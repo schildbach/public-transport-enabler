@@ -22,7 +22,7 @@ package de.schildbach.pte;
  */
 public enum Product
 {
-	HIGH_SPEED_TRAIN, REGIONAL_TRAIN, URBAN_TRAIN, SUBWAY, TRAM, BUS, FERRY;
+	HIGH_SPEED_TRAIN, REGIONAL_TRAIN, SUBURBAN_TRAIN, SUBWAY, TRAM, BUS, FERRY;
 
 	public static Product fromCode(char code)
 	{
@@ -31,7 +31,7 @@ public enum Product
 		else if (code == 'R')
 			return Product.REGIONAL_TRAIN;
 		else if (code == 'S')
-			return Product.URBAN_TRAIN;
+			return Product.SUBURBAN_TRAIN;
 		else if (code == 'U')
 			return Product.SUBWAY;
 		else if (code == 'T')
