@@ -114,21 +114,23 @@ public interface NetworkProvider
 	 * 
 	 * @param stationId
 	 *            id of the station
+	 * @param maxDepartures
+	 *            maximum number of departures to get or {@code 0}
 	 * @return uri for getting departures
 	 */
-	String getDeparturesUri(String stationId);
+	String departuresQueryUri(String stationId, int maxDepartures);
 
 	/**
 	 * Get departures at a given station, probably live
 	 * 
-	 * @param stationId
-	 *            id of the station
+	 * @param queryUri
+	 *            uri constructed by {@link NetworkProvider#departuresQueryUri}
 	 * @param products
-	 *            products to consider or {@code null} to consider all products
+	 *            products to filter or {@code null} to return all products
 	 * @param maxDepartures
-	 *            maximum number of departures to get or {@code 0}
+	 *            maximum number of departures to return or {@code 0}
 	 * @return result object containing the departures
 	 * @throws IOException
 	 */
-	GetDeparturesResult getDepartures(String stationId, Product[] products, int maxDepartures) throws IOException;
+	QueryDeparturesResult queryDepartures(String queryUri, Product[] products, int maxDepartures) throws IOException;
 }

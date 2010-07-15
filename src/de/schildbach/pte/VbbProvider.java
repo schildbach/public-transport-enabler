@@ -352,13 +352,18 @@ public final class VbbProvider implements NetworkProvider
 		return selected;
 	}
 
-	private static final String DEPARTURE_URL_LIVE = "http://mobil.bvg.de/IstAbfahrtzeiten/index/mobil?input=";
-	private static final String DEPARTURE_URL_PLAN = "http://mobil.bvg.de/Fahrinfo/bin/stboard.bin/dox/dox?boardType=dep&start=yes&maxJourneys=12&input=";
+	private static final String DEPARTURE_URL_LIVE = "http://mobil.bvg.de/IstAbfahrtzeiten/index/mobil?";
+	private static final String DEPARTURE_URL_PLAN = "http://mobil.bvg.de/Fahrinfo/bin/stboard.bin/dox/dox?boardType=dep&start=yes&";
 
-	public String getDeparturesUri(String stationId)
+	public String departuresQueryUri(final String stationId, final int maxDepartures)
 	{
 		final boolean live = stationId.length() == 6;
-		return live ? DEPARTURE_URL_LIVE + stationId : DEPARTURE_URL_PLAN + stationId;
+
+		final StringBuilder uri = new StringBuilder();
+		uri.append(live ? DEPARTURE_URL_LIVE : DEPARTURE_URL_PLAN);
+		uri.append("input=").append(stationId);
+		uri.append("&maxJourneys=").append(maxDepartures != 0 ? maxDepartures : 12);
+		return uri.toString();
 	}
 
 	private static final Pattern P_DEPARTURES_HEAD = Pattern.compile(".*<strong>(.*?)</strong>.*Datum:(.*?)<br />.*", Pattern.DOTALL);
@@ -372,12 +377,12 @@ public final class VbbProvider implements NetworkProvider
 			+ "<td>\\s*<a.*?>\\s*(.*?)\\s*</a>\\s*</td>", Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_SERVICE_DOWN = Pattern.compile("Wartungsarbeiten");
 
-	public GetDeparturesResult getDepartures(final String stationId, final Product[] products, final int maxDepartures) throws IOException
+	public QueryDeparturesResult queryDepartures(final String uri, final Product[] products, final int maxDepartures) throws IOException
 	{
-		final CharSequence page = ParserUtils.scrape(getDeparturesUri(stationId));
+		final CharSequence page = ParserUtils.scrape(uri);
 
 		if (P_DEPARTURES_SERVICE_DOWN.matcher(page).find())
-			return GetDeparturesResult.SERVICE_DOWN;
+			return QueryDeparturesResult.SERVICE_DOWN;
 
 		// parse page
 		final Matcher mHead = P_DEPARTURES_HEAD.matcher(page);
@@ -391,7 +396,7 @@ public final class VbbProvider implements NetworkProvider
 			final Matcher mDepCoarse = P_DEPARTURES_COARSE.matcher(page);
 			while (mDepCoarse.find() && (maxDepartures == 0 || departures.size() < maxDepartures))
 			{
-				final boolean live = stationId.length() == 6;
+				final boolean live = uri.contains("IstAbfahrtzeiten");
 				final Matcher mDepFine = (live ? P_DEPARTURES_LIVE_FINE : P_DEPARTURES_PLAN_FINE).matcher(mDepCoarse.group(1));
 				if (mDepFine.matches())
 				{
@@ -402,15 +407,15 @@ public final class VbbProvider implements NetworkProvider
 				}
 				else
 				{
-					throw new IllegalArgumentException("cannot parse '" + mDepCoarse.group(1) + "' on " + stationId);
+					throw new IllegalArgumentException("cannot parse '" + mDepCoarse.group(1) + "' on " + uri);
 				}
 			}
 
-			return new GetDeparturesResult(location, currentTime, departures);
+			return new QueryDeparturesResult(location, currentTime, departures);
 		}
 		else
 		{
-			return GetDeparturesResult.NO_INFO;
+			return QueryDeparturesResult.NO_INFO;
 		}
 	}
 

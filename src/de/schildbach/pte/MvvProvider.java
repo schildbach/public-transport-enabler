@@ -456,7 +456,7 @@ public class MvvProvider implements NetworkProvider
 
 	private static final String DEPARTURE_URL = "http://efa.mvv-muenchen.de/mobile/XSLT_DM_REQUEST?typeInfo_dm=stopID&mode=direct&nameInfo_dm=";
 
-	public String getDeparturesUri(final String stationId)
+	public String departuresQueryUri(final String stationId, final int maxDepartures)
 	{
 		return DEPARTURE_URL + stationId;
 	}
@@ -473,9 +473,9 @@ public class MvvProvider implements NetworkProvider
 			+ "<br />\\s*(.*?)\\s*<br />.*?" // destination
 			+ "</td>.*?", Pattern.DOTALL);
 
-	public GetDeparturesResult getDepartures(final String stationId, final Product[] products, final int maxDepartures) throws IOException
+	public QueryDeparturesResult queryDepartures(final String uri, final Product[] products, final int maxDepartures) throws IOException
 	{
-		final CharSequence page = ParserUtils.scrape(getDeparturesUri(stationId));
+		final CharSequence page = ParserUtils.scrape(uri);
 
 		final Matcher mHead = P_DEPARTURES_HEAD.matcher(page);
 		if (mHead.matches())
@@ -508,15 +508,15 @@ public class MvvProvider implements NetworkProvider
 				}
 				else
 				{
-					throw new IllegalArgumentException("cannot parse '" + mDepCoarse.group(1) + "' on " + stationId);
+					throw new IllegalArgumentException("cannot parse '" + mDepCoarse.group(1) + "' on " + uri);
 				}
 			}
 
-			return new GetDeparturesResult(location, currentTime, departures);
+			return new QueryDeparturesResult(location, currentTime, departures);
 		}
 		else
 		{
-			return GetDeparturesResult.NO_INFO;
+			return QueryDeparturesResult.NO_INFO;
 		}
 	}
 

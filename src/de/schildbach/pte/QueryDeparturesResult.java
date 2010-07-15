@@ -23,16 +23,16 @@ import java.util.List;
 /**
  * @author Andreas Schildbach
  */
-public final class GetDeparturesResult
+public final class QueryDeparturesResult
 {
-	public static final GetDeparturesResult NO_INFO = new GetDeparturesResult(null, null, null);
-	public static final GetDeparturesResult SERVICE_DOWN = new GetDeparturesResult(null, null, null);
+	public static final QueryDeparturesResult NO_INFO = new QueryDeparturesResult(null, null, null);
+	public static final QueryDeparturesResult SERVICE_DOWN = new QueryDeparturesResult(null, null, null);
 
 	public final String location;
 	public final Date currentTime;
 	public final List<Departure> departures;
 
-	public GetDeparturesResult(final String location, final Date currentTime, final List<Departure> departures)
+	public QueryDeparturesResult(final String location, final Date currentTime, final List<Departure> departures)
 	{
 		this.location = location;
 		this.currentTime = currentTime;

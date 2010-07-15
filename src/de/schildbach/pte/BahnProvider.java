@@ -394,11 +394,16 @@ public final class BahnProvider implements NetworkProvider
 		}
 	}
 
-	private static final String DEPARTURE_URL = "http://mobile.bahn.de/bin/mobil/bhftafel.exe/dox?start=&maxJourneys=20&boardType=Abfahrt&productsFilter=1111111111000000&input=";
-
-	public String getDeparturesUri(String stationId)
+	public String departuresQueryUri(final String stationId, final int maxDepartures)
 	{
-		return DEPARTURE_URL + stationId;
+		final StringBuilder uri = new StringBuilder();
+		uri.append("http://mobile.bahn.de/bin/mobil/bhftafel.exe/dox");
+		uri.append("?start=");
+		uri.append("&maxJourneys=").append(maxDepartures);
+		uri.append("&boardType=Abfahrt");
+		uri.append("&productsFilter=1111111111000000");
+		uri.append("&input=").append(stationId);
+		return uri.toString();
 	}
 
 	private static final Pattern P_DEPARTURES_HEAD = Pattern.compile(".*<div class=\"haupt rline\">.*?"
@@ -409,9 +414,9 @@ public final class BahnProvider implements NetworkProvider
 	private static final Pattern P_DEPARTURES_FINE = Pattern.compile(".*?<span class=\"bold\">(.*?)</span>.*?"
 			+ "&gt;&gt;\\n?\\s*(.+?)\\s*\\n?<br />\\n?<span class=\"bold\">(\\d+:\\d+)</span>.*?", Pattern.DOTALL);
 
-	public GetDeparturesResult getDepartures(final String stationId, final Product[] products, final int maxDepartures) throws IOException
+	public QueryDeparturesResult queryDepartures(final String uri, final Product[] products, final int maxDepartures) throws IOException
 	{
-		final CharSequence page = ParserUtils.scrape(getDeparturesUri(stationId));
+		final CharSequence page = ParserUtils.scrape(uri);
 
 		// parse page
 		final Matcher mHead = P_DEPARTURES_HEAD.matcher(page);
@@ -435,15 +440,15 @@ public final class BahnProvider implements NetworkProvider
 				}
 				else
 				{
-					throw new IllegalArgumentException("cannot parse '" + mDepCoarse.group(1) + "' on " + stationId);
+					throw new IllegalArgumentException("cannot parse '" + mDepCoarse.group(1) + "' on " + uri);
 				}
 			}
 
-			return new GetDeparturesResult(location, currentTime, departures);
+			return new QueryDeparturesResult(location, currentTime, departures);
 		}
 		else
 		{
-			return GetDeparturesResult.NO_INFO;
+			return QueryDeparturesResult.NO_INFO;
 		}
 	}
 

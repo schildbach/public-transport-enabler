@@ -358,13 +358,21 @@ public class RmvProvider implements NetworkProvider
 		}
 	}
 
-	public String getDeparturesUri(final String stationId)
+	public String departuresQueryUri(final String stationId, final int maxDepartures)
 	{
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yy");
 		final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
 		final Date now = new Date();
-		return "http://www.rmv.de/auskunft/bin/jp/stboard.exe/dox?input=" + stationId + "&boardType=dep&time=" + TIME_FORMAT.format(now) + "&date="
-				+ DATE_FORMAT.format(now) + "&start=yes";
+
+		final StringBuilder uri = new StringBuilder();
+		uri.append("http://www.rmv.de/auskunft/bin/jp/stboard.exe/dox");
+		uri.append("?input=").append(stationId);
+		uri.append("&boardType=dep");
+		uri.append("&maxJourneys=").append(maxDepartures != 0 ? maxDepartures : 12);
+		uri.append("&time=").append(TIME_FORMAT.format(now));
+		uri.append("&date=").append(DATE_FORMAT.format(now));
+		uri.append("&start=yes");
+		return uri.toString();
 	}
 
 	private static final Pattern P_DEPARTURES_HEAD = Pattern.compile(".*<p class=\"qs\">.*?" //
@@ -380,9 +388,9 @@ public class RmvProvider implements NetworkProvider
 			+ "<b>(\\d+:\\d+)</b>.*?" // time
 			+ "(?:Gl\\. (\\d+)<br />.*?)?", Pattern.DOTALL);
 
-	public GetDeparturesResult getDepartures(final String stationId, final Product[] products, final int maxDepartures) throws IOException
+	public QueryDeparturesResult queryDepartures(final String uri, final Product[] products, final int maxDepartures) throws IOException
 	{
-		final CharSequence page = ParserUtils.scrape(getDeparturesUri(stationId));
+		final CharSequence page = ParserUtils.scrape(uri);
 
 		// parse page
 		final Matcher mHead = P_DEPARTURES_HEAD.matcher(page);
@@ -406,15 +414,15 @@ public class RmvProvider implements NetworkProvider
 				}
 				else
 				{
-					throw new IllegalArgumentException("cannot parse '" + mDepCoarse.group(1) + "' on " + stationId);
+					throw new IllegalArgumentException("cannot parse '" + mDepCoarse.group(1) + "' on " + uri);
 				}
 			}
 
-			return new GetDeparturesResult(location, currentTime, departures);
+			return new QueryDeparturesResult(location, currentTime, departures);
 		}
 		else
 		{
-			return GetDeparturesResult.NO_INFO;
+			return QueryDeparturesResult.NO_INFO;
 		}
 	}
 
