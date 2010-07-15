@@ -473,7 +473,7 @@ public class MvvProvider implements NetworkProvider
 			+ "<br />\\s*(.*?)\\s*<br />.*?" // destination
 			+ "</td>.*?", Pattern.DOTALL);
 
-	public QueryDeparturesResult queryDepartures(final String uri, final Product[] products, final int maxDepartures) throws IOException
+	public QueryDeparturesResult queryDepartures(final String uri, final int maxDepartures) throws IOException
 	{
 		final CharSequence page = ParserUtils.scrape(uri);
 

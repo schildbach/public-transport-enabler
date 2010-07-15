@@ -388,7 +388,7 @@ public class RmvProvider implements NetworkProvider
 			+ "<b>(\\d+:\\d+)</b>.*?" // time
 			+ "(?:Gl\\. (\\d+)<br />.*?)?", Pattern.DOTALL);
 
-	public QueryDeparturesResult queryDepartures(final String uri, final Product[] products, final int maxDepartures) throws IOException
+	public QueryDeparturesResult queryDepartures(final String uri, final int maxDepartures) throws IOException
 	{
 		final CharSequence page = ParserUtils.scrape(uri);
 
@@ -408,9 +408,8 @@ public class RmvProvider implements NetworkProvider
 				if (mDepFine.matches())
 				{
 					final Departure dep = parseDeparture(mDepFine, currentTime);
-					if (products == null || filter(dep.line.charAt(0), products))
-						if (!departures.contains(dep))
-							departures.add(dep);
+					if (!departures.contains(dep))
+						departures.add(dep);
 				}
 				else
 				{
@@ -449,17 +448,6 @@ public class RmvProvider implements NetworkProvider
 			parsed.add(Calendar.DAY_OF_MONTH, 1);
 
 		return new Departure(parsed.getTime(), line, lineColors, destination);
-	}
-
-	private static boolean filter(final char line, final Product[] products)
-	{
-		final Product lineProduct = Product.fromCode(line);
-
-		for (final Product p : products)
-			if (lineProduct == p)
-				return true;
-
-		return false;
 	}
 
 	private static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zÄÖÜäöüß]+)[\\s-]*(.*)");

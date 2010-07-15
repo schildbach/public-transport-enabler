@@ -125,12 +125,10 @@ public interface NetworkProvider
 	 * 
 	 * @param queryUri
 	 *            uri constructed by {@link NetworkProvider#departuresQueryUri}
-	 * @param products
-	 *            products to filter or {@code null} to return all products
 	 * @param maxDepartures
 	 *            maximum number of departures to return or {@code 0}
 	 * @return result object containing the departures
 	 * @throws IOException
 	 */
-	QueryDeparturesResult queryDepartures(String queryUri, Product[] products, int maxDepartures) throws IOException;
+	QueryDeparturesResult queryDepartures(String queryUri, int maxDepartures) throws IOException;
 }
