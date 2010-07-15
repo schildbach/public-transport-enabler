@@ -473,7 +473,7 @@ public class MvvProvider implements NetworkProvider
 			+ "<br />\\s*(.*?)\\s*<br />.*?" // destination
 			+ "</td>.*?", Pattern.DOTALL);
 
-	public QueryDeparturesResult queryDepartures(final String uri, final int maxDepartures) throws IOException
+	public QueryDeparturesResult queryDepartures(final String uri) throws IOException
 	{
 		final CharSequence page = ParserUtils.scrape(uri);
 
@@ -482,12 +482,12 @@ public class MvvProvider implements NetworkProvider
 		{
 			final String location = ParserUtils.resolveEntities(mHead.group(1));
 			final Date currentTime = parseDate(mHead.group(2), mHead.group(3), mHead.group(4));
-			final List<Departure> departures = new ArrayList<Departure>(maxDepartures);
+			final List<Departure> departures = new ArrayList<Departure>(8);
 
 			final Calendar calendar = new GregorianCalendar();
 
 			final Matcher mDepCoarse = P_DEPARTURES_COARSE.matcher(page);
-			while (mDepCoarse.find() && (maxDepartures == 0 || departures.size() < maxDepartures))
+			while (mDepCoarse.find())
 			{
 				final Matcher mDepFine = P_DEPARTURES_FINE.matcher(mDepCoarse.group(1));
 				if (mDepFine.matches())
@@ -512,7 +512,7 @@ public class MvvProvider implements NetworkProvider
 				}
 			}
 
-			return new QueryDeparturesResult(location, currentTime, departures);
+			return new QueryDeparturesResult(uri, location, currentTime, departures);
 		}
 		else
 		{

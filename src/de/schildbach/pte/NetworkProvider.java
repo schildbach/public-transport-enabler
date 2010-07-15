@@ -125,10 +125,8 @@ public interface NetworkProvider
 	 * 
 	 * @param queryUri
 	 *            uri constructed by {@link NetworkProvider#departuresQueryUri}
-	 * @param maxDepartures
-	 *            maximum number of departures to return or {@code 0}
 	 * @return result object containing the departures
 	 * @throws IOException
 	 */
-	QueryDeparturesResult queryDepartures(String queryUri, int maxDepartures) throws IOException;
+	QueryDeparturesResult queryDepartures(String queryUri) throws IOException;
 }

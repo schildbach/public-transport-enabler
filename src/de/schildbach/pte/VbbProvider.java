@@ -377,7 +377,7 @@ public final class VbbProvider implements NetworkProvider
 			+ "<td>\\s*<a.*?>\\s*(.*?)\\s*</a>\\s*</td>", Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_SERVICE_DOWN = Pattern.compile("Wartungsarbeiten");
 
-	public QueryDeparturesResult queryDepartures(final String uri, final int maxDepartures) throws IOException
+	public QueryDeparturesResult queryDepartures(final String uri) throws IOException
 	{
 		final CharSequence page = ParserUtils.scrape(uri);
 
@@ -390,11 +390,11 @@ public final class VbbProvider implements NetworkProvider
 		{
 			final String location = ParserUtils.resolveEntities(mHead.group(1));
 			final Date currentTime = parseDate(mHead.group(2));
-			final List<Departure> departures = new ArrayList<Departure>(maxDepartures);
+			final List<Departure> departures = new ArrayList<Departure>(8);
 
 			// choose matcher
 			final Matcher mDepCoarse = P_DEPARTURES_COARSE.matcher(page);
-			while (mDepCoarse.find() && (maxDepartures == 0 || departures.size() < maxDepartures))
+			while (mDepCoarse.find())
 			{
 				final boolean live = uri.contains("IstAbfahrtzeiten");
 				final Matcher mDepFine = (live ? P_DEPARTURES_LIVE_FINE : P_DEPARTURES_PLAN_FINE).matcher(mDepCoarse.group(1));
@@ -410,7 +410,7 @@ public final class VbbProvider implements NetworkProvider
 				}
 			}
 
-			return new QueryDeparturesResult(location, currentTime, departures);
+			return new QueryDeparturesResult(uri, location, currentTime, departures);
 		}
 		else
 		{

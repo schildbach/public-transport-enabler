@@ -25,15 +25,17 @@ import java.util.List;
  */
 public final class QueryDeparturesResult
 {
-	public static final QueryDeparturesResult NO_INFO = new QueryDeparturesResult(null, null, null);
-	public static final QueryDeparturesResult SERVICE_DOWN = new QueryDeparturesResult(null, null, null);
+	public static final QueryDeparturesResult NO_INFO = new QueryDeparturesResult(null, null, null, null);
+	public static final QueryDeparturesResult SERVICE_DOWN = new QueryDeparturesResult(null, null, null, null);
 
+	public final String uri;
 	public final String location;
 	public final Date currentTime;
 	public final List<Departure> departures;
 
-	public QueryDeparturesResult(final String location, final Date currentTime, final List<Departure> departures)
+	public QueryDeparturesResult(final String uri, final String location, final Date currentTime, final List<Departure> departures)
 	{
+		this.uri = uri;
 		this.location = location;
 		this.currentTime = currentTime;
 		this.departures = departures;

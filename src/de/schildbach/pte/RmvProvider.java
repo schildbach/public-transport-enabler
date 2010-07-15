@@ -388,7 +388,7 @@ public class RmvProvider implements NetworkProvider
 			+ "<b>(\\d+:\\d+)</b>.*?" // time
 			+ "(?:Gl\\. (\\d+)<br />.*?)?", Pattern.DOTALL);
 
-	public QueryDeparturesResult queryDepartures(final String uri, final int maxDepartures) throws IOException
+	public QueryDeparturesResult queryDepartures(final String uri) throws IOException
 	{
 		final CharSequence page = ParserUtils.scrape(uri);
 
@@ -398,11 +398,11 @@ public class RmvProvider implements NetworkProvider
 		{
 			final String location = ParserUtils.resolveEntities(mHead.group(1));
 			final Date currentTime = ParserUtils.joinDateTime(ParserUtils.parseDate(mHead.group(3)), ParserUtils.parseTime(mHead.group(2)));
-			final List<Departure> departures = new ArrayList<Departure>(maxDepartures);
+			final List<Departure> departures = new ArrayList<Departure>(8);
 
 			// choose matcher
 			final Matcher mDepCoarse = P_DEPARTURES_COARSE.matcher(page);
-			while (mDepCoarse.find() && (maxDepartures == 0 || departures.size() < maxDepartures))
+			while (mDepCoarse.find())
 			{
 				final Matcher mDepFine = P_DEPARTURES_FINE.matcher(mDepCoarse.group(1));
 				if (mDepFine.matches())
@@ -417,7 +417,7 @@ public class RmvProvider implements NetworkProvider
 				}
 			}
 
-			return new QueryDeparturesResult(location, currentTime, departures);
+			return new QueryDeparturesResult(uri, location, currentTime, departures);
 		}
 		else
 		{
