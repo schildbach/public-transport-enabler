@@ -533,14 +533,24 @@ public class MvvProvider implements NetworkProvider
 		{
 			if (line.matches("\\d{2,4}") && Integer.parseInt(line) >= 30)
 				return "B" + line;
+			else if (line.matches("N4\\d"))
+				return "B" + line;
 			else if (LINES.containsKey("T" + line))
 				return "T" + line;
 			else if (LINES.containsKey("S" + line))
 				return "S" + line;
 			else if (LINES.containsKey("U" + line))
 				return "U" + line;
-			else if (line.matches("N4\\d"))
-				return "B" + line;
+			else if (line.startsWith("RE "))
+				return "R" + line;
+			else if (line.startsWith("RB "))
+				return "R" + line;
+			else if (line.startsWith("ALX "))
+				return "R" + line;
+			else if (line.startsWith("ICE "))
+				return "I" + line;
+			else if (line.startsWith("CNL "))
+				return "I" + line;
 
 			throw new IllegalStateException("cannot normalize null product, line " + line);
 		}
