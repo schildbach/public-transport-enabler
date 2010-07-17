@@ -539,6 +539,8 @@ public class MvvProvider implements NetworkProvider
 				return "S" + line;
 			else if (LINES.containsKey("U" + line))
 				return "U" + line;
+			else if (line.matches("N4\\d"))
+				return "B" + line;
 
 			throw new IllegalStateException("cannot normalize null product, line " + line);
 		}
