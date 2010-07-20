@@ -387,10 +387,16 @@ public class RmvProvider implements NetworkProvider
 			+ "<br />.*?" //
 			+ "<b>(\\d+:\\d+)</b>.*?" // time
 			+ "(?:Gl\\. (\\d+)<br />.*?)?", Pattern.DOTALL);
+	private static final Pattern P_DEPARTURES_URI_STATION_ID = Pattern.compile("input=(\\d+)");
 
 	public QueryDeparturesResult queryDepartures(final String uri) throws IOException
 	{
 		final CharSequence page = ParserUtils.scrape(uri);
+
+		final Matcher mStationId = P_DEPARTURES_URI_STATION_ID.matcher(uri);
+		if (!mStationId.find())
+			throw new IllegalStateException(uri);
+		final int stationId = Integer.parseInt(mStationId.group(1));
 
 		// parse page
 		final Matcher mHead = P_DEPARTURES_HEAD.matcher(page);
@@ -417,7 +423,7 @@ public class RmvProvider implements NetworkProvider
 				}
 			}
 
-			return new QueryDeparturesResult(uri, location, currentTime, departures);
+			return new QueryDeparturesResult(uri, stationId, location, currentTime, departures);
 		}
 		else
 		{

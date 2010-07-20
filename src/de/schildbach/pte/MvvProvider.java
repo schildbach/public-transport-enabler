@@ -474,10 +474,16 @@ public class MvvProvider implements NetworkProvider
 			+ "<td width=\"100\">\\s*([^<]*?)[\\xa0\\s]*(?:<a .*?</a>.*?)?" // line
 			+ "<br />\\s*(.*?)\\s*<br />.*?" // destination
 			+ "</td>.*?", Pattern.DOTALL);
+	private static final Pattern P_DEPARTURES_URI_STATION_ID = Pattern.compile("nameInfo_dm=(\\d+)");
 
 	public QueryDeparturesResult queryDepartures(final String uri) throws IOException
 	{
 		final CharSequence page = ParserUtils.scrape(uri);
+
+		final Matcher mStationId = P_DEPARTURES_URI_STATION_ID.matcher(uri);
+		if (!mStationId.find())
+			throw new IllegalStateException(uri);
+		final int stationId = Integer.parseInt(mStationId.group(1));
 
 		final Matcher mHead = P_DEPARTURES_HEAD.matcher(page);
 		if (mHead.matches())
@@ -514,7 +520,7 @@ public class MvvProvider implements NetworkProvider
 				}
 			}
 
-			return new QueryDeparturesResult(uri, location, currentTime, departures);
+			return new QueryDeparturesResult(uri, stationId, location, currentTime, departures);
 		}
 		else
 		{

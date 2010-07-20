@@ -413,10 +413,16 @@ public final class BahnProvider implements NetworkProvider
 	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<div class=\"sqdetailsDep trow\">(.+?)</div>", Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_FINE = Pattern.compile(".*?<span class=\"bold\">(.*?)</span>.*?"
 			+ "&gt;&gt;\\n?\\s*(.+?)\\s*\\n?<br />\\n?<span class=\"bold\">(\\d+:\\d+)</span>.*?", Pattern.DOTALL);
+	private static final Pattern P_DEPARTURES_URI_STATION_ID = Pattern.compile("input=(\\d+)");
 
 	public QueryDeparturesResult queryDepartures(final String uri) throws IOException
 	{
 		final CharSequence page = ParserUtils.scrape(uri);
+		
+		final Matcher mStationId = P_DEPARTURES_URI_STATION_ID.matcher(uri);
+		if (!mStationId.find())
+			throw new IllegalStateException(uri);
+		final int stationId = Integer.parseInt(mStationId.group(1));
 
 		// parse page
 		final Matcher mHead = P_DEPARTURES_HEAD.matcher(page);
@@ -443,7 +449,7 @@ public final class BahnProvider implements NetworkProvider
 				}
 			}
 
-			return new QueryDeparturesResult(uri, location, currentTime, departures);
+			return new QueryDeparturesResult(uri, stationId, location, currentTime, departures);
 		}
 		else
 		{

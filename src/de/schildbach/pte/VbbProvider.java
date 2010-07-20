@@ -401,10 +401,16 @@ public final class VbbProvider implements NetworkProvider
 			+ "<td>\\s*<strong>\\s*(.*?)[\\s\\*]*</strong>.*?</td>\\s*" //
 			+ "<td>\\s*<a.*?>\\s*(.*?)\\s*</a>\\s*</td>", Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_SERVICE_DOWN = Pattern.compile("Wartungsarbeiten");
+	private static final Pattern P_DEPARTURES_URI_STATION_ID = Pattern.compile("input=(\\d+)");
 
 	public QueryDeparturesResult queryDepartures(final String uri) throws IOException
 	{
 		final CharSequence page = ParserUtils.scrape(uri);
+
+		final Matcher mStationId = P_DEPARTURES_URI_STATION_ID.matcher(uri);
+		if (!mStationId.find())
+			throw new IllegalStateException(uri);
+		final int stationId = Integer.parseInt(mStationId.group(1));
 
 		if (P_DEPARTURES_SERVICE_DOWN.matcher(page).find())
 			return QueryDeparturesResult.SERVICE_DOWN;
@@ -435,7 +441,7 @@ public final class VbbProvider implements NetworkProvider
 				}
 			}
 
-			return new QueryDeparturesResult(uri, location, currentTime, departures);
+			return new QueryDeparturesResult(uri, stationId, location, currentTime, departures);
 		}
 		else
 		{
