@@ -29,17 +29,22 @@ public final class Connection
 	final public String link;
 	final public Date departureTime;
 	final public Date arrivalTime;
+	final public int fromId;
 	final public String from;
+	final public int toId;
 	final public String to;
 	final public List<Part> parts;
 
-	public Connection(String link, Date departureTime, Date arrivalTime, String from, String to, List<Part> parts)
+	public Connection(final String link, final Date departureTime, final Date arrivalTime, final int fromId, final String from, final int toId,
+			final String to, final List<Part> parts)
 	{
 		this.id = extractId(link);
 		this.link = link;
 		this.departureTime = departureTime;
+		this.fromId = fromId;
 		this.from = from;
 		this.arrivalTime = arrivalTime;
+		this.toId = toId;
 		this.to = to;
 		this.parts = parts;
 	}
@@ -89,28 +94,33 @@ public final class Connection
 		final public String destination;
 		final public Date departureTime;
 		final public String departurePosition;
+		final public int departureId;
 		final public String departure;
 		final public Date arrivalTime;
 		final public String arrivalPosition;
+		final public int arrivalId;
 		final public String arrival;
 
 		public Trip(final String line, final int[] lineColors, final String destination, final Date departureTime, final String departurePosition,
-				final String departure, final Date arrivalTime, final String arrivalPosition, final String arrival)
+				final int departureId, final String departure, final Date arrivalTime, final String arrivalPosition, final int arrivalId,
+				final String arrival)
 		{
 			this.line = line;
 			this.lineColors = lineColors;
 			this.destination = destination;
 			this.departureTime = departureTime;
 			this.departurePosition = departurePosition;
+			this.departureId = departureId;
 			this.departure = departure;
 			this.arrivalTime = arrivalTime;
 			this.arrivalPosition = arrivalPosition;
+			this.arrivalId = arrivalId;
 			this.arrival = arrival;
 		}
 
 		public Trip(final Date departureTime, final Date arrivalTime, final String line, final int[] lineColors)
 		{
-			this(line, lineColors, null, departureTime, null, null, arrivalTime, null, null);
+			this(line, lineColors, null, departureTime, null, 0, null, arrivalTime, null, 0, null);
 		}
 
 		@Override
@@ -121,9 +131,11 @@ public final class Connection
 			builder.append(",");
 			builder.append("destination=").append(destination);
 			builder.append(",");
-			builder.append("departure=").append(departureTime).append("/").append(departurePosition).append("/").append(departure);
+			builder.append("departure=").append(departureTime).append("/").append(departurePosition).append("/").append(departureId).append("/")
+					.append(departure);
 			builder.append(",");
-			builder.append("arrival=").append(arrivalTime).append("/").append(arrivalPosition).append("/").append(arrival);
+			builder.append("arrival=").append(arrivalTime).append("/").append(arrivalPosition).append("/").append(arrivalId).append("/").append(
+					arrival);
 			builder.append("]");
 			return builder.toString();
 		}
@@ -135,7 +147,7 @@ public final class Connection
 		final public String departure;
 		final public String arrival;
 
-		public Footway(int min, String departure, String arrival)
+		public Footway(final int min, final String departure, final String arrival)
 		{
 			this.min = min;
 			this.departure = departure;

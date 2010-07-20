@@ -290,7 +290,8 @@ public class MvvProvider implements NetworkProvider
 						Date arrivalTime = ParserUtils.joinDateTime(date, ParserUtils.parseTime(mConFine.group(5)));
 						if (departureTime.after(arrivalTime))
 							arrivalTime = ParserUtils.addDays(arrivalTime, 1);
-						final Connection connection = new Connection(link, departureTime, arrivalTime, from, to, new ArrayList<Connection.Part>(1));
+						final Connection connection = new Connection(link, departureTime, arrivalTime, 0, from, 0, to,
+								new ArrayList<Connection.Part>(1));
 						connection.parts.add(new Connection.Trip(departureTime, arrivalTime, null, null));
 						connections.add(connection);
 					}
@@ -301,7 +302,8 @@ public class MvvProvider implements NetworkProvider
 						final Date departureTime = calendar.getTime();
 						calendar.add(Calendar.MINUTE, min);
 						final Date arrivalTime = calendar.getTime();
-						final Connection connection = new Connection(link, departureTime, arrivalTime, from, to, new ArrayList<Connection.Part>(1));
+						final Connection connection = new Connection(link, departureTime, arrivalTime, 0, from, 0, to,
+								new ArrayList<Connection.Part>(1));
 						connection.parts.add(new Connection.Footway(min, from, to));
 						connections.add(connection);
 					}
@@ -386,8 +388,8 @@ public class MvvProvider implements NetworkProvider
 
 						final String normalizedLine = normalizeLine(product, line);
 
-						parts.add(new Connection.Trip(normalizedLine, LINES.get(normalizedLine), destination, departureTime, null, departure,
-								arrivalTime, null, arrival));
+						parts.add(new Connection.Trip(normalizedLine, LINES.get(normalizedLine), destination, departureTime, null, 0, departure,
+								arrivalTime, null, 0, arrival));
 
 						if (firstDepartureTime == null)
 							firstDepartureTime = departureTime;
@@ -432,8 +434,8 @@ public class MvvProvider implements NetworkProvider
 				lastArrivalTime = calendar.getTime();
 			}
 
-			return new GetConnectionDetailsResult(new Date(), new Connection(uri, firstDepartureTime, lastArrivalTime, firstDeparture, lastArrival,
-					parts));
+			return new GetConnectionDetailsResult(new Date(), new Connection(uri, firstDepartureTime, lastArrivalTime, 0, firstDeparture, 0,
+					lastArrival, parts));
 		}
 		else
 		{

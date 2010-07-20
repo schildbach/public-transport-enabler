@@ -257,7 +257,7 @@ public final class BahnProvider implements NetworkProvider
 						line = normalizeLine(line);
 					else
 						line = null;
-					final Connection connection = new Connection(link, departureTime, arrivalTime, from, to, new ArrayList<Connection.Part>(1));
+					final Connection connection = new Connection(link, departureTime, arrivalTime, 0, from, 0, to, new ArrayList<Connection.Part>(1));
 					connection.parts.add(new Connection.Trip(departureTime, arrivalTime, line, line != null ? LINES.get(line.charAt(0)) : null));
 					connections.add(connection);
 				}
@@ -347,8 +347,8 @@ public final class BahnProvider implements NetworkProvider
 
 							final Date departureDateTime = ParserUtils.joinDateTime(departureDate, departureTime);
 							final Date arrivalDateTime = ParserUtils.joinDateTime(arrivalDate, arrivalTime);
-							lastTrip = new Connection.Trip(line, LINES.get(line.charAt(0)), null, departureDateTime, departurePosition, departure,
-									arrivalDateTime, arrivalPosition, arrival);
+							lastTrip = new Connection.Trip(line, LINES.get(line.charAt(0)), null, departureDateTime, departurePosition, 0, departure,
+									arrivalDateTime, arrivalPosition, 0, arrival);
 							parts.add(lastTrip);
 
 							if (firstDepartureTime == null)
@@ -385,8 +385,8 @@ public final class BahnProvider implements NetworkProvider
 			if (firstDepartureTime == null || lastArrivalTime == null)
 				throw new IllegalStateException("could not parse all parts of:\n" + page + "\n" + parts);
 
-			return new GetConnectionDetailsResult(new Date(), new Connection(uri, firstDepartureTime, lastArrivalTime, firstDeparture, lastArrival,
-					parts));
+			return new GetConnectionDetailsResult(new Date(), new Connection(uri, firstDepartureTime, lastArrivalTime, 0, firstDeparture, 0,
+					lastArrival, parts));
 		}
 		else
 		{

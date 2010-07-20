@@ -193,24 +193,24 @@ public final class VbbProvider implements NetworkProvider
 				if (mConFine.matches())
 				{
 					final String link = BVG_BASE_URL + ParserUtils.resolveEntities(mConFine.group(1));
-					Date departure = ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mConFine.group(2)));
+					Date departureTime = ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mConFine.group(2)));
 					if (!connections.isEmpty())
 					{
-						final long diff = ParserUtils.timeDiff(departure,
+						final long diff = ParserUtils.timeDiff(departureTime,
 								((Connection.Trip) connections.get(connections.size() - 1).parts.get(0)).departureTime);
 						if (diff > PARSER_DAY_ROLLOVER_THRESHOLD_MS)
-							departure = ParserUtils.addDays(departure, -1);
+							departureTime = ParserUtils.addDays(departureTime, -1);
 						else if (diff < -PARSER_DAY_ROLLDOWN_THRESHOLD_MS)
-							departure = ParserUtils.addDays(departure, 1);
+							departureTime = ParserUtils.addDays(departureTime, 1);
 					}
-					Date arrival = ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mConFine.group(3)));
-					if (departure.after(arrival))
-						arrival = ParserUtils.addDays(arrival, 1);
+					Date arrivalTime = ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mConFine.group(3)));
+					if (departureTime.after(arrivalTime))
+						arrivalTime = ParserUtils.addDays(arrivalTime, 1);
 					String line = mConFine.group(4);
 					if (line != null)
 						line = normalizeLine(ParserUtils.resolveEntities(line));
-					final Connection connection = new Connection(link, departure, arrival, from, to, new ArrayList<Connection.Part>(1));
-					connection.parts.add(new Connection.Trip(departure, arrival, line, LINES.get(line)));
+					final Connection connection = new Connection(link, departureTime, arrivalTime, 0, from, 0, to, new ArrayList<Connection.Part>(1));
+					connection.parts.add(new Connection.Trip(departureTime, arrivalTime, line, LINES.get(line)));
 					connections.add(connection);
 				}
 				else
@@ -229,7 +229,8 @@ public final class VbbProvider implements NetworkProvider
 
 	private static final Pattern P_CONNECTION_DETAILS_HEAD = Pattern.compile(".*(?:Datum|Abfahrt): (\\d\\d\\.\\d\\d\\.\\d\\d).*", Pattern.DOTALL);
 	private static final Pattern P_CONNECTION_DETAILS_COARSE = Pattern.compile("<p class=\"con\\w\">\n?(.+?)\n?</p>", Pattern.DOTALL);
-	static final Pattern P_CONNECTION_DETAILS_FINE = Pattern.compile("(?:<a href=\".+?\">(?:\\n?<strong>)?(.+?)(?:</strong>\\n?)?</a>)?.*?" // departure
+	static final Pattern P_CONNECTION_DETAILS_FINE = Pattern.compile("(?:<a href=\".*?input=(\\d+).*?\">(?:\\n?<strong>)?" // departureId
+			+ "(.+?)(?:</strong>\\n?)?</a>)?.*?" // departure
 			+ "(?:" //
 			+ "ab (\\d+:\\d+)\n?" // departureTime
 			+ "(Gl\\. \\d+)?.*?" // departurePosition
@@ -237,6 +238,7 @@ public final class VbbProvider implements NetworkProvider
 			+ "Ri\\. (.*?)[\n\\.]*<.*?" // destination
 			+ "an (\\d+:\\d+)\n?" // arrivalTime
 			+ "(Gl\\. \\d+)?.*?" // arrivalPosition
+			+ "<a href=\".*?input=(\\d+).*?\">\n?" // arrivalId
 			+ "<strong>(.*?)</strong>" // arrival
 			+ "|" //
 			+ "(\\d+) Min\\.[\n\\s]?" // footway
@@ -256,8 +258,10 @@ public final class VbbProvider implements NetworkProvider
 
 			Date firstDepartureTime = null;
 			String firstDeparture = null;
+			int firstDepartureId = 0;
 			Date lastArrivalTime = null;
 			String lastArrival = null;
+			int lastArrivalId = 0;
 
 			final Matcher mDetCoarse = P_CONNECTION_DETAILS_COARSE.matcher(page);
 			while (mDetCoarse.find())
@@ -265,45 +269,60 @@ public final class VbbProvider implements NetworkProvider
 				final Matcher mDetFine = P_CONNECTION_DETAILS_FINE.matcher(mDetCoarse.group(1));
 				if (mDetFine.matches())
 				{
-					String departure = ParserUtils.resolveEntities(mDetFine.group(1));
+					int departureId = 0;
+					String departure = ParserUtils.resolveEntities(mDetFine.group(2));
 					if (departure == null)
+					{
 						departure = lastArrival;
-					if (departure != null && firstDeparture == null)
-						firstDeparture = departure;
+						departureId = lastArrivalId;
+					}
+					else
+					{
+						departureId = Integer.parseInt(mDetFine.group(1));
+					}
 
-					final String min = mDetFine.group(9);
+					if (departure != null && firstDeparture == null)
+					{
+						firstDeparture = departure;
+						firstDepartureId = departureId;
+					}
+
+					final String min = mDetFine.group(11);
 					if (min == null)
 					{
-						Date departureTime = ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mDetFine.group(2)));
+						Date departureTime = ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mDetFine.group(3)));
 						if (lastArrivalTime != null && departureTime.before(lastArrivalTime))
 							departureTime = ParserUtils.addDays(departureTime, 1);
 
-						final String departurePosition = mDetFine.group(3);
+						final String departurePosition = mDetFine.group(4);
 
-						final String line = normalizeLine(ParserUtils.resolveEntities(mDetFine.group(4)));
+						final String line = normalizeLine(ParserUtils.resolveEntities(mDetFine.group(5)));
 
-						final String destination = ParserUtils.resolveEntities(mDetFine.group(5));
+						final String destination = ParserUtils.resolveEntities(mDetFine.group(6));
 
-						Date arrivalTime = ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mDetFine.group(6)));
+						Date arrivalTime = ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mDetFine.group(7)));
 						if (departureTime.after(arrivalTime))
 							arrivalTime = ParserUtils.addDays(arrivalTime, 1);
 
-						final String arrivalPosition = mDetFine.group(7);
+						final String arrivalPosition = mDetFine.group(8);
 
-						final String arrival = ParserUtils.resolveEntities(mDetFine.group(8));
+						final int arrivalId = Integer.parseInt(mDetFine.group(9));
 
-						parts.add(new Connection.Trip(line, LINES.get(line), destination, departureTime, departurePosition, departure, arrivalTime,
-								arrivalPosition, arrival));
+						final String arrival = ParserUtils.resolveEntities(mDetFine.group(10));
+
+						parts.add(new Connection.Trip(line, LINES.get(line), destination, departureTime, departurePosition, departureId, departure,
+								arrivalTime, arrivalPosition, arrivalId, arrival));
 
 						if (firstDepartureTime == null)
 							firstDepartureTime = departureTime;
 
 						lastArrival = arrival;
+						lastArrivalId = arrivalId;
 						lastArrivalTime = arrivalTime;
 					}
 					else
 					{
-						final String arrival = ParserUtils.resolveEntities(selectNotNull(mDetFine.group(10), mDetFine.group(11)));
+						final String arrival = ParserUtils.resolveEntities(selectNotNull(mDetFine.group(12), mDetFine.group(13)));
 
 						if (parts.size() > 0 && parts.get(parts.size() - 1) instanceof Connection.Footway)
 						{
@@ -325,8 +344,8 @@ public final class VbbProvider implements NetworkProvider
 			}
 
 			if (firstDepartureTime != null && lastArrivalTime != null)
-				return new GetConnectionDetailsResult(currentDate, new Connection(uri, firstDepartureTime, lastArrivalTime, firstDeparture,
-						lastArrival, parts));
+				return new GetConnectionDetailsResult(currentDate, new Connection(uri, firstDepartureTime, lastArrivalTime, firstDepartureId,
+						firstDeparture, lastArrivalId, lastArrival, parts));
 			else
 				return new GetConnectionDetailsResult(currentDate, null);
 		}

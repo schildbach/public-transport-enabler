@@ -215,26 +215,26 @@ public class RmvProvider implements NetworkProvider
 				if (mConFine.matches())
 				{
 					final String link = ParserUtils.resolveEntities(mConFine.group(1));
-					Date departure = ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mConFine.group(2)));
+					Date departureTime = ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mConFine.group(2)));
 					if (!connections.isEmpty())
 					{
-						final long diff = ParserUtils.timeDiff(departure,
+						final long diff = ParserUtils.timeDiff(departureTime,
 								((Connection.Trip) connections.get(connections.size() - 1).parts.get(0)).departureTime);
 						if (diff > PARSER_DAY_ROLLOVER_THRESHOLD_MS)
-							departure = ParserUtils.addDays(departure, -1);
+							departureTime = ParserUtils.addDays(departureTime, -1);
 						else if (diff < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
-							departure = ParserUtils.addDays(departure, 1);
+							departureTime = ParserUtils.addDays(departureTime, 1);
 					}
-					Date arrival = ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mConFine.group(3)));
-					if (departure.after(arrival))
-						arrival = ParserUtils.addDays(arrival, 1);
+					Date arrivalTime = ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mConFine.group(3)));
+					if (departureTime.after(arrivalTime))
+						arrivalTime = ParserUtils.addDays(arrivalTime, 1);
 					String line = mConFine.group(4);
 					if (line != null && !line.endsWith("Um."))
 						line = normalizeLine(line);
 					else
 						line = null;
-					final Connection connection = new Connection(link, departure, arrival, from, to, new ArrayList<Connection.Part>(1));
-					connection.parts.add(new Connection.Trip(departure, arrival, line, line != null ? LINES.get(line.charAt(0)) : null));
+					final Connection connection = new Connection(link, departureTime, arrivalTime, 0, from, 0, to, new ArrayList<Connection.Part>(1));
+					connection.parts.add(new Connection.Trip(departureTime, arrivalTime, line, line != null ? LINES.get(line.charAt(0)) : null));
 					connections.add(connection);
 				}
 				else
@@ -321,8 +321,8 @@ public class RmvProvider implements NetworkProvider
 
 						final Date departureDateTime = ParserUtils.joinDateTime(currentDate, departureTime);
 						final Date arrivalDateTime = ParserUtils.joinDateTime(currentDate, arrivalTime);
-						lastTrip = new Connection.Trip(line, LINES.get(line.charAt(0)), destination, departureDateTime, departurePosition, departure,
-								arrivalDateTime, arrivalPosition, arrival);
+						lastTrip = new Connection.Trip(line, LINES.get(line.charAt(0)), destination, departureDateTime, departurePosition, 0,
+								departure, arrivalDateTime, arrivalPosition, 0, arrival);
 						parts.add(lastTrip);
 
 						if (firstDepartureTime == null)
@@ -349,8 +349,8 @@ public class RmvProvider implements NetworkProvider
 				}
 			}
 
-			return new GetConnectionDetailsResult(currentDate, new Connection(uri, firstDepartureTime, lastArrivalTime, firstDeparture, lastArrival,
-					parts));
+			return new GetConnectionDetailsResult(currentDate, new Connection(uri, firstDepartureTime, lastArrivalTime, 0, firstDeparture, 0,
+					lastArrival, parts));
 		}
 		else
 		{
