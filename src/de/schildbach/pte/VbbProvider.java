@@ -128,14 +128,20 @@ public final class VbbProvider implements NetworkProvider
 	private static final Pattern P_CHECK_ADDRESS = Pattern.compile("<option.*?>\\s*(.*?)\\s*</option>", Pattern.DOTALL);
 	private static final Pattern P_CHECK_FROM = Pattern.compile("Von:");
 	private static final Pattern P_CHECK_TO = Pattern.compile("Nach:");
-	private static final Pattern P_CHECK_TOO_CLOSE = Pattern.compile("zu dicht beieinander");
+	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern.compile("(zu dicht beieinander)|(keine Verbindung gefunden)");
 
 	public CheckConnectionsQueryResult checkConnectionsQuery(final String uri) throws IOException
 	{
 		final CharSequence page = ParserUtils.scrape(uri);
 
-		if (P_CHECK_TOO_CLOSE.matcher(page).find())
-			return CheckConnectionsQueryResult.TOO_CLOSE;
+		final Matcher mError = P_CHECK_CONNECTIONS_ERROR.matcher(page);
+		if (mError.find())
+		{
+			if (mError.group(1) != null)
+				return CheckConnectionsQueryResult.TOO_CLOSE;
+			if (mError.group(2) != null)
+				return CheckConnectionsQueryResult.NO_CONNECTIONS;
+		}
 
 		final Matcher mAddress = P_CHECK_ADDRESS.matcher(page);
 
