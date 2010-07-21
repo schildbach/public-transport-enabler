@@ -332,11 +332,11 @@ public class MvvProvider implements NetworkProvider
 	private static final Pattern P_CONNECTION_DETAILS_COARSE = Pattern.compile("<tr bgcolor=\"#(\\w{6})\">(.+?)</tr>.*?"
 			+ "<tr bgcolor=\"#\\1\">(.+?)</tr>.*?" //
 			+ "<tr bgcolor=\"#\\1\">(.+?)</tr>", Pattern.DOTALL);
-	private static final Pattern P_CONNECTION_DETAILS_FINE = Pattern.compile(".*?(?:" //
-			+ "ab (\\d+:\\d+)\\s+(.*?)\\s*<a.*?" //
+	static final Pattern P_CONNECTION_DETAILS_FINE = Pattern.compile(".*?(?:" //
+			+ "ab (\\d+:\\d+)\\s+(.*?)\\s*<.*?" //
 			+ "<img src=\"images/means.*?\" alt=\"(.*?)\" />.*?" //
 			+ "<td>\\s*(.*?)\\s*<br />Richtung\\s*(.*?)\\s*</td>.*?" //
-			+ "an (\\d+:\\d+)\\s+(.*?)\\s*<a" //
+			+ "an (\\d+:\\d+)\\s+(.*?)\\s*<" //
 			+ "|" //
 			+ "ab\\s+(.*?)\\s*<a.*?" //
 			+ "Fußweg[\\xa0\\s]+\\(ca\\.[\\xa0\\s]+(\\d+)[\\xa0\\s]+Minute.*?" //
