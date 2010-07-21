@@ -98,6 +98,11 @@ public final class VbbProvider implements NetworkProvider
 		throw new UnsupportedOperationException();
 	}
 
+	public StationLocationResult stationLocation(final String stationId) throws IOException
+	{
+		throw new UnsupportedOperationException();
+	}
+
 	public static final String STATION_URL_CONNECTION = "http://mobil.bvg.de/Fahrinfo/bin/query.bin/dox";
 
 	public String connectionsQueryUri(final String from, final String via, final String to, final Date date, final boolean dep)

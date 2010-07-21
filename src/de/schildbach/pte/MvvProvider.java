@@ -78,6 +78,11 @@ public class MvvProvider implements NetworkProvider
 		throw new UnsupportedOperationException();
 	}
 
+	public StationLocationResult stationLocation(final String stationId) throws IOException
+	{
+		throw new UnsupportedOperationException();
+	}
+
 	public String connectionsQueryUri(final String from, final String via, final String to, final Date date, final boolean dep)
 	{
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");

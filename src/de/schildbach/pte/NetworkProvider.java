@@ -61,6 +61,8 @@ public interface NetworkProvider
 	 */
 	List<Station> nearbyStations(double lat, double lon, int maxDistance, int maxStations) throws IOException;
 
+	StationLocationResult stationLocation(String stationId) throws IOException;
+
 	/**
 	 * Construct an Uri for querying connections
 	 * 

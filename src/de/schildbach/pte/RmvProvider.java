@@ -98,6 +98,36 @@ public class RmvProvider implements NetworkProvider
 			return stations.subList(0, maxStations);
 	}
 
+	private static Pattern P_STATION_LOCATION = Pattern
+			.compile("REQMapRoute0\\.Location0\\.X=(\\d+)&REQMapRoute0\\.Location0\\.Y=(\\d+)&REQMapRoute0\\.Location0\\.Name=(.+?)\"");
+
+	public StationLocationResult stationLocation(final String stationId) throws IOException
+	{
+		final String uri = "http://www.rmv.de/auskunft/bin/jp/stboard.exe/dn?L=vs_rmv&selectDate=today&time=now&showStBoard=yes&boardType=dep&maxJourneys=10&start&input="
+				+ stationId;
+
+		final CharSequence page = ParserUtils.scrape(uri);
+
+		final Matcher m = P_STATION_LOCATION.matcher(page);
+		if (m.find())
+		{
+			final double lon = latLonToDouble(Integer.parseInt(m.group(1)));
+			final double lat = latLonToDouble(Integer.parseInt(m.group(2)));
+			final String name = ParserUtils.resolveEntities(m.group(3));
+
+			return new StationLocationResult(lat, lon, name);
+		}
+		else
+		{
+			throw new IllegalArgumentException("cannot parse '" + page + "' on " + uri);
+		}
+	}
+
+	private static double latLonToDouble(int value)
+	{
+		return (double) value / 1000000;
+	}
+
 	public String connectionsQueryUri(final String from, final String via, final String to, final Date date, final boolean dep)
 	{
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yy");
