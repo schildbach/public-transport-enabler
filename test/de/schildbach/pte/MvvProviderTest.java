@@ -47,6 +47,24 @@ public class MvvProviderTest
 	}
 
 	@Test
+	public void trip2()
+	{
+		assertFineConnectionDetails("\n" //
+				+ "<td colspan=\"4\">ab 09:04 Hauptbahnhof Haupthalle Gleis 26 <a class=\"imgLink\" href=\"XSLT_TRIP_REQUEST2?language=de&amp;tripSelector2=on&amp;sessionID=MVV2_1641919219&amp;requestID=1&amp;tripSelection=on&amp;itdLPxx_view=map_2&amp;itdLPxx_img=FILELOAD?Filename=mvv2_4C4530855.png&amp;itdLPxx_partialRoute=3&amp;imageFormat=PNG&amp;imageWidth=400&amp;imageHeight=300&amp;imageOnly=1&amp;imageNoTiles=1&amp;itdLPxx_usage=departure\"><img src=\"images/pdf.gif\" border=\"0\" alt=\"Karte\" /></a>\n" //
+				+ "<br />\n" //
+				+ "</td>\n" //
+				+ "\n" //
+				+ "<td width=\"15\" valign=\"middle\">\n" //
+				+ "<img src=\"images/means/zug.gif\" alt=\"Zug\" />\n" //
+				+ "</td>\n" //
+				+ "<td width=\"1\" valign=\"middle\" />\n" //
+				+ "<td>RE 4006 RegionalExpress <br />Richtung Nürnberg Hbf</td>\n" //
+				+ "<td width=\"1\"> </td>\n" //
+				+ "\n" //
+				+ "<td colspan=\"4\">an 10:47 Nürnberg Hbf Gleis 12</td>\n");
+	}
+
+	@Test
 	@Ignore("deactivated because there is no time")
 	public void tripWithoutTime()
 	{
