@@ -110,7 +110,7 @@ public final class BahnProvider implements NetworkProvider
 	{
 		return (double) value / 1000000;
 	}
-	
+
 	public StationLocationResult stationLocation(final String stationId) throws IOException
 	{
 		throw new UnsupportedOperationException();
@@ -423,7 +423,7 @@ public final class BahnProvider implements NetworkProvider
 	public QueryDeparturesResult queryDepartures(final String uri) throws IOException
 	{
 		final CharSequence page = ParserUtils.scrape(uri);
-		
+
 		final Matcher mStationId = P_DEPARTURES_URI_STATION_ID.matcher(uri);
 		if (!mStationId.find())
 			throw new IllegalStateException(uri);
@@ -538,6 +538,8 @@ public final class BahnProvider implements NetworkProvider
 				return "ISC" + number;
 			if (type.equals("EST")) // Eurostar
 				return "IEST" + number;
+			if (type.equals("ES")) // Eurostar Italia
+				return "IES" + number;
 			if (type.equals("HOT")) // Spanien, Nachtzug?
 				return "IHOT" + number;
 			if (type.equals("R"))
