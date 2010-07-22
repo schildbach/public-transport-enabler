@@ -198,6 +198,12 @@ public class SbbProvider implements NetworkProvider
 				return "ICNL" + number;
 			if (type.equals("TGV")) // Train à Grande Vitesse
 				return "ITGV" + number;
+			if (type.equals("X")) // InterConnex
+				return "IX" + number;
+			if (type.equals("OEC")) // ÖBB-EuroCity
+				return "IOEC" + number;
+			if (type.equals("ES")) // Eurostar Italia
+				return "IES" + number;
 			if (type.equals("R"))
 				return "R" + number;
 			if (type.equals("IR")) // InterRegio
@@ -210,10 +216,14 @@ public class SbbProvider implements NetworkProvider
 				return "RIRE" + number;
 			if (type.equals("EXT"))
 				return "REXT" + number;
+			if (type.equals("ATZ"))
+				return "RATZ" + number;
 			if (type.equals("S"))
 				return "SS" + number;
 			if (type.equals("Tram"))
 				return "T" + number;
+			if (type.equals("M")) // Lausanne
+				return "TM" + number;
 			if (type.startsWith("Bus"))
 				return "B" + type.substring(3) + number;
 			if (type.equals("BUS"))
@@ -230,6 +240,8 @@ public class SbbProvider implements NetworkProvider
 				return "FBAV" + number;
 			if (type.equals("FAE"))
 				return "FFAE" + number;
+			if (type.equals("KAT")) // z.B. Friedrichshafen <-> Konstanz
+				return "FKAT" + number;
 			if (type.equals("GB")) // Gondelbahn
 				return "CGB" + number;
 			if (type.equals("LB"))
