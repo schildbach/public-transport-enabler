@@ -202,6 +202,9 @@ public class SbbProvider implements NetworkProvider
 
 	private static String normalizeLine(final String line)
 	{
+		// TODO NZ
+		// TODO IN Torino-Napoli
+
 		if (line.length() == 0)
 			return line;
 
@@ -225,10 +228,16 @@ public class SbbProvider implements NetworkProvider
 				return "ICNL" + number;
 			if (type.equals("TGV")) // Train à Grande Vitesse
 				return "ITGV" + number;
+			if (type.equals("THA")) // Thalys
+				return "ITHA" + number;
 			if (type.equals("X")) // InterConnex
 				return "IX" + number;
+			if (type.equals("RJ")) // RailJet, Österreichische Bundesbahnen
+				return "IRJ" + number;
 			if (type.equals("OEC")) // ÖBB-EuroCity
 				return "IOEC" + number;
+			if (type.equals("OIC")) // ÖBB-InterCity
+				return "IOIC" + number;
 			if (type.equals("ES")) // Eurostar Italia
 				return "IES" + number;
 			if (type.equals("R"))
@@ -237,6 +246,8 @@ public class SbbProvider implements NetworkProvider
 				return "RIR" + number;
 			if (type.equals("D")) // D-Zug?
 				return "RD" + number;
+			if (type.equals("E"))
+				return "RE" + number;
 			if (type.equals("RE")) // RegionalExpress
 				return "RRE" + number;
 			if (type.equals("IRE")) // Interregio Express
@@ -245,8 +256,14 @@ public class SbbProvider implements NetworkProvider
 				return "REXT" + number;
 			if (type.equals("ATZ"))
 				return "RATZ" + number;
+			if (type.equals("RSB"))
+				return "RRSB" + number;
+			if (type.equals("CAT")) // City Airport Train Wien
+				return "RCAT" + number;
 			if (type.equals("S"))
 				return "SS" + number;
+			if (type.equals("T"))
+				return "T" + number;
 			if (type.equals("Tram"))
 				return "T" + number;
 			if (type.equals("M")) // Lausanne
@@ -271,6 +288,8 @@ public class SbbProvider implements NetworkProvider
 				return "FKAT" + number;
 			if (type.equals("GB")) // Gondelbahn
 				return "CGB" + number;
+			if (type.equals("SL")) // Sessel-Lift
+				return "CSL" + number;
 			if (type.equals("LB"))
 				return "CLB" + number;
 			if (type.equals("FUN") || type.equals("Fun")) // Standseilbahn
