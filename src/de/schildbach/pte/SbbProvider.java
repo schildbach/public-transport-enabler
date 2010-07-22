@@ -39,12 +39,39 @@ public class SbbProvider implements NetworkProvider
 
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
-		return false;
+		for (final Capability capability : capabilities)
+			if (capability != Capability.DEPARTURES)
+				return false;
+
+		return true;
 	}
+
+	private static final String NAME_URL = "http://fahrplan.sbb.ch/bin/bhftafel.exe/dox?input=";
+	private static final Pattern P_SINGLE_NAME = Pattern.compile(".*?<input type=\"hidden\" name=\"input\" value=\"(.+?)#(\\d+)\" />.*",
+			Pattern.DOTALL);
+	private static final Pattern P_MULTI_NAME = Pattern.compile("<a href=\"http://fahrplan\\.sbb\\.ch/bin/bhftafel\\.exe/dox\\?input=(\\d+).*?\">\n?" //
+			+ "(.*?)\n?" //
+			+ "</a>", Pattern.DOTALL);
 
 	public List<String> autoCompleteStationName(final CharSequence constraint) throws IOException
 	{
-		throw new UnsupportedOperationException();
+		final CharSequence page = ParserUtils.scrape(NAME_URL + ParserUtils.urlEncode(constraint.toString()));
+
+		final List<String> names = new ArrayList<String>();
+
+		final Matcher mSingle = P_SINGLE_NAME.matcher(page);
+		if (mSingle.matches())
+		{
+			names.add(ParserUtils.resolveEntities(mSingle.group(1)));
+		}
+		else
+		{
+			final Matcher mMulti = P_MULTI_NAME.matcher(page);
+			while (mMulti.find())
+				names.add(ParserUtils.resolveEntities(mMulti.group(2)));
+		}
+
+		return names;
 	}
 
 	public List<Station> nearbyStations(final double lat, final double lon, final int maxDistance, final int maxStations) throws IOException
