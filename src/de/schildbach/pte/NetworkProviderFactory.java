@@ -26,9 +26,10 @@ import java.lang.ref.SoftReference;
 public final class NetworkProviderFactory
 {
 	private static Reference<VbbProvider> vbbProviderRef;
-	private static Reference<MvvProvider> mvvProviderRef;
-	private static Reference<BahnProvider> bahnProviderRef;
 	private static Reference<RmvProvider> rmvProviderRef;
+	private static Reference<BahnProvider> bahnProviderRef;
+	private static Reference<MvvProvider> mvvProviderRef;
+	private static Reference<SbbProvider> sbbProviderRef;
 
 	public static synchronized NetworkProvider provider(final String networkId)
 	{
@@ -45,17 +46,17 @@ public final class NetworkProviderFactory
 			vbbProviderRef = new SoftReference<VbbProvider>(provider);
 			return provider;
 		}
-		else if (networkId.equals(MvvProvider.NETWORK_ID))
+		else if (networkId.equals(RmvProvider.NETWORK_ID) || networkId.equals(RmvProvider.NETWORK_ID_ALT))
 		{
-			if (mvvProviderRef != null)
+			if (rmvProviderRef != null)
 			{
-				final MvvProvider provider = mvvProviderRef.get();
+				final RmvProvider provider = rmvProviderRef.get();
 				if (provider != null)
 					return provider;
 			}
 
-			final MvvProvider provider = new MvvProvider();
-			mvvProviderRef = new SoftReference<MvvProvider>(provider);
+			final RmvProvider provider = new RmvProvider();
+			rmvProviderRef = new SoftReference<RmvProvider>(provider);
 			return provider;
 		}
 		else if (networkId.equals(BahnProvider.NETWORK_ID))
@@ -71,17 +72,30 @@ public final class NetworkProviderFactory
 			bahnProviderRef = new SoftReference<BahnProvider>(provider);
 			return provider;
 		}
-		else if (networkId.equals(RmvProvider.NETWORK_ID) || networkId.equals(RmvProvider.NETWORK_ID_ALT))
+		else if (networkId.equals(MvvProvider.NETWORK_ID))
 		{
-			if (rmvProviderRef != null)
+			if (mvvProviderRef != null)
 			{
-				final RmvProvider provider = rmvProviderRef.get();
+				final MvvProvider provider = mvvProviderRef.get();
 				if (provider != null)
 					return provider;
 			}
 
-			final RmvProvider provider = new RmvProvider();
-			rmvProviderRef = new SoftReference<RmvProvider>(provider);
+			final MvvProvider provider = new MvvProvider();
+			mvvProviderRef = new SoftReference<MvvProvider>(provider);
+			return provider;
+		}
+		else if (networkId.equals(SbbProvider.NETWORK_ID))
+		{
+			if (sbbProviderRef != null)
+			{
+				final SbbProvider provider = sbbProviderRef.get();
+				if (provider != null)
+					return provider;
+			}
+
+			final SbbProvider provider = new SbbProvider();
+			sbbProviderRef = new SoftReference<SbbProvider>(provider);
 			return provider;
 		}
 		else
@@ -92,14 +106,16 @@ public final class NetworkProviderFactory
 
 	public static String networkId(final NetworkProvider provider)
 	{
-		if (provider instanceof MvvProvider)
-			return MvvProvider.NETWORK_ID;
-		else if (provider instanceof VbbProvider)
+		if (provider instanceof VbbProvider)
 			return VbbProvider.NETWORK_ID;
-		else if (provider instanceof BahnProvider)
-			return BahnProvider.NETWORK_ID;
 		else if (provider instanceof RmvProvider)
 			return RmvProvider.NETWORK_ID;
+		else if (provider instanceof BahnProvider)
+			return BahnProvider.NETWORK_ID;
+		else if (provider instanceof MvvProvider)
+			return MvvProvider.NETWORK_ID;
+		else if (provider instanceof SbbProvider)
+			return SbbProvider.NETWORK_ID;
 		else
 			throw new IllegalArgumentException(provider.getClass().toString());
 	}
