@@ -562,6 +562,8 @@ public class MvvProvider implements NetworkProvider
 				return "R" + line;
 			else if (line.startsWith("ICE "))
 				return "I" + line;
+			else if (line.startsWith("IC "))
+				return "I" + line;
 			else if (line.startsWith("EC "))
 				return "I" + line;
 			else if (line.startsWith("CNL "))
