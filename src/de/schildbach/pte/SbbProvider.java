@@ -202,8 +202,8 @@ public class SbbProvider implements NetworkProvider
 
 	private static String normalizeLine(final String line)
 	{
-		// TODO NZ
 		// TODO IN Torino-Napoli
+		// TODO TAL
 
 		if (line.length() == 0)
 			return line;
@@ -240,6 +240,10 @@ public class SbbProvider implements NetworkProvider
 				return "IOIC" + number;
 			if (type.equals("ES")) // Eurostar Italia
 				return "IES" + number;
+			if (type.equals("EST")) // Eurostar Frankreich
+				return "IEST" + number;
+			if (type.equals("NZ")) // Nachtzug?
+				return "INZ" + number;
 			if (type.equals("R"))
 				return "R" + number;
 			if (type.equals("IR")) // InterRegio
@@ -258,8 +262,14 @@ public class SbbProvider implements NetworkProvider
 				return "RATZ" + number;
 			if (type.equals("RSB"))
 				return "RRSB" + number;
+			if (type.equals("SN"))
+				return "RSN" + number;
 			if (type.equals("CAT")) // City Airport Train Wien
 				return "RCAT" + number;
+			if (type.equals("ALS")) // Spanien
+				return "RALS" + number;
+			if (type.equals("ARC")) // Spanien
+				return "RARC" + number;
 			if (type.equals("S"))
 				return "SS" + number;
 			if (type.equals("T"))
