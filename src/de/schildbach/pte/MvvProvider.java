@@ -38,6 +38,7 @@ public class MvvProvider implements NetworkProvider
 	public static final String NETWORK_ID = "efa.mvv-muenchen.de";
 
 	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
+	private static final String ENCODING = "ISO-8859-1";
 
 	public boolean hasCapabilities(Capability... capabilities)
 	{
@@ -54,7 +55,7 @@ public class MvvProvider implements NetworkProvider
 
 	public List<String> autoCompleteStationName(final CharSequence constraint) throws IOException
 	{
-		final CharSequence page = ParserUtils.scrape(AUTOCOMPLETE_NAME_URL + ParserUtils.urlEncode(constraint.toString()));
+		final CharSequence page = ParserUtils.scrape(AUTOCOMPLETE_NAME_URL + ParserUtils.urlEncode(constraint.toString(), ENCODING));
 
 		final List<String> names = new ArrayList<String>();
 
@@ -128,7 +129,7 @@ public class MvvProvider implements NetworkProvider
 		uri.append("&reducedAnyPostcodeObjFilter_origin=64");
 		uri.append("&reducedAnyTooManyObjFilter_origin=2");
 		uri.append("&type_origin=stop"); // any|stop|poi|address
-		uri.append("&name_origin=").append(ParserUtils.urlEncode(from)); // fine-grained location, e.g. stop name
+		uri.append("&name_origin=").append(ParserUtils.urlEncode(from, ENCODING)); // fine-grained location
 
 		uri.append("&useHouseNumberList_destination=1");
 		uri.append("&place_destination="); // coarse-grained location, e.g. city
@@ -141,7 +142,7 @@ public class MvvProvider implements NetworkProvider
 		uri.append("&reducedAnyPostcodeObjFilter_destination=64");
 		uri.append("&reducedAnyTooManyObjFilter_destination=2");
 		uri.append("&type_destination=stop"); // any|stop|poi|address
-		uri.append("&name_destination=").append(ParserUtils.urlEncode(to)); // fine-grained location, e.g. stop name
+		uri.append("&name_destination=").append(ParserUtils.urlEncode(to, ENCODING)); // fine-grained location
 
 		if (via != null)
 		{
@@ -156,7 +157,7 @@ public class MvvProvider implements NetworkProvider
 			uri.append("&reducedAnyPostcodeObjFilter_via=64");
 			uri.append("&reducedAnyTooManyObjFilter_via=2");
 			uri.append("&type_via=stop"); // any
-			uri.append("&name_via=").append(ParserUtils.urlEncode(via));
+			uri.append("&name_via=").append(ParserUtils.urlEncode(via, ENCODING));
 		}
 
 		uri.append("&itdTripDateTimeDepArr=").append(dep ? "dep" : "arr");

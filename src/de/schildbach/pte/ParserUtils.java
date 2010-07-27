@@ -157,11 +157,23 @@ public final class ParserUtils
 			System.out.println("group " + i + ":'" + m.group(i) + "'");
 	}
 
-	public static String urlEncode(String part)
+	public static String urlEncode(final String str)
 	{
 		try
 		{
-			return URLEncoder.encode(part, "utf-8");
+			return URLEncoder.encode(str, "utf-8");
+		}
+		catch (UnsupportedEncodingException x)
+		{
+			throw new RuntimeException(x);
+		}
+	}
+
+	public static String urlEncode(final String str, final String enc)
+	{
+		try
+		{
+			return URLEncoder.encode(str, enc);
 		}
 		catch (UnsupportedEncodingException x)
 		{
