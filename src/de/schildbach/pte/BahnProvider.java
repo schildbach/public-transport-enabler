@@ -352,8 +352,8 @@ public final class BahnProvider implements NetworkProvider
 
 							final Date departureDateTime = ParserUtils.joinDateTime(departureDate, departureTime);
 							final Date arrivalDateTime = ParserUtils.joinDateTime(arrivalDate, arrivalTime);
-							lastTrip = new Connection.Trip(line, LINES.get(line.charAt(0)), null, departureDateTime, departurePosition, 0, departure,
-									arrivalDateTime, arrivalPosition, 0, arrival);
+							lastTrip = new Connection.Trip(line, line != null ? LINES.get(line.charAt(0)) : null, null, departureDateTime,
+									departurePosition, 0, departure, arrivalDateTime, arrivalPosition, 0, arrival);
 							parts.add(lastTrip);
 
 							if (firstDepartureTime == null)
@@ -465,10 +465,7 @@ public final class BahnProvider implements NetworkProvider
 	private static Departure parseDeparture(final Matcher mDep, final Date currentTime)
 	{
 		// line
-		String line = normalizeLine(ParserUtils.resolveEntities(mDep.group(1)));
-		if (line.length() == 0)
-			line = null;
-		final int[] lineColors = line != null ? LINES.get(line.charAt(0)) : null;
+		final String line = normalizeLine(ParserUtils.resolveEntities(mDep.group(1)));
 
 		// destination
 		final String destination = ParserUtils.resolveEntities(mDep.group(2));
@@ -484,7 +481,7 @@ public final class BahnProvider implements NetworkProvider
 		if (ParserUtils.timeDiff(parsed.getTime(), currentTime) < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
 			parsed.add(Calendar.DAY_OF_MONTH, 1);
 
-		return new Departure(parsed.getTime(), line, lineColors, destination);
+		return new Departure(parsed.getTime(), line, line != null ? LINES.get(line.charAt(0)) : null, destination);
 	}
 
 	private static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zÄÖÜäöüß]+)[\\s-]*(.*)");
@@ -497,8 +494,8 @@ public final class BahnProvider implements NetworkProvider
 		// TODO EIC Polen?
 		// TODO EM East Midland? http://www.eastmidlandstrains.co.uk
 
-		if (line.length() == 0)
-			return line;
+		if (line == null || line.length() == 0)
+			return null;
 
 		final Matcher m = P_NORMALIZE_LINE.matcher(line);
 		if (m.matches())
@@ -536,7 +533,7 @@ public final class BahnProvider implements NetworkProvider
 				return "IAVE" + number;
 			if (type.equals("SC")) // SuperCity, cz
 				return "ISC" + number;
-			if (type.equals("EST")) // Eurostar
+			if (type.equals("EST")) // Eurostar Frankreich
 				return "IEST" + number;
 			if (type.equals("ES")) // Eurostar Italia
 				return "IES" + number;

@@ -217,11 +217,9 @@ public final class VbbProvider implements NetworkProvider
 					Date arrivalTime = ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mConFine.group(3)));
 					if (departureTime.after(arrivalTime))
 						arrivalTime = ParserUtils.addDays(arrivalTime, 1);
-					String line = mConFine.group(4);
-					if (line != null)
-						line = normalizeLine(ParserUtils.resolveEntities(line));
+					final String line = normalizeLine(ParserUtils.resolveEntities(mConFine.group(4)));
 					final Connection connection = new Connection(link, departureTime, arrivalTime, 0, from, 0, to, new ArrayList<Connection.Part>(1));
-					connection.parts.add(new Connection.Trip(departureTime, arrivalTime, line, LINES.get(line)));
+					connection.parts.add(new Connection.Trip(departureTime, arrivalTime, line, line != null ? LINES.get(line) : null));
 					connections.add(connection);
 				}
 				else
@@ -321,8 +319,8 @@ public final class VbbProvider implements NetworkProvider
 
 						final String arrival = ParserUtils.resolveEntities(mDetFine.group(10));
 
-						parts.add(new Connection.Trip(line, LINES.get(line), destination, departureTime, departurePosition, departureId, departure,
-								arrivalTime, arrivalPosition, arrivalId, arrival));
+						parts.add(new Connection.Trip(line, line != null ? LINES.get(line) : null, destination, departureTime, departurePosition,
+								departureId, departure, arrivalTime, arrivalPosition, arrivalId, arrival));
 
 						if (firstDepartureTime == null)
 							firstDepartureTime = departureTime;
@@ -473,7 +471,7 @@ public final class VbbProvider implements NetworkProvider
 		// destination
 		final String destination = ParserUtils.resolveEntities(mDep.group(3));
 
-		return new Departure(parsed.getTime(), line, LINES.get(line), destination);
+		return new Departure(parsed.getTime(), line, line != null ? LINES.get(line) : null, destination);
 	}
 
 	private static final Date parseDate(String str)
@@ -501,6 +499,9 @@ public final class VbbProvider implements NetworkProvider
 
 	private static String normalizeLine(final String line)
 	{
+		if (line == null || line.length() == 0)
+			return null;
+
 		if (line.startsWith("RE") || line.startsWith("RB") || line.startsWith("NE") || line.startsWith("OE") || line.startsWith("MR")
 				|| line.startsWith("PE"))
 			return "R" + line;

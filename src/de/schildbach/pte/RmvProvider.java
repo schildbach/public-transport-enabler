@@ -351,8 +351,8 @@ public class RmvProvider implements NetworkProvider
 
 						final Date departureDateTime = ParserUtils.joinDateTime(currentDate, departureTime);
 						final Date arrivalDateTime = ParserUtils.joinDateTime(currentDate, arrivalTime);
-						lastTrip = new Connection.Trip(line, LINES.get(line.charAt(0)), destination, departureDateTime, departurePosition, 0,
-								departure, arrivalDateTime, arrivalPosition, 0, arrival);
+						lastTrip = new Connection.Trip(line, line != null ? LINES.get(line.charAt(0)) : null, destination, departureDateTime,
+								departurePosition, 0, departure, arrivalDateTime, arrivalPosition, 0, arrival);
 						parts.add(lastTrip);
 
 						if (firstDepartureTime == null)
@@ -464,10 +464,7 @@ public class RmvProvider implements NetworkProvider
 	private static Departure parseDeparture(final Matcher mDep, final Date currentTime)
 	{
 		// line
-		String line = normalizeLine(ParserUtils.resolveEntities(mDep.group(1)));
-		if (line.length() == 0)
-			line = null;
-		final int[] lineColors = line != null ? LINES.get(line.charAt(0)) : null;
+		final String line = normalizeLine(ParserUtils.resolveEntities(mDep.group(1)));
 
 		// destination
 		final String destination = ParserUtils.resolveEntities(mDep.group(2));
@@ -483,15 +480,15 @@ public class RmvProvider implements NetworkProvider
 		if (ParserUtils.timeDiff(parsed.getTime(), currentTime) < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
 			parsed.add(Calendar.DAY_OF_MONTH, 1);
 
-		return new Departure(parsed.getTime(), line, lineColors, destination);
+		return new Departure(parsed.getTime(), line, line != null ? LINES.get(line.charAt(0)) : null, destination);
 	}
 
 	private static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zÄÖÜäöüß]+)[\\s-]*(.*)");
 
 	private static String normalizeLine(final String line)
 	{
-		if (line.length() == 0)
-			return line;
+		if (line == null || line.length() == 0)
+			return null;
 
 		final Matcher m = P_NORMALIZE_LINE.matcher(line);
 		if (m.matches())
