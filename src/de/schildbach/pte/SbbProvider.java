@@ -18,6 +18,8 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -86,7 +88,29 @@ public class SbbProvider implements NetworkProvider
 
 	public String connectionsQueryUri(final String from, final String via, final String to, final Date date, final boolean dep)
 	{
-		throw new UnsupportedOperationException();
+		final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yy");
+		final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
+		final StringBuilder uri = new StringBuilder();
+
+		uri.append("http://fahrplan.sbb.ch/bin/query.exe/dn");
+		uri.append("?REQ0HafasInitialSelection=0");
+		uri.append("&REQ0JourneyStopsS0G=").append(ParserUtils.urlEncode(from));
+		uri.append("&REQ0JourneyStopsS0A=1");
+		uri.append("&REQ0JourneyStopsS0ID=");
+		if (via != null)
+		{
+			uri.append("&REQ0JourneyStops1.0G=").append(ParserUtils.urlEncode(via));
+			uri.append("&REQ0JourneyStops1.0A=1");
+		}
+		uri.append("&REQ0JourneyStopsZ0G=").append(ParserUtils.urlEncode(to));
+		uri.append("&REQ0JourneyStopsZ0A=1");
+		uri.append("&REQ0JourneyStopsZ0ID=");
+		uri.append("&REQ0HafasSearchForw=").append(dep ? "1" : "0");
+		uri.append("&REQ0JourneyDate=").append(ParserUtils.urlEncode(DATE_FORMAT.format(date)));
+		uri.append("&REQ0JourneyTime=").append(ParserUtils.urlEncode(TIME_FORMAT.format(date)));
+		uri.append("&start=Suchen");
+
+		return uri.toString();
 	}
 
 	public CheckConnectionsQueryResult checkConnectionsQuery(final String queryUri) throws IOException
