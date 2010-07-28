@@ -106,7 +106,9 @@ public final class NetworkProviderFactory
 
 	public static String networkId(final NetworkProvider provider)
 	{
-		if (provider instanceof VbbProvider)
+		if (provider == null)
+			throw new IllegalArgumentException("null provider");
+		else if (provider instanceof VbbProvider)
 			return VbbProvider.NETWORK_ID;
 		else if (provider instanceof RmvProvider)
 			return RmvProvider.NETWORK_ID;
