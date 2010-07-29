@@ -29,19 +29,20 @@ public final class CheckConnectionsQueryResult
 		OK, AMBIGUOUS, TOO_CLOSE, NO_CONNECTIONS;
 	}
 
-	public static final CheckConnectionsQueryResult OK = new CheckConnectionsQueryResult(Status.OK, null, null, null);
-	public static final CheckConnectionsQueryResult TOO_CLOSE = new CheckConnectionsQueryResult(Status.TOO_CLOSE, null, null, null);
-	public static final CheckConnectionsQueryResult NO_CONNECTIONS = new CheckConnectionsQueryResult(Status.NO_CONNECTIONS, null, null, null);
+	public static final CheckConnectionsQueryResult TOO_CLOSE = new CheckConnectionsQueryResult(Status.TOO_CLOSE, null, null, null, null);
+	public static final CheckConnectionsQueryResult NO_CONNECTIONS = new CheckConnectionsQueryResult(Status.NO_CONNECTIONS, null, null, null, null);
 
 	public final Status status;
+	public final String queryUri;
 	public final List<String> ambiguousFromAddresses;
 	public final List<String> ambiguousViaAddresses;
 	public final List<String> ambiguousToAddresses;
 
-	public CheckConnectionsQueryResult(final Status status, final List<String> ambiguousFromAddresses, final List<String> ambiguousViaAddresses,
-			final List<String> ambiguousToAddresses)
+	public CheckConnectionsQueryResult(final Status status, final String queryUri, final List<String> ambiguousFromAddresses,
+			final List<String> ambiguousViaAddresses, final List<String> ambiguousToAddresses)
 	{
 		this.status = status;
+		this.queryUri = queryUri;
 		this.ambiguousFromAddresses = ambiguousFromAddresses;
 		this.ambiguousViaAddresses = ambiguousViaAddresses;
 		this.ambiguousToAddresses = ambiguousToAddresses;

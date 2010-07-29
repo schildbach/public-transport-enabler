@@ -204,13 +204,9 @@ public class RmvProvider implements NetworkProvider
 		}
 
 		if (fromAddresses != null || viaAddresses != null || toAddresses != null)
-		{
-			return new CheckConnectionsQueryResult(CheckConnectionsQueryResult.Status.AMBIGUOUS, fromAddresses, viaAddresses, toAddresses);
-		}
+			return new CheckConnectionsQueryResult(CheckConnectionsQueryResult.Status.AMBIGUOUS, queryUri, fromAddresses, viaAddresses, toAddresses);
 		else
-		{
-			return CheckConnectionsQueryResult.OK;
-		}
+			return new CheckConnectionsQueryResult(CheckConnectionsQueryResult.Status.OK, queryUri, null, null, null);
 	}
 
 	private static final Pattern P_CONNECTIONS_HEAD = Pattern.compile(".*" //

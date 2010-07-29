@@ -135,9 +135,9 @@ public final class VbbProvider implements NetworkProvider
 	private static final Pattern P_CHECK_TO = Pattern.compile("Nach:");
 	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern.compile("(zu dicht beieinander)|(keine Verbindung gefunden)");
 
-	public CheckConnectionsQueryResult checkConnectionsQuery(final String uri) throws IOException
+	public CheckConnectionsQueryResult checkConnectionsQuery(final String queryUri) throws IOException
 	{
-		final CharSequence page = ParserUtils.scrape(uri);
+		final CharSequence page = ParserUtils.scrape(queryUri);
 
 		final Matcher mError = P_CHECK_CONNECTIONS_ERROR.matcher(page);
 		if (mError.find())
@@ -160,18 +160,18 @@ public final class VbbProvider implements NetworkProvider
 
 		if (addresses.isEmpty())
 		{
-			return CheckConnectionsQueryResult.OK;
+			return new CheckConnectionsQueryResult(CheckConnectionsQueryResult.Status.OK, queryUri, null, null, null);
 		}
 		else if (P_CHECK_FROM.matcher(page).find())
 		{
 			if (P_CHECK_TO.matcher(page).find())
-				return new CheckConnectionsQueryResult(CheckConnectionsQueryResult.Status.AMBIGUOUS, null, addresses, null);
+				return new CheckConnectionsQueryResult(CheckConnectionsQueryResult.Status.AMBIGUOUS, queryUri, null, addresses, null);
 			else
-				return new CheckConnectionsQueryResult(CheckConnectionsQueryResult.Status.AMBIGUOUS, null, null, addresses);
+				return new CheckConnectionsQueryResult(CheckConnectionsQueryResult.Status.AMBIGUOUS, queryUri, null, null, addresses);
 		}
 		else
 		{
-			return new CheckConnectionsQueryResult(CheckConnectionsQueryResult.Status.AMBIGUOUS, addresses, null, null);
+			return new CheckConnectionsQueryResult(CheckConnectionsQueryResult.Status.AMBIGUOUS, queryUri, addresses, null, null);
 		}
 	}
 

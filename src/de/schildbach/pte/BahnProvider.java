@@ -158,9 +158,9 @@ public final class BahnProvider implements NetworkProvider
 	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern
 			.compile("(?:(zu dicht beieinander|mehrfach vorhanden oder identisch)|(leider konnte zu Ihrer Anfrage keine Verbindung gefunden werden))");
 
-	public CheckConnectionsQueryResult checkConnectionsQuery(final String uri) throws IOException
+	public CheckConnectionsQueryResult checkConnectionsQuery(final String queryUri) throws IOException
 	{
-		final CharSequence page = ParserUtils.scrape(uri);
+		final CharSequence page = ParserUtils.scrape(queryUri);
 
 		final Matcher mError = P_CHECK_CONNECTIONS_ERROR.matcher(page);
 		if (mError.find())
@@ -201,13 +201,9 @@ public final class BahnProvider implements NetworkProvider
 		}
 
 		if (fromAddresses != null || viaAddresses != null || toAddresses != null)
-		{
-			return new CheckConnectionsQueryResult(CheckConnectionsQueryResult.Status.AMBIGUOUS, fromAddresses, viaAddresses, toAddresses);
-		}
+			return new CheckConnectionsQueryResult(CheckConnectionsQueryResult.Status.AMBIGUOUS, queryUri, fromAddresses, viaAddresses, toAddresses);
 		else
-		{
-			return CheckConnectionsQueryResult.OK;
-		}
+			return new CheckConnectionsQueryResult(CheckConnectionsQueryResult.Status.OK, queryUri, null, null, null);
 	}
 
 	private static final Pattern P_CONNECTIONS_HEAD = Pattern.compile(".*" //
