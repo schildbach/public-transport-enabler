@@ -61,6 +61,14 @@ public interface NetworkProvider
 	 */
 	List<Station> nearbyStations(double lat, double lon, int maxDistance, int maxStations) throws IOException;
 
+	/**
+	 * Look up location of station.
+	 * 
+	 * @param stationId
+	 *            id of station to look up
+	 * @return location
+	 * @throws IOException
+	 */
 	StationLocationResult stationLocation(String stationId) throws IOException;
 
 	/**
