@@ -128,7 +128,7 @@ public class RmvProvider implements NetworkProvider
 		return (double) value / 1000000;
 	}
 
-	public String connectionsQueryUri(final String from, final String via, final String to, final Date date, final boolean dep)
+	private String connectionsQueryUri(final String from, final String via, final String to, final Date date, final boolean dep)
 	{
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yy");
 		final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
@@ -160,8 +160,9 @@ public class RmvProvider implements NetworkProvider
 	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern.compile(
 			"(?:(mehrfach vorhanden oder identisch)|(keine Verbindung gefunden werden))", Pattern.CASE_INSENSITIVE);
 
-	public CheckConnectionsQueryResult checkConnectionsQuery(final String queryUri) throws IOException
+	public CheckConnectionsQueryResult checkConnectionsQuery(final String from, final String via, final String to, final Date date, final boolean dep) throws IOException
 	{
+		final String queryUri = connectionsQueryUri(from, via, to, date, dep);
 		final CharSequence page = ParserUtils.scrape(queryUri);
 
 		final Matcher mError = P_CHECK_CONNECTIONS_ERROR.matcher(page);

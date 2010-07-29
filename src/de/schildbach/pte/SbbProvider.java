@@ -86,7 +86,7 @@ public class SbbProvider implements NetworkProvider
 		throw new UnsupportedOperationException();
 	}
 
-	public String connectionsQueryUri(final String from, final String via, final String to, final Date date, final boolean dep)
+	private String connectionsQueryUri(final String from, final String via, final String to, final Date date, final boolean dep)
 	{
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yy");
 		final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
@@ -113,7 +113,8 @@ public class SbbProvider implements NetworkProvider
 		return uri.toString();
 	}
 
-	public CheckConnectionsQueryResult checkConnectionsQuery(final String queryUri) throws IOException
+	public CheckConnectionsQueryResult checkConnectionsQuery(final String from, final String via, final String to, final Date date, final boolean dep)
+			throws IOException
 	{
 		throw new UnsupportedOperationException();
 	}

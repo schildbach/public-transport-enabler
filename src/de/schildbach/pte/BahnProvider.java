@@ -116,7 +116,7 @@ public final class BahnProvider implements NetworkProvider
 		throw new UnsupportedOperationException();
 	}
 
-	public String connectionsQueryUri(final String from, final String via, final String to, final Date date, final boolean dep)
+	private String connectionsQueryUri(final String from, final String via, final String to, final Date date, final boolean dep)
 	{
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yy");
 		final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
@@ -158,8 +158,10 @@ public final class BahnProvider implements NetworkProvider
 	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern
 			.compile("(?:(zu dicht beieinander|mehrfach vorhanden oder identisch)|(leider konnte zu Ihrer Anfrage keine Verbindung gefunden werden))");
 
-	public CheckConnectionsQueryResult checkConnectionsQuery(final String queryUri) throws IOException
+	public CheckConnectionsQueryResult checkConnectionsQuery(final String from, final String via, final String to, final Date date, final boolean dep)
+			throws IOException
 	{
+		final String queryUri = connectionsQueryUri(from, via, to, date, dep);
 		final CharSequence page = ParserUtils.scrape(queryUri);
 
 		final Matcher mError = P_CHECK_CONNECTIONS_ERROR.matcher(page);

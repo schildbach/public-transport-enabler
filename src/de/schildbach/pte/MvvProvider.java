@@ -84,7 +84,7 @@ public class MvvProvider implements NetworkProvider
 		throw new UnsupportedOperationException();
 	}
 
-	public String connectionsQueryUri(final String from, final String via, final String to, final Date date, final boolean dep)
+	private String connectionsQueryUri(final String from, final String via, final String to, final Date date, final boolean dep)
 	{
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
 		final DateFormat YEAR_FORMAT = new SimpleDateFormat("yyyy");
@@ -174,8 +174,10 @@ public class MvvProvider implements NetworkProvider
 	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern.compile("(?:(xxxzudichtxxx)|(konnte keine Verbindung gefunden werden))",
 			Pattern.CASE_INSENSITIVE);
 
-	public CheckConnectionsQueryResult checkConnectionsQuery(final String queryUri) throws IOException
+	public CheckConnectionsQueryResult checkConnectionsQuery(final String from, final String via, final String to, final Date date, final boolean dep)
+			throws IOException
 	{
+		final String queryUri = connectionsQueryUri(from, via, to, date, dep);
 		CharSequence page = ParserUtils.scrape(queryUri);
 		while (page.length() == 0)
 		{
