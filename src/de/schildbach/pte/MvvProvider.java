@@ -342,6 +342,7 @@ public class MvvProvider implements NetworkProvider
 			+ "an\\s+(.*?)\\s*<a" //
 			+ ").*?", Pattern.DOTALL);
 	private static final Pattern P_CONNECTION_DETAILS_ERRORS = Pattern.compile("(session has expired)", Pattern.CASE_INSENSITIVE);
+	private static final String SITZENBLEIBER = "Sitzenbleiber";
 
 	public GetConnectionDetailsResult getConnectionDetails(final String uri) throws IOException
 	{
@@ -369,59 +370,63 @@ public class MvvProvider implements NetworkProvider
 			while (mDetCoarse.find())
 			{
 				final String set = mDetCoarse.group(2) + mDetCoarse.group(3) + mDetCoarse.group(4);
-				final Matcher mDetFine = P_CONNECTION_DETAILS_FINE.matcher(set);
-				if (mDetFine.matches())
+				if (!set.contains(SITZENBLEIBER))
 				{
-					if (mDetFine.group(8) == null)
+					final Matcher mDetFine = P_CONNECTION_DETAILS_FINE.matcher(set);
+					if (mDetFine.matches())
 					{
-						final Date departureTime = upTime(lastTime, ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mDetFine.group(1))));
-
-						final String departure = ParserUtils.resolveEntities(mDetFine.group(2));
-						if (departure != null && firstDeparture == null)
-							firstDeparture = departure;
-
-						final String product = ParserUtils.resolveEntities(mDetFine.group(3));
-
-						final String line = ParserUtils.resolveEntities(mDetFine.group(4));
-
-						final String destination = ParserUtils.resolveEntities(mDetFine.group(5));
-
-						final Date arrivalTime = upTime(lastTime, ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mDetFine.group(6))));
-
-						final String arrival = ParserUtils.resolveEntities(mDetFine.group(7));
-
-						final String normalizedLine = normalizeLine(product, line);
-
-						parts.add(new Connection.Trip(normalizedLine, LINES.get(normalizedLine), destination, departureTime, null, 0, departure,
-								arrivalTime, null, 0, arrival));
-
-						if (firstDepartureTime == null)
-							firstDepartureTime = departureTime;
-
-						lastArrival = arrival;
-						lastArrivalTime = arrivalTime;
-					}
-					else
-					{
-						final String departure = ParserUtils.resolveEntities(mDetFine.group(8));
-						if (departure != null && firstDeparture == null)
-							firstDeparture = departure;
-
-						final String min = mDetFine.group(9);
-
-						final String arrival = ParserUtils.resolveEntities(mDetFine.group(10));
-
-						if (parts.size() > 0 && parts.get(parts.size() - 1) instanceof Connection.Footway)
+						if (mDetFine.group(8) == null)
 						{
-							final Connection.Footway lastFootway = (Connection.Footway) parts.remove(parts.size() - 1);
-							parts.add(new Connection.Footway(lastFootway.min + Integer.parseInt(min), lastFootway.departure, arrival));
+							final Date departureTime = upTime(lastTime, ParserUtils.joinDateTime(currentDate, ParserUtils
+									.parseTime(mDetFine.group(1))));
+
+							final String departure = ParserUtils.resolveEntities(mDetFine.group(2));
+							if (departure != null && firstDeparture == null)
+								firstDeparture = departure;
+
+							final String product = ParserUtils.resolveEntities(mDetFine.group(3));
+
+							final String line = ParserUtils.resolveEntities(mDetFine.group(4));
+
+							final String destination = ParserUtils.resolveEntities(mDetFine.group(5));
+
+							final Date arrivalTime = upTime(lastTime, ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mDetFine.group(6))));
+
+							final String arrival = ParserUtils.resolveEntities(mDetFine.group(7));
+
+							final String normalizedLine = normalizeLine(product, line);
+
+							parts.add(new Connection.Trip(normalizedLine, LINES.get(normalizedLine), destination, departureTime, null, 0, departure,
+									arrivalTime, null, 0, arrival));
+
+							if (firstDepartureTime == null)
+								firstDepartureTime = departureTime;
+
+							lastArrival = arrival;
+							lastArrivalTime = arrivalTime;
 						}
 						else
 						{
-							parts.add(new Connection.Footway(Integer.parseInt(min), departure, arrival));
-						}
+							final String departure = ParserUtils.resolveEntities(mDetFine.group(8));
+							if (departure != null && firstDeparture == null)
+								firstDeparture = departure;
 
-						lastArrival = arrival;
+							final String min = mDetFine.group(9);
+
+							final String arrival = ParserUtils.resolveEntities(mDetFine.group(10));
+
+							if (parts.size() > 0 && parts.get(parts.size() - 1) instanceof Connection.Footway)
+							{
+								final Connection.Footway lastFootway = (Connection.Footway) parts.remove(parts.size() - 1);
+								parts.add(new Connection.Footway(lastFootway.min + Integer.parseInt(min), lastFootway.departure, arrival));
+							}
+							else
+							{
+								parts.add(new Connection.Footway(Integer.parseInt(min), departure, arrival));
+							}
+
+							lastArrival = arrival;
+						}
 					}
 				}
 				else
