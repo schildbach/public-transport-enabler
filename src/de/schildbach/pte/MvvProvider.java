@@ -562,7 +562,11 @@ public class MvvProvider implements NetworkProvider
 				return "R" + line;
 			else if (line.startsWith("RB "))
 				return "R" + line;
-			else if (line.startsWith("ALX "))
+			else if (line.startsWith("ALX ")) // Alex
+				return "R" + line;
+			else if (line.startsWith("BOB ")) // Bayerische Oberlandbahn
+				return "R" + line;
+			else if (line.startsWith("VBG ")) // Vogtlandbahn
 				return "R" + line;
 			else if (line.startsWith("ICE "))
 				return "I" + line;
