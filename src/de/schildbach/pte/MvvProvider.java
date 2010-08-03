@@ -552,6 +552,8 @@ public class MvvProvider implements NetworkProvider
 				return "B" + line;
 			else if (line.matches("N4\\d"))
 				return "B" + line;
+			else if (line.equals("Schienenersatzverkehr"))
+				return "BSEV";
 			else if (LINES.containsKey("T" + line))
 				return "T" + line;
 			else if (LINES.containsKey("S" + line))
