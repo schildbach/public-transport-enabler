@@ -19,8 +19,10 @@ package de.schildbach.pte;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -42,9 +44,24 @@ public final class ParserUtils
 
 	public static CharSequence scrape(final String url) throws IOException
 	{
+		return scrape(url, null);
+	}
+
+	public static CharSequence scrape(final String url, final String request) throws IOException
+	{
 		final StringBuilder buffer = new StringBuilder(SCRAPE_INITIAL_CAPACITY);
 		final URLConnection connection = new URL(url).openConnection();
+		connection.setDoInput(true);
+		connection.setDoOutput(request != null);
 		connection.addRequestProperty("User-Agent", SCRAPE_USER_AGENT);
+
+		if (request != null)
+		{
+			final Writer writer = new OutputStreamWriter(connection.getOutputStream(), "ISO-8859-1");
+			writer.write(request);
+			writer.close();
+		}
+
 		final Reader pageReader = new InputStreamReader(connection.getInputStream(), "ISO-8859-1");
 
 		final char[] buf = new char[SCRAPE_INITIAL_CAPACITY];
