@@ -620,12 +620,14 @@ public class MvvProvider implements NetworkProvider
 			final String[] lineParts = line.split("\\s+");
 			final String type = lineParts[0];
 			final String number = lineParts[1];
-			if (type.equals("EC"))
-				return "I" + type + number;
 			if (type.equals("IC"))
 				return "I" + type + number;
 			if (type.equals("ICE"))
 				return "I" + type + number;
+			if (type.equals("EC"))
+				return "I" + type + number;
+			if (type.equals("EN")) // EuroNight
+				return "IEN" + number;
 			if (type.equals("CNL"))
 				return "I" + type + number;
 			if (type.equals("RJ")) // Railjet, Österreich
