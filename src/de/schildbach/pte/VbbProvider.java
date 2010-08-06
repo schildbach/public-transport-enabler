@@ -300,7 +300,8 @@ public final class VbbProvider implements NetworkProvider
 			+ "|" //
 			+ "(\\d+) Min\\.[\n\\s]?" // footway
 			+ "Fussweg\n?" //
-			+ ".*?(?:<strong>(.*?)</strong>|<a href=\".*?\">(\\w.*?)</a>).*?" // arrival
+			+ ".*?(?:<a href=\"/Fahrinfo.*?input=(\\d+)\">\n?" // arrivalId
+			+ "<strong>(.*?)</strong>|<a href=\"/Stadtplan.*?\">(\\w.*?)</a>).*?" // arrival
 			+ ").*?", Pattern.DOTALL);
 
 	public GetConnectionDetailsResult getConnectionDetails(final String uri) throws IOException
@@ -379,7 +380,9 @@ public final class VbbProvider implements NetworkProvider
 					}
 					else
 					{
-						final String arrival = ParserUtils.resolveEntities(selectNotNull(mDetFine.group(12), mDetFine.group(13)));
+						final int arrivalId = Integer.parseInt(mDetFine.group(12));
+
+						final String arrival = ParserUtils.resolveEntities(selectNotNull(mDetFine.group(13), mDetFine.group(14)));
 
 						if (parts.size() > 0 && parts.get(parts.size() - 1) instanceof Connection.Footway)
 						{
@@ -392,6 +395,7 @@ public final class VbbProvider implements NetworkProvider
 						}
 
 						lastArrival = arrival;
+						lastArrivalId = arrivalId;
 					}
 				}
 				else
