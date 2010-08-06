@@ -555,7 +555,7 @@ public final class VbbProvider implements NetworkProvider
 		throw new IllegalStateException("cannot normalize line " + line);
 	}
 
-	public static final Map<String, int[]> LINES = new HashMap<String, int[]>();
+	private static final Map<String, int[]> LINES = new HashMap<String, int[]>();
 
 	static
 	{
@@ -669,5 +669,10 @@ public final class VbbProvider implements NetworkProvider
 		LINES.put("T89", new int[] { Color.parseColor("#EE1C23"), Color.WHITE });
 		LINES.put("RRB91", new int[] { Color.parseColor("#A7653F"), Color.WHITE });
 		LINES.put("RRB93", new int[] { Color.parseColor("#A7653F"), Color.WHITE });
+	}
+
+	public int[] lineColors(final String line)
+	{
+		return LINES.get(line);
 	}
 }

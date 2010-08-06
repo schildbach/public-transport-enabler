@@ -130,4 +130,13 @@ public interface NetworkProvider
 	 * @throws IOException
 	 */
 	QueryDeparturesResult queryDepartures(String queryUri) throws IOException;
+
+	/**
+	 * Get colors of line
+	 * 
+	 * @param line
+	 *            line to get color of
+	 * @return array containing background, foreground and border (optional) colors
+	 */
+	int[] lineColors(String line);
 }

@@ -160,7 +160,8 @@ public class RmvProvider implements NetworkProvider
 	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern.compile(
 			"(?:(mehrfach vorhanden oder identisch)|(keine Verbindung gefunden werden))", Pattern.CASE_INSENSITIVE);
 
-	public CheckConnectionsQueryResult checkConnectionsQuery(final String from, final String via, final String to, final Date date, final boolean dep) throws IOException
+	public CheckConnectionsQueryResult checkConnectionsQuery(final String from, final String via, final String to, final Date date, final boolean dep)
+			throws IOException
 	{
 		final String queryUri = connectionsQueryUri(from, via, to, date, dep);
 		final CharSequence page = ParserUtils.scrape(queryUri);
@@ -534,7 +535,7 @@ public class RmvProvider implements NetworkProvider
 		throw new IllegalStateException("cannot normalize line " + line);
 	}
 
-	public static final Map<Character, int[]> LINES = new HashMap<Character, int[]>();
+	private static final Map<Character, int[]> LINES = new HashMap<Character, int[]>();
 
 	static
 	{
@@ -545,5 +546,10 @@ public class RmvProvider implements NetworkProvider
 		LINES.put('T', new int[] { Color.parseColor("#cc0000"), Color.WHITE });
 		LINES.put('B', new int[] { Color.parseColor("#993399"), Color.WHITE });
 		LINES.put('F', new int[] { Color.BLUE, Color.WHITE });
+	}
+
+	public int[] lineColors(final String line)
+	{
+		return LINES.get(line.charAt(0));
 	}
 }

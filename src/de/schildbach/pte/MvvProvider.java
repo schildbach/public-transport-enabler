@@ -680,7 +680,7 @@ public class MvvProvider implements NetworkProvider
 		throw new IllegalArgumentException("cannot parse month: " + month);
 	}
 
-	public static final Map<String, int[]> LINES = new HashMap<String, int[]>();
+	private static final Map<String, int[]> LINES = new HashMap<String, int[]>();
 
 	static
 	{
@@ -723,5 +723,10 @@ public class MvvProvider implements NetworkProvider
 		LINES.put("UU4", new int[] { Color.parseColor("#00ccaa"), Color.WHITE });
 		LINES.put("UU5", new int[] { Color.parseColor("#bb7700"), Color.WHITE });
 		LINES.put("UU6", new int[] { Color.parseColor("#0000cc"), Color.WHITE });
+	}
+
+	public int[] lineColors(final String line)
+	{
+		return LINES.get(line);
 	}
 }

@@ -747,7 +747,7 @@ public final class BahnProvider implements NetworkProvider
 		throw new IllegalStateException("cannot normalize line " + line);
 	}
 
-	public static final Map<Character, int[]> LINES = new HashMap<Character, int[]>();
+	private static final Map<Character, int[]> LINES = new HashMap<Character, int[]>();
 
 	static
 	{
@@ -758,5 +758,10 @@ public final class BahnProvider implements NetworkProvider
 		LINES.put('T', new int[] { Color.parseColor("#cc0000"), Color.WHITE });
 		LINES.put('B', new int[] { Color.parseColor("#993399"), Color.WHITE });
 		LINES.put('F', new int[] { Color.BLUE, Color.WHITE });
+	}
+
+	public int[] lineColors(final String line)
+	{
+		return LINES.get(line.charAt(0));
 	}
 }
