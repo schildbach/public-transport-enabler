@@ -380,7 +380,7 @@ public final class VbbProvider implements NetworkProvider
 					}
 					else
 					{
-						final int arrivalId = Integer.parseInt(mDetFine.group(12));
+						final int arrivalId = mDetFine.group(12) != null ? Integer.parseInt(mDetFine.group(12)) : 0;
 
 						final String arrival = ParserUtils.resolveEntities(selectNotNull(mDetFine.group(13), mDetFine.group(14)));
 
