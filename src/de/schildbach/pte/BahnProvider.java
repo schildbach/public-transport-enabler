@@ -483,6 +483,7 @@ public final class BahnProvider implements NetworkProvider
 	}
 
 	private static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zÄÖÜäöüß]+)[\\s-]*(.*)");
+	private static final Pattern P_NORMALIZE_LINE_RUSSIA = Pattern.compile("(?:D\\s*)?(\\d{1,3}[A-Z]{2})");
 	private static final Pattern P_NORMALIZE_LINE_SBAHN = Pattern.compile("S\\w*\\d+");
 	private static final Pattern P_NORMALIZE_LINE_NUMBER = Pattern.compile("\\d{4,5}");
 
@@ -494,6 +495,10 @@ public final class BahnProvider implements NetworkProvider
 
 		if (line == null || line.length() == 0)
 			return null;
+
+		final Matcher mRussia = P_NORMALIZE_LINE_RUSSIA.matcher(line);
+		if (mRussia.matches())
+			return "R" + mRussia.group(1);
 
 		final Matcher m = P_NORMALIZE_LINE.matcher(line);
 		if (m.matches())
