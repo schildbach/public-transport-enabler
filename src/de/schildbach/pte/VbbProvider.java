@@ -586,6 +586,8 @@ public final class VbbProvider implements NetworkProvider
 				return "RKBS" + number;
 			if (type.equals("BKB")) // Buckower Kleinbahn
 				return "RBKB" + number;
+			if (type.equals("Ausfl")) // Umgebung Berlin
+				return "RAusfl" + number;
 			if (type.equals("S"))
 				return "SS" + number;
 			if (type.equals("U"))
