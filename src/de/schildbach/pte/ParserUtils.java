@@ -54,7 +54,7 @@ public final class ParserUtils
 		connection.setDoInput(true);
 		connection.setDoOutput(request != null);
 		connection.setConnectTimeout(5000);
-		connection.setReadTimeout(5000);
+		connection.setReadTimeout(10000);
 		connection.addRequestProperty("User-Agent", SCRAPE_USER_AGENT);
 
 		if (request != null)
