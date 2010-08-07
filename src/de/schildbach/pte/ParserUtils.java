@@ -41,6 +41,8 @@ public final class ParserUtils
 {
 	private static final String SCRAPE_USER_AGENT = "Mozilla/5.0 (Windows; U; Windows NT 5.1; de; rv:1.9.2) Gecko/20100115 Firefox/3.6 (.NET CLR 3.5.30729)";
 	private static final int SCRAPE_INITIAL_CAPACITY = 4096;
+	private static final int SCRAPE_CONNECT_TIMEOUT = 5000;
+	private static final int SCRAPE_READ_TIMEOUT = 10000;
 
 	public static CharSequence scrape(final String url) throws IOException
 	{
@@ -53,8 +55,8 @@ public final class ParserUtils
 		final URLConnection connection = new URL(url).openConnection();
 		connection.setDoInput(true);
 		connection.setDoOutput(request != null);
-		connection.setConnectTimeout(5000);
-		connection.setReadTimeout(10000);
+		connection.setConnectTimeout(SCRAPE_CONNECT_TIMEOUT);
+		connection.setReadTimeout(SCRAPE_READ_TIMEOUT);
 		connection.addRequestProperty("User-Agent", SCRAPE_USER_AGENT);
 
 		if (request != null)
