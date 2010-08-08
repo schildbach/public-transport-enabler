@@ -72,7 +72,7 @@ public interface NetworkProvider
 	StationLocationResult stationLocation(String stationId) throws IOException;
 
 	/**
-	 * Check if query is well defined, asking for any ambiguousnesses
+	 * Query connections, asking for any ambiguousnesses
 	 * 
 	 * @param from
 	 *            location to route from, mandatory
@@ -84,21 +84,20 @@ public interface NetworkProvider
 	 *            desired date for departing, mandatory
 	 * @param dep
 	 *            date is departure date? {@code true} for departure, {@code false} for arrival
-	 * @return result object that can contain alternatives to clear up ambiguousnesses
+	 * @return result object that can contain alternatives to clear up ambiguousnesses, or contains possible connections
 	 * @throws IOException
 	 */
-	CheckConnectionsQueryResult checkConnectionsQuery(String from, String via, String to, Date date, boolean dep) throws IOException;
+	QueryConnectionsResult queryConnections(String from, String via, String to, Date date, boolean dep) throws IOException;
 
 	/**
-	 * Execute well-defined connections query
+	 * Query more connections (e.g. earlier or later)
 	 * 
-	 * @param queryUri
-	 *            uri constructed by {@link NetworkProvider#connectionsQueryUri} and optionally checked with
-	 *            {@link NetworkProvider#checkConnectionsQuery}
-	 * @return result object containing possible connections
+	 * @param uri
+	 *            uri to query more connections from
+	 * @return result object that contains possible connections
 	 * @throws IOException
 	 */
-	QueryConnectionsResult queryConnections(String queryUri) throws IOException;
+	QueryConnectionsResult queryMoreConnections(String uri) throws IOException;
 
 	/**
 	 * Get details about a connection

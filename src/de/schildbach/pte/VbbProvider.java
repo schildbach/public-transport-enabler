@@ -181,19 +181,19 @@ public final class VbbProvider implements NetworkProvider
 	private static final Pattern P_CHECK_TO = Pattern.compile("Nach:");
 	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern.compile("(zu dicht beieinander)|(keine Verbindung gefunden)");
 
-	public CheckConnectionsQueryResult checkConnectionsQuery(final String from, final String via, final String to, final Date date, final boolean dep)
+	public QueryConnectionsResult queryConnections(final String from, final String via, final String to, final Date date, final boolean dep)
 			throws IOException
 	{
-		final String queryUri = connectionsQueryUri(from, via, to, date, dep);
-		final CharSequence page = ParserUtils.scrape(queryUri);
+		final String uri = connectionsQueryUri(from, via, to, date, dep);
+		final CharSequence page = ParserUtils.scrape(uri);
 
 		final Matcher mError = P_CHECK_CONNECTIONS_ERROR.matcher(page);
 		if (mError.find())
 		{
 			if (mError.group(1) != null)
-				return CheckConnectionsQueryResult.TOO_CLOSE;
+				return QueryConnectionsResult.TOO_CLOSE;
 			if (mError.group(2) != null)
-				return CheckConnectionsQueryResult.NO_CONNECTIONS;
+				return QueryConnectionsResult.NO_CONNECTIONS;
 		}
 
 		final Matcher mAddress = P_CHECK_ADDRESS.matcher(page);
@@ -208,19 +208,26 @@ public final class VbbProvider implements NetworkProvider
 
 		if (addresses.isEmpty())
 		{
-			return new CheckConnectionsQueryResult(CheckConnectionsQueryResult.Status.OK, queryUri, null, null, null);
+			return queryConnections(uri, page);
 		}
 		else if (P_CHECK_FROM.matcher(page).find())
 		{
 			if (P_CHECK_TO.matcher(page).find())
-				return new CheckConnectionsQueryResult(CheckConnectionsQueryResult.Status.AMBIGUOUS, queryUri, null, addresses, null);
+				return new QueryConnectionsResult(QueryConnectionsResult.Status.AMBIGUOUS, null, addresses, null);
 			else
-				return new CheckConnectionsQueryResult(CheckConnectionsQueryResult.Status.AMBIGUOUS, queryUri, null, null, addresses);
+				return new QueryConnectionsResult(QueryConnectionsResult.Status.AMBIGUOUS, null, null, addresses);
 		}
 		else
 		{
-			return new CheckConnectionsQueryResult(CheckConnectionsQueryResult.Status.AMBIGUOUS, queryUri, addresses, null, null);
+			return new QueryConnectionsResult(QueryConnectionsResult.Status.AMBIGUOUS, addresses, null, null);
 		}
+	}
+
+	public QueryConnectionsResult queryMoreConnections(final String uri) throws IOException
+	{
+		final CharSequence page = ParserUtils.scrape(uri);
+
+		return queryConnections(uri, page);
 	}
 
 	private static final Pattern P_CONNECTIONS_HEAD = Pattern.compile(
@@ -231,10 +238,8 @@ public final class VbbProvider implements NetworkProvider
 	private static final Pattern P_CONNECTIONS_FINE = Pattern.compile(".*?<a href=\"(/Fahrinfo/bin/query\\.bin/dox.*?)\">"
 			+ "(\\d\\d:\\d\\d)-(\\d\\d:\\d\\d)</a>&nbsp;&nbsp;(?:\\d+ Umst\\.|([\\w\\d ]+)).*?", Pattern.DOTALL);
 
-	public QueryConnectionsResult queryConnections(final String uri) throws IOException
+	private QueryConnectionsResult queryConnections(final String uri, final CharSequence page) throws IOException
 	{
-		final CharSequence page = ParserUtils.scrape(uri);
-
 		final Matcher mHead = P_CONNECTIONS_HEAD.matcher(page);
 		if (mHead.matches())
 		{
@@ -276,7 +281,7 @@ public final class VbbProvider implements NetworkProvider
 				}
 			}
 
-			return new QueryConnectionsResult(from, to, currentDate, linkEarlier, linkLater, connections);
+			return new QueryConnectionsResult(uri, from, to, currentDate, linkEarlier, linkLater, connections);
 		}
 		else
 		{

@@ -158,19 +158,19 @@ public final class BahnProvider implements NetworkProvider
 	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern
 			.compile("(?:(zu dicht beieinander|mehrfach vorhanden oder identisch)|(leider konnte zu Ihrer Anfrage keine Verbindung gefunden werden))");
 
-	public CheckConnectionsQueryResult checkConnectionsQuery(final String from, final String via, final String to, final Date date, final boolean dep)
+	public QueryConnectionsResult queryConnections(final String from, final String via, final String to, final Date date, final boolean dep)
 			throws IOException
 	{
-		final String queryUri = connectionsQueryUri(from, via, to, date, dep);
-		final CharSequence page = ParserUtils.scrape(queryUri);
+		final String uri = connectionsQueryUri(from, via, to, date, dep);
+		final CharSequence page = ParserUtils.scrape(uri);
 
 		final Matcher mError = P_CHECK_CONNECTIONS_ERROR.matcher(page);
 		if (mError.find())
 		{
 			if (mError.group(1) != null)
-				return CheckConnectionsQueryResult.TOO_CLOSE;
+				return QueryConnectionsResult.TOO_CLOSE;
 			if (mError.group(2) != null)
-				return CheckConnectionsQueryResult.NO_CONNECTIONS;
+				return QueryConnectionsResult.NO_CONNECTIONS;
 		}
 
 		List<String> fromAddresses = null;
@@ -203,9 +203,16 @@ public final class BahnProvider implements NetworkProvider
 		}
 
 		if (fromAddresses != null || viaAddresses != null || toAddresses != null)
-			return new CheckConnectionsQueryResult(CheckConnectionsQueryResult.Status.AMBIGUOUS, queryUri, fromAddresses, viaAddresses, toAddresses);
+			return new QueryConnectionsResult(QueryConnectionsResult.Status.AMBIGUOUS, fromAddresses, viaAddresses, toAddresses);
 		else
-			return new CheckConnectionsQueryResult(CheckConnectionsQueryResult.Status.OK, queryUri, null, null, null);
+			return queryConnections(uri, page);
+	}
+
+	public QueryConnectionsResult queryMoreConnections(final String uri) throws IOException
+	{
+		final CharSequence page = ParserUtils.scrape(uri);
+
+		return queryConnections(uri, page);
 	}
 
 	private static final Pattern P_CONNECTIONS_HEAD = Pattern.compile(".*" //
@@ -221,10 +228,8 @@ public final class BahnProvider implements NetworkProvider
 			+ "<td class=\"overview iphonepfeil\">(.*?)<br />.*?" // line
 	, Pattern.DOTALL);
 
-	public QueryConnectionsResult queryConnections(final String uri) throws IOException
+	private QueryConnectionsResult queryConnections(final String uri, final CharSequence page) throws IOException
 	{
-		final CharSequence page = ParserUtils.scrape(uri);
-
 		final Matcher mHead = P_CONNECTIONS_HEAD.matcher(page);
 		if (mHead.matches())
 		{
@@ -270,7 +275,7 @@ public final class BahnProvider implements NetworkProvider
 				}
 			}
 
-			return new QueryConnectionsResult(from, to, currentDate, linkEarlier, linkLater, connections);
+			return new QueryConnectionsResult(uri, from, to, currentDate, linkEarlier, linkLater, connections);
 		}
 		else
 		{

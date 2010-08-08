@@ -17,13 +17,14 @@
 
 package de.schildbach.pte;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
 /**
  * @author Andreas Schildbach
  */
-public final class Connection
+public final class Connection implements Serializable
 {
 	final public String id;
 	final public String link;
@@ -83,7 +84,7 @@ public final class Connection
 		return id.hashCode();
 	}
 
-	public static interface Part
+	public static interface Part extends Serializable
 	{
 	}
 

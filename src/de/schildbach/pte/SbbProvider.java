@@ -113,13 +113,18 @@ public class SbbProvider implements NetworkProvider
 		return uri.toString();
 	}
 
-	public CheckConnectionsQueryResult checkConnectionsQuery(final String from, final String via, final String to, final Date date, final boolean dep)
+	public QueryConnectionsResult queryConnections(final String from, final String via, final String to, final Date date, final boolean dep)
 			throws IOException
 	{
 		throw new UnsupportedOperationException();
 	}
 
-	public QueryConnectionsResult queryConnections(final String queryUri) throws IOException
+	public QueryConnectionsResult queryMoreConnections(String uri) throws IOException
+	{
+		throw new UnsupportedOperationException();
+	}
+
+	private QueryConnectionsResult queryConnections(final String uri, final CharSequence page) throws IOException
 	{
 		throw new UnsupportedOperationException();
 	}
