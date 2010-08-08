@@ -306,7 +306,7 @@ public final class VbbProvider implements NetworkProvider
 			+ "(\\d+) Min\\.[\n\\s]?" // footway
 			+ "Fussweg\n?" //
 			+ ".*?(?:<a href=\"/Fahrinfo.*?input=(\\d+)\">\n?" // arrivalId
-			+ "<strong>(.*?)</strong>|<a href=\"/Stadtplan.*?\">(\\w.*?)</a>).*?" // arrival
+			+ "<strong>(.*?)</strong>|<a href=\"/Stadtplan.*?\">(\\w.*?)</a>|<strong>(.*?)</strong>).*?" // arrival
 			+ ").*?", Pattern.DOTALL);
 
 	public GetConnectionDetailsResult getConnectionDetails(final String uri) throws IOException
@@ -387,7 +387,7 @@ public final class VbbProvider implements NetworkProvider
 					{
 						final int arrivalId = mDetFine.group(12) != null ? Integer.parseInt(mDetFine.group(12)) : 0;
 
-						final String arrival = ParserUtils.resolveEntities(selectNotNull(mDetFine.group(13), mDetFine.group(14)));
+						final String arrival = ParserUtils.resolveEntities(selectNotNull(mDetFine.group(13), mDetFine.group(14), mDetFine.group(15)));
 
 						if (parts.size() > 0 && parts.get(parts.size() - 1) instanceof Connection.Footway)
 						{
