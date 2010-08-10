@@ -460,6 +460,10 @@ public class SbbProvider implements NetworkProvider
 			return "I" + strippedLine;
 		if (type.equals("rj")) // RailJet, Österreichische Bundesbahnen
 			return "I" + strippedLine;
+		if (type.equals("oec")) // ÖBB-EuroCity
+			return "I" + strippedLine;
+		if (type.equals("oic")) // ÖBB-InterCity
+			return "I" + strippedLine;
 		if (type.equals("r"))
 			return "R" + strippedLine;
 		if (type.equals("re"))
