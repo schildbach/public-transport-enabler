@@ -120,6 +120,7 @@ public class SbbProvider implements NetworkProvider
 	private static final Pattern P_PRE_ADDRESS = Pattern.compile(
 			"<select name=\"(REQ0JourneyStopsS0K|REQ0JourneyStopsZ0K|REQ0JourneyStops1\\.0K)\" accesskey=\"f\".*?>(.*?)</select>", Pattern.DOTALL);
 	private static final Pattern P_ADDRESSES = Pattern.compile("<option.*?>\\s*(.*?)\\s*</option>", Pattern.DOTALL);
+	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern.compile("(keine Verbindung gefunden werden)");
 
 	public QueryConnectionsResult queryConnections(final String from, final String via, final String to, final Date date, final boolean dep)
 			throws IOException
@@ -127,7 +128,12 @@ public class SbbProvider implements NetworkProvider
 		final String uri = connectionsQueryUri(from, via, to, date, dep);
 		final CharSequence page = ParserUtils.scrape(uri);
 
-		// TODO errors
+		final Matcher mError = P_CHECK_CONNECTIONS_ERROR.matcher(page);
+		if (mError.find())
+		{
+			if (mError.group(1) != null)
+				return QueryConnectionsResult.NO_CONNECTIONS;
+		}
 
 		List<String> fromAddresses = null;
 		List<String> viaAddresses = null;
@@ -439,11 +445,15 @@ public class SbbProvider implements NetworkProvider
 
 		if (type.equals("ec")) // EuroCity
 			return "I" + strippedLine;
+		if (type.equals("en")) // EuroNight
+			return "I" + strippedLine;
 		if (type.equals("ice")) // InterCityExpress
 			return "I" + strippedLine;
 		if (type.equals("ic")) // InterCity
 			return "I" + strippedLine;
 		if (type.equals("icn")) // Intercity-Neigezug, Schweiz
+			return "I" + strippedLine;
+		if (type.equals("cnl")) // CityNightLine
 			return "I" + strippedLine;
 		if (type.equals("tha")) // Thalys
 			return "I" + strippedLine;
@@ -461,6 +471,12 @@ public class SbbProvider implements NetworkProvider
 			return "B" + strippedLine;
 		if (type.equals("tro"))
 			return "B" + strippedLine;
+		if (type.equals("bat"))
+			return "F" + strippedLine;
+		if (type.equals("lb"))
+			return "C" + strippedLine;
+		if (type.equals("gb")) // Gondelbahn
+			return "C" + strippedLine;
 
 		throw new IllegalStateException("cannot normalize type " + type + " line " + line);
 	}
