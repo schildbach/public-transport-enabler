@@ -204,8 +204,8 @@ public class SbbProvider implements NetworkProvider
 			+ "<td .*?class=\"date.*?>\n?(?:.., (\\d{2}\\.\\d{2}\\.\\d{2})\n?)?</td>.*?" // departureDate
 			+ "<td .*?class=\"time.*?>(?:(\\d{2}:\\d{2})|&nbsp;)</td>.*?" // departureTime
 			+ "<td .*?class=\"platform.*?>\n?\\s*(.+?)?\\s*\n?</td>.*?" // departurePosition
-			+ "<img src=\"/img/2/products/(\\w+?)_pic.gif\" .*? alt=\"(.*?)\".*?>.*?" // line
-			+ "<td .*?class=\"remarks.*?>(?:\n?(\\d+) Min\\..*?)?</td>.*?" // min
+			+ "<img src=\"/img/2/products/(\\w+?)_pic.gif\" .*? alt=\"(.*?)\" .*?><br />.*?" // line
+			+ "(?:<td .*?class=\"remarks.*?>\n?(\\d+) Min\\..*?</td>.*?)?" // min
 			+ "<a href=\"http://fahrplan\\.sbb\\.ch/bin/bhftafel\\.exe/dn.*?input=(\\d+)&.*?\" .*?>" // arrivalId,
 			+ "(.*?)</a>.*?" // arrival
 			+ "<td .*?class=\"date.*?>\n?(?:.., (\\d{2}\\.\\d{2}\\.\\d{2})\n?)?</td>.*?" // arrivalDate
@@ -433,6 +433,7 @@ public class SbbProvider implements NetworkProvider
 	}
 
 	private static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zÄÖÜäöüß]+)[\\s-]*(.*)");
+	private static final Pattern P_NORMALIZE_LINE_SBAHN = Pattern.compile("s\\d*");
 
 	private static String normalizeLine(final String type, final String line)
 	{
@@ -457,13 +458,17 @@ public class SbbProvider implements NetworkProvider
 			return "I" + strippedLine;
 		if (type.equals("tha")) // Thalys
 			return "I" + strippedLine;
+		if (type.equals("rj")) // RailJet, Österreichische Bundesbahnen
+			return "I" + strippedLine;
 		if (type.equals("r"))
 			return "R" + strippedLine;
 		if (type.equals("re"))
 			return "R" + strippedLine;
 		if (type.equals("ir"))
 			return "R" + strippedLine;
-		if (type.matches("s\\d*"))
+		if (type.equals("d"))
+			return "R" + strippedLine;
+		if (P_NORMALIZE_LINE_SBAHN.matcher(type).matches())
 			return "S" + strippedLine;
 		if (type.equals("tra"))
 			return "T" + strippedLine;
@@ -529,7 +534,7 @@ public class SbbProvider implements NetworkProvider
 				return "R" + number;
 			if (type.equals("IR")) // InterRegio
 				return "RIR" + number;
-			if (type.equals("D")) // D-Zug?
+			if (type.equals("D"))
 				return "RD" + number;
 			if (type.equals("E"))
 				return "RE" + number;

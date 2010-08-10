@@ -29,6 +29,47 @@ import org.junit.Test;
 public class SbbProviderTest
 {
 	@Test
+	public void tripThatTriggeredLongRunningMatch()
+	{
+		assertFineConnectionDetails("<td headers=\"stops-0\" class=\"stop-station-icon\" valign=\"top\">\n" //
+				+ "<a href=\"http://fahrplan.sbb.ch/bin/query.exe/dn?ld=&i=mc.023454218.1281459219&n=1&uscid=10\"><img src=\"/img/2/icon_map_location.gif\" width=\"12\" height=\"12\" border=\"0\" alt=\"Umgebungskarte: Budapest-Keleti pu.\" hspace=\"3\" style=\"vertical-align:middle;margin-right:4px;\" /></a>\n" //
+				+ "</td>\n" //
+				+ "<td headers=\"stops-0\" class=\"stop-station\">\n" //
+				+ "<a href=\"http://fahrplan.sbb.ch/bin/bhftafel.exe/dn?seqnr=1&ident=mc.023454218.1281459219&input=5510017&boardType=dep&time=21:05\" title=\"Haltestelleninformation: Budapest-Keleti pu.\">Budapest-Keleti pu.</a></td>\n" //
+				+ "<td headers=\"date-0\" class=\"date\" align=\"left\">\n" //
+				+ "Di, 10.08.10\n" //
+				+ "</td>\n" //
+				+ "<td headers=\"time-0\" class=\"time prefix timeLeft\" align=\"left\" nowrap=\"nowrap\">ab</td><td headers=\"time-0\" class=\"time timeRight\" align=\"left\" nowrap=\"nowrap\">21:05</td><td headers=\"platform-0\" class=\"platform\" align=\"left\">\n" //
+				+ "</td>\n" //
+				+ "<td headers=\"products-0\" class=\"products last\" style=\"white-space:nowrap;\" rowspan=\"2\" valign=\"top\">\n" //
+				+ "<img src=\"/img/2/products/en_pic.gif\" width=\"18\" height=\"18\" alt=\"EN 462\" style=\"margin-top:2px;\"><br />\n" //
+				+ "<a href=\"http://fahrplan.sbb.ch/bin/traininfo.exe/dn/180702/86414/270520/75026/85?seqnr=1&ident=mc.023454218.1281459219&date=10.08.10&station_evaId=5510017&station_type=dep&journeyStartIdx=0&journeyEndIdx=12&\" title=\"Fahrtinformation\">\n" //
+				+ "EN 462\n" //
+				+ "</a>\n" //
+				+ "</td>\n" //
+				+ "<td headers=\"capacity-0\" class=\"capacity last\" style=\"white-space:nowrap;\" rowspan=\"2\" valign=\"top\">\n" //
+				+ "<div style=\"width:65px;height:15px;line-height:15px;\">\n" //
+				+ "<div style=\"float:left;width:30px;height:15px;line-height:15px;\">\n" //
+				+ "</div>\n" //
+				+ "<div style=\"float:left;width:30px;height:15px;line-height:15px;margin-left:4px;\">\n" //
+				+ "</div>\n" //
+				+ "</div>\n" //
+				+ "</td>\n" //
+				+ "<td headers=\"remarks-0\" class=\"remarks last\" rowspan=\"2\" valign=\"top\">\n" //
+				+ "EuroNight, <img src=\"/img/2/products/attr_2_pic.gif\" width=\"16\" height=\"12\" border=\"0\" title=\"Nur 2. Klasse\" alt=\"Nur 2. Klasse\"> <img src=\"/img/2/products/attr_rr_pic.gif\" width=\"16\" height=\"12\" border=\"0\" title=\"Reservierung obligatorisch\" alt=\"Reservierung obligatorisch\"> <img src=\"/img/2/products/attr_wl_pic.gif\" width=\"16\" height=\"12\" border=\"0\" title=\"Schlafwagen\" alt=\"Schlafwagen\"> <img src=\"/img/2/products/attr_cc_pic.gif\" width=\"16\" height=\"12\" border=\"0\" title=\"Liegewagen\" alt=\"Liegewagen\"> <img src=\"/img/2/products/attr_mi_pic.gif\" width=\"16\" height=\"12\" border=\"0\" title=\"Minibar\" alt=\"Minibar\"> GP </td>\n" //
+				+ "<td headers=\"stops-0\"  class=\"stop-station-icon last\" valign=\"top\">\n" //
+				+ "<a href=\"http://fahrplan.sbb.ch/bin/query.exe/dn?ld=&i=mc.023454218.1281459219&n=1&uscid=11\"><img src=\"/img/2/icon_map_location.gif\" width=\"12\" height=\"12\" border=\"0\" alt=\"Umgebungskarte: M&#252;nchen Hbf\" hspace=\"3\" style=\"vertical-align:middle;margin-right:4px;\" /></a></td>\n" //
+				+ "<td headers=\"stops-0\" class=\"stop-station last\">\n" //
+				+ "<a href=\"http://fahrplan.sbb.ch/bin/bhftafel.exe/dn?seqnr=1&ident=mc.023454218.1281459219&input=8020347&boardType=arr&time=06:15\" title=\"Haltestelleninformation: M&#252;nchen Hbf\">M&#252;nchen Hbf</a></td>\n" //
+				+ "<td headers=\"date-0\" class=\"date last\" align=\"left\">\n" //
+				+ "Mi, 11.08.10\n" //
+				+ "</td>\n" //
+				+ "<td headers=\"time-0\" class=\"time prefix last timeLeft\" align=\"left\" nowrap=\"nowrap\">an</td><td headers=\"time-0\" class=\"time last timeRight\" align=\"left\" nowrap=\"nowrap\">06:15</td><td headers=\"platform-0\" class=\"platform last\" align=\"left\">\n" //
+				+ "12      \n" //
+				+ "</td>\n");
+	}
+
+	@Test
 	public void tripWithoutDate()
 	{
 		assertFineConnectionDetails("<td headers=\"stops-2\" class=\"stop-station-icon\" valign=\"top\">\n" //
