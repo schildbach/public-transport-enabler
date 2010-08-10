@@ -260,8 +260,7 @@ public final class VbbProvider implements NetworkProvider
 					Date departureTime = ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mConFine.group(2)));
 					if (!connections.isEmpty())
 					{
-						final long diff = ParserUtils.timeDiff(departureTime,
-								((Connection.Trip) connections.get(connections.size() - 1).parts.get(0)).departureTime);
+						final long diff = ParserUtils.timeDiff(departureTime, connections.get(connections.size() - 1).departureTime);
 						if (diff > PARSER_DAY_ROLLOVER_THRESHOLD_MS)
 							departureTime = ParserUtils.addDays(departureTime, -1);
 						else if (diff < -PARSER_DAY_ROLLDOWN_THRESHOLD_MS)
@@ -271,9 +270,8 @@ public final class VbbProvider implements NetworkProvider
 					if (departureTime.after(arrivalTime))
 						arrivalTime = ParserUtils.addDays(arrivalTime, 1);
 					final String line = normalizeLine(ParserUtils.resolveEntities(mConFine.group(4)));
-					final Connection connection = new Connection(ParserUtils.extractId(link), link, departureTime, arrivalTime, 0, from, 0, to,
-							new ArrayList<Connection.Part>(1));
-					connection.parts.add(new Connection.Trip(departureTime, arrivalTime, line, line != null ? LINES.get(line) : null));
+					final Connection connection = new Connection(ParserUtils.extractId(link), link, departureTime, arrivalTime, line,
+							line != null ? LINES.get(line.charAt(0)) : null, 0, from, 0, to, null);
 					connections.add(connection);
 				}
 				else
@@ -412,7 +410,7 @@ public final class VbbProvider implements NetworkProvider
 
 			if (firstDepartureTime != null && lastArrivalTime != null)
 				return new GetConnectionDetailsResult(currentDate, new Connection(ParserUtils.extractId(uri), uri, firstDepartureTime,
-						lastArrivalTime, firstDepartureId, firstDeparture, lastArrivalId, lastArrival, parts));
+						lastArrivalTime, null, null, firstDepartureId, firstDeparture, lastArrivalId, lastArrival, parts));
 			else
 				return new GetConnectionDetailsResult(currentDate, null);
 		}

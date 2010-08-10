@@ -234,7 +234,7 @@ public class SbbProvider implements NetworkProvider
 							.parseTime(mConFine.group(5)));
 					final String link = uri + "#" + id; // TODO use print link?
 
-					final Connection connection = new Connection(id, link, departureTime, arrivalTime, 0, from, 0, to,
+					final Connection connection = new Connection(id, link, departureTime, arrivalTime, null, null, 0, from, 0, to,
 							new ArrayList<Connection.Part>(1));
 					connections.add(connection);
 				}
@@ -437,6 +437,8 @@ public class SbbProvider implements NetworkProvider
 		else
 			strippedLine = line;
 
+		if (type.equals("ec")) // EuroCity
+			return "I" + strippedLine;
 		if (type.equals("ice")) // InterCityExpress
 			return "I" + strippedLine;
 		if (type.equals("ic")) // InterCity

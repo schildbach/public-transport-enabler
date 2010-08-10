@@ -289,8 +289,7 @@ public class MvvProvider implements NetworkProvider
 						Date departureTime = ParserUtils.joinDateTime(date, ParserUtils.parseTime(mConFine.group(4)));
 						if (!connections.isEmpty())
 						{
-							final long diff = ParserUtils.timeDiff(departureTime, ((Connection.Trip) connections.get(connections.size() - 1).parts
-									.get(0)).departureTime);
+							final long diff = ParserUtils.timeDiff(departureTime, connections.get(connections.size() - 1).departureTime);
 							if (diff > PARSER_DAY_ROLLOVER_THRESHOLD_MS)
 								departureTime = ParserUtils.addDays(departureTime, -1);
 							else if (diff < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
@@ -299,9 +298,8 @@ public class MvvProvider implements NetworkProvider
 						Date arrivalTime = ParserUtils.joinDateTime(date, ParserUtils.parseTime(mConFine.group(5)));
 						if (departureTime.after(arrivalTime))
 							arrivalTime = ParserUtils.addDays(arrivalTime, 1);
-						final Connection connection = new Connection(ParserUtils.extractId(link), link, departureTime, arrivalTime, 0, from, 0, to,
-								new ArrayList<Connection.Part>(1));
-						connection.parts.add(new Connection.Trip(departureTime, arrivalTime, null, null));
+						final Connection connection = new Connection(ParserUtils.extractId(link), link, departureTime, arrivalTime, null, null, 0,
+								from, 0, to, null);
 						connections.add(connection);
 					}
 					else
@@ -311,9 +309,8 @@ public class MvvProvider implements NetworkProvider
 						final Date departureTime = calendar.getTime();
 						calendar.add(Calendar.MINUTE, min);
 						final Date arrivalTime = calendar.getTime();
-						final Connection connection = new Connection(ParserUtils.extractId(link), link, departureTime, arrivalTime, 0, from, 0, to,
-								new ArrayList<Connection.Part>(1));
-						connection.parts.add(new Connection.Footway(min, from, to));
+						final Connection connection = new Connection(ParserUtils.extractId(link), link, departureTime, arrivalTime, null, null, 0,
+								from, 0, to, null);
 						connections.add(connection);
 					}
 				}
@@ -448,8 +445,8 @@ public class MvvProvider implements NetworkProvider
 				lastArrivalTime = calendar.getTime();
 			}
 
-			return new GetConnectionDetailsResult(new Date(), new Connection(ParserUtils.extractId(uri), uri, firstDepartureTime, lastArrivalTime, 0,
-					firstDeparture, 0, lastArrival, parts));
+			return new GetConnectionDetailsResult(new Date(), new Connection(ParserUtils.extractId(uri), uri, firstDepartureTime, lastArrivalTime,
+					null, null, 0, firstDeparture, 0, lastArrival, parts));
 		}
 		else
 		{
