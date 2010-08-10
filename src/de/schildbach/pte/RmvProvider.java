@@ -195,8 +195,6 @@ public class RmvProvider implements NetworkProvider
 			final List<String> addresses = new ArrayList<String>();
 			while (mAddresses.find())
 			{
-				ParserUtils.printGroups(mAddresses);
-
 				final String address = ParserUtils.resolveEntities(mAddresses.group(1)).trim();
 				if (!addresses.contains(address))
 					addresses.add(address);
