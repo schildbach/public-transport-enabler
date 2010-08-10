@@ -487,10 +487,10 @@ public final class BahnProvider implements NetworkProvider
 		return new Departure(parsed.getTime(), line, line != null ? LINES.get(line.charAt(0)) : null, destination);
 	}
 
+	private static final Pattern P_NORMALIZE_LINE_NUMBER = Pattern.compile("\\d{2,5}");
 	private static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zÄÖÜäöüß]+)[\\s-]*(.*)");
 	private static final Pattern P_NORMALIZE_LINE_RUSSIA = Pattern.compile("(?:D\\s*)?(\\d{1,3}[A-Z]{2})");
 	private static final Pattern P_NORMALIZE_LINE_SBAHN = Pattern.compile("S\\w*\\d+");
-	private static final Pattern P_NORMALIZE_LINE_NUMBER = Pattern.compile("\\d{3,5}");
 
 	private static String normalizeLine(final String line)
 	{
@@ -500,6 +500,12 @@ public final class BahnProvider implements NetworkProvider
 
 		if (line == null || line.length() == 0)
 			return null;
+
+		if (line.equals("---"))
+			return "?---";
+
+		if (P_NORMALIZE_LINE_NUMBER.matcher(line).matches()) // just numbers
+			return "?" + line;
 
 		final Matcher mRussia = P_NORMALIZE_LINE_RUSSIA.matcher(line);
 		if (mRussia.matches())
@@ -551,8 +557,6 @@ public final class BahnProvider implements NetworkProvider
 				return "R" + number;
 			if (type.equals("IR")) // InterRegio
 				return "RIR" + number;
-			if (type.equals("D")) // D-Zug?
-				return "RD" + number;
 			if (type.equals("RB")) // RegionalBahn
 				return "RRB" + number;
 			if (type.equals("RE")) // RegionalExpress
@@ -746,12 +750,10 @@ public final class BahnProvider implements NetworkProvider
 				else
 					return "RE" + number;
 			}
+			if (type.equals("D"))
+				return "?D" + number;
 
 			throw new IllegalStateException("cannot normalize type " + type + " number " + number + " line " + line);
-		}
-		else if (P_NORMALIZE_LINE_NUMBER.matcher(line).matches()) // Polen, Niederlande... leider unscharf
-		{
-			return "R" + line;
 		}
 
 		throw new IllegalStateException("cannot normalize line " + line);
@@ -768,6 +770,7 @@ public final class BahnProvider implements NetworkProvider
 		LINES.put('T', new int[] { Color.parseColor("#cc0000"), Color.WHITE });
 		LINES.put('B', new int[] { Color.parseColor("#993399"), Color.WHITE });
 		LINES.put('F', new int[] { Color.BLUE, Color.WHITE });
+		LINES.put('?', new int[] { Color.DKGRAY, Color.WHITE });
 	}
 
 	public int[] lineColors(final String line)
