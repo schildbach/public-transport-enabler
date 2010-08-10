@@ -113,20 +113,121 @@ public class SbbProvider implements NetworkProvider
 		return uri.toString();
 	}
 
+	private static final Pattern P_PRE_ADDRESS = Pattern.compile(
+			"<select name=\"(REQ0JourneyStopsS0K|REQ0JourneyStopsZ0K|REQ0JourneyStops1\\.0K)\" accesskey=\"f\".*?>(.*?)</select>", Pattern.DOTALL);
+	private static final Pattern P_ADDRESSES = Pattern.compile("<option.*?>\\s*(.*?)\\s*</option>", Pattern.DOTALL);
+
 	public QueryConnectionsResult queryConnections(final String from, final String via, final String to, final Date date, final boolean dep)
 			throws IOException
 	{
-		throw new UnsupportedOperationException();
+		final String uri = connectionsQueryUri(from, via, to, date, dep);
+		final CharSequence page = ParserUtils.scrape(uri);
+
+		// TODO errors
+
+		List<String> fromAddresses = null;
+		List<String> viaAddresses = null;
+		List<String> toAddresses = null;
+
+		final Matcher mPreAddress = P_PRE_ADDRESS.matcher(page);
+		while (mPreAddress.find())
+		{
+			final String type = mPreAddress.group(1);
+			final String options = mPreAddress.group(2);
+
+			final Matcher mAddresses = P_ADDRESSES.matcher(options);
+			final List<String> addresses = new ArrayList<String>();
+			while (mAddresses.find())
+			{
+				final String address = ParserUtils.resolveEntities(mAddresses.group(1)).trim();
+				if (!addresses.contains(address))
+					addresses.add(address);
+			}
+
+			if (type.equals("REQ0JourneyStopsS0K"))
+				fromAddresses = addresses;
+			else if (type.equals("REQ0JourneyStopsZ0K"))
+				toAddresses = addresses;
+			else if (type.equals("REQ0JourneyStops1.0K"))
+				viaAddresses = addresses;
+			else
+				throw new IOException(type);
+		}
+
+		if (fromAddresses != null || viaAddresses != null || toAddresses != null)
+			return new QueryConnectionsResult(QueryConnectionsResult.Status.AMBIGUOUS, fromAddresses, viaAddresses, toAddresses);
+		else
+			return queryConnections(uri, page);
 	}
 
-	public QueryConnectionsResult queryMoreConnections(String uri) throws IOException
+	public QueryConnectionsResult queryMoreConnections(final String uri) throws IOException
 	{
-		throw new UnsupportedOperationException();
+		final CharSequence page = ParserUtils.scrape(uri);
+
+		return queryConnections(uri, page);
 	}
+
+	private static final Pattern P_CONNECTIONS_HEAD = Pattern.compile(".*?" //
+			+ "Von:.*?<td .*?>(.*?)</td>.*?" // from
+			+ "Datum:.*?<td .*?>.., (\\d{2}\\.\\d{2}\\.\\d{2})</td>.*?" // date
+			+ "Nach:.*?<td .*?>(.*?)</td>.*?" // to
+			+ "(?:<a href=\"(http://fahrplan.sbb.ch/bin/query.exe/dn\\?seqnr=\\d+&ident=[\\w\\.]+&REQ0HafasScrollDir=2)\".*?>.*?)?" // linkEarlier
+			+ "(?:<a href=\"(http://fahrplan.sbb.ch/bin/query.exe/dn\\?seqnr=\\d+&ident=[\\w\\.]+&REQ0HafasScrollDir=1)\".*?>.*?)?" // linkLater
+	, Pattern.DOTALL);
+	private static final Pattern P_CONNECTIONS_COARSE = Pattern.compile("<tr class=\"(zebra-row-\\d)\">(.*?)</tr>\n?"//
+			+ "<tr class=\"\\1\">(.+?)</tr>", Pattern.DOTALL);
+	private static final Pattern P_CONNECTIONS_FINE = Pattern.compile(".*?" //
+			+ ".., (\\d{2}\\.\\d{2}\\.\\d{2}).*?" // departureDate
+			+ "ab.*?(\\d{2}:\\d{2}).*?" // departureTime
+			+ "duration.*?\\d{1,2}:\\d{2}.*?" //
+			+ "(?:.., (\\d{2}\\.\\d{2}\\.\\d{2}).*?)?" // arrivalDate
+			+ "an.*?(\\d{2}:\\d{2}).*?" // arrivalTime
+	, Pattern.DOTALL);
 
 	private QueryConnectionsResult queryConnections(final String uri, final CharSequence page) throws IOException
 	{
-		throw new UnsupportedOperationException();
+		final Matcher mHead = P_CONNECTIONS_HEAD.matcher(page);
+		if (mHead.matches())
+		{
+			final String from = ParserUtils.resolveEntities(mHead.group(1));
+			final Date currentDate = ParserUtils.parseDate(mHead.group(2));
+			final String to = ParserUtils.resolveEntities(mHead.group(3));
+			final String linkEarlier = mHead.group(4) != null ? ParserUtils.resolveEntities(mHead.group(4)) : null;
+			final String linkLater = mHead.group(5) != null ? ParserUtils.resolveEntities(mHead.group(5)) : null;
+			final List<Connection> connections = new ArrayList<Connection>();
+
+			final Matcher mConCoarse = P_CONNECTIONS_COARSE.matcher(page);
+			int i = 1;
+			while (mConCoarse.find())
+			{
+				final String set = mConCoarse.group(2) + mConCoarse.group(3);
+				final Matcher mConFine = P_CONNECTIONS_FINE.matcher(set);
+				if (mConFine.matches())
+				{
+					final Date departureDate = ParserUtils.parseDate(mConFine.group(1));
+					final Date departureTime = ParserUtils.joinDateTime(departureDate, ParserUtils.parseTime(mConFine.group(2)));
+					final Date arrivalDate = mConFine.group(3) != null ? ParserUtils.parseDate(mConFine.group(3)) : null;
+					final Date arrivalTime = ParserUtils.joinDateTime(arrivalDate != null ? arrivalDate : departureDate, ParserUtils
+							.parseTime(mConFine.group(4)));
+					final String id = departureTime.toString() + arrivalTime.toString();
+
+					final Connection connection = new Connection(id, uri + "#" + i++, departureTime, arrivalTime, 0, from, 0, to,
+							new ArrayList<Connection.Part>(1));
+					connection.parts.add(new Connection.Trip(departureTime, arrivalTime, null, null));
+					connections.add(connection);
+				}
+				else
+				{
+					throw new IllegalArgumentException("cannot parse '" + set + "' on " + uri);
+				}
+			}
+
+			return new QueryConnectionsResult(uri, from, to, currentDate, linkEarlier, linkLater, connections);
+		}
+		else
+		{
+			throw new IOException(page.toString());
+		}
 	}
 
 	public GetConnectionDetailsResult getConnectionDetails(final String connectionUri) throws IOException

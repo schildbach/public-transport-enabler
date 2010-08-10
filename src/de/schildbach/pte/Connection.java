@@ -36,10 +36,10 @@ public final class Connection implements Serializable
 	final public String to;
 	final public List<Part> parts;
 
-	public Connection(final String link, final Date departureTime, final Date arrivalTime, final int fromId, final String from, final int toId,
-			final String to, final List<Part> parts)
+	public Connection(final String id, final String link, final Date departureTime, final Date arrivalTime, final int fromId, final String from,
+			final int toId, final String to, final List<Part> parts)
 	{
-		this.id = extractId(link);
+		this.id = id;
 		this.link = link;
 		this.departureTime = departureTime;
 		this.fromId = fromId;
@@ -48,11 +48,6 @@ public final class Connection implements Serializable
 		this.toId = toId;
 		this.to = to;
 		this.parts = parts;
-	}
-
-	public static String extractId(String link)
-	{
-		return link.substring(link.length() - 10);
 	}
 
 	@Override

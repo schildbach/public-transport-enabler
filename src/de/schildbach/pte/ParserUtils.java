@@ -201,4 +201,9 @@ public final class ParserUtils
 			throw new RuntimeException(x);
 		}
 	}
+
+	public static String extractId(final String link)
+	{
+		return link.substring(link.length() - 10);
+	}
 }

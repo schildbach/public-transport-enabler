@@ -271,7 +271,8 @@ public final class VbbProvider implements NetworkProvider
 					if (departureTime.after(arrivalTime))
 						arrivalTime = ParserUtils.addDays(arrivalTime, 1);
 					final String line = normalizeLine(ParserUtils.resolveEntities(mConFine.group(4)));
-					final Connection connection = new Connection(link, departureTime, arrivalTime, 0, from, 0, to, new ArrayList<Connection.Part>(1));
+					final Connection connection = new Connection(ParserUtils.extractId(link), link, departureTime, arrivalTime, 0, from, 0, to,
+							new ArrayList<Connection.Part>(1));
 					connection.parts.add(new Connection.Trip(departureTime, arrivalTime, line, line != null ? LINES.get(line) : null));
 					connections.add(connection);
 				}
@@ -410,8 +411,8 @@ public final class VbbProvider implements NetworkProvider
 			}
 
 			if (firstDepartureTime != null && lastArrivalTime != null)
-				return new GetConnectionDetailsResult(currentDate, new Connection(uri, firstDepartureTime, lastArrivalTime, firstDepartureId,
-						firstDeparture, lastArrivalId, lastArrival, parts));
+				return new GetConnectionDetailsResult(currentDate, new Connection(ParserUtils.extractId(uri), uri, firstDepartureTime,
+						lastArrivalTime, firstDepartureId, firstDeparture, lastArrivalId, lastArrival, parts));
 			else
 				return new GetConnectionDetailsResult(currentDate, null);
 		}
