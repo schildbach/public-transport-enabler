@@ -175,7 +175,7 @@ public final class ParserUtils
 	{
 		final int groupCount = m.groupCount();
 		for (int i = 1; i <= groupCount; i++)
-			System.out.println("group " + i + ":'" + m.group(i) + "'");
+			System.out.println("group " + i + ":" + (m.group(i) != null ? "'" + m.group(i) + "'" : "null"));
 	}
 
 	public static String urlEncode(final String str)
