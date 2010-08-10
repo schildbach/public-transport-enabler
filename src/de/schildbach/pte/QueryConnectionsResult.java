@@ -85,6 +85,19 @@ public final class QueryConnectionsResult implements Serializable
 	@Override
 	public String toString()
 	{
-		return getClass().getName() + "[" + this.status + "]";
+		final StringBuilder builder = new StringBuilder(getClass().getName());
+		builder.append("[").append(this.status).append(": ");
+		if (connections != null)
+			builder.append(connections.size()).append(" connections, ");
+		if (ambiguousFromAddresses != null)
+			builder.append(ambiguousFromAddresses.size()).append(" ambiguous fromAddresses, ");
+		if (ambiguousViaAddresses != null)
+			builder.append(ambiguousViaAddresses.size()).append(" ambiguous viaAddresses, ");
+		if (ambiguousToAddresses != null)
+			builder.append(ambiguousToAddresses.size()).append(" ambiguous toAddresses, ");
+		if (builder.substring(builder.length() - 2).equals(", "))
+			builder.setLength(builder.length() - 2);
+		builder.append("]");
+		return builder.toString();
 	}
 }
