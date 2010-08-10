@@ -81,4 +81,10 @@ public final class QueryConnectionsResult implements Serializable
 		this.ambiguousViaAddresses = null;
 		this.ambiguousToAddresses = null;
 	}
+
+	@Override
+	public String toString()
+	{
+		return getClass().getName() + "[" + this.status + "]";
+	}
 }
