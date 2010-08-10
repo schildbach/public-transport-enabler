@@ -297,6 +297,8 @@ public class SbbProvider implements NetworkProvider
 				return "RALS" + number;
 			if (type.equals("ARC")) // Spanien
 				return "RARC" + number;
+			if (type.equals("ZUG"))
+				return "RZUG" + number;
 			if (type.equals("S"))
 				return "SS" + number;
 			if (type.equals("T"))
@@ -315,6 +317,10 @@ public class SbbProvider implements NetworkProvider
 				return "BNFB" + number;
 			if (type.equals("TX"))
 				return "BTX" + number;
+			if (type.equals("Taxi"))
+				return "BTaxi" + number;
+			if (type.equals("Buxi"))
+				return "BBuxi" + number;
 			if (type.equals("BAT"))
 				return "FBAT" + number;
 			if (type.equals("BAV"))
@@ -331,6 +337,10 @@ public class SbbProvider implements NetworkProvider
 				return "CLB" + number;
 			if (type.equals("FUN") || type.equals("Fun")) // Standseilbahn
 				return "CFun" + number;
+			if (type.equals("N"))
+				return "?N" + number;
+			if (type.equals("P"))
+				return "?P" + number;
 
 			throw new IllegalStateException("cannot normalize type " + type + " number " + number + " line " + line);
 		}
@@ -349,6 +359,7 @@ public class SbbProvider implements NetworkProvider
 		LINES.put('T', new int[] { Color.parseColor("#cc0000"), Color.WHITE });
 		LINES.put('B', new int[] { Color.parseColor("#993399"), Color.WHITE });
 		LINES.put('F', new int[] { Color.BLUE, Color.WHITE });
+		LINES.put('?', new int[] { Color.DKGRAY, Color.WHITE });
 	}
 
 	public int[] lineColors(final String line)
