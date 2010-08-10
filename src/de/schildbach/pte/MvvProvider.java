@@ -557,6 +557,8 @@ public class MvvProvider implements NetworkProvider
 				return "B" + line;
 			else if (line.matches("N4\\d"))
 				return "B" + line;
+			else if (line.equals("N117")) // Ersatzbus für N17
+				return "BN117";
 			else if (line.equals("Schienenersatzverkehr"))
 				return "BSEV";
 			else if (LINES.containsKey("T" + line))
