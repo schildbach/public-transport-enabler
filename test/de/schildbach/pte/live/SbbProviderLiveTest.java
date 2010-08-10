@@ -32,9 +32,20 @@ public class SbbProviderLiveTest
 	private SbbProvider provider = new SbbProvider();
 
 	@Test
-	public void connection() throws Exception
+	public void fastConnection() throws Exception
 	{
 		final QueryConnectionsResult result = provider.queryConnections("Zürich!", null, "Bern", new Date(), true);
 		System.out.println(result);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
+		System.out.println(moreResult);
+	}
+
+	@Test
+	public void slowConnection() throws Exception
+	{
+		final QueryConnectionsResult result = provider.queryConnections("Schocherswil, Alte Post!", null, "Laconnex, Mollach", new Date(), true);
+		System.out.println(result);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
+		System.out.println(moreResult);
 	}
 }

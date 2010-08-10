@@ -42,7 +42,7 @@ public class SbbProvider implements NetworkProvider
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
 		for (final Capability capability : capabilities)
-			if (capability != Capability.DEPARTURES)
+			if (capability == Capability.NEARBY_STATIONS)
 				return false;
 
 		return true;
@@ -93,7 +93,12 @@ public class SbbProvider implements NetworkProvider
 		final StringBuilder uri = new StringBuilder();
 
 		uri.append("http://fahrplan.sbb.ch/bin/query.exe/dn");
-		uri.append("?REQ0HafasInitialSelection=0");
+		uri.append("?OK");
+		uri.append("&REQ0HafasMaxChangeTime=120");
+		uri.append("&REQ0HafasOptimize1=").append(ParserUtils.urlEncode("1:1"));
+		uri.append("&REQ0HafasSearchForw=").append(dep ? "1" : "0");
+		uri.append("&REQ0HafasSkipLongChanges=1");
+		uri.append("&REQ0JourneyDate=").append(ParserUtils.urlEncode(DATE_FORMAT.format(date)));
 		uri.append("&REQ0JourneyStopsS0G=").append(ParserUtils.urlEncode(from));
 		uri.append("&REQ0JourneyStopsS0A=1");
 		uri.append("&REQ0JourneyStopsS0ID=");
@@ -101,15 +106,14 @@ public class SbbProvider implements NetworkProvider
 		{
 			uri.append("&REQ0JourneyStops1.0G=").append(ParserUtils.urlEncode(via));
 			uri.append("&REQ0JourneyStops1.0A=1");
+			uri.append("&REQ0JourneyStops1.0ID=");
 		}
 		uri.append("&REQ0JourneyStopsZ0G=").append(ParserUtils.urlEncode(to));
 		uri.append("&REQ0JourneyStopsZ0A=1");
 		uri.append("&REQ0JourneyStopsZ0ID=");
-		uri.append("&REQ0HafasSearchForw=").append(dep ? "1" : "0");
-		uri.append("&REQ0JourneyDate=").append(ParserUtils.urlEncode(DATE_FORMAT.format(date)));
 		uri.append("&REQ0JourneyTime=").append(ParserUtils.urlEncode(TIME_FORMAT.format(date)));
+		uri.append("&queryPageDisplayed=yes");
 		uri.append("&start=Suchen");
-
 		return uri.toString();
 	}
 
@@ -177,11 +181,30 @@ public class SbbProvider implements NetworkProvider
 	private static final Pattern P_CONNECTIONS_COARSE = Pattern.compile("<tr class=\"(zebra-row-\\d)\">(.*?)</tr>\n?"//
 			+ "<tr class=\"\\1\">(.+?)</tr>", Pattern.DOTALL);
 	private static final Pattern P_CONNECTIONS_FINE = Pattern.compile(".*?" //
+			+ "name=\"guiVCtrl_connection_detailsOut_select_([\\w-]+)\".*?" // id
 			+ ".., (\\d{2}\\.\\d{2}\\.\\d{2}).*?" // departureDate
 			+ "ab.*?(\\d{2}:\\d{2}).*?" // departureTime
 			+ "duration.*?\\d{1,2}:\\d{2}.*?" //
 			+ "(?:.., (\\d{2}\\.\\d{2}\\.\\d{2}).*?)?" // arrivalDate
 			+ "an.*?(\\d{2}:\\d{2}).*?" // arrivalTime
+	, Pattern.DOTALL);
+	private static final Pattern P_CONNECTIONS_DETAILS_COARSE = Pattern.compile("<a name=\"cis_([\\w-]+)\">.*?" // id
+			+ "<table .*? class=\"hac_detail\">\n?<tr>.*?</tr>(.*?)</table>", Pattern.DOTALL);
+	private static final Pattern P_CONNECTION_DETAILS_COARSE = Pattern.compile("<tr>(.*?class=\"stop-station-icon\".*?)</tr>\n?" //
+			+ "<tr>(.*?class=\"stop-station-icon last\".*?)</tr>", Pattern.DOTALL);
+	static final Pattern P_CONNECTION_DETAILS_FINE = Pattern.compile(".*?" //
+			+ "<a href=\"http://fahrplan\\.sbb\\.ch/bin/bhftafel\\.exe/dn.*?input=(\\d+)&.*?\" .*?>" // departureId
+			+ "(.*?)</a>.*?" // departure
+			+ "<td .*?class=\"date.*?>\n?(?:.., (\\d{2}\\.\\d{2}\\.\\d{2})\n?)?</td>.*?" // departureDate
+			+ "<td .*?class=\"time.*?>(?:(\\d{2}:\\d{2})|&nbsp;)</td>.*?" // departureTime
+			+ "<td .*?class=\"platform.*?>\n?\\s*(.+?)?\\s*\n?</td>.*?" // departurePosition
+			+ "<img src=\"/img/2/products/(\\w+?)_pic.gif\" .*? alt=\"(.*?)\".*?>.*?" // line
+			+ "<td .*?class=\"remarks.*?>(?:\n?(\\d+) Min\\..*?)?</td>.*?" // min
+			+ "<a href=\"http://fahrplan\\.sbb\\.ch/bin/bhftafel\\.exe/dn.*?input=(\\d+)&.*?\" .*?>" // arrivalId,
+			+ "(.*?)</a>.*?" // arrival
+			+ "<td .*?class=\"date.*?>\n?(?:.., (\\d{2}\\.\\d{2}\\.\\d{2})\n?)?</td>.*?" // arrivalDate
+			+ "<td .*?class=\"time.*?>(?:(\\d{2}:\\d{2})|&nbsp;)</td>.*?" // arrivalTime
+			+ "<td .*?class=\"platform.*?>\n?\\s*(.+?)?\\s*\n?</td>.*?" // arrivalPosition
 	, Pattern.DOTALL);
 
 	private QueryConnectionsResult queryConnections(final String uri, final CharSequence page) throws IOException
@@ -197,28 +220,96 @@ public class SbbProvider implements NetworkProvider
 			final List<Connection> connections = new ArrayList<Connection>();
 
 			final Matcher mConCoarse = P_CONNECTIONS_COARSE.matcher(page);
-			int i = 1;
 			while (mConCoarse.find())
 			{
 				final String set = mConCoarse.group(2) + mConCoarse.group(3);
 				final Matcher mConFine = P_CONNECTIONS_FINE.matcher(set);
 				if (mConFine.matches())
 				{
-					final Date departureDate = ParserUtils.parseDate(mConFine.group(1));
-					final Date departureTime = ParserUtils.joinDateTime(departureDate, ParserUtils.parseTime(mConFine.group(2)));
-					final Date arrivalDate = mConFine.group(3) != null ? ParserUtils.parseDate(mConFine.group(3)) : null;
+					final String id = mConFine.group(1);
+					final Date departureDate = ParserUtils.parseDate(mConFine.group(2));
+					final Date departureTime = ParserUtils.joinDateTime(departureDate, ParserUtils.parseTime(mConFine.group(3)));
+					final Date arrivalDate = mConFine.group(4) != null ? ParserUtils.parseDate(mConFine.group(4)) : null;
 					final Date arrivalTime = ParserUtils.joinDateTime(arrivalDate != null ? arrivalDate : departureDate, ParserUtils
-							.parseTime(mConFine.group(4)));
-					final String id = departureTime.toString() + arrivalTime.toString();
+							.parseTime(mConFine.group(5)));
+					final String link = uri + "#" + id; // TODO use print link?
 
-					final Connection connection = new Connection(id, uri + "#" + i++, departureTime, arrivalTime, 0, from, 0, to,
+					final Connection connection = new Connection(id, link, departureTime, arrivalTime, 0, from, 0, to,
 							new ArrayList<Connection.Part>(1));
-					connection.parts.add(new Connection.Trip(departureTime, arrivalTime, null, null));
 					connections.add(connection);
 				}
 				else
 				{
 					throw new IllegalArgumentException("cannot parse '" + set + "' on " + uri);
+				}
+			}
+
+			final Matcher mConDetCoarse = P_CONNECTIONS_DETAILS_COARSE.matcher(page);
+			while (mConDetCoarse.find())
+			{
+				final String id = mConDetCoarse.group(1);
+				final Connection connection = findConnection(connections, id);
+
+				Date lastDate = null;
+
+				final Matcher mDetCoarse = P_CONNECTION_DETAILS_COARSE.matcher(mConDetCoarse.group(2));
+				while (mDetCoarse.find())
+				{
+					final String set = mDetCoarse.group(1) + mDetCoarse.group(2);
+
+					final Matcher mDetFine = P_CONNECTION_DETAILS_FINE.matcher(set);
+					if (mDetFine.matches())
+					{
+						final int departureId = Integer.parseInt(mDetFine.group(1));
+
+						final String departure = ParserUtils.resolveEntities(mDetFine.group(2));
+
+						final String lineType = mDetFine.group(6);
+
+						final int arrivalId = Integer.parseInt(mDetFine.group(9));
+
+						final String arrival = ParserUtils.resolveEntities(mDetFine.group(10));
+
+						if (!lineType.equals("fuss") && !lineType.equals("transfer"))
+						{
+							Date departureDate = mDetFine.group(3) != null ? ParserUtils.parseDate(mDetFine.group(3)) : null;
+							if (departureDate != null)
+								lastDate = departureDate;
+							else
+								departureDate = lastDate;
+
+							final Date departureTime = ParserUtils.joinDateTime(departureDate, ParserUtils.parseTime(mDetFine.group(4)));
+
+							final String departurePosition = mDetFine.group(5) != null ? ParserUtils.resolveEntities(mDetFine.group(5)) : null;
+
+							final String line = normalizeLine(lineType, ParserUtils.resolveEntities(mDetFine.group(7)));
+
+							Date arrivalDate = mDetFine.group(11) != null ? ParserUtils.parseDate(mDetFine.group(11)) : null;
+							if (arrivalDate != null)
+								lastDate = arrivalDate;
+							else
+								arrivalDate = lastDate;
+
+							final Date arrivalTime = ParserUtils.joinDateTime(arrivalDate, ParserUtils.parseTime(mDetFine.group(12)));
+
+							final String arrivalPosition = mDetFine.group(13) != null ? ParserUtils.resolveEntities(mDetFine.group(13)) : null;
+
+							final Connection.Trip trip = new Connection.Trip(line, LINES.get(line.charAt(0)), null, departureTime, departurePosition,
+									departureId, departure, arrivalTime, arrivalPosition, arrivalId, arrival);
+							connection.parts.add(trip);
+						}
+						else
+						{
+							final int min = Integer.parseInt(mDetFine.group(8));
+
+							final Connection.Footway footway = new Connection.Footway(min, departure, arrival);
+							connection.parts.add(footway);
+						}
+					}
+					else
+					{
+						throw new IllegalArgumentException("cannot parse '" + set + "' on " + uri);
+					}
 				}
 			}
 
@@ -228,6 +319,15 @@ public class SbbProvider implements NetworkProvider
 		{
 			throw new IOException(page.toString());
 		}
+	}
+
+	private Connection findConnection(List<Connection> connections, String id)
+	{
+		for (final Connection connection : connections)
+			if (connection.id.equals(id))
+				return connection;
+
+		return null;
 	}
 
 	public GetConnectionDetailsResult getConnectionDetails(final String connectionUri) throws IOException
@@ -327,6 +427,41 @@ public class SbbProvider implements NetworkProvider
 	}
 
 	private static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zÄÖÜäöüß]+)[\\s-]*(.*)");
+
+	private static String normalizeLine(final String type, final String line)
+	{
+		String strippedLine;
+		final Matcher m = P_NORMALIZE_LINE.matcher(line);
+		if (m.matches())
+			strippedLine = m.group(1) + m.group(2);
+		else
+			strippedLine = line;
+
+		if (type.equals("ice")) // InterCityExpress
+			return "I" + strippedLine;
+		if (type.equals("ic")) // InterCity
+			return "I" + strippedLine;
+		if (type.equals("icn")) // Intercity-Neigezug, Schweiz
+			return "I" + strippedLine;
+		if (type.equals("tha")) // Thalys
+			return "I" + strippedLine;
+		if (type.equals("r"))
+			return "R" + strippedLine;
+		if (type.equals("re"))
+			return "R" + strippedLine;
+		if (type.equals("ir"))
+			return "R" + strippedLine;
+		if (type.matches("s\\d*"))
+			return "S" + strippedLine;
+		if (type.equals("tra"))
+			return "T" + strippedLine;
+		if (type.equals("bus"))
+			return "B" + strippedLine;
+		if (type.equals("tro"))
+			return "B" + strippedLine;
+
+		throw new IllegalStateException("cannot normalize type " + type + " line " + line);
+	}
 
 	private static String normalizeLine(final String line)
 	{
