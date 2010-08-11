@@ -433,78 +433,21 @@ public class SbbProvider implements NetworkProvider
 	}
 
 	private static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zÄÖÜäöüß]+)[\\s-]*(.*)");
-	private static final Pattern P_NORMALIZE_LINE_SBAHN = Pattern.compile("s\\d*");
 
 	private static String normalizeLine(final String type, final String line)
 	{
-		String strippedLine;
 		final Matcher m = P_NORMALIZE_LINE.matcher(line);
-		if (m.matches())
-			strippedLine = m.group(1) + m.group(2);
-		else
-			strippedLine = line;
+		final String strippedLine = m.matches() ? m.group(1) + m.group(2) : line;
 
-		if (type.equals("ec")) // EuroCity
-			return "I" + strippedLine;
-		if (type.equals("en")) // EuroNight
-			return "I" + strippedLine;
-		if (type.equals("ice")) // InterCityExpress
-			return "I" + strippedLine;
-		if (type.equals("ic")) // InterCity
-			return "I" + strippedLine;
-		if (type.equals("icn")) // Intercity-Neigezug, Schweiz
-			return "I" + strippedLine;
-		if (type.equals("cnl")) // CityNightLine
-			return "I" + strippedLine;
-		if (type.equals("tha")) // Thalys
-			return "I" + strippedLine;
-		if (type.equals("tgv")) // Train à Grande Vitesse
-			return "I" + strippedLine;
-		if (type.equals("rj")) // RailJet, Österreichische Bundesbahnen
-			return "I" + strippedLine;
-		if (type.equals("oec")) // ÖBB-EuroCity
-			return "I" + strippedLine;
-		if (type.equals("oic")) // ÖBB-InterCity
-			return "I" + strippedLine;
-		if (type.equals("r"))
-			return "R" + strippedLine;
-		if (type.equals("re"))
-			return "R" + strippedLine;
-		if (type.equals("ir"))
-			return "R" + strippedLine;
-		if (type.equals("ire")) // Interregio Express
-			return "R" + strippedLine;
-		if (type.equals("d"))
-			return "R" + strippedLine;
-		if (P_NORMALIZE_LINE_SBAHN.matcher(type).matches())
-			return "S" + strippedLine;
-		if (type.equals("tra"))
-			return "T" + strippedLine;
-		if (type.equals("m"))
-			return "T" + strippedLine;
-		if (type.equals("bus"))
-			return "B" + strippedLine;
-		if (type.equals("tro"))
-			return "B" + strippedLine;
-		if (type.equals("nfb"))
-			return "B" + strippedLine;
-		if (type.equals("nbu"))
-			return "B" + strippedLine;
-		if (type.equals("bat"))
-			return "F" + strippedLine;
-		if (type.equals("lb"))
-			return "C" + strippedLine;
-		if (type.equals("gb")) // Gondelbahn
-			return "C" + strippedLine;
+		final char normalizedType = normalizeType(type);
+		if (normalizedType != 0)
+			return normalizedType + strippedLine;
 
 		throw new IllegalStateException("cannot normalize type " + type + " line " + line);
 	}
 
 	private static String normalizeLine(final String line)
 	{
-		// TODO IN Torino-Napoli
-		// TODO TAL
-
 		if (line == null || line.length() == 0)
 			return null;
 
@@ -514,111 +457,150 @@ public class SbbProvider implements NetworkProvider
 			final String type = m.group(1);
 			final String number = m.group(2);
 
-			if (type.equals("ICE")) // InterCityExpress
-				return "IICE" + number;
-			if (type.equals("IC")) // InterCity
-				return "IIC" + number;
-			if (type.equals("ICN")) // Intercity-Neigezug, Schweiz
-				return "IICN" + number;
-			if (type.equals("EC")) // EuroCity
-				return "IEC" + number;
-			if (type.equals("EN")) // EuroNight
-				return "IEN" + number;
-			if (type.equals("CNL")) // CityNightLine
-				return "ICNL" + number;
-			if (type.equals("TGV")) // Train à Grande Vitesse
-				return "ITGV" + number;
-			if (type.equals("THA")) // Thalys
-				return "ITHA" + number;
-			if (type.equals("X")) // InterConnex
-				return "IX" + number;
-			if (type.equals("RJ")) // RailJet, Österreichische Bundesbahnen
-				return "IRJ" + number;
-			if (type.equals("OEC")) // ÖBB-EuroCity
-				return "IOEC" + number;
-			if (type.equals("OIC")) // ÖBB-InterCity
-				return "IOIC" + number;
-			if (type.equals("ES")) // Eurostar Italia
-				return "IES" + number;
-			if (type.equals("EST")) // Eurostar Frankreich
-				return "IEST" + number;
-			if (type.equals("NZ")) // Nachtzug?
-				return "INZ" + number;
-			if (type.equals("R"))
-				return "R" + number;
-			if (type.equals("IR")) // InterRegio
-				return "RIR" + number;
-			if (type.equals("D"))
-				return "RD" + number;
-			if (type.equals("E"))
-				return "RE" + number;
-			if (type.equals("RE")) // RegionalExpress
-				return "RRE" + number;
-			if (type.equals("IRE")) // Interregio Express
-				return "RIRE" + number;
-			if (type.equals("EXT"))
-				return "REXT" + number;
-			if (type.equals("ATZ"))
-				return "RATZ" + number;
-			if (type.equals("RSB"))
-				return "RRSB" + number;
-			if (type.equals("SN"))
-				return "RSN" + number;
-			if (type.equals("CAT")) // City Airport Train Wien
-				return "RCAT" + number;
-			if (type.equals("ALS")) // Spanien
-				return "RALS" + number;
-			if (type.equals("ARC")) // Spanien
-				return "RARC" + number;
-			if (type.equals("ZUG"))
-				return "RZUG" + number;
-			if (type.equals("S"))
-				return "SS" + number;
-			if (type.equals("T"))
-				return "T" + number;
-			if (type.equals("Tram"))
-				return "T" + number;
-			if (type.equals("M")) // Lausanne
-				return "TM" + number;
-			if (type.startsWith("Bus"))
-				return "B" + type.substring(3) + number;
-			if (type.equals("BUS"))
-				return "B" + number;
-			if (type.equals("Tro"))
-				return "BTro" + number;
-			if (type.equals("NFB"))
-				return "BNFB" + number;
-			if (type.equals("TX"))
-				return "BTX" + number;
-			if (type.equals("Taxi"))
-				return "BTaxi" + number;
-			if (type.equals("Buxi"))
-				return "BBuxi" + number;
-			if (type.equals("BAT"))
-				return "FBAT" + number;
-			if (type.equals("BAV"))
-				return "FBAV" + number;
-			if (type.equals("FAE"))
-				return "FFAE" + number;
-			if (type.equals("KAT")) // z.B. Friedrichshafen <-> Konstanz
-				return "FKAT" + number;
-			if (type.equals("GB")) // Gondelbahn
-				return "CGB" + number;
-			if (type.equals("SL")) // Sessel-Lift
-				return "CSL" + number;
-			if (type.equals("LB"))
-				return "CLB" + number;
-			if (type.equals("FUN") || type.equals("Fun")) // Standseilbahn
-				return "CFun" + number;
-			if (type.equals("N"))
-				return "?N" + number;
-			if (type.equals("P"))
-				return "?P" + number;
+			final char normalizedType = normalizeType(type);
+			if (normalizedType != 0)
+				return normalizedType + type + number;
 
 			throw new IllegalStateException("cannot normalize type " + type + " number " + number + " line " + line);
 		}
 
 		throw new IllegalStateException("cannot normalize line " + line);
+	}
+
+	private static final Pattern P_NORMALIZE_TYPE_SBAHN = Pattern.compile("S\\d*");
+	private static final Pattern P_NORMALIZE_TYPE_BUS = Pattern.compile("BUS\\w*");
+
+	private static char normalizeType(final String type)
+	{
+		// TODO ARZ
+
+		final String ucType = type.toUpperCase();
+
+		if (ucType.equals("EC")) // EuroCity
+			return 'I';
+		if (ucType.equals("EN")) // EuroNight
+			return 'I';
+		if (ucType.equals("ICE")) // InterCityExpress
+			return 'I';
+		if (ucType.equals("IC")) // InterCity
+			return 'I';
+		if (ucType.equals("ICN")) // Intercity-Neigezug, Schweiz
+			return 'I';
+		if (ucType.equals("CNL")) // CityNightLine
+			return 'I';
+		if (ucType.equals("THA")) // Thalys
+			return 'I';
+		if (ucType.equals("TGV")) // Train à Grande Vitesse
+			return 'I';
+		if (ucType.equals("RJ")) // RailJet, Österreichische Bundesbahnen
+			return 'I';
+		if (ucType.equals("OEC")) // ÖBB-EuroCity
+			return 'I';
+		if (ucType.equals("OIC")) // ÖBB-InterCity
+			return 'I';
+		if (ucType.equals("X")) // InterConnex
+			return 'I';
+		if (ucType.equals("ES")) // Eurostar Italia
+			return 'I';
+		if (ucType.equals("EST")) // Eurostar Frankreich
+			return 'I';
+		if (ucType.equals("NZ")) // Nachtzug?
+			return 'I';
+		if (ucType.equals("IN")) // Oslo
+			return 'I';
+		if (ucType.equals("AVE")) // Alta Velocidad Española, Spanien
+			return 'I';
+		if (ucType.equals("EM")) // Barcelona-Alicante, Spanien
+			return 'I';
+		if (ucType.equals("FYR")) // Fyra, Amsterdam-Schiphol-Rotterdam
+			return 'I';
+
+		if (ucType.equals("R"))
+			return 'R';
+		if (ucType.equals("RE")) // RegionalExpress
+			return 'R';
+		if (ucType.equals("IR"))
+			return 'R';
+		if (ucType.equals("IRE")) // Interregio Express
+			return 'R';
+		if (ucType.equals("D"))
+			return 'R';
+		if (ucType.equals("E"))
+			return 'R';
+		if (ucType.equals("EXT"))
+			return 'R';
+		if (ucType.equals("ATZ"))
+			return 'R';
+		if (ucType.equals("RSB"))
+			return 'R';
+		if (ucType.equals("SN"))
+			return 'R';
+		if (ucType.equals("CAT")) // City Airport Train Wien
+			return 'R';
+		if (ucType.equals("ALS")) // Spanien
+			return 'R';
+		if (ucType.equals("ARC")) // Spanien
+			return 'R';
+		if (ucType.equals("TAL")) // Spanien
+			return 'R';
+		if (ucType.equals("ATR")) // Spanien
+			return 'R';
+		if (ucType.equals("ZUG"))
+			return 'R';
+
+		if (P_NORMALIZE_TYPE_SBAHN.matcher(ucType).matches())
+			return 'S';
+
+		if (ucType.equals("TRAM"))
+			return 'T';
+		if (ucType.equals("TRA"))
+			return 'T';
+		if (ucType.equals("M")) // Lausanne
+			return 'T';
+		if (ucType.equals("T"))
+			return 'T';
+
+		if (ucType.equals("BUS"))
+			return 'B';
+		if (ucType.equals("TRO"))
+			return 'B';
+		if (ucType.equals("NFB"))
+			return 'B';
+		if (ucType.equals("NBU"))
+			return 'B';
+		if (ucType.equals("N"))
+			return 'B';
+		if (ucType.equals("TX"))
+			return 'B';
+		if (ucType.equals("TAXI"))
+			return 'B';
+		if (ucType.equals("BUXI"))
+			return 'B';
+		if (P_NORMALIZE_TYPE_BUS.matcher(ucType).matches())
+			return 'B';
+
+		if (ucType.equals("BAT"))
+			return 'F';
+		if (ucType.equals("BAV"))
+			return 'F';
+		if (ucType.equals("FAE"))
+			return 'F';
+		if (ucType.equals("KAT")) // z.B. Friedrichshafen <-> Konstanz
+			return 'F';
+
+		if (ucType.equals("GB")) // Gondelbahn
+			return 'C';
+		if (ucType.equals("SL")) // Sessel-Lift
+			return 'C';
+		if (ucType.equals("LB"))
+			return 'C';
+		if (ucType.equals("FUN")) // Standseilbahn
+			return 'C';
+
+		if (ucType.equals("P"))
+			return '?';
+
+		return 0;
 	}
 
 	private static final Map<Character, int[]> LINES = new HashMap<Character, int[]>();
