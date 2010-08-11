@@ -458,6 +458,8 @@ public class SbbProvider implements NetworkProvider
 			return "I" + strippedLine;
 		if (type.equals("tha")) // Thalys
 			return "I" + strippedLine;
+		if (type.equals("tgv")) // Train à Grande Vitesse
+			return "I" + strippedLine;
 		if (type.equals("rj")) // RailJet, Österreichische Bundesbahnen
 			return "I" + strippedLine;
 		if (type.equals("oec")) // ÖBB-EuroCity
@@ -470,15 +472,23 @@ public class SbbProvider implements NetworkProvider
 			return "R" + strippedLine;
 		if (type.equals("ir"))
 			return "R" + strippedLine;
+		if (type.equals("ire")) // Interregio Express
+			return "R" + strippedLine;
 		if (type.equals("d"))
 			return "R" + strippedLine;
 		if (P_NORMALIZE_LINE_SBAHN.matcher(type).matches())
 			return "S" + strippedLine;
 		if (type.equals("tra"))
 			return "T" + strippedLine;
+		if (type.equals("m"))
+			return "T" + strippedLine;
 		if (type.equals("bus"))
 			return "B" + strippedLine;
 		if (type.equals("tro"))
+			return "B" + strippedLine;
+		if (type.equals("nfb"))
+			return "B" + strippedLine;
+		if (type.equals("nbu"))
 			return "B" + strippedLine;
 		if (type.equals("bat"))
 			return "F" + strippedLine;
