@@ -676,6 +676,8 @@ public final class BahnProvider implements NetworkProvider
 				return "RDab" + number;
 			if (type.equals("SDG")) // Sächsische Dampfeisenbahngesellschaft
 				return "RSDG" + number;
+			if (type.equals("ARR")) // Ostfriesland
+				return "RARR" + number;
 			if (type.equals("VEN")) // Rhenus Veniro
 				return "RVEN" + number;
 			if (type.equals("KD")) // Koleje Dolnośląskie

@@ -546,41 +546,56 @@ public class MvvProvider implements NetworkProvider
 		return P_STATION_NAME_WHITESPACE.matcher(name).replaceAll(" ");
 	}
 
+	private static final Pattern P_NORMALIZE_LINE_TRAM = Pattern.compile("[12]\\d");
+	private static final Pattern P_NORMALIZE_LINE_NACHTTRAM = Pattern.compile("N[12]\\d");
+	private static final Pattern P_NORMALIZE_LINE_METROBUS = Pattern.compile("[56]\\d");
+	private static final Pattern P_NORMALIZE_LINE_STADTBUS = Pattern.compile("1\\d{2}");
+	private static final Pattern P_NORMALIZE_LINE_NACHTBUS = Pattern.compile("N[48]\\d");
+	private static final Pattern P_NORMALIZE_LINE_REGIONALBUS = Pattern.compile("\\d{3}\\w");
+
 	private String normalizeLine(final String product, final String line)
 	{
 		if (product == null)
 		{
-			if (line.matches("\\d{2,4}") && Integer.parseInt(line) >= 30)
+			if (P_NORMALIZE_LINE_METROBUS.matcher(line).matches())
 				return "B" + line;
-			else if (line.matches("N4\\d"))
+			if (P_NORMALIZE_LINE_STADTBUS.matcher(line).matches())
 				return "B" + line;
-			else if (line.equals("N117")) // Ersatzbus für N17
+			if (P_NORMALIZE_LINE_NACHTBUS.matcher(line).matches())
+				return "B" + line;
+			if (line.equals("N117")) // Ersatzbus für N17
 				return "BN117";
-			else if (line.equals("Schienenersatzverkehr"))
+			if (P_NORMALIZE_LINE_REGIONALBUS.matcher(line).matches())
+				return "B" + line;
+			if (line.equals("Schienenersatzverkehr"))
 				return "BSEV";
-			else if (LINES.containsKey("T" + line))
+			if (P_NORMALIZE_LINE_TRAM.matcher(line).matches())
 				return "T" + line;
-			else if (LINES.containsKey("S" + line))
+			if (P_NORMALIZE_LINE_NACHTTRAM.matcher(line).matches())
+				return "T" + line;
+			if (LINES.containsKey("S" + line))
 				return "S" + line;
-			else if (LINES.containsKey("U" + line))
+			if (line.equals("S20/27"))
+				return "S" + line;
+			if (LINES.containsKey("U" + line))
 				return "U" + line;
-			else if (line.startsWith("RE "))
+			if (line.startsWith("RE "))
 				return "R" + line;
-			else if (line.startsWith("RB "))
+			if (line.startsWith("RB "))
 				return "R" + line;
-			else if (line.startsWith("ALX ")) // Alex
+			if (line.startsWith("ALX ")) // Alex
 				return "R" + line;
-			else if (line.startsWith("BOB ")) // Bayerische Oberlandbahn
+			if (line.startsWith("BOB ")) // Bayerische Oberlandbahn
 				return "R" + line;
-			else if (line.startsWith("VBG ")) // Vogtlandbahn
+			if (line.startsWith("VBG ")) // Vogtlandbahn
 				return "R" + line;
-			else if (line.startsWith("ICE "))
+			if (line.startsWith("ICE "))
 				return "I" + line;
-			else if (line.startsWith("IC "))
+			if (line.startsWith("IC "))
 				return "I" + line;
-			else if (line.startsWith("EC "))
+			if (line.startsWith("EC "))
 				return "I" + line;
-			else if (line.startsWith("CNL "))
+			if (line.startsWith("CNL "))
 				return "I" + line;
 
 			throw new IllegalStateException("cannot normalize null product, line " + line);
