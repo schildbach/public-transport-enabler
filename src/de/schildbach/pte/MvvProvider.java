@@ -474,17 +474,19 @@ public class MvvProvider implements NetworkProvider
 		return DEPARTURE_URL + stationId;
 	}
 
-	private static final Pattern P_DEPARTURES_HEAD = Pattern.compile(".*Von:[\\xa0\\s]*</b>(.*?)<br />.*?" //
-			+ "Datum:[\\xa0\\s]*</b>\\w{2}\\.,\\s(\\d+)\\.\\s(\\w{3})\\.[\\xa0\\s]+(\\d{4})<br />.*", Pattern.DOTALL);
+	private static final Pattern P_DEPARTURES_HEAD_COARSE = Pattern.compile(".*?<body>(.*?Linie/Richtung.*?)</body>.*?", Pattern.DOTALL);
+	private static final Pattern P_DEPARTURES_HEAD_FINE = Pattern.compile(".*?" //
+			+ "Von:[\\xa0\\s]*</b>(.*?)<br />.*?" // location
+			+ "Datum:[\\xa0\\s]*</b>\\w{2}\\.,\\s(\\d+)\\.\\s(\\w{3})\\.[\\xa0\\s]+(\\d{4})<br />.*?" // date
+	, Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<tr valign=\"top\" bgcolor=\"#\\w{6}\">(.+?)</tr>", Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_FINE = Pattern.compile(".*?" //
-			+ "<td>" //
 			+ "(?:[\\xa0\\s]*<font color=\"red\">[\\xa0\\s]*(\\d+)\\.(\\d+)\\.[\\xa0\\s]*</font>)?" // date
 			+ "(\\d+):(\\d+)</td>.*?" // time
 			+ "(?:<img src=\"images/means.*?\" alt=\"(.*?)\" />.*?)?" // product
 			+ "<td width=\"100\">\\s*([^<]*?)[\\xa0\\s]*(?:<a .*?</a>.*?)?" // line
 			+ "<br />\\s*(.*?)\\s*<br />.*?" // destination
-			+ "</td>.*?", Pattern.DOTALL);
+	, Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_URI_STATION_ID = Pattern.compile("nameInfo_dm=(\\d+)");
 
 	public QueryDeparturesResult queryDepartures(final String uri) throws IOException
@@ -496,42 +498,50 @@ public class MvvProvider implements NetworkProvider
 			throw new IllegalStateException(uri);
 		final int stationId = Integer.parseInt(mStationId.group(1));
 
-		final Matcher mHead = P_DEPARTURES_HEAD.matcher(page);
-		if (mHead.matches())
+		final Matcher mHeadCoarse = P_DEPARTURES_HEAD_COARSE.matcher(page);
+		if (mHeadCoarse.matches())
 		{
-			final String location = ParserUtils.resolveEntities(mHead.group(1));
-			final Date currentTime = parseDate(mHead.group(2), mHead.group(3), mHead.group(4));
-			final List<Departure> departures = new ArrayList<Departure>(8);
-
-			final Calendar calendar = new GregorianCalendar();
-
-			final Matcher mDepCoarse = P_DEPARTURES_COARSE.matcher(page);
-			while (mDepCoarse.find())
+			final Matcher mHeadFine = P_DEPARTURES_HEAD_FINE.matcher(mHeadCoarse.group(1));
+			if (mHeadFine.matches())
 			{
-				final Matcher mDepFine = P_DEPARTURES_FINE.matcher(mDepCoarse.group(1));
-				if (mDepFine.matches())
-				{
-					calendar.setTime(currentTime);
-					final String day = mDepFine.group(1);
-					if (day != null)
-						calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day));
-					final String month = mDepFine.group(2);
-					if (month != null)
-						calendar.set(Calendar.MONTH, Integer.parseInt(month) - 1);
-					calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(mDepFine.group(3)));
-					calendar.set(Calendar.MINUTE, Integer.parseInt(mDepFine.group(4)));
-					final String normalizedLine = normalizeLine(mDepFine.group(5), mDepFine.group(6));
-					final String destination = normalizeStationName(mDepFine.group(7));
-					final Departure departure = new Departure(calendar.getTime(), normalizedLine, LINES.get(normalizedLine), 0, destination);
-					departures.add(departure);
-				}
-				else
-				{
-					throw new IllegalArgumentException("cannot parse '" + mDepCoarse.group(1) + "' on " + uri);
-				}
-			}
+				final String location = ParserUtils.resolveEntities(mHeadFine.group(1));
+				final Date currentTime = parseDate(mHeadFine.group(2), mHeadFine.group(3), mHeadFine.group(4));
+				final List<Departure> departures = new ArrayList<Departure>(8);
 
-			return new QueryDeparturesResult(uri, stationId, location, currentTime, departures);
+				final Calendar calendar = new GregorianCalendar();
+
+				final Matcher mDepCoarse = P_DEPARTURES_COARSE.matcher(page);
+				while (mDepCoarse.find())
+				{
+					final Matcher mDepFine = P_DEPARTURES_FINE.matcher(mDepCoarse.group(1));
+					if (mDepFine.matches())
+					{
+						calendar.setTime(currentTime);
+						final String day = mDepFine.group(1);
+						if (day != null)
+							calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day));
+						final String month = mDepFine.group(2);
+						if (month != null)
+							calendar.set(Calendar.MONTH, Integer.parseInt(month) - 1);
+						calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(mDepFine.group(3)));
+						calendar.set(Calendar.MINUTE, Integer.parseInt(mDepFine.group(4)));
+						final String normalizedLine = normalizeLine(mDepFine.group(5), mDepFine.group(6));
+						final String destination = normalizeStationName(mDepFine.group(7));
+						final Departure departure = new Departure(calendar.getTime(), normalizedLine, LINES.get(normalizedLine), 0, destination);
+						departures.add(departure);
+					}
+					else
+					{
+						throw new IllegalArgumentException("cannot parse '" + mDepCoarse.group(1) + "' on " + uri);
+					}
+				}
+
+				return new QueryDeparturesResult(uri, stationId, location, currentTime, departures);
+			}
+			else
+			{
+				throw new IllegalArgumentException("cannot parse '" + mHeadCoarse.group(1) + "' on " + uri);
+			}
 		}
 		else
 		{
