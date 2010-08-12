@@ -451,15 +451,15 @@ public final class VbbProvider implements NetworkProvider
 		return uri.toString();
 	}
 
-	private static final Pattern P_DEPARTURES_HEAD = Pattern.compile(".*<strong>(.*?)</strong>.*Datum:(.*?)<br />.*", Pattern.DOTALL);
+	private static final Pattern P_DEPARTURES_HEAD = Pattern.compile(".*?<strong>(.*?)</strong>.*?Datum:(.*?)<br />.*", Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile(
 			"<tr class=\"ivu_table_bg\\d\">\\s*((?:<td class=\"ivu_table_c_dep\">|<td>).+?)\\s*</tr>", Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_LIVE_FINE = Pattern.compile("<td class=\"ivu_table_c_dep\">\\s*(.*?)[\\s\\*]*</td>\\s*" // 
 			+ "<td class=\"ivu_table_c_line\">\\s*(.*?)\\s*</td>\\s*" //
 			+ "<td>.*?<a.*?[^-]>\\s*(.*?)\\s*</a>.*?</td>", Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_PLAN_FINE = Pattern.compile("<td><strong>\\s*(.*?)[\\s\\*]*</strong></td>\\s*" // 
-			+ "<td>\\s*<strong>\\s*(.*?)[\\s\\*]*</strong>.*?</td>\\s*" //
-			+ "<td>\\s*<a.*?>\\s*(.*?)\\s*</a>\\s*</td>", Pattern.DOTALL);
+	private static final Pattern P_DEPARTURES_PLAN_FINE = Pattern.compile("<td><strong>(\\d{2}:\\d{2})</strong></td>.*?" // 
+			+ "<strong>\\s*(.*?)[\\s\\*]*</strong>.*?" //
+			+ "<a href=\"/Fahrinfo/bin/stboard\\.bin/dox/dox.*?evaId=(\\d+)&.*?>\\s*(.*?)\\s*</a>.*?", Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_SERVICE_DOWN = Pattern.compile("Wartungsarbeiten");
 	private static final Pattern P_DEPARTURES_URI_STATION_ID = Pattern.compile("input=(\\d+)");
 
@@ -491,7 +491,27 @@ public final class VbbProvider implements NetworkProvider
 				final Matcher mDepFine = (live ? P_DEPARTURES_LIVE_FINE : P_DEPARTURES_PLAN_FINE).matcher(mDepCoarse.group(1));
 				if (mDepFine.matches())
 				{
-					final Departure dep = parseDeparture(mDepFine, currentTime);
+					// time
+					final Calendar current = new GregorianCalendar();
+					current.setTime(currentTime);
+					final Calendar parsed = new GregorianCalendar();
+					parsed.setTime(ParserUtils.parseTime(mDepFine.group(1)));
+					parsed.set(Calendar.YEAR, current.get(Calendar.YEAR));
+					parsed.set(Calendar.MONTH, current.get(Calendar.MONTH));
+					parsed.set(Calendar.DAY_OF_MONTH, current.get(Calendar.DAY_OF_MONTH));
+					if (ParserUtils.timeDiff(parsed.getTime(), currentTime) < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
+						parsed.add(Calendar.DAY_OF_MONTH, 1);
+
+					// line
+					final String line = normalizeLine(ParserUtils.resolveEntities(mDepFine.group(2)));
+
+					// destinationId
+					final int destinationId = !live ? Integer.parseInt(mDepFine.group(3)) : 0;
+
+					// destination
+					final String destination = ParserUtils.resolveEntities(mDepFine.group(live ? 3 : 4));
+
+					final Departure dep = new Departure(parsed.getTime(), line, line != null ? LINES.get(line) : null, destinationId, destination);
 					if (!departures.contains(dep))
 						departures.add(dep);
 				}
@@ -507,28 +527,6 @@ public final class VbbProvider implements NetworkProvider
 		{
 			return QueryDeparturesResult.NO_INFO;
 		}
-	}
-
-	private static Departure parseDeparture(final Matcher mDep, final Date currentTime)
-	{
-		// time
-		final Calendar current = new GregorianCalendar();
-		current.setTime(currentTime);
-		final Calendar parsed = new GregorianCalendar();
-		parsed.setTime(ParserUtils.parseTime(mDep.group(1)));
-		parsed.set(Calendar.YEAR, current.get(Calendar.YEAR));
-		parsed.set(Calendar.MONTH, current.get(Calendar.MONTH));
-		parsed.set(Calendar.DAY_OF_MONTH, current.get(Calendar.DAY_OF_MONTH));
-		if (ParserUtils.timeDiff(parsed.getTime(), currentTime) < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
-			parsed.add(Calendar.DAY_OF_MONTH, 1);
-
-		// line
-		final String line = normalizeLine(ParserUtils.resolveEntities(mDep.group(2)));
-
-		// destination
-		final String destination = ParserUtils.resolveEntities(mDep.group(3));
-
-		return new Departure(parsed.getTime(), line, line != null ? LINES.get(line) : null, destination);
 	}
 
 	private static final Date parseDate(String str)

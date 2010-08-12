@@ -27,13 +27,15 @@ public final class Departure
 	final public Date time;
 	final public String line;
 	final public int[] lineColors;
+	final public int destinationId;
 	final public String destination;
 
-	public Departure(final Date time, final String line, final int[] lineColors, final String destination)
+	public Departure(final Date time, final String line, final int[] lineColors, final int destinationId, final String destination)
 	{
 		this.time = time;
 		this.line = line;
 		this.lineColors = lineColors;
+		this.destinationId = destinationId;
 		this.destination = destination;
 	}
 
@@ -44,6 +46,8 @@ public final class Departure
 		builder.append(time != null ? time : "null");
 		builder.append(",");
 		builder.append(line != null ? line : "null");
+		builder.append(",");
+		builder.append(destinationId);
 		builder.append(",");
 		builder.append(destination != null ? destination : "null");
 		builder.append(")");
@@ -66,6 +70,8 @@ public final class Departure
 			return false;
 		if (this.line != null && !this.line.equals(other.line))
 			return false;
+		if (this.destinationId != other.destinationId)
+			return false;
 		if (!this.destination.equals(other.destination))
 			return false;
 		return true;
@@ -78,6 +84,8 @@ public final class Departure
 		hashCode *= 29;
 		if (line != null)
 			hashCode += line.hashCode();
+		hashCode *= 29;
+		hashCode += destinationId;
 		hashCode *= 29;
 		hashCode += destination.hashCode();
 		return hashCode;

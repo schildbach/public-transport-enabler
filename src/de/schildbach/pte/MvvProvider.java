@@ -522,7 +522,7 @@ public class MvvProvider implements NetworkProvider
 					calendar.set(Calendar.MINUTE, Integer.parseInt(mDepFine.group(4)));
 					final String normalizedLine = normalizeLine(mDepFine.group(5), mDepFine.group(6));
 					final String destination = normalizeStationName(mDepFine.group(7));
-					final Departure departure = new Departure(calendar.getTime(), normalizedLine, LINES.get(normalizedLine), destination);
+					final Departure departure = new Departure(calendar.getTime(), normalizedLine, LINES.get(normalizedLine), 0, destination);
 					departures.add(departure);
 				}
 				else
