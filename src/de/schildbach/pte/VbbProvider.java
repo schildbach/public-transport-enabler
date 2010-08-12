@@ -31,6 +31,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.schildbach.pte.QueryDeparturesResult.Status;
+
 /**
  * @author Andreas Schildbach
  */
@@ -473,7 +475,7 @@ public final class VbbProvider implements NetworkProvider
 		final int stationId = Integer.parseInt(mStationId.group(1));
 
 		if (P_DEPARTURES_SERVICE_DOWN.matcher(page).find())
-			return QueryDeparturesResult.SERVICE_DOWN;
+			return new QueryDeparturesResult(uri, Status.SERVICE_DOWN);
 
 		// parse page
 		final Matcher mHead = P_DEPARTURES_HEAD.matcher(page);
@@ -525,7 +527,7 @@ public final class VbbProvider implements NetworkProvider
 		}
 		else
 		{
-			return QueryDeparturesResult.NO_INFO;
+			return new QueryDeparturesResult(uri, Status.NO_INFO);
 		}
 	}
 

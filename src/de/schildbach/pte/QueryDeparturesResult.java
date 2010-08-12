@@ -25,10 +25,13 @@ import java.util.List;
  */
 public final class QueryDeparturesResult
 {
-	public static final QueryDeparturesResult NO_INFO = new QueryDeparturesResult(null, 0, null, null, null);
-	public static final QueryDeparturesResult SERVICE_DOWN = new QueryDeparturesResult(null, 0, null, null, null);
+	public enum Status
+	{
+		OK, NO_INFO, SERVICE_DOWN
+	}
 
 	public final String uri;
+	public final Status status;
 	public final int locationId;
 	public final String location;
 	public final Date currentTime;
@@ -38,9 +41,20 @@ public final class QueryDeparturesResult
 			final List<Departure> departures)
 	{
 		this.uri = uri;
+		this.status = Status.OK;
 		this.locationId = locationId;
 		this.location = location;
 		this.currentTime = currentTime;
 		this.departures = departures;
+	}
+
+	public QueryDeparturesResult(final String uri, final Status status)
+	{
+		this.uri = uri;
+		this.status = status;
+		this.locationId = 0;
+		this.location = null;
+		this.currentTime = null;
+		this.departures = null;
 	}
 }

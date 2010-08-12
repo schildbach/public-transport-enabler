@@ -30,6 +30,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.schildbach.pte.QueryDeparturesResult.Status;
+
 /**
  * @author Andreas Schildbach
  */
@@ -457,7 +459,7 @@ public class RmvProvider implements NetworkProvider
 		}
 		else
 		{
-			return QueryDeparturesResult.NO_INFO;
+			return new QueryDeparturesResult(uri, Status.NO_INFO);
 		}
 	}
 
