@@ -398,7 +398,7 @@ public class RmvProvider implements NetworkProvider
 		uri.append("http://www.rmv.de/auskunft/bin/jp/stboard.exe/dox");
 		uri.append("?input=").append(stationId);
 		uri.append("&boardType=dep");
-		uri.append("&maxJourneys=").append(maxDepartures != 0 ? maxDepartures : 12);
+		uri.append("&maxJourneys=").append(maxDepartures != 0 ? maxDepartures : 50); // maximum taken from RMV site
 		uri.append("&time=").append(TIME_FORMAT.format(now));
 		uri.append("&date=").append(DATE_FORMAT.format(now));
 		uri.append("&start=yes");

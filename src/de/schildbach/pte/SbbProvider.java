@@ -347,7 +347,8 @@ public class SbbProvider implements NetworkProvider
 
 		uri.append("http://fahrplan.sbb.ch/bin/bhftafel.exe/dox");
 		uri.append("?start=");
-		uri.append("&maxJourneys=").append(maxDepartures);
+		if (maxDepartures != 0)
+			uri.append("&maxJourneys=").append(maxDepartures);
 		uri.append("&boardType=dep");
 		uri.append("&productsFilter=1111111111000000");
 		uri.append("&input=").append(stationId);
