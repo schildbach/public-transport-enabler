@@ -430,10 +430,10 @@ public class MvvProvider implements NetworkProvider
 							lastArrival = arrival;
 						}
 					}
-				}
-				else
-				{
-					throw new IllegalArgumentException("cannot parse '" + set + "' on " + uri);
+					else
+					{
+						throw new IllegalArgumentException("cannot parse '" + set + "' on " + uri);
+					}
 				}
 			}
 
