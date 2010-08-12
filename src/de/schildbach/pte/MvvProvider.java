@@ -510,7 +510,7 @@ public class MvvProvider implements NetworkProvider
 
 				final Calendar calendar = new GregorianCalendar();
 
-				final Matcher mDepCoarse = P_DEPARTURES_COARSE.matcher(page);
+				final Matcher mDepCoarse = P_DEPARTURES_COARSE.matcher(mHeadCoarse.group(1));
 				while (mDepCoarse.find())
 				{
 					final Matcher mDepFine = P_DEPARTURES_FINE.matcher(mDepCoarse.group(1));

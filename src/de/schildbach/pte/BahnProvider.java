@@ -449,7 +449,7 @@ public final class BahnProvider implements NetworkProvider
 				final List<Departure> departures = new ArrayList<Departure>(8);
 
 				// choose matcher
-				final Matcher mDepCoarse = P_DEPARTURES_COARSE.matcher(page);
+				final Matcher mDepCoarse = P_DEPARTURES_COARSE.matcher(mHeadCoarse.group(1));
 				while (mDepCoarse.find())
 				{
 					final Matcher mDepFine = P_DEPARTURES_FINE.matcher(mDepCoarse.group(1));
