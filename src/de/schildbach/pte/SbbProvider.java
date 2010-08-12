@@ -84,6 +84,7 @@ public class SbbProvider implements NetworkProvider
 	public StationLocationResult stationLocation(final String stationId) throws IOException
 	{
 		throw new UnsupportedOperationException();
+		// final String uri = "http://fahrplan.sbb.ch/bin/extxml.exe/dn";
 	}
 
 	private String connectionsQueryUri(final String from, final String via, final String to, final Date date, final boolean dep)
