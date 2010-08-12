@@ -646,10 +646,12 @@ public class MvvProvider implements NetworkProvider
 			if (type.equals("EC"))
 				return "I" + type + number;
 			if (type.equals("EN")) // EuroNight
-				return "IEN" + number;
+				return "I" + type + number;
 			if (type.equals("CNL"))
 				return "I" + type + number;
 			if (type.equals("RJ")) // Railjet, Österreich
+				return "I" + type + number;
+			if (type.equals("IRE")) // Franken-Sachsen-Express
 				return "I" + type + number;
 			if (type.equals("RB"))
 				return "R" + type + number;

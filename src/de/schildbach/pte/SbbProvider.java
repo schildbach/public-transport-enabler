@@ -560,6 +560,8 @@ public class SbbProvider implements NetworkProvider
 			return 'T';
 		if (ucType.equals("T"))
 			return 'T';
+		if (ucType.equals("NTR"))
+			return 'T';
 
 		if (ucType.equals("BUS"))
 			return 'B';
