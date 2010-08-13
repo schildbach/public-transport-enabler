@@ -563,7 +563,7 @@ public class MvvProvider implements NetworkProvider
 	private static final Pattern P_NORMALIZE_LINE_METROBUS = Pattern.compile("[56]\\d");
 	private static final Pattern P_NORMALIZE_LINE_STADTBUS = Pattern.compile("1\\d{2}");
 	private static final Pattern P_NORMALIZE_LINE_NACHTBUS = Pattern.compile("N[48]\\d");
-	private static final Pattern P_NORMALIZE_LINE_REGIONALBUS = Pattern.compile("\\d{3}\\w");
+	private static final Pattern P_NORMALIZE_LINE_REGIONALBUS = Pattern.compile("\\d{3}[A-Z]?");
 
 	private String normalizeLine(final String product, final String line)
 	{
