@@ -23,6 +23,7 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -51,34 +52,49 @@ public final class ParserUtils
 
 	public static CharSequence scrape(final String url, final String request) throws IOException
 	{
-		final StringBuilder buffer = new StringBuilder(SCRAPE_INITIAL_CAPACITY);
-		final URLConnection connection = new URL(url).openConnection();
-		connection.setDoInput(true);
-		connection.setDoOutput(request != null);
-		connection.setConnectTimeout(SCRAPE_CONNECT_TIMEOUT);
-		connection.setReadTimeout(SCRAPE_READ_TIMEOUT);
-		connection.addRequestProperty("User-Agent", SCRAPE_USER_AGENT);
+		int tries = 3;
 
-		if (request != null)
-		{
-			final Writer writer = new OutputStreamWriter(connection.getOutputStream(), "ISO-8859-1");
-			writer.write(request);
-			writer.close();
-		}
-
-		final Reader pageReader = new InputStreamReader(connection.getInputStream(), "ISO-8859-1");
-
-		final char[] buf = new char[SCRAPE_INITIAL_CAPACITY];
 		while (true)
 		{
-			final int read = pageReader.read(buf);
-			if (read == -1)
-				break;
-			buffer.append(buf, 0, read);
-		}
+			try
+			{
+				final StringBuilder buffer = new StringBuilder(SCRAPE_INITIAL_CAPACITY);
+				final URLConnection connection = new URL(url).openConnection();
+				connection.setDoInput(true);
+				connection.setDoOutput(request != null);
+				connection.setConnectTimeout(SCRAPE_CONNECT_TIMEOUT);
+				connection.setReadTimeout(SCRAPE_READ_TIMEOUT);
+				connection.addRequestProperty("User-Agent", SCRAPE_USER_AGENT);
 
-		pageReader.close();
-		return buffer;
+				if (request != null)
+				{
+					final Writer writer = new OutputStreamWriter(connection.getOutputStream(), "ISO-8859-1");
+					writer.write(request);
+					writer.close();
+				}
+
+				final Reader pageReader = new InputStreamReader(connection.getInputStream(), "ISO-8859-1");
+
+				final char[] buf = new char[SCRAPE_INITIAL_CAPACITY];
+				while (true)
+				{
+					final int read = pageReader.read(buf);
+					if (read == -1)
+						break;
+					buffer.append(buf, 0, read);
+				}
+
+				pageReader.close();
+				return buffer;
+			}
+			catch (final SocketTimeoutException x)
+			{
+				if (tries-- > 0)
+					System.out.println("socket timed out, retrying...");
+				else
+					throw x;
+			}
+		}
 	}
 
 	private static final Pattern P_ENTITY = Pattern.compile("&(?:#(x[\\da-f]+|\\d+)|(amp|quot|apos));");
