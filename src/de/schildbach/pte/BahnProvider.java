@@ -41,8 +41,12 @@ public final class BahnProvider implements NetworkProvider
 
 	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
 
-	public boolean hasCapabilities(Capability... capabilities)
+	public boolean hasCapabilities(final Capability... capabilities)
 	{
+		for (final Capability capability : capabilities)
+			if (capability == Capability.LOCATION_WGS84)
+				return false;
+
 		return true;
 	}
 

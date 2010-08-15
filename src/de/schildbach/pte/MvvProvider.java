@@ -42,7 +42,7 @@ public class MvvProvider implements NetworkProvider
 	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
 	private static final String ENCODING = "ISO-8859-1";
 
-	public boolean hasCapabilities(Capability... capabilities)
+	public boolean hasCapabilities(final Capability... capabilities)
 	{
 		for (final Capability capability : capabilities)
 			if (capability == Capability.NEARBY_STATIONS)
@@ -122,7 +122,7 @@ public class MvvProvider implements NetworkProvider
 
 		if (fromType == LocationType.WGS84)
 		{
-			final String[] parts = from.split(",");
+			final String[] parts = from.split(",\\s*", 2);
 			final double lat = Double.parseDouble(parts[0]);
 			final double lon = Double.parseDouble(parts[1]);
 			uri.append("&nameInfo_origin=").append(String.format("%2.5f:%2.5f", lon, lat)).append(":WGS84[DD.ddddd]");
@@ -146,7 +146,7 @@ public class MvvProvider implements NetworkProvider
 
 		if (toType == LocationType.WGS84)
 		{
-			final String[] parts = to.split(",");
+			final String[] parts = to.split(",\\s*", 2);
 			final double lat = Double.parseDouble(parts[0]);
 			final double lon = Double.parseDouble(parts[1]);
 			uri.append("&nameInfo_destination=").append(String.format("%2.5f:%2.5f", lon, lat)).append(":WGS84[DD.ddddd]");
@@ -172,7 +172,7 @@ public class MvvProvider implements NetworkProvider
 		{
 			if (viaType == LocationType.WGS84)
 			{
-				final String[] parts = via.split(",");
+				final String[] parts = via.split(",\\s*", 2);
 				final double lat = Double.parseDouble(parts[0]);
 				final double lon = Double.parseDouble(parts[1]);
 				uri.append("&nameInfo_via=").append(String.format("%2.5f:%2.5f", lon, lat)).append(":WGS84[DD.ddddd]");

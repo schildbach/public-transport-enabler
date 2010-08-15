@@ -30,7 +30,7 @@ public interface NetworkProvider
 {
 	public enum Capability
 	{
-		NEARBY_STATIONS, DEPARTURES, CONNECTIONS
+		NEARBY_STATIONS, DEPARTURES, CONNECTIONS, LOCATION_WGS84
 	}
 
 	public enum LocationType

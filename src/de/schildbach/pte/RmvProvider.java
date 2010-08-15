@@ -44,6 +44,10 @@ public class RmvProvider implements NetworkProvider
 
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
+		for (final Capability capability : capabilities)
+			if (capability == Capability.LOCATION_WGS84)
+				return false;
+
 		return true;
 	}
 
