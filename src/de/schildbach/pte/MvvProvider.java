@@ -610,6 +610,8 @@ public class MvvProvider implements NetworkProvider
 				return "S" + line;
 			if (LINES.containsKey("U" + line))
 				return "U" + line;
+			if (line.startsWith("D "))
+				return "R" + line;
 			if (line.startsWith("RE "))
 				return "R" + line;
 			if (line.startsWith("RB "))
