@@ -138,31 +138,31 @@ public final class ParserUtils
 		return builder.toString();
 	}
 
-	public static Date parseDate(String str)
+	public static Date parseDate(final String str)
 	{
 		try
 		{
 			return new SimpleDateFormat("dd.MM.yy").parse(str);
 		}
-		catch (ParseException x)
+		catch (final ParseException x)
 		{
 			throw new RuntimeException(x);
 		}
 	}
 
-	public static Date parseTime(String str)
+	public static Date parseTime(final String str)
 	{
 		try
 		{
 			return new SimpleDateFormat("HH:mm").parse(str);
 		}
-		catch (ParseException x)
+		catch (final ParseException x)
 		{
 			throw new RuntimeException(x);
 		}
 	}
 
-	public static Date joinDateTime(Date date, Date time)
+	public static Date joinDateTime(final Date date, final Date time)
 	{
 		final Calendar cDate = new GregorianCalendar();
 		cDate.setTime(date);
@@ -179,7 +179,7 @@ public final class ParserUtils
 		return d1.getTime() - d2.getTime();
 	}
 
-	public static Date addDays(Date time, int days)
+	public static Date addDays(final Date time, final int days)
 	{
 		final Calendar c = new GregorianCalendar();
 		c.setTime(time);
@@ -187,7 +187,7 @@ public final class ParserUtils
 		return c.getTime();
 	}
 
-	public static void printGroups(Matcher m)
+	public static void printGroups(final Matcher m)
 	{
 		final int groupCount = m.groupCount();
 		for (int i = 1; i <= groupCount; i++)
@@ -200,7 +200,7 @@ public final class ParserUtils
 		{
 			return URLEncoder.encode(str, "utf-8");
 		}
-		catch (UnsupportedEncodingException x)
+		catch (final UnsupportedEncodingException x)
 		{
 			throw new RuntimeException(x);
 		}
@@ -212,7 +212,7 @@ public final class ParserUtils
 		{
 			return URLEncoder.encode(str, enc);
 		}
-		catch (UnsupportedEncodingException x)
+		catch (final UnsupportedEncodingException x)
 		{
 			throw new RuntimeException(x);
 		}
