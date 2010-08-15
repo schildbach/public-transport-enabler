@@ -48,7 +48,7 @@ public final class VbbProvider implements NetworkProvider
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
 		for (final Capability capability : capabilities)
-			if (capability == Capability.NEARBY_STATIONS || capability == Capability.LOCATION_WGS84)
+			if (capability == Capability.NEARBY_STATIONS)
 				return false;
 
 		return true;
@@ -153,7 +153,8 @@ public final class VbbProvider implements NetworkProvider
 
 	public static final String STATION_URL_CONNECTION = "http://mobil.bvg.de/Fahrinfo/bin/query.bin/dox";
 
-	private String connectionsQueryUri(final String from, final String via, final String to, final Date date, final boolean dep)
+	private String connectionsQueryUri(final LocationType fromType, final String from, final String via, final LocationType toType, final String to,
+			final Date date, final boolean dep)
 	{
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yy");
 		final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
@@ -161,21 +162,60 @@ public final class VbbProvider implements NetworkProvider
 
 		uri.append("http://mobil.bvg.de/Fahrinfo/bin/query.bin/dox");
 		uri.append("?REQ0HafasInitialSelection=0");
-		uri.append("&REQ0JourneyStopsS0A=255");
-		uri.append("&REQ0JourneyStopsS0G=").append(ParserUtils.urlEncode(from));
+
+		// from
+		if (fromType == LocationType.ANY)
+		{
+			uri.append("&REQ0JourneyStopsS0A=255");
+			uri.append("&REQ0JourneyStopsS0G=").append(ParserUtils.urlEncode(from));
+		}
+		else
+		{
+			final String[] parts = from.split(",\\s*", 2);
+			final double lat = Double.parseDouble(parts[0]);
+			final double lon = Double.parseDouble(parts[1]);
+			uri.append("&SID=").append(ParserUtils.urlEncode("A=16@X=" + latLonToInt(lon) + "@Y=" + latLonToInt(lat)));
+		}
+
+		// via
 		if (via != null)
 		{
-			uri.append("&REQ0JourneyStops1A=1");
-			uri.append("&REQ0JourneyStops1G=").append(ParserUtils.urlEncode(via));
+			if (fromType == LocationType.ANY)
+			{
+				uri.append("&REQ0JourneyStops1A=1");
+				uri.append("&REQ0JourneyStops1G=").append(ParserUtils.urlEncode(via));
+			}
+			else
+			{
+				// FIXME
+			}
 		}
-		uri.append("&REQ0JourneyStopsZ0A=255");
-		uri.append("&REQ0JourneyStopsZ0G=").append(ParserUtils.urlEncode(to));
+
+		// to
+		if (toType == LocationType.ANY)
+		{
+			uri.append("&REQ0JourneyStopsZ0A=255");
+			uri.append("&REQ0JourneyStopsZ0G=").append(ParserUtils.urlEncode(to));
+		}
+		else
+		{
+			final String[] parts = to.split(",\\s*", 2);
+			final double lat = Double.parseDouble(parts[0]);
+			final double lon = Double.parseDouble(parts[1]);
+			uri.append("&ZID=").append(ParserUtils.urlEncode("A=16@X=" + latLonToInt(lon) + "@Y=" + latLonToInt(lat)));
+		}
+
 		uri.append("&REQ0HafasSearchForw=").append(dep ? "1" : "0");
 		uri.append("&REQ0JourneyDate=").append(ParserUtils.urlEncode(DATE_FORMAT.format(date)));
 		uri.append("&REQ0JourneyTime=").append(ParserUtils.urlEncode(TIME_FORMAT.format(date)));
 		uri.append("&start=Suchen");
 
 		return uri.toString();
+	}
+
+	private static int latLonToInt(double value)
+	{
+		return (int) (value * 1000000);
 	}
 
 	private static final Pattern P_CHECK_ADDRESS = Pattern.compile("<option.*?>\\s*(.*?)\\s*</option>", Pattern.DOTALL);
@@ -186,7 +226,7 @@ public final class VbbProvider implements NetworkProvider
 	public QueryConnectionsResult queryConnections(final LocationType fromType, final String from, final LocationType viaType, final String via,
 			final LocationType toType, final String to, final Date date, final boolean dep) throws IOException
 	{
-		final String uri = connectionsQueryUri(from, via, to, date, dep);
+		final String uri = connectionsQueryUri(fromType, from, via, toType, to, date, dep);
 		final CharSequence page = ParserUtils.scrape(uri);
 
 		final Matcher mError = P_CHECK_CONNECTIONS_ERROR.matcher(page);
