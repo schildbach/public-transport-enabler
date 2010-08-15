@@ -21,21 +21,21 @@ import java.util.Date;
 
 import org.junit.Test;
 
+import de.schildbach.pte.MvvProvider;
 import de.schildbach.pte.QueryConnectionsResult;
-import de.schildbach.pte.SbbProvider;
 import de.schildbach.pte.NetworkProvider.LocationType;
 
 /**
  * @author Andreas Schildbach
  */
-public class SbbProviderLiveTest
+public class MvvProviderLiveTest
 {
-	private SbbProvider provider = new SbbProvider();
+	private MvvProvider provider = new MvvProvider();
 
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(LocationType.ANY, "Zürich!", null, null, LocationType.ANY, "Bern",
+		final QueryConnectionsResult result = provider.queryConnections(LocationType.ANY, "Marienplatz", null, null, LocationType.ANY, "Pasing",
 				new Date(), true);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
@@ -43,10 +43,30 @@ public class SbbProviderLiveTest
 	}
 
 	@Test
-	public void slowConnection() throws Exception
+	public void longConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(LocationType.ANY, "Schocherswil, Alte Post!", null, null, LocationType.ANY,
-				"Laconnex, Mollach", new Date(), true);
+		final QueryConnectionsResult result = provider.queryConnections(LocationType.ANY, "Starnberg, Arbeitsamt", null, null, LocationType.ANY,
+				"Ackermannstraße", new Date(), true);
+		System.out.println(result);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
+		System.out.println(moreResult);
+	}
+
+	@Test
+	public void connectionBetweenCoordinates() throws Exception
+	{
+		final QueryConnectionsResult result = provider.queryConnections(LocationType.WGS84, "48.165238,11.577473", null, null, LocationType.WGS84,
+				"47.987199,11.326532", new Date(), true);
+		System.out.println(result);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
+		System.out.println(moreResult);
+	}
+
+	@Test
+	public void connectionBetweenCoordinateAndStation() throws Exception
+	{
+		final QueryConnectionsResult result = provider.queryConnections(LocationType.WGS84, "48.238341,11.478230", null, null, LocationType.ANY,
+				"Ostbahnhof", new Date(), true);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
 		System.out.println(moreResult);

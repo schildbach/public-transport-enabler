@@ -86,7 +86,8 @@ public class MvvProvider implements NetworkProvider
 		throw new UnsupportedOperationException();
 	}
 
-	private String connectionsQueryUri(final String from, final String via, final String to, final Date date, final boolean dep)
+	private String connectionsQueryUri(final LocationType fromType, final String from, final LocationType viaType, final String via,
+			final LocationType toType, final String to, final Date date, final boolean dep)
 	{
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
 		final DateFormat YEAR_FORMAT = new SimpleDateFormat("yyyy");
@@ -115,51 +116,83 @@ public class MvvProvider implements NetworkProvider
 		uri.append("&itdDateMonth=").append(ParserUtils.urlEncode(MONTH_FORMAT.format(date)));
 		uri.append("&itdDateYear=").append(ParserUtils.urlEncode(YEAR_FORMAT.format(date)));
 		uri.append("&locationServerActive=1");
-		uri.append("&useProxFootSearch=1"); // Take stops close to the stop/start into account and possibly use them
-		// instead
+		uri.append("&useProxFootSearch=1"); // Take nearby stops into account and possibly use them instead
 		uri.append("&anySigWhenPerfectNoOtherMatches=1");
 		uri.append("&lineRestriction=403");
 
-		uri.append("&useHouseNumberList_origin=1");
-		uri.append("&place_origin="); // coarse-grained location, e.g. city
-		uri.append("&placeState_origin=empty"); // empty|identified
-		uri.append("&nameState_origin=empty"); // empty|identified|list|notidentified
-		uri.append("&placeInfo_origin=invalid"); // invalid
-		uri.append("&nameInfo_origin=invalid"); // invalid
-		uri.append("&typeInfo_origin=invalid"); // invalid
-		uri.append("&reducedAnyWithoutAddressObjFilter_origin=102");
-		uri.append("&reducedAnyPostcodeObjFilter_origin=64");
-		uri.append("&reducedAnyTooManyObjFilter_origin=2");
-		uri.append("&type_origin=stop"); // any|stop|poi|address
-		uri.append("&name_origin=").append(ParserUtils.urlEncode(from, ENCODING)); // fine-grained location
+		if (fromType == LocationType.WGS84)
+		{
+			final String[] parts = from.split(",");
+			final double lat = Double.parseDouble(parts[0]);
+			final double lon = Double.parseDouble(parts[1]);
+			uri.append("&nameInfo_origin=").append(String.format("%2.5f:%2.5f", lon, lat)).append(":WGS84[DD.ddddd]");
+			uri.append("&typeInfo_origin=coord");
+		}
+		else
+		{
+			uri.append("&useHouseNumberList_origin=1");
+			uri.append("&place_origin="); // coarse-grained location, e.g. city
+			uri.append("&placeState_origin=empty"); // empty|identified
+			uri.append("&nameState_origin=empty"); // empty|identified|list|notidentified
+			uri.append("&placeInfo_origin=invalid"); // invalid
+			uri.append("&nameInfo_origin=invalid"); // invalid
+			uri.append("&typeInfo_origin=invalid"); // invalid
+			uri.append("&reducedAnyWithoutAddressObjFilter_origin=102");
+			uri.append("&reducedAnyPostcodeObjFilter_origin=64");
+			uri.append("&reducedAnyTooManyObjFilter_origin=2");
+			uri.append("&type_origin=stop"); // any|stop|poi|address
+			uri.append("&name_origin=").append(ParserUtils.urlEncode(from, ENCODING)); // fine-grained location
+		}
 
-		uri.append("&useHouseNumberList_destination=1");
-		uri.append("&place_destination="); // coarse-grained location, e.g. city
-		uri.append("&placeState_destination=empty"); // empty|identified
-		uri.append("&nameState_destination=empty"); // empty|identified|list|notidentified
-		uri.append("&placeInfo_destination=invalid"); // invalid
-		uri.append("&nameInfo_destination=invalid"); // invalid
-		uri.append("&typeInfo_destination=invalid"); // invalid
-		uri.append("&reducedAnyWithoutAddressObjFilter_destination=102");
-		uri.append("&reducedAnyPostcodeObjFilter_destination=64");
-		uri.append("&reducedAnyTooManyObjFilter_destination=2");
-		uri.append("&type_destination=stop"); // any|stop|poi|address
-		uri.append("&name_destination=").append(ParserUtils.urlEncode(to, ENCODING)); // fine-grained location
+		if (toType == LocationType.WGS84)
+		{
+			final String[] parts = to.split(",");
+			final double lat = Double.parseDouble(parts[0]);
+			final double lon = Double.parseDouble(parts[1]);
+			uri.append("&nameInfo_destination=").append(String.format("%2.5f:%2.5f", lon, lat)).append(":WGS84[DD.ddddd]");
+			uri.append("&typeInfo_destination=coord");
+		}
+		else
+		{
+			uri.append("&useHouseNumberList_destination=1");
+			uri.append("&place_destination="); // coarse-grained location, e.g. city
+			uri.append("&placeState_destination=empty"); // empty|identified
+			uri.append("&nameState_destination=empty"); // empty|identified|list|notidentified
+			uri.append("&placeInfo_destination=invalid"); // invalid
+			uri.append("&nameInfo_destination=invalid"); // invalid
+			uri.append("&typeInfo_destination=invalid"); // invalid
+			uri.append("&reducedAnyWithoutAddressObjFilter_destination=102");
+			uri.append("&reducedAnyPostcodeObjFilter_destination=64");
+			uri.append("&reducedAnyTooManyObjFilter_destination=2");
+			uri.append("&type_destination=stop"); // any|stop|poi|address
+			uri.append("&name_destination=").append(ParserUtils.urlEncode(to, ENCODING)); // fine-grained location
+		}
 
 		if (via != null)
 		{
-			uri.append("&useHouseNumberList_via=1");
-			uri.append("&place_via=");
-			uri.append("&placeState_via=empty");
-			uri.append("&nameState_via=empty");
-			uri.append("&placeInfo_via=invalid");
-			uri.append("&nameInfo_via=invalid");
-			uri.append("&typeInfo_via=invalid");
-			uri.append("&reducedAnyWithoutAddressObjFilter_via=102");
-			uri.append("&reducedAnyPostcodeObjFilter_via=64");
-			uri.append("&reducedAnyTooManyObjFilter_via=2");
-			uri.append("&type_via=stop"); // any
-			uri.append("&name_via=").append(ParserUtils.urlEncode(via, ENCODING));
+			if (viaType == LocationType.WGS84)
+			{
+				final String[] parts = via.split(",");
+				final double lat = Double.parseDouble(parts[0]);
+				final double lon = Double.parseDouble(parts[1]);
+				uri.append("&nameInfo_via=").append(String.format("%2.5f:%2.5f", lon, lat)).append(":WGS84[DD.ddddd]");
+				uri.append("&typeInfo_via=coord");
+			}
+			else
+			{
+				uri.append("&useHouseNumberList_via=1");
+				uri.append("&place_via=");
+				uri.append("&placeState_via=empty");
+				uri.append("&nameState_via=empty");
+				uri.append("&placeInfo_via=invalid");
+				uri.append("&nameInfo_via=invalid");
+				uri.append("&typeInfo_via=invalid");
+				uri.append("&reducedAnyWithoutAddressObjFilter_via=102");
+				uri.append("&reducedAnyPostcodeObjFilter_via=64");
+				uri.append("&reducedAnyTooManyObjFilter_via=2");
+				uri.append("&type_via=stop");
+				uri.append("&name_via=").append(ParserUtils.urlEncode(via, ENCODING));
+			}
 		}
 
 		uri.append("&itdTripDateTimeDepArr=").append(dep ? "dep" : "arr");
@@ -176,10 +209,10 @@ public class MvvProvider implements NetworkProvider
 	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern.compile("(?:(xxxzudichtxxx)|(konnte keine Verbindung gefunden werden))",
 			Pattern.CASE_INSENSITIVE);
 
-	public QueryConnectionsResult queryConnections(final String from, final String via, final String to, final Date date, final boolean dep)
-			throws IOException
+	public QueryConnectionsResult queryConnections(final LocationType fromType, final String from, final LocationType viaType, final String via,
+			final LocationType toType, final String to, final Date date, final boolean dep) throws IOException
 	{
-		final String uri = connectionsQueryUri(from, via, to, date, dep);
+		final String uri = connectionsQueryUri(fromType, from, viaType, via, toType, to, date, dep);
 		CharSequence page = ParserUtils.scrape(uri);
 		while (page.length() == 0)
 		{

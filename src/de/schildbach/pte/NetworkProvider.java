@@ -33,6 +33,11 @@ public interface NetworkProvider
 		NEARBY_STATIONS, DEPARTURES, CONNECTIONS
 	}
 
+	public enum LocationType
+	{
+		ANY, WGS84
+	}
+
 	boolean hasCapabilities(Capability... capabilities);
 
 	/**
@@ -74,10 +79,16 @@ public interface NetworkProvider
 	/**
 	 * Query connections, asking for any ambiguousnesses
 	 * 
+	 * @param fromType
+	 *            type of location to route from, mandatory
 	 * @param from
 	 *            location to route from, mandatory
+	 * @param viaType
+	 *            type of location to route via, may be {@code null}
 	 * @param via
 	 *            location to route via, may be {@code null}
+	 * @param toType
+	 *            type of location to route to, mandatory
 	 * @param to
 	 *            location to route to, mandatory
 	 * @param date
@@ -87,7 +98,8 @@ public interface NetworkProvider
 	 * @return result object that can contain alternatives to clear up ambiguousnesses, or contains possible connections
 	 * @throws IOException
 	 */
-	QueryConnectionsResult queryConnections(String from, String via, String to, Date date, boolean dep) throws IOException;
+	QueryConnectionsResult queryConnections(LocationType fromType, String from, LocationType viaType, String via, LocationType toType, String to,
+			Date date, boolean dep) throws IOException;
 
 	/**
 	 * Query more connections (e.g. earlier or later)

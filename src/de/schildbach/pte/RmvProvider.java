@@ -169,8 +169,8 @@ public class RmvProvider implements NetworkProvider
 	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern.compile(
 			"(?:(mehrfach vorhanden oder identisch)|(keine Verbindung gefunden werden))", Pattern.CASE_INSENSITIVE);
 
-	public QueryConnectionsResult queryConnections(final String from, final String via, final String to, final Date date, final boolean dep)
-			throws IOException
+	public QueryConnectionsResult queryConnections(final LocationType fromType, final String from, final LocationType viaType, final String via,
+			final LocationType toType, final String to, final Date date, final boolean dep) throws IOException
 	{
 		final String uri = connectionsQueryUri(from, via, to, date, dep);
 		final CharSequence page = ParserUtils.scrape(uri);
