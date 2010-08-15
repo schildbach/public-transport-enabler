@@ -213,12 +213,8 @@ public class MvvProvider implements NetworkProvider
 			final LocationType toType, final String to, final Date date, final boolean dep) throws IOException
 	{
 		final String uri = connectionsQueryUri(fromType, from, viaType, via, toType, to, date, dep);
-		CharSequence page = ParserUtils.scrape(uri);
-		while (page.length() == 0)
-		{
-			System.out.println("Got empty page, retrying...");
-			page = ParserUtils.scrape(uri);
-		}
+
+		final CharSequence page = ParserUtils.scrape(uri);
 
 		final Matcher mError = P_CHECK_CONNECTIONS_ERROR.matcher(page);
 		if (mError.find())
@@ -266,12 +262,7 @@ public class MvvProvider implements NetworkProvider
 
 	public QueryConnectionsResult queryMoreConnections(final String uri) throws IOException
 	{
-		CharSequence page = ParserUtils.scrape(uri);
-		while (page.length() == 0)
-		{
-			System.out.println("Got empty page, retrying...");
-			page = ParserUtils.scrape(uri);
-		}
+		final CharSequence page = ParserUtils.scrape(uri);
 
 		return queryConnections(uri, page);
 	}
@@ -383,12 +374,7 @@ public class MvvProvider implements NetworkProvider
 
 	public GetConnectionDetailsResult getConnectionDetails(final String uri) throws IOException
 	{
-		CharSequence page = ParserUtils.scrape(uri);
-		while (page.length() == 0)
-		{
-			System.out.println("Got empty page, retrying...");
-			page = ParserUtils.scrape(uri);
-		}
+		final CharSequence page = ParserUtils.scrape(uri);
 
 		final Matcher mHead = P_CONNECTION_DETAILS_HEAD.matcher(page);
 		if (mHead.matches())

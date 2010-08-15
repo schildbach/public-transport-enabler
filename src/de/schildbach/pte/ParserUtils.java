@@ -85,7 +85,16 @@ public final class ParserUtils
 				}
 
 				pageReader.close();
-				return buffer;
+
+				if (buffer.length() > 0)
+					return buffer;
+				else
+				{
+					if (tries-- > 0)
+						System.out.println("got empty page, retrying...");
+					else
+						throw new IOException("got empty page: " + url);
+				}
 			}
 			catch (final SocketTimeoutException x)
 			{
