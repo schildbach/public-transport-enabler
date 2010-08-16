@@ -290,7 +290,7 @@ public final class BahnProvider implements NetworkProvider
 
 	private static final Pattern P_CONNECTION_DETAILS_HEAD = Pattern.compile(".*<span class=\"bold\">Verbindungsdetails</span>.*", Pattern.DOTALL);
 	private static final Pattern P_CONNECTION_DETAILS_COARSE = Pattern.compile("<div class=\"haupt rline\">\n?(.+?)\n?</div>", Pattern.DOTALL);
-	private static final Pattern P_CONNECTION_DETAILS_FINE = Pattern.compile("<span class=\"bold\">\\s*(.+?)\\s*</span>.*?" // departure
+	static final Pattern P_CONNECTION_DETAILS_FINE = Pattern.compile("<span class=\"bold\">\\s*(.+?)\\s*</span>.*?" // departure
 			+ "(?:" //
 			+ "<span class=\"bold\">\\s*(.+?)\\s*</span>.*?" // line
 			+ "ab\\s+(?:<span.*?>.*?</span>)?\\s*(\\d+:\\d+)\\s*(?:<span.*?>.*?</span>)?" // departureTime
@@ -303,6 +303,8 @@ public final class BahnProvider implements NetworkProvider
 			+ "|" //
 			+ "(\\d+) Min\\..*?" // footway
 			+ "<span class=\"bold\">\\s*(.+?)\\s*</span><br />" // arrival
+			+ "|" //
+			+ "&#220;bergang.*?" + "<span class=\"bold\">\\s*(.+?)\\s*</span><br />" // arrival
 			+ ")", Pattern.DOTALL);
 	private static final Pattern P_CONNECTION_DETAILS_MESSAGES = Pattern
 			.compile("Dauer: \\d+:\\d+|(Anschlusszug nicht mehr rechtzeitig)|(Anschlusszug jedoch erreicht werden)|(nur teilweise dargestellt)|(L&#228;ngerer Aufenthalt)|(&#228;quivalentem Bahnhof)|(Bahnhof wird mehrfach durchfahren)");
@@ -339,8 +341,7 @@ public final class BahnProvider implements NetworkProvider
 						if (departure != null && firstDeparture == null)
 							firstDeparture = departure;
 
-						final String min = mDetFine.group(10);
-						if (min == null)
+						if (mDetFine.group(2) != null)
 						{
 							final String line = normalizeLine(ParserUtils.resolveEntities(mDetFine.group(2)));
 
@@ -370,8 +371,10 @@ public final class BahnProvider implements NetworkProvider
 							lastArrival = arrival;
 							lastArrivalTime = arrivalDateTime;
 						}
-						else
+						else if (mDetFine.group(10) != null)
 						{
+							final String min = mDetFine.group(10);
+
 							final String arrival = ParserUtils.resolveEntities(mDetFine.group(11));
 
 							if (parts.size() > 0 && parts.get(parts.size() - 1) instanceof Connection.Footway)
@@ -385,6 +388,12 @@ public final class BahnProvider implements NetworkProvider
 							}
 
 							lastArrival = arrival;
+						}
+						else
+						{
+							final String arrival = ParserUtils.resolveEntities(mDetFine.group(12));
+
+							parts.add(new Connection.Footway(0, departure, arrival));
 						}
 					}
 					else
