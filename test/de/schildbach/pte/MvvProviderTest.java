@@ -84,6 +84,46 @@ public class MvvProviderTest
 				+ "</td>\n");
 	}
 
+	@Test
+	public void footway()
+	{
+		assertFineConnectionDetails("\n" //
+				+ "<td colspan=\"4\">ab München Infanteriestraße 7  <a class=\"imgLink\" href=\"XSLT_TRIP_REQUEST2?language=de&amp;tripSelector5=on&amp;sessionID=MVV2_3994525266&amp;requestID=1&amp;tripSelection=on&amp;itdLPxx_view=map_5&amp;itdLPxx_img=FILELOAD?Filename=mvv2_4C6916821.png&amp;itdLPxx_partialRoute=1&amp;imageFormat=PNG&amp;imageWidth=400&amp;imageHeight=300&amp;imageOnly=1&amp;imageNoTiles=1&amp;itdLPxx_usage=departure\"><img src=\"images/pdf.gif\" border=\"0\" alt=\"Karte\" /></a>\n" //
+				+ "<br />\n" //
+				+ "</td>\n" //
+				+ "\n" //
+				+ "<td width=\"15\" valign=\"middle\">\n" //
+				+ "<img src=\"images/means/fuss.gif\" alt=\"Fussweg\" />\n" //
+				+ "</td>\n" //
+				+ "<td width=\"1\" valign=\"middle\" />\n" //
+				+ "<td>Fußweg\n" //
+				+ "											(ca. 3 Minuten)\n" //
+				+ "												</td>\n" //
+				+ "<td width=\"1\"> </td>\n" //
+				+ "\n" //
+				+ "<td colspan=\"4\">an Infanteriestraße Süd  <a class=\"imgLink\" href=\"XSLT_TRIP_REQUEST2?language=de&amp;tripSelector5=on&amp;sessionID=MVV2_3994525266&amp;requestID=1&amp;tripSelection=on&amp;itdLPxx_view=map_5&amp;itdLPxx_img=FILELOAD?Filename=mvv2_4C6916822.png&amp;itdLPxx_partialRoute=1&amp;imageFormat=PNG&amp;imageWidth=400&amp;imageHeight=300&amp;imageOnly=1&amp;imageNoTiles=1&amp;command=nop&amp;itdLPxx_usage=arrival\"><img src=\"images/pdf.gif\" border=\"0\" alt=\"Karte\" /></a>\n" //
+				+ "</td>\n");
+	}
+
+	@Test
+	public void footway2()
+	{
+		assertFineConnectionDetails("\n" //
+				+ "<td colspan=\"4\">ab Weimar Gleis 1<br />\n" //
+				+ "</td>\n" //
+				+ "\n" //
+				+ "<td width=\"15\" valign=\"middle\">\n" //
+				+ "<img src=\"images/means/fuss.gif\" alt=\"Fussweg\" />\n" //
+				+ "</td>\n" //
+				+ "<td width=\"1\" valign=\"middle\" />\n" //
+				+ "<td>Fußweg\n" //
+				+ "(ca. 2 Minuten)\n" //
+				+ "</td>\n" //
+				+ "<td width=\"1\"> </td>\n" //
+				+ "\n" //
+				+ "<td colspan=\"4\">an Weimar Gleis 2</td>\n");
+	}
+
 	private void assertFineConnectionDetails(String s)
 	{
 		Matcher m = MvvProvider.P_CONNECTION_DETAILS_FINE.matcher(s);

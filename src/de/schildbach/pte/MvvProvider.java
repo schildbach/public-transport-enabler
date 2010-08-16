@@ -365,9 +365,9 @@ public class MvvProvider implements NetworkProvider
 			+ "<td>\\s*(.*?)\\s*<br />Richtung\\s*(.*?)\\s*</td>.*?" //
 			+ "an (\\d+:\\d+)\\s+(.*?)\\s*<" //
 			+ "|" //
-			+ "ab\\s+(.*?)\\s*<a.*?" //
+			+ "ab\\s+(.*?)\\s*<.*?" //
 			+ "Fußweg[\\xa0\\s]+\\(ca\\.[\\xa0\\s]+(\\d+)[\\xa0\\s]+Minute.*?" //
-			+ "an\\s+(.*?)\\s*<a" //
+			+ "an\\s+(.*?)\\s*<" //
 			+ ").*?", Pattern.DOTALL);
 	private static final Pattern P_CONNECTION_DETAILS_ERRORS = Pattern.compile("(session has expired)", Pattern.CASE_INSENSITIVE);
 	private static final String SITZENBLEIBER = "Sitzenbleiber";
