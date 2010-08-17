@@ -583,6 +583,7 @@ public class MvvProvider implements NetworkProvider
 	private static final Pattern P_NORMALIZE_LINE_STADTBUS = Pattern.compile("1\\d{2}");
 	private static final Pattern P_NORMALIZE_LINE_NACHTBUS = Pattern.compile("N[48]\\d");
 	private static final Pattern P_NORMALIZE_LINE_REGIONALBUS = Pattern.compile("\\d{3}[A-Z]?");
+	private static final Pattern P_NORMALIZE_LINE_NUMBER = Pattern.compile("\\d{4}");
 
 	private String normalizeLine(final String product, final String line)
 	{
@@ -630,6 +631,8 @@ public class MvvProvider implements NetworkProvider
 				return "I" + line;
 			if (line.startsWith("CNL "))
 				return "I" + line;
+			if (P_NORMALIZE_LINE_NUMBER.matcher(line).matches())
+				return "?" + line;
 
 			throw new IllegalStateException("cannot normalize null product, line " + line);
 		}
