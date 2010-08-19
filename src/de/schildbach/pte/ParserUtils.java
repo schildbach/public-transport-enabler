@@ -65,6 +65,8 @@ public final class ParserUtils
 				connection.setConnectTimeout(SCRAPE_CONNECT_TIMEOUT);
 				connection.setReadTimeout(SCRAPE_READ_TIMEOUT);
 				connection.addRequestProperty("User-Agent", SCRAPE_USER_AGENT);
+				// workaround to disable Vodafone compression
+				connection.addRequestProperty("Cache-Control", "no-cache");
 
 				if (request != null)
 				{
