@@ -512,6 +512,8 @@ public class RmvProvider implements NetworkProvider
 				return "IEN" + number;
 			if (type.equals("CNL")) // CityNightLine
 				return "ICNL" + number;
+			if (type.equals("DNZ")) // Basel-Minsk, Nacht
+				return "IDNZ" + number;
 			if (type.equals("RB")) // RegionalBahn
 				return "RRB" + number;
 			if (type.equals("RE")) // RegionalExpress
@@ -536,6 +538,8 @@ public class RmvProvider implements NetworkProvider
 				return "BALT" + type.substring(3) + number;
 			if (type.equals("LTaxi"))
 				return "BLTaxi" + number;
+			if (type.equals("SCH"))
+				return "FSCH" + number;
 
 			throw new IllegalStateException("cannot normalize type " + type + " number " + number + " line " + line);
 		}
