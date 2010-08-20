@@ -27,7 +27,7 @@ public final class QueryDeparturesResult
 {
 	public enum Status
 	{
-		OK, NO_INFO, SERVICE_DOWN
+		OK, NO_INFO, INVALID_STATION, SERVICE_DOWN
 	}
 
 	public final String uri;

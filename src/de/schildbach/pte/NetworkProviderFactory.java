@@ -30,6 +30,7 @@ public final class NetworkProviderFactory
 	private static Reference<BahnProvider> bahnProviderRef;
 	private static Reference<MvvProvider> mvvProviderRef;
 	private static Reference<SbbProvider> sbbProviderRef;
+	private static Reference<OebbProvider> oebbProviderRef;
 
 	public static synchronized NetworkProvider provider(final String networkId)
 	{
@@ -98,6 +99,19 @@ public final class NetworkProviderFactory
 			sbbProviderRef = new SoftReference<SbbProvider>(provider);
 			return provider;
 		}
+		else if (networkId.equals(OebbProvider.NETWORK_ID))
+		{
+			if (oebbProviderRef != null)
+			{
+				final OebbProvider provider = oebbProviderRef.get();
+				if (provider != null)
+					return provider;
+			}
+
+			final OebbProvider provider = new OebbProvider();
+			oebbProviderRef = new SoftReference<OebbProvider>(provider);
+			return provider;
+		}
 		else
 		{
 			throw new IllegalArgumentException(networkId);
@@ -118,6 +132,8 @@ public final class NetworkProviderFactory
 			return MvvProvider.NETWORK_ID;
 		else if (provider instanceof SbbProvider)
 			return SbbProvider.NETWORK_ID;
+		else if (provider instanceof OebbProvider)
+			return OebbProvider.NETWORK_ID;
 		else
 			throw new IllegalArgumentException(provider.getClass().toString());
 	}
