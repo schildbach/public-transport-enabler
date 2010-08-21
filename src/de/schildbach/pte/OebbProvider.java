@@ -190,17 +190,141 @@ public class OebbProvider implements NetworkProvider
 	{
 		final String ucType = type.toUpperCase();
 
-		if (ucType.equals("OEC"))
+		if (ucType.equals("OEC")) // ÖBB-EuroCity
+			return 'I';
+		if (ucType.equals("OIC")) // ÖBB-InterCity
+			return 'I';
+		if (ucType.equals("EC")) // EuroCity
+			return 'I';
+		if (ucType.equals("IC")) // InterCity
+			return 'I';
+		if (ucType.equals("ICE")) // InterCityExpress
+			return 'I';
+		if (ucType.equals("X")) // Interconnex
+			return 'I';
+		if (ucType.equals("EN")) // EuroNight
+			return 'I';
+		if (ucType.equals("CNL")) // CityNightLine
+			return 'I';
+		if (ucType.equals("DNZ")) // Berlin-Saratov, Berlin-Moskva
+			return 'I';
+		if (ucType.equals("INT")) // Rußland
+			return 'I';
+		if (ucType.equals("D")) // Rußland
+			return 'I';
+		if (ucType.equals("RR")) // Finnland
+			return 'I';
+		if (ucType.equals("TLK")) // Tanie Linie Kolejowe (Polen)
+			return 'I';
+		if (ucType.equals("EE")) // Rumänien
+			return 'I';
+		if (ucType.equals("SC")) // Tschechien
+			return 'I';
+		if (ucType.equals("RJ")) // RailJet, Österreichische Bundesbahnen
+			return 'I';
+		if (ucType.equals("EST")) // Eurostar Frankreich
+			return 'I';
+		if (ucType.equals("ALS")) // Spanien
+			return 'I';
+		if (ucType.equals("ARC")) // Spanien
+			return 'I';
+		if (ucType.equals("TLG")) // Spanien, Madrid
+			return 'I';
+		if (ucType.equals("HOT")) // Spanien, Nacht
+			return 'I';
+		if (ucType.equals("AVE")) // Alta Velocidad Española, Spanien
+			return 'I';
+		if (ucType.equals("INZ")) // Schweden, Nacht
+			return 'I';
+		if (ucType.equals("OZ")) // Schweden, Oeresundzug
+			return 'I';
+		if (ucType.equals("X2")) // Schweden
+			return 'I';
+		if (ucType.equals("THA")) // Thalys
+			return 'I';
+		if (ucType.equals("TGV")) // Train à Grande Vitesse
+			return 'I';
+		if (ucType.equals("LYN")) // Dänemark
+			return 'I';
+		if (ucType.equals("ARZ")) // Frankreich, Nacht
+			return 'I';
+		if (ucType.equals("ES")) // Eurostar Italia
+			return 'I';
+		if (ucType.equals("ICN")) // Italien, Nacht
+			return 'I';
+		if (ucType.equals("UUU")) // Italien, Nacht
+			return 'I';
+		if (ucType.equals("RHI")) // ICE
+			return 'I';
+		if (ucType.equals("RHT")) // TGV
+			return 'I';
+		if (ucType.equals("TGD")) // TGV
+			return 'I';
+		if (ucType.equals("ECB")) // EC
+			return 'I';
+		if (ucType.equals("IRX")) // IC
+			return 'I';
+		if (ucType.equals("AIR"))
 			return 'I';
 
 		if (ucType.equals("R"))
 			return 'R';
 		if (ucType.equals("REX"))
 			return 'R';
+		if (ucType.equals("ZUG"))
+			return 'R';
 		if (ucType.equals("EZ")) // Erlebniszug
+			return 'R';
+		if (ucType.equals("S2")) // Helsinki-Turku
+			return 'R';
+		if (ucType.equals("RB")) // RegionalBahn
+			return 'R';
+		if (ucType.equals("RE"))
+			return 'R';
+		if (ucType.equals("DPN"))
+			return 'R';
+		if (ucType.equals("VIA"))
+			return 'R';
+		if (ucType.equals("PCC")) // Polen
+			return 'R';
+		if (ucType.equals("KM")) // Polen
+			return 'R';
+		if (ucType.equals("SKM")) // Polen
+			return 'R';
+		if (ucType.equals("SKW")) // Polen
+			return 'R';
+		if (ucType.equals("WKD")) // Warszawska Kolej Dojazdowa, Polen
+			return 'R';
+		if (ucType.equals("IR")) // Polen
+			return 'R';
+		if (ucType.equals("OS")) // Chop-Cierna nas Tisou
+			return 'R';
+		if (ucType.equals("SP")) // Polen
+			return 'R';
+		if (ucType.equals("EX")) // Polen
+			return 'R';
+		if (ucType.equals("E")) // Budapest, Ungarn
+			return 'R';
+		if (ucType.equals("IP")) // Ozd, Ungarn
+			return 'R';
+		if (ucType.equals("ZR")) // Bratislava, Slovakai
+			return 'R';
+		if (ucType.equals("CAT")) // Stockholm-Arlanda, Arlanda Express
+			return 'R';
+		if (ucType.equals("RT")) // Deutschland
+			return 'R';
+		if (ucType.equals("IRE")) // Interregio Express
+			return 'R';
+		if (ucType.equals("N")) // Frankreich, Tours
+			return 'R';
+		if (ucType.equals("DPF")) // VX=Vogtland Express
 			return 'R';
 
 		if (ucType.equals("S"))
+			return 'S';
+		if (ucType.equals("RSB")) // Schnellbahn Wien
+			return 'S';
+		if (ucType.equals("RER")) // Réseau Express Régional, Frankreich
 			return 'S';
 
 		if (ucType.equals("U"))
@@ -219,14 +343,31 @@ public class OebbProvider implements NetworkProvider
 			return 'B';
 		if (ucType.equals("ICB")) // ICBus
 			return 'B';
+		if (ucType.equals("FB")) // Polen
+			return 'B';
+		if (ucType.equals("BSV")) // Deutschland
+			return 'B';
+		if (ucType.equals("LT")) // Linien-Taxi
+			return 'B';
 
 		if (ucType.equals("SCH"))
+			return 'F';
+		if (ucType.equals("AS")) // SyltShuttle
 			return 'F';
 
 		if (ucType.equals("SB"))
 			return 'C';
 		if (ucType.equals("LIF"))
 			return 'C';
+
+		if (ucType.equals("U70")) // U.K.
+			return '?';
+		if (ucType.equals("R84"))
+			return '?';
+		if (ucType.equals("S84"))
+			return '?';
+		if (ucType.equals("T84"))
+			return '?';
 
 		return 0;
 	}

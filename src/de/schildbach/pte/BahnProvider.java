@@ -574,8 +574,15 @@ public final class BahnProvider implements NetworkProvider
 				return "IEST" + number;
 			if (type.equals("ES")) // Eurostar Italia
 				return "IES" + number;
-			if (type.equals("HOT")) // Spanien, Nachtzug?
+			if (type.equals("ALS")) // Spanien
+				return "IALS" + number;
+			if (type.equals("ARC")) // Spanien
+				return "IARC" + number;
+			if (type.equals("TLG")) // Spanien
+				return "ITLG" + number;
+			if (type.equals("HOT")) // Spanien, Nacht
 				return "IHOT" + number;
+
 			if (type.equals("R"))
 				return "R" + number;
 			if (type.equals("IR")) // InterRegio
@@ -706,12 +713,6 @@ public final class BahnProvider implements NetworkProvider
 				return "RVEN" + number;
 			if (type.equals("KD")) // Koleje Dolnośląskie
 				return "RKD" + number;
-			if (type.equals("ALS")) // Spanien
-				return "RALS" + number;
-			if (type.equals("TLG")) // Spanien
-				return "RTLG" + number;
-			if (type.equals("ARC")) // Spanien
-				return "RARC" + number;
 			if (type.equals("SKW")) // Polen
 				return "RSKW" + number;
 			if (type.equals("KM")) // Polen
@@ -728,6 +729,7 @@ public final class BahnProvider implements NetworkProvider
 				return "REX" + number;
 			if (type.equals("NZ")) // Norwegen
 				return "RNZ" + number;
+
 			if (type.equals("S"))
 				return "SS" + number;
 			if (type.equals("BSB")) // Breisgau S-Bahn
@@ -738,14 +740,17 @@ public final class BahnProvider implements NetworkProvider
 				return "SRSB" + number;
 			if (type.equals("CAT")) // City Airport Train, Schweden
 				return "SCAT" + number;
+
 			if (type.equals("U"))
 				return "UU" + number;
+
 			if (type.equals("STR"))
 				return "T" + number;
 			if (type.equals("RT")) // RegioTram
 				return "TRT" + number;
 			if (type.equals("Schw")) // Schwebebahn, gilt als "Straßenbahn besonderer Bauart"
 				return "TSchw" + number;
+
 			if (type.startsWith("Bus"))
 				return "B" + type.substring(3) + number;
 			if (type.startsWith("AST")) // Anruf-Sammel-Taxi
@@ -756,6 +761,7 @@ public final class BahnProvider implements NetworkProvider
 				return "BRFB" + type.substring(3) + number;
 			if (type.equals("RNV")) // Rhein-Neckar-Verkehr GmbH - TODO aufteilen in Tram/Bus/Fähre
 				return "BRNV" + number;
+
 			if (type.equals("Fähre"))
 				return "F" + number;
 			if (type.equals("Fäh"))
@@ -764,6 +770,7 @@ public final class BahnProvider implements NetworkProvider
 				return "FSchiff" + number;
 			if (type.equals("KAT")) // z.B. Friedrichshafen <-> Konstanz
 				return "FKAT" + number;
+
 			if (type.equals("ZahnR")) // Zahnradbahn, u.a. Zugspitzbahn
 				return "RZahnR" + number;
 			if (type.equals("Flug"))
