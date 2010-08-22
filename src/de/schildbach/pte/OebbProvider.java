@@ -74,7 +74,7 @@ public class OebbProvider implements NetworkProvider
 			+ "(?:" // 
 			+ "<table class=\"hafasResult\".*?>(.+?)</table>.*?" //
 			+ "(?:<table cellspacing=\"0\" class=\"hafasResult\".*?>(.+?)</table>|(verkehren an dieser Haltestelle keine))"//
-			+ "|(Eingabe kann nicht interpretiert))" //
+			+ "|(Eingabe kann nicht interpretiert)|(Verbindung zum Server konnte leider nicht hergestellt werden))" //
 			+ ".*?" //
 	, Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_HEAD_FINE = Pattern.compile(".*?" //
@@ -108,6 +108,8 @@ public class OebbProvider implements NetworkProvider
 				return new QueryDeparturesResult(uri, Status.NO_INFO);
 			else if (mHeadCoarse.group(4) != null)
 				return new QueryDeparturesResult(uri, Status.INVALID_STATION);
+			else if (mHeadCoarse.group(5) != null)
+				return new QueryDeparturesResult(uri, Status.SERVICE_DOWN);
 
 			final Matcher mHeadFine = P_DEPARTURES_HEAD_FINE.matcher(mHeadCoarse.group(1));
 			if (mHeadFine.matches())
