@@ -518,7 +518,6 @@ public final class BahnProvider implements NetworkProvider
 	private static String normalizeLine(final String line)
 	{
 		// TODO DPN Bad Reichenhall
-		// TODO EIC Polen?
 		// TODO EM East Midland? http://www.eastmidlandstrains.co.uk
 
 		if (line == null || line.length() == 0)
@@ -582,6 +581,8 @@ public final class BahnProvider implements NetworkProvider
 				return "ITLG" + number;
 			if (type.equals("HOT")) // Spanien, Nacht
 				return "IHOT" + number;
+			if (type.equals("EIC")) // Polen
+				return "IEIC" + number;
 
 			if (type.equals("R"))
 				return "R" + number;
@@ -709,6 +710,18 @@ public final class BahnProvider implements NetworkProvider
 				return "RSDG" + number;
 			if (type.equals("ARR")) // Ostfriesland
 				return "RARR" + number;
+			if (type.equals("MEL")) // Museumsbahn Merzig-Losheim
+				return "RMEL" + number;
+			if (type.equals("VEB")) // Vulkan-Eifel-Bahn Betriebsgesellschaft
+				return "RVEB" + number;
+			if (type.equals("P")) // Kasbachtalbahn
+				return "RP" + number;
+			if (type.equals("MSB")) // Mainschleifenbahn
+				return "RMSB" + number;
+			if (type.equals("KTB")) // Kandertalbahn
+				return "RKTB" + number;
+			if (type.equals("WTB")) // Wutachtalbahn
+				return "RWTB" + number;
 			if (type.equals("VEN")) // Rhenus Veniro
 				return "RVEN" + number;
 			if (type.equals("KD")) // Koleje Dolnośląskie

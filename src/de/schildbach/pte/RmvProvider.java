@@ -514,6 +514,8 @@ public class RmvProvider implements NetworkProvider
 				return "ICNL" + number;
 			if (type.equals("DNZ")) // Basel-Minsk, Nacht
 				return "IDNZ" + number;
+			if (type.equals("D")) // Prag-Fulda
+				return "ID" + number;
 			if (type.equals("RB")) // RegionalBahn
 				return "RRB" + number;
 			if (type.equals("RE")) // RegionalExpress

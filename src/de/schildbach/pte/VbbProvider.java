@@ -633,6 +633,8 @@ public final class VbbProvider implements NetworkProvider
 				return "RBKB" + number;
 			if (type.equals("Ausfl")) // Umgebung Berlin
 				return "RAusfl" + number;
+			if (type.equals("PKP")) // Polen
+				return "RPKP" + number;
 			if (type.equals("S"))
 				return "SS" + number;
 			if (type.equals("U"))
