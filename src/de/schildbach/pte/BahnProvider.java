@@ -517,8 +517,7 @@ public final class BahnProvider implements NetworkProvider
 
 	private static String normalizeLine(final String line)
 	{
-		// TODO DPN Bad Reichenhall
-		// TODO EM East Midland? http://www.eastmidlandstrains.co.uk
+		// TODO ARZ Simplon Tunnel: Brig - Iselle di Trasquera
 
 		if (line == null || line.length() == 0)
 			return null;
@@ -567,7 +566,7 @@ public final class BahnProvider implements NetworkProvider
 				return "IICN" + number;
 			if (type.equals("AVE")) // Alta Velocidad Española, Spanien
 				return "IAVE" + number;
-			if (type.equals("SC")) // SuperCity, cz
+			if (type.equals("SC")) // SuperCity, Tschechien
 				return "ISC" + number;
 			if (type.equals("EST")) // Eurostar Frankreich
 				return "IEST" + number;
@@ -581,8 +580,12 @@ public final class BahnProvider implements NetworkProvider
 				return "ITLG" + number;
 			if (type.equals("HOT")) // Spanien, Nacht
 				return "IHOT" + number;
+			if (type.equals("EM")) // EuroMed, Spanien
+				return "IEM" + number;
 			if (type.equals("EIC")) // Polen
 				return "IEIC" + number;
+			if (type.equals("FYR")) // Fyra, Amsterdam-Schiphol-Rotterdam
+				return "IFYR" + number;
 
 			if (type.equals("R"))
 				return "R" + number;
@@ -722,6 +725,10 @@ public final class BahnProvider implements NetworkProvider
 				return "RKTB" + number;
 			if (type.equals("WTB")) // Wutachtalbahn
 				return "RWTB" + number;
+			if (type.equals("DPNCbahn")) // Chiemsee-Bahn
+				return "RDPNCbahn" + number;
+			if (type.equals("LEO")) // Chiemgauer Lokalbahn
+				return "RLEO" + number;
 			if (type.equals("VEN")) // Rhenus Veniro
 				return "RVEN" + number;
 			if (type.equals("KD")) // Koleje Dolnośląskie
@@ -742,6 +749,12 @@ public final class BahnProvider implements NetworkProvider
 				return "REX" + number;
 			if (type.equals("NZ")) // Norwegen
 				return "RNZ" + number;
+			if (type.equals("IP")) // InterPici, Ungarn
+				return "RIP" + number;
+			if (type.equals("Zr")) // ZSR, Slovakai
+				return "RZr" + number;
+			if (type.equals("N")) // Frankreich, Tours, Orléans
+				return "RN" + number;
 
 			if (type.equals("S"))
 				return "SS" + number;
@@ -753,11 +766,15 @@ public final class BahnProvider implements NetworkProvider
 				return "SRSB" + number;
 			if (type.equals("CAT")) // City Airport Train, Schweden
 				return "SCAT" + number;
+			if (type.equals("DPN")) // S3 Bad Reichenhall-Freilassing
+				return "SDPN" + number;
 
 			if (type.equals("U"))
 				return "UU" + number;
 
 			if (type.equals("STR"))
+				return "T" + number;
+			if (type.equals("STRNE"))
 				return "T" + number;
 			if (type.equals("RT")) // RegioTram
 				return "TRT" + number;
@@ -766,6 +783,8 @@ public final class BahnProvider implements NetworkProvider
 
 			if (type.startsWith("Bus"))
 				return "B" + type.substring(3) + number;
+			if (type.equals("O")) // Salzburg
+				return "BO" + number;
 			if (type.startsWith("AST")) // Anruf-Sammel-Taxi
 				return "BAST" + type.substring(3) + number;
 			if (type.startsWith("ALT")) // Anruf-Linien-Taxi
@@ -783,6 +802,8 @@ public final class BahnProvider implements NetworkProvider
 				return "FSchiff" + number;
 			if (type.equals("KAT")) // z.B. Friedrichshafen <-> Konstanz
 				return "FKAT" + number;
+			if (type.equals("AS")) // SyltShuttle
+				return "FAS" + number;
 
 			if (type.equals("ZahnR")) // Zahnradbahn, u.a. Zugspitzbahn
 				return "RZahnR" + number;
