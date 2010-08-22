@@ -21,7 +21,11 @@ public class OebbProvider implements NetworkProvider
 
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
-		throw new UnsupportedOperationException();
+		for (final Capability capability : capabilities)
+			if (capability != Capability.DEPARTURES)
+				return false;
+
+		return true;
 	}
 
 	public List<String> autoCompleteStationName(final CharSequence constraint) throws IOException
@@ -216,11 +220,11 @@ public class OebbProvider implements NetworkProvider
 			return 'I';
 		if (ucType.equals("RR")) // Finnland
 			return 'I';
-		if (ucType.equals("TLK")) // Tanie Linie Kolejowe (Polen)
+		if (ucType.equals("TLK")) // Tanie Linie Kolejowe, Polen
 			return 'I';
 		if (ucType.equals("EE")) // Rumänien
 			return 'I';
-		if (ucType.equals("SC")) // Tschechien
+		if (ucType.equals("SC")) // SuperCity, Tschechien
 			return 'I';
 		if (ucType.equals("RJ")) // RailJet, Österreichische Bundesbahnen
 			return 'I';
@@ -283,7 +287,7 @@ public class OebbProvider implements NetworkProvider
 			return 'R';
 		if (ucType.equals("RE"))
 			return 'R';
-		if (ucType.equals("DPN"))
+		if (ucType.equals("DPN")) // TODO nicht evtl. doch eher ne S-Bahn?
 			return 'R';
 		if (ucType.equals("VIA"))
 			return 'R';
