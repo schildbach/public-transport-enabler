@@ -364,7 +364,7 @@ public class SbbProvider implements NetworkProvider
 			+ "<p class=\"qs\">\n(.+?)\n</p>.*?" //
 			+ "(?:(.+)|(an dieser Haltestelle keines)).*?" //
 			+ "<p class=\"links\">\n(.+?)\n</p>" //
-			+ "|(Informationen zu))" //
+			+ "|(Informationen zu)|(Verbindung zum Server konnte leider nicht hergestellt werden))" //
 			+ ".*?" //
 	, Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_HEAD_FINE = Pattern.compile("" // 
@@ -395,6 +395,8 @@ public class SbbProvider implements NetworkProvider
 				return new QueryDeparturesResult(uri, Status.NO_INFO);
 			else if (mHeadCoarse.group(5) != null)
 				return new QueryDeparturesResult(uri, Status.INVALID_STATION);
+			else if (mHeadCoarse.group(6) != null)
+				return new QueryDeparturesResult(uri, Status.SERVICE_DOWN);
 
 			final String c = mHeadCoarse.group(1) + mHeadCoarse.group(4);
 			final Matcher mHeadFine = P_DEPARTURES_HEAD_FINE.matcher(c);
