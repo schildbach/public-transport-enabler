@@ -1,6 +1,8 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -22,10 +24,10 @@ public class OebbProvider implements NetworkProvider
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
 		for (final Capability capability : capabilities)
-			if (capability != Capability.DEPARTURES)
-				return false;
+			if (capability == Capability.DEPARTURES || capability == Capability.CONNECTIONS)
+				return true;
 
-		return true;
+		return false;
 	}
 
 	private static final String NAME_URL = "http://fahrplan.oebb.at/bin/stboard.exe/dn?input=";
@@ -64,15 +66,289 @@ public class OebbProvider implements NetworkProvider
 		throw new UnsupportedOperationException();
 	}
 
-	public QueryConnectionsResult queryConnections(LocationType fromType, String from, LocationType viaType, String via, LocationType toType,
-			String to, Date date, boolean dep) throws IOException
+	private String connectionsQueryUri(final String from, final String via, final String to, final Date date, final boolean dep)
 	{
-		throw new UnsupportedOperationException();
+		final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yy");
+		final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
+		final StringBuilder uri = new StringBuilder();
+
+		uri.append("http://fahrplan.oebb.at/bin/query.exe/dn?ld=web25&OK");
+		uri.append("&REQ0HafasSearchForw=").append(dep ? "1" : "0");
+		uri.append("&REQ0JourneyDate=").append(ParserUtils.urlEncode(DATE_FORMAT.format(date)));
+		uri.append("&REQ0JourneyStopsS0G=").append(ParserUtils.urlEncode(from));
+		uri.append("&REQ0JourneyStopsS0A=255"); // 1=station, 2=city/street, 255=any
+		uri.append("&REQ0JourneyStopsS0ID="); // "tupel"?
+		if (via != null)
+		{
+			uri.append("&REQ0JourneyStops1.0G=").append(ParserUtils.urlEncode(via));
+			uri.append("&REQ0JourneyStops1.0A=255"); // 1=station, 2=city/street, 255=any
+			uri.append("&REQ0JourneyStops1.0ID=");
+		}
+		uri.append("&REQ0JourneyStopsZ0G=").append(ParserUtils.urlEncode(to));
+		uri.append("&REQ0JourneyStopsZ0A=255"); // 1=station, 2=city/street, 255=any
+		uri.append("&REQ0JourneyStopsZ0ID=");
+		uri.append("&REQ0JourneyTime=").append(ParserUtils.urlEncode(TIME_FORMAT.format(date)));
+		uri.append("&REQ0JourneyProduct_list=0:1111111111010000-000000");
+		uri.append("&existHafasAttrInc=yes");
+		uri.append("&existHafasDemo3=yes");
+		uri.append("&queryPageDisplayed=yes");
+		uri.append("&start=Suchen");
+
+		return uri.toString();
+	}
+
+	private static final Pattern P_PRE_ADDRESS = Pattern.compile(
+			"<select.*? name=\"(REQ0JourneyStopsS0K|REQ0JourneyStopsZ0K|REQ0JourneyStops1\\.0K)\".*?>(.*?)</select>", Pattern.DOTALL);
+	private static final Pattern P_ADDRESSES = Pattern.compile("<option.*?>\\s*(.*?)\\s*</option>", Pattern.DOTALL);
+	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern.compile("(keine Verbindung gefunden werden)");
+
+	public QueryConnectionsResult queryConnections(final LocationType fromType, final String from, final LocationType viaType, final String via,
+			final LocationType toType, final String to, final Date date, final boolean dep) throws IOException
+	{
+		final String uri = connectionsQueryUri(from, via, to, date, dep);
+		final CharSequence page = ParserUtils.scrape(uri);
+
+		final Matcher mError = P_CHECK_CONNECTIONS_ERROR.matcher(page);
+		if (mError.find())
+		{
+			if (mError.group(1) != null)
+				return QueryConnectionsResult.NO_CONNECTIONS;
+		}
+
+		List<String> fromAddresses = null;
+		List<String> viaAddresses = null;
+		List<String> toAddresses = null;
+
+		final Matcher mPreAddress = P_PRE_ADDRESS.matcher(page);
+		while (mPreAddress.find())
+		{
+			final String type = mPreAddress.group(1);
+			final String options = mPreAddress.group(2);
+
+			final Matcher mAddresses = P_ADDRESSES.matcher(options);
+			final List<String> addresses = new ArrayList<String>();
+			while (mAddresses.find())
+			{
+				final String address = ParserUtils.resolveEntities(mAddresses.group(1)).trim();
+				if (!addresses.contains(address))
+					addresses.add(address);
+			}
+
+			if (type.equals("REQ0JourneyStopsS0K"))
+				fromAddresses = addresses;
+			else if (type.equals("REQ0JourneyStopsZ0K"))
+				toAddresses = addresses;
+			else if (type.equals("REQ0JourneyStops1.0K"))
+				viaAddresses = addresses;
+			else
+				throw new IOException(type);
+		}
+
+		if (fromAddresses != null || viaAddresses != null || toAddresses != null)
+			return new QueryConnectionsResult(QueryConnectionsResult.Status.AMBIGUOUS, fromAddresses, viaAddresses, toAddresses);
+		else
+			return queryConnections(uri, page);
 	}
 
 	public QueryConnectionsResult queryMoreConnections(final String uri) throws IOException
 	{
-		throw new UnsupportedOperationException();
+		final CharSequence page = ParserUtils.scrape(uri);
+
+		return queryConnections(uri, page);
+	}
+
+	private static final Pattern P_CONNECTIONS_FORM_ACTION = Pattern.compile("" //
+			+ "<form name=\"tp_results_form\" action=\"(http://fahrplan.oebb.at/bin/query.exe/.*?)#.*?>" // action
+	, Pattern.DOTALL);
+	private static final Pattern P_CONNECTIONS_PAGE = Pattern.compile(".*?" //
+			+ "<form name=\"tp_results_form\" action=\"(http://fahrplan.oebb.at/bin/query.exe/.*?)#.*?>.*?" // action
+			+ "<table class=\"hafasResult\" cellspacing=\"0\" summary=\"Ihre Anfrage\">\n(.*?)\n</table>.*?" // header
+			+ "<table cellspacing=\"0\" class=\"hafasResult\" style=\"width:100%;\" summary=\"Verbindungen &#220;bersicht\">\n" //
+			+ "(.*?<table cellspacing=\"0\">(.*?)</table>.*?)\n" // connections overview
+			+ "</table>.*?" //
+			+ "<table cellspacing=\"0\" class=\"hafasResult\" style=\"width: 100%;\" summary=\"Verbindungen Detailansicht\">\n" //
+			+ "(.*?)\n" // connection details
+			+ "</table>\n<div.*?" //
+	, Pattern.DOTALL);
+	private static final Pattern P_CONNECTIONS_HEAD = Pattern.compile(".*?" //
+			+ "von:.*?<td .*?>\\s*(.*?)\\s*</td>.*?" // from
+			+ "Datum:.*?<td .*?>.., (\\d{2}\\.\\d{2}\\.\\d{2})</td>.*?" // date
+			+ "nach:.*?<td .*?>\\s*(.*?)\\s*</td>.*?" // to
+			+ "(?:\"(REQ0HafasScrollDir=2&guiVCtrl_connection_detailsOut_add_selection&)\".*?)?" // linkEarlier
+			+ "(?:\"(REQ0HafasScrollDir=1&guiVCtrl_connection_detailsOut_add_selection&)\".*?)?" // linkLater
+	, Pattern.DOTALL);
+	private static final Pattern P_CONNECTIONS_COARSE = Pattern.compile("<tr class=\"(?:selected|tpOverview)\">\n(.*?)</tr>", Pattern.DOTALL);
+	private static final Pattern P_CONNECTIONS_FINE = Pattern.compile(".*?" //
+			+ "name=\"guiVCtrl_connection_detailsOut_select_([\\w-]+)\".*?" // id
+			+ "<td headers=\"hafasOVDate\".*?>(\\d{2}\\.\\d{2}\\.\\d{2})" // departureDate
+			+ "(?:<br />(\\d{2}\\.\\d{2}\\.\\d{2}))?.*?" // arrivalDate
+			+ "<td class=\"sepline\">(\\d{1,2}:\\d{2})" // departureTime
+			+ "<br />(\\d{1,2}:\\d{2}).*?" // arrivalTime
+	, Pattern.DOTALL);
+	private static final Pattern P_CONNECTIONS_DETAILS_COARSE = Pattern.compile("Detailansicht<a name=\"cis_([\\w-]+)\">" // id
+			+ "(.*?)" //
+			+ "\nDauer:", Pattern.DOTALL);
+	private static final Pattern P_CONNECTION_DETAILS_COARSE = Pattern.compile("<tr class=\"tpDetails\">\n(.*?)\n</tr>\n" //
+			+ "<tr class=\"tpDetails(?: special)?\">\n(.*?)\n</tr>\n<tr>\n(.*?)\n</tr>", Pattern.DOTALL);
+	private static final Pattern P_CONNECTION_DETAILS_FINE = Pattern.compile(".*?" //
+			+ "<td headers=\"hafasDTL\\d+_Stop\".*?>\n" //
+			+ "(?:<a href=\"http://fahrplan\\.oebb\\.at/bin/stboard\\.exe/dn.*?input=.*?%23(\\d+)&.*?>)?" // departureId
+			+ "([^<]*?)<.*?" // departure
+			+ "<td headers=\"hafasDTL\\d+_Date\".*?>\n(?:(\\d{2}\\.\\d{2}\\.\\d{2})|&nbsp;)\n</td>.*?" // departureDate
+			+ "<td headers=\"hafasDTL\\d+_TimeDep\".*?>(?:(\\d{2}:\\d{2})|&nbsp;)</td>.*?" // departureTime
+			+ "<td headers=\"hafasDTL\\d+_Platform\".*?>\\s*(?:&nbsp;|(.*?))\\s*</td>.*?" // departurePosition
+			+ "<img src=\"/img/vs_oebb/(\\w+?)_pic.gif\".*?" // lineType
+			+ "(?:<a href=\"http://fahrplan\\.oebb\\.at/bin/traininfo\\.exe/dn.*?>(.*?)</a>.*?)?" // line
+			+ "<td headers=\"hafasDTL\\d+_Stop\".*?>\n" //
+			+ "(?:<a href=\"http://fahrplan\\.oebb\\.at/bin/stboard\\.exe/dn.*?input=.*?%23(\\d+)&.*?>)?" // arrivalId
+			+ "([^<]*?)<.*?" // arrival
+			+ "<td headers=\"hafasDTL\\d+_Date\".*?>\n(?:(\\d{2}\\.\\d{2}\\.\\d{2})|&nbsp;)\n</td>.*?" // arrivalDate
+			+ "<td headers=\"hafasDTL\\d+_TimeDep\".*?>(?:(\\d{2}:\\d{2})|&nbsp;)</td>.*?" // arrivalTime
+			+ "<td headers=\"hafasDTL\\d+_Platform\".*?>\\s*(?:&nbsp;|(.*?))\\s*</td>.*?" // arrivalPosition
+			+ "(?:ca\\. (\\d+) Min\\.\n.*?)?" // min
+	, Pattern.DOTALL);
+
+	private QueryConnectionsResult queryConnections(final String firstUri, final CharSequence firstPage) throws IOException
+	{
+		// ugly workaround to fetch all details
+		final Matcher mFormAction = P_CONNECTIONS_FORM_ACTION.matcher(firstPage);
+		if (!mFormAction.find())
+			throw new IOException("cannot find form action in '" + firstPage + "' on " + firstUri);
+		final String uri = mFormAction.group(1) + "&guiVCtrl_connection_detailsOut_add_group_overviewOut=yes";
+		final CharSequence page = ParserUtils.scrape(uri);
+
+		// parse page
+		final Matcher mPage = P_CONNECTIONS_PAGE.matcher(page);
+		if (mPage.matches())
+		{
+			final String action = mPage.group(1);
+			final String headSet = mPage.group(2) + mPage.group(4);
+
+			final Matcher mHead = P_CONNECTIONS_HEAD.matcher(headSet);
+			if (mHead.matches())
+			{
+				final String from = ParserUtils.resolveEntities(mHead.group(1));
+				final Date currentDate = ParserUtils.parseDate(mHead.group(2));
+				final String to = ParserUtils.resolveEntities(mHead.group(3));
+				final String linkEarlier = mHead.group(4) != null ? action + "&REQ0HafasScrollDir=2" + ParserUtils.resolveEntities(mHead.group(4))
+						: null;
+				final String linkLater = mHead.group(5) != null ? action + "&REQ0HafasScrollDir=1" + ParserUtils.resolveEntities(mHead.group(5))
+						: null;
+				final List<Connection> connections = new ArrayList<Connection>();
+
+				final Matcher mConCoarse = P_CONNECTIONS_COARSE.matcher(mPage.group(3));
+				while (mConCoarse.find())
+				{
+					final Matcher mConFine = P_CONNECTIONS_FINE.matcher(mConCoarse.group(1));
+					if (mConFine.matches())
+					{
+						final String id = mConFine.group(1);
+						final Date departureDate = ParserUtils.parseDate(mConFine.group(2));
+						final Date arrivalDate = mConFine.group(3) != null ? ParserUtils.parseDate(mConFine.group(3)) : null;
+						final Date departureTime = ParserUtils.joinDateTime(departureDate, ParserUtils.parseTime(mConFine.group(4)));
+						final Date arrivalTime = ParserUtils.joinDateTime(arrivalDate != null ? arrivalDate : departureDate, ParserUtils
+								.parseTime(mConFine.group(5)));
+						final String link = uri + "#" + id; // TODO use print link?
+
+						final Connection connection = new Connection(id, link, departureTime, arrivalTime, null, null, 0, from, 0, to,
+								new ArrayList<Connection.Part>(1));
+						connections.add(connection);
+					}
+					else
+					{
+						throw new IllegalArgumentException("cannot parse '" + mConCoarse.group(1) + "' on " + uri);
+					}
+				}
+
+				final Matcher mConDetCoarse = P_CONNECTIONS_DETAILS_COARSE.matcher(mPage.group(5));
+				while (mConDetCoarse.find())
+				{
+					final String id = mConDetCoarse.group(1);
+					final Connection connection = findConnection(connections, id);
+
+					Date lastDate = null;
+
+					final Matcher mDetCoarse = P_CONNECTION_DETAILS_COARSE.matcher(mConDetCoarse.group(2));
+					while (mDetCoarse.find())
+					{
+						final String set = mDetCoarse.group(1) + mDetCoarse.group(2) + mDetCoarse.group(3);
+
+						final Matcher mDetFine = P_CONNECTION_DETAILS_FINE.matcher(set);
+						if (mDetFine.matches())
+						{
+							final String departure = ParserUtils.resolveEntities(mDetFine.group(2));
+
+							Date departureDate = mDetFine.group(3) != null ? ParserUtils.parseDate(mDetFine.group(3)) : null;
+							if (departureDate != null)
+								lastDate = departureDate;
+							else
+								departureDate = lastDate;
+
+							final String lineType = mDetFine.group(6);
+
+							final String arrival = ParserUtils.resolveEntities(mDetFine.group(9));
+
+							Date arrivalDate = mDetFine.group(10) != null ? ParserUtils.parseDate(mDetFine.group(10)) : null;
+							if (arrivalDate != null)
+								lastDate = arrivalDate;
+							else
+								arrivalDate = lastDate;
+
+							if (!lineType.equals("fuss"))
+							{
+								final int departureId = Integer.parseInt(mDetFine.group(1));
+
+								final Date departureTime = ParserUtils.joinDateTime(departureDate, ParserUtils.parseTime(mDetFine.group(4)));
+
+								final String departurePosition = mDetFine.group(5) != null ? ParserUtils.resolveEntities(mDetFine.group(5)) : null;
+
+								final String line = normalizeLine(lineType, ParserUtils.resolveEntities(mDetFine.group(7)));
+
+								final int arrivalId = Integer.parseInt(mDetFine.group(8));
+
+								final Date arrivalTime = ParserUtils.joinDateTime(arrivalDate, ParserUtils.parseTime(mDetFine.group(11)));
+
+								final String arrivalPosition = mDetFine.group(12) != null ? ParserUtils.resolveEntities(mDetFine.group(12)) : null;
+
+								final Connection.Trip trip = new Connection.Trip(line, LINES.get(line.charAt(0)), null, departureTime,
+										departurePosition, departureId, departure, arrivalTime, arrivalPosition, arrivalId, arrival);
+								connection.parts.add(trip);
+							}
+							else
+							{
+								final int min = Integer.parseInt(mDetFine.group(13));
+
+								final Connection.Footway footway = new Connection.Footway(min, departure, arrival);
+								connection.parts.add(footway);
+							}
+						}
+						else
+						{
+							throw new IllegalArgumentException("cannot parse '" + set + "' on " + uri);
+						}
+					}
+				}
+
+				return new QueryConnectionsResult(uri, from, to, currentDate, linkEarlier, linkLater, connections);
+			}
+			else
+			{
+				throw new IllegalArgumentException("cannot parse '" + headSet + "' on " + uri);
+			}
+		}
+		else
+		{
+			throw new IOException(page.toString());
+		}
+	}
+
+	private Connection findConnection(final List<Connection> connections, final String id)
+	{
+		for (final Connection connection : connections)
+			if (connection.id.equals(id))
+				return connection;
+
+		return null;
 	}
 
 	public GetConnectionDetailsResult getConnectionDetails(final String connectionUri) throws IOException
