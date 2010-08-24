@@ -18,6 +18,7 @@
 package de.schildbach.pte;
 
 import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.assertNotNull;
 
 import java.util.regex.Matcher;
 
@@ -113,7 +114,7 @@ public class SbbProviderTest
 	}
 
 	@Test
-	public void footway()
+	public void footwayFromStationToStation()
 	{
 		assertFineConnectionDetails("\n" //
 				+ "<td headers=\"stops-0\" class=\"stop-station-icon\" valign=\"top\">\n" //
@@ -150,10 +151,52 @@ public class SbbProviderTest
 				+ "</td>\n");
 	}
 
+	@Test
+	public void footwayFromStationToAddress()
+	{
+		assertFineConnectionDetails("\n" //
+				+ "<td headers=\"stops-0\" class=\"stop-station-icon\" valign=\"top\">\n" //
+				+ "<a href=\"http://fahrplan.sbb.ch/bin/query.exe/dn?ld=&i=0y.01800219.1282687338&n=1&uscid=30\"><img src=\"/img/2/icon_map_location.gif\" width=\"12\" height=\"12\" border=\"0\" alt=\"Umgebungskarte: Einsiedeln, Birchli/Garage\" hspace=\"3\" style=\"vertical-align:middle;margin-right:4px;\" /></a>\n" //
+				+ "</td>\n" //
+				+ "<td headers=\"stops-0\" class=\"stop-station\">\n" //
+				+ "<a href=\"http://fahrplan.sbb.ch/bin/bhftafel.exe/dn?seqnr=1&ident=0y.01800219.1282687338&input=8580858&boardType=dep&time=08:09\" title=\"Haltestelleninformation: Einsiedeln, Birchli/Garage\">Einsiedeln, Birchli/Garage</a></td>\n" //
+				+ "<td headers=\"date-0\" class=\"date\" align=\"left\">\n" //
+				+ "</td>\n" //
+				+ "<td headers=\"time-0\" class=\"time prefix timeLeft\" align=\"left\" nowrap=\"nowrap\">&nbsp;</td><td headers=\"time-0\" class=\"time timeRight\" align=\"left\" nowrap=\"nowrap\">&nbsp;</td><td headers=\"platform-0\" class=\"platform\" align=\"left\">\n" //
+				+ "</td>\n" //
+				+ "<td headers=\"products-0\" class=\"products last\" style=\"white-space:nowrap;\" rowspan=\"2\" valign=\"top\">\n" //
+				+ "<img src=\"/img/2/products/fuss_pic.gif\" width=\"18\" height=\"18\" border=\"0\" vspace=\"2\" alt=\"Fussweg\" /><br />\n" //
+				+ "<a href=\"http://fahrplan.sbb.ch/bin/query.exe/dn?ld=&i=0y.01800219.1282687338&n=1&uscid=31\">Fussweg</a>\n" //
+				+ "</td>\n" //
+				+ "<td headers=\"capacity-0\" class=\"capacity last\" style=\"white-space:nowrap;\" rowspan=\"2\" valign=\"top\">\n" //
+				+ "<div style=\"width:65px;height:15px;line-height:15px;\">\n" //
+				+ "<div style=\"float:left;width:30px;height:15px;line-height:15px;\">\n" //
+				+ "</div>\n" //
+				+ "<div style=\"float:left;width:30px;height:15px;line-height:15px;margin-left:4px;\">\n" //
+				+ "</div>\n" //
+				+ "</div>\n" //
+				+ "</td>\n" //
+				+ "<td headers=\"remarks-0\" class=\"remarks last\" rowspan=\"2\" valign=\"top\">\n" //
+				+ "9 Min. </td>\n" //
+				+ "\n" //
+				+ "<td headers=\"stops-0\"  class=\"stop-station-icon last\" valign=\"top\">\n" //
+				+ "<a href=\"http://fahrplan.sbb.ch/bin/query.exe/dn?ld=&i=0y.01800219.1282687338&n=1&uscid=32\"><img src=\"/img/2/icon_map_location.gif\" width=\"12\" height=\"12\" border=\"0\" alt=\"Umgebungskarte: 8840 Einsiedeln, Erlenmoosweg 24\" hspace=\"3\" style=\"vertical-align:middle;margin-right:4px;\" /></a></td>\n" //
+				+ "<td headers=\"stops-0\" class=\"stop-station last\">\n" //
+				+ "8840 Einsiedeln, Erlenmoosweg 24</td>\n" //
+				+ "<td headers=\"date-0\" class=\"date last\" align=\"left\">\n" //
+				+ "</td>\n" //
+				+ "<td headers=\"time-0\" class=\"time prefix last timeLeft\" align=\"left\" nowrap=\"nowrap\">&nbsp;</td><td headers=\"time-0\" class=\"time last timeRight\" align=\"left\" nowrap=\"nowrap\">&nbsp;</td><td headers=\"platform-0\" class=\"platform last\" align=\"left\">\n" //
+				+ "</td>\n");
+	}
+
 	private void assertFineConnectionDetails(String s)
 	{
 		Matcher m = SbbProvider.P_CONNECTION_DETAILS_FINE.matcher(s);
 		assertTrue(m.matches());
+
 		// ParserUtils.printGroups(m);
+
+		assertNotNull(m.group(2)); // departure
+		assertNotNull(m.group(10)); // arrival
 	}
 }

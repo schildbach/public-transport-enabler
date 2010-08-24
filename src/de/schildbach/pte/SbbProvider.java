@@ -103,16 +103,16 @@ public class SbbProvider implements NetworkProvider
 		uri.append("&REQ0HafasSkipLongChanges=1");
 		uri.append("&REQ0JourneyDate=").append(ParserUtils.urlEncode(DATE_FORMAT.format(date)));
 		uri.append("&REQ0JourneyStopsS0G=").append(ParserUtils.urlEncode(from));
-		uri.append("&REQ0JourneyStopsS0A=1");
+		uri.append("&REQ0JourneyStopsS0A=7"); // any
 		uri.append("&REQ0JourneyStopsS0ID=");
 		if (via != null)
 		{
 			uri.append("&REQ0JourneyStops1.0G=").append(ParserUtils.urlEncode(via));
-			uri.append("&REQ0JourneyStops1.0A=1");
+			uri.append("&REQ0JourneyStops1.0A=7"); // any
 			uri.append("&REQ0JourneyStops1.0ID=");
 		}
 		uri.append("&REQ0JourneyStopsZ0G=").append(ParserUtils.urlEncode(to));
-		uri.append("&REQ0JourneyStopsZ0A=1");
+		uri.append("&REQ0JourneyStopsZ0A=7"); // any
 		uri.append("&REQ0JourneyStopsZ0ID=");
 		uri.append("&REQ0JourneyTime=").append(ParserUtils.urlEncode(TIME_FORMAT.format(date)));
 		uri.append("&queryPageDisplayed=yes");
@@ -202,18 +202,21 @@ public class SbbProvider implements NetworkProvider
 	private static final Pattern P_CONNECTION_DETAILS_COARSE = Pattern.compile("<tr>(.*?class=\"stop-station-icon\".*?)</tr>\n?" //
 			+ "<tr>(.*?class=\"stop-station-icon last\".*?)</tr>", Pattern.DOTALL);
 	static final Pattern P_CONNECTION_DETAILS_FINE = Pattern.compile(".*?" //
-			+ "<a href=\"http://fahrplan\\.sbb\\.ch/bin/bhftafel\\.exe/dn.*?input=(\\d+)&.*?\" .*?>" // departureId
-			+ "(.*?)</a>.*?" // departure
-			+ "<td .*?class=\"date.*?>\n?(?:.., (\\d{2}\\.\\d{2}\\.\\d{2})\n?)?</td>.*?" // departureDate
-			+ "<td .*?class=\"time.*?>(?:(\\d{2}:\\d{2})|&nbsp;)</td>.*?" // departureTime
-			+ "<td .*?class=\"platform.*?>\n?\\s*(.+?)?\\s*\n?</td>.*?" // departurePosition
-			+ "<img src=\"/img/2/products/(\\w+?)_pic.gif\" .*? alt=\"(.*?)\" .*?><br />.*?" // line
-			+ "(?:<td .*?class=\"remarks.*?>\n?(\\d+) Min\\..*?</td>.*?)?" // min
-			+ "<a href=\"http://fahrplan\\.sbb\\.ch/bin/bhftafel\\.exe/dn.*?input=(\\d+)&.*?\" .*?>" // arrivalId,
-			+ "(.*?)</a>.*?" // arrival
-			+ "<td .*?class=\"date.*?>\n?(?:.., (\\d{2}\\.\\d{2}\\.\\d{2})\n?)?</td>.*?" // arrivalDate
-			+ "<td .*?class=\"time.*?>(?:(\\d{2}:\\d{2})|&nbsp;)</td>.*?" // arrivalTime
-			+ "<td .*?class=\"platform.*?>\n?\\s*(.+?)?\\s*\n?</td>.*?" // arrivalPosition
+			+ "<td headers=\"stops-\\d+\" class=\"stop-station\">\n" //
+			+ "(?:<a href=\"http://fahrplan\\.sbb\\.ch/bin/bhftafel\\.exe/dn.*?input=(\\d+)&.*?>)?" // departureId
+			+ "([^\n<]*?)<.*?" // departure
+			+ "<td headers=\"date-\\d+\"[^>]*>\n(?:.., (\\d{2}\\.\\d{2}\\.\\d{2})\n)?</td>.*?" // departureDate
+			+ "<td headers=\"time-\\d+\"[^>]*>(?:(\\d{2}:\\d{2})|&nbsp;)</td>.*?" // departureTime
+			+ "<td headers=\"platform-\\d+\"[^>]*>\\s*(.+?)?\\s*</td>.*?" // departurePosition
+			+ "<img src=\"/img/2/products/(\\w+?)_pic.gif\".*?" // lineType
+			+ "(?:<a href=\"http://fahrplan\\.sbb\\.ch/bin/traininfo\\.exe/dn.*?>\\s*(.*?)\\s*</a>|" // line
+			+ "\n(\\d+) Min\\.).*?" // min
+			+ "<td headers=\"stops-\\d+\" class=\"stop-station last\">\n" //
+			+ "(?:<a href=\"http://fahrplan\\.sbb\\.ch/bin/bhftafel\\.exe/dn.*?input=(\\d+)&.*?>)?" // arrivalId
+			+ "([^\n<]*?)<.*?" // arrival
+			+ "<td headers=\"date-\\d+\"[^>]*>\n(?:.., (\\d{2}\\.\\d{2}\\.\\d{2})\n)?</td>.*?" // arrivalDate
+			+ "<td headers=\"time-\\d+\"[^>]*>(?:(\\d{2}:\\d{2})|&nbsp;)</td>.*?" // arrivalTime
+			+ "<td headers=\"platform-\\d+\"[^>]*>\\s*(.+?)?\\s*</td>.*?" // arrivalPosition
 	, Pattern.DOTALL);
 
 	private QueryConnectionsResult queryConnections(final String uri, final CharSequence page) throws IOException
@@ -269,23 +272,27 @@ public class SbbProvider implements NetworkProvider
 					final Matcher mDetFine = P_CONNECTION_DETAILS_FINE.matcher(set);
 					if (mDetFine.matches())
 					{
-						final int departureId = Integer.parseInt(mDetFine.group(1));
-
 						final String departure = ParserUtils.resolveEntities(mDetFine.group(2));
+
+						Date departureDate = mDetFine.group(3) != null ? ParserUtils.parseDate(mDetFine.group(3)) : null;
+						if (departureDate != null)
+							lastDate = departureDate;
+						else
+							departureDate = lastDate;
 
 						final String lineType = mDetFine.group(6);
 
-						final int arrivalId = Integer.parseInt(mDetFine.group(9));
-
 						final String arrival = ParserUtils.resolveEntities(mDetFine.group(10));
+
+						Date arrivalDate = mDetFine.group(11) != null ? ParserUtils.parseDate(mDetFine.group(11)) : null;
+						if (arrivalDate != null)
+							lastDate = arrivalDate;
+						else
+							arrivalDate = lastDate;
 
 						if (!lineType.equals("fuss") && !lineType.equals("transfer"))
 						{
-							Date departureDate = mDetFine.group(3) != null ? ParserUtils.parseDate(mDetFine.group(3)) : null;
-							if (departureDate != null)
-								lastDate = departureDate;
-							else
-								departureDate = lastDate;
+							final int departureId = Integer.parseInt(mDetFine.group(1));
 
 							final Date departureTime = ParserUtils.joinDateTime(departureDate, ParserUtils.parseTime(mDetFine.group(4)));
 
@@ -293,11 +300,7 @@ public class SbbProvider implements NetworkProvider
 
 							final String line = normalizeLine(lineType, ParserUtils.resolveEntities(mDetFine.group(7)));
 
-							Date arrivalDate = mDetFine.group(11) != null ? ParserUtils.parseDate(mDetFine.group(11)) : null;
-							if (arrivalDate != null)
-								lastDate = arrivalDate;
-							else
-								arrivalDate = lastDate;
+							final int arrivalId = Integer.parseInt(mDetFine.group(9));
 
 							final Date arrivalTime = ParserUtils.joinDateTime(arrivalDate, ParserUtils.parseTime(mDetFine.group(12)));
 
@@ -330,7 +333,7 @@ public class SbbProvider implements NetworkProvider
 		}
 	}
 
-	private Connection findConnection(List<Connection> connections, String id)
+	private Connection findConnection(final List<Connection> connections, final String id)
 	{
 		for (final Connection connection : connections)
 			if (connection.id.equals(id))

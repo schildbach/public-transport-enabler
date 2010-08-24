@@ -51,4 +51,14 @@ public class SbbProviderLiveTest
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
 		System.out.println(moreResult);
 	}
+
+	@Test
+	public void connectionWithFootway() throws Exception
+	{
+		final QueryConnectionsResult result = provider.queryConnections(LocationType.ANY, "Spiez, Seestraße 62", null, null, LocationType.ANY,
+				"Einsiedeln, Erlenmoosweg 24", new Date(), true);
+		System.out.println(result);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
+		System.out.println(moreResult);
+	}
 }
