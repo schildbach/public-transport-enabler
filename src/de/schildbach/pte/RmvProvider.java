@@ -489,7 +489,7 @@ public class RmvProvider implements NetworkProvider
 		return new Departure(parsed.getTime(), line, line != null ? LINES.get(line.charAt(0)) : null, 0, destination);
 	}
 
-	private static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zÄÖÜäöüß]+)[\\s-]*(.*)");
+	private static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zÄÖÜäöüßéèêáàâóòô]+)[\\s-]*(.*)");
 
 	private static String normalizeLine(final String line)
 	{
