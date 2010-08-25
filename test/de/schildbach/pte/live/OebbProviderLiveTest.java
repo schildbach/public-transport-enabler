@@ -61,4 +61,14 @@ public class OebbProviderLiveTest
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
 		System.out.println(moreResult);
 	}
+
+	@Test
+	public void connectionWithFootway2() throws Exception
+	{
+		final QueryConnectionsResult result = provider.queryConnections(LocationType.ANY, "Wien, Krottenbachstraße 110!", null, null,
+				LocationType.ANY, "Wien, Meidlinger Hauptstraße 1!", new Date(), true);
+		System.out.println(result);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
+		System.out.println(moreResult);
+	}
 }

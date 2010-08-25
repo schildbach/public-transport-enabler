@@ -193,7 +193,7 @@ public class OebbProvider implements NetworkProvider
 	private static final Pattern P_CONNECTION_DETAILS_FINE = Pattern.compile(".*?" //
 			+ "<td headers=\"hafasDTL\\d+_Stop\".*?>\n" //
 			+ "(?:<a href=\"http://fahrplan\\.oebb\\.at/bin/stboard\\.exe/dn.*?input=.*?%23(\\d+)&.*?>)?" // departureId
-			+ "([^<]*?)<.*?" // departure
+			+ "([^\n<]*).*?" // departure
 			+ "<td headers=\"hafasDTL\\d+_Date\".*?>\n(?:(\\d{2}\\.\\d{2}\\.\\d{2})|&nbsp;)\n</td>.*?" // departureDate
 			+ "<td headers=\"hafasDTL\\d+_TimeDep\".*?>(?:(\\d{2}:\\d{2})|&nbsp;)</td>.*?" // departureTime
 			+ "<td headers=\"hafasDTL\\d+_Platform\".*?>\\s*(?:&nbsp;|(.*?))\\s*</td>.*?" // departurePosition
@@ -201,7 +201,7 @@ public class OebbProvider implements NetworkProvider
 			+ "(?:<a href=\"http://fahrplan\\.oebb\\.at/bin/traininfo\\.exe/dn.*?>(.*?)</a>.*?)?" // line
 			+ "<td headers=\"hafasDTL\\d+_Stop\".*?>\n" //
 			+ "(?:<a href=\"http://fahrplan\\.oebb\\.at/bin/stboard\\.exe/dn.*?input=.*?%23(\\d+)&.*?>)?" // arrivalId
-			+ "([^<]*?)<.*?" // arrival
+			+ "([^\n<]*).*?" // arrival
 			+ "<td headers=\"hafasDTL\\d+_Date\".*?>\n(?:(\\d{2}\\.\\d{2}\\.\\d{2})|&nbsp;)\n</td>.*?" // arrivalDate
 			+ "<td headers=\"hafasDTL\\d+_TimeDep\".*?>(?:(\\d{2}:\\d{2})|&nbsp;)</td>.*?" // arrivalTime
 			+ "<td headers=\"hafasDTL\\d+_Platform\".*?>\\s*(?:&nbsp;|(.*?))\\s*</td>.*?" // arrivalPosition
