@@ -363,7 +363,7 @@ public class SbbProvider implements NetworkProvider
 	}
 
 	private static final Pattern P_DEPARTURES_HEAD_COARSE = Pattern.compile(".*?" //
-			+ "(?:" // 
+			+ "(?:" //
 			+ "<p class=\"qs\">\n(.+?)\n</p>.*?" //
 			+ "(?:(.+)|(an dieser Haltestelle keines)).*?" //
 			+ "<p class=\"links\">\n(.+?)\n</p>" //
@@ -573,6 +573,9 @@ public class SbbProvider implements NetworkProvider
 
 		if (P_NORMALIZE_TYPE_SBAHN.matcher(ucType).matches())
 			return 'S';
+
+		if (ucType.equals("MET")) // Lausanne
+			return 'U';
 
 		if (ucType.equals("TRAM"))
 			return 'T';
