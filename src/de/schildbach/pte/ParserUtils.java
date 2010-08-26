@@ -161,6 +161,18 @@ public final class ParserUtils
 		}
 	}
 
+	public static Date parseDateSlash(final String str)
+	{
+		try
+		{
+			return new SimpleDateFormat("dd/MM/yy").parse(str);
+		}
+		catch (final ParseException x)
+		{
+			throw new RuntimeException(x);
+		}
+	}
+
 	public static Date parseTime(final String str)
 	{
 		try
