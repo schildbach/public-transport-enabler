@@ -475,7 +475,7 @@ public class OebbProvider implements NetworkProvider
 		}
 	}
 
-	private static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zÄÖÜäöüßéèêáàâóòô]+)[\\s-]*(.*)");
+	private static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zÄÖÜäöüßáàâéèêíìîóòôúùû]+)[\\s-]*(.*)");
 
 	private static String normalizeLine(final String type, final String line)
 	{
