@@ -417,8 +417,9 @@ public class RmvProvider implements NetworkProvider
 			+ "<p class=\"qs\">\n(.*?)</p>\n" // head
 			+ "(.*?)<p class=\"links\">.*?" // departures
 			+ "input=(\\d+).*?" // locationId
-			+ "|(Eingabe kann nicht interpretiert))" //
-			+ ".*?", Pattern.DOTALL);
+			+ "|(Eingabe kann nicht interpretiert)" // messages
+			+ "|(Internal Error)" // messages
+			+ ").*?", Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_HEAD_FINE = Pattern.compile("" //
 			+ "<b>(.*?)</b><br />.*?" //
 			+ "Abfahrt (\\d+:\\d+).*?" // 
@@ -444,6 +445,8 @@ public class RmvProvider implements NetworkProvider
 			// messages
 			if (mHeadCoarse.group(4) != null)
 				return new QueryDeparturesResult(uri, Status.INVALID_STATION);
+			else if (mHeadCoarse.group(5) != null)
+				return new QueryDeparturesResult(uri, Status.SERVICE_DOWN);
 
 			final int stationId = Integer.parseInt(mHeadCoarse.group(3));
 
@@ -568,6 +571,8 @@ public class RmvProvider implements NetworkProvider
 				return "BALT" + type.substring(3) + number;
 			if (type.equals("LTaxi"))
 				return "BLTaxi" + number;
+			if (type.equals("AT")) // AnschlußSammelTaxi
+				return "BAT" + number;
 			if (type.equals("SCH"))
 				return "FSCH" + number;
 
