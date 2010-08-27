@@ -61,6 +61,7 @@ public class SncbProvider implements NetworkProvider
 		uri.append("&boardType=dep");
 		uri.append("&maxJourneys=").append(maxDepartures != 0 ? maxDepartures : 50); // maximum taken from SNCB site
 		uri.append("&productsFilter=1:1111111111111111");
+		uri.append("&disableEquivs=yes"); // don't use nearby stations
 		uri.append("&start=yes");
 		return uri.toString();
 	}
