@@ -350,7 +350,6 @@ public class SbbProvider implements NetworkProvider
 	public String departuresQueryUri(final String stationId, final int maxDepartures)
 	{
 		final StringBuilder uri = new StringBuilder();
-
 		uri.append("http://fahrplan.sbb.ch/bin/bhftafel.exe/dox");
 		uri.append("?start=");
 		if (maxDepartures != 0)
@@ -358,7 +357,7 @@ public class SbbProvider implements NetworkProvider
 		uri.append("&boardType=dep");
 		uri.append("&productsFilter=1111111111000000");
 		uri.append("&input=").append(stationId);
-
+		uri.append("&disableEquivs=yes"); // don't use nearby stations
 		return uri.toString();
 	}
 
