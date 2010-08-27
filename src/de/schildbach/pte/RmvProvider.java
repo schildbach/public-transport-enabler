@@ -403,90 +403,118 @@ public class RmvProvider implements NetworkProvider
 		final StringBuilder uri = new StringBuilder();
 		uri.append("http://www.rmv.de/auskunft/bin/jp/stboard.exe/dox");
 		uri.append("?input=").append(stationId);
-		uri.append("&boardType=dep");
+		uri.append("&boardType=dep"); // show departures
 		uri.append("&maxJourneys=").append(maxDepartures != 0 ? maxDepartures : 50); // maximum taken from RMV site
 		uri.append("&time=").append(TIME_FORMAT.format(now));
 		uri.append("&date=").append(DATE_FORMAT.format(now));
+		uri.append("&disableEquivs=yes"); // don't use nearby stations
 		uri.append("&start=yes");
 		return uri.toString();
 	}
 
-	private static final Pattern P_DEPARTURES_HEAD = Pattern.compile(".*<p class=\"qs\">.*?" //
+	private static final Pattern P_DEPARTURES_HEAD_COARSE = Pattern.compile(".*?" //
+			+ "(?:" //
+			+ "<p class=\"qs\">\n(.*?)</p>\n" // head
+			+ "(.*?)<p class=\"links\">.*?" // departures
+			+ "input=(\\d+).*?" // locationId
+			+ "|(Eingabe kann nicht interpretiert))" //
+			+ ".*?", Pattern.DOTALL);
+	private static final Pattern P_DEPARTURES_HEAD_FINE = Pattern.compile("" //
 			+ "<b>(.*?)</b><br />.*?" //
 			+ "Abfahrt (\\d+:\\d+).*?" // 
 			+ "Uhr, (\\d+\\.\\d+\\.\\d+).*?" //
-			+ "</p>.*", Pattern.DOTALL);
+	, Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<p class=\"sq\">(.+?)</p>", Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_FINE = Pattern.compile(".*?<b>\\s*(.*?)\\s*</b>.*?" // line
-			+ "&gt;&gt;\n?" //
+			+ "&gt;&gt;\n" //
 			+ "(.*?)\n?" // destination
 			+ "<br />.*?" //
-			+ "<b>(\\d+:\\d+)</b>.*?" // time
+			+ "<b>(\\d{1,2}:\\d{2})</b>.*?" // planTime
+			+ "(?:<span class=\"red\">ca\\. (\\d{1,2}:\\d{2})</span>.*?)?" // liveTime
 			+ "(?:Gl\\. (\\d+)<br />.*?)?", Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_URI_STATION_ID = Pattern.compile("input=(\\d+)");
 
 	public QueryDeparturesResult queryDepartures(final String uri) throws IOException
 	{
 		final CharSequence page = ParserUtils.scrape(uri);
 
-		final Matcher mStationId = P_DEPARTURES_URI_STATION_ID.matcher(uri);
-		if (!mStationId.find())
-			throw new IllegalStateException(uri);
-		final int stationId = Integer.parseInt(mStationId.group(1));
-
 		// parse page
-		final Matcher mHead = P_DEPARTURES_HEAD.matcher(page);
-		if (mHead.matches())
+		final Matcher mHeadCoarse = P_DEPARTURES_HEAD_COARSE.matcher(page);
+		if (mHeadCoarse.matches())
 		{
-			final String location = ParserUtils.resolveEntities(mHead.group(1));
-			final Date currentTime = ParserUtils.joinDateTime(ParserUtils.parseDate(mHead.group(3)), ParserUtils.parseTime(mHead.group(2)));
-			final List<Departure> departures = new ArrayList<Departure>(8);
+			// messages
+			if (mHeadCoarse.group(4) != null)
+				return new QueryDeparturesResult(uri, Status.INVALID_STATION);
 
-			// choose matcher
-			final Matcher mDepCoarse = P_DEPARTURES_COARSE.matcher(page);
-			while (mDepCoarse.find())
+			final int stationId = Integer.parseInt(mHeadCoarse.group(3));
+
+			final Matcher mHeadFine = P_DEPARTURES_HEAD_FINE.matcher(mHeadCoarse.group(1));
+			if (mHeadFine.matches())
 			{
-				final Matcher mDepFine = P_DEPARTURES_FINE.matcher(mDepCoarse.group(1));
-				if (mDepFine.matches())
-				{
-					final Departure dep = parseDeparture(mDepFine, currentTime);
-					if (!departures.contains(dep))
-						departures.add(dep);
-				}
-				else
-				{
-					throw new IllegalArgumentException("cannot parse '" + mDepCoarse.group(1) + "' on " + uri);
-				}
-			}
+				final String location = ParserUtils.resolveEntities(mHeadFine.group(1));
+				final Date currentTime = ParserUtils.joinDateTime(ParserUtils.parseDate(mHeadFine.group(3)), ParserUtils
+						.parseTime(mHeadFine.group(2)));
+				final List<Departure> departures = new ArrayList<Departure>(8);
 
-			return new QueryDeparturesResult(uri, stationId, location, currentTime, departures);
+				final Matcher mDepCoarse = P_DEPARTURES_COARSE.matcher(mHeadCoarse.group(2));
+				while (mDepCoarse.find())
+				{
+					final Matcher mDepFine = P_DEPARTURES_FINE.matcher(mDepCoarse.group(1));
+					if (mDepFine.matches())
+					{
+						// line
+						final String line = normalizeLine(ParserUtils.resolveEntities(mDepFine.group(1)));
+
+						// destination
+						final String destination = ParserUtils.resolveEntities(mDepFine.group(2));
+
+						// time
+						final Calendar current = new GregorianCalendar();
+						current.setTime(currentTime);
+						final Calendar parsed = new GregorianCalendar();
+
+						// planTime
+						parsed.setTime(ParserUtils.parseTime(mDepFine.group(3)));
+						parsed.set(Calendar.YEAR, current.get(Calendar.YEAR));
+						parsed.set(Calendar.MONTH, current.get(Calendar.MONTH));
+						parsed.set(Calendar.DAY_OF_MONTH, current.get(Calendar.DAY_OF_MONTH));
+						if (ParserUtils.timeDiff(parsed.getTime(), currentTime) < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
+							parsed.add(Calendar.DAY_OF_MONTH, 1);
+						final Date planTime = parsed.getTime();
+
+						// liveTime
+						if (mDepFine.group(4) != null)
+						{
+							parsed.setTime(ParserUtils.parseTime(mDepFine.group(4)));
+							parsed.set(Calendar.YEAR, current.get(Calendar.YEAR));
+							parsed.set(Calendar.MONTH, current.get(Calendar.MONTH));
+							parsed.set(Calendar.DAY_OF_MONTH, current.get(Calendar.DAY_OF_MONTH));
+							if (ParserUtils.timeDiff(parsed.getTime(), currentTime) < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
+								parsed.add(Calendar.DAY_OF_MONTH, 1);
+							final Date liveTime = parsed.getTime();
+						}
+
+						final Departure dep = new Departure(planTime, line, line != null ? LINES.get(line.charAt(0)) : null, 0, destination);
+
+						if (!departures.contains(dep))
+							departures.add(dep);
+					}
+					else
+					{
+						throw new IllegalArgumentException("cannot parse '" + mDepCoarse.group(1) + "' on " + uri);
+					}
+				}
+
+				return new QueryDeparturesResult(uri, stationId, location, currentTime, departures);
+			}
+			else
+			{
+				throw new IllegalArgumentException("cannot parse '" + mHeadCoarse.group(1) + "' on " + uri);
+			}
 		}
 		else
 		{
-			return new QueryDeparturesResult(uri, Status.NO_INFO);
+			throw new IllegalArgumentException("cannot parse '" + page + "' on " + uri);
 		}
-	}
-
-	private static Departure parseDeparture(final Matcher mDep, final Date currentTime)
-	{
-		// line
-		final String line = normalizeLine(ParserUtils.resolveEntities(mDep.group(1)));
-
-		// destination
-		final String destination = ParserUtils.resolveEntities(mDep.group(2));
-
-		// time
-		final Calendar current = new GregorianCalendar();
-		current.setTime(currentTime);
-		final Calendar parsed = new GregorianCalendar();
-		parsed.setTime(ParserUtils.parseTime(mDep.group(3)));
-		parsed.set(Calendar.YEAR, current.get(Calendar.YEAR));
-		parsed.set(Calendar.MONTH, current.get(Calendar.MONTH));
-		parsed.set(Calendar.DAY_OF_MONTH, current.get(Calendar.DAY_OF_MONTH));
-		if (ParserUtils.timeDiff(parsed.getTime(), currentTime) < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
-			parsed.add(Calendar.DAY_OF_MONTH, 1);
-
-		return new Departure(parsed.getTime(), line, line != null ? LINES.get(line.charAt(0)) : null, 0, destination);
 	}
 
 	private static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zÄÖÜäöüßáàâéèêíìîóòôúùû]+)[\\s-]*(.*)");
