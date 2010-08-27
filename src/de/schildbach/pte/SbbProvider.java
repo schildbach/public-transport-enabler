@@ -363,11 +363,12 @@ public class SbbProvider implements NetworkProvider
 
 	private static final Pattern P_DEPARTURES_HEAD_COARSE = Pattern.compile(".*?" //
 			+ "(?:" //
-			+ "<p class=\"qs\">\n(.+?)\n</p>.*?" //
-			+ "(?:(.+)|(an dieser Haltestelle keines)).*?" //
+			+ "<p class=\"qs\">\n(.+?)\n</p>.*?" // head
+			+ "(?:(.+)|(an dieser Haltestelle keines)).*?" // departures
 			+ "<p class=\"links\">\n(.+?)\n</p>" //
-			+ "|(Informationen zu)|(Verbindung zum Server konnte leider nicht hergestellt werden))" //
-			+ ".*?" //
+			+ "|(Informationen zu)" // messages
+			+ "|(Verbindung zum Server konnte leider nicht hergestellt werden|kann vom Server derzeit leider nicht bearbeitet werden)" // messages
+			+ ").*?" //
 	, Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_HEAD_FINE = Pattern.compile("" // 
 			+ "<b>(.*?)</b><br />\n" // location
@@ -494,8 +495,6 @@ public class SbbProvider implements NetworkProvider
 
 	private static char normalizeType(final String type)
 	{
-		// TODO ARZ
-
 		final String ucType = type.toUpperCase();
 
 		if (ucType.equals("EC")) // EuroCity
@@ -535,6 +534,8 @@ public class SbbProvider implements NetworkProvider
 		if (ucType.equals("EM")) // Barcelona-Alicante, Spanien
 			return 'I';
 		if (ucType.equals("FYR")) // Fyra, Amsterdam-Schiphol-Rotterdam
+			return 'I';
+		if (ucType.equals("ARZ")) // Frankreich, Nacht
 			return 'I';
 
 		if (ucType.equals("R"))
