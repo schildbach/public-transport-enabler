@@ -359,15 +359,14 @@ public class OebbProvider implements NetworkProvider
 	public String departuresQueryUri(final String stationId, final int maxDepartures)
 	{
 		final StringBuilder uri = new StringBuilder();
-
 		uri.append("http://fahrplan.oebb.at/bin/stboard.exe/dn");
 		uri.append("?input=").append(stationId);
 		uri.append("&boardType=dep");
 		uri.append("&productsFilter=111111111111");
 		if (maxDepartures != 0)
 			uri.append("&maxJourneys=").append(maxDepartures);
+		uri.append("&disableEquivs=yes"); // don't use nearby stations
 		uri.append("&start=yes");
-
 		return uri.toString();
 	}
 
@@ -388,11 +387,10 @@ public class OebbProvider implements NetworkProvider
 	private static final Pattern P_DEPARTURES_FINE = Pattern.compile(".*?" //
 			+ "<td class=\"[\\w ]*\">(\\d+:\\d+)</td>.*?" // time
 			+ "<img src=\"/img/vs_oebb/(\\w+)_pic\\.gif\"\\s+alt=\".*?\">\\s*(.*?)\\s*</.*?" // type, line
-			+ "<span class=\"bold\">\n?" //
+			+ "<span class=\"bold\">\n" //
 			+ "<a href=\"http://fahrplan\\.oebb\\.at/bin/stboard\\.exe/dn\\?ld=web25&input=[^%]*?(?:%23(\\d+))?&.*?\">" // destinationId
-			+ "\\s*(.*?)\\s*</a>\n?" // destination
+			+ "\\s*(.*?)\\s*</a>\n" // destination
 			+ "</span>.*?" //
-			+ "(?:<td class=\"center sepline top\">\\s*(.*?)\\s*</td>.*?)?" // other stop
 	, Pattern.DOTALL);
 
 	public QueryDeparturesResult queryDepartures(final String uri) throws IOException
@@ -427,34 +425,29 @@ public class OebbProvider implements NetworkProvider
 					final Matcher mDepFine = P_DEPARTURES_FINE.matcher(mDepCoarse.group(1));
 					if (mDepFine.matches())
 					{
-						final String otherStop = mDepFine.group(6);
+						final Calendar current = new GregorianCalendar();
+						current.setTime(currentTime);
+						final Calendar parsed = new GregorianCalendar();
+						parsed.setTime(ParserUtils.parseTime(mDepFine.group(1)));
+						parsed.set(Calendar.YEAR, current.get(Calendar.YEAR));
+						parsed.set(Calendar.MONTH, current.get(Calendar.MONTH));
+						parsed.set(Calendar.DAY_OF_MONTH, current.get(Calendar.DAY_OF_MONTH));
+						if (ParserUtils.timeDiff(parsed.getTime(), currentTime) < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
+							parsed.add(Calendar.DAY_OF_MONTH, 1);
 
-						if (otherStop == null || otherStop.contains("&nbsp;"))
-						{
-							final Calendar current = new GregorianCalendar();
-							current.setTime(currentTime);
-							final Calendar parsed = new GregorianCalendar();
-							parsed.setTime(ParserUtils.parseTime(mDepFine.group(1)));
-							parsed.set(Calendar.YEAR, current.get(Calendar.YEAR));
-							parsed.set(Calendar.MONTH, current.get(Calendar.MONTH));
-							parsed.set(Calendar.DAY_OF_MONTH, current.get(Calendar.DAY_OF_MONTH));
-							if (ParserUtils.timeDiff(parsed.getTime(), currentTime) < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
-								parsed.add(Calendar.DAY_OF_MONTH, 1);
+						final String lineType = mDepFine.group(2);
 
-							final String lineType = mDepFine.group(2);
+						final String line = normalizeLine(lineType, ParserUtils.resolveEntities(mDepFine.group(3)));
 
-							final String line = normalizeLine(lineType, ParserUtils.resolveEntities(mDepFine.group(3)));
+						final int destinationId = mDepFine.group(4) != null ? Integer.parseInt(mDepFine.group(4)) : 0;
 
-							final int destinationId = mDepFine.group(4) != null ? Integer.parseInt(mDepFine.group(4)) : 0;
+						final String destination = ParserUtils.resolveEntities(mDepFine.group(5));
 
-							final String destination = ParserUtils.resolveEntities(mDepFine.group(5));
+						final Departure dep = new Departure(parsed.getTime(), line, line != null ? LINES.get(line.charAt(0)) : null, destinationId,
+								destination);
 
-							final Departure dep = new Departure(parsed.getTime(), line, line != null ? LINES.get(line.charAt(0)) : null,
-									destinationId, destination);
-
-							if (!departures.contains(dep))
-								departures.add(dep);
-						}
+						if (!departures.contains(dep))
+							departures.add(dep);
 					}
 					else
 					{
