@@ -493,8 +493,7 @@ public final class VbbProvider implements NetworkProvider
 		final StringBuilder uri = new StringBuilder();
 		uri.append(live ? DEPARTURE_URL_LIVE : DEPARTURE_URL_PLAN);
 		uri.append("input=").append(stationId);
-		if (maxDepartures != 0)
-			uri.append("&maxJourneys=").append(maxDepartures);
+		uri.append("&maxJourneys=").append(maxDepartures != 0 ? maxDepartures : 50);
 		return uri.toString();
 	}
 
