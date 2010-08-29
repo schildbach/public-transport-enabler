@@ -225,11 +225,12 @@ public final class BahnProvider implements NetworkProvider
 			+ "von: <span class=\"bold\">(.*?)</span>.*?" // from
 			+ "nach: <span class=\"bold\">(.*?)</span>.*?" // to
 			+ "Datum: <span class=\"bold\">.., (.*?)</span>.*?" // currentDate
-			+ "(?:<a href=\"(http://mobile.bahn.de/bin/mobil/query.exe/dox.*?)\">.*?Fr&#252;her.*?)?" // linkEarlier
-			+ "(?:<a class=\"noBG\" href=\"(http://mobile.bahn.de/bin/mobil/query.exe/dox.*?)\">.*?Sp&#228;ter.*?)?" // linkLater
+			+ "(?:<a href=\"(http://mobile.bahn.de/bin/mobil/query.exe/dox[^\"]*?)\">.*?Fr&#252;her.*?)?" // linkEarlier
+			+ "(?:<a class=\"noBG\" href=\"(http://mobile.bahn.de/bin/mobil/query.exe/dox[^\"]*?)\">.*?Sp&#228;ter.*?)?" // linkLater
 	, Pattern.DOTALL);
 	private static final Pattern P_CONNECTIONS_COARSE = Pattern.compile("<tr><td class=\"overview timelink\">(.+?)</td></tr>", Pattern.DOTALL);
-	private static final Pattern P_CONNECTIONS_FINE = Pattern.compile(".*?<a href=\"(http://mobile.bahn.de/bin/mobil/query.exe/dox.*?)\">" // url
+	private static final Pattern P_CONNECTIONS_FINE = Pattern.compile(".*?" //
+			+ "<a href=\"(http://mobile.bahn.de/bin/mobil/query.exe/dox[^\"]*?)\">" // link
 			+ "(\\d+:\\d+)<br />(\\d+:\\d+)</a></td>.+?" // departureTime, arrivalTime
 			+ "<td class=\"overview iphonepfeil\">(.*?)<br />.*?" // line
 	, Pattern.DOTALL);

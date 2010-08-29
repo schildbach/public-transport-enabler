@@ -272,13 +272,18 @@ public final class VbbProvider implements NetworkProvider
 		return queryConnections(uri, page);
 	}
 
-	private static final Pattern P_CONNECTIONS_HEAD = Pattern.compile(
-			".*Von: <strong>(.*?)</strong>.*?Nach: <strong>(.*?)</strong>.*?Datum: .., (.*?)<br />.*?"
-					+ "(?:<a href=\"(/Fahrinfo/bin/query\\.bin/dox.{1,80}ScrollDir=2)\">.*?)?"
-					+ "(?:<a href=\"(/Fahrinfo/bin/query\\.bin/dox.{1,80}ScrollDir=1)\">.*?)?", Pattern.DOTALL);
+	private static final Pattern P_CONNECTIONS_HEAD = Pattern.compile(".*?" //
+			+ "Von: <strong>(.*?)</strong>.*?" // from
+			+ "Nach: <strong>(.*?)</strong>.*?" // to
+			+ "Datum: .., (.*?)<br />.*?" // currentDate
+			+ "(?:<a href=\"(/Fahrinfo/bin/query\\.bin/dox[^\"]*?ScrollDir=2)\">.*?)?" // linkEarlier
+			+ "(?:<a href=\"(/Fahrinfo/bin/query\\.bin/dox[^\"]*?ScrollDir=1)\">.*?)?" // linkLater
+	, Pattern.DOTALL);
 	private static final Pattern P_CONNECTIONS_COARSE = Pattern.compile("<p class=\"con(?:L|D)\">(.+?)</p>", Pattern.DOTALL);
-	private static final Pattern P_CONNECTIONS_FINE = Pattern.compile(".*?<a href=\"(/Fahrinfo/bin/query\\.bin/dox.*?)\">"
-			+ "(\\d\\d:\\d\\d)-(\\d\\d:\\d\\d)</a>&nbsp;&nbsp;(?:\\d+ Umst\\.|([\\w\\d ]+)).*?", Pattern.DOTALL);
+	private static final Pattern P_CONNECTIONS_FINE = Pattern.compile(".*?" //
+			+ "<a href=\"(/Fahrinfo/bin/query\\.bin/dox[^\"]*?)\">" // link
+			+ "(\\d\\d:\\d\\d)-(\\d\\d:\\d\\d)</a>&nbsp;&nbsp;(?:\\d+ Umst\\.|([\\w\\d ]+)).*?" //
+	, Pattern.DOTALL);
 
 	private QueryConnectionsResult queryConnections(final String uri, final CharSequence page) throws IOException
 	{
@@ -602,6 +607,8 @@ public final class VbbProvider implements NetworkProvider
 		if (line.startsWith("RE") || line.startsWith("RB") || line.startsWith("NE") || line.startsWith("OE") || line.startsWith("MR")
 				|| line.startsWith("PE"))
 			return "R" + line;
+		if (line.equals("11"))
+			return "?11";
 		if (P_NORMALIZE_LINE_SPECIAL_NUMBER.matcher(line).matches())
 			return "R" + line;
 

@@ -222,16 +222,19 @@ public class RmvProvider implements NetworkProvider
 			return queryConnections(uri, page);
 	}
 
-	private static final Pattern P_CONNECTIONS_HEAD = Pattern.compile(".*" //
-			+ "Von: <b>(.*?)</b>.*?" //
-			+ "Nach: <b>(.*?)</b>.*?" //
-			+ "Datum: .., (\\d+\\..\\d+\\.\\d+).*?" //
-			+ "(?:<a href=\"(http://www.rmv.de/auskunft/bin/jp/query.exe/dox.*?REQ0HafasScrollDir=2)\">Fr&#252;her.*?)?" //
-			+ "(?:<a href=\"(http://www.rmv.de/auskunft/bin/jp/query.exe/dox.*?REQ0HafasScrollDir=1)\">Sp&#228;ter.*?)?", Pattern.DOTALL);
+	private static final Pattern P_CONNECTIONS_HEAD = Pattern.compile(".*?" //
+			+ "Von: <b>(.*?)</b>.*?" // from
+			+ "Nach: <b>(.*?)</b>.*?" // to
+			+ "Datum: .., (\\d+\\..\\d+\\.\\d+).*?" // currentDate
+			+ "(?:<a href=\"(http://www.rmv.de/auskunft/bin/jp/query.exe/dox[^\"]*?REQ0HafasScrollDir=2)\".*?)?" // linkEarlier
+			+ "(?:<a href=\"(http://www.rmv.de/auskunft/bin/jp/query.exe/dox[^\"]*?REQ0HafasScrollDir=1)\".*?)?" // linkLater
+	, Pattern.DOTALL);
 	private static final Pattern P_CONNECTIONS_COARSE = Pattern.compile("<p class=\"con(?:L|D)\">(.+?)</p>", Pattern.DOTALL);
-	private static final Pattern P_CONNECTIONS_FINE = Pattern.compile(".*?<a href=\"(http://www.rmv.de/auskunft/bin/jp/query.exe/dox.*?)\">" // url
+	private static final Pattern P_CONNECTIONS_FINE = Pattern.compile(".*?" //
+			+ "<a href=\"(http://www.rmv.de/auskunft/bin/jp/query.exe/dox[^\"]*?)\">" // link
 			+ "(\\d+:\\d+)-(\\d+:\\d+)</a>" //
-			+ "(?:&nbsp;(.+?))?", Pattern.DOTALL);
+			+ "(?:&nbsp;(.+?))?" //
+	, Pattern.DOTALL);
 
 	private QueryConnectionsResult queryConnections(final String uri, final CharSequence page) throws IOException
 	{

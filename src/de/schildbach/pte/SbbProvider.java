@@ -184,8 +184,8 @@ public class SbbProvider implements NetworkProvider
 			+ "Von:.*?<td .*?>(.*?)</td>.*?" // from
 			+ "Datum:.*?<td .*?>.., (\\d{2}\\.\\d{2}\\.\\d{2})</td>.*?" // date
 			+ "Nach:.*?<td .*?>(.*?)</td>.*?" // to
-			+ "(?:<a href=\"(http://fahrplan.sbb.ch/bin/query.exe/dn\\?seqnr=\\d+&ident=[\\w\\.]+&REQ0HafasScrollDir=2)\".*?>.*?)?" // linkEarlier
-			+ "(?:<a href=\"(http://fahrplan.sbb.ch/bin/query.exe/dn\\?seqnr=\\d+&ident=[\\w\\.]+&REQ0HafasScrollDir=1)\".*?>.*?)?" // linkLater
+			+ "(?:<a href=\"(http://fahrplan.sbb.ch/bin/query.exe/dn[^\"]*?&REQ0HafasScrollDir=2)\".*?)?" // linkEarlier
+			+ "(?:<a href=\"(http://fahrplan.sbb.ch/bin/query.exe/dn[^\"]*?&REQ0HafasScrollDir=1)\".*?)?" // linkLater
 	, Pattern.DOTALL);
 	private static final Pattern P_CONNECTIONS_COARSE = Pattern.compile("<tr class=\"(zebra-row-\\d)\">(.*?)</tr>\n?"//
 			+ "<tr class=\"\\1\">(.+?)</tr>", Pattern.DOTALL);
