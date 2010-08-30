@@ -122,7 +122,8 @@ public final class BahnProvider implements NetworkProvider
 		throw new UnsupportedOperationException();
 	}
 
-	private String connectionsQueryUri(final String from, final String via, final String to, final Date date, final boolean dep)
+	private String connectionsQueryUri(final LocationType fromType, final String from, final String via, final LocationType toType, final String to,
+			final Date date, final boolean dep)
 	{
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yy");
 		final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
@@ -131,20 +132,14 @@ public final class BahnProvider implements NetworkProvider
 		uri.append("http://mobile.bahn.de/bin/mobil/query.exe/dox");
 		uri.append("?REQ0HafasOptimize1=0:1");
 		uri.append("&REQ0JourneyStopsS0G=").append(ParserUtils.urlEncode(from));
-		uri.append("&REQ0JourneyStopsS0A=1");
-		uri.append("&REQ0JourneyStopsS0ALocation=1");
-		uri.append("&REQ0JourneyStopsS0AAddress=1");
+		uri.append("&REQ0JourneyStopsS0A=").append(locationType(fromType));
 		if (via != null)
 		{
 			uri.append("&REQ0JourneyStops1.0G=").append(ParserUtils.urlEncode(via));
-			uri.append("&REQ0JourneyStops1.0A=1");
-			uri.append("&REQ0JourneyStops1.0ALocation=1");
-			uri.append("&REQ0JourneyStops1.0AAddress=1");
+			uri.append("&REQ0JourneyStops1.0A=255");
 		}
 		uri.append("&REQ0JourneyStopsZ0G=").append(ParserUtils.urlEncode(to));
-		uri.append("&REQ0JourneyStopsZ0A=1");
-		uri.append("&REQ0JourneyStopsZ0ALocation=1");
-		uri.append("&REQ0JourneyStopsZ0AAddress=1");
+		uri.append("&REQ0JourneyStopsZ0A=").append(locationType(toType));
 		uri.append("&REQ0HafasSearchForw=").append(dep ? "1" : "0");
 		uri.append("&REQ0JourneyDate=").append(ParserUtils.urlEncode(DATE_FORMAT.format(date)));
 		uri.append("&REQ0JourneyTime=").append(ParserUtils.urlEncode(TIME_FORMAT.format(date)));
@@ -158,6 +153,15 @@ public final class BahnProvider implements NetworkProvider
 		return uri.toString();
 	}
 
+	private static int locationType(final LocationType locationType)
+	{
+		if (locationType == LocationType.ADDRESS)
+			return 2;
+		if (locationType == LocationType.ANY)
+			return 255;
+		throw new IllegalArgumentException(locationType.toString());
+	}
+
 	private static final Pattern P_PRE_ADDRESS = Pattern.compile(
 			"<select name=\"(REQ0JourneyStopsS0K|REQ0JourneyStopsZ0K|REQ0JourneyStops1\\.0K)\" class=\"nofullwidth\">(.*?)</select>", Pattern.DOTALL);
 	private static final Pattern P_ADDRESSES = Pattern.compile("<option.*?>\\s*(.*?)\\s*</option>", Pattern.DOTALL);
@@ -167,7 +171,7 @@ public final class BahnProvider implements NetworkProvider
 	public QueryConnectionsResult queryConnections(final LocationType fromType, final String from, final LocationType viaType, final String via,
 			final LocationType toType, final String to, final Date date, final boolean dep) throws IOException
 	{
-		final String uri = connectionsQueryUri(from, via, to, date, dep);
+		final String uri = connectionsQueryUri(fromType, from, via, toType, to, date, dep);
 		final CharSequence page = ParserUtils.scrape(uri);
 
 		final Matcher mError = P_CHECK_CONNECTIONS_ERROR.matcher(page);

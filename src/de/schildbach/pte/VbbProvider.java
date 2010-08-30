@@ -164,45 +164,46 @@ public final class VbbProvider implements NetworkProvider
 		uri.append("?REQ0HafasInitialSelection=0");
 
 		// from
-		if (fromType == LocationType.ANY)
-		{
-			uri.append("&REQ0JourneyStopsS0A=255");
-			uri.append("&REQ0JourneyStopsS0G=").append(ParserUtils.urlEncode(from));
-		}
-		else
+		if (fromType == LocationType.WGS84)
 		{
 			final String[] parts = from.split(",\\s*", 2);
 			final double lat = Double.parseDouble(parts[0]);
 			final double lon = Double.parseDouble(parts[1]);
 			uri.append("&SID=").append(ParserUtils.urlEncode("A=16@X=" + latLonToInt(lon) + "@Y=" + latLonToInt(lat)));
 		}
+		else
+		{
+			uri.append("&REQ0JourneyStopsS0A=").append(locationType(fromType));
+			uri.append("&REQ0JourneyStopsS0G=").append(ParserUtils.urlEncode(from));
+		}
 
 		// via
 		if (via != null)
 		{
-			if (fromType == LocationType.ANY)
+			if (fromType == LocationType.WGS84)
 			{
-				uri.append("&REQ0JourneyStops1A=1");
-				uri.append("&REQ0JourneyStops1G=").append(ParserUtils.urlEncode(via));
+				// FIXME
+				throw new UnsupportedOperationException();
 			}
 			else
 			{
-				// FIXME
+				uri.append("&REQ0JourneyStops1A=255");
+				uri.append("&REQ0JourneyStops1G=").append(ParserUtils.urlEncode(via));
 			}
 		}
 
 		// to
-		if (toType == LocationType.ANY)
-		{
-			uri.append("&REQ0JourneyStopsZ0A=255");
-			uri.append("&REQ0JourneyStopsZ0G=").append(ParserUtils.urlEncode(to));
-		}
-		else
+		if (toType == LocationType.WGS84)
 		{
 			final String[] parts = to.split(",\\s*", 2);
 			final double lat = Double.parseDouble(parts[0]);
 			final double lon = Double.parseDouble(parts[1]);
 			uri.append("&ZID=").append(ParserUtils.urlEncode("A=16@X=" + latLonToInt(lon) + "@Y=" + latLonToInt(lat)));
+		}
+		else
+		{
+			uri.append("&REQ0JourneyStopsZ0A=").append(locationType(toType));
+			uri.append("&REQ0JourneyStopsZ0G=").append(ParserUtils.urlEncode(to));
 		}
 
 		uri.append("&REQ0HafasSearchForw=").append(dep ? "1" : "0");
@@ -213,7 +214,16 @@ public final class VbbProvider implements NetworkProvider
 		return uri.toString();
 	}
 
-	private static int latLonToInt(double value)
+	private static int locationType(final LocationType locationType)
+	{
+		if (locationType == LocationType.ADDRESS)
+			return 2;
+		if (locationType == LocationType.ANY)
+			return 255;
+		throw new IllegalArgumentException(locationType.toString());
+	}
+
+	private static int latLonToInt(final double value)
 	{
 		return (int) (value * 1000000);
 	}

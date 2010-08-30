@@ -71,4 +71,14 @@ public class MvvProviderLiveTest
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
 		System.out.println(moreResult);
 	}
+
+	@Test
+	public void connectionBetweenAddresses() throws Exception
+	{
+		final QueryConnectionsResult result = provider.queryConnections(LocationType.ADDRESS, "München, Maximilianstr. 1", null, null,
+				LocationType.ADDRESS, "Starnberg, Jahnstraße 50", new Date(), true);
+		System.out.println(result);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
+		System.out.println(moreResult);
+	}
 }

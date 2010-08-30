@@ -45,7 +45,7 @@ public class OebbProviderLiveTest
 	@Test
 	public void slowConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(LocationType.ANY, "Ufhusen, Zollhus", null, null, LocationType.ANY, "Azuga",
+		final QueryConnectionsResult result = provider.queryConnections(LocationType.ANY, "Ramsen, Zoll", null, null, LocationType.ANY, "Azuga",
 				new Date(), true);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
@@ -55,8 +55,8 @@ public class OebbProviderLiveTest
 	@Test
 	public void connectionWithFootway() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(LocationType.ANY, "Graz, Haselweg", null, null, LocationType.ANY,
-				"Innsbruck, Gumppstraße 69!", new Date(), true);
+		final QueryConnectionsResult result = provider.queryConnections(LocationType.ANY, "Graz, Haselweg", null, null, LocationType.ADDRESS,
+				"Innsbruck, Gumppstraße 69", new Date(), true);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
 		System.out.println(moreResult);
@@ -66,7 +66,7 @@ public class OebbProviderLiveTest
 	public void connectionWithFootway2() throws Exception
 	{
 		final QueryConnectionsResult result = provider.queryConnections(LocationType.ANY, "Wien, Krottenbachstraße 110!", null, null,
-				LocationType.ANY, "Wien, Meidlinger Hauptstraße 1!", new Date(), true);
+				LocationType.ADDRESS, "Wien, Meidlinger Hauptstraße 1", new Date(), true);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
 		System.out.println(moreResult);

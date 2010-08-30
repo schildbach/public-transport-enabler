@@ -66,7 +66,8 @@ public class OebbProvider implements NetworkProvider
 		throw new UnsupportedOperationException();
 	}
 
-	private String connectionsQueryUri(final String from, final String via, final String to, final Date date, final boolean dep)
+	private String connectionsQueryUri(final LocationType fromType, final String from, final String via, final LocationType toType, final String to,
+			final Date date, final boolean dep)
 	{
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yy");
 		final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
@@ -76,7 +77,7 @@ public class OebbProvider implements NetworkProvider
 		uri.append("&REQ0HafasSearchForw=").append(dep ? "1" : "0");
 		uri.append("&REQ0JourneyDate=").append(ParserUtils.urlEncode(DATE_FORMAT.format(date)));
 		uri.append("&REQ0JourneyStopsS0G=").append(ParserUtils.urlEncode(from));
-		uri.append("&REQ0JourneyStopsS0A=255"); // 1=station, 2=city/street, 255=any
+		uri.append("&REQ0JourneyStopsS0A=").append(locationType(fromType));
 		uri.append("&REQ0JourneyStopsS0ID="); // "tupel"?
 		if (via != null)
 		{
@@ -85,7 +86,7 @@ public class OebbProvider implements NetworkProvider
 			uri.append("&REQ0JourneyStops1.0ID=");
 		}
 		uri.append("&REQ0JourneyStopsZ0G=").append(ParserUtils.urlEncode(to));
-		uri.append("&REQ0JourneyStopsZ0A=255"); // 1=station, 2=city/street, 255=any
+		uri.append("&REQ0JourneyStopsZ0A=").append(locationType(toType));
 		uri.append("&REQ0JourneyStopsZ0ID=");
 		uri.append("&REQ0JourneyTime=").append(ParserUtils.urlEncode(TIME_FORMAT.format(date)));
 		uri.append("&REQ0JourneyProduct_list=0:1111111111010000-000000");
@@ -97,6 +98,15 @@ public class OebbProvider implements NetworkProvider
 		return uri.toString();
 	}
 
+	private static int locationType(final LocationType locationType)
+	{
+		if (locationType == LocationType.ADDRESS)
+			return 2;
+		if (locationType == LocationType.ANY)
+			return 255;
+		throw new IllegalArgumentException(locationType.toString());
+	}
+
 	private static final Pattern P_PRE_ADDRESS = Pattern.compile(
 			"<select.*? name=\"(REQ0JourneyStopsS0K|REQ0JourneyStopsZ0K|REQ0JourneyStops1\\.0K)\".*?>(.*?)</select>", Pattern.DOTALL);
 	private static final Pattern P_ADDRESSES = Pattern.compile("<option.*?>\\s*(.*?)\\s*</option>", Pattern.DOTALL);
@@ -105,7 +115,7 @@ public class OebbProvider implements NetworkProvider
 	public QueryConnectionsResult queryConnections(final LocationType fromType, final String from, final LocationType viaType, final String via,
 			final LocationType toType, final String to, final Date date, final boolean dep) throws IOException
 	{
-		final String uri = connectionsQueryUri(from, via, to, date, dep);
+		final String uri = connectionsQueryUri(fromType, from, via, toType, to, date, dep);
 		final CharSequence page = ParserUtils.scrape(uri);
 
 		final Matcher mError = P_CHECK_CONNECTIONS_ERROR.matcher(page);
@@ -565,7 +575,7 @@ public class OebbProvider implements NetworkProvider
 
 		if (ucType.equals("R"))
 			return 'R';
-		if (ucType.equals("REX"))
+		if (ucType.equals("REX")) // RegionalExpress
 			return 'R';
 		if (ucType.equals("ZUG"))
 			return 'R';

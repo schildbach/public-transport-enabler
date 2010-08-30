@@ -35,7 +35,7 @@ public interface NetworkProvider
 
 	public enum LocationType
 	{
-		ANY, WGS84
+		ANY, WGS84, ADDRESS
 	}
 
 	boolean hasCapabilities(Capability... capabilities);
