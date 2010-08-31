@@ -395,12 +395,13 @@ public class OebbProvider implements NetworkProvider
 	, Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<tr class=\"depboard-\\w*\">(.*?)</tr>", Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_FINE = Pattern.compile(".*?" //
-			+ "<td class=\"[\\w ]*\">(\\d+:\\d+)</td>.*?" // time
+			+ "<td class=\"[\\w ]*\">(\\d{1,2}:\\d{2})</td>.*?" // time
 			+ "<img src=\"/img/vs_oebb/(\\w+)_pic\\.gif\"\\s+alt=\".*?\">\\s*(.*?)\\s*</.*?" // type, line
 			+ "<span class=\"bold\">\n" //
 			+ "<a href=\"http://fahrplan\\.oebb\\.at/bin/stboard\\.exe/dn\\?ld=web25&input=[^%]*?(?:%23(\\d+))?&.*?\">" // destinationId
 			+ "\\s*(.*?)\\s*</a>\n" // destination
 			+ "</span>.*?" //
+			+ "(?:<td class=\"center sepline top\">\n(" + ParserUtils.P_PLATFORM + ").*?)?" // position
 	, Pattern.DOTALL);
 
 	public QueryDeparturesResult queryDepartures(final String uri) throws IOException
@@ -453,8 +454,10 @@ public class OebbProvider implements NetworkProvider
 
 						final String destination = ParserUtils.resolveEntities(mDepFine.group(5));
 
-						final Departure dep = new Departure(parsed.getTime(), line, line != null ? LINES.get(line.charAt(0)) : null, destinationId,
-								destination);
+						final String position = mDepFine.group(6) != null ? "Gl. " + ParserUtils.resolveEntities(mDepFine.group(6)) : null;
+
+						final Departure dep = new Departure(parsed.getTime(), line, line != null ? LINES.get(line.charAt(0)) : null, position,
+								destinationId, destination);
 
 						if (!departures.contains(dep))
 							departures.add(dep);

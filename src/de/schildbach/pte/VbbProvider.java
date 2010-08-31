@@ -507,15 +507,24 @@ public final class VbbProvider implements NetworkProvider
 		return uri.toString();
 	}
 
-	private static final Pattern P_DEPARTURES_HEAD = Pattern.compile(".*?<strong>(.*?)</strong>.*?Datum:(.*?)<br />.*", Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile(
-			"<tr class=\"ivu_table_bg\\d\">\\s*((?:<td class=\"ivu_table_c_dep\">|<td>).+?)\\s*</tr>", Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_LIVE_FINE = Pattern.compile("<td class=\"ivu_table_c_dep\">\\s*(.*?)[\\s\\*]*</td>\\s*" // 
+	private static final Pattern P_DEPARTURES_HEAD = Pattern.compile(".*?" //
+			+ "<strong>(.*?)</strong>.*?Datum:(.*?)<br />.*" //
+	, Pattern.DOTALL);
+	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("" //
+			+ "<tr class=\"ivu_table_bg\\d\">\\s*((?:<td class=\"ivu_table_c_dep\">|<td>).+?)\\s*</tr>" //
+	, Pattern.DOTALL);
+	private static final Pattern P_DEPARTURES_LIVE_FINE = Pattern.compile("" //
+			+ "<td class=\"ivu_table_c_dep\">\\s*(.*?)[\\s\\*]*</td>\\s*" // 
 			+ "<td class=\"ivu_table_c_line\">\\s*(.*?)\\s*</td>\\s*" //
-			+ "<td>.*?<a.*?[^-]>\\s*(.*?)\\s*</a>.*?</td>", Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_PLAN_FINE = Pattern.compile("<td><strong>(\\d{2}:\\d{2})</strong></td>.*?" // 
-			+ "<strong>\\s*(.*?)[\\s\\*]*</strong>.*?" //
-			+ "<a href=\"/Fahrinfo/bin/stboard\\.bin/dox/dox.*?evaId=(\\d+)&.*?>\\s*(.*?)\\s*</a>.*?", Pattern.DOTALL);
+			+ "<td>.*?<a.*?[^-]>\\s*(.*?)\\s*</a>.*?</td>" //
+	, Pattern.DOTALL);
+	private static final Pattern P_DEPARTURES_PLAN_FINE = Pattern.compile("" //
+			+ "<td><strong>(\\d{1,2}:\\d{2})</strong></td>.*?" // time
+			+ "<strong>\\s*(.*?)[\\s\\*]*</strong>.*?" // line
+			+ "(?:\\((Gl\\. " + ParserUtils.P_PLATFORM + ")\\).*?)?" // position
+			+ "<a href=\"/Fahrinfo/bin/stboard\\.bin/dox/dox.*?evaId=(\\d+)&.*?>" // destinationId
+			+ "\\s*(.*?)\\s*</a>.*?" // destination
+	, Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_SERVICE_DOWN = Pattern.compile("Wartungsarbeiten");
 	private static final Pattern P_DEPARTURES_URI_STATION_ID = Pattern.compile("input=(\\d+)");
 
@@ -561,13 +570,17 @@ public final class VbbProvider implements NetworkProvider
 					// line
 					final String line = normalizeLine(ParserUtils.resolveEntities(mDepFine.group(2)));
 
+					// position
+					final String position = !live ? ParserUtils.resolveEntities(mDepFine.group(3)) : null;
+
 					// destinationId
-					final int destinationId = !live ? Integer.parseInt(mDepFine.group(3)) : 0;
+					final int destinationId = !live ? Integer.parseInt(mDepFine.group(4)) : 0;
 
 					// destination
-					final String destination = ParserUtils.resolveEntities(mDepFine.group(live ? 3 : 4));
+					final String destination = ParserUtils.resolveEntities(mDepFine.group(live ? 3 : 5));
 
-					final Departure dep = new Departure(parsed.getTime(), line, line != null ? LINES.get(line) : null, destinationId, destination);
+					final Departure dep = new Departure(parsed.getTime(), line, line != null ? LINES.get(line) : null, position, destinationId,
+							destination);
 					if (!departures.contains(dep))
 						departures.add(dep);
 				}
@@ -638,6 +651,8 @@ public final class VbbProvider implements NetworkProvider
 			if (type.equals("CNL")) // CityNightLine
 				return "ICNL" + number;
 			if (type.equals("Zug"))
+				return "R" + number;
+			if (type.equals("ZUG"))
 				return "R" + number;
 			if (type.equals("D")) // D-Zug?
 				return "RD" + number;

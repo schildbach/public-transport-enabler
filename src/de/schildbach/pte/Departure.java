@@ -27,14 +27,17 @@ public final class Departure
 	final public Date time;
 	final public String line;
 	final public int[] lineColors;
+	final public String position;
 	final public int destinationId;
 	final public String destination;
 
-	public Departure(final Date time, final String line, final int[] lineColors, final int destinationId, final String destination)
+	public Departure(final Date time, final String line, final int[] lineColors, final String position, final int destinationId,
+			final String destination)
 	{
 		this.time = time;
 		this.line = line;
 		this.lineColors = lineColors;
+		this.position = position;
 		this.destinationId = destinationId;
 		this.destination = destination;
 	}
@@ -46,6 +49,8 @@ public final class Departure
 		builder.append(time != null ? time : "null");
 		builder.append(",");
 		builder.append(line != null ? line : "null");
+		builder.append(",");
+		builder.append(position != null ? position : "null");
 		builder.append(",");
 		builder.append(destinationId);
 		builder.append(",");

@@ -387,13 +387,15 @@ public class SbbProvider implements NetworkProvider
 			+ "Uhr, (\\d{2}\\.\\d{2}\\.\\d{2}).*?" // date
 			+ "input=(\\d+).*?" // locationId
 	, Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<p class=\"sq\">\n(.+?)\n</p>", Pattern.DOTALL);
+	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<p class=\"sq\">\n(.+?)</p>", Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_FINE = Pattern.compile("" //
 			+ "<b>(.*?)</b>\n" // line
 			+ "&gt;&gt;\n" //
 			+ "(.*?)\n" // destination
 			+ "<br />\n" //
-			+ "<b>(\\d+:\\d+)</b>.*?" // time
+			+ "<b>(\\d+:\\d+)</b>\n" // time
+			+ "(?:Gl\\. (" + ParserUtils.P_PLATFORM + ")\n)?" // position
+			+ ".*?" //
 	, Pattern.DOTALL);
 
 	public QueryDeparturesResult queryDepartures(final String uri) throws IOException
@@ -442,7 +444,10 @@ public class SbbProvider implements NetworkProvider
 						if (ParserUtils.timeDiff(parsed.getTime(), currentTime) < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
 							parsed.add(Calendar.DAY_OF_MONTH, 1);
 
-						final Departure dep = new Departure(parsed.getTime(), line, line != null ? LINES.get(line.charAt(0)) : null, 0, destination);
+						final String position = ParserUtils.resolveEntities(mDepFine.group(4));
+
+						final Departure dep = new Departure(parsed.getTime(), line, line != null ? LINES.get(line.charAt(0)) : null, position, 0,
+								destination);
 
 						if (!departures.contains(dep))
 							departures.add(dep);

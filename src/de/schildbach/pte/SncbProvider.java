@@ -132,7 +132,8 @@ public class SncbProvider implements NetworkProvider
 
 						mDepFine.group(4); // TODO delay
 
-						final Departure dep = new Departure(parsed.getTime(), line, line != null ? LINES.get(line.charAt(0)) : null, 0, destination);
+						final Departure dep = new Departure(parsed.getTime(), line, line != null ? LINES.get(line.charAt(0)) : null, null, 0,
+								destination);
 
 						if (!departures.contains(dep))
 							departures.add(dep);

@@ -245,4 +245,6 @@ public final class ParserUtils
 	{
 		return link.substring(link.length() - 10);
 	}
+	
+	public static final String P_PLATFORM = "[\\wÄÖÜäöüßáàâéèêíìîóòôúùû\\. -/&#;]+";
 }

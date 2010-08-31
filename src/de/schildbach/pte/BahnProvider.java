@@ -309,7 +309,8 @@ public final class BahnProvider implements NetworkProvider
 			+ "(\\d+) Min\\..*?" // footway
 			+ "<span class=\"bold\">\\s*(.+?)\\s*</span><br />" // arrival
 			+ "|" //
-			+ "&#220;bergang.*?" + "<span class=\"bold\">\\s*(.+?)\\s*</span><br />" // arrival
+			+ "&#220;bergang.*?" //
+			+ "<span class=\"bold\">\\s*(.+?)\\s*</span><br />" // arrival
 			+ ")", Pattern.DOTALL);
 	private static final Pattern P_CONNECTION_DETAILS_MESSAGES = Pattern
 			.compile("Dauer: \\d+:\\d+|(Anschlusszug nicht mehr rechtzeitig)|(Anschlusszug jedoch erreicht werden)|(nur teilweise dargestellt)|(L&#228;ngerer Aufenthalt)|(&#228;quivalentem Bahnhof)|(Bahnhof wird mehrfach durchfahren)");
@@ -437,14 +438,16 @@ public final class BahnProvider implements NetworkProvider
 	private static final Pattern P_DEPARTURES_HEAD_COARSE = Pattern.compile(
 			".*?<title>Deutsche Bahn - Abfahrt</title>.*?<body >(.*?Abfahrt.*?)</body>.*?", Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_HEAD_FINE = Pattern.compile(".*?" //
-			+ "<div class=\"haupt rline\">\n?<span class=\"bold\">\\n?(.+?)\\s*(?:- Aktuell)?\\n</span>.*?" // location
+			+ "<div class=\"haupt rline\">\n<span class=\"bold\">\n(.+?)\\s*(?:- Aktuell)?\\n</span>.*?" // location
 			+ "Abfahrt (\\d+:\\d+)\\n?Uhr, (\\d+\\.\\d+\\.\\d+).*?" // currentTime
 	, Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<div class=\"sqdetailsDep trow\">(.+?)</div>", Pattern.DOTALL);
+	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<div class=\"sqdetailsDep trow\">\n(.+?)</div>", Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_FINE = Pattern.compile(".*?" //
 			+ "<span class=\"bold\">(.*?)</span>.*?" // line
-			+ "&gt;&gt;\\n?\\s*(.+?)\\s*\\n?<br />\\n?" // destination
-			+ "<span class=\"bold\">(\\d+:\\d+)</span>.*?" // time
+			+ "&gt;&gt;\n\\s*(.+?)\\s*\n<br />\n" // destination
+			+ "<span class=\"bold\">(\\d{1,2}:\\d{2})</span>" // time
+			+ "(?:&nbsp;<span class=\"red\">ca. ([+-]?\\d+)</span>)?" // delay
+			+ "(?:,&nbsp;(Gl\\. " + ParserUtils.P_PLATFORM + "))?" // position
 	, Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_URI_STATION_ID = Pattern.compile("input=(\\d+)");
 
@@ -492,7 +495,14 @@ public final class BahnProvider implements NetworkProvider
 						if (ParserUtils.timeDiff(parsed.getTime(), currentTime) < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
 							parsed.add(Calendar.DAY_OF_MONTH, 1);
 
-						final Departure dep = new Departure(parsed.getTime(), line, line != null ? LINES.get(line.charAt(0)) : null, 0, destination);
+						// delay
+						final int delay = mDepFine.group(4) != null ? Integer.parseInt(mDepFine.group(4)) : 0;
+
+						// position
+						final String position = ParserUtils.resolveEntities(mDepFine.group(5));
+
+						final Departure dep = new Departure(parsed.getTime(), line, line != null ? LINES.get(line.charAt(0)) : null, position, 0,
+								destination);
 						if (!departures.contains(dep))
 							departures.add(dep);
 					}

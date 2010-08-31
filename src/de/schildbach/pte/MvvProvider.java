@@ -278,8 +278,9 @@ public class MvvProvider implements NetworkProvider
 			+ "(?:<font color=\"red\">(\\d+)\\.(\\d+)\\. </font>.*?)?" // date
 			+ "<a href=\"(XSLT_TRIP_REQUEST2.*?itdLPxx_view=detail_\\d+)\">" // url
 			+ "(?:" //
-			+ "(\\d+:\\d+)[\\xa0\\s]+-[\\xa0\\s]+(\\d+:\\d+)" // departureTime, arrivalTime
-			+ "|" + "Fußweg.*?Dauer:[\\xa0\\s]+(\\d+):(\\d+)" //
+			+ "(\\d{1,2}:\\d{2})[\\xa0\\s]+-[\\xa0\\s]+(\\d{1,2}:\\d{2})" // departureTime, arrivalTime
+			+ "|" //
+			+ "Fußweg.*?Dauer:[\\xa0\\s]+(\\d{1,2}):(\\d{2})" // min
 			+ ").*?", Pattern.DOTALL);
 
 	private QueryConnectionsResult queryConnections(final String uri, final CharSequence page) throws IOException
@@ -503,7 +504,7 @@ public class MvvProvider implements NetworkProvider
 	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<tr valign=\"top\" bgcolor=\"#\\w{6}\">(.+?)</tr>", Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_FINE = Pattern.compile(".*?" //
 			+ "(?:[\\xa0\\s]*<font color=\"red\">[\\xa0\\s]*(\\d+)\\.(\\d+)\\.[\\xa0\\s]*</font>)?" // date
-			+ "(\\d+):(\\d+)</td>.*?" // time
+			+ "(\\d{1,2}):(\\d{2})</td>.*?" // time
 			+ "(?:<img src=\"images/means.*?\" alt=\"(.*?)\" />.*?)?" // product
 			+ "<td width=\"100\">\\s*([^<]*?)[\\xa0\\s]*(?:<a .*?</a>.*?)?" // line
 			+ "<br />\\s*(.*?)\\s*<br />.*?" // destination
@@ -546,9 +547,16 @@ public class MvvProvider implements NetworkProvider
 							calendar.set(Calendar.MONTH, Integer.parseInt(month) - 1);
 						calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(mDepFine.group(3)));
 						calendar.set(Calendar.MINUTE, Integer.parseInt(mDepFine.group(4)));
+
 						final String normalizedLine = normalizeLine(mDepFine.group(5), mDepFine.group(6));
+
 						final String destination = normalizeStationName(mDepFine.group(7));
-						final Departure departure = new Departure(calendar.getTime(), normalizedLine, LINES.get(normalizedLine), 0, destination);
+
+						final String position = null; // TODO
+
+						final Departure departure = new Departure(calendar.getTime(), normalizedLine, LINES.get(normalizedLine), position, 0,
+								destination);
+
 						departures.add(departure);
 					}
 					else

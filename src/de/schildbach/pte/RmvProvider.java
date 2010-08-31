@@ -438,14 +438,18 @@ public class RmvProvider implements NetworkProvider
 			+ "Abfahrt (\\d+:\\d+).*?" // 
 			+ "Uhr, (\\d+\\.\\d+\\.\\d+).*?" //
 	, Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<p class=\"sq\">(.+?)</p>", Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_FINE = Pattern.compile(".*?<b>\\s*(.*?)\\s*</b>.*?" // line
+	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<p class=\"sq\">\n(.+?)</p>", Pattern.DOTALL);
+	private static final Pattern P_DEPARTURES_FINE = Pattern.compile("" //
+			+ "<b>\\s*(.*?)\\s*</b>.*?" // line
 			+ "&gt;&gt;\n" //
-			+ "(.*?)\n?" // destination
-			+ "<br />.*?" //
-			+ "<b>(\\d{1,2}:\\d{2})</b>.*?" // planTime
-			+ "(?:<span class=\"red\">ca\\. (\\d{1,2}:\\d{2})</span>.*?)?" // liveTime
-			+ "(?:Gl\\. (\\d+)<br />.*?)?", Pattern.DOTALL);
+			+ "(.*?)\n" // destination
+			+ "<br />\n" //
+			+ "<b>(\\d{1,2}:\\d{2})</b>\n" // plannedTime
+			+ "(?:<span class=\"red\">ca\\. (\\d{1,2}:\\d{2})</span>\n)?" // predictedTime
+			+ "(?:<span class=\"red\">heute Gl\\. " + ParserUtils.P_PLATFORM + "</span><br />\n)?" // predictedPosition
+			+ "(?:(Gl\\. " + ParserUtils.P_PLATFORM + ")<br />\n)?" // position
+			+ "(?:<img src=\".+?\" alt=\"\" />\n<b>.+?</b>\n<br />\n)*" // (messages)
+	, Pattern.DOTALL);
 
 	public QueryDeparturesResult queryDepartures(final String uri) throws IOException
 	{
@@ -488,16 +492,16 @@ public class RmvProvider implements NetworkProvider
 						current.setTime(currentTime);
 						final Calendar parsed = new GregorianCalendar();
 
-						// planTime
+						// plannedTime
 						parsed.setTime(ParserUtils.parseTime(mDepFine.group(3)));
 						parsed.set(Calendar.YEAR, current.get(Calendar.YEAR));
 						parsed.set(Calendar.MONTH, current.get(Calendar.MONTH));
 						parsed.set(Calendar.DAY_OF_MONTH, current.get(Calendar.DAY_OF_MONTH));
 						if (ParserUtils.timeDiff(parsed.getTime(), currentTime) < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
 							parsed.add(Calendar.DAY_OF_MONTH, 1);
-						final Date planTime = parsed.getTime();
+						final Date plannedTime = parsed.getTime();
 
-						// liveTime
+						// predictedTime
 						if (mDepFine.group(4) != null)
 						{
 							parsed.setTime(ParserUtils.parseTime(mDepFine.group(4)));
@@ -506,10 +510,14 @@ public class RmvProvider implements NetworkProvider
 							parsed.set(Calendar.DAY_OF_MONTH, current.get(Calendar.DAY_OF_MONTH));
 							if (ParserUtils.timeDiff(parsed.getTime(), currentTime) < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
 								parsed.add(Calendar.DAY_OF_MONTH, 1);
-							final Date liveTime = parsed.getTime();
+							final Date predictedTime = parsed.getTime();
 						}
 
-						final Departure dep = new Departure(planTime, line, line != null ? LINES.get(line.charAt(0)) : null, 0, destination);
+						// position
+						final String position = ParserUtils.resolveEntities(mDepFine.group(5));
+
+						final Departure dep = new Departure(plannedTime, line, line != null ? LINES.get(line.charAt(0)) : null, position, 0,
+								destination);
 
 						if (!departures.contains(dep))
 							departures.add(dep);
