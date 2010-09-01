@@ -48,7 +48,7 @@ public interface NetworkProvider
 	 * @return auto-complete suggestions
 	 * @throws IOException
 	 */
-	List<String> autoCompleteStationName(CharSequence constraint) throws IOException;
+	List<Autocomplete> autocompleteStations(CharSequence constraint) throws IOException;
 
 	/**
 	 * Determine stations near to given location

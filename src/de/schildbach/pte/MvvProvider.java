@@ -51,29 +51,43 @@ public class MvvProvider implements NetworkProvider
 		return true;
 	}
 
-	private static final String AUTOCOMPLETE_NAME_URL = "http://efa.mvv-muenchen.de/mobile/XSLT_DM_REQUEST?anySigWhenPerfectNoOtherMatches=1&command=&itdLPxx_advancedOptions=0&itdLPxx_odvPPType=&language=de&limit=20&locationServerActive=1&nameInfo_dm=invalid&nameState_dm=empty&nameState_dm=empty&placeInfo_dm=invalid&placeState_dm=empty&place_dm=&reducedAnyPostcodeObjFilter_dm=64&reducedAnyTooManyObjFilter_dm=2&reducedAnyWithoutAddressObjFilter_dm=102&requestID=0&selectAssignedStops=1&sessionID=0&typeInfo_dm=invalid&type_dm=stop&useHouseNumberList_dm=1&name_dm=";
-	private static final Pattern P_SINGLE_NAME = Pattern.compile(".*Von:[\\xa0\\s]+</b>(.+?)<br />.*", Pattern.DOTALL);
-	private static final Pattern P_MULTI_NAME = Pattern.compile("<option value=\"\\d+:\\d+\">(.+?)</option>", Pattern.DOTALL);
+	private static final String AUTOCOMPLETE_URI = "http://efa.mvv-muenchen.de/ultralite/XML_STOPFINDER_REQUEST"
+			+ "?coordOutputFormat=WGS84&anyObjFilter_sf=126&locationServerActive=1&name_sf=%s&type_sf=%s";
+	private static final String AUTOCOMPLETE_TYPE = "any"; // any, stop, street, poi
+	private static final Pattern P_AUTOCOMPLETE_COARSE = Pattern.compile("<p>(.*?)</p>");
+	private static final Pattern P_AUTOCOMPLETE_FINE = Pattern.compile(".*?<n>(.*?)</n>.*?<ty>(.*?)</ty>.*?<id>(.*?)</id>.*?<pc>(.*?)</pc>.*?");
 
-	public List<String> autoCompleteStationName(final CharSequence constraint) throws IOException
+	public List<Autocomplete> autocompleteStations(final CharSequence constraint) throws IOException
 	{
-		final CharSequence page = ParserUtils.scrape(AUTOCOMPLETE_NAME_URL + ParserUtils.urlEncode(constraint.toString(), ENCODING));
+		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING), AUTOCOMPLETE_TYPE);
+		final CharSequence page = ParserUtils.scrape(uri);
 
-		final List<String> names = new ArrayList<String>();
+		final List<Autocomplete> results = new ArrayList<Autocomplete>();
 
-		final Matcher mSingle = P_SINGLE_NAME.matcher(page);
-		if (mSingle.matches())
+		final Matcher mAutocompleteCoarse = P_AUTOCOMPLETE_COARSE.matcher(page);
+		while (mAutocompleteCoarse.find())
 		{
-			names.add(ParserUtils.resolveEntities(mSingle.group(1)));
-		}
-		else
-		{
-			final Matcher mMulti = P_MULTI_NAME.matcher(page);
-			while (mMulti.find())
-				names.add(ParserUtils.resolveEntities(mMulti.group(1)));
+			final Matcher mAutocompleteFine = P_AUTOCOMPLETE_FINE.matcher(mAutocompleteCoarse.group(1));
+			if (mAutocompleteFine.matches())
+			{
+				final String location = mAutocompleteFine.group(1);
+				final String type = mAutocompleteFine.group(2);
+				final int locationId = Integer.parseInt(mAutocompleteFine.group(3));
+				final String city = mAutocompleteFine.group(4);
+
+				if (type.equals("stop"))
+				{
+					final Autocomplete result = new Autocomplete(locationId, city + ", " + location);
+					results.add(result);
+				}
+			}
+			else
+			{
+				throw new IllegalArgumentException("cannot parse '" + mAutocompleteCoarse.group(1) + "' on " + uri);
+			}
 		}
 
-		return names;
+		return results;
 	}
 
 	private static final String NEARBY_URI = "http://efa.mvv-muenchen.de/ultralite/XML_DM_REQUEST"

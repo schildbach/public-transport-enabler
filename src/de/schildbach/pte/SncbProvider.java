@@ -22,7 +22,7 @@ public class SncbProvider implements NetworkProvider
 		throw new UnsupportedOperationException();
 	}
 
-	public List<String> autoCompleteStationName(final CharSequence constraint) throws IOException
+	public List<Autocomplete> autocompleteStations(final CharSequence constraint) throws IOException
 	{
 		throw new UnsupportedOperationException();
 	}

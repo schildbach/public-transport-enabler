@@ -61,9 +61,9 @@ public final class VbbProvider implements NetworkProvider
 	private static final String AUTOCOMPLETE_MASTID_URL = "http://mobil.bvg.de/IstAbfahrtzeiten/index/mobil?input=";
 	private static final Pattern P_SINGLE_MASTID = Pattern.compile(".*Ist-Abfahrtzeiten.*?<strong>(.*?)</strong>.*", Pattern.DOTALL);
 
-	public List<String> autoCompleteStationName(CharSequence constraint) throws IOException
+	public List<Autocomplete> autocompleteStations(final CharSequence constraint) throws IOException
 	{
-		final List<String> names = new ArrayList<String>();
+		final List<Autocomplete> results = new ArrayList<Autocomplete>();
 
 		if (P_AUTOCOMPLETE_IS_MAST.matcher(constraint).matches())
 		{
@@ -72,7 +72,7 @@ public final class VbbProvider implements NetworkProvider
 			final Matcher mSingle = P_SINGLE_MASTID.matcher(page);
 			if (mSingle.matches())
 			{
-				names.add(ParserUtils.resolveEntities(mSingle.group(1)));
+				results.add(new Autocomplete(0, ParserUtils.resolveEntities(mSingle.group(1))));
 			}
 		}
 		else
@@ -82,17 +82,17 @@ public final class VbbProvider implements NetworkProvider
 			final Matcher mSingle = P_SINGLE_NAME.matcher(page);
 			if (mSingle.matches())
 			{
-				names.add(ParserUtils.resolveEntities(mSingle.group(1)));
+				results.add(new Autocomplete(0, ParserUtils.resolveEntities(mSingle.group(1))));
 			}
 			else
 			{
 				final Matcher mMulti = P_MULTI_NAME.matcher(page);
 				while (mMulti.find())
-					names.add(ParserUtils.resolveEntities(mMulti.group(1)));
+					results.add(new Autocomplete(0, ParserUtils.resolveEntities(mMulti.group(1))));
 			}
 		}
 
-		return names;
+		return results;
 	}
 
 	public List<Station> nearbyStations(final double lat, final double lon, final int maxDistance, final int maxStations) throws IOException

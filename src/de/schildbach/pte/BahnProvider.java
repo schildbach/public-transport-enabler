@@ -55,25 +55,25 @@ public final class BahnProvider implements NetworkProvider
 			.compile(".*<input type=\"hidden\" name=\"input\" value=\"(.+?)#\\d+?\" />.*", Pattern.DOTALL);
 	private static final Pattern P_MULTI_NAME = Pattern.compile("<option value=\".+?#\\d+?\">(.+?)</option>", Pattern.DOTALL);
 
-	public List<String> autoCompleteStationName(CharSequence constraint) throws IOException
+	public List<Autocomplete> autocompleteStations(final CharSequence constraint) throws IOException
 	{
 		final CharSequence page = ParserUtils.scrape(NAME_URL + ParserUtils.urlEncode(constraint.toString()));
 
-		final List<String> names = new ArrayList<String>();
+		final List<Autocomplete> results = new ArrayList<Autocomplete>();
 
 		final Matcher mSingle = P_SINGLE_NAME.matcher(page);
 		if (mSingle.matches())
 		{
-			names.add(ParserUtils.resolveEntities(mSingle.group(1)));
+			results.add(new Autocomplete(0, ParserUtils.resolveEntities(mSingle.group(1))));
 		}
 		else
 		{
 			final Matcher mMulti = P_MULTI_NAME.matcher(page);
 			while (mMulti.find())
-				names.add(ParserUtils.resolveEntities(mMulti.group(1)));
+				results.add(new Autocomplete(0, ParserUtils.resolveEntities(mMulti.group(1))));
 		}
 
-		return names;
+		return results;
 	}
 
 	private final static Pattern P_NEARBY_STATIONS = Pattern
