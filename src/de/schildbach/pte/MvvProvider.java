@@ -76,9 +76,47 @@ public class MvvProvider implements NetworkProvider
 		return names;
 	}
 
+	private static final String NEARBY_URI = "http://efa.mvv-muenchen.de/ultralite/XML_DM_REQUEST"
+			+ "?mode=direct&coordOutputFormat=WGS84&mergeDep=1&useAllStops=1&name_dm=%2.6f:%2.6f:WGS84&type_dm=coord&itOptionsActive=1&ptOptionsActive=1&useProxFootSearch=1&excludedMeans=checkbox";
+	private static final Pattern P_NEARBY_COARSE = Pattern.compile("<dp>(.*?)</dp>");
+	private static final Pattern P_NEARBY_FINE = Pattern.compile(".*?<n>(.*?)</n>.*?<r>.*?<id>(.*?)</id>.*?</r>.*?<c>(\\d+),(\\d+)</c>.*?");
+
 	public List<Station> nearbyStations(final double lat, final double lon, final int maxDistance, final int maxStations) throws IOException
 	{
-		throw new UnsupportedOperationException();
+		final String uri = String.format(NEARBY_URI, lon, lat);
+		final CharSequence page = ParserUtils.scrape(uri);
+
+		final List<Station> stations = new ArrayList<Station>();
+
+		final Matcher mNearbyCoarse = P_NEARBY_COARSE.matcher(page);
+		while (mNearbyCoarse.find())
+		{
+			final Matcher mNearbyFine = P_NEARBY_FINE.matcher(mNearbyCoarse.group(1));
+			if (mNearbyFine.matches())
+			{
+				final String sName = mNearbyFine.group(1).trim();
+				final int sId = Integer.parseInt(mNearbyFine.group(2));
+				final double sLon = latLonToDouble(Integer.parseInt(mNearbyFine.group(3)));
+				final double sLat = latLonToDouble(Integer.parseInt(mNearbyFine.group(4)));
+
+				final Station station = new Station(sId, sName, sLat, sLon, 0, null, null);
+				stations.add(station);
+			}
+			else
+			{
+				throw new IllegalArgumentException("cannot parse '" + mNearbyCoarse.group(1) + "' on " + uri);
+			}
+		}
+
+		if (maxStations == 0 || maxStations >= stations.size())
+			return stations;
+		else
+			return stations.subList(0, maxStations);
+	}
+
+	private static double latLonToDouble(int value)
+	{
+		return (double) value / 1000000;
 	}
 
 	public StationLocationResult stationLocation(final String stationId) throws IOException
