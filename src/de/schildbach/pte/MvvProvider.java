@@ -270,7 +270,7 @@ public class MvvProvider implements NetworkProvider
 	private static final Pattern P_CONNECTIONS_HEAD = Pattern.compile(".*<b>Von:[\\xa0\\s]+</b>(.+?)<br />[\\xa0\\s]+"
 			+ "<b>Nach:[\\xa0\\s]+</b>(.+?)<br />[\\xa0\\s]+" //
 			+ "(?:<b>itdTripRequestDetails/via:[\\xa0\\s]+</b>(.+?)<br />[\\xa0\\s]+)?" //
-			+ "<b>Datum:[\\xa0\\s]+</b>\\w{2}\\.,\\s(\\d+)\\.\\s(\\w{3})\\.[\\xa0\\s]+(\\d{4}).*?"
+			+ "<b>Datum:[\\xa0\\s]+</b>\\w{2}\\.,\\s(\\d+)\\.\\s(\\w{3,4})\\.[\\xa0\\s]+(\\d{4}).*?"
 			+ "(?:<a href=\"(XSLT_TRIP_REQUEST2\\?language=de&amp;sessionID=[^&]+&amp;requestID=[^&]+&amp;command=tripPrev)\">.*?)?" //
 			+ "(?:<a href=\"(XSLT_TRIP_REQUEST2\\?language=de&amp;sessionID=[^&]+&amp;requestID=[^&]+&amp;command=tripNext)\">.*?)?", Pattern.DOTALL);
 	private static final Pattern P_CONNECTIONS_COARSE = Pattern.compile("<div style=\"background-color:#\\w{6};\">(.+?)</div>", Pattern.DOTALL);
@@ -356,7 +356,7 @@ public class MvvProvider implements NetworkProvider
 	}
 
 	private static final Pattern P_CONNECTION_DETAILS_HEAD = Pattern.compile(".*<b>Detailansicht</b>.*?" //
-			+ "<b>Datum:[\\xa0\\s]+</b>\\w{2}\\.,\\s(\\d+)\\.\\s(\\w{3})\\.[\\xa0\\s]+(\\d{4}).*", Pattern.DOTALL);
+			+ "<b>Datum:[\\xa0\\s]+</b>\\w{2}\\.,\\s(\\d+)\\.\\s(\\w{3,4})\\.[\\xa0\\s]+(\\d{4}).*", Pattern.DOTALL);
 	private static final Pattern P_CONNECTION_DETAILS_COARSE = Pattern.compile("<tr bgcolor=\"#(\\w{6})\">(.+?)</tr>.*?"
 			+ "<tr bgcolor=\"#\\1\">(.+?)</tr>.*?" //
 			+ "<tr bgcolor=\"#\\1\">(.+?)</tr>", Pattern.DOTALL);
@@ -499,7 +499,7 @@ public class MvvProvider implements NetworkProvider
 	private static final Pattern P_DEPARTURES_HEAD_COARSE = Pattern.compile(".*?<body>(.*?Linie/Richtung.*?)</body>.*?", Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_HEAD_FINE = Pattern.compile(".*?" //
 			+ "Von:[\\xa0\\s]*</b>(.*?)<br />.*?" // location
-			+ "Datum:[\\xa0\\s]*</b>\\w{2}\\.,\\s(\\d+)\\.\\s(\\w{3})\\.[\\xa0\\s]+(\\d{4})<br />.*?" // date
+			+ "Datum:[\\xa0\\s]*</b>\\w{2}\\.,\\s(\\d+)\\.\\s(\\w{3,4})\\.[\\xa0\\s]+(\\d{4})<br />.*?" // date
 	, Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<tr valign=\"top\" bgcolor=\"#\\w{6}\">(.+?)</tr>", Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_FINE = Pattern.compile(".*?" //
@@ -734,7 +734,7 @@ public class MvvProvider implements NetworkProvider
 		return calendar.getTime();
 	}
 
-	private final static String[] MONTHS = new String[] { "Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez" };
+	private final static String[] MONTHS = new String[] { "Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sept", "Okt", "Nov", "Dez" };
 
 	private static int parseMonth(final String month)
 	{
