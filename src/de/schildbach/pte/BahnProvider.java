@@ -442,12 +442,12 @@ public final class BahnProvider implements NetworkProvider
 			+ "Abfahrt (\\d+:\\d+)\\n?Uhr, (\\d+\\.\\d+\\.\\d+).*?" // currentTime
 	, Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<div class=\"sqdetailsDep trow\">\n(.+?)</div>", Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_FINE = Pattern.compile(".*?" //
+	static final Pattern P_DEPARTURES_FINE = Pattern.compile(".*?" //
 			+ "<span class=\"bold\">(.*?)</span>.*?" // line
 			+ "&gt;&gt;\n\\s*(.+?)\\s*\n<br />\n" // destination
 			+ "<span class=\"bold\">(\\d{1,2}:\\d{2})</span>" // time
 			+ "(?:&nbsp;<span class=\"red\">ca. ([+-]?\\d+)</span>)?" // delay
-			+ "(?:,&nbsp;(Gl\\. " + ParserUtils.P_PLATFORM + "))?" // position
+			+ "(?:(?:,&nbsp;)?(Gl\\. " + ParserUtils.P_PLATFORM + "))?" // position
 	, Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_URI_STATION_ID = Pattern.compile("input=(\\d+)");
 
@@ -770,6 +770,8 @@ public final class BahnProvider implements NetworkProvider
 				return "RZr" + number;
 			if (type.equals("N")) // Frankreich, Tours, Orléans
 				return "RN" + number;
+			if (type.equals("VE")) // Lutherstadt Wittenberg
+				return "RVE" + number;
 
 			if (type.equals("S"))
 				return "SS" + number;
