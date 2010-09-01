@@ -646,6 +646,8 @@ public class OebbProvider implements NetworkProvider
 
 		if (ucType.equals("BUS"))
 			return 'B';
+		if (ucType.equals("RFB"))
+			return 'B';
 		if (ucType.equals("OBU"))
 			return 'B';
 		if (ucType.equals("AST"))
