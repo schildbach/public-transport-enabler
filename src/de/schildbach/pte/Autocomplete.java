@@ -33,6 +33,7 @@ public final class Autocomplete
 	@Override
 	public String toString()
 	{
-		return getClass().getName() + "[" + locationId + " " + location + "]";
+		// return getClass().getName() + "[" + locationId + " " + location + "]";
+		return location; // invoked by AutoCompleteTextView in landscape orientation
 	}
 }
