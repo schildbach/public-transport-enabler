@@ -171,7 +171,7 @@ public class MvvProvider implements NetworkProvider
 		uri.append("&locationServerActive=1");
 		uri.append("&useProxFootSearch=1"); // Take nearby stops into account and possibly use them instead
 		uri.append("&anySigWhenPerfectNoOtherMatches=1");
-		uri.append("&lineRestriction=403");
+		// uri.append("&lineRestriction=403");
 
 		if (fromType == LocationType.WGS84)
 		{
@@ -195,6 +195,7 @@ public class MvvProvider implements NetworkProvider
 			uri.append("&reducedAnyTooManyObjFilter_origin=2");
 			uri.append("&type_origin=").append(locationType(fromType));
 			uri.append("&name_origin=").append(ParserUtils.urlEncode(from, ENCODING)); // fine-grained location
+			uri.append("&anyObjFilter_origin=").append(locationAnyObjFilter(fromType));
 		}
 
 		if (toType == LocationType.WGS84)
@@ -219,6 +220,7 @@ public class MvvProvider implements NetworkProvider
 			uri.append("&reducedAnyTooManyObjFilter_destination=2");
 			uri.append("&type_destination=").append(locationType(toType));
 			uri.append("&name_destination=").append(ParserUtils.urlEncode(to, ENCODING)); // fine-grained location
+			uri.append("&anyObjFilter_destination=").append(locationAnyObjFilter(toType));
 		}
 
 		if (via != null)
@@ -245,6 +247,7 @@ public class MvvProvider implements NetworkProvider
 				uri.append("&reducedAnyTooManyObjFilter_via=2");
 				uri.append("&type_via=").append(locationType(viaType));
 				uri.append("&name_via=").append(ParserUtils.urlEncode(via, ENCODING));
+				uri.append("&anyObjFilter_via=").append(locationAnyObjFilter(viaType));
 			}
 		}
 
@@ -261,10 +264,22 @@ public class MvvProvider implements NetworkProvider
 		if (locationType == LocationType.STATION)
 			return "stop";
 		if (locationType == LocationType.ADDRESS)
-			return "address";
+			return "any"; // strange, matches with anyObjFilter
 		if (locationType == LocationType.ANY)
 			return "any";
 		// TODO poi
+		throw new IllegalArgumentException(locationType.toString());
+	}
+
+	private static int locationAnyObjFilter(final LocationType locationType)
+	{
+		if (locationType == LocationType.STATION)
+			return 2;
+		if (locationType == LocationType.ADDRESS)
+			return 12;
+		if (locationType == LocationType.ANY)
+			return 0;
+		// TODO poi=32
 		throw new IllegalArgumentException(locationType.toString());
 	}
 
@@ -278,7 +293,6 @@ public class MvvProvider implements NetworkProvider
 			final LocationType toType, final String to, final Date date, final boolean dep) throws IOException
 	{
 		final String uri = connectionsQueryUri(fromType, from, viaType, via, toType, to, date, dep);
-
 		final CharSequence page = ParserUtils.scrape(uri);
 
 		final Matcher mError = P_CHECK_CONNECTIONS_ERROR.matcher(page);
