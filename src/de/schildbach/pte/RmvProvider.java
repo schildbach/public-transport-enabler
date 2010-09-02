@@ -134,7 +134,7 @@ public class RmvProvider implements NetworkProvider
 		return (double) value / 1000000;
 	}
 
-	private String connectionsQueryUri(final LocationType fromType, final String from, final String via, final LocationType toType, final String to,
+	private String connectionsQueryUri(final LocationType fromType, final String from, final LocationType viaType, final String via, final LocationType toType, final String to,
 			final Date date, final boolean dep)
 	{
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yy");
@@ -153,7 +153,7 @@ public class RmvProvider implements NetworkProvider
 		if (via != null)
 		{
 			uri.append("&REQ0JourneyStops1.0G=").append(ParserUtils.urlEncode(via));
-			uri.append("&REQ0JourneyStops1.0A=255");
+			uri.append("&REQ0JourneyStops1.0A=").append(locationType(viaType));
 		}
 		uri.append("&start=Suchen");
 
@@ -162,18 +162,13 @@ public class RmvProvider implements NetworkProvider
 
 	private static int locationType(final LocationType locationType)
 	{
+		if (locationType == LocationType.STATION)
+			return 1;
 		if (locationType == LocationType.ADDRESS)
 			return 2;
 		if (locationType == LocationType.ANY)
 			return 255;
 		throw new IllegalArgumentException(locationType.toString());
-	}
-
-	public QueryConnectionsResult queryMoreConnections(final String uri) throws IOException
-	{
-		final CharSequence page = ParserUtils.scrape(uri);
-
-		return queryConnections(uri, page);
 	}
 
 	private static final Pattern P_PRE_ADDRESS = Pattern.compile("(?:Geben Sie einen (Startort|Zielort) an.*?)?Bitte w&#228;hlen Sie aus der Liste",
@@ -186,7 +181,7 @@ public class RmvProvider implements NetworkProvider
 	public QueryConnectionsResult queryConnections(final LocationType fromType, final String from, final LocationType viaType, final String via,
 			final LocationType toType, final String to, final Date date, final boolean dep) throws IOException
 	{
-		final String uri = connectionsQueryUri(fromType, from, via, toType, to, date, dep);
+		final String uri = connectionsQueryUri(fromType, from, viaType, via, toType, to, date, dep);
 		final CharSequence page = ParserUtils.scrape(uri);
 
 		final Matcher mError = P_CHECK_CONNECTIONS_ERROR.matcher(page);
@@ -245,6 +240,13 @@ public class RmvProvider implements NetworkProvider
 			+ "(\\d+:\\d+)-(\\d+:\\d+)</a>" //
 			+ "(?:&nbsp;(.+?))?" //
 	, Pattern.DOTALL);
+
+	public QueryConnectionsResult queryMoreConnections(final String uri) throws IOException
+	{
+		final CharSequence page = ParserUtils.scrape(uri);
+
+		return queryConnections(uri, page);
+	}
 
 	private QueryConnectionsResult queryConnections(final String uri, final CharSequence page) throws IOException
 	{

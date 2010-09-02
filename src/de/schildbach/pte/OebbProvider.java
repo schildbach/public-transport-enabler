@@ -24,7 +24,7 @@ public class OebbProvider implements NetworkProvider
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
 		for (final Capability capability : capabilities)
-			if (capability == Capability.DEPARTURES || capability == Capability.CONNECTIONS)
+			if (capability == Capability.DEPARTURES || capability == Capability.CONNECTIONS || capability == Capability.LOCATION_STATION_ID)
 				return true;
 
 		return false;
@@ -66,8 +66,8 @@ public class OebbProvider implements NetworkProvider
 		throw new UnsupportedOperationException();
 	}
 
-	private String connectionsQueryUri(final LocationType fromType, final String from, final String via, final LocationType toType, final String to,
-			final Date date, final boolean dep)
+	private String connectionsQueryUri(final LocationType fromType, final String from, final LocationType viaType, final String via,
+			final LocationType toType, final String to, final Date date, final boolean dep)
 	{
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yy");
 		final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
@@ -82,7 +82,7 @@ public class OebbProvider implements NetworkProvider
 		if (via != null)
 		{
 			uri.append("&REQ0JourneyStops1.0G=").append(ParserUtils.urlEncode(via));
-			uri.append("&REQ0JourneyStops1.0A=255"); // 1=station, 2=city/street, 255=any
+			uri.append("&REQ0JourneyStops1.0A=").append(locationType(viaType));
 			uri.append("&REQ0JourneyStops1.0ID=");
 		}
 		uri.append("&REQ0JourneyStopsZ0G=").append(ParserUtils.urlEncode(to));
@@ -100,6 +100,8 @@ public class OebbProvider implements NetworkProvider
 
 	private static int locationType(final LocationType locationType)
 	{
+		if (locationType == LocationType.STATION)
+			return 1;
 		if (locationType == LocationType.ADDRESS)
 			return 2;
 		if (locationType == LocationType.ANY)
@@ -115,7 +117,7 @@ public class OebbProvider implements NetworkProvider
 	public QueryConnectionsResult queryConnections(final LocationType fromType, final String from, final LocationType viaType, final String via,
 			final LocationType toType, final String to, final Date date, final boolean dep) throws IOException
 	{
-		final String uri = connectionsQueryUri(fromType, from, via, toType, to, date, dep);
+		final String uri = connectionsQueryUri(fromType, from, viaType, via, toType, to, date, dep);
 		final CharSequence page = ParserUtils.scrape(uri);
 
 		final Matcher mError = P_CHECK_CONNECTIONS_ERROR.matcher(page);

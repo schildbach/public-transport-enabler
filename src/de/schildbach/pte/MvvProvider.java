@@ -44,6 +44,7 @@ public class MvvProvider implements NetworkProvider
 
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
+		// TODO remove
 		for (final Capability capability : capabilities)
 			if (capability == Capability.NEARBY_STATIONS)
 				return false;
@@ -192,7 +193,7 @@ public class MvvProvider implements NetworkProvider
 			uri.append("&reducedAnyWithoutAddressObjFilter_origin=102");
 			uri.append("&reducedAnyPostcodeObjFilter_origin=64");
 			uri.append("&reducedAnyTooManyObjFilter_origin=2");
-			uri.append("&type_origin=stop"); // any|stop|poi|address
+			uri.append("&type_origin=").append(locationType(fromType));
 			uri.append("&name_origin=").append(ParserUtils.urlEncode(from, ENCODING)); // fine-grained location
 		}
 
@@ -216,7 +217,7 @@ public class MvvProvider implements NetworkProvider
 			uri.append("&reducedAnyWithoutAddressObjFilter_destination=102");
 			uri.append("&reducedAnyPostcodeObjFilter_destination=64");
 			uri.append("&reducedAnyTooManyObjFilter_destination=2");
-			uri.append("&type_destination=stop"); // any|stop|poi|address
+			uri.append("&type_destination=").append(locationType(toType));
 			uri.append("&name_destination=").append(ParserUtils.urlEncode(to, ENCODING)); // fine-grained location
 		}
 
@@ -242,7 +243,7 @@ public class MvvProvider implements NetworkProvider
 				uri.append("&reducedAnyWithoutAddressObjFilter_via=102");
 				uri.append("&reducedAnyPostcodeObjFilter_via=64");
 				uri.append("&reducedAnyTooManyObjFilter_via=2");
-				uri.append("&type_via=stop");
+				uri.append("&type_via=").append(locationType(viaType));
 				uri.append("&name_via=").append(ParserUtils.urlEncode(via, ENCODING));
 			}
 		}
@@ -253,6 +254,18 @@ public class MvvProvider implements NetworkProvider
 		uri.append("&itdDate=").append(ParserUtils.urlEncode(DATE_FORMAT.format(date)));
 
 		return uri.toString();
+	}
+
+	private static String locationType(final LocationType locationType)
+	{
+		if (locationType == LocationType.STATION)
+			return "stop";
+		if (locationType == LocationType.ADDRESS)
+			return "address";
+		if (locationType == LocationType.ANY)
+			return "any";
+		// TODO poi
+		throw new IllegalArgumentException(locationType.toString());
 	}
 
 	private static final Pattern P_PRE_ADDRESS = Pattern.compile("<select name=\"(name_origin|name_destination|name_via)\".*?>(.*?)</select>",

@@ -30,12 +30,12 @@ public interface NetworkProvider
 {
 	public enum Capability
 	{
-		NEARBY_STATIONS, DEPARTURES, CONNECTIONS, LOCATION_WGS84
+		NEARBY_STATIONS, DEPARTURES, CONNECTIONS, LOCATION_WGS84, LOCATION_STATION_ID
 	}
 
 	public enum LocationType
 	{
-		ANY, WGS84, ADDRESS
+		ANY, STATION, WGS84, ADDRESS
 	}
 
 	boolean hasCapabilities(Capability... capabilities);
