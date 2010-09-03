@@ -134,8 +134,8 @@ public class RmvProvider implements NetworkProvider
 		return (double) value / 1000000;
 	}
 
-	private String connectionsQueryUri(final LocationType fromType, final String from, final LocationType viaType, final String via, final LocationType toType, final String to,
-			final Date date, final boolean dep)
+	private String connectionsQueryUri(final LocationType fromType, final String from, final LocationType viaType, final String via,
+			final LocationType toType, final String to, final Date date, final boolean dep)
 	{
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yy");
 		final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
@@ -441,12 +441,13 @@ public class RmvProvider implements NetworkProvider
 			+ "Uhr, (\\d+\\.\\d+\\.\\d+).*?" //
 	, Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<p class=\"sq\">\n(.+?)</p>", Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_FINE = Pattern.compile("" //
+	static final Pattern P_DEPARTURES_FINE = Pattern.compile("" //
 			+ "<b>\\s*(.*?)\\s*</b>.*?" // line
 			+ "&gt;&gt;\n" //
 			+ "(.*?)\n" // destination
 			+ "<br />\n" //
 			+ "<b>(\\d{1,2}:\\d{2})</b>\n" // plannedTime
+			+ "(?:keine Prognose verf&#252;gbar\n)?" //
 			+ "(?:<span class=\"red\">ca\\. (\\d{1,2}:\\d{2})</span>\n)?" // predictedTime
 			+ "(?:<span class=\"red\">heute Gl\\. " + ParserUtils.P_PLATFORM + "</span><br />\n)?" // predictedPosition
 			+ "(?:(Gl\\. " + ParserUtils.P_PLATFORM + ")<br />\n)?" // position
