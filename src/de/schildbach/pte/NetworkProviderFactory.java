@@ -25,16 +25,56 @@ import java.lang.ref.SoftReference;
  */
 public final class NetworkProviderFactory
 {
+	private static Reference<BahnProvider> bahnProviderRef;
+	private static Reference<OebbProvider> oebbProviderRef;
+	private static Reference<SbbProvider> sbbProviderRef;
 	private static Reference<VbbProvider> vbbProviderRef;
 	private static Reference<RmvProvider> rmvProviderRef;
-	private static Reference<BahnProvider> bahnProviderRef;
 	private static Reference<MvvProvider> mvvProviderRef;
-	private static Reference<SbbProvider> sbbProviderRef;
-	private static Reference<OebbProvider> oebbProviderRef;
+	private static Reference<TflProvider> tflProviderRef;
 
 	public static synchronized NetworkProvider provider(final String networkId)
 	{
-		if (networkId.equals(VbbProvider.NETWORK_ID))
+		if (networkId.equals(BahnProvider.NETWORK_ID))
+		{
+			if (bahnProviderRef != null)
+			{
+				final BahnProvider provider = bahnProviderRef.get();
+				if (provider != null)
+					return provider;
+			}
+
+			final BahnProvider provider = new BahnProvider();
+			bahnProviderRef = new SoftReference<BahnProvider>(provider);
+			return provider;
+		}
+		else if (networkId.equals(OebbProvider.NETWORK_ID))
+		{
+			if (oebbProviderRef != null)
+			{
+				final OebbProvider provider = oebbProviderRef.get();
+				if (provider != null)
+					return provider;
+			}
+
+			final OebbProvider provider = new OebbProvider();
+			oebbProviderRef = new SoftReference<OebbProvider>(provider);
+			return provider;
+		}
+		else if (networkId.equals(SbbProvider.NETWORK_ID))
+		{
+			if (sbbProviderRef != null)
+			{
+				final SbbProvider provider = sbbProviderRef.get();
+				if (provider != null)
+					return provider;
+			}
+
+			final SbbProvider provider = new SbbProvider();
+			sbbProviderRef = new SoftReference<SbbProvider>(provider);
+			return provider;
+		}
+		else if (networkId.equals(VbbProvider.NETWORK_ID))
 		{
 			if (vbbProviderRef != null)
 			{
@@ -60,19 +100,6 @@ public final class NetworkProviderFactory
 			rmvProviderRef = new SoftReference<RmvProvider>(provider);
 			return provider;
 		}
-		else if (networkId.equals(BahnProvider.NETWORK_ID))
-		{
-			if (bahnProviderRef != null)
-			{
-				final BahnProvider provider = bahnProviderRef.get();
-				if (provider != null)
-					return provider;
-			}
-
-			final BahnProvider provider = new BahnProvider();
-			bahnProviderRef = new SoftReference<BahnProvider>(provider);
-			return provider;
-		}
 		else if (networkId.equals(MvvProvider.NETWORK_ID))
 		{
 			if (mvvProviderRef != null)
@@ -86,30 +113,17 @@ public final class NetworkProviderFactory
 			mvvProviderRef = new SoftReference<MvvProvider>(provider);
 			return provider;
 		}
-		else if (networkId.equals(SbbProvider.NETWORK_ID))
+		else if (networkId.equals(TflProvider.NETWORK_ID))
 		{
-			if (sbbProviderRef != null)
+			if (tflProviderRef != null)
 			{
-				final SbbProvider provider = sbbProviderRef.get();
+				final TflProvider provider = tflProviderRef.get();
 				if (provider != null)
 					return provider;
 			}
 
-			final SbbProvider provider = new SbbProvider();
-			sbbProviderRef = new SoftReference<SbbProvider>(provider);
-			return provider;
-		}
-		else if (networkId.equals(OebbProvider.NETWORK_ID))
-		{
-			if (oebbProviderRef != null)
-			{
-				final OebbProvider provider = oebbProviderRef.get();
-				if (provider != null)
-					return provider;
-			}
-
-			final OebbProvider provider = new OebbProvider();
-			oebbProviderRef = new SoftReference<OebbProvider>(provider);
+			final TflProvider provider = new TflProvider();
+			tflProviderRef = new SoftReference<TflProvider>(provider);
 			return provider;
 		}
 		else
@@ -122,18 +136,20 @@ public final class NetworkProviderFactory
 	{
 		if (provider == null)
 			throw new IllegalArgumentException("null provider");
+		else if (provider instanceof BahnProvider)
+			return BahnProvider.NETWORK_ID;
+		else if (provider instanceof OebbProvider)
+			return OebbProvider.NETWORK_ID;
+		else if (provider instanceof SbbProvider)
+			return SbbProvider.NETWORK_ID;
 		else if (provider instanceof VbbProvider)
 			return VbbProvider.NETWORK_ID;
 		else if (provider instanceof RmvProvider)
 			return RmvProvider.NETWORK_ID;
-		else if (provider instanceof BahnProvider)
-			return BahnProvider.NETWORK_ID;
 		else if (provider instanceof MvvProvider)
 			return MvvProvider.NETWORK_ID;
-		else if (provider instanceof SbbProvider)
-			return SbbProvider.NETWORK_ID;
-		else if (provider instanceof OebbProvider)
-			return OebbProvider.NETWORK_ID;
+		else if (provider instanceof TflProvider)
+			return TflProvider.NETWORK_ID;
 		else
 			throw new IllegalArgumentException(provider.getClass().toString());
 	}
