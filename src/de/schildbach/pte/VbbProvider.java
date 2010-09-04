@@ -57,7 +57,8 @@ public final class VbbProvider implements NetworkProvider
 	private static final Pattern P_AUTOCOMPLETE_IS_MAST = Pattern.compile("\\d{6}");
 	private static final String AUTOCOMPLETE_NAME_URL = "http://mobil.bvg.de/Fahrinfo/bin/stboard.bin/dox/dox?input=";
 	private static final Pattern P_SINGLE_NAME = Pattern.compile(".*Haltestelleninfo.*?<strong>(.*?)</strong>.*", Pattern.DOTALL);
-	private static final Pattern P_MULTI_NAME = Pattern.compile("<a href=\\\"/Fahrinfo/bin/stboard.*?\\\">\\s*(.*?)\\s*</a>", Pattern.DOTALL);
+	private static final Pattern P_MULTI_NAME = Pattern.compile("<a href=\\\"/Fahrinfo/bin/stboard\\.bin/dox.*?input=(\\d+)&.*?\">\\s*(.*?)\\s*</a>",
+			Pattern.DOTALL);
 	private static final String AUTOCOMPLETE_MASTID_URL = "http://mobil.bvg.de/IstAbfahrtzeiten/index/mobil?input=";
 	private static final Pattern P_SINGLE_MASTID = Pattern.compile(".*Ist-Abfahrtzeiten.*?<strong>(.*?)</strong>.*", Pattern.DOTALL);
 
@@ -72,7 +73,7 @@ public final class VbbProvider implements NetworkProvider
 			final Matcher mSingle = P_SINGLE_MASTID.matcher(page);
 			if (mSingle.matches())
 			{
-				results.add(new Autocomplete(0, ParserUtils.resolveEntities(mSingle.group(1))));
+				results.add(new Autocomplete(0 /* TODO */, ParserUtils.resolveEntities(mSingle.group(1))));
 			}
 		}
 		else
@@ -82,13 +83,13 @@ public final class VbbProvider implements NetworkProvider
 			final Matcher mSingle = P_SINGLE_NAME.matcher(page);
 			if (mSingle.matches())
 			{
-				results.add(new Autocomplete(0, ParserUtils.resolveEntities(mSingle.group(1))));
+				results.add(new Autocomplete(0 /* TODO */, ParserUtils.resolveEntities(mSingle.group(1))));
 			}
 			else
 			{
 				final Matcher mMulti = P_MULTI_NAME.matcher(page);
 				while (mMulti.find())
-					results.add(new Autocomplete(0, ParserUtils.resolveEntities(mMulti.group(1))));
+					results.add(new Autocomplete(Integer.parseInt(mMulti.group(1)), ParserUtils.resolveEntities(mMulti.group(2))));
 			}
 		}
 

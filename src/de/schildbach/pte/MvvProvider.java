@@ -137,6 +137,21 @@ public class MvvProvider implements NetworkProvider
 	public StationLocationResult stationLocation(final String stationId) throws IOException
 	{
 		throw new UnsupportedOperationException();
+
+		// private Pattern P_GEO =
+		// Pattern.compile(".*?var latact = \"(\\d+\\.\\d+)\";.*?var lonact = \"(\\d+\\.\\d+)\";.*?", Pattern.DOTALL);
+
+		// final String urlGeo =
+		// "http://www.mvv-muenchen.de/de/home/fahrgastinformation/mvv-netz/sis/sdb/googlemaps/index.html?id="
+		// + id;
+		// final CharSequence pageGeo = ParserUtils.scrape(urlGeo);
+		// final Matcher mGeo = P_GEO.matcher(pageGeo);
+		// if (mGeo.matches())
+		// {
+		// mvvLat = Double.parseDouble(mGeo.group(1));
+		// mvvLon = Double.parseDouble(mGeo.group(2));
+		// }
+
 	}
 
 	private String connectionsQueryUri(final LocationType fromType, final String from, final LocationType viaType, final String via,

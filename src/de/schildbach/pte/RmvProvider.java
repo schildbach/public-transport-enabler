@@ -52,9 +52,10 @@ public class RmvProvider implements NetworkProvider
 	}
 
 	private static final String NAME_URL = "http://www.rmv.de/auskunft/bin/jp/stboard.exe/dox?input=";
-	private static final Pattern P_SINGLE_NAME = Pattern
-			.compile(".*<input type=\"hidden\" name=\"input\" value=\"(.+?)#\\d+?\" />.*", Pattern.DOTALL);
-	private static final Pattern P_MULTI_NAME = Pattern.compile("<a href=\"/auskunft/bin/jp/stboard.exe/dox.*?\">\\s*(.*?)\\s*</a>", Pattern.DOTALL);
+	private static final Pattern P_SINGLE_NAME = Pattern.compile(".*<input type=\"hidden\" name=\"input\" value=\"(.+?)#(\\d+)\" />.*",
+			Pattern.DOTALL);
+	private static final Pattern P_MULTI_NAME = Pattern.compile("<a href=\"/auskunft/bin/jp/stboard.exe/dox.*?input=(\\d+)&.*?\">\\s*(.*?)\\s*</a>",
+			Pattern.DOTALL);
 
 	public List<Autocomplete> autocompleteStations(final CharSequence constraint) throws IOException
 	{
@@ -65,13 +66,13 @@ public class RmvProvider implements NetworkProvider
 		final Matcher mSingle = P_SINGLE_NAME.matcher(page);
 		if (mSingle.matches())
 		{
-			results.add(new Autocomplete(0, ParserUtils.resolveEntities(mSingle.group(1))));
+			results.add(new Autocomplete(Integer.parseInt(mSingle.group(2)), ParserUtils.resolveEntities(mSingle.group(1))));
 		}
 		else
 		{
 			final Matcher mMulti = P_MULTI_NAME.matcher(page);
 			while (mMulti.find())
-				results.add(new Autocomplete(0, ParserUtils.resolveEntities(mMulti.group(1))));
+				results.add(new Autocomplete(Integer.parseInt(mMulti.group(1)), ParserUtils.resolveEntities(mMulti.group(2))));
 		}
 
 		return results;

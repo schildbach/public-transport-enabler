@@ -33,7 +33,7 @@ public class OebbProvider implements NetworkProvider
 	private static final String NAME_URL = "http://fahrplan.oebb.at/bin/stboard.exe/dn?input=";
 	private static final Pattern P_SINGLE_NAME = Pattern
 			.compile(".*?<input type=\"hidden\" name=\"input\" value=\"(.+?)#(\\d+)\">.*", Pattern.DOTALL);
-	private static final Pattern P_MULTI_NAME = Pattern.compile("<option value=\".+?#(\\d+?)\">(.+?)</option>", Pattern.DOTALL);
+	private static final Pattern P_MULTI_NAME = Pattern.compile("<option value=\".+?#(\\d+)\">(.+?)</option>", Pattern.DOTALL);
 
 	public List<Autocomplete> autocompleteStations(final CharSequence constraint) throws IOException
 	{
@@ -44,13 +44,13 @@ public class OebbProvider implements NetworkProvider
 		final Matcher mSingle = P_SINGLE_NAME.matcher(page);
 		if (mSingle.matches())
 		{
-			results.add(new Autocomplete(0, ParserUtils.resolveEntities(mSingle.group(1))));
+			results.add(new Autocomplete(Integer.parseInt(mSingle.group(2)), ParserUtils.resolveEntities(mSingle.group(1))));
 		}
 		else
 		{
 			final Matcher mMulti = P_MULTI_NAME.matcher(page);
 			while (mMulti.find())
-				results.add(new Autocomplete(0, ParserUtils.resolveEntities(mMulti.group(2))));
+				results.add(new Autocomplete(Integer.parseInt(mMulti.group(1)), ParserUtils.resolveEntities(mMulti.group(2))));
 		}
 
 		return results;
