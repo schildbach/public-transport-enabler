@@ -168,7 +168,7 @@ public final class BahnProvider implements NetworkProvider
 			"<select name=\"(REQ0JourneyStopsS0K|REQ0JourneyStopsZ0K|REQ0JourneyStops1\\.0K)\" class=\"nofullwidth\">(.*?)</select>", Pattern.DOTALL);
 	private static final Pattern P_ADDRESSES = Pattern.compile("<option.*?>\\s*(.*?)\\s*</option>", Pattern.DOTALL);
 	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern
-			.compile("(?:(zu dicht beieinander|mehrfach vorhanden oder identisch)|(leider konnte zu Ihrer Anfrage keine Verbindung gefunden werden))");
+			.compile("(zu dicht beieinander|mehrfach vorhanden oder identisch)|(leider konnte zu Ihrer Anfrage keine Verbindung gefunden werden)");
 
 	public QueryConnectionsResult queryConnections(final LocationType fromType, final String from, final LocationType viaType, final String via,
 			final LocationType toType, final String to, final Date date, final boolean dep) throws IOException

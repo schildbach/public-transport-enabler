@@ -240,7 +240,8 @@ public final class VbbProvider implements NetworkProvider
 	private static final Pattern P_CHECK_ADDRESS = Pattern.compile("<option.*?>\\s*(.*?)\\s*</option>", Pattern.DOTALL);
 	private static final Pattern P_CHECK_FROM = Pattern.compile("Von:");
 	private static final Pattern P_CHECK_TO = Pattern.compile("Nach:");
-	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern.compile("(zu dicht beieinander)|(keine Verbindung gefunden)");
+	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern
+			.compile("(zu dicht beieinander|mehrfach vorhanden oder identisch)|(keine Verbindung gefunden)");
 
 	public QueryConnectionsResult queryConnections(final LocationType fromType, final String from, final LocationType viaType, final String via,
 			final LocationType toType, final String to, final Date date, final boolean dep) throws IOException

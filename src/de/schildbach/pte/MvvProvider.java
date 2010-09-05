@@ -301,8 +301,8 @@ public class MvvProvider implements NetworkProvider
 	private static final Pattern P_PRE_ADDRESS = Pattern.compile("<select name=\"(name_origin|name_destination|name_via)\".*?>(.*?)</select>",
 			Pattern.DOTALL);
 	private static final Pattern P_ADDRESSES = Pattern.compile("<option.*?>\\s*(.*?)\\s*</option>", Pattern.DOTALL);
-	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern.compile("(?:(xxxzudichtxxx)|(konnte keine Verbindung gefunden werden))",
-			Pattern.CASE_INSENSITIVE);
+	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern.compile(
+			"(Start und Ziel sind identisch)|(konnte keine Verbindung gefunden werden)", Pattern.CASE_INSENSITIVE);
 
 	public QueryConnectionsResult queryConnections(final LocationType fromType, final String from, final LocationType viaType, final String via,
 			final LocationType toType, final String to, final Date date, final boolean dep) throws IOException
