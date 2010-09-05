@@ -49,6 +49,18 @@ public class BahnProviderTest
 				+ "<span class=\"bold\">10:42</span>Gl. 1");
 	}
 
+	@Test
+	public void departureWithOnTime()
+	{
+		assertFineDepartures("<a href=\"http://mobile.bahn.de/bin/mobil/traininfo.exe/dox/438441/245165/958/145668/80/si=8011160&amp;bt=dep&amp;ti=21:47&amp;pt=21:47&amp;p=1111101&amp;date=05.09.10&amp;max=10&amp;rt=1&amp;&amp;\">\n" //
+				+ "<span class=\"bold\">RE 38148</span>\n" //
+				+ "</a>\n" //
+				+ "&gt;&gt;\n" //
+				+ "Rathenow\n" //
+				+ "<br />\n" //
+				+ "<span class=\"bold\">21:58</span>&nbsp;<span class=\"green bold\">p&#252;nktl.</span>,&nbsp;Gl. 13");
+	}
+
 	private void assertFineConnectionDetails(String s)
 	{
 		Matcher m = BahnProvider.P_CONNECTION_DETAILS_FINE.matcher(s);
