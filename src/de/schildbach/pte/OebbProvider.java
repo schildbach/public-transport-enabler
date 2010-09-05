@@ -403,7 +403,10 @@ public class OebbProvider implements NetworkProvider
 	, Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<tr class=\"depboard-\\w*\">(.*?)</tr>", Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_FINE = Pattern.compile(".*?" //
-			+ "<td class=\"[\\w ]*\">(\\d{1,2}:\\d{2})</td>.*?" // time
+			+ "<td class=\"[\\w ]*\">(\\d{1,2}:\\d{2})</td>\n" // plannedTime
+			+ "(?:<td class=\"[\\w ]*prognosis[\\w ]*\">\n" //
+			+ "(?:&nbsp;|<span class=\"rtLimit\\d\">(p&#252;nktlich|\\d{1,2}:\\d{2})</span>)\n</td>\n" // predictedTime
+			+ ")?.*?" //
 			+ "<img src=\"/img/vs_oebb/(\\w+)_pic\\.gif\"\\s+alt=\".*?\">\\s*(.*?)\\s*</.*?" // type, line
 			+ "<span class=\"bold\">\n" //
 			+ "<a href=\"http://fahrplan\\.oebb\\.at/bin/stboard\\.exe/dn\\?ld=web25&input=[^%]*?(?:%23(\\d+))?&.*?\">" // destinationId
@@ -454,18 +457,31 @@ public class OebbProvider implements NetworkProvider
 						if (ParserUtils.timeDiff(parsed.getTime(), currentTime) < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
 							parsed.add(Calendar.DAY_OF_MONTH, 1);
 
-						final String lineType = mDepFine.group(2);
+						final Date plannedTime = parsed.getTime();
 
-						final String line = normalizeLine(lineType, ParserUtils.resolveEntities(mDepFine.group(3)));
+						Date predictedTime = null;
+						final String prognosis = ParserUtils.resolveEntities(mDepFine.group(2));
+						System.out.println("===" + prognosis);
+						if (prognosis != null)
+						{
+							if (prognosis.equals("pünktlich"))
+								predictedTime = plannedTime;
+							else
+								predictedTime = ParserUtils.joinDateTime(currentTime, ParserUtils.parseTime(prognosis));
+						}
 
-						final int destinationId = mDepFine.group(4) != null ? Integer.parseInt(mDepFine.group(4)) : 0;
+						final String lineType = mDepFine.group(3);
 
-						final String destination = ParserUtils.resolveEntities(mDepFine.group(5));
+						final String line = normalizeLine(lineType, ParserUtils.resolveEntities(mDepFine.group(4)));
 
-						final String position = mDepFine.group(6) != null ? "Gl. " + ParserUtils.resolveEntities(mDepFine.group(6)) : null;
+						final int destinationId = mDepFine.group(5) != null ? Integer.parseInt(mDepFine.group(5)) : 0;
 
-						final Departure dep = new Departure(parsed.getTime(), line, line != null ? LINES.get(line.charAt(0)) : null, position,
-								destinationId, destination);
+						final String destination = ParserUtils.resolveEntities(mDepFine.group(6));
+
+						final String position = mDepFine.group(7) != null ? "Gl. " + ParserUtils.resolveEntities(mDepFine.group(7)) : null;
+
+						final Departure dep = new Departure(plannedTime, predictedTime, line, line != null ? LINES.get(line.charAt(0)) : null,
+								position, destinationId, destination);
 
 						if (!departures.contains(dep))
 							departures.add(dep);

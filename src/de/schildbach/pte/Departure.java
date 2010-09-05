@@ -24,17 +24,31 @@ import java.util.Date;
  */
 public final class Departure
 {
-	final public Date time;
+	final public Date plannedTime;
+	final public Date predictedTime;
 	final public String line;
 	final public int[] lineColors;
 	final public String position;
 	final public int destinationId;
 	final public String destination;
 
-	public Departure(final Date time, final String line, final int[] lineColors, final String position, final int destinationId,
+	public Departure(final Date plannedTime, final Date predictedTime, final String line, final int[] lineColors, final String position,
+			final int destinationId, final String destination)
+	{
+		this.plannedTime = plannedTime;
+		this.predictedTime = predictedTime;
+		this.line = line;
+		this.lineColors = lineColors;
+		this.position = position;
+		this.destinationId = destinationId;
+		this.destination = destination;
+	}
+
+	public Departure(final Date plannedTime, final String line, final int[] lineColors, final String position, final int destinationId,
 			final String destination)
 	{
-		this.time = time;
+		this.plannedTime = plannedTime;
+		this.predictedTime = null;
 		this.line = line;
 		this.lineColors = lineColors;
 		this.position = position;
@@ -46,7 +60,9 @@ public final class Departure
 	public String toString()
 	{
 		StringBuilder builder = new StringBuilder("Departure(");
-		builder.append(time != null ? time : "null");
+		builder.append(plannedTime != null ? plannedTime : "null");
+		builder.append(",");
+		builder.append(predictedTime != null ? predictedTime : "null");
 		builder.append(",");
 		builder.append(line != null ? line : "null");
 		builder.append(",");
@@ -60,20 +76,18 @@ public final class Departure
 	}
 
 	@Override
-	public boolean equals(Object o)
+	public boolean equals(final Object o)
 	{
 		if (o == this)
 			return true;
 		if (!(o instanceof Departure))
 			return false;
 		final Departure other = (Departure) o;
-		if (!this.time.equals(other.time))
+		if (!nullSafeEquals(this.plannedTime, other.plannedTime))
 			return false;
-		if (this.line == null && other.line != null)
+		if (!nullSafeEquals(this.predictedTime, other.predictedTime))
 			return false;
-		if (other.line == null && this.line != null)
-			return false;
-		if (this.line != null && !this.line.equals(other.line))
+		if (!nullSafeEquals(this.line, other.line))
 			return false;
 		if (this.destinationId != other.destinationId)
 			return false;
@@ -85,14 +99,32 @@ public final class Departure
 	@Override
 	public int hashCode()
 	{
-		int hashCode = time.hashCode();
+		int hashCode = 0;
+		hashCode += nullSafeHashCode(plannedTime);
 		hashCode *= 29;
-		if (line != null)
-			hashCode += line.hashCode();
+		hashCode += nullSafeHashCode(predictedTime);
+		hashCode *= 29;
+		hashCode += nullSafeHashCode(line);
 		hashCode *= 29;
 		hashCode += destinationId;
 		hashCode *= 29;
 		hashCode += destination.hashCode();
 		return hashCode;
+	}
+
+	private boolean nullSafeEquals(final Object o1, final Object o2)
+	{
+		if (o1 == null && o2 == null)
+			return true;
+		if (o1 != null && o1.equals(o2))
+			return true;
+		return false;
+	}
+
+	private int nullSafeHashCode(final Object o)
+	{
+		if (o == null)
+			return 0;
+		return o.hashCode();
 	}
 }
