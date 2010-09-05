@@ -506,6 +506,7 @@ public class RmvProvider implements NetworkProvider
 						final Date plannedTime = parsed.getTime();
 
 						// predictedTime
+						Date predictedTime = null;
 						if (mDepFine.group(4) != null)
 						{
 							parsed.setTime(ParserUtils.parseTime(mDepFine.group(4)));
@@ -514,14 +515,14 @@ public class RmvProvider implements NetworkProvider
 							parsed.set(Calendar.DAY_OF_MONTH, current.get(Calendar.DAY_OF_MONTH));
 							if (ParserUtils.timeDiff(parsed.getTime(), currentTime) < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
 								parsed.add(Calendar.DAY_OF_MONTH, 1);
-							final Date predictedTime = parsed.getTime();
+							predictedTime = parsed.getTime();
 						}
 
 						// position
 						final String position = ParserUtils.resolveEntities(mDepFine.group(5));
 
-						final Departure dep = new Departure(plannedTime, line, line != null ? LINES.get(line.charAt(0)) : null, position, 0,
-								destination);
+						final Departure dep = new Departure(plannedTime, predictedTime, line, line != null ? LINES.get(line.charAt(0)) : null,
+								position, 0, destination);
 
 						if (!departures.contains(dep))
 							departures.add(dep);
