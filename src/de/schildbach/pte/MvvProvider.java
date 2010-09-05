@@ -803,6 +803,8 @@ public class MvvProvider implements NetworkProvider
 				return "R" + type + number;
 			if (type.equals("ALX")) // Länderbahn und Vogtlandbahn
 				return "R" + type + number;
+			if (type.equals("ERB")) // Eurobahn
+				return "R" + type + number;
 
 			throw new IllegalStateException("cannot normalize product " + product + " line " + line);
 		}
