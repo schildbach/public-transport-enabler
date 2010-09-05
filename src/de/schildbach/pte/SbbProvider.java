@@ -197,9 +197,9 @@ public class SbbProvider implements NetworkProvider
 	}
 
 	private static final Pattern P_CONNECTIONS_HEAD = Pattern.compile(".*?" //
-			+ "Von:.*?<td .*?>(.*?)</td>.*?" // from
+			+ "Von:.*?<td .*?>(?:<a.*?/a>)?(.*?)</td>.*?" // from
 			+ "Datum:.*?<td .*?>.., (\\d{2}\\.\\d{2}\\.\\d{2})</td>.*?" // date
-			+ "Nach:.*?<td .*?>(.*?)</td>.*?" // to
+			+ "Nach:.*?<td .*?>(?:<a.*?/a>)?(.*?)</td>.*?" // to
 			+ "(?:<a href=\"(http://fahrplan.sbb.ch/bin/query.exe/dn[^\"]*?&REQ0HafasScrollDir=2)\".*?)?" // linkEarlier
 			+ "(?:<a href=\"(http://fahrplan.sbb.ch/bin/query.exe/dn[^\"]*?&REQ0HafasScrollDir=1)\".*?)?" // linkLater
 	, Pattern.DOTALL);
