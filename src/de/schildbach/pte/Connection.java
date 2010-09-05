@@ -143,6 +143,19 @@ public final class Connection implements Serializable
 		final public String departure;
 		final public int arrivalId;
 		final public String arrival;
+		final public double arrivalLat, arrivalLon;
+
+		public Footway(final int min, final int departureId, final String departure, final int arrivalId, final String arrival,
+				final double arrivalLat, final double arrivalLon)
+		{
+			this.min = min;
+			this.departureId = departureId;
+			this.departure = departure;
+			this.arrivalId = arrivalId;
+			this.arrival = arrival;
+			this.arrivalLat = arrivalLat;
+			this.arrivalLon = arrivalLon;
+		}
 
 		public Footway(final int min, final int departureId, final String departure, final int arrivalId, final String arrival)
 		{
@@ -151,6 +164,8 @@ public final class Connection implements Serializable
 			this.departure = departure;
 			this.arrivalId = arrivalId;
 			this.arrival = arrival;
+			this.arrivalLat = 0;
+			this.arrivalLon = 0;
 		}
 
 		@Override
@@ -161,7 +176,7 @@ public final class Connection implements Serializable
 			builder.append(",");
 			builder.append("departure=").append(departureId).append("/").append(departure);
 			builder.append(",");
-			builder.append("arrival=").append(arrivalId).append("/").append(arrival);
+			builder.append("arrival=").append(arrivalId).append("/").append(arrival).append("/").append(arrivalLat).append(",").append(arrivalLon);
 			builder.append("]");
 			return builder.toString();
 		}

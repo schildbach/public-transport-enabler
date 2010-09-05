@@ -370,9 +370,9 @@ public final class VbbProvider implements NetworkProvider
 			+ "<strong>(.*?)</strong>" // arrival
 			+ "|" //
 			+ "(\\d+) Min\\.[\n\\s]?" // footway
-			+ "Fussweg\n?" //
-			+ ".*?(?:<a href=\"/Fahrinfo.*?input=(\\d+)\">\n?" // arrivalId
-			+ "<strong>(.*?)</strong>|<a href=\"/Stadtplan.*?\">(\\w.*?)</a>|<strong>(.*?)</strong>).*?" // arrival
+			+ "Fussweg.*?" //
+			+ "(?:<a href=\"/Fahrinfo.*?input=(\\d+)\">\n" // arrivalId
+			+ "<strong>(.*?)</strong>|<a href=\"/Stadtplan.*?WGS84,(\\d+),(\\d+)&.*?\">([^<]*)</a>|<strong>([^<]*)</strong>).*?" // arrival
 			+ ").*?", Pattern.DOTALL);
 
 	public GetConnectionDetailsResult getConnectionDetails(final String uri) throws IOException
@@ -453,17 +453,22 @@ public final class VbbProvider implements NetworkProvider
 					{
 						final int arrivalId = mDetFine.group(12) != null ? Integer.parseInt(mDetFine.group(12)) : 0;
 
-						final String arrival = ParserUtils.resolveEntities(selectNotNull(mDetFine.group(13), mDetFine.group(14), mDetFine.group(15)));
+						final String arrival = ParserUtils.resolveEntities(selectNotNull(mDetFine.group(13), mDetFine.group(16), mDetFine.group(17)));
+
+						final double arrivalLon = mDetFine.group(14) != null ? latLonToDouble(Integer.parseInt(mDetFine.group(14))) : 0;
+
+						final double arrivalLat = mDetFine.group(15) != null ? latLonToDouble(Integer.parseInt(mDetFine.group(15))) : 0;
 
 						if (parts.size() > 0 && parts.get(parts.size() - 1) instanceof Connection.Footway)
 						{
 							final Connection.Footway lastFootway = (Connection.Footway) parts.remove(parts.size() - 1);
 							parts.add(new Connection.Footway(lastFootway.min + Integer.parseInt(min), lastFootway.departureId, lastFootway.departure,
-									arrivalId, arrival));
+									arrivalId, arrival, arrivalLat, arrivalLon));
 						}
 						else
 						{
-							parts.add(new Connection.Footway(Integer.parseInt(min), departureId, departure, arrivalId, arrival));
+							parts.add(new Connection.Footway(Integer.parseInt(min), departureId, departure, arrivalId, arrival, arrivalLat,
+									arrivalLon));
 						}
 
 						lastArrival = arrival;
