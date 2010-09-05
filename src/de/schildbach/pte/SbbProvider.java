@@ -223,7 +223,7 @@ public class SbbProvider implements NetworkProvider
 			+ "([^\n<]*?)<.*?" // departure
 			+ "<td headers=\"date-\\d+\"[^>]*>\n(?:.., (\\d{2}\\.\\d{2}\\.\\d{2})\n)?</td>.*?" // departureDate
 			+ "<td headers=\"time-\\d+\"[^>]*>(?:(\\d{2}:\\d{2})|&nbsp;)</td>.*?" // departureTime
-			+ "<td headers=\"platform-\\d+\"[^>]*>\\s*(.+?)?\\s*</td>.*?" // departurePosition
+			+ "<td headers=\"platform-\\d+\"[^>]*>\n(?:<span[^>]*>\n)?(.+?)?\\s*(?:<img[^>]*>\n</span>\n)?</td>.*?" // departurePosition
 			+ "<img src=\"/img/2/products/(\\w+?)_pic.gif\".*?" // lineType
 			+ "(?:<a href=\"http://fahrplan\\.sbb\\.ch/bin/traininfo\\.exe/dn.*?>\\s*(.*?)\\s*</a>|" // line
 			+ "\n(\\d+) Min\\.).*?" // min
@@ -232,7 +232,7 @@ public class SbbProvider implements NetworkProvider
 			+ "([^\n<]*?)<.*?" // arrival
 			+ "<td headers=\"date-\\d+\"[^>]*>\n(?:.., (\\d{2}\\.\\d{2}\\.\\d{2})\n)?</td>.*?" // arrivalDate
 			+ "<td headers=\"time-\\d+\"[^>]*>(?:(\\d{2}:\\d{2})|&nbsp;)</td>.*?" // arrivalTime
-			+ "<td headers=\"platform-\\d+\"[^>]*>\\s*(.+?)?\\s*</td>.*?" // arrivalPosition
+			+ "<td headers=\"platform-\\d+\"[^>]*>\n(?:<span[^>]*>\n)?(.+?)?\\s*(?:<img[^>]*>\n</span>\n)?</td>.*?" // arrivalPosition
 	, Pattern.DOTALL);
 
 	private QueryConnectionsResult queryConnections(final String uri, final CharSequence page) throws IOException

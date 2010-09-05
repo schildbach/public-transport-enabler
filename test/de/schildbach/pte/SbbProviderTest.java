@@ -17,8 +17,8 @@
 
 package de.schildbach.pte;
 
-import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 
 import java.util.regex.Matcher;
 
@@ -114,6 +114,51 @@ public class SbbProviderTest
 	}
 
 	@Test
+	public void tripWithPrognosisInPosition()
+	{
+		assertFineConnectionDetails("\n" //
+				+ "<td headers=\"stops-0\" class=\"stop-station-icon\" valign=\"top\">\n" //
+				+ "<a href=\"http://fahrplan.sbb.ch/bin/query.exe/dn?ld=&i=1d.012380247.1283691798&n=1&uscid=13\"><img src=\"/img/2/icon_map_location.gif\" width=\"12\" height=\"12\" border=\"0\" alt=\"Umgebungskarte: Spiez\" hspace=\"3\" style=\"vertical-align:middle;margin-right:4px;\" /></a>\n" //
+				+ "</td>\n" //
+				+ "<td headers=\"stops-0\" class=\"stop-station\">\n" //
+				+ "<a href=\"http://fahrplan.sbb.ch/bin/bhftafel.exe/dn?seqnr=1&ident=1d.012380247.1283691798&input=8507483&boardType=dep&time=15:54\" title=\"Haltestelleninformation: Spiez\">Spiez</a></td>\n" //
+				+ "<td headers=\"date-0\" class=\"date\" align=\"left\">\n" //
+				+ "</td>\n" //
+				+ "<td headers=\"time-0\" class=\"time prefix timeLeft\" align=\"left\" nowrap=\"nowrap\">ab</td><td headers=\"time-0\" class=\"time timeRight\" align=\"left\" nowrap=\"nowrap\">15:54</td><td headers=\"platform-0\" class=\"platform\" align=\"left\">\n" //
+				+ "4       \n" //
+				+ "</td>\n" //
+				+ "<td headers=\"products-0\" class=\"products last\" style=\"white-space:nowrap;\" rowspan=\"2\" valign=\"top\">\n" //
+				+ "<img src=\"/img/2/products/ic_pic.gif\" width=\"18\" height=\"18\" alt=\"IC 1080\" style=\"margin-top:2px;\"><br />\n" //
+				+ "<a href=\"http://fahrplan.sbb.ch/bin/traininfo.exe/dn/339144/113432/403392/88648/85?seqnr=1&ident=1d.012380247.1283691798&date=05.09.10&station_evaId=8507483&station_type=dep&journeyStartIdx=3&journeyEndIdx=9&\" title=\"Fahrtinformation\">\n" //
+				+ "IC 1080\n" //
+				+ "</a>\n" //
+				+ "</td>\n" //
+				+ "<td headers=\"capacity-0\" class=\"capacity last\" style=\"white-space:nowrap;\" rowspan=\"2\" valign=\"top\">\n" //
+				+ "<div style=\"width:65px;height:15px;line-height:15px;\">\n" //
+				+ "<div style=\"float:left;width:30px;height:15px;line-height:15px;\">\n" //
+				+ "1. <img src=\"/img/2/icon_capacity2.gif\" alt=\"Hohe Belegung erwartet\" title=\"Hohe Belegung erwartet\" style=\"border:0px;width:14px;height12:px\" />\n" //
+				+ "</div>\n" //
+				+ "<div style=\"float:left;width:30px;height:15px;line-height:15px;margin-left:4px;\">\n" //
+				+ "2. <img src=\"/img/2/icon_capacity2.gif\" alt=\"Hohe Belegung erwartet\" title=\"Hohe Belegung erwartet\" style=\"border:0px;width:14px;height12:px\" />\n" //
+				+ "</div>\n" //
+				+ "</div>\n" //
+				+ "</td>\n" //
+				+ "<td headers=\"remarks-0\" class=\"remarks last\" rowspan=\"2\" valign=\"top\">\n" //
+				+ "InterCity, <img src=\"/img/2/products/attr_wr_pic.gif\" width=\"16\" height=\"12\" border=\"0\" title=\"Restaurant\" alt=\"Restaurant\"> <img src=\"/img/2/products/attr_mi_pic.gif\" width=\"16\" height=\"12\" border=\"0\" title=\"Minibar\" alt=\"Minibar\"> <img src=\"/img/2/products/attr_r_pic.gif\" width=\"16\" height=\"12\" border=\"0\" title=\"Reservierung m&#246;glich\" alt=\"Reservierung m&#246;glich\"> FZ BZ RZ </td>\n" //
+				+ "<td headers=\"stops-0\"  class=\"stop-station-icon last\" valign=\"top\">\n" //
+				+ "<a href=\"http://fahrplan.sbb.ch/bin/query.exe/dn?ld=&i=1d.012380247.1283691798&n=1&uscid=14\"><img src=\"/img/2/icon_map_location.gif\" width=\"12\" height=\"12\" border=\"0\" alt=\"Umgebungskarte: Basel SBB\" hspace=\"3\" style=\"vertical-align:middle;margin-right:4px;\" /></a></td>\n" //
+				+ "<td headers=\"stops-0\" class=\"stop-station last\">\n" //
+				+ "<a href=\"http://fahrplan.sbb.ch/bin/bhftafel.exe/dn?seqnr=1&ident=1d.012380247.1283691798&input=8500010&boardType=arr&time=17:32\" title=\"Haltestelleninformation: Basel SBB\">Basel SBB</a></td>\n" //
+				+ "<td headers=\"date-0\" class=\"date last\" align=\"left\">\n" //
+				+ "</td>\n" //
+				+ "<td headers=\"time-0\" class=\"time prefix last timeLeft\" align=\"left\" nowrap=\"nowrap\">an</td><td headers=\"time-0\" class=\"time last timeRight\" align=\"left\" nowrap=\"nowrap\">17:32</td><td headers=\"platform-0\" class=\"platform last\" align=\"left\">\n" //
+				+ "<span class=\"prognosis\">\n" //
+				+ "12 <img src=\"/img/2/rt_platform_change.gif\" border=\"0\" width=\"12\" height=\"12\" alt=\"Gleiswechsel!\" />\n" //
+				+ "</span>\n" //
+				+ "</td>");
+	}
+
+	@Test
 	public void footwayFromStationToStation()
 	{
 		assertFineConnectionDetails("\n" //
@@ -197,6 +242,8 @@ public class SbbProviderTest
 		// ParserUtils.printGroups(m);
 
 		assertNotNull(m.group(2)); // departure
+		assertTrue(m.group(5) == null || m.group(5).length() < 10); // departurePosition
 		assertNotNull(m.group(10)); // arrival
+		assertTrue(m.group(13) == null || m.group(13).length() < 10); // arrivalPosition
 	}
 }
