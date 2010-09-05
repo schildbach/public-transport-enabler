@@ -47,10 +47,10 @@ public final class ParserUtils
 
 	public static CharSequence scrape(final String url) throws IOException
 	{
-		return scrape(url, null);
+		return scrape(url, null, null);
 	}
 
-	public static CharSequence scrape(final String url, final String request) throws IOException
+	public static CharSequence scrape(final String url, final String request, final String encoding) throws IOException
 	{
 		int tries = 3;
 
@@ -70,12 +70,12 @@ public final class ParserUtils
 
 				if (request != null)
 				{
-					final Writer writer = new OutputStreamWriter(connection.getOutputStream(), "ISO-8859-1");
+					final Writer writer = new OutputStreamWriter(connection.getOutputStream(), encoding != null ? encoding : "ISO-8859-1");
 					writer.write(request);
 					writer.close();
 				}
 
-				final Reader pageReader = new InputStreamReader(connection.getInputStream(), "ISO-8859-1");
+				final Reader pageReader = new InputStreamReader(connection.getInputStream(), encoding != null ? encoding : "ISO-8859-1");
 
 				final char[] buf = new char[SCRAPE_INITIAL_CAPACITY];
 				while (true)
