@@ -388,11 +388,11 @@ public final class BahnProvider implements NetworkProvider
 							if (parts.size() > 0 && parts.get(parts.size() - 1) instanceof Connection.Footway)
 							{
 								final Connection.Footway lastFootway = (Connection.Footway) parts.remove(parts.size() - 1);
-								parts.add(new Connection.Footway(lastFootway.min + Integer.parseInt(min), lastFootway.departure, arrival));
+								parts.add(new Connection.Footway(lastFootway.min + Integer.parseInt(min), 0, lastFootway.departure, 0, arrival));
 							}
 							else
 							{
-								parts.add(new Connection.Footway(Integer.parseInt(min), departure, arrival));
+								parts.add(new Connection.Footway(Integer.parseInt(min), 0, departure, 0, arrival));
 							}
 
 							lastArrival = arrival;
@@ -401,7 +401,7 @@ public final class BahnProvider implements NetworkProvider
 						{
 							final String arrival = ParserUtils.resolveEntities(mDetFine.group(12));
 
-							parts.add(new Connection.Footway(0, departure, arrival));
+							parts.add(new Connection.Footway(0, 0, departure, 0, arrival));
 						}
 					}
 					else

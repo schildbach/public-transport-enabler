@@ -458,11 +458,12 @@ public final class VbbProvider implements NetworkProvider
 						if (parts.size() > 0 && parts.get(parts.size() - 1) instanceof Connection.Footway)
 						{
 							final Connection.Footway lastFootway = (Connection.Footway) parts.remove(parts.size() - 1);
-							parts.add(new Connection.Footway(lastFootway.min + Integer.parseInt(min), lastFootway.departure, arrival));
+							parts.add(new Connection.Footway(lastFootway.min + Integer.parseInt(min), lastFootway.departureId, lastFootway.departure,
+									arrivalId, arrival));
 						}
 						else
 						{
-							parts.add(new Connection.Footway(Integer.parseInt(min), departure, arrival));
+							parts.add(new Connection.Footway(Integer.parseInt(min), departureId, departure, arrivalId, arrival));
 						}
 
 						lastArrival = arrival;

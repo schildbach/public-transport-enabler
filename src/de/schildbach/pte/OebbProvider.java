@@ -288,6 +288,8 @@ public class OebbProvider implements NetworkProvider
 						final Matcher mDetFine = P_CONNECTION_DETAILS_FINE.matcher(set);
 						if (mDetFine.matches())
 						{
+							final int departureId = mDetFine.group(1) != null ? Integer.parseInt(mDetFine.group(1)) : 0;
+
 							final String departure = ParserUtils.resolveEntities(mDetFine.group(2));
 
 							Date departureDate = mDetFine.group(3) != null ? ParserUtils.parseDate(mDetFine.group(3)) : null;
@@ -297,6 +299,8 @@ public class OebbProvider implements NetworkProvider
 								departureDate = lastDate;
 
 							final String lineType = mDetFine.group(6);
+
+							final int arrivalId = mDetFine.group(8) != null ? Integer.parseInt(mDetFine.group(8)) : 0;
 
 							final String arrival = ParserUtils.resolveEntities(mDetFine.group(9));
 
@@ -308,7 +312,8 @@ public class OebbProvider implements NetworkProvider
 
 							if (!lineType.equals("fuss"))
 							{
-								final int departureId = Integer.parseInt(mDetFine.group(1));
+								if (departureId == 0)
+									throw new IllegalStateException("departureId");
 
 								final Date departureTime = ParserUtils.joinDateTime(departureDate, ParserUtils.parseTime(mDetFine.group(4)));
 
@@ -316,7 +321,8 @@ public class OebbProvider implements NetworkProvider
 
 								final String line = normalizeLine(lineType, ParserUtils.resolveEntities(mDetFine.group(7)));
 
-								final int arrivalId = Integer.parseInt(mDetFine.group(8));
+								if (arrivalId == 0)
+									throw new IllegalStateException("arrivalId");
 
 								final Date arrivalTime = ParserUtils.joinDateTime(arrivalDate, ParserUtils.parseTime(mDetFine.group(11)));
 
@@ -330,7 +336,7 @@ public class OebbProvider implements NetworkProvider
 							{
 								final int min = Integer.parseInt(mDetFine.group(13));
 
-								final Connection.Footway footway = new Connection.Footway(min, departure, arrival);
+								final Connection.Footway footway = new Connection.Footway(min, departureId, departure, arrivalId, arrival);
 								connection.parts.add(footway);
 							}
 						}

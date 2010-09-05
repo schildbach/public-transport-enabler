@@ -118,11 +118,6 @@ public final class Connection implements Serializable
 			this.arrival = arrival;
 		}
 
-		public Trip(final Date departureTime, final Date arrivalTime, final String line, final int[] lineColors)
-		{
-			this(line, lineColors, null, departureTime, null, 0, null, arrivalTime, null, 0, null);
-		}
-
 		@Override
 		public String toString()
 		{
@@ -144,13 +139,17 @@ public final class Connection implements Serializable
 	public final static class Footway implements Part
 	{
 		final public int min;
+		final public int departureId;
 		final public String departure;
+		final public int arrivalId;
 		final public String arrival;
 
-		public Footway(final int min, final String departure, final String arrival)
+		public Footway(final int min, final int departureId, final String departure, final int arrivalId, final String arrival)
 		{
 			this.min = min;
+			this.departureId = departureId;
 			this.departure = departure;
+			this.arrivalId = arrivalId;
 			this.arrival = arrival;
 		}
 
@@ -160,9 +159,9 @@ public final class Connection implements Serializable
 			final StringBuilder builder = new StringBuilder(getClass().getName() + "[");
 			builder.append("min=").append(min);
 			builder.append(",");
-			builder.append("departure=").append(departure);
+			builder.append("departure=").append(departureId).append("/").append(departure);
 			builder.append(",");
-			builder.append("arrival=").append(arrival);
+			builder.append("arrival=").append(arrivalId).append("/").append(arrival);
 			builder.append("]");
 			return builder.toString();
 		}
