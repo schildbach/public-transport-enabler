@@ -530,9 +530,10 @@ public final class VbbProvider implements NetworkProvider
 			+ "<tr class=\"ivu_table_bg\\d\">\\s*((?:<td class=\"ivu_table_c_dep\">|<td>).+?)\\s*</tr>" //
 	, Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_LIVE_FINE = Pattern.compile("" //
-			+ "<td class=\"ivu_table_c_dep\">\\s*(.*?)[\\s\\*]*</td>\\s*" // 
-			+ "<td class=\"ivu_table_c_line\">\\s*(.*?)\\s*</td>\\s*" //
-			+ "<td>.*?<a.*?[^-]>\\s*(.*?)\\s*</a>.*?</td>" //
+			+ "<td class=\"ivu_table_c_dep\">\\s*(\\d{1,2}:\\d{2})\\s*" // time
+			+ "(\\*)?\\s*</td>\\s*" // planned
+			+ "<td class=\"ivu_table_c_line\">\\s*(.*?)\\s*</td>\\s*" // line
+			+ "<td>.*?<a.*?[^-]>\\s*(.*?)\\s*</a>.*?</td>" // destination
 	, Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_PLAN_FINE = Pattern.compile("" //
 			+ "<td><strong>(\\d{1,2}:\\d{2})</strong></td>.*?" // time
@@ -572,7 +573,6 @@ public final class VbbProvider implements NetworkProvider
 				final Matcher mDepFine = (live ? P_DEPARTURES_LIVE_FINE : P_DEPARTURES_PLAN_FINE).matcher(mDepCoarse.group(1));
 				if (mDepFine.matches())
 				{
-					// time
 					final Calendar current = new GregorianCalendar();
 					current.setTime(currentTime);
 					final Calendar parsed = new GregorianCalendar();
@@ -583,20 +583,25 @@ public final class VbbProvider implements NetworkProvider
 					if (ParserUtils.timeDiff(parsed.getTime(), currentTime) < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
 						parsed.add(Calendar.DAY_OF_MONTH, 1);
 
-					// line
-					final String line = normalizeLine(ParserUtils.resolveEntities(mDepFine.group(2)));
+					boolean isPlanned = live && mDepFine.group(2) != null;
 
-					// position
+					Date plannedTime = null;
+					Date predictedTime = null;
+					if (live && !isPlanned)
+						predictedTime = parsed.getTime();
+					else
+						plannedTime = parsed.getTime();
+
+					final String line = normalizeLine(ParserUtils.resolveEntities(mDepFine.group(live ? 3 : 2)));
+
 					final String position = !live ? ParserUtils.resolveEntities(mDepFine.group(3)) : null;
 
-					// destinationId
 					final int destinationId = !live ? Integer.parseInt(mDepFine.group(4)) : 0;
 
-					// destination
-					final String destination = ParserUtils.resolveEntities(mDepFine.group(live ? 3 : 5));
+					final String destination = ParserUtils.resolveEntities(mDepFine.group(live ? 4 : 5));
 
-					final Departure dep = new Departure(parsed.getTime(), line, line != null ? LINES.get(line) : null, position, destinationId,
-							destination);
+					final Departure dep = new Departure(plannedTime, predictedTime, line, line != null ? LINES.get(line) : null, position,
+							destinationId, destination);
 					if (!departures.contains(dep))
 						departures.add(dep);
 				}
