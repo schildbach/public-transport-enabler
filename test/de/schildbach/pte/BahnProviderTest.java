@@ -96,6 +96,6 @@ public class BahnProviderTest
 		assertNotNull(m.group(1)); // line
 		assertNotNull(m.group(2)); // destination
 		assertNotNull(m.group(3)); // time
-		assertNotNull(m.group(6)); // departure
+		assertNotNull(m.group(7)); // departure
 	}
 }
