@@ -78,6 +78,19 @@ public class BahnProviderTest
 				+ "<span class=\"bold\">07:02</span>&nbsp;<span class=\"red\">ca. +5</span>, <span class=\"red\">F&#228;hrt heute nur bis&nbsp;D&#252;sseldorf Hbf</span>,&nbsp;Gl. 10");
 	}
 
+	@Test
+	public void departureWithWeirdMessage()
+	{
+		assertFineDepartures("" //
+				+ "<a href=\"http://mobile.bahn.de/bin/mobil/traininfo.exe/dox/760983/402261/557174/24926/80/si=808093&amp;bt=dep&amp;ti=02:41&amp;pt=02:41&amp;p=1111111111&amp;date=06.09.10&amp;max=10&amp;rt=1&amp;&amp;\">\n" //
+				+ "<span class=\"bold\">ICE  609</span>\n" //
+				+ "</a>\n" //
+				+ "&gt;&gt;\n" //
+				+ "Basel SBB\n" //
+				+ "<br />\n" //
+				+ "<span class=\"bold\">04:52</span>&nbsp;k.A.,&nbsp;Gl. 3");
+	}
+
 	private void assertFineConnectionDetails(String s)
 	{
 		Matcher m = BahnProvider.P_CONNECTION_DETAILS_FINE.matcher(s);
