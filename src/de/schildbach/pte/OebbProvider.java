@@ -481,7 +481,7 @@ public class OebbProvider implements NetworkProvider
 						final String position = mDepFine.group(7) != null ? "Gl. " + ParserUtils.resolveEntities(mDepFine.group(7)) : null;
 
 						final Departure dep = new Departure(plannedTime, predictedTime, line, line != null ? LINES.get(line.charAt(0)) : null,
-								position, destinationId, destination);
+								position, destinationId, destination, null);
 
 						if (!departures.contains(dep))
 							departures.add(dep);

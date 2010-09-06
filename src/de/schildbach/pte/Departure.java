@@ -31,9 +31,10 @@ public final class Departure
 	final public String position;
 	final public int destinationId;
 	final public String destination;
+	final public String message;
 
 	public Departure(final Date plannedTime, final Date predictedTime, final String line, final int[] lineColors, final String position,
-			final int destinationId, final String destination)
+			final int destinationId, final String destination, final String message)
 	{
 		this.plannedTime = plannedTime;
 		this.predictedTime = predictedTime;
@@ -42,6 +43,7 @@ public final class Departure
 		this.position = position;
 		this.destinationId = destinationId;
 		this.destination = destination;
+		this.message = message;
 	}
 
 	public Departure(final Date plannedTime, final String line, final int[] lineColors, final String position, final int destinationId,
@@ -54,6 +56,7 @@ public final class Departure
 		this.position = position;
 		this.destinationId = destinationId;
 		this.destination = destination;
+		this.message = null;
 	}
 
 	@Override

@@ -522,7 +522,7 @@ public class RmvProvider implements NetworkProvider
 						final String position = ParserUtils.resolveEntities(mDepFine.group(5));
 
 						final Departure dep = new Departure(plannedTime, predictedTime, line, line != null ? LINES.get(line.charAt(0)) : null,
-								position, 0, destination);
+								position, 0, destination, null);
 
 						if (!departures.contains(dep))
 							departures.add(dep);

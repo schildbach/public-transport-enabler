@@ -450,6 +450,7 @@ public final class BahnProvider implements NetworkProvider
 			+ "&gt;&gt;\n\\s*(.+?)\\s*\n<br />\n" // destination
 			+ "<span class=\"bold\">(\\d{1,2}:\\d{2})</span>" // time
 			+ "(?:&nbsp;<span class=\"[\\w ]*\">(?:(p&#252;nktl\\.)|ca. \\+(\\d+))</span>)?" // ontime, delay
+			+ "(?:, <span class=\"red\">([^<]*)</span>)?" // (message)
 			+ "(?:(?:,&nbsp;)?(Gl\\. " + ParserUtils.P_PLATFORM + "))?" // position
 	, Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_URI_STATION_ID = Pattern.compile("input=(\\d+)");
@@ -508,10 +509,12 @@ public final class BahnProvider implements NetworkProvider
 							predictedTime = parsed.getTime();
 						}
 
-						final String position = ParserUtils.resolveEntities(mDepFine.group(6));
+						final String message = ParserUtils.resolveEntities(mDepFine.group(6));
+
+						final String position = ParserUtils.resolveEntities(mDepFine.group(7));
 
 						final Departure dep = new Departure(plannedTime, predictedTime, line, line != null ? LINES.get(line.charAt(0)) : null,
-								position, 0, destination);
+								position, 0, destination, message);
 						if (!departures.contains(dep))
 							departures.add(dep);
 					}

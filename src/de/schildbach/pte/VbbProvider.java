@@ -601,7 +601,7 @@ public final class VbbProvider implements NetworkProvider
 					final String destination = ParserUtils.resolveEntities(mDepFine.group(live ? 4 : 5));
 
 					final Departure dep = new Departure(plannedTime, predictedTime, line, line != null ? LINES.get(line) : null, position,
-							destinationId, destination);
+							destinationId, destination, null);
 					if (!departures.contains(dep))
 						departures.add(dep);
 				}
