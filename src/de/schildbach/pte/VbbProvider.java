@@ -356,21 +356,22 @@ public final class VbbProvider implements NetworkProvider
 	}
 
 	private static final Pattern P_CONNECTION_DETAILS_HEAD = Pattern.compile(".*(?:Datum|Abfahrt): (\\d\\d\\.\\d\\d\\.\\d\\d).*", Pattern.DOTALL);
-	private static final Pattern P_CONNECTION_DETAILS_COARSE = Pattern.compile("<p class=\"con\\w\">\n?(.+?)\n?</p>", Pattern.DOTALL);
-	static final Pattern P_CONNECTION_DETAILS_FINE = Pattern.compile("(?:<a href=\".*?input=(\\d+).*?\">(?:\\n?<strong>)?" // departureId
-			+ "(.+?)(?:</strong>\\n?)?</a>)?.*?" // departure
+	private static final Pattern P_CONNECTION_DETAILS_COARSE = Pattern.compile("<p class=\"con\\w\">\n(.+?)</p>", Pattern.DOTALL);
+	static final Pattern P_CONNECTION_DETAILS_FINE = Pattern.compile("(?:<a href=\".*?input=(\\d+).*?\">(?:\n<strong>)?" // departureId
+			+ "(.+?)(?:</strong>\n)?</a>)?.*?" // departure
 			+ "(?:" //
-			+ "ab (\\d+:\\d+)\n?" // departureTime
+			+ "ab (\\d+:\\d+)\n" // departureTime
 			+ "(Gl\\. \\d+)?.*?" // departurePosition
 			+ "<strong>\\s*(.*?)\\s*</strong>.*?" // line
 			+ "Ri\\. (.*?)[\n\\.]*<.*?" // destination
-			+ "an (\\d+:\\d+)\n?" // arrivalTime
+			+ "an (\\d+:\\d+)\n" // arrivalTime
 			+ "(Gl\\. \\d+)?.*?" // arrivalPosition
-			+ "<a href=\".*?input=(\\d+).*?\">\n?" // arrivalId
+			+ "<a href=\".*?input=(\\d+).*?\">\n" // arrivalId
 			+ "<strong>(.*?)</strong>" // arrival
 			+ "|" //
-			+ "(\\d+) Min\\.[\n\\s]?" // footway
-			+ "Fussweg.*?" //
+			+ "(\\d+) Min\\.\n" // footway
+			+ "(?:Fussweg|&#220;bergang)\n" //
+			+ "<br />\n" //
 			+ "(?:<a href=\"/Fahrinfo.*?input=(\\d+)\">\n" // arrivalId
 			+ "<strong>(.*?)</strong>|<a href=\"/Stadtplan.*?WGS84,(\\d+),(\\d+)&.*?\">([^<]*)</a>|<strong>([^<]*)</strong>).*?" // arrival
 			+ ").*?", Pattern.DOTALL);
