@@ -318,20 +318,20 @@ public class RmvProvider implements NetworkProvider
 			+ "(?:Ankunft: \\d{2}\\.\\d{2}\\.\\d{2}<br />\n)?" //
 			+ "Dauer: (\\d{1,2}:\\d{2})<br />.*?" // duration
 	, Pattern.DOTALL);
-	private static final Pattern P_CONNECTION_DETAILS_COARSE = Pattern.compile("/b> -\n?(.*?- <b>.*?)<", Pattern.DOTALL);
-	private static final Pattern P_CONNECTION_DETAILS_FINE = Pattern.compile("<br />\n?" //
-			+ "(?:(.*?) nach (.*?)\n?" // line, destination
-			+ "<br />\n?" //
-			+ "ab (\\d+:\\d+)\n?" // departureTime
-			+ "(.*?)\\s*\n?" // departurePosition
-			+ "<br />\n?" //
-			+ "an (\\d+:\\d+)\n?" // arrivalTime
-			+ "(.*?)\\s*\n?" // arrivalPosition
-			+ "<br />\n?|" //
-			+ "<a href=\".*?\">\n?" //
-			+ "Fussweg\\s*\n?" //
-			+ "</a>\n?" //
-			+ "(\\d+) Min.<br />\n?)" // footway
+	private static final Pattern P_CONNECTION_DETAILS_COARSE = Pattern.compile("/b> -\n(.*?- <b>[^<]*)<", Pattern.DOTALL);
+	private static final Pattern P_CONNECTION_DETAILS_FINE = Pattern.compile("<br />\n" //
+			+ "(?:(.*?) nach (.*?)\n" // line, destination
+			+ "<br />\n" //
+			+ "ab (\\d{1,2}:\\d{2})\n" // departureTime
+			+ "(?:(.*?)\\s*\n)?" // departurePosition
+			+ "<br />\n" //
+			+ "an (\\d{1,2}:\\d{2})\n" // arrivalTime
+			+ "(?:(.*?)\\s*\n)?" // arrivalPosition
+			+ "<br />\n|" //
+			+ "<a href=[^>]*>\n" //
+			+ "Fussweg\\s*\n" //
+			+ "</a>\n" //
+			+ "(\\d+) Min.<br />\n)" // footway
 			+ "- <b>(.*?)" // arrival
 	, Pattern.DOTALL);
 
