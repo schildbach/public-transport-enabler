@@ -79,6 +79,32 @@ public class BahnProviderTest
 	}
 
 	@Test
+	public void departureUpdatedPosition()
+	{
+		assertFineDepartures("" //
+				+ "<a href=\"http://mobile.bahn.de/bin/mobil/traininfo.exe/dox/492282/296365/292060/18065/80/si=8000320&amp;bt=dep&amp;ti=17:08&amp;pt=17:08&amp;p=1111111111&amp;date=07.09.10&amp;max=10&amp;rt=1&amp;&amp;\">\n" //
+				+ "<span class=\"bold\">RB 30240</span>\n" //
+				+ "</a>\n" //
+				+ "&gt;&gt;\n" //
+				+ "Holzkirchen\n" //
+				+ "<br />\n" //
+				+ "<span class=\"bold\">17:10</span>&nbsp;<span class=\"green bold\">p&#252;nktl.</span>,&nbsp;<span class=\"red\">heute Gl. 7       </span>");
+	}
+
+	@Test
+	public void departureMessageAndUpdatedPosition()
+	{
+		assertFineDepartures("" //
+				+ "<a href=\"http://mobile.bahn.de/bin/mobil/traininfo.exe/dox/220206/221797/157782/5489/80/si=727269&amp;bt=dep&amp;ti=19:56&amp;pt=19:56&amp;p=1111111111&amp;date=06.09.10&amp;max=10&amp;rt=1&amp;&amp;\">\n" //
+				+ "<span class=\"bold\">CNL  450</span>\n" //
+				+ "</a>\n" //
+				+ "&gt;&gt;\n" //
+				+ "Paris Est\n" //
+				+ "<br />\n" //
+				+ "<span class=\"bold\">19:57</span>&nbsp;<span class=\"green bold\">p&#252;nktl.</span>, <span class=\"red\">&#196;nderung im Zuglauf!</span>,&nbsp;<span class=\"red\">heute Gl. 7       </span>");
+	}
+
+	@Test
 	public void departureWithWeirdMessage()
 	{
 		assertFineDepartures("" //
@@ -104,7 +130,7 @@ public class BahnProviderTest
 		Matcher m = BahnProvider.P_DEPARTURES_FINE.matcher(s);
 		assertTrue(m.matches());
 
-		ParserUtils.printGroups(m);
+		// ParserUtils.printGroups(m);
 
 		assertNotNull(m.group(1)); // line
 		assertNotNull(m.group(2)); // destination
