@@ -135,8 +135,16 @@ public class RmvProvider implements NetworkProvider
 		return (double) value / 1000000;
 	}
 
+	private static final Map<WalkSpeed, String> WALKSPEED_MAP = new HashMap<WalkSpeed, String>();
+	static
+	{
+		WALKSPEED_MAP.put(WalkSpeed.SLOW, "115");
+		WALKSPEED_MAP.put(WalkSpeed.NORMAL, "100");
+		WALKSPEED_MAP.put(WalkSpeed.FAST, "85");
+	}
+
 	private String connectionsQueryUri(final LocationType fromType, final String from, final LocationType viaType, final String via,
-			final LocationType toType, final String to, final Date date, final boolean dep)
+			final LocationType toType, final String to, final Date date, final boolean dep, final WalkSpeed walkSpeed)
 	{
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yy");
 		final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
@@ -156,6 +164,7 @@ public class RmvProvider implements NetworkProvider
 			uri.append("&REQ0JourneyStops1.0G=").append(ParserUtils.urlEncode(via));
 			uri.append("&REQ0JourneyStops1.0A=").append(locationType(viaType));
 		}
+		uri.append("&REQ0JourneyDep_Foot_speed=").append(WALKSPEED_MAP.get(walkSpeed));
 		uri.append("&start=Suchen");
 
 		return uri.toString();
@@ -180,9 +189,9 @@ public class RmvProvider implements NetworkProvider
 			"(?:(mehrfach vorhanden oder identisch)|(keine Verbindung gefunden werden))", Pattern.CASE_INSENSITIVE);
 
 	public QueryConnectionsResult queryConnections(final LocationType fromType, final String from, final LocationType viaType, final String via,
-			final LocationType toType, final String to, final Date date, final boolean dep) throws IOException
+			final LocationType toType, final String to, final Date date, final boolean dep, final WalkSpeed walkSpeed) throws IOException
 	{
-		final String uri = connectionsQueryUri(fromType, from, viaType, via, toType, to, date, dep);
+		final String uri = connectionsQueryUri(fromType, from, viaType, via, toType, to, date, dep, walkSpeed);
 		final CharSequence page = ParserUtils.scrape(uri);
 
 		final Matcher mError = P_CHECK_CONNECTIONS_ERROR.matcher(page);

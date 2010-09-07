@@ -56,7 +56,7 @@ public class TflProvider implements NetworkProvider
 	}
 
 	public QueryConnectionsResult queryConnections(final LocationType fromType, final String from, final LocationType viaType, final String via,
-			final LocationType toType, final String to, final Date date, final boolean dep) throws IOException
+			final LocationType toType, final String to, final Date date, final boolean dep, final WalkSpeed walkSpeed) throws IOException
 	{
 		throw new UnsupportedOperationException();
 	}

@@ -140,7 +140,7 @@ public class SbbProvider implements NetworkProvider
 			.compile("(mehrfach vorhanden oder identisch)|(keine Verbindung gefunden werden)");
 
 	public QueryConnectionsResult queryConnections(final LocationType fromType, final String from, final LocationType viaType, final String via,
-			final LocationType toType, final String to, final Date date, final boolean dep) throws IOException
+			final LocationType toType, final String to, final Date date, final boolean dep, final WalkSpeed walkSpeed) throws IOException
 	{
 		final String uri = connectionsQueryUri(fromType, from, viaType, via, toType, to, date, dep);
 		final CharSequence page = ParserUtils.scrape(uri);

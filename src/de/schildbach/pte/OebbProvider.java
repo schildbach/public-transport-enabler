@@ -66,8 +66,16 @@ public class OebbProvider implements NetworkProvider
 		throw new UnsupportedOperationException();
 	}
 
+	private static final Map<WalkSpeed, String> WALKSPEED_MAP = new HashMap<WalkSpeed, String>();
+	static
+	{
+		WALKSPEED_MAP.put(WalkSpeed.SLOW, "115");
+		WALKSPEED_MAP.put(WalkSpeed.NORMAL, "100");
+		WALKSPEED_MAP.put(WalkSpeed.FAST, "85");
+	}
+
 	private String connectionsQueryUri(final LocationType fromType, final String from, final LocationType viaType, final String via,
-			final LocationType toType, final String to, final Date date, final boolean dep)
+			final LocationType toType, final String to, final Date date, final boolean dep, final WalkSpeed walkSpeed)
 	{
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yy");
 		final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
@@ -90,6 +98,7 @@ public class OebbProvider implements NetworkProvider
 		uri.append("&REQ0JourneyStopsZ0ID=");
 		uri.append("&REQ0JourneyTime=").append(ParserUtils.urlEncode(TIME_FORMAT.format(date)));
 		uri.append("&REQ0JourneyProduct_list=0:1111111111010000-000000");
+		uri.append("&REQ0JourneyDep_Foot_speed=").append(WALKSPEED_MAP.get(walkSpeed));
 		uri.append("&existHafasAttrInc=yes");
 		uri.append("&existHafasDemo3=yes");
 		uri.append("&queryPageDisplayed=yes");
@@ -115,9 +124,9 @@ public class OebbProvider implements NetworkProvider
 	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern.compile("(keine Verbindung gefunden werden)");
 
 	public QueryConnectionsResult queryConnections(final LocationType fromType, final String from, final LocationType viaType, final String via,
-			final LocationType toType, final String to, final Date date, final boolean dep) throws IOException
+			final LocationType toType, final String to, final Date date, final boolean dep, final WalkSpeed walkSpeed) throws IOException
 	{
-		final String uri = connectionsQueryUri(fromType, from, viaType, via, toType, to, date, dep);
+		final String uri = connectionsQueryUri(fromType, from, viaType, via, toType, to, date, dep, walkSpeed);
 		final CharSequence page = ParserUtils.scrape(uri);
 
 		final Matcher mError = P_CHECK_CONNECTIONS_ERROR.matcher(page);

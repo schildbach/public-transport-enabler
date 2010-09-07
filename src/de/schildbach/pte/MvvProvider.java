@@ -154,8 +154,16 @@ public class MvvProvider implements NetworkProvider
 
 	}
 
+	private static final Map<WalkSpeed, String> WALKSPEED_MAP = new HashMap<WalkSpeed, String>();
+	static
+	{
+		WALKSPEED_MAP.put(WalkSpeed.SLOW, "slow");
+		WALKSPEED_MAP.put(WalkSpeed.NORMAL, "normal");
+		WALKSPEED_MAP.put(WalkSpeed.FAST, "fast");
+	}
+
 	private String connectionsQueryUri(final LocationType fromType, final String from, final LocationType viaType, final String via,
-			final LocationType toType, final String to, final Date date, final boolean dep)
+			final LocationType toType, final String to, final Date date, final boolean dep, final WalkSpeed walkSpeed)
 	{
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
 		final DateFormat YEAR_FORMAT = new SimpleDateFormat("yyyy");
@@ -270,6 +278,7 @@ public class MvvProvider implements NetworkProvider
 		uri.append("&itdTimeHour=").append(ParserUtils.urlEncode(HOUR_FORMAT.format(date)));
 		uri.append("&itdTimeMinute=").append(ParserUtils.urlEncode(MINUTE_FORMAT.format(date)));
 		uri.append("&itdDate=").append(ParserUtils.urlEncode(DATE_FORMAT.format(date)));
+		uri.append("&changeSpeed=").append(WALKSPEED_MAP.get(walkSpeed));
 
 		return uri.toString();
 	}
@@ -305,9 +314,9 @@ public class MvvProvider implements NetworkProvider
 			"(Start und Ziel sind identisch)|(konnte keine Verbindung gefunden werden)", Pattern.CASE_INSENSITIVE);
 
 	public QueryConnectionsResult queryConnections(final LocationType fromType, final String from, final LocationType viaType, final String via,
-			final LocationType toType, final String to, final Date date, final boolean dep) throws IOException
+			final LocationType toType, final String to, final Date date, final boolean dep, final WalkSpeed walkSpeed) throws IOException
 	{
-		final String uri = connectionsQueryUri(fromType, from, viaType, via, toType, to, date, dep);
+		final String uri = connectionsQueryUri(fromType, from, viaType, via, toType, to, date, dep, walkSpeed);
 		final CharSequence page = ParserUtils.scrape(uri);
 
 		final Matcher mError = P_CHECK_CONNECTIONS_ERROR.matcher(page);

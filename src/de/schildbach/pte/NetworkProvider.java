@@ -38,6 +38,11 @@ public interface NetworkProvider
 		ANY, STATION, WGS84, ADDRESS
 	}
 
+	public enum WalkSpeed
+	{
+		SLOW, NORMAL, FAST
+	}
+
 	boolean hasCapabilities(Capability... capabilities);
 
 	/**
@@ -95,11 +100,13 @@ public interface NetworkProvider
 	 *            desired date for departing, mandatory
 	 * @param dep
 	 *            date is departure date? {@code true} for departure, {@code false} for arrival
+	 * @param walkSpeed
+	 *            how fast can you walk?
 	 * @return result object that can contain alternatives to clear up ambiguousnesses, or contains possible connections
 	 * @throws IOException
 	 */
 	QueryConnectionsResult queryConnections(LocationType fromType, String from, LocationType viaType, String via, LocationType toType, String to,
-			Date date, boolean dep) throws IOException;
+			Date date, boolean dep, WalkSpeed walkSpeed) throws IOException;
 
 	/**
 	 * Query more connections (e.g. earlier or later)

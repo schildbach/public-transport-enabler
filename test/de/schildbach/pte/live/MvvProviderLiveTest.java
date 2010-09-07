@@ -24,6 +24,7 @@ import org.junit.Test;
 import de.schildbach.pte.MvvProvider;
 import de.schildbach.pte.QueryConnectionsResult;
 import de.schildbach.pte.NetworkProvider.LocationType;
+import de.schildbach.pte.NetworkProvider.WalkSpeed;
 
 /**
  * @author Andreas Schildbach
@@ -36,7 +37,7 @@ public class MvvProviderLiveTest
 	public void shortConnection() throws Exception
 	{
 		final QueryConnectionsResult result = provider.queryConnections(LocationType.ANY, "Marienplatz", null, null, LocationType.ANY, "Pasing",
-				new Date(), true);
+				new Date(), true, WalkSpeed.NORMAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
 		System.out.println(moreResult);
@@ -46,7 +47,7 @@ public class MvvProviderLiveTest
 	public void longConnection() throws Exception
 	{
 		final QueryConnectionsResult result = provider.queryConnections(LocationType.ANY, "Starnberg, Arbeitsamt", null, null, LocationType.ANY,
-				"Ackermannstraße", new Date(), true);
+				"Ackermannstraße", new Date(), true, WalkSpeed.NORMAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
 		System.out.println(moreResult);
@@ -56,7 +57,7 @@ public class MvvProviderLiveTest
 	public void connectionBetweenCoordinates() throws Exception
 	{
 		final QueryConnectionsResult result = provider.queryConnections(LocationType.WGS84, "48.165238,11.577473", null, null, LocationType.WGS84,
-				"47.987199,11.326532", new Date(), true);
+				"47.987199,11.326532", new Date(), true, WalkSpeed.NORMAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
 		System.out.println(moreResult);
@@ -66,7 +67,7 @@ public class MvvProviderLiveTest
 	public void connectionBetweenCoordinateAndStation() throws Exception
 	{
 		final QueryConnectionsResult result = provider.queryConnections(LocationType.WGS84, "48.238341,11.478230", null, null, LocationType.ANY,
-				"Ostbahnhof", new Date(), true);
+				"Ostbahnhof", new Date(), true, WalkSpeed.NORMAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
 		System.out.println(moreResult);
@@ -76,7 +77,7 @@ public class MvvProviderLiveTest
 	public void connectionBetweenAddresses() throws Exception
 	{
 		final QueryConnectionsResult result = provider.queryConnections(LocationType.ADDRESS, "München, Maximilianstr. 1", null, null,
-				LocationType.ADDRESS, "Starnberg, Jahnstraße 50", new Date(), true);
+				LocationType.ADDRESS, "Starnberg, Jahnstraße 50", new Date(), true, WalkSpeed.NORMAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
 		System.out.println(moreResult);
