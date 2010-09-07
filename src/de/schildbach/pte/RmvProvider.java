@@ -303,10 +303,11 @@ public class RmvProvider implements NetworkProvider
 		}
 	}
 
-	private static final Pattern P_CONNECTION_DETAILS_HEAD = Pattern.compile(".*?<p class=\"details\">\n?" //
+	private static final Pattern P_CONNECTION_DETAILS_HEAD = Pattern.compile(".*?<p class=\"details\">\n" //
 			+ "- <b>(.*?)</b> -.*?" // firstDeparture
-			+ "Abfahrt: (\\d+\\.\\d+\\.\\d+)<br />\n?"// date
-			+ "Dauer: (\\d+:\\d+)<br />.*?" // duration
+			+ "Abfahrt: (\\d{2}\\.\\d{2}\\.\\d{2})<br />\n"// date
+			+ "(?:Ankunft: \\d{2}\\.\\d{2}\\.\\d{2}<br />\n)?" //
+			+ "Dauer: (\\d{1,2}:\\d{2})<br />.*?" // duration
 	, Pattern.DOTALL);
 	private static final Pattern P_CONNECTION_DETAILS_COARSE = Pattern.compile("/b> -\n?(.*?- <b>.*?)<", Pattern.DOTALL);
 	private static final Pattern P_CONNECTION_DETAILS_FINE = Pattern.compile("<br />\n?" //
