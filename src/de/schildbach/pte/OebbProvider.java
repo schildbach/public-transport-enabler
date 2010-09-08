@@ -324,7 +324,8 @@ public class OebbProvider implements NetworkProvider
 								if (departureId == 0)
 									throw new IllegalStateException("departureId");
 
-								final Date departureTime = ParserUtils.joinDateTime(departureDate, ParserUtils.parseTime(mDetFine.group(4)));
+								final Date departureTime = ParserUtils.parseTime(mDetFine.group(4));
+								final Date departureDateTime = ParserUtils.joinDateTime(departureDate, departureTime);
 
 								final String departurePosition = mDetFine.group(5) != null ? ParserUtils.resolveEntities(mDetFine.group(5)) : null;
 
@@ -333,12 +334,13 @@ public class OebbProvider implements NetworkProvider
 								if (arrivalId == 0)
 									throw new IllegalStateException("arrivalId");
 
-								final Date arrivalTime = ParserUtils.joinDateTime(arrivalDate, ParserUtils.parseTime(mDetFine.group(11)));
+								final Date arrivalTime = ParserUtils.parseTime(mDetFine.group(11));
+								final Date arrivalDateTime = ParserUtils.joinDateTime(arrivalDate, arrivalTime);
 
 								final String arrivalPosition = mDetFine.group(12) != null ? ParserUtils.resolveEntities(mDetFine.group(12)) : null;
 
-								final Connection.Trip trip = new Connection.Trip(line, LINES.get(line.charAt(0)), null, departureTime,
-										departurePosition, departureId, departure, arrivalTime, arrivalPosition, arrivalId, arrival);
+								final Connection.Trip trip = new Connection.Trip(line, LINES.get(line.charAt(0)), null, departureDateTime,
+										departurePosition, departureId, departure, arrivalDateTime, arrivalPosition, arrivalId, arrival);
 								connection.parts.add(trip);
 							}
 							else
