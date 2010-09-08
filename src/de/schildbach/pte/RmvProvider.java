@@ -460,8 +460,9 @@ public class RmvProvider implements NetworkProvider
 			+ "<b>(\\d{1,2}:\\d{2})</b>\n" // plannedTime
 			+ "(?:keine Prognose verf&#252;gbar\n)?" //
 			+ "(?:<span class=\"red\">ca\\. (\\d{1,2}:\\d{2})</span>\n)?" // predictedTime
-			+ "(?:<span class=\"red\">heute Gl\\. " + ParserUtils.P_PLATFORM + "</span><br />\n)?" // predictedPosition
+			+ "(?:<span class=\"red\">heute (Gl\\. " + ParserUtils.P_PLATFORM + ")</span><br />\n)?" // predictedPosition
 			+ "(?:(Gl\\. " + ParserUtils.P_PLATFORM + ")<br />\n)?" // position
+			+ "(?:<span class=\"red\">([^>]*)</span>\n)?" // message
 			+ "(?:<img src=\".+?\" alt=\"\" />\n<b>.+?</b>\n<br />\n)*" // (messages)
 	, Pattern.DOTALL);
 
@@ -495,18 +496,14 @@ public class RmvProvider implements NetworkProvider
 					final Matcher mDepFine = P_DEPARTURES_FINE.matcher(mDepCoarse.group(1));
 					if (mDepFine.matches())
 					{
-						// line
 						final String line = normalizeLine(ParserUtils.resolveEntities(mDepFine.group(1)));
 
-						// destination
 						final String destination = ParserUtils.resolveEntities(mDepFine.group(2));
 
-						// time
 						final Calendar current = new GregorianCalendar();
 						current.setTime(currentTime);
 						final Calendar parsed = new GregorianCalendar();
 
-						// plannedTime
 						parsed.setTime(ParserUtils.parseTime(mDepFine.group(3)));
 						parsed.set(Calendar.YEAR, current.get(Calendar.YEAR));
 						parsed.set(Calendar.MONTH, current.get(Calendar.MONTH));
@@ -515,7 +512,6 @@ public class RmvProvider implements NetworkProvider
 							parsed.add(Calendar.DAY_OF_MONTH, 1);
 						final Date plannedTime = parsed.getTime();
 
-						// predictedTime
 						Date predictedTime = null;
 						if (mDepFine.group(4) != null)
 						{
@@ -528,8 +524,7 @@ public class RmvProvider implements NetworkProvider
 							predictedTime = parsed.getTime();
 						}
 
-						// position
-						final String position = ParserUtils.resolveEntities(mDepFine.group(5));
+						final String position = ParserUtils.resolveEntities(ParserUtils.selectNotNull(mDepFine.group(5), mDepFine.group(6)));
 
 						final Departure dep = new Departure(plannedTime, predictedTime, line, line != null ? LINES.get(line.charAt(0)) : null,
 								position, 0, destination, null);

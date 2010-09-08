@@ -241,10 +241,28 @@ public final class ParserUtils
 		}
 	}
 
+	public static <T> T selectNotNull(final T... groups)
+	{
+		T selected = null;
+
+		for (final T group : groups)
+		{
+			if (group != null)
+			{
+				if (selected == null)
+					selected = group;
+				else
+					throw new IllegalStateException("ambiguous");
+			}
+		}
+
+		return selected;
+	}
+
 	public static String extractId(final String link)
 	{
 		return link.substring(link.length() - 10);
 	}
-	
+
 	public static final String P_PLATFORM = "[\\wÄÖÜäöüßáàâéèêíìîóòôúùû\\. -/&#;]+?";
 }

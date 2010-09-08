@@ -454,7 +454,7 @@ public final class VbbProvider implements NetworkProvider
 					{
 						final int arrivalId = mDetFine.group(12) != null ? Integer.parseInt(mDetFine.group(12)) : 0;
 
-						final String arrival = ParserUtils.resolveEntities(selectNotNull(mDetFine.group(13), mDetFine.group(16), mDetFine.group(17)));
+						final String arrival = ParserUtils.resolveEntities(ParserUtils.selectNotNull(mDetFine.group(13), mDetFine.group(16), mDetFine.group(17)));
 
 						final double arrivalLon = mDetFine.group(14) != null ? latLonToDouble(Integer.parseInt(mDetFine.group(14))) : 0;
 
@@ -492,22 +492,6 @@ public final class VbbProvider implements NetworkProvider
 		{
 			throw new IOException(page.toString());
 		}
-	}
-
-	private static String selectNotNull(final String... groups)
-	{
-		String selected = null;
-		for (final String group : groups)
-		{
-			if (group != null)
-			{
-				if (selected == null)
-					selected = group;
-				else
-					throw new IllegalStateException("ambiguous");
-			}
-		}
-		return selected;
 	}
 
 	private static final String DEPARTURE_URL_LIVE = "http://mobil.bvg.de/IstAbfahrtzeiten/index/mobil?";
