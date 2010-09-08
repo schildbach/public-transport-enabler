@@ -25,6 +25,9 @@ import java.lang.ref.SoftReference;
  */
 public final class NetworkProviderFactory
 {
+	public static final String[] ALL_NETWORK_IDS = { BahnProvider.NETWORK_ID, OebbProvider.NETWORK_ID, SbbProvider.NETWORK_ID,
+			VbbProvider.NETWORK_ID, RmvProvider.NETWORK_ID, MvvProvider.NETWORK_ID, TflProvider.NETWORK_ID };
+
 	private static Reference<BahnProvider> bahnProviderRef;
 	private static Reference<OebbProvider> oebbProviderRef;
 	private static Reference<SbbProvider> sbbProviderRef;
