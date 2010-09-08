@@ -446,12 +446,17 @@ public final class BahnProvider implements NetworkProvider
 	, Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<div class=\"sqdetailsDep trow\">\n(.+?)</div>", Pattern.DOTALL);
 	static final Pattern P_DEPARTURES_FINE = Pattern.compile(".*?" //
-			+ "<span class=\"bold\">(.*?)</span>.*?" // line
-			+ "&gt;&gt;\n\\s*(.+?)\\s*\n<br />\n" // destination
+			+ "<a href=\"http://mobile\\.bahn\\.de/bin/mobil/traininfo.exe/dox[^\"]*\">\n" //
+			+ "<span class=\"bold\">(.*?)</span>\n" // line
+			+ "</a>\n" //
+			+ "&gt;&gt;\n" //
+			+ "\\s*(.+?)\\s*\n" // destination
+			+ "<br />\n" //
 			+ "<span class=\"bold\">(\\d{1,2}:\\d{2})</span>" // time
 			+ "(?:&nbsp;<span class=\"[\\w ]*\">(?:(p&#252;nktl\\.)|ca. \\+(\\d+))</span>)?" // ontime, delay
 			+ "(?:&nbsp;k\\.A\\.)?" //
 			+ "(?:, <span class=\"red\">([^<]*)</span>)?" // message
+			+ "(?:,<br/><a[^>]*><span class=\"red\">[^<]*</a></span>)?" // (ersatzzug message)
 			+ "(?:(?:,&nbsp;)?(?:<span class=\"red\">heute )?(Gl\\. " + ParserUtils.P_PLATFORM + ")(?:\\s*</span>)?)?" // position
 	, Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_URI_STATION_ID = Pattern.compile("input=(\\d+)");
