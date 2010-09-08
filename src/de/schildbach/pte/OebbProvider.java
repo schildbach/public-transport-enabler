@@ -472,7 +472,6 @@ public class OebbProvider implements NetworkProvider
 
 						Date predictedTime = null;
 						final String prognosis = ParserUtils.resolveEntities(mDepFine.group(2));
-						System.out.println("===" + prognosis);
 						if (prognosis != null)
 						{
 							if (prognosis.equals("pünktlich"))
