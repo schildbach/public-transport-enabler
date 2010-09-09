@@ -146,6 +146,22 @@ public class BahnProviderTest
 		assertNotNull(m.group(6)); // message
 	}
 
+	@Test
+	public void departureWithPositionAndMessages()
+	{
+		final Matcher m = assertFineDepartures("" //
+				+ "<a href=\"http://mobile.bahn.de/bin/mobil/traininfo.exe/dox/32967/150423/39690/8856/80/si=676819&amp;bt=dep&amp;ti=00:57&amp;pt=00:57&amp;p=1111111111&amp;date=09.09.10&amp;max=10&amp;rt=1&amp;&amp;\">\n" //
+				+ "<span class=\"bold\">RB 34075</span>\n" //
+				+ "</a>\n" //
+				+ "&gt;&gt;\n" //
+				+ "N&#252;rnberg Hbf\n" //
+				+ "<br />\n" //
+				+ "<span class=\"bold\">00:18</span>, <span class=\"red\">Zug f&#228;llt aus</span>,&nbsp;Gl. 4,<br/><a class=\"red underline\" href=\"http://mobile.bahn.de/bin/mobil/traininfo.exe/dox/843399/1026627/462944/49661/80?ld=96159&amp;rt=1&amp;use_realtime_filter=1&amp;date=09.09.10&amp;time=00:18&amp;station_evaId=8001844&amp;station_type=dep&amp;\"><span class=\"red\">Ersatzzug&nbsp;RB 30535</a></span>");
+
+		assertNotNull(m.group(6)); // message
+		assertNotNull(m.group(7)); // position
+	}
+
 	private void assertFineConnectionDetails(String s)
 	{
 		Matcher m = BahnProvider.P_CONNECTION_DETAILS_FINE.matcher(s);
