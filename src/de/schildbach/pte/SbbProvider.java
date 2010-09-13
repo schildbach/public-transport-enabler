@@ -205,8 +205,9 @@ public class SbbProvider implements NetworkProvider
 			+ "(?:<a href=\"(http://fahrplan.sbb.ch/bin/query.exe/dn[^\"]*?&REQ0HafasScrollDir=2)\".*?)?" // linkEarlier
 			+ "(?:<a href=\"(http://fahrplan.sbb.ch/bin/query.exe/dn[^\"]*?&REQ0HafasScrollDir=1)\".*?)?" // linkLater
 	, Pattern.DOTALL);
-	private static final Pattern P_CONNECTIONS_COARSE = Pattern.compile("<tr class=\"(zebra-row-\\d)\">(.*?)</tr>\n?"//
-			+ "<tr class=\"\\1\">(.+?)</tr>", Pattern.DOTALL);
+	private static final Pattern P_CONNECTIONS_COARSE = Pattern.compile("<tr class=\"(zebra-row-\\d)\">(.*?)</tr>\n"//
+			+ "<tr class=\"\\1\">(.*?)</tr>\n"//
+			+ "(?:<tr class=\"\\1\">.*?</tr>\n)?", Pattern.DOTALL);
 	private static final Pattern P_CONNECTIONS_FINE = Pattern.compile(".*?" //
 			+ "name=\"guiVCtrl_connection_detailsOut_select_([\\w-]+)\".*?" // id
 			+ ".., (\\d{2}\\.\\d{2}\\.\\d{2}).*?" // departureDate
@@ -248,10 +249,17 @@ public class SbbProvider implements NetworkProvider
 			final String linkEarlier = mHead.group(4) != null ? ParserUtils.resolveEntities(mHead.group(4)) : null;
 			final String linkLater = mHead.group(5) != null ? ParserUtils.resolveEntities(mHead.group(5)) : null;
 			final List<Connection> connections = new ArrayList<Connection>();
+			String oldZebra = null;
 
 			final Matcher mConCoarse = P_CONNECTIONS_COARSE.matcher(page);
 			while (mConCoarse.find())
 			{
+				final String zebra = mConCoarse.group(1);
+				if (oldZebra != null && zebra.equals(oldZebra))
+					throw new IllegalArgumentException("missed row? last:" + zebra);
+				else
+					oldZebra = zebra;
+
 				final String set = mConCoarse.group(2) + mConCoarse.group(3);
 				final Matcher mConFine = P_CONNECTIONS_FINE.matcher(set);
 				if (mConFine.matches())
