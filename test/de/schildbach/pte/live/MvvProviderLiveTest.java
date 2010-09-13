@@ -49,8 +49,7 @@ public class MvvProviderLiveTest
 		final QueryConnectionsResult result = provider.queryConnections(LocationType.ANY, "Starnberg, Arbeitsamt", null, null, LocationType.ANY,
 				"Ackermannstraße", new Date(), true, WalkSpeed.NORMAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
-		System.out.println(moreResult);
+		// seems like there are no more connections all the time
 	}
 
 	@Test
