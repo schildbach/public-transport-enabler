@@ -465,7 +465,7 @@ public class RmvProvider implements NetworkProvider
 			+ "(?:<span class=\"red\">heute (Gl\\. " + ParserUtils.P_PLATFORM + ")</span><br />\n)?" // predictedPosition
 			+ "(?:(Gl\\. " + ParserUtils.P_PLATFORM + ")<br />\n)?" // position
 			+ "(?:<span class=\"red\">([^>]*)</span>\n)?" // message
-			+ "(?:<img src=\".+?\" alt=\"\" />\n<b>.+?</b>\n<br />\n)*" // (messages)
+			+ "(?:<img src=\".+?\" alt=\"\" />\n<b>[^<]*</b>\n<br />\n)*" // (messages)
 	, Pattern.DOTALL);
 
 	public QueryDeparturesResult queryDepartures(final String uri) throws IOException

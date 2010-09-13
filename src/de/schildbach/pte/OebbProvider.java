@@ -119,8 +119,8 @@ public class OebbProvider implements NetworkProvider
 	}
 
 	private static final Pattern P_PRE_ADDRESS = Pattern.compile(
-			"<select.*? name=\"(REQ0JourneyStopsS0K|REQ0JourneyStopsZ0K|REQ0JourneyStops1\\.0K)\".*?>(.*?)</select>", Pattern.DOTALL);
-	private static final Pattern P_ADDRESSES = Pattern.compile("<option.*?>\\s*(.*?)\\s*</option>", Pattern.DOTALL);
+			"<select.*? name=\"(REQ0JourneyStopsS0K|REQ0JourneyStopsZ0K|REQ0JourneyStops1\\.0K)\"[^>]*>(.*?)</select>", Pattern.DOTALL);
+	private static final Pattern P_ADDRESSES = Pattern.compile("<option[^>]*>\\s*(.*?)\\s*</option>", Pattern.DOTALL);
 	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern
 			.compile("(keine Verbindung gefunden werden)|(liegt nach dem Ende der Fahrplanperiode|liegt vor Beginn der Fahrplanperiode)");
 
@@ -182,10 +182,10 @@ public class OebbProvider implements NetworkProvider
 	}
 
 	private static final Pattern P_CONNECTIONS_FORM_ACTION = Pattern.compile("" //
-			+ "<form name=\"tp_results_form\" action=\"(http://fahrplan.oebb.at/bin/query.exe/.*?)#.*?>" // action
+			+ "<form name=\"tp_results_form\" action=\"(http://fahrplan.oebb.at/bin/query.exe/.*?)#[^>]*>" // action
 	, Pattern.DOTALL);
 	private static final Pattern P_CONNECTIONS_PAGE = Pattern.compile(".*?" //
-			+ "<form name=\"tp_results_form\" action=\"(http://fahrplan.oebb.at/bin/query.exe/.*?)#.*?>.*?" // action
+			+ "<form name=\"tp_results_form\" action=\"(http://fahrplan.oebb.at/bin/query.exe/.*?)#[^>]*>.*?" // action
 			+ "<table class=\"hafasResult\" cellspacing=\"0\" summary=\"Ihre Anfrage\">\n(.*?)\n</table>.*?" // header
 			+ "<table cellspacing=\"0\" class=\"hafasResult\" style=\"width:100%;\" summary=\"Verbindungen &#220;bersicht\">\n" //
 			+ "(.*?<table cellspacing=\"0\">(.*?)</table>.*?)\n" // connections overview
@@ -204,7 +204,7 @@ public class OebbProvider implements NetworkProvider
 	private static final Pattern P_CONNECTIONS_COARSE = Pattern.compile("<tr class=\"(?:selected|tpOverview)\">\n(.*?)</tr>", Pattern.DOTALL);
 	private static final Pattern P_CONNECTIONS_FINE = Pattern.compile(".*?" //
 			+ "name=\"guiVCtrl_connection_detailsOut_select_([\\w-]+)\".*?" // id
-			+ "<td headers=\"hafasOVDate\".*?>(\\d{2}\\.\\d{2}\\.\\d{2})" // departureDate
+			+ "<td headers=\"hafasOVDate\"[^>]*>(\\d{2}\\.\\d{2}\\.\\d{2})" // departureDate
 			+ "(?:<br />(\\d{2}\\.\\d{2}\\.\\d{2}))?.*?" // arrivalDate
 			+ "<td class=\"sepline\">(\\d{1,2}:\\d{2})" // departureTime
 			+ "<br />(\\d{1,2}:\\d{2}).*?" // arrivalTime
@@ -215,20 +215,20 @@ public class OebbProvider implements NetworkProvider
 	private static final Pattern P_CONNECTION_DETAILS_COARSE = Pattern.compile("<tr class=\"tpDetails\">\n(.*?)\n</tr>\n" //
 			+ "<tr class=\"tpDetails(?: special)?\">\n(.*?)\n</tr>\n<tr>\n(.*?)\n</tr>", Pattern.DOTALL);
 	private static final Pattern P_CONNECTION_DETAILS_FINE = Pattern.compile(".*?" //
-			+ "<td headers=\"hafasDTL\\d+_Stop\".*?>\n" //
-			+ "(?:<a href=\"http://fahrplan\\.oebb\\.at/bin/stboard\\.exe/dn.*?input=.*?%23(\\d+)&.*?>)?" // departureId
+			+ "<td headers=\"hafasDTL\\d+_Stop\"[^>]*>\n" //
+			+ "(?:<a href=\"http://fahrplan\\.oebb\\.at/bin/stboard\\.exe/dn.*?input=.*?%23(\\d+)&[^>]*>)?" // departureId
 			+ "([^\n<]*).*?" // departure
-			+ "<td headers=\"hafasDTL\\d+_Date\".*?>\n(?:(\\d{2}\\.\\d{2}\\.\\d{2})|&nbsp;)\n</td>.*?" // departureDate
-			+ "<td headers=\"hafasDTL\\d+_TimeDep\".*?>(?:(\\d{2}:\\d{2})|&nbsp;)</td>.*?" // departureTime
-			+ "<td headers=\"hafasDTL\\d+_Platform\".*?>\\s*(?:&nbsp;|(.*?))\\s*</td>.*?" // departurePosition
+			+ "<td headers=\"hafasDTL\\d+_Date\"[^>]*>\n(?:(\\d{2}\\.\\d{2}\\.\\d{2})|&nbsp;)\n</td>.*?" // departureDate
+			+ "<td headers=\"hafasDTL\\d+_TimeDep\"[^>]*>(?:(\\d{2}:\\d{2})|&nbsp;)</td>.*?" // departureTime
+			+ "<td headers=\"hafasDTL\\d+_Platform\"[^>]*>\\s*(?:&nbsp;|(.*?))\\s*</td>.*?" // departurePosition
 			+ "<img src=\"/img/vs_oebb/(\\w+?)_pic.gif\".*?" // lineType
-			+ "(?:<a href=\"http://fahrplan\\.oebb\\.at/bin/traininfo\\.exe/dn.*?>(.*?)</a>.*?)?" // line
-			+ "<td headers=\"hafasDTL\\d+_Stop\".*?>\n" //
-			+ "(?:<a href=\"http://fahrplan\\.oebb\\.at/bin/stboard\\.exe/dn.*?input=.*?%23(\\d+)&.*?>)?" // arrivalId
+			+ "(?:<a href=\"http://fahrplan\\.oebb\\.at/bin/traininfo\\.exe/dn[^>]*>(.*?)</a>.*?)?" // line
+			+ "<td headers=\"hafasDTL\\d+_Stop\"[^>]*>\n" //
+			+ "(?:<a href=\"http://fahrplan\\.oebb\\.at/bin/stboard\\.exe/dn.*?input=.*?%23(\\d+)&[^>]*>)?" // arrivalId
 			+ "([^\n<]*).*?" // arrival
-			+ "<td headers=\"hafasDTL\\d+_Date\".*?>\n(?:(\\d{2}\\.\\d{2}\\.\\d{2})|&nbsp;)\n</td>.*?" // arrivalDate
-			+ "<td headers=\"hafasDTL\\d+_TimeDep\".*?>(?:(\\d{2}:\\d{2})|&nbsp;)</td>.*?" // arrivalTime
-			+ "<td headers=\"hafasDTL\\d+_Platform\".*?>\\s*(?:&nbsp;|(.*?))\\s*</td>.*?" // arrivalPosition
+			+ "<td headers=\"hafasDTL\\d+_Date\"[^>]*>\n(?:(\\d{2}\\.\\d{2}\\.\\d{2})|&nbsp;)\n</td>.*?" // arrivalDate
+			+ "<td headers=\"hafasDTL\\d+_TimeDep\"[^>]*>(?:(\\d{2}:\\d{2})|&nbsp;)</td>.*?" // arrivalTime
+			+ "<td headers=\"hafasDTL\\d+_Platform\"[^>]*>\\s*(?:&nbsp;|(.*?))\\s*</td>.*?" // arrivalPosition
 			+ "(?:ca\\. (\\d+) Min\\.\n.*?)?" // min
 	, Pattern.DOTALL);
 
@@ -404,8 +404,8 @@ public class OebbProvider implements NetworkProvider
 
 	private static final Pattern P_DEPARTURES_HEAD_COARSE = Pattern.compile(".*?" //
 			+ "(?:" // 
-			+ "<table class=\"hafasResult\".*?>(.+?)</table>.*?" //
-			+ "(?:<table cellspacing=\"0\" class=\"hafasResult\".*?>(.+?)</table>|(verkehren an dieser Haltestelle keine))"//
+			+ "<table class=\"hafasResult\"[^>]*>(.+?)</table>.*?" //
+			+ "(?:<table cellspacing=\"0\" class=\"hafasResult\"[^>]*>(.+?)</table>|(verkehren an dieser Haltestelle keine))"//
 			+ "|(Eingabe kann nicht interpretiert)|(Verbindung zum Server konnte leider nicht hergestellt werden))" //
 			+ ".*?" //
 	, Pattern.DOTALL);

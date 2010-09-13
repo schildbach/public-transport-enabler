@@ -134,8 +134,8 @@ public class SbbProvider implements NetworkProvider
 	}
 
 	private static final Pattern P_PRE_ADDRESS = Pattern.compile(
-			"<select name=\"(REQ0JourneyStopsS0K|REQ0JourneyStopsZ0K|REQ0JourneyStops1\\.0K)\" accesskey=\"f\".*?>(.*?)</select>", Pattern.DOTALL);
-	private static final Pattern P_ADDRESSES = Pattern.compile("<option.*?>\\s*(.*?)\\s*</option>", Pattern.DOTALL);
+			"<select name=\"(REQ0JourneyStopsS0K|REQ0JourneyStopsZ0K|REQ0JourneyStops1\\.0K)\" accesskey=\"f\"[^>]*>(.*?)</select>", Pattern.DOTALL);
+	private static final Pattern P_ADDRESSES = Pattern.compile("<option[^>]*>\\s*(.*?)\\s*</option>", Pattern.DOTALL);
 	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern
 			.compile("(mehrfach vorhanden oder identisch)|(keine Verbindung gefunden werden)|(liegt nach dem Ende der Fahrplanperiode|liegt vor Beginn der Fahrplanperiode)");
 
@@ -221,16 +221,16 @@ public class SbbProvider implements NetworkProvider
 			+ "<tr>(.*?class=\"stop-station-icon last\".*?)</tr>", Pattern.DOTALL);
 	static final Pattern P_CONNECTION_DETAILS_FINE = Pattern.compile(".*?" //
 			+ "<td headers=\"stops-\\d+\" class=\"stop-station\">\n" //
-			+ "(?:<a href=\"http://fahrplan\\.sbb\\.ch/bin/bhftafel\\.exe/dn.*?input=(\\d+)&.*?>)?" // departureId
+			+ "(?:<a href=\"http://fahrplan\\.sbb\\.ch/bin/bhftafel\\.exe/dn.*?input=(\\d+)&[^>]*>)?" // departureId
 			+ "([^\n<]*?)<.*?" // departure
 			+ "<td headers=\"date-\\d+\"[^>]*>\n(?:.., (\\d{2}\\.\\d{2}\\.\\d{2})\n)?</td>.*?" // departureDate
 			+ "<td headers=\"time-\\d+\"[^>]*>(?:(\\d{2}:\\d{2})|&nbsp;)</td>.*?" // departureTime
 			+ "<td headers=\"platform-\\d+\"[^>]*>\n(?:<span[^>]*>\n)?(.+?)?\\s*(?:<img[^>]*>\n</span>\n)?</td>.*?" // departurePosition
 			+ "<img src=\"/img/2/products/(\\w+?)_pic.gif\".*?" // lineType
-			+ "(?:<a href=\"http://fahrplan\\.sbb\\.ch/bin/traininfo\\.exe/dn.*?>\\s*(.*?)\\s*</a>|" // line
+			+ "(?:<a href=\"http://fahrplan\\.sbb\\.ch/bin/traininfo\\.exe/dn[^>]*>\\s*(.*?)\\s*</a>|" // line
 			+ "\n(\\d+) Min\\.).*?" // min
 			+ "<td headers=\"stops-\\d+\" class=\"stop-station last\">\n" //
-			+ "(?:<a href=\"http://fahrplan\\.sbb\\.ch/bin/bhftafel\\.exe/dn.*?input=(\\d+)&.*?>)?" // arrivalId
+			+ "(?:<a href=\"http://fahrplan\\.sbb\\.ch/bin/bhftafel\\.exe/dn.*?input=(\\d+)&[^>]*>)?" // arrivalId
 			+ "([^\n<]*?)<.*?" // arrival
 			+ "<td headers=\"date-\\d+\"[^>]*>\n(?:.., (\\d{2}\\.\\d{2}\\.\\d{2})\n)?</td>.*?" // arrivalDate
 			+ "<td headers=\"time-\\d+\"[^>]*>(?:(\\d{2}:\\d{2})|&nbsp;)</td>.*?" // arrivalTime

@@ -237,7 +237,7 @@ public final class VbbProvider implements NetworkProvider
 		return (int) (value * 1000000);
 	}
 
-	private static final Pattern P_CHECK_ADDRESS = Pattern.compile("<option.*?>\\s*(.*?)\\s*</option>", Pattern.DOTALL);
+	private static final Pattern P_CHECK_ADDRESS = Pattern.compile("<option[^>]*>\\s*(.*?)\\s*</option>", Pattern.DOTALL);
 	private static final Pattern P_CHECK_FROM = Pattern.compile("Von:");
 	private static final Pattern P_CHECK_TO = Pattern.compile("Nach:");
 	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern
@@ -527,7 +527,7 @@ public final class VbbProvider implements NetworkProvider
 			+ "<td><strong>(\\d{1,2}:\\d{2})</strong></td>.*?" // time
 			+ "<strong>\\s*(.*?)[\\s\\*]*</strong>.*?" // line
 			+ "(?:\\((Gl\\. " + ParserUtils.P_PLATFORM + ")\\).*?)?" // position
-			+ "<a href=\"/Fahrinfo/bin/stboard\\.bin/dox/dox.*?evaId=(\\d+)&.*?>" // destinationId
+			+ "<a href=\"/Fahrinfo/bin/stboard\\.bin/dox/dox.*?evaId=(\\d+)&[^>]*>" // destinationId
 			+ "\\s*(.*?)\\s*</a>.*?" // destination
 	, Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_SERVICE_DOWN = Pattern.compile("Wartungsarbeiten");

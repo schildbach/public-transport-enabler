@@ -165,8 +165,8 @@ public final class BahnProvider implements NetworkProvider
 	}
 
 	private static final Pattern P_PRE_ADDRESS = Pattern.compile(
-			"<select name=\"(REQ0JourneyStopsS0K|REQ0JourneyStopsZ0K|REQ0JourneyStops1\\.0K)\" class=\"nofullwidth\">(.*?)</select>", Pattern.DOTALL);
-	private static final Pattern P_ADDRESSES = Pattern.compile("<option.*?>\\s*(.*?)\\s*</option>", Pattern.DOTALL);
+			"<select name=\"(REQ0JourneyStopsS0K|REQ0JourneyStopsZ0K|REQ0JourneyStops1\\.0K)\"[^>]*>(.*?)</select>", Pattern.DOTALL);
+	private static final Pattern P_ADDRESSES = Pattern.compile("<option[^>]*>\\s*(.*?)\\s*</option>", Pattern.DOTALL);
 	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern
 			.compile("(zu dicht beieinander|mehrfach vorhanden oder identisch)|(leider konnte zu Ihrer Anfrage keine Verbindung gefunden werden)|(derzeit nur Ausk&#252;nfte vom)");
 
@@ -230,11 +230,11 @@ public final class BahnProvider implements NetworkProvider
 	}
 
 	private static final Pattern P_CONNECTIONS_HEAD = Pattern.compile(".*" //
-			+ "von: <span class=\"bold\">(.*?)</span>.*?" // from
-			+ "nach: <span class=\"bold\">(.*?)</span>.*?" // to
-			+ "Datum: <span class=\"bold\">.., (.*?)</span>.*?" // currentDate
-			+ "(?:<a href=\"(http://mobile.bahn.de/bin/mobil/query.exe/dox[^\"]*?)\">.*?Fr&#252;her.*?)?" // linkEarlier
-			+ "(?:<a class=\"noBG\" href=\"(http://mobile.bahn.de/bin/mobil/query.exe/dox[^\"]*?)\">.*?Sp&#228;ter.*?)?" // linkLater
+			+ "von: <span class=\"bold\">([^<]*)</span>.*?" // from
+			+ "nach: <span class=\"bold\">([^<]*)</span>.*?" // to
+			+ "Datum: <span class=\"bold\">.., (\\d{2}\\.\\d{2}\\.\\d{2})</span>.*?" // currentDate
+			+ "(?:<a href=\"([^\"]*)\"><img [^>]*>\\s*Fr&#252;her.*?)?" // linkEarlier
+			+ "(?:<a class=\"noBG\" href=\"([^\"]*)\"><img [^>]*>\\s*Sp&#228;ter.*?)?" // linkLater
 	, Pattern.DOTALL);
 	private static final Pattern P_CONNECTIONS_COARSE = Pattern.compile("<tr><td class=\"overview timelink\">(.+?)</td></tr>", Pattern.DOTALL);
 	private static final Pattern P_CONNECTIONS_FINE = Pattern.compile(".*?" //
@@ -302,11 +302,11 @@ public final class BahnProvider implements NetworkProvider
 	static final Pattern P_CONNECTION_DETAILS_FINE = Pattern.compile("<span class=\"bold\">\\s*(.+?)\\s*</span>.*?" // departure
 			+ "(?:" //
 			+ "<span class=\"bold\">\\s*(.+?)\\s*</span>.*?" // line
-			+ "ab\\s+(?:<span.*?>.*?</span>)?\\s*(\\d+:\\d+)\\s*(?:<span.*?>.*?</span>)?" // departureTime
+			+ "ab\\s+(?:<span[^>]*>.*?</span>)?\\s*(\\d+:\\d+)\\s*(?:<span[^>]*>.*?</span>)?" // departureTime
 			+ "\\s*(Gl\\. .+?)?\\s*\n?" // departurePosition
 			+ "am\\s+(\\d+\\.\\d+\\.\\d+).*?" // departureDate
 			+ "<span class=\"bold\">\\s*(.+?)\\s*</span><br />.*?" // arrival
-			+ "an\\s+(?:<span.*?>.*?</span>)?\\s*(\\d+:\\d+)\\s*(?:<span.*?>.*?</span>)?" // arrivalTime
+			+ "an\\s+(?:<span[^>]*>.*?</span>)?\\s*(\\d+:\\d+)\\s*(?:<span[^>]*>.*?</span>)?" // arrivalTime
 			+ "\\s*(Gl\\. .+?)?\\s*\n?" // arrivalPosition
 			+ "am\\s+(\\d+\\.\\d+\\.\\d+).*?" // arrivalDate
 			+ "|" //
