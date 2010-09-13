@@ -186,7 +186,7 @@ public class RmvProvider implements NetworkProvider
 	private static final Pattern P_ADDRESSES = Pattern.compile(
 			"<span class=\"tplight\">.*?<a href=\"http://www.rmv.de/auskunft/bin/jp/query.exe/dox.*?\">\\s*(.*?)\\s*</a>.*?</span>", Pattern.DOTALL);
 	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern.compile(
-			"(?:(mehrfach vorhanden oder identisch)|(keine Verbindung gefunden werden))", Pattern.CASE_INSENSITIVE);
+			"(mehrfach vorhanden oder identisch)|(keine Verbindung gefunden werden)|(derzeit nur Ausk&#252;nfte vom)", Pattern.CASE_INSENSITIVE);
 
 	public QueryConnectionsResult queryConnections(final LocationType fromType, final String from, final LocationType viaType, final String via,
 			final LocationType toType, final String to, final Date date, final boolean dep, final WalkSpeed walkSpeed) throws IOException
@@ -201,6 +201,8 @@ public class RmvProvider implements NetworkProvider
 				return QueryConnectionsResult.TOO_CLOSE;
 			if (mError.group(2) != null)
 				return QueryConnectionsResult.NO_CONNECTIONS;
+			if (mError.group(3) != null)
+				return QueryConnectionsResult.INVALID_DATE;
 		}
 
 		List<String> fromAddresses = null;

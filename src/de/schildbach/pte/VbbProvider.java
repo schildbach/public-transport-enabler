@@ -241,7 +241,7 @@ public final class VbbProvider implements NetworkProvider
 	private static final Pattern P_CHECK_FROM = Pattern.compile("Von:");
 	private static final Pattern P_CHECK_TO = Pattern.compile("Nach:");
 	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern
-			.compile("(zu dicht beieinander|mehrfach vorhanden oder identisch)|(keine Verbindung gefunden)");
+			.compile("(zu dicht beieinander|mehrfach vorhanden oder identisch)|(keine Verbindung gefunden)|(derzeit nur Ausk&#252;nfte vom)");
 
 	public QueryConnectionsResult queryConnections(final LocationType fromType, final String from, final LocationType viaType, final String via,
 			final LocationType toType, final String to, final Date date, final boolean dep, final WalkSpeed walkSpeed) throws IOException
@@ -256,6 +256,8 @@ public final class VbbProvider implements NetworkProvider
 				return QueryConnectionsResult.TOO_CLOSE;
 			if (mError.group(2) != null)
 				return QueryConnectionsResult.NO_CONNECTIONS;
+			if (mError.group(3) != null)
+				return QueryConnectionsResult.INVALID_DATE;
 		}
 
 		final Matcher mAddress = P_CHECK_ADDRESS.matcher(page);
@@ -454,7 +456,8 @@ public final class VbbProvider implements NetworkProvider
 					{
 						final int arrivalId = mDetFine.group(12) != null ? Integer.parseInt(mDetFine.group(12)) : 0;
 
-						final String arrival = ParserUtils.resolveEntities(ParserUtils.selectNotNull(mDetFine.group(13), mDetFine.group(16), mDetFine.group(17)));
+						final String arrival = ParserUtils.resolveEntities(ParserUtils.selectNotNull(mDetFine.group(13), mDetFine.group(16), mDetFine
+								.group(17)));
 
 						final double arrivalLon = mDetFine.group(14) != null ? latLonToDouble(Integer.parseInt(mDetFine.group(14))) : 0;
 

@@ -121,7 +121,8 @@ public class OebbProvider implements NetworkProvider
 	private static final Pattern P_PRE_ADDRESS = Pattern.compile(
 			"<select.*? name=\"(REQ0JourneyStopsS0K|REQ0JourneyStopsZ0K|REQ0JourneyStops1\\.0K)\".*?>(.*?)</select>", Pattern.DOTALL);
 	private static final Pattern P_ADDRESSES = Pattern.compile("<option.*?>\\s*(.*?)\\s*</option>", Pattern.DOTALL);
-	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern.compile("(keine Verbindung gefunden werden)");
+	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern
+			.compile("(keine Verbindung gefunden werden)|(liegt nach dem Ende der Fahrplanperiode|liegt vor Beginn der Fahrplanperiode)");
 
 	public QueryConnectionsResult queryConnections(final LocationType fromType, final String from, final LocationType viaType, final String via,
 			final LocationType toType, final String to, final Date date, final boolean dep, final WalkSpeed walkSpeed) throws IOException
@@ -134,6 +135,8 @@ public class OebbProvider implements NetworkProvider
 		{
 			if (mError.group(1) != null)
 				return QueryConnectionsResult.NO_CONNECTIONS;
+			if (mError.group(2) != null)
+				return QueryConnectionsResult.INVALID_DATE;
 		}
 
 		List<String> fromAddresses = null;
@@ -192,9 +195,9 @@ public class OebbProvider implements NetworkProvider
 			+ "</table>\n<div.*?" //
 	, Pattern.DOTALL);
 	private static final Pattern P_CONNECTIONS_HEAD = Pattern.compile(".*?" //
-			+ "von:.*?<td .*?>\\s*(.*?)\\s*</td>.*?" // from
-			+ "Datum:.*?<td .*?>.., (\\d{2}\\.\\d{2}\\.\\d{2})</td>.*?" // date
-			+ "nach:.*?<td .*?>\\s*(.*?)\\s*</td>.*?" // to
+			+ "von:.*?<td [^>]*>\\s*(.*?)\\s*</td>.*?" // from
+			+ "Datum:.*?<td [^>]*>.., (\\d{2}\\.\\d{2}\\.\\d{2})</td>.*?" // date
+			+ "nach:.*?<td [^>]*>\\s*(.*?)\\s*</td>.*?" // to
 			+ "(?:\"(REQ0HafasScrollDir=2&guiVCtrl_connection_detailsOut_add_selection&)\".*?)?" // linkEarlier
 			+ "(?:\"(REQ0HafasScrollDir=1&guiVCtrl_connection_detailsOut_add_selection&)\".*?)?" // linkLater
 	, Pattern.DOTALL);

@@ -137,7 +137,7 @@ public class SbbProvider implements NetworkProvider
 			"<select name=\"(REQ0JourneyStopsS0K|REQ0JourneyStopsZ0K|REQ0JourneyStops1\\.0K)\" accesskey=\"f\".*?>(.*?)</select>", Pattern.DOTALL);
 	private static final Pattern P_ADDRESSES = Pattern.compile("<option.*?>\\s*(.*?)\\s*</option>", Pattern.DOTALL);
 	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern
-			.compile("(mehrfach vorhanden oder identisch)|(keine Verbindung gefunden werden)");
+			.compile("(mehrfach vorhanden oder identisch)|(keine Verbindung gefunden werden)|(liegt nach dem Ende der Fahrplanperiode|liegt vor Beginn der Fahrplanperiode)");
 
 	public QueryConnectionsResult queryConnections(final LocationType fromType, final String from, final LocationType viaType, final String via,
 			final LocationType toType, final String to, final Date date, final boolean dep, final WalkSpeed walkSpeed) throws IOException
@@ -152,6 +152,8 @@ public class SbbProvider implements NetworkProvider
 				return QueryConnectionsResult.TOO_CLOSE;
 			if (mError.group(2) != null)
 				return QueryConnectionsResult.NO_CONNECTIONS;
+			if (mError.group(3) != null)
+				return QueryConnectionsResult.INVALID_DATE;
 		}
 
 		List<String> fromAddresses = null;
@@ -197,9 +199,9 @@ public class SbbProvider implements NetworkProvider
 	}
 
 	private static final Pattern P_CONNECTIONS_HEAD = Pattern.compile(".*?" //
-			+ "Von:.*?<td .*?>(?:<a.*?/a>)?(.*?)</td>.*?" // from
-			+ "Datum:.*?<td .*?>.., (\\d{2}\\.\\d{2}\\.\\d{2})</td>.*?" // date
-			+ "Nach:.*?<td .*?>(?:<a.*?/a>)?(.*?)</td>.*?" // to
+			+ "Von:.*?<td [^>]*>(?:<a.*?/a>)?(.*?)</td>.*?" // from
+			+ "Datum:.*?<td [^>]*>.., (\\d{2}\\.\\d{2}\\.\\d{2})</td>.*?" // date
+			+ "Nach:.*?<td [^>]*>(?:<a.*?/a>)?(.*?)</td>.*?" // to
 			+ "(?:<a href=\"(http://fahrplan.sbb.ch/bin/query.exe/dn[^\"]*?&REQ0HafasScrollDir=2)\".*?)?" // linkEarlier
 			+ "(?:<a href=\"(http://fahrplan.sbb.ch/bin/query.exe/dn[^\"]*?&REQ0HafasScrollDir=1)\".*?)?" // linkLater
 	, Pattern.DOTALL);
