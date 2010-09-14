@@ -17,7 +17,6 @@
 
 package de.schildbach.pte;
 
-import java.util.Date;
 
 /**
  * @author Andreas Schildbach
@@ -31,9 +30,6 @@ public final class Station
 	public float distance;
 	public final String[] lines;
 	public final int[][] lineColors;
-
-	// transient
-	public transient Date lastUpdatedDepartures;
 
 	public Station(final int id, final String name, final double latitude, final double longitude, final float distance, final String[] lines,
 			final int[][] lineColors)
