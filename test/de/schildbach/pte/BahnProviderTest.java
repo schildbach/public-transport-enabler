@@ -136,7 +136,23 @@ public class BahnProviderTest
 	}
 
 	@Test
-	public void departureWithMultipleMessages()
+	public void departureWithErsatzzugMessage()
+	{
+		final Matcher m = assertFineDepartures("" //
+				+ "<a href=\"http://mobile.bahn.de/bin/mobil/traininfo.exe/dox/606621/948269/912326/253956/80/si=591375&amp;bt=dep&amp;ti=14:28&amp;pt=14:28&amp;p=1111111111&amp;date=10.09.10&amp;max=10&amp;rt=1&amp;&amp;\">\n" //
+				+ "<span class=\"bold\">RB 93328</span>\n" //
+				+ "</a>\n" //
+				+ "&gt;&gt;\n" //
+				+ "M&#252;nchen Hbf Gl.27-36\n" //
+				+ "<br />\n" //
+				+ "<span class=\"bold\">14:49</span>&nbsp;<span class=\"green bold\">p&#252;nktl.</span>,&nbsp;Gl. 1,<br/><span class=\"red\">Ersatzzug f&#252;r<a class=\"red underline\" href=\"http://mobile.bahn.de/bin/mobil/traininfo.exe/dox/611619/369020/735680/163967/80?ld=96159&amp;rt=1&amp;use_realtime_filter=1&amp;date=10.09.10&amp;time=14:49&amp;station_evaId=8000220&amp;station_type=dep&amp;\">RB  5416</a></span>");
+
+		assertNotNull(m.group(4)); // onTime
+		assertNotNull(m.group(7)); // position
+	}
+
+	@Test
+	public void departureWithMessageAndErsatzzugMessage()
 	{
 		final Matcher m = assertFineDepartures("" //
 				+ "<a href=\"http://mobile.bahn.de/bin/mobil/traininfo.exe/dox/208035/206616/13568/62563/80/si=624141&amp;bt=dep&amp;ti=09:34&amp;pt=09:34&amp;p=1111111111&amp;date=08.09.10&amp;max=10&amp;rt=1&amp;&amp;\">\n" //
@@ -167,18 +183,19 @@ public class BahnProviderTest
 	}
 
 	@Test
-	public void departureWithErsatzzugMessage()
+	public void departureWithMultipleMessages()
 	{
-		final Matcher m = assertFineDepartures("" //
-				+ "<a href=\"http://mobile.bahn.de/bin/mobil/traininfo.exe/dox/606621/948269/912326/253956/80/si=591375&amp;bt=dep&amp;ti=14:28&amp;pt=14:28&amp;p=1111111111&amp;date=10.09.10&amp;max=10&amp;rt=1&amp;&amp;\">\n" //
-				+ "<span class=\"bold\">RB 93328</span>\n" //
+		final Matcher m = assertFineDepartures(""//
+				+ "<a href=\"http://mobile.bahn.de/bin/mobil/traininfo.exe/dox/66819/191058/790068/372764/80/si=445675&amp;bt=dep&amp;ti=10:44&amp;pt=10:44&amp;p=1111111111&amp;date=15.09.10&amp;max=10&amp;rt=1&amp;&amp;\">\n" //
+				+ "<span class=\"bold\">S     11</span>\n" //
 				+ "</a>\n" //
 				+ "&gt;&gt;\n" //
-				+ "M&#252;nchen Hbf Gl.27-36\n" //
+				+ "Bergisch Gladbach\n" //
 				+ "<br />\n" //
-				+ "<span class=\"bold\">14:49</span>&nbsp;<span class=\"green bold\">p&#252;nktl.</span>,&nbsp;Gl. 1,<br/><span class=\"red\">Ersatzzug f&#252;r<a class=\"red underline\" href=\"http://mobile.bahn.de/bin/mobil/traininfo.exe/dox/611619/369020/735680/163967/80?ld=96159&amp;rt=1&amp;use_realtime_filter=1&amp;date=10.09.10&amp;time=14:49&amp;station_evaId=8000220&amp;station_type=dep&amp;\">RB  5416</a></span>");
+				+ "<span class=\"bold\">10:59</span>&nbsp;<span class=\"green bold\">p&#252;nktl.</span>, <span class=\"red\">&#196;nderung im Zuglauf!</span>, <span class=\"red\">F&#228;hrt heute nur bis&nbsp;K&#246;ln-Dellbr&#252;ck</span>,&nbsp;Gl. 1");
 
 		assertNotNull(m.group(4)); // onTime
+		assertNotNull(m.group(6)); // message
 		assertNotNull(m.group(7)); // position
 	}
 

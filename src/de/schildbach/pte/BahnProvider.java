@@ -457,7 +457,7 @@ public final class BahnProvider implements NetworkProvider
 			+ "<span class=\"bold\">(\\d{1,2}:\\d{2})</span>" // time
 			+ "(?:&nbsp;<span class=\"[\\w ]*\">(?:(p&#252;nktl\\.)|ca. \\+(\\d+))</span>)?" // ontime, delay
 			+ "(?:&nbsp;k\\.A\\.)?" //
-			+ "(?:, <span class=\"red\">([^<]*)</span>)?" // message
+			+ "(?:, <span class=\"red\">([^<]*)</span>)*" // messages FIXME
 			+ "(?:(?:,&nbsp;)?(?:<span class=\"red\">heute )?(Gl\\. " + ParserUtils.P_PLATFORM + ")(?:\\s*</span>)?)?" // position
 			+ "(?:,<br/><a[^>]*><span class=\"red\">[^<]*</a></span>)?" // (ersatzzug message)
 			+ "(?:,<br/><span class=\"red\">[^<]*<a[^>]*>[^<]*</a></span>)?" // (ersatzzug message)
