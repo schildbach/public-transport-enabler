@@ -440,11 +440,15 @@ public final class BahnProvider implements NetworkProvider
 		return uri.toString();
 	}
 
-	private static final Pattern P_DEPARTURES_HEAD_COARSE = Pattern.compile(
-			".*?<title>Deutsche Bahn - Abfahrt</title>.*?<body >(.*?Abfahrt.*?)</body>.*?", Pattern.DOTALL);
+	private static final Pattern P_DEPARTURES_HEAD_COARSE = Pattern.compile(".*?" //
+			+ "(?:" // 
+			+ "<title>Deutsche Bahn - Abfahrt</title>.*?<body >(.*?Abfahrt.*?)</body>" //
+			+ "|(Eingabe kann nicht interpretiert))" //
+			+ ".*?" //
+	, Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_HEAD_FINE = Pattern.compile(".*?" //
 			+ "<div class=\"haupt rline\">\n<span class=\"bold\">\n(.+?)\\s*(?:- Aktuell)?\\n</span>.*?" // location
-			+ "Abfahrt (\\d+:\\d+)\\n?Uhr, (\\d+\\.\\d+\\.\\d+).*?" // currentTime
+			+ "Abfahrt (\\d{1,2}:\\d{2})\\n?Uhr, (\\d{2}\\.\\d{2}\\.\\d{2}).*?" // currentTime
 	, Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<div class=\"sqdetailsDep trow\">\n(.+?)</div>", Pattern.DOTALL);
 	static final Pattern P_DEPARTURES_FINE = Pattern.compile(".*?" //
@@ -476,6 +480,10 @@ public final class BahnProvider implements NetworkProvider
 		final Matcher mHeadCoarse = P_DEPARTURES_HEAD_COARSE.matcher(page);
 		if (mHeadCoarse.matches())
 		{
+			// messages
+			if (mHeadCoarse.group(2) != null)
+				return new QueryDeparturesResult(uri, Status.INVALID_STATION);
+
 			final Matcher mHeadFine = P_DEPARTURES_HEAD_FINE.matcher(mHeadCoarse.group(1));
 			if (mHeadFine.matches())
 			{
@@ -554,6 +562,8 @@ public final class BahnProvider implements NetworkProvider
 	private static String normalizeLine(final String line)
 	{
 		// TODO ARZ Simplon Tunnel: Brig - Iselle di Trasquera
+		// ARZ29177
+		// ARZ29178
 
 		if (line == null || line.length() == 0)
 			return null;
