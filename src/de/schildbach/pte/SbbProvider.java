@@ -629,6 +629,8 @@ public class SbbProvider implements NetworkProvider
 			return 'B';
 		if (ucType.equals("TRO"))
 			return 'B';
+		if (ucType.equals("NTO")) // Niederflurtrolleybus zwischen Bern, Bahnhofsplatz und Bern, Wankdorf Bahnhof
+			return 'B';
 		if (ucType.equals("NFB"))
 			return 'B';
 		if (ucType.equals("NBU"))
