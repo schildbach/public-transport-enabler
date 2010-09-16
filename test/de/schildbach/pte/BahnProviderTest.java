@@ -185,7 +185,7 @@ public class BahnProviderTest
 	@Test
 	public void departureWithMultipleMessages()
 	{
-		final Matcher m = assertFineDepartures(""//
+		final Matcher m = assertFineDepartures("" //
 				+ "<a href=\"http://mobile.bahn.de/bin/mobil/traininfo.exe/dox/66819/191058/790068/372764/80/si=445675&amp;bt=dep&amp;ti=10:44&amp;pt=10:44&amp;p=1111111111&amp;date=15.09.10&amp;max=10&amp;rt=1&amp;&amp;\">\n" //
 				+ "<span class=\"bold\">S     11</span>\n" //
 				+ "</a>\n" //
@@ -196,6 +196,22 @@ public class BahnProviderTest
 
 		assertNotNull(m.group(4)); // onTime
 		assertNotNull(m.group(6)); // message
+		assertNotNull(m.group(7)); // position
+	}
+
+	@Test
+	public void departureSonderzug()
+	{
+		final Matcher m = assertFineDepartures("" //
+				+ "<a href=\"http://mobile.bahn.de/bin/mobil/traininfo.exe/dox/656949/964945/873914/217974/80/si=675348&amp;bt=dep&amp;ti=22:16&amp;pt=22:16&amp;p=1111111111&amp;date=16.09.10&amp;max=50&amp;rt=1&amp;&amp;\">\n" //
+				+ "<span class=\"bold\">RE 30534</span>\n" //
+				+ "</a>\n" //
+				+ "&gt;&gt;\n" //
+				+ "N&#252;rnberg Hbf\n" //
+				+ "<br />\n" //
+				+ "<span class=\"bold\">22:58</span>&nbsp;<span class=\"green bold\">p&#252;nktl.</span>,&nbsp;Gl. 2,<br/>&nbsp;<span class=\"red\">Sonderzug</span>");
+
+		assertNotNull(m.group(4)); // onTime
 		assertNotNull(m.group(7)); // position
 	}
 

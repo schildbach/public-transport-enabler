@@ -465,6 +465,7 @@ public final class BahnProvider implements NetworkProvider
 			+ "(?:(?:,&nbsp;)?(?:<span class=\"red\">heute )?(Gl\\. " + ParserUtils.P_PLATFORM + ")(?:\\s*</span>)?)?" // position
 			+ "(?:,<br/><a[^>]*><span class=\"red\">[^<]*</a></span>)?" // (ersatzzug message)
 			+ "(?:,<br/><span class=\"red\">[^<]*<a[^>]*>[^<]*</a></span>)?" // (ersatzzug message)
+			+ "(?:,<br/>&nbsp;<span class=\"red\">[^<]*</span>)?" // (sonderzug message)
 	, Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_URI_STATION_ID = Pattern.compile("input=(\\d+)");
 
