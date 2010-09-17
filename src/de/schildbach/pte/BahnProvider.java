@@ -563,6 +563,9 @@ public final class BahnProvider implements NetworkProvider
 	private static String normalizeLine(final String line)
 	{
 		// TODO ARZ Simplon Tunnel: Brig - Iselle di Trasquera
+		// ARZ29171
+		// ARZ29172
+		// ARZ29173
 		// ARZ29177
 		// ARZ29178
 
@@ -638,8 +641,10 @@ public final class BahnProvider implements NetworkProvider
 				return "R" + number;
 			if (type.equals("IR")) // InterRegio
 				return "RIR" + number;
-			if (type.equals("RB")) // RegionalBahn
+			if (type.equals("RB")) // RegionalBahn, evtl. auch Regental Bahnbetriebs GmbH
 				return "RRB" + number;
+			if (type.equals("RBG")) // Regental Bahnbetriebs GmbH
+				return "RRBG" + number;
 			if (type.equals("RE")) // RegionalExpress
 				return "RRE" + number;
 			if (type.equals("IRE")) // Interregio Express
@@ -804,6 +809,8 @@ public final class BahnProvider implements NetworkProvider
 				return "RN" + number;
 			if (type.equals("VE")) // Lutherstadt Wittenberg
 				return "RVE" + number;
+			if (type.equals("DZ")) // Dampfzug Freiburg-Innsbruck
+				return "RDZ " + number;
 
 			if (type.equals("S"))
 				return "SS" + number;
@@ -825,6 +832,8 @@ public final class BahnProvider implements NetworkProvider
 				return "T" + number;
 			if (type.equals("STRNE"))
 				return "T" + number;
+			if (type.equals("STRKbahn"))
+				return "TKbahn" + number;
 			if (type.equals("RT")) // RegioTram
 				return "TRT" + number;
 			if (type.equals("Schw")) // Schwebebahn, gilt als "Straßenbahn besonderer Bauart"
