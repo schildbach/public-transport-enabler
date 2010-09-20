@@ -96,7 +96,8 @@ public final class VbbProvider implements NetworkProvider
 		return results;
 	}
 
-	public List<Station> nearbyStations(final double lat, final double lon, final int maxDistance, final int maxStations) throws IOException
+	public List<Station> nearbyStations(final String stationId, final double lat, final double lon, final int maxDistance, final int maxStations)
+			throws IOException
 	{
 		throw new UnsupportedOperationException();
 	}

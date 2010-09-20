@@ -56,9 +56,43 @@ public class OebbProvider implements NetworkProvider
 		return results;
 	}
 
-	public List<Station> nearbyStations(final double lat, final double lon, final int maxDistance, final int maxStations) throws IOException
+	private final String NEARBY_URI = "http://fahrplan.oebb.at/bin/stboard.exe/dn?distance=50&near=Suchen&input=%d";
+	private final static Pattern P_NEARBY_COARSE = Pattern.compile("<tr class=\"zebracol-\\d\">(.*?)</tr>", Pattern.DOTALL);
+	private final static Pattern P_NEARBY_FINE = Pattern.compile(".*?stboard\\.exe/.*?&input=.*?%23(\\d+)&.*?>(.*?)</a>.*?", Pattern.DOTALL);
+
+	public List<Station> nearbyStations(final String stationId, final double lat, final double lon, final int maxDistance, final int maxStations)
+			throws IOException
 	{
-		throw new UnsupportedOperationException();
+		if (stationId == null)
+			throw new IllegalArgumentException("stationId must be given");
+
+		final List<Station> stations = new ArrayList<Station>();
+
+		final String uri = String.format(NEARBY_URI, stationId);
+		final CharSequence page = ParserUtils.scrape(uri);
+
+		final Matcher mCoarse = P_NEARBY_COARSE.matcher(page);
+		while (mCoarse.find())
+		{
+			final Matcher mFine = P_NEARBY_FINE.matcher(mCoarse.group(1));
+			if (mFine.matches())
+			{
+				final int parsedId = Integer.parseInt(mFine.group(1));
+				final String parsedName = ParserUtils.resolveEntities(mFine.group(2));
+
+				final Station station = new Station(parsedId, parsedName, 0, 0, 0, null, null);
+				stations.add(station);
+			}
+			else
+			{
+				throw new IllegalArgumentException("cannot parse '" + mCoarse.group(1) + "' on " + uri);
+			}
+		}
+
+		if (maxStations == 0 || maxStations >= stations.size())
+			return stations;
+		else
+			return stations.subList(0, maxStations);
 	}
 
 	public StationLocationResult stationLocation(final String stationId) throws IOException

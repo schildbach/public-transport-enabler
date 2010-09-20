@@ -56,12 +56,14 @@ public interface NetworkProvider
 	List<Autocomplete> autocompleteStations(CharSequence constraint) throws IOException;
 
 	/**
-	 * Determine stations near to given location
+	 * Determine stations near to given location. At least one of stationId or lat/lon pair must be given.
 	 * 
+	 * @param stationId
+	 *            id of station to look up nearby stations (optional)
 	 * @param lat
-	 *            latitude
+	 *            latitude (optional)
 	 * @param lon
-	 *            longitude
+	 *            longitude (optional)
 	 * @param maxDistance
 	 *            maximum distance in meters, or {@code 0}
 	 * @param maxStations
@@ -69,7 +71,7 @@ public interface NetworkProvider
 	 * @return nearby stations
 	 * @throws IOException
 	 */
-	List<Station> nearbyStations(double lat, double lon, int maxDistance, int maxStations) throws IOException;
+	List<Station> nearbyStations(String stationId, double lat, double lon, int maxDistance, int maxStations) throws IOException;
 
 	/**
 	 * Look up location of station.

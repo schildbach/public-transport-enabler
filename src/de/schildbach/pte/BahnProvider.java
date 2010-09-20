@@ -79,13 +79,17 @@ public final class BahnProvider implements NetworkProvider
 	private final static Pattern P_NEARBY_STATIONS = Pattern
 			.compile("<a class=\"uLine\" href=\".+?!X=(\\d+)!Y=(\\d+)!id=(\\d+)!dist=(\\d+).*?\">(.+?)</a>");
 
-	public List<Station> nearbyStations(final double lat, final double lon, final int maxDistance, final int maxStations) throws IOException
+	public List<Station> nearbyStations(final String stationId, final double lat, final double lon, final int maxDistance, final int maxStations)
+			throws IOException
 	{
+		if (lat == 0 && lon == 0)
+			throw new IllegalArgumentException("lat/lon must be given");
+
+		final List<Station> stations = new ArrayList<Station>();
+
 		final String url = "http://mobile.bahn.de/bin/mobil/query.exe/dox" + "?performLocating=2&tpl=stopsnear&look_maxdist="
 				+ (maxDistance > 0 ? maxDistance : 5000) + "&look_stopclass=1023" + "&look_x=" + latLonToInt(lon) + "&look_y=" + latLonToInt(lat);
 		final CharSequence page = ParserUtils.scrape(url);
-
-		final List<Station> stations = new ArrayList<Station>();
 
 		final Matcher m = P_NEARBY_STATIONS.matcher(page);
 		while (m.find())

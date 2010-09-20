@@ -91,14 +91,24 @@ public class MvvProvider implements NetworkProvider
 		return results;
 	}
 
-	private static final String NEARBY_URI = "http://efa.mvv-muenchen.de/ultralite/XML_DM_REQUEST"
+	private static final String NEARBY_LATLON_URI = "http://efa.mvv-muenchen.de/ultralite/XML_DM_REQUEST"
 			+ "?mode=direct&coordOutputFormat=WGS84&mergeDep=1&useAllStops=1&name_dm=%2.6f:%2.6f:WGS84&type_dm=coord&itOptionsActive=1&ptOptionsActive=1&useProxFootSearch=1&excludedMeans=checkbox";
+	private final String NEARBY_STATION_URI = "http://efa.mvv-muenchen.de/ultralite/XML_DM_REQUEST"
+			+ "?mode=direct&coordOutputFormat=WGS84&mergeDep=1&useAllStops=1&name_dm=%d&type_dm=stop&itOptionsActive=1&ptOptionsActive=1&useProxFootSearch=1&excludedMeans=checkbox";
 	private static final Pattern P_NEARBY_COARSE = Pattern.compile("<dp>(.*?)</dp>");
-	private static final Pattern P_NEARBY_FINE = Pattern.compile(".*?<n>(.*?)</n>.*?<r>.*?<id>(.*?)</id>.*?</r>.*?<c>(\\d+),(\\d+)</c>.*?");
+	private static final Pattern P_NEARBY_FINE = Pattern.compile(".*?<n>(.*?)</n>.*?<r>.*?<id>(.*?)</id>.*?</r>.*?(?:<c>(\\d+),(\\d+)</c>.*?)?");
 
-	public List<Station> nearbyStations(final double lat, final double lon, final int maxDistance, final int maxStations) throws IOException
+	public List<Station> nearbyStations(final String stationId, final double lat, final double lon, final int maxDistance, final int maxStations)
+			throws IOException
 	{
-		final String uri = String.format(NEARBY_URI, lon, lat);
+		String uri;
+		if (lat != 0 || lon != 0)
+			uri = String.format(NEARBY_LATLON_URI, lon, lat);
+		else if (stationId != null)
+			uri = String.format(NEARBY_STATION_URI, stationId);
+		else
+			throw new IllegalArgumentException("at least one of stationId or lat/lon must be given");
+
 		final CharSequence page = ParserUtils.scrape(uri);
 
 		final List<Station> stations = new ArrayList<Station>();
@@ -111,8 +121,8 @@ public class MvvProvider implements NetworkProvider
 			{
 				final String sName = mNearbyFine.group(1).trim();
 				final int sId = Integer.parseInt(mNearbyFine.group(2));
-				final double sLon = latLonToDouble(Integer.parseInt(mNearbyFine.group(3)));
-				final double sLat = latLonToDouble(Integer.parseInt(mNearbyFine.group(4)));
+				final double sLon = mNearbyFine.group(3) != null ? latLonToDouble(Integer.parseInt(mNearbyFine.group(3))) : 0;
+				final double sLat = mNearbyFine.group(4) != null ? latLonToDouble(Integer.parseInt(mNearbyFine.group(4))) : 0;
 
 				final Station station = new Station(sId, sName, sLat, sLon, 0, null, null);
 				stations.add(station);
