@@ -302,23 +302,23 @@ public final class BahnProvider implements NetworkProvider
 	}
 
 	private static final Pattern P_CONNECTION_DETAILS_HEAD = Pattern.compile(".*<span class=\"bold\">Verbindungsdetails</span>.*", Pattern.DOTALL);
-	private static final Pattern P_CONNECTION_DETAILS_COARSE = Pattern.compile("<div class=\"haupt rline\">\n?(.+?)\n?</div>", Pattern.DOTALL);
+	private static final Pattern P_CONNECTION_DETAILS_COARSE = Pattern.compile("<div class=\"haupt rline\">\n(.+?)</div>", Pattern.DOTALL);
 	static final Pattern P_CONNECTION_DETAILS_FINE = Pattern.compile("<span class=\"bold\">\\s*(.+?)\\s*</span>.*?" // departure
 			+ "(?:" //
 			+ "<span class=\"bold\">\\s*(.+?)\\s*</span>.*?" // line
 			+ "ab\\s+(?:<span[^>]*>.*?</span>)?\\s*(\\d+:\\d+)\\s*(?:<span[^>]*>.*?</span>)?" // departureTime
-			+ "\\s*(Gl\\. .+?)?\\s*\n?" // departurePosition
+			+ "\\s*(Gl\\. .+?)?\\s*\n" // departurePosition
 			+ "am\\s+(\\d+\\.\\d+\\.\\d+).*?" // departureDate
 			+ "<span class=\"bold\">\\s*(.+?)\\s*</span><br />.*?" // arrival
 			+ "an\\s+(?:<span[^>]*>.*?</span>)?\\s*(\\d+:\\d+)\\s*(?:<span[^>]*>.*?</span>)?" // arrivalTime
-			+ "\\s*(Gl\\. .+?)?\\s*\n?" // arrivalPosition
+			+ "\\s*(Gl\\. .+?)?\\s*\n" // arrivalPosition
 			+ "am\\s+(\\d+\\.\\d+\\.\\d+).*?" // arrivalDate
 			+ "|" //
 			+ "(\\d+) Min\\..*?" // footway
-			+ "<span class=\"bold\">\\s*(.+?)\\s*</span><br />" // arrival
+			+ "<span class=\"bold\">\\s*(.+?)\\s*</span><br />\n" // arrival
 			+ "|" //
 			+ "&#220;bergang.*?" //
-			+ "<span class=\"bold\">\\s*(.+?)\\s*</span><br />" // arrival
+			+ "<span class=\"bold\">\\s*(.+?)\\s*</span><br />\n" // arrival
 			+ ")", Pattern.DOTALL);
 	private static final Pattern P_CONNECTION_DETAILS_MESSAGES = Pattern
 			.compile("Dauer: \\d+:\\d+|(Anschlusszug nicht mehr rechtzeitig)|(Anschlusszug jedoch erreicht werden)|(nur teilweise dargestellt)|(L&#228;ngerer Aufenthalt)|(&#228;quivalentem Bahnhof)|(Bahnhof wird mehrfach durchfahren)");
@@ -451,8 +451,8 @@ public final class BahnProvider implements NetworkProvider
 			+ ".*?" //
 	, Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_HEAD_FINE = Pattern.compile(".*?" //
-			+ "<div class=\"haupt rline\">\n<span class=\"bold\">\n(.+?)\\s*(?:- Aktuell)?\\n</span>.*?" // location
-			+ "Abfahrt (\\d{1,2}:\\d{2})\\n?Uhr, (\\d{2}\\.\\d{2}\\.\\d{2}).*?" // currentTime
+			+ "<div class=\"haupt rline\">\n<span class=\"bold\">\n(.+?)\\s*(?:- Aktuell)?\n</span>.*?" // location
+			+ "Abfahrt (\\d{1,2}:\\d{2})\nUhr, (\\d{2}\\.\\d{2}\\.\\d{2}).*?" // currentTime
 	, Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<div class=\"sqdetailsDep trow\">\n(.+?)</div>", Pattern.DOTALL);
 	static final Pattern P_DEPARTURES_FINE = Pattern.compile(".*?" //
