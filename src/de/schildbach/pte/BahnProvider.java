@@ -278,7 +278,7 @@ public final class BahnProvider implements NetworkProvider
 					Date arrivalTime = ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mConFine.group(3)));
 					if (departureTime.after(arrivalTime))
 						arrivalTime = ParserUtils.addDays(arrivalTime, 1);
-					String line = mConFine.group(4);
+					String line = ParserUtils.resolveEntities(mConFine.group(4));
 					if (line != null && !line.contains(","))
 						line = normalizeLine(line);
 					else
