@@ -115,7 +115,7 @@ public class OebbProvider implements NetworkProvider
 		final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
 		final StringBuilder uri = new StringBuilder();
 
-		uri.append("http://fahrplan.oebb.at/bin/query.exe/dn?ld=web25&OK");
+		uri.append("http://fahrplan.oebb.at/bin/query.exe/dn?ld=web05&OK");
 		uri.append("&REQ0HafasSearchForw=").append(dep ? "1" : "0");
 		uri.append("&REQ0JourneyDate=").append(ParserUtils.urlEncode(DATE_FORMAT.format(date)));
 		uri.append("&REQ0JourneyStopsS0G=").append(ParserUtils.urlEncode(from));
@@ -449,15 +449,15 @@ public class OebbProvider implements NetworkProvider
 			+ "Abfahrt (\\d+:\\d+).*?" // time
 			+ "%23(\\d+)&.*?" // locationId
 	, Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<tr class=\"depboard-\\w*\">(.*?)</tr>", Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_FINE = Pattern.compile(".*?" //
-			+ "<td class=\"[\\w ]*\">(\\d{1,2}:\\d{2})</td>\n" // plannedTime
-			+ "(?:<td class=\"[\\w ]*prognosis[\\w ]*\">\n" //
+	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<tr class=\"depboard-(\\w*)\">\n(.*?)</tr>", Pattern.DOTALL);
+	static final Pattern P_DEPARTURES_FINE = Pattern.compile("" //
+			+ "<td class=\"[\\w ]*\">(\\d{1,2}:\\d{2})</td>\n.*?" // plannedTime
+			+ "(?:<td class=\"[\\w ]*?prognosis[\\w ]*?\">\n" //
 			+ "(?:&nbsp;|<span class=\"rtLimit\\d\">(p&#252;nktlich|\\d{1,2}:\\d{2})</span>)\n</td>\n" // predictedTime
 			+ ")?.*?" //
-			+ "<img src=\"/img/vs_oebb/(\\w+)_pic\\.gif\"\\s+alt=\".*?\">\\s*(.*?)\\s*</.*?" // type, line
+			+ "<img src=\"/img/vs_oebb/(\\w+)_pic\\.gif\"\\s+alt=\"[^\"]*\">\\s*(.*?)\\s*</.*?" // type, line
 			+ "<span class=\"bold\">\n" //
-			+ "<a href=\"http://fahrplan\\.oebb\\.at/bin/stboard\\.exe/dn\\?ld=web25&input=[^%]*?(?:%23(\\d+))?&.*?\">" // destinationId
+			+ "<a href=\"http://fahrplan\\.oebb\\.at/bin/stboard\\.exe/dn\\?ld=web\\d+&input=[^%]*?(?:%23(\\d+))?&.*?\">" // destinationId
 			+ "\\s*(.*?)\\s*</a>\n" // destination
 			+ "</span>.*?" //
 			+ "(?:<td class=\"center sepline top\">\n(" + ParserUtils.P_PLATFORM + ").*?)?" // position
@@ -488,11 +488,18 @@ public class OebbProvider implements NetworkProvider
 						.parseTime(mHeadFine.group(3)));
 				final int stationId = Integer.parseInt(mHeadFine.group(4));
 				final List<Departure> departures = new ArrayList<Departure>(8);
+				String oldZebra = null;
 
 				final Matcher mDepCoarse = P_DEPARTURES_COARSE.matcher(mHeadCoarse.group(2));
 				while (mDepCoarse.find())
 				{
-					final Matcher mDepFine = P_DEPARTURES_FINE.matcher(mDepCoarse.group(1));
+					final String zebra = mDepCoarse.group(1);
+					if (oldZebra != null && zebra.equals(oldZebra))
+						throw new IllegalArgumentException("missed row? last:" + zebra);
+					else
+						oldZebra = zebra;
+
+					final Matcher mDepFine = P_DEPARTURES_FINE.matcher(mDepCoarse.group(2));
 					if (mDepFine.matches())
 					{
 						final Calendar current = new GregorianCalendar();
@@ -535,7 +542,7 @@ public class OebbProvider implements NetworkProvider
 					}
 					else
 					{
-						throw new IllegalArgumentException("cannot parse '" + mDepCoarse.group(1) + "' on " + uri);
+						throw new IllegalArgumentException("cannot parse '" + mDepCoarse.group(2) + "' on " + uri);
 					}
 				}
 
