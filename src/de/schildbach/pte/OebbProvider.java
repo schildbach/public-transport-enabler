@@ -24,7 +24,7 @@ public class OebbProvider implements NetworkProvider
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
 		for (final Capability capability : capabilities)
-			if (capability == Capability.DEPARTURES || capability == Capability.CONNECTIONS || capability == Capability.LOCATION_STATION_ID)
+			if (capability == Capability.DEPARTURES || /* capability == Capability.CONNECTIONS || */capability == Capability.LOCATION_STATION_ID)
 				return true;
 
 		return false;
@@ -131,7 +131,7 @@ public class OebbProvider implements NetworkProvider
 		uri.append("&REQ0JourneyStopsZ0A=").append(locationType(toType));
 		uri.append("&REQ0JourneyStopsZ0ID=");
 		uri.append("&REQ0JourneyTime=").append(ParserUtils.urlEncode(TIME_FORMAT.format(date)));
-		uri.append("&REQ0JourneyProduct_list=0:1111111111010000-000000");
+		uri.append("&REQ0JourneyProduct_list=").append(ParserUtils.urlEncode("0:1111111111010000-000000"));
 		uri.append("&REQ0JourneyDep_Foot_speed=").append(WALKSPEED_MAP.get(walkSpeed));
 		uri.append("&existHafasAttrInc=yes");
 		uri.append("&existHafasDemo3=yes");
