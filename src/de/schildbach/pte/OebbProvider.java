@@ -24,7 +24,7 @@ public class OebbProvider implements NetworkProvider
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
 		for (final Capability capability : capabilities)
-			if (capability == Capability.DEPARTURES || /* capability == Capability.CONNECTIONS || */capability == Capability.LOCATION_STATION_ID)
+			if (capability == Capability.DEPARTURES || capability == Capability.CONNECTIONS || capability == Capability.LOCATION_STATION_ID)
 				return true;
 
 		return false;
@@ -108,35 +108,38 @@ public class OebbProvider implements NetworkProvider
 		WALKSPEED_MAP.put(WalkSpeed.FAST, "85");
 	}
 
-	private String connectionsQueryUri(final LocationType fromType, final String from, final LocationType viaType, final String via,
-			final LocationType toType, final String to, final Date date, final boolean dep, final WalkSpeed walkSpeed)
+	private String connectionsQuery(final LocationType fromType, final String from, final LocationType viaType, final String via,
+			final LocationType toType, final String to, final Date date, final boolean dep, final WalkSpeed walkSpeed) throws IOException
 	{
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yy");
 		final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
 		final StringBuilder uri = new StringBuilder();
 
-		uri.append("http://fahrplan.oebb.at/bin/query.exe/dn?ld=web05&OK");
-		uri.append("&REQ0HafasSearchForw=").append(dep ? "1" : "0");
-		uri.append("&REQ0JourneyDate=").append(ParserUtils.urlEncode(DATE_FORMAT.format(date)));
-		uri.append("&REQ0JourneyStopsS0G=").append(ParserUtils.urlEncode(from));
+		uri.append("queryPageDisplayed=yes");
+		uri.append("&start.x=0");
+		uri.append("&start.y=0");
+		uri.append("&start=Suchen");
 		uri.append("&REQ0JourneyStopsS0A=").append(locationType(fromType));
+		uri.append("&REQ0JourneyStopsS0G=").append(ParserUtils.urlEncode(from));
 		uri.append("&REQ0JourneyStopsS0ID="); // "tupel"?
 		if (via != null)
 		{
-			uri.append("&REQ0JourneyStops1.0G=").append(ParserUtils.urlEncode(via));
 			uri.append("&REQ0JourneyStops1.0A=").append(locationType(viaType));
+			uri.append("&REQ0JourneyStops1.0G=").append(ParserUtils.urlEncode(via));
 			uri.append("&REQ0JourneyStops1.0ID=");
 		}
-		uri.append("&REQ0JourneyStopsZ0G=").append(ParserUtils.urlEncode(to));
 		uri.append("&REQ0JourneyStopsZ0A=").append(locationType(toType));
+		uri.append("&REQ0JourneyStopsZ0G=").append(ParserUtils.urlEncode(to));
 		uri.append("&REQ0JourneyStopsZ0ID=");
+		uri.append("&REQ0JourneyDate=").append(ParserUtils.urlEncode(DATE_FORMAT.format(date)));
+		uri.append("&wDayExt0=").append(ParserUtils.urlEncode("Mo|Di|Mi|Do|Fr|Sa|So"));
 		uri.append("&REQ0JourneyTime=").append(ParserUtils.urlEncode(TIME_FORMAT.format(date)));
+		uri.append("&REQ0HafasSearchForw=").append(dep ? "1" : "0");
+		uri.append("&existHafasDemo3=yes");
 		uri.append("&REQ0JourneyProduct_list=").append(ParserUtils.urlEncode("0:1111111111010000-000000"));
 		uri.append("&REQ0JourneyDep_Foot_speed=").append(WALKSPEED_MAP.get(walkSpeed));
+		uri.append("&existBikeEverywhere=yes");
 		uri.append("&existHafasAttrInc=yes");
-		uri.append("&existHafasDemo3=yes");
-		uri.append("&queryPageDisplayed=yes");
-		uri.append("&start=Suchen");
 
 		return uri.toString();
 	}
@@ -152,25 +155,38 @@ public class OebbProvider implements NetworkProvider
 		throw new IllegalArgumentException(locationType.toString());
 	}
 
+	private static final String QUERY_CONNECTIONS_FORM_URL = "http://fahrplan.oebb.at/bin/query.exe/dn?";
+	private static final Pattern P_QUERY_CONNECTIONS_FORM_ACTION = Pattern
+			.compile("<form action=\"(http://fahrplan\\.oebb\\.at/bin/query\\.exe[^#]*)#");
+	private static final Pattern P_QUERY_CONNECTIONS_ERROR = Pattern
+			.compile("(keine Verbindung gefunden werden)|(liegt nach dem Ende der Fahrplanperiode|liegt vor Beginn der Fahrplanperiode)|(zwischenzeitlich nicht mehr gespeichert)");
 	private static final Pattern P_PRE_ADDRESS = Pattern.compile(
 			"<select.*? name=\"(REQ0JourneyStopsS0K|REQ0JourneyStopsZ0K|REQ0JourneyStops1\\.0K)\"[^>]*>(.*?)</select>", Pattern.DOTALL);
 	private static final Pattern P_ADDRESSES = Pattern.compile("<option[^>]*>\\s*(.*?)\\s*</option>", Pattern.DOTALL);
-	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern
-			.compile("(keine Verbindung gefunden werden)|(liegt nach dem Ende der Fahrplanperiode|liegt vor Beginn der Fahrplanperiode)");
 
 	public QueryConnectionsResult queryConnections(final LocationType fromType, final String from, final LocationType viaType, final String via,
 			final LocationType toType, final String to, final Date date, final boolean dep, final WalkSpeed walkSpeed) throws IOException
 	{
-		final String uri = connectionsQueryUri(fromType, from, viaType, via, toType, to, date, dep, walkSpeed);
-		final CharSequence page = ParserUtils.scrape(uri);
+		// get base url and cookies from form
+		final CharSequence form = ParserUtils.scrape(QUERY_CONNECTIONS_FORM_URL, false, null, null, true);
+		final Matcher m = P_QUERY_CONNECTIONS_FORM_ACTION.matcher(form);
+		if (!m.find())
+			throw new IllegalStateException("cannot find form: '" + form + "' on " + QUERY_CONNECTIONS_FORM_URL);
+		final String baseUri = m.group(1);
 
-		final Matcher mError = P_CHECK_CONNECTIONS_ERROR.matcher(page);
+		// query
+		final String query = connectionsQuery(fromType, from, viaType, via, toType, to, date, dep, walkSpeed);
+		final CharSequence page = ParserUtils.scrape(baseUri, true, query, null, true);
+
+		final Matcher mError = P_QUERY_CONNECTIONS_ERROR.matcher(page);
 		if (mError.find())
 		{
 			if (mError.group(1) != null)
 				return QueryConnectionsResult.NO_CONNECTIONS;
 			if (mError.group(2) != null)
 				return QueryConnectionsResult.INVALID_DATE;
+			if (mError.group(3) != null)
+				return QueryConnectionsResult.SESSION_TIMEOUT;
 		}
 
 		List<String> fromAddresses = null;
@@ -205,19 +221,29 @@ public class OebbProvider implements NetworkProvider
 		if (fromAddresses != null || viaAddresses != null || toAddresses != null)
 			return new QueryConnectionsResult(QueryConnectionsResult.Status.AMBIGUOUS, fromAddresses, viaAddresses, toAddresses);
 		else
-			return queryConnections(uri, page);
+			return queryConnections(baseUri, page);
 	}
 
 	public QueryConnectionsResult queryMoreConnections(final String uri) throws IOException
 	{
-		final CharSequence page = ParserUtils.scrape(uri);
+		final CharSequence page = ParserUtils.scrape(uri, false, null, null, true);
+
+		final Matcher mError = P_QUERY_CONNECTIONS_ERROR.matcher(page);
+		if (mError.find())
+		{
+			if (mError.group(1) != null)
+				return QueryConnectionsResult.NO_CONNECTIONS;
+			if (mError.group(2) != null)
+				return QueryConnectionsResult.INVALID_DATE;
+			if (mError.group(3) != null)
+				return QueryConnectionsResult.SESSION_TIMEOUT;
+		}
 
 		return queryConnections(uri, page);
 	}
 
-	private static final Pattern P_CONNECTIONS_FORM_ACTION = Pattern.compile("" //
-			+ "<form name=\"tp_results_form\" action=\"(http://fahrplan.oebb.at/bin/query.exe/.*?)#[^>]*>" // action
-	, Pattern.DOTALL);
+	private static final Pattern P_CONNECTIONS_FORM_ACTION = Pattern
+			.compile("<form name=\"tp_results_form\" action=\"(http://fahrplan\\.oebb\\.at/bin/query\\.exe[^#]*)#");
 	private static final Pattern P_CONNECTIONS_PAGE = Pattern.compile(".*?" //
 			+ "<form name=\"tp_results_form\" action=\"(http://fahrplan.oebb.at/bin/query.exe/.*?)#[^>]*>.*?" // action
 			+ "<table class=\"hafasResult\" cellspacing=\"0\" summary=\"Ihre Anfrage\">\n(.*?)\n</table>.*?" // header
@@ -272,8 +298,20 @@ public class OebbProvider implements NetworkProvider
 		final Matcher mFormAction = P_CONNECTIONS_FORM_ACTION.matcher(firstPage);
 		if (!mFormAction.find())
 			throw new IOException("cannot find form action in '" + firstPage + "' on " + firstUri);
-		final String uri = mFormAction.group(1) + "&guiVCtrl_connection_detailsOut_add_group_overviewOut=yes";
-		final CharSequence page = ParserUtils.scrape(uri);
+		final String baseUri = mFormAction.group(1);
+		final String query = "sortConnections=minDeparture&guiVCtrl_connection_detailsOut_add_group_overviewOut=yes";
+		final CharSequence page = ParserUtils.scrape(baseUri, true, query, null, true);
+
+		final Matcher mError = P_QUERY_CONNECTIONS_ERROR.matcher(page);
+		if (mError.find())
+		{
+			if (mError.group(1) != null)
+				return QueryConnectionsResult.NO_CONNECTIONS;
+			if (mError.group(2) != null)
+				return QueryConnectionsResult.INVALID_DATE;
+			if (mError.group(3) != null)
+				return QueryConnectionsResult.SESSION_TIMEOUT;
+		}
 
 		// parse page
 		final Matcher mPage = P_CONNECTIONS_PAGE.matcher(page);
@@ -306,7 +344,7 @@ public class OebbProvider implements NetworkProvider
 						final Date departureTime = ParserUtils.joinDateTime(departureDate, ParserUtils.parseTime(mConFine.group(4)));
 						final Date arrivalTime = ParserUtils.joinDateTime(arrivalDate != null ? arrivalDate : departureDate, ParserUtils
 								.parseTime(mConFine.group(5)));
-						final String link = uri + "#" + id; // TODO use print link?
+						final String link = firstUri + "#" + id; // TODO use print link?
 
 						final Connection connection = new Connection(id, link, departureTime, arrivalTime, null, null, 0, from, 0, to,
 								new ArrayList<Connection.Part>(1));
@@ -314,7 +352,7 @@ public class OebbProvider implements NetworkProvider
 					}
 					else
 					{
-						throw new IllegalArgumentException("cannot parse '" + mConCoarse.group(1) + "' on " + uri);
+						throw new IllegalArgumentException("cannot parse '" + mConCoarse.group(1) + "' on " + baseUri + " (POST)");
 					}
 				}
 
@@ -390,16 +428,16 @@ public class OebbProvider implements NetworkProvider
 						}
 						else
 						{
-							throw new IllegalArgumentException("cannot parse '" + set + "' on " + uri);
+							throw new IllegalArgumentException("cannot parse '" + set + "' on " + baseUri + " (POST)");
 						}
 					}
 				}
 
-				return new QueryConnectionsResult(uri, from, to, currentDate, linkEarlier, linkLater, connections);
+				return new QueryConnectionsResult(baseUri, from, to, currentDate, linkEarlier, linkLater, connections);
 			}
 			else
 			{
-				throw new IllegalArgumentException("cannot parse '" + headSet + "' on " + uri);
+				throw new IllegalArgumentException("cannot parse '" + headSet + "' on " + baseUri + " (POST)");
 			}
 		}
 		else

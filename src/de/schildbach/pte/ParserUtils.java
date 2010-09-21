@@ -23,15 +23,17 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,26 +42,39 @@ import java.util.regex.Pattern;
  */
 public final class ParserUtils
 {
-	private static final String SCRAPE_USER_AGENT = "Mozilla/5.0 (Windows; U; Windows NT 5.1; de; rv:1.9.2) Gecko/20100115 Firefox/3.6 (.NET CLR 3.5.30729)";
+	private static final String SCRAPE_USER_AGENT = "Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.10) Gecko/20100915 Ubuntu/10.04 (lucid) Firefox/3.6.10";
 	private static final int SCRAPE_INITIAL_CAPACITY = 4096;
 	private static final int SCRAPE_CONNECT_TIMEOUT = 5000;
 	private static final int SCRAPE_READ_TIMEOUT = 10000;
+	private static final String SCRAPE_DEFAULT_ENCODING = "ISO-8859-1";
+
+	private static String stateCookie;
+
+	public static void resetState()
+	{
+		stateCookie = null;
+	}
 
 	public static CharSequence scrape(final String url) throws IOException
 	{
-		return scrape(url, null, null);
+		return scrape(url, false, null, null, false);
 	}
 
-	public static CharSequence scrape(final String url, final String request, final String encoding) throws IOException
+	public static CharSequence scrape(final String url, final boolean isPost, final String request, String encoding, final boolean cookieHandling)
+			throws IOException
 	{
+		if (encoding == null)
+			encoding = SCRAPE_DEFAULT_ENCODING;
+
+		final StringBuilder buffer = new StringBuilder(SCRAPE_INITIAL_CAPACITY);
 		int tries = 3;
 
 		while (true)
 		{
 			try
 			{
-				final StringBuilder buffer = new StringBuilder(SCRAPE_INITIAL_CAPACITY);
-				final URLConnection connection = new URL(url).openConnection();
+				final HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+
 				connection.setDoInput(true);
 				connection.setDoOutput(request != null);
 				connection.setConnectTimeout(SCRAPE_CONNECT_TIMEOUT);
@@ -68,28 +83,50 @@ public final class ParserUtils
 				// workaround to disable Vodafone compression
 				connection.addRequestProperty("Cache-Control", "no-cache");
 
+				if (cookieHandling && stateCookie != null)
+				{
+					connection.addRequestProperty("Cookie", stateCookie);
+				}
+
 				if (request != null)
 				{
-					final Writer writer = new OutputStreamWriter(connection.getOutputStream(), encoding != null ? encoding : "ISO-8859-1");
+					if (isPost)
+					{
+						connection.setRequestMethod("POST");
+						connection.addRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+						connection.addRequestProperty("Content-Length", Integer.toString(request.length()));
+					}
+
+					final Writer writer = new OutputStreamWriter(connection.getOutputStream(), encoding);
 					writer.write(request);
 					writer.close();
 				}
 
-				final Reader pageReader = new InputStreamReader(connection.getInputStream(), encoding != null ? encoding : "ISO-8859-1");
-
-				final char[] buf = new char[SCRAPE_INITIAL_CAPACITY];
-				while (true)
-				{
-					final int read = pageReader.read(buf);
-					if (read == -1)
-						break;
-					buffer.append(buf, 0, read);
-				}
-
+				final Reader pageReader = new InputStreamReader(connection.getInputStream(), encoding);
+				copy(pageReader, buffer);
 				pageReader.close();
 
 				if (buffer.length() > 0)
+				{
+					if (cookieHandling)
+					{
+						for (final Map.Entry<String, List<String>> entry : connection.getHeaderFields().entrySet())
+						{
+							if (entry.getKey().equalsIgnoreCase("set-cookie"))
+							{
+								for (final String value : entry.getValue())
+								{
+									if (value.startsWith("NSC_"))
+									{
+										stateCookie = value.split(";", 2)[0];
+									}
+								}
+							}
+						}
+					}
+
 					return buffer;
+				}
 				else
 				{
 					if (tries-- > 0)
@@ -106,6 +143,19 @@ public final class ParserUtils
 					throw x;
 			}
 		}
+	}
+
+	private static long copy(final Reader reader, final StringBuilder builder) throws IOException
+	{
+		final char[] buffer = new char[SCRAPE_INITIAL_CAPACITY];
+		long count = 0;
+		int n = 0;
+		while (-1 != (n = reader.read(buffer)))
+		{
+			builder.append(buffer, 0, n);
+			count += n;
+		}
+		return count;
 	}
 
 	private static final Pattern P_ENTITY = Pattern.compile("&(?:#(x[\\da-f]+|\\d+)|(amp|quot|apos));");

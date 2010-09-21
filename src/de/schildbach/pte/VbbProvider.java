@@ -122,7 +122,7 @@ public final class VbbProvider implements NetworkProvider
 				+ DATE_FORMAT.format(now) + "</DateEnd></Period><TableStation externalId='" + stationId + "'/></STBReq></ReqC>";
 		final String uri = "http://www.vbb-fahrinfo.de/hafas/extxml/extxml.exe/dn";
 
-		final CharSequence page = ParserUtils.scrape(uri, request, null);
+		final CharSequence page = ParserUtils.scrape(uri, false, request, null, false);
 
 		final Matcher mError = P_STATION_LOCATION_ERROR.matcher(page);
 		if (mError.find())
