@@ -470,18 +470,19 @@ public class MvvProvider implements NetworkProvider
 
 	private static final Pattern P_CONNECTION_DETAILS_HEAD = Pattern.compile(".*<b>Detailansicht</b>.*?" //
 			+ "<b>Datum:[\\xa0\\s]+</b>\\w{2}\\.,\\s(\\d+)\\.\\s(\\w{3,4})\\.[\\xa0\\s]+(\\d{4}).*", Pattern.DOTALL);
-	private static final Pattern P_CONNECTION_DETAILS_COARSE = Pattern.compile("<tr bgcolor=\"#(\\w{6})\">(.+?)</tr>.*?"
-			+ "<tr bgcolor=\"#\\1\">(.+?)</tr>.*?" //
-			+ "<tr bgcolor=\"#\\1\">(.+?)</tr>", Pattern.DOTALL);
-	static final Pattern P_CONNECTION_DETAILS_FINE = Pattern.compile(".*?(?:" //
-			+ "ab (\\d+:\\d+)\\s+(.*?)\\s*<.*?" //
-			+ "<img src=\"images/means.*?\" alt=\"(.*?)\" />.*?" //
+	private static final Pattern P_CONNECTION_DETAILS_COARSE = Pattern.compile("" //
+			+ "<tr bgcolor=\"#(\\w{6})\">\r\\x0a(.+?)</tr>.*?" //
+			+ "<tr bgcolor=\"#\\1\">\r\\x0a(.+?)</tr>.*?" //
+			+ "<tr bgcolor=\"#\\1\">\r\\x0a(.+?)</tr>", Pattern.DOTALL);
+	static final Pattern P_CONNECTION_DETAILS_FINE = Pattern.compile("(?:" //
+			+ "<td colspan=\"\\d+\">ab (\\d{1,2}:\\d{2})\\s(.*?)\\s*<.*?" // departureTime, departure
+			+ "(?:<img src=\"images/means.*?\" alt=\"(.*?)\" />.*?)?" // product
 			+ "<td>\\s*(.*?)\\s*<br />Richtung\\s*(.*?)\\s*</td>.*?" //
-			+ "an (\\d+:\\d+)\\s+(.*?)\\s*<" //
+			+ "<td colspan=\"\\d+\">an (\\d{1,2}:\\d{2})\\s(.*?)\\s*<" //
 			+ "|" //
-			+ "ab\\s+(.*?)\\s*<.*?" //
+			+ "<td colspan=\"\\d+\">ab (.*?)\\s*<.*?" // departure
 			+ "Fußweg[\\xa0\\s]+\\(ca\\.[\\xa0\\s]+(\\d+)[\\xa0\\s]+Minute.*?" //
-			+ "an\\s+(.*?)\\s*<" //
+			+ "<td colspan=\"\\d+\">an (.*?)\\s*<" //
 			+ ").*?", Pattern.DOTALL);
 	private static final Pattern P_CONNECTION_DETAILS_ERRORS = Pattern.compile("(session has expired)", Pattern.CASE_INSENSITIVE);
 	private static final String SITZENBLEIBER = "Sitzenbleiber";
@@ -502,10 +503,17 @@ public class MvvProvider implements NetworkProvider
 			String firstDeparture = null;
 			Date lastArrivalTime = null;
 			String lastArrival = null;
+			String oldZebra = null;
 
 			final Matcher mDetCoarse = P_CONNECTION_DETAILS_COARSE.matcher(page);
 			while (mDetCoarse.find())
 			{
+				final String zebra = mDetCoarse.group(1);
+				if (oldZebra != null && zebra.equals(oldZebra))
+					throw new IllegalArgumentException("missed row? last:" + zebra);
+				else
+					oldZebra = zebra;
+				
 				final String set = mDetCoarse.group(2) + mDetCoarse.group(3) + mDetCoarse.group(4);
 				if (!set.contains(SITZENBLEIBER))
 				{
