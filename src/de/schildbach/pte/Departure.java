@@ -28,18 +28,20 @@ public final class Departure
 	final public Date predictedTime;
 	final public String line;
 	final public int[] lineColors;
+	final public String lineLink;
 	final public String position;
 	final public int destinationId;
 	final public String destination;
 	final public String message;
 
-	public Departure(final Date plannedTime, final Date predictedTime, final String line, final int[] lineColors, final String position,
-			final int destinationId, final String destination, final String message)
+	public Departure(final Date plannedTime, final Date predictedTime, final String line, final int[] lineColors, final String lineLink,
+			final String position, final int destinationId, final String destination, final String message)
 	{
 		this.plannedTime = plannedTime;
 		this.predictedTime = predictedTime;
 		this.line = line;
 		this.lineColors = lineColors;
+		this.lineLink = lineLink;
 		this.position = position;
 		this.destinationId = destinationId;
 		this.destination = destination;
@@ -53,6 +55,7 @@ public final class Departure
 		this.predictedTime = null;
 		this.line = line;
 		this.lineColors = lineColors;
+		this.lineLink = null;
 		this.position = position;
 		this.destinationId = destinationId;
 		this.destination = destination;

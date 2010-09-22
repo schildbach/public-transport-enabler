@@ -51,7 +51,8 @@ public class BahnProviderTest
 				+ "<br />\n" //
 				+ "<span class=\"bold\">10:42</span>Gl. 1");
 
-		assertNotNull(m.group(7)); // position
+		assertNotNull(m.group(1)); // lineLink
+		assertNotNull(m.group(8)); // position
 	}
 
 	@Test
@@ -66,8 +67,9 @@ public class BahnProviderTest
 				+ "<br />\n" //
 				+ "<span class=\"bold\">21:58</span>&nbsp;<span class=\"green bold\">p&#252;nktl.</span>,&nbsp;Gl. 13");
 
-		assertNotNull(m.group(4)); // onTime
-		assertNotNull(m.group(7)); // position
+		assertNotNull(m.group(1)); // lineLink
+		assertNotNull(m.group(5)); // onTime
+		assertNotNull(m.group(8)); // position
 	}
 
 	@Test
@@ -82,9 +84,10 @@ public class BahnProviderTest
 				+ "<br />\n" //
 				+ "<span class=\"bold\">07:02</span>&nbsp;<span class=\"red\">ca. +5</span>, <span class=\"red\">F&#228;hrt heute nur bis&nbsp;D&#252;sseldorf Hbf</span>,&nbsp;Gl. 10");
 
-		assertNotNull(m.group(5)); // delay
-		assertNotNull(m.group(6)); // message
-		assertNotNull(m.group(7)); // position
+		assertNotNull(m.group(1)); // lineLink
+		assertNotNull(m.group(6)); // delay
+		assertNotNull(m.group(7)); // message
+		assertNotNull(m.group(8)); // position
 	}
 
 	@Test
@@ -99,8 +102,9 @@ public class BahnProviderTest
 				+ "<br />\n" //
 				+ "<span class=\"bold\">17:10</span>&nbsp;<span class=\"green bold\">p&#252;nktl.</span>,&nbsp;<span class=\"red\">heute Gl. 7       </span>");
 
-		assertNotNull(m.group(4)); // onTime
-		assertNotNull(m.group(7)); // position
+		assertNotNull(m.group(1)); // lineLink
+		assertNotNull(m.group(5)); // onTime
+		assertNotNull(m.group(8)); // position
 	}
 
 	@Test
@@ -115,9 +119,10 @@ public class BahnProviderTest
 				+ "<br />\n" //
 				+ "<span class=\"bold\">19:57</span>&nbsp;<span class=\"green bold\">p&#252;nktl.</span>, <span class=\"red\">&#196;nderung im Zuglauf!</span>,&nbsp;<span class=\"red\">heute Gl. 7       </span>");
 
-		assertNotNull(m.group(4)); // onTime
-		assertNotNull(m.group(6)); // message
-		assertNotNull(m.group(7)); // position
+		assertNotNull(m.group(1)); // lineLink
+		assertNotNull(m.group(5)); // onTime
+		assertNotNull(m.group(7)); // message
+		assertNotNull(m.group(8)); // position
 	}
 
 	@Test
@@ -132,7 +137,8 @@ public class BahnProviderTest
 				+ "<br />\n" //
 				+ "<span class=\"bold\">04:52</span>&nbsp;k.A.,&nbsp;Gl. 3");
 
-		assertNotNull(m.group(7)); // position
+		assertNotNull(m.group(1)); // lineLink
+		assertNotNull(m.group(8)); // position
 	}
 
 	@Test
@@ -147,8 +153,9 @@ public class BahnProviderTest
 				+ "<br />\n" //
 				+ "<span class=\"bold\">14:49</span>&nbsp;<span class=\"green bold\">p&#252;nktl.</span>,&nbsp;Gl. 1,<br/><span class=\"red\">Ersatzzug f&#252;r<a class=\"red underline\" href=\"http://mobile.bahn.de/bin/mobil/traininfo.exe/dox/611619/369020/735680/163967/80?ld=96159&amp;rt=1&amp;use_realtime_filter=1&amp;date=10.09.10&amp;time=14:49&amp;station_evaId=8000220&amp;station_type=dep&amp;\">RB  5416</a></span>");
 
-		assertNotNull(m.group(4)); // onTime
-		assertNotNull(m.group(7)); // position
+		assertNotNull(m.group(1)); // lineLink
+		assertNotNull(m.group(5)); // onTime
+		assertNotNull(m.group(8)); // position
 	}
 
 	@Test
@@ -163,7 +170,8 @@ public class BahnProviderTest
 				+ "<br />\n" //
 				+ "<span class=\"bold\">10:27</span>, <span class=\"red\">Zug f&#228;llt aus</span>,<br/><a class=\"red underline\" href=\"http://mobile.bahn.de/bin/mobil/traininfo.exe/dox/144627/793698/280606/92094/80?ld=96159&amp;rt=1&amp;use_realtime_filter=1&amp;date=08.09.10&amp;time=10:27&amp;station_evaId=8001647&amp;station_type=dep&amp;\"><span class=\"red\">Ersatzzug&nbsp;S       </a></span>");
 
-		assertNotNull(m.group(6)); // message
+		assertNotNull(m.group(1)); // lineLink
+		assertNotNull(m.group(7)); // message
 	}
 
 	@Test
@@ -178,8 +186,9 @@ public class BahnProviderTest
 				+ "<br />\n" //
 				+ "<span class=\"bold\">00:18</span>, <span class=\"red\">Zug f&#228;llt aus</span>,&nbsp;Gl. 4,<br/><a class=\"red underline\" href=\"http://mobile.bahn.de/bin/mobil/traininfo.exe/dox/843399/1026627/462944/49661/80?ld=96159&amp;rt=1&amp;use_realtime_filter=1&amp;date=09.09.10&amp;time=00:18&amp;station_evaId=8001844&amp;station_type=dep&amp;\"><span class=\"red\">Ersatzzug&nbsp;RB 30535</a></span>");
 
-		assertNotNull(m.group(6)); // message
-		assertNotNull(m.group(7)); // position
+		assertNotNull(m.group(1)); // lineLink
+		assertNotNull(m.group(7)); // message
+		assertNotNull(m.group(8)); // position
 	}
 
 	@Test
@@ -194,8 +203,9 @@ public class BahnProviderTest
 				+ "<br />\n" //
 				+ "<span class=\"bold\">10:59</span>&nbsp;<span class=\"green bold\">p&#252;nktl.</span>, <span class=\"red\">&#196;nderung im Zuglauf!</span>, <span class=\"red\">F&#228;hrt heute nur bis&nbsp;K&#246;ln-Dellbr&#252;ck</span>,&nbsp;Gl. 1");
 
-		assertNotNull(m.group(4)); // onTime
-		assertNotNull(m.group(6)); // message
+		assertNotNull(m.group(1)); // lineLink
+		assertNotNull(m.group(5)); // onTime
+		assertNotNull(m.group(7)); // message
 		assertNotNull(m.group(7)); // position
 	}
 
@@ -211,8 +221,9 @@ public class BahnProviderTest
 				+ "<br />\n" //
 				+ "<span class=\"bold\">22:58</span>&nbsp;<span class=\"green bold\">p&#252;nktl.</span>,&nbsp;Gl. 2,<br/>&nbsp;<span class=\"red\">Sonderzug</span>");
 
-		assertNotNull(m.group(4)); // onTime
-		assertNotNull(m.group(7)); // position
+		assertNotNull(m.group(1)); // lineLink
+		assertNotNull(m.group(5)); // onTime
+		assertNotNull(m.group(8)); // position
 	}
 
 	private void assertFineConnectionDetails(String s)
@@ -230,9 +241,9 @@ public class BahnProviderTest
 
 		// ParserUtils.printGroups(m);
 
-		assertNotNull(m.group(1)); // line
-		assertNotNull(m.group(2)); // destination
-		assertNotNull(m.group(3)); // time
+		assertNotNull(m.group(2)); // line
+		assertNotNull(m.group(3)); // destination
+		assertNotNull(m.group(4)); // time
 
 		return m;
 	}

@@ -456,7 +456,7 @@ public final class BahnProvider implements NetworkProvider
 	, Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<div class=\"sqdetailsDep trow\">\n(.+?)</div>", Pattern.DOTALL);
 	static final Pattern P_DEPARTURES_FINE = Pattern.compile(".*?" //
-			+ "<a href=\"http://mobile\\.bahn\\.de/bin/mobil/traininfo.exe/dox[^\"]*\">\n" //
+			+ "<a href=\"(http://mobile\\.bahn\\.de/bin/mobil/traininfo.exe/dox[^\"]*)\">\n" // lineLink
 			+ "<span class=\"bold\">(.*?)</span>\n" // line
 			+ "</a>\n" //
 			+ "&gt;&gt;\n" //
@@ -504,14 +504,16 @@ public final class BahnProvider implements NetworkProvider
 					final Matcher mDepFine = P_DEPARTURES_FINE.matcher(mDepCoarse.group(1));
 					if (mDepFine.matches())
 					{
-						final String line = normalizeLine(ParserUtils.resolveEntities(mDepFine.group(1)));
+						final String lineLink = ParserUtils.resolveEntities(mDepFine.group(1));
 
-						final String destination = ParserUtils.resolveEntities(mDepFine.group(2));
+						final String line = normalizeLine(ParserUtils.resolveEntities(mDepFine.group(2)));
+
+						final String destination = ParserUtils.resolveEntities(mDepFine.group(3));
 
 						final Calendar current = new GregorianCalendar();
 						current.setTime(currentTime);
 						final Calendar parsed = new GregorianCalendar();
-						parsed.setTime(ParserUtils.parseTime(mDepFine.group(3)));
+						parsed.setTime(ParserUtils.parseTime(mDepFine.group(4)));
 						parsed.set(Calendar.YEAR, current.get(Calendar.YEAR));
 						parsed.set(Calendar.MONTH, current.get(Calendar.MONTH));
 						parsed.set(Calendar.DAY_OF_MONTH, current.get(Calendar.DAY_OF_MONTH));
@@ -520,23 +522,23 @@ public final class BahnProvider implements NetworkProvider
 						final Date plannedTime = parsed.getTime();
 
 						Date predictedTime = null;
-						if (mDepFine.group(4) != null)
+						if (mDepFine.group(5) != null)
 						{
 							predictedTime = plannedTime;
 						}
-						else if (mDepFine.group(5) != null)
+						else if (mDepFine.group(6) != null)
 						{
-							final int delay = Integer.parseInt(mDepFine.group(5));
+							final int delay = Integer.parseInt(mDepFine.group(6));
 							parsed.add(Calendar.MINUTE, delay);
 							predictedTime = parsed.getTime();
 						}
 
-						final String message = ParserUtils.resolveEntities(mDepFine.group(6));
+						final String message = ParserUtils.resolveEntities(mDepFine.group(7));
 
-						final String position = ParserUtils.resolveEntities(mDepFine.group(7));
+						final String position = ParserUtils.resolveEntities(mDepFine.group(8));
 
 						final Departure dep = new Departure(plannedTime, predictedTime, line, line != null ? LINES.get(line.charAt(0)) : null,
-								position, 0, destination, message);
+								lineLink, position, 0, destination, message);
 						if (!departures.contains(dep))
 							departures.add(dep);
 					}
