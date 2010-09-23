@@ -144,7 +144,7 @@ public class TflProvider implements NetworkProvider
 					}
 				}
 
-				return new QueryDeparturesResult(uri, 0, location, null, departures);
+				return new QueryDeparturesResult(uri, 0, location, departures);
 			}
 			else
 			{

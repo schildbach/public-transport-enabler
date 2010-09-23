@@ -683,7 +683,7 @@ public class MvvProvider implements NetworkProvider
 					}
 				}
 
-				return new QueryDeparturesResult(uri, stationId, location, currentTime, departures);
+				return new QueryDeparturesResult(uri, stationId, location, departures);
 			}
 			else
 			{

@@ -600,7 +600,7 @@ public final class VbbProvider implements NetworkProvider
 				}
 			}
 
-			return new QueryDeparturesResult(uri, stationId, location, currentTime, departures);
+			return new QueryDeparturesResult(uri, stationId, location, departures);
 		}
 		else
 		{

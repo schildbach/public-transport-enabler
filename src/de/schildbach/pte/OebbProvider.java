@@ -526,7 +526,7 @@ public class OebbProvider implements NetworkProvider
 				}
 			}
 
-			return new QueryDeparturesResult(uri, locationId, location, null, departures);
+			return new QueryDeparturesResult(uri, locationId, location, departures);
 		}
 		catch (final JSONException x)
 		{

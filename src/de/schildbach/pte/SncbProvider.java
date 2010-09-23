@@ -186,7 +186,7 @@ public class SncbProvider implements NetworkProvider
 					}
 				}
 
-				return new QueryDeparturesResult(uri, 0, location, currentTime, departures);
+				return new QueryDeparturesResult(uri, 0, location, departures);
 			}
 			else
 			{

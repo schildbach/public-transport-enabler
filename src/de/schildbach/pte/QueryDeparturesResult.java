@@ -17,7 +17,6 @@
 
 package de.schildbach.pte;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -34,17 +33,14 @@ public final class QueryDeparturesResult
 	public final Status status;
 	public final int locationId;
 	public final String location;
-	public final Date currentTime;
 	public final List<Departure> departures;
 
-	public QueryDeparturesResult(final String uri, final int locationId, final String location, final Date currentTime,
-			final List<Departure> departures)
+	public QueryDeparturesResult(final String uri, final int locationId, final String location, final List<Departure> departures)
 	{
 		this.uri = uri;
 		this.status = Status.OK;
 		this.locationId = locationId;
 		this.location = location;
-		this.currentTime = currentTime;
 		this.departures = departures;
 	}
 
@@ -54,7 +50,6 @@ public final class QueryDeparturesResult
 		this.status = status;
 		this.locationId = 0;
 		this.location = null;
-		this.currentTime = null;
 		this.departures = null;
 	}
 }

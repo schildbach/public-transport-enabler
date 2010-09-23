@@ -521,7 +521,7 @@ public class SbbProvider implements NetworkProvider
 					}
 				}
 
-				return new QueryDeparturesResult(uri, locationId, location, currentTime, departures);
+				return new QueryDeparturesResult(uri, locationId, location, departures);
 			}
 			else
 			{
