@@ -66,13 +66,13 @@ public final class ParserUtils
 		if (encoding == null)
 			encoding = SCRAPE_DEFAULT_ENCODING;
 
-		final StringBuilder buffer = new StringBuilder(SCRAPE_INITIAL_CAPACITY);
 		int tries = 3;
 
 		while (true)
 		{
 			try
 			{
+				final StringBuilder buffer = new StringBuilder(SCRAPE_INITIAL_CAPACITY);
 				final HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
 
 				connection.setDoInput(true);
