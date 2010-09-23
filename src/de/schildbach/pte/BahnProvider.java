@@ -753,7 +753,7 @@ public final class BahnProvider implements NetworkProvider
 				return "RSB" + number;
 			if (type.equals("LT"))
 				return "RLT" + number;
-			if (type.equals("CB")) // http://www.railfan.de/nebahn/morac.html
+			if (type.equals("CB")) // City Bahn Chemnitz
 				return "RCB" + number;
 			if (type.equals("SWE")) // SWEG
 				return "RSWE" + number;
