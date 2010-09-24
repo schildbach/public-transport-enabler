@@ -159,7 +159,7 @@ public class OebbProvider implements NetworkProvider
 	private static final Pattern P_QUERY_CONNECTIONS_FORM_ACTION = Pattern
 			.compile("<form id=\"HFSQuery\" action=\"(http://fahrplan\\.oebb\\.at/bin/query\\.exe[^#]*)#");
 	private static final Pattern P_QUERY_CONNECTIONS_ERROR = Pattern
-			.compile("(keine Verbindung gefunden werden)|(liegt nach dem Ende der Fahrplanperiode|liegt vor Beginn der Fahrplanperiode)|(zwischenzeitlich nicht mehr gespeichert)");
+			.compile("(keine Verbindung gefunden|kein Weg gefunden)|(liegt nach dem Ende der Fahrplanperiode|liegt vor Beginn der Fahrplanperiode)|(zwischenzeitlich nicht mehr gespeichert)");
 	private static final Pattern P_PRE_ADDRESS = Pattern.compile(
 			"<select.*? name=\"(REQ0JourneyStopsS0K|REQ0JourneyStopsZ0K|REQ0JourneyStops1\\.0K)\"[^>]*>(.*?)</select>", Pattern.DOTALL);
 	private static final Pattern P_ADDRESSES = Pattern.compile("<option[^>]*>\\s*(.*?)\\s*</option>", Pattern.DOTALL);
