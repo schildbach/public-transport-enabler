@@ -651,14 +651,14 @@ public class OebbProvider implements NetworkProvider
 			return 'I';
 		if (ucType.equals("TGV")) // Train à Grande Vitesse
 			return 'I';
-		// if (ucType.equals("LYN")) // Dänemark
-		// return 'I';
+		if (ucType.equals("LYN")) // Dänemark
+			return 'I';
 		if (ucType.equals("ARZ")) // Frankreich, Nacht
 			return 'I';
-		// if (ucType.equals("ES")) // Eurostar Italia
-		// return 'I';
-		// if (ucType.equals("ICN")) // Italien, Nacht
-		// return 'I';
+		if (ucType.equals("ES")) // Eurostar Italia
+			return 'I';
+		if (ucType.equals("ICN")) // Italien, Nacht
+			return 'I';
 		// if (ucType.equals("UUU")) // Italien, Nacht
 		// return 'I';
 		// if (ucType.equals("RHI")) // ICE
@@ -730,8 +730,8 @@ public class OebbProvider implements NetworkProvider
 			return 'R';
 		if (ucType.equals("IRE")) // Interregio Express
 			return 'R';
-		// if (ucType.equals("N")) // Frankreich, Tours
-		// return 'R';
+		if (ucType.equals("N")) // Frankreich, Tours
+			return 'R';
 		// if (ucType.equals("DPF")) // VX=Vogtland Express
 		// return 'R';
 		if (ucType.equals("VBG")) // Vogtlandbahn, via JSON API
@@ -828,6 +828,8 @@ public class OebbProvider implements NetworkProvider
 			return 'R';
 		if (ucType.equals("NEG")) // Norddeutsche Eisenbahngesellschaft Niebüll, via JSON API
 			return 'R';
+		if (ucType.equals("P")) // Kasbachtalbahn, via JSON API
+			return 'R';
 
 		if (ucType.equals("S"))
 			return 'S';
@@ -839,8 +841,8 @@ public class OebbProvider implements NetworkProvider
 			return 'S';
 		if (ucType.equals("SWE")) // Südwestdeutsche Verkehrs-AG, Ortenau-S-Bahn, via JSON API
 			return 'S';
-		 if (ucType.equals("RER")) // Réseau Express Régional, Frankreich
-		 return 'S';
+		if (ucType.equals("RER")) // Réseau Express Régional, Frankreich
+			return 'S';
 
 		if (ucType.equals("U"))
 			return 'U';
@@ -876,13 +878,15 @@ public class OebbProvider implements NetworkProvider
 			return 'B';
 		if (ucType.equals("BUSTN/TW")) // via JSON API
 			return 'B';
+		if (ucType.equals("BUSMKK")) // via JSON API
+			return 'B';
 		if (ucType.equals("O-B")) // Stadtbus, via JSON API
 			return 'B';
 
 		// if (ucType.equals("SCH"))
 		// return 'F';
-		// if (ucType.equals("AS")) // SyltShuttle
-		// return 'F';
+		if (ucType.equals("AS")) // SyltShuttle
+			return 'F';
 		if (ucType.equals("SCHIFF")) // via JSON API
 			return 'F';
 
