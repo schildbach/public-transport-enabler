@@ -24,7 +24,7 @@ public class OebbProvider implements NetworkProvider
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
 		for (final Capability capability : capabilities)
-			if (capability == Capability.DEPARTURES || capability == Capability.LOCATION_STATION_ID)
+			if (capability == Capability.DEPARTURES || capability == Capability.CONNECTIONS || capability == Capability.LOCATION_STATION_ID)
 				return true;
 
 		return false;
@@ -157,7 +157,7 @@ public class OebbProvider implements NetworkProvider
 
 	private static final String QUERY_CONNECTIONS_FORM_URL = "http://fahrplan.oebb.at/bin/query.exe/dn?";
 	private static final Pattern P_QUERY_CONNECTIONS_FORM_ACTION = Pattern
-			.compile("<form action=\"(http://fahrplan\\.oebb\\.at/bin/query\\.exe[^#]*)#");
+			.compile("<form id=\"HFSQuery\" action=\"(http://fahrplan\\.oebb\\.at/bin/query\\.exe[^#]*)#");
 	private static final Pattern P_QUERY_CONNECTIONS_ERROR = Pattern
 			.compile("(keine Verbindung gefunden werden)|(liegt nach dem Ende der Fahrplanperiode|liegt vor Beginn der Fahrplanperiode)|(zwischenzeitlich nicht mehr gespeichert)");
 	private static final Pattern P_PRE_ADDRESS = Pattern.compile(
@@ -242,65 +242,53 @@ public class OebbProvider implements NetworkProvider
 		return queryConnections(uri, page);
 	}
 
-	private static final Pattern P_CONNECTIONS_FORM_ACTION = Pattern
-			.compile("<form name=\"tp_results_form\" action=\"(http://fahrplan\\.oebb\\.at/bin/query\\.exe[^#]*)#");
-	private static final Pattern P_CONNECTIONS_PAGE = Pattern.compile(".*?" //
-			+ "<form name=\"tp_results_form\" action=\"(http://fahrplan.oebb.at/bin/query.exe/.*?)#[^>]*>.*?" // action
-			+ "<table class=\"hafasResult\" cellspacing=\"0\" summary=\"Ihre Anfrage\">\n(.*?)\n</table>.*?" // header
-			+ "<table cellspacing=\"0\" class=\"hafasResult\" style=\"width:100%;\" summary=\"Verbindungen &#220;bersicht\">\n" //
-			+ "(.*?<table cellspacing=\"0\">(.*?)</table>.*?)\n" // connections overview
-			+ "</table>.*?" //
-			+ "<table cellspacing=\"0\" class=\"hafasResult\" style=\"width: 100%;\" summary=\"Verbindungen Detailansicht\">\n" //
-			+ "(.*?)\n" // connection details
-			+ "</table>\n<div.*?" //
-	, Pattern.DOTALL);
+	private static final Pattern P_CONNECTIONS_ALL_DETAILS = Pattern.compile("" //
+			+ "<a id=\"showAllDetails\" class=\"[^\"]*\" href=\"(http://fahrplan\\.oebb\\.at[^\"]*)\">");
 	private static final Pattern P_CONNECTIONS_HEAD = Pattern.compile(".*?" //
-			+ "von:.*?<td [^>]*>\\s*(.*?)\\s*</td>.*?" // from
-			+ "Datum:.*?<td [^>]*>.., (\\d{2}\\.\\d{2}\\.\\d{2})</td>.*?" // date
-			+ "nach:.*?<td [^>]*>\\s*(.*?)\\s*</td>.*?" // to
-			+ "(?:\"(REQ0HafasScrollDir=2&guiVCtrl_connection_detailsOut_add_selection&)\".*?)?" // linkEarlier
-			+ "(?:\"(REQ0HafasScrollDir=1&guiVCtrl_connection_detailsOut_add_selection&)\".*?)?" // linkLater
+			+ "<span class=\"label\">von:</span>\n<span class=\"output\">\\s*(.*?)\\s*</span>.*?" // from
+			+ "<span class=\"label\">nach:</span>\n<span class=\"output\">\\s*(.*?)\\s*</span>.*?" // to
+			+ "<span class=\"label\">\nDatum:\n</span>\n<span class=\"output\">.., (\\d{2}\\.\\d{2}\\.\\d{2})</span>.*?" // date
+			+ "(?:<a href=\"(http://fahrplan\\.oebb\\.at/bin/query\\.exe/dn?.*?&REQ0HafasScrollDir=2)\".*?)?" // linkEarlier
+			+ "(?:<a href=\"(http://fahrplan\\.oebb\\.at/bin/query\\.exe/dn?.*?&REQ0HafasScrollDir=1)\".*?)?" // linkLater
 	, Pattern.DOTALL);
-	private static final Pattern P_CONNECTIONS_COARSE = Pattern.compile("<tr class=\"(?:selected|tpOverview)\">\n(.*?)</tr>", Pattern.DOTALL);
+	private static final Pattern P_CONNECTIONS_COARSE = Pattern.compile("" //	
+			+ "<tr id=\"trOverview(C\\d+-\\d+)\" [^>]*>\n(.*?)</tr>\n" //
+			+ "<tr class=\"[^\"]*\" id=\"tr\\1\">\n(.*?)Seitenanfang.*?</tr>" //
+	, Pattern.DOTALL);
 	private static final Pattern P_CONNECTIONS_FINE = Pattern.compile(".*?" //
-			+ "name=\"guiVCtrl_connection_detailsOut_select_([\\w-]+)\".*?" // id
-			+ "<td headers=\"hafasOVDate\"[^>]*>(\\d{2}\\.\\d{2}\\.\\d{2})" // departureDate
+			+ "<td class=\"date\" headers=\"hafasOVDate\"[^>]*>(\\d{2}\\.\\d{2}\\.\\d{2})" // departureDate
 			+ "(?:<br />(\\d{2}\\.\\d{2}\\.\\d{2}))?.*?" // arrivalDate
-			+ "<td class=\"sepline\">(\\d{1,2}:\\d{2})" // departureTime
-			+ "<br />(\\d{1,2}:\\d{2}).*?" // arrivalTime
+			+ "(\\d{1,2}:\\d{2}) ab.*?" // departureTime
+			+ "(\\d{1,2}:\\d{2}) an.*?" // arrivalTime
 	, Pattern.DOTALL);
-	private static final Pattern P_CONNECTIONS_DETAILS_COARSE = Pattern.compile("Detailansicht<a name=\"cis_([\\w-]+)\">" // id
-			+ "(.*?)" //
-			+ "\nDauer:", Pattern.DOTALL);
-	private static final Pattern P_CONNECTION_DETAILS_COARSE = Pattern.compile("<tr class=\"tpDetails\">\n(.*?)\n</tr>\n" //
-			+ "<tr class=\"tpDetails(?: special)?\">\n(.*?)\n</tr>\n<tr>\n(.*?)\n</tr>", Pattern.DOTALL);
+	private static final Pattern P_CONNECTION_DETAILS_COARSE = Pattern.compile("" //
+			+ "<tr class=\"tpDetails (?:conFirstSecFirstRow|intermediateSection|conLastSecLastRow)\">\n(.*?)</tr>\n" //
+			+ "<tr class=\"tpDetails (?:conFirstSecFirstRow|intermediateSection|conLastSecLastRow)\">\n(.*?)</tr>\n" //
+			+ "<tr class=\"tpDetails sectionInfo\">" //
+	, Pattern.DOTALL);
 	private static final Pattern P_CONNECTION_DETAILS_FINE = Pattern.compile(".*?" //
-			+ "<td headers=\"hafasDTL\\d+_Stop\"[^>]*>\n" //
-			+ "(?:<a href=\"http://fahrplan\\.oebb\\.at/bin/stboard\\.exe/dn.*?input=.*?%23(\\d+)&[^>]*>)?" // departureId
+			+ "<td class=\"station\">(?:<a href=\"http://fahrplan\\.oebb\\.at/bin/stboard\\.exe/dn.*?input=(\\d+)&[^>]*>)?" // departureId
 			+ "([^\n<]*).*?" // departure
-			+ "<td headers=\"hafasDTL\\d+_Date\"[^>]*>\n(?:(\\d{2}\\.\\d{2}\\.\\d{2})|&nbsp;)\n</td>.*?" // departureDate
-			+ "<td headers=\"hafasDTL\\d+_TimeDep\"[^>]*>(?:(\\d{2}:\\d{2})|&nbsp;)</td>.*?" // departureTime
-			+ "<td headers=\"hafasDTL\\d+_Platform\"[^>]*>\\s*(?:&nbsp;|(.*?))\\s*</td>.*?" // departurePosition
-			+ "<img src=\"/img/vs_oebb/(\\w+?)_pic.gif\".*?" // lineType
+			+ "<td class=\"date\">(?:(\\d{2}\\.\\d{2}\\.\\d{2})|&nbsp;)</td>.*?" // departureDate
+			+ "<td class=\"timeValue\">\n?<span>ab (\\d{2}:\\d{2}).*?" // departureTime
+			+ "<td class=\"platform\">\\s*(?:&nbsp;|(.*?))\\s*</td>.*?" // departurePosition
+			+ "<img class=\"product\" src=\"/img/vs_oebb/(\\w+?)_pic.gif\".*?" // lineType
 			+ "(?:<a href=\"http://fahrplan\\.oebb\\.at/bin/traininfo\\.exe/dn[^>]*>(.*?)</a>.*?)?" // line
-			+ "<td headers=\"hafasDTL\\d+_Stop\"[^>]*>\n" //
-			+ "(?:<a href=\"http://fahrplan\\.oebb\\.at/bin/stboard\\.exe/dn.*?input=.*?%23(\\d+)&[^>]*>)?" // arrivalId
+			+ "<td class=\"station\">(?:<a href=\"http://fahrplan\\.oebb\\.at/bin/stboard\\.exe/dn.*?input=(\\d+)&[^>]*>)?" // arrivalId
 			+ "([^\n<]*).*?" // arrival
-			+ "<td headers=\"hafasDTL\\d+_Date\"[^>]*>\n(?:(\\d{2}\\.\\d{2}\\.\\d{2})|&nbsp;)\n</td>.*?" // arrivalDate
-			+ "<td headers=\"hafasDTL\\d+_TimeDep\"[^>]*>(?:(\\d{2}:\\d{2})|&nbsp;)</td>.*?" // arrivalTime
-			+ "<td headers=\"hafasDTL\\d+_Platform\"[^>]*>\\s*(?:&nbsp;|(.*?))\\s*</td>.*?" // arrivalPosition
-			+ "(?:ca\\. (\\d+) Min\\.\n.*?)?" // min
+			+ "<td class=\"date\">(?:(\\d{2}\\.\\d{2}\\.\\d{2})|&nbsp;)</td>.*?" // arrivalDate
+			+ "<td class=\"timeValue\">\n?<span>an (\\d{2}:\\d{2}).*?" // arrivalTime
+			+ "<td class=\"platform\">\\s*(?:&nbsp;|(.*?))\\s*</td>.*?" // arrivalPosition
 	, Pattern.DOTALL);
 
 	private QueryConnectionsResult queryConnections(final String firstUri, final CharSequence firstPage) throws IOException
 	{
 		// ugly workaround to fetch all details
-		final Matcher mFormAction = P_CONNECTIONS_FORM_ACTION.matcher(firstPage);
-		if (!mFormAction.find())
-			throw new IOException("cannot find form action in '" + firstPage + "' on " + firstUri);
-		final String baseUri = mFormAction.group(1);
-		final String query = "sortConnections=minDeparture&guiVCtrl_connection_detailsOut_add_group_overviewOut=yes";
-		final CharSequence page = ParserUtils.scrape(baseUri, true, query, null, true);
+		final Matcher mAllDetailsAction = P_CONNECTIONS_ALL_DETAILS.matcher(firstPage);
+		if (!mAllDetailsAction.find())
+			throw new IOException("cannot find all details link in '" + firstPage + "' on " + firstUri);
+		final String allDetailsUri = mAllDetailsAction.group(1);
+		final CharSequence page = ParserUtils.scrape(allDetailsUri, false, null, null, true);
 
 		final Matcher mError = P_QUERY_CONNECTIONS_ERROR.matcher(page);
 		if (mError.find())
@@ -314,60 +302,43 @@ public class OebbProvider implements NetworkProvider
 		}
 
 		// parse page
-		final Matcher mPage = P_CONNECTIONS_PAGE.matcher(page);
-		if (mPage.matches())
+		final Matcher mHead = P_CONNECTIONS_HEAD.matcher(page);
+		if (mHead.matches())
 		{
-			final String action = mPage.group(1);
-			final String headSet = mPage.group(2) + mPage.group(4);
+			final String from = ParserUtils.resolveEntities(mHead.group(1));
+			final String to = ParserUtils.resolveEntities(mHead.group(2));
+			final Date currentDate = ParserUtils.parseDate(mHead.group(3));
+			final String linkEarlier = mHead.group(4) != null ? ParserUtils.resolveEntities(mHead.group(4)) : null;
+			final String linkLater = mHead.group(5) != null ? ParserUtils.resolveEntities(mHead.group(5)) : null;
+			final List<Connection> connections = new ArrayList<Connection>();
 
-			final Matcher mHead = P_CONNECTIONS_HEAD.matcher(headSet);
-			if (mHead.matches())
+			Date lastDate = null;
+
+			final Matcher mConCoarse = P_CONNECTIONS_COARSE.matcher(page);
+			while (mConCoarse.find())
 			{
-				final String from = ParserUtils.resolveEntities(mHead.group(1));
-				final Date currentDate = ParserUtils.parseDate(mHead.group(2));
-				final String to = ParserUtils.resolveEntities(mHead.group(3));
-				final String linkEarlier = mHead.group(4) != null ? action + "&REQ0HafasScrollDir=2" + ParserUtils.resolveEntities(mHead.group(4))
-						: null;
-				final String linkLater = mHead.group(5) != null ? action + "&REQ0HafasScrollDir=1" + ParserUtils.resolveEntities(mHead.group(5))
-						: null;
-				final List<Connection> connections = new ArrayList<Connection>();
+				final String id = mConCoarse.group(1);
+				final String overview = mConCoarse.group(2);
+				final String details = mConCoarse.group(3);
 
-				final Matcher mConCoarse = P_CONNECTIONS_COARSE.matcher(mPage.group(3));
-				while (mConCoarse.find())
+				final Matcher mConFine = P_CONNECTIONS_FINE.matcher(overview);
+				if (mConFine.matches())
 				{
-					final Matcher mConFine = P_CONNECTIONS_FINE.matcher(mConCoarse.group(1));
-					if (mConFine.matches())
-					{
-						final String id = mConFine.group(1);
-						final Date departureDate = ParserUtils.parseDate(mConFine.group(2));
-						final Date arrivalDate = mConFine.group(3) != null ? ParserUtils.parseDate(mConFine.group(3)) : null;
-						final Date departureTime = ParserUtils.joinDateTime(departureDate, ParserUtils.parseTime(mConFine.group(4)));
-						final Date arrivalTime = ParserUtils.joinDateTime(arrivalDate != null ? arrivalDate : departureDate, ParserUtils
-								.parseTime(mConFine.group(5)));
-						final String link = firstUri + "#" + id; // TODO use print link?
+					final Date overviewDepartureDate = ParserUtils.parseDate(mConFine.group(1));
+					final Date overviewArrivalDate = mConFine.group(2) != null ? ParserUtils.parseDate(mConFine.group(2)) : null;
+					final Date overviewDepartureTime = ParserUtils.joinDateTime(overviewDepartureDate, ParserUtils.parseTime(mConFine.group(3)));
+					final Date overviewArrivalTime = ParserUtils.joinDateTime(overviewArrivalDate != null ? overviewArrivalDate
+							: overviewDepartureDate, ParserUtils.parseTime(mConFine.group(4)));
+					final String link = allDetailsUri; // TODO use print link?
 
-						final Connection connection = new Connection(id, link, departureTime, arrivalTime, null, null, 0, from, 0, to,
-								new ArrayList<Connection.Part>(1));
-						connections.add(connection);
-					}
-					else
-					{
-						throw new IllegalArgumentException("cannot parse '" + mConCoarse.group(1) + "' on " + baseUri + " (POST)");
-					}
-				}
+					final Connection connection = new Connection(id, link, overviewDepartureTime, overviewArrivalTime, null, null, 0, from, 0, to,
+							new ArrayList<Connection.Part>(1));
+					connections.add(connection);
 
-				final Matcher mConDetCoarse = P_CONNECTIONS_DETAILS_COARSE.matcher(mPage.group(5));
-				while (mConDetCoarse.find())
-				{
-					final String id = mConDetCoarse.group(1);
-					final Connection connection = findConnection(connections, id);
-
-					Date lastDate = null;
-
-					final Matcher mDetCoarse = P_CONNECTION_DETAILS_COARSE.matcher(mConDetCoarse.group(2));
+					final Matcher mDetCoarse = P_CONNECTION_DETAILS_COARSE.matcher(details);
 					while (mDetCoarse.find())
 					{
-						final String set = mDetCoarse.group(1) + mDetCoarse.group(2) + mDetCoarse.group(3);
+						final String set = mDetCoarse.group(1) + mDetCoarse.group(2);
 
 						final Matcher mDetFine = P_CONNECTION_DETAILS_FINE.matcher(set);
 						if (mDetFine.matches())
@@ -376,11 +347,14 @@ public class OebbProvider implements NetworkProvider
 
 							final String departure = ParserUtils.resolveEntities(mDetFine.group(2));
 
-							Date departureDate = mDetFine.group(3) != null ? ParserUtils.parseDate(mDetFine.group(3)) : null;
-							if (departureDate != null)
-								lastDate = departureDate;
+							Date detailsDepartureDate = mDetFine.group(3) != null ? ParserUtils.parseDate(mDetFine.group(3)) : null;
+							if (detailsDepartureDate != null)
+								lastDate = detailsDepartureDate;
 							else
-								departureDate = lastDate;
+								detailsDepartureDate = lastDate;
+
+							final Date detailsDepartureTime = ParserUtils.parseTime(mDetFine.group(4));
+							final Date detailsDepartureDateTime = ParserUtils.joinDateTime(detailsDepartureDate, detailsDepartureTime);
 
 							final String lineType = mDetFine.group(6);
 
@@ -388,19 +362,19 @@ public class OebbProvider implements NetworkProvider
 
 							final String arrival = ParserUtils.resolveEntities(mDetFine.group(9));
 
-							Date arrivalDate = mDetFine.group(10) != null ? ParserUtils.parseDate(mDetFine.group(10)) : null;
-							if (arrivalDate != null)
-								lastDate = arrivalDate;
+							Date detailsArrivalDate = mDetFine.group(10) != null ? ParserUtils.parseDate(mDetFine.group(10)) : null;
+							if (detailsArrivalDate != null)
+								lastDate = detailsArrivalDate;
 							else
-								arrivalDate = lastDate;
+								detailsArrivalDate = lastDate;
+
+							final Date detailsArrivalTime = ParserUtils.parseTime(mDetFine.group(11));
+							final Date detailsArrivalDateTime = ParserUtils.joinDateTime(detailsArrivalDate, detailsArrivalTime);
 
 							if (!lineType.equals("fuss"))
 							{
 								if (departureId == 0)
 									throw new IllegalStateException("departureId");
-
-								final Date departureTime = ParserUtils.parseTime(mDetFine.group(4));
-								final Date departureDateTime = ParserUtils.joinDateTime(departureDate, departureTime);
 
 								final String departurePosition = mDetFine.group(5) != null ? ParserUtils.resolveEntities(mDetFine.group(5)) : null;
 
@@ -409,18 +383,15 @@ public class OebbProvider implements NetworkProvider
 								if (arrivalId == 0)
 									throw new IllegalStateException("arrivalId");
 
-								final Date arrivalTime = ParserUtils.parseTime(mDetFine.group(11));
-								final Date arrivalDateTime = ParserUtils.joinDateTime(arrivalDate, arrivalTime);
-
 								final String arrivalPosition = mDetFine.group(12) != null ? ParserUtils.resolveEntities(mDetFine.group(12)) : null;
 
-								final Connection.Trip trip = new Connection.Trip(line, LINES.get(line.charAt(0)), null, departureDateTime,
-										departurePosition, departureId, departure, arrivalDateTime, arrivalPosition, arrivalId, arrival);
+								final Connection.Trip trip = new Connection.Trip(line, LINES.get(line.charAt(0)), null, detailsDepartureDateTime,
+										departurePosition, departureId, departure, detailsArrivalDateTime, arrivalPosition, arrivalId, arrival);
 								connection.parts.add(trip);
 							}
 							else
 							{
-								final int min = Integer.parseInt(mDetFine.group(13));
+								final int min = (int) (detailsArrivalDateTime.getTime() - detailsDepartureDateTime.getTime()) / 1000 / 60;
 
 								final Connection.Footway footway = new Connection.Footway(min, departureId, departure, arrivalId, arrival);
 								connection.parts.add(footway);
@@ -428,31 +399,23 @@ public class OebbProvider implements NetworkProvider
 						}
 						else
 						{
-							throw new IllegalArgumentException("cannot parse '" + set + "' on " + baseUri + " (POST)");
+							throw new IllegalArgumentException("cannot parse '" + set + "' on " + allDetailsUri);
 						}
 					}
 				}
+				else
+				{
+					throw new IllegalArgumentException("cannot parse '" + overview + "' on " + allDetailsUri);
+				}
 
-				return new QueryConnectionsResult(baseUri, from, to, currentDate, linkEarlier, linkLater, connections);
 			}
-			else
-			{
-				throw new IllegalArgumentException("cannot parse '" + headSet + "' on " + baseUri + " (POST)");
-			}
+
+			return new QueryConnectionsResult(allDetailsUri, from, to, currentDate, linkEarlier, linkLater, connections);
 		}
 		else
 		{
-			throw new IOException(page.toString());
+			throw new IllegalArgumentException("cannot parse '" + page + "' on " + allDetailsUri);
 		}
-	}
-
-	private Connection findConnection(final List<Connection> connections, final String id)
-	{
-		for (final Connection connection : connections)
-			if (connection.id.equals(id))
-				return connection;
-
-		return null;
 	}
 
 	public GetConnectionDetailsResult getConnectionDetails(final String connectionUri) throws IOException
@@ -603,24 +566,24 @@ public class OebbProvider implements NetworkProvider
 			return 'I';
 		if (ucType.equals("ICE")) // InterCityExpress
 			return 'I';
-		// if (ucType.equals("X")) // Interconnex
+		// if (ucType.equals("X")) // Interconnex, Connections only?
 		// return 'I';
 		if (ucType.equals("EN")) // EuroNight
 			return 'I';
 		if (ucType.equals("CNL")) // CityNightLine
 			return 'I';
-		// if (ucType.equals("DNZ")) // Berlin-Saratov, Berlin-Moskva
-		// return 'I';
-		// if (ucType.equals("INT")) // Rußland
-		// return 'I';
+		if (ucType.equals("DNZ")) // Berlin-Saratov, Berlin-Moskva, Connections only?
+			return 'I';
+		if (ucType.equals("INT")) // Rußland, Connections only?
+			return 'I';
 		if (ucType.equals("D")) // Rußland
 			return 'I';
-		// if (ucType.equals("RR")) // Finnland
-		// return 'I';
+		if (ucType.equals("RR")) // Finnland, Connections only?
+			return 'I';
 		if (ucType.equals("TLK")) // Tanie Linie Kolejowe, Polen
 			return 'I';
-		// if (ucType.equals("EE")) // Rumänien
-		// return 'I';
+		if (ucType.equals("EE")) // Rumänien, Connections only?
+			return 'I';
 		if (ucType.equals("SC")) // SuperCity, Tschechien
 			return 'I';
 		if (ucType.equals("RJ")) // RailJet, Österreichische Bundesbahnen
@@ -637,14 +600,14 @@ public class OebbProvider implements NetworkProvider
 			return 'I';
 		if (ucType.equals("AVE")) // Alta Velocidad Española, Spanien
 			return 'I';
-		// if (ucType.equals("INZ")) // Schweden, Nacht
-		// return 'I';
+		if (ucType.equals("INZ")) // Schweden, Nacht, Connections only?
+			return 'I';
 		if (ucType.equals("NZ")) // Schweden, Nacht, via JSON API
 			return 'I';
-		// if (ucType.equals("OZ")) // Schweden, Oeresundzug
-		// return 'I';
-		// if (ucType.equals("X2")) // Schweden
-		// return 'I';
+		if (ucType.equals("OZ")) // Schweden, Oeresundzug, Connections only?
+			return 'I';
+		if (ucType.equals("X2")) // Schweden, Connections only?
+			return 'I';
 		if (ucType.equals("X")) // Schweden, via JSON API
 			return 'I';
 		if (ucType.equals("THA")) // Thalys
@@ -659,37 +622,37 @@ public class OebbProvider implements NetworkProvider
 			return 'I';
 		if (ucType.equals("ICN")) // Italien, Nacht
 			return 'I';
-		// if (ucType.equals("UUU")) // Italien, Nacht
-		// return 'I';
-		// if (ucType.equals("RHI")) // ICE
-		// return 'I';
-		// if (ucType.equals("RHT")) // TGV
-		// return 'I';
-		// if (ucType.equals("TGD")) // TGV
-		// return 'I';
-		// if (ucType.equals("ECB")) // EC
-		// return 'I';
-		// if (ucType.equals("IRX")) // IC
-		// return 'I';
-		// if (ucType.equals("AIR"))
-		// return 'I';
-		//
+		if (ucType.equals("UUU")) // Italien, Nacht, Connections only?
+			return 'I';
+		if (ucType.equals("RHI")) // ICE, Connections only?
+			return 'I';
+		if (ucType.equals("RHT")) // TGV, Connections only?
+			return 'I';
+		if (ucType.equals("TGD")) // TGV, Connections only?
+			return 'I';
+		if (ucType.equals("ECB")) // EC, Connections only?
+			return 'I';
+		if (ucType.equals("IRX")) // IC, Connections only?
+			return 'I';
+		if (ucType.equals("AIR")) // Connections only?
+			return 'I';
+
 		if (ucType.equals("R"))
 			return 'R';
 		if (ucType.equals("REX")) // RegionalExpress
 			return 'R';
-		// if (ucType.equals("ZUG"))
-		// return 'R';
+		if (ucType.equals("ZUG")) // Connections only?
+			return 'R';
 		if (ucType.equals("EZ")) // Erlebniszug
 			return 'R';
-		// if (ucType.equals("S2")) // Helsinki-Turku
-		// return 'R';
+		if (ucType.equals("S2")) // Helsinki-Turku, Connections only?
+			return 'R';
 		if (ucType.equals("RB")) // RegionalBahn Deutschland
 			return 'R';
 		if (ucType.equals("RE")) // RegionalExpress Deutschland
 			return 'R';
-		// if (ucType.equals("DPN")) // TODO nicht evtl. doch eher ne S-Bahn?
-		// return 'R';
+		if (ucType.equals("DPN")) // Connections only? TODO nicht evtl. doch eher ne S-Bahn?
+			return 'R';
 		if (ucType.equals("BRB")) // ABELLIO Rail, via JSON API
 			return 'R';
 		if (ucType.equals("ABR")) // Bayerische Regiobahn, via JSON API
@@ -732,8 +695,8 @@ public class OebbProvider implements NetworkProvider
 			return 'R';
 		if (ucType.equals("N")) // Frankreich, Tours
 			return 'R';
-		// if (ucType.equals("DPF")) // VX=Vogtland Express
-		// return 'R';
+		if (ucType.equals("DPF")) // VX=Vogtland Express, Connections only?
+			return 'R';
 		if (ucType.equals("VBG")) // Vogtlandbahn, via JSON API
 			return 'R';
 		if (ucType.equals("SBE")) // Zittau-Seifhennersdorf, via JSON API
@@ -849,8 +812,8 @@ public class OebbProvider implements NetworkProvider
 
 		if (ucType.equals("STR"))
 			return 'T';
-		// if (ucType.equals("LKB"))
-		// return 'T';
+		if (ucType.equals("LKB")) // Connections only?
+			return 'T';
 		if (ucType.equals("WLB")) // via JSON API
 			return 'T';
 
@@ -858,20 +821,20 @@ public class OebbProvider implements NetworkProvider
 			return 'B';
 		if (ucType.equals("RFB"))
 			return 'B';
-		// if (ucType.equals("OBU"))
-		// return 'B';
+		if (ucType.equals("OBU")) // Connections only?
+			return 'B';
 		if (ucType.equals("AST"))
 			return 'B';
 		if (ucType.equals("ASTSV")) // via JSON API
 			return 'B';
 		if (ucType.equals("ICB")) // ÖBB ICBus
 			return 'B';
-		// if (ucType.equals("FB")) // Polen
-		// return 'B';
-		// if (ucType.equals("BSV")) // Deutschland
-		// return 'B';
-		// if (ucType.equals("LT")) // Linien-Taxi
-		// return 'B';
+		if (ucType.equals("FB")) // Polen, Connections only?
+			return 'B';
+		if (ucType.equals("BSV")) // Deutschland, Connections only?
+			return 'B';
+		if (ucType.equals("LT")) // Linien-Taxi, Connections only?
+			return 'B';
 		if (ucType.equals("BUSSV")) // via JSON API
 			return 'B';
 		if (ucType.equals("BUSLEOBE")) // Rufbus, via JSON API
@@ -883,15 +846,15 @@ public class OebbProvider implements NetworkProvider
 		if (ucType.equals("O-B")) // Stadtbus, via JSON API
 			return 'B';
 
-		// if (ucType.equals("SCH"))
-		// return 'F';
+		if (ucType.equals("SCH")) // Connections only?
+			return 'F';
 		if (ucType.equals("AS")) // SyltShuttle
 			return 'F';
 		if (ucType.equals("SCHIFF")) // via JSON API
 			return 'F';
 
-		// if (ucType.equals("SB"))
-		// return 'C';
+		if (ucType.equals("SB")) // Connections only?
+			return 'C';
 		if (ucType.equals("LIF"))
 			return 'C';
 		if (ucType.equals("SEILBAHN")) // via JSON API
@@ -900,14 +863,14 @@ public class OebbProvider implements NetworkProvider
 		if (ucType.equals("FLUG")) // via JSON API
 			return 'I';
 
-		// if (ucType.equals("U70")) // U.K.
-		// return '?';
-		// if (ucType.equals("R84"))
-		// return '?';
-		// if (ucType.equals("S84"))
-		// return '?';
-		// if (ucType.equals("T84"))
-		// return '?';
+		if (ucType.equals("U70")) // U.K., Connections only?
+			return '?';
+		if (ucType.equals("R84")) // U.K., Connections only?
+			return '?';
+		if (ucType.equals("S84")) // U.K., Connections only?
+			return '?';
+		if (ucType.equals("T84")) // U.K., Connections only?
+			return '?';
 
 		return 0;
 	}
