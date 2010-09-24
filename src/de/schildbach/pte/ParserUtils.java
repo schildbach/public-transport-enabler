@@ -112,7 +112,7 @@ public final class ParserUtils
 					{
 						for (final Map.Entry<String, List<String>> entry : connection.getHeaderFields().entrySet())
 						{
-							if (entry.getKey().equalsIgnoreCase("set-cookie"))
+							if ("set-cookie".equalsIgnoreCase(entry.getKey()))
 							{
 								for (final String value : entry.getValue())
 								{
