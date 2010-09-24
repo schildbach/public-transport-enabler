@@ -344,11 +344,9 @@ public class SbbProvider implements NetworkProvider
 
 						final String departure = ParserUtils.resolveEntities(mDetFine.group(2));
 
-						Date departureDate = mDetFine.group(3) != null ? ParserUtils.parseDate(mDetFine.group(3)) : null;
+						Date departureDate = mDetFine.group(3) != null ? ParserUtils.parseDate(mDetFine.group(3)) : lastDate;
 						if (departureDate != null)
 							lastDate = departureDate;
-						else
-							departureDate = lastDate;
 
 						final String lineType = mDetFine.group(6);
 
@@ -356,11 +354,9 @@ public class SbbProvider implements NetworkProvider
 
 						final String arrival = ParserUtils.resolveEntities(mDetFine.group(10));
 
-						Date arrivalDate = mDetFine.group(11) != null ? ParserUtils.parseDate(mDetFine.group(11)) : null;
+						Date arrivalDate = mDetFine.group(11) != null ? ParserUtils.parseDate(mDetFine.group(11)) : lastDate;
 						if (arrivalDate != null)
 							lastDate = arrivalDate;
-						else
-							arrivalDate = lastDate;
 
 						if (!lineType.equals("fuss") && !lineType.equals("transfer"))
 						{

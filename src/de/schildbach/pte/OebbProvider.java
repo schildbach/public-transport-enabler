@@ -347,11 +347,9 @@ public class OebbProvider implements NetworkProvider
 
 							final String departure = ParserUtils.resolveEntities(mDetFine.group(2));
 
-							Date detailsDepartureDate = mDetFine.group(3) != null ? ParserUtils.parseDate(mDetFine.group(3)) : null;
+							Date detailsDepartureDate = mDetFine.group(3) != null ? ParserUtils.parseDate(mDetFine.group(3)) : lastDate;
 							if (detailsDepartureDate != null)
 								lastDate = detailsDepartureDate;
-							else
-								detailsDepartureDate = lastDate;
 
 							final Date detailsDepartureTime = ParserUtils.parseTime(mDetFine.group(4));
 							final Date detailsDepartureDateTime = ParserUtils.joinDateTime(detailsDepartureDate, detailsDepartureTime);
@@ -362,11 +360,9 @@ public class OebbProvider implements NetworkProvider
 
 							final String arrival = ParserUtils.resolveEntities(mDetFine.group(9));
 
-							Date detailsArrivalDate = mDetFine.group(10) != null ? ParserUtils.parseDate(mDetFine.group(10)) : null;
+							Date detailsArrivalDate = mDetFine.group(10) != null ? ParserUtils.parseDate(mDetFine.group(10)) : lastDate;
 							if (detailsArrivalDate != null)
 								lastDate = detailsArrivalDate;
-							else
-								detailsArrivalDate = lastDate;
 
 							final Date detailsArrivalTime = ParserUtils.parseTime(mDetFine.group(11));
 							final Date detailsArrivalDateTime = ParserUtils.joinDateTime(detailsArrivalDate, detailsArrivalTime);
