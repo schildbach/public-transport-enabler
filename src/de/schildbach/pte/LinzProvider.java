@@ -180,8 +180,7 @@ public class LinzProvider implements NetworkProvider
 			+ "<itdDate year=\"(\\d+)\" month=\"(\\d+)\" day=\"(\\d+)\" weekday=\"\\d+\"/>" // date
 			+ "<itdTime hour=\"(\\d+)\" minute=\"(\\d+)\" ap=\"\"/>" // time
 			+ ".*?" //
-			+ "<itdServingLine [^>]* number=\"([^<]*)\" symbol=\"([^<]*)\" motType=\"(\\d+)\" " // line, symbol,
-			// lineType
+			+ "<itdServingLine [^>]* number=\"([^<]*)\" symbol=\"([^<]*)\" motType=\"(\\d+)\" " // line, symbol, type
 			+ "realtime=\"(\\d+)\" " // realtime
 			+ "direction=\"([^<]*)\" destID=\"(\\d+)\"" // destination, destinationId
 			+ ".*?" //			
@@ -195,12 +194,10 @@ public class LinzProvider implements NetworkProvider
 		final Matcher mHeadCoarse = P_DEPARTURES_HEAD_COARSE.matcher(page);
 		if (mHeadCoarse.matches())
 		{
+			final String headerText = mHeadCoarse.group(1);
 			final String departuresText = mHeadCoarse.group(2);
-			// // messages
-			// if (mHeadCoarse.group(3) != null)
-			// return new QueryDeparturesResult(uri, Status.INVALID_STATION);
 
-			final Matcher mHeadFine = P_DEPARTURES_HEAD_FINE.matcher(mHeadCoarse.group(1));
+			final Matcher mHeadFine = P_DEPARTURES_HEAD_FINE.matcher(headerText);
 			if (mHeadFine.matches())
 			{
 				final int locationId = Integer.parseInt(mHeadFine.group(1));
@@ -245,7 +242,7 @@ public class LinzProvider implements NetworkProvider
 			}
 			else
 			{
-				throw new IllegalArgumentException("cannot parse '" + mHeadCoarse.group(1) + "' on " + uri);
+				throw new IllegalArgumentException("cannot parse '" + headerText + "' on " + uri);
 			}
 		}
 		else
