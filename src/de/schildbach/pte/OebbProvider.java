@@ -831,6 +831,8 @@ public class OebbProvider implements NetworkProvider
 			return 'B';
 		if (ucType.equals("LT")) // Linien-Taxi, Connections only?
 			return 'B';
+		if (ucType.equals("BUSS")) // via JSON API
+			return 'B';
 		if (ucType.equals("BUSSV")) // via JSON API
 			return 'B';
 		if (ucType.equals("BUSLEOBE")) // Rufbus, via JSON API
