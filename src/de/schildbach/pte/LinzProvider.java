@@ -34,6 +34,7 @@ import java.util.regex.Pattern;
 public class LinzProvider implements NetworkProvider
 {
 	public static final String NETWORK_ID = "www.linzag.at";
+	public static final String API_BASE = "http://www.linzag.at/linz/";
 
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
@@ -44,17 +45,53 @@ public class LinzProvider implements NetworkProvider
 		return false;
 	}
 
+	private static final String AUTOCOMPLETE_URI = API_BASE + "XML_STOPFINDER_REQUEST"
+			+ "?outputFormat=XML&coordOutputFormat=WGS84&name_sf=%s&type_sf=%s";
+	private static final String AUTOCOMPLETE_TYPE = "any"; // any, stop, street, poi
+	private static final Pattern P_AUTOCOMPLETE = Pattern.compile("" //
+			+ "(?:" //
+			+ "<itdOdvAssignedStop stopID=\"(\\d+)\" x=\"(\\d+)\" y=\"(\\d+)\" mapName=\"WGS84\" [^>]* nameWithPlace=\"([^\"]*)\"" //
+			+ "|" //
+			+ "<odvNameElem [^>]* locality=\"([^\"]*)\"" //
+			+ ")");
+	private static final String ENCODING = "ISO-8859-1";
+
 	public List<Autocomplete> autocompleteStations(final CharSequence constraint) throws IOException
 	{
-		throw new UnsupportedOperationException();
+		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING), AUTOCOMPLETE_TYPE);
+		final CharSequence page = ParserUtils.scrape(uri);
+
+		final List<Autocomplete> results = new ArrayList<Autocomplete>();
+
+		final Matcher m = P_AUTOCOMPLETE.matcher(page);
+		while (m.find())
+		{
+			if (m.group(1) != null)
+			{
+				final int sId = Integer.parseInt(m.group(1));
+				// final double sLon = latLonToDouble(Integer.parseInt(mAutocomplete.group(2)));
+				// final double sLat = latLonToDouble(Integer.parseInt(mAutocomplete.group(3)));
+				final String sName = m.group(4).trim();
+				results.add(new Autocomplete(sId, sName));
+			}
+			else if (m.group(5) != null)
+			{
+				final String sName = m.group(5).trim();
+				results.add(new Autocomplete(0, sName));
+			}
+		}
+
+		return results;
 	}
 
-	private static final String NEARBY_LATLON_URI = "http://www.linzag.at/linz/XSLT_DM_REQUEST"
+	private static final String NEARBY_LATLON_URI = API_BASE
+			+ "XSLT_DM_REQUEST"
 			+ "?outputFormat=XML&mode=direct&coordOutputFormat=WGS84&mergeDep=1&useAllStops=1&name_dm=%2.6f:%2.6f:WGS84&type_dm=coord&itOptionsActive=1&ptOptionsActive=1&useProxFootSearch=1&excludedMeans=checkbox";
-	private static final String NEARBY_STATION_URI = "http://www.linzag.at/linz/XSLT_DM_REQUEST"
+	private static final String NEARBY_STATION_URI = API_BASE
+			+ "XSLT_DM_REQUEST"
 			+ "?outputFormat=XML&mode=direct&coordOutputFormat=WGS84&mergeDep=1&useAllStops=1&name_dm=%s&type_dm=stop&itOptionsActive=1&ptOptionsActive=1&useProxFootSearch=1&excludedMeans=checkbox";
 	private static final Pattern P_NEARBY = Pattern
-			.compile("<itdOdvAssignedStop stopID=\"(\\d+)\" x=\"(\\d+)\" y=\"(\\d+)\" mapName=\"WGS84\" .*? nameWithPlace=\"([^\"]*)\" distance=\"(\\d+)\"");
+			.compile("<itdOdvAssignedStop stopID=\"(\\d+)\" x=\"(\\d+)\" y=\"(\\d+)\" mapName=\"WGS84\" [^>]* nameWithPlace=\"([^\"]*)\" distance=\"(\\d+)\"");
 
 	public List<Station> nearbyStations(final String stationId, final double lat, final double lon, final int maxDistance, final int maxStations)
 			throws IOException
@@ -119,7 +156,7 @@ public class LinzProvider implements NetworkProvider
 	public String departuresQueryUri(final String stationId, final int maxDepartures)
 	{
 		final StringBuilder uri = new StringBuilder();
-		uri.append("http://www.linzag.at/linz/XSLT_DM_REQUEST");
+		uri.append(API_BASE).append("XSLT_DM_REQUEST");
 		uri.append("?outputFormat=XML");
 		uri.append("&coordOutputFormat=WGS84");
 		uri.append("&type_dm=stop");
@@ -139,11 +176,12 @@ public class LinzProvider implements NetworkProvider
 	, Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<itdDeparture (.*?)</itdDeparture>", Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_FINE = Pattern.compile("" //
-			+ "stopID=\"(\\d+)\" .*? area=\"\\d+\" platform=\"(\\d+)?\" platformName=\"\".*?" // locationId
+			+ "stopID=\"(\\d+)\" [^>]* area=\"\\d+\" platform=\"(\\d+)?\" platformName=\"\".*?" // locationId
 			+ "<itdDate year=\"(\\d+)\" month=\"(\\d+)\" day=\"(\\d+)\" weekday=\"\\d+\"/>" // date
 			+ "<itdTime hour=\"(\\d+)\" minute=\"(\\d+)\" ap=\"\"/>" // time
 			+ ".*?" //
-			+ "<itdServingLine .*? number=\"([^<]*)\" symbol=\"([^<]*)\" motType=\"(\\d+)\" " // line, symbol, lineType
+			+ "<itdServingLine [^>]* number=\"([^<]*)\" symbol=\"([^<]*)\" motType=\"(\\d+)\" " // line, symbol,
+			// lineType
 			+ "realtime=\"(\\d+)\" " // realtime
 			+ "direction=\"([^<]*)\" destID=\"(\\d+)\"" // destination, destinationId
 			+ ".*?" //			
