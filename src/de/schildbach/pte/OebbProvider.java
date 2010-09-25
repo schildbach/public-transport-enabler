@@ -251,7 +251,7 @@ public class OebbProvider implements NetworkProvider
 			if (mError.group(2) != null)
 				return QueryConnectionsResult.INVALID_DATE;
 			if (mError.group(3) != null)
-				return QueryConnectionsResult.SESSION_TIMEOUT;
+				throw new SessionExpiredException();
 		}
 
 		List<String> fromAddresses = null;
@@ -301,7 +301,7 @@ public class OebbProvider implements NetworkProvider
 			if (mError.group(2) != null)
 				return QueryConnectionsResult.INVALID_DATE;
 			if (mError.group(3) != null)
-				return QueryConnectionsResult.SESSION_TIMEOUT;
+				throw new SessionExpiredException();
 		}
 
 		return queryConnections(uri, page);
@@ -363,7 +363,7 @@ public class OebbProvider implements NetworkProvider
 			if (mError.group(2) != null)
 				return QueryConnectionsResult.INVALID_DATE;
 			if (mError.group(3) != null)
-				return QueryConnectionsResult.SESSION_TIMEOUT;
+				throw new SessionExpiredException();
 		}
 
 		// parse page
