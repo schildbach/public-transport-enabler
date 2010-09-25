@@ -71,16 +71,20 @@ public class MvvProvider implements NetworkProvider
 			final Matcher mAutocompleteFine = P_AUTOCOMPLETE_FINE.matcher(mAutocompleteCoarse.group(1));
 			if (mAutocompleteFine.matches())
 			{
-				final String location = mAutocompleteFine.group(1);
+				final String location = mAutocompleteFine.group(1) + ", " + mAutocompleteFine.group(4);
 				final String type = mAutocompleteFine.group(2);
 				final int locationId = Integer.parseInt(mAutocompleteFine.group(3));
-				final String city = mAutocompleteFine.group(4);
 
 				if (type.equals("stop"))
-				{
-					final Autocomplete result = new Autocomplete(LocationType.STATION, locationId, city + ", " + location);
-					results.add(result);
-				}
+					results.add(new Autocomplete(LocationType.STATION, locationId, location));
+				else if (type.equals("street"))
+					results.add(new Autocomplete(LocationType.ADDRESS, 0, location));
+				else if (type.equals("singlehouse"))
+					results.add(new Autocomplete(LocationType.ADDRESS, 0, location));
+				else if (type.equals("poi"))
+					results.add(new Autocomplete(LocationType.ANY, 0, location));
+				else
+					throw new IllegalStateException("unknown type " + type + " on " + uri);
 			}
 			else
 			{
