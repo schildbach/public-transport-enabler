@@ -94,7 +94,7 @@ public class MvvProvider implements NetworkProvider
 	private static final String NEARBY_LATLON_URI = "http://efa.mvv-muenchen.de/ultralite/XML_DM_REQUEST"
 			+ "?mode=direct&coordOutputFormat=WGS84&mergeDep=1&useAllStops=1&name_dm=%2.6f:%2.6f:WGS84&type_dm=coord&itOptionsActive=1&ptOptionsActive=1&useProxFootSearch=1&excludedMeans=checkbox";
 	private static final String NEARBY_STATION_URI = "http://efa.mvv-muenchen.de/ultralite/XML_DM_REQUEST"
-			+ "?mode=direct&coordOutputFormat=WGS84&mergeDep=1&useAllStops=1&name_dm=%d&type_dm=stop&itOptionsActive=1&ptOptionsActive=1&useProxFootSearch=1&excludedMeans=checkbox";
+			+ "?mode=direct&coordOutputFormat=WGS84&mergeDep=1&useAllStops=1&name_dm=%s&type_dm=stop&itOptionsActive=1&ptOptionsActive=1&useProxFootSearch=1&excludedMeans=checkbox";
 	private static final Pattern P_NEARBY_COARSE = Pattern.compile("<dp>(.*?)</dp>");
 	private static final Pattern P_NEARBY_FINE = Pattern.compile(".*?<n>(.*?)</n>.*?<r>.*?<id>(.*?)</id>.*?</r>.*?(?:<c>(\\d+),(\\d+)</c>.*?)?");
 
