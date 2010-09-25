@@ -179,7 +179,7 @@ public class LinzProvider implements NetworkProvider
 	, Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<itdDeparture (.*?)</itdDeparture>", Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_FINE = Pattern.compile("" //
-			+ "stopID=\"(\\d+)\" [^>]* area=\"\\d+\" platform=\"(\\d+)?\" platformName=\"\".*?" // locationId
+			+ "stopID=\"(\\d+)\" [^>]* area=\"(\\d+)\" platform=\"(\\d+)?\" platformName=\"\".*?" // locationId
 			+ "<itdDate year=\"(\\d+)\" month=\"(\\d+)\" day=\"(\\d+)\" weekday=\"\\d+\"/>" // date
 			+ "<itdTime hour=\"(\\d+)\" minute=\"(\\d+)\" ap=\"\"/>" // time
 			+ ".*?" //
@@ -220,18 +220,20 @@ public class LinzProvider implements NetworkProvider
 						{
 							if (Integer.parseInt(mDepFine.group(1)) == locationId)
 							{
-								final String position = mDepFine.group(2) != null ? "Gl. " + mDepFine.group(2) : null;
+								final String area = mDepFine.group(2); // FIXME not clear what this is
 
-								final Date departureDate = parseDate(mDepFine.group(3), mDepFine.group(4), mDepFine.group(5), mDepFine.group(6),
-										mDepFine.group(7));
+								final String position = mDepFine.group(3) != null ? "Gl. " + mDepFine.group(3) : null;
 
-								final String line = parseLine(mDepFine.group(8), mDepFine.group(9), mDepFine.group(10));
+								final Date departureDate = parseDate(mDepFine.group(4), mDepFine.group(5), mDepFine.group(6), mDepFine.group(7),
+										mDepFine.group(8));
 
-								final boolean isRealtime = mDepFine.group(11).equals("1");
+								final String line = parseLine(mDepFine.group(9), mDepFine.group(10), mDepFine.group(11));
 
-								final String destination = mDepFine.group(12);
+								final boolean isRealtime = mDepFine.group(12).equals("1");
 
-								final int destinationId = Integer.parseInt(mDepFine.group(13));
+								final String destination = mDepFine.group(13);
+
+								final int destinationId = Integer.parseInt(mDepFine.group(14));
 
 								departures.add(new Departure(!isRealtime ? departureDate : null, isRealtime ? departureDate : null, line, LINES
 										.get(line.charAt(0)), null, position, destinationId, destination, null));
