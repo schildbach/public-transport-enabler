@@ -1,3 +1,20 @@
+/*
+ * Copyright 2010 the original author or authors.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package de.schildbach.pte;
 
 import java.io.IOException;
@@ -104,7 +121,7 @@ public class OebbProvider implements NetworkProvider
 		}
 	}
 
-	private final String NEARBY_URI = "http://fahrplan.oebb.at/bin/stboard.exe/dn?distance=50&near=Suchen&input=%d";
+	private final String NEARBY_URI = API_BASE + "stboard.exe/dn?distance=50&near=Suchen&input=%d";
 	private final static Pattern P_NEARBY_COARSE = Pattern.compile("<tr class=\"zebracol-\\d\">(.*?)</tr>", Pattern.DOTALL);
 	private final static Pattern P_NEARBY_FINE = Pattern.compile(".*?stboard\\.exe/.*?&input=.*?%23(\\d+)&.*?>(.*?)</a>.*?", Pattern.DOTALL);
 
@@ -203,7 +220,7 @@ public class OebbProvider implements NetworkProvider
 		throw new IllegalArgumentException(locationType.toString());
 	}
 
-	private static final String QUERY_CONNECTIONS_FORM_URL = "http://fahrplan.oebb.at/bin/query.exe/dn?";
+	private static final String QUERY_CONNECTIONS_FORM_URL = API_BASE + "query.exe/dn?";
 	private static final Pattern P_QUERY_CONNECTIONS_FORM_ACTION = Pattern
 			.compile("<form id=\"HFSQuery\" action=\"(http://fahrplan\\.oebb\\.at/bin/query\\.exe[^#]*)#");
 	private static final Pattern P_QUERY_CONNECTIONS_ERROR = Pattern
@@ -474,7 +491,8 @@ public class OebbProvider implements NetworkProvider
 
 		final StringBuilder uri = new StringBuilder();
 
-		uri.append("http://fahrplan.oebb.at/bin/stboard.exe/dn?L=vs_scotty.vs_stb");
+		uri.append(API_BASE);
+		uri.append("stboard.exe/dn?L=vs_scotty.vs_stb");
 		uri.append("&input=").append(stationId);
 		uri.append("&boardType=dep");
 		uri.append("&time=").append(TIME_FORMAT.format(now));
