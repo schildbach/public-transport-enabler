@@ -166,9 +166,12 @@ public class LinzProvider implements NetworkProvider
 	}
 
 	private static final Pattern P_DEPARTURES_HEAD_COARSE = Pattern.compile(".*?" //
+			+ "(?:" //
 			+ "<itdOdv type=\"stop\" usage=\"dm\">(.*?)</itdOdv>.*?" // head
 			+ "(?:<itdDepartureList>(.*?)</itdDepartureList>.*?)?" // departures
-			// TODO messages
+			+ "|" //
+			+ "(Server-Wartung).*?" // messages
+			+ ")" //
 	, Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_HEAD_FINE = Pattern.compile(".*?" //
 			+ "<odvNameElem .*? stopID=\"(\\d+)\" [^>]*>" // locationId
@@ -182,7 +185,7 @@ public class LinzProvider implements NetworkProvider
 			+ ".*?" //
 			+ "<itdServingLine [^>]* number=\"([^<]*)\" symbol=\"([^<]*)\" motType=\"(\\d+)\" " // line, symbol, type
 			+ "realtime=\"(\\d+)\" " // realtime
-			+ "direction=\"([^<]*)\" destID=\"(\\d+)\"" // destination, destinationId
+			+ "direction=\"([^\"]*)\" destID=\"(\\d+)\"" // destination, destinationId
 			+ ".*?" //			
 	, Pattern.DOTALL);
 
@@ -194,6 +197,9 @@ public class LinzProvider implements NetworkProvider
 		final Matcher mHeadCoarse = P_DEPARTURES_HEAD_COARSE.matcher(page);
 		if (mHeadCoarse.matches())
 		{
+			if (mHeadCoarse.group(3) != null)
+				return new QueryDeparturesResult(uri, QueryDeparturesResult.Status.SERVICE_DOWN);
+
 			final String headerText = mHeadCoarse.group(1);
 			final String departuresText = mHeadCoarse.group(2);
 
@@ -227,8 +233,8 @@ public class LinzProvider implements NetworkProvider
 
 								final int destinationId = Integer.parseInt(mDepFine.group(13));
 
-								departures.add(new Departure(!isRealtime ? departureDate : null, isRealtime ? departureDate : null, line,
-										line != null ? LINES.get(line.charAt(0)) : null, null, position, destinationId, destination, null));
+								departures.add(new Departure(!isRealtime ? departureDate : null, isRealtime ? departureDate : null, line, LINES
+										.get(line.charAt(0)), null, position, destinationId, destination, null));
 							}
 						}
 						else
