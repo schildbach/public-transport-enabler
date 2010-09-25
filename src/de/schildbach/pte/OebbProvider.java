@@ -312,7 +312,7 @@ public class OebbProvider implements NetworkProvider
 			final String linkLater = mHead.group(5) != null ? ParserUtils.resolveEntities(mHead.group(5)) : null;
 			final List<Connection> connections = new ArrayList<Connection>();
 
-			Date lastDate = null;
+			Date lastDate = currentDate;
 
 			final Matcher mConCoarse = P_CONNECTIONS_COARSE.matcher(page);
 			while (mConCoarse.find())
