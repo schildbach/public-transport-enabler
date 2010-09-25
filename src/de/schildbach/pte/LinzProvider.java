@@ -72,12 +72,12 @@ public class LinzProvider implements NetworkProvider
 				// final double sLon = latLonToDouble(Integer.parseInt(mAutocomplete.group(2)));
 				// final double sLat = latLonToDouble(Integer.parseInt(mAutocomplete.group(3)));
 				final String sName = m.group(4).trim();
-				results.add(new Autocomplete(sId, sName));
+				results.add(new Autocomplete(LocationType.STATION, sId, sName));
 			}
 			else if (m.group(5) != null)
 			{
 				final String sName = m.group(5).trim();
-				results.add(new Autocomplete(0, sName));
+				results.add(new Autocomplete(LocationType.ANY, 0, sName));
 			}
 		}
 

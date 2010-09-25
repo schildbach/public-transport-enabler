@@ -78,7 +78,7 @@ public class MvvProvider implements NetworkProvider
 
 				if (type.equals("stop"))
 				{
-					final Autocomplete result = new Autocomplete(locationId, city + ", " + location);
+					final Autocomplete result = new Autocomplete(LocationType.STATION, locationId, city + ", " + location);
 					results.add(result);
 				}
 			}

@@ -16,16 +16,20 @@
  */
 package de.schildbach.pte;
 
+import de.schildbach.pte.NetworkProvider.LocationType;
+
 /**
  * @author Andreas Schildbach
  */
 public final class Autocomplete
 {
+	public final LocationType locationType;
 	public final int locationId;
 	public final String location;
 
-	public Autocomplete(final int locationId, final String location)
+	public Autocomplete(final LocationType locationType, final int locationId, final String location)
 	{
+		this.locationType = locationType;
 		this.locationId = locationId;
 		this.location = location;
 	}

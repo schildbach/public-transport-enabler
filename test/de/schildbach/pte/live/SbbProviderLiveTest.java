@@ -18,9 +18,11 @@
 package de.schildbach.pte.live;
 
 import java.util.Date;
+import java.util.List;
 
 import org.junit.Test;
 
+import de.schildbach.pte.Autocomplete;
 import de.schildbach.pte.QueryConnectionsResult;
 import de.schildbach.pte.SbbProvider;
 import de.schildbach.pte.NetworkProvider.LocationType;
@@ -61,5 +63,12 @@ public class SbbProviderLiveTest
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
 		System.out.println(moreResult);
+	}
+
+	@Test
+	public void autoComplete() throws Exception
+	{
+		final List<Autocomplete> result = provider.autocompleteStations("haupt");
+		System.out.println(result);
 	}
 }

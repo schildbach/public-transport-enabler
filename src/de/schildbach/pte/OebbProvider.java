@@ -20,6 +20,7 @@ import de.schildbach.pte.QueryDeparturesResult.Status;
 public class OebbProvider implements NetworkProvider
 {
 	public static final String NETWORK_ID = "fahrplan.oebb.at";
+	public static final String API_BASE = "http://fahrplan.oebb.at/bin/";
 
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
@@ -30,30 +31,77 @@ public class OebbProvider implements NetworkProvider
 		return false;
 	}
 
-	private static final String NAME_URL = "http://fahrplan.oebb.at/bin/stboard.exe/dn?input=";
-	private static final Pattern P_SINGLE_NAME = Pattern
-			.compile(".*?<input type=\"hidden\" name=\"input\" value=\"(.+?)#(\\d+)\">.*", Pattern.DOTALL);
-	private static final Pattern P_MULTI_NAME = Pattern.compile("<option value=\".+?#(\\d+)\">(.+?)</option>", Pattern.DOTALL);
+	private static final String AUTOCOMPLETE_URI = API_BASE
+			+ "ajax-getstop.exe/dny?start=1&tpl=suggest2json&REQ0JourneyStopsS0A=255&REQ0JourneyStopsB=12&S=%s?&js=true&";
+	private static final String ENCODING = "ISO-8859-1";
+	private static final Pattern P_AUTOCOMPLETE_JSON = Pattern.compile("SLs\\.sls=(.*?);SLs\\.showSuggestion\\(\\);", Pattern.DOTALL);
+	private static final Pattern P_AUTOCOMPLETE_ID = Pattern.compile(".*?@L=(\\d+)@.*?");
 
 	public List<Autocomplete> autocompleteStations(final CharSequence constraint) throws IOException
 	{
-		final CharSequence page = ParserUtils.scrape(NAME_URL + ParserUtils.urlEncode(constraint.toString()));
+		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING));
+		final CharSequence page = ParserUtils.scrape(uri);
 
-		final List<Autocomplete> results = new ArrayList<Autocomplete>();
-
-		final Matcher mSingle = P_SINGLE_NAME.matcher(page);
-		if (mSingle.matches())
+		final Matcher mJson = P_AUTOCOMPLETE_JSON.matcher(page);
+		if (mJson.matches())
 		{
-			results.add(new Autocomplete(Integer.parseInt(mSingle.group(2)), ParserUtils.resolveEntities(mSingle.group(1))));
+			final String json = mJson.group(1);
+			final List<Autocomplete> results = new ArrayList<Autocomplete>();
+
+			try
+			{
+				final JSONObject head = new JSONObject(json);
+				final JSONArray aSuggestions = head.getJSONArray("suggestions");
+
+				for (int i = 0; i < aSuggestions.length(); i++)
+				{
+					final JSONObject suggestion = aSuggestions.optJSONObject(i);
+					if (suggestion != null)
+					{
+						final int type = suggestion.getInt("type");
+						final String value = suggestion.getString("value");
+
+						if (type == 1) // station
+						{
+							final String id = suggestion.getString("id");
+							final Matcher m = P_AUTOCOMPLETE_ID.matcher(id);
+							if (m.matches())
+							{
+								final int localId = Integer.parseInt(m.group(1));
+								results.add(new Autocomplete(LocationType.STATION, localId, value));
+							}
+							else
+							{
+								throw new IllegalStateException("id does not match: " + id);
+							}
+						}
+						else if (type == 2) // address
+						{
+							results.add(new Autocomplete(LocationType.ADDRESS, 0, value));
+						}
+						else if (type == 4) // poi
+						{
+							results.add(new Autocomplete(LocationType.ANY, 0, value));
+						}
+						else
+						{
+							throw new IllegalStateException("unknown type " + type + " on " + uri);
+						}
+					}
+				}
+
+				return results;
+			}
+			catch (final JSONException x)
+			{
+				x.printStackTrace();
+				throw new RuntimeException("cannot parse: '" + json + "' on " + uri, x);
+			}
 		}
 		else
 		{
-			final Matcher mMulti = P_MULTI_NAME.matcher(page);
-			while (mMulti.find())
-				results.add(new Autocomplete(Integer.parseInt(mMulti.group(1)), ParserUtils.resolveEntities(mMulti.group(2))));
+			throw new RuntimeException("cannot parse: '" + page + "' on " + uri);
 		}
-
-		return results;
 	}
 
 	private final String NEARBY_URI = "http://fahrplan.oebb.at/bin/stboard.exe/dn?distance=50&near=Suchen&input=%d";

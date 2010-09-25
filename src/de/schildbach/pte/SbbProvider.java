@@ -66,13 +66,13 @@ public class SbbProvider implements NetworkProvider
 		final Matcher mSingle = P_SINGLE_NAME.matcher(page);
 		if (mSingle.matches())
 		{
-			results.add(new Autocomplete(Integer.parseInt(mSingle.group(2)), ParserUtils.resolveEntities(mSingle.group(1))));
+			results.add(new Autocomplete(LocationType.STATION, Integer.parseInt(mSingle.group(2)), ParserUtils.resolveEntities(mSingle.group(1))));
 		}
 		else
 		{
 			final Matcher mMulti = P_MULTI_NAME.matcher(page);
 			while (mMulti.find())
-				results.add(new Autocomplete(Integer.parseInt(mMulti.group(1)), ParserUtils.resolveEntities(mMulti.group(2))));
+				results.add(new Autocomplete(LocationType.STATION, Integer.parseInt(mMulti.group(1)), ParserUtils.resolveEntities(mMulti.group(2))));
 		}
 
 		return results;
