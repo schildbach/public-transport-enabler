@@ -15,11 +15,17 @@ import de.schildbach.pte.QueryDeparturesResult.Status;
 
 public class SncbProvider implements NetworkProvider
 {
+	public static final String NETWORK_ID = "hari.b-rail.be";
+
 	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
 
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
-		throw new UnsupportedOperationException();
+		for (final Capability capability : capabilities)
+			if (capability == Capability.DEPARTURES)
+				return true;
+
+		return false;
 	}
 
 	public List<Autocomplete> autocompleteStations(final CharSequence constraint) throws IOException
