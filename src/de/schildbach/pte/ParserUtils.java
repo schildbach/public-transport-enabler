@@ -63,10 +63,14 @@ public final class ParserUtils
 	public static CharSequence scrape(final String url, final boolean isPost, final String request, String encoding, final boolean cookieHandling)
 			throws IOException
 	{
+		return scrape(url, isPost, request, encoding, cookieHandling, 3);
+	}
+
+	public static CharSequence scrape(final String url, final boolean isPost, final String request, String encoding, final boolean cookieHandling,
+			int tries) throws IOException
+	{
 		if (encoding == null)
 			encoding = SCRAPE_DEFAULT_ENCODING;
-
-		int tries = 3;
 
 		while (true)
 		{
