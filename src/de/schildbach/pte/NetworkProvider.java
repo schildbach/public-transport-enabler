@@ -35,7 +35,7 @@ public interface NetworkProvider
 
 	public enum LocationType
 	{
-		ANY, STATION, WGS84, ADDRESS
+		ANY, STATION, WGS84, ADDRESS, POI
 	}
 
 	public enum WalkSpeed

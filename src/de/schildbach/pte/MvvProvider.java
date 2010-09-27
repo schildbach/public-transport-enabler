@@ -82,7 +82,7 @@ public class MvvProvider implements NetworkProvider
 				else if (type.equals("singlehouse"))
 					results.add(new Autocomplete(LocationType.ADDRESS, 0, location));
 				else if (type.equals("poi"))
-					results.add(new Autocomplete(LocationType.ANY, 0, location));
+					results.add(new Autocomplete(LocationType.POI, 0, location));
 				else
 					throw new IllegalStateException("unknown type " + type + " on " + uri);
 			}
@@ -303,9 +303,10 @@ public class MvvProvider implements NetworkProvider
 			return "stop";
 		if (locationType == LocationType.ADDRESS)
 			return "any"; // strange, matches with anyObjFilter
+		if (locationType == LocationType.POI)
+			return "any";
 		if (locationType == LocationType.ANY)
 			return "any";
-		// TODO poi
 		throw new IllegalArgumentException(locationType.toString());
 	}
 
@@ -315,9 +316,10 @@ public class MvvProvider implements NetworkProvider
 			return 2;
 		if (locationType == LocationType.ADDRESS)
 			return 12;
+		if (locationType == LocationType.POI)
+			return 32;
 		if (locationType == LocationType.ANY)
 			return 0;
-		// TODO poi=32
 		throw new IllegalArgumentException(locationType.toString());
 	}
 
