@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 /**
  * @author Andreas Schildbach
  */
-public class LinzProvider implements NetworkProvider
+public class LinzProvider extends AbstractEfaProvider
 {
 	public static final String NETWORK_ID = "www.linzag.at";
 	public static final String API_BASE = "http://www.linzag.at/linz/";
@@ -48,90 +48,34 @@ public class LinzProvider implements NetworkProvider
 	private static final String AUTOCOMPLETE_URI = API_BASE + "XML_STOPFINDER_REQUEST"
 			+ "?outputFormat=XML&coordOutputFormat=WGS84&name_sf=%s&type_sf=%s";
 	private static final String AUTOCOMPLETE_TYPE = "any"; // any, stop, street, poi
-	private static final Pattern P_AUTOCOMPLETE = Pattern.compile("" //
-			+ "(?:" //
-			+ "<itdOdvAssignedStop stopID=\"(\\d+)\" x=\"(\\d+)\" y=\"(\\d+)\" mapName=\"WGS84\" [^>]* nameWithPlace=\"([^\"]*)\"" //
-			+ "|" //
-			+ "<odvNameElem [^>]* locality=\"([^\"]*)\"" //
-			+ ")");
 	private static final String ENCODING = "ISO-8859-1";
 
-	public List<Autocomplete> autocompleteStations(final CharSequence constraint) throws IOException
+	@Override
+	protected String autocompleteUri(final CharSequence constraint)
 	{
-		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING), AUTOCOMPLETE_TYPE);
-		final CharSequence page = ParserUtils.scrape(uri);
-
-		final List<Autocomplete> results = new ArrayList<Autocomplete>();
-
-		final Matcher m = P_AUTOCOMPLETE.matcher(page);
-		while (m.find())
-		{
-			if (m.group(1) != null)
-			{
-				final int sId = Integer.parseInt(m.group(1));
-				// final double sLon = latLonToDouble(Integer.parseInt(mAutocomplete.group(2)));
-				// final double sLat = latLonToDouble(Integer.parseInt(mAutocomplete.group(3)));
-				final String sName = m.group(4).trim();
-				results.add(new Autocomplete(LocationType.STATION, sId, sName));
-			}
-			else if (m.group(5) != null)
-			{
-				final String sName = m.group(5).trim();
-				results.add(new Autocomplete(LocationType.ANY, 0, sName));
-			}
-		}
-
-		return results;
+		return String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING), AUTOCOMPLETE_TYPE);
 	}
 
 	private static final String NEARBY_LATLON_URI = API_BASE
 			+ "XSLT_DM_REQUEST"
 			+ "?outputFormat=XML&mode=direct&coordOutputFormat=WGS84&mergeDep=1&useAllStops=1&name_dm=%2.6f:%2.6f:WGS84&type_dm=coord&itOptionsActive=1&ptOptionsActive=1&useProxFootSearch=1&excludedMeans=checkbox";
+
+	@Override
+	protected String nearbyLatLonUri(final double lat, final double lon)
+	{
+		return String.format(NEARBY_LATLON_URI, lon, lat);
+	}
+	
 	private static final String NEARBY_STATION_URI = API_BASE
 			+ "XSLT_DM_REQUEST"
 			+ "?outputFormat=XML&mode=direct&coordOutputFormat=WGS84&mergeDep=1&useAllStops=1&name_dm=%s&type_dm=stop&itOptionsActive=1&ptOptionsActive=1&useProxFootSearch=1&excludedMeans=checkbox";
-	private static final Pattern P_NEARBY = Pattern
-			.compile("<itdOdvAssignedStop stopID=\"(\\d+)\" x=\"(\\d+)\" y=\"(\\d+)\" mapName=\"WGS84\" [^>]* nameWithPlace=\"([^\"]*)\" distance=\"(\\d+)\"");
 
-	public List<Station> nearbyStations(final String stationId, final double lat, final double lon, final int maxDistance, final int maxStations)
-			throws IOException
+	@Override
+	protected String nearbyStationUri(final String stationId)
 	{
-		String uri;
-		if (lat != 0 || lon != 0)
-			uri = String.format(NEARBY_LATLON_URI, lon, lat);
-		else if (stationId != null)
-			uri = String.format(NEARBY_STATION_URI, stationId);
-		else
-			throw new IllegalArgumentException("at least one of stationId or lat/lon must be given");
-
-		final CharSequence page = ParserUtils.scrape(uri);
-
-		final List<Station> stations = new ArrayList<Station>();
-
-		final Matcher mNearby = P_NEARBY.matcher(page);
-		while (mNearby.find())
-		{
-			final int sId = Integer.parseInt(mNearby.group(1));
-			final double sLon = latLonToDouble(Integer.parseInt(mNearby.group(2)));
-			final double sLat = latLonToDouble(Integer.parseInt(mNearby.group(3)));
-			final String sName = mNearby.group(4).trim();
-			final int sDist = Integer.parseInt(mNearby.group(5));
-
-			final Station station = new Station(sId, sName, sLat, sLon, sDist, null, null);
-			stations.add(station);
-		}
-
-		if (maxStations == 0 || maxStations >= stations.size())
-			return stations;
-		else
-			return stations.subList(0, maxStations);
+		return String.format(NEARBY_STATION_URI, stationId);
 	}
-
-	private static double latLonToDouble(int value)
-	{
-		return (double) value / 1000000;
-	}
-
+	
 	public StationLocationResult stationLocation(final String stationId) throws IOException
 	{
 		throw new UnsupportedOperationException();
