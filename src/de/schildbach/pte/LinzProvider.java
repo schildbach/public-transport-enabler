@@ -18,15 +18,9 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author Andreas Schildbach
@@ -109,113 +103,8 @@ public class LinzProvider extends AbstractEfaProvider
 		return uri.toString();
 	}
 
-	private static final Pattern P_DEPARTURES_HEAD_COARSE = Pattern.compile(".*?" //
-			+ "(?:" //
-			+ "<itdOdv type=\"stop\" usage=\"dm\">(.*?)</itdOdv>.*?" // head
-			+ "(?:<itdDepartureList>(.*?)</itdDepartureList>.*?)?" // departures
-			+ "|" //
-			+ "(Server-Wartung).*?" // messages
-			+ ")" //
-	, Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_HEAD_FINE = Pattern.compile(".*?" //
-			+ "<odvNameElem .*? stopID=\"(\\d+)\" [^>]*>" // locationId
-			+ "([^<]*).*?" // location
-	, Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<itdDeparture (.*?)</itdDeparture>", Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_FINE = Pattern.compile("" //
-			+ "stopID=\"(\\d+)\" [^>]* area=\"(\\d+)\" platform=\"(\\d+)?\" platformName=\"\".*?" // locationId
-			+ "<itdDate year=\"(\\d+)\" month=\"(\\d+)\" day=\"(\\d+)\" weekday=\"\\d+\"/>" // date
-			+ "<itdTime hour=\"(\\d+)\" minute=\"(\\d+)\" ap=\"\"/>" // time
-			+ ".*?" //
-			+ "<itdServingLine [^>]* number=\"([^<]*)\" symbol=\"([^<]*)\" motType=\"(\\d+)\" " // line, symbol, type
-			+ "realtime=\"(\\d+)\" " // realtime
-			+ "direction=\"([^\"]*)\" destID=\"(\\d+)\"" // destination, destinationId
-			+ ".*?" //			
-	, Pattern.DOTALL);
-
-	public QueryDeparturesResult queryDepartures(final String uri) throws IOException
-	{
-		final CharSequence page = ParserUtils.scrape(uri);
-
-		// parse page
-		final Matcher mHeadCoarse = P_DEPARTURES_HEAD_COARSE.matcher(page);
-		if (mHeadCoarse.matches())
-		{
-			if (mHeadCoarse.group(3) != null)
-				return new QueryDeparturesResult(uri, QueryDeparturesResult.Status.SERVICE_DOWN);
-
-			final String headerText = mHeadCoarse.group(1);
-			final String departuresText = mHeadCoarse.group(2);
-
-			final Matcher mHeadFine = P_DEPARTURES_HEAD_FINE.matcher(headerText);
-			if (mHeadFine.matches())
-			{
-				final int locationId = Integer.parseInt(mHeadFine.group(1));
-				final String location = ParserUtils.resolveEntities(mHeadFine.group(2));
-				final List<Departure> departures = new ArrayList<Departure>(8);
-
-				if (departuresText != null)
-				{
-					final Matcher mDepCoarse = P_DEPARTURES_COARSE.matcher(departuresText);
-					while (mDepCoarse.find())
-					{
-						final Matcher mDepFine = P_DEPARTURES_FINE.matcher(mDepCoarse.group(1));
-						if (mDepFine.matches())
-						{
-							if (Integer.parseInt(mDepFine.group(1)) == locationId)
-							{
-								final String area = mDepFine.group(2); // FIXME not clear what this is
-
-								final String position = mDepFine.group(3) != null ? "Gl. " + mDepFine.group(3) : null;
-
-								final Date departureDate = parseDate(mDepFine.group(4), mDepFine.group(5), mDepFine.group(6), mDepFine.group(7),
-										mDepFine.group(8));
-
-								final String line = parseLine(mDepFine.group(9), mDepFine.group(10), mDepFine.group(11));
-
-								final boolean isRealtime = mDepFine.group(12).equals("1");
-
-								final String destination = mDepFine.group(13);
-
-								final int destinationId = Integer.parseInt(mDepFine.group(14));
-
-								departures.add(new Departure(!isRealtime ? departureDate : null, isRealtime ? departureDate : null, line, LINES
-										.get(line.charAt(0)), null, position, destinationId, destination, null));
-							}
-						}
-						else
-						{
-							throw new IllegalArgumentException("cannot parse '" + mDepCoarse.group(1) + "' on " + uri);
-						}
-					}
-				}
-
-				return new QueryDeparturesResult(uri, locationId, location, departures);
-			}
-			else
-			{
-				throw new IllegalArgumentException("cannot parse '" + headerText + "' on " + uri);
-			}
-		}
-		else
-		{
-			throw new IllegalArgumentException("cannot parse '" + page + "' on " + uri);
-		}
-	}
-
-	private static Date parseDate(final String year, final String month, final String day, final String hour, final String minute)
-	{
-		final Calendar calendar = new GregorianCalendar();
-		calendar.clear();
-		calendar.set(Calendar.YEAR, Integer.parseInt(year));
-		calendar.set(Calendar.MONTH, Integer.parseInt(month) - 1);
-		calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day));
-		calendar.set(Calendar.HOUR, Integer.parseInt(hour));
-		calendar.set(Calendar.MINUTE, Integer.parseInt(minute));
-		return calendar.getTime();
-	}
-
-	private String parseLine(final String number, final String symbol, final String mot)
+	@Override
+	protected String parseLine(final String number, final String symbol, final String mot)
 	{
 		if (!number.equals(symbol))
 			throw new IllegalStateException("number " + number + ", symbol " + symbol);
@@ -229,7 +118,7 @@ public class LinzProvider extends AbstractEfaProvider
 		if (t == 8)
 			return 'C' + number;
 
-		throw new IllegalStateException("cannot normalize type '" + mot + "' line '" + number + "'");
+		throw new IllegalStateException("cannot normalize mot '" + mot + "' number '" + number + "'");
 	}
 
 	private static final Map<Character, int[]> LINES = new HashMap<Character, int[]>();

@@ -18,10 +18,19 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
+
+import de.schildbach.pte.util.XmlPullUtil;
 
 /**
  * @author Andreas Schildbach
@@ -111,5 +120,79 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 	private static double latLonToDouble(final int value)
 	{
 		return (double) value / 1000000;
+	}
+
+	protected abstract String parseLine(String number, String symbol, String mot);
+
+	public QueryDeparturesResult queryDepartures(final String uri) throws IOException
+	{
+		try
+		{
+			final CharSequence page = ParserUtils.scrape(uri);
+			// System.out.println(page);
+
+			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
+			final XmlPullParser pp = factory.newPullParser();
+			pp.setInput(new StringReader(page.toString()));
+
+			XmlPullUtil.jumpToStartTag(pp, null, "odvNameElem");
+			final int locationId = Integer.parseInt(pp.getAttributeValue(null, "stopID"));
+
+			final String location = pp.nextText();
+
+			final Calendar departureTime = new GregorianCalendar();
+			final List<Departure> departures = new ArrayList<Departure>(8);
+
+			XmlPullUtil.jumpToStartTag(pp, null, "itdDepartureList");
+			while (XmlPullUtil.jumpToStartTag(pp, null, "itdDeparture"))
+			{
+				if (Integer.parseInt(pp.getAttributeValue(null, "stopID")) == locationId)
+				{
+					String position = pp.getAttributeValue(null, "platform");
+					if (position != null)
+						position = "Gl. " + position;
+
+					departureTime.clear();
+					XmlPullUtil.jumpToStartTag(pp, null, "itdDate");
+					processItdDate(pp, departureTime);
+					XmlPullUtil.jumpToStartTag(pp, null, "itdTime");
+					processItdTime(pp, departureTime);
+					XmlPullUtil.jumpToStartTag(pp, null, "itdServingLine");
+
+					final String line = parseLine(pp.getAttributeValue(null, "number"), pp.getAttributeValue(null, "symbol"), pp.getAttributeValue(
+							null, "motType"));
+
+					final boolean isRealtime = pp.getAttributeValue(null, "realtime").equals("1");
+
+					final String destination = pp.getAttributeValue(null, "direction");
+
+					final int destinationId = Integer.parseInt(pp.getAttributeValue(null, "destID"));
+
+					departures.add(new Departure(!isRealtime ? departureTime.getTime() : null, isRealtime ? departureTime.getTime() : null, line,
+							lineColors(line), null, position, destinationId, destination, null));
+				}
+			}
+
+			return new QueryDeparturesResult(uri, locationId, location, departures);
+		}
+		catch (final XmlPullParserException x)
+		{
+			throw new RuntimeException(x);
+		}
+	}
+
+	private void processItdDate(final XmlPullParser pp, final Calendar calendar) throws XmlPullParserException, IOException
+	{
+		pp.require(XmlPullParser.START_TAG, null, "itdDate");
+		calendar.set(Calendar.YEAR, Integer.parseInt(pp.getAttributeValue(null, "year")));
+		calendar.set(Calendar.MONTH, Integer.parseInt(pp.getAttributeValue(null, "month")) - 1);
+		calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(pp.getAttributeValue(null, "day")));
+	}
+
+	private void processItdTime(final XmlPullParser pp, final Calendar calendar) throws XmlPullParserException, IOException
+	{
+		pp.require(XmlPullParser.START_TAG, null, "itdTime");
+		calendar.set(Calendar.HOUR, Integer.parseInt(pp.getAttributeValue(null, "hour")));
+		calendar.set(Calendar.MINUTE, Integer.parseInt(pp.getAttributeValue(null, "minute")));
 	}
 }
