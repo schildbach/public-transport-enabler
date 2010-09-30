@@ -345,7 +345,12 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 					{
 						String position = pp.getAttributeValue(null, "platform");
 						if (position != null)
-							position = "Gl. " + position;
+						{
+							if (position.length() != 0)
+								position = "Gl. " + position;
+							else
+								position = null;
+						}
 
 						departureTime.clear();
 
