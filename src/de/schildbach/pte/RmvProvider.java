@@ -388,6 +388,8 @@ public class RmvProvider implements NetworkProvider
 			final Date currentDate = ParserUtils.parseDate(mHead.group(2));
 			final List<Connection.Part> parts = new ArrayList<Connection.Part>(4);
 
+			Date lastTime = currentDate;
+
 			Date firstDepartureTime = null;
 			Date lastArrivalTime = null;
 			String lastArrival = null;
@@ -411,28 +413,22 @@ public class RmvProvider implements NetworkProvider
 
 						final String destination = ParserUtils.resolveEntities(mDetFine.group(2));
 
-						final Date departureTime = ParserUtils.parseTime(mDetFine.group(3));
+						final Date departureTime = upTime(lastTime, ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mDetFine.group(3))));
 
 						final String departurePosition = ParserUtils.resolveEntities(mDetFine.group(4));
 
-						// final Date departureDate = ParserUtils.parseDate(mDet.group(5));
-
-						final Date arrivalTime = ParserUtils.parseTime(mDetFine.group(5));
+						final Date arrivalTime = upTime(lastTime, ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mDetFine.group(5))));
 
 						final String arrivalPosition = ParserUtils.resolveEntities(mDetFine.group(6));
 
-						// final Date arrivalDate = ParserUtils.parseDate(mDet.group(9));
-
-						final Date departureDateTime = ParserUtils.joinDateTime(currentDate, departureTime);
-						final Date arrivalDateTime = ParserUtils.joinDateTime(currentDate, arrivalTime);
-						lastTrip = new Connection.Trip(line, line != null ? LINES.get(line.charAt(0)) : null, destination, departureDateTime,
-								departurePosition, 0, departure, arrivalDateTime, arrivalPosition, 0, arrival);
+						lastTrip = new Connection.Trip(line, line != null ? LINES.get(line.charAt(0)) : null, destination, departureTime,
+								departurePosition, 0, departure, arrivalTime, arrivalPosition, 0, arrival);
 						parts.add(lastTrip);
 
 						if (firstDepartureTime == null)
-							firstDepartureTime = departureDateTime;
+							firstDepartureTime = departureTime;
 
-						lastArrivalTime = arrivalDateTime;
+						lastArrivalTime = arrivalTime;
 					}
 					else
 					{
@@ -460,6 +456,16 @@ public class RmvProvider implements NetworkProvider
 		{
 			throw new IOException(page.toString());
 		}
+	}
+
+	private static Date upTime(final Date lastTime, Date time)
+	{
+		while (time.before(lastTime))
+			time = ParserUtils.addDays(time, 1);
+
+		lastTime.setTime(time.getTime());
+
+		return time;
 	}
 
 	public String departuresQueryUri(final String stationId, final int maxDepartures)
