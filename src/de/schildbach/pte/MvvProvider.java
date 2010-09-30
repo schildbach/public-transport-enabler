@@ -30,14 +30,13 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.schildbach.pte.QueryDeparturesResult.Status;
-
 /**
  * @author Andreas Schildbach
  */
-public class MvvProvider implements NetworkProvider
+public class MvvProvider extends AbstractEfaProvider
 {
 	public static final String NETWORK_ID = "efa.mvv-muenchen.de";
+	private static final String API_BASE = "http://efa.mvv-muenchen.de/mobile/";
 
 	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
 	private static final String ENCODING = "ISO-8859-1";
@@ -58,9 +57,16 @@ public class MvvProvider implements NetworkProvider
 	private static final Pattern P_AUTOCOMPLETE_COARSE = Pattern.compile("<p>(.*?)</p>");
 	private static final Pattern P_AUTOCOMPLETE_FINE = Pattern.compile(".*?<n>(.*?)</n>.*?<ty>(.*?)</ty>.*?<id>(.*?)</id>.*?<pc>(.*?)</pc>.*?");
 
+	@Override
+	protected String autocompleteUri(final CharSequence constraint)
+	{
+		return String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING), AUTOCOMPLETE_TYPE);
+	}
+
+	@Override
 	public List<Autocomplete> autocompleteStations(final CharSequence constraint) throws IOException
 	{
-		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING), AUTOCOMPLETE_TYPE);
+		final String uri = autocompleteUri(constraint);
 		final CharSequence page = ParserUtils.scrape(uri);
 
 		final List<Autocomplete> results = new ArrayList<Autocomplete>();
@@ -97,19 +103,34 @@ public class MvvProvider implements NetworkProvider
 
 	private static final String NEARBY_LATLON_URI = "http://efa.mvv-muenchen.de/ultralite/XML_DM_REQUEST"
 			+ "?mode=direct&coordOutputFormat=WGS84&mergeDep=1&useAllStops=1&name_dm=%2.6f:%2.6f:WGS84&type_dm=coord&itOptionsActive=1&ptOptionsActive=1&useProxFootSearch=1&excludedMeans=checkbox";
+
+	@Override
+	protected String nearbyLatLonUri(final double lat, final double lon)
+	{
+		return String.format(NEARBY_LATLON_URI, lon, lat);
+	}
+
 	private static final String NEARBY_STATION_URI = "http://efa.mvv-muenchen.de/ultralite/XML_DM_REQUEST"
 			+ "?mode=direct&coordOutputFormat=WGS84&mergeDep=1&useAllStops=1&name_dm=%s&type_dm=stop&itOptionsActive=1&ptOptionsActive=1&useProxFootSearch=1&excludedMeans=checkbox";
+
+	@Override
+	protected String nearbyStationUri(final String stationId)
+	{
+		return String.format(NEARBY_STATION_URI, stationId);
+	}
+
 	private static final Pattern P_NEARBY_COARSE = Pattern.compile("<dp>(.*?)</dp>");
 	private static final Pattern P_NEARBY_FINE = Pattern.compile(".*?<n>(.*?)</n>.*?<r>.*?<id>(.*?)</id>.*?</r>.*?(?:<c>(\\d+),(\\d+)</c>.*?)?");
 
+	@Override
 	public List<Station> nearbyStations(final String stationId, final double lat, final double lon, final int maxDistance, final int maxStations)
 			throws IOException
 	{
 		String uri;
 		if (lat != 0 || lon != 0)
-			uri = String.format(NEARBY_LATLON_URI, lon, lat);
+			uri = nearbyLatLonUri(lat, lon);
 		else if (stationId != null)
-			uri = String.format(NEARBY_STATION_URI, stationId);
+			uri = nearbyStationUri(stationId);
 		else
 			throw new IllegalArgumentException("at least one of stationId or lat/lon must be given");
 
@@ -151,21 +172,6 @@ public class MvvProvider implements NetworkProvider
 	public StationLocationResult stationLocation(final String stationId) throws IOException
 	{
 		throw new UnsupportedOperationException();
-
-		// private Pattern P_GEO =
-		// Pattern.compile(".*?var latact = \"(\\d+\\.\\d+)\";.*?var lonact = \"(\\d+\\.\\d+)\";.*?", Pattern.DOTALL);
-
-		// final String urlGeo =
-		// "http://www.mvv-muenchen.de/de/home/fahrgastinformation/mvv-netz/sis/sdb/googlemaps/index.html?id="
-		// + id;
-		// final CharSequence pageGeo = ParserUtils.scrape(urlGeo);
-		// final Matcher mGeo = P_GEO.matcher(pageGeo);
-		// if (mGeo.matches())
-		// {
-		// mvvLat = Double.parseDouble(mGeo.group(1));
-		// mvvLon = Double.parseDouble(mGeo.group(2));
-		// }
-
 	}
 
 	private static final Map<WalkSpeed, String> WALKSPEED_MAP = new HashMap<WalkSpeed, String>();
@@ -186,7 +192,7 @@ public class MvvProvider implements NetworkProvider
 		final DateFormat HOUR_FORMAT = new SimpleDateFormat("H");
 		final DateFormat MINUTE_FORMAT = new SimpleDateFormat("m");
 
-		final StringBuilder uri = new StringBuilder("http://efa.mvv-muenchen.de/mobile/XSLT_TRIP_REQUEST2");
+		final StringBuilder uri = new StringBuilder(API_BASE + "XSLT_TRIP_REQUEST2");
 		uri.append("?language=de");
 		uri.append("&sessionID=0");
 		uri.append("&requestID=0");
@@ -411,10 +417,8 @@ public class MvvProvider implements NetworkProvider
 			final String to = ParserUtils.resolveEntities(mHead.group(2));
 			// final String via = ParserUtils.resolveEntities(mHead.group(3));
 			final Date currentDate = parseDate(mHead.group(4), mHead.group(5), mHead.group(6));
-			final String linkEarlier = mHead.group(7) != null ? "http://efa.mvv-muenchen.de/mobile/" + ParserUtils.resolveEntities(mHead.group(7))
-					: null;
-			final String linkLater = mHead.group(8) != null ? "http://efa.mvv-muenchen.de/mobile/" + ParserUtils.resolveEntities(mHead.group(8))
-					: null;
+			final String linkEarlier = mHead.group(7) != null ? API_BASE + ParserUtils.resolveEntities(mHead.group(7)) : null;
+			final String linkLater = mHead.group(8) != null ? API_BASE + ParserUtils.resolveEntities(mHead.group(8)) : null;
 			final List<Connection> connections = new ArrayList<Connection>();
 
 			final Matcher mConCoarse = P_CONNECTIONS_COARSE.matcher(page);
@@ -423,7 +427,7 @@ public class MvvProvider implements NetworkProvider
 				final Matcher mConFine = P_CONNECTIONS_FINE.matcher(mConCoarse.group(1));
 				if (mConFine.matches())
 				{
-					final String link = "http://efa.mvv-muenchen.de/mobile/" + ParserUtils.resolveEntities(mConFine.group(3));
+					final String link = API_BASE + ParserUtils.resolveEntities(mConFine.group(3));
 
 					if (mConFine.group(6) == null)
 					{
@@ -613,100 +617,16 @@ public class MvvProvider implements NetworkProvider
 		return time;
 	}
 
-	private static final String DEPARTURE_URL = "http://efa.mvv-muenchen.de/mobile/XSLT_DM_REQUEST?typeInfo_dm=stopID&mode=direct&nameInfo_dm=";
-
 	public String departuresQueryUri(final String stationId, final int maxDepartures)
 	{
-		return DEPARTURE_URL + stationId;
-	}
-
-	private static final Pattern P_DEPARTURES_HEAD_COARSE = Pattern.compile(".*?<body>(.*?Linie/Richtung.*?)</body>.*?", Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_HEAD_FINE = Pattern.compile(".*?" //
-			+ "Von:[\\xa0\\s]*</b>(.*?)<br />.*?" // location
-			+ "Datum:[\\xa0\\s]*</b>\\w{2}\\.,\\s(\\d+)\\.\\s(\\w{3,4})\\.[\\xa0\\s]+(\\d{4})<br />.*?" // date
-	, Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<tr valign=\"top\" bgcolor=\"#\\w{6}\">(.+?)</tr>", Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_FINE = Pattern.compile(".*?" //
-			+ "(?:[\\xa0\\s]*<font color=\"red\">[\\xa0\\s]*(\\d+)\\.(\\d+)\\.[\\xa0\\s]*</font>)?" // date
-			+ "(\\d{1,2}):(\\d{2})</td>.*?" // time
-			+ "(?:<img src=\"images/means.*?\" alt=\"(.*?)\" />.*?)?" // product
-			+ "<td width=\"100\">\\s*([^<]*?)[\\xa0\\s]*(?:<a .*?</a>.*?)?" // line
-			+ "<br />\\s*(.*?)\\s*<br />.*?" // destination
-	, Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_URI_STATION_ID = Pattern.compile("nameInfo_dm=(\\d+)");
-
-	public QueryDeparturesResult queryDepartures(final String uri) throws IOException
-	{
-		final CharSequence page = ParserUtils.scrape(uri);
-
-		final Matcher mStationId = P_DEPARTURES_URI_STATION_ID.matcher(uri);
-		if (!mStationId.find())
-			throw new IllegalStateException(uri);
-		final int stationId = Integer.parseInt(mStationId.group(1));
-
-		final Matcher mHeadCoarse = P_DEPARTURES_HEAD_COARSE.matcher(page);
-		if (mHeadCoarse.matches())
-		{
-			final Matcher mHeadFine = P_DEPARTURES_HEAD_FINE.matcher(mHeadCoarse.group(1));
-			if (mHeadFine.matches())
-			{
-				final String location = ParserUtils.resolveEntities(mHeadFine.group(1));
-				final Date currentTime = parseDate(mHeadFine.group(2), mHeadFine.group(3), mHeadFine.group(4));
-				final List<Departure> departures = new ArrayList<Departure>(8);
-
-				final Calendar calendar = new GregorianCalendar();
-
-				final Matcher mDepCoarse = P_DEPARTURES_COARSE.matcher(mHeadCoarse.group(1));
-				while (mDepCoarse.find())
-				{
-					final Matcher mDepFine = P_DEPARTURES_FINE.matcher(mDepCoarse.group(1));
-					if (mDepFine.matches())
-					{
-						calendar.setTime(currentTime);
-						final String day = mDepFine.group(1);
-						if (day != null)
-							calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day));
-						final String month = mDepFine.group(2);
-						if (month != null)
-							calendar.set(Calendar.MONTH, Integer.parseInt(month) - 1);
-						calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(mDepFine.group(3)));
-						calendar.set(Calendar.MINUTE, Integer.parseInt(mDepFine.group(4)));
-
-						final String normalizedLine = normalizeLine(mDepFine.group(5), mDepFine.group(6));
-
-						final String destination = normalizeStationName(mDepFine.group(7));
-
-						final String position = null; // TODO
-
-						final Departure departure = new Departure(calendar.getTime(), normalizedLine, LINES.get(normalizedLine), position, 0,
-								destination);
-
-						departures.add(departure);
-					}
-					else
-					{
-						throw new IllegalArgumentException("cannot parse '" + mDepCoarse.group(1) + "' on " + uri);
-					}
-				}
-
-				return new QueryDeparturesResult(uri, stationId, location, departures);
-			}
-			else
-			{
-				throw new IllegalArgumentException("cannot parse '" + mHeadCoarse.group(1) + "' on " + uri);
-			}
-		}
-		else
-		{
-			return new QueryDeparturesResult(uri, Status.NO_INFO);
-		}
-	}
-
-	private static final Pattern P_STATION_NAME_WHITESPACE = Pattern.compile("\\s+");
-
-	private String normalizeStationName(String name)
-	{
-		return P_STATION_NAME_WHITESPACE.matcher(name).replaceAll(" ");
+		final StringBuilder uri = new StringBuilder();
+		uri.append(API_BASE).append("XSLT_DM_REQUEST");
+		uri.append("?outputFormat=XML");
+		uri.append("&coordOutputFormat=WGS84");
+		uri.append("&type_dm=stop");
+		uri.append("&name_dm=").append(stationId);
+		uri.append("&mode=direct");
+		return uri.toString();
 	}
 
 	private static final Pattern P_NORMALIZE_LINE_TRAM = Pattern.compile("[12]\\d");

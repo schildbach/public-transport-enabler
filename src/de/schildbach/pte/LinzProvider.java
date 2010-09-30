@@ -59,7 +59,7 @@ public class LinzProvider extends AbstractEfaProvider
 	{
 		return String.format(NEARBY_LATLON_URI, lon, lat);
 	}
-	
+
 	private static final String NEARBY_STATION_URI = API_BASE
 			+ "XSLT_DM_REQUEST"
 			+ "?outputFormat=XML&mode=direct&coordOutputFormat=WGS84&mergeDep=1&useAllStops=1&name_dm=%s&type_dm=stop&itOptionsActive=1&ptOptionsActive=1&useProxFootSearch=1&excludedMeans=checkbox";
@@ -69,7 +69,7 @@ public class LinzProvider extends AbstractEfaProvider
 	{
 		return String.format(NEARBY_STATION_URI, stationId);
 	}
-	
+
 	public StationLocationResult stationLocation(final String stationId) throws IOException
 	{
 		throw new UnsupportedOperationException();
@@ -101,24 +101,6 @@ public class LinzProvider extends AbstractEfaProvider
 		uri.append("&name_dm=").append(stationId);
 		uri.append("&mode=direct");
 		return uri.toString();
-	}
-
-	@Override
-	protected String parseLine(final String number, final String symbol, final String mot)
-	{
-		if (!number.equals(symbol))
-			throw new IllegalStateException("number " + number + ", symbol " + symbol);
-
-		int t = Integer.parseInt(mot);
-
-		if (t == 4)
-			return 'T' + number;
-		if (t == 5 || t == 6 || t == 7 || t == 10)
-			return 'B' + number;
-		if (t == 8)
-			return 'C' + number;
-
-		throw new IllegalStateException("cannot normalize mot '" + mot + "' number '" + number + "'");
 	}
 
 	private static final Map<Character, int[]> LINES = new HashMap<Character, int[]>();
