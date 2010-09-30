@@ -30,6 +30,7 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import de.schildbach.pte.QueryDeparturesResult.Status;
 import de.schildbach.pte.util.XmlPullUtil;
 
 /**
@@ -129,51 +130,63 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		try
 		{
 			final CharSequence page = ParserUtils.scrape(uri);
-			// System.out.println(page);
 
 			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
 			final XmlPullParser pp = factory.newPullParser();
 			pp.setInput(new StringReader(page.toString()));
 
-			XmlPullUtil.jumpToStartTag(pp, null, "odvNameElem");
-			final int locationId = Integer.parseInt(pp.getAttributeValue(null, "stopID"));
-
-			final String location = pp.nextText();
-
-			final Calendar departureTime = new GregorianCalendar();
-			final List<Departure> departures = new ArrayList<Departure>(8);
-
-			XmlPullUtil.jumpToStartTag(pp, null, "itdDepartureList");
-			while (XmlPullUtil.jumpToStartTag(pp, null, "itdDeparture"))
+			XmlPullUtil.jumpToStartTag(pp, null, "itdOdvName");
+			final String nameState = pp.getAttributeValue(null, "state");
+			if (nameState.equals("identified"))
 			{
-				if (Integer.parseInt(pp.getAttributeValue(null, "stopID")) == locationId)
+				XmlPullUtil.jumpToStartTag(pp, null, "odvNameElem");
+				final int locationId = Integer.parseInt(pp.getAttributeValue(null, "stopID"));
+
+				final String location = pp.nextText();
+
+				final Calendar departureTime = new GregorianCalendar();
+				final List<Departure> departures = new ArrayList<Departure>(8);
+
+				XmlPullUtil.jumpToStartTag(pp, null, "itdDepartureList");
+				while (XmlPullUtil.jumpToStartTag(pp, null, "itdDeparture"))
 				{
-					String position = pp.getAttributeValue(null, "platform");
-					if (position != null)
-						position = "Gl. " + position;
+					if (Integer.parseInt(pp.getAttributeValue(null, "stopID")) == locationId)
+					{
+						String position = pp.getAttributeValue(null, "platform");
+						if (position != null)
+							position = "Gl. " + position;
 
-					departureTime.clear();
-					XmlPullUtil.jumpToStartTag(pp, null, "itdDate");
-					processItdDate(pp, departureTime);
-					XmlPullUtil.jumpToStartTag(pp, null, "itdTime");
-					processItdTime(pp, departureTime);
-					XmlPullUtil.jumpToStartTag(pp, null, "itdServingLine");
+						departureTime.clear();
+						XmlPullUtil.jumpToStartTag(pp, null, "itdDate");
+						processItdDate(pp, departureTime);
+						XmlPullUtil.jumpToStartTag(pp, null, "itdTime");
+						processItdTime(pp, departureTime);
+						XmlPullUtil.jumpToStartTag(pp, null, "itdServingLine");
 
-					final String line = parseLine(pp.getAttributeValue(null, "number"), pp.getAttributeValue(null, "symbol"), pp.getAttributeValue(
-							null, "motType"));
+						final String line = parseLine(pp.getAttributeValue(null, "number"), pp.getAttributeValue(null, "symbol"), pp
+								.getAttributeValue(null, "motType"));
 
-					final boolean isRealtime = pp.getAttributeValue(null, "realtime").equals("1");
+						final boolean isRealtime = pp.getAttributeValue(null, "realtime").equals("1");
 
-					final String destination = pp.getAttributeValue(null, "direction");
+						final String destination = pp.getAttributeValue(null, "direction");
 
-					final int destinationId = Integer.parseInt(pp.getAttributeValue(null, "destID"));
+						final int destinationId = Integer.parseInt(pp.getAttributeValue(null, "destID"));
 
-					departures.add(new Departure(!isRealtime ? departureTime.getTime() : null, isRealtime ? departureTime.getTime() : null, line,
-							lineColors(line), null, position, destinationId, destination, null));
+						departures.add(new Departure(!isRealtime ? departureTime.getTime() : null, isRealtime ? departureTime.getTime() : null, line,
+								lineColors(line), null, position, destinationId, destination, null));
+					}
 				}
-			}
 
-			return new QueryDeparturesResult(uri, locationId, location, departures);
+				return new QueryDeparturesResult(uri, locationId, location, departures);
+			}
+			else if (nameState.equals("notidentified"))
+			{
+				return new QueryDeparturesResult(uri, Status.INVALID_STATION);
+			}
+			else
+			{
+				throw new RuntimeException("unknown nameState '" + nameState + "' on " + uri);
+			}
 		}
 		catch (final XmlPullParserException x)
 		{
