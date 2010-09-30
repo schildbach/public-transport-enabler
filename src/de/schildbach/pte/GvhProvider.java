@@ -84,6 +84,7 @@ public class GvhProvider extends AbstractEfaProvider
 
 	private static final Pattern P_LINE_RE = Pattern.compile("RE\\d+");
 	private static final Pattern P_LINE_RB = Pattern.compile("RB\\d+");
+	private static final Pattern P_LINE_U = Pattern.compile("U\\d+");
 
 	@Override
 	protected String parseLine(final String number, final String symbol, final String mot)
@@ -91,7 +92,7 @@ public class GvhProvider extends AbstractEfaProvider
 		if (!number.equals(symbol))
 			throw new IllegalStateException("number " + number + ", symbol " + symbol);
 
-		int t = Integer.parseInt(mot);
+		final int t = Integer.parseInt(mot);
 
 		if (t == 0)
 		{
@@ -99,16 +100,27 @@ public class GvhProvider extends AbstractEfaProvider
 			final String type = parts[0];
 			final String num = parts.length >= 2 ? parts[1] : null;
 			final String str = type + (num != null ? num : "");
+
 			if (type.equals("EC")) // Eurocity
+				return 'I' + str;
+			if (type.equals("EN")) // Euronight
 				return 'I' + str;
 			if (type.equals("IC")) // Intercity
 				return 'I' + str;
 			if (type.equals("ICE")) // Intercity Express
 				return 'I' + str;
+			if (type.equals("CNL")) // City Night Line
+				return 'I' + str;
 			if (type.equals("THA")) // Thalys
+				return 'I' + str;
+			if (type.equals("TGV")) // TGV
+				return 'I' + str;
+			if (type.equals("RJ")) // railjet
 				return 'I' + str;
 
 			if (type.equals("IR")) // Interregio
+				return 'R' + str;
+			if (type.equals("IRE")) // Interregio-Express
 				return 'R' + str;
 			if (type.equals("RE")) // Regional-Express
 				return 'R' + str;
@@ -119,6 +131,8 @@ public class GvhProvider extends AbstractEfaProvider
 			if (P_LINE_RB.matcher(type).matches())
 				return 'R' + str;
 			if (type.equals("R")) // Regionalzug
+				return 'R' + str;
+			if (type.equals("D")) // Schnellzug
 				return 'R' + str;
 			if (type.equals("WFB")) // Westfalenbahn
 				return 'R' + str;
@@ -138,6 +152,107 @@ public class GvhProvider extends AbstractEfaProvider
 				return 'R' + str;
 			if (type.equals("ABR")) // ABELLIO Rail NRW
 				return 'R' + str;
+			if (type.equals("NEB")) // Niederbarnimer Eisenbahn
+				return 'R' + str;
+			if (type.equals("OE")) // Ostdeutsche Eisenbahn
+				return 'R' + str;
+			if (type.equals("MR")) // Märkische Regiobahn
+				return 'R' + str;
+			if (type.equals("OLA")) // Ostseeland Verkehr
+				return 'R' + str;
+			if (type.equals("UBB")) // Usedomer Bäderbahn
+				return 'R' + str;
+			if (type.equals("EVB")) // Elbe-Weser
+				return 'R' + str;
+			if (type.equals("PEG")) // Prignitzer Eisenbahngesellschaft
+				return 'R' + str;
+			if (type.equals("RTB")) // Rurtalbahn
+				return 'R' + str;
+			if (type.equals("STB")) // Süd-Thüringen-Bahn
+				return 'R' + str;
+			if (type.equals("HTB")) // Hellertalbahn
+				return 'R' + str;
+			if (type.equals("VBG")) // Vogtlandbahn
+				return 'R' + str;
+			if (type.equals("VX")) // Vogtland Express
+				return 'R' + str;
+			if (type.equals("CB")) // City-Bahn Chemnitz
+				return 'R' + str;
+			if (type.equals("VEC")) // VECTUS Verkehrsgesellschaft
+				return 'R' + str;
+			if (type.equals("HzL")) // Hohenzollerische Landesbahn
+				return 'R' + str;
+			if (type.equals("OSB")) // Ortenau-S-Bahn
+				return 'R' + str;
+			if (type.equals("SBB")) // SBB
+				return 'R' + str;
+			if (type.equals("MBB")) // Mecklenburgische Bäderbahn Molli
+				return 'R' + str;
+			if (type.equals("OS")) // Regionalbahn
+				return 'R' + str;
+			if (type.equals("SP"))
+				return 'R' + str;
+			if (type.equals("Dab")) // Daadetalbahn
+				return 'R' + str;
+			if (type.equals("FEG")) // Freiberger Eisenbahngesellschaft
+				return 'R' + str;
+			if (type.equals("ARR")) // ARRIVA
+				return 'R' + str;
+			if (type.equals("HSB")) // Harzer Schmalspurbahn
+				return 'R' + str;
+			if (type.equals("SBE")) // Sächsisch-Böhmische Eisenbahngesellschaft
+				return 'R' + str;
+			if (type.equals("ALX")) // Arriva-Länderbahn-Express
+				return 'R' + str;
+			if (type.equals("MEr")) // metronom regional
+				return 'R' + str;
+			if (type.equals("AKN")) // AKN Eisenbahn
+				return 'R' + str;
+			if (type.equals("ZUG")) // Regionalbahn
+				return 'R' + str;
+			if (type.equals("SOE")) // Sächsisch-Oberlausitzer Eisenbahngesellschaft
+				return 'R' + str;
+			if (type.equals("VIA")) // VIAS
+				return 'R' + str;
+			if (type.equals("BRB")) // Bayerische Regiobahn
+				return 'R' + str;
+			if (type.equals("BLB")) // Berchtesgadener Land Bahn
+				return 'R' + str;
+			if (type.equals("HLB")) // Hessische Landesbahn
+				return 'R' + str;
+			if (type.equals("NOB")) // NordOstseeBahn
+				return 'R' + str;
+			if (type.equals("WEG")) // Wieslauftalbahn
+				return 'R' + str;
+			if (type.equals("NBE")) // Nordbahn Eisenbahngesellschaft
+				return 'R' + str;
+			if (type.equals("VEN")) // Rhenus Veniro
+				return 'R' + str;
+			if (type.equals("DPN")) // Nahreisezug
+				return 'R' + str;
+			if (type.equals("SHB")) // Schleswig-Holstein-Bahn
+				return 'R' + str;
+			if (type.equals("RBG")) // Regental Bahnbetriebs GmbH
+				return 'R' + str;
+			if (type.equals("BOB")) // Bayerische Oberlandbahn
+				return 'R' + str;
+			if (type.equals("SWE")) // Südwestdeutsche Verkehrs AG
+				return 'R' + str;
+			if (type.equals("VE")) // Vetter
+				return 'R' + str;
+			if (type.equals("SDG")) // Sächsische Dampfeisenbahngesellschaft
+				return 'R' + str;
+
+			if (type.equals("BSB")) // Breisgau-S-Bahn
+				return 'S' + str;
+
+			if (P_LINE_U.matcher(type).matches())
+				return 'U' + str;
+
+			if (type.equals("RT")) // RegioTram
+				return 'T' + str;
+			if (type.equals("STR")) // Nordhausen
+				return 'T' + str;
 
 			throw new IllegalArgumentException("cannot normalize: " + number);
 		}
