@@ -148,7 +148,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				final List<Departure> departures = new ArrayList<Departure>(8);
 
 				XmlPullUtil.jumpToStartTag(pp, null, "itdDepartureList");
-				while (XmlPullUtil.jumpToStartTag(pp, null, "itdDeparture"))
+				while (XmlPullUtil.nextStartTagInsideTree(pp, null, "itdDeparture"))
 				{
 					if (Integer.parseInt(pp.getAttributeValue(null, "stopID")) == locationId)
 					{
@@ -157,24 +157,36 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 							position = "Gl. " + position;
 
 						departureTime.clear();
-						XmlPullUtil.jumpToStartTag(pp, null, "itdDate");
-						processItdDate(pp, departureTime);
-						XmlPullUtil.jumpToStartTag(pp, null, "itdTime");
-						processItdTime(pp, departureTime);
-						XmlPullUtil.jumpToStartTag(pp, null, "itdServingLine");
 
+						if (!XmlPullUtil.nextStartTagInsideTree(pp, null, "itdDateTime"))
+							throw new IllegalStateException("itdDateTime not found:" + pp.getPositionDescription());
+
+						if (!XmlPullUtil.nextStartTagInsideTree(pp, null, "itdDate"))
+							throw new IllegalStateException("itdDate not found:" + pp.getPositionDescription());
+						processItdDate(pp, departureTime);
+						XmlPullUtil.skipRestOfTree(pp);
+
+						if (!XmlPullUtil.nextStartTagInsideTree(pp, null, "itdTime"))
+							throw new IllegalStateException("itdTime not found:" + pp.getPositionDescription());
+						processItdTime(pp, departureTime);
+						XmlPullUtil.skipRestOfTree(pp);
+
+						XmlPullUtil.skipRestOfTree(pp);
+
+						if (!XmlPullUtil.nextStartTagInsideTree(pp, null, "itdServingLine"))
+							throw new IllegalStateException("itdServingLine not found:" + pp.getPositionDescription());
 						final String line = parseLine(pp.getAttributeValue(null, "number"), pp.getAttributeValue(null, "symbol"), pp
 								.getAttributeValue(null, "motType"));
-
 						final boolean isRealtime = pp.getAttributeValue(null, "realtime").equals("1");
-
 						final String destination = pp.getAttributeValue(null, "direction");
-
 						final int destinationId = Integer.parseInt(pp.getAttributeValue(null, "destID"));
+						XmlPullUtil.skipRestOfTree(pp);
 
 						departures.add(new Departure(!isRealtime ? departureTime.getTime() : null, isRealtime ? departureTime.getTime() : null, line,
 								lineColors(line), null, position, destinationId, destination, null));
 					}
+
+					XmlPullUtil.skipRestOfTree(pp);
 				}
 
 				return new QueryDeparturesResult(uri, locationId, location, departures);

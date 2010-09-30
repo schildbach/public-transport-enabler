@@ -297,6 +297,58 @@ public final class XmlPullUtil
 		}
 	}
 
+	public static boolean nextStartTagInsideTree(final XmlPullParser pp, final String tagNamespace, final String tagName)
+			throws XmlPullParserException, IOException
+	{
+		if (tagNamespace == null && tagName == null)
+			throw new IllegalArgumentException("namespace and name argument can not be both null:" + pp.getPositionDescription());
+
+		if (pp.getEventType() != XmlPullParser.START_TAG && pp.getEventType() != XmlPullParser.END_TAG)
+			throw new IllegalStateException("expected START_TAG of parent or END_TAG of child:" + pp.getPositionDescription());
+
+		while (true)
+		{
+			final int eventType = pp.next();
+
+			if (eventType == XmlPullParser.START_TAG)
+			{
+				final String name = pp.getName();
+				final String namespace = pp.getNamespace();
+				boolean matches = (tagNamespace != null && tagNamespace.equals(namespace)) || (tagName != null && tagName.equals(name));
+				if (matches)
+					return true;
+
+				skipSubTree(pp);
+				pp.require(XmlPullParser.END_TAG, name, namespace);
+			}
+			else if (eventType == XmlPullParser.END_TAG)
+			{
+				return false;
+			}
+		}
+	}
+
+	public static void skipRestOfTree(final XmlPullParser pp) throws XmlPullParserException, IOException
+	{
+		if (pp.getEventType() != XmlPullParser.START_TAG && pp.getEventType() != XmlPullParser.END_TAG)
+			throw new IllegalStateException("expected START_TAG of parent or END_TAG of child:" + pp.getPositionDescription());
+
+		while (true)
+		{
+			final int eventType = pp.next();
+
+			if (eventType == XmlPullParser.START_TAG)
+			{
+				skipSubTree(pp);
+				pp.require(XmlPullParser.END_TAG, null, null);
+			}
+			else if (eventType == XmlPullParser.END_TAG)
+			{
+				return;
+			}
+		}
+	}
+
 	/**
 	 * This method bypasses all events until it finds a start tag that has passed in namespace (if not null) and
 	 * namespace (if not null).
