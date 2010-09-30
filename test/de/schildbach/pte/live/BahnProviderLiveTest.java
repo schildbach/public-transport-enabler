@@ -24,6 +24,7 @@ import org.junit.Test;
 import de.schildbach.pte.BahnProvider;
 import de.schildbach.pte.Connection;
 import de.schildbach.pte.QueryConnectionsResult;
+import de.schildbach.pte.QueryDeparturesResult;
 import de.schildbach.pte.NetworkProvider.LocationType;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
 
@@ -33,6 +34,13 @@ import de.schildbach.pte.NetworkProvider.WalkSpeed;
 public class BahnProviderLiveTest
 {
 	private BahnProvider provider = new BahnProvider();
+	
+	@Test
+	public void departures() throws Exception
+	{
+		final QueryDeparturesResult queryDepartures = provider.queryDepartures(provider.departuresQueryUri("692991", 0));
+		System.out.println(queryDepartures.departures);
+	}
 
 	@Test
 	public void shortConnection() throws Exception
