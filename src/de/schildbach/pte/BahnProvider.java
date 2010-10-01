@@ -442,7 +442,7 @@ public final class BahnProvider implements NetworkProvider
 		return uri.toString();
 	}
 
-	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<Journey (.*?)/>", Pattern.DOTALL);
+	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<Journey (.*?)/?>", Pattern.DOTALL);
 	static final Pattern P_DEPARTURES_FINE = Pattern.compile("" //
 			+ "fpTime=\"(\\d{1,2}:\\d{2})\" fpDate=\"(\\d{2}\\.\\d{2}\\.\\d{2})\" \n" // time, date
 			+ "delay=\"(?:-|k\\.A\\.?|cancel|\\+?\\s*(\\d+))\" \n" // delay
@@ -497,7 +497,7 @@ public final class BahnProvider implements NetworkProvider
 
 					final String position = mDepFine.group(4) != null ? "Gl. " + ParserUtils.resolveEntities(mDepFine.group(4)) : null;
 
-					final String destination = ParserUtils.resolveEntities(mDepFine.group(6));
+					final String destination = ParserUtils.resolveEntities(mDepFine.group(6)).trim();
 
 					final String line = normalizeLine(ParserUtils.resolveEntities(mDepFine.group(7)));
 
