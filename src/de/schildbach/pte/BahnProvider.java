@@ -448,10 +448,10 @@ public final class BahnProvider implements NetworkProvider
 			+ "delay=\"(?:-|k\\.A\\.?|cancel|\\+?\\s*(\\d+))\" \n" // delay
 			+ "(?:platform =\"([^\"]*)\" \n)?" // position
 			+ "(?:newpl =\"([^\"]*)\" \n)?" //
-			+ "targetLoc=\"([^\"]*)\" \n" // destination
+			+ "targetLoc=\"(.*?)\" \n" // destination
 			+ "prod=\"([^\"]*)\" \n" // line
 			+ "(?:dir=[^\n]*\n)?" // (destination)
-			+ "(?:depStation=\"([^\"]*)\"\n)?" //
+			+ "(?:depStation=\"(.*?)\"\n)?" //
 			+ "delayReason=\"([^\"]*)\"\n" // message
 	);
 	private static final Pattern P_DEPARTURES_MESSAGES = Pattern.compile("<Err code=\"([^\"]*)\" text=\"([^\"]*)\"");
@@ -530,8 +530,11 @@ public final class BahnProvider implements NetworkProvider
 		// ARZ29177
 		// ARZ29178
 
-		if (line == null || line.length() == 0)
+		if (line == null)
 			return null;
+
+		if (line.length() == 0)
+			return "?";
 
 		if (line.equals("---"))
 			return "?---";
