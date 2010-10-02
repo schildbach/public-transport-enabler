@@ -45,11 +45,18 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 		final String uri = nearbyStationUri(stationId);
 		final CharSequence page = ParserUtils.scrape(uri);
+		String oldZebra = null;
 
 		final Matcher mCoarse = P_NEARBY_COARSE.matcher(page);
 
 		while (mCoarse.find())
 		{
+			final String zebra = mCoarse.group(1);
+			if (oldZebra != null && zebra.equals(oldZebra))
+				throw new IllegalArgumentException("missed row? last:" + zebra);
+			else
+				oldZebra = zebra;
+
 			final Matcher mFineCoords = P_NEARBY_FINE_COORDS.matcher(mCoarse.group(2));
 			final Matcher mFineLocation = P_NEARBY_FINE_LOCATION.matcher(mCoarse.group(2));
 
