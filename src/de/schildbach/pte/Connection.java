@@ -143,10 +143,10 @@ public final class Connection implements Serializable
 		final public String departure;
 		final public int arrivalId;
 		final public String arrival;
-		final public double arrivalLat, arrivalLon;
+		final public int arrivalLat, arrivalLon;
 
-		public Footway(final int min, final int departureId, final String departure, final int arrivalId, final String arrival,
-				final double arrivalLat, final double arrivalLon)
+		public Footway(final int min, final int departureId, final String departure, final int arrivalId, final String arrival, final int arrivalLat,
+				final int arrivalLon)
 		{
 			this.min = min;
 			this.departureId = departureId;

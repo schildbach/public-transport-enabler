@@ -17,7 +17,6 @@
 
 package de.schildbach.pte;
 
-
 /**
  * @author Andreas Schildbach
  */
@@ -26,12 +25,12 @@ public final class Station
 	// data
 	public final int id;
 	public final String name;
-	public final double latitude, longitude;
+	public final int latitude, longitude;
 	public float distance;
 	public final String[] lines;
 	public final int[][] lineColors;
 
-	public Station(final int id, final String name, final double latitude, final double longitude, final float distance, final String[] lines,
+	public Station(final int id, final String name, final int latitude, final int longitude, final float distance, final String[] lines,
 			final int[][] lineColors)
 	{
 		this.id = id;

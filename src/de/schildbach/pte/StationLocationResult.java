@@ -25,7 +25,7 @@ public final class StationLocationResult
 	public final double lat, lon;
 	public final String name;
 
-	public StationLocationResult(final double lat, final double lon, final String name)
+	public StationLocationResult(final int lat, final int lon, final String name)
 	{
 		this.lat = lat;
 		this.lon = lon;

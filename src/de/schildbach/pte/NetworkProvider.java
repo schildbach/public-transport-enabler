@@ -71,7 +71,7 @@ public interface NetworkProvider
 	 * @return nearby stations
 	 * @throws IOException
 	 */
-	List<Station> nearbyStations(String stationId, double lat, double lon, int maxDistance, int maxStations) throws IOException;
+	List<Station> nearbyStations(String stationId, int lat, int lon, int maxDistance, int maxStations) throws IOException;
 
 	/**
 	 * Look up location of station.

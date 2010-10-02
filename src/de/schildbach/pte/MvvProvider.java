@@ -105,9 +105,9 @@ public class MvvProvider extends AbstractEfaProvider
 			+ "?mode=direct&coordOutputFormat=WGS84&mergeDep=1&useAllStops=1&name_dm=%2.6f:%2.6f:WGS84&type_dm=coord&itOptionsActive=1&ptOptionsActive=1&useProxFootSearch=1&excludedMeans=checkbox";
 
 	@Override
-	protected String nearbyLatLonUri(final double lat, final double lon)
+	protected String nearbyLatLonUri(final int lat, final int lon)
 	{
-		return String.format(NEARBY_LATLON_URI, lon, lat);
+		return String.format(NEARBY_LATLON_URI, latLonToDouble(lon), latLonToDouble(lat));
 	}
 
 	private static final String NEARBY_STATION_URI = "http://efa.mvv-muenchen.de/ultralite/XML_DM_REQUEST"
@@ -123,7 +123,7 @@ public class MvvProvider extends AbstractEfaProvider
 	private static final Pattern P_NEARBY_FINE = Pattern.compile(".*?<n>(.*?)</n>.*?<r>.*?<id>(.*?)</id>.*?</r>.*?(?:<c>(\\d+),(\\d+)</c>.*?)?");
 
 	@Override
-	public List<Station> nearbyStations(final String stationId, final double lat, final double lon, final int maxDistance, final int maxStations)
+	public List<Station> nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
 			throws IOException
 	{
 		String uri;
@@ -146,8 +146,8 @@ public class MvvProvider extends AbstractEfaProvider
 			{
 				final String sName = mNearbyFine.group(1).trim();
 				final int sId = Integer.parseInt(mNearbyFine.group(2));
-				final double sLon = mNearbyFine.group(3) != null ? latLonToDouble(Integer.parseInt(mNearbyFine.group(3))) : 0;
-				final double sLat = mNearbyFine.group(4) != null ? latLonToDouble(Integer.parseInt(mNearbyFine.group(4))) : 0;
+				final int sLon = mNearbyFine.group(3) != null ? Integer.parseInt(mNearbyFine.group(3)) : 0;
+				final int sLat = mNearbyFine.group(4) != null ? Integer.parseInt(mNearbyFine.group(4)) : 0;
 
 				final Station station = new Station(sId, sName, sLat, sLon, 0, null, null);
 				stations.add(station);
@@ -162,11 +162,6 @@ public class MvvProvider extends AbstractEfaProvider
 			return stations;
 		else
 			return stations.subList(0, maxStations);
-	}
-
-	private static double latLonToDouble(int value)
-	{
-		return (double) value / 1000000;
 	}
 
 	public StationLocationResult stationLocation(final String stationId) throws IOException
@@ -219,9 +214,9 @@ public class MvvProvider extends AbstractEfaProvider
 		if (fromType == LocationType.WGS84)
 		{
 			final String[] parts = from.split(",\\s*", 2);
-			final double lat = Double.parseDouble(parts[0]);
-			final double lon = Double.parseDouble(parts[1]);
-			uri.append("&nameInfo_origin=").append(String.format("%2.5f:%2.5f", lon, lat)).append(":WGS84[DD.ddddd]");
+			final int lat = Integer.parseInt(parts[0]);
+			final int lon = Integer.parseInt(parts[1]);
+			uri.append("&nameInfo_origin=").append(String.format("%2.5f:%2.5f", lon / 1E6, lat / 1E6)).append(":WGS84[DD.ddddd]");
 			uri.append("&typeInfo_origin=coord");
 		}
 		else
@@ -244,9 +239,9 @@ public class MvvProvider extends AbstractEfaProvider
 		if (toType == LocationType.WGS84)
 		{
 			final String[] parts = to.split(",\\s*", 2);
-			final double lat = Double.parseDouble(parts[0]);
-			final double lon = Double.parseDouble(parts[1]);
-			uri.append("&nameInfo_destination=").append(String.format("%2.5f:%2.5f", lon, lat)).append(":WGS84[DD.ddddd]");
+			final int lat = Integer.parseInt(parts[0]);
+			final int lon = Integer.parseInt(parts[1]);
+			uri.append("&nameInfo_destination=").append(String.format("%2.5f:%2.5f", lon / 1E6, lat / 1E6)).append(":WGS84[DD.ddddd]");
 			uri.append("&typeInfo_destination=coord");
 		}
 		else
@@ -271,9 +266,9 @@ public class MvvProvider extends AbstractEfaProvider
 			if (viaType == LocationType.WGS84)
 			{
 				final String[] parts = via.split(",\\s*", 2);
-				final double lat = Double.parseDouble(parts[0]);
-				final double lon = Double.parseDouble(parts[1]);
-				uri.append("&nameInfo_via=").append(String.format("%2.5f:%2.5f", lon, lat)).append(":WGS84[DD.ddddd]");
+				final int lat = Integer.parseInt(parts[0]);
+				final int lon = Integer.parseInt(parts[1]);
+				uri.append("&nameInfo_via=").append(String.format("%2.5f:%2.5f", lon / 1E6, lat / 1E6)).append(":WGS84[DD.ddddd]");
 				uri.append("&typeInfo_via=coord");
 			}
 			else

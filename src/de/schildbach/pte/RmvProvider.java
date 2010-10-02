@@ -87,14 +87,14 @@ public class RmvProvider implements NetworkProvider
 			+ "&REQMapRoute0\\.Location0\\.X=(-?\\d+)&REQMapRoute0\\.Location0\\.Y=(-?\\d+)" //
 			+ "&REQMapRoute0\\.Location0\\.Name=(.*?)\">.*?", Pattern.DOTALL);
 
-	public List<Station> nearbyStations(final String stationId, final double lat, final double lon, final int maxDistance, final int maxStations)
+	public List<Station> nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
 			throws IOException
 	{
 		final List<Station> stations = new ArrayList<Station>();
 
 		if (lat != 0 || lon != 0)
 		{
-			final String url = "http://www.rmv.de/auskunft/bin/jp/stboard.exe/dox?input=" + lat + "%20" + lon;
+			final String url = "http://www.rmv.de/auskunft/bin/jp/stboard.exe/dox?input=" + latLonToDouble(lat) + "%20" + latLonToDouble(lon);
 			final CharSequence page = ParserUtils.scrape(url);
 
 			final Matcher m = P_NEARBY_STATIONS.matcher(page);
@@ -121,8 +121,8 @@ public class RmvProvider implements NetworkProvider
 				if (mFine.matches())
 				{
 					final int parsedId = Integer.parseInt(mFine.group(1));
-					final double parsedLon = latLonToDouble(Integer.parseInt(mFine.group(2)));
-					final double parsedLat = latLonToDouble(Integer.parseInt(mFine.group(3)));
+					final int parsedLon = Integer.parseInt(mFine.group(2));
+					final int parsedLat = Integer.parseInt(mFine.group(3));
 					final String parsedName = ParserUtils.resolveEntities(mFine.group(4));
 
 					final Station station = new Station(parsedId, parsedName, parsedLat, parsedLon, 0, null, null);
@@ -158,8 +158,8 @@ public class RmvProvider implements NetworkProvider
 		final Matcher m = P_STATION_LOCATION.matcher(page);
 		if (m.find())
 		{
-			final double lon = latLonToDouble(Integer.parseInt(m.group(1)));
-			final double lat = latLonToDouble(Integer.parseInt(m.group(2)));
+			final int lon = Integer.parseInt(m.group(1));
+			final int lat = Integer.parseInt(m.group(2));
 			final String name = ParserUtils.resolveEntities(m.group(3));
 
 			return new StationLocationResult(lat, lon, name);

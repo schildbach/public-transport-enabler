@@ -59,7 +59,7 @@ public class GvhProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	protected String nearbyLatLonUri(final double lat, final double lon)
+	protected String nearbyLatLonUri(final int lat, final int lon)
 	{
 		return null;
 	}

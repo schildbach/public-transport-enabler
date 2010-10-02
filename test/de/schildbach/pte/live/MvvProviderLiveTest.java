@@ -55,8 +55,8 @@ public class MvvProviderLiveTest
 	@Test
 	public void connectionBetweenCoordinates() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(LocationType.WGS84, "48.165238,11.577473", null, null, LocationType.WGS84,
-				"47.987199,11.326532", new Date(), true, WalkSpeed.NORMAL);
+		final QueryConnectionsResult result = provider.queryConnections(LocationType.WGS84, "48165238,11577473", null, null, LocationType.WGS84,
+				"47987199,11326532", new Date(), true, WalkSpeed.NORMAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
 		System.out.println(moreResult);
@@ -65,7 +65,7 @@ public class MvvProviderLiveTest
 	@Test
 	public void connectionBetweenCoordinateAndStation() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(LocationType.WGS84, "48.238341,11.478230", null, null, LocationType.ANY,
+		final QueryConnectionsResult result = provider.queryConnections(LocationType.WGS84, "48238341,11478230", null, null, LocationType.ANY,
 				"Ostbahnhof", new Date(), true, WalkSpeed.NORMAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);

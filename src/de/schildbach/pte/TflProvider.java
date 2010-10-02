@@ -45,7 +45,7 @@ public class TflProvider implements NetworkProvider
 		throw new UnsupportedOperationException();
 	}
 
-	public List<Station> nearbyStations(final String stationId, final double lat, final double lon, final int maxDistance, final int maxStations)
+	public List<Station> nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
 			throws IOException
 	{
 		throw new UnsupportedOperationException();

@@ -79,11 +79,11 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			+ "|distance=\"(\\d+)\" [^>]*? nameWithPlace=\"([^\"]*)\" [^>]*? stopID=\"(\\d+)\" [^>]*? x=\"(\\d+)\" y=\"(\\d+)\"" //
 			+ ")");
 
-	protected abstract String nearbyLatLonUri(double lat, double lon);
+	protected abstract String nearbyLatLonUri(int lat, int lon);
 
 	protected abstract String nearbyStationUri(String stationId);
 
-	public List<Station> nearbyStations(final String stationId, final double lat, final double lon, final int maxDistance, final int maxStations)
+	public List<Station> nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
 			throws IOException
 	{
 		String uri = null;
@@ -103,8 +103,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		{
 			final boolean firstSyntax = mNearby.group(1) != null;
 			final int sId = Integer.parseInt(mNearby.group(firstSyntax ? 1 : 8));
-			final double sLon = latLonToDouble(Integer.parseInt(mNearby.group(firstSyntax ? 2 : 9)));
-			final double sLat = latLonToDouble(Integer.parseInt(mNearby.group(firstSyntax ? 3 : 10)));
+			final int sLon = Integer.parseInt(mNearby.group(firstSyntax ? 2 : 9));
+			final int sLat = Integer.parseInt(mNearby.group(firstSyntax ? 3 : 10));
 			final String sName = mNearby.group(firstSyntax ? 4 : 7).trim();
 			final int sDist = Integer.parseInt(mNearby.group(firstSyntax ? 5 : 6));
 
@@ -116,11 +116,6 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			return stations;
 		else
 			return stations.subList(0, maxStations);
-	}
-
-	private static double latLonToDouble(final int value)
-	{
-		return (double) value / 1000000;
 	}
 
 	private static final Pattern P_LINE_RE = Pattern.compile("RE\\d+");
@@ -422,5 +417,10 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 	private static String normalizeLocationName(final String name)
 	{
 		return P_STATION_NAME_WHITESPACE.matcher(name).replaceAll(" ");
+	}
+
+	protected static double latLonToDouble(final int value)
+	{
+		return (double) value / 1000000;
 	}
 }

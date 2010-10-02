@@ -97,7 +97,7 @@ public final class VbbProvider implements NetworkProvider
 		return results;
 	}
 
-	public List<Station> nearbyStations(final String stationId, final double lat, final double lon, final int maxDistance, final int maxStations)
+	public List<Station> nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
 			throws IOException
 	{
 		throw new UnsupportedOperationException();
@@ -138,8 +138,8 @@ public final class VbbProvider implements NetworkProvider
 		if (m.find())
 		{
 			final String name = ParserUtils.resolveEntities(m.group(1));
-			final double lon = latLonToDouble(Integer.parseInt(m.group(2)));
-			final double lat = latLonToDouble(Integer.parseInt(m.group(3)));
+			final int lon = Integer.parseInt(m.group(2));
+			final int lat = Integer.parseInt(m.group(3));
 
 			return new StationLocationResult(lat, lon, name);
 		}
@@ -147,11 +147,6 @@ public final class VbbProvider implements NetworkProvider
 		{
 			throw new IllegalArgumentException("cannot parse '" + page + "' on " + uri);
 		}
-	}
-
-	private static double latLonToDouble(int value)
-	{
-		return (double) value / 1000000;
 	}
 
 	public static final String STATION_URL_CONNECTION = "http://mobil.bvg.de/Fahrinfo/bin/query.bin/dox";
@@ -170,9 +165,9 @@ public final class VbbProvider implements NetworkProvider
 		if (fromType == LocationType.WGS84)
 		{
 			final String[] parts = from.split(",\\s*", 2);
-			final double lat = Double.parseDouble(parts[0]);
-			final double lon = Double.parseDouble(parts[1]);
-			uri.append("&SID=").append(ParserUtils.urlEncode("A=16@X=" + latLonToInt(lon) + "@Y=" + latLonToInt(lat)));
+			final int lat = Integer.parseInt(parts[0]);
+			final int lon = Integer.parseInt(parts[1]);
+			uri.append("&SID=").append(ParserUtils.urlEncode("A=16@X=" + lon + "@Y=" + lat));
 		}
 		else
 		{
@@ -203,9 +198,9 @@ public final class VbbProvider implements NetworkProvider
 		if (toType == LocationType.WGS84)
 		{
 			final String[] parts = to.split(",\\s*", 2);
-			final double lat = Double.parseDouble(parts[0]);
-			final double lon = Double.parseDouble(parts[1]);
-			uri.append("&ZID=").append(ParserUtils.urlEncode("A=16@X=" + latLonToInt(lon) + "@Y=" + latLonToInt(lat)));
+			final int lat = Integer.parseInt(parts[0]);
+			final int lon = Integer.parseInt(parts[1]);
+			uri.append("&ZID=").append(ParserUtils.urlEncode("A=16@X=" + lon + "@Y=" + lat));
 		}
 		else
 		{
@@ -232,11 +227,6 @@ public final class VbbProvider implements NetworkProvider
 		if (locationType == LocationType.ANY)
 			return 255;
 		throw new IllegalArgumentException(locationType.toString());
-	}
-
-	private static int latLonToInt(final double value)
-	{
-		return (int) (value * 1000000);
 	}
 
 	private static final Pattern P_CHECK_ADDRESS = Pattern.compile("<option[^>]*>\\s*(.*?)\\s*</option>", Pattern.DOTALL);
@@ -461,9 +451,9 @@ public final class VbbProvider implements NetworkProvider
 						final String arrival = ParserUtils.resolveEntities(ParserUtils.selectNotNull(mDetFine.group(13), mDetFine.group(16), mDetFine
 								.group(17)));
 
-						final double arrivalLon = mDetFine.group(14) != null ? latLonToDouble(Integer.parseInt(mDetFine.group(14))) : 0;
+						final int arrivalLon = mDetFine.group(14) != null ? Integer.parseInt(mDetFine.group(14)) : 0;
 
-						final double arrivalLat = mDetFine.group(15) != null ? latLonToDouble(Integer.parseInt(mDetFine.group(15))) : 0;
+						final int arrivalLat = mDetFine.group(15) != null ? Integer.parseInt(mDetFine.group(15)) : 0;
 
 						if (parts.size() > 0 && parts.get(parts.size() - 1) instanceof Connection.Footway)
 						{

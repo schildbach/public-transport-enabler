@@ -125,7 +125,7 @@ public class OebbProvider implements NetworkProvider
 	private final static Pattern P_NEARBY_COARSE = Pattern.compile("<tr class=\"zebracol-\\d\">(.*?)</tr>", Pattern.DOTALL);
 	private final static Pattern P_NEARBY_FINE = Pattern.compile(".*?stboard\\.exe/.*?&input=.*?%23(\\d+)&.*?>(.*?)</a>.*?", Pattern.DOTALL);
 
-	public List<Station> nearbyStations(final String stationId, final double lat, final double lon, final int maxDistance, final int maxStations)
+	public List<Station> nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
 			throws IOException
 	{
 		if (stationId == null)

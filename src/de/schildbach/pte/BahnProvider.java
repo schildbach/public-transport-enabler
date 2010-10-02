@@ -78,7 +78,7 @@ public final class BahnProvider implements NetworkProvider
 	private final static Pattern P_NEARBY_STATIONS = Pattern
 			.compile("<a class=\"uLine\" href=\".+?!X=(\\d+)!Y=(\\d+)!id=(\\d+)!dist=(\\d+).*?\">(.+?)</a>");
 
-	public List<Station> nearbyStations(final String stationId, final double lat, final double lon, final int maxDistance, final int maxStations)
+	public List<Station> nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
 			throws IOException
 	{
 		if (lat == 0 && lon == 0)
@@ -87,7 +87,7 @@ public final class BahnProvider implements NetworkProvider
 		final List<Station> stations = new ArrayList<Station>();
 
 		final String url = API_BASE + "query.exe/dox" + "?performLocating=2&tpl=stopsnear&look_maxdist=" + (maxDistance > 0 ? maxDistance : 5000)
-				+ "&look_stopclass=1023" + "&look_x=" + latLonToInt(lon) + "&look_y=" + latLonToInt(lat);
+				+ "&look_stopclass=1023" + "&look_x=" + lon + "&look_y=" + lat;
 		final CharSequence page = ParserUtils.scrape(url);
 
 		final Matcher m = P_NEARBY_STATIONS.matcher(page);
@@ -95,8 +95,8 @@ public final class BahnProvider implements NetworkProvider
 		{
 			final int sId = Integer.parseInt(m.group(3));
 
-			final double sLon = latLonToDouble(Integer.parseInt(m.group(1)));
-			final double sLat = latLonToDouble(Integer.parseInt(m.group(2)));
+			final int sLon = Integer.parseInt(m.group(1));
+			final int sLat = Integer.parseInt(m.group(2));
 			final int sDist = Integer.parseInt(m.group(4));
 			final String sName = ParserUtils.resolveEntities(m.group(5).trim());
 
@@ -108,16 +108,6 @@ public final class BahnProvider implements NetworkProvider
 			return stations;
 		else
 			return stations.subList(0, maxStations);
-	}
-
-	private static int latLonToInt(double value)
-	{
-		return (int) (value * 1000000);
-	}
-
-	private static double latLonToDouble(int value)
-	{
-		return (double) value / 1000000;
 	}
 
 	public StationLocationResult stationLocation(final String stationId) throws IOException

@@ -55,9 +55,9 @@ public class LinzProvider extends AbstractEfaProvider
 			+ "?outputFormat=XML&mode=direct&coordOutputFormat=WGS84&mergeDep=1&useAllStops=1&name_dm=%2.6f:%2.6f:WGS84&type_dm=coord&itOptionsActive=1&ptOptionsActive=1&useProxFootSearch=1&excludedMeans=checkbox";
 
 	@Override
-	protected String nearbyLatLonUri(final double lat, final double lon)
+	protected String nearbyLatLonUri(final int lat, final int lon)
 	{
-		return String.format(NEARBY_LATLON_URI, lon, lat);
+		return String.format(NEARBY_LATLON_URI, latLonToDouble(lon), latLonToDouble(lat));
 	}
 
 	private static final String NEARBY_STATION_URI = API_BASE

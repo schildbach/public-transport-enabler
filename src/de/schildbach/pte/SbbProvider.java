@@ -83,7 +83,7 @@ public class SbbProvider implements NetworkProvider
 	private final static Pattern P_NEARBY_FINE = Pattern.compile(".*?&REQMapRoute0\\.Location0\\.X=(-?\\d+)&REQMapRoute0\\.Location0\\.Y=(-?\\d+)"
 			+ "&REQMapRoute0\\.Location0\\.Name=(.*?)&sturl=.*?dn\\?input=(\\d+).*?", Pattern.DOTALL);
 
-	public List<Station> nearbyStations(final String stationId, final double lat, final double lon, final int maxDistance, final int maxStations)
+	public List<Station> nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
 			throws IOException
 	{
 		if (stationId == null)
@@ -100,8 +100,8 @@ public class SbbProvider implements NetworkProvider
 			final Matcher mFine = P_NEARBY_FINE.matcher(mCoarse.group(1));
 			if (mFine.matches())
 			{
-				final double parsedLon = latLonToDouble(Integer.parseInt(mFine.group(1)));
-				final double parsedLat = latLonToDouble(Integer.parseInt(mFine.group(2)));
+				final int parsedLon = Integer.parseInt(mFine.group(1));
+				final int parsedLat = Integer.parseInt(mFine.group(2));
 				final String parsedName = ParserUtils.resolveEntities(mFine.group(3));
 				final int parsedId = Integer.parseInt(mFine.group(4));
 
@@ -118,11 +118,6 @@ public class SbbProvider implements NetworkProvider
 			return stations;
 		else
 			return stations.subList(0, maxStations);
-	}
-
-	private static double latLonToDouble(int value)
-	{
-		return (double) value / 1000000;
 	}
 
 	public StationLocationResult stationLocation(final String stationId) throws IOException
