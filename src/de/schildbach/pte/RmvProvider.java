@@ -319,7 +319,7 @@ public class RmvProvider extends AbstractHafasProvider
 					else
 						line = null;
 					final Connection connection = new Connection(ParserUtils.extractId(link), link, departureTime, arrivalTime, line,
-							line != null ? LINES.get(line.charAt(0)) : null, 0, from, 0, to, null);
+							line != null ? lineColors(line) : null, 0, from, 0, to, null);
 					connections.add(connection);
 				}
 				else
@@ -403,8 +403,8 @@ public class RmvProvider extends AbstractHafasProvider
 
 						final String arrivalPosition = ParserUtils.resolveEntities(mDetFine.group(6));
 
-						lastTrip = new Connection.Trip(line, line != null ? LINES.get(line.charAt(0)) : null, destination, departureTime,
-								departurePosition, 0, departure, arrivalTime, arrivalPosition, 0, arrival);
+						lastTrip = new Connection.Trip(line, line != null ? lineColors(line) : null, destination, departureTime, departurePosition,
+								0, departure, arrivalTime, arrivalPosition, 0, arrival);
 						parts.add(lastTrip);
 
 						if (firstDepartureTime == null)
@@ -556,8 +556,8 @@ public class RmvProvider extends AbstractHafasProvider
 
 						final String position = ParserUtils.resolveEntities(ParserUtils.selectNotNull(mDepFine.group(5), mDepFine.group(6)));
 
-						final Departure dep = new Departure(plannedTime, predictedTime, line, line != null ? LINES.get(line.charAt(0)) : null, null,
-								position, 0, destination, null);
+						final Departure dep = new Departure(plannedTime, predictedTime, line, line != null ? lineColors(line) : null, null, position,
+								0, destination, null);
 
 						if (!departures.contains(dep))
 							departures.add(dep);
@@ -580,8 +580,6 @@ public class RmvProvider extends AbstractHafasProvider
 			throw new IllegalArgumentException("cannot parse '" + page + "' on " + uri);
 		}
 	}
-
-	private static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zÄÖÜäöüßáàâéèêíìîóòôúùû]+)[\\s-]*(.*)");
 
 	private static String normalizeLine(final String line)
 	{
@@ -643,21 +641,9 @@ public class RmvProvider extends AbstractHafasProvider
 		throw new IllegalStateException("cannot normalize line " + line);
 	}
 
-	private static final Map<Character, int[]> LINES = new HashMap<Character, int[]>();
-
-	static
+	@Override
+	protected char normalizeType(final String type)
 	{
-		LINES.put('I', new int[] { Color.WHITE, Color.RED, Color.RED });
-		LINES.put('R', new int[] { Color.GRAY, Color.WHITE });
-		LINES.put('S', new int[] { Color.parseColor("#006e34"), Color.WHITE });
-		LINES.put('U', new int[] { Color.parseColor("#003090"), Color.WHITE });
-		LINES.put('T', new int[] { Color.parseColor("#cc0000"), Color.WHITE });
-		LINES.put('B', new int[] { Color.parseColor("#993399"), Color.WHITE });
-		LINES.put('F', new int[] { Color.BLUE, Color.WHITE });
-	}
-
-	public int[] lineColors(final String line)
-	{
-		return LINES.get(line.charAt(0));
+		throw new UnsupportedOperationException();
 	}
 }

@@ -18,15 +18,27 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import de.schildbach.pte.QueryDeparturesResult.Status;
 
 /**
  * @author Andreas Schildbach
  */
 public class NasaProvider extends AbstractHafasProvider
 {
+	public static final String NETWORK_ID = "www.nasa.de";
 	private static final String API_BASE = "http://www.nasa.de/delfi52/";
+
+	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
 
 	public boolean hasCapabilities(Capability... capabilities)
 	{
@@ -38,7 +50,8 @@ public class NasaProvider extends AbstractHafasProvider
 		throw new UnsupportedOperationException();
 	}
 
-	private final String NEARBY_URI = API_BASE + "stboard.exe/dn?input=%s&selectDate=today&boardType=dep&productsFilter=11111111&distance=50&near=Anzeigen";
+	private final String NEARBY_URI = API_BASE
+			+ "stboard.exe/dn?input=%s&selectDate=today&boardType=dep&productsFilter=11111111&distance=50&near=Anzeigen";
 
 	@Override
 	protected String nearbyStationUri(final String stationId)
@@ -51,14 +64,163 @@ public class NasaProvider extends AbstractHafasProvider
 		throw new UnsupportedOperationException();
 	}
 
-	public String departuresQueryUri(String stationId, int maxDepartures)
+	public String departuresQueryUri(final String stationId, final int maxDepartures)
 	{
-		throw new UnsupportedOperationException();
+		final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yy");
+		final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
+		final Date now = new Date();
+
+		final StringBuilder uri = new StringBuilder();
+		uri.append(API_BASE).append("stboard.exe/dn");
+		uri.append("?input=").append(stationId);
+		uri.append("&boardType=dep");
+		uri.append("&time=").append(TIME_FORMAT.format(now));
+		uri.append("&selectDate=").append(DATE_FORMAT.format(now));
+		uri.append("&productsFilter=11111111");
+		if (maxDepartures != 0)
+			uri.append("&maxJourneys=").append(maxDepartures);
+		uri.append("&disableEquivs=yes"); // don't use nearby stations
+		uri.append("&start=yes");
+
+		return uri.toString();
 	}
 
-	public QueryDeparturesResult queryDepartures(String queryUri) throws IOException
+	private static final Pattern P_DEPARTURES_HEAD_COARSE = Pattern
+			.compile(
+					".*?" //
+							+ "(?:" // 
+							+ "<table class=\"hafasResult\"[^>]*>(.+?)</table>.*?" //
+							+ "(?:<table cellspacing=\"0\" class=\"hafasResult\"[^>]*>(.+?)</table>|(verkehren an dieser Haltestelle keine))"//
+							+ "|(Eingabe kann nicht interpretiert)|(Verbindung zum Server konnte leider nicht hergestellt werden|kann vom Server derzeit leider nicht bearbeitet werden))" //
+							+ ".*?" //
+					, Pattern.DOTALL);
+	private static final Pattern P_DEPARTURES_HEAD_FINE = Pattern.compile(".*?" //
+			+ "<td class=\"querysummary screennowrap\">\\s*(.*?)\\s*<.*?" // location
+			+ "(\\d{2}\\.\\d{2}\\.\\d{2}).*?" // date
+			+ "Abfahrt (\\d{1,2}:\\d{2}).*?" // time
+	, Pattern.DOTALL);
+	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<tr class=\"(depboard-\\w*)\">(.*?)</tr>", Pattern.DOTALL);
+	private static final Pattern P_DEPARTURES_FINE = Pattern.compile(".*?" //
+			+ "<td class=\"[\\w ]*\">(\\d{1,2}:\\d{2})</td>\n" // plannedTime
+			+ "(?:<td class=\"[\\w ]*prognosis[\\w ]*\">\n" //
+			+ "(?:&nbsp;|<span class=\"rtLimit\\d\">(p&#252;nktlich|\\d{1,2}:\\d{2})</span>)\n</td>\n" // predictedTime
+			+ ")?.*?" //
+			+ "<img src=\"/img52/(\\w+)_pic\\.gif\"[^>]*>\\s*(.*?)\\s*</.*?" // type, line
+			+ "<span class=\"bold\">\n" //
+			+ "<a href=\"/delfi52/stboard\\.exe/dn\\?input=(\\d+)&[^>]*>" // destinationId
+			+ "\\s*(.*?)\\s*</a>\n" // destination
+			+ "</span>.*?" //
+			+ "(?:<td class=\"center sepline top\">\n(" + ParserUtils.P_PLATFORM + ").*?)?" // position
+	, Pattern.DOTALL);
+
+	public QueryDeparturesResult queryDepartures(final String uri) throws IOException
 	{
-		throw new UnsupportedOperationException();
+		// scrape page
+		final CharSequence page = ParserUtils.scrape(uri);
+
+		// parse page
+		final Matcher mHeadCoarse = P_DEPARTURES_HEAD_COARSE.matcher(page);
+		if (mHeadCoarse.matches())
+		{
+			// messages
+			if (mHeadCoarse.group(3) != null)
+				return new QueryDeparturesResult(uri, Status.NO_INFO);
+			else if (mHeadCoarse.group(4) != null)
+				return new QueryDeparturesResult(uri, Status.INVALID_STATION);
+			else if (mHeadCoarse.group(5) != null)
+				return new QueryDeparturesResult(uri, Status.SERVICE_DOWN);
+
+			final Matcher mHeadFine = P_DEPARTURES_HEAD_FINE.matcher(mHeadCoarse.group(1));
+			if (mHeadFine.matches())
+			{
+				final String location = ParserUtils.resolveEntities(mHeadFine.group(1));
+				final Date currentTime = ParserUtils.joinDateTime(ParserUtils.parseDate(mHeadFine.group(2)), ParserUtils
+						.parseTime(mHeadFine.group(3)));
+				final List<Departure> departures = new ArrayList<Departure>(8);
+				String oldZebra = null;
+
+				final Matcher mDepCoarse = P_DEPARTURES_COARSE.matcher(mHeadCoarse.group(2));
+				while (mDepCoarse.find())
+				{
+					final String zebra = mDepCoarse.group(1);
+					if (oldZebra != null && zebra.equals(oldZebra))
+						throw new IllegalArgumentException("missed row? last:" + zebra);
+					else
+						oldZebra = zebra;
+
+					final Matcher mDepFine = P_DEPARTURES_FINE.matcher(mDepCoarse.group(2));
+					if (mDepFine.matches())
+					{
+						final Calendar current = new GregorianCalendar();
+						current.setTime(currentTime);
+						final Calendar parsed = new GregorianCalendar();
+						parsed.setTime(ParserUtils.parseTime(mDepFine.group(1)));
+						parsed.set(Calendar.YEAR, current.get(Calendar.YEAR));
+						parsed.set(Calendar.MONTH, current.get(Calendar.MONTH));
+						parsed.set(Calendar.DAY_OF_MONTH, current.get(Calendar.DAY_OF_MONTH));
+						if (ParserUtils.timeDiff(parsed.getTime(), currentTime) < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
+							parsed.add(Calendar.DAY_OF_MONTH, 1);
+
+						final Date plannedTime = parsed.getTime();
+
+						Date predictedTime = null;
+						final String prognosis = ParserUtils.resolveEntities(mDepFine.group(2));
+						if (prognosis != null)
+						{
+							if (prognosis.equals("pünktlich"))
+								predictedTime = plannedTime;
+							else
+								predictedTime = ParserUtils.joinDateTime(currentTime, ParserUtils.parseTime(prognosis));
+						}
+
+						final String lineType = mDepFine.group(3);
+
+						final String line = normalizeLine(lineType, ParserUtils.resolveEntities(mDepFine.group(4)));
+
+						final int destinationId = mDepFine.group(5) != null ? Integer.parseInt(mDepFine.group(5)) : 0;
+
+						final String destination = ParserUtils.resolveEntities(mDepFine.group(6));
+
+						final String position = mDepFine.group(7) != null ? "Gl. " + ParserUtils.resolveEntities(mDepFine.group(7)) : null;
+
+						final Departure dep = new Departure(plannedTime, predictedTime, line, line != null ? lineColors(line) : null, null, position,
+								destinationId, destination, null);
+
+						if (!departures.contains(dep))
+							departures.add(dep);
+					}
+					else
+					{
+						throw new IllegalArgumentException("cannot parse '" + mDepCoarse.group(2) + "' on " + uri);
+					}
+				}
+
+				return new QueryDeparturesResult(uri, 0, location, departures);
+			}
+			else
+			{
+				throw new IllegalArgumentException("cannot parse '" + mHeadCoarse.group(1) + "' on " + uri);
+			}
+		}
+		else
+		{
+			throw new IllegalArgumentException("cannot parse '" + page + "' on " + uri);
+		}
+	}
+
+	@Override
+	protected char normalizeType(String type)
+	{
+		final String ucType = type.toUpperCase();
+
+		final char t = normalizeCommonTypes(ucType);
+		if (t != 0)
+			return t;
+
+		if (ucType.equals("BSV"))
+			return 'B';
+
+		return 0;
 	}
 
 	public QueryConnectionsResult queryConnections(LocationType fromType, String from, LocationType viaType, String via, LocationType toType,
@@ -73,11 +235,6 @@ public class NasaProvider extends AbstractHafasProvider
 	}
 
 	public GetConnectionDetailsResult getConnectionDetails(String connectionUri) throws IOException
-	{
-		throw new UnsupportedOperationException();
-	}
-
-	public int[] lineColors(String line)
 	{
 		throw new UnsupportedOperationException();
 	}

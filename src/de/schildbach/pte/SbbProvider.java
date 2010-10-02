@@ -24,9 +24,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -337,7 +335,7 @@ public class SbbProvider extends AbstractHafasProvider
 
 							final String arrivalPosition = mDetFine.group(13) != null ? ParserUtils.resolveEntities(mDetFine.group(13)) : null;
 
-							final Connection.Trip trip = new Connection.Trip(line, LINES.get(line.charAt(0)), null, departureTime, departurePosition,
+							final Connection.Trip trip = new Connection.Trip(line, lineColors(line), null, departureTime, departurePosition,
 									departureId, departure, arrivalTime, arrivalPosition, arrivalId, arrival);
 							connection.parts.add(trip);
 						}
@@ -466,8 +464,7 @@ public class SbbProvider extends AbstractHafasProvider
 
 						final String position = ParserUtils.resolveEntities(mDepFine.group(4));
 
-						final Departure dep = new Departure(parsed.getTime(), line, line != null ? LINES.get(line.charAt(0)) : null, position, 0,
-								destination);
+						final Departure dep = new Departure(parsed.getTime(), line, line != null ? lineColors(line) : null, position, 0, destination);
 
 						if (!departures.contains(dep))
 							departures.add(dep);
@@ -491,21 +488,7 @@ public class SbbProvider extends AbstractHafasProvider
 		}
 	}
 
-	private static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zÄÖÜäöüßáàâéèêíìîóòôúùû]+)[\\s-]*(.*)");
-
-	private static String normalizeLine(final String type, final String line)
-	{
-		final Matcher m = P_NORMALIZE_LINE.matcher(line);
-		final String strippedLine = m.matches() ? m.group(1) + m.group(2) : line;
-
-		final char normalizedType = normalizeType(type);
-		if (normalizedType != 0)
-			return normalizedType + strippedLine;
-
-		throw new IllegalStateException("cannot normalize type " + type + " line " + line);
-	}
-
-	private static String normalizeLine(final String line)
+	private String normalizeLine(final String line)
 	{
 		if (line == null || line.length() == 0)
 			return null;
@@ -529,31 +512,16 @@ public class SbbProvider extends AbstractHafasProvider
 	private static final Pattern P_NORMALIZE_TYPE_SBAHN = Pattern.compile("SN?\\d*");
 	private static final Pattern P_NORMALIZE_TYPE_BUS = Pattern.compile("BUS\\w*");
 
-	private static char normalizeType(final String type)
+	@Override
+	protected char normalizeType(final String type)
 	{
 		final String ucType = type.toUpperCase();
 
-		if (ucType.equals("EC")) // EuroCity
-			return 'I';
-		if (ucType.equals("EN")) // EuroNight
-			return 'I';
-		if (ucType.equals("ICE")) // InterCityExpress
-			return 'I';
-		if (ucType.equals("IC")) // InterCity
-			return 'I';
+		final char t = normalizeCommonTypes(ucType);
+		if (t != 0)
+			return t;
+		
 		if (ucType.equals("ICN")) // Intercity-Neigezug, Schweiz
-			return 'I';
-		if (ucType.equals("CNL")) // CityNightLine
-			return 'I';
-		if (ucType.equals("THA")) // Thalys
-			return 'I';
-		if (ucType.equals("TGV")) // Train à Grande Vitesse
-			return 'I';
-		if (ucType.equals("RJ")) // RailJet, Österreichische Bundesbahnen
-			return 'I';
-		if (ucType.equals("OEC")) // ÖBB-EuroCity
-			return 'I';
-		if (ucType.equals("OIC")) // ÖBB-InterCity
 			return 'I';
 		if (ucType.equals("X")) // InterConnex
 			return 'I';
@@ -574,13 +542,7 @@ public class SbbProvider extends AbstractHafasProvider
 		if (ucType.equals("ARZ")) // Frankreich, Nacht
 			return 'I';
 
-		if (ucType.equals("R"))
-			return 'R';
-		if (ucType.equals("RE")) // RegionalExpress
-			return 'R';
 		if (ucType.equals("IR"))
-			return 'R';
-		if (ucType.equals("IRE")) // Interregio Express
 			return 'R';
 		if (ucType.equals("D"))
 			return 'R';
@@ -604,8 +566,6 @@ public class SbbProvider extends AbstractHafasProvider
 			return 'R';
 		if (ucType.equals("ATR")) // Spanien
 			return 'R';
-		if (ucType.equals("ZUG"))
-			return 'R';
 
 		if (P_NORMALIZE_TYPE_SBAHN.matcher(ucType).matches())
 			return 'S';
@@ -624,8 +584,6 @@ public class SbbProvider extends AbstractHafasProvider
 		if (ucType.equals("NTR"))
 			return 'T';
 
-		if (ucType.equals("BUS"))
-			return 'B';
 		if (ucType.equals("TRO"))
 			return 'B';
 		if (ucType.equals("NTO")) // Niederflurtrolleybus zwischen Bern, Bahnhofsplatz und Bern, Wankdorf Bahnhof
@@ -671,24 +629,5 @@ public class SbbProvider extends AbstractHafasProvider
 			return '?';
 
 		return 0;
-	}
-
-	private static final Map<Character, int[]> LINES = new HashMap<Character, int[]>();
-
-	static
-	{
-		LINES.put('I', new int[] { Color.WHITE, Color.RED, Color.RED });
-		LINES.put('R', new int[] { Color.GRAY, Color.WHITE });
-		LINES.put('S', new int[] { Color.parseColor("#006e34"), Color.WHITE });
-		LINES.put('U', new int[] { Color.parseColor("#003090"), Color.WHITE });
-		LINES.put('T', new int[] { Color.parseColor("#cc0000"), Color.WHITE });
-		LINES.put('B', new int[] { Color.parseColor("#993399"), Color.WHITE });
-		LINES.put('F', new int[] { Color.BLUE, Color.WHITE });
-		LINES.put('?', new int[] { Color.DKGRAY, Color.WHITE });
-	}
-
-	public int[] lineColors(final String line)
-	{
-		return LINES.get(line.charAt(0));
 	}
 }

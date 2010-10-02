@@ -415,7 +415,7 @@ public class OebbProvider extends AbstractHafasProvider
 
 								final String arrivalPosition = mDetFine.group(12) != null ? ParserUtils.resolveEntities(mDetFine.group(12)) : null;
 
-								final Connection.Trip trip = new Connection.Trip(line, LINES.get(line.charAt(0)), null, detailsDepartureDateTime,
+								final Connection.Trip trip = new Connection.Trip(line, lineColors(line), null, detailsDepartureDateTime,
 										departurePosition, departureId, departure, detailsArrivalDateTime, arrivalPosition, arrivalId, arrival);
 								connection.parts.add(trip);
 							}
@@ -521,8 +521,8 @@ public class OebbProvider extends AbstractHafasProvider
 						final boolean rt = head.optBoolean("rt", false);
 						final String lineLink = departure.optString("tinfoline");
 
-						departures.add(new Departure(!rt ? time : null, rt ? time : null, line, line != null ? LINES.get(line.charAt(0)) : null,
-								lineLink, position, 0, destination, null));
+						departures.add(new Departure(!rt ? time : null, rt ? time : null, line, line != null ? lineColors(line) : null, lineLink,
+								position, 0, destination, null));
 					}
 				}
 			}
@@ -535,12 +535,11 @@ public class OebbProvider extends AbstractHafasProvider
 		}
 	}
 
-	private static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zÄÖÜäöüßáàâéèêíìîóòôúùû/-]+)[\\s]*(.*)");
 	private static final Pattern P_NORMALIZE_LINE_NUMBER = Pattern.compile("\\d{2,5}");
 	private static final Pattern P_NORMALIZE_LINE_RUSSIA = Pattern.compile("\\d{1,3}[A-Z]{2}");
 	private static final Pattern P_NORMALIZE_LINE_RUSSIA_INT = Pattern.compile("\\d{3}Y");
 
-	private static String normalizeLine(final String line)
+	private String normalizeLine(final String line)
 	{
 		final Matcher m = P_NORMALIZE_LINE.matcher(line);
 		if (m.matches())
@@ -571,40 +570,17 @@ public class OebbProvider extends AbstractHafasProvider
 		throw new IllegalStateException("cannot normalize line " + line);
 	}
 
-	private static String normalizeLine(final String type, final String line)
-	{
-		final Matcher m = P_NORMALIZE_LINE.matcher(line);
-		final String strippedLine = m.matches() ? m.group(1) + m.group(2) : line;
-
-		final char normalizedType = normalizeType(type);
-		if (normalizedType != 0)
-			return normalizedType + strippedLine;
-
-		throw new IllegalStateException("cannot normalize type " + type + " line " + line);
-	}
-
-	private static char normalizeType(final String type)
+	@Override
+	protected char normalizeType(final String type)
 	{
 		final String ucType = type.toUpperCase();
 
-		if (ucType.equals("OEC")) // ÖBB-EuroCity
-			return 'I';
-		if (ucType.equals("OIC")) // ÖBB-InterCity
-			return 'I';
-		if (ucType.equals("EC")) // EuroCity
-			return 'I';
-		if (ucType.equals("IC")) // InterCity
-			return 'I';
-		if (ucType.equals("ICE")) // InterCityExpress
-			return 'I';
+		final char t = normalizeCommonTypes(ucType);
+		if (t != 0)
+			return t;
+
 		// if (ucType.equals("X")) // Interconnex, Connections only?
 		// return 'I';
-		if (ucType.equals("EN")) // EuroNight
-			return 'I';
-		if (ucType.equals("CNL")) // CityNightLine
-			return 'I';
-		if (ucType.equals("DNZ")) // Berlin-Saratov, Berlin-Moskva, Connections only?
-			return 'I';
 		if (ucType.equals("INT")) // Rußland, Connections only?
 			return 'I';
 		if (ucType.equals("D")) // Rußland
@@ -616,8 +592,6 @@ public class OebbProvider extends AbstractHafasProvider
 		if (ucType.equals("EE")) // Rumänien, Connections only?
 			return 'I';
 		if (ucType.equals("SC")) // SuperCity, Tschechien
-			return 'I';
-		if (ucType.equals("RJ")) // RailJet, Österreichische Bundesbahnen
 			return 'I';
 		if (ucType.equals("EST")) // Eurostar Frankreich
 			return 'I';
@@ -640,10 +614,6 @@ public class OebbProvider extends AbstractHafasProvider
 		if (ucType.equals("X2")) // Schweden, Connections only?
 			return 'I';
 		if (ucType.equals("X")) // Schweden, via JSON API
-			return 'I';
-		if (ucType.equals("THA")) // Thalys
-			return 'I';
-		if (ucType.equals("TGV")) // Train à Grande Vitesse
 			return 'I';
 		if (ucType.equals("LYN")) // Dänemark
 			return 'I';
@@ -668,17 +638,9 @@ public class OebbProvider extends AbstractHafasProvider
 		if (ucType.equals("AIR")) // Connections only?
 			return 'I';
 
-		if (ucType.equals("R"))
-			return 'R';
-		if (ucType.equals("REX")) // RegionalExpress
-			return 'R';
-		if (ucType.equals("ZUG")) // Connections only?
-			return 'R';
 		if (ucType.equals("EZ")) // Erlebniszug
 			return 'R';
 		if (ucType.equals("S2")) // Helsinki-Turku, Connections only?
-			return 'R';
-		if (ucType.equals("RB")) // RegionalBahn Deutschland
 			return 'R';
 		if (ucType.equals("RE")) // RegionalExpress Deutschland
 			return 'R';
@@ -719,10 +681,6 @@ public class OebbProvider extends AbstractHafasProvider
 		if (ucType.equals("ZR")) // Bratislava, Slovakai
 			return 'R';
 		if (ucType.equals("CAT")) // Stockholm-Arlanda, Arlanda Express
-			return 'R';
-		if (ucType.equals("RT")) // Deutschland
-			return 'R';
-		if (ucType.equals("IRE")) // Interregio Express
 			return 'R';
 		if (ucType.equals("N")) // Frankreich, Tours
 			return 'R';
@@ -766,8 +724,6 @@ public class OebbProvider extends AbstractHafasProvider
 			return 'R';
 		if (ucType.equals("MRB")) // Mitteldeutsche Regiobahn, via JSON API
 			return 'R';
-		if (ucType.equals("WFB")) // Westfalenbahn, via JSON API
-			return 'R';
 		if (ucType.equals("ARR")) // Ostfriesland, via JSON API
 			return 'R';
 		if (ucType.equals("SHB")) // Schleswig-Holstein-Bahn, via JSON API
@@ -785,8 +741,6 @@ public class OebbProvider extends AbstractHafasProvider
 		if (ucType.equals("NBE")) // nordbahn, via JSON API
 			return 'R';
 		if (ucType.equals("DAB")) // Daadetalbahn, via JSON API
-			return 'R';
-		if (ucType.equals("HEX")) // Harz-Berlin-Express, Veolia, via JSON API
 			return 'R';
 		if (ucType.equals("WEG")) // Württembergische Eisenbahn-Gesellschaft, via JSON API
 			return 'R';
@@ -825,8 +779,6 @@ public class OebbProvider extends AbstractHafasProvider
 		if (ucType.equals("P")) // Kasbachtalbahn, via JSON API
 			return 'R';
 
-		if (ucType.equals("S"))
-			return 'S';
 		if (ucType.equals("RSB")) // Schnellbahn Wien
 			return 'S';
 		if (ucType.equals("BSB")) // Breisgau S-Bahn, via JSON API
@@ -838,18 +790,11 @@ public class OebbProvider extends AbstractHafasProvider
 		if (ucType.equals("RER")) // Réseau Express Régional, Frankreich
 			return 'S';
 
-		if (ucType.equals("U"))
-			return 'U';
-
-		if (ucType.equals("STR"))
-			return 'T';
 		if (ucType.equals("LKB")) // Connections only?
 			return 'T';
 		if (ucType.equals("WLB")) // via JSON API
 			return 'T';
 
-		if (ucType.equals("BUS"))
-			return 'B';
 		if (ucType.equals("RFB"))
 			return 'B';
 		if (ucType.equals("OBU")) // Connections only?
@@ -906,24 +851,5 @@ public class OebbProvider extends AbstractHafasProvider
 			return '?';
 
 		return 0;
-	}
-
-	private static final Map<Character, int[]> LINES = new HashMap<Character, int[]>();
-
-	static
-	{
-		LINES.put('I', new int[] { Color.WHITE, Color.RED, Color.RED });
-		LINES.put('R', new int[] { Color.GRAY, Color.WHITE });
-		LINES.put('S', new int[] { Color.parseColor("#006e34"), Color.WHITE });
-		LINES.put('U', new int[] { Color.parseColor("#003090"), Color.WHITE });
-		LINES.put('T', new int[] { Color.parseColor("#cc0000"), Color.WHITE });
-		LINES.put('B', new int[] { Color.parseColor("#993399"), Color.WHITE });
-		LINES.put('F', new int[] { Color.BLUE, Color.WHITE });
-		LINES.put('?', new int[] { Color.DKGRAY, Color.WHITE });
-	}
-
-	public int[] lineColors(final String line)
-	{
-		return LINES.get(line.charAt(0));
 	}
 }

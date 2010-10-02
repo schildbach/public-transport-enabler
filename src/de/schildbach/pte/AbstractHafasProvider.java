@@ -19,7 +19,9 @@ package de.schildbach.pte;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -79,5 +81,109 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return stations;
 		else
 			return stations.subList(0, maxStations);
+	}
+
+	protected static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zÄÖÜäöüßáàâéèêíìîóòôúùû/-]+)[\\s-]*(.*)");
+
+	protected final String normalizeLine(final String type, final String line)
+	{
+		final Matcher m = P_NORMALIZE_LINE.matcher(line);
+		final String strippedLine = m.matches() ? m.group(1) + m.group(2) : line;
+
+		final char normalizedType = normalizeType(type);
+		if (normalizedType != 0)
+			return normalizedType + strippedLine;
+
+		throw new IllegalStateException("cannot normalize type " + type + " line " + line);
+	}
+
+	protected abstract char normalizeType(String type);
+
+	protected final char normalizeCommonTypes(final String ucType)
+	{
+		// Intercity
+		if (ucType.equals("EC")) // EuroCity
+			return 'I';
+		if (ucType.equals("EN")) // EuroNight
+			return 'I';
+		if (ucType.equals("ICE")) // InterCityExpress
+			return 'I';
+		if (ucType.equals("IC")) // InterCity
+			return 'I';
+		if (ucType.equals("EN")) // EuroNight
+			return 'I';
+		if (ucType.equals("CNL")) // CityNightLine
+			return 'I';
+		if (ucType.equals("OEC")) // ÖBB-EuroCity
+			return 'I';
+		if (ucType.equals("OIC")) // ÖBB-InterCity
+			return 'I';
+		if (ucType.equals("RJ")) // RailJet, Österreichische Bundesbahnen
+			return 'I';
+		if (ucType.equals("THA")) // Thalys
+			return 'I';
+		if (ucType.equals("TGV")) // Train à Grande Vitesse
+			return 'I';
+		if (ucType.equals("DNZ")) // Berlin-Saratov, Berlin-Moskva, Connections only?
+			return 'I';
+
+		// Regional Germany
+		if (ucType.equals("ZUG")) // Generic Train
+			return 'R';
+		if (ucType.equals("R")) // Generic Regional Train
+			return 'R';
+		if (ucType.equals("DPN")) // Dritter Personen Nahverkehr
+			return 'R';
+		if (ucType.equals("RB")) // RegionalBahn
+			return 'R';
+		if (ucType.equals("RE")) // RegionalExpress
+			return 'R';
+		if (ucType.equals("IRE")) // Interregio Express
+			return 'R';
+		if (ucType.equals("HEX")) // Harz-Berlin-Express, Veolia
+			return 'R';
+		if (ucType.equals("WFB")) // Westfalenbahn
+			return 'R';
+		if (ucType.equals("RT")) // RegioTram
+			return 'R';
+		if (ucType.equals("REX")) // RegionalExpress, Österreich
+			return 'R';
+
+		// Suburban Trains
+		if (ucType.equals("S")) // Generic S-Bahn
+			return 'S';
+
+		// Subway
+		if (ucType.equals("U")) // Generic U-Bahn
+			return 'U';
+
+		// Tram
+		if (ucType.equals("STR")) // Generic Tram
+			return 'T';
+
+		// Bus
+		if (ucType.equals("BUS")) // Generic Bus
+			return 'B';
+
+		return 0;
+	}
+
+	private static final Map<Character, int[]> LINES = new HashMap<Character, int[]>();
+
+	static
+	{
+		LINES.put('I', new int[] { Color.WHITE, Color.RED, Color.RED });
+		LINES.put('R', new int[] { Color.GRAY, Color.WHITE });
+		LINES.put('S', new int[] { Color.parseColor("#006e34"), Color.WHITE });
+		LINES.put('U', new int[] { Color.parseColor("#003090"), Color.WHITE });
+		LINES.put('T', new int[] { Color.parseColor("#cc0000"), Color.WHITE });
+		LINES.put('B', new int[] { Color.parseColor("#993399"), Color.WHITE });
+		LINES.put('F', new int[] { Color.BLUE, Color.WHITE });
+		LINES.put('?', new int[] { Color.DKGRAY, Color.WHITE });
+	}
+
+	public final int[] lineColors(final String line)
+	{
+		return LINES.get(line.charAt(0));
 	}
 }

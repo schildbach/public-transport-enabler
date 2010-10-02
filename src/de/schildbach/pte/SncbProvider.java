@@ -1,3 +1,20 @@
+/*
+ * Copyright 2010 the original author or authors.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package de.schildbach.pte;
 
 import java.io.IOException;
@@ -5,14 +22,15 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.schildbach.pte.QueryDeparturesResult.Status;
 
+/**
+ * @author Andreas Schildbach
+ */
 public class SncbProvider extends AbstractHafasProvider
 {
 	public static final String NETWORK_ID = "hari.b-rail.be";
@@ -141,8 +159,7 @@ public class SncbProvider extends AbstractHafasProvider
 
 						mDepFine.group(4); // TODO delay
 
-						final Departure dep = new Departure(parsed.getTime(), line, line != null ? LINES.get(line.charAt(0)) : null, null, 0,
-								destination);
+						final Departure dep = new Departure(parsed.getTime(), line, line != null ? lineColors(line) : null, null, 0, destination);
 
 						if (!departures.contains(dep))
 							departures.add(dep);
@@ -166,9 +183,7 @@ public class SncbProvider extends AbstractHafasProvider
 		}
 	}
 
-	private static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zÄÖÜäöüßáàâéèêíìîóòôúùû]+)[\\s-]*(.*)");
-
-	private static String normalizeLine(final String line)
+	private String normalizeLine(final String line)
 	{
 		if (line == null || line.length() == 0)
 			return null;
@@ -189,19 +204,16 @@ public class SncbProvider extends AbstractHafasProvider
 		throw new IllegalStateException("cannot normalize line " + line);
 	}
 
-	private static char normalizeType(final String type)
+	@Override
+	protected char normalizeType(final String type)
 	{
 		final String ucType = type.toUpperCase();
 
-		if (ucType.equals("ICE")) // InterCityExpress
-			return 'I';
-		if (ucType.equals("IC")) // InterCity
-			return 'I';
+		final char t = normalizeCommonTypes(ucType);
+		if (t != 0)
+			return t;
+
 		if (ucType.equals("EST")) // Eurostar Frankreich
-			return 'I';
-		if (ucType.equals("THA")) // Thalys
-			return 'I';
-		if (ucType.equals("TGV")) // Train à Grande Vitesse
 			return 'I';
 		if (ucType.equals("INT")) // Zürich-Brüssel
 			return 'I';
@@ -225,28 +237,6 @@ public class SncbProvider extends AbstractHafasProvider
 		if (ucType.equals("TRA"))
 			return 'T';
 
-		if (ucType.equals("BUS"))
-			return 'B';
-
 		return 0;
-	}
-
-	private static final Map<Character, int[]> LINES = new HashMap<Character, int[]>();
-
-	static
-	{
-		LINES.put('I', new int[] { Color.WHITE, Color.RED, Color.RED });
-		LINES.put('R', new int[] { Color.GRAY, Color.WHITE });
-		LINES.put('S', new int[] { Color.parseColor("#006e34"), Color.WHITE });
-		LINES.put('U', new int[] { Color.parseColor("#003090"), Color.WHITE });
-		LINES.put('T', new int[] { Color.parseColor("#cc0000"), Color.WHITE });
-		LINES.put('B', new int[] { Color.parseColor("#993399"), Color.WHITE });
-		LINES.put('F', new int[] { Color.BLUE, Color.WHITE });
-		LINES.put('?', new int[] { Color.DKGRAY, Color.WHITE });
-	}
-
-	public int[] lineColors(final String line)
-	{
-		return LINES.get(line.charAt(0));
 	}
 }
