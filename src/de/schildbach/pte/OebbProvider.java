@@ -631,11 +631,7 @@ public class OebbProvider extends AbstractHafasProvider
 			return 'I';
 		if (ucType.equals("TGD")) // TGV, Connections only?
 			return 'I';
-		if (ucType.equals("ECB")) // EC, Connections only?
-			return 'I';
 		if (ucType.equals("IRX")) // IC, Connections only?
-			return 'I';
-		if (ucType.equals("AIR")) // Connections only?
 			return 'I';
 
 		if (ucType.equals("EZ")) // Erlebniszug
@@ -663,12 +659,6 @@ public class OebbProvider extends AbstractHafasProvider
 		if (ucType.equals("SKW")) // Polen
 			return 'R';
 		if (ucType.equals("WKD")) // Warszawska Kolej Dojazdowa, Polen
-			return 'R';
-		if (ucType.equals("IR")) // Polen
-			return 'R';
-		if (ucType.equals("OS")) // Chop-Cierna nas Tisou
-			return 'R';
-		if (ucType.equals("SP")) // Polen
 			return 'R';
 		if (ucType.equals("EX")) // Polen
 			return 'R';
@@ -825,8 +815,6 @@ public class OebbProvider extends AbstractHafasProvider
 			return 'B';
 
 		if (ucType.equals("SCH")) // Connections only?
-			return 'F';
-		if (ucType.equals("AS")) // SyltShuttle
 			return 'F';
 		if (ucType.equals("SCHIFF")) // via JSON API
 			return 'F';

@@ -217,8 +217,25 @@ public class NasaProvider extends AbstractHafasProvider
 		if (t != 0)
 			return t;
 
+		if (ucType.equals("D")) // Rußland Schlafwagenzug
+			return 'I';
+
+		if (ucType.equals("DPF")) // mit Dampflok bespannter Zug
+			return 'R';
+		if (ucType.equals("RR")) // Polen
+			return 'R';
+
 		if (ucType.equals("BSV"))
 			return 'B';
+		if (ucType.equals("RBS")) // Rufbus
+			return 'B';
+		if (ucType.equals("FB")) // Bus
+			return 'B';
+
+		if (ucType.equals("E")) // manchmal S4, manchmal 5stellige Zugnr.
+			return '?';
+		if (ucType.equals("EB")) // Europa-Park, vermutlich "Erlebnisbahn"
+			return '?';
 
 		return 0;
 	}

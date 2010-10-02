@@ -542,8 +542,6 @@ public class SbbProvider extends AbstractHafasProvider
 		if (ucType.equals("ARZ")) // Frankreich, Nacht
 			return 'I';
 
-		if (ucType.equals("IR"))
-			return 'R';
 		if (ucType.equals("D"))
 			return 'R';
 		if (ucType.equals("E"))

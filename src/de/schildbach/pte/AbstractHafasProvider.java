@@ -126,6 +126,10 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return 'I';
 		if (ucType.equals("DNZ")) // Berlin-Saratov, Berlin-Moskva, Connections only?
 			return 'I';
+		if (ucType.equals("AIR")) // Generic Flight
+			return 'I';
+		if (ucType.equals("ECB")) // EC, Verona-München
+			return 'I';
 
 		// Regional Germany
 		if (ucType.equals("ZUG")) // Generic Train
@@ -138,6 +142,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return 'R';
 		if (ucType.equals("RE")) // RegionalExpress
 			return 'R';
+		if (ucType.equals("IR")) // Interregio
+			return 'R';
 		if (ucType.equals("IRE")) // Interregio Express
 			return 'R';
 		if (ucType.equals("HEX")) // Harz-Berlin-Express, Veolia
@@ -147,6 +153,12 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		if (ucType.equals("RT")) // RegioTram
 			return 'R';
 		if (ucType.equals("REX")) // RegionalExpress, Österreich
+			return 'R';
+
+		// Regional Poland
+		if (ucType.equals("OS")) // Chop-Cierna nas Tisou
+			return 'R';
+		if (ucType.equals("SP")) // Polen
 			return 'R';
 
 		// Suburban Trains
@@ -164,6 +176,10 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		// Bus
 		if (ucType.equals("BUS")) // Generic Bus
 			return 'B';
+
+		// Ferry
+		if (ucType.equals("AS")) // SyltShuttle, eigentlich Autoreisezug
+			return 'F';
 
 		return 0;
 	}
