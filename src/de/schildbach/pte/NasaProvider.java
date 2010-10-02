@@ -40,9 +40,13 @@ public class NasaProvider extends AbstractHafasProvider
 
 	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
 
-	public boolean hasCapabilities(Capability... capabilities)
+	public boolean hasCapabilities(final Capability... capabilities)
 	{
-		throw new UnsupportedOperationException();
+		for (final Capability capability : capabilities)
+			if (capability == Capability.DEPARTURES)
+				return true;
+
+		return false;
 	}
 
 	public List<Autocomplete> autocompleteStations(CharSequence constraint) throws IOException
