@@ -21,6 +21,7 @@ import java.util.List;
 import org.junit.Test;
 
 import de.schildbach.pte.NasaProvider;
+import de.schildbach.pte.QueryDeparturesResult;
 import de.schildbach.pte.Station;
 
 /**
@@ -36,5 +37,13 @@ public class NasaProviderLiveTest
 		final List<Station> results = provider.nearbyStations("13000", 0, 0, 0, 0);
 
 		System.out.println(results.size() + "  " + results);
+	}
+
+	@Test
+	public void queryDepartures() throws Exception
+	{
+		final QueryDeparturesResult result = provider.queryDepartures(provider.departuresQueryUri("13000", 0));
+
+		System.out.println(result.departures.size() + "  " + result.departures);
 	}
 }
