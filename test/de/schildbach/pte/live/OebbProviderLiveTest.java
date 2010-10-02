@@ -18,11 +18,13 @@
 package de.schildbach.pte.live;
 
 import java.util.Date;
+import java.util.List;
 
 import org.junit.Test;
 
 import de.schildbach.pte.OebbProvider;
 import de.schildbach.pte.QueryConnectionsResult;
+import de.schildbach.pte.Station;
 import de.schildbach.pte.NetworkProvider.LocationType;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
 
@@ -32,6 +34,14 @@ import de.schildbach.pte.NetworkProvider.WalkSpeed;
 public class OebbProviderLiveTest
 {
 	private OebbProvider provider = new OebbProvider();
+
+	@Test
+	public void nearbyStation() throws Exception
+	{
+		final List<Station> results = provider.nearbyStations("902006", 0, 0, 0, 0);
+
+		System.out.println(results.size() + "  " + results);
+	}
 
 	@Test
 	public void shortConnection() throws Exception

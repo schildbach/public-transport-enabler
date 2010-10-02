@@ -35,7 +35,7 @@ import de.schildbach.pte.QueryDeparturesResult.Status;
 /**
  * @author Andreas Schildbach
  */
-public class RmvProvider implements NetworkProvider
+public class RmvProvider extends AbstractHafasProvider
 {
 	public static final String NETWORK_ID = "mobil.rmv.de";
 	public static final String NETWORK_ID_ALT = "www.rmv.de";
@@ -81,12 +81,20 @@ public class RmvProvider implements NetworkProvider
 	private final static Pattern P_NEARBY_STATIONS = Pattern.compile("<a href=\"/auskunft/bin/jp/stboard.exe/dox.+?input=(\\d+).*?\">\\n"
 			+ "(.+?)\\s*\\((\\d+) m/[A-Z]+\\)\\n</a>", Pattern.DOTALL);
 
-	private final String NEARBY_URI = "http://www.rmv.de/auskunft/bin/jp/stboard.exe/dn?L=vs_rmv&distance=50&near&input=%d";
+	private final String NEARBY_URI = "http://www.rmv.de/auskunft/bin/jp/stboard.exe/dn?L=vs_rmv&distance=50&near&input=%s";
+	
+	@Override
+	protected String nearbyStationUri(final String stationId)
+	{
+		return String.format(NEARBY_URI, stationId);
+	}
+
 	private final static Pattern P_NEARBY_COARSE = Pattern.compile("<tr class=\"zebracol-\\d\">(.*?)</tr>", Pattern.DOTALL);
 	private final static Pattern P_NEARBY_FINE = Pattern.compile(".*?auskunft/bin/jp/stboard\\.exe/dn\\?L=vs_rmv&input=(\\d+).*?"
 			+ "&REQMapRoute0\\.Location0\\.X=(-?\\d+)&REQMapRoute0\\.Location0\\.Y=(-?\\d+)" //
 			+ "&REQMapRoute0\\.Location0\\.Name=(.*?)\">.*?", Pattern.DOTALL);
 
+	@Override
 	public List<Station> nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
 			throws IOException
 	{
@@ -110,8 +118,7 @@ public class RmvProvider implements NetworkProvider
 		}
 		else if (stationId != null)
 		{
-			final String uri = String.format(NEARBY_URI, stationId);
-
+			final String uri = nearbyStationUri(stationId);
 			final CharSequence page = ParserUtils.scrape(uri);
 
 			final Matcher mCoarse = P_NEARBY_COARSE.matcher(page);

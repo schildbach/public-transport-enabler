@@ -34,7 +34,7 @@ import org.json.JSONObject;
 
 import de.schildbach.pte.QueryDeparturesResult.Status;
 
-public class OebbProvider implements NetworkProvider
+public class OebbProvider extends AbstractHafasProvider
 {
 	public static final String NETWORK_ID = "fahrplan.oebb.at";
 	public static final String API_BASE = "http://fahrplan.oebb.at/bin/";
@@ -121,43 +121,12 @@ public class OebbProvider implements NetworkProvider
 		}
 	}
 
-	private final String NEARBY_URI = API_BASE + "stboard.exe/dn?distance=50&near=Suchen&input=%d";
-	private final static Pattern P_NEARBY_COARSE = Pattern.compile("<tr class=\"zebracol-\\d\">(.*?)</tr>", Pattern.DOTALL);
-	private final static Pattern P_NEARBY_FINE = Pattern.compile(".*?stboard\\.exe/.*?&input=.*?%23(\\d+)&.*?>(.*?)</a>.*?", Pattern.DOTALL);
+	private final String NEARBY_URI = API_BASE + "stboard.exe/dn?distance=50&near=Suchen&input=%s";
 
-	public List<Station> nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
-			throws IOException
+	@Override
+	protected String nearbyStationUri(final String stationId)
 	{
-		if (stationId == null)
-			throw new IllegalArgumentException("stationId must be given");
-
-		final List<Station> stations = new ArrayList<Station>();
-
-		final String uri = String.format(NEARBY_URI, stationId);
-		final CharSequence page = ParserUtils.scrape(uri);
-
-		final Matcher mCoarse = P_NEARBY_COARSE.matcher(page);
-		while (mCoarse.find())
-		{
-			final Matcher mFine = P_NEARBY_FINE.matcher(mCoarse.group(1));
-			if (mFine.matches())
-			{
-				final int parsedId = Integer.parseInt(mFine.group(1));
-				final String parsedName = ParserUtils.resolveEntities(mFine.group(2));
-
-				final Station station = new Station(parsedId, parsedName, 0, 0, 0, null, null);
-				stations.add(station);
-			}
-			else
-			{
-				throw new IllegalArgumentException("cannot parse '" + mCoarse.group(1) + "' on " + uri);
-			}
-		}
-
-		if (maxStations == 0 || maxStations >= stations.size())
-			return stations;
-		else
-			return stations.subList(0, maxStations);
+		return String.format(NEARBY_URI, stationId);
 	}
 
 	public StationLocationResult stationLocation(final String stationId) throws IOException

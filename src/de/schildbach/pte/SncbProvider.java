@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 
 import de.schildbach.pte.QueryDeparturesResult.Status;
 
-public class SncbProvider implements NetworkProvider
+public class SncbProvider extends AbstractHafasProvider
 {
 	public static final String NETWORK_ID = "hari.b-rail.be";
 
@@ -33,46 +33,12 @@ public class SncbProvider implements NetworkProvider
 		throw new UnsupportedOperationException();
 	}
 
-	private final String NEARBY_URI = "http://hari.b-rail.be/HAFAS/bin/stboard.exe/en?input=%d&distance=50&near=Anzeigen";
-	private final static Pattern P_NEARBY_COARSE = Pattern.compile("<tr class=\"zebracol-\\d\">(.*?)</tr>", Pattern.DOTALL);
-	private final static Pattern P_NEARBY_FINE = Pattern.compile(".*?&REQMapRoute0\\.Location0\\.X=(-?\\d+)&REQMapRoute0\\.Location0\\.Y=(-?\\d+)"
-			+ "&REQMapRoute0\\.Location0\\.Name=(.*?)\">.*?en\\?input=(\\d+).*?", Pattern.DOTALL);
+	private final String NEARBY_URI = "http://hari.b-rail.be/HAFAS/bin/stboard.exe/en?input=%s&distance=50&near=Anzeigen";
 
-	public List<Station> nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
-			throws IOException
+	@Override
+	protected String nearbyStationUri(final String stationId)
 	{
-		if (stationId == null)
-			throw new IllegalArgumentException("stationId must be given");
-
-		final List<Station> stations = new ArrayList<Station>();
-
-		final String uri = String.format(NEARBY_URI, stationId);
-		final CharSequence page = ParserUtils.scrape(uri);
-
-		final Matcher mCoarse = P_NEARBY_COARSE.matcher(page);
-		while (mCoarse.find())
-		{
-			final Matcher mFine = P_NEARBY_FINE.matcher(mCoarse.group(1));
-			if (mFine.matches())
-			{
-				final int parsedLon = Integer.parseInt(mFine.group(1));
-				final int parsedLat = Integer.parseInt(mFine.group(2));
-				final String parsedName = ParserUtils.resolveEntities(mFine.group(3));
-				final int parsedId = Integer.parseInt(mFine.group(4));
-
-				final Station station = new Station(parsedId, parsedName, parsedLat, parsedLon, 0, null, null);
-				stations.add(station);
-			}
-			else
-			{
-				throw new IllegalArgumentException("cannot parse '" + mCoarse.group(1) + "' on " + uri);
-			}
-		}
-
-		if (maxStations == 0 || maxStations >= stations.size())
-			return stations;
-		else
-			return stations.subList(0, maxStations);
+		return String.format(NEARBY_URI, stationId);
 	}
 
 	public StationLocationResult stationLocation(final String stationId) throws IOException

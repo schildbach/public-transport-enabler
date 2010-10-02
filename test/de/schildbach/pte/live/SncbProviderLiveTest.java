@@ -20,29 +20,20 @@ import java.util.List;
 
 import org.junit.Test;
 
-import de.schildbach.pte.Autocomplete;
-import de.schildbach.pte.GvhProvider;
+import de.schildbach.pte.SncbProvider;
 import de.schildbach.pte.Station;
 
 /**
  * @author Andreas Schildbach
  */
-public class GvhProviderLiveTest
+public class SncbProviderLiveTest
 {
-	private final GvhProvider provider = new GvhProvider();
-
-	@Test
-	public void autocomplete() throws Exception
-	{
-		final List<Autocomplete> results = provider.autocompleteStations("Hannover");
-
-		System.out.println(results.size() + "  " + results);
-	}
+	private final SncbProvider provider = new SncbProvider();
 
 	@Test
 	public void nearbyStation() throws Exception
 	{
-		final List<Station> results = provider.nearbyStations("25000031", 0, 0, 0, 0);
+		final List<Station> results = provider.nearbyStations("100080", 0, 0, 0, 0);
 
 		System.out.println(results.size() + "  " + results);
 	}
