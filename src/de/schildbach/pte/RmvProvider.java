@@ -39,6 +39,7 @@ public class RmvProvider extends AbstractHafasProvider
 {
 	public static final String NETWORK_ID = "mobil.rmv.de";
 	public static final String NETWORK_ID_ALT = "www.rmv.de";
+	private static final String API_BASE = "http://www.rmv.de/auskunft/bin/jp/";
 
 	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
 
@@ -51,7 +52,7 @@ public class RmvProvider extends AbstractHafasProvider
 		return true;
 	}
 
-	private static final String NAME_URL = "http://www.rmv.de/auskunft/bin/jp/stboard.exe/dox?input=";
+	private static final String NAME_URL = API_BASE + "stboard.exe/dox?input=";
 	private static final Pattern P_SINGLE_NAME = Pattern.compile(".*<input type=\"hidden\" name=\"input\" value=\"(.+?)#(\\d+)\" />.*",
 			Pattern.DOTALL);
 	private static final Pattern P_MULTI_NAME = Pattern.compile("<a href=\"/auskunft/bin/jp/stboard.exe/dox.*?input=(\\d+)&.*?\">\\s*(.*?)\\s*</a>",
@@ -81,29 +82,24 @@ public class RmvProvider extends AbstractHafasProvider
 	private final static Pattern P_NEARBY_STATIONS = Pattern.compile("<a href=\"/auskunft/bin/jp/stboard.exe/dox.+?input=(\\d+).*?\">\\n"
 			+ "(.+?)\\s*\\((\\d+) m/[A-Z]+\\)\\n</a>", Pattern.DOTALL);
 
-	private final String NEARBY_URI = "http://www.rmv.de/auskunft/bin/jp/stboard.exe/dn?L=vs_rmv&distance=50&near&input=%s";
-	
+	private final String NEARBY_URI = API_BASE + "stboard.exe/dn?L=vs_rmv&distance=50&near&input=%s";
+
 	@Override
 	protected String nearbyStationUri(final String stationId)
 	{
 		return String.format(NEARBY_URI, stationId);
 	}
 
-	private final static Pattern P_NEARBY_COARSE = Pattern.compile("<tr class=\"zebracol-\\d\">(.*?)</tr>", Pattern.DOTALL);
-	private final static Pattern P_NEARBY_FINE = Pattern.compile(".*?auskunft/bin/jp/stboard\\.exe/dn\\?L=vs_rmv&input=(\\d+).*?"
-			+ "&REQMapRoute0\\.Location0\\.X=(-?\\d+)&REQMapRoute0\\.Location0\\.Y=(-?\\d+)" //
-			+ "&REQMapRoute0\\.Location0\\.Name=(.*?)\">.*?", Pattern.DOTALL);
-
 	@Override
 	public List<Station> nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
 			throws IOException
 	{
-		final List<Station> stations = new ArrayList<Station>();
-
 		if (lat != 0 || lon != 0)
 		{
-			final String url = "http://www.rmv.de/auskunft/bin/jp/stboard.exe/dox?input=" + latLonToDouble(lat) + "%20" + latLonToDouble(lon);
+			final String url = API_BASE + "dox?input=" + latLonToDouble(lat) + "%20" + latLonToDouble(lon);
 			final CharSequence page = ParserUtils.scrape(url);
+
+			final List<Station> stations = new ArrayList<Station>();
 
 			final Matcher m = P_NEARBY_STATIONS.matcher(page);
 			while (m.find())
@@ -115,41 +111,20 @@ public class RmvProvider extends AbstractHafasProvider
 				final Station station = new Station(sId, sName, 0, 0, sDist, null, null);
 				stations.add(station);
 			}
+
+			if (maxStations == 0 || maxStations >= stations.size())
+				return stations;
+			else
+				return stations.subList(0, maxStations);
 		}
 		else if (stationId != null)
 		{
-			final String uri = nearbyStationUri(stationId);
-			final CharSequence page = ParserUtils.scrape(uri);
-
-			final Matcher mCoarse = P_NEARBY_COARSE.matcher(page);
-			while (mCoarse.find())
-			{
-				final Matcher mFine = P_NEARBY_FINE.matcher(mCoarse.group(1));
-				if (mFine.matches())
-				{
-					final int parsedId = Integer.parseInt(mFine.group(1));
-					final int parsedLon = Integer.parseInt(mFine.group(2));
-					final int parsedLat = Integer.parseInt(mFine.group(3));
-					final String parsedName = ParserUtils.resolveEntities(mFine.group(4));
-
-					final Station station = new Station(parsedId, parsedName, parsedLat, parsedLon, 0, null, null);
-					stations.add(station);
-				}
-				else
-				{
-					throw new IllegalArgumentException("cannot parse '" + mCoarse.group(1) + "' on " + uri);
-				}
-			}
+			return super.nearbyStations(stationId, 0, 0, maxDistance, maxStations);
 		}
 		else
 		{
 			throw new IllegalArgumentException("at least one of stationId or lat/lon must be given");
 		}
-
-		if (maxStations == 0 || maxStations >= stations.size())
-			return stations;
-		else
-			return stations.subList(0, maxStations);
 	}
 
 	private static Pattern P_STATION_LOCATION = Pattern
@@ -157,7 +132,7 @@ public class RmvProvider extends AbstractHafasProvider
 
 	public StationLocationResult stationLocation(final String stationId) throws IOException
 	{
-		final String uri = "http://www.rmv.de/auskunft/bin/jp/stboard.exe/dn?L=vs_rmv&selectDate=today&time=now&showStBoard=yes&boardType=dep&maxJourneys=10&start&input="
+		final String uri = API_BASE + "stboard.exe/dn?L=vs_rmv&selectDate=today&time=now&showStBoard=yes&boardType=dep&maxJourneys=10&start&input="
 				+ stationId;
 
 		final CharSequence page = ParserUtils.scrape(uri);
@@ -197,7 +172,7 @@ public class RmvProvider extends AbstractHafasProvider
 		final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
 		final StringBuilder uri = new StringBuilder();
 
-		uri.append("http://www.rmv.de/auskunft/bin/jp/query.exe/dox");
+		uri.append(API_BASE).append("query.exe/dox");
 		uri.append("?REQ0HafasInitialSelection=0");
 		uri.append("&REQ0HafasSearchForw=").append(dep ? "1" : "0");
 		uri.append("&REQ0JourneyDate=").append(ParserUtils.urlEncode(DATE_FORMAT.format(date)));
@@ -482,7 +457,7 @@ public class RmvProvider extends AbstractHafasProvider
 		final Date now = new Date();
 
 		final StringBuilder uri = new StringBuilder();
-		uri.append("http://www.rmv.de/auskunft/bin/jp/stboard.exe/dox");
+		uri.append(API_BASE).append("stboard.exe/dox");
 		uri.append("?input=").append(stationId);
 		uri.append("&boardType=dep"); // show departures
 		uri.append("&maxJourneys=").append(maxDepartures != 0 ? maxDepartures : 50); // maximum taken from RMV site

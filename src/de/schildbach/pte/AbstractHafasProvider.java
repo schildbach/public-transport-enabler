@@ -29,8 +29,9 @@ import java.util.regex.Pattern;
 public abstract class AbstractHafasProvider implements NetworkProvider
 {
 	private final static Pattern P_NEARBY_COARSE = Pattern.compile("<tr class=\"(zebra[^\"]*)\">(.*?)</tr>", Pattern.DOTALL);
-	private final static Pattern P_NEARBY_FINE = Pattern.compile(".*?&REQMapRoute0\\.Location0\\.X=(-?\\d+)&REQMapRoute0\\.Location0\\.Y=(-?\\d+)"
-			+ "&.*?[\\?&]input=(\\d+)&[^\"]*\">([^<]*)<.*?", Pattern.DOTALL);
+	private final static Pattern P_NEARBY_FINE_COORDS = Pattern
+			.compile("&REQMapRoute0\\.Location0\\.X=(-?\\d+)&REQMapRoute0\\.Location0\\.Y=(-?\\d+)&");
+	private final static Pattern P_NEARBY_FINE_LOCATION = Pattern.compile("[\\?&]input=(\\d+)&[^\"]*\">([^<]*)<");
 
 	protected abstract String nearbyStationUri(String stationId);
 
@@ -46,15 +47,18 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		final CharSequence page = ParserUtils.scrape(uri);
 
 		final Matcher mCoarse = P_NEARBY_COARSE.matcher(page);
+
 		while (mCoarse.find())
 		{
-			final Matcher mFine = P_NEARBY_FINE.matcher(mCoarse.group(2));
-			if (mFine.matches())
+			final Matcher mFineCoords = P_NEARBY_FINE_COORDS.matcher(mCoarse.group(2));
+			final Matcher mFineLocation = P_NEARBY_FINE_LOCATION.matcher(mCoarse.group(2));
+
+			if (mFineCoords.find() && mFineLocation.find())
 			{
-				final int parsedLon = Integer.parseInt(mFine.group(1));
-				final int parsedLat = Integer.parseInt(mFine.group(2));
-				final int parsedId = Integer.parseInt(mFine.group(3));
-				final String parsedName = ParserUtils.resolveEntities(mFine.group(4));
+				final int parsedLon = Integer.parseInt(mFineCoords.group(1));
+				final int parsedLat = Integer.parseInt(mFineCoords.group(2));
+				final int parsedId = Integer.parseInt(mFineLocation.group(1));
+				final String parsedName = ParserUtils.resolveEntities(mFineLocation.group(2));
 
 				stations.add(new Station(parsedId, parsedName, parsedLat, parsedLon, 0, null, null));
 			}
