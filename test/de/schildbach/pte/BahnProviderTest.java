@@ -30,6 +30,49 @@ import org.junit.Test;
 public class BahnProviderTest
 {
 	@Test
+	public void coarseDeparture()
+	{
+		assertCoarseDepartures("" //
+				+ "<Journey fpTime=\"17:45\" fpDate=\"02.10.10\" \n" //
+				+ "delay=\"k.A\" \n" //
+				+ "platform =\"1\" \n" //
+				+ "targetLoc=\"Berlin Südkreuz (S)\" \n" //
+				+ "prod=\"S     41\" \n" //
+				+ "depStation=\"Berlin Sonnenallee\"\n" //
+				+ "delayReason=\" \"\n" //
+				+ "/>\n");
+	}
+
+	@Test
+	public void coarseDepartureWithoutTrailingNewLine()
+	{
+		assertCoarseDepartures("" //
+				+ "<Journey fpTime=\"17:45\" fpDate=\"02.10.10\" \n" //
+				+ "delay=\"k.A\" \n" //
+				+ "platform =\"1\" \n" //
+				+ "targetLoc=\"Berlin Südkreuz (S)\" \n" //
+				+ "prod=\"S     41\" \n" //
+				+ "depStation=\"Berlin Sonnenallee\"\n" //
+				+ "delayReason=\" \"\n" //
+				+ "/>");
+	}
+
+	@Test
+	public void coarseDepartureWithInvalidClosingBracket()
+	{
+		assertCoarseDepartures("" //
+				+ "<Journey fpTime=\"17:45\" fpDate=\"02.10.10\" \n" //
+				+ "delay=\"k.A\" \n" //
+				+ "platform =\"1\" \n" //
+				+ "targetLoc=\"Berlin Südkreuz (S)\" \n" //
+				+ "prod=\"S     41\" \n" //
+				+ "dir=\"Ringbahn ->\"\n" //
+				+ "depStation=\"Berlin Sonnenallee\"\n" //
+				+ "delayReason=\" \"\n" //
+				+ "/>\n");
+	}
+
+	@Test
 	public void connectionUebergang()
 	{
 		assertFineConnectionDetails("" //
@@ -54,7 +97,7 @@ public class BahnProviderTest
 		assertNotNull(m.group(9)); // message
 	}
 
-	private void assertFineConnectionDetails(String s)
+	private void assertFineConnectionDetails(final String s)
 	{
 		Matcher m = BahnProvider.P_CONNECTION_DETAILS_FINE.matcher(s);
 		assertTrue(m.matches());
@@ -62,7 +105,16 @@ public class BahnProviderTest
 		// ParserUtils.printGroups(m);
 	}
 
-	private Matcher assertFineDepartures(String s)
+	private Matcher assertCoarseDepartures(final String s)
+	{
+		Matcher m = BahnProvider.P_DEPARTURES_COARSE.matcher(s);
+		assertTrue(m.find());
+		assertFineDepartures(m.group(1));
+
+		return m;
+	}
+
+	private Matcher assertFineDepartures(final String s)
 	{
 		Matcher m = BahnProvider.P_DEPARTURES_FINE.matcher(s);
 		assertTrue(m.matches());
