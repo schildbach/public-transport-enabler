@@ -648,8 +648,6 @@ public class OebbProvider extends AbstractHafasProvider
 			return 'R';
 		if (ucType.equals("SKW")) // Polen
 			return 'R';
-		if (ucType.equals("WKD")) // Warszawska Kolej Dojazdowa, Polen
-			return 'R';
 		if (ucType.equals("EX")) // Polen
 			return 'R';
 		if (ucType.equals("NEB")) // Kostrzyn-Berlin, via JSON API
@@ -768,6 +766,8 @@ public class OebbProvider extends AbstractHafasProvider
 		if (ucType.equals("SWE")) // Südwestdeutsche Verkehrs-AG, Ortenau-S-Bahn, via JSON API
 			return 'S';
 		if (ucType.equals("RER")) // Réseau Express Régional, Frankreich
+			return 'S';
+		if (ucType.equals("WKD")) // Warszawska Kolej Dojazdowa (Warsaw Suburban Railway)
 			return 'S';
 
 		if (ucType.equals("LKB")) // Connections only?

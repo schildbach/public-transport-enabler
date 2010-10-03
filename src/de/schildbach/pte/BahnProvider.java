@@ -737,7 +737,7 @@ public final class BahnProvider implements NetworkProvider
 				return "RLEO" + number;
 			if (type.equals("VEN")) // Rhenus Veniro
 				return "RVEN" + number;
-			if (type.equals("KD")) // Koleje Dolnośląskie
+			if (type.equals("KD")) // Koleje Dolnośląskie (Niederschlesische Eisenbahn)
 				return "RKD" + number;
 			if (type.equals("SKW")) // Polen
 				return "RSKW" + number;
@@ -747,8 +747,6 @@ public final class BahnProvider implements NetworkProvider
 				return "RPCC" + number;
 			if (type.equals("SKM")) // Polen
 				return "RSKM" + number;
-			if (type.equals("WKD")) // Warszawska Kolej Dojazdowa, Polen
-				return "RWKD" + number;
 			if (type.equals("LYN")) // Dänemark
 				return "RLYN" + number;
 			if (type.equals("EX")) // Norwegen
@@ -778,6 +776,8 @@ public final class BahnProvider implements NetworkProvider
 				return "SCAT" + number;
 			if (type.equals("DPN")) // S3 Bad Reichenhall-Freilassing
 				return "SDPN" + number;
+			if (type.equals("WKD")) // Warszawska Kolej Dojazdowa (Warsaw Suburban Railway)
+				return "SWKD" + number;
 
 			if (type.equals("U"))
 				return "UU" + number;
