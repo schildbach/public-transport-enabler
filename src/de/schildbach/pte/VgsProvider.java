@@ -33,10 +33,10 @@ import de.schildbach.pte.QueryDeparturesResult.Status;
 /**
  * @author Andreas Schildbach
  */
-public class NasaProvider extends AbstractHafasProvider
+public class VgsProvider extends AbstractHafasProvider
 {
-	public static final String NETWORK_ID = "www.nasa.de";
-	private static final String API_BASE = "http://www.nasa.de/delfi52/";
+	public static final String NETWORK_ID = "www.vgs-online.de";
+	private static final String API_BASE = "http://www.vgs-online.de/cgi-bin/";
 
 	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
 
@@ -80,7 +80,7 @@ public class NasaProvider extends AbstractHafasProvider
 		uri.append("&boardType=dep");
 		uri.append("&time=").append(TIME_FORMAT.format(now));
 		uri.append("&date=").append(DATE_FORMAT.format(now));
-		uri.append("&productsFilter=11111111");
+		uri.append("&productsFilter=11111111111");
 		if (maxDepartures != 0)
 			uri.append("&maxJourneys=").append(maxDepartures);
 		uri.append("&disableEquivs=yes"); // don't use nearby stations
@@ -109,9 +109,9 @@ public class NasaProvider extends AbstractHafasProvider
 			+ "(?:<td class=\"[\\w ]*prognosis[\\w ]*\">\n" //
 			+ "(?:&nbsp;|<span class=\"rtLimit\\d\">(p&#252;nktlich|\\d{1,2}:\\d{2})</span>)\n</td>\n" // predictedTime
 			+ ")?.*?" //
-			+ "<img src=\"/img52/(\\w+)_pic\\.gif\"[^>]*>\\s*(.*?)\\s*</.*?" // type, line
+			+ "<img src=\"/hafas-res/img/(\\w+)_pic\\.gif\"[^>]*>\\s*(.*?)\\s*</.*?" // type, line
 			+ "<span class=\"bold\">\n" //
-			+ "<a href=\"/delfi52/stboard\\.exe/dn\\?input=(\\d+)&[^>]*>" // destinationId
+			+ "<a href=\"http://www\\.vgs-online\\.de/cgi-bin/stboard\\.exe/dn\\?input=(\\d+)&[^>]*>" // destinationId
 			+ "\\s*(.*?)\\s*</a>\n" // destination
 			+ "</span>.*?" //
 			+ "(?:<td class=\"center sepline top\">\n(" + ParserUtils.P_PLATFORM + ").*?)?" // position
@@ -221,23 +221,20 @@ public class NasaProvider extends AbstractHafasProvider
 		if (t != 0)
 			return t;
 
-		if (ucType.equals("D")) // Rußland Schlafwagenzug
+		if (ucType.equals("INT")) // Zürich-Brüssel
 			return 'I';
 
-		if (ucType.equals("DPF")) // mit Dampflok bespannter Zug
-			return 'R';
-		if (ucType.equals("RR")) // Polen
-			return 'R';
-
+		if (ucType.equals("SBS"))
+			return 'S';
 		if (ucType.equals("E")) // Stadtbahn Karlsruhe: S4/S31/xxxxx
 			return 'S';
 
-		if (ucType.equals("BSV"))
+		if (ucType.equals("BSS"))
 			return 'B';
-		if (ucType.equals("RBS")) // Rufbus
+		if (ucType.equals("BOV"))
 			return 'B';
 
-		if (ucType.equals("EB")) // Europa-Park, vermutlich "Erlebnisbahn"
+		if (ucType.equals("T84")) // U.K.
 			return '?';
 
 		return 0;

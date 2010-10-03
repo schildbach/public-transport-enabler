@@ -59,15 +59,22 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			else
 				oldZebra = zebra;
 
-			final Matcher mFineCoords = P_NEARBY_FINE_COORDS.matcher(mCoarse.group(2));
 			final Matcher mFineLocation = P_NEARBY_FINE_LOCATION.matcher(mCoarse.group(2));
 
-			if (mFineCoords.find() && mFineLocation.find())
+			if (mFineLocation.find())
 			{
-				final int parsedLon = Integer.parseInt(mFineCoords.group(1));
-				final int parsedLat = Integer.parseInt(mFineCoords.group(2));
+				int parsedLon = 0;
+				int parsedLat = 0;
 				final int parsedId = Integer.parseInt(mFineLocation.group(1));
 				final String parsedName = ParserUtils.resolveEntities(mFineLocation.group(2));
+
+				final Matcher mFineCoords = P_NEARBY_FINE_COORDS.matcher(mCoarse.group(2));
+
+				if (mFineCoords.find())
+				{
+					parsedLon = Integer.parseInt(mFineCoords.group(1));
+					parsedLat = Integer.parseInt(mFineCoords.group(2));
+				}
 
 				stations.add(new Station(parsedId, parsedName, parsedLat, parsedLon, 0, null, null));
 			}
@@ -130,6 +137,16 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return 'I';
 		if (ucType.equals("ECB")) // EC, Verona-München
 			return 'I';
+		if (ucType.equals("INZ")) // Nacht
+			return 'I';
+		if (ucType.equals("RHI")) // ICE
+			return 'I';
+		if (ucType.equals("RHT")) // TGV
+			return 'I';
+		if (ucType.equals("TGD")) // TGV
+			return 'I';
+		if (ucType.equals("IRX")) // IC
+			return 'I';
 
 		// Regional Germany
 		if (ucType.equals("ZUG")) // Generic Train
@@ -175,6 +192,12 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 		// Bus
 		if (ucType.equals("BUS")) // Generic Bus
+			return 'B';
+		if (ucType.equals("AST")) // Anruf-Sammel-Taxi
+			return 'B';
+		if (ucType.equals("SEV")) // Schienen-Ersatz-Verkehr
+			return 'B';
+		if (ucType.equals("FB")) // Luxemburg-Saarbrücken
 			return 'B';
 
 		// Ferry

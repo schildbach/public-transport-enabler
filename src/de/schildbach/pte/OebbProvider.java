@@ -605,8 +605,6 @@ public class OebbProvider extends AbstractHafasProvider
 			return 'I';
 		if (ucType.equals("AVE")) // Alta Velocidad Española, Spanien
 			return 'I';
-		if (ucType.equals("INZ")) // Schweden, Nacht, Connections only?
-			return 'I';
 		if (ucType.equals("NZ")) // Schweden, Nacht, via JSON API
 			return 'I';
 		if (ucType.equals("OZ")) // Schweden, Oeresundzug, Connections only?
@@ -624,14 +622,6 @@ public class OebbProvider extends AbstractHafasProvider
 		if (ucType.equals("ICN")) // Italien, Nacht
 			return 'I';
 		if (ucType.equals("UUU")) // Italien, Nacht, Connections only?
-			return 'I';
-		if (ucType.equals("RHI")) // ICE, Connections only?
-			return 'I';
-		if (ucType.equals("RHT")) // TGV, Connections only?
-			return 'I';
-		if (ucType.equals("TGD")) // TGV, Connections only?
-			return 'I';
-		if (ucType.equals("IRX")) // IC, Connections only?
 			return 'I';
 
 		if (ucType.equals("EZ")) // Erlebniszug
@@ -789,13 +779,9 @@ public class OebbProvider extends AbstractHafasProvider
 			return 'B';
 		if (ucType.equals("OBU")) // Connections only?
 			return 'B';
-		if (ucType.equals("AST"))
-			return 'B';
 		if (ucType.equals("ASTSV")) // via JSON API
 			return 'B';
 		if (ucType.equals("ICB")) // ÖBB ICBus
-			return 'B';
-		if (ucType.equals("FB")) // Polen, Connections only?
 			return 'B';
 		if (ucType.equals("BSV")) // Deutschland, Connections only?
 			return 'B';
