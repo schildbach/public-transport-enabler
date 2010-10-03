@@ -74,10 +74,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		return results;
 	}
 
-	private static final Pattern P_NEARBY = Pattern.compile("<itdOdvAssignedStop " // 
-			+ "(?:stopID=\"(\\d+)\" x=\"(\\d+)\" y=\"(\\d+)\" mapName=\"WGS84\" [^>]*? nameWithPlace=\"([^\"]*)\" distance=\"(\\d+)\"" //
-			+ "|distance=\"(\\d+)\" [^>]*? nameWithPlace=\"([^\"]*)\" [^>]*? stopID=\"(\\d+)\" [^>]*? x=\"(\\d+)\" y=\"(\\d+)\"" //
-			+ ")");
+	private static final Pattern P_NEARBY_MESSAGES = Pattern.compile("(unsere Server zur Zeit ausgelastet)");
 
 	protected abstract String nearbyLatLonUri(int lat, int lon);
 
@@ -87,39 +84,95 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			throws IOException
 	{
 		String uri = null;
-		if (lat != 0 || lon != 0)
-			uri = nearbyLatLonUri(lat, lon);
 		if (uri == null && stationId != null)
 			uri = nearbyStationUri(stationId);
+		if (uri == null && (lat != 0 || lon != 0))
+			uri = nearbyLatLonUri(lat, lon);
 		if (uri == null)
 			throw new IllegalArgumentException("at least one of stationId or lat/lon must be given");
 
-		final CharSequence page = ParserUtils.scrape(uri);
-
-		final List<Station> stations = new ArrayList<Station>();
-
-		final Matcher mNearby = P_NEARBY.matcher(page);
-		while (mNearby.find())
+		try
 		{
-			final boolean firstSyntax = mNearby.group(1) != null;
-			final int sId = Integer.parseInt(mNearby.group(firstSyntax ? 1 : 8));
-			final int sLon = Integer.parseInt(mNearby.group(firstSyntax ? 2 : 9));
-			final int sLat = Integer.parseInt(mNearby.group(firstSyntax ? 3 : 10));
-			final String sName = mNearby.group(firstSyntax ? 4 : 7).trim();
-			final int sDist = Integer.parseInt(mNearby.group(firstSyntax ? 5 : 6));
+			final CharSequence page = ParserUtils.scrape(uri);
 
-			final Station station = new Station(sId, sName, sLat, sLon, sDist, null, null);
-			stations.add(station);
+			if (P_NEARBY_MESSAGES.matcher(page).find())
+				return null;
+
+			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
+			final XmlPullParser pp = factory.newPullParser();
+			pp.setInput(new StringReader(page.toString()));
+
+			XmlPullUtil.jumpToStartTag(pp, null, "itdOdvName");
+			final String nameState = pp.getAttributeValue(null, "state");
+			if (nameState.equals("identified"))
+			{
+				final List<Station> stations = new ArrayList<Station>();
+
+				XmlPullUtil.jumpToStartTag(pp, null, "odvNameElem");
+				final String parsedOwnLocationIdStr = pp.getAttributeValue(null, "stopID");
+				if (parsedOwnLocationIdStr != null)
+				{
+					final int parsedOwnLocationId = Integer.parseInt(parsedOwnLocationIdStr);
+					final String parsedOwnMapName = pp.getAttributeValue(null, "mapName");
+					if (parsedOwnMapName != null)
+					{
+						if (!"WGS84".equals(parsedOwnMapName))
+							throw new IllegalStateException("unknown mapName: " + parsedOwnMapName);
+						final int parsedOwnLon = Integer.parseInt(pp.getAttributeValue(null, "x"));
+						final int parsedOwnLat = Integer.parseInt(pp.getAttributeValue(null, "y"));
+						stations.add(new Station(parsedOwnLocationId, null, parsedOwnLat, parsedOwnLon, 0, null, null));
+					}
+				}
+
+				if (XmlPullUtil.jumpToStartTag(pp, null, "itdOdvAssignedStops"))
+				{
+					while (XmlPullUtil.nextStartTagInsideTree(pp, null, "itdOdvAssignedStop"))
+					{
+						final String parsedMapName = pp.getAttributeValue(null, "mapName");
+						if (parsedMapName != null)
+						{
+							if (!"WGS84".equals(parsedMapName))
+								throw new IllegalStateException("unknown mapName: " + parsedMapName);
+
+							final int parsedLocationId = Integer.parseInt(pp.getAttributeValue(null, "stopID"));
+							final String parsedName = normalizeLocationName(pp.getAttributeValue(null, "nameWithPlace"));
+							final int parsedLon = Integer.parseInt(pp.getAttributeValue(null, "x"));
+							final int parsedLat = Integer.parseInt(pp.getAttributeValue(null, "y"));
+							final String parsedDistStr = pp.getAttributeValue(null, "distance");
+							final int parsedDist = parsedDistStr != null ? Integer.parseInt(parsedDistStr) : 0;
+
+							stations.add(new Station(parsedLocationId, parsedName, parsedLat, parsedLon, parsedDist, null, null));
+
+							XmlPullUtil.skipRestOfTree(pp);
+						}
+					}
+				}
+
+				if (maxStations == 0 || maxStations >= stations.size())
+					return stations;
+				else
+					return stations.subList(0, maxStations);
+			}
+			else if (nameState.equals("notidentified"))
+			{
+				return null;
+			}
+			else
+			{
+				throw new RuntimeException("unknown nameState '" + nameState + "' on " + uri);
+			}
 		}
-
-		if (maxStations == 0 || maxStations >= stations.size())
-			return stations;
-		else
-			return stations.subList(0, maxStations);
+		catch (final XmlPullParserException x)
+		{
+			throw new RuntimeException(x);
+		}
 	}
 
+	private static final Pattern P_LINE_IRE = Pattern.compile("IRE\\d+");
 	private static final Pattern P_LINE_RE = Pattern.compile("RE\\d+");
 	private static final Pattern P_LINE_RB = Pattern.compile("RB\\d+");
+	private static final Pattern P_LINE_VB = Pattern.compile("VB\\d+");
+	private static final Pattern P_LINE_R = Pattern.compile("R\\d+(/R\\d+|\\(z\\))?");
 	private static final Pattern P_LINE_U = Pattern.compile("U\\d+");
 
 	protected String parseLine(final String number, final String symbol, final String mot)
@@ -157,6 +210,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'R' + str;
 			if (type.equals("IRE")) // Interregio-Express
 				return 'R' + str;
+			if (P_LINE_IRE.matcher(type).matches())
+				return 'R' + str;
 			if (type.equals("RE")) // Regional-Express
 				return 'R' + str;
 			if (P_LINE_RE.matcher(type).matches())
@@ -166,6 +221,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			if (P_LINE_RB.matcher(type).matches())
 				return 'R' + str;
 			if (type.equals("R")) // Regionalzug
+				return 'R' + str;
+			if (P_LINE_R.matcher(type).matches())
 				return 'R' + str;
 			if (type.equals("D")) // Schnellzug
 				return 'R' + str;
@@ -208,6 +265,10 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			if (type.equals("HTB")) // Hellertalbahn
 				return 'R' + str;
 			if (type.equals("VBG")) // Vogtlandbahn
+				return 'R' + str;
+			if (type.equals("VB")) // Vogtlandbahn
+				return 'R' + str;
+			if (P_LINE_VB.matcher(type).matches())
 				return 'R' + str;
 			if (type.equals("VX")) // Vogtland Express
 				return 'R' + str;
@@ -278,6 +339,24 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			if (type.equals("SDG")) // Sächsische Dampfeisenbahngesellschaft
 				return 'R' + str;
 			if (type.equals("PRE")) // Pressnitztalbahn
+				return 'R' + str;
+			if (type.equals("VEB")) // Vulkan-Eifel-Bahn
+				return 'R' + str;
+			if (type.equals("neg")) // Norddeutsche Eisenbahn Gesellschaft
+				return 'R' + str;
+			if (type.equals("AVG")) // Felsenland-Express
+				return 'R' + str;
+			if (type.equals("ABG")) // Anhaltische Bahngesellschaft
+				return 'R' + str;
+			if (type.equals("LGB")) // Lößnitzgrundbahn
+				return 'R' + str;
+			if (type.equals("LEO")) // Chiemgauer Lokalbahn
+				return 'R' + str;
+			if (type.equals("WTB")) // Weißeritztalbahn
+				return 'R' + str;
+			if (type.equals("P")) // Kasbachtalbahn, Wanderbahn im Regental, Rhön-Zügle
+				return 'R' + str;
+			if (type.equals("KBS")) // Kursbuchstrecke
 				return 'R' + str;
 
 			if (type.equals("BSB")) // Breisgau-S-Bahn
@@ -414,7 +493,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 	private static final Pattern P_STATION_NAME_WHITESPACE = Pattern.compile("\\s+");
 
-	private static String normalizeLocationName(final String name)
+	protected static String normalizeLocationName(final String name)
 	{
 		return P_STATION_NAME_WHITESPACE.matcher(name).replaceAll(" ");
 	}
