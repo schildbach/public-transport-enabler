@@ -792,11 +792,6 @@ public class MvvProvider extends AbstractEfaProvider
 
 	static
 	{
-		LINES.put("I", new int[] { Color.WHITE, Color.RED, Color.RED }); // generic
-		LINES.put("R", new int[] { Color.WHITE, Color.RED, Color.RED }); // generic
-		LINES.put("S", new int[] { Color.parseColor("#006e34"), Color.WHITE }); // generic
-		LINES.put("U", new int[] { Color.parseColor("#003090"), Color.WHITE }); // generic
-
 		LINES.put("SS1", new int[] { Color.parseColor("#00ccff"), Color.WHITE });
 		LINES.put("SS2", new int[] { Color.parseColor("#66cc00"), Color.WHITE });
 		LINES.put("SS3", new int[] { Color.parseColor("#880099"), Color.WHITE });
@@ -833,8 +828,13 @@ public class MvvProvider extends AbstractEfaProvider
 		LINES.put("UU6", new int[] { Color.parseColor("#0000cc"), Color.WHITE });
 	}
 
+	@Override
 	public int[] lineColors(final String line)
 	{
-		return LINES.get(line);
+		final int[] lineColors = LINES.get(line);
+		if (lineColors != null)
+			return lineColors;
+		else
+			return super.lineColors(line);
 	}
 }

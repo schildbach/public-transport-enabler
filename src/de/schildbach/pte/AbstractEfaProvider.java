@@ -22,7 +22,9 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -370,6 +372,9 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			if (type.equals("STR")) // Nordhausen
 				return 'T' + str;
 
+			if (type.length() == 0)
+				return "?";
+
 			throw new IllegalArgumentException("cannot normalize: " + number);
 		}
 		if (t == 1)
@@ -405,7 +410,10 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			if (nameState.equals("identified"))
 			{
 				XmlPullUtil.jumpToStartTag(pp, null, "odvNameElem");
-				final int locationId = Integer.parseInt(pp.getAttributeValue(null, "stopID"));
+				String locationIdStr = pp.getAttributeValue(null, "stopID");
+				if (locationIdStr == null)
+					locationIdStr = pp.getAttributeValue(null, "id");
+				final int locationId = Integer.parseInt(locationIdStr);
 
 				final String location = normalizeLocationName(pp.nextText());
 
@@ -501,5 +509,24 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 	protected static double latLonToDouble(final int value)
 	{
 		return (double) value / 1000000;
+	}
+
+	private static final Map<Character, int[]> LINES = new HashMap<Character, int[]>();
+
+	static
+	{
+		LINES.put('I', new int[] { Color.WHITE, Color.RED, Color.RED });
+		LINES.put('R', new int[] { Color.GRAY, Color.WHITE });
+		LINES.put('S', new int[] { Color.parseColor("#006e34"), Color.WHITE });
+		LINES.put('U', new int[] { Color.parseColor("#003090"), Color.WHITE });
+		LINES.put('T', new int[] { Color.parseColor("#cc0000"), Color.WHITE });
+		LINES.put('B', new int[] { Color.parseColor("#993399"), Color.WHITE });
+		LINES.put('F', new int[] { Color.BLUE, Color.WHITE });
+		LINES.put('?', new int[] { Color.DKGRAY, Color.WHITE });
+	}
+
+	public int[] lineColors(final String line)
+	{
+		return LINES.get(line.charAt(0));
 	}
 }

@@ -19,8 +19,6 @@ package de.schildbach.pte;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author Andreas Schildbach
@@ -101,24 +99,5 @@ public class LinzProvider extends AbstractEfaProvider
 		uri.append("&name_dm=").append(stationId);
 		uri.append("&mode=direct");
 		return uri.toString();
-	}
-
-	private static final Map<Character, int[]> LINES = new HashMap<Character, int[]>();
-
-	static
-	{
-		LINES.put('I', new int[] { Color.WHITE, Color.RED, Color.RED });
-		LINES.put('R', new int[] { Color.GRAY, Color.WHITE });
-		LINES.put('S', new int[] { Color.parseColor("#006e34"), Color.WHITE });
-		LINES.put('U', new int[] { Color.parseColor("#003090"), Color.WHITE });
-		LINES.put('T', new int[] { Color.parseColor("#cc0000"), Color.WHITE });
-		LINES.put('B', new int[] { Color.parseColor("#993399"), Color.WHITE });
-		LINES.put('F', new int[] { Color.BLUE, Color.WHITE });
-		LINES.put('?', new int[] { Color.DKGRAY, Color.WHITE });
-	}
-
-	public int[] lineColors(final String line)
-	{
-		return LINES.get(line.charAt(0));
 	}
 }
