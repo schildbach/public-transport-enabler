@@ -79,7 +79,7 @@ public class NasaProvider extends AbstractHafasProvider
 		uri.append("?input=").append(stationId);
 		uri.append("&boardType=dep");
 		uri.append("&time=").append(TIME_FORMAT.format(now));
-		uri.append("&selectDate=").append(DATE_FORMAT.format(now));
+		uri.append("&date=").append(DATE_FORMAT.format(now));
 		uri.append("&productsFilter=11111111");
 		if (maxDepartures != 0)
 			uri.append("&maxJourneys=").append(maxDepartures);
