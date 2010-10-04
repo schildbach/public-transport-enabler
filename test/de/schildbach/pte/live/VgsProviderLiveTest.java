@@ -20,9 +20,9 @@ import java.util.List;
 
 import org.junit.Test;
 
-import de.schildbach.pte.QueryDeparturesResult;
-import de.schildbach.pte.Station;
 import de.schildbach.pte.VgsProvider;
+import de.schildbach.pte.dto.QueryDeparturesResult;
+import de.schildbach.pte.dto.Station;
 
 /**
  * @author Andreas Schildbach

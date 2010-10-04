@@ -20,6 +20,8 @@ package de.schildbach.pte;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.schildbach.pte.util.Color;
+
 /**
  * @author Andreas Schildbach
  */

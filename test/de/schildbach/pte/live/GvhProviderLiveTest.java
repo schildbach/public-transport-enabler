@@ -20,9 +20,9 @@ import java.util.List;
 
 import org.junit.Test;
 
-import de.schildbach.pte.Autocomplete;
 import de.schildbach.pte.GvhProvider;
-import de.schildbach.pte.Station;
+import de.schildbach.pte.dto.Autocomplete;
+import de.schildbach.pte.dto.Station;
 
 /**
  * @author Andreas Schildbach

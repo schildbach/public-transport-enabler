@@ -15,21 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.schildbach.pte;
-
-import java.util.Date;
+package de.schildbach.pte.dto;
 
 /**
  * @author Andreas Schildbach
  */
-public final class GetConnectionDetailsResult
+public final class StationLocationResult
 {
-	public final Date currentDate;
-	public final Connection connection;
+	public final double lat, lon;
+	public final String name;
 
-	public GetConnectionDetailsResult(Date currentDate, Connection connection)
+	public StationLocationResult(final int lat, final int lon, final String name)
 	{
-		this.currentDate = currentDate;
-		this.connection = connection;
+		this.lat = lat;
+		this.lon = lon;
+		this.name = name;
 	}
 }

@@ -25,6 +25,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.schildbach.pte.dto.Station;
+import de.schildbach.pte.util.Color;
+import de.schildbach.pte.util.ParserUtils;
+
 /**
  * @author Andreas Schildbach
  */

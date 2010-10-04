@@ -21,7 +21,7 @@ import java.util.List;
 import org.junit.Test;
 
 import de.schildbach.pte.RmvProvider;
-import de.schildbach.pte.Station;
+import de.schildbach.pte.dto.Station;
 
 /**
  * @author Andreas Schildbach

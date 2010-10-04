@@ -22,9 +22,9 @@ import java.util.Date;
 import org.junit.Test;
 
 import de.schildbach.pte.MvvProvider;
-import de.schildbach.pte.QueryConnectionsResult;
 import de.schildbach.pte.NetworkProvider.LocationType;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
+import de.schildbach.pte.dto.QueryConnectionsResult;
 
 /**
  * @author Andreas Schildbach

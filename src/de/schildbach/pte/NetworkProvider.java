@@ -21,6 +21,13 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import de.schildbach.pte.dto.Autocomplete;
+import de.schildbach.pte.dto.GetConnectionDetailsResult;
+import de.schildbach.pte.dto.QueryConnectionsResult;
+import de.schildbach.pte.dto.QueryDeparturesResult;
+import de.schildbach.pte.dto.Station;
+import de.schildbach.pte.dto.StationLocationResult;
+
 /**
  * Interface to be implemented by providers of transportation networks
  * 

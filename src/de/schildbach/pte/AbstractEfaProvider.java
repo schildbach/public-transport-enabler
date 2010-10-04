@@ -32,7 +32,13 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import de.schildbach.pte.QueryDeparturesResult.Status;
+import de.schildbach.pte.dto.Autocomplete;
+import de.schildbach.pte.dto.Departure;
+import de.schildbach.pte.dto.QueryDeparturesResult;
+import de.schildbach.pte.dto.Station;
+import de.schildbach.pte.dto.QueryDeparturesResult.Status;
+import de.schildbach.pte.util.Color;
+import de.schildbach.pte.util.ParserUtils;
 import de.schildbach.pte.util.XmlPullUtil;
 
 /**

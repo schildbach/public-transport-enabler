@@ -22,11 +22,11 @@ import java.util.Date;
 import org.junit.Test;
 
 import de.schildbach.pte.BahnProvider;
-import de.schildbach.pte.Connection;
-import de.schildbach.pte.QueryConnectionsResult;
-import de.schildbach.pte.QueryDeparturesResult;
 import de.schildbach.pte.NetworkProvider.LocationType;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
+import de.schildbach.pte.dto.Connection;
+import de.schildbach.pte.dto.QueryConnectionsResult;
+import de.schildbach.pte.dto.QueryDeparturesResult;
 
 /**
  * @author Andreas Schildbach

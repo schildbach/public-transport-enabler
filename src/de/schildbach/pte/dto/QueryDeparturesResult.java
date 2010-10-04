@@ -14,30 +14,42 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.schildbach.pte;
 
-import de.schildbach.pte.NetworkProvider.LocationType;
+package de.schildbach.pte.dto;
+
+import java.util.List;
 
 /**
  * @author Andreas Schildbach
  */
-public final class Autocomplete
+public final class QueryDeparturesResult
 {
-	public final LocationType locationType;
-	public final int locationId;
-	public final String location;
-
-	public Autocomplete(final LocationType locationType, final int locationId, final String location)
+	public enum Status
 	{
-		this.locationType = locationType;
-		this.locationId = locationId;
-		this.location = location;
+		OK, NO_INFO, INVALID_STATION, SERVICE_DOWN
 	}
 
-	@Override
-	public String toString()
+	public final String uri;
+	public final Status status;
+	public final int locationId;
+	public final String location;
+	public final List<Departure> departures;
+
+	public QueryDeparturesResult(final String uri, final int locationId, final String location, final List<Departure> departures)
 	{
-		// return getClass().getName() + "[" + locationId + " " + location + "]";
-		return location; // invoked by AutoCompleteTextView in landscape orientation
+		this.uri = uri;
+		this.status = Status.OK;
+		this.locationId = locationId;
+		this.location = location;
+		this.departures = departures;
+	}
+
+	public QueryDeparturesResult(final String uri, final Status status)
+	{
+		this.uri = uri;
+		this.status = status;
+		this.locationId = 0;
+		this.location = null;
+		this.departures = null;
 	}
 }

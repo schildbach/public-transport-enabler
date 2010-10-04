@@ -20,6 +20,11 @@ package de.schildbach.pte;
 import java.io.IOException;
 import java.util.Date;
 
+import de.schildbach.pte.dto.GetConnectionDetailsResult;
+import de.schildbach.pte.dto.QueryConnectionsResult;
+import de.schildbach.pte.dto.StationLocationResult;
+import de.schildbach.pte.util.ParserUtils;
+
 /**
  * @author Andreas Schildbach
  */
