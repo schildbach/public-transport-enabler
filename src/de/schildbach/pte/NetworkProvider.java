@@ -23,9 +23,9 @@ import java.util.List;
 
 import de.schildbach.pte.dto.Autocomplete;
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
+import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
-import de.schildbach.pte.dto.Station;
 import de.schildbach.pte.dto.StationLocationResult;
 
 /**
@@ -78,7 +78,7 @@ public interface NetworkProvider
 	 * @return nearby stations
 	 * @throws IOException
 	 */
-	List<Station> nearbyStations(String stationId, int lat, int lon, int maxDistance, int maxStations) throws IOException;
+	NearbyStationsResult nearbyStations(String stationId, int lat, int lon, int maxDistance, int maxStations) throws IOException;
 
 	/**
 	 * Look up location of station.

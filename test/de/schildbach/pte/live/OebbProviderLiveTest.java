@@ -18,15 +18,14 @@
 package de.schildbach.pte.live;
 
 import java.util.Date;
-import java.util.List;
 
 import org.junit.Test;
 
 import de.schildbach.pte.OebbProvider;
 import de.schildbach.pte.NetworkProvider.LocationType;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
+import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
-import de.schildbach.pte.dto.Station;
 
 /**
  * @author Andreas Schildbach
@@ -38,9 +37,9 @@ public class OebbProviderLiveTest
 	@Test
 	public void nearbyStation() throws Exception
 	{
-		final List<Station> results = provider.nearbyStations("902006", 0, 0, 0, 0);
+		final NearbyStationsResult result = provider.nearbyStations("902006", 0, 0, 0, 0);
 
-		System.out.println(results.size() + "  " + results);
+		System.out.println(result.stations.size() + "  " + result.stations);
 	}
 
 	@Test

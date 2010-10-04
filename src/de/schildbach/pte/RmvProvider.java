@@ -34,6 +34,7 @@ import de.schildbach.pte.dto.Autocomplete;
 import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
+import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.Station;
@@ -100,13 +101,13 @@ public class RmvProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	public List<Station> nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
+	public NearbyStationsResult nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
 			throws IOException
 	{
 		if (lat != 0 || lon != 0)
 		{
-			final String url = API_BASE + "dox?input=" + latLonToDouble(lat) + "%20" + latLonToDouble(lon);
-			final CharSequence page = ParserUtils.scrape(url);
+			final String uri = API_BASE + "dox?input=" + latLonToDouble(lat) + "%20" + latLonToDouble(lon);
+			final CharSequence page = ParserUtils.scrape(uri);
 
 			final List<Station> stations = new ArrayList<Station>();
 
@@ -122,9 +123,9 @@ public class RmvProvider extends AbstractHafasProvider
 			}
 
 			if (maxStations == 0 || maxStations >= stations.size())
-				return stations;
+				return new NearbyStationsResult(uri, stations);
 			else
-				return stations.subList(0, maxStations);
+				return new NearbyStationsResult(uri, stations.subList(0, maxStations));
 		}
 		else if (stationId != null)
 		{

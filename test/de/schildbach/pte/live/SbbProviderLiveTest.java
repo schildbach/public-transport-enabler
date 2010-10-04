@@ -26,8 +26,8 @@ import de.schildbach.pte.SbbProvider;
 import de.schildbach.pte.NetworkProvider.LocationType;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Autocomplete;
+import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
-import de.schildbach.pte.dto.Station;
 
 /**
  * @author Andreas Schildbach
@@ -39,11 +39,11 @@ public class SbbProviderLiveTest
 	@Test
 	public void nearbyStation() throws Exception
 	{
-		final List<Station> results = provider.nearbyStations("8500010", 0, 0, 0, 0);
+		final NearbyStationsResult result = provider.nearbyStations("8500010", 0, 0, 0, 0);
 
-		System.out.println(results.size() + "  " + results);
+		System.out.println(result.stations.size() + "  " + result.stations);
 	}
-	
+
 	@Test
 	public void shortConnection() throws Exception
 	{

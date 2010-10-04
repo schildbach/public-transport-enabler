@@ -34,6 +34,7 @@ import de.schildbach.pte.dto.Autocomplete;
 import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
+import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.Station;
@@ -89,7 +90,7 @@ public final class BahnProvider implements NetworkProvider
 	private final static Pattern P_NEARBY_STATIONS = Pattern
 			.compile("<a class=\"uLine\" href=\".+?!X=(\\d+)!Y=(\\d+)!id=(\\d+)!dist=(\\d+).*?\">(.+?)</a>");
 
-	public List<Station> nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
+	public NearbyStationsResult nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
 			throws IOException
 	{
 		if (lat == 0 && lon == 0)
@@ -97,9 +98,9 @@ public final class BahnProvider implements NetworkProvider
 
 		final List<Station> stations = new ArrayList<Station>();
 
-		final String url = API_BASE + "query.exe/dox" + "?performLocating=2&tpl=stopsnear&look_maxdist=" + (maxDistance > 0 ? maxDistance : 5000)
+		final String uri = API_BASE + "query.exe/dox" + "?performLocating=2&tpl=stopsnear&look_maxdist=" + (maxDistance > 0 ? maxDistance : 5000)
 				+ "&look_stopclass=1023" + "&look_x=" + lon + "&look_y=" + lat;
-		final CharSequence page = ParserUtils.scrape(url);
+		final CharSequence page = ParserUtils.scrape(uri);
 
 		final Matcher m = P_NEARBY_STATIONS.matcher(page);
 		while (m.find())
@@ -116,9 +117,9 @@ public final class BahnProvider implements NetworkProvider
 		}
 
 		if (maxStations == 0 || maxStations >= stations.size())
-			return stations;
+			return new NearbyStationsResult(uri, stations);
 		else
-			return stations.subList(0, maxStations);
+			return new NearbyStationsResult(uri, stations.subList(0, maxStations));
 	}
 
 	public StationLocationResult stationLocation(final String stationId) throws IOException

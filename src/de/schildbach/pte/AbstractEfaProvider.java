@@ -17,6 +17,7 @@
 
 package de.schildbach.pte;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -34,9 +35,9 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 import de.schildbach.pte.dto.Autocomplete;
 import de.schildbach.pte.dto.Departure;
+import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.Station;
-import de.schildbach.pte.dto.QueryDeparturesResult.Status;
 import de.schildbach.pte.util.Color;
 import de.schildbach.pte.util.ParserUtils;
 import de.schildbach.pte.util.XmlPullUtil;
@@ -88,7 +89,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 	protected abstract String nearbyStationUri(String stationId);
 
-	public List<Station> nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
+	public NearbyStationsResult nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
 			throws IOException
 	{
 		String uri = null;
@@ -104,7 +105,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			final CharSequence page = ParserUtils.scrape(uri);
 
 			if (P_NEARBY_MESSAGES.matcher(page).find())
-				return null;
+				return new NearbyStationsResult(uri, NearbyStationsResult.Status.SERVICE_DOWN);
 
 			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
 			final XmlPullParser pp = factory.newPullParser();
@@ -157,13 +158,13 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				}
 
 				if (maxStations == 0 || maxStations >= stations.size())
-					return stations;
+					return new NearbyStationsResult(uri, stations);
 				else
-					return stations.subList(0, maxStations);
+					return new NearbyStationsResult(uri, stations.subList(0, maxStations));
 			}
 			else if (nameState.equals("notidentified"))
 			{
-				return null;
+				return new NearbyStationsResult(uri, NearbyStationsResult.Status.INVALID_STATION);
 			}
 			else
 			{
@@ -173,6 +174,10 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		catch (final XmlPullParserException x)
 		{
 			throw new RuntimeException(x);
+		}
+		catch (final FileNotFoundException x)
+		{
+			return new NearbyStationsResult(uri, NearbyStationsResult.Status.SERVICE_DOWN);
 		}
 	}
 
@@ -497,7 +502,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			}
 			else if (nameState.equals("notidentified"))
 			{
-				return new QueryDeparturesResult(uri, Status.INVALID_STATION);
+				return new QueryDeparturesResult(uri, QueryDeparturesResult.Status.INVALID_STATION);
 			}
 			else
 			{

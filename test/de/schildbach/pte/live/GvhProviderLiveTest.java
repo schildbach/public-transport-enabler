@@ -22,7 +22,7 @@ import org.junit.Test;
 
 import de.schildbach.pte.GvhProvider;
 import de.schildbach.pte.dto.Autocomplete;
-import de.schildbach.pte.dto.Station;
+import de.schildbach.pte.dto.NearbyStationsResult;
 
 /**
  * @author Andreas Schildbach
@@ -42,8 +42,8 @@ public class GvhProviderLiveTest
 	@Test
 	public void nearbyStation() throws Exception
 	{
-		final List<Station> results = provider.nearbyStations("25000031", 0, 0, 0, 0);
+		final NearbyStationsResult result = provider.nearbyStations("25000031", 0, 0, 0, 0);
 
-		System.out.println(results.size() + "  " + results);
+		System.out.println(result.stations.size() + "  " + result.stations);
 	}
 }

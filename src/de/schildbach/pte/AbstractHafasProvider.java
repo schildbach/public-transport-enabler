@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Station;
 import de.schildbach.pte.util.Color;
 import de.schildbach.pte.util.ParserUtils;
@@ -41,7 +42,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 	protected abstract String nearbyStationUri(String stationId);
 
-	public List<Station> nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
+	public NearbyStationsResult nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
 			throws IOException
 	{
 		if (stationId == null)
@@ -89,9 +90,9 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		}
 
 		if (maxStations == 0 || maxStations >= stations.size())
-			return stations;
+			return new NearbyStationsResult(uri, stations);
 		else
-			return stations.subList(0, maxStations);
+			return new NearbyStationsResult(uri, stations.subList(0, maxStations));
 	}
 
 	protected static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zÄÖÜäöüßáàâéèêíìîóòôúùû/-]+)[\\s-]*(.*)");

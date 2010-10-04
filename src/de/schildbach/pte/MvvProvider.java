@@ -33,6 +33,7 @@ import java.util.regex.Pattern;
 import de.schildbach.pte.dto.Autocomplete;
 import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
+import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.Station;
 import de.schildbach.pte.dto.StationLocationResult;
@@ -133,7 +134,7 @@ public class MvvProvider extends AbstractEfaProvider
 	private static final Pattern P_NEARBY_FINE = Pattern.compile(".*?<n>(.*?)</n>.*?<r>.*?<id>(.*?)</id>.*?</r>.*?(?:<c>(\\d+),(\\d+)</c>.*?)?");
 
 	@Override
-	public List<Station> nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
+	public NearbyStationsResult nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
 			throws IOException
 	{
 		String uri;
@@ -169,9 +170,9 @@ public class MvvProvider extends AbstractEfaProvider
 		}
 
 		if (maxStations == 0 || maxStations >= stations.size())
-			return stations;
+			return new NearbyStationsResult(uri, stations);
 		else
-			return stations.subList(0, maxStations);
+			return new NearbyStationsResult(uri, stations.subList(0, maxStations));
 	}
 
 	public StationLocationResult stationLocation(final String stationId) throws IOException

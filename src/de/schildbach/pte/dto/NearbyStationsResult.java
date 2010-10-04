@@ -14,25 +14,36 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.schildbach.pte.live;
 
-import org.junit.Test;
+package de.schildbach.pte.dto;
 
-import de.schildbach.pte.SncbProvider;
-import de.schildbach.pte.dto.NearbyStationsResult;
+import java.util.List;
 
 /**
  * @author Andreas Schildbach
  */
-public class SncbProviderLiveTest
+public final class NearbyStationsResult
 {
-	private final SncbProvider provider = new SncbProvider();
-
-	@Test
-	public void nearbyStation() throws Exception
+	public enum Status
 	{
-		final NearbyStationsResult result = provider.nearbyStations("100080", 0, 0, 0, 0);
+		OK, INVALID_STATION, SERVICE_DOWN
+	}
 
-		System.out.println(result.stations.size() + "  " + result.stations);
+	public final String uri;
+	public final Status status;
+	public final List<Station> stations;
+
+	public NearbyStationsResult(final String uri, List<Station> stations)
+	{
+		this.uri = uri;
+		this.status = Status.OK;
+		this.stations = stations;
+	}
+
+	public NearbyStationsResult(final String uri, final Status status)
+	{
+		this.uri = uri;
+		this.status = status;
+		this.stations = null;
 	}
 }
