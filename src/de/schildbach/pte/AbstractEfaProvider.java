@@ -174,8 +174,10 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 	private static final Pattern P_LINE_RE = Pattern.compile("RE\\d+");
 	private static final Pattern P_LINE_RB = Pattern.compile("RB\\d+");
 	private static final Pattern P_LINE_VB = Pattern.compile("VB\\d+");
+	private static final Pattern P_LINE_OE = Pattern.compile("OE\\d+");
 	private static final Pattern P_LINE_R = Pattern.compile("R\\d+(/R\\d+|\\(z\\))?");
 	private static final Pattern P_LINE_U = Pattern.compile("U\\d+");
+	private static final Pattern P_LINE_NUMBER = Pattern.compile("\\d+");
 
 	protected String parseLine(final String number, final String symbol, final String mot)
 	{
@@ -249,6 +251,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			if (type.equals("NEB")) // Niederbarnimer Eisenbahn
 				return 'R' + str;
 			if (type.equals("OE")) // Ostdeutsche Eisenbahn
+				return 'R' + str;
+			if (P_LINE_OE.matcher(type).matches())
 				return 'R' + str;
 			if (type.equals("MR")) // Märkische Regiobahn
 				return 'R' + str;
@@ -360,8 +364,22 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'R' + str;
 			if (type.equals("KBS")) // Kursbuchstrecke
 				return 'R' + str;
+			if (type.equals("Zug"))
+				return 'R' + str;
+			if (type.equals("ÖBB"))
+				return 'R' + str;
+			if (type.equals("CD"))
+				return 'R' + str;
+			if (type.equals("PR"))
+				return 'R' + str;
+			if (type.equals("KD")) // Koleje Dolnośląskie (Niederschlesische Eisenbahn)
+				return 'R' + str;
+			if (type.equals("VIAMO"))
+				return 'R' + str;
 
 			if (type.equals("BSB")) // Breisgau-S-Bahn
+				return 'S' + str;
+			if (type.equals("RER")) // Réseau Express Régional, Frankreich
 				return 'S' + str;
 
 			if (P_LINE_U.matcher(type).matches())
@@ -373,6 +391,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'T' + str;
 
 			if (type.length() == 0)
+				return "?";
+			if (P_LINE_NUMBER.matcher(type).matches())
 				return "?";
 
 			throw new IllegalArgumentException("cannot normalize: " + number);
