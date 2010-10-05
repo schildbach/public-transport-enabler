@@ -36,7 +36,6 @@ import de.schildbach.pte.dto.GetConnectionDetailsResult;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.Station;
-import de.schildbach.pte.dto.StationLocationResult;
 import de.schildbach.pte.exception.SessionExpiredException;
 import de.schildbach.pte.util.Color;
 import de.schildbach.pte.util.ParserUtils;
@@ -173,11 +172,6 @@ public class MvvProvider extends AbstractEfaProvider
 			return new NearbyStationsResult(uri, stations);
 		else
 			return new NearbyStationsResult(uri, stations.subList(0, maxStations));
-	}
-
-	public StationLocationResult stationLocation(final String stationId) throws IOException
-	{
-		throw new UnsupportedOperationException();
 	}
 
 	private static final Map<WalkSpeed, String> WALKSPEED_MAP = new HashMap<WalkSpeed, String>();
@@ -662,6 +656,8 @@ public class MvvProvider extends AbstractEfaProvider
 				return "B" + line;
 			if (line.equals("Schienenersatzverkehr"))
 				return "BSEV";
+			if (line.startsWith("MVV-Ruftaxi "))
+				return "B" + line;
 			if (P_NORMALIZE_LINE_TRAM.matcher(line).matches())
 				return "T" + line;
 			if (P_NORMALIZE_LINE_NACHTTRAM.matcher(line).matches())

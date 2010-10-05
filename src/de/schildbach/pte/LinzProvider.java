@@ -22,7 +22,6 @@ import java.util.Date;
 
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
-import de.schildbach.pte.dto.StationLocationResult;
 import de.schildbach.pte.util.ParserUtils;
 
 /**
@@ -71,11 +70,6 @@ public class LinzProvider extends AbstractEfaProvider
 	protected String nearbyStationUri(final String stationId)
 	{
 		return String.format(NEARBY_STATION_URI, stationId);
-	}
-
-	public StationLocationResult stationLocation(final String stationId) throws IOException
-	{
-		throw new UnsupportedOperationException();
 	}
 
 	public QueryConnectionsResult queryConnections(final LocationType fromType, final String from, final LocationType viaType, final String via,

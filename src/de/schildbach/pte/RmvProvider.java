@@ -38,7 +38,6 @@ import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.Station;
-import de.schildbach.pte.dto.StationLocationResult;
 import de.schildbach.pte.dto.QueryDeparturesResult.Status;
 import de.schildbach.pte.util.ParserUtils;
 
@@ -134,31 +133,6 @@ public class RmvProvider extends AbstractHafasProvider
 		else
 		{
 			throw new IllegalArgumentException("at least one of stationId or lat/lon must be given");
-		}
-	}
-
-	private static Pattern P_STATION_LOCATION = Pattern
-			.compile("REQMapRoute0\\.Location0\\.X=(\\d+)&REQMapRoute0\\.Location0\\.Y=(\\d+)&REQMapRoute0\\.Location0\\.Name=(.+?)\"");
-
-	public StationLocationResult stationLocation(final String stationId) throws IOException
-	{
-		final String uri = API_BASE + "stboard.exe/dn?L=vs_rmv&selectDate=today&time=now&showStBoard=yes&boardType=dep&maxJourneys=10&start&input="
-				+ stationId;
-
-		final CharSequence page = ParserUtils.scrape(uri);
-
-		final Matcher m = P_STATION_LOCATION.matcher(page);
-		if (m.find())
-		{
-			final int lon = Integer.parseInt(m.group(1));
-			final int lat = Integer.parseInt(m.group(2));
-			final String name = ParserUtils.resolveEntities(m.group(3));
-
-			return new StationLocationResult(lat, lon, name);
-		}
-		else
-		{
-			throw new IllegalArgumentException("cannot parse '" + page + "' on " + uri);
 		}
 	}
 

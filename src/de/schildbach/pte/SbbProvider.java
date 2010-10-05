@@ -34,7 +34,6 @@ import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
-import de.schildbach.pte.dto.StationLocationResult;
 import de.schildbach.pte.dto.QueryDeparturesResult.Status;
 import de.schildbach.pte.util.ParserUtils;
 
@@ -90,12 +89,6 @@ public class SbbProvider extends AbstractHafasProvider
 	protected String nearbyStationUri(final String stationId)
 	{
 		return String.format(NEARBY_URI, stationId);
-	}
-
-	public StationLocationResult stationLocation(final String stationId) throws IOException
-	{
-		throw new UnsupportedOperationException();
-		// final String uri = "http://fahrplan.sbb.ch/bin/extxml.exe/dn";
 	}
 
 	private String connectionsQueryUri(final LocationType fromType, final String from, final LocationType viaType, final String via,

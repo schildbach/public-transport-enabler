@@ -22,7 +22,6 @@ import java.util.Date;
 
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
-import de.schildbach.pte.dto.StationLocationResult;
 import de.schildbach.pte.util.ParserUtils;
 
 /**
@@ -65,11 +64,6 @@ public class GvhProvider extends AbstractEfaProvider
 	protected String nearbyLatLonUri(final int lat, final int lon)
 	{
 		return null;
-	}
-
-	public StationLocationResult stationLocation(String stationId) throws IOException
-	{
-		throw new UnsupportedOperationException();
 	}
 
 	public String departuresQueryUri(String stationId, int maxDepartures)

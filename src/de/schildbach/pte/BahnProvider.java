@@ -38,7 +38,6 @@ import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.Station;
-import de.schildbach.pte.dto.StationLocationResult;
 import de.schildbach.pte.util.Color;
 import de.schildbach.pte.util.ParserUtils;
 
@@ -120,11 +119,6 @@ public final class BahnProvider implements NetworkProvider
 			return new NearbyStationsResult(uri, stations);
 		else
 			return new NearbyStationsResult(uri, stations.subList(0, maxStations));
-	}
-
-	public StationLocationResult stationLocation(final String stationId) throws IOException
-	{
-		throw new UnsupportedOperationException();
 	}
 
 	private String connectionsQueryUri(final LocationType fromType, final String from, final LocationType viaType, final String via,

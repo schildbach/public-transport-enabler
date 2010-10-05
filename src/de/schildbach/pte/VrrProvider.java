@@ -21,7 +21,6 @@ import java.util.Date;
 
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
-import de.schildbach.pte.dto.StationLocationResult;
 
 /**
  * @author Andreas Schildbach
@@ -60,11 +59,6 @@ public class VrrProvider extends AbstractEfaProvider
 	protected String nearbyStationUri(final String stationId)
 	{
 		return String.format(NEARBY_STATION_URI, stationId);
-	}
-
-	public StationLocationResult stationLocation(String stationId) throws IOException
-	{
-		throw new UnsupportedOperationException();
 	}
 
 	public String departuresQueryUri(final String stationId, final int maxDepartures)

@@ -31,7 +31,6 @@ import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
-import de.schildbach.pte.dto.StationLocationResult;
 import de.schildbach.pte.dto.QueryDeparturesResult.Status;
 import de.schildbach.pte.util.ParserUtils;
 
@@ -64,11 +63,6 @@ public class SncbProvider extends AbstractHafasProvider
 	protected String nearbyStationUri(final String stationId)
 	{
 		return String.format(NEARBY_URI, stationId);
-	}
-
-	public StationLocationResult stationLocation(final String stationId) throws IOException
-	{
-		throw new UnsupportedOperationException();
 	}
 
 	public QueryConnectionsResult queryConnections(final LocationType fromType, final String from, final LocationType viaType, final String via,

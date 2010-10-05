@@ -38,7 +38,6 @@ import de.schildbach.pte.dto.GetConnectionDetailsResult;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
-import de.schildbach.pte.dto.StationLocationResult;
 import de.schildbach.pte.dto.QueryDeparturesResult.Status;
 import de.schildbach.pte.util.Color;
 import de.schildbach.pte.util.ParserUtils;
@@ -111,52 +110,6 @@ public final class VbbProvider implements NetworkProvider
 			throws IOException
 	{
 		throw new UnsupportedOperationException();
-	}
-
-	private static Pattern P_STATION_LOCATION = Pattern.compile("<Station name=\"(.*?)\" x=\"(\\d+)\" y=\"(\\d+)\" type=\"WGS84\"");
-	private static Pattern P_STATION_LOCATION_ERROR = Pattern.compile("(No trains in result)|(No Response from Server)");
-
-	public StationLocationResult stationLocation(final String stationId) throws IOException
-	{
-		final boolean live = stationId.length() == 6;
-		if (live)
-			throw new UnsupportedOperationException();
-
-		final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
-		final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
-		final Date now = new Date();
-		final String request = "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?><ReqC lang=\"DE\" prod=\"testsystem\" ver=\"1.1\" accessId=\"VBB-STD\"><STBReq boardType='DEP'><Time>"
-				+ TIME_FORMAT.format(now)
-				+ "</Time><Period><DateBegin>"
-				+ DATE_FORMAT.format(now)
-				+ "</DateBegin><DateEnd>"
-				+ DATE_FORMAT.format(now) + "</DateEnd></Period><TableStation externalId='" + stationId + "'/></STBReq></ReqC>";
-		final String uri = "http://www.vbb-fahrinfo.de/hafas/extxml/extxml.exe/dn";
-
-		final CharSequence page = ParserUtils.scrape(uri, false, request, null, false);
-
-		final Matcher mError = P_STATION_LOCATION_ERROR.matcher(page);
-		if (mError.find())
-		{
-			if (mError.group(1) != null)
-				return null;
-			if (mError.group(2) != null)
-				throw new RuntimeException("timeout error");
-		}
-
-		final Matcher m = P_STATION_LOCATION.matcher(page);
-		if (m.find())
-		{
-			final String name = ParserUtils.resolveEntities(m.group(1));
-			final int lon = Integer.parseInt(m.group(2));
-			final int lat = Integer.parseInt(m.group(3));
-
-			return new StationLocationResult(lat, lon, name);
-		}
-		else
-		{
-			throw new IllegalArgumentException("cannot parse '" + page + "' on " + uri);
-		}
 	}
 
 	public static final String STATION_URL_CONNECTION = "http://mobil.bvg.de/Fahrinfo/bin/query.bin/dox";

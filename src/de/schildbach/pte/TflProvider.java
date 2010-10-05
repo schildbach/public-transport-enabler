@@ -32,7 +32,6 @@ import de.schildbach.pte.dto.GetConnectionDetailsResult;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
-import de.schildbach.pte.dto.StationLocationResult;
 import de.schildbach.pte.dto.QueryDeparturesResult.Status;
 import de.schildbach.pte.util.Color;
 import de.schildbach.pte.util.ParserUtils;
@@ -56,11 +55,6 @@ public class TflProvider implements NetworkProvider
 
 	public NearbyStationsResult nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
 			throws IOException
-	{
-		throw new UnsupportedOperationException();
-	}
-
-	public StationLocationResult stationLocation(final String stationId) throws IOException
 	{
 		throw new UnsupportedOperationException();
 	}

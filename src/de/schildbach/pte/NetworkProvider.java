@@ -26,7 +26,6 @@ import de.schildbach.pte.dto.GetConnectionDetailsResult;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
-import de.schildbach.pte.dto.StationLocationResult;
 
 /**
  * Interface to be implemented by providers of transportation networks
@@ -81,16 +80,6 @@ public interface NetworkProvider
 	NearbyStationsResult nearbyStations(String stationId, int lat, int lon, int maxDistance, int maxStations) throws IOException;
 
 	/**
-	 * Look up location of station.
-	 * 
-	 * @param stationId
-	 *            id of station to look up
-	 * @return location
-	 * @throws IOException
-	 */
-	StationLocationResult stationLocation(String stationId) throws IOException;
-
-	/**
 	 * Query connections, asking for any ambiguousnesses
 	 * 
 	 * @param fromType
@@ -109,7 +98,8 @@ public interface NetworkProvider
 	 *            desired date for departing, mandatory
 	 * @param dep
 	 *            date is departure date? {@code true} for departure, {@code false} for arrival
-	 * @param products TODO
+	 * @param products
+	 *            TODO
 	 * @param walkSpeed
 	 *            how fast can you walk?
 	 * @param products
