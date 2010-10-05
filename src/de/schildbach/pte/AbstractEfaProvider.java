@@ -513,6 +513,10 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		{
 			throw new RuntimeException(x);
 		}
+		catch (final FileNotFoundException x)
+		{
+			return new QueryDeparturesResult(uri, QueryDeparturesResult.Status.SERVICE_DOWN);
+		}
 	}
 
 	private void processItdDate(final XmlPullParser pp, final Calendar calendar) throws XmlPullParserException, IOException
