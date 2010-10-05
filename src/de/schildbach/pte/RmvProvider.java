@@ -34,10 +34,8 @@ import de.schildbach.pte.dto.Autocomplete;
 import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
-import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
-import de.schildbach.pte.dto.Station;
 import de.schildbach.pte.dto.QueryDeparturesResult.Status;
 import de.schildbach.pte.util.ParserUtils;
 
@@ -88,57 +86,12 @@ public class RmvProvider extends AbstractHafasProvider
 		return results;
 	}
 
-	private final static Pattern P_NEARBY_STATIONS = Pattern.compile("<a href=\"/auskunft/bin/jp/stboard.exe/dox.+?input=(\\d+).*?\">\\n"
-			+ "(.+?)\\s*\\((\\d+) m/[A-Z]+\\)\\n</a>", Pattern.DOTALL);
-
 	private final String NEARBY_URI = API_BASE + "stboard.exe/dn?L=vs_rmv&distance=50&near&input=%s";
 
 	@Override
 	protected String nearbyStationUri(final String stationId)
 	{
 		return String.format(NEARBY_URI, stationId);
-	}
-
-	@Override
-	public NearbyStationsResult nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
-			throws IOException
-	{
-		if (lat != 0 || lon != 0)
-		{
-			final String uri = API_BASE + "dox?input=" + latLonToDouble(lat) + "%20" + latLonToDouble(lon);
-			final CharSequence page = ParserUtils.scrape(uri);
-
-			final List<Station> stations = new ArrayList<Station>();
-
-			final Matcher m = P_NEARBY_STATIONS.matcher(page);
-			while (m.find())
-			{
-				final int sId = Integer.parseInt(m.group(1));
-				final String sName = ParserUtils.resolveEntities(m.group(2));
-				final int sDist = Integer.parseInt(m.group(3));
-
-				final Station station = new Station(sId, sName, 0, 0, sDist, null, null);
-				stations.add(station);
-			}
-
-			if (maxStations == 0 || maxStations >= stations.size())
-				return new NearbyStationsResult(uri, stations);
-			else
-				return new NearbyStationsResult(uri, stations.subList(0, maxStations));
-		}
-		else if (stationId != null)
-		{
-			return super.nearbyStations(stationId, 0, 0, maxDistance, maxStations);
-		}
-		else
-		{
-			throw new IllegalArgumentException("at least one of stationId or lat/lon must be given");
-		}
-	}
-
-	private static double latLonToDouble(int value)
-	{
-		return (double) value / 1000000;
 	}
 
 	private static final Map<WalkSpeed, String> WALKSPEED_MAP = new HashMap<WalkSpeed, String>();
