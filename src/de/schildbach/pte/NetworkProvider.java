@@ -109,13 +109,16 @@ public interface NetworkProvider
 	 *            desired date for departing, mandatory
 	 * @param dep
 	 *            date is departure date? {@code true} for departure, {@code false} for arrival
+	 * @param products TODO
 	 * @param walkSpeed
 	 *            how fast can you walk?
+	 * @param products
+	 *            products to take into account
 	 * @return result object that can contain alternatives to clear up ambiguousnesses, or contains possible connections
 	 * @throws IOException
 	 */
 	QueryConnectionsResult queryConnections(LocationType fromType, String from, LocationType viaType, String via, LocationType toType, String to,
-			Date date, boolean dep, WalkSpeed walkSpeed) throws IOException;
+			Date date, boolean dep, String products, WalkSpeed walkSpeed) throws IOException;
 
 	/**
 	 * Query more connections (e.g. earlier or later)

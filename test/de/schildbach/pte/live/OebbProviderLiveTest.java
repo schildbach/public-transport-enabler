@@ -33,6 +33,7 @@ import de.schildbach.pte.dto.QueryConnectionsResult;
 public class OebbProviderLiveTest
 {
 	private OebbProvider provider = new OebbProvider();
+	private static final String ALL_PRODUCTS = "IRSUTBFC";
 
 	@Test
 	public void nearbyStation() throws Exception
@@ -46,7 +47,7 @@ public class OebbProviderLiveTest
 	public void shortConnection() throws Exception
 	{
 		final QueryConnectionsResult result = provider.queryConnections(LocationType.ANY, "Linz", null, null, LocationType.ANY, "Berlin", new Date(),
-				true, WalkSpeed.NORMAL);
+				true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
 		System.out.println(moreResult);
@@ -56,7 +57,7 @@ public class OebbProviderLiveTest
 	public void slowConnection() throws Exception
 	{
 		final QueryConnectionsResult result = provider.queryConnections(LocationType.ANY, "Ramsen, Zoll", null, null, LocationType.ANY, "Azuga",
-				new Date(), true, WalkSpeed.NORMAL);
+				new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
 		System.out.println(moreResult);
@@ -66,7 +67,7 @@ public class OebbProviderLiveTest
 	public void connectionWithFootway() throws Exception
 	{
 		final QueryConnectionsResult result = provider.queryConnections(LocationType.ANY, "Graz, Haselweg", null, null, LocationType.ADDRESS,
-				"Innsbruck, Gumppstraße 69", new Date(), true, WalkSpeed.NORMAL);
+				"Innsbruck, Gumppstraße 69", new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
 		System.out.println(moreResult);
@@ -76,7 +77,7 @@ public class OebbProviderLiveTest
 	public void connectionWithFootway2() throws Exception
 	{
 		final QueryConnectionsResult result = provider.queryConnections(LocationType.ANY, "Wien, Krottenbachstraße 110!", null, null,
-				LocationType.ADDRESS, "Wien, Meidlinger Hauptstraße 1", new Date(), true, WalkSpeed.NORMAL);
+				LocationType.ADDRESS, "Wien, Meidlinger Hauptstraße 1", new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
 		System.out.println(moreResult);

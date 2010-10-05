@@ -189,7 +189,7 @@ public class MvvProvider extends AbstractEfaProvider
 	}
 
 	private String connectionsQueryUri(final LocationType fromType, final String from, final LocationType viaType, final String via,
-			final LocationType toType, final String to, final Date date, final boolean dep, final WalkSpeed walkSpeed)
+			final LocationType toType, final String to, final Date date, final boolean dep, final String products, final WalkSpeed walkSpeed)
 	{
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
 		final DateFormat YEAR_FORMAT = new SimpleDateFormat("yyyy");
@@ -305,6 +305,7 @@ public class MvvProvider extends AbstractEfaProvider
 		uri.append("&itdTimeMinute=").append(ParserUtils.urlEncode(MINUTE_FORMAT.format(date)));
 		uri.append("&itdDate=").append(ParserUtils.urlEncode(DATE_FORMAT.format(date)));
 		uri.append("&changeSpeed=").append(WALKSPEED_MAP.get(walkSpeed));
+		uri.append(productParams(products));
 
 		return uri.toString();
 	}
@@ -342,9 +343,11 @@ public class MvvProvider extends AbstractEfaProvider
 			"(Start und Ziel sind identisch)|(konnte keine Verbindung gefunden werden)", Pattern.CASE_INSENSITIVE);
 
 	public QueryConnectionsResult queryConnections(final LocationType fromType, final String from, final LocationType viaType, final String via,
-			final LocationType toType, final String to, final Date date, final boolean dep, final WalkSpeed walkSpeed) throws IOException
+			final LocationType toType, final String to, final Date date, final boolean dep, String products, final WalkSpeed walkSpeed)
+			throws IOException
 	{
-		final String uri = connectionsQueryUri(fromType, from, viaType, via, toType, to, date, dep, walkSpeed);
+		final String uri = connectionsQueryUri(fromType, from, viaType, via, toType, to, date, dep, products, walkSpeed);
+		System.out.println(uri);
 		final CharSequence page = ParserUtils.scrape(uri);
 
 		final Matcher mError = P_CHECK_CONNECTIONS_ERROR.matcher(page);

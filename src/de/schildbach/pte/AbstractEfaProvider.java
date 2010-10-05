@@ -556,6 +556,35 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		return (double) value / 1000000;
 	}
 
+	protected final String productParams(final String products)
+	{
+		if (products == null)
+			return "";
+
+		final StringBuilder params = new StringBuilder("&includedMeans=checkbox");
+
+		for (final char p : products.toCharArray())
+		{
+			if (p == 'I' || p == 'R')
+				params.append("&inclMOT_0=on");
+			if (p == 'S')
+				params.append("&inclMOT_1=on");
+			if (p == 'U')
+				params.append("&inclMOT_2=on");
+			if (p == 'T')
+				params.append("&inclMOT_3=on&inclMOT_4=on");
+			if (p == 'B')
+				params.append("&inclMOT_5=on&inclMOT_6=on&inclMOT_7=on&inclMOT_10=on");
+			if (p == 'F')
+				params.append("&inclMOT_9=on");
+			if (p == 'C')
+				params.append("&inclMOT_8=on");
+			params.append("&inclMOT_11=on"); // TODO always show 'others', for now
+		}
+
+		return params.toString();
+	}
+
 	private static final Map<Character, int[]> LINES = new HashMap<Character, int[]>();
 
 	static

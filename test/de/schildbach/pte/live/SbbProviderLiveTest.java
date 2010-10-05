@@ -35,6 +35,7 @@ import de.schildbach.pte.dto.QueryConnectionsResult;
 public class SbbProviderLiveTest
 {
 	private SbbProvider provider = new SbbProvider();
+	private static final String ALL_PRODUCTS = "IRSUTBFC";
 
 	@Test
 	public void nearbyStation() throws Exception
@@ -48,7 +49,7 @@ public class SbbProviderLiveTest
 	public void shortConnection() throws Exception
 	{
 		final QueryConnectionsResult result = provider.queryConnections(LocationType.ANY, "Zürich!", null, null, LocationType.ANY, "Bern",
-				new Date(), true, WalkSpeed.NORMAL);
+				new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
 		System.out.println(moreResult);
@@ -58,7 +59,7 @@ public class SbbProviderLiveTest
 	public void slowConnection() throws Exception
 	{
 		final QueryConnectionsResult result = provider.queryConnections(LocationType.ANY, "Schocherswil, Alte Post!", null, null, LocationType.ANY,
-				"Laconnex, Mollach", new Date(), true, WalkSpeed.NORMAL);
+				"Laconnex, Mollach", new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
 		System.out.println(moreResult);
@@ -68,7 +69,7 @@ public class SbbProviderLiveTest
 	public void connectionWithFootway() throws Exception
 	{
 		final QueryConnectionsResult result = provider.queryConnections(LocationType.ADDRESS, "Spiez, Seestraße 62", null, null,
-				LocationType.ADDRESS, "Einsiedeln, Erlenmoosweg 24", new Date(), true, WalkSpeed.NORMAL);
+				LocationType.ADDRESS, "Einsiedeln, Erlenmoosweg 24", new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
 		System.out.println(moreResult);

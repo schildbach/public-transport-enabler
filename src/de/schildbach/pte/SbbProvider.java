@@ -126,6 +126,9 @@ public class SbbProvider extends AbstractHafasProvider
 		uri.append("&REQ0JourneyStopsZ0ID=");
 		uri.append("&REQ0JourneyTime=").append(ParserUtils.urlEncode(TIME_FORMAT.format(date)));
 		uri.append("&queryPageDisplayed=yes");
+
+		// TODO products
+
 		uri.append("&start=Suchen");
 
 		return uri.toString();
@@ -149,7 +152,8 @@ public class SbbProvider extends AbstractHafasProvider
 			.compile("(mehrfach vorhanden oder identisch)|(keine Verbindung gefunden werden)|(liegt nach dem Ende der Fahrplanperiode|liegt vor Beginn der Fahrplanperiode)");
 
 	public QueryConnectionsResult queryConnections(final LocationType fromType, final String from, final LocationType viaType, final String via,
-			final LocationType toType, final String to, final Date date, final boolean dep, final WalkSpeed walkSpeed) throws IOException
+			final LocationType toType, final String to, final Date date, final boolean dep, final String products, final WalkSpeed walkSpeed)
+			throws IOException
 	{
 		final String uri = connectionsQueryUri(fromType, from, viaType, via, toType, to, date, dep);
 		final CharSequence page = ParserUtils.scrape(uri);
@@ -528,7 +532,7 @@ public class SbbProvider extends AbstractHafasProvider
 		final char t = normalizeCommonTypes(ucType);
 		if (t != 0)
 			return t;
-		
+
 		if (ucType.equals("ICN")) // Intercity-Neigezug, Schweiz
 			return 'I';
 		if (ucType.equals("X")) // InterConnex

@@ -176,7 +176,7 @@ public class RmvProvider extends AbstractHafasProvider
 	}
 
 	private String connectionsQueryUri(final LocationType fromType, final String from, final LocationType viaType, final String via,
-			final LocationType toType, final String to, final Date date, final boolean dep, final WalkSpeed walkSpeed)
+			final LocationType toType, final String to, final Date date, final boolean dep, final String products, final WalkSpeed walkSpeed)
 	{
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yy");
 		final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
@@ -197,6 +197,27 @@ public class RmvProvider extends AbstractHafasProvider
 			uri.append("&REQ0JourneyStops1.0A=").append(locationType(viaType));
 		}
 		uri.append("&REQ0JourneyDep_Foot_speed=").append(WALKSPEED_MAP.get(walkSpeed));
+
+		for (final char p : products.toCharArray())
+		{
+			if (p == 'I')
+				uri.append("&REQ0JourneyProduct_prod_list_1=1000000000000000");
+			if (p == 'R')
+				uri.append("&REQ0JourneyProduct_prod_list_2=0110000000100000");
+			if (p == 'S')
+				uri.append("&REQ0JourneyProduct_prod_list_3=0001000000000000");
+			if (p == 'U')
+				uri.append("&REQ0JourneyProduct_prod_list_4=0000100000000000");
+			if (p == 'T')
+				uri.append("&REQ0JourneyProduct_prod_list_5=0000010000000000");
+			if (p == 'B')
+				uri.append("&REQ0JourneyProduct_prod_list_6=0000001101000000");
+			if (p == 'F')
+				uri.append("&REQ0JourneyProduct_prod_list_7=0000000010000000");
+			if (p == 'C')
+				; // FIXME
+		}
+
 		uri.append("&start=Suchen");
 
 		return uri.toString();
@@ -221,9 +242,10 @@ public class RmvProvider extends AbstractHafasProvider
 			"(mehrfach vorhanden oder identisch)|(keine Verbindung gefunden werden)|(derzeit nur Ausk&#252;nfte vom)", Pattern.CASE_INSENSITIVE);
 
 	public QueryConnectionsResult queryConnections(final LocationType fromType, final String from, final LocationType viaType, final String via,
-			final LocationType toType, final String to, final Date date, final boolean dep, final WalkSpeed walkSpeed) throws IOException
+			final LocationType toType, final String to, final Date date, final boolean dep, final String products, final WalkSpeed walkSpeed)
+			throws IOException
 	{
-		final String uri = connectionsQueryUri(fromType, from, viaType, via, toType, to, date, dep, walkSpeed);
+		final String uri = connectionsQueryUri(fromType, from, viaType, via, toType, to, date, dep, products, walkSpeed);
 		final CharSequence page = ParserUtils.scrape(uri);
 
 		final Matcher mError = P_CHECK_CONNECTIONS_ERROR.matcher(page);

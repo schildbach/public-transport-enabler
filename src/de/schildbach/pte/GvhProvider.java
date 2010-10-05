@@ -85,7 +85,7 @@ public class GvhProvider extends AbstractEfaProvider
 	}
 
 	public QueryConnectionsResult queryConnections(LocationType fromType, String from, LocationType viaType, String via, LocationType toType,
-			String to, Date date, boolean dep, WalkSpeed walkSpeed) throws IOException
+			String to, Date date, boolean dep, String products, WalkSpeed walkSpeed) throws IOException
 	{
 		throw new UnsupportedOperationException();
 	}

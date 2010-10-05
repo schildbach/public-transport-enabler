@@ -162,7 +162,7 @@ public final class VbbProvider implements NetworkProvider
 	public static final String STATION_URL_CONNECTION = "http://mobil.bvg.de/Fahrinfo/bin/query.bin/dox";
 
 	private String connectionsQueryUri(final LocationType fromType, final String from, final LocationType viaType, final String via,
-			final LocationType toType, final String to, final Date date, final boolean dep)
+			final LocationType toType, final String to, final Date date, final boolean dep, final String products)
 	{
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yy");
 		final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
@@ -223,8 +223,28 @@ public final class VbbProvider implements NetworkProvider
 		uri.append("&REQ0HafasSearchForw=").append(dep ? "1" : "0");
 		uri.append("&REQ0JourneyDate=").append(ParserUtils.urlEncode(DATE_FORMAT.format(date)));
 		uri.append("&REQ0JourneyTime=").append(ParserUtils.urlEncode(TIME_FORMAT.format(date)));
-		uri.append("&start=Suchen");
 
+		for (final char p : products.toCharArray())
+		{
+			if (p == 'I')
+				uri.append("&vw=5");
+			if (p == 'R')
+				uri.append("&vw=6");
+			if (p == 'S')
+				uri.append("&vw=0");
+			if (p == 'U')
+				uri.append("&vw=1");
+			if (p == 'T')
+				uri.append("&vw=2");
+			if (p == 'B')
+				uri.append("&vw=3");
+			if (p == 'F')
+				uri.append("&vw=7");
+			if (p == 'C')
+				; // FIXME
+		}
+
+		uri.append("&start=Suchen");
 		return uri.toString();
 	}
 
@@ -246,9 +266,10 @@ public final class VbbProvider implements NetworkProvider
 			.compile("(zu dicht beieinander|mehrfach vorhanden oder identisch)|(keine Verbindung gefunden)|(derzeit nur Ausk&#252;nfte vom)");
 
 	public QueryConnectionsResult queryConnections(final LocationType fromType, final String from, final LocationType viaType, final String via,
-			final LocationType toType, final String to, final Date date, final boolean dep, final WalkSpeed walkSpeed) throws IOException
+			final LocationType toType, final String to, final Date date, final boolean dep, String products, final WalkSpeed walkSpeed)
+			throws IOException
 	{
-		final String uri = connectionsQueryUri(fromType, from, viaType, via, toType, to, date, dep);
+		final String uri = connectionsQueryUri(fromType, from, viaType, via, toType, to, date, dep, products);
 		final CharSequence page = ParserUtils.scrape(uri);
 
 		final Matcher mError = P_CHECK_CONNECTIONS_ERROR.matcher(page);

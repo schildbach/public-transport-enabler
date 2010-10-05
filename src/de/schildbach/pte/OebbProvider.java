@@ -152,7 +152,8 @@ public class OebbProvider extends AbstractHafasProvider
 	}
 
 	private String connectionsQuery(final LocationType fromType, final String from, final LocationType viaType, final String via,
-			final LocationType toType, final String to, final Date date, final boolean dep, final WalkSpeed walkSpeed) throws IOException
+			final LocationType toType, final String to, final Date date, final boolean dep, final String products, final WalkSpeed walkSpeed)
+			throws IOException
 	{
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yy");
 		final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
@@ -179,10 +180,29 @@ public class OebbProvider extends AbstractHafasProvider
 		uri.append("&REQ0JourneyTime=").append(ParserUtils.urlEncode(TIME_FORMAT.format(date)));
 		uri.append("&REQ0HafasSearchForw=").append(dep ? "1" : "0");
 		uri.append("&existHafasDemo3=yes");
-		uri.append("&REQ0JourneyProduct_list=").append(ParserUtils.urlEncode("0:1111111111010000-000000"));
 		uri.append("&REQ0JourneyDep_Foot_speed=").append(WALKSPEED_MAP.get(walkSpeed));
 		uri.append("&existBikeEverywhere=yes");
 		uri.append("&existHafasAttrInc=yes");
+
+		for (final char p : products.toCharArray())
+		{
+			if (p == 'I')
+				uri.append("&REQ0JourneyProduct_prod_section_0_0=1&REQ0JourneyProduct_prod_section_0_1=1&REQ0JourneyProduct_prod_section_0_2");
+			if (p == 'R')
+				uri.append("&REQ0JourneyProduct_prod_section_0_3=1&REQ0JourneyProduct_prod_section_0_4=1");
+			if (p == 'S')
+				uri.append("&REQ0JourneyProduct_prod_section_0_5=1");
+			if (p == 'U')
+				uri.append("&REQ0JourneyProduct_prod_section_0_8=1");
+			if (p == 'T')
+				uri.append("&REQ0JourneyProduct_prod_section_0_9=1");
+			if (p == 'B')
+				uri.append("&REQ0JourneyProduct_prod_section_0_6=1&REQ0JourneyProduct_prod_section_0_11=1");
+			if (p == 'F')
+				uri.append("&REQ0JourneyProduct_prod_section_0_7=1");
+			if (p == 'C')
+				; // FIXME
+		}
 
 		return uri.toString();
 	}
@@ -208,7 +228,8 @@ public class OebbProvider extends AbstractHafasProvider
 	private static final Pattern P_ADDRESSES = Pattern.compile("<option[^>]*>\\s*([^<\\[]*)(?:\\[[^\\[]*\\])?\\s*</option>", Pattern.DOTALL);
 
 	public QueryConnectionsResult queryConnections(final LocationType fromType, final String from, final LocationType viaType, final String via,
-			final LocationType toType, final String to, final Date date, final boolean dep, final WalkSpeed walkSpeed) throws IOException
+			final LocationType toType, final String to, final Date date, final boolean dep, final String products, final WalkSpeed walkSpeed)
+			throws IOException
 	{
 		// get base url and cookies from form
 		final CharSequence form = ParserUtils.scrape(QUERY_CONNECTIONS_FORM_URL, false, null, null, true);
@@ -218,7 +239,7 @@ public class OebbProvider extends AbstractHafasProvider
 		final String baseUri = m.group(1);
 
 		// query
-		final String query = connectionsQuery(fromType, from, viaType, via, toType, to, date, dep, walkSpeed);
+		final String query = connectionsQuery(fromType, from, viaType, via, toType, to, date, dep, products, walkSpeed);
 		final CharSequence page = ParserUtils.scrape(baseUri, true, query, null, true);
 
 		final Matcher mError = P_QUERY_CONNECTIONS_ERROR.matcher(page);
