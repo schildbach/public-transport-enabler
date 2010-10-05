@@ -117,20 +117,25 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			{
 				final List<Station> stations = new ArrayList<Station>();
 
+				Station ownStation = null;
 				XmlPullUtil.jumpToStartTag(pp, null, "odvNameElem");
-				final String parsedOwnLocationIdStr = pp.getAttributeValue(null, "stopID");
+				String parsedOwnLocationIdStr = pp.getAttributeValue(null, "stopID");
+				if (parsedOwnLocationIdStr == null)
+					parsedOwnLocationIdStr = pp.getAttributeValue(null, "id");
 				if (parsedOwnLocationIdStr != null)
 				{
 					final int parsedOwnLocationId = Integer.parseInt(parsedOwnLocationIdStr);
-					final String parsedOwnMapName = pp.getAttributeValue(null, "mapName");
-					if (parsedOwnMapName != null)
+					int parsedOwnLat = 0, parsedOwnLon = 0;
+					final String mapName = pp.getAttributeValue(null, "mapName");
+					if (mapName != null)
 					{
-						if (!"WGS84".equals(parsedOwnMapName))
-							throw new IllegalStateException("unknown mapName: " + parsedOwnMapName);
-						final int parsedOwnLon = Integer.parseInt(pp.getAttributeValue(null, "x"));
-						final int parsedOwnLat = Integer.parseInt(pp.getAttributeValue(null, "y"));
-						stations.add(new Station(parsedOwnLocationId, null, parsedOwnLat, parsedOwnLon, 0, null, null));
+						if (!"WGS84".equals(mapName))
+							throw new IllegalStateException("unknown mapName: " + mapName);
+						parsedOwnLon = Integer.parseInt(pp.getAttributeValue(null, "x"));
+						parsedOwnLat = Integer.parseInt(pp.getAttributeValue(null, "y"));
 					}
+					final String parsedOwnLocation = normalizeLocationName(pp.nextText()); // FIXME evtl. nur optional?
+					ownStation = new Station(parsedOwnLocationId, parsedOwnLocation, parsedOwnLat, parsedOwnLon, 0, null, null);
 				}
 
 				if (XmlPullUtil.jumpToStartTag(pp, null, "itdOdvAssignedStops"))
@@ -150,12 +155,17 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 							final String parsedDistStr = pp.getAttributeValue(null, "distance");
 							final int parsedDist = parsedDistStr != null ? Integer.parseInt(parsedDistStr) : 0;
 
-							stations.add(new Station(parsedLocationId, parsedName, parsedLat, parsedLon, parsedDist, null, null));
+							final Station newStation = new Station(parsedLocationId, parsedName, parsedLat, parsedLon, parsedDist, null, null);
+							if (!stations.contains(newStation))
+								stations.add(newStation);
 
 							XmlPullUtil.skipRestOfTree(pp);
 						}
 					}
 				}
+
+				if (ownStation != null && !stations.contains(ownStation))
+					stations.add(ownStation);
 
 				if (maxStations == 0 || maxStations >= stations.size())
 					return new NearbyStationsResult(uri, stations);
