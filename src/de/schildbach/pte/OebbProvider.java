@@ -522,7 +522,7 @@ public class OebbProvider extends AbstractHafasProvider
 					{
 						final Date time = ParserUtils.joinDateTime(ParserUtils.parseDate(departure.getString("da")), ParserUtils.parseTime(departure
 								.getString("ti")));
-						final String line = normalizeLine(departure.getString("pr"));
+						final String line = normalizeLine(ParserUtils.resolveEntities(departure.getString("pr")));
 						final String destination = ParserUtils.resolveEntities(departure.getString("st"));
 						String position = departure.optString("tr");
 						if (position != null)
@@ -813,12 +813,16 @@ public class OebbProvider extends AbstractHafasProvider
 			return 'F';
 		if (ucType.equals("SCHIFF")) // via JSON API
 			return 'F';
+		if (ucType.equals("F")) // Fähre
+			return 'F';
 
 		if (ucType.equals("SB")) // Connections only?
 			return 'C';
 		if (ucType.equals("LIF"))
 			return 'C';
 		if (ucType.equals("SEILBAHN")) // via JSON API
+			return 'C';
+		if (ucType.equals("SSB")) // Graz Schlossbergbahn
 			return 'C';
 
 		if (ucType.equals("FLUG")) // via JSON API

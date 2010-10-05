@@ -202,6 +202,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return 'B';
 		if (ucType.equals("SEV")) // Schienen-Ersatz-Verkehr
 			return 'B';
+		if (ucType.equals("BUSSEV")) // Schienen-Ersatz-Verkehr
+			return 'B';
 		if (ucType.equals("FB")) // Luxemburg-Saarbrücken
 			return 'B';
 
