@@ -319,7 +319,7 @@ public final class XmlPullUtil
 					return true;
 
 				skipSubTree(pp);
-				pp.require(XmlPullParser.END_TAG, name, namespace);
+				pp.require(XmlPullParser.END_TAG, namespace, name);
 			}
 			else if (eventType == XmlPullParser.END_TAG)
 			{
