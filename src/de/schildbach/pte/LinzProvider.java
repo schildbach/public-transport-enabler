@@ -41,15 +41,12 @@ public class LinzProvider extends AbstractEfaProvider
 		return false;
 	}
 
-	private static final String AUTOCOMPLETE_URI = API_BASE + "XML_STOPFINDER_REQUEST"
-			+ "?outputFormat=XML&coordOutputFormat=WGS84&name_sf=%s&type_sf=%s";
-	private static final String AUTOCOMPLETE_TYPE = "any"; // any, stop, street, poi
-	private static final String ENCODING = "ISO-8859-1";
+	private static final String AUTOCOMPLETE_URI = API_BASE + "XSLT_TRIP_REQUEST2?outputFormat=XML&name_origin=%s&type_origin=any";
 
 	@Override
 	protected String autocompleteUri(final CharSequence constraint)
 	{
-		return String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING), AUTOCOMPLETE_TYPE);
+		return String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), "ISO-8859-1"));
 	}
 
 	private static final String NEARBY_LATLON_URI = API_BASE

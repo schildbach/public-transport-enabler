@@ -16,9 +16,12 @@
  */
 package de.schildbach.pte.live;
 
+import java.util.List;
+
 import org.junit.Test;
 
 import de.schildbach.pte.VrnProvider;
+import de.schildbach.pte.dto.Autocomplete;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 
@@ -28,6 +31,46 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 public class VrnProviderLiveTest
 {
 	private final VrnProvider provider = new VrnProvider();
+
+	@Test
+	public void autocompleteIncomplete() throws Exception
+	{
+		final List<Autocomplete> autocompletes = provider.autocompleteStations("Kur");
+
+		list(autocompletes);
+	}
+
+	@Test
+	public void autocompleteIdentified() throws Exception
+	{
+		final List<Autocomplete> autocompletes = provider.autocompleteStations("Bremen, KUR");
+
+		list(autocompletes);
+	}
+
+	@Test
+	public void autocompleteLocality() throws Exception
+	{
+		final List<Autocomplete> autocompletes = provider.autocompleteStations("Bremen");
+
+		list(autocompletes);
+	}
+
+	@Test
+	public void autocompleteCity() throws Exception
+	{
+		final List<Autocomplete> autocompletes = provider.autocompleteStations("Mannheim");
+
+		list(autocompletes);
+	}
+
+	private void list(final List<Autocomplete> autocompletes)
+	{
+		System.out.print(autocompletes.size() + " ");
+		for (final Autocomplete autocomplete : autocompletes)
+			System.out.print(autocomplete.toDebugString() + " ");
+		System.out.println();
+	}
 
 	@Test
 	public void nearbyStation() throws Exception

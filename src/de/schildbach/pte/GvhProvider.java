@@ -42,13 +42,12 @@ public class GvhProvider extends AbstractEfaProvider
 	}
 
 	private static final String AUTOCOMPLETE_URI = API_BASE
-			+ "XML_STOPFINDER_REQUEST?outputFormat=XML&coordOutputFormat=WGS84&name_sf=%s&type_sf=any";
-	private static final String ENCODING = "ISO-8859-1";
+			+ "XSLT_TRIP_REQUEST2?outputFormat=XML&locationServerActive=1&type_origin=any&name_origin=%s";
 
 	@Override
 	protected String autocompleteUri(final CharSequence constraint)
 	{
-		return String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING));
+		return String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), "ISO-8859-1"));
 	}
 
 	private static final String NEARBY_STATION_URI = API_BASE

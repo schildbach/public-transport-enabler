@@ -26,7 +26,6 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -47,40 +46,76 @@ import de.schildbach.pte.util.XmlPullUtil;
  */
 public abstract class AbstractEfaProvider implements NetworkProvider
 {
-	private static final Pattern P_AUTOCOMPLETE = Pattern.compile("" //
-			+ "(?:" //
-			+ "<itdOdvAssignedStop stopID=\"(\\d+)\" x=\"(\\d+)\" y=\"(\\d+)\" mapName=\"WGS84\" [^>]* nameWithPlace=\"([^\"]*)\"" //
-			+ "|" //
-			+ "<odvNameElem [^>]* locality=\"([^\"]*)\"" //
-			+ ")");
-
 	protected abstract String autocompleteUri(final CharSequence constraint);
 
 	public List<Autocomplete> autocompleteStations(final CharSequence constraint) throws IOException
 	{
-		final CharSequence page = ParserUtils.scrape(autocompleteUri(constraint));
+		final String uri = autocompleteUri(constraint);
 
-		final List<Autocomplete> results = new ArrayList<Autocomplete>();
-
-		final Matcher m = P_AUTOCOMPLETE.matcher(page);
-		while (m.find())
+		try
 		{
-			if (m.group(1) != null)
-			{
-				final int sId = Integer.parseInt(m.group(1));
-				// final double sLon = latLonToDouble(Integer.parseInt(mAutocomplete.group(2)));
-				// final double sLat = latLonToDouble(Integer.parseInt(mAutocomplete.group(3)));
-				final String sName = m.group(4).trim();
-				results.add(new Autocomplete(LocationType.STATION, sId, sName));
-			}
-			else if (m.group(5) != null)
-			{
-				final String sName = m.group(5).trim();
-				results.add(new Autocomplete(LocationType.ANY, 0, sName));
-			}
-		}
+			final CharSequence page = ParserUtils.scrape(uri);
+			final List<Autocomplete> results = new ArrayList<Autocomplete>();
 
-		return results;
+			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
+			final XmlPullParser pp = factory.newPullParser();
+			pp.setInput(new StringReader(page.toString()));
+
+			// parse odv name elements
+			XmlPullUtil.jumpToStartTag(pp, null, "itdOdv");
+			final String usage = pp.getAttributeValue(null, "usage");
+			if (!"origin".equals(usage))
+				throw new IllegalStateException();
+			XmlPullUtil.nextStartTagInsideTree(pp, null, "itdOdvName");
+			final String nameState = pp.getAttributeValue(null, "state");
+			if ("list".equals(nameState))
+			{
+				while (XmlPullUtil.nextStartTagInsideTree(pp, null, "odvNameElem"))
+				{
+					final String type = pp.getAttributeValue(null, "anyType");
+					int id = Integer.parseInt(pp.getAttributeValue(null, "id"));
+					if (id < 0)
+						id = 0;
+					final String name = normalizeLocationName(pp.nextText());
+					results.add(new Autocomplete(type(type), id, name));
+				}
+			}
+
+			// parse assigned stops
+			if (XmlPullUtil.jumpToStartTag(pp, null, "itdOdvAssignedStops"))
+			{
+				while (XmlPullUtil.nextStartTagInsideTree(pp, null, "itdOdvAssignedStop"))
+				{
+					final int id = Integer.parseInt(pp.getAttributeValue(null, "stopID"));
+					final String name = normalizeLocationName(pp.getAttributeValue(null, "nameWithPlace"));
+
+					final Autocomplete autocomplete = new Autocomplete(LocationType.STATION, id, name);
+					if (!results.contains(autocomplete))
+						results.add(autocomplete);
+
+					XmlPullUtil.skipRestOfTree(pp);
+				}
+			}
+
+			return results;
+		}
+		catch (final XmlPullParserException x)
+		{
+			throw new RuntimeException(x);
+		}
+	}
+
+	private static LocationType type(final String type)
+	{
+		if (type.equals("stop"))
+			return LocationType.STATION;
+		if (type.equals("poi"))
+			return LocationType.POI;
+		if (type.equals("street"))
+			return LocationType.ADDRESS;
+		if (type.equals("loc"))
+			return LocationType.ANY;
+		throw new IllegalArgumentException("unknown type: " + type);
 	}
 
 	private static final Pattern P_NEARBY_MESSAGES = Pattern.compile("(unsere Server zur Zeit ausgelastet)");

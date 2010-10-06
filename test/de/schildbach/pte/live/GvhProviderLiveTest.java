@@ -32,6 +32,38 @@ public class GvhProviderLiveTest
 	private final GvhProvider provider = new GvhProvider();
 
 	@Test
+	public void autocompleteIncomplete() throws Exception
+	{
+		final List<Autocomplete> autocompletes = provider.autocompleteStations("Kur");
+
+		list(autocompletes);
+	}
+
+	@Test
+	public void autocompleteIdentified() throws Exception
+	{
+		final List<Autocomplete> autocompletes = provider.autocompleteStations("Hannover, Hannoversche Straße");
+
+		list(autocompletes);
+	}
+
+	@Test
+	public void autocompleteCity() throws Exception
+	{
+		final List<Autocomplete> autocompletes = provider.autocompleteStations("Hannover");
+
+		list(autocompletes);
+	}
+
+	private void list(final List<Autocomplete> autocompletes)
+	{
+		System.out.print(autocompletes.size() + " ");
+		for (final Autocomplete autocomplete : autocompletes)
+			System.out.print(autocomplete.toDebugString() + " ");
+		System.out.println();
+	}
+
+	@Test
 	public void autocomplete() throws Exception
 	{
 		final List<Autocomplete> results = provider.autocompleteStations("Hannover");

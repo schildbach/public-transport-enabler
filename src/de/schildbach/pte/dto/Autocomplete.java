@@ -37,7 +37,34 @@ public final class Autocomplete
 	@Override
 	public String toString()
 	{
-		// return getClass().getName() + "[" + locationId + " " + location + "]";
 		return location; // invoked by AutoCompleteTextView in landscape orientation
+	}
+
+	public String toDebugString()
+	{
+		return "[" + locationType + " " + locationId + " '" + location + "']";
+	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (o == this)
+			return true;
+		if (!(o instanceof Autocomplete))
+			return false;
+		final Autocomplete other = (Autocomplete) o;
+		if (this.locationType != other.locationType)
+			return false;
+		if (this.locationId != other.locationId)
+			return false;
+		if (this.locationId != 0)
+			return true;
+		return this.location.equals(other.location);
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return locationType.hashCode(); // FIXME not very discriminative
 	}
 }

@@ -18,12 +18,14 @@
 package de.schildbach.pte.live;
 
 import java.util.Date;
+import java.util.List;
 
 import org.junit.Test;
 
 import de.schildbach.pte.LinzProvider;
 import de.schildbach.pte.NetworkProvider.LocationType;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
+import de.schildbach.pte.dto.Autocomplete;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 
@@ -34,6 +36,38 @@ public class LinzProviderLiveTest
 {
 	private LinzProvider provider = new LinzProvider();
 	private static final String ALL_PRODUCTS = "IRSUTBFC";
+
+	@Test
+	public void autocompleteIncomplete() throws Exception
+	{
+		final List<Autocomplete> autocompletes = provider.autocompleteStations("Linz, H");
+
+		list(autocompletes);
+	}
+
+	@Test
+	public void autocompleteIdentified() throws Exception
+	{
+		final List<Autocomplete> autocompletes = provider.autocompleteStations("Leonding, Haag");
+
+		list(autocompletes);
+	}
+
+	@Test
+	public void autocompleteCity() throws Exception
+	{
+		final List<Autocomplete> autocompletes = provider.autocompleteStations("Linz");
+
+		list(autocompletes);
+	}
+
+	private void list(final List<Autocomplete> autocompletes)
+	{
+		System.out.print(autocompletes.size() + " ");
+		for (final Autocomplete autocomplete : autocompletes)
+			System.out.print(autocomplete.toDebugString() + " ");
+		System.out.println();
+	}
 
 	@Test
 	public void queryDepartures() throws Exception

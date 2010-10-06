@@ -21,6 +21,7 @@ import java.util.Date;
 
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
+import de.schildbach.pte.util.ParserUtils;
 
 /**
  * @author Andreas Schildbach
@@ -39,10 +40,13 @@ public class VrnProvider extends AbstractEfaProvider
 		return false;
 	}
 
+	private static final String AUTOCOMPLETE_URI = API_BASE
+			+ "XSLT_TRIP_REQUEST2?outputFormat=XML&locationServerActive=1&type_origin=any&name_origin=%s";
+
 	@Override
-	protected String autocompleteUri(CharSequence constraint)
+	protected String autocompleteUri(final CharSequence constraint)
 	{
-		throw new UnsupportedOperationException();
+		return String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), "ISO-8859-1"));
 	}
 
 	@Override
