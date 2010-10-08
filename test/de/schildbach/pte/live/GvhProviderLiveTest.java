@@ -16,13 +16,17 @@
  */
 package de.schildbach.pte.live;
 
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
 
 import de.schildbach.pte.GvhProvider;
+import de.schildbach.pte.NetworkProvider.LocationType;
+import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Autocomplete;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.QueryConnectionsResult;
 
 /**
  * @author Andreas Schildbach
@@ -30,6 +34,7 @@ import de.schildbach.pte.dto.NearbyStationsResult;
 public class GvhProviderLiveTest
 {
 	private final GvhProvider provider = new GvhProvider();
+	private static final String ALL_PRODUCTS = "IRSUTBFC";
 
 	@Test
 	public void autocompleteIncomplete() throws Exception
@@ -77,5 +82,13 @@ public class GvhProviderLiveTest
 		final NearbyStationsResult result = provider.nearbyStations("25000031", 0, 0, 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
+	}
+
+	@Test
+	public void incompleteConnection() throws Exception
+	{
+		final QueryConnectionsResult result = provider.queryConnections(LocationType.ANY, "hann", null, null, LocationType.ANY, "laat", new Date(),
+				true, ALL_PRODUCTS, WalkSpeed.FAST);
+		System.out.println(result);
 	}
 }

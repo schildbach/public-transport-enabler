@@ -187,9 +187,9 @@ public final class BahnProvider implements NetworkProvider
 				return QueryConnectionsResult.INVALID_DATE;
 		}
 
-		List<String> fromAddresses = null;
-		List<String> viaAddresses = null;
-		List<String> toAddresses = null;
+		List<Autocomplete> fromAddresses = null;
+		List<Autocomplete> viaAddresses = null;
+		List<Autocomplete> toAddresses = null;
 
 		final Matcher mPreAddress = P_PRE_ADDRESS.matcher(page);
 		while (mPreAddress.find())
@@ -198,12 +198,12 @@ public final class BahnProvider implements NetworkProvider
 			final String options = mPreAddress.group(2);
 
 			final Matcher mAddresses = P_ADDRESSES.matcher(options);
-			final List<String> addresses = new ArrayList<String>();
+			final List<Autocomplete> addresses = new ArrayList<Autocomplete>();
 			while (mAddresses.find())
 			{
 				final String address = ParserUtils.resolveEntities(mAddresses.group(1)).trim();
 				if (!addresses.contains(address))
-					addresses.add(address);
+					addresses.add(new Autocomplete(LocationType.ANY, 0, address));
 			}
 
 			if (type.equals("REQ0JourneyStopsS0K"))
@@ -217,7 +217,7 @@ public final class BahnProvider implements NetworkProvider
 		}
 
 		if (fromAddresses != null || viaAddresses != null || toAddresses != null)
-			return new QueryConnectionsResult(QueryConnectionsResult.Status.AMBIGUOUS, fromAddresses, viaAddresses, toAddresses);
+			return new QueryConnectionsResult(fromAddresses, viaAddresses, toAddresses);
 		else
 			return queryConnections(uri, page);
 	}
@@ -371,7 +371,7 @@ public final class BahnProvider implements NetworkProvider
 
 							final Date departureDateTime = ParserUtils.joinDateTime(departureDate, departureTime);
 							final Date arrivalDateTime = ParserUtils.joinDateTime(arrivalDate, arrivalTime);
-							lastTrip = new Connection.Trip(line, line != null ? LINES.get(line.charAt(0)) : null, null, departureDateTime,
+							lastTrip = new Connection.Trip(line, line != null ? LINES.get(line.charAt(0)) : null, 0, null, departureDateTime,
 									departurePosition, 0, departure, arrivalDateTime, arrivalPosition, 0, arrival);
 							parts.add(lastTrip);
 

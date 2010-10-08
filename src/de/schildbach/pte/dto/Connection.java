@@ -91,6 +91,7 @@ public final class Connection implements Serializable
 	{
 		final public String line;
 		final public int[] lineColors;
+		final public int destinationId;
 		final public String destination;
 		final public Date departureTime;
 		final public String departurePosition;
@@ -101,12 +102,13 @@ public final class Connection implements Serializable
 		final public int arrivalId;
 		final public String arrival;
 
-		public Trip(final String line, final int[] lineColors, final String destination, final Date departureTime, final String departurePosition,
-				final int departureId, final String departure, final Date arrivalTime, final String arrivalPosition, final int arrivalId,
-				final String arrival)
+		public Trip(final String line, final int[] lineColors, final int destinationId, final String destination, final Date departureTime,
+				final String departurePosition, final int departureId, final String departure, final Date arrivalTime, final String arrivalPosition,
+				final int arrivalId, final String arrival)
 		{
 			this.line = line;
 			this.lineColors = lineColors;
+			this.destinationId = destinationId;
 			this.destination = destination;
 			this.departureTime = departureTime;
 			this.departurePosition = departurePosition;
@@ -124,7 +126,7 @@ public final class Connection implements Serializable
 			final StringBuilder builder = new StringBuilder(getClass().getName() + "[");
 			builder.append("line=").append(line);
 			builder.append(",");
-			builder.append("destination=").append(destination);
+			builder.append("destination=").append(destination).append("/").append(destinationId);
 			builder.append(",");
 			builder.append("departure=").append(departureTime).append("/").append(departurePosition).append("/").append(departureId).append("/")
 					.append(departure);

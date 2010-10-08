@@ -238,12 +238,12 @@ public final class VbbProvider implements NetworkProvider
 
 		final Matcher mAddress = P_CHECK_ADDRESS.matcher(page);
 
-		final List<String> addresses = new ArrayList<String>();
+		final List<Autocomplete> addresses = new ArrayList<Autocomplete>();
 		while (mAddress.find())
 		{
 			final String address = ParserUtils.resolveEntities(mAddress.group(1));
 			if (!addresses.contains(address))
-				addresses.add(address);
+				addresses.add(new Autocomplete(LocationType.ANY, 0, address));
 		}
 
 		if (addresses.isEmpty())
@@ -253,13 +253,13 @@ public final class VbbProvider implements NetworkProvider
 		else if (P_CHECK_FROM.matcher(page).find())
 		{
 			if (P_CHECK_TO.matcher(page).find())
-				return new QueryConnectionsResult(QueryConnectionsResult.Status.AMBIGUOUS, null, addresses, null);
+				return new QueryConnectionsResult(null, addresses, null);
 			else
-				return new QueryConnectionsResult(QueryConnectionsResult.Status.AMBIGUOUS, null, null, addresses);
+				return new QueryConnectionsResult(null, null, addresses);
 		}
 		else
 		{
-			return new QueryConnectionsResult(QueryConnectionsResult.Status.AMBIGUOUS, addresses, null, null);
+			return new QueryConnectionsResult(addresses, null, null);
 		}
 	}
 
@@ -418,7 +418,7 @@ public final class VbbProvider implements NetworkProvider
 
 						final String arrival = ParserUtils.resolveEntities(mDetFine.group(10));
 
-						parts.add(new Connection.Trip(line, line != null ? LINES.get(line) : null, destination, departureTime, departurePosition,
+						parts.add(new Connection.Trip(line, line != null ? LINES.get(line) : null, 0, destination, departureTime, departurePosition,
 								departureId, departure, arrivalTime, arrivalPosition, arrivalId, arrival));
 
 						if (firstDepartureTime == null)

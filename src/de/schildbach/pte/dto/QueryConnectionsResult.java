@@ -31,15 +31,15 @@ public final class QueryConnectionsResult implements Serializable
 		OK, AMBIGUOUS, TOO_CLOSE, NO_CONNECTIONS, INVALID_DATE;
 	}
 
-	public static final QueryConnectionsResult TOO_CLOSE = new QueryConnectionsResult(Status.TOO_CLOSE, null, null, null);
-	public static final QueryConnectionsResult NO_CONNECTIONS = new QueryConnectionsResult(Status.NO_CONNECTIONS, null, null, null);
-	public static final QueryConnectionsResult INVALID_DATE = new QueryConnectionsResult(Status.INVALID_DATE, null, null, null);
+	public static final QueryConnectionsResult TOO_CLOSE = new QueryConnectionsResult(Status.TOO_CLOSE);
+	public static final QueryConnectionsResult NO_CONNECTIONS = new QueryConnectionsResult(Status.NO_CONNECTIONS);
+	public static final QueryConnectionsResult INVALID_DATE = new QueryConnectionsResult(Status.INVALID_DATE);
 
 	public final Status status;
 
-	public final List<String> ambiguousFromAddresses;
-	public final List<String> ambiguousViaAddresses;
-	public final List<String> ambiguousToAddresses;
+	public final List<Autocomplete> ambiguousFrom;
+	public final List<Autocomplete> ambiguousVia;
+	public final List<Autocomplete> ambiguousTo;
 
 	public final String queryUri;
 	public final String from;
@@ -48,23 +48,6 @@ public final class QueryConnectionsResult implements Serializable
 	public final String linkEarlier;
 	public final String linkLater;
 	public final List<Connection> connections;
-
-	public QueryConnectionsResult(final Status status, final List<String> ambiguousFromAddresses, final List<String> ambiguousViaAddresses,
-			final List<String> ambiguousToAddresses)
-	{
-		this.status = status;
-		this.ambiguousFromAddresses = ambiguousFromAddresses;
-		this.ambiguousViaAddresses = ambiguousViaAddresses;
-		this.ambiguousToAddresses = ambiguousToAddresses;
-
-		this.queryUri = null;
-		this.from = null;
-		this.to = null;
-		this.currentDate = null;
-		this.linkEarlier = null;
-		this.linkLater = null;
-		this.connections = null;
-	}
 
 	public QueryConnectionsResult(final String queryUri, final String from, final String to, final Date currentDate, final String linkEarlier,
 			final String linkLater, final List<Connection> connections)
@@ -78,9 +61,41 @@ public final class QueryConnectionsResult implements Serializable
 		this.linkLater = linkLater;
 		this.connections = connections;
 
-		this.ambiguousFromAddresses = null;
-		this.ambiguousViaAddresses = null;
-		this.ambiguousToAddresses = null;
+		this.ambiguousFrom = null;
+		this.ambiguousVia = null;
+		this.ambiguousTo = null;
+	}
+
+	public QueryConnectionsResult(final List<Autocomplete> ambiguousFrom, final List<Autocomplete> ambiguousVia, final List<Autocomplete> ambiguousTo)
+	{
+		this.status = Status.AMBIGUOUS;
+		this.ambiguousFrom = ambiguousFrom;
+		this.ambiguousVia = ambiguousVia;
+		this.ambiguousTo = ambiguousTo;
+
+		this.queryUri = null;
+		this.from = null;
+		this.to = null;
+		this.currentDate = null;
+		this.linkEarlier = null;
+		this.linkLater = null;
+		this.connections = null;
+	}
+
+	public QueryConnectionsResult(final Status status)
+	{
+		this.status = status;
+
+		this.ambiguousFrom = null;
+		this.ambiguousVia = null;
+		this.ambiguousTo = null;
+		this.queryUri = null;
+		this.from = null;
+		this.to = null;
+		this.currentDate = null;
+		this.linkEarlier = null;
+		this.linkLater = null;
+		this.connections = null;
 	}
 
 	@Override
@@ -90,12 +105,12 @@ public final class QueryConnectionsResult implements Serializable
 		builder.append("[").append(this.status).append(": ");
 		if (connections != null)
 			builder.append(connections.size()).append(" connections, ");
-		if (ambiguousFromAddresses != null)
-			builder.append(ambiguousFromAddresses.size()).append(" ambiguous fromAddresses, ");
-		if (ambiguousViaAddresses != null)
-			builder.append(ambiguousViaAddresses.size()).append(" ambiguous viaAddresses, ");
-		if (ambiguousToAddresses != null)
-			builder.append(ambiguousToAddresses.size()).append(" ambiguous toAddresses, ");
+		if (ambiguousFrom != null)
+			builder.append(ambiguousFrom.size()).append(" ambiguous from, ");
+		if (ambiguousVia != null)
+			builder.append(ambiguousVia.size()).append(" ambiguous via, ");
+		if (ambiguousTo != null)
+			builder.append(ambiguousTo.size()).append(" ambiguous to, ");
 		if (builder.substring(builder.length() - 2).equals(", "))
 			builder.setLength(builder.length() - 2);
 		builder.append("]");

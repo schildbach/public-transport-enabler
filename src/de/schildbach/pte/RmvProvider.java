@@ -186,9 +186,9 @@ public class RmvProvider extends AbstractHafasProvider
 				return QueryConnectionsResult.INVALID_DATE;
 		}
 
-		List<String> fromAddresses = null;
-		List<String> viaAddresses = null;
-		List<String> toAddresses = null;
+		List<Autocomplete> fromAddresses = null;
+		List<Autocomplete> viaAddresses = null;
+		List<Autocomplete> toAddresses = null;
 
 		final Matcher mPreAddress = P_PRE_ADDRESS.matcher(page);
 		while (mPreAddress.find())
@@ -196,12 +196,12 @@ public class RmvProvider extends AbstractHafasProvider
 			final String type = mPreAddress.group(1);
 
 			final Matcher mAddresses = P_ADDRESSES.matcher(page);
-			final List<String> addresses = new ArrayList<String>();
+			final List<Autocomplete> addresses = new ArrayList<Autocomplete>();
 			while (mAddresses.find())
 			{
 				final String address = ParserUtils.resolveEntities(mAddresses.group(1)).trim();
 				if (!addresses.contains(address))
-					addresses.add(address);
+					addresses.add(new Autocomplete(LocationType.ANY, 0, address));
 			}
 
 			if (type == null)
@@ -215,7 +215,7 @@ public class RmvProvider extends AbstractHafasProvider
 		}
 
 		if (fromAddresses != null || viaAddresses != null || toAddresses != null)
-			return new QueryConnectionsResult(QueryConnectionsResult.Status.AMBIGUOUS, fromAddresses, viaAddresses, toAddresses);
+			return new QueryConnectionsResult(fromAddresses, viaAddresses, toAddresses);
 		else
 			return queryConnections(uri, page);
 	}
@@ -362,8 +362,8 @@ public class RmvProvider extends AbstractHafasProvider
 
 						final String arrivalPosition = ParserUtils.resolveEntities(mDetFine.group(6));
 
-						lastTrip = new Connection.Trip(line, line != null ? lineColors(line) : null, destination, departureTime, departurePosition,
-								0, departure, arrivalTime, arrivalPosition, 0, arrival);
+						lastTrip = new Connection.Trip(line, line != null ? lineColors(line) : null, 0, destination, departureTime,
+								departurePosition, 0, departure, arrivalTime, arrivalPosition, 0, arrival);
 						parts.add(lastTrip);
 
 						if (firstDepartureTime == null)

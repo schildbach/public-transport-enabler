@@ -174,15 +174,8 @@ public class MvvProvider extends AbstractEfaProvider
 			return new NearbyStationsResult(uri, stations.subList(0, maxStations));
 	}
 
-	private static final Map<WalkSpeed, String> WALKSPEED_MAP = new HashMap<WalkSpeed, String>();
-	static
-	{
-		WALKSPEED_MAP.put(WalkSpeed.SLOW, "slow");
-		WALKSPEED_MAP.put(WalkSpeed.NORMAL, "normal");
-		WALKSPEED_MAP.put(WalkSpeed.FAST, "fast");
-	}
-
-	private String connectionsQueryUri(final LocationType fromType, final String from, final LocationType viaType, final String via,
+	@Override
+	protected String connectionsQueryUri(final LocationType fromType, final String from, final LocationType viaType, final String via,
 			final LocationType toType, final String to, final Date date, final boolean dep, final String products, final WalkSpeed walkSpeed)
 	{
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
@@ -221,7 +214,7 @@ public class MvvProvider extends AbstractEfaProvider
 			final String[] parts = from.split(",\\s*", 2);
 			final int lat = Integer.parseInt(parts[0]);
 			final int lon = Integer.parseInt(parts[1]);
-			uri.append("&nameInfo_origin=").append(String.format("%2.5f:%2.5f", lon / 1E6, lat / 1E6)).append(":WGS84[DD.ddddd]");
+			uri.append("&nameInfo_origin=").append(String.format("%2.6f:%2.6f", lon / 1E6, lat / 1E6)).append(":WGS84[DD.dddddd]");
 			uri.append("&typeInfo_origin=coord");
 		}
 		else
@@ -246,7 +239,7 @@ public class MvvProvider extends AbstractEfaProvider
 			final String[] parts = to.split(",\\s*", 2);
 			final int lat = Integer.parseInt(parts[0]);
 			final int lon = Integer.parseInt(parts[1]);
-			uri.append("&nameInfo_destination=").append(String.format("%2.5f:%2.5f", lon / 1E6, lat / 1E6)).append(":WGS84[DD.ddddd]");
+			uri.append("&nameInfo_destination=").append(String.format("%2.6f:%2.6f", lon / 1E6, lat / 1E6)).append(":WGS84[DD.dddddd]");
 			uri.append("&typeInfo_destination=coord");
 		}
 		else
@@ -273,7 +266,7 @@ public class MvvProvider extends AbstractEfaProvider
 				final String[] parts = via.split(",\\s*", 2);
 				final int lat = Integer.parseInt(parts[0]);
 				final int lon = Integer.parseInt(parts[1]);
-				uri.append("&nameInfo_via=").append(String.format("%2.5f:%2.5f", lon / 1E6, lat / 1E6)).append(":WGS84[DD.ddddd]");
+				uri.append("&nameInfo_via=").append(String.format("%2.6f:%2.6f", lon / 1E6, lat / 1E6)).append(":WGS84[DD.dddddd]");
 				uri.append("&typeInfo_via=coord");
 			}
 			else
@@ -336,8 +329,9 @@ public class MvvProvider extends AbstractEfaProvider
 	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern.compile(
 			"(Start und Ziel sind identisch)|(konnte keine Verbindung gefunden werden)", Pattern.CASE_INSENSITIVE);
 
+	@Override
 	public QueryConnectionsResult queryConnections(final LocationType fromType, final String from, final LocationType viaType, final String via,
-			final LocationType toType, final String to, final Date date, final boolean dep, String products, final WalkSpeed walkSpeed)
+			final LocationType toType, final String to, final Date date, final boolean dep, final String products, final WalkSpeed walkSpeed)
 			throws IOException
 	{
 		final String uri = connectionsQueryUri(fromType, from, viaType, via, toType, to, date, dep, products, walkSpeed);
@@ -353,9 +347,9 @@ public class MvvProvider extends AbstractEfaProvider
 				return QueryConnectionsResult.NO_CONNECTIONS;
 		}
 
-		List<String> fromAddresses = null;
-		List<String> viaAddresses = null;
-		List<String> toAddresses = null;
+		List<Autocomplete> fromAddresses = null;
+		List<Autocomplete> viaAddresses = null;
+		List<Autocomplete> toAddresses = null;
 
 		final Matcher mPreAddress = P_PRE_ADDRESS.matcher(page);
 		while (mPreAddress.find())
@@ -364,12 +358,12 @@ public class MvvProvider extends AbstractEfaProvider
 			final String options = mPreAddress.group(2);
 
 			final Matcher mAddresses = P_ADDRESSES.matcher(options);
-			final List<String> addresses = new ArrayList<String>();
+			final List<Autocomplete> addresses = new ArrayList<Autocomplete>();
 			while (mAddresses.find())
 			{
 				final String address = ParserUtils.resolveEntities(mAddresses.group(1)).trim();
 				if (!addresses.contains(address))
-					addresses.add(address);
+					addresses.add(new Autocomplete(LocationType.ANY, 0, address));
 			}
 
 			if (type.equals("name_origin"))
@@ -383,11 +377,12 @@ public class MvvProvider extends AbstractEfaProvider
 		}
 
 		if (fromAddresses != null || viaAddresses != null || toAddresses != null)
-			return new QueryConnectionsResult(QueryConnectionsResult.Status.AMBIGUOUS, fromAddresses, viaAddresses, toAddresses);
+			return new QueryConnectionsResult(fromAddresses, viaAddresses, toAddresses);
 		else
 			return queryConnections(uri, page);
 	}
 
+	@Override
 	public QueryConnectionsResult queryMoreConnections(final String uri) throws IOException
 	{
 		final CharSequence page = ParserUtils.scrape(uri);
@@ -501,6 +496,7 @@ public class MvvProvider extends AbstractEfaProvider
 			+ ").*?", Pattern.DOTALL);
 	private static final Pattern P_CONNECTION_DETAILS_ERRORS = Pattern.compile("(session has expired)", Pattern.CASE_INSENSITIVE);
 
+	@Override
 	public GetConnectionDetailsResult getConnectionDetails(final String uri) throws IOException
 	{
 		final CharSequence page = ParserUtils.scrape(uri);
@@ -552,7 +548,7 @@ public class MvvProvider extends AbstractEfaProvider
 
 						final String normalizedLine = normalizeLine(product, line);
 
-						parts.add(new Connection.Trip(normalizedLine, LINES.get(normalizedLine), destination, departureTime, null, 0, departure,
+						parts.add(new Connection.Trip(normalizedLine, LINES.get(normalizedLine), 0, destination, departureTime, null, 0, departure,
 								arrivalTime, null, 0, arrival));
 
 						if (firstDepartureTime == null)
@@ -618,6 +614,12 @@ public class MvvProvider extends AbstractEfaProvider
 		lastTime.setTime(time.getTime());
 
 		return time;
+	}
+
+	@Override
+	protected String commandLink(final String sessionId, final String command)
+	{
+		return null;
 	}
 
 	public String departuresQueryUri(final String stationId, final int maxDepartures)

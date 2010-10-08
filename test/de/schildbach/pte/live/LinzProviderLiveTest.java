@@ -77,13 +77,21 @@ public class LinzProviderLiveTest
 	}
 
 	@Test
+	public void incompleteConnection() throws Exception
+	{
+		final QueryConnectionsResult result = provider.queryConnections(LocationType.ANY, "linz", null, null, LocationType.ANY, "gel", new Date(),
+				true, ALL_PRODUCTS, WalkSpeed.FAST);
+		System.out.println(result);
+	}
+
+	@Test
 	public void shortConnection() throws Exception
 	{
 		final QueryConnectionsResult result = provider.queryConnections(LocationType.STATION, "Linz Hauptbahnhof", null, null, LocationType.STATION,
 				"Linz Auwiesen", new Date(), true, ALL_PRODUCTS, WalkSpeed.FAST);
 		System.out.println(result);
-		// final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
-		// System.out.println(moreResult);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
+		System.out.println(moreResult);
 	}
 
 	@Test

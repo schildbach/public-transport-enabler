@@ -22,8 +22,10 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -33,10 +35,14 @@ import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 import de.schildbach.pte.dto.Autocomplete;
+import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.Departure;
+import de.schildbach.pte.dto.GetConnectionDetailsResult;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.Station;
+import de.schildbach.pte.dto.QueryConnectionsResult.Status;
 import de.schildbach.pte.util.Color;
 import de.schildbach.pte.util.ParserUtils;
 import de.schildbach.pte.util.XmlPullUtil;
@@ -69,17 +75,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			XmlPullUtil.nextStartTagInsideTree(pp, null, "itdOdvName");
 			final String nameState = pp.getAttributeValue(null, "state");
 			if ("list".equals(nameState))
-			{
-				while (XmlPullUtil.nextStartTagInsideTree(pp, null, "odvNameElem"))
-				{
-					final String type = pp.getAttributeValue(null, "anyType");
-					int id = Integer.parseInt(pp.getAttributeValue(null, "id"));
-					if (id < 0)
-						id = 0;
-					final String name = normalizeLocationName(pp.nextText());
-					results.add(new Autocomplete(type(type), id, name));
-				}
-			}
+				processOdvNameElem(results, pp);
 
 			// parse assigned stops
 			if (XmlPullUtil.jumpToStartTag(pp, null, "itdOdvAssignedStops"))
@@ -105,16 +101,33 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		}
 	}
 
+	private void processOdvNameElem(final List<Autocomplete> results, final XmlPullParser pp) throws XmlPullParserException, IOException
+	{
+		while (XmlPullUtil.nextStartTagInsideTree(pp, null, "odvNameElem"))
+		{
+			final String type = pp.getAttributeValue(null, "anyType");
+			int id = Integer.parseInt(pp.getAttributeValue(null, "id"));
+			if (id < 0)
+				id = 0;
+			final String name = normalizeLocationName(pp.nextText());
+			results.add(new Autocomplete(type(type), id, name));
+		}
+	}
+
 	private static LocationType type(final String type)
 	{
 		if (type.equals("stop"))
 			return LocationType.STATION;
 		if (type.equals("poi"))
 			return LocationType.POI;
-		if (type.equals("street"))
-			return LocationType.ADDRESS;
 		if (type.equals("loc"))
 			return LocationType.ANY;
+		if (type.equals("street"))
+			return LocationType.ADDRESS;
+		if (type.equals("singlehouse"))
+			return LocationType.ADDRESS;
+		if (type.equals("address"))
+			return LocationType.ADDRESS;
 		throw new IllegalArgumentException("unknown type: " + type);
 	}
 
@@ -235,16 +248,16 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 	private static final Pattern P_LINE_U = Pattern.compile("U\\d+");
 	private static final Pattern P_LINE_NUMBER = Pattern.compile("\\d+");
 
-	protected String parseLine(final String number, final String symbol, final String mot)
+	protected String parseLine(final String mot, final String name, final String longName)
 	{
-		if (!number.equals(symbol))
-			throw new IllegalStateException("number " + number + ", symbol " + symbol);
+		if (mot == null || name == null || longName == null)
+			throw new IllegalStateException("cannot normalize mot '" + mot + "' name '" + name + "' long '" + longName + "'");
 
 		final int t = Integer.parseInt(mot);
 
 		if (t == 0)
 		{
-			final String[] parts = number.split(" ", 3);
+			final String[] parts = longName.split(" ", 3);
 			final String type = parts[0];
 			final String num = parts.length >= 2 ? parts[1] : null;
 			final String str = type + (num != null ? num : "");
@@ -451,24 +464,24 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			if (P_LINE_NUMBER.matcher(type).matches())
 				return "?";
 
-			throw new IllegalArgumentException("cannot normalize: " + number);
+			throw new IllegalArgumentException("cannot normalize: " + longName);
 		}
 		if (t == 1)
-			return 'S' + number;
+			return 'S' + name;
 		if (t == 2)
-			return 'U' + number;
+			return 'U' + name;
 		if (t == 3 || t == 4)
-			return 'T' + number;
+			return 'T' + name;
 		if (t == 5 || t == 6 || t == 7 || t == 10)
-			return 'B' + number;
+			return 'B' + name;
 		if (t == 8)
-			return 'C' + number;
+			return 'C' + name;
 		if (t == 9)
-			return 'F' + number;
+			return 'F' + name;
 		if (t == 11)
-			return '?' + number;
+			return '?' + name;
 
-		throw new IllegalStateException("cannot normalize mot '" + mot + "' number '" + number + "'");
+		throw new IllegalStateException("cannot normalize mot '" + mot + "' name '" + name + "' long '" + longName + "'");
 	}
 
 	public QueryDeparturesResult queryDepartures(final String uri) throws IOException
@@ -512,25 +525,12 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 						departureTime.clear();
 
-						if (!XmlPullUtil.nextStartTagInsideTree(pp, null, "itdDateTime"))
-							throw new IllegalStateException("itdDateTime not found:" + pp.getPositionDescription());
-
-						if (!XmlPullUtil.nextStartTagInsideTree(pp, null, "itdDate"))
-							throw new IllegalStateException("itdDate not found:" + pp.getPositionDescription());
-						processItdDate(pp, departureTime);
-						XmlPullUtil.skipRestOfTree(pp);
-
-						if (!XmlPullUtil.nextStartTagInsideTree(pp, null, "itdTime"))
-							throw new IllegalStateException("itdTime not found:" + pp.getPositionDescription());
-						processItdTime(pp, departureTime);
-						XmlPullUtil.skipRestOfTree(pp);
-
-						XmlPullUtil.skipRestOfTree(pp);
+						processItdDateTime(pp, departureTime);
 
 						if (!XmlPullUtil.nextStartTagInsideTree(pp, null, "itdServingLine"))
 							throw new IllegalStateException("itdServingLine not found:" + pp.getPositionDescription());
-						final String line = parseLine(pp.getAttributeValue(null, "number"), pp.getAttributeValue(null, "symbol"), pp
-								.getAttributeValue(null, "motType"));
+						final String line = parseLine(pp.getAttributeValue(null, "motType"), pp.getAttributeValue(null, "number"), pp
+								.getAttributeValue(null, "number"));
 						final boolean isRealtime = pp.getAttributeValue(null, "realtime").equals("1");
 						final String destination = normalizeLocationName(pp.getAttributeValue(null, "direction"));
 						final int destinationId = Integer.parseInt(pp.getAttributeValue(null, "destID"));
@@ -564,6 +564,24 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		}
 	}
 
+	private void processItdDateTime(final XmlPullParser pp, final Calendar calendar) throws XmlPullParserException, IOException
+	{
+		if (!XmlPullUtil.nextStartTagInsideTree(pp, null, "itdDateTime"))
+			throw new IllegalStateException("itdDateTime not found:" + pp.getPositionDescription());
+
+		if (!XmlPullUtil.nextStartTagInsideTree(pp, null, "itdDate"))
+			throw new IllegalStateException("itdDate not found:" + pp.getPositionDescription());
+		processItdDate(pp, calendar);
+		XmlPullUtil.skipRestOfTree(pp);
+
+		if (!XmlPullUtil.nextStartTagInsideTree(pp, null, "itdTime"))
+			throw new IllegalStateException("itdTime not found:" + pp.getPositionDescription());
+		processItdTime(pp, calendar);
+		XmlPullUtil.skipRestOfTree(pp);
+
+		XmlPullUtil.skipRestOfTree(pp);
+	}
+
 	private void processItdDate(final XmlPullParser pp, final Calendar calendar) throws XmlPullParserException, IOException
 	{
 		pp.require(XmlPullParser.START_TAG, null, "itdDate");
@@ -575,7 +593,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 	private void processItdTime(final XmlPullParser pp, final Calendar calendar) throws XmlPullParserException, IOException
 	{
 		pp.require(XmlPullParser.START_TAG, null, "itdTime");
-		calendar.set(Calendar.HOUR, Integer.parseInt(pp.getAttributeValue(null, "hour")));
+		calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(pp.getAttributeValue(null, "hour")));
 		calendar.set(Calendar.MINUTE, Integer.parseInt(pp.getAttributeValue(null, "minute")));
 	}
 
@@ -591,7 +609,197 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		return (double) value / 1000000;
 	}
 
-	protected final String productParams(final String products)
+	public QueryConnectionsResult queryConnections(final LocationType fromType, final String from, final LocationType viaType, final String via,
+			final LocationType toType, final String to, final Date date, final boolean dep, final String products, final WalkSpeed walkSpeed)
+			throws IOException
+	{
+		final String uri = connectionsQueryUri(fromType, from, viaType, via, toType, to, date, dep, products, walkSpeed) + "&sessionID=0";
+
+		final CharSequence page = ParserUtils.scrape(uri);
+
+		return queryConnections(uri, page);
+	}
+
+	public QueryConnectionsResult queryMoreConnections(final String uri) throws IOException
+	{
+		final CharSequence page = ParserUtils.scrape(uri);
+
+		return queryConnections(uri, page);
+	}
+
+	private QueryConnectionsResult queryConnections(final String uri, final CharSequence page) throws IOException
+	{
+		try
+		{
+			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
+			final XmlPullParser pp = factory.newPullParser();
+			pp.setInput(new StringReader(page.toString()));
+
+			XmlPullUtil.jumpToStartTag(pp, null, "itdRequest");
+			final String sessionId = pp.getAttributeValue(null, "sessionID");
+
+			// parse odv name elements
+			List<Autocomplete> ambiguousFrom = null, ambiguousTo = null, ambiguousVia = null;
+			String from = null, to = null;
+
+			XmlPullUtil.jumpToStartTag(pp, null, "itdOdv");
+			if (!"origin".equals(pp.getAttributeValue(null, "usage")))
+				throw new IllegalStateException();
+			XmlPullUtil.nextStartTagInsideTree(pp, null, "itdOdvName");
+			final String originState = pp.getAttributeValue(null, "state");
+			if ("list".equals(originState))
+			{
+				ambiguousFrom = new ArrayList<Autocomplete>();
+				processOdvNameElem(ambiguousFrom, pp);
+			}
+			else if ("identified".equals(originState))
+			{
+				XmlPullUtil.nextStartTagInsideTree(pp, null, "odvNameElem");
+				from = pp.nextText();
+			}
+
+			XmlPullUtil.jumpToStartTag(pp, null, "itdOdv");
+			if (!"destination".equals(pp.getAttributeValue(null, "usage")))
+				throw new IllegalStateException();
+			XmlPullUtil.nextStartTagInsideTree(pp, null, "itdOdvName");
+			final String destinationState = pp.getAttributeValue(null, "state");
+			if ("list".equals(destinationState))
+			{
+				ambiguousTo = new ArrayList<Autocomplete>();
+				processOdvNameElem(ambiguousTo, pp);
+			}
+			else if ("identified".equals(destinationState))
+			{
+				XmlPullUtil.nextStartTagInsideTree(pp, null, "odvNameElem");
+				to = pp.nextText();
+			}
+
+			XmlPullUtil.jumpToStartTag(pp, null, "itdOdv");
+			if (!"via".equals(pp.getAttributeValue(null, "usage")))
+				throw new IllegalStateException();
+			XmlPullUtil.nextStartTagInsideTree(pp, null, "itdOdvName");
+			final String viaState = pp.getAttributeValue(null, "state");
+			if ("list".equals(viaState))
+			{
+				ambiguousVia = new ArrayList<Autocomplete>();
+				processOdvNameElem(ambiguousVia, pp);
+			}
+			else if ("identified".equals(viaState))
+			{
+				// TODO parse identified name/id
+			}
+
+			if (ambiguousFrom != null || ambiguousTo != null || ambiguousVia != null)
+				return new QueryConnectionsResult(ambiguousFrom, ambiguousVia, ambiguousTo);
+
+			final Calendar departureTime = new GregorianCalendar(), arrivalTime = new GregorianCalendar();
+			final List<Connection> connections = new ArrayList<Connection>();
+
+			if (XmlPullUtil.jumpToStartTag(pp, null, "itdRouteList"))
+			{
+				while (XmlPullUtil.nextStartTagInsideTree(pp, null, "itdRoute"))
+				{
+					final String id = pp.getAttributeValue(null, "routeIndex") + "-" + pp.getAttributeValue(null, "routeTripIndex");
+
+					XmlPullUtil.jumpToStartTag(pp, null, "itdPartialRouteList");
+					final List<Connection.Part> parts = new LinkedList<Connection.Part>();
+					String firstDeparture = null;
+					Date firstDepartureTime = null;
+					String lastArrival = null;
+					Date lastArrivalTime = null;
+
+					while (XmlPullUtil.nextStartTagInsideTree(pp, null, "itdPartialRoute"))
+					{
+						XmlPullUtil.jumpToStartTag(pp, null, "itdPoint");
+						if (!"departure".equals(pp.getAttributeValue(null, "usage")))
+							throw new IllegalStateException();
+						final int departureId = Integer.parseInt(pp.getAttributeValue(null, "stopID"));
+						final String departure = normalizeLocationName(pp.getAttributeValue(null, "name"));
+						if (firstDeparture == null)
+							firstDeparture = departure;
+						final String departurePosition = pp.getAttributeValue(null, "platform");
+						processItdDateTime(pp, departureTime);
+						if (firstDepartureTime == null)
+							firstDepartureTime = departureTime.getTime();
+						XmlPullUtil.skipRestOfTree(pp);
+
+						XmlPullUtil.jumpToStartTag(pp, null, "itdPoint");
+						if (!"arrival".equals(pp.getAttributeValue(null, "usage")))
+							throw new IllegalStateException();
+						final int arrivalId = Integer.parseInt(pp.getAttributeValue(null, "stopID"));
+						final String arrival = normalizeLocationName(pp.getAttributeValue(null, "name"));
+						lastArrival = arrival;
+						final String arrivalPosition = pp.getAttributeValue(null, "platform");
+						processItdDateTime(pp, arrivalTime);
+						lastArrivalTime = arrivalTime.getTime();
+						XmlPullUtil.skipRestOfTree(pp);
+
+						XmlPullUtil.jumpToStartTag(pp, null, "itdMeansOfTransport");
+						Connection.Part part;
+						if (!"Fussweg".equals(pp.getAttributeValue(null, "productName")))
+						{
+							final String destinationIdStr = pp.getAttributeValue(null, "destID");
+							final int destinationId = destinationIdStr.length() > 0 ? Integer.parseInt(destinationIdStr) : 0;
+							final String destination = normalizeLocationName(pp.getAttributeValue(null, "destination"));
+							final String line = parseLine(pp.getAttributeValue(null, "motType"), pp.getAttributeValue(null, "shortname"), pp
+									.getAttributeValue(null, "name"));
+							part = new Connection.Trip(line, LINES.get(line.charAt(0)), destinationId, destination, departureTime.getTime(),
+									departurePosition, departureId, departure, arrivalTime.getTime(), arrivalPosition, arrivalId, arrival);
+						}
+						else
+						{
+							final int min = (int) (arrivalTime.getTimeInMillis() - departureTime.getTimeInMillis()) / 1000 / 60;
+							part = new Connection.Footway(min, departureId, departurePosition, arrivalId, arrivalPosition);
+						}
+						XmlPullUtil.skipRestOfTree(pp);
+
+						parts.add(part);
+						XmlPullUtil.skipRestOfTree(pp);
+					}
+
+					connections
+							.add(new Connection(id, uri, firstDepartureTime, lastArrivalTime, null, null, 0, firstDeparture, 0, lastArrival, parts));
+					XmlPullUtil.skipRestOfTree(pp);
+				}
+
+				return new QueryConnectionsResult(uri, from, to, null, commandLink(sessionId, "tripPrev"), commandLink(sessionId, "tripNext"),
+						connections);
+			}
+			else
+			{
+				return new QueryConnectionsResult(Status.NO_CONNECTIONS);
+			}
+		}
+		catch (final XmlPullParserException x)
+		{
+			throw new RuntimeException(x);
+		}
+	}
+
+	public GetConnectionDetailsResult getConnectionDetails(final String connectionUri) throws IOException
+	{
+		throw new UnsupportedOperationException();
+	}
+
+	protected abstract String connectionsQueryUri(LocationType fromType, String from, LocationType viaType, String via, LocationType toType,
+			String to, Date date, boolean dep, String products, WalkSpeed walkSpeed);
+
+	protected abstract String commandLink(String sessionId, String command);
+
+	protected static final String locationTypeValue(final LocationType locationType)
+	{
+		if (locationType == LocationType.STATION)
+			return "stop";
+		if (locationType == LocationType.ADDRESS)
+			return "any"; // strange, matches with anyObjFilter
+		if (locationType == LocationType.POI)
+			return "any";
+		if (locationType == LocationType.ANY)
+			return "any";
+		throw new IllegalArgumentException(locationType.toString());
+	}
+
+	protected static final String productParams(final String products)
 	{
 		if (products == null)
 			return "";
@@ -618,6 +826,15 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		}
 
 		return params.toString();
+	}
+
+	protected static final Map<WalkSpeed, String> WALKSPEED_MAP = new HashMap<WalkSpeed, String>();
+
+	static
+	{
+		WALKSPEED_MAP.put(WalkSpeed.SLOW, "slow");
+		WALKSPEED_MAP.put(WalkSpeed.NORMAL, "normal");
+		WALKSPEED_MAP.put(WalkSpeed.FAST, "fast");
 	}
 
 	private static final Map<Character, int[]> LINES = new HashMap<Character, int[]>();

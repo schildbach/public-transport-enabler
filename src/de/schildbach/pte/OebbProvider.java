@@ -247,9 +247,9 @@ public class OebbProvider extends AbstractHafasProvider
 				throw new SessionExpiredException();
 		}
 
-		List<String> fromAddresses = null;
-		List<String> viaAddresses = null;
-		List<String> toAddresses = null;
+		List<Autocomplete> fromAddresses = null;
+		List<Autocomplete> viaAddresses = null;
+		List<Autocomplete> toAddresses = null;
 
 		final Matcher mPreAddress = P_PRE_ADDRESS.matcher(page);
 		while (mPreAddress.find())
@@ -258,12 +258,12 @@ public class OebbProvider extends AbstractHafasProvider
 			final String options = mPreAddress.group(2);
 
 			final Matcher mAddresses = P_ADDRESSES.matcher(options);
-			final List<String> addresses = new ArrayList<String>();
+			final List<Autocomplete> addresses = new ArrayList<Autocomplete>();
 			while (mAddresses.find())
 			{
 				final String address = ParserUtils.resolveEntities(mAddresses.group(1)).trim();
 				if (!addresses.contains(address))
-					addresses.add(address);
+					addresses.add(new Autocomplete(LocationType.ANY, 0, address));
 			}
 
 			if (type.equals("REQ0JourneyStopsS0K"))
@@ -277,7 +277,7 @@ public class OebbProvider extends AbstractHafasProvider
 		}
 
 		if (fromAddresses != null || viaAddresses != null || toAddresses != null)
-			return new QueryConnectionsResult(QueryConnectionsResult.Status.AMBIGUOUS, fromAddresses, viaAddresses, toAddresses);
+			return new QueryConnectionsResult(fromAddresses, viaAddresses, toAddresses);
 		else
 			return queryConnections(baseUri, page);
 	}
@@ -439,7 +439,7 @@ public class OebbProvider extends AbstractHafasProvider
 
 								final String arrivalPosition = mDetFine.group(12) != null ? ParserUtils.resolveEntities(mDetFine.group(12)) : null;
 
-								final Connection.Trip trip = new Connection.Trip(line, lineColors(line), null, detailsDepartureDateTime,
+								final Connection.Trip trip = new Connection.Trip(line, lineColors(line), 0, null, detailsDepartureDateTime,
 										departurePosition, departureId, departure, detailsArrivalDateTime, arrivalPosition, arrivalId, arrival);
 								connection.parts.add(trip);
 							}
