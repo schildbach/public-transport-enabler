@@ -94,7 +94,7 @@ public class OebbProvider extends AbstractHafasProvider
 							if (m.matches())
 							{
 								final int localId = Integer.parseInt(m.group(1));
-								results.add(new Location(LocationType.STATION, localId, value));
+								results.add(new Location(LocationType.STATION, localId, 0, 0, value));
 							}
 							else
 							{
@@ -103,11 +103,11 @@ public class OebbProvider extends AbstractHafasProvider
 						}
 						else if (type == 2) // address
 						{
-							results.add(new Location(LocationType.ADDRESS, 0, value));
+							results.add(new Location(LocationType.ADDRESS, 0, 0, 0, value));
 						}
 						else if (type == 4) // poi
 						{
-							results.add(new Location(LocationType.ANY, 0, value));
+							results.add(new Location(LocationType.ANY, 0, 0, 0, value));
 						}
 						else
 						{
@@ -264,7 +264,7 @@ public class OebbProvider extends AbstractHafasProvider
 			{
 				final String address = ParserUtils.resolveEntities(mAddresses.group(1)).trim();
 				if (!addresses.contains(address))
-					addresses.add(new Location(LocationType.ANY, 0, address));
+					addresses.add(new Location(LocationType.ANY, 0, 0, 0, address));
 			}
 
 			if (type.equals("REQ0JourneyStopsS0K"))

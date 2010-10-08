@@ -83,7 +83,7 @@ public final class VbbProvider implements NetworkProvider
 			final Matcher mSingle = P_SINGLE_MASTID.matcher(page);
 			if (mSingle.matches())
 			{
-				results.add(new Location(LocationType.ANY, 0 /* TODO */, ParserUtils.resolveEntities(mSingle.group(1))));
+				results.add(new Location(LocationType.ANY, 0, 0, 0, ParserUtils.resolveEntities(mSingle.group(1))));
 			}
 		}
 		else
@@ -93,14 +93,14 @@ public final class VbbProvider implements NetworkProvider
 			final Matcher mSingle = P_SINGLE_NAME.matcher(page);
 			if (mSingle.matches())
 			{
-				results.add(new Location(LocationType.ANY, 0 /* TODO */, ParserUtils.resolveEntities(mSingle.group(1))));
+				results.add(new Location(LocationType.ANY, 0, 0, 0, ParserUtils.resolveEntities(mSingle.group(1))));
 			}
 			else
 			{
 				final Matcher mMulti = P_MULTI_NAME.matcher(page);
 				while (mMulti.find())
-					results.add(new Location(LocationType.STATION, Integer.parseInt(mMulti.group(1)), ParserUtils
-							.resolveEntities(mMulti.group(2))));
+					results.add(new Location(LocationType.STATION, Integer.parseInt(mMulti.group(1)), 0, 0, ParserUtils.resolveEntities(mMulti
+							.group(2))));
 			}
 		}
 
@@ -244,7 +244,7 @@ public final class VbbProvider implements NetworkProvider
 		{
 			final String address = ParserUtils.resolveEntities(mAddress.group(1));
 			if (!addresses.contains(address))
-				addresses.add(new Location(LocationType.ANY, 0, address));
+				addresses.add(new Location(LocationType.ANY, 0, 0, 0, address));
 		}
 
 		if (addresses.isEmpty())

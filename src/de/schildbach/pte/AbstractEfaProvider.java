@@ -34,10 +34,10 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
+import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
@@ -76,19 +76,17 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			XmlPullUtil.nextStartTagInsideTree(pp, null, "itdOdvName");
 			final String nameState = pp.getAttributeValue(null, "state");
 			if ("list".equals(nameState))
-				processOdvNameElem(results, pp);
+				while (XmlPullUtil.nextStartTagInsideTree(pp, null, "odvNameElem"))
+					results.add(processOdvNameElem(pp));
 
 			// parse assigned stops
 			if (XmlPullUtil.jumpToStartTag(pp, null, "itdOdvAssignedStops"))
 			{
 				while (XmlPullUtil.nextStartTagInsideTree(pp, null, "itdOdvAssignedStop"))
 				{
-					final int id = Integer.parseInt(pp.getAttributeValue(null, "stopID"));
-					final String name = normalizeLocationName(pp.getAttributeValue(null, "nameWithPlace"));
-
-					final Location autocomplete = new Location(LocationType.STATION, id, name);
-					if (!results.contains(autocomplete))
-						results.add(autocomplete);
+					final Location location = processItdOdvAssignedStop(pp);
+					if (!results.contains(location))
+						results.add(location);
 
 					XmlPullUtil.skipRestOfTree(pp);
 				}
@@ -102,17 +100,33 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		}
 	}
 
-	private void processOdvNameElem(final List<Location> results, final XmlPullParser pp) throws XmlPullParserException, IOException
+	private Location processOdvNameElem(final XmlPullParser pp) throws XmlPullParserException, IOException
 	{
-		while (XmlPullUtil.nextStartTagInsideTree(pp, null, "odvNameElem"))
+		final String type = pp.getAttributeValue(null, "anyType");
+		int id = Integer.parseInt(pp.getAttributeValue(null, "id"));
+		if (id < 0)
+			id = 0;
+		int lat = 0, lon = 0;
+		if ("WGS84".equals(pp.getAttributeValue(null, "mapName")))
 		{
-			final String type = pp.getAttributeValue(null, "anyType");
-			int id = Integer.parseInt(pp.getAttributeValue(null, "id"));
-			if (id < 0)
-				id = 0;
-			final String name = normalizeLocationName(pp.nextText());
-			results.add(new Location(type(type), id, name));
+			lat = Integer.parseInt(pp.getAttributeValue(null, "y"));
+			lon = Integer.parseInt(pp.getAttributeValue(null, "x"));
 		}
+		final String name = normalizeLocationName(pp.nextText());
+		return new Location(type(type), id, lat, lon, name);
+	}
+
+	private Location processItdOdvAssignedStop(final XmlPullParser pp)
+	{
+		final int id = Integer.parseInt(pp.getAttributeValue(null, "stopID"));
+		int lat = 0, lon = 0;
+		if ("WGS84".equals(pp.getAttributeValue(null, "mapName")))
+		{
+			lat = Integer.parseInt(pp.getAttributeValue(null, "y"));
+			lon = Integer.parseInt(pp.getAttributeValue(null, "x"));
+		}
+		final String name = normalizeLocationName(pp.getAttributeValue(null, "nameWithPlace"));
+		return new Location(LocationType.STATION, id, lat, lon, name);
 	}
 
 	private static LocationType type(final String type)
@@ -651,7 +665,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			if ("list".equals(originState))
 			{
 				ambiguousFrom = new ArrayList<Location>();
-				processOdvNameElem(ambiguousFrom, pp);
+				while (XmlPullUtil.nextStartTagInsideTree(pp, null, "odvNameElem"))
+					ambiguousFrom.add(processOdvNameElem(pp));
 			}
 			else if ("identified".equals(originState))
 			{
@@ -667,7 +682,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			if ("list".equals(destinationState))
 			{
 				ambiguousTo = new ArrayList<Location>();
-				processOdvNameElem(ambiguousTo, pp);
+				while (XmlPullUtil.nextStartTagInsideTree(pp, null, "odvNameElem"))
+					ambiguousTo.add(processOdvNameElem(pp));
 			}
 			else if ("identified".equals(destinationState))
 			{
@@ -683,7 +699,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			if ("list".equals(viaState))
 			{
 				ambiguousVia = new ArrayList<Location>();
-				processOdvNameElem(ambiguousVia, pp);
+				while (XmlPullUtil.nextStartTagInsideTree(pp, null, "odvNameElem"))
+					ambiguousVia.add(processOdvNameElem(pp));
 			}
 			else if ("identified".equals(viaState))
 			{

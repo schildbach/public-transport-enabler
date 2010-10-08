@@ -23,12 +23,15 @@ public final class Location
 {
 	public final LocationType type;
 	public final int id;
+	public final int lat, lon;
 	public final String name;
 
-	public Location(final LocationType type, final int id, final String name)
+	public Location(final LocationType type, final int id, final int lat, final int lon, final String name)
 	{
 		this.type = type;
 		this.id = id;
+		this.lat = lat;
+		this.lon = lon;
 		this.name = name;
 	}
 

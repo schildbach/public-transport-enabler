@@ -93,13 +93,13 @@ public class MvvProvider extends AbstractEfaProvider
 				final int locationId = Integer.parseInt(mAutocompleteFine.group(3));
 
 				if (type.equals("stop"))
-					results.add(new Location(LocationType.STATION, locationId, location));
+					results.add(new Location(LocationType.STATION, locationId, 0, 0, location));
 				else if (type.equals("street"))
-					results.add(new Location(LocationType.ADDRESS, 0, location));
+					results.add(new Location(LocationType.ADDRESS, 0, 0, 0, location));
 				else if (type.equals("singlehouse"))
-					results.add(new Location(LocationType.ADDRESS, 0, location));
+					results.add(new Location(LocationType.ADDRESS, 0, 0, 0, location));
 				else if (type.equals("poi"))
-					results.add(new Location(LocationType.POI, 0, location));
+					results.add(new Location(LocationType.POI, 0, 0, 0, location));
 				else
 					throw new IllegalStateException("unknown type " + type + " on " + uri);
 			}
@@ -364,7 +364,7 @@ public class MvvProvider extends AbstractEfaProvider
 			{
 				final String address = ParserUtils.resolveEntities(mAddresses.group(1)).trim();
 				if (!addresses.contains(address))
-					addresses.add(new Location(LocationType.ANY, 0, address));
+					addresses.add(new Location(LocationType.ANY, 0, 0, 0, address));
 			}
 
 			if (type.equals("name_origin"))
