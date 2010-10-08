@@ -23,9 +23,9 @@ import java.util.List;
 import org.junit.Test;
 
 import de.schildbach.pte.SbbProvider;
-import de.schildbach.pte.NetworkProvider.LocationType;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
-import de.schildbach.pte.dto.Autocomplete;
+import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 
@@ -78,7 +78,7 @@ public class SbbProviderLiveTest
 	@Test
 	public void autoComplete() throws Exception
 	{
-		final List<Autocomplete> result = provider.autocompleteStations("haupt");
+		final List<Location> result = provider.autocompleteStations("haupt");
 		System.out.println(result);
 	}
 }

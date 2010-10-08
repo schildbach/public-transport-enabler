@@ -30,9 +30,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.schildbach.pte.dto.Autocomplete;
+import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
+import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.Station;
@@ -74,12 +75,12 @@ public class MvvProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	public List<Autocomplete> autocompleteStations(final CharSequence constraint) throws IOException
+	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
 		final String uri = autocompleteUri(constraint);
 		final CharSequence page = ParserUtils.scrape(uri);
 
-		final List<Autocomplete> results = new ArrayList<Autocomplete>();
+		final List<Location> results = new ArrayList<Location>();
 
 		final Matcher mAutocompleteCoarse = P_AUTOCOMPLETE_COARSE.matcher(page);
 		while (mAutocompleteCoarse.find())
@@ -92,13 +93,13 @@ public class MvvProvider extends AbstractEfaProvider
 				final int locationId = Integer.parseInt(mAutocompleteFine.group(3));
 
 				if (type.equals("stop"))
-					results.add(new Autocomplete(LocationType.STATION, locationId, location));
+					results.add(new Location(LocationType.STATION, locationId, location));
 				else if (type.equals("street"))
-					results.add(new Autocomplete(LocationType.ADDRESS, 0, location));
+					results.add(new Location(LocationType.ADDRESS, 0, location));
 				else if (type.equals("singlehouse"))
-					results.add(new Autocomplete(LocationType.ADDRESS, 0, location));
+					results.add(new Location(LocationType.ADDRESS, 0, location));
 				else if (type.equals("poi"))
-					results.add(new Autocomplete(LocationType.POI, 0, location));
+					results.add(new Location(LocationType.POI, 0, location));
 				else
 					throw new IllegalStateException("unknown type " + type + " on " + uri);
 			}
@@ -347,9 +348,9 @@ public class MvvProvider extends AbstractEfaProvider
 				return QueryConnectionsResult.NO_CONNECTIONS;
 		}
 
-		List<Autocomplete> fromAddresses = null;
-		List<Autocomplete> viaAddresses = null;
-		List<Autocomplete> toAddresses = null;
+		List<Location> fromAddresses = null;
+		List<Location> viaAddresses = null;
+		List<Location> toAddresses = null;
 
 		final Matcher mPreAddress = P_PRE_ADDRESS.matcher(page);
 		while (mPreAddress.find())
@@ -358,12 +359,12 @@ public class MvvProvider extends AbstractEfaProvider
 			final String options = mPreAddress.group(2);
 
 			final Matcher mAddresses = P_ADDRESSES.matcher(options);
-			final List<Autocomplete> addresses = new ArrayList<Autocomplete>();
+			final List<Location> addresses = new ArrayList<Location>();
 			while (mAddresses.find())
 			{
 				final String address = ParserUtils.resolveEntities(mAddresses.group(1)).trim();
 				if (!addresses.contains(address))
-					addresses.add(new Autocomplete(LocationType.ANY, 0, address));
+					addresses.add(new Location(LocationType.ANY, 0, address));
 			}
 
 			if (type.equals("name_origin"))

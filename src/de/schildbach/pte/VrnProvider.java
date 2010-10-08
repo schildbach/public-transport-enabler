@@ -20,6 +20,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.util.ParserUtils;
 
 /**

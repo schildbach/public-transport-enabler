@@ -28,10 +28,11 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.schildbach.pte.dto.Autocomplete;
+import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
+import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryDeparturesResult.Status;
@@ -62,22 +63,22 @@ public class SbbProvider extends AbstractHafasProvider
 			+ "(.*?)\n?" //
 			+ "</a>", Pattern.DOTALL);
 
-	public List<Autocomplete> autocompleteStations(final CharSequence constraint) throws IOException
+	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
 		final CharSequence page = ParserUtils.scrape(NAME_URL + ParserUtils.urlEncode(constraint.toString()));
 
-		final List<Autocomplete> results = new ArrayList<Autocomplete>();
+		final List<Location> results = new ArrayList<Location>();
 
 		final Matcher mSingle = P_SINGLE_NAME.matcher(page);
 		if (mSingle.matches())
 		{
-			results.add(new Autocomplete(LocationType.STATION, Integer.parseInt(mSingle.group(2)), ParserUtils.resolveEntities(mSingle.group(1))));
+			results.add(new Location(LocationType.STATION, Integer.parseInt(mSingle.group(2)), ParserUtils.resolveEntities(mSingle.group(1))));
 		}
 		else
 		{
 			final Matcher mMulti = P_MULTI_NAME.matcher(page);
 			while (mMulti.find())
-				results.add(new Autocomplete(LocationType.STATION, Integer.parseInt(mMulti.group(1)), ParserUtils.resolveEntities(mMulti.group(2))));
+				results.add(new Location(LocationType.STATION, Integer.parseInt(mMulti.group(1)), ParserUtils.resolveEntities(mMulti.group(2))));
 		}
 
 		return results;
@@ -162,9 +163,9 @@ public class SbbProvider extends AbstractHafasProvider
 				return QueryConnectionsResult.INVALID_DATE;
 		}
 
-		List<Autocomplete> fromAddresses = null;
-		List<Autocomplete> viaAddresses = null;
-		List<Autocomplete> toAddresses = null;
+		List<Location> fromAddresses = null;
+		List<Location> viaAddresses = null;
+		List<Location> toAddresses = null;
 
 		final Matcher mPreAddress = P_PRE_ADDRESS.matcher(page);
 		while (mPreAddress.find())
@@ -173,12 +174,12 @@ public class SbbProvider extends AbstractHafasProvider
 			final String options = mPreAddress.group(2);
 
 			final Matcher mAddresses = P_ADDRESSES.matcher(options);
-			final List<Autocomplete> addresses = new ArrayList<Autocomplete>();
+			final List<Location> addresses = new ArrayList<Location>();
 			while (mAddresses.find())
 			{
 				final String address = ParserUtils.resolveEntities(mAddresses.group(1)).trim();
 				if (!addresses.contains(address))
-					addresses.add(new Autocomplete(LocationType.ANY, 0, address));
+					addresses.add(new Location(LocationType.ANY, 0, address));
 			}
 
 			if (type.equals("REQ0JourneyStopsS0K"))

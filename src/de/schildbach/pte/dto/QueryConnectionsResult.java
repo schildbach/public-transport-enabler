@@ -37,9 +37,9 @@ public final class QueryConnectionsResult implements Serializable
 
 	public final Status status;
 
-	public final List<Autocomplete> ambiguousFrom;
-	public final List<Autocomplete> ambiguousVia;
-	public final List<Autocomplete> ambiguousTo;
+	public final List<Location> ambiguousFrom;
+	public final List<Location> ambiguousVia;
+	public final List<Location> ambiguousTo;
 
 	public final String queryUri;
 	public final String from;
@@ -66,7 +66,7 @@ public final class QueryConnectionsResult implements Serializable
 		this.ambiguousTo = null;
 	}
 
-	public QueryConnectionsResult(final List<Autocomplete> ambiguousFrom, final List<Autocomplete> ambiguousVia, final List<Autocomplete> ambiguousTo)
+	public QueryConnectionsResult(final List<Location> ambiguousFrom, final List<Location> ambiguousVia, final List<Location> ambiguousTo)
 	{
 		this.status = Status.AMBIGUOUS;
 		this.ambiguousFrom = ambiguousFrom;

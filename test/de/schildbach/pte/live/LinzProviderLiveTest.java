@@ -23,9 +23,9 @@ import java.util.List;
 import org.junit.Test;
 
 import de.schildbach.pte.LinzProvider;
-import de.schildbach.pte.NetworkProvider.LocationType;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
-import de.schildbach.pte.dto.Autocomplete;
+import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 
@@ -40,7 +40,7 @@ public class LinzProviderLiveTest
 	@Test
 	public void autocompleteIncomplete() throws Exception
 	{
-		final List<Autocomplete> autocompletes = provider.autocompleteStations("Linz, H");
+		final List<Location> autocompletes = provider.autocompleteStations("Linz, H");
 
 		list(autocompletes);
 	}
@@ -48,7 +48,7 @@ public class LinzProviderLiveTest
 	@Test
 	public void autocompleteIdentified() throws Exception
 	{
-		final List<Autocomplete> autocompletes = provider.autocompleteStations("Leonding, Haag");
+		final List<Location> autocompletes = provider.autocompleteStations("Leonding, Haag");
 
 		list(autocompletes);
 	}
@@ -56,15 +56,15 @@ public class LinzProviderLiveTest
 	@Test
 	public void autocompleteCity() throws Exception
 	{
-		final List<Autocomplete> autocompletes = provider.autocompleteStations("Linz");
+		final List<Location> autocompletes = provider.autocompleteStations("Linz");
 
 		list(autocompletes);
 	}
 
-	private void list(final List<Autocomplete> autocompletes)
+	private void list(final List<Location> autocompletes)
 	{
 		System.out.print(autocompletes.size() + " ");
-		for (final Autocomplete autocomplete : autocompletes)
+		for (final Location autocomplete : autocompletes)
 			System.out.print(autocomplete.toDebugString() + " ");
 		System.out.println();
 	}

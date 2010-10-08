@@ -34,10 +34,11 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import de.schildbach.pte.dto.Autocomplete;
+import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
+import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
@@ -54,14 +55,14 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 {
 	protected abstract String autocompleteUri(final CharSequence constraint);
 
-	public List<Autocomplete> autocompleteStations(final CharSequence constraint) throws IOException
+	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
 		final String uri = autocompleteUri(constraint);
 
 		try
 		{
 			final CharSequence page = ParserUtils.scrape(uri);
-			final List<Autocomplete> results = new ArrayList<Autocomplete>();
+			final List<Location> results = new ArrayList<Location>();
 
 			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
 			final XmlPullParser pp = factory.newPullParser();
@@ -85,7 +86,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 					final int id = Integer.parseInt(pp.getAttributeValue(null, "stopID"));
 					final String name = normalizeLocationName(pp.getAttributeValue(null, "nameWithPlace"));
 
-					final Autocomplete autocomplete = new Autocomplete(LocationType.STATION, id, name);
+					final Location autocomplete = new Location(LocationType.STATION, id, name);
 					if (!results.contains(autocomplete))
 						results.add(autocomplete);
 
@@ -101,7 +102,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		}
 	}
 
-	private void processOdvNameElem(final List<Autocomplete> results, final XmlPullParser pp) throws XmlPullParserException, IOException
+	private void processOdvNameElem(final List<Location> results, final XmlPullParser pp) throws XmlPullParserException, IOException
 	{
 		while (XmlPullUtil.nextStartTagInsideTree(pp, null, "odvNameElem"))
 		{
@@ -110,7 +111,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			if (id < 0)
 				id = 0;
 			final String name = normalizeLocationName(pp.nextText());
-			results.add(new Autocomplete(type(type), id, name));
+			results.add(new Location(type(type), id, name));
 		}
 	}
 
@@ -639,7 +640,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			final String sessionId = pp.getAttributeValue(null, "sessionID");
 
 			// parse odv name elements
-			List<Autocomplete> ambiguousFrom = null, ambiguousTo = null, ambiguousVia = null;
+			List<Location> ambiguousFrom = null, ambiguousTo = null, ambiguousVia = null;
 			String from = null, to = null;
 
 			XmlPullUtil.jumpToStartTag(pp, null, "itdOdv");
@@ -649,7 +650,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			final String originState = pp.getAttributeValue(null, "state");
 			if ("list".equals(originState))
 			{
-				ambiguousFrom = new ArrayList<Autocomplete>();
+				ambiguousFrom = new ArrayList<Location>();
 				processOdvNameElem(ambiguousFrom, pp);
 			}
 			else if ("identified".equals(originState))
@@ -665,7 +666,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			final String destinationState = pp.getAttributeValue(null, "state");
 			if ("list".equals(destinationState))
 			{
-				ambiguousTo = new ArrayList<Autocomplete>();
+				ambiguousTo = new ArrayList<Location>();
 				processOdvNameElem(ambiguousTo, pp);
 			}
 			else if ("identified".equals(destinationState))
@@ -681,7 +682,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			final String viaState = pp.getAttributeValue(null, "state");
 			if ("list".equals(viaState))
 			{
-				ambiguousVia = new ArrayList<Autocomplete>();
+				ambiguousVia = new ArrayList<Location>();
 				processOdvNameElem(ambiguousVia, pp);
 			}
 			else if ("identified".equals(viaState))

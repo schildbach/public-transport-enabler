@@ -22,8 +22,8 @@ import java.util.Date;
 import org.junit.Test;
 
 import de.schildbach.pte.OebbProvider;
-import de.schildbach.pte.NetworkProvider.LocationType;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
+import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 

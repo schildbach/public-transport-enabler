@@ -16,33 +16,31 @@
  */
 package de.schildbach.pte.dto;
 
-import de.schildbach.pte.NetworkProvider.LocationType;
-
 /**
  * @author Andreas Schildbach
  */
-public final class Autocomplete
+public final class Location
 {
-	public final LocationType locationType;
-	public final int locationId;
-	public final String location;
+	public final LocationType type;
+	public final int id;
+	public final String name;
 
-	public Autocomplete(final LocationType locationType, final int locationId, final String location)
+	public Location(final LocationType type, final int id, final String name)
 	{
-		this.locationType = locationType;
-		this.locationId = locationId;
-		this.location = location;
+		this.type = type;
+		this.id = id;
+		this.name = name;
 	}
 
 	@Override
 	public String toString()
 	{
-		return location; // invoked by AutoCompleteTextView in landscape orientation
+		return name; // invoked by AutoCompleteTextView in landscape orientation
 	}
 
 	public String toDebugString()
 	{
-		return "[" + locationType + " " + locationId + " '" + location + "']";
+		return "[" + type + " " + id + " '" + name + "']";
 	}
 
 	@Override
@@ -50,21 +48,21 @@ public final class Autocomplete
 	{
 		if (o == this)
 			return true;
-		if (!(o instanceof Autocomplete))
+		if (!(o instanceof Location))
 			return false;
-		final Autocomplete other = (Autocomplete) o;
-		if (this.locationType != other.locationType)
+		final Location other = (Location) o;
+		if (this.type != other.type)
 			return false;
-		if (this.locationId != other.locationId)
+		if (this.id != other.id)
 			return false;
-		if (this.locationId != 0)
+		if (this.id != 0)
 			return true;
-		return this.location.equals(other.location);
+		return this.name.equals(other.name);
 	}
 
 	@Override
 	public int hashCode()
 	{
-		return locationType.hashCode(); // FIXME not very discriminative
+		return type.hashCode(); // FIXME not very discriminative
 	}
 }

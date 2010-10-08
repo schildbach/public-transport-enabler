@@ -21,8 +21,9 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
-import de.schildbach.pte.dto.Autocomplete;
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
+import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
@@ -37,11 +38,6 @@ public interface NetworkProvider
 	public enum Capability
 	{
 		NEARBY_STATIONS, DEPARTURES, CONNECTIONS, LOCATION_WGS84, LOCATION_STATION_ID
-	}
-
-	public enum LocationType
-	{
-		ANY, STATION, WGS84, ADDRESS, POI
 	}
 
 	public enum WalkSpeed
@@ -59,7 +55,7 @@ public interface NetworkProvider
 	 * @return auto-complete suggestions
 	 * @throws IOException
 	 */
-	List<Autocomplete> autocompleteStations(CharSequence constraint) throws IOException;
+	List<Location> autocompleteStations(CharSequence constraint) throws IOException;
 
 	/**
 	 * Determine stations near to given location. At least one of stationId or lat/lon pair must be given.

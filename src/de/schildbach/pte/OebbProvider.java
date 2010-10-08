@@ -32,10 +32,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import de.schildbach.pte.dto.Autocomplete;
+import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
+import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryDeparturesResult.Status;
@@ -62,7 +63,7 @@ public class OebbProvider extends AbstractHafasProvider
 	private static final Pattern P_AUTOCOMPLETE_JSON = Pattern.compile("SLs\\.sls=(.*?);SLs\\.showSuggestion\\(\\);", Pattern.DOTALL);
 	private static final Pattern P_AUTOCOMPLETE_ID = Pattern.compile(".*?@L=(\\d+)@.*?");
 
-	public List<Autocomplete> autocompleteStations(final CharSequence constraint) throws IOException
+	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
 		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING));
 		final CharSequence page = ParserUtils.scrape(uri);
@@ -71,7 +72,7 @@ public class OebbProvider extends AbstractHafasProvider
 		if (mJson.matches())
 		{
 			final String json = mJson.group(1);
-			final List<Autocomplete> results = new ArrayList<Autocomplete>();
+			final List<Location> results = new ArrayList<Location>();
 
 			try
 			{
@@ -93,7 +94,7 @@ public class OebbProvider extends AbstractHafasProvider
 							if (m.matches())
 							{
 								final int localId = Integer.parseInt(m.group(1));
-								results.add(new Autocomplete(LocationType.STATION, localId, value));
+								results.add(new Location(LocationType.STATION, localId, value));
 							}
 							else
 							{
@@ -102,11 +103,11 @@ public class OebbProvider extends AbstractHafasProvider
 						}
 						else if (type == 2) // address
 						{
-							results.add(new Autocomplete(LocationType.ADDRESS, 0, value));
+							results.add(new Location(LocationType.ADDRESS, 0, value));
 						}
 						else if (type == 4) // poi
 						{
-							results.add(new Autocomplete(LocationType.ANY, 0, value));
+							results.add(new Location(LocationType.ANY, 0, value));
 						}
 						else
 						{
@@ -247,9 +248,9 @@ public class OebbProvider extends AbstractHafasProvider
 				throw new SessionExpiredException();
 		}
 
-		List<Autocomplete> fromAddresses = null;
-		List<Autocomplete> viaAddresses = null;
-		List<Autocomplete> toAddresses = null;
+		List<Location> fromAddresses = null;
+		List<Location> viaAddresses = null;
+		List<Location> toAddresses = null;
 
 		final Matcher mPreAddress = P_PRE_ADDRESS.matcher(page);
 		while (mPreAddress.find())
@@ -258,12 +259,12 @@ public class OebbProvider extends AbstractHafasProvider
 			final String options = mPreAddress.group(2);
 
 			final Matcher mAddresses = P_ADDRESSES.matcher(options);
-			final List<Autocomplete> addresses = new ArrayList<Autocomplete>();
+			final List<Location> addresses = new ArrayList<Location>();
 			while (mAddresses.find())
 			{
 				final String address = ParserUtils.resolveEntities(mAddresses.group(1)).trim();
 				if (!addresses.contains(address))
-					addresses.add(new Autocomplete(LocationType.ANY, 0, address));
+					addresses.add(new Location(LocationType.ANY, 0, address));
 			}
 
 			if (type.equals("REQ0JourneyStopsS0K"))

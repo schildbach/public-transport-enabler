@@ -31,10 +31,11 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.schildbach.pte.dto.Autocomplete;
+import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
+import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
@@ -71,9 +72,9 @@ public final class VbbProvider implements NetworkProvider
 	private static final String AUTOCOMPLETE_MASTID_URL = "http://mobil.bvg.de/IstAbfahrtzeiten/index/mobil?input=";
 	private static final Pattern P_SINGLE_MASTID = Pattern.compile(".*Ist-Abfahrtzeiten.*?<strong>(.*?)</strong>.*", Pattern.DOTALL);
 
-	public List<Autocomplete> autocompleteStations(final CharSequence constraint) throws IOException
+	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
-		final List<Autocomplete> results = new ArrayList<Autocomplete>();
+		final List<Location> results = new ArrayList<Location>();
 
 		if (P_AUTOCOMPLETE_IS_MAST.matcher(constraint).matches())
 		{
@@ -82,7 +83,7 @@ public final class VbbProvider implements NetworkProvider
 			final Matcher mSingle = P_SINGLE_MASTID.matcher(page);
 			if (mSingle.matches())
 			{
-				results.add(new Autocomplete(LocationType.ANY, 0 /* TODO */, ParserUtils.resolveEntities(mSingle.group(1))));
+				results.add(new Location(LocationType.ANY, 0 /* TODO */, ParserUtils.resolveEntities(mSingle.group(1))));
 			}
 		}
 		else
@@ -92,13 +93,13 @@ public final class VbbProvider implements NetworkProvider
 			final Matcher mSingle = P_SINGLE_NAME.matcher(page);
 			if (mSingle.matches())
 			{
-				results.add(new Autocomplete(LocationType.ANY, 0 /* TODO */, ParserUtils.resolveEntities(mSingle.group(1))));
+				results.add(new Location(LocationType.ANY, 0 /* TODO */, ParserUtils.resolveEntities(mSingle.group(1))));
 			}
 			else
 			{
 				final Matcher mMulti = P_MULTI_NAME.matcher(page);
 				while (mMulti.find())
-					results.add(new Autocomplete(LocationType.STATION, Integer.parseInt(mMulti.group(1)), ParserUtils
+					results.add(new Location(LocationType.STATION, Integer.parseInt(mMulti.group(1)), ParserUtils
 							.resolveEntities(mMulti.group(2))));
 			}
 		}
@@ -238,12 +239,12 @@ public final class VbbProvider implements NetworkProvider
 
 		final Matcher mAddress = P_CHECK_ADDRESS.matcher(page);
 
-		final List<Autocomplete> addresses = new ArrayList<Autocomplete>();
+		final List<Location> addresses = new ArrayList<Location>();
 		while (mAddress.find())
 		{
 			final String address = ParserUtils.resolveEntities(mAddress.group(1));
 			if (!addresses.contains(address))
-				addresses.add(new Autocomplete(LocationType.ANY, 0, address));
+				addresses.add(new Location(LocationType.ANY, 0, address));
 		}
 
 		if (addresses.isEmpty())

@@ -22,9 +22,9 @@ import java.util.List;
 import org.junit.Test;
 
 import de.schildbach.pte.GvhProvider;
-import de.schildbach.pte.NetworkProvider.LocationType;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
-import de.schildbach.pte.dto.Autocomplete;
+import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 
@@ -39,7 +39,7 @@ public class GvhProviderLiveTest
 	@Test
 	public void autocompleteIncomplete() throws Exception
 	{
-		final List<Autocomplete> autocompletes = provider.autocompleteStations("Kur");
+		final List<Location> autocompletes = provider.autocompleteStations("Kur");
 
 		list(autocompletes);
 	}
@@ -47,7 +47,7 @@ public class GvhProviderLiveTest
 	@Test
 	public void autocompleteIdentified() throws Exception
 	{
-		final List<Autocomplete> autocompletes = provider.autocompleteStations("Hannover, Hannoversche Straße");
+		final List<Location> autocompletes = provider.autocompleteStations("Hannover, Hannoversche Straße");
 
 		list(autocompletes);
 	}
@@ -55,15 +55,15 @@ public class GvhProviderLiveTest
 	@Test
 	public void autocompleteCity() throws Exception
 	{
-		final List<Autocomplete> autocompletes = provider.autocompleteStations("Hannover");
+		final List<Location> autocompletes = provider.autocompleteStations("Hannover");
 
 		list(autocompletes);
 	}
 
-	private void list(final List<Autocomplete> autocompletes)
+	private void list(final List<Location> autocompletes)
 	{
 		System.out.print(autocompletes.size() + " ");
-		for (final Autocomplete autocomplete : autocompletes)
+		for (final Location autocomplete : autocompletes)
 			System.out.print(autocomplete.toDebugString() + " ");
 		System.out.println();
 	}
@@ -71,7 +71,7 @@ public class GvhProviderLiveTest
 	@Test
 	public void autocomplete() throws Exception
 	{
-		final List<Autocomplete> results = provider.autocompleteStations("Hannover");
+		final List<Location> results = provider.autocompleteStations("Hannover");
 
 		System.out.println(results.size() + "  " + results);
 	}
