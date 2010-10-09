@@ -148,10 +148,9 @@ public class MvvProvider extends AbstractEfaProvider
 		uri.append("&itdTime=").append(ParserUtils.urlEncode(TIME_FORMAT.format(date)));
 		uri.append("&itdTripDateTimeDepArr=").append(dep ? "dep" : "arr");
 
-		uri.append(productParams(products));
-
 		uri.append("&ptOptionsActive=1");
 		uri.append("&changeSpeed=").append(WALKSPEED_MAP.get(walkSpeed));
+		uri.append(productParams(products));
 
 		uri.append("&locationServerActive=1");
 
