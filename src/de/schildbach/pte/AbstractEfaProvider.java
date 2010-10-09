@@ -774,7 +774,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 						else
 						{
 							final int min = (int) (arrivalTime.getTimeInMillis() - departureTime.getTimeInMillis()) / 1000 / 60;
-							part = new Connection.Footway(min, departureId, departurePosition, arrivalId, arrivalPosition);
+							part = new Connection.Footway(min, departureId, departure, arrivalId, arrival);
 						}
 						XmlPullUtil.skipRestOfTree(pp);
 
