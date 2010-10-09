@@ -76,7 +76,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				throw new IllegalStateException();
 			XmlPullUtil.nextStartTagInsideTree(pp, null, "itdOdvName");
 			final String nameState = pp.getAttributeValue(null, "state");
-			if ("list".equals(nameState))
+			if ("identified".equals(nameState) || "list".equals(nameState))
 				while (XmlPullUtil.nextStartTagInsideTree(pp, null, "odvNameElem"))
 					results.add(processOdvNameElem(pp));
 

@@ -62,54 +62,13 @@ public class MvvProvider extends AbstractEfaProvider
 		return true;
 	}
 
-	private static final String AUTOCOMPLETE_URI = "http://efa.mvv-muenchen.de/ultralite/XML_STOPFINDER_REQUEST"
-			+ "?coordOutputFormat=WGS84&anyObjFilter_sf=126&locationServerActive=1&name_sf=%s&type_sf=%s";
-	private static final String AUTOCOMPLETE_TYPE = "any"; // any, stop, street, poi
-	private static final Pattern P_AUTOCOMPLETE_COARSE = Pattern.compile("<p>(.*?)</p>");
-	private static final Pattern P_AUTOCOMPLETE_FINE = Pattern.compile(".*?<n>(.*?)</n>.*?<ty>(.*?)</ty>.*?<id>(.*?)</id>.*?<pc>(.*?)</pc>.*?");
+	private static final String AUTOCOMPLETE_URI = API_BASE
+			+ "XSLT_TRIP_REQUEST2?outputFormat=XML&coordOutputFormat=WGS84&locationServerActive=1&type_origin=any&name_origin=%s";
 
 	@Override
 	protected String autocompleteUri(final CharSequence constraint)
 	{
-		return String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING), AUTOCOMPLETE_TYPE);
-	}
-
-	@Override
-	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
-	{
-		final String uri = autocompleteUri(constraint);
-		final CharSequence page = ParserUtils.scrape(uri);
-
-		final List<Location> results = new ArrayList<Location>();
-
-		final Matcher mAutocompleteCoarse = P_AUTOCOMPLETE_COARSE.matcher(page);
-		while (mAutocompleteCoarse.find())
-		{
-			final Matcher mAutocompleteFine = P_AUTOCOMPLETE_FINE.matcher(mAutocompleteCoarse.group(1));
-			if (mAutocompleteFine.matches())
-			{
-				final String location = mAutocompleteFine.group(1) + ", " + mAutocompleteFine.group(4);
-				final String type = mAutocompleteFine.group(2);
-				final int locationId = Integer.parseInt(mAutocompleteFine.group(3));
-
-				if (type.equals("stop"))
-					results.add(new Location(LocationType.STATION, locationId, 0, 0, location));
-				else if (type.equals("street"))
-					results.add(new Location(LocationType.ADDRESS, 0, 0, 0, location));
-				else if (type.equals("singlehouse"))
-					results.add(new Location(LocationType.ADDRESS, 0, 0, 0, location));
-				else if (type.equals("poi"))
-					results.add(new Location(LocationType.POI, 0, 0, 0, location));
-				else
-					throw new IllegalStateException("unknown type " + type + " on " + uri);
-			}
-			else
-			{
-				throw new IllegalArgumentException("cannot parse '" + mAutocompleteCoarse.group(1) + "' on " + uri);
-			}
-		}
-
-		return results;
+		return String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), "ISO-8859-1"));
 	}
 
 	private static final String NEARBY_LATLON_URI = "http://efa.mvv-muenchen.de/ultralite/XML_DM_REQUEST"
