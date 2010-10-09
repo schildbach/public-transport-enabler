@@ -774,25 +774,28 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 						XmlPullUtil.skipRestOfTree(pp);
 
 						XmlPullUtil.jumpToStartTag(pp, null, "itdMeansOfTransport");
-						Connection.Part part;
-						if (!"Fussweg".equals(pp.getAttributeValue(null, "productName")))
+						final String productName = pp.getAttributeValue(null, "productName");
+						if ("Fussweg".equals(productName))
+						{
+							final int min = (int) (arrivalTime.getTimeInMillis() - departureTime.getTimeInMillis()) / 1000 / 60;
+							parts.add(new Connection.Footway(min, departureId, departure, arrivalId, arrival));
+						}
+						else if ("gesicherter Anschluss".equals(productName))
+						{
+							// ignore
+						}
+						else
 						{
 							final String destinationIdStr = pp.getAttributeValue(null, "destID");
 							final int destinationId = destinationIdStr.length() > 0 ? Integer.parseInt(destinationIdStr) : 0;
 							final String destination = normalizeLocationName(pp.getAttributeValue(null, "destination"));
 							final String line = parseLine(pp.getAttributeValue(null, "motType"), pp.getAttributeValue(null, "shortname"), pp
 									.getAttributeValue(null, "name"));
-							part = new Connection.Trip(line, lineColors(line), destinationId, destination, departureTime.getTime(),
-									departurePosition, departureId, departure, arrivalTime.getTime(), arrivalPosition, arrivalId, arrival);
-						}
-						else
-						{
-							final int min = (int) (arrivalTime.getTimeInMillis() - departureTime.getTimeInMillis()) / 1000 / 60;
-							part = new Connection.Footway(min, departureId, departure, arrivalId, arrival);
+							parts.add(new Connection.Trip(line, lineColors(line), destinationId, destination, departureTime.getTime(),
+									departurePosition, departureId, departure, arrivalTime.getTime(), arrivalPosition, arrivalId, arrival));
 						}
 						XmlPullUtil.skipRestOfTree(pp);
 
-						parts.add(part);
 						XmlPullUtil.skipRestOfTree(pp);
 					}
 
