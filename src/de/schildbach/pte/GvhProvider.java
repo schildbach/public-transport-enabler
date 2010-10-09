@@ -42,7 +42,7 @@ public class GvhProvider extends AbstractEfaProvider
 	}
 
 	private static final String AUTOCOMPLETE_URI = API_BASE
-			+ "XSLT_TRIP_REQUEST2?outputFormat=XML&locationServerActive=1&type_origin=any&name_origin=%s";
+			+ "XSLT_TRIP_REQUEST2?outputFormat=XML&coordOutputFormat=WGS84&locationServerActive=1&type_origin=any&name_origin=%s";
 
 	@Override
 	protected String autocompleteUri(final CharSequence constraint)

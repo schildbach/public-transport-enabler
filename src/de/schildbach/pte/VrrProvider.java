@@ -40,7 +40,8 @@ public class VrrProvider extends AbstractEfaProvider
 		return false;
 	}
 
-	private static final String AUTOCOMPLETE_URI = API_BASE + "XSLT_TRIP_REQUEST2?outputFormat=XML&type_origin=any&name_origin=%s";
+	private static final String AUTOCOMPLETE_URI = API_BASE
+			+ "XSLT_TRIP_REQUEST2?outputFormat=XML&coordOutputFormat=WGS84&type_origin=any&name_origin=%s";
 
 	@Override
 	protected String autocompleteUri(final CharSequence constraint)
