@@ -251,8 +251,8 @@ public class RmvProvider extends AbstractHafasProvider
 		final Matcher mHead = P_CONNECTIONS_HEAD.matcher(page);
 		if (mHead.matches())
 		{
-			final String from = ParserUtils.resolveEntities(mHead.group(1));
-			final String to = ParserUtils.resolveEntities(mHead.group(2));
+			final Location from = new Location(LocationType.ANY, 0, 0, 0, ParserUtils.resolveEntities(mHead.group(1)));
+			final Location to = new Location(LocationType.ANY, 0, 0, 0, ParserUtils.resolveEntities(mHead.group(2)));
 			final Date currentDate = ParserUtils.parseDate(mHead.group(3));
 			final String linkEarlier = mHead.group(4) != null ? ParserUtils.resolveEntities(mHead.group(4)) : null;
 			final String linkLater = mHead.group(5) != null ? ParserUtils.resolveEntities(mHead.group(5)) : null;
@@ -283,7 +283,7 @@ public class RmvProvider extends AbstractHafasProvider
 					else
 						line = null;
 					final Connection connection = new Connection(ParserUtils.extractId(link), link, departureTime, arrivalTime, line,
-							line != null ? lineColors(line) : null, 0, from, 0, to, null);
+							line != null ? lineColors(line) : null, 0, from.name, 0, to.name, null);
 					connections.add(connection);
 				}
 				else
@@ -292,7 +292,7 @@ public class RmvProvider extends AbstractHafasProvider
 				}
 			}
 
-			return new QueryConnectionsResult(uri, from, to, currentDate, linkEarlier, linkLater, connections);
+			return new QueryConnectionsResult(uri, from, null, to, linkEarlier, linkLater, connections);
 		}
 		else
 		{

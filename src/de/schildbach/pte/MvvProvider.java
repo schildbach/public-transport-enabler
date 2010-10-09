@@ -352,9 +352,9 @@ public class MvvProvider extends AbstractEfaProvider
 		final Matcher mHead = P_CONNECTIONS_HEAD.matcher(page);
 		if (mHead.matches())
 		{
-			final String from = ParserUtils.resolveEntities(mHead.group(1));
-			final String to = ParserUtils.resolveEntities(mHead.group(2));
-			// final String via = ParserUtils.resolveEntities(mHead.group(3));
+			final Location from = new Location(LocationType.ANY, 0, 0, 0, ParserUtils.resolveEntities(mHead.group(1)));
+			final Location to = new Location(LocationType.ANY, 0, 0, 0, ParserUtils.resolveEntities(mHead.group(2)));
+			final Location via = mHead.group(3) != null ? new Location(LocationType.ANY, 0, 0, 0, ParserUtils.resolveEntities(mHead.group(3))) : null;
 			final Date currentDate = parseDate(mHead.group(4), mHead.group(5), mHead.group(6));
 			final String linkEarlier = mHead.group(7) != null ? API_BASE + ParserUtils.resolveEntities(mHead.group(7)) : null;
 			final String linkLater = mHead.group(8) != null ? API_BASE + ParserUtils.resolveEntities(mHead.group(8)) : null;
@@ -388,7 +388,7 @@ public class MvvProvider extends AbstractEfaProvider
 						if (departureTime.after(arrivalTime))
 							arrivalTime = ParserUtils.addDays(arrivalTime, 1);
 						final Connection connection = new Connection(ParserUtils.extractId(link), link, departureTime, arrivalTime, null, null, 0,
-								from, 0, to, null);
+								from.name, 0, to.name, null);
 						connections.add(connection);
 					}
 					else
@@ -399,7 +399,7 @@ public class MvvProvider extends AbstractEfaProvider
 						calendar.add(Calendar.MINUTE, min);
 						final Date arrivalTime = calendar.getTime();
 						final Connection connection = new Connection(ParserUtils.extractId(link), link, departureTime, arrivalTime, null, null, 0,
-								from, 0, to, null);
+								from.name, 0, to.name, null);
 						connections.add(connection);
 					}
 				}
@@ -409,7 +409,7 @@ public class MvvProvider extends AbstractEfaProvider
 				}
 			}
 
-			return new QueryConnectionsResult(uri, from, to, currentDate, linkEarlier, linkLater, connections);
+			return new QueryConnectionsResult(uri, from, via, to, linkEarlier, linkLater, connections);
 		}
 		else
 		{

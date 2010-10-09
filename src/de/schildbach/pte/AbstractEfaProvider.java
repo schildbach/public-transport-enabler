@@ -102,8 +102,11 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 	private Location processOdvNameElem(final XmlPullParser pp) throws XmlPullParserException, IOException
 	{
-		final String type = pp.getAttributeValue(null, "anyType");
-		int id = Integer.parseInt(pp.getAttributeValue(null, "id"));
+		final String anyType = pp.getAttributeValue(null, "anyType");
+		final String idStr = pp.getAttributeValue(null, "id");
+		int id = 0;
+		if (idStr != null)
+			id = Integer.parseInt(idStr);
 		if (id < 0)
 			id = 0;
 		int lat = 0, lon = 0;
@@ -113,7 +116,11 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			lon = Integer.parseInt(pp.getAttributeValue(null, "x"));
 		}
 		final String name = normalizeLocationName(pp.nextText());
-		return new Location(type(type), id, lat, lon, name);
+
+		LocationType type = LocationType.ADDRESS;
+		if (anyType != null)
+			type = type(anyType);
+		return new Location(type, id, lat, lon, name);
 	}
 
 	private Location processItdOdvAssignedStop(final XmlPullParser pp)
@@ -654,7 +661,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 			// parse odv name elements
 			List<Location> ambiguousFrom = null, ambiguousTo = null, ambiguousVia = null;
-			String from = null, to = null;
+			Location from = null, via = null, to = null;
 
 			XmlPullUtil.jumpToStartTag(pp, null, "itdOdv");
 			if (!"origin".equals(pp.getAttributeValue(null, "usage")))
@@ -670,7 +677,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			else if ("identified".equals(originState))
 			{
 				XmlPullUtil.nextStartTagInsideTree(pp, null, "odvNameElem");
-				from = pp.nextText();
+				from = processOdvNameElem(pp);
 			}
 
 			XmlPullUtil.jumpToStartTag(pp, null, "itdOdv");
@@ -687,7 +694,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			else if ("identified".equals(destinationState))
 			{
 				XmlPullUtil.nextStartTagInsideTree(pp, null, "odvNameElem");
-				to = pp.nextText();
+				to = processOdvNameElem(pp);
 			}
 
 			XmlPullUtil.jumpToStartTag(pp, null, "itdOdv");
@@ -703,7 +710,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			}
 			else if ("identified".equals(viaState))
 			{
-				// TODO parse identified name/id
+				XmlPullUtil.nextStartTagInsideTree(pp, null, "odvNameElem");
+				via = processOdvNameElem(pp);
 			}
 
 			if (ambiguousFrom != null || ambiguousTo != null || ambiguousVia != null)
@@ -779,7 +787,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 					XmlPullUtil.skipRestOfTree(pp);
 				}
 
-				return new QueryConnectionsResult(uri, from, to, null, commandLink(sessionId, "tripPrev"), commandLink(sessionId, "tripNext"),
+				return new QueryConnectionsResult(uri, from, via, to, commandLink(sessionId, "tripPrev"), commandLink(sessionId, "tripNext"),
 						connections);
 			}
 			else

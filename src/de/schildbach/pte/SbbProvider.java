@@ -258,9 +258,8 @@ public class SbbProvider extends AbstractHafasProvider
 		final Matcher mHead = P_CONNECTIONS_HEAD.matcher(page);
 		if (mHead.matches())
 		{
-			final String from = ParserUtils.resolveEntities(mHead.group(1));
-			final Date currentDate = ParserUtils.parseDate(mHead.group(2));
-			final String to = ParserUtils.resolveEntities(mHead.group(3));
+			final Location from = new Location(LocationType.ANY, 0, 0, 0, ParserUtils.resolveEntities(mHead.group(1)));
+			final Location to = new Location(LocationType.ANY, 0, 0, 0, ParserUtils.resolveEntities(mHead.group(3)));
 			final String linkEarlier = mHead.group(4) != null ? ParserUtils.resolveEntities(mHead.group(4)) : null;
 			final String linkLater = mHead.group(5) != null ? ParserUtils.resolveEntities(mHead.group(5)) : null;
 			final List<Connection> connections = new ArrayList<Connection>();
@@ -287,7 +286,7 @@ public class SbbProvider extends AbstractHafasProvider
 							.parseTime(mConFine.group(5)));
 					final String link = uri + "#" + id; // TODO use print link?
 
-					final Connection connection = new Connection(id, link, departureTime, arrivalTime, null, null, 0, from, 0, to,
+					final Connection connection = new Connection(id, link, departureTime, arrivalTime, null, null, 0, from.name, 0, to.name,
 							new ArrayList<Connection.Part>(1));
 					connections.add(connection);
 				}
@@ -368,7 +367,7 @@ public class SbbProvider extends AbstractHafasProvider
 				}
 			}
 
-			return new QueryConnectionsResult(uri, from, to, currentDate, linkEarlier, linkLater, connections);
+			return new QueryConnectionsResult(uri, from, null, to, linkEarlier, linkLater, connections);
 		}
 		else
 		{

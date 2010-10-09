@@ -18,7 +18,6 @@
 package de.schildbach.pte.dto;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -42,21 +41,21 @@ public final class QueryConnectionsResult implements Serializable
 	public final List<Location> ambiguousTo;
 
 	public final String queryUri;
-	public final String from;
-	public final String to;
-	public final Date currentDate;
+	public final Location from;
+	public final Location via;
+	public final Location to;
 	public final String linkEarlier;
 	public final String linkLater;
 	public final List<Connection> connections;
 
-	public QueryConnectionsResult(final String queryUri, final String from, final String to, final Date currentDate, final String linkEarlier,
+	public QueryConnectionsResult(final String queryUri, final Location from, final Location via, final Location to, final String linkEarlier,
 			final String linkLater, final List<Connection> connections)
 	{
 		this.status = Status.OK;
 		this.queryUri = queryUri;
 		this.from = from;
+		this.via = via;
 		this.to = to;
-		this.currentDate = currentDate;
 		this.linkEarlier = linkEarlier;
 		this.linkLater = linkLater;
 		this.connections = connections;
@@ -75,8 +74,8 @@ public final class QueryConnectionsResult implements Serializable
 
 		this.queryUri = null;
 		this.from = null;
+		this.via = null;
 		this.to = null;
-		this.currentDate = null;
 		this.linkEarlier = null;
 		this.linkLater = null;
 		this.connections = null;
@@ -91,8 +90,8 @@ public final class QueryConnectionsResult implements Serializable
 		this.ambiguousTo = null;
 		this.queryUri = null;
 		this.from = null;
+		this.via = null;
 		this.to = null;
-		this.currentDate = null;
 		this.linkEarlier = null;
 		this.linkLater = null;
 		this.connections = null;

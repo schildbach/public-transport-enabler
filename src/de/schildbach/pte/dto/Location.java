@@ -16,10 +16,12 @@
  */
 package de.schildbach.pte.dto;
 
+import java.io.Serializable;
+
 /**
  * @author Andreas Schildbach
  */
-public final class Location
+public final class Location implements Serializable
 {
 	public final LocationType type;
 	public final int id;

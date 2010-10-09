@@ -370,8 +370,8 @@ public class OebbProvider extends AbstractHafasProvider
 		final Matcher mHead = P_CONNECTIONS_HEAD.matcher(page);
 		if (mHead.matches())
 		{
-			final String from = ParserUtils.resolveEntities(mHead.group(1));
-			final String to = ParserUtils.resolveEntities(mHead.group(2));
+			final Location from = new Location(LocationType.ANY, 0, 0, 0, ParserUtils.resolveEntities(mHead.group(1)));
+			final Location to = new Location(LocationType.ANY, 0, 0, 0, ParserUtils.resolveEntities(mHead.group(2)));
 			final Date currentDate = ParserUtils.parseDate(mHead.group(3));
 			final String linkEarlier = mHead.group(4) != null ? ParserUtils.resolveEntities(mHead.group(4)) : null;
 			final String linkLater = mHead.group(5) != null ? ParserUtils.resolveEntities(mHead.group(5)) : null;
@@ -396,8 +396,8 @@ public class OebbProvider extends AbstractHafasProvider
 							: overviewDepartureDate, ParserUtils.parseTime(mConFine.group(4)));
 					final String link = allDetailsUri; // TODO use print link?
 
-					final Connection connection = new Connection(id, link, overviewDepartureTime, overviewArrivalTime, null, null, 0, from, 0, to,
-							new ArrayList<Connection.Part>(1));
+					final Connection connection = new Connection(id, link, overviewDepartureTime, overviewArrivalTime, null, null, 0, from.name, 0,
+							to.name, new ArrayList<Connection.Part>(1));
 					connections.add(connection);
 
 					final Matcher mDetCoarse = P_CONNECTION_DETAILS_COARSE.matcher(details);
@@ -471,7 +471,7 @@ public class OebbProvider extends AbstractHafasProvider
 
 			}
 
-			return new QueryConnectionsResult(allDetailsUri, from, to, currentDate, linkEarlier, linkLater, connections);
+			return new QueryConnectionsResult(allDetailsUri, from, null, to, linkEarlier, linkLater, connections);
 		}
 		else
 		{
