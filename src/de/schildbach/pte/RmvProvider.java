@@ -53,7 +53,11 @@ public class RmvProvider extends AbstractHafasProvider
 
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
-		return true;
+		for (final Capability capability : capabilities)
+			if (capability == Capability.DEPARTURES || capability == Capability.CONNECTIONS)
+				return true;
+
+		return false;
 	}
 
 	private static final String NAME_URL = API_BASE + "stboard.exe/dox?input=";
