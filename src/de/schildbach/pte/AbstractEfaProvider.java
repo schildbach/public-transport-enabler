@@ -106,6 +106,12 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		final String anyType = pp.getAttributeValue(null, "anyType");
 		final String idStr = pp.getAttributeValue(null, "id");
 		final String stopIdStr = pp.getAttributeValue(null, "stopID");
+		int lat = 0, lon = 0;
+		if ("WGS84".equals(pp.getAttributeValue(null, "mapName")))
+		{
+			lat = Integer.parseInt(pp.getAttributeValue(null, "y"));
+			lon = Integer.parseInt(pp.getAttributeValue(null, "x"));
+		}
 
 		LocationType type;
 		int id;
@@ -134,16 +140,14 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			type = LocationType.STATION;
 			id = Integer.parseInt(stopIdStr);
 		}
+		else if (stopIdStr == null && idStr == null && (lat != 0 || lon != 0))
+		{
+			type = LocationType.ADDRESS;
+			id = 0;
+		}
 		else
 		{
 			throw new IllegalArgumentException("unknown type: " + anyType + " " + idStr + " " + stopIdStr);
-		}
-
-		int lat = 0, lon = 0;
-		if ("WGS84".equals(pp.getAttributeValue(null, "mapName")))
-		{
-			lat = Integer.parseInt(pp.getAttributeValue(null, "y"));
-			lon = Integer.parseInt(pp.getAttributeValue(null, "x"));
 		}
 
 		final String name = normalizeLocationName(pp.nextText());
