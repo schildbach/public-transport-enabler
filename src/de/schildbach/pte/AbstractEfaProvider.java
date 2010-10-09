@@ -310,6 +310,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'R' + str;
 			if (type.equals("RE")) // Regional-Express
 				return 'R' + str;
+			if (type.equals("R-Bahn")) // Regional-Express, VRR
+				return 'R' + str;
 			if (P_LINE_RE.matcher(type).matches())
 				return 'R' + str;
 			if (type.equals("RB")) // Regionalbahn
@@ -487,7 +489,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			if (P_LINE_NUMBER.matcher(type).matches())
 				return "?";
 
-			throw new IllegalArgumentException("cannot normalize: " + longName);
+			throw new IllegalArgumentException("cannot normalize: long '" + longName + "' type '" + type + "'");
 		}
 		if (t == 1)
 			return 'S' + name;
@@ -650,16 +652,19 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			final XmlPullParser pp = factory.newPullParser();
 			pp.setInput(new StringReader(page.toString()));
 
-			XmlPullUtil.jumpToStartTag(pp, null, "itdRequest");
+			if (!XmlPullUtil.jumpToStartTag(pp, null, "itdRequest"))
+				throw new IllegalStateException("cannot find <itdRequest />");
 			final String sessionId = pp.getAttributeValue(null, "sessionID");
+
+			if (!XmlPullUtil.jumpToStartTag(pp, null, "itdTripRequest"))
+				throw new IllegalStateException("cannot find <itdTripRequest />");
 
 			// parse odv name elements
 			List<Location> ambiguousFrom = null, ambiguousTo = null, ambiguousVia = null;
 			Location from = null, via = null, to = null;
 
-			XmlPullUtil.jumpToStartTag(pp, null, "itdOdv");
-			if (!"origin".equals(pp.getAttributeValue(null, "usage")))
-				throw new IllegalStateException();
+			if (!XmlPullUtil.jumpToStartTag(pp, null, "itdOdv") || !"origin".equals(pp.getAttributeValue(null, "usage")))
+				throw new IllegalStateException("cannot find <itdOdv usage=\"origin\" />");
 			XmlPullUtil.nextStartTagInsideTree(pp, null, "itdOdvName");
 			final String originState = pp.getAttributeValue(null, "state");
 			if ("list".equals(originState))
@@ -674,9 +679,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				from = processOdvNameElem(pp);
 			}
 
-			XmlPullUtil.jumpToStartTag(pp, null, "itdOdv");
-			if (!"destination".equals(pp.getAttributeValue(null, "usage")))
-				throw new IllegalStateException();
+			if (!XmlPullUtil.jumpToStartTag(pp, null, "itdOdv") || !"destination".equals(pp.getAttributeValue(null, "usage")))
+				throw new IllegalStateException("cannot find <itdOdv usage=\"destination\" />");
 			XmlPullUtil.nextStartTagInsideTree(pp, null, "itdOdvName");
 			final String destinationState = pp.getAttributeValue(null, "state");
 			if ("list".equals(destinationState))
@@ -691,9 +695,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				to = processOdvNameElem(pp);
 			}
 
-			XmlPullUtil.jumpToStartTag(pp, null, "itdOdv");
-			if (!"via".equals(pp.getAttributeValue(null, "usage")))
-				throw new IllegalStateException();
+			if (!XmlPullUtil.jumpToStartTag(pp, null, "itdOdv") || !"via".equals(pp.getAttributeValue(null, "usage")))
+				throw new IllegalStateException("cannot find <itdOdv usage=\"via\" />");
 			XmlPullUtil.nextStartTagInsideTree(pp, null, "itdOdvName");
 			final String viaState = pp.getAttributeValue(null, "state");
 			if ("list".equals(viaState))
@@ -710,6 +713,9 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 			if (ambiguousFrom != null || ambiguousTo != null || ambiguousVia != null)
 				return new QueryConnectionsResult(ambiguousFrom, ambiguousVia, ambiguousTo);
+
+			if (!XmlPullUtil.jumpToStartTag(pp, null, "itdTripDateTime"))
+				throw new IllegalStateException("cannot find <itdTripDateTime />");
 
 			final Calendar departureTime = new GregorianCalendar(), arrivalTime = new GregorianCalendar();
 			final List<Connection> connections = new ArrayList<Connection>();
