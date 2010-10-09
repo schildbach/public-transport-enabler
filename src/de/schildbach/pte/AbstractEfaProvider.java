@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -536,14 +537,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				{
 					if (Integer.parseInt(pp.getAttributeValue(null, "stopID")) == locationId)
 					{
-						String position = pp.getAttributeValue(null, "platform");
-						if (position != null)
-						{
-							if (position.length() != 0)
-								position = "Gl. " + position;
-							else
-								position = null;
-						}
+						final String position = normalizePlatform(pp.getAttributeValue(null, "platform"), pp.getAttributeValue(null, "platformName"));
 
 						departureTime.clear();
 
@@ -742,7 +736,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 						final String departure = normalizeLocationName(pp.getAttributeValue(null, "name"));
 						if (firstDeparture == null)
 							firstDeparture = departure;
-						final String departurePosition = pp.getAttributeValue(null, "platform");
+						final String departurePosition = normalizePlatform(pp.getAttributeValue(null, "platform"), pp.getAttributeValue(null,
+								"platformName"));
 						processItdDateTime(pp, departureTime);
 						if (firstDepartureTime == null)
 							firstDepartureTime = departureTime.getTime();
@@ -754,7 +749,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 						final int arrivalId = Integer.parseInt(pp.getAttributeValue(null, "stopID"));
 						final String arrival = normalizeLocationName(pp.getAttributeValue(null, "name"));
 						lastArrival = arrival;
-						final String arrivalPosition = pp.getAttributeValue(null, "platform");
+						final String arrivalPosition = normalizePlatform(pp.getAttributeValue(null, "platform"), pp.getAttributeValue(null,
+								"platformName"));
 						processItdDateTime(pp, arrivalTime);
 						lastArrivalTime = arrivalTime.getTime();
 						XmlPullUtil.skipRestOfTree(pp);
@@ -799,6 +795,32 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		{
 			throw new RuntimeException(x);
 		}
+	}
+
+	private static final Pattern P_PLATFORM_GLEIS = Pattern.compile("Gleis (\\d+[a-z]?)(?: ([A-Z])\\s*-\\s*([A-Z]))?");
+
+	private static final String normalizePlatform(final String platform, final String platformName)
+	{
+		if (platformName != null && platformName.length() > 0)
+		{
+			final Matcher mGleis = P_PLATFORM_GLEIS.matcher(platformName);
+			if (mGleis.matches())
+			{
+				if (mGleis.group(2) == null)
+					return "Gl. " + mGleis.group(1);
+				else
+					return "Gl. " + mGleis.group(1) + " " + mGleis.group(2) + "-" + mGleis.group(3);
+			}
+			else
+			{
+				return platformName;
+			}
+		}
+
+		if (platform != null && platform.length() > 0)
+			return platform;
+
+		return null;
 	}
 
 	public GetConnectionDetailsResult getConnectionDetails(final String connectionUri) throws IOException
