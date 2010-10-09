@@ -57,13 +57,7 @@ public final class Connection implements Serializable
 	@Override
 	public String toString()
 	{
-		final StringBuilder builder = new StringBuilder(getClass().getName() + "[");
-		builder.append("id=").append(id);
-		builder.append(",departureTime=").append(departureTime);
-		builder.append(",arrivalTime=").append(arrivalTime);
-		builder.append(",parts=").append(parts);
-		builder.append("]");
-		return builder.toString();
+		return id;
 	}
 
 	@Override

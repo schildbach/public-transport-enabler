@@ -103,7 +103,7 @@ public final class QueryConnectionsResult implements Serializable
 		final StringBuilder builder = new StringBuilder(getClass().getName());
 		builder.append("[").append(this.status).append(": ");
 		if (connections != null)
-			builder.append(connections.size()).append(" connections, ");
+			builder.append(connections.size()).append(" connections " + connections + ", ");
 		if (ambiguousFrom != null)
 			builder.append(ambiguousFrom.size()).append(" ambiguous from, ");
 		if (ambiguousVia != null)
