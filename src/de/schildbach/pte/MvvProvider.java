@@ -136,8 +136,7 @@ public class MvvProvider extends AbstractEfaProvider
 		uri.append("XSLT_TRIP_REQUEST2");
 
 		uri.append("?language=de");
-		uri.append("&outputFormat=XML");
-		uri.append("&coordOutputFormat=WGS84");
+		appendCommonConnectionParams(uri);
 
 		appendLocation(uri, from, "origin");
 		appendLocation(uri, to, "destination");
@@ -164,6 +163,7 @@ public class MvvProvider extends AbstractEfaProvider
 		uri.append(API_BASE);
 		uri.append("XSLT_TRIP_REQUEST2");
 		uri.append("?sessionID=").append(sessionId);
+		appendCommonConnectionParams(uri);
 		uri.append("&command=").append(command);
 		return uri.toString();
 	}

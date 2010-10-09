@@ -868,6 +868,13 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 	protected abstract String commandLink(String sessionId, String command);
 
+	protected static final void appendCommonConnectionParams(final StringBuilder uri)
+	{
+		uri.append("&outputFormat=XML");
+		uri.append("&coordOutputFormat=WGS84");
+		uri.append("&calcNumberOfTrips=4");
+	}
+
 	protected static final void appendLocation(final StringBuilder uri, final Location location, final String paramSuffix)
 	{
 		if (location.type == LocationType.ADDRESS && location.lat != 0 && location.lon != 0)
