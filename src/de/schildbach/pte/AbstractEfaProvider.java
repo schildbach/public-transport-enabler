@@ -624,11 +624,10 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		return (double) value / 1000000;
 	}
 
-	public QueryConnectionsResult queryConnections(final LocationType fromType, final String from, final LocationType viaType, final String via,
-			final LocationType toType, final String to, final Date date, final boolean dep, final String products, final WalkSpeed walkSpeed)
-			throws IOException
+	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
+			final String products, final WalkSpeed walkSpeed) throws IOException
 	{
-		final String uri = connectionsQueryUri(fromType, from, viaType, via, toType, to, date, dep, products, walkSpeed) + "&sessionID=0";
+		final String uri = connectionsQueryUri(from, via, to, date, dep, products, walkSpeed) + "&sessionID=0";
 
 		final CharSequence page = ParserUtils.scrape(uri);
 
@@ -799,22 +798,46 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		throw new UnsupportedOperationException();
 	}
 
-	protected abstract String connectionsQueryUri(LocationType fromType, String from, LocationType viaType, String via, LocationType toType,
-			String to, Date date, boolean dep, String products, WalkSpeed walkSpeed);
+	protected abstract String connectionsQueryUri(Location from, Location via, Location to, Date date, boolean dep, String products,
+			WalkSpeed walkSpeed);
 
 	protected abstract String commandLink(String sessionId, String command);
 
-	protected static final String locationTypeValue(final LocationType locationType)
+	protected static final void appendLocation(final StringBuilder uri, final Location location, final String paramSuffix)
 	{
-		if (locationType == LocationType.STATION)
+		if (location.type == LocationType.ADDRESS && location.lat != 0 && location.lon != 0)
+		{
+			uri.append("&nameInfo_").append(paramSuffix).append("=").append(String.format("%2.6f:%2.6f", location.lon / 1E6, location.lat / 1E6))
+					.append(":WGS84[DD.dddddd]");
+			uri.append("&typeInfo_").append(paramSuffix).append("=coord");
+		}
+		else
+		{
+			uri.append("&type_").append(paramSuffix).append("=").append(locationTypeValue(location));
+			uri.append("&name_").append(paramSuffix).append("=").append(ParserUtils.urlEncode(locationValue(location), "ISO-8859-1"));
+		}
+	}
+
+	protected static final String locationTypeValue(final Location location)
+	{
+		final LocationType type = location.type;
+		if (type == LocationType.STATION)
 			return "stop";
-		if (locationType == LocationType.ADDRESS)
+		if (type == LocationType.ADDRESS)
 			return "any"; // strange, matches with anyObjFilter
-		if (locationType == LocationType.POI)
+		if (type == LocationType.POI)
 			return "any";
-		if (locationType == LocationType.ANY)
+		if (type == LocationType.ANY)
 			return "any";
-		throw new IllegalArgumentException(locationType.toString());
+		throw new IllegalArgumentException(type.toString());
+	}
+
+	protected static final String locationValue(final Location location)
+	{
+		if (location.type == LocationType.STATION && location.id != 0)
+			return Integer.toString(location.id);
+		else
+			return location.name;
 	}
 
 	protected static final String productParams(final String products)

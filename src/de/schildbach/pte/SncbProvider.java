@@ -26,10 +26,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
-import de.schildbach.pte.dto.LocationType;
+import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryDeparturesResult.Status;
@@ -66,9 +65,8 @@ public class SncbProvider extends AbstractHafasProvider
 		return String.format(NEARBY_URI, stationId);
 	}
 
-	public QueryConnectionsResult queryConnections(final LocationType fromType, final String from, final LocationType viaType, final String via,
-			final LocationType toType, final String to, final Date date, final boolean dep, final String products, final WalkSpeed walkSpeed)
-			throws IOException
+	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
+			final String products, final WalkSpeed walkSpeed) throws IOException
 	{
 		throw new UnsupportedOperationException();
 	}

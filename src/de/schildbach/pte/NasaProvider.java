@@ -28,10 +28,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
-import de.schildbach.pte.dto.LocationType;
+import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryDeparturesResult.Status;
@@ -245,8 +244,8 @@ public class NasaProvider extends AbstractHafasProvider
 		return 0;
 	}
 
-	public QueryConnectionsResult queryConnections(LocationType fromType, String from, LocationType viaType, String via, LocationType toType,
-			String to, Date date, boolean dep, String products, WalkSpeed walkSpeed) throws IOException
+	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
+			final String products, final WalkSpeed walkSpeed) throws IOException
 	{
 		throw new UnsupportedOperationException();
 	}

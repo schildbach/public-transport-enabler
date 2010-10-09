@@ -24,6 +24,7 @@ import org.junit.Test;
 import de.schildbach.pte.BahnProvider;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Connection;
+import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
@@ -34,7 +35,7 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 public class BahnProviderLiveTest
 {
 	private BahnProvider provider = new BahnProvider();
-	private static final String ALL_PRODUCTS = "IRSUTBFC";
+	protected static final String ALL_PRODUCTS = "IRSUTBFC";
 
 	@Test
 	public void departures() throws Exception
@@ -46,8 +47,8 @@ public class BahnProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(LocationType.ANY, "Berlin", null, null, LocationType.ANY, "Leipzig",
-				new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, 0, 0, "Berlin"), null, new Location(
+				LocationType.ANY, 0, 0, 0, "Leipzig"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
 		for (final Connection connection : result.connections)
@@ -58,8 +59,8 @@ public class BahnProviderLiveTest
 	@Test
 	public void slowConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(LocationType.ANY, "Marienburger Str., Berlin ", null, null, LocationType.ANY,
-				"Tutzinger-Hof-Platz, Starnberg", new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, 0, 0, "Marienburger Str., Berlin"), null,
+				new Location(LocationType.ANY, 0, 0, 0, "Tutzinger-Hof-Platz, Starnberg"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
 		for (final Connection connection : result.connections)
@@ -70,8 +71,9 @@ public class BahnProviderLiveTest
 	@Test
 	public void connectionWithFootway() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(LocationType.ADDRESS, "Berlin - Mitte, Unter den Linden 24", null, null,
-				LocationType.ADDRESS, "Starnberg, Possenhofener Straße 13", new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, 0, 0,
+				"Berlin - Mitte, Unter den Linden 24"), null, new Location(LocationType.ADDRESS, 0, 0, 0, "Starnberg, Possenhofener Straße 13"),
+				new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
 
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);

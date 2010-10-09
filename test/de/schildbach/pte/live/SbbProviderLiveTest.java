@@ -48,8 +48,8 @@ public class SbbProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(LocationType.ANY, "Zürich!", null, null, LocationType.ANY, "Bern",
-				new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, 0, 0, "Zürich!"), null, new Location(
+				LocationType.ANY, 0, 0, 0, "Bern"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
 		System.out.println(moreResult);
@@ -58,8 +58,8 @@ public class SbbProviderLiveTest
 	@Test
 	public void slowConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(LocationType.ANY, "Schocherswil, Alte Post!", null, null, LocationType.ANY,
-				"Laconnex, Mollach", new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, 0, 0, "Schocherswil, Alte Post!"), null,
+				new Location(LocationType.ANY, 0, 0, 0, "Laconnex, Mollach"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
 		System.out.println(moreResult);
@@ -68,8 +68,8 @@ public class SbbProviderLiveTest
 	@Test
 	public void connectionWithFootway() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(LocationType.ADDRESS, "Spiez, Seestraße 62", null, null,
-				LocationType.ADDRESS, "Einsiedeln, Erlenmoosweg 24", new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, 0, 0, "Spiez, Seestraße 62"), null,
+				new Location(LocationType.ADDRESS, 0, 0, 0, "Einsiedeln, Erlenmoosweg 24"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
 		System.out.println(moreResult);

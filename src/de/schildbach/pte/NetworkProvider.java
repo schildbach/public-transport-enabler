@@ -23,7 +23,6 @@ import java.util.List;
 
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
 import de.schildbach.pte.dto.Location;
-import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
@@ -37,7 +36,7 @@ public interface NetworkProvider
 {
 	public enum Capability
 	{
-		NEARBY_STATIONS, DEPARTURES, CONNECTIONS, LOCATION_WGS84, LOCATION_STATION_ID
+		NEARBY_STATIONS, DEPARTURES, CONNECTIONS
 	}
 
 	public enum WalkSpeed
@@ -78,16 +77,10 @@ public interface NetworkProvider
 	/**
 	 * Query connections, asking for any ambiguousnesses
 	 * 
-	 * @param fromType
-	 *            type of location to route from, mandatory
 	 * @param from
 	 *            location to route from, mandatory
-	 * @param viaType
-	 *            type of location to route via, may be {@code null}
 	 * @param via
 	 *            location to route via, may be {@code null}
-	 * @param toType
-	 *            type of location to route to, mandatory
 	 * @param to
 	 *            location to route to, mandatory
 	 * @param date
@@ -103,8 +96,8 @@ public interface NetworkProvider
 	 * @return result object that can contain alternatives to clear up ambiguousnesses, or contains possible connections
 	 * @throws IOException
 	 */
-	QueryConnectionsResult queryConnections(LocationType fromType, String from, LocationType viaType, String via, LocationType toType, String to,
-			Date date, boolean dep, String products, WalkSpeed walkSpeed) throws IOException;
+	QueryConnectionsResult queryConnections(Location from, Location via, Location to, Date date, boolean dep, String products, WalkSpeed walkSpeed)
+			throws IOException;
 
 	/**
 	 * Query more connections (e.g. earlier or later)

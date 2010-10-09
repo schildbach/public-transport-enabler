@@ -79,16 +79,16 @@ public class LinzProviderLiveTest
 	@Test
 	public void incompleteConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(LocationType.ANY, "linz", null, null, LocationType.ANY, "gel", new Date(),
-				true, ALL_PRODUCTS, WalkSpeed.FAST);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, 0, 0, "linz"), null, new Location(
+				LocationType.ANY, 0, 0, 0, "gel"), new Date(), true, ALL_PRODUCTS, WalkSpeed.FAST);
 		System.out.println(result);
 	}
 
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(LocationType.STATION, "Linz Hauptbahnhof", null, null, LocationType.STATION,
-				"Linz Auwiesen", new Date(), true, ALL_PRODUCTS, WalkSpeed.FAST);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 0, 0, 0, "Linz Hauptbahnhof"), null,
+				new Location(LocationType.STATION, 0, 0, 0, "Linz Auwiesen"), new Date(), true, ALL_PRODUCTS, WalkSpeed.FAST);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
 		System.out.println(moreResult);
@@ -97,38 +97,8 @@ public class LinzProviderLiveTest
 	@Test
 	public void longConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(LocationType.STATION, "Linz Auwiesen", null, null, LocationType.STATION,
-				"Linz Hafen", new Date(), true, ALL_PRODUCTS, WalkSpeed.SLOW);
-		System.out.println(result);
-		// final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
-		// System.out.println(moreResult);
-	}
-
-	@Test
-	public void connectionBetweenCoordinates() throws Exception
-	{
-		final QueryConnectionsResult result = provider.queryConnections(LocationType.WGS84, "48165238,11577473", null, null, LocationType.WGS84,
-				"47987199,11326532", new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
-		System.out.println(result);
-		// final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
-		// System.out.println(moreResult);
-	}
-
-	@Test
-	public void connectionBetweenCoordinateAndStation() throws Exception
-	{
-		final QueryConnectionsResult result = provider.queryConnections(LocationType.WGS84, "48238341,11478230", null, null, LocationType.ANY,
-				"Ostbahnhof", new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
-		System.out.println(result);
-		// final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
-		// System.out.println(moreResult);
-	}
-
-	@Test
-	public void connectionBetweenAddresses() throws Exception
-	{
-		final QueryConnectionsResult result = provider.queryConnections(LocationType.ADDRESS, "München, Maximilianstr. 1", null, null,
-				LocationType.ADDRESS, "Starnberg, Jahnstraße 50", new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 0, 0, 0, "Linz Auwiesen"), null,
+				new Location(LocationType.STATION, 0, 0, 0, "Linz Hafen"), new Date(), true, ALL_PRODUCTS, WalkSpeed.SLOW);
 		System.out.println(result);
 		// final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
 		// System.out.println(moreResult);

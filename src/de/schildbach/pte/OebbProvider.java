@@ -32,10 +32,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
+import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
@@ -51,7 +51,7 @@ public class OebbProvider extends AbstractHafasProvider
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
 		for (final Capability capability : capabilities)
-			if (capability == Capability.DEPARTURES || capability == Capability.CONNECTIONS || capability == Capability.LOCATION_STATION_ID)
+			if (capability == Capability.DEPARTURES || capability == Capability.CONNECTIONS)
 				return true;
 
 		return false;
@@ -146,9 +146,8 @@ public class OebbProvider extends AbstractHafasProvider
 		WALKSPEED_MAP.put(WalkSpeed.FAST, "85");
 	}
 
-	private String connectionsQuery(final LocationType fromType, final String from, final LocationType viaType, final String via,
-			final LocationType toType, final String to, final Date date, final boolean dep, final String products, final WalkSpeed walkSpeed)
-			throws IOException
+	private String connectionsQuery(final Location from, final Location via, final Location to, final Date date, final boolean dep,
+			final String products, final WalkSpeed walkSpeed) throws IOException
 	{
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yy");
 		final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
@@ -158,17 +157,17 @@ public class OebbProvider extends AbstractHafasProvider
 		uri.append("&start.x=0");
 		uri.append("&start.y=0");
 		uri.append("&start=Suchen");
-		uri.append("&REQ0JourneyStopsS0A=").append(locationType(fromType));
-		uri.append("&REQ0JourneyStopsS0G=").append(ParserUtils.urlEncode(from));
+		uri.append("&REQ0JourneyStopsS0A=").append(locationTypeValue(from));
+		uri.append("&REQ0JourneyStopsS0G=").append(ParserUtils.urlEncode(locationValue(from)));
 		uri.append("&REQ0JourneyStopsS0ID="); // "tupel"?
 		if (via != null)
 		{
-			uri.append("&REQ0JourneyStops1.0A=").append(locationType(viaType));
-			uri.append("&REQ0JourneyStops1.0G=").append(ParserUtils.urlEncode(via));
+			uri.append("&REQ0JourneyStops1.0A=").append(locationTypeValue(via));
+			uri.append("&REQ0JourneyStops1.0G=").append(ParserUtils.urlEncode(locationValue(via)));
 			uri.append("&REQ0JourneyStops1.0ID=");
 		}
-		uri.append("&REQ0JourneyStopsZ0A=").append(locationType(toType));
-		uri.append("&REQ0JourneyStopsZ0G=").append(ParserUtils.urlEncode(to));
+		uri.append("&REQ0JourneyStopsZ0A=").append(locationTypeValue(to));
+		uri.append("&REQ0JourneyStopsZ0G=").append(ParserUtils.urlEncode(locationValue(to)));
 		uri.append("&REQ0JourneyStopsZ0ID=");
 		uri.append("&REQ0JourneyDate=").append(ParserUtils.urlEncode(DATE_FORMAT.format(date)));
 		uri.append("&wDayExt0=").append(ParserUtils.urlEncode("Mo|Di|Mi|Do|Fr|Sa|So"));
@@ -195,22 +194,30 @@ public class OebbProvider extends AbstractHafasProvider
 				uri.append("&REQ0JourneyProduct_prod_section_0_6=1&REQ0JourneyProduct_prod_section_0_11=1");
 			if (p == 'F')
 				uri.append("&REQ0JourneyProduct_prod_section_0_7=1");
-			if (p == 'C')
-				; // FIXME
+			// FIXME if (p == 'C')
 		}
 
 		return uri.toString();
 	}
 
-	private static int locationType(final LocationType locationType)
+	private static int locationTypeValue(final Location location)
 	{
-		if (locationType == LocationType.STATION)
+		final LocationType type = location.type;
+		if (type == LocationType.STATION)
 			return 1;
-		if (locationType == LocationType.ADDRESS)
+		if (type == LocationType.ADDRESS)
 			return 2;
-		if (locationType == LocationType.ANY)
+		if (type == LocationType.ANY)
 			return 255;
-		throw new IllegalArgumentException(locationType.toString());
+		throw new IllegalArgumentException(type.toString());
+	}
+
+	private static String locationValue(final Location location)
+	{
+		if (location.type == LocationType.STATION && location.id != 0)
+			return Integer.toString(location.id);
+		else
+			return location.name;
 	}
 
 	private static final String QUERY_CONNECTIONS_FORM_URL = API_BASE + "query.exe/dn?";
@@ -222,9 +229,8 @@ public class OebbProvider extends AbstractHafasProvider
 			"<select.*? name=\"(REQ0JourneyStopsS0K|REQ0JourneyStopsZ0K|REQ0JourneyStops1\\.0K)\"[^>]*>\n(.*?)</select>", Pattern.DOTALL);
 	private static final Pattern P_ADDRESSES = Pattern.compile("<option[^>]*>\\s*([^<\\[]*)(?:\\[[^\\[]*\\])?\\s*</option>", Pattern.DOTALL);
 
-	public QueryConnectionsResult queryConnections(final LocationType fromType, final String from, final LocationType viaType, final String via,
-			final LocationType toType, final String to, final Date date, final boolean dep, final String products, final WalkSpeed walkSpeed)
-			throws IOException
+	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
+			final String products, final WalkSpeed walkSpeed) throws IOException
 	{
 		// get base url and cookies from form
 		final CharSequence form = ParserUtils.scrape(QUERY_CONNECTIONS_FORM_URL, false, null, null, true);
@@ -234,7 +240,7 @@ public class OebbProvider extends AbstractHafasProvider
 		final String baseUri = m.group(1);
 
 		// query
-		final String query = connectionsQuery(fromType, from, viaType, via, toType, to, date, dep, products, walkSpeed);
+		final String query = connectionsQuery(from, via, to, date, dep, products, walkSpeed);
 		final CharSequence page = ParserUtils.scrape(baseUri, true, query, null, true);
 
 		final Matcher mError = P_QUERY_CONNECTIONS_ERROR.matcher(page);

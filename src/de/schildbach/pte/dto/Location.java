@@ -43,7 +43,7 @@ public final class Location
 
 	public String toDebugString()
 	{
-		return "[" + type + " " + id + " '" + name + "']";
+		return "[" + type + " " + id + " " + lat + "/" + lon + " '" + name + "']";
 	}
 
 	@Override

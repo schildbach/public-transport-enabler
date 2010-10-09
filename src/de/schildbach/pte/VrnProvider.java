@@ -20,7 +20,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import de.schildbach.pte.dto.LocationType;
+import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.util.ParserUtils;
 
 /**
@@ -34,8 +34,7 @@ public class VrnProvider extends AbstractEfaProvider
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
 		for (final Capability capability : capabilities)
-			if (capability == Capability.DEPARTURES || capability == Capability.CONNECTIONS || capability == Capability.LOCATION_STATION_ID
-					|| capability == Capability.LOCATION_WGS84)
+			if (capability == Capability.DEPARTURES || capability == Capability.CONNECTIONS)
 				return true;
 
 		return false;
@@ -79,8 +78,8 @@ public class VrnProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	protected String connectionsQueryUri(final LocationType fromType, final String from, final LocationType viaType, final String via,
-			final LocationType toType, final String to, final Date date, final boolean dep, final String products, final WalkSpeed walkSpeed)
+	protected String connectionsQueryUri(final Location from, final Location via, final Location to, final Date date, final boolean dep,
+			final String products, final WalkSpeed walkSpeed)
 	{
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
 		final DateFormat TIME_FORMAT = new SimpleDateFormat("HHmm");
@@ -93,50 +92,10 @@ public class VrnProvider extends AbstractEfaProvider
 		uri.append("&outputFormat=XML");
 		uri.append("&coordOutputFormat=WGS84");
 
-		if (fromType == LocationType.WGS84)
-		{
-			final String[] parts = from.split(",\\s*", 2);
-			final int lat = Integer.parseInt(parts[0]);
-			final int lon = Integer.parseInt(parts[1]);
-			uri.append("&nameInfo_origin=").append(String.format("%2.6f:%2.6f", lon / 1E6, lat / 1E6)).append(":WGS84[DD.dddddd]");
-			uri.append("&typeInfo_origin=coord");
-		}
-		else
-		{
-			uri.append("&type_origin=").append(locationTypeValue(fromType));
-			uri.append("&name_origin=").append(ParserUtils.urlEncode(from, "ISO-8859-1")); // fine-grained location
-		}
-
-		if (toType == LocationType.WGS84)
-		{
-			final String[] parts = to.split(",\\s*", 2);
-			final int lat = Integer.parseInt(parts[0]);
-			final int lon = Integer.parseInt(parts[1]);
-			uri.append("&nameInfo_destination=").append(String.format("%2.6f:%2.6f", lon / 1E6, lat / 1E6)).append(":WGS84[DD.dddddd]");
-			uri.append("&typeInfo_destination=coord");
-		}
-		else
-		{
-			uri.append("&type_destination=").append(locationTypeValue(toType));
-			uri.append("&name_destination=").append(ParserUtils.urlEncode(to, "ISO-8859-1")); // fine-grained location
-		}
-
+		appendLocation(uri, from, "origin");
+		appendLocation(uri, to, "destination");
 		if (via != null)
-		{
-			if (viaType == LocationType.WGS84)
-			{
-				final String[] parts = via.split(",\\s*", 2);
-				final int lat = Integer.parseInt(parts[0]);
-				final int lon = Integer.parseInt(parts[1]);
-				uri.append("&nameInfo_via=").append(String.format("%2.6f:%2.6f", lon / 1E6, lat / 1E6)).append(":WGS84[DD.dddddd]");
-				uri.append("&typeInfo_via=coord");
-			}
-			else
-			{
-				uri.append("&type_via=").append(locationTypeValue(viaType));
-				uri.append("&name_via=").append(ParserUtils.urlEncode(via, "ISO-8859-1"));
-			}
-		}
+			appendLocation(uri, via, "via");
 
 		uri.append("&itdDate=").append(ParserUtils.urlEncode(DATE_FORMAT.format(date)));
 		uri.append("&itdTime=").append(ParserUtils.urlEncode(TIME_FORMAT.format(date)));

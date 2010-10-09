@@ -21,5 +21,5 @@ package de.schildbach.pte.dto;
  */
 public enum LocationType
 {
-	ANY, STATION, WGS84, ADDRESS, POI
+	ANY, STATION, POI, ADDRESS
 }

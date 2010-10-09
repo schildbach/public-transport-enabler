@@ -30,10 +30,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
+import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
@@ -53,10 +53,6 @@ public class RmvProvider extends AbstractHafasProvider
 
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
-		for (final Capability capability : capabilities)
-			if (capability == Capability.LOCATION_WGS84)
-				return false;
-
 		return true;
 	}
 
@@ -104,8 +100,8 @@ public class RmvProvider extends AbstractHafasProvider
 		WALKSPEED_MAP.put(WalkSpeed.FAST, "85");
 	}
 
-	private String connectionsQueryUri(final LocationType fromType, final String from, final LocationType viaType, final String via,
-			final LocationType toType, final String to, final Date date, final boolean dep, final String products, final WalkSpeed walkSpeed)
+	private String connectionsQueryUri(final Location from, final Location via, final Location to, final Date date, final boolean dep,
+			final String products, final WalkSpeed walkSpeed)
 	{
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yy");
 		final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
@@ -116,14 +112,14 @@ public class RmvProvider extends AbstractHafasProvider
 		uri.append("&REQ0HafasSearchForw=").append(dep ? "1" : "0");
 		uri.append("&REQ0JourneyDate=").append(ParserUtils.urlEncode(DATE_FORMAT.format(date)));
 		uri.append("&REQ0JourneyTime=").append(ParserUtils.urlEncode(TIME_FORMAT.format(date)));
-		uri.append("&REQ0JourneyStopsS0G=").append(ParserUtils.urlEncode(from));
-		uri.append("&REQ0JourneyStopsS0A=").append(locationType(fromType));
-		uri.append("&REQ0JourneyStopsZ0G=").append(ParserUtils.urlEncode(to));
-		uri.append("&REQ0JourneyStopsZ0A=").append(locationType(toType));
+		uri.append("&REQ0JourneyStopsS0G=").append(ParserUtils.urlEncode(locationValue(from)));
+		uri.append("&REQ0JourneyStopsS0A=").append(locationTypeValue(from));
+		uri.append("&REQ0JourneyStopsZ0G=").append(ParserUtils.urlEncode(locationValue(to)));
+		uri.append("&REQ0JourneyStopsZ0A=").append(locationTypeValue(to));
 		if (via != null)
 		{
-			uri.append("&REQ0JourneyStops1.0G=").append(ParserUtils.urlEncode(via));
-			uri.append("&REQ0JourneyStops1.0A=").append(locationType(viaType));
+			uri.append("&REQ0JourneyStops1.0G=").append(ParserUtils.urlEncode(locationValue(via)));
+			uri.append("&REQ0JourneyStops1.0A=").append(locationTypeValue(via));
 		}
 		uri.append("&REQ0JourneyDep_Foot_speed=").append(WALKSPEED_MAP.get(walkSpeed));
 
@@ -143,8 +139,7 @@ public class RmvProvider extends AbstractHafasProvider
 				uri.append("&REQ0JourneyProduct_prod_list_6=0000001101000000");
 			if (p == 'F')
 				uri.append("&REQ0JourneyProduct_prod_list_7=0000000010000000");
-			if (p == 'C')
-				; // FIXME
+			// FIXME if (p == 'C')
 		}
 
 		uri.append("&start=Suchen");
@@ -152,15 +147,24 @@ public class RmvProvider extends AbstractHafasProvider
 		return uri.toString();
 	}
 
-	private static int locationType(final LocationType locationType)
+	private static int locationTypeValue(final Location location)
 	{
-		if (locationType == LocationType.STATION)
+		final LocationType type = location.type;
+		if (type == LocationType.STATION)
 			return 1;
-		if (locationType == LocationType.ADDRESS)
+		if (type == LocationType.ADDRESS)
 			return 2;
-		if (locationType == LocationType.ANY)
+		if (type == LocationType.ANY)
 			return 255;
-		throw new IllegalArgumentException(locationType.toString());
+		throw new IllegalArgumentException(type.toString());
+	}
+
+	private static String locationValue(final Location location)
+	{
+		if (location.type == LocationType.STATION && location.id != 0)
+			return Integer.toString(location.id);
+		else
+			return location.name;
 	}
 
 	private static final Pattern P_PRE_ADDRESS = Pattern.compile("(?:Geben Sie einen (Startort|Zielort) an.*?)?Bitte w&#228;hlen Sie aus der Liste",
@@ -170,11 +174,10 @@ public class RmvProvider extends AbstractHafasProvider
 	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern.compile(
 			"(mehrfach vorhanden oder identisch)|(keine Verbindung gefunden werden)|(derzeit nur Ausk&#252;nfte vom)", Pattern.CASE_INSENSITIVE);
 
-	public QueryConnectionsResult queryConnections(final LocationType fromType, final String from, final LocationType viaType, final String via,
-			final LocationType toType, final String to, final Date date, final boolean dep, final String products, final WalkSpeed walkSpeed)
-			throws IOException
+	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
+			final String products, final WalkSpeed walkSpeed) throws IOException
 	{
-		final String uri = connectionsQueryUri(fromType, from, viaType, via, toType, to, date, dep, products, walkSpeed);
+		final String uri = connectionsQueryUri(from, via, to, date, dep, products, walkSpeed);
 		final CharSequence page = ParserUtils.scrape(uri);
 
 		final Matcher mError = P_CHECK_CONNECTIONS_ERROR.matcher(page);

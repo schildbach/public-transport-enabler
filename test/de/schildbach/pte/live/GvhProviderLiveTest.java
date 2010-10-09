@@ -87,8 +87,8 @@ public class GvhProviderLiveTest
 	@Test
 	public void incompleteConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(LocationType.ANY, "hann", null, null, LocationType.ANY, "laat", new Date(),
-				true, ALL_PRODUCTS, WalkSpeed.FAST);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, 0, 0, "hann"), null, new Location(
+				LocationType.ANY, 0, 0, 0, "laat"), new Date(), true, ALL_PRODUCTS, WalkSpeed.FAST);
 		System.out.println(result);
 	}
 }

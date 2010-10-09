@@ -31,10 +31,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
+import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
@@ -58,7 +58,7 @@ public final class VbbProvider implements NetworkProvider
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
 		for (final Capability capability : capabilities)
-			if (capability == Capability.NEARBY_STATIONS || capability == Capability.LOCATION_STATION_ID)
+			if (capability == Capability.NEARBY_STATIONS)
 				return false;
 
 		return true;
@@ -115,8 +115,8 @@ public final class VbbProvider implements NetworkProvider
 
 	public static final String STATION_URL_CONNECTION = "http://mobil.bvg.de/Fahrinfo/bin/query.bin/dox";
 
-	private String connectionsQueryUri(final LocationType fromType, final String from, final LocationType viaType, final String via,
-			final LocationType toType, final String to, final Date date, final boolean dep, final String products)
+	private String connectionsQueryUri(final Location from, final Location via, final Location to, final Date date, final boolean dep,
+			final String products)
 	{
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yy");
 		final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
@@ -125,54 +125,10 @@ public final class VbbProvider implements NetworkProvider
 		uri.append("http://mobil.bvg.de/Fahrinfo/bin/query.bin/dox");
 		uri.append("?REQ0HafasInitialSelection=0");
 
-		// from
-		if (fromType == LocationType.WGS84)
-		{
-			final String[] parts = from.split(",\\s*", 2);
-			final int lat = Integer.parseInt(parts[0]);
-			final int lon = Integer.parseInt(parts[1]);
-			uri.append("&SID=").append(ParserUtils.urlEncode("A=16@X=" + lon + "@Y=" + lat));
-		}
-		else
-		{
-			uri.append("&REQ0JourneyStopsS0A=").append(locationType(fromType));
-			uri.append("&REQ0JourneyStopsS0G=").append(ParserUtils.urlEncode(from));
-			if (fromType == LocationType.STATION)
-				uri.append(ParserUtils.urlEncode("!"));
-		}
-
-		// via
+		appendLocationVbb(uri, from, "S0", "SID");
+		appendLocationVbb(uri, to, "Z0", "ZID");
 		if (via != null)
-		{
-			if (viaType == LocationType.WGS84)
-			{
-				// FIXME
-				throw new UnsupportedOperationException();
-			}
-			else
-			{
-				uri.append("&REQ0JourneyStops1A=").append(locationType(viaType));
-				uri.append("&REQ0JourneyStops1G=").append(ParserUtils.urlEncode(via));
-				if (viaType == LocationType.STATION)
-					uri.append(ParserUtils.urlEncode("!"));
-			}
-		}
-
-		// to
-		if (toType == LocationType.WGS84)
-		{
-			final String[] parts = to.split(",\\s*", 2);
-			final int lat = Integer.parseInt(parts[0]);
-			final int lon = Integer.parseInt(parts[1]);
-			uri.append("&ZID=").append(ParserUtils.urlEncode("A=16@X=" + lon + "@Y=" + lat));
-		}
-		else
-		{
-			uri.append("&REQ0JourneyStopsZ0A=").append(locationType(toType));
-			uri.append("&REQ0JourneyStopsZ0G=").append(ParserUtils.urlEncode(to));
-			if (toType == LocationType.STATION)
-				uri.append(ParserUtils.urlEncode("!"));
-		}
+			appendLocationVbb(uri, via, "1", null);
 
 		uri.append("&REQ0HafasSearchForw=").append(dep ? "1" : "0");
 		uri.append("&REQ0JourneyDate=").append(ParserUtils.urlEncode(DATE_FORMAT.format(date)));
@@ -194,23 +150,44 @@ public final class VbbProvider implements NetworkProvider
 				uri.append("&vw=3");
 			if (p == 'F')
 				uri.append("&vw=7");
-			if (p == 'C')
-				; // FIXME
+			// FIXME if (p == 'C')
 		}
 
 		uri.append("&start=Suchen");
 		return uri.toString();
 	}
 
-	private static int locationType(final LocationType locationType)
+	private static final void appendLocationVbb(final StringBuilder uri, final Location location, final String paramSuffix, final String paramWgs)
 	{
-		if (locationType == LocationType.STATION)
+		if (location.type == LocationType.ADDRESS && location.lat != 0 && location.lon != 0 && paramWgs != null)
+		{
+			uri.append("&").append(paramWgs).append("=").append(ParserUtils.urlEncode("A=16@X=" + location.lon + "@Y=" + location.lat));
+		}
+		else
+		{
+			uri.append("&REQ0JourneyStops").append(paramSuffix).append("A=").append(locationTypeValue(location));
+			uri.append("&REQ0JourneyStops").append(paramSuffix).append("G=").append(ParserUtils.urlEncode(locationValue(location)));
+		}
+	}
+
+	private static final int locationTypeValue(final Location location)
+	{
+		final LocationType type = location.type;
+		if (type == LocationType.STATION)
 			return 1;
-		if (locationType == LocationType.ADDRESS)
+		if (type == LocationType.ADDRESS)
 			return 2;
-		if (locationType == LocationType.ANY)
+		if (type == LocationType.ANY)
 			return 255;
-		throw new IllegalArgumentException(locationType.toString());
+		throw new IllegalArgumentException(type.toString());
+	}
+
+	private static final String locationValue(final Location location)
+	{
+		if (location.type == LocationType.STATION && location.id != 0)
+			return Integer.toString(location.id);
+		else
+			return location.name;
 	}
 
 	private static final Pattern P_CHECK_ADDRESS = Pattern.compile("<option[^>]*>\\s*(.*?)\\s*</option>", Pattern.DOTALL);
@@ -219,11 +196,11 @@ public final class VbbProvider implements NetworkProvider
 	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern
 			.compile("(zu dicht beieinander|mehrfach vorhanden oder identisch)|(keine Verbindung gefunden)|(derzeit nur Ausk&#252;nfte vom)");
 
-	public QueryConnectionsResult queryConnections(final LocationType fromType, final String from, final LocationType viaType, final String via,
-			final LocationType toType, final String to, final Date date, final boolean dep, String products, final WalkSpeed walkSpeed)
-			throws IOException
+	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
+			final String products, final WalkSpeed walkSpeed) throws IOException
 	{
-		final String uri = connectionsQueryUri(fromType, from, viaType, via, toType, to, date, dep, products);
+		final String uri = connectionsQueryUri(from, via, to, date, dep, products);
+		System.out.println(uri);
 		final CharSequence page = ParserUtils.scrape(uri);
 
 		final Matcher mError = P_CHECK_CONNECTIONS_ERROR.matcher(page);

@@ -30,9 +30,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
+import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
@@ -176,8 +176,8 @@ public class MvvProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	protected String connectionsQueryUri(final LocationType fromType, final String from, final LocationType viaType, final String via,
-			final LocationType toType, final String to, final Date date, final boolean dep, final String products, final WalkSpeed walkSpeed)
+	protected String connectionsQueryUri(final Location from, final Location via, final Location to, final Date date, final boolean dep,
+			final String products, final WalkSpeed walkSpeed)
 	{
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
 		final DateFormat YEAR_FORMAT = new SimpleDateFormat("yyyy");
@@ -210,83 +210,10 @@ public class MvvProvider extends AbstractEfaProvider
 		uri.append("&anySigWhenPerfectNoOtherMatches=1");
 		// uri.append("&lineRestriction=403");
 
-		if (fromType == LocationType.WGS84)
-		{
-			final String[] parts = from.split(",\\s*", 2);
-			final int lat = Integer.parseInt(parts[0]);
-			final int lon = Integer.parseInt(parts[1]);
-			uri.append("&nameInfo_origin=").append(String.format("%2.6f:%2.6f", lon / 1E6, lat / 1E6)).append(":WGS84[DD.dddddd]");
-			uri.append("&typeInfo_origin=coord");
-		}
-		else
-		{
-			uri.append("&useHouseNumberList_origin=1");
-			uri.append("&place_origin="); // coarse-grained location, e.g. city
-			uri.append("&placeState_origin=empty"); // empty|identified
-			uri.append("&nameState_origin=empty"); // empty|identified|list|notidentified
-			uri.append("&placeInfo_origin=invalid"); // invalid
-			uri.append("&nameInfo_origin=invalid"); // invalid
-			uri.append("&typeInfo_origin=invalid"); // invalid
-			uri.append("&reducedAnyWithoutAddressObjFilter_origin=102");
-			uri.append("&reducedAnyPostcodeObjFilter_origin=64");
-			uri.append("&reducedAnyTooManyObjFilter_origin=2");
-			uri.append("&type_origin=").append(locationType(fromType));
-			uri.append("&name_origin=").append(ParserUtils.urlEncode(from, ENCODING)); // fine-grained location
-			uri.append("&anyObjFilter_origin=").append(locationAnyObjFilter(fromType));
-		}
-
-		if (toType == LocationType.WGS84)
-		{
-			final String[] parts = to.split(",\\s*", 2);
-			final int lat = Integer.parseInt(parts[0]);
-			final int lon = Integer.parseInt(parts[1]);
-			uri.append("&nameInfo_destination=").append(String.format("%2.6f:%2.6f", lon / 1E6, lat / 1E6)).append(":WGS84[DD.dddddd]");
-			uri.append("&typeInfo_destination=coord");
-		}
-		else
-		{
-			uri.append("&useHouseNumberList_destination=1");
-			uri.append("&place_destination="); // coarse-grained location, e.g. city
-			uri.append("&placeState_destination=empty"); // empty|identified
-			uri.append("&nameState_destination=empty"); // empty|identified|list|notidentified
-			uri.append("&placeInfo_destination=invalid"); // invalid
-			uri.append("&nameInfo_destination=invalid"); // invalid
-			uri.append("&typeInfo_destination=invalid"); // invalid
-			uri.append("&reducedAnyWithoutAddressObjFilter_destination=102");
-			uri.append("&reducedAnyPostcodeObjFilter_destination=64");
-			uri.append("&reducedAnyTooManyObjFilter_destination=2");
-			uri.append("&type_destination=").append(locationType(toType));
-			uri.append("&name_destination=").append(ParserUtils.urlEncode(to, ENCODING)); // fine-grained location
-			uri.append("&anyObjFilter_destination=").append(locationAnyObjFilter(toType));
-		}
-
+		appendLocationMvv(uri, from, "origin");
+		appendLocationMvv(uri, to, "destination");
 		if (via != null)
-		{
-			if (viaType == LocationType.WGS84)
-			{
-				final String[] parts = via.split(",\\s*", 2);
-				final int lat = Integer.parseInt(parts[0]);
-				final int lon = Integer.parseInt(parts[1]);
-				uri.append("&nameInfo_via=").append(String.format("%2.6f:%2.6f", lon / 1E6, lat / 1E6)).append(":WGS84[DD.dddddd]");
-				uri.append("&typeInfo_via=coord");
-			}
-			else
-			{
-				uri.append("&useHouseNumberList_via=1");
-				uri.append("&place_via=");
-				uri.append("&placeState_via=empty");
-				uri.append("&nameState_via=empty");
-				uri.append("&placeInfo_via=invalid");
-				uri.append("&nameInfo_via=invalid");
-				uri.append("&typeInfo_via=invalid");
-				uri.append("&reducedAnyWithoutAddressObjFilter_via=102");
-				uri.append("&reducedAnyPostcodeObjFilter_via=64");
-				uri.append("&reducedAnyTooManyObjFilter_via=2");
-				uri.append("&type_via=").append(locationType(viaType));
-				uri.append("&name_via=").append(ParserUtils.urlEncode(via, ENCODING));
-				uri.append("&anyObjFilter_via=").append(locationAnyObjFilter(viaType));
-			}
-		}
+			appendLocationMvv(uri, via, "via");
 
 		uri.append("&itdTripDateTimeDepArr=").append(dep ? "dep" : "arr");
 		uri.append("&itdTimeHour=").append(ParserUtils.urlEncode(HOUR_FORMAT.format(date)));
@@ -298,30 +225,44 @@ public class MvvProvider extends AbstractEfaProvider
 		return uri.toString();
 	}
 
-	private static String locationType(final LocationType locationType)
+	private static final void appendLocationMvv(final StringBuilder uri, final Location location, final String paramSuffix)
 	{
-		if (locationType == LocationType.STATION)
-			return "stop";
-		if (locationType == LocationType.ADDRESS)
-			return "any"; // strange, matches with anyObjFilter
-		if (locationType == LocationType.POI)
-			return "any";
-		if (locationType == LocationType.ANY)
-			return "any";
-		throw new IllegalArgumentException(locationType.toString());
+		if (location.type == LocationType.ADDRESS && location.lat != 0 && location.lon != 0)
+		{
+			uri.append("&nameInfo_").append(paramSuffix).append("=").append(String.format("%2.6f:%2.6f", location.lon / 1E6, location.lat / 1E6))
+					.append(":WGS84[DD.dddddd]");
+			uri.append("&typeInfo_").append(paramSuffix).append("=coord");
+		}
+		else
+		{
+			uri.append("&useHouseNumberList_").append(paramSuffix).append("=1");
+			uri.append("&place_").append(paramSuffix).append("="); // coarse-grained location, e.g. city
+			uri.append("&placeState_").append(paramSuffix).append("=empty"); // empty|identified
+			uri.append("&nameState_").append(paramSuffix).append("=empty"); // empty|identified|list|notidentified
+			uri.append("&placeInfo_").append(paramSuffix).append("=invalid"); // invalid
+			uri.append("&nameInfo_").append(paramSuffix).append("=invalid"); // invalid
+			uri.append("&typeInfo_").append(paramSuffix).append("=invalid"); // invalid
+			uri.append("&reducedAnyWithoutAddressObjFilter_").append(paramSuffix).append("=102");
+			uri.append("&reducedAnyPostcodeObjFilter_").append(paramSuffix).append("=64");
+			uri.append("&reducedAnyTooManyObjFilter_").append(paramSuffix).append("=2");
+			uri.append("&type_").append(paramSuffix).append("=").append(locationTypeValue(location));
+			uri.append("&name_").append(paramSuffix).append("=").append(ParserUtils.urlEncode(locationValue(location), ENCODING));
+			uri.append("&anyObjFilter_").append(paramSuffix).append("=").append(locationAnyObjFilterMvv(location));
+		}
 	}
 
-	private static int locationAnyObjFilter(final LocationType locationType)
+	private static final int locationAnyObjFilterMvv(final Location location)
 	{
-		if (locationType == LocationType.STATION)
+		final LocationType type = location.type;
+		if (type == LocationType.STATION)
 			return 2;
-		if (locationType == LocationType.ADDRESS)
+		if (type == LocationType.ADDRESS)
 			return 12;
-		if (locationType == LocationType.POI)
+		if (type == LocationType.POI)
 			return 32;
-		if (locationType == LocationType.ANY)
+		if (type == LocationType.ANY)
 			return 0;
-		throw new IllegalArgumentException(locationType.toString());
+		throw new IllegalArgumentException(type.toString());
 	}
 
 	private static final Pattern P_PRE_ADDRESS = Pattern.compile("<select name=\"(name_origin|name_destination|name_via)\"[^>]*>(.*?)</select>",
@@ -331,11 +272,10 @@ public class MvvProvider extends AbstractEfaProvider
 			"(Start und Ziel sind identisch)|(konnte keine Verbindung gefunden werden)", Pattern.CASE_INSENSITIVE);
 
 	@Override
-	public QueryConnectionsResult queryConnections(final LocationType fromType, final String from, final LocationType viaType, final String via,
-			final LocationType toType, final String to, final Date date, final boolean dep, final String products, final WalkSpeed walkSpeed)
-			throws IOException
+	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
+			final String products, final WalkSpeed walkSpeed) throws IOException
 	{
-		final String uri = connectionsQueryUri(fromType, from, viaType, via, toType, to, date, dep, products, walkSpeed);
+		final String uri = connectionsQueryUri(from, via, to, date, dep, products, walkSpeed);
 		System.out.println(uri);
 		final CharSequence page = ParserUtils.scrape(uri);
 

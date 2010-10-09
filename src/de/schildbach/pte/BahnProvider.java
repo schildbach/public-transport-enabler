@@ -30,10 +30,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
+import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
@@ -54,10 +54,6 @@ public final class BahnProvider implements NetworkProvider
 
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
-		for (final Capability capability : capabilities)
-			if (capability == Capability.LOCATION_WGS84)
-				return false;
-
 		return true;
 	}
 
@@ -123,8 +119,7 @@ public final class BahnProvider implements NetworkProvider
 			return new NearbyStationsResult(uri, stations.subList(0, maxStations));
 	}
 
-	private String connectionsQueryUri(final LocationType fromType, final String from, final LocationType viaType, final String via,
-			final LocationType toType, final String to, final Date date, final boolean dep)
+	private String connectionsQueryUri(final Location from, final Location via, final Location to, final Date date, final boolean dep)
 	{
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yy");
 		final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
@@ -132,15 +127,15 @@ public final class BahnProvider implements NetworkProvider
 
 		uri.append(API_BASE).append("query.exe/dox");
 		uri.append("?REQ0HafasOptimize1=0:1");
-		uri.append("&REQ0JourneyStopsS0G=").append(ParserUtils.urlEncode(from));
-		uri.append("&REQ0JourneyStopsS0A=").append(locationType(fromType));
+		uri.append("&REQ0JourneyStopsS0G=").append(ParserUtils.urlEncode(locationValue(from)));
+		uri.append("&REQ0JourneyStopsS0A=").append(locationTypeValue(from));
 		if (via != null)
 		{
-			uri.append("&REQ0JourneyStops1.0G=").append(ParserUtils.urlEncode(via));
-			uri.append("&REQ0JourneyStops1.0A=").append(locationType(viaType));
+			uri.append("&REQ0JourneyStops1.0G=").append(ParserUtils.urlEncode(locationValue(via)));
+			uri.append("&REQ0JourneyStops1.0A=").append(locationTypeValue(via));
 		}
-		uri.append("&REQ0JourneyStopsZ0G=").append(ParserUtils.urlEncode(to));
-		uri.append("&REQ0JourneyStopsZ0A=").append(locationType(toType));
+		uri.append("&REQ0JourneyStopsZ0G=").append(ParserUtils.urlEncode(locationValue(to)));
+		uri.append("&REQ0JourneyStopsZ0A=").append(locationTypeValue(to));
 		uri.append("&REQ0HafasSearchForw=").append(dep ? "1" : "0");
 		uri.append("&REQ0JourneyDate=").append(ParserUtils.urlEncode(DATE_FORMAT.format(date)));
 		uri.append("&REQ0JourneyTime=").append(ParserUtils.urlEncode(TIME_FORMAT.format(date)));
@@ -154,15 +149,24 @@ public final class BahnProvider implements NetworkProvider
 		return uri.toString();
 	}
 
-	private static int locationType(final LocationType locationType)
+	private static final int locationTypeValue(final Location location)
 	{
-		if (locationType == LocationType.STATION)
+		final LocationType type = location.type;
+		if (type == LocationType.STATION)
 			return 1;
-		if (locationType == LocationType.ADDRESS)
+		if (type == LocationType.ADDRESS)
 			return 2;
-		if (locationType == LocationType.ANY)
+		if (type == LocationType.ANY)
 			return 255;
-		throw new IllegalArgumentException(locationType.toString());
+		throw new IllegalArgumentException(type.toString());
+	}
+
+	private static final String locationValue(final Location location)
+	{
+		if (location.type == LocationType.STATION && location.id != 0)
+			return Integer.toString(location.id);
+		else
+			return location.name;
 	}
 
 	private static final Pattern P_PRE_ADDRESS = Pattern.compile(
@@ -171,11 +175,10 @@ public final class BahnProvider implements NetworkProvider
 	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern
 			.compile("(zu dicht beieinander|mehrfach vorhanden oder identisch)|(leider konnte zu Ihrer Anfrage keine Verbindung gefunden werden)|(derzeit nur Ausk&#252;nfte vom)");
 
-	public QueryConnectionsResult queryConnections(final LocationType fromType, final String from, final LocationType viaType, final String via,
-			final LocationType toType, final String to, final Date date, final boolean dep, final String products, final WalkSpeed walkSpeed)
-			throws IOException
+	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
+			final String products, final WalkSpeed walkSpeed) throws IOException
 	{
-		final String uri = connectionsQueryUri(fromType, from, viaType, via, toType, to, date, dep);
+		final String uri = connectionsQueryUri(from, via, to, date, dep);
 		final CharSequence page = ParserUtils.scrape(uri);
 
 		final Matcher mError = P_CHECK_CONNECTIONS_ERROR.matcher(page);
