@@ -105,22 +105,49 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 	{
 		final String anyType = pp.getAttributeValue(null, "anyType");
 		final String idStr = pp.getAttributeValue(null, "id");
-		int id = 0;
-		if (idStr != null)
+		final String stopIdStr = pp.getAttributeValue(null, "stopID");
+
+		LocationType type;
+		int id;
+		if ("stop".equals(anyType))
+		{
+			type = LocationType.STATION;
 			id = Integer.parseInt(idStr);
-		if (id < 0)
+		}
+		else if ("poi".equals(anyType))
+		{
+			type = LocationType.POI;
+			id = Integer.parseInt(idStr);
+		}
+		else if ("loc".equals(anyType))
+		{
+			type = LocationType.ANY;
 			id = 0;
+		}
+		else if ("street".equals(anyType) || "address".equals(anyType) || "singlehouse".equals(anyType))
+		{
+			type = LocationType.ADDRESS;
+			id = 0;
+		}
+		else if (stopIdStr != null)
+		{
+			type = LocationType.STATION;
+			id = Integer.parseInt(stopIdStr);
+		}
+		else
+		{
+			throw new IllegalArgumentException("unknown type: " + anyType + " " + idStr + " " + stopIdStr);
+		}
+
 		int lat = 0, lon = 0;
 		if ("WGS84".equals(pp.getAttributeValue(null, "mapName")))
 		{
 			lat = Integer.parseInt(pp.getAttributeValue(null, "y"));
 			lon = Integer.parseInt(pp.getAttributeValue(null, "x"));
 		}
+
 		final String name = normalizeLocationName(pp.nextText());
 
-		LocationType type = LocationType.ADDRESS;
-		if (anyType != null)
-			type = type(anyType);
 		return new Location(type, id, lat, lon, name);
 	}
 
@@ -135,23 +162,6 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		}
 		final String name = normalizeLocationName(pp.getAttributeValue(null, "nameWithPlace"));
 		return new Location(LocationType.STATION, id, lat, lon, name);
-	}
-
-	private static LocationType type(final String type)
-	{
-		if (type.equals("stop"))
-			return LocationType.STATION;
-		if (type.equals("poi"))
-			return LocationType.POI;
-		if (type.equals("loc"))
-			return LocationType.ANY;
-		if (type.equals("street"))
-			return LocationType.ADDRESS;
-		if (type.equals("singlehouse"))
-			return LocationType.ADDRESS;
-		if (type.equals("address"))
-			return LocationType.ADDRESS;
-		throw new IllegalArgumentException("unknown type: " + type);
 	}
 
 	private static final Pattern P_NEARBY_MESSAGES = Pattern.compile("(unsere Server zur Zeit ausgelastet)");
