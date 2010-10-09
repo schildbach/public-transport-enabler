@@ -764,7 +764,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 							final String destination = normalizeLocationName(pp.getAttributeValue(null, "destination"));
 							final String line = parseLine(pp.getAttributeValue(null, "motType"), pp.getAttributeValue(null, "shortname"), pp
 									.getAttributeValue(null, "name"));
-							part = new Connection.Trip(line, LINES.get(line.charAt(0)), destinationId, destination, departureTime.getTime(),
+							part = new Connection.Trip(line, lineColors(line), destinationId, destination, departureTime.getTime(),
 									departurePosition, departureId, departure, arrivalTime.getTime(), arrivalPosition, arrivalId, arrival);
 						}
 						else
