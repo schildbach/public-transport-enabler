@@ -716,6 +716,18 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 			if (!XmlPullUtil.jumpToStartTag(pp, null, "itdTripDateTime"))
 				throw new IllegalStateException("cannot find <itdTripDateTime />");
+			if (!XmlPullUtil.nextStartTagInsideTree(pp, null, "itdDateTime"))
+				throw new IllegalStateException("cannot find <itdDateTime />");
+			if (!XmlPullUtil.nextStartTagInsideTree(pp, null, "itdDate"))
+				throw new IllegalStateException("cannot find <itdDate />");
+			if (!pp.isEmptyElementTag())
+			{
+				if (!XmlPullUtil.nextStartTagInsideTree(pp, null, "itdMessage"))
+					throw new IllegalStateException("cannot find <itdMessage />");
+				final String message = pp.nextText();
+				if (message.equals("invalid date"))
+					return new QueryConnectionsResult(Status.INVALID_DATE);
+			}
 
 			final Calendar departureTime = new GregorianCalendar(), arrivalTime = new GregorianCalendar();
 			final List<Connection> connections = new ArrayList<Connection>();
