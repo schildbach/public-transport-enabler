@@ -103,6 +103,7 @@ public class VrnProvider extends AbstractEfaProvider
 
 		// TODO products
 
+		uri.append("&ptOptionsActive=1");
 		uri.append("&changeSpeed=").append(WALKSPEED_MAP.get(walkSpeed));
 
 		uri.append("&locationServerActive=1");

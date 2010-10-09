@@ -150,6 +150,7 @@ public class MvvProvider extends AbstractEfaProvider
 
 		uri.append(productParams(products));
 
+		uri.append("&ptOptionsActive=1");
 		uri.append("&changeSpeed=").append(WALKSPEED_MAP.get(walkSpeed));
 
 		uri.append("&locationServerActive=1");
