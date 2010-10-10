@@ -315,6 +315,10 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'I' + str;
 			if (type.equals("RJ")) // railjet
 				return 'I' + str;
+			if (type.equals("OEC")) // ÖBB-EuroCity
+				return 'I' + str;
+			if (type.equals("OIC")) // ÖBB-InterCity
+				return 'I' + str;
 
 			if (type.equals("IR")) // Interregio
 				return 'R' + str;
@@ -325,6 +329,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			if (type.equals("RE")) // Regional-Express
 				return 'R' + str;
 			if (type.equals("R-Bahn")) // Regional-Express, VRR
+				return 'R' + str;
+			if (type.equals("REX")) // RegionalExpress, Österreich
 				return 'R' + str;
 			if (P_LINE_RE.matcher(type).matches())
 				return 'R' + str;
@@ -337,6 +343,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			if (P_LINE_R.matcher(type).matches())
 				return 'R' + str;
 			if (type.equals("D")) // Schnellzug
+				return 'R' + str;
+			if (type.equals("S")) // ~Innsbruck
 				return 'R' + str;
 			if (type.equals("WFB")) // Westfalenbahn
 				return 'R' + str;
@@ -517,7 +525,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			return 'C' + name;
 		if (t == 9)
 			return 'F' + name;
-		if (t == 11)
+		if (t == 11 || t == -1)
 			return '?' + name;
 
 		throw new IllegalStateException("cannot normalize mot '" + mot + "' name '" + name + "' long '" + longName + "'");
