@@ -750,7 +750,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			}
 			else if ("identified".equals(originState))
 			{
-				XmlPullUtil.nextStartTagInsideTree(pp, null, "odvNameElem");
+				if (!XmlPullUtil.nextStartTagInsideTree(pp, null, "odvNameElem"))
+					throw new IllegalStateException("cannot find <odvNameElem />");
 				from = processOdvNameElem(pp);
 			}
 
@@ -766,7 +767,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			}
 			else if ("identified".equals(destinationState))
 			{
-				XmlPullUtil.nextStartTagInsideTree(pp, null, "odvNameElem");
+				if (!XmlPullUtil.nextStartTagInsideTree(pp, null, "odvNameElem"))
+					throw new IllegalStateException("cannot find <odvNameElem />");
 				to = processOdvNameElem(pp);
 			}
 
@@ -782,7 +784,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			}
 			else if ("identified".equals(viaState))
 			{
-				XmlPullUtil.nextStartTagInsideTree(pp, null, "odvNameElem");
+				if (!XmlPullUtil.nextStartTagInsideTree(pp, null, "odvNameElem"))
+					throw new IllegalStateException("cannot find <odvNameElem />");
 				via = processOdvNameElem(pp);
 			}
 
