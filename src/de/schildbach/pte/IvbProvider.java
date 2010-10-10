@@ -74,6 +74,7 @@ public class IvbProvider extends AbstractEfaProvider
 		uri.append("&type_dm=stop");
 		uri.append("&name_dm=").append(stationId);
 		uri.append("&mode=direct");
+		uri.append("&useRealtime=1");
 		return uri.toString();
 	}
 

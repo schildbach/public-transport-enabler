@@ -124,6 +124,19 @@ public class MvvProvider extends AbstractEfaProvider
 			return new NearbyStationsResult(uri, stations.subList(0, maxStations));
 	}
 
+	public String departuresQueryUri(final String stationId, final int maxDepartures)
+	{
+		final StringBuilder uri = new StringBuilder();
+		uri.append(API_BASE).append("XSLT_DM_REQUEST");
+		uri.append("?outputFormat=XML");
+		uri.append("&coordOutputFormat=WGS84");
+		uri.append("&type_dm=stop");
+		uri.append("&name_dm=").append(stationId);
+		uri.append("&mode=direct");
+		uri.append("&useRealtime=1");
+		return uri.toString();
+	}
+
 	@Override
 	protected String connectionsQueryUri(final Location from, final Location via, final Location to, final Date date, final boolean dep,
 			final String products, final WalkSpeed walkSpeed)
@@ -165,18 +178,6 @@ public class MvvProvider extends AbstractEfaProvider
 		uri.append("?sessionID=").append(sessionId);
 		appendCommonConnectionParams(uri);
 		uri.append("&command=").append(command);
-		return uri.toString();
-	}
-
-	public String departuresQueryUri(final String stationId, final int maxDepartures)
-	{
-		final StringBuilder uri = new StringBuilder();
-		uri.append(API_BASE).append("XSLT_DM_REQUEST");
-		uri.append("?outputFormat=XML");
-		uri.append("&coordOutputFormat=WGS84");
-		uri.append("&type_dm=stop");
-		uri.append("&name_dm=").append(stationId);
-		uri.append("&mode=direct");
 		return uri.toString();
 	}
 
