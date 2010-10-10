@@ -105,6 +105,8 @@ public class SvvProvider extends AbstractEfaProvider
 		uri.append("&changeSpeed=").append(WALKSPEED_MAP.get(walkSpeed));
 		uri.append(productParams(products));
 
+		// TODO uri.append("&useRealtime=1");
+
 		return uri.toString();
 	}
 

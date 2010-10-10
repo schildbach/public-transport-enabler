@@ -109,6 +109,8 @@ public class LinzProvider extends AbstractEfaProvider
 		uri.append("&ptOptionsActive=1");
 		uri.append("&changeSpeed=").append(WALKSPEED_MAP.get(walkSpeed));
 		uri.append(productParams(products));
+		
+		uri.append("&useRealtime=1");
 
 		return uri.toString();
 	}

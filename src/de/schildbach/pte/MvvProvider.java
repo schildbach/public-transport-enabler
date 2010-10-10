@@ -165,6 +165,7 @@ public class MvvProvider extends AbstractEfaProvider
 		uri.append(productParams(products));
 
 		uri.append("&locationServerActive=1");
+		uri.append("&useRealtime=1");
 
 		return uri.toString();
 	}

@@ -106,6 +106,7 @@ public class VrrProvider extends AbstractEfaProvider
 		uri.append(productParams(products));
 
 		uri.append("&locationServerActive=1");
+		// TODO uri.append("&useRealtime=1");
 
 		return uri.toString();
 	}
