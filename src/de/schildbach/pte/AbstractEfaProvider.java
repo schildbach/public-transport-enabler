@@ -302,6 +302,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 	private static final Pattern P_LINE_OE = Pattern.compile("OE\\d+");
 	private static final Pattern P_LINE_R = Pattern.compile("R\\d+(/R\\d+|\\(z\\))?");
 	private static final Pattern P_LINE_U = Pattern.compile("U\\d+");
+	private static final Pattern P_LINE_S = Pattern.compile("^(?:%)?(S\\d+)");
 	private static final Pattern P_LINE_NUMBER = Pattern.compile("\\d+");
 
 	protected String parseLine(final String mot, final String name, final String longName)
@@ -532,18 +533,31 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 			throw new IllegalArgumentException("cannot normalize: long '" + longName + "' type '" + type + "'");
 		}
+
 		if (t == 1)
-			return 'S' + name;
+		{
+			final Matcher m = P_LINE_S.matcher(name);
+			if (m.find())
+				return 'S' + m.group(1);
+			else
+				return 'S' + name;
+		}
+
 		if (t == 2)
 			return 'U' + name;
+
 		if (t == 3 || t == 4)
 			return 'T' + name;
+
 		if (t == 5 || t == 6 || t == 7 || t == 10)
 			return 'B' + name;
+
 		if (t == 8)
 			return 'C' + name;
+
 		if (t == 9)
 			return 'F' + name;
+
 		if (t == 11 || t == -1)
 			return '?' + name;
 
