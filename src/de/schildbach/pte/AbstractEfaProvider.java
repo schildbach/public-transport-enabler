@@ -19,7 +19,8 @@ package de.schildbach.pte;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.StringReader;
+import java.io.InputStream;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -54,20 +55,24 @@ import de.schildbach.pte.util.XmlPullUtil;
  */
 public abstract class AbstractEfaProvider implements NetworkProvider
 {
+	private static final String DEFAULT_ENCODING = "ISO-8859-1";
+
 	protected abstract String autocompleteUri(final CharSequence constraint);
 
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
 		final String uri = autocompleteUri(constraint);
 
+		InputStream is = null;
 		try
 		{
-			final CharSequence page = ParserUtils.scrape(uri);
+			is = ParserUtils.scrapeInputStream(uri);
+
 			final List<Location> results = new ArrayList<Location>();
 
 			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
 			final XmlPullParser pp = factory.newPullParser();
-			pp.setInput(new StringReader(page.toString()));
+			pp.setInput(is, DEFAULT_ENCODING);
 
 			// parse odv name elements
 			XmlPullUtil.jumpToStartTag(pp, null, "itdOdv");
@@ -98,6 +103,15 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		catch (final XmlPullParserException x)
 		{
 			throw new RuntimeException(x);
+		}
+		catch (final SocketTimeoutException x)
+		{
+			throw new RuntimeException(x);
+		}
+		finally
+		{
+			if (is != null)
+				is.close();
 		}
 	}
 
@@ -168,8 +182,6 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		return new Location(LocationType.STATION, id, lat, lon, name);
 	}
 
-	private static final Pattern P_NEARBY_MESSAGES = Pattern.compile("(unsere Server zur Zeit ausgelastet)");
-
 	protected abstract String nearbyLatLonUri(int lat, int lon);
 
 	protected abstract String nearbyStationUri(String stationId);
@@ -185,16 +197,14 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		if (uri == null)
 			throw new IllegalArgumentException("at least one of stationId or lat/lon must be given");
 
+		InputStream is = null;
 		try
 		{
-			final CharSequence page = ParserUtils.scrape(uri);
-
-			if (P_NEARBY_MESSAGES.matcher(page).find())
-				return new NearbyStationsResult(uri, NearbyStationsResult.Status.SERVICE_DOWN);
+			is = ParserUtils.scrapeInputStream(uri);
 
 			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
 			final XmlPullParser pp = factory.newPullParser();
-			pp.setInput(new StringReader(page.toString()));
+			pp.setInput(is, DEFAULT_ENCODING);
 
 			XmlPullUtil.jumpToStartTag(pp, null, "itdOdvName");
 			final String nameState = pp.getAttributeValue(null, "state");
@@ -273,6 +283,15 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		catch (final FileNotFoundException x)
 		{
 			return new NearbyStationsResult(uri, NearbyStationsResult.Status.SERVICE_DOWN);
+		}
+		catch (final SocketTimeoutException x)
+		{
+			return new NearbyStationsResult(uri, NearbyStationsResult.Status.SERVICE_DOWN);
+		}
+		finally
+		{
+			if (is != null)
+				is.close();
 		}
 	}
 
@@ -533,13 +552,14 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 	public QueryDeparturesResult queryDepartures(final String uri) throws IOException
 	{
+		InputStream is = null;
 		try
 		{
-			final CharSequence page = ParserUtils.scrape(uri);
+			is = ParserUtils.scrapeInputStream(uri);
 
 			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
 			final XmlPullParser pp = factory.newPullParser();
-			pp.setInput(new StringReader(page.toString()));
+			pp.setInput(is, DEFAULT_ENCODING);
 
 			XmlPullUtil.jumpToStartTag(pp, null, "itdOdvName");
 			final String nameState = pp.getAttributeValue(null, "state");
@@ -602,6 +622,15 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		{
 			return new QueryDeparturesResult(uri, QueryDeparturesResult.Status.SERVICE_DOWN);
 		}
+		catch (final SocketTimeoutException x)
+		{
+			return new QueryDeparturesResult(uri, QueryDeparturesResult.Status.SERVICE_DOWN);
+		}
+		finally
+		{
+			if (is != null)
+				is.close();
+		}
 	}
 
 	private void processItdDateTime(final XmlPullParser pp, final Calendar calendar) throws XmlPullParserException, IOException
@@ -654,25 +683,49 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 	{
 		final String uri = connectionsQueryUri(from, via, to, date, dep, products, walkSpeed) + "&sessionID=0";
 
-		final CharSequence page = ParserUtils.scrape(uri);
-
-		return queryConnections(uri, page);
+		InputStream is = null;
+		try
+		{
+			is = ParserUtils.scrapeInputStream(uri);
+			return queryConnections(uri, is);
+		}
+		catch (final SocketTimeoutException x)
+		{
+			return new QueryConnectionsResult(QueryConnectionsResult.Status.SERVICE_DOWN);
+		}
+		finally
+		{
+			if (is != null)
+				is.close();
+		}
 	}
 
 	public QueryConnectionsResult queryMoreConnections(final String uri) throws IOException
 	{
-		final CharSequence page = ParserUtils.scrape(uri);
-
-		return queryConnections(uri, page);
+		InputStream is = null;
+		try
+		{
+			is = ParserUtils.scrapeInputStream(uri);
+			return queryConnections(uri, is);
+		}
+		catch (final SocketTimeoutException x)
+		{
+			return new QueryConnectionsResult(QueryConnectionsResult.Status.SERVICE_DOWN);
+		}
+		finally
+		{
+			if (is != null)
+				is.close();
+		}
 	}
 
-	private QueryConnectionsResult queryConnections(final String uri, final CharSequence page) throws IOException
+	private QueryConnectionsResult queryConnections(final String uri, final InputStream is) throws IOException
 	{
 		try
 		{
 			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
 			final XmlPullParser pp = factory.newPullParser();
-			pp.setInput(new StringReader(page.toString()));
+			pp.setInput(is, DEFAULT_ENCODING);
 
 			if (!XmlPullUtil.jumpToStartTag(pp, null, "itdRequest"))
 				throw new IllegalStateException("cannot find <itdRequest />");

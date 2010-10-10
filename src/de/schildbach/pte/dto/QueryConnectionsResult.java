@@ -27,7 +27,7 @@ public final class QueryConnectionsResult implements Serializable
 {
 	public enum Status
 	{
-		OK, AMBIGUOUS, TOO_CLOSE, NO_CONNECTIONS, INVALID_DATE;
+		OK, AMBIGUOUS, TOO_CLOSE, NO_CONNECTIONS, INVALID_DATE, SERVICE_DOWN;
 	}
 
 	public static final QueryConnectionsResult TOO_CLOSE = new QueryConnectionsResult(Status.TOO_CLOSE);

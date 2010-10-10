@@ -18,6 +18,7 @@
 package de.schildbach.pte.util;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
@@ -55,19 +56,19 @@ public final class ParserUtils
 		stateCookie = null;
 	}
 
-	public static CharSequence scrape(final String url) throws IOException
+	public static final CharSequence scrape(final String url) throws IOException
 	{
 		return scrape(url, false, null, null, false);
 	}
 
-	public static CharSequence scrape(final String url, final boolean isPost, final String request, String encoding, final boolean cookieHandling)
-			throws IOException
+	public static final CharSequence scrape(final String url, final boolean isPost, final String request, String encoding,
+			final boolean cookieHandling) throws IOException
 	{
 		return scrape(url, isPost, request, encoding, cookieHandling, 3);
 	}
 
-	public static CharSequence scrape(final String url, final boolean isPost, final String request, String encoding, final boolean cookieHandling,
-			int tries) throws IOException
+	public static final CharSequence scrape(final String url, final boolean isPost, final String request, String encoding,
+			final boolean cookieHandling, int tries) throws IOException
 	{
 		if (encoding == null)
 			encoding = SCRAPE_DEFAULT_ENCODING;
@@ -149,7 +150,7 @@ public final class ParserUtils
 		}
 	}
 
-	private static long copy(final Reader reader, final StringBuilder builder) throws IOException
+	private static final long copy(final Reader reader, final StringBuilder builder) throws IOException
 	{
 		final char[] buffer = new char[SCRAPE_INITIAL_CAPACITY];
 		long count = 0;
@@ -160,6 +161,21 @@ public final class ParserUtils
 			count += n;
 		}
 		return count;
+	}
+
+	public static final InputStream scrapeInputStream(final String url) throws IOException
+	{
+		final HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+
+		connection.setDoInput(true);
+		connection.setDoOutput(false);
+		connection.setConnectTimeout(SCRAPE_CONNECT_TIMEOUT);
+		connection.setReadTimeout(SCRAPE_READ_TIMEOUT);
+		connection.addRequestProperty("User-Agent", SCRAPE_USER_AGENT);
+		// workaround to disable Vodafone compression
+		connection.addRequestProperty("Cache-Control", "no-cache");
+
+		return connection.getInputStream();
 	}
 
 	private static final Pattern P_ENTITY = Pattern.compile("&(?:#(x[\\da-f]+|\\d+)|(amp|quot|apos));");
