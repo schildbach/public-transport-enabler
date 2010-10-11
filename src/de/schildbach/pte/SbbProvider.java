@@ -187,7 +187,7 @@ public class SbbProvider extends AbstractHafasProvider
 			{
 				final String address = ParserUtils.resolveEntities(mAddresses.group(1)).trim();
 				if (!addresses.contains(address))
-					addresses.add(new Location(LocationType.ANY, 0, 0, 0, address));
+					addresses.add(new Location(LocationType.ANY, 0, 0, 0, address + "!"));
 			}
 
 			if (type.equals("REQ0JourneyStopsS0K"))

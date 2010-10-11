@@ -205,7 +205,7 @@ public final class VbbProvider implements NetworkProvider
 		{
 			final String address = ParserUtils.resolveEntities(mAddress.group(1));
 			if (!addresses.contains(address))
-				addresses.add(new Location(LocationType.ANY, 0, 0, 0, address));
+				addresses.add(new Location(LocationType.ANY, 0, 0, 0, address + "!"));
 		}
 
 		if (addresses.isEmpty())
