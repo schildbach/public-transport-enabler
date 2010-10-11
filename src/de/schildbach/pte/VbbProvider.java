@@ -64,44 +64,28 @@ public final class VbbProvider implements NetworkProvider
 		return true;
 	}
 
-	private static final Pattern P_AUTOCOMPLETE_IS_MAST = Pattern.compile("\\d{6}");
 	private static final String AUTOCOMPLETE_NAME_URL = "http://mobil.bvg.de/Fahrinfo/bin/stboard.bin/dox/dox?input=";
-	private static final Pattern P_SINGLE_NAME = Pattern.compile(".*Haltestelleninfo.*?<strong>(.*?)</strong>.*", Pattern.DOTALL);
+	private static final Pattern P_SINGLE_NAME = Pattern.compile(".*?Haltestelleninfo.*?<strong>(.*?)</strong>.*?input=(\\d+)&.*?", Pattern.DOTALL);
 	private static final Pattern P_MULTI_NAME = Pattern.compile("<a href=\\\"/Fahrinfo/bin/stboard\\.bin/dox.*?input=(\\d+)&.*?\">\\s*(.*?)\\s*</a>",
 			Pattern.DOTALL);
-	private static final String AUTOCOMPLETE_MASTID_URL = "http://mobil.bvg.de/IstAbfahrtzeiten/index/mobil?input=";
-	private static final Pattern P_SINGLE_MASTID = Pattern.compile(".*Ist-Abfahrtzeiten.*?<strong>(.*?)</strong>.*", Pattern.DOTALL);
 
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
 		final List<Location> results = new ArrayList<Location>();
 
-		if (P_AUTOCOMPLETE_IS_MAST.matcher(constraint).matches())
-		{
-			final CharSequence page = ParserUtils.scrape(AUTOCOMPLETE_MASTID_URL + ParserUtils.urlEncode(constraint.toString()));
+		final CharSequence page = ParserUtils.scrape(AUTOCOMPLETE_NAME_URL + ParserUtils.urlEncode(constraint.toString()));
 
-			final Matcher mSingle = P_SINGLE_MASTID.matcher(page);
-			if (mSingle.matches())
-			{
-				results.add(new Location(LocationType.ANY, 0, 0, 0, ParserUtils.resolveEntities(mSingle.group(1))));
-			}
+		final Matcher mSingle = P_SINGLE_NAME.matcher(page);
+		if (mSingle.matches())
+		{
+			results.add(new Location(LocationType.STATION, Integer.parseInt(mSingle.group(2)), 0, 0, ParserUtils.resolveEntities(mSingle.group(1))));
 		}
 		else
 		{
-			final CharSequence page = ParserUtils.scrape(AUTOCOMPLETE_NAME_URL + ParserUtils.urlEncode(constraint.toString()));
-
-			final Matcher mSingle = P_SINGLE_NAME.matcher(page);
-			if (mSingle.matches())
-			{
-				results.add(new Location(LocationType.ANY, 0, 0, 0, ParserUtils.resolveEntities(mSingle.group(1))));
-			}
-			else
-			{
-				final Matcher mMulti = P_MULTI_NAME.matcher(page);
-				while (mMulti.find())
-					results.add(new Location(LocationType.STATION, Integer.parseInt(mMulti.group(1)), 0, 0, ParserUtils.resolveEntities(mMulti
-							.group(2))));
-			}
+			final Matcher mMulti = P_MULTI_NAME.matcher(page);
+			while (mMulti.find())
+				results
+						.add(new Location(LocationType.STATION, Integer.parseInt(mMulti.group(1)), 0, 0, ParserUtils.resolveEntities(mMulti.group(2))));
 		}
 
 		return results;
