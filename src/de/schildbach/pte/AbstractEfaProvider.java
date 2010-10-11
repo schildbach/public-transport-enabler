@@ -120,6 +120,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		final String anyType = pp.getAttributeValue(null, "anyType");
 		final String idStr = pp.getAttributeValue(null, "id");
 		final String stopIdStr = pp.getAttributeValue(null, "stopID");
+		final String poiIdStr = pp.getAttributeValue(null, "poiID");
+		final String streetIdStr = pp.getAttributeValue(null, "streetID");
 		int lat = 0, lon = 0;
 		if ("WGS84".equals(pp.getAttributeValue(null, "mapName")))
 		{
@@ -158,6 +160,16 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		{
 			type = LocationType.ADDRESS;
 			id = 0;
+		}
+		else if (poiIdStr != null)
+		{
+			type = LocationType.POI;
+			id = Integer.parseInt(poiIdStr);
+		}
+		else if (streetIdStr != null)
+		{
+			type = LocationType.ADDRESS;
+			id = Integer.parseInt(streetIdStr);
 		}
 		else
 		{
