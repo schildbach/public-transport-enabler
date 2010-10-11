@@ -577,7 +577,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 			XmlPullUtil.jumpToStartTag(pp, null, "itdOdvName");
 			final String nameState = pp.getAttributeValue(null, "state");
-			if (nameState.equals("identified"))
+			if ("identified".equals(nameState))
 			{
 				XmlPullUtil.jumpToStartTag(pp, null, "odvNameElem");
 				String locationIdStr = pp.getAttributeValue(null, "stopID");
@@ -619,7 +619,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 				return new QueryDeparturesResult(uri, locationId, location, departures);
 			}
-			else if (nameState.equals("notidentified"))
+			else if ("notidentified".equals(nameState))
 			{
 				return new QueryDeparturesResult(uri, QueryDeparturesResult.Status.INVALID_STATION);
 			}
