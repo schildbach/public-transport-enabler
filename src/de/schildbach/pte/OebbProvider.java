@@ -86,28 +86,24 @@ public class OebbProvider extends AbstractHafasProvider
 					{
 						final int type = suggestion.getInt("type");
 						final String value = suggestion.getString("value");
+						final int lat = suggestion.getInt("ycoord");
+						final int lon = suggestion.getInt("xcoord");
+						int localId = 0;
+						final Matcher m = P_AUTOCOMPLETE_ID.matcher(suggestion.getString("id"));
+						if (m.matches())
+							localId = Integer.parseInt(m.group(1));
 
 						if (type == 1) // station
 						{
-							final String id = suggestion.getString("id");
-							final Matcher m = P_AUTOCOMPLETE_ID.matcher(id);
-							if (m.matches())
-							{
-								final int localId = Integer.parseInt(m.group(1));
-								results.add(new Location(LocationType.STATION, localId, 0, 0, value));
-							}
-							else
-							{
-								throw new IllegalStateException("id does not match: " + id);
-							}
+							results.add(new Location(LocationType.STATION, localId, lat, lon, value));
 						}
 						else if (type == 2) // address
 						{
-							results.add(new Location(LocationType.ADDRESS, 0, 0, 0, value));
+							results.add(new Location(LocationType.ADDRESS, 0, lat, lon, value));
 						}
 						else if (type == 4) // poi
 						{
-							results.add(new Location(LocationType.ANY, 0, 0, 0, value));
+							results.add(new Location(LocationType.POI, localId, lat, lon, value));
 						}
 						else
 						{
@@ -207,6 +203,8 @@ public class OebbProvider extends AbstractHafasProvider
 			return 1;
 		if (type == LocationType.ADDRESS)
 			return 2;
+		if (type == LocationType.POI)
+			return 4;
 		if (type == LocationType.ANY)
 			return 255;
 		throw new IllegalArgumentException(type.toString());
@@ -214,7 +212,7 @@ public class OebbProvider extends AbstractHafasProvider
 
 	private static String locationValue(final Location location)
 	{
-		if (location.type == LocationType.STATION && location.id != 0)
+		if ((location.type == LocationType.STATION || location.type == LocationType.POI) && location.id != 0)
 			return Integer.toString(location.id);
 		else
 			return location.name;
