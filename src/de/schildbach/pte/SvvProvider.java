@@ -74,7 +74,7 @@ public class SvvProvider extends AbstractEfaProvider
 		uri.append("&type_dm=stop");
 		uri.append("&name_dm=").append(stationId);
 		uri.append("&mode=direct");
-		// TODO uri.append("&useRealtime=1");
+		uri.append("&useRealtime=1");
 		return uri.toString();
 	}
 
@@ -105,7 +105,7 @@ public class SvvProvider extends AbstractEfaProvider
 		uri.append("&changeSpeed=").append(WALKSPEED_MAP.get(walkSpeed));
 		uri.append(productParams(products));
 
-		// TODO uri.append("&useRealtime=1");
+		uri.append("&useRealtime=1");
 
 		return uri.toString();
 	}
