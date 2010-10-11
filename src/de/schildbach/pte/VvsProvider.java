@@ -21,6 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.util.ParserUtils;
 
 /**
@@ -109,6 +110,20 @@ public class VvsProvider extends AbstractEfaProvider
 		uri.append("&useRealtime=1");
 
 		return uri.toString();
+	}
+
+	@Override
+	protected void appendLocation(final StringBuilder uri, final Location location, final String paramSuffix)
+	{
+		if (location.type == LocationType.POI && location.id != 0)
+		{
+			uri.append("&type_").append(paramSuffix).append("=poiID");
+			uri.append("&name_").append(paramSuffix).append("=").append(location.id);
+		}
+		else
+		{
+			super.appendLocation(uri, location, paramSuffix);
+		}
 	}
 
 	@Override

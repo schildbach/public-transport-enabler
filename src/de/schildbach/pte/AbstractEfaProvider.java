@@ -953,9 +953,9 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		uri.append("&calcNumberOfTrips=4");
 	}
 
-	protected static final void appendLocation(final StringBuilder uri, final Location location, final String paramSuffix)
+	protected void appendLocation(final StringBuilder uri, final Location location, final String paramSuffix)
 	{
-		if (location.type == LocationType.ADDRESS && location.lat != 0 && location.lon != 0)
+		if ((location.type == LocationType.POI || location.type == LocationType.ADDRESS) && location.lat != 0 && location.lon != 0)
 		{
 			uri.append("&nameInfo_").append(paramSuffix).append("=").append(String.format("%2.6f:%2.6f", location.lon / 1E6, location.lat / 1E6))
 					.append(":WGS84[DD.dddddd]");
@@ -976,7 +976,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		if (type == LocationType.ADDRESS)
 			return "any"; // strange, matches with anyObjFilter
 		if (type == LocationType.POI)
-			return "any";
+			return "poi";
 		if (type == LocationType.ANY)
 			return "any";
 		throw new IllegalArgumentException(type.toString());
@@ -984,7 +984,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 	protected static final String locationValue(final Location location)
 	{
-		if (location.type == LocationType.STATION && location.id != 0)
+		if ((location.type == LocationType.STATION || location.type == LocationType.POI) && location.id != 0)
 			return Integer.toString(location.id);
 		else
 			return location.name;
