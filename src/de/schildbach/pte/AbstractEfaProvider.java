@@ -362,6 +362,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'R' + str;
 			if (P_LINE_R.matcher(type).matches())
 				return 'R' + str;
+			if (type.equals("Bahn"))
+				return 'R' + str;
 			if (type.equals("D")) // Schnellzug
 				return 'R' + str;
 			if (type.equals("S")) // ~Innsbruck
