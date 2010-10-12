@@ -384,6 +384,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'R' + str;
 			if (type.equals("NWB")) // NordWestBahn
 				return 'R' + str;
+			if (type.equals("NordWestBahn"))
+				return 'R' + str;
 			if (type.equals("ME")) // Metronom
 				return 'R' + str;
 			if (type.equals("ERB")) // eurobahn
