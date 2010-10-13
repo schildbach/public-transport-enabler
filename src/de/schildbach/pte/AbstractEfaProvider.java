@@ -75,11 +75,10 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			pp.setInput(is, DEFAULT_ENCODING);
 
 			// parse odv name elements
-			XmlPullUtil.jumpToStartTag(pp, null, "itdOdv");
-			final String usage = pp.getAttributeValue(null, "usage");
-			if (!"origin".equals(usage))
-				throw new IllegalStateException();
-			XmlPullUtil.nextStartTagInsideTree(pp, null, "itdOdvName");
+			if (!XmlPullUtil.jumpToStartTag(pp, null, "itdOdv") || !"origin".equals(pp.getAttributeValue(null, "usage")))
+				throw new IllegalStateException("cannot find <itdOdv usage=\"origin\" />");
+			if (!XmlPullUtil.nextStartTagInsideTree(pp, null, "itdOdvName"))
+				throw new IllegalStateException("cannot find <itdOdvName />");
 			final String nameState = pp.getAttributeValue(null, "state");
 			if ("identified".equals(nameState) || "list".equals(nameState))
 				while (XmlPullUtil.nextStartTagInsideTree(pp, null, "odvNameElem"))
@@ -218,9 +217,12 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			final XmlPullParser pp = factory.newPullParser();
 			pp.setInput(is, DEFAULT_ENCODING);
 
-			XmlPullUtil.jumpToStartTag(pp, null, "itdOdvName");
+			if (!XmlPullUtil.jumpToStartTag(pp, null, "itdOdv") || !"dm".equals(pp.getAttributeValue(null, "usage")))
+				throw new IllegalStateException("cannot find <itdOdv usage=\"dm\" />");
+			if (!XmlPullUtil.nextStartTagInsideTree(pp, null, "itdOdvName"))
+				throw new IllegalStateException("cannot find <itdOdvName />");
 			final String nameState = pp.getAttributeValue(null, "state");
-			if (nameState.equals("identified"))
+			if ("identified".equals(nameState))
 			{
 				final List<Station> stations = new ArrayList<Station>();
 
@@ -279,7 +281,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				else
 					return new NearbyStationsResult(uri, stations.subList(0, maxStations));
 			}
-			else if (nameState.equals("notidentified"))
+			else if ("notidentified".equals(nameState))
 			{
 				return new NearbyStationsResult(uri, NearbyStationsResult.Status.INVALID_STATION);
 			}
@@ -591,7 +593,10 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			final XmlPullParser pp = factory.newPullParser();
 			pp.setInput(is, DEFAULT_ENCODING);
 
-			XmlPullUtil.jumpToStartTag(pp, null, "itdOdvName");
+			if (!XmlPullUtil.jumpToStartTag(pp, null, "itdOdv") || !"dm".equals(pp.getAttributeValue(null, "usage")))
+				throw new IllegalStateException("cannot find <itdOdv usage=\"dm\" />");
+			if (!XmlPullUtil.nextStartTagInsideTree(pp, null, "itdOdvName"))
+				throw new IllegalStateException("cannot find <itdOdvName />");
 			final String nameState = pp.getAttributeValue(null, "state");
 			if ("identified".equals(nameState))
 			{
