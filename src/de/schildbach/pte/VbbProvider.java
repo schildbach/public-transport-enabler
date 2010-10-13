@@ -133,8 +133,9 @@ public final class VbbProvider implements NetworkProvider
 			if (p == 'B')
 				uri.append("&vw=3");
 			if (p == 'F')
-				uri.append("&vw=7");
+				uri.append("&vw=4");
 			// FIXME if (p == 'C')
+			// TODO Ruftaxi wäre wohl &vw=7
 		}
 
 		uri.append("&start=Suchen");
@@ -184,7 +185,6 @@ public final class VbbProvider implements NetworkProvider
 			final String products, final WalkSpeed walkSpeed) throws IOException
 	{
 		final String uri = connectionsQueryUri(from, via, to, date, dep, products);
-		System.out.println(uri);
 		final CharSequence page = ParserUtils.scrape(uri);
 
 		final Matcher mError = P_CHECK_CONNECTIONS_ERROR.matcher(page);
