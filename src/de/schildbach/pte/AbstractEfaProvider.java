@@ -978,9 +978,9 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 	{
 		if ((location.type == LocationType.POI || location.type == LocationType.ADDRESS) && location.lat != 0 && location.lon != 0)
 		{
-			uri.append("&nameInfo_").append(paramSuffix).append("=").append(String.format("%2.6f:%2.6f", location.lon / 1E6, location.lat / 1E6))
-					.append(":WGS84[DD.dddddd]");
-			uri.append("&typeInfo_").append(paramSuffix).append("=coord");
+			uri.append("&type_").append(paramSuffix).append("=coord");
+			uri.append("&name_").append(paramSuffix).append("=").append(String.format("%2.6f:%2.6f", location.lon / 1E6, location.lat / 1E6)).append(
+					":WGS84[DD.dddddd]");
 		}
 		else
 		{
