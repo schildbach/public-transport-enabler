@@ -405,26 +405,26 @@ public class SbbProvider extends AbstractHafasProvider
 
 	private static final Pattern P_DEPARTURES_HEAD_COARSE = Pattern.compile(".*?" //
 			+ "(?:" //
-			+ "<p class=\"qs\">\n(.+?)\n</p>.*?" // head
-			+ "(?:(.+)|(an dieser Haltestelle keines)).*?" // departures
-			+ "<p class=\"links\">\n(.+?)\n</p>" //
+			+ "<p class=\"querysummary\">\n(.*?)</p>\n" // head
+			+ "(?:(.*?)|(an dieser Haltestelle keines))\n" // departures
+			+ "<p class=\"link1\">\n(.*?)</p>\n" // footer
 			+ "|(Informationen zu)" // messages
 			+ "|(Verbindung zum Server konnte leider nicht hergestellt werden|kann vom Server derzeit leider nicht bearbeitet werden)" // messages
 			+ ").*?" //
 	, Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_HEAD_FINE = Pattern.compile("" // 
-			+ "<b>(.*?)</b><br />\n" // location
-			+ "Abfahrt (\\d+:\\d+)\n" // time
-			+ "Uhr, (\\d{2}\\.\\d{2}\\.\\d{2}).*?" // date
-			+ "input=(\\d+).*?" // locationId
+			+ "<strong>([^<]*)</strong>(?:<br />)?\n" // location
+			+ "Abfahrt (\\d{1,2}:\\d{2})\n" // time
+			+ "Uhr, (\\d{2}\\.\\d{2}\\.\\d{2})\n" // date
+			+ ".*?input=(\\d+)&.*?" // locationId
 	, Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<p class=\"sq\">\n(.+?)</p>", Pattern.DOTALL);
+	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<p class=\"(journey con_\\d+)\">\n(.*?)</p>", Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_FINE = Pattern.compile("" //
-			+ "<b>(.*?)</b>\n" // line
+			+ "<strong>(.*?)</strong>\n" // line
 			+ "&gt;&gt;\n" //
 			+ "(.*?)\n" // destination
 			+ "<br />\n" //
-			+ "<b>(\\d+:\\d+)</b>\n" // time
+			+ "<strong>(\\d+:\\d+)</strong>\n" // time
 			+ "(?:Gl\\. (" + ParserUtils.P_PLATFORM + ")\n)?" // position
 			+ ".*?" //
 	, Pattern.DOTALL);
@@ -445,8 +445,8 @@ public class SbbProvider extends AbstractHafasProvider
 			else if (mHeadCoarse.group(6) != null)
 				return new QueryDeparturesResult(uri, Status.SERVICE_DOWN);
 
-			final String c = mHeadCoarse.group(1) + mHeadCoarse.group(4);
-			final Matcher mHeadFine = P_DEPARTURES_HEAD_FINE.matcher(c);
+			final String head = mHeadCoarse.group(1) + mHeadCoarse.group(4);
+			final Matcher mHeadFine = P_DEPARTURES_HEAD_FINE.matcher(head);
 			if (mHeadFine.matches())
 			{
 				final String location = ParserUtils.resolveEntities(mHeadFine.group(1));
@@ -454,11 +454,18 @@ public class SbbProvider extends AbstractHafasProvider
 						.parseTime(mHeadFine.group(2)));
 				final int locationId = Integer.parseInt(mHeadFine.group(4));
 				final List<Departure> departures = new ArrayList<Departure>(8);
+				String oldZebra = null;
 
 				final Matcher mDepCoarse = P_DEPARTURES_COARSE.matcher(mHeadCoarse.group(2));
 				while (mDepCoarse.find())
 				{
-					final Matcher mDepFine = P_DEPARTURES_FINE.matcher(mDepCoarse.group(1));
+					final String zebra = mDepCoarse.group(1);
+					if (oldZebra != null && zebra.equals(oldZebra))
+						throw new IllegalArgumentException("missed row? last:" + zebra);
+					else
+						oldZebra = zebra;
+
+					final Matcher mDepFine = P_DEPARTURES_FINE.matcher(mDepCoarse.group(2));
 					if (mDepFine.matches())
 					{
 						final String line = normalizeLine(ParserUtils.resolveEntities(mDepFine.group(1)));
@@ -492,7 +499,7 @@ public class SbbProvider extends AbstractHafasProvider
 			}
 			else
 			{
-				throw new IllegalArgumentException("cannot parse '" + c + "' on " + uri);
+				throw new IllegalArgumentException("cannot parse '" + head + "' on " + uri);
 			}
 		}
 		else

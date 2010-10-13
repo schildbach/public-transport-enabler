@@ -28,6 +28,7 @@ import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
+import de.schildbach.pte.dto.QueryDeparturesResult;
 
 /**
  * @author Andreas Schildbach
@@ -42,7 +43,15 @@ public class SbbProviderLiveTest
 	{
 		final NearbyStationsResult result = provider.nearbyStations("8500010", 0, 0, 0, 0);
 
-		System.out.println(result.stations.size() + "  " + result.stations);
+		System.out.println(result.status + "  " + result.stations.size() + "  " + result.stations);
+	}
+
+	@Test
+	public void queryDepartures() throws Exception
+	{
+		final QueryDeparturesResult result = provider.queryDepartures(provider.departuresQueryUri("8500010", 0));
+
+		System.out.println(result.status + "  " + result.departures.size() + "  " + result.departures);
 	}
 
 	@Test
