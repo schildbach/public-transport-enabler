@@ -17,214 +17,77 @@
 
 package de.schildbach.pte;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.TimeZone;
 
-import de.schildbach.pte.dto.Departure;
-import de.schildbach.pte.dto.GetConnectionDetailsResult;
 import de.schildbach.pte.dto.Location;
-import de.schildbach.pte.dto.NearbyStationsResult;
-import de.schildbach.pte.dto.QueryConnectionsResult;
-import de.schildbach.pte.dto.QueryDeparturesResult;
-import de.schildbach.pte.dto.QueryDeparturesResult.Status;
-import de.schildbach.pte.util.Color;
-import de.schildbach.pte.util.ParserUtils;
 
 /**
  * @author Andreas Schildbach
  */
-public class TflProvider implements NetworkProvider
+public class TflProvider extends AbstractEfaProvider
 {
 	public static final String NETWORK_ID = "journeyplanner.tfl.gov.uk";
+	private static final String API_BASE = "http://journeyplanner.tfl.gov.uk/user/";
+
+	@Override
+	protected TimeZone timeZone()
+	{
+		return TimeZone.getTimeZone("Europe/London");
+	}
 
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
+		for (final Capability capability : capabilities)
+			if (capability == Capability.DEPARTURES)
+				return true;
+
 		return false;
 	}
 
-	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
+	@Override
+	protected String autocompleteUri(CharSequence constraint)
 	{
 		throw new UnsupportedOperationException();
 	}
 
-	public NearbyStationsResult nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
-			throws IOException
+	private static final String NEARBY_STATION_URI = API_BASE
+			+ "XSLT_DM_REQUEST?outputFormat=XML&coordOutputFormat=WGS84&name_dm=%s&type_dm=stop&itOptionsActive=1&ptOptionsActive=1&useProxFootSearch=1&mergeDep=1&useAllStops=1&mode=direct";
+
+	@Override
+	protected String nearbyStationUri(final String stationId)
 	{
-		throw new UnsupportedOperationException();
+		return String.format(NEARBY_STATION_URI, stationId);
 	}
 
-	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final String products, final WalkSpeed walkSpeed) throws IOException
+	@Override
+	protected String nearbyLatLonUri(int lat, int lon)
 	{
-		throw new UnsupportedOperationException();
-	}
-
-	public QueryConnectionsResult queryMoreConnections(final String uri) throws IOException
-	{
-		throw new UnsupportedOperationException();
-	}
-
-	public GetConnectionDetailsResult getConnectionDetails(final String connectionUri) throws IOException
-	{
-		throw new UnsupportedOperationException();
+		return null;
 	}
 
 	public String departuresQueryUri(final String stationId, final int maxDepartures)
 	{
 		final StringBuilder uri = new StringBuilder();
-		uri.append("http://journeyplanner.tfl.gov.uk/user/XSLT_DM_REQUEST?typeInfo_dm=stopID&mode=direct");
-		uri.append("&nameInfo_dm=").append(stationId);
+		uri.append(API_BASE).append("XSLT_DM_REQUEST");
+		uri.append("?outputFormat=XML");
+		uri.append("&coordOutputFormat=WGS84");
+		uri.append("&type_dm=stop");
+		uri.append("&name_dm=").append(stationId);
+		uri.append("&mode=direct");
+		uri.append("&useRealtime=1");
 		return uri.toString();
 	}
 
-	private static final Pattern P_DEPARTURES_HEAD_COARSE = Pattern.compile(".*?" //
-			+ "(?:" //
-			+ "<div id=\"main-content\">(.*?)" // head
-			+ "<table id=\"timetable\">(.*?)</table>.*?" // departures
-			+ "|(hat diesen Ort nicht gefunden|Geben Sie einen Bahnhof)" // messages
-			+ ").*?" //
-	, Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_HEAD_FINE = Pattern.compile(".*?" //
-			+ "<h2>\\s*(?:Selected )?[Dd]epartures from: (.*?)</h2>.*?" // location
-	, Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<tr>(<td>\\d.*?)</tr>", Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_FINE = Pattern.compile("" //
-			+ "<td>(\\d{1,2}:\\d{2})</td>" // time
-			+ "<td><img src=\"assets/images/icon-\\w*.gif\" alt=\"(\\w*)\" hspace=\"1\" /><br />" // lineType
-			+ "(?:<span class=\"\\w*\">)?(.*?)(?:</span>)?</td>" // line
-			+ "<td>(.*?)</td>" // destination
-	, Pattern.DOTALL);
-
-	public QueryDeparturesResult queryDepartures(final String uri) throws IOException
+	@Override
+	protected String connectionsQueryUri(Location from, Location via, Location to, Date date, boolean dep, String products, WalkSpeed walkSpeed)
 	{
-		final CharSequence page = ParserUtils.scrape(uri);
-
-		// parse page
-		final Matcher mHeadCoarse = P_DEPARTURES_HEAD_COARSE.matcher(page);
-		if (mHeadCoarse.matches())
-		{
-			// messages
-			if (mHeadCoarse.group(3) != null)
-				return new QueryDeparturesResult(uri, Status.INVALID_STATION);
-
-			final Matcher mHeadFine = P_DEPARTURES_HEAD_FINE.matcher(mHeadCoarse.group(1));
-			if (mHeadFine.matches())
-			{
-				final String location = ParserUtils.resolveEntities(mHeadFine.group(1));
-				final List<Departure> departures = new ArrayList<Departure>(8);
-				final Date now = new Date();
-
-				final Matcher mDepCoarse = P_DEPARTURES_COARSE.matcher(mHeadCoarse.group(2));
-				while (mDepCoarse.find())
-				{
-					final Matcher mDepFine = P_DEPARTURES_FINE.matcher(mDepCoarse.group(1));
-					if (mDepFine.matches())
-					{
-						final Date departureTime = ParserUtils.parseTime(mDepFine.group(1));
-						final Date departureDateTime = ParserUtils.joinDateTime(now, departureTime);
-
-						final String lineType = ParserUtils.resolveEntities(mDepFine.group(2));
-
-						final String line = normalizeLine(lineType, ParserUtils.resolveEntities(mDepFine.group(3)));
-
-						final String destination = ParserUtils.resolveEntities(mDepFine.group(4));
-
-						final Departure dep = new Departure(departureDateTime, line, line != null ? LINES.get(line.charAt(0)) : null, null, 0,
-								destination);
-
-						if (!departures.contains(dep))
-							departures.add(dep);
-					}
-					else
-					{
-						throw new IllegalArgumentException("cannot parse '" + mDepCoarse.group(1) + "' on " + uri);
-					}
-				}
-
-				return new QueryDeparturesResult(uri, 0, location, departures);
-			}
-			else
-			{
-				throw new IllegalArgumentException("cannot parse '" + mHeadCoarse.group(1) + "' on " + uri);
-			}
-		}
-		else
-		{
-			throw new IllegalArgumentException("cannot parse '" + page + "' on " + uri);
-		}
+		throw new UnsupportedOperationException();
 	}
 
-	private String normalizeLine(final String type, final String line)
+	@Override
+	protected String commandLink(String sessionId, String command)
 	{
-		final char normalizedType = normalizeType(type);
-		final String normalizedLine = normalizeLine(line);
-
-		if (normalizedType != 0 && normalizedLine != null)
-			return normalizedType + normalizedLine;
-
-		throw new IllegalStateException("cannot normalize type '" + type + "' line '" + line + "'");
-	}
-
-	private char normalizeType(final String type)
-	{
-		if (type.equals("Tube"))
-			return 'U';
-		if (type.equals("DLR")) // Docklands Light Railway
-			return 'U';
-		if (type.equals("Bus"))
-			return 'B';
-		if (type.equals("Tram"))
-			return 'T';
-		if (type.equals("Rail"))
-			return '?';
-
-		return 0;
-	}
-
-	private static final Pattern P_LINE = Pattern.compile("(.*?) Line");
-	private static final Pattern P_ROUTE = Pattern.compile("Route (.*?)");
-
-	private String normalizeLine(final String line)
-	{
-		if (line.length() == 0)
-			return "";
-		if (line.equals("Docklands Light Railway"))
-			return "DLR";
-		if (line.equals("London Tramlink"))
-			return "Tramlink";
-
-		final Matcher mLine = P_LINE.matcher(line);
-		if (mLine.matches())
-			return mLine.group(1);
-		final Matcher mRoute = P_ROUTE.matcher(line);
-		if (mRoute.matches())
-			return mRoute.group(1);
-
-		return null;
-	}
-
-	private static final Map<Character, int[]> LINES = new HashMap<Character, int[]>();
-
-	static
-	{
-		LINES.put('I', new int[] { Color.WHITE, Color.RED, Color.RED });
-		LINES.put('R', new int[] { Color.GRAY, Color.WHITE });
-		LINES.put('S', new int[] { Color.parseColor("#006e34"), Color.WHITE });
-		LINES.put('U', new int[] { Color.parseColor("#003090"), Color.WHITE });
-		LINES.put('T', new int[] { Color.parseColor("#cc0000"), Color.WHITE });
-		LINES.put('B', new int[] { Color.parseColor("#993399"), Color.WHITE });
-		LINES.put('F', new int[] { Color.BLUE, Color.WHITE });
-		LINES.put('?', new int[] { Color.DKGRAY, Color.WHITE });
-	}
-
-	public int[] lineColors(final String line)
-	{
-		return LINES.get(line.charAt(0));
+		throw new UnsupportedOperationException();
 	}
 }

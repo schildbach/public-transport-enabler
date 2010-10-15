@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -56,6 +57,11 @@ import de.schildbach.pte.util.XmlPullUtil;
 public abstract class AbstractEfaProvider implements NetworkProvider
 {
 	private static final String DEFAULT_ENCODING = "ISO-8859-1";
+
+	protected TimeZone timeZone()
+	{
+		return TimeZone.getTimeZone("Europe/Berlin");
+	}
 
 	protected abstract String autocompleteUri(final CharSequence constraint);
 
@@ -353,6 +359,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'I' + str;
 			if (type.equals("OIC")) // ÖBB-InterCity
 				return 'I' + str;
+			if (type.equals("HT")) // First Hull Trains, GB
+				return 'I' + str;
 
 			if (type.equals("IR")) // Interregio
 				return 'R' + str;
@@ -530,10 +538,54 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'R' + str;
 			if (type.equals("VIAMO"))
 				return 'R' + str;
+			if (type.equals("SE")) // Southeastern, GB
+				return 'R' + str;
+			if (type.equals("SW")) // South West Trains, GB
+				return 'R' + str;
+			if (type.equals("SN")) // Southern, GB
+				return 'R' + str;
+			if (type.equals("NT")) // Northern Rail, GB
+				return 'R' + str;
+			if (type.equals("CH")) // Chiltern Railways, GB
+				return 'R' + str;
+			if (type.equals("EA")) // National Express East Anglia, GB
+				return 'R' + str;
+			if (type.equals("FC")) // First Capital Connect, GB
+				return 'R' + str;
+			if (type.equals("GW")) // First Great Western, GB
+				return 'R' + str;
+			if (type.equals("XC")) // Cross Country, GB, evtl. auch highspeed?
+				return 'R' + str;
+			if (type.equals("HC")) // Heathrow Connect, GB
+				return 'R' + str;
+			if (type.equals("HX")) // Heathrow Express, GB
+				return 'R' + str;
+			if (type.equals("GX")) // Gatwick Express, GB
+				return 'R' + str;
+			if (type.equals("C2C")) // c2c, GB
+				return 'R' + str;
+			if (type.equals("LM")) // London Midland, GB
+				return 'R' + str;
+			if (type.equals("EM")) // East Midlands Trains, GB
+				return 'R' + str;
+			if (type.equals("VT")) // Virgin Trains, GB, evtl. auch highspeed?
+				return 'R' + str;
+			if (type.equals("SR")) // ScotRail, GB, evtl. auch long-distance?
+				return 'R' + str;
+			if (type.equals("AW")) // Arriva Trains Wales, GB
+				return 'R' + str;
+			if (type.equals("WS")) // Wrexham & Shropshire, GB
+				return 'R' + str;
+			if (type.equals("TP")) // First TransPennine Express, GB, evtl. auch long-distance?
+				return 'R' + str;
+			if (type.equals("GC")) // Grand Central, GB
+				return 'R' + str;
 
 			if (type.equals("BSB")) // Breisgau-S-Bahn
 				return 'S' + str;
 			if (type.equals("RER")) // Réseau Express Régional, Frankreich
+				return 'S' + str;
+			if (type.equals("LO")) // London Overground, GB
 				return 'S' + str;
 
 			if (P_LINE_U.matcher(type).matches())
@@ -609,6 +661,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				final String location = normalizeLocationName(pp.nextText());
 
 				final Calendar departureTime = new GregorianCalendar();
+				departureTime.setTimeZone(timeZone());
 				final List<Departure> departures = new ArrayList<Departure>(8);
 
 				XmlPullUtil.jumpToStartTag(pp, null, "itdDepartureList");
@@ -843,6 +896,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			}
 
 			final Calendar departureTime = new GregorianCalendar(), arrivalTime = new GregorianCalendar();
+			departureTime.setTimeZone(timeZone());
+			arrivalTime.setTimeZone(timeZone());
 			final List<Connection> connections = new ArrayList<Connection>();
 
 			if (XmlPullUtil.jumpToStartTag(pp, null, "itdRouteList"))
