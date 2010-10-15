@@ -946,7 +946,17 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 						if ("Fussweg".equals(productName))
 						{
 							final int min = (int) (arrivalTime.getTimeInMillis() - departureTime.getTimeInMillis()) / 1000 / 60;
-							parts.add(new Connection.Footway(min, departureId, departure, arrivalId, arrival));
+
+							if (parts.size() > 0 && parts.get(parts.size() - 1) instanceof Connection.Footway)
+							{
+								final Connection.Footway lastFootway = (Connection.Footway) parts.remove(parts.size() - 1);
+								parts.add(new Connection.Footway(lastFootway.min + min, lastFootway.departureId, lastFootway.departure, arrivalId,
+										arrival));
+							}
+							else
+							{
+								parts.add(new Connection.Footway(min, departureId, departure, arrivalId, arrival));
+							}
 						}
 						else if ("gesicherter Anschluss".equals(productName))
 						{
