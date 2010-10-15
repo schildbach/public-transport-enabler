@@ -24,6 +24,7 @@ import org.junit.Test;
 
 import de.schildbach.pte.SbbProvider;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
+import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -62,6 +63,8 @@ public class SbbProviderLiveTest
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
 		System.out.println(moreResult);
+		for (final Connection connection : moreResult.connections)
+			System.out.println(provider.getConnectionDetails(connection.link));
 	}
 
 	@Test
@@ -72,6 +75,8 @@ public class SbbProviderLiveTest
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
 		System.out.println(moreResult);
+		for (final Connection connection : moreResult.connections)
+			System.out.println(provider.getConnectionDetails(connection.link));
 	}
 
 	@Test
@@ -82,6 +87,8 @@ public class SbbProviderLiveTest
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
 		System.out.println(moreResult);
+		for (final Connection connection : moreResult.connections)
+			System.out.println(provider.getConnectionDetails(connection.link));
 	}
 
 	@Test

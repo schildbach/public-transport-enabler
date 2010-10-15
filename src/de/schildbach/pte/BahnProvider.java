@@ -234,7 +234,7 @@ public final class BahnProvider implements NetworkProvider
 		return queryConnections(uri, page);
 	}
 
-	private static final Pattern P_CONNECTIONS_HEAD = Pattern.compile(".*" //
+	private static final Pattern P_CONNECTIONS_HEAD = Pattern.compile(".*?" //
 			+ "von: <span class=\"bold\">([^<]*)</span>.*?" // from
 			+ "nach: <span class=\"bold\">([^<]*)</span>.*?" // to
 			+ "Datum: <span class=\"bold\">.., (\\d{2}\\.\\d{2}\\.\\d{2})</span>.*?" // currentDate
@@ -244,7 +244,7 @@ public final class BahnProvider implements NetworkProvider
 	private static final Pattern P_CONNECTIONS_COARSE = Pattern.compile("<tr><td class=\"overview timelink\">(.+?)</td></tr>", Pattern.DOTALL);
 	private static final Pattern P_CONNECTIONS_FINE = Pattern.compile(".*?" //
 			+ "<a href=\"(http://mobile.bahn.de/bin/mobil/query.exe/dox[^\"]*?)\">" // link
-			+ "(\\d+:\\d+)<br />(\\d+:\\d+)</a></td>.+?" // departureTime, arrivalTime
+			+ "(\\d{1,2}:\\d{2})<br />(\\d{1,2}:\\d{2})</a></td>.+?" // departureTime, arrivalTime
 			+ "<td class=\"overview iphonepfeil\">(.*?)<br />.*?" // line
 	, Pattern.DOTALL);
 
@@ -284,8 +284,8 @@ public final class BahnProvider implements NetworkProvider
 						line = normalizeLine(line);
 					else
 						line = null;
-					final Connection connection = new Connection(ParserUtils.extractId(link), link, departureTime, arrivalTime, line,
-							line != null ? LINES.get(line.charAt(0)) : null, 0, from.name, 0, to.name, null);
+					final Connection connection = new Connection(AbstractHafasProvider.extractConnectionId(link), link, departureTime, arrivalTime,
+							line, line != null ? LINES.get(line.charAt(0)) : null, 0, from.name, 0, to.name, null);
 					connections.add(connection);
 				}
 				else
@@ -302,18 +302,19 @@ public final class BahnProvider implements NetworkProvider
 		}
 	}
 
-	private static final Pattern P_CONNECTION_DETAILS_HEAD = Pattern.compile(".*<span class=\"bold\">Verbindungsdetails</span>.*", Pattern.DOTALL);
+	private static final Pattern P_CONNECTION_DETAILS_HEAD = Pattern.compile(".*?" //
+			+ "<span class=\"bold\">Verbindungsdetails</span>.*", Pattern.DOTALL);
 	private static final Pattern P_CONNECTION_DETAILS_COARSE = Pattern.compile("<div class=\"haupt rline\">\n(.+?>\n)</div>", Pattern.DOTALL);
 	static final Pattern P_CONNECTION_DETAILS_FINE = Pattern.compile("<span class=\"bold\">\\s*(.+?)\\s*</span>.*?" // departure
 			+ "(?:" //
 			+ "<span class=\"bold\">\\s*(.+?)\\s*</span>.*?" // line
-			+ "ab\\s+(?:<span[^>]*>.*?</span>)?\\s*(\\d+:\\d+)\\s*(?:<span[^>]*>.*?</span>)?" // departureTime
+			+ "ab\\s+(?:<span[^>]*>.*?</span>)?\\s*(\\d{1,2}:\\d{2})\\s*(?:<span[^>]*>.*?</span>)?" // departureTime
 			+ "\\s*(Gl\\. .+?)?\\s*\n" // departurePosition
-			+ "am\\s+(\\d+\\.\\d+\\.\\d+).*?" // departureDate
+			+ "am\\s+(\\d{2}\\.\\d{2}\\.\\d{2}).*?" // departureDate
 			+ "<span class=\"bold\">\\s*(.+?)\\s*</span><br />.*?" // arrival
-			+ "an\\s+(?:<span[^>]*>.*?</span>)?\\s*(\\d+:\\d+)\\s*(?:<span[^>]*>.*?</span>)?" // arrivalTime
+			+ "an\\s+(?:<span[^>]*>.*?</span>)?\\s*(\\d{1,2}:\\d{2})\\s*(?:<span[^>]*>.*?</span>)?" // arrivalTime
 			+ "\\s*(Gl\\. .+?)?\\s*\n" // arrivalPosition
-			+ "am\\s+(\\d+\\.\\d+\\.\\d+).*?" // arrivalDate
+			+ "am\\s+(\\d{2}\\.\\d{2}\\.\\d{2}).*?" // arrivalDate
 			+ "|" //
 			+ "(\\d+) Min\\..*?" // footway
 			+ "<span class=\"bold\">\\s*(.+?)\\s*</span><br />\n" // arrival
@@ -422,8 +423,8 @@ public final class BahnProvider implements NetworkProvider
 			if (firstDepartureTime == null || lastArrivalTime == null)
 				throw new IllegalStateException("could not parse all parts of:\n" + page + "\n" + parts);
 
-			return new GetConnectionDetailsResult(new Date(), new Connection(ParserUtils.extractId(uri), uri, firstDepartureTime, lastArrivalTime,
-					null, null, 0, firstDeparture, 0, lastArrival, parts));
+			return new GetConnectionDetailsResult(new Date(), new Connection(AbstractHafasProvider.extractConnectionId(uri), uri, firstDepartureTime,
+					lastArrivalTime, null, null, 0, firstDeparture, 0, lastArrival, parts));
 		}
 		else
 		{

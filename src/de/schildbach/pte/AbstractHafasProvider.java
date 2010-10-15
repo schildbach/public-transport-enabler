@@ -214,6 +214,17 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		return 0;
 	}
 
+	private static final Pattern P_CONNECTION_ID = Pattern.compile("co=(C\\d+-\\d+)&");
+
+	protected static String extractConnectionId(final String link)
+	{
+		final Matcher m = P_CONNECTION_ID.matcher(link);
+		if (m.find())
+			return m.group(1);
+		else
+			throw new IllegalArgumentException("cannot extract id from " + link);
+	}
+
 	private static final Map<Character, int[]> LINES = new HashMap<Character, int[]>();
 
 	static

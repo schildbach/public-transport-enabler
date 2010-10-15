@@ -277,7 +277,7 @@ public final class VbbProvider implements NetworkProvider
 					if (departureTime.after(arrivalTime))
 						arrivalTime = ParserUtils.addDays(arrivalTime, 1);
 					final String line = normalizeLine(ParserUtils.resolveEntities(mConFine.group(4)));
-					final Connection connection = new Connection(ParserUtils.extractId(link), link, departureTime, arrivalTime, line,
+					final Connection connection = new Connection(AbstractHafasProvider.extractConnectionId(link), link, departureTime, arrivalTime, line,
 							line != null ? LINES.get(line.charAt(0)) : null, 0, from.name, 0, to.name, null);
 					connections.add(connection);
 				}
@@ -424,7 +424,7 @@ public final class VbbProvider implements NetworkProvider
 			}
 
 			if (firstDepartureTime != null && lastArrivalTime != null)
-				return new GetConnectionDetailsResult(currentDate, new Connection(ParserUtils.extractId(uri), uri, firstDepartureTime,
+				return new GetConnectionDetailsResult(currentDate, new Connection(AbstractHafasProvider.extractConnectionId(uri), uri, firstDepartureTime,
 						lastArrivalTime, null, null, firstDepartureId, firstDeparture, lastArrivalId, lastArrival, parts));
 			else
 				return new GetConnectionDetailsResult(currentDate, null);

@@ -267,9 +267,11 @@ public final class ParserUtils
 		return cTime.getTime();
 	}
 
-	public static long timeDiff(Date d1, Date d2)
+	public static long timeDiff(final Date d1, final Date d2)
 	{
-		return d1.getTime() - d2.getTime();
+		final long t1 = d1.getTime();
+		final long t2 = d2.getTime();
+		return t1 - t2;
 	}
 
 	public static Date addDays(final Date time, final int days)
@@ -327,11 +329,6 @@ public final class ParserUtils
 		}
 
 		return selected;
-	}
-
-	public static String extractId(final String link)
-	{
-		return link.substring(link.length() - 10);
 	}
 
 	public static final String P_PLATFORM = "[\\wÄÖÜäöüßáàâéèêíìîóòôúùû\\. -/&#;]+?";
