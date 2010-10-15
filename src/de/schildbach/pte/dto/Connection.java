@@ -18,6 +18,7 @@
 package de.schildbach.pte.dto;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -57,7 +58,8 @@ public final class Connection implements Serializable
 	@Override
 	public String toString()
 	{
-		return id;
+		final SimpleDateFormat FORMAT = new SimpleDateFormat("E HH:mm");
+		return id + " " + FORMAT.format(departureTime) + "-" + FORMAT.format(arrivalTime);
 	}
 
 	@Override

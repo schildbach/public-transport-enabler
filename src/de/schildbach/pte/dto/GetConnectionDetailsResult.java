@@ -17,6 +17,7 @@
 
 package de.schildbach.pte.dto;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -31,5 +32,12 @@ public final class GetConnectionDetailsResult
 	{
 		this.currentDate = currentDate;
 		this.connection = connection;
+	}
+
+	@Override
+	public String toString()
+	{
+		final SimpleDateFormat FORMAT = new SimpleDateFormat("EE dd.MM.yy");
+		return FORMAT.format(currentDate) + "|" + connection.toString();
 	}
 }
