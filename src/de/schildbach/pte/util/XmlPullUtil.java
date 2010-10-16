@@ -22,6 +22,67 @@ public final class XmlPullUtil
 	public static final String XSI_NS = "http://www.w3.org/2001/XMLSchema-instance";
 
 	/**
+	 * directly jumps forward to start tag, ignoring any structure
+	 */
+	public static void jump(final XmlPullParser pp, final String tagName) throws XmlPullParserException, IOException
+	{
+		if (!jumpToStartTag(pp, null, tagName))
+			throw new IllegalStateException("cannot find <" + tagName + " />");
+	}
+
+	/**
+	 * enters current tag
+	 * @throws IOException 
+	 */
+	public static void enter(final XmlPullParser pp) throws XmlPullParserException, IOException
+	{
+		if (pp.getEventType() != XmlPullParser.START_TAG)
+			throw new IllegalStateException("expecting start tag to enter");
+		if (pp.isEmptyElementTag())
+			throw new IllegalStateException("cannot enter empty tag");
+		pp.next();
+	}
+	
+	public static void exit(final XmlPullParser pp) throws XmlPullParserException, IOException
+	{
+		if (pp.getEventType() != XmlPullParser.END_TAG)
+			throw new IllegalStateException("expecting end tag to exit");
+		pp.next();
+	}
+	
+	public static boolean test(final XmlPullParser pp, final String tagName) throws XmlPullParserException
+	{
+		return pp.getEventType() == XmlPullParser.START_TAG && pp.getName().equals(tagName);
+	}
+	
+	public static void skipTree(final XmlPullParser pp) throws XmlPullParserException, IOException
+	{
+		skipSubTree(pp);
+		pp.next();
+	}
+
+	public static void require(final XmlPullParser pp, final String tagName) throws XmlPullParserException, IOException
+	{
+		pp.require(XmlPullParser.START_TAG, null, tagName);
+	}
+
+	public static String attr(final XmlPullParser pp, final String attrName)
+	{
+		return pp.getAttributeValue(null, attrName);
+	}
+
+	public static int intAttr(final XmlPullParser pp, final String attrName)
+	{
+		return Integer.parseInt(pp.getAttributeValue(null, attrName));
+	}
+
+	public static void requireAttr(final XmlPullParser pp, final String attrName, final String requiredValue)
+	{
+		if (!requiredValue.equals(attr(pp, attrName)))
+			throw new IllegalStateException("cannot find " + attrName + "=\"" + requiredValue + "\" />");
+	}
+
+	/**
 	 * Return value of attribute with given name and no namespace.
 	 */
 	public static String getAttributeValue(final XmlPullParser pp, final String name)

@@ -165,15 +165,31 @@ public final class ParserUtils
 
 	public static final InputStream scrapeInputStream(final String url) throws IOException
 	{
+		return scrapeInputStream(url, null);
+	}
+
+	public static final InputStream scrapeInputStream(final String url, final String postRequest) throws IOException
+	{
 		final HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
 
 		connection.setDoInput(true);
-		connection.setDoOutput(false);
+		connection.setDoOutput(postRequest != null);
 		connection.setConnectTimeout(SCRAPE_CONNECT_TIMEOUT);
 		connection.setReadTimeout(SCRAPE_READ_TIMEOUT);
 		connection.addRequestProperty("User-Agent", SCRAPE_USER_AGENT);
 		// workaround to disable Vodafone compression
 		connection.addRequestProperty("Cache-Control", "no-cache");
+
+		if (postRequest != null)
+		{
+			connection.setRequestMethod("POST");
+			connection.addRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			connection.addRequestProperty("Content-Length", Integer.toString(postRequest.length()));
+
+			final Writer writer = new OutputStreamWriter(connection.getOutputStream(), SCRAPE_DEFAULT_ENCODING);
+			writer.write(postRequest);
+			writer.close();
+		}
 
 		return connection.getInputStream();
 	}
