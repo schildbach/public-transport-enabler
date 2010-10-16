@@ -46,7 +46,7 @@ import de.schildbach.pte.util.ParserUtils;
 public class OebbProvider extends AbstractHafasProvider
 {
 	public static final String NETWORK_ID = "fahrplan.oebb.at";
-	public static final String API_BASE = "http://fahrplan.oebb.at/bin/";
+	private static final String API_BASE = "http://fahrplan.oebb.at/bin/";
 
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
