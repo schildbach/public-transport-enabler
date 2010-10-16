@@ -46,6 +46,11 @@ public class VgsProvider extends AbstractHafasProvider
 
 	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
 
+	public VgsProvider()
+	{
+		super(null, null, null);
+	}
+
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
 		for (final Capability capability : capabilities)
@@ -55,6 +60,7 @@ public class VgsProvider extends AbstractHafasProvider
 		return false;
 	}
 
+	@Override
 	public List<Location> autocompleteStations(CharSequence constraint) throws IOException
 	{
 		throw new UnsupportedOperationException();

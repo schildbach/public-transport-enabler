@@ -48,6 +48,11 @@ public class OebbProvider extends AbstractHafasProvider
 	public static final String NETWORK_ID = "fahrplan.oebb.at";
 	private static final String API_BASE = "http://fahrplan.oebb.at/bin/";
 
+	public OebbProvider()
+	{
+		super(null, null, null);
+	}
+
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
 		for (final Capability capability : capabilities)
@@ -63,6 +68,7 @@ public class OebbProvider extends AbstractHafasProvider
 	private static final Pattern P_AUTOCOMPLETE_JSON = Pattern.compile("SLs\\.sls=(.*?);SLs\\.showSuggestion\\(\\);", Pattern.DOTALL);
 	private static final Pattern P_AUTOCOMPLETE_ID = Pattern.compile(".*?@L=(\\d+)@.*?");
 
+	@Override
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
 		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING));

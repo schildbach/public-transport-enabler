@@ -43,6 +43,13 @@ public class SncbProvider extends AbstractHafasProvider
 
 	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
 
+	private static final String AUTOCOMPLETE_URI = "http://hari.b-rail.be/Hafas/bin/extxml.exe";
+
+	public SncbProvider()
+	{
+		super(AUTOCOMPLETE_URI, "irail", null);
+	}
+
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
 		for (final Capability capability : capabilities)
@@ -50,11 +57,6 @@ public class SncbProvider extends AbstractHafasProvider
 				return true;
 
 		return false;
-	}
-
-	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
-	{
-		throw new UnsupportedOperationException();
 	}
 
 	private final String NEARBY_URI = "http://hari.b-rail.be/HAFAS/bin/stboard.exe/en?input=%s&distance=50&near=Anzeigen";

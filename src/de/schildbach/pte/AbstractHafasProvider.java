@@ -18,6 +18,8 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,16 +27,108 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
+
+import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Station;
 import de.schildbach.pte.util.Color;
 import de.schildbach.pte.util.ParserUtils;
+import de.schildbach.pte.util.XmlPullUtil;
 
 /**
  * @author Andreas Schildbach
  */
 public abstract class AbstractHafasProvider implements NetworkProvider
 {
+	private static final String DEFAULT_ENCODING = "ISO-8859-1";
+
+	private final String autocompleteUri;
+	private final String prod;
+	private final String accessId;
+
+	public AbstractHafasProvider(final String autocompleteUri, final String prod, final String accessId)
+	{
+		this.autocompleteUri = autocompleteUri;
+		this.prod = prod;
+		this.accessId = accessId;
+	}
+
+	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
+	{
+		final String request = "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>" //
+				+ "<ReqC ver=\"1.1\" prod=\"" + prod + "\" lang=\"DE\"" + (accessId != null ? " accessId=\"" + accessId + "\"" : "") + ">" //
+				+ "<LocValReq id=\"station\" maxNr=\"10\"><ReqLoc match=\"" + constraint + "\" type=\"ST\"/></LocValReq>" //
+				+ "<LocValReq id=\"poi\" maxNr=\"10\"><ReqLoc match=\"" + constraint + "\" type=\"POI\"/></LocValReq>" //
+				+ "</ReqC>";
+
+		InputStream is = null;
+		try
+		{
+			is = ParserUtils.scrapeInputStream(autocompleteUri, request);
+
+			final List<Location> results = new ArrayList<Location>();
+
+			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
+			final XmlPullParser pp = factory.newPullParser();
+			pp.setInput(is, DEFAULT_ENCODING);
+
+			XmlPullUtil.jump(pp, "ResC");
+			XmlPullUtil.enter(pp);
+
+			XmlPullUtil.require(pp, "LocValRes");
+			XmlPullUtil.requireAttr(pp, "id", "station");
+			XmlPullUtil.enter(pp);
+
+			while (XmlPullUtil.test(pp, "Station"))
+			{
+				final String name = pp.getAttributeValue(null, "name");
+				final int id = Integer.parseInt(pp.getAttributeValue(null, "externalStationNr"));
+				final int x = Integer.parseInt(pp.getAttributeValue(null, "x"));
+				final int y = Integer.parseInt(pp.getAttributeValue(null, "y"));
+				results.add(new Location(LocationType.STATION, id, y, x, name));
+
+				XmlPullUtil.skipTree(pp);
+			}
+
+			XmlPullUtil.exit(pp);
+
+			XmlPullUtil.require(pp, "LocValRes");
+			XmlPullUtil.requireAttr(pp, "id", "poi");
+			XmlPullUtil.enter(pp);
+
+			while (XmlPullUtil.test(pp, "Poi"))
+			{
+				final String name = pp.getAttributeValue(null, "name");
+				final int x = Integer.parseInt(pp.getAttributeValue(null, "x"));
+				final int y = Integer.parseInt(pp.getAttributeValue(null, "y"));
+				results.add(new Location(LocationType.POI, 0, y, x, name));
+
+				XmlPullUtil.skipTree(pp);
+			}
+
+			XmlPullUtil.exit(pp);
+
+			return results;
+		}
+		catch (final XmlPullParserException x)
+		{
+			throw new RuntimeException(x);
+		}
+		catch (final SocketTimeoutException x)
+		{
+			throw new RuntimeException(x);
+		}
+		finally
+		{
+			if (is != null)
+				is.close();
+		}
+	}
+
 	private final static Pattern P_NEARBY_COARSE = Pattern.compile("<tr class=\"(zebra[^\"]*)\">(.*?)</tr>", Pattern.DOTALL);
 	private final static Pattern P_NEARBY_FINE_COORDS = Pattern
 			.compile("&REQMapRoute0\\.Location0\\.X=(-?\\d+)&REQMapRoute0\\.Location0\\.Y=(-?\\d+)&");

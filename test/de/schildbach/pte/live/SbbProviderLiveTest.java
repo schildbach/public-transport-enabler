@@ -40,6 +40,22 @@ public class SbbProviderLiveTest
 	private static final String ALL_PRODUCTS = "IRSUTBFC";
 
 	@Test
+	public void autoComplete() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("haupt");
+
+		list(autocompletes);
+	}
+
+	private void list(final List<Location> autocompletes)
+	{
+		System.out.print(autocompletes.size() + " ");
+		for (final Location autocomplete : autocompletes)
+			System.out.print(autocomplete.toDebugString() + " ");
+		System.out.println();
+	}
+
+	@Test
 	public void nearbyStation() throws Exception
 	{
 		final NearbyStationsResult result = provider.nearbyStations("8500010", 0, 0, 0, 0);
@@ -89,12 +105,5 @@ public class SbbProviderLiveTest
 		System.out.println(moreResult);
 		for (final Connection connection : moreResult.connections)
 			System.out.println(provider.getConnectionDetails(connection.link));
-	}
-
-	@Test
-	public void autoComplete() throws Exception
-	{
-		final List<Location> result = provider.autocompleteStations("haupt");
-		System.out.println(result);
 	}
 }

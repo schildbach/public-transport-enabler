@@ -48,6 +48,11 @@ public class SbbProvider extends AbstractHafasProvider
 
 	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
 
+	public SbbProvider()
+	{
+		super("http://fahrplan.sbb.ch/bin/extxml.exe", "iPhone3.1", "MJXZ841ZfsmqqmSymWhBPy5dMNoqoGsHInHbWJQ5PTUZOJ1rLTkn8vVZOZDFfSe");
+	}
+
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
 		for (final Capability capability : capabilities)
@@ -55,35 +60,6 @@ public class SbbProvider extends AbstractHafasProvider
 				return true;
 
 		return false;
-	}
-
-	private static final String NAME_URL = API_BASE + "bhftafel.exe/dox?input=";
-	private static final Pattern P_SINGLE_NAME = Pattern.compile(".*?<input type=\"hidden\" name=\"input\" value=\"(.+?)#(\\d+)\" />.*",
-			Pattern.DOTALL);
-	private static final Pattern P_MULTI_NAME = Pattern.compile("<a href=\"http://fahrplan\\.sbb\\.ch/bin/bhftafel\\.exe/dox\\?input=(\\d+).*?\">\n?" //
-			+ "(.*?)\n?" //
-			+ "</a>", Pattern.DOTALL);
-
-	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
-	{
-		final CharSequence page = ParserUtils.scrape(NAME_URL + ParserUtils.urlEncode(constraint.toString()));
-
-		final List<Location> results = new ArrayList<Location>();
-
-		final Matcher mSingle = P_SINGLE_NAME.matcher(page);
-		if (mSingle.matches())
-		{
-			results.add(new Location(LocationType.STATION, Integer.parseInt(mSingle.group(2)), 0, 0, ParserUtils.resolveEntities(mSingle.group(1))));
-		}
-		else
-		{
-			final Matcher mMulti = P_MULTI_NAME.matcher(page);
-			while (mMulti.find())
-				results
-						.add(new Location(LocationType.STATION, Integer.parseInt(mMulti.group(1)), 0, 0, ParserUtils.resolveEntities(mMulti.group(2))));
-		}
-
-		return results;
 	}
 
 	private final static String NEARBY_URI = API_BASE + "bhftafel.exe/dn?input=%s&distance=50&near=Anzeigen";
