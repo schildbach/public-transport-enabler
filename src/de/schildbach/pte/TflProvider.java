@@ -17,10 +17,13 @@
 
 package de.schildbach.pte;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
 import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.util.ParserUtils;
 
 /**
  * @author Andreas Schildbach
@@ -39,16 +42,19 @@ public class TflProvider extends AbstractEfaProvider
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
 		for (final Capability capability : capabilities)
-			if (capability == Capability.DEPARTURES)
+			if (capability == Capability.DEPARTURES || capability == Capability.CONNECTIONS)
 				return true;
 
 		return false;
 	}
 
+	private static final String AUTOCOMPLETE_URI = API_BASE
+			+ "XSLT_TRIP_REQUEST2?outputFormat=XML&coordOutputFormat=WGS84&locationServerActive=1&type_origin=any&name_origin=%s";
+
 	@Override
 	protected String autocompleteUri(CharSequence constraint)
 	{
-		throw new UnsupportedOperationException();
+		return String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), "ISO-8859-1"));
 	}
 
 	private static final String NEARBY_STATION_URI = API_BASE
@@ -80,14 +86,47 @@ public class TflProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	protected String connectionsQueryUri(Location from, Location via, Location to, Date date, boolean dep, String products, WalkSpeed walkSpeed)
+	protected String connectionsQueryUri(final Location from, final Location via, final Location to, final Date date, final boolean dep,
+			final String products, final WalkSpeed walkSpeed)
 	{
-		throw new UnsupportedOperationException();
+		final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
+		final DateFormat TIME_FORMAT = new SimpleDateFormat("HHmm");
+
+		final StringBuilder uri = new StringBuilder();
+		uri.append(API_BASE);
+		uri.append("XSLT_TRIP_REQUEST2");
+
+		uri.append("?language=de");
+		appendCommonConnectionParams(uri);
+
+		appendLocation(uri, from, "origin");
+		appendLocation(uri, to, "destination");
+		if (via != null)
+			appendLocation(uri, via, "via");
+
+		uri.append("&itdDate=").append(ParserUtils.urlEncode(DATE_FORMAT.format(date)));
+		uri.append("&itdTime=").append(ParserUtils.urlEncode(TIME_FORMAT.format(date)));
+		uri.append("&itdTripDateTimeDepArr=").append(dep ? "dep" : "arr");
+
+		uri.append("&ptOptionsActive=1");
+		uri.append("&changeSpeed=").append(WALKSPEED_MAP.get(walkSpeed));
+		uri.append(productParams(products));
+
+		uri.append("&locationServerActive=1");
+		uri.append("&useRealtime=1");
+
+		return uri.toString();
 	}
 
 	@Override
-	protected String commandLink(String sessionId, String command)
+	protected String commandLink(final String sessionId, final String command)
 	{
-		throw new UnsupportedOperationException();
+		final StringBuilder uri = new StringBuilder();
+		uri.append(API_BASE);
+		uri.append("XSLT_TRIP_REQUEST2");
+		uri.append("?sessionID=").append(sessionId);
+		appendCommonConnectionParams(uri);
+		uri.append("&command=").append(command);
+		return uri.toString();
 	}
 }
