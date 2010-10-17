@@ -73,7 +73,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 				+ "</ReqC>";
 	}
 
-	private static final Location parseLocation(final XmlPullParser pp)
+	private static final Location parseStation(final XmlPullParser pp)
 	{
 		final String type = pp.getName();
 		if ("Station".equals(type))
@@ -102,10 +102,38 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		throw new IllegalStateException("cannot handle: " + type);
 	}
 
+	private static final Location parseAddress(final XmlPullParser pp)
+	{
+		final String type = pp.getName();
+		if ("Address".equals(type))
+		{
+			String name = pp.getAttributeValue(null, "name").trim();
+			if (name.equals("unknown"))
+				name = null;
+			final int x = Integer.parseInt(pp.getAttributeValue(null, "x"));
+			final int y = Integer.parseInt(pp.getAttributeValue(null, "y"));
+			return new Location(LocationType.ADDRESS, 0, y, x, name);
+		}
+		throw new IllegalStateException("cannot handle: " + type);
+	}
+
+	private static final Location parseReqLoc(final XmlPullParser pp)
+	{
+		final String type = pp.getName();
+		if ("ReqLoc".equals(type))
+		{
+			XmlPullUtil.requireAttr(pp, "type", "ADR");
+			final String name = pp.getAttributeValue(null, "output").trim();
+			return new Location(LocationType.ADDRESS, 0, 0, 0, name);
+		}
+		throw new IllegalStateException("cannot handle: " + type);
+	}
+
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
-		final String request = "<LocValReq id=\"station\" maxNr=\"10\"><ReqLoc match=\"" + constraint + "\" type=\"ST\"/></LocValReq>" //
-				+ "<LocValReq id=\"poi\" maxNr=\"10\"><ReqLoc match=\"" + constraint + "\" type=\"POI\"/></LocValReq>";
+		final String request = "<LocValReq id=\"req\" maxNr=\"20\"><ReqLoc match=\"" + constraint + "\" type=\"ALLTYPE\"/></LocValReq>";
+
+		// System.out.println(ParserUtils.scrape(apiUri, true, wrap(request), null, false));
 
 		InputStream is = null;
 		try
@@ -122,30 +150,27 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			XmlPullUtil.enter(pp);
 
 			XmlPullUtil.require(pp, "LocValRes");
-			XmlPullUtil.requireAttr(pp, "id", "station");
+			XmlPullUtil.requireAttr(pp, "id", "req");
 			XmlPullUtil.enter(pp);
 
-			while (XmlPullUtil.test(pp, "Station"))
+			while (pp.getEventType() == XmlPullParser.START_TAG)
 			{
-				results.add(parseLocation(pp));
+				final String tag = pp.getName();
+				if ("Station".equals(tag))
+					results.add(parseStation(pp));
+				else if ("Poi".equals(tag))
+					results.add(parsePoi(pp));
+				else if ("Address".equals(tag))
+					results.add(parseAddress(pp));
+				else if ("ReqLoc".equals(tag))
+					/* results.add(parseReqLoc(pp)) */;
+				else
+					System.out.println("cannot handle tag: " + tag);
 
 				XmlPullUtil.next(pp);
 			}
 
 			XmlPullUtil.exit(pp);
-
-			// XmlPullUtil.require(pp, "LocValRes");
-			// XmlPullUtil.requireAttr(pp, "id", "poi");
-			// XmlPullUtil.enter(pp);
-			//
-			// while (XmlPullUtil.test(pp, "Poi"))
-			// {
-			// results.add(parsePoi(pp));
-			//
-			// XmlPullUtil.next(pp);
-			// }
-			//
-			// XmlPullUtil.exit(pp);
 
 			return results;
 		}
@@ -274,7 +299,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 						XmlPullUtil.next(pp);
 					Location departure;
 					if (pp.getName().equals("Station"))
-						departure = parseLocation(pp);
+						departure = parseStation(pp);
 					else if (pp.getName().equals("Poi"))
 						departure = parsePoi(pp);
 					else
@@ -342,7 +367,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 						line = _normalizeLine(category, name, longCategory);
 					}
-					else if (tag.equals("Walk") || tag.equals("Transfer"))
+					else if (tag.equals("Walk") || tag.equals("Transfer") || tag.equals("GisRoute"))
 					{
 						XmlPullUtil.enter(pp);
 						XmlPullUtil.require(pp, "Duration");
@@ -366,9 +391,11 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 						XmlPullUtil.next(pp);
 					Location arrival;
 					if (pp.getName().equals("Station"))
-						arrival = parseLocation(pp);
+						arrival = parseStation(pp);
 					else if (pp.getName().equals("Poi"))
 						arrival = parsePoi(pp);
+					else if (pp.getName().equals("Address"))
+						arrival = parseAddress(pp);
 					else
 						throw new IllegalStateException("cannot parse: " + pp.getName());
 					XmlPullUtil.next(pp);
@@ -504,6 +531,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return "<Station externalId=\"" + location.id + "\" />";
 		if (location.type == LocationType.POI && (location.lat != 0 || location.lon != 0))
 			return "<Poi type=\"WGS84\" x=\"" + location.lon + "\" y=\"" + location.lat + "\" />";
+		if (location.type == LocationType.ADDRESS && (location.lat != 0 || location.lon != 0))
+			return "<Address type=\"WGS84\" x=\"" + location.lon + "\" y=\"" + location.lat + "\" />";
 
 		throw new IllegalArgumentException("cannot handle: " + location.toDebugString());
 	}
