@@ -169,7 +169,7 @@ public final class VbbProvider implements NetworkProvider
 
 	private static final String locationValue(final Location location)
 	{
-		if (location.type == LocationType.STATION && location.id != 0)
+		if (location.type == LocationType.STATION && location.id >= 1000000)
 			return Integer.toString(location.id);
 		else
 			return location.name;
