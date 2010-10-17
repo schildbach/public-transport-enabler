@@ -24,7 +24,9 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -247,7 +249,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 				XmlPullUtil.require(pp, "Overview");
 				XmlPullUtil.enter(pp);
 				XmlPullUtil.require(pp, "Date");
-				final Date currentDate = DATE_FORMAT.parse(XmlPullUtil.text(pp));
+				final Calendar currentDate = new GregorianCalendar();
+				currentDate.setTime(DATE_FORMAT.parse(XmlPullUtil.text(pp)));
 				XmlPullUtil.exit(pp);
 				XmlPullUtil.require(pp, "ConSectionList");
 				XmlPullUtil.enter(pp);
@@ -278,7 +281,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 					XmlPullUtil.require(pp, "Dep");
 					XmlPullUtil.enter(pp);
 					XmlPullUtil.require(pp, "Time");
-					final Date departureTime = ParserUtils.joinDateTime(currentDate, TIME_FORMAT.parse(XmlPullUtil.text(pp).substring(3, 8)));
+					final Date departureTime = parseTime(currentDate, XmlPullUtil.text(pp));
 					XmlPullUtil.require(pp, "Platform");
 					XmlPullUtil.enter(pp);
 					XmlPullUtil.require(pp, "Text");
@@ -307,27 +310,35 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 						XmlPullUtil.enter(pp);
 						String name = null;
 						String category = null;
+						String longCategory = null;
 						while (XmlPullUtil.test(pp, "JourneyAttribute"))
 						{
 							XmlPullUtil.enter(pp);
 							XmlPullUtil.require(pp, "Attribute");
 							final String attrName = XmlPullUtil.attr(pp, "type");
 							XmlPullUtil.enter(pp);
-							final String attrValue = parseAttributeVariant(pp, "NORMAL");
+							final Map<String, String> attributeVariants = parseAttributeVariants(pp);
 							XmlPullUtil.exit(pp);
 							XmlPullUtil.exit(pp);
 
 							if ("NAME".equals(attrName))
-								name = attrValue;
+							{
+								name = attributeVariants.get("NORMAL");
+							}
 							else if ("CATEGORY".equals(attrName))
-								category = attrValue;
+							{
+								category = attributeVariants.get("NORMAL");
+								longCategory = attributeVariants.get("LONG");
+							}
 							else if ("DIRECTION".equals(attrName))
-								direction = attrValue;
+							{
+								direction = attributeVariants.get("NORMAL");
+							}
 						}
 						XmlPullUtil.exit(pp);
 						XmlPullUtil.exit(pp);
 
-						line = _normalizeLine(category, name);
+						line = _normalizeLine(category, name, longCategory);
 					}
 					else if (tag.equals("Walk") || tag.equals("Transfer"))
 					{
@@ -362,7 +373,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 					XmlPullUtil.require(pp, "Arr");
 					XmlPullUtil.enter(pp);
 					XmlPullUtil.require(pp, "Time");
-					final Date arrivalTime = ParserUtils.joinDateTime(currentDate, TIME_FORMAT.parse(XmlPullUtil.text(pp).substring(3, 8)));
+					final Date arrivalTime = parseTime(currentDate, XmlPullUtil.text(pp));
 					XmlPullUtil.require(pp, "Platform");
 					XmlPullUtil.enter(pp);
 					XmlPullUtil.require(pp, "Text");
@@ -432,26 +443,46 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		}
 	}
 
-	private final String parseAttributeVariant(final XmlPullParser pp, final String type) throws XmlPullParserException, IOException
+	private final Map<String, String> parseAttributeVariants(final XmlPullParser pp) throws XmlPullParserException, IOException
 	{
-		String value = null;
+		final Map<String, String> attributeVariants = new HashMap<String, String>();
 
 		while (XmlPullUtil.test(pp, "AttributeVariant"))
 		{
-			if (type.equals(XmlPullUtil.attr(pp, "type")))
-			{
-				XmlPullUtil.enter(pp);
-				XmlPullUtil.require(pp, "Text");
-				value = XmlPullUtil.text(pp).trim();
-				XmlPullUtil.exit(pp);
-			}
-			else
-			{
-				XmlPullUtil.next(pp);
-			}
+			final String type = XmlPullUtil.attr(pp, "type");
+			XmlPullUtil.enter(pp);
+			XmlPullUtil.require(pp, "Text");
+			final String value = XmlPullUtil.text(pp).trim();
+			XmlPullUtil.exit(pp);
+
+			attributeVariants.put(type, value);
 		}
 
-		return value;
+		return attributeVariants;
+	}
+
+	private static final Pattern P_TIME = Pattern.compile("(\\d+)d(\\d+):(\\d{2}):(\\d{2})");
+
+	private Date parseTime(final Calendar currentDate, final String str)
+	{
+		final Matcher m = P_TIME.matcher(str);
+		if (m.matches())
+		{
+			final Calendar c = new GregorianCalendar();
+			c.set(Calendar.YEAR, currentDate.get(Calendar.YEAR));
+			c.set(Calendar.MONTH, currentDate.get(Calendar.MONTH));
+			c.set(Calendar.DAY_OF_MONTH, currentDate.get(Calendar.DAY_OF_MONTH));
+			c.set(Calendar.HOUR_OF_DAY, Integer.parseInt(m.group(2)));
+			c.set(Calendar.MINUTE, Integer.parseInt(m.group(3)));
+			c.set(Calendar.SECOND, Integer.parseInt(m.group(4)));
+			c.set(Calendar.MILLISECOND, 0);
+			c.add(Calendar.DAY_OF_MONTH, Integer.parseInt(m.group(1)));
+			return c.getTime();
+		}
+		else
+		{
+			throw new IllegalArgumentException("cannot parse duration: " + str);
+		}
 	}
 
 	private static final Pattern P_DURATION = Pattern.compile("(\\d+):(\\d{2})");
@@ -475,39 +506,49 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		throw new IllegalArgumentException("cannot handle: " + location.toDebugString());
 	}
 
-	private final String _normalizeLine(final String type, final String name)
+	private final String _normalizeLine(final String type, final String name, final String longCategory)
 	{
 		final String normalizedType = type.split(" ", 2)[0];
 		final String normalizedName = normalizeWhitespace(name);
 
-		if ("THALYS".equals(normalizedType))
+		if ("EN".equals(normalizedType))
+			return "I" + normalizedName;
+		if ("ICE".equals(normalizedType)) // InterCityExpress
 			return "I" + normalizedName;
 		if ("IC".equals(normalizedType))
 			return "I" + normalizedName;
-		if ("EN".equals(normalizedType))
+		if ("CNL".equals(normalizedType)) // CityNightLine
 			return "I" + normalizedName;
 		if ("OEC".equals(normalizedType))
 			return "I" + normalizedName;
+		if ("OIC".equals(normalizedType))
+			return "I" + normalizedName;
+		if ("THALYS".equals(normalizedType))
+			return "I" + normalizedName;
 
-		if ("R".equals(normalizedType))
+		if ("R".equals(normalizedType)) // Regio
 			return "R" + normalizedName;
 		if ("RE".equals(normalizedType))
 			return "R" + normalizedName;
 		if ("IR".equals(normalizedType))
 			return "R" + normalizedName;
 
-		if ("Tramway".equals(normalizedType))
-			return "T" + normalizedName;
+		if ("S".equals(normalizedType)) // S-Bahn
+			return "S" + normalizedName;
 
-		if ("BUS".equals(normalizedType))
-			return "B" + normalizedName;
+		 if ("Tramway".equals(normalizedType))
+		 return "T" + normalizedName;
+		
+		 if ("BUS".equals(normalizedType))
+		 return "B" + normalizedName;
 
 		if ("L".equals(normalizedType))
 			return "?" + normalizedName;
-		if ("NZ".equals(normalizedType))
+		if ("NZ".equals(normalizedType)) // Nacht-Zug
 			return "?" + normalizedName;
 
-		throw new IllegalStateException("cannot normalize type '" + normalizedType + "' (" + type + ") name '" + normalizedName + "'");
+		throw new IllegalStateException("cannot normalize type '" + normalizedType + "' (" + type + ") name '" + normalizedName + "' longCategory '"
+				+ longCategory + "'");
 	}
 
 	private final static Pattern P_WHITESPACE = Pattern.compile("\\s+");
