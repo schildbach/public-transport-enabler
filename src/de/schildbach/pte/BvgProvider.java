@@ -46,7 +46,7 @@ import de.schildbach.pte.util.ParserUtils;
 /**
  * @author Andreas Schildbach
  */
-public final class VbbProvider implements NetworkProvider
+public final class BvgProvider implements NetworkProvider
 {
 	public static final String NETWORK_ID = "mobil.bvg.de";
 
@@ -109,10 +109,10 @@ public final class VbbProvider implements NetworkProvider
 		uri.append("http://mobil.bvg.de/Fahrinfo/bin/query.bin/dox");
 		uri.append("?REQ0HafasInitialSelection=0");
 
-		appendLocationVbb(uri, from, "S0", "SID");
-		appendLocationVbb(uri, to, "Z0", "ZID");
+		appendLocationBvg(uri, from, "S0", "SID");
+		appendLocationBvg(uri, to, "Z0", "ZID");
 		if (via != null)
-			appendLocationVbb(uri, via, "1", null);
+			appendLocationBvg(uri, via, "1", null);
 
 		uri.append("&REQ0HafasSearchForw=").append(dep ? "1" : "0");
 		uri.append("&REQ0JourneyDate=").append(ParserUtils.urlEncode(DATE_FORMAT.format(date)));
@@ -142,7 +142,7 @@ public final class VbbProvider implements NetworkProvider
 		return uri.toString();
 	}
 
-	private static final void appendLocationVbb(final StringBuilder uri, final Location location, final String paramSuffix, final String paramWgs)
+	private static final void appendLocationBvg(final StringBuilder uri, final Location location, final String paramSuffix, final String paramWgs)
 	{
 		if (location.type == LocationType.ADDRESS && location.lat != 0 && location.lon != 0 && paramWgs != null)
 		{

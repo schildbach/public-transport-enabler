@@ -26,7 +26,7 @@ import org.junit.Test;
 /**
  * @author Andreas Schildbach
  */
-public class VbbProviderTest
+public class BvgProviderTest
 {
 	@Test
 	public void footwayWithLink()
@@ -90,7 +90,7 @@ public class VbbProviderTest
 
 	private void assertFineConnectionDetails(String s)
 	{
-		Matcher m = VbbProvider.P_CONNECTION_DETAILS_FINE.matcher(s);
+		Matcher m = BvgProvider.P_CONNECTION_DETAILS_FINE.matcher(s);
 		assertTrue(m.matches());
 		// ParserUtils.printGroups(m);
 	}
