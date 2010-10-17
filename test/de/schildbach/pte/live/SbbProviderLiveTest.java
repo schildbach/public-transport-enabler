@@ -36,7 +36,7 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
  */
 public class SbbProviderLiveTest
 {
-	private SbbProvider provider = new SbbProvider();
+	private SbbProvider provider = new SbbProvider(Secrets.SBB_ACCESS_ID);
 	private static final String ALL_PRODUCTS = "IRSUTBFC";
 
 	@Test
@@ -74,8 +74,8 @@ public class SbbProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, 0, 0, "Zürich!"), null, new Location(
-				LocationType.ANY, 0, 0, 0, "Bern"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 8503000, 0, 0, "Zürich HB"), null,
+				new Location(LocationType.STATION, 8507785, 0, 0, "Bern, Hauptbahnhof"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
 		System.out.println(moreResult);

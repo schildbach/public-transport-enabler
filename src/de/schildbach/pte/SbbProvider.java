@@ -45,12 +45,13 @@ public class SbbProvider extends AbstractHafasProvider
 {
 	public static final String NETWORK_ID = "fahrplan.sbb.ch";
 	private static final String API_BASE = "http://fahrplan.sbb.ch/bin/";
+	private static final String API_URI = "http://fahrplan.sbb.ch/bin/extxml.exe";
 
 	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
 
-	public SbbProvider()
+	public SbbProvider(final String accessId)
 	{
-		super("http://fahrplan.sbb.ch/bin/extxml.exe", "iPhone3.1", "MJXZ841ZfsmqqmSymWhBPy5dMNoqoGsHInHbWJQ5PTUZOJ1rLTkn8vVZOZDFfSe");
+		super(API_URI, accessId);
 	}
 
 	public boolean hasCapabilities(final Capability... capabilities)
@@ -131,6 +132,7 @@ public class SbbProvider extends AbstractHafasProvider
 	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern
 			.compile("(mehrfach vorhanden oder identisch)|(keine Verbindung gefunden werden)|(liegt nach dem Ende der Fahrplanperiode|liegt vor Beginn der Fahrplanperiode)");
 
+	@Override
 	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
 			final String products, final WalkSpeed walkSpeed) throws IOException
 	{
@@ -185,6 +187,7 @@ public class SbbProvider extends AbstractHafasProvider
 			return queryConnections(uri, page);
 	}
 
+	@Override
 	public QueryConnectionsResult queryMoreConnections(final String uri) throws IOException
 	{
 		final CharSequence page = ParserUtils.scrape(uri);
@@ -293,6 +296,7 @@ public class SbbProvider extends AbstractHafasProvider
 			+ "- ([^<]*) -\n" // destination
 	, Pattern.DOTALL);
 
+	@Override
 	public GetConnectionDetailsResult getConnectionDetails(final String uri) throws IOException
 	{
 		final CharSequence page = ParserUtils.scrape(uri);

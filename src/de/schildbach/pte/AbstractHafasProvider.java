@@ -20,7 +20,11 @@ package de.schildbach.pte;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketTimeoutException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,9 +35,12 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import de.schildbach.pte.dto.Connection;
+import de.schildbach.pte.dto.GetConnectionDetailsResult;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.Station;
 import de.schildbach.pte.util.Color;
 import de.schildbach.pte.util.ParserUtils;
@@ -46,29 +53,62 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 {
 	private static final String DEFAULT_ENCODING = "ISO-8859-1";
 
-	private final String autocompleteUri;
-	private final String prod;
+	private final String apiUri;
+	private static final String prod = "hafas";
 	private final String accessId;
 
-	public AbstractHafasProvider(final String autocompleteUri, final String prod, final String accessId)
+	public AbstractHafasProvider(final String apiUri, final String accessId)
 	{
-		this.autocompleteUri = autocompleteUri;
-		this.prod = prod;
+		this.apiUri = apiUri;
 		this.accessId = accessId;
+	}
+
+	private final String wrap(final String request)
+	{
+		return "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>" //
+				+ "<ReqC ver=\"1.1\" prod=\"" + prod + "\" lang=\"DE\"" + (accessId != null ? " accessId=\"" + accessId + "\"" : "") + ">" //
+				+ request //
+				+ "</ReqC>";
+	}
+
+	private static final Location parseLocation(final XmlPullParser pp)
+	{
+		final String type = pp.getName();
+		if ("Station".equals(type))
+		{
+			final String name = pp.getAttributeValue(null, "name").trim();
+			final int id = Integer.parseInt(pp.getAttributeValue(null, "externalStationNr"));
+			final int x = Integer.parseInt(pp.getAttributeValue(null, "x"));
+			final int y = Integer.parseInt(pp.getAttributeValue(null, "y"));
+			return new Location(LocationType.STATION, id, y, x, name);
+		}
+		throw new IllegalStateException("cannot handle: " + type);
+	}
+
+	private static final Location parsePoi(final XmlPullParser pp)
+	{
+		final String type = pp.getName();
+		if ("Poi".equals(type))
+		{
+			String name = pp.getAttributeValue(null, "name").trim();
+			if (name.equals("unknown"))
+				name = null;
+			final int x = Integer.parseInt(pp.getAttributeValue(null, "x"));
+			final int y = Integer.parseInt(pp.getAttributeValue(null, "y"));
+			return new Location(LocationType.POI, 0, y, x, name);
+		}
+		throw new IllegalStateException("cannot handle: " + type);
 	}
 
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
-		final String request = "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>" //
-				+ "<ReqC ver=\"1.1\" prod=\"" + prod + "\" lang=\"DE\"" + (accessId != null ? " accessId=\"" + accessId + "\"" : "") + ">" //
-				+ "<LocValReq id=\"station\" maxNr=\"10\"><ReqLoc match=\"" + constraint + "\" type=\"ST\"/></LocValReq>" //
-				+ "<LocValReq id=\"poi\" maxNr=\"10\"><ReqLoc match=\"" + constraint + "\" type=\"POI\"/></LocValReq>" //
-				+ "</ReqC>";
+		final String request = "<LocValReq id=\"station\" maxNr=\"10\"><ReqLoc match=\"" + constraint + "\" type=\"ST\"/></LocValReq>" //
+				+ "<LocValReq id=\"poi\" maxNr=\"10\"><ReqLoc match=\"" + constraint + "\" type=\"POI\"/></LocValReq>";
 
 		InputStream is = null;
 		try
 		{
-			is = ParserUtils.scrapeInputStream(autocompleteUri, request);
+			is = ParserUtils.scrapeInputStream(apiUri, wrap(request));
 
 			final List<Location> results = new ArrayList<Location>();
 
@@ -85,32 +125,25 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 			while (XmlPullUtil.test(pp, "Station"))
 			{
-				final String name = pp.getAttributeValue(null, "name");
-				final int id = Integer.parseInt(pp.getAttributeValue(null, "externalStationNr"));
-				final int x = Integer.parseInt(pp.getAttributeValue(null, "x"));
-				final int y = Integer.parseInt(pp.getAttributeValue(null, "y"));
-				results.add(new Location(LocationType.STATION, id, y, x, name));
+				results.add(parseLocation(pp));
 
-				XmlPullUtil.skipTree(pp);
+				XmlPullUtil.next(pp);
 			}
 
 			XmlPullUtil.exit(pp);
 
-			XmlPullUtil.require(pp, "LocValRes");
-			XmlPullUtil.requireAttr(pp, "id", "poi");
-			XmlPullUtil.enter(pp);
-
-			while (XmlPullUtil.test(pp, "Poi"))
-			{
-				final String name = pp.getAttributeValue(null, "name");
-				final int x = Integer.parseInt(pp.getAttributeValue(null, "x"));
-				final int y = Integer.parseInt(pp.getAttributeValue(null, "y"));
-				results.add(new Location(LocationType.POI, 0, y, x, name));
-
-				XmlPullUtil.skipTree(pp);
-			}
-
-			XmlPullUtil.exit(pp);
+			// XmlPullUtil.require(pp, "LocValRes");
+			// XmlPullUtil.requireAttr(pp, "id", "poi");
+			// XmlPullUtil.enter(pp);
+			//
+			// while (XmlPullUtil.test(pp, "Poi"))
+			// {
+			// results.add(parsePoi(pp));
+			//
+			// XmlPullUtil.next(pp);
+			// }
+			//
+			// XmlPullUtil.exit(pp);
 
 			return results;
 		}
@@ -127,6 +160,371 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			if (is != null)
 				is.close();
 		}
+	}
+
+	public QueryConnectionsResult queryConnections(Location from, Location via, Location to, final Date date, final boolean dep,
+			final String products, final WalkSpeed walkSpeed) throws IOException
+	{
+		if (from.type == LocationType.ANY)
+		{
+			final List<Location> autocompletes = autocompleteStations(from.name);
+			if (autocompletes.isEmpty())
+				return new QueryConnectionsResult(QueryConnectionsResult.Status.NO_CONNECTIONS); // TODO
+			if (autocompletes.size() > 1)
+				return new QueryConnectionsResult(autocompletes, null, null);
+			from = autocompletes.get(0);
+		}
+
+		if (via != null && via.type == LocationType.ANY)
+		{
+			final List<Location> autocompletes = autocompleteStations(via.name);
+			if (autocompletes.isEmpty())
+				return new QueryConnectionsResult(QueryConnectionsResult.Status.NO_CONNECTIONS); // TODO
+			if (autocompletes.size() > 1)
+				return new QueryConnectionsResult(null, autocompletes, null);
+			via = autocompletes.get(0);
+		}
+
+		if (to.type == LocationType.ANY)
+		{
+			final List<Location> autocompletes = autocompleteStations(to.name);
+			if (autocompletes.isEmpty())
+				return new QueryConnectionsResult(QueryConnectionsResult.Status.NO_CONNECTIONS); // TODO
+			if (autocompletes.size() > 1)
+				return new QueryConnectionsResult(null, null, autocompletes);
+			to = autocompletes.get(0);
+		}
+
+		final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
+		final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
+
+		final String request = "<ConReq>" //
+				+ "<Start>" + location(from) + "<Prod bike=\"0\" couchette=\"0\" direct=\"0\" sleeper=\"0\"/></Start>" //
+				+ (via != null ? "<Via>" + location(via) + "</Via>" : "") //
+				+ "<Dest>" + location(to) + "</Dest>" //
+				+ "<ReqT a=\"" + (dep ? 0 : 1) + "\" date=\"" + DATE_FORMAT.format(date) + "\" time=\"" + TIME_FORMAT.format(date) + "\"/>" //
+				+ "<RFlags b=\"0\" chExtension=\"0\" f=\"4\" sMode=\"N\"/>" //
+				+ "</ConReq>";
+
+		// System.out.println(request);
+		// System.out.println(ParserUtils.scrape(apiUri, true, wrap(request), null, false));
+
+		InputStream is = null;
+		try
+		{
+			is = ParserUtils.scrapeInputStream(apiUri, wrap(request));
+
+			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
+			final XmlPullParser pp = factory.newPullParser();
+			pp.setInput(is, DEFAULT_ENCODING);
+
+			XmlPullUtil.jump(pp, "ConRes");
+			XmlPullUtil.enter(pp);
+			if (pp.getName().equals("Err"))
+			{
+				final String code = XmlPullUtil.attr(pp, "code");
+				if (code.equals("K9380"))
+					return QueryConnectionsResult.TOO_CLOSE;
+				if (code.equals("K9220")) // Nearby to the given address stations could not be found
+					return QueryConnectionsResult.NO_CONNECTIONS;
+				throw new IllegalStateException("error " + code + " " + XmlPullUtil.attr(pp, "text"));
+			}
+
+			XmlPullUtil.require(pp, "ConResCtxt");
+			final String sessionId = XmlPullUtil.text(pp);
+			XmlPullUtil.require(pp, "ConnectionList");
+			XmlPullUtil.enter(pp);
+
+			final List<Connection> connections = new ArrayList<Connection>();
+
+			while (XmlPullUtil.test(pp, "Connection"))
+			{
+				final String id = XmlPullUtil.attr(pp, "id");
+
+				XmlPullUtil.enter(pp);
+				while (pp.getName().equals("RtStateList"))
+					XmlPullUtil.next(pp);
+				XmlPullUtil.require(pp, "Overview");
+				XmlPullUtil.enter(pp);
+				XmlPullUtil.require(pp, "Date");
+				final Date currentDate = DATE_FORMAT.parse(XmlPullUtil.text(pp));
+				XmlPullUtil.exit(pp);
+				XmlPullUtil.require(pp, "ConSectionList");
+				XmlPullUtil.enter(pp);
+
+				final List<Connection.Part> parts = new ArrayList<Connection.Part>(4);
+				Date firstDepartureTime = null;
+				Date lastArrivalTime = null;
+
+				while (XmlPullUtil.test(pp, "ConSection"))
+				{
+					XmlPullUtil.enter(pp);
+
+					// departure
+					XmlPullUtil.require(pp, "Departure");
+					XmlPullUtil.enter(pp);
+					XmlPullUtil.require(pp, "BasicStop");
+					XmlPullUtil.enter(pp);
+					while (pp.getName().equals("StAttrList"))
+						XmlPullUtil.next(pp);
+					Location departure;
+					if (pp.getName().equals("Station"))
+						departure = parseLocation(pp);
+					else if (pp.getName().equals("Poi"))
+						departure = parsePoi(pp);
+					else
+						throw new IllegalStateException("cannot parse: " + pp.getName());
+					XmlPullUtil.next(pp);
+					XmlPullUtil.require(pp, "Dep");
+					XmlPullUtil.enter(pp);
+					XmlPullUtil.require(pp, "Time");
+					final Date departureTime = ParserUtils.joinDateTime(currentDate, TIME_FORMAT.parse(XmlPullUtil.text(pp).substring(3, 8)));
+					XmlPullUtil.require(pp, "Platform");
+					XmlPullUtil.enter(pp);
+					XmlPullUtil.require(pp, "Text");
+					String departurePos = XmlPullUtil.text(pp).trim();
+					if (departurePos.length() == 0)
+						departurePos = null;
+					XmlPullUtil.exit(pp);
+
+					XmlPullUtil.exit(pp);
+
+					XmlPullUtil.exit(pp);
+					XmlPullUtil.exit(pp);
+
+					// journey
+					String line = null;
+					String direction = null;
+					int min = 0;
+
+					final String tag = pp.getName();
+					if (tag.equals("Journey"))
+					{
+						XmlPullUtil.enter(pp);
+						while (pp.getName().equals("JHandle"))
+							XmlPullUtil.next(pp);
+						XmlPullUtil.require(pp, "JourneyAttributeList");
+						XmlPullUtil.enter(pp);
+						String name = null;
+						String category = null;
+						while (XmlPullUtil.test(pp, "JourneyAttribute"))
+						{
+							XmlPullUtil.enter(pp);
+							XmlPullUtil.require(pp, "Attribute");
+							final String attrName = XmlPullUtil.attr(pp, "type");
+							XmlPullUtil.enter(pp);
+							final String attrValue = parseAttributeVariant(pp, "NORMAL");
+							XmlPullUtil.exit(pp);
+							XmlPullUtil.exit(pp);
+
+							if ("NAME".equals(attrName))
+								name = attrValue;
+							else if ("CATEGORY".equals(attrName))
+								category = attrValue;
+							else if ("DIRECTION".equals(attrName))
+								direction = attrValue;
+						}
+						XmlPullUtil.exit(pp);
+						XmlPullUtil.exit(pp);
+
+						line = _normalizeLine(category, name);
+					}
+					else if (tag.equals("Walk") || tag.equals("Transfer"))
+					{
+						XmlPullUtil.enter(pp);
+						XmlPullUtil.require(pp, "Duration");
+						XmlPullUtil.enter(pp);
+						XmlPullUtil.require(pp, "Time");
+						min = parseDuration(XmlPullUtil.text(pp).substring(3, 8));
+						XmlPullUtil.exit(pp);
+						XmlPullUtil.exit(pp);
+					}
+					else
+					{
+						throw new IllegalStateException("cannot handle: " + pp.getName());
+					}
+
+					// arrival
+					XmlPullUtil.require(pp, "Arrival");
+					XmlPullUtil.enter(pp);
+					XmlPullUtil.require(pp, "BasicStop");
+					XmlPullUtil.enter(pp);
+					while (pp.getName().equals("StAttrList"))
+						XmlPullUtil.next(pp);
+					Location arrival;
+					if (pp.getName().equals("Station"))
+						arrival = parseLocation(pp);
+					else if (pp.getName().equals("Poi"))
+						arrival = parsePoi(pp);
+					else
+						throw new IllegalStateException("cannot parse: " + pp.getName());
+					XmlPullUtil.next(pp);
+					XmlPullUtil.require(pp, "Arr");
+					XmlPullUtil.enter(pp);
+					XmlPullUtil.require(pp, "Time");
+					final Date arrivalTime = ParserUtils.joinDateTime(currentDate, TIME_FORMAT.parse(XmlPullUtil.text(pp).substring(3, 8)));
+					XmlPullUtil.require(pp, "Platform");
+					XmlPullUtil.enter(pp);
+					XmlPullUtil.require(pp, "Text");
+					String arrivalPos = XmlPullUtil.text(pp).trim();
+					if (arrivalPos.length() == 0)
+						arrivalPos = null;
+					XmlPullUtil.exit(pp);
+
+					XmlPullUtil.exit(pp);
+
+					XmlPullUtil.exit(pp);
+					XmlPullUtil.exit(pp);
+
+					XmlPullUtil.exit(pp);
+
+					if (min == 0 || line != null)
+					{
+						parts.add(new Connection.Trip(line, lineColors(line), 0, direction, departureTime, departurePos, departure.id,
+								departure.name, arrivalTime, arrivalPos, arrival.id, arrival.name));
+					}
+					else
+					{
+						if (parts.size() > 0 && parts.get(parts.size() - 1) instanceof Connection.Footway)
+						{
+							final Connection.Footway lastFootway = (Connection.Footway) parts.remove(parts.size() - 1);
+							parts.add(new Connection.Footway(lastFootway.min + min, lastFootway.departureId, lastFootway.departure, arrival.id,
+									arrival.name));
+						}
+						else
+						{
+							parts.add(new Connection.Footway(min, departure.id, departure.name, arrival.id, arrival.name));
+						}
+					}
+
+					if (firstDepartureTime == null)
+						firstDepartureTime = departureTime;
+					lastArrivalTime = arrivalTime;
+				}
+
+				XmlPullUtil.exit(pp);
+
+				XmlPullUtil.exit(pp);
+
+				connections.add(new Connection(id, null, firstDepartureTime, lastArrivalTime, null, null, 0, null, 0, null, parts));
+			}
+
+			XmlPullUtil.exit(pp);
+
+			return new QueryConnectionsResult(null, from, via, to, null, null, connections);
+		}
+		catch (final XmlPullParserException x)
+		{
+			throw new RuntimeException(x);
+		}
+		catch (final SocketTimeoutException x)
+		{
+			throw new RuntimeException(x);
+		}
+		catch (final ParseException x)
+		{
+			throw new RuntimeException(x);
+		}
+		finally
+		{
+			if (is != null)
+				is.close();
+		}
+	}
+
+	private final String parseAttributeVariant(final XmlPullParser pp, final String type) throws XmlPullParserException, IOException
+	{
+		String value = null;
+
+		while (XmlPullUtil.test(pp, "AttributeVariant"))
+		{
+			if (type.equals(XmlPullUtil.attr(pp, "type")))
+			{
+				XmlPullUtil.enter(pp);
+				XmlPullUtil.require(pp, "Text");
+				value = XmlPullUtil.text(pp).trim();
+				XmlPullUtil.exit(pp);
+			}
+			else
+			{
+				XmlPullUtil.next(pp);
+			}
+		}
+
+		return value;
+	}
+
+	private static final Pattern P_DURATION = Pattern.compile("(\\d+):(\\d{2})");
+
+	private final int parseDuration(final String str)
+	{
+		final Matcher m = P_DURATION.matcher(str);
+		if (m.matches())
+			return Integer.parseInt(m.group(1)) * 60 + Integer.parseInt(m.group(2));
+		else
+			throw new IllegalArgumentException("cannot parse duration: " + str);
+	}
+
+	private final String location(final Location location)
+	{
+		if (location.type == LocationType.STATION && location.id != 0)
+			return "<Station externalId=\"" + location.id + "\" />";
+		if (location.type == LocationType.POI && (location.lat != 0 || location.lon != 0))
+			return "<Poi type=\"WGS84\" x=\"" + location.lon + "\" y=\"" + location.lat + "\" />";
+
+		throw new IllegalArgumentException("cannot handle: " + location.toDebugString());
+	}
+
+	private final String _normalizeLine(final String type, final String name)
+	{
+		final String normalizedType = type.split(" ", 2)[0];
+		final String normalizedName = normalizeWhitespace(name);
+
+		if ("THALYS".equals(normalizedType))
+			return "I" + normalizedName;
+		if ("IC".equals(normalizedType))
+			return "I" + normalizedName;
+		if ("EN".equals(normalizedType))
+			return "I" + normalizedName;
+		if ("OEC".equals(normalizedType))
+			return "I" + normalizedName;
+
+		if ("R".equals(normalizedType))
+			return "R" + normalizedName;
+		if ("RE".equals(normalizedType))
+			return "R" + normalizedName;
+		if ("IR".equals(normalizedType))
+			return "R" + normalizedName;
+
+		if ("Tramway".equals(normalizedType))
+			return "T" + normalizedName;
+
+		if ("BUS".equals(normalizedType))
+			return "B" + normalizedName;
+
+		if ("L".equals(normalizedType))
+			return "?" + normalizedName;
+		if ("NZ".equals(normalizedType))
+			return "?" + normalizedName;
+
+		throw new IllegalStateException("cannot normalize type '" + normalizedType + "' (" + type + ") name '" + normalizedName + "'");
+	}
+
+	private final static Pattern P_WHITESPACE = Pattern.compile("\\s+");
+
+	private final String normalizeWhitespace(final String str)
+	{
+		return P_WHITESPACE.matcher(str).replaceAll("");
+	}
+
+	public QueryConnectionsResult queryMoreConnections(String uri) throws IOException
+	{
+		throw new UnsupportedOperationException();
+	}
+
+	public GetConnectionDetailsResult getConnectionDetails(String connectionUri) throws IOException
+	{
+		throw new UnsupportedOperationException();
 	}
 
 	private final static Pattern P_NEARBY_COARSE = Pattern.compile("<tr class=\"(zebra[^\"]*)\">(.*?)</tr>", Pattern.DOTALL);
@@ -200,7 +598,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		if (normalizedType != 0)
 			return normalizedType + strippedLine;
 
-		throw new IllegalStateException("cannot normalize type " + type + " line " + line);
+		throw new IllegalStateException("cannot normalize type '" + type + "' line '" + line + "'");
 	}
 
 	protected abstract char normalizeType(String type);

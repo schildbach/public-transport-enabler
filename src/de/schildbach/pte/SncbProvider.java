@@ -27,9 +27,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.schildbach.pte.dto.Departure;
-import de.schildbach.pte.dto.GetConnectionDetailsResult;
-import de.schildbach.pte.dto.Location;
-import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryDeparturesResult.Status;
 import de.schildbach.pte.util.ParserUtils;
@@ -43,17 +40,17 @@ public class SncbProvider extends AbstractHafasProvider
 
 	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
 
-	private static final String AUTOCOMPLETE_URI = "http://hari.b-rail.be/Hafas/bin/extxml.exe";
+	private static final String API_URI = "http://hari.b-rail.be/Hafas/bin/extxml.exe";
 
 	public SncbProvider()
 	{
-		super(AUTOCOMPLETE_URI, "irail", null);
+		super(API_URI, null);
 	}
 
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
 		for (final Capability capability : capabilities)
-			if (capability == Capability.DEPARTURES)
+			if (capability == Capability.DEPARTURES || capability == Capability.CONNECTIONS)
 				return true;
 
 		return false;
@@ -65,22 +62,6 @@ public class SncbProvider extends AbstractHafasProvider
 	protected String nearbyStationUri(final String stationId)
 	{
 		return String.format(NEARBY_URI, stationId);
-	}
-
-	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final String products, final WalkSpeed walkSpeed) throws IOException
-	{
-		throw new UnsupportedOperationException();
-	}
-
-	public QueryConnectionsResult queryMoreConnections(final String uri) throws IOException
-	{
-		throw new UnsupportedOperationException();
-	}
-
-	public GetConnectionDetailsResult getConnectionDetails(final String connectionUri) throws IOException
-	{
-		throw new UnsupportedOperationException();
 	}
 
 	public String departuresQueryUri(final String stationId, final int maxDepartures)

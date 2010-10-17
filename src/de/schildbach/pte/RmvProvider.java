@@ -53,7 +53,7 @@ public class RmvProvider extends AbstractHafasProvider
 
 	public RmvProvider()
 	{
-		super(null, null, null);
+		super(null, null);
 	}
 
 	public boolean hasCapabilities(final Capability... capabilities)
@@ -184,6 +184,7 @@ public class RmvProvider extends AbstractHafasProvider
 	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern.compile(
 			"(mehrfach vorhanden oder identisch)|(keine Verbindung gefunden werden)|(derzeit nur Ausk&#252;nfte vom)", Pattern.CASE_INSENSITIVE);
 
+	@Override
 	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
 			final String products, final WalkSpeed walkSpeed) throws IOException
 	{
@@ -249,6 +250,7 @@ public class RmvProvider extends AbstractHafasProvider
 			+ "(?:&nbsp;(.+?))?" //
 	, Pattern.DOTALL);
 
+	@Override
 	public QueryConnectionsResult queryMoreConnections(final String uri) throws IOException
 	{
 		final CharSequence page = ParserUtils.scrape(uri);
@@ -333,6 +335,7 @@ public class RmvProvider extends AbstractHafasProvider
 			+ "- <b>(.*?)" // arrival
 	, Pattern.DOTALL);
 
+	@Override
 	public GetConnectionDetailsResult getConnectionDetails(final String uri) throws IOException
 	{
 		final CharSequence page = ParserUtils.scrape(uri);

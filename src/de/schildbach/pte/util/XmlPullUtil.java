@@ -32,7 +32,8 @@ public final class XmlPullUtil
 
 	/**
 	 * enters current tag
-	 * @throws IOException 
+	 * 
+	 * @throws IOException
 	 */
 	public static void enter(final XmlPullParser pp) throws XmlPullParserException, IOException
 	{
@@ -40,22 +41,34 @@ public final class XmlPullUtil
 			throw new IllegalStateException("expecting start tag to enter");
 		if (pp.isEmptyElementTag())
 			throw new IllegalStateException("cannot enter empty tag");
+
 		pp.next();
 	}
-	
+
 	public static void exit(final XmlPullParser pp) throws XmlPullParserException, IOException
 	{
+		while (pp.getEventType() != XmlPullParser.END_TAG)
+		{
+			if (pp.getEventType() == XmlPullParser.START_TAG)
+				next(pp);
+			else if (pp.getEventType() == XmlPullParser.TEXT)
+				pp.next();
+			else
+				throw new IllegalStateException();
+		}
+
 		if (pp.getEventType() != XmlPullParser.END_TAG)
 			throw new IllegalStateException("expecting end tag to exit");
+
 		pp.next();
 	}
-	
+
 	public static boolean test(final XmlPullParser pp, final String tagName) throws XmlPullParserException
 	{
 		return pp.getEventType() == XmlPullParser.START_TAG && pp.getName().equals(tagName);
 	}
-	
-	public static void skipTree(final XmlPullParser pp) throws XmlPullParserException, IOException
+
+	public static void next(final XmlPullParser pp) throws XmlPullParserException, IOException
 	{
 		skipSubTree(pp);
 		pp.next();
@@ -80,6 +93,22 @@ public final class XmlPullUtil
 	{
 		if (!requiredValue.equals(attr(pp, attrName)))
 			throw new IllegalStateException("cannot find " + attrName + "=\"" + requiredValue + "\" />");
+	}
+
+	public static String text(final XmlPullParser pp) throws XmlPullParserException, IOException
+	{
+		if (pp.getEventType() != XmlPullParser.START_TAG || pp.isEmptyElementTag())
+			throw new IllegalStateException("expecting start tag to get text from");
+
+		enter(pp);
+
+		String text = "";
+		if (pp.getEventType() == XmlPullParser.TEXT)
+			text = pp.getText();
+
+		exit(pp);
+
+		return text;
 	}
 
 	/**

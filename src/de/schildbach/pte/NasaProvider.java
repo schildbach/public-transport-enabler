@@ -48,7 +48,7 @@ public class NasaProvider extends AbstractHafasProvider
 
 	public NasaProvider()
 	{
-		super(null, null, null);
+		super(null, null);
 	}
 
 	public boolean hasCapabilities(final Capability... capabilities)
@@ -250,17 +250,20 @@ public class NasaProvider extends AbstractHafasProvider
 		return 0;
 	}
 
+	@Override
 	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
 			final String products, final WalkSpeed walkSpeed) throws IOException
 	{
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
 	public QueryConnectionsResult queryMoreConnections(String uri) throws IOException
 	{
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
 	public GetConnectionDetailsResult getConnectionDetails(String connectionUri) throws IOException
 	{
 		throw new UnsupportedOperationException();

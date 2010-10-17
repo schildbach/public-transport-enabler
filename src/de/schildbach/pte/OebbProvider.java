@@ -50,7 +50,7 @@ public class OebbProvider extends AbstractHafasProvider
 
 	public OebbProvider()
 	{
-		super(null, null, null);
+		super(null, null);
 	}
 
 	public boolean hasCapabilities(final Capability... capabilities)
@@ -233,6 +233,7 @@ public class OebbProvider extends AbstractHafasProvider
 			"<select.*? name=\"(REQ0JourneyStopsS0K|REQ0JourneyStopsZ0K|REQ0JourneyStops1\\.0K)\"[^>]*>\n(.*?)</select>", Pattern.DOTALL);
 	private static final Pattern P_ADDRESSES = Pattern.compile("<option[^>]*>\\s*([^<\\[]*)(?:\\[[^\\[]*\\])?\\s*</option>", Pattern.DOTALL);
 
+	@Override
 	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
 			final String products, final WalkSpeed walkSpeed) throws IOException
 	{
@@ -293,6 +294,7 @@ public class OebbProvider extends AbstractHafasProvider
 			return queryConnections(baseUri, page);
 	}
 
+	@Override
 	public QueryConnectionsResult queryMoreConnections(final String uri) throws IOException
 	{
 		final CharSequence page = ParserUtils.scrape(uri, false, null, null, true);
@@ -483,6 +485,7 @@ public class OebbProvider extends AbstractHafasProvider
 		}
 	}
 
+	@Override
 	public GetConnectionDetailsResult getConnectionDetails(final String connectionUri) throws IOException
 	{
 		throw new UnsupportedOperationException();
