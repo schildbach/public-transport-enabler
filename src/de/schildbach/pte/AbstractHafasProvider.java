@@ -229,6 +229,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 					return QueryConnectionsResult.TOO_CLOSE;
 				if (code.equals("K9220")) // Nearby to the given address stations could not be found
 					return QueryConnectionsResult.NO_CONNECTIONS;
+				if (code.equals("K890")) // No connections found
+					return QueryConnectionsResult.NO_CONNECTIONS;
 				throw new IllegalStateException("error " + code + " " + XmlPullUtil.attr(pp, "text"));
 			}
 
@@ -506,45 +508,114 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		throw new IllegalArgumentException("cannot handle: " + location.toDebugString());
 	}
 
+	private static final Pattern P_LINE_S = Pattern.compile("S\\d+");
+
 	private final String _normalizeLine(final String type, final String name, final String longCategory)
 	{
 		final String normalizedType = type.split(" ", 2)[0];
 		final String normalizedName = normalizeWhitespace(name);
 
-		if ("EN".equals(normalizedType))
+		if ("EN".equals(normalizedType)) // EuroNight
+			return "I" + normalizedName;
+		if ("EC".equals(normalizedType)) // EuroCity
 			return "I" + normalizedName;
 		if ("ICE".equals(normalizedType)) // InterCityExpress
 			return "I" + normalizedName;
-		if ("IC".equals(normalizedType))
+		if ("IC".equals(normalizedType)) // InterCity
+			return "I" + normalizedName;
+		if ("ICN".equals(normalizedType)) // IC-Neigezug
 			return "I" + normalizedName;
 		if ("CNL".equals(normalizedType)) // CityNightLine
 			return "I" + normalizedName;
-		if ("OEC".equals(normalizedType))
+		if ("OEC".equals(normalizedType)) // ÖBB EuroCity
 			return "I" + normalizedName;
-		if ("OIC".equals(normalizedType))
+		if ("OIC".equals(normalizedType)) // ÖBB InterCity
 			return "I" + normalizedName;
-		if ("THALYS".equals(normalizedType))
+		if ("TGV".equals(normalizedType)) // Train à grande vit.
+			return "I" + normalizedName;
+		if ("THA".equals(normalizedType)) // Thalys
+			return "I" + normalizedName;
+		// if ("THALYS".equals(normalizedType))
+		// return "I" + normalizedName;
+		if ("ES".equals(normalizedType)) // Eurostar Italia
+			return "I" + normalizedName;
+		if ("EST".equals(normalizedType)) // Eurostar
+			return "I" + normalizedName;
+		if ("X2".equals(normalizedType)) // X2000 Neigezug, Schweden
+			return "I" + normalizedName;
+		if ("RJ".equals(normalizedType)) // Railjet
+			return "I" + normalizedName;
+		if ("AVE".equals(normalizedType)) // Alta Velocidad ES
+			return "I" + normalizedName;
+		if ("ARC".equals(normalizedType)) // Arco, Spanien
+			return "I" + normalizedName;
+		if ("ALS".equals(normalizedType)) // Alaris, Spanien
+			return "I" + normalizedName;
+		if ("NZ".equals(normalizedType)) // Nacht-Zug
 			return "I" + normalizedName;
 
 		if ("R".equals(normalizedType)) // Regio
 			return "R" + normalizedName;
-		if ("RE".equals(normalizedType))
+		if ("D".equals(normalizedType)) // Schnellzug
 			return "R" + normalizedName;
-		if ("IR".equals(normalizedType))
+		if ("E".equals(normalizedType)) // Eilzug
+			return "R" + normalizedName;
+		if ("RE".equals(normalizedType)) // RegioExpress
+			return "R" + normalizedName;
+		if ("IR".equals(normalizedType)) // InterRegio
+			return "R" + normalizedName;
+		if ("IRE".equals(normalizedType)) // InterRegioExpress
+			return "R" + normalizedName;
+		if ("ATZ".equals(normalizedType)) // Autotunnelzug
 			return "R" + normalizedName;
 
 		if ("S".equals(normalizedType)) // S-Bahn
 			return "S" + normalizedName;
+		if (P_LINE_S.matcher(normalizedType).matches()) // diverse S-Bahnen
+			return "S" + normalizedType;
 
-		 if ("Tramway".equals(normalizedType))
-		 return "T" + normalizedName;
-		
-		 if ("BUS".equals(normalizedType))
-		 return "B" + normalizedName;
+		if ("Met".equals(normalizedType)) // Metro
+			return "U" + normalizedName;
+		if ("M".equals(normalizedType)) // Metro
+			return "U" + normalizedName;
+		if ("Métro".equals(normalizedType))
+			return "U" + normalizedName;
+
+		if ("Tram".equals(normalizedType)) // Tram
+			return "T" + normalizedName;
+		if ("Tramway".equals(normalizedType))
+			return "T" + normalizedName;
+
+		if ("BUS".equals(normalizedType)) // Bus
+			return "B" + normalizedName;
+		if ("Bus".equals(normalizedType)) // Niederflurbus
+			return "B" + normalizedName;
+		if ("NFB".equals(normalizedType)) // Niederflur-Bus
+			return "B" + normalizedName;
+		if ("Tro".equals(normalizedType)) // Trolleybus
+			return "B" + normalizedName;
+		if ("Taxi".equals(normalizedType)) // Taxi
+			return "B" + normalizedName;
+		if ("TX".equals(normalizedType)) // Taxi
+			return "B" + normalizedName;
+
+		if ("BAT".equals(normalizedType)) // Schiff
+			return "F" + normalizedName;
+
+		if ("LB".equals(normalizedType)) // Luftseilbahn
+			return "C" + normalizedName;
+		if ("FUN".equals(normalizedType)) // Standseilbahn
+			return "C" + normalizedName;
+		if ("Fun".equals(normalizedType)) // Funiculaire
+			return "C" + normalizedName;
 
 		if ("L".equals(normalizedType))
 			return "?" + normalizedName;
-		if ("NZ".equals(normalizedType)) // Nacht-Zug
+		if ("P".equals(normalizedType))
+			return "?" + normalizedName;
+		if ("CR".equals(normalizedType))
+			return "?" + normalizedName;
+		if ("TRN".equals(normalizedType))
 			return "?" + normalizedName;
 
 		throw new IllegalStateException("cannot normalize type '" + normalizedType + "' (" + type + ") name '" + normalizedName + "' longCategory '"
