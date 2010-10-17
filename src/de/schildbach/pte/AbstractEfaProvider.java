@@ -634,8 +634,12 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		throw new IllegalStateException("cannot normalize mot '" + mot + "' name '" + name + "' long '" + longName + "'");
 	}
 
-	public QueryDeparturesResult queryDepartures(final String uri) throws IOException
+	protected abstract String departuresQueryUri(String stationId, int maxDepartures);
+
+	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures) throws IOException
 	{
+		final String uri = departuresQueryUri(stationId, maxDepartures);
+
 		InputStream is = null;
 		try
 		{
@@ -691,11 +695,11 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 					XmlPullUtil.skipRestOfTree(pp);
 				}
 
-				return new QueryDeparturesResult(uri, locationId, location, departures);
+				return new QueryDeparturesResult(locationId, location, departures);
 			}
 			else if ("notidentified".equals(nameState))
 			{
-				return new QueryDeparturesResult(uri, QueryDeparturesResult.Status.INVALID_STATION);
+				return new QueryDeparturesResult(QueryDeparturesResult.Status.INVALID_STATION, Integer.parseInt(stationId));
 			}
 			else
 			{
@@ -708,11 +712,11 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		}
 		catch (final FileNotFoundException x)
 		{
-			return new QueryDeparturesResult(uri, QueryDeparturesResult.Status.SERVICE_DOWN);
+			return new QueryDeparturesResult(QueryDeparturesResult.Status.SERVICE_DOWN, Integer.parseInt(stationId));
 		}
 		catch (final SocketTimeoutException x)
 		{
-			return new QueryDeparturesResult(uri, QueryDeparturesResult.Status.SERVICE_DOWN);
+			return new QueryDeparturesResult(QueryDeparturesResult.Status.SERVICE_DOWN, Integer.parseInt(stationId));
 		}
 		finally
 		{

@@ -29,26 +29,23 @@ public final class QueryDeparturesResult
 		OK, NO_INFO, INVALID_STATION, SERVICE_DOWN
 	}
 
-	public final String uri;
 	public final Status status;
 	public final int locationId;
 	public final String location;
 	public final List<Departure> departures;
 
-	public QueryDeparturesResult(final String uri, final int locationId, final String location, final List<Departure> departures)
+	public QueryDeparturesResult(final int locationId, final String location, final List<Departure> departures)
 	{
-		this.uri = uri;
 		this.status = Status.OK;
 		this.locationId = locationId;
 		this.location = location;
 		this.departures = departures;
 	}
 
-	public QueryDeparturesResult(final String uri, final Status status)
+	public QueryDeparturesResult(final Status status, final int locationId)
 	{
-		this.uri = uri;
 		this.status = status;
-		this.locationId = 0;
+		this.locationId = locationId;
 		this.location = null;
 		this.departures = null;
 	}

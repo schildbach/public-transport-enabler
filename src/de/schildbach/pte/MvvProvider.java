@@ -124,7 +124,8 @@ public class MvvProvider extends AbstractEfaProvider
 			return new NearbyStationsResult(uri, stations.subList(0, maxStations));
 	}
 
-	public String departuresQueryUri(final String stationId, final int maxDepartures)
+	@Override
+	protected String departuresQueryUri(final String stationId, final int maxDepartures)
 	{
 		final StringBuilder uri = new StringBuilder();
 		uri.append(API_BASE).append("XSLT_DM_REQUEST");

@@ -491,7 +491,7 @@ public class OebbProvider extends AbstractHafasProvider
 		throw new UnsupportedOperationException();
 	}
 
-	public String departuresQueryUri(final String stationId, final int maxDepartures)
+	private String departuresQueryUri(final String stationId, final int maxDepartures)
 	{
 		final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
 		final Date now = new Date();
@@ -518,16 +518,16 @@ public class OebbProvider extends AbstractHafasProvider
 
 	private static final Pattern P_DEPARTURES_ERROR = Pattern.compile("(Verbindung zum Server konnte leider nicht hergestellt werden)");
 
-	public QueryDeparturesResult queryDepartures(final String uri) throws IOException
+	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures) throws IOException
 	{
 		// scrape page
-		final String page = ParserUtils.scrape(uri).toString().substring(14);
+		final String page = ParserUtils.scrape(departuresQueryUri(stationId, maxDepartures)).toString().substring(14);
 
 		final Matcher mError = P_DEPARTURES_ERROR.matcher(page);
 		if (mError.find())
 		{
 			if (mError.group(1) != null)
-				return new QueryDeparturesResult(uri, Status.SERVICE_DOWN);
+				return new QueryDeparturesResult(Status.SERVICE_DOWN, Integer.parseInt(stationId));
 		}
 
 		try
@@ -537,7 +537,7 @@ public class OebbProvider extends AbstractHafasProvider
 			final int locationId = head.optInt("stationEvaId", -1);
 			// final boolean rt = head.optBoolean("rtInfo");
 			if (locationId == -1)
-				return new QueryDeparturesResult(uri, Status.INVALID_STATION);
+				return new QueryDeparturesResult(Status.INVALID_STATION, Integer.parseInt(stationId));
 
 			final List<Departure> departures = new ArrayList<Departure>(8);
 
@@ -565,11 +565,11 @@ public class OebbProvider extends AbstractHafasProvider
 				}
 			}
 
-			return new QueryDeparturesResult(uri, locationId, location, departures);
+			return new QueryDeparturesResult(locationId, location, departures);
 		}
 		catch (final JSONException x)
 		{
-			throw new RuntimeException("cannot parse: '" + page + "' on " + uri, x);
+			throw new RuntimeException("cannot parse: '" + page + "' on " + stationId, x);
 		}
 	}
 

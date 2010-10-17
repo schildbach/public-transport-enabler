@@ -367,7 +367,7 @@ public class SbbProvider extends AbstractHafasProvider
 
 	}
 
-	public String departuresQueryUri(final String stationId, final int maxDepartures)
+	private String departuresQueryUri(final String stationId, final int maxDepartures)
 	{
 		final StringBuilder uri = new StringBuilder();
 		uri.append(API_BASE).append("bhftafel.exe/dox");
@@ -407,9 +407,9 @@ public class SbbProvider extends AbstractHafasProvider
 			+ ".*?" //
 	, Pattern.DOTALL);
 
-	public QueryDeparturesResult queryDepartures(final String uri) throws IOException
+	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures) throws IOException
 	{
-		final CharSequence page = ParserUtils.scrape(uri);
+		final CharSequence page = ParserUtils.scrape(departuresQueryUri(stationId, maxDepartures));
 
 		// parse page
 		final Matcher mHeadCoarse = P_DEPARTURES_HEAD_COARSE.matcher(page);
@@ -417,11 +417,11 @@ public class SbbProvider extends AbstractHafasProvider
 		{
 			// messages
 			if (mHeadCoarse.group(3) != null)
-				return new QueryDeparturesResult(uri, Status.NO_INFO);
+				return new QueryDeparturesResult( Status.NO_INFO, Integer.parseInt(stationId));
 			else if (mHeadCoarse.group(5) != null)
-				return new QueryDeparturesResult(uri, Status.INVALID_STATION);
+				return new QueryDeparturesResult( Status.INVALID_STATION, Integer.parseInt(stationId));
 			else if (mHeadCoarse.group(6) != null)
-				return new QueryDeparturesResult(uri, Status.SERVICE_DOWN);
+				return new QueryDeparturesResult( Status.SERVICE_DOWN, Integer.parseInt(stationId));
 
 			final String head = mHeadCoarse.group(1) + mHeadCoarse.group(4);
 			final Matcher mHeadFine = P_DEPARTURES_HEAD_FINE.matcher(head);
@@ -469,20 +469,20 @@ public class SbbProvider extends AbstractHafasProvider
 					}
 					else
 					{
-						throw new IllegalArgumentException("cannot parse '" + mDepCoarse.group(1) + "' on " + uri);
+						throw new IllegalArgumentException("cannot parse '" + mDepCoarse.group(1) + "' on " + stationId);
 					}
 				}
 
-				return new QueryDeparturesResult(uri, locationId, location, departures);
+				return new QueryDeparturesResult(locationId, location, departures);
 			}
 			else
 			{
-				throw new IllegalArgumentException("cannot parse '" + head + "' on " + uri);
+				throw new IllegalArgumentException("cannot parse '" + head + "' on " + stationId);
 			}
 		}
 		else
 		{
-			throw new IllegalArgumentException("cannot parse '" + page + "' on " + uri);
+			throw new IllegalArgumentException("cannot parse '" + page + "' on " + stationId);
 		}
 	}
 

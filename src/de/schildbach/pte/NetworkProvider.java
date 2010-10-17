@@ -120,25 +120,16 @@ public interface NetworkProvider
 	GetConnectionDetailsResult getConnectionDetails(String connectionUri) throws IOException;
 
 	/**
-	 * Construct an Uri for getting departures
+	 * Get departures at a given station, probably live
 	 * 
 	 * @param stationId
 	 *            id of the station
 	 * @param maxDepartures
 	 *            maximum number of departures to get or {@code 0}
-	 * @return uri for getting departures
-	 */
-	String departuresQueryUri(String stationId, int maxDepartures);
-
-	/**
-	 * Get departures at a given station, probably live
-	 * 
-	 * @param queryUri
-	 *            uri constructed by {@link NetworkProvider#departuresQueryUri}
 	 * @return result object containing the departures
 	 * @throws IOException
 	 */
-	QueryDeparturesResult queryDepartures(String queryUri) throws IOException;
+	QueryDeparturesResult queryDepartures(String stationId, int maxDepartures) throws IOException;
 
 	/**
 	 * Get colors of line

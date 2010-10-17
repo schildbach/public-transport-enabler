@@ -40,7 +40,7 @@ public class VgsProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(provider.departuresQueryUri("8000244", 0));
+		final QueryDeparturesResult result = provider.queryDepartures("8000244", 0);
 
 		System.out.println(result.departures.size() + "  " + result.departures);
 	}

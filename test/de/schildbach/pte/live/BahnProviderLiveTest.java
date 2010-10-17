@@ -40,7 +40,7 @@ public class BahnProviderLiveTest
 	@Test
 	public void departures() throws Exception
 	{
-		final QueryDeparturesResult queryDepartures = provider.queryDepartures(provider.departuresQueryUri("692991", 0));
+		final QueryDeparturesResult queryDepartures = provider.queryDepartures("692991", 0);
 		System.out.println(queryDepartures.departures);
 	}
 

@@ -83,7 +83,7 @@ public class VrnProviderLiveTest
 	@Test
 	public void departures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(provider.departuresQueryUri("6032236", 0));
+		final QueryDeparturesResult result = provider.queryDepartures("6032236", 0);
 
 		System.out.println(result.departures.size() + "  " + result.departures);
 	}

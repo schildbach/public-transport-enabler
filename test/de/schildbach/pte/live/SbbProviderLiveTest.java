@@ -66,7 +66,7 @@ public class SbbProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(provider.departuresQueryUri("8500010", 0));
+		final QueryDeparturesResult result = provider.queryDepartures("8500010", 0);
 
 		System.out.println(result.status + "  " + result.departures.size() + "  " + result.departures);
 	}

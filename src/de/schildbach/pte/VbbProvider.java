@@ -277,8 +277,8 @@ public final class VbbProvider implements NetworkProvider
 					if (departureTime.after(arrivalTime))
 						arrivalTime = ParserUtils.addDays(arrivalTime, 1);
 					final String line = normalizeLine(ParserUtils.resolveEntities(mConFine.group(4)));
-					final Connection connection = new Connection(AbstractHafasProvider.extractConnectionId(link), link, departureTime, arrivalTime, line,
-							line != null ? LINES.get(line.charAt(0)) : null, 0, from.name, 0, to.name, null);
+					final Connection connection = new Connection(AbstractHafasProvider.extractConnectionId(link), link, departureTime, arrivalTime,
+							line, line != null ? LINES.get(line.charAt(0)) : null, 0, from.name, 0, to.name, null);
 					connections.add(connection);
 				}
 				else
@@ -424,8 +424,8 @@ public final class VbbProvider implements NetworkProvider
 			}
 
 			if (firstDepartureTime != null && lastArrivalTime != null)
-				return new GetConnectionDetailsResult(currentDate, new Connection(AbstractHafasProvider.extractConnectionId(uri), uri, firstDepartureTime,
-						lastArrivalTime, null, null, firstDepartureId, firstDeparture, lastArrivalId, lastArrival, parts));
+				return new GetConnectionDetailsResult(currentDate, new Connection(AbstractHafasProvider.extractConnectionId(uri), uri,
+						firstDepartureTime, lastArrivalTime, null, null, firstDepartureId, firstDeparture, lastArrivalId, lastArrival, parts));
 			else
 				return new GetConnectionDetailsResult(currentDate, null);
 		}
@@ -438,7 +438,7 @@ public final class VbbProvider implements NetworkProvider
 	private static final String DEPARTURE_URL_LIVE = "http://mobil.bvg.de/IstAbfahrtzeiten/index/mobil?";
 	private static final String DEPARTURE_URL_PLAN = "http://mobil.bvg.de/Fahrinfo/bin/stboard.bin/dox/dox?boardType=dep&start=yes&";
 
-	public String departuresQueryUri(final String stationId, final int maxDepartures)
+	private String departuresQueryUri(final String stationId, final int maxDepartures)
 	{
 		final boolean live = stationId.length() == 6;
 
@@ -469,19 +469,13 @@ public final class VbbProvider implements NetworkProvider
 			+ "\\s*(.*?)\\s*</a>.*?" // destination
 	, Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_SERVICE_DOWN = Pattern.compile("Wartungsarbeiten");
-	private static final Pattern P_DEPARTURES_URI_STATION_ID = Pattern.compile("input=(\\d+)");
 
-	public QueryDeparturesResult queryDepartures(final String uri) throws IOException
+	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures) throws IOException
 	{
-		final CharSequence page = ParserUtils.scrape(uri);
-
-		final Matcher mStationId = P_DEPARTURES_URI_STATION_ID.matcher(uri);
-		if (!mStationId.find())
-			throw new IllegalStateException(uri);
-		final int stationId = Integer.parseInt(mStationId.group(1));
+		final CharSequence page = ParserUtils.scrape(departuresQueryUri(stationId, maxDepartures));
 
 		if (P_DEPARTURES_SERVICE_DOWN.matcher(page).find())
-			return new QueryDeparturesResult(uri, Status.SERVICE_DOWN);
+			return new QueryDeparturesResult(Status.SERVICE_DOWN, Integer.parseInt(stationId));
 
 		// parse page
 		final Matcher mHead = P_DEPARTURES_HEAD.matcher(page);
@@ -495,7 +489,7 @@ public final class VbbProvider implements NetworkProvider
 			final Matcher mDepCoarse = P_DEPARTURES_COARSE.matcher(page);
 			while (mDepCoarse.find())
 			{
-				final boolean live = uri.contains("IstAbfahrtzeiten");
+				final boolean live = stationId.length() == 6;
 				final Matcher mDepFine = (live ? P_DEPARTURES_LIVE_FINE : P_DEPARTURES_PLAN_FINE).matcher(mDepCoarse.group(1));
 				if (mDepFine.matches())
 				{
@@ -533,15 +527,15 @@ public final class VbbProvider implements NetworkProvider
 				}
 				else
 				{
-					throw new IllegalArgumentException("cannot parse '" + mDepCoarse.group(1) + "' on " + uri);
+					throw new IllegalArgumentException("cannot parse '" + mDepCoarse.group(1) + "' on " + stationId);
 				}
 			}
 
-			return new QueryDeparturesResult(uri, stationId, location, departures);
+			return new QueryDeparturesResult(Integer.parseInt(stationId), location, departures);
 		}
 		else
 		{
-			return new QueryDeparturesResult(uri, Status.NO_INFO);
+			return new QueryDeparturesResult(Status.NO_INFO, Integer.parseInt(stationId));
 		}
 	}
 

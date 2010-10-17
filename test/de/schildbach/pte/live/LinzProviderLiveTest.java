@@ -72,7 +72,7 @@ public class LinzProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(provider.departuresQueryUri("60501720", 0));
+		final QueryDeparturesResult result = provider.queryDepartures("60501720", 0);
 		System.out.println(result);
 	}
 

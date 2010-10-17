@@ -65,7 +65,8 @@ public class AvvProvider extends AbstractEfaProvider
 		return String.format(NEARBY_STATION_URI, ParserUtils.urlEncode(stationId));
 	}
 
-	public String departuresQueryUri(final String stationId, final int maxDepartures)
+	@Override
+	protected String departuresQueryUri(final String stationId, final int maxDepartures)
 	{
 		final StringBuilder uri = new StringBuilder();
 		uri.append(API_BASE).append("XSLT_DM_REQUEST");

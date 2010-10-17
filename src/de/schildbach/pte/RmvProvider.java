@@ -427,7 +427,7 @@ public class RmvProvider extends AbstractHafasProvider
 		return time;
 	}
 
-	public String departuresQueryUri(final String stationId, final int maxDepartures)
+	private String departuresQueryUri(final String stationId, final int maxDepartures)
 	{
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yy");
 		final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
@@ -473,9 +473,9 @@ public class RmvProvider extends AbstractHafasProvider
 			+ "(?:<img src=\".+?\" alt=\"\" />\n<b>[^<]*</b>\n<br />\n)*" // (messages)
 	, Pattern.DOTALL);
 
-	public QueryDeparturesResult queryDepartures(final String uri) throws IOException
+	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures) throws IOException
 	{
-		final CharSequence page = ParserUtils.scrape(uri);
+		final CharSequence page = ParserUtils.scrape(departuresQueryUri(stationId, maxDepartures));
 
 		// parse page
 		final Matcher mHeadCoarse = P_DEPARTURES_HEAD_COARSE.matcher(page);
@@ -483,11 +483,11 @@ public class RmvProvider extends AbstractHafasProvider
 		{
 			// messages
 			if (mHeadCoarse.group(4) != null)
-				return new QueryDeparturesResult(uri, Status.INVALID_STATION);
+				return new QueryDeparturesResult(Status.INVALID_STATION, Integer.parseInt(stationId));
 			else if (mHeadCoarse.group(5) != null)
-				return new QueryDeparturesResult(uri, Status.SERVICE_DOWN);
+				return new QueryDeparturesResult(Status.SERVICE_DOWN, Integer.parseInt(stationId));
 
-			final int stationId = Integer.parseInt(mHeadCoarse.group(3));
+			final int locationId = Integer.parseInt(mHeadCoarse.group(3));
 
 			final Matcher mHeadFine = P_DEPARTURES_HEAD_FINE.matcher(mHeadCoarse.group(1));
 			if (mHeadFine.matches())
@@ -541,20 +541,20 @@ public class RmvProvider extends AbstractHafasProvider
 					}
 					else
 					{
-						throw new IllegalArgumentException("cannot parse '" + mDepCoarse.group(1) + "' on " + uri);
+						throw new IllegalArgumentException("cannot parse '" + mDepCoarse.group(1) + "' on " + stationId);
 					}
 				}
 
-				return new QueryDeparturesResult(uri, stationId, location, departures);
+				return new QueryDeparturesResult(locationId, location, departures);
 			}
 			else
 			{
-				throw new IllegalArgumentException("cannot parse '" + mHeadCoarse.group(1) + "' on " + uri);
+				throw new IllegalArgumentException("cannot parse '" + mHeadCoarse.group(1) + "' on " + stationId);
 			}
 		}
 		else
 		{
-			throw new IllegalArgumentException("cannot parse '" + page + "' on " + uri);
+			throw new IllegalArgumentException("cannot parse '" + page + "' on " + stationId);
 		}
 	}
 

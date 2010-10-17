@@ -40,7 +40,7 @@ public class NasaProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(provider.departuresQueryUri("13000", 0));
+		final QueryDeparturesResult result = provider.queryDepartures("13000", 0);
 
 		System.out.println(result.departures.size() + "  " + result.departures);
 	}

@@ -40,7 +40,7 @@ public class SvvProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(provider.departuresQueryUri("60650002", 0));
+		final QueryDeparturesResult result = provider.queryDepartures("60650002", 0);
 
 		System.out.println(result.departures.size() + "  " + result.departures);
 	}

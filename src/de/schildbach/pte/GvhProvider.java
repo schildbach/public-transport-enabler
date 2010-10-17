@@ -65,7 +65,8 @@ public class GvhProvider extends AbstractEfaProvider
 		return null;
 	}
 
-	public String departuresQueryUri(String stationId, int maxDepartures)
+	@Override
+	protected String departuresQueryUri(String stationId, int maxDepartures)
 	{
 		final StringBuilder uri = new StringBuilder();
 		uri.append(API_BASE).append("XSLT_DM_REQUEST");

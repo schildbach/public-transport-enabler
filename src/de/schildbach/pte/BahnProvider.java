@@ -432,7 +432,7 @@ public final class BahnProvider implements NetworkProvider
 		}
 	}
 
-	public String departuresQueryUri(final String stationId, final int maxDepartures)
+	private String departuresQueryUri(final String stationId, final int maxDepartures)
 	{
 		final StringBuilder uri = new StringBuilder();
 		uri.append(API_BASE).append("bhftafel.exe/dn");
@@ -459,9 +459,9 @@ public final class BahnProvider implements NetworkProvider
 	);
 	private static final Pattern P_DEPARTURES_MESSAGES = Pattern.compile("<Err code=\"([^\"]*)\" text=\"([^\"]*)\"");
 
-	public QueryDeparturesResult queryDepartures(final String uri) throws IOException
+	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures) throws IOException
 	{
-		final CharSequence page = ParserUtils.scrape(uri);
+		final CharSequence page = ParserUtils.scrape(departuresQueryUri(stationId, maxDepartures));
 
 		final Matcher mMessage = P_DEPARTURES_MESSAGES.matcher(page);
 		if (mMessage.find())
@@ -470,9 +470,9 @@ public final class BahnProvider implements NetworkProvider
 			final String text = mMessage.group(2);
 
 			if (code.equals("H730")) // Your input is not valid
-				return new QueryDeparturesResult(uri, QueryDeparturesResult.Status.INVALID_STATION);
+				return new QueryDeparturesResult(QueryDeparturesResult.Status.INVALID_STATION, Integer.parseInt(stationId));
 			if (code.equals("H890")) // No trains in result
-				return new QueryDeparturesResult(uri, QueryDeparturesResult.Status.NO_INFO);
+				return new QueryDeparturesResult(QueryDeparturesResult.Status.NO_INFO, Integer.parseInt(stationId));
 			throw new IllegalArgumentException("unknown error " + code + ", " + text);
 		}
 
@@ -512,11 +512,11 @@ public final class BahnProvider implements NetworkProvider
 			}
 			else
 			{
-				throw new IllegalArgumentException("cannot parse '" + mDepCoarse.group(1) + "' on " + uri);
+				throw new IllegalArgumentException("cannot parse '" + mDepCoarse.group(1) + "' on " + stationId);
 			}
 		}
 
-		return new QueryDeparturesResult(uri, 0, null, departures);
+		return new QueryDeparturesResult(Integer.parseInt(stationId), null, departures);
 	}
 
 	private static final Pattern P_NORMALIZE_LINE_NUMBER = Pattern.compile("\\d{2,5}");

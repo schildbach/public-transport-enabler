@@ -72,7 +72,8 @@ public class TflProvider extends AbstractEfaProvider
 		return null;
 	}
 
-	public String departuresQueryUri(final String stationId, final int maxDepartures)
+	@Override
+	protected String departuresQueryUri(final String stationId, final int maxDepartures)
 	{
 		final StringBuilder uri = new StringBuilder();
 		uri.append(API_BASE).append("XSLT_DM_REQUEST");
