@@ -305,6 +305,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 						departure = parseStation(pp);
 					else if (pp.getName().equals("Poi"))
 						departure = parsePoi(pp);
+					else if (pp.getName().equals("Address"))
+						departure = parseAddress(pp);
 					else
 						throw new IllegalStateException("cannot parse: " + pp.getName());
 					XmlPullUtil.next(pp);
