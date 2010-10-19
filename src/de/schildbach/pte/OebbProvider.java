@@ -285,7 +285,7 @@ public class OebbProvider extends AbstractHafasProvider
 			else if (type.equals("REQ0JourneyStops1.0K"))
 				viaAddresses = addresses;
 			else
-				throw new IOException(type);
+				throw new IllegalStateException(type);
 		}
 
 		if (fromAddresses != null || viaAddresses != null || toAddresses != null)

@@ -227,7 +227,7 @@ public class RmvProvider extends AbstractHafasProvider
 			else if (type.equals("Zielort"))
 				toAddresses = addresses;
 			else
-				throw new IOException(type);
+				throw new IllegalStateException(type);
 		}
 
 		if (fromAddresses != null || viaAddresses != null || toAddresses != null)

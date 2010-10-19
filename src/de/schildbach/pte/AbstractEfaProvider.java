@@ -80,6 +80,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			final XmlPullParser pp = factory.newPullParser();
 			pp.setInput(is, DEFAULT_ENCODING);
 
+			assertItdRequest(pp);
+
 			// parse odv name elements
 			if (!XmlPullUtil.jumpToStartTag(pp, null, "itdOdv") || !"origin".equals(pp.getAttributeValue(null, "usage")))
 				throw new IllegalStateException("cannot find <itdOdv usage=\"origin\" />");
@@ -222,6 +224,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
 			final XmlPullParser pp = factory.newPullParser();
 			pp.setInput(is, DEFAULT_ENCODING);
+
+			assertItdRequest(pp);
 
 			if (!XmlPullUtil.jumpToStartTag(pp, null, "itdOdv") || !"dm".equals(pp.getAttributeValue(null, "usage")))
 				throw new IllegalStateException("cannot find <itdOdv usage=\"dm\" />");
@@ -649,6 +653,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			final XmlPullParser pp = factory.newPullParser();
 			pp.setInput(is, DEFAULT_ENCODING);
 
+			assertItdRequest(pp);
+
 			if (!XmlPullUtil.jumpToStartTag(pp, null, "itdOdv") || !"dm".equals(pp.getAttributeValue(null, "usage")))
 				throw new IllegalStateException("cannot find <itdOdv usage=\"dm\" />");
 			if (!XmlPullUtil.nextStartTagInsideTree(pp, null, "itdOdvName"))
@@ -819,8 +825,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			final XmlPullParser pp = factory.newPullParser();
 			pp.setInput(is, DEFAULT_ENCODING);
 
-			if (!XmlPullUtil.jumpToStartTag(pp, null, "itdRequest"))
-				throw new IllegalStateException("cannot find <itdRequest />");
+			assertItdRequest(pp);
 			final String sessionId = pp.getAttributeValue(null, "sessionID");
 
 			if (!XmlPullUtil.jumpToStartTag(pp, null, "itdTripRequest"))
@@ -1135,5 +1140,11 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 	public int[] lineColors(final String line)
 	{
 		return LINES.get(line.charAt(0));
+	}
+
+	private void assertItdRequest(final XmlPullParser pp) throws XmlPullParserException, IOException
+	{
+		if (!XmlPullUtil.jumpToStartTag(pp, null, "itdRequest"))
+			throw new IOException("cannot find <itdRequest />");
 	}
 }

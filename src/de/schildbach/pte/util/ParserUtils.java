@@ -137,7 +137,7 @@ public final class ParserUtils
 					if (tries-- > 0)
 						System.out.println("got empty page, retrying...");
 					else
-						throw new IOException("got empty page: " + url);
+						throw new RuntimeException("got empty page: " + url);
 				}
 			}
 			catch (final SocketTimeoutException x)
@@ -145,7 +145,7 @@ public final class ParserUtils
 				if (tries-- > 0)
 					System.out.println("socket timed out, retrying...");
 				else
-					throw x;
+					throw new RuntimeException(x);
 			}
 		}
 	}

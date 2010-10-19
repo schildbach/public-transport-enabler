@@ -146,7 +146,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			final XmlPullParser pp = factory.newPullParser();
 			pp.setInput(is, DEFAULT_ENCODING);
 
-			XmlPullUtil.jump(pp, "ResC");
+			assertResC(pp);
 			XmlPullUtil.enter(pp);
 
 			XmlPullUtil.require(pp, "LocValRes");
@@ -245,7 +245,10 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			final XmlPullParser pp = factory.newPullParser();
 			pp.setInput(is, DEFAULT_ENCODING);
 
-			XmlPullUtil.jump(pp, "ConRes");
+			assertResC(pp);
+			XmlPullUtil.enter(pp);
+
+			XmlPullUtil.require(pp, "ConRes");
 			XmlPullUtil.enter(pp);
 			if (pp.getName().equals("Err"))
 			{
@@ -875,5 +878,11 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 	public final int[] lineColors(final String line)
 	{
 		return LINES.get(line.charAt(0));
+	}
+
+	private void assertResC(final XmlPullParser pp) throws XmlPullParserException, IOException
+	{
+		if (!XmlPullUtil.jumpToStartTag(pp, null, "ResC"))
+			throw new IOException("cannot find <ResC />");
 	}
 }
