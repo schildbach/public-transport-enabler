@@ -542,7 +542,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		throw new IllegalArgumentException("cannot handle: " + location.toDebugString());
 	}
 
-	private static final Pattern P_LINE_S = Pattern.compile("S\\d+");
+	private static final Pattern P_LINE_S = Pattern.compile("SN?\\d+");
 
 	private final String _normalizeLine(final String type, final String name, final String longCategory)
 	{
