@@ -516,7 +516,7 @@ public final class BahnProvider implements NetworkProvider
 			}
 		}
 
-		return new QueryDeparturesResult(Integer.parseInt(stationId), null, departures);
+		return new QueryDeparturesResult(new Location(LocationType.STATION, Integer.parseInt(stationId), 0, 0, null), departures);
 	}
 
 	private static final Pattern P_NORMALIZE_LINE_NUMBER = Pattern.compile("\\d{2,5}");

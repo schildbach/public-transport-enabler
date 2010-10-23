@@ -27,6 +27,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.schildbach.pte.dto.Departure;
+import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryDeparturesResult.Status;
 import de.schildbach.pte.util.ParserUtils;
@@ -154,7 +156,7 @@ public class SncbProvider extends AbstractHafasProvider
 					}
 				}
 
-				return new QueryDeparturesResult(Integer.parseInt(stationId), location, departures);
+				return new QueryDeparturesResult(new Location(LocationType.STATION, Integer.parseInt(stationId), 0, 0, location), departures);
 			}
 			else
 			{

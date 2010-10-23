@@ -531,7 +531,7 @@ public final class BvgProvider implements NetworkProvider
 				}
 			}
 
-			return new QueryDeparturesResult(Integer.parseInt(stationId), location, departures);
+			return new QueryDeparturesResult(new Location(LocationType.STATION, Integer.parseInt(stationId), 0, 0, location), departures);
 		}
 		else
 		{

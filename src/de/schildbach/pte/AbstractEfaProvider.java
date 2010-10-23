@@ -703,7 +703,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 					XmlPullUtil.skipRestOfTree(pp);
 				}
 
-				return new QueryDeparturesResult(locationId, location, departures);
+				return new QueryDeparturesResult(new Location(LocationType.STATION, locationId, 0, 0, location), departures);
 			}
 			else if ("notidentified".equals(nameState))
 			{

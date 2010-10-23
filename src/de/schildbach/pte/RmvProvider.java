@@ -545,7 +545,7 @@ public class RmvProvider extends AbstractHafasProvider
 					}
 				}
 
-				return new QueryDeparturesResult(locationId, location, departures);
+				return new QueryDeparturesResult(new Location(LocationType.STATION, locationId, 0, 0, location), departures);
 			}
 			else
 			{
