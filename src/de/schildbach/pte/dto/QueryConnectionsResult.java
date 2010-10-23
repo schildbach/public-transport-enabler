@@ -44,20 +44,18 @@ public final class QueryConnectionsResult implements Serializable
 	public final Location from;
 	public final Location via;
 	public final Location to;
-	public final String linkEarlier;
-	public final String linkLater;
+	public final String context;
 	public final List<Connection> connections;
 
-	public QueryConnectionsResult(final String queryUri, final Location from, final Location via, final Location to, final String linkEarlier,
-			final String linkLater, final List<Connection> connections)
+	public QueryConnectionsResult(final String queryUri, final Location from, final Location via, final Location to, final String context,
+			final List<Connection> connections)
 	{
 		this.status = Status.OK;
 		this.queryUri = queryUri;
 		this.from = from;
 		this.via = via;
 		this.to = to;
-		this.linkEarlier = linkEarlier;
-		this.linkLater = linkLater;
+		this.context = context;
 		this.connections = connections;
 
 		this.ambiguousFrom = null;
@@ -76,8 +74,7 @@ public final class QueryConnectionsResult implements Serializable
 		this.from = null;
 		this.via = null;
 		this.to = null;
-		this.linkEarlier = null;
-		this.linkLater = null;
+		this.context = null;
 		this.connections = null;
 	}
 
@@ -92,8 +89,7 @@ public final class QueryConnectionsResult implements Serializable
 		this.from = null;
 		this.via = null;
 		this.to = null;
-		this.linkEarlier = null;
-		this.linkLater = null;
+		this.context = null;
 		this.connections = null;
 	}
 

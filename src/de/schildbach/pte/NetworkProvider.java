@@ -102,12 +102,12 @@ public interface NetworkProvider
 	/**
 	 * Query more connections (e.g. earlier or later)
 	 * 
-	 * @param uri
-	 *            uri to query more connections from
+	 * @param context
+	 *            context to query more connections from
 	 * @return result object that contains possible connections
 	 * @throws IOException
 	 */
-	QueryConnectionsResult queryMoreConnections(String uri) throws IOException;
+	QueryConnectionsResult queryMoreConnections(String context) throws IOException;
 
 	/**
 	 * Get details about a connection

@@ -233,8 +233,25 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 				+ "<RFlags b=\"0\" chExtension=\"0\" f=\"4\" sMode=\"N\"/>" //
 				+ "</ConReq>";
 
+		return queryConnections(request, from, via, to);
+	}
+
+	public QueryConnectionsResult queryMoreConnections(final String context) throws IOException
+	{
+		final String request = "<ConScrReq scr=\"F\" nrCons=\"4\">" //
+				+ "<ConResCtxt>" + context + "</ConResCtxt>" //
+				+ "</ConScrReq>";
+
+		return queryConnections(request, null, null, null);
+	}
+
+	private QueryConnectionsResult queryConnections(final String request, final Location from, final Location via, final Location to)
+			throws IOException
+	{
 		// System.out.println(request);
 		// System.out.println(ParserUtils.scrape(apiUri, true, wrap(request), null, false));
+
+		final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
 
 		InputStream is = null;
 		try
@@ -263,7 +280,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			}
 
 			XmlPullUtil.require(pp, "ConResCtxt");
-			final String sessionId = XmlPullUtil.text(pp);
+			final String context = XmlPullUtil.text(pp);
 			XmlPullUtil.require(pp, "ConnectionList");
 			XmlPullUtil.enter(pp);
 
@@ -456,7 +473,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 			XmlPullUtil.exit(pp);
 
-			return new QueryConnectionsResult(null, from, via, to, null, null, connections);
+			return new QueryConnectionsResult(null, from, via, to, context, connections);
 		}
 		catch (final XmlPullParserException x)
 		{
@@ -661,11 +678,6 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 	private final String normalizeWhitespace(final String str)
 	{
 		return P_WHITESPACE.matcher(str).replaceAll("");
-	}
-
-	public QueryConnectionsResult queryMoreConnections(String uri) throws IOException
-	{
-		throw new UnsupportedOperationException();
 	}
 
 	public GetConnectionDetailsResult getConnectionDetails(String connectionUri) throws IOException

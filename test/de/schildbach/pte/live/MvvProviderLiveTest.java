@@ -41,7 +41,7 @@ public class MvvProviderLiveTest
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, 0, 0, "Marienplatz"), null, new Location(
 				LocationType.ANY, 0, 0, 0, "Pasing"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);
 	}
 
@@ -60,7 +60,7 @@ public class MvvProviderLiveTest
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, 48165238, 11577473, null), null,
 				new Location(LocationType.ADDRESS, 0, 47987199, 11326532, null), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);
 	}
 
@@ -70,7 +70,7 @@ public class MvvProviderLiveTest
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, 48238341, 11478230, null), null,
 				new Location(LocationType.ANY, 0, 0, 0, "Ostbahnhof"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);
 	}
 
@@ -80,7 +80,7 @@ public class MvvProviderLiveTest
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, 0, 0, "München, Maximilianstr. 1"),
 				null, new Location(LocationType.ADDRESS, 0, 0, 0, "Starnberg, Jahnstraße 50"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);
 	}
 }

@@ -50,7 +50,7 @@ public class BahnProviderLiveTest
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, 0, 0, "Berlin"), null, new Location(
 				LocationType.ANY, 0, 0, 0, "Leipzig"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		for (final Connection connection : result.connections)
 			provider.getConnectionDetails(connection.link);
 		System.out.println(moreResult);
@@ -62,7 +62,7 @@ public class BahnProviderLiveTest
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, 0, 0, "Marienburger Str., Berlin"), null,
 				new Location(LocationType.ANY, 0, 0, 0, "Tutzinger-Hof-Platz, Starnberg"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		for (final Connection connection : result.connections)
 			provider.getConnectionDetails(connection.link);
 		System.out.println(moreResult);
@@ -76,7 +76,7 @@ public class BahnProviderLiveTest
 				new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
 
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.linkLater);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		for (final Connection connection : result.connections)
 			provider.getConnectionDetails(connection.link);
 		System.out.println(moreResult);

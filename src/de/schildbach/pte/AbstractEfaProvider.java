@@ -993,8 +993,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 					XmlPullUtil.skipRestOfTree(pp);
 				}
 
-				return new QueryConnectionsResult(uri, from, via, to, commandLink(sessionId, "tripPrev"), commandLink(sessionId, "tripNext"),
-						connections);
+				return new QueryConnectionsResult(uri, from, via, to, commandLink(sessionId, "tripNext"), connections);
 			}
 			else
 			{

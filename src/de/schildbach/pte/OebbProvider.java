@@ -477,7 +477,7 @@ public class OebbProvider extends AbstractHafasProvider
 
 			}
 
-			return new QueryConnectionsResult(allDetailsUri, from, null, to, linkEarlier, linkLater, connections);
+			return new QueryConnectionsResult(allDetailsUri, from, null, to, linkLater, connections);
 		}
 		else
 		{

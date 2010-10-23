@@ -304,7 +304,7 @@ public class RmvProvider extends AbstractHafasProvider
 				}
 			}
 
-			return new QueryConnectionsResult(uri, from, null, to, linkEarlier, linkLater, connections);
+			return new QueryConnectionsResult(uri, from, null, to, linkLater, connections);
 		}
 		else
 		{
