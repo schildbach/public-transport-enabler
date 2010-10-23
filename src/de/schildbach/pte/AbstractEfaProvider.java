@@ -390,6 +390,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'R' + str;
 			if (type.equals("Bahn"))
 				return 'R' + str;
+			if (type.equals("Regionalbahn"))
+				return 'R' + str;
 			if (type.equals("D")) // Schnellzug
 				return 'R' + str;
 			if (type.equals("S")) // ~Innsbruck
@@ -607,7 +609,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			if (P_LINE_NUMBER.matcher(type).matches())
 				return "?";
 
-			throw new IllegalArgumentException("cannot normalize: long '" + longName + "' type '" + type + "'");
+			throw new IllegalArgumentException("cannot normalize: long '" + longName + "' type '" + type + "' str '" + str + "'");
 		}
 
 		if (t == 1)
