@@ -547,7 +547,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			throw new IllegalArgumentException("cannot parse duration: " + str);
 	}
 
-	private final String location(final Location location)
+	private static final String location(final Location location)
 	{
 		if (location.type == LocationType.STATION && location.id != 0)
 			return "<Station externalId=\"" + location.id + "\" />";
@@ -557,6 +557,34 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return "<Address type=\"WGS84\" x=\"" + location.lon + "\" y=\"" + location.lat + "\" />";
 
 		throw new IllegalArgumentException("cannot handle: " + location.toDebugString());
+	}
+
+	protected static final String locationId(final Location location)
+	{
+		final StringBuilder builder = new StringBuilder();
+		builder.append("A=").append(locationType(location));
+		if (location.lat != 0 || location.lon != 0)
+			builder.append("@X=" + location.lon + "@Y=" + location.lat);
+		if (location.name != null)
+			builder.append("@G=" + location.name);
+		if (location.type == LocationType.STATION && location.id != 0)
+			builder.append("@L=").append(location.id);
+		return builder.toString();
+	}
+
+	protected static final int locationType(final Location location)
+	{
+		if (location.type == LocationType.STATION)
+			return 1;
+		if (location.type == LocationType.POI)
+			return 4;
+		if (location.type == LocationType.ADDRESS && (location.lat != 0 || location.lon != 0))
+			return 16;
+		if (location.type == LocationType.ADDRESS && location.name != null)
+			return 2;
+		if (location.type == LocationType.ANY)
+			return 255;
+		throw new IllegalArgumentException(location.type.toString());
 	}
 
 	private static final Pattern P_LINE_S = Pattern.compile("SN?\\d+");

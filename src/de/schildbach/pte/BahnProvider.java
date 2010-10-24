@@ -24,9 +24,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,18 +37,22 @@ import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.Station;
-import de.schildbach.pte.util.Color;
 import de.schildbach.pte.util.ParserUtils;
 
 /**
  * @author Andreas Schildbach
  */
-public final class BahnProvider implements NetworkProvider
+public final class BahnProvider extends AbstractHafasProvider
 {
 	public static final String NETWORK_ID = "mobile.bahn.de";
 	private static final String API_BASE = "http://mobile.bahn.de/bin/mobil/";
 
 	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
+
+	public BahnProvider()
+	{
+		super(null, null);
+	}
 
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
@@ -62,6 +64,7 @@ public final class BahnProvider implements NetworkProvider
 			Pattern.DOTALL);
 	private static final Pattern P_MULTI_NAME = Pattern.compile("<option value=\".+?#(\\d+)\">(.+?)</option>", Pattern.DOTALL);
 
+	@Override
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
 		final CharSequence page = ParserUtils.scrape(NAME_URL + ParserUtils.urlEncode(constraint.toString()));
@@ -87,6 +90,13 @@ public final class BahnProvider implements NetworkProvider
 	private final static Pattern P_NEARBY_STATIONS = Pattern
 			.compile("<a class=\"uLine\" href=\".+?!X=(\\d+)!Y=(\\d+)!id=(\\d+)!dist=(\\d+).*?\">(.+?)</a>");
 
+	@Override
+	protected String nearbyStationUri(final String stationId)
+	{
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public NearbyStationsResult nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
 			throws IOException
 	{
@@ -127,15 +137,10 @@ public final class BahnProvider implements NetworkProvider
 
 		uri.append(API_BASE).append("query.exe/dox");
 		uri.append("?REQ0HafasOptimize1=0:1");
-		uri.append("&REQ0JourneyStopsS0G=").append(ParserUtils.urlEncode(locationValue(from)));
-		uri.append("&REQ0JourneyStopsS0A=").append(locationTypeValue(from));
+		uri.append("&REQ0JourneyStopsS0ID=").append(ParserUtils.urlEncode(locationId(from)));
 		if (via != null)
-		{
-			uri.append("&REQ0JourneyStops1.0G=").append(ParserUtils.urlEncode(locationValue(via)));
-			uri.append("&REQ0JourneyStops1.0A=").append(locationTypeValue(via));
-		}
-		uri.append("&REQ0JourneyStopsZ0G=").append(ParserUtils.urlEncode(locationValue(to)));
-		uri.append("&REQ0JourneyStopsZ0A=").append(locationTypeValue(to));
+			uri.append("&REQ0JourneyStops1.0ID=").append(ParserUtils.urlEncode(locationId(via)));
+		uri.append("&REQ0JourneyStopsZ0ID=").append(ParserUtils.urlEncode(locationId(to)));
 		uri.append("&REQ0HafasSearchForw=").append(dep ? "1" : "0");
 		uri.append("&REQ0JourneyDate=").append(ParserUtils.urlEncode(DATE_FORMAT.format(date)));
 		uri.append("&REQ0JourneyTime=").append(ParserUtils.urlEncode(TIME_FORMAT.format(date)));
@@ -149,32 +154,13 @@ public final class BahnProvider implements NetworkProvider
 		return uri.toString();
 	}
 
-	private static final int locationTypeValue(final Location location)
-	{
-		final LocationType type = location.type;
-		if (type == LocationType.STATION)
-			return 1;
-		if (type == LocationType.ADDRESS)
-			return 2;
-		if (type == LocationType.ANY)
-			return 255;
-		throw new IllegalArgumentException(type.toString());
-	}
-
-	private static final String locationValue(final Location location)
-	{
-		if (location.type == LocationType.STATION && location.id != 0)
-			return Integer.toString(location.id);
-		else
-			return location.name;
-	}
-
 	private static final Pattern P_PRE_ADDRESS = Pattern.compile(
 			"<select name=\"(REQ0JourneyStopsS0K|REQ0JourneyStopsZ0K|REQ0JourneyStops1\\.0K)\"[^>]*>(.*?)</select>", Pattern.DOTALL);
 	private static final Pattern P_ADDRESSES = Pattern.compile("<option[^>]*>\\s*(.*?)\\s*</option>", Pattern.DOTALL);
 	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern
 			.compile("(zu dicht beieinander|mehrfach vorhanden oder identisch)|(leider konnte zu Ihrer Anfrage keine Verbindung gefunden werden)|(derzeit nur Ausk&#252;nfte vom)");
 
+	@Override
 	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
 			final String products, final WalkSpeed walkSpeed) throws IOException
 	{
@@ -227,6 +213,7 @@ public final class BahnProvider implements NetworkProvider
 			return queryConnections(uri, page);
 	}
 
+	@Override
 	public QueryConnectionsResult queryMoreConnections(final String uri) throws IOException
 	{
 		final CharSequence page = ParserUtils.scrape(uri);
@@ -285,7 +272,7 @@ public final class BahnProvider implements NetworkProvider
 					else
 						line = null;
 					final Connection connection = new Connection(AbstractHafasProvider.extractConnectionId(link), link, departureTime, arrivalTime,
-							line, line != null ? LINES.get(line.charAt(0)) : null, 0, from.name, 0, to.name, null);
+							line, line != null ? lineColors(line) : null, 0, from.name, 0, to.name, null);
 					connections.add(connection);
 				}
 				else
@@ -325,6 +312,7 @@ public final class BahnProvider implements NetworkProvider
 	private static final Pattern P_CONNECTION_DETAILS_MESSAGES = Pattern
 			.compile("Dauer: \\d+:\\d+|(Anschlusszug nicht mehr rechtzeitig)|(Anschlusszug jedoch erreicht werden)|(nur teilweise dargestellt)|(L&#228;ngerer Aufenthalt)|(&#228;quivalentem Bahnhof)|(Bahnhof wird mehrfach durchfahren)");
 
+	@Override
 	public GetConnectionDetailsResult getConnectionDetails(final String uri) throws IOException
 	{
 		final CharSequence page = ParserUtils.scrape(uri);
@@ -377,7 +365,7 @@ public final class BahnProvider implements NetworkProvider
 
 							final Date departureDateTime = ParserUtils.joinDateTime(departureDate, departureTime);
 							final Date arrivalDateTime = ParserUtils.joinDateTime(arrivalDate, arrivalTime);
-							lastTrip = new Connection.Trip(line, line != null ? LINES.get(line.charAt(0)) : null, 0, null, departureDateTime,
+							lastTrip = new Connection.Trip(line, line != null ? lineColors(line) : null, 0, null, departureDateTime,
 									departurePosition, 0, departure, arrivalDateTime, arrivalPosition, 0, arrival);
 							parts.add(lastTrip);
 
@@ -506,8 +494,8 @@ public final class BahnProvider implements NetworkProvider
 
 					final String message = ParserUtils.resolveEntities(mDepFine.group(9));
 
-					departures.add(new Departure(plannedTime, predictedTime, line, line != null ? LINES.get(line.charAt(0)) : null, null, position,
-							0, destination, message));
+					departures.add(new Departure(plannedTime, predictedTime, line, line != null ? lineColors(line) : null, null, position, 0,
+							destination, message));
 				}
 			}
 			else
@@ -517,6 +505,12 @@ public final class BahnProvider implements NetworkProvider
 		}
 
 		return new QueryDeparturesResult(new Location(LocationType.STATION, Integer.parseInt(stationId), 0, 0, null), departures);
+	}
+
+	@Override
+	protected char normalizeType(String type)
+	{
+		throw new UnsupportedOperationException();
 	}
 
 	private static final Pattern P_NORMALIZE_LINE_NUMBER = Pattern.compile("\\d{2,5}");
@@ -848,24 +842,5 @@ public final class BahnProvider implements NetworkProvider
 		}
 
 		throw new IllegalStateException("cannot normalize line " + line);
-	}
-
-	private static final Map<Character, int[]> LINES = new HashMap<Character, int[]>();
-
-	static
-	{
-		LINES.put('I', new int[] { Color.WHITE, Color.RED, Color.RED });
-		LINES.put('R', new int[] { Color.GRAY, Color.WHITE });
-		LINES.put('S', new int[] { Color.parseColor("#006e34"), Color.WHITE });
-		LINES.put('U', new int[] { Color.parseColor("#003090"), Color.WHITE });
-		LINES.put('T', new int[] { Color.parseColor("#cc0000"), Color.WHITE });
-		LINES.put('B', new int[] { Color.parseColor("#993399"), Color.WHITE });
-		LINES.put('F', new int[] { Color.BLUE, Color.WHITE });
-		LINES.put('?', new int[] { Color.DKGRAY, Color.WHITE });
-	}
-
-	public int[] lineColors(final String line)
-	{
-		return LINES.get(line.charAt(0));
 	}
 }

@@ -122,15 +122,10 @@ public class RmvProvider extends AbstractHafasProvider
 		uri.append("&REQ0HafasSearchForw=").append(dep ? "1" : "0");
 		uri.append("&REQ0JourneyDate=").append(ParserUtils.urlEncode(DATE_FORMAT.format(date)));
 		uri.append("&REQ0JourneyTime=").append(ParserUtils.urlEncode(TIME_FORMAT.format(date)));
-		uri.append("&REQ0JourneyStopsS0G=").append(ParserUtils.urlEncode(locationValue(from)));
-		uri.append("&REQ0JourneyStopsS0A=").append(locationTypeValue(from));
-		uri.append("&REQ0JourneyStopsZ0G=").append(ParserUtils.urlEncode(locationValue(to)));
-		uri.append("&REQ0JourneyStopsZ0A=").append(locationTypeValue(to));
+		uri.append("&REQ0JourneyStopsS0ID=").append(ParserUtils.urlEncode(locationId(from)));
 		if (via != null)
-		{
-			uri.append("&REQ0JourneyStops1.0G=").append(ParserUtils.urlEncode(locationValue(via)));
-			uri.append("&REQ0JourneyStops1.0A=").append(locationTypeValue(via));
-		}
+			uri.append("&REQ0JourneyStops1.0ID=").append(ParserUtils.urlEncode(locationId(via)));
+		uri.append("&REQ0JourneyStopsZ0ID=").append(ParserUtils.urlEncode(locationId(to)));
 		uri.append("&REQ0JourneyDep_Foot_speed=").append(WALKSPEED_MAP.get(walkSpeed));
 
 		for (final char p : products.toCharArray())
@@ -155,26 +150,6 @@ public class RmvProvider extends AbstractHafasProvider
 		uri.append("&start=Suchen");
 
 		return uri.toString();
-	}
-
-	private static int locationTypeValue(final Location location)
-	{
-		final LocationType type = location.type;
-		if (type == LocationType.STATION)
-			return 1;
-		if (type == LocationType.ADDRESS)
-			return 2;
-		if (type == LocationType.ANY)
-			return 255;
-		throw new IllegalArgumentException(type.toString());
-	}
-
-	private static String locationValue(final Location location)
-	{
-		if (location.type == LocationType.STATION && location.id != 0)
-			return Integer.toString(location.id);
-		else
-			return location.name;
 	}
 
 	private static final Pattern P_PRE_ADDRESS = Pattern.compile("(?:Geben Sie einen (Startort|Zielort) an.*?)?Bitte w&#228;hlen Sie aus der Liste",

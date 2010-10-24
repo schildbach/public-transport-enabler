@@ -159,18 +159,10 @@ public class OebbProvider extends AbstractHafasProvider
 		uri.append("&start.x=0");
 		uri.append("&start.y=0");
 		uri.append("&start=Suchen");
-		uri.append("&REQ0JourneyStopsS0A=").append(locationTypeValue(from));
-		uri.append("&REQ0JourneyStopsS0G=").append(ParserUtils.urlEncode(locationValue(from)));
-		uri.append("&REQ0JourneyStopsS0ID="); // "tupel"?
+		uri.append("&REQ0JourneyStopsS0ID=").append(ParserUtils.urlEncode(locationId(from)));
 		if (via != null)
-		{
-			uri.append("&REQ0JourneyStops1.0A=").append(locationTypeValue(via));
-			uri.append("&REQ0JourneyStops1.0G=").append(ParserUtils.urlEncode(locationValue(via)));
-			uri.append("&REQ0JourneyStops1.0ID=");
-		}
-		uri.append("&REQ0JourneyStopsZ0A=").append(locationTypeValue(to));
-		uri.append("&REQ0JourneyStopsZ0G=").append(ParserUtils.urlEncode(locationValue(to)));
-		uri.append("&REQ0JourneyStopsZ0ID=");
+			uri.append("&REQ0JourneyStops1.0ID=").append(ParserUtils.urlEncode(locationId(via)));
+		uri.append("&REQ0JourneyStopsZ0ID=").append(ParserUtils.urlEncode(locationId(to)));
 		uri.append("&REQ0JourneyDate=").append(ParserUtils.urlEncode(DATE_FORMAT.format(date)));
 		uri.append("&wDayExt0=").append(ParserUtils.urlEncode("Mo|Di|Mi|Do|Fr|Sa|So"));
 		uri.append("&REQ0JourneyTime=").append(ParserUtils.urlEncode(TIME_FORMAT.format(date)));
@@ -200,28 +192,6 @@ public class OebbProvider extends AbstractHafasProvider
 		}
 
 		return uri.toString();
-	}
-
-	private static int locationTypeValue(final Location location)
-	{
-		final LocationType type = location.type;
-		if (type == LocationType.STATION)
-			return 1;
-		if (type == LocationType.ADDRESS)
-			return 2;
-		if (type == LocationType.POI)
-			return 4;
-		if (type == LocationType.ANY)
-			return 255;
-		throw new IllegalArgumentException(type.toString());
-	}
-
-	private static String locationValue(final Location location)
-	{
-		if ((location.type == LocationType.STATION || location.type == LocationType.POI) && location.id != 0)
-			return Integer.toString(location.id);
-		else
-			return location.name;
 	}
 
 	private static final String QUERY_CONNECTIONS_FORM_URL = API_BASE + "query.exe/dn?";
