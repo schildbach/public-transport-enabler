@@ -394,6 +394,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'R' + str;
 			if (type.equals("D")) // Schnellzug
 				return 'R' + str;
+			if (type.equals("E")) // Eilzug
+				return 'R' + str;
 			if (type.equals("S")) // ~Innsbruck
 				return 'R' + str;
 			if (type.equals("WFB")) // Westfalenbahn
