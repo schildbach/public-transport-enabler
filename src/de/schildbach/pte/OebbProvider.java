@@ -535,7 +535,7 @@ public class OebbProvider extends AbstractHafasProvider
 				}
 			}
 
-			return new QueryDeparturesResult(new Location(LocationType.STATION, locationId, 0, 0, location), departures);
+			return new QueryDeparturesResult(new Location(LocationType.STATION, locationId, 0, 0, location), departures, null);
 		}
 		catch (final JSONException x)
 		{

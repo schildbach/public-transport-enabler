@@ -40,6 +40,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
+import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -678,9 +679,35 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 				final Calendar departureTime = new GregorianCalendar();
 				departureTime.setTimeZone(timeZone());
+
+				final List<Line> lines = new ArrayList<Line>(4);
+
+				XmlPullUtil.jumpToStartTag(pp, null, "itdServingLines");
+				if (!pp.isEmptyElementTag())
+				{
+					XmlPullUtil.enter(pp);
+					while (XmlPullUtil.test(pp, "itdServingLine"))
+					{
+						final String line = parseLine(pp.getAttributeValue(null, "motType"), pp.getAttributeValue(null, "number"), pp
+								.getAttributeValue(null, "number"));
+						final String destination = normalizeLocationName(pp.getAttributeValue(null, "direction"));
+						final String destinationIdStr = pp.getAttributeValue(null, "destID");
+						final int destinationId = destinationIdStr.length() > 0 ? Integer.parseInt(destinationIdStr) : 0;
+						lines.add(new Line(line, lineColors(line), destinationId, destination));
+
+						XmlPullUtil.enter(pp);
+						XmlPullUtil.exit(pp);
+					}
+					XmlPullUtil.exit(pp);
+				}
+				else
+				{
+					XmlPullUtil.next(pp);
+				}
+
 				final List<Departure> departures = new ArrayList<Departure>(8);
 
-				XmlPullUtil.jumpToStartTag(pp, null, "itdDepartureList");
+				XmlPullUtil.require(pp, "itdDepartureList");
 				while (XmlPullUtil.nextStartTagInsideTree(pp, null, "itdDeparture"))
 				{
 					if (Integer.parseInt(pp.getAttributeValue(null, "stopID")) == locationId)
@@ -707,7 +734,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 					XmlPullUtil.skipRestOfTree(pp);
 				}
 
-				return new QueryDeparturesResult(new Location(LocationType.STATION, locationId, 0, 0, location), departures);
+				return new QueryDeparturesResult(new Location(LocationType.STATION, locationId, 0, 0, location), departures, lines);
 			}
 			else if ("notidentified".equals(nameState))
 			{

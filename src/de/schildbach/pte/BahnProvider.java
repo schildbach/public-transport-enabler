@@ -504,7 +504,7 @@ public final class BahnProvider extends AbstractHafasProvider
 			}
 		}
 
-		return new QueryDeparturesResult(new Location(LocationType.STATION, Integer.parseInt(stationId), 0, 0, null), departures);
+		return new QueryDeparturesResult(new Location(LocationType.STATION, Integer.parseInt(stationId), 0, 0, null), departures, null);
 	}
 
 	@Override

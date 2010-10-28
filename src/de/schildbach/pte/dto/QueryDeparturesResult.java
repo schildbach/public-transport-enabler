@@ -32,12 +32,14 @@ public final class QueryDeparturesResult
 	public final Status status;
 	public final Location location;
 	public final List<Departure> departures;
+	public final List<Line> lines;
 
-	public QueryDeparturesResult(final Location location, final List<Departure> departures)
+	public QueryDeparturesResult(final Location location, final List<Departure> departures, final List<Line> lines)
 	{
 		this.status = Status.OK;
 		this.location = location;
 		this.departures = departures;
+		this.lines = lines;
 	}
 
 	public QueryDeparturesResult(final Status status, final int locationId)
@@ -45,5 +47,6 @@ public final class QueryDeparturesResult
 		this.status = status;
 		this.location = new Location(LocationType.STATION, locationId, 0, 0, null);
 		this.departures = null;
+		this.lines = null;
 	}
 }
