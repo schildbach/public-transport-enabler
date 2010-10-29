@@ -533,6 +533,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'R' + str;
 			if (type.equals("P")) // Kasbachtalbahn, Wanderbahn im Regental, Rhön-Zügle
 				return 'R' + str;
+			if (type.equals("ÖBA")) // Eisenbahn-Betriebsgesellschaft Ochsenhausen
+				return 'R' + str;
 			if (type.equals("Abellio-Zug")) // Abellio
 				return 'R' + str;
 			if (type.equals("KBS")) // Kursbuchstrecke

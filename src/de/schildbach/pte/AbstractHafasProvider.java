@@ -662,6 +662,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 		if ("Tram".equals(normalizedType)) // Tram
 			return "T" + normalizedName;
+		if ("T".equals(normalizedType)) // Tram
+			return "T" + normalizedName;
 		if ("Tramway".equals(normalizedType))
 			return "T" + normalizedName;
 
