@@ -633,7 +633,12 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			return 'T' + name;
 
 		if (t == 5 || t == 6 || t == 7 || t == 10)
-			return 'B' + name;
+		{
+			if (name.equals("Schienenersatzverkehr"))
+				return "BSEV";
+			else
+				return 'B' + name;
+		}
 
 		if (t == 8)
 			return 'C' + name;
