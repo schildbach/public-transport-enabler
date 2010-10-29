@@ -154,7 +154,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			type = LocationType.ANY;
 			id = 0;
 		}
-		else if ("street".equals(anyType) || "address".equals(anyType) || "singlehouse".equals(anyType))
+		else if ("street".equals(anyType) || "address".equals(anyType) || "singlehouse".equals(anyType) || "buildingname".equals(anyType))
 		{
 			type = LocationType.ADDRESS;
 			id = 0;
