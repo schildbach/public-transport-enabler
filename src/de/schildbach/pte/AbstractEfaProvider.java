@@ -1003,7 +1003,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 						XmlPullUtil.jumpToStartTag(pp, null, "itdMeansOfTransport");
 						final String productName = pp.getAttributeValue(null, "productName");
-						if ("Fussweg".equals(productName))
+						if ("Fussweg".equals(productName)) // type99
 						{
 							final int min = (int) (arrivalTime.getTimeInMillis() - departureTime.getTimeInMillis()) / 1000 / 60;
 
@@ -1018,7 +1018,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 								parts.add(new Connection.Footway(min, departureId, departure, arrivalId, arrival));
 							}
 						}
-						else if ("gesicherter Anschluss".equals(productName))
+						else if ("gesicherter Anschluss".equals(productName) || "nicht umsteigen".equals(productName)) // type97
 						{
 							// ignore
 						}
