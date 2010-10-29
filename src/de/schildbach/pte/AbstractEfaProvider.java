@@ -688,12 +688,19 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 					XmlPullUtil.enter(pp);
 					while (XmlPullUtil.test(pp, "itdServingLine"))
 					{
-						final String line = parseLine(pp.getAttributeValue(null, "motType"), pp.getAttributeValue(null, "number"), pp
-								.getAttributeValue(null, "number"));
-						final String destination = normalizeLocationName(pp.getAttributeValue(null, "direction"));
-						final String destinationIdStr = pp.getAttributeValue(null, "destID");
-						final int destinationId = destinationIdStr.length() > 0 ? Integer.parseInt(destinationIdStr) : 0;
-						lines.add(new Line(line, lineColors(line), destinationId, destination));
+						try
+						{
+							final String line = parseLine(pp.getAttributeValue(null, "motType"), pp.getAttributeValue(null, "number"), pp
+									.getAttributeValue(null, "number"));
+							final String destination = normalizeLocationName(pp.getAttributeValue(null, "direction"));
+							final String destinationIdStr = pp.getAttributeValue(null, "destID");
+							final int destinationId = destinationIdStr.length() > 0 ? Integer.parseInt(destinationIdStr) : 0;
+							lines.add(new Line(line, lineColors(line), destinationId, destination));
+						}
+						catch (final IllegalArgumentException x)
+						{
+							// swallow for now
+						}
 
 						XmlPullUtil.enter(pp);
 						XmlPullUtil.exit(pp);
