@@ -356,7 +356,7 @@ public class RmvProvider extends AbstractHafasProvider
 						final String arrivalPosition = ParserUtils.resolveEntities(mDetFine.group(6));
 
 						lastTrip = new Connection.Trip(line, line != null ? lineColors(line) : null, 0, destination, departureTime,
-								departurePosition, 0, departure, arrivalTime, arrivalPosition, 0, arrival);
+								departurePosition, 0, departure, arrivalTime, arrivalPosition, 0, arrival, null);
 						parts.add(lastTrip);
 
 						if (firstDepartureTime == null)

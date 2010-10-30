@@ -423,7 +423,7 @@ public class OebbProvider extends AbstractHafasProvider
 								final String arrivalPosition = mDetFine.group(12) != null ? ParserUtils.resolveEntities(mDetFine.group(12)) : null;
 
 								final Connection.Trip trip = new Connection.Trip(line, lineColors(line), 0, null, detailsDepartureDateTime,
-										departurePosition, departureId, departure, detailsArrivalDateTime, arrivalPosition, arrivalId, arrival);
+										departurePosition, departureId, departure, detailsArrivalDateTime, arrivalPosition, arrivalId, arrival, null);
 								connection.parts.add(trip);
 							}
 							else

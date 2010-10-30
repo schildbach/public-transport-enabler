@@ -381,7 +381,7 @@ public final class BvgProvider implements NetworkProvider
 						final String arrival = ParserUtils.resolveEntities(mDetFine.group(10));
 
 						parts.add(new Connection.Trip(line, line != null ? LINES.get(line) : null, 0, destination, departureTime, departurePosition,
-								departureId, departure, arrivalTime, arrivalPosition, arrivalId, arrival));
+								departureId, departure, arrivalTime, arrivalPosition, arrivalId, arrival, null));
 
 						if (firstDepartureTime == null)
 							firstDepartureTime = departureTime;

@@ -47,6 +47,7 @@ import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.Station;
+import de.schildbach.pte.dto.Stop;
 import de.schildbach.pte.dto.QueryConnectionsResult.Status;
 import de.schildbach.pte.util.Color;
 import de.schildbach.pte.util.ParserUtils;
@@ -694,7 +695,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				XmlPullUtil.jumpToStartTag(pp, null, "itdServingLines");
 				if (!pp.isEmptyElementTag())
 				{
-					XmlPullUtil.enter(pp);
+					XmlPullUtil.enter(pp, "itdServingLines");
 					while (XmlPullUtil.test(pp, "itdServingLine"))
 					{
 						try
@@ -716,7 +717,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 						XmlPullUtil.enter(pp);
 						XmlPullUtil.exit(pp);
 					}
-					XmlPullUtil.exit(pp);
+					XmlPullUtil.exit(pp, "itdServingLines");
 				}
 				else
 				{
@@ -726,30 +727,44 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				final List<Departure> departures = new ArrayList<Departure>(8);
 
 				XmlPullUtil.require(pp, "itdDepartureList");
-				while (XmlPullUtil.nextStartTagInsideTree(pp, null, "itdDeparture"))
+				if (!pp.isEmptyElementTag())
 				{
-					if (Integer.parseInt(pp.getAttributeValue(null, "stopID")) == locationId)
+					XmlPullUtil.enter(pp, "itdDepartureList");
+					while (XmlPullUtil.test(pp, "itdDeparture"))
 					{
-						final String position = normalizePlatform(pp.getAttributeValue(null, "platform"), pp.getAttributeValue(null, "platformName"));
+						if (Integer.parseInt(pp.getAttributeValue(null, "stopID")) == locationId)
+						{
+							final String position = normalizePlatform(pp.getAttributeValue(null, "platform"), pp.getAttributeValue(null,
+									"platformName"));
 
-						departureTime.clear();
+							XmlPullUtil.enter(pp, "itdDeparture");
 
-						processItdDateTime(pp, departureTime);
+							departureTime.clear();
+							processItdDateTime(pp, departureTime);
 
-						if (!XmlPullUtil.nextStartTagInsideTree(pp, null, "itdServingLine"))
-							throw new IllegalStateException("itdServingLine not found:" + pp.getPositionDescription());
-						final String line = parseLine(pp.getAttributeValue(null, "motType"), pp.getAttributeValue(null, "number"), pp
-								.getAttributeValue(null, "number"));
-						final boolean isRealtime = pp.getAttributeValue(null, "realtime").equals("1");
-						final String destination = normalizeLocationName(pp.getAttributeValue(null, "direction"));
-						final int destinationId = Integer.parseInt(pp.getAttributeValue(null, "destID"));
-						XmlPullUtil.skipRestOfTree(pp);
+							// TODO
+							if (XmlPullUtil.test(pp, "itdRTDateTime"))
+								XmlPullUtil.next(pp);
 
-						departures.add(new Departure(!isRealtime ? departureTime.getTime() : null, isRealtime ? departureTime.getTime() : null, line,
-								lineColors(line), null, position, destinationId, destination, null));
+							XmlPullUtil.require(pp, "itdServingLine");
+							final String line = parseLine(pp.getAttributeValue(null, "motType"), pp.getAttributeValue(null, "number"), pp
+									.getAttributeValue(null, "number"));
+							final boolean isRealtime = pp.getAttributeValue(null, "realtime").equals("1");
+							final String destination = normalizeLocationName(pp.getAttributeValue(null, "direction"));
+							final int destinationId = Integer.parseInt(pp.getAttributeValue(null, "destID"));
+
+							departures.add(new Departure(!isRealtime ? departureTime.getTime() : null, isRealtime ? departureTime.getTime() : null,
+									line, lineColors(line), null, position, destinationId, destination, null));
+						}
+						else
+						{
+							XmlPullUtil.enter(pp, "itdDeparture");
+						}
+
+						XmlPullUtil.exit(pp, "itdDeparture");
 					}
 
-					XmlPullUtil.skipRestOfTree(pp);
+					XmlPullUtil.exit(pp, "itdDepartureList");
 				}
 
 				return new QueryDeparturesResult(new Location(LocationType.STATION, locationId, 0, 0, location), departures, lines);
@@ -782,37 +797,37 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		}
 	}
 
-	private void processItdDateTime(final XmlPullParser pp, final Calendar calendar) throws XmlPullParserException, IOException
+	private void findAndProcessItdDateTime(final XmlPullParser pp, final Calendar calendar) throws XmlPullParserException, IOException
 	{
 		if (!XmlPullUtil.nextStartTagInsideTree(pp, null, "itdDateTime"))
 			throw new IllegalStateException("itdDateTime not found:" + pp.getPositionDescription());
 
-		if (!XmlPullUtil.nextStartTagInsideTree(pp, null, "itdDate"))
-			throw new IllegalStateException("itdDate not found:" + pp.getPositionDescription());
+		processItdDateTime(pp, calendar);
+	}
+
+	private void processItdDateTime(final XmlPullParser pp, final Calendar calendar) throws XmlPullParserException, IOException
+	{
+		XmlPullUtil.enter(pp, "itdDateTime");
 		processItdDate(pp, calendar);
-		XmlPullUtil.skipRestOfTree(pp);
-
-		if (!XmlPullUtil.nextStartTagInsideTree(pp, null, "itdTime"))
-			throw new IllegalStateException("itdTime not found:" + pp.getPositionDescription());
 		processItdTime(pp, calendar);
-		XmlPullUtil.skipRestOfTree(pp);
-
-		XmlPullUtil.skipRestOfTree(pp);
+		XmlPullUtil.exit(pp, "itdDateTime");
 	}
 
 	private void processItdDate(final XmlPullParser pp, final Calendar calendar) throws XmlPullParserException, IOException
 	{
-		pp.require(XmlPullParser.START_TAG, null, "itdDate");
+		XmlPullUtil.require(pp, "itdDate");
 		calendar.set(Calendar.YEAR, Integer.parseInt(pp.getAttributeValue(null, "year")));
 		calendar.set(Calendar.MONTH, Integer.parseInt(pp.getAttributeValue(null, "month")) - 1);
 		calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(pp.getAttributeValue(null, "day")));
+		XmlPullUtil.next(pp);
 	}
 
 	private void processItdTime(final XmlPullParser pp, final Calendar calendar) throws XmlPullParserException, IOException
 	{
-		pp.require(XmlPullParser.START_TAG, null, "itdTime");
+		XmlPullUtil.require(pp, "itdTime");
 		calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(pp.getAttributeValue(null, "hour")));
 		calendar.set(Calendar.MINUTE, Integer.parseInt(pp.getAttributeValue(null, "minute")));
+		XmlPullUtil.next(pp);
 	}
 
 	private static final Pattern P_STATION_NAME_WHITESPACE = Pattern.compile("\\s+");
@@ -955,27 +970,35 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 					return new QueryConnectionsResult(Status.INVALID_DATE);
 			}
 
-			final Calendar departureTime = new GregorianCalendar(), arrivalTime = new GregorianCalendar();
+			final Calendar departureTime = new GregorianCalendar(), arrivalTime = new GregorianCalendar(), stopTime = new GregorianCalendar();
 			departureTime.setTimeZone(timeZone());
 			arrivalTime.setTimeZone(timeZone());
 			final List<Connection> connections = new ArrayList<Connection>();
 
 			if (XmlPullUtil.jumpToStartTag(pp, null, "itdRouteList"))
 			{
-				while (XmlPullUtil.nextStartTagInsideTree(pp, null, "itdRoute"))
+				XmlPullUtil.enter(pp, "itdRouteList");
+
+				while (XmlPullUtil.test(pp, "itdRoute"))
 				{
 					final String id = pp.getAttributeValue(null, "routeIndex") + "-" + pp.getAttributeValue(null, "routeTripIndex");
+					XmlPullUtil.enter(pp, "itdRoute");
 
-					XmlPullUtil.jumpToStartTag(pp, null, "itdPartialRouteList");
+					if (XmlPullUtil.test(pp, "itdMapItemList"))
+						XmlPullUtil.next(pp);
+
+					XmlPullUtil.enter(pp, "itdPartialRouteList");
 					final List<Connection.Part> parts = new LinkedList<Connection.Part>();
 					String firstDeparture = null;
 					Date firstDepartureTime = null;
 					String lastArrival = null;
 					Date lastArrivalTime = null;
 
-					while (XmlPullUtil.nextStartTagInsideTree(pp, null, "itdPartialRoute"))
+					while (XmlPullUtil.test(pp, "itdPartialRoute"))
 					{
-						XmlPullUtil.jumpToStartTag(pp, null, "itdPoint");
+						XmlPullUtil.enter(pp, "itdPartialRoute");
+
+						XmlPullUtil.test(pp, "itdPoint");
 						if (!"departure".equals(pp.getAttributeValue(null, "usage")))
 							throw new IllegalStateException();
 						final int departureId = Integer.parseInt(pp.getAttributeValue(null, "stopID"));
@@ -984,12 +1007,15 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 							firstDeparture = departure;
 						final String departurePosition = normalizePlatform(pp.getAttributeValue(null, "platform"), pp.getAttributeValue(null,
 								"platformName"));
+						XmlPullUtil.enter(pp, "itdPoint");
+						if (XmlPullUtil.test(pp, "itdMapItemList"))
+							XmlPullUtil.next(pp);
 						processItdDateTime(pp, departureTime);
 						if (firstDepartureTime == null)
 							firstDepartureTime = departureTime.getTime();
-						XmlPullUtil.skipRestOfTree(pp);
+						XmlPullUtil.exit(pp, "itdPoint");
 
-						XmlPullUtil.jumpToStartTag(pp, null, "itdPoint");
+						XmlPullUtil.test(pp, "itdPoint");
 						if (!"arrival".equals(pp.getAttributeValue(null, "usage")))
 							throw new IllegalStateException();
 						final int arrivalId = Integer.parseInt(pp.getAttributeValue(null, "stopID"));
@@ -997,11 +1023,14 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 						lastArrival = arrival;
 						final String arrivalPosition = normalizePlatform(pp.getAttributeValue(null, "platform"), pp.getAttributeValue(null,
 								"platformName"));
+						XmlPullUtil.enter(pp, "itdPoint");
+						if (XmlPullUtil.test(pp, "itdMapItemList"))
+							XmlPullUtil.next(pp);
 						processItdDateTime(pp, arrivalTime);
 						lastArrivalTime = arrivalTime.getTime();
-						XmlPullUtil.skipRestOfTree(pp);
+						XmlPullUtil.exit(pp, "itdPoint");
 
-						XmlPullUtil.jumpToStartTag(pp, null, "itdMeansOfTransport");
+						XmlPullUtil.test(pp, "itdMeansOfTransport");
 						final String productName = pp.getAttributeValue(null, "productName");
 						if ("Fussweg".equals(productName)) // type99
 						{
@@ -1017,10 +1046,16 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 							{
 								parts.add(new Connection.Footway(min, departureId, departure, arrivalId, arrival));
 							}
+
+							XmlPullUtil.enter(pp, "itdMeansOfTransport");
+							XmlPullUtil.exit(pp, "itdMeansOfTransport");
 						}
 						else if ("gesicherter Anschluss".equals(productName) || "nicht umsteigen".equals(productName)) // type97
 						{
 							// ignore
+
+							XmlPullUtil.enter(pp, "itdMeansOfTransport");
+							XmlPullUtil.exit(pp, "itdMeansOfTransport");
 						}
 						else
 						{
@@ -1029,18 +1064,59 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 							final String destination = normalizeLocationName(pp.getAttributeValue(null, "destination"));
 							final String line = parseLine(pp.getAttributeValue(null, "motType"), pp.getAttributeValue(null, "shortname"), pp
 									.getAttributeValue(null, "name"));
-							parts.add(new Connection.Trip(line, lineColors(line), destinationId, destination, departureTime.getTime(),
-									departurePosition, departureId, departure, arrivalTime.getTime(), arrivalPosition, arrivalId, arrival));
-						}
-						XmlPullUtil.skipRestOfTree(pp);
 
-						XmlPullUtil.skipRestOfTree(pp);
+							XmlPullUtil.enter(pp, "itdMeansOfTransport");
+							XmlPullUtil.exit(pp, "itdMeansOfTransport");
+
+							if (XmlPullUtil.test(pp, "itdRBLControlled"))
+								XmlPullUtil.next(pp);
+							if (XmlPullUtil.test(pp, "itdInfoTextList"))
+								XmlPullUtil.next(pp);
+							if (XmlPullUtil.test(pp, "itdFootPathInfo"))
+								XmlPullUtil.next(pp);
+							if (XmlPullUtil.test(pp, "infoLink"))
+								XmlPullUtil.next(pp);
+
+							XmlPullUtil.enter(pp, "itdStopSeq");
+							final List<Stop> intermediateStops = new LinkedList<Stop>();
+							while (XmlPullUtil.test(pp, "itdPoint"))
+							{
+								final int stopId = Integer.parseInt(pp.getAttributeValue(null, "stopID"));
+								final String stopName = normalizeLocationName(pp.getAttributeValue(null, "name"));
+								final String stopPosition = normalizePlatform(pp.getAttributeValue(null, "platform"), pp.getAttributeValue(null,
+										"platformName"));
+								XmlPullUtil.enter(pp, "itdPoint");
+								processItdDateTime(pp, stopTime);
+								XmlPullUtil.exit(pp, "itdPoint");
+								intermediateStops.add(new Stop(new Location(LocationType.STATION, stopId, 0, 0, stopName), stopPosition, stopTime
+										.getTime()));
+							}
+							XmlPullUtil.exit(pp, "itdStopSeq");
+
+							// remove first and last, because they are not intermediate
+							if (intermediateStops.get(0).location.id != departureId)
+								throw new IllegalStateException();
+							if (intermediateStops.get(intermediateStops.size() - 1).location.id != arrivalId)
+								throw new IllegalStateException();
+							intermediateStops.remove(0);
+							intermediateStops.remove(intermediateStops.size() - 1);
+
+							parts.add(new Connection.Trip(line, lineColors(line), destinationId, destination, departureTime.getTime(),
+									departurePosition, departureId, departure, arrivalTime.getTime(), arrivalPosition, arrivalId, arrival,
+									intermediateStops));
+						}
+
+						XmlPullUtil.exit(pp, "itdPartialRoute");
 					}
+
+					XmlPullUtil.exit(pp, "itdPartialRouteList");
 
 					connections
 							.add(new Connection(id, uri, firstDepartureTime, lastArrivalTime, null, null, 0, firstDeparture, 0, lastArrival, parts));
-					XmlPullUtil.skipRestOfTree(pp);
+					XmlPullUtil.exit(pp, "itdRoute");
 				}
+
+				XmlPullUtil.exit(pp, "itdRouteList");
 
 				return new QueryConnectionsResult(uri, from, via, to, commandLink(sessionId, "tripNext"), connections);
 			}

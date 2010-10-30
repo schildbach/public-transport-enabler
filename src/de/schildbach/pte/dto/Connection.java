@@ -27,17 +27,17 @@ import java.util.List;
  */
 public final class Connection implements Serializable
 {
-	final public String id;
-	final public String link;
-	final public Date departureTime;
-	final public Date arrivalTime;
-	final public String line;
-	final public int[] lineColors;
-	final public int fromId;
-	final public String from;
-	final public int toId;
-	final public String to;
-	final public List<Part> parts;
+	public final String id;
+	public final String link;
+	public final Date departureTime;
+	public final Date arrivalTime;
+	public final String line;
+	public final int[] lineColors;
+	public final int fromId;
+	public final String from;
+	public final int toId;
+	public final String to;
+	public final List<Part> parts;
 
 	public Connection(final String id, final String link, final Date departureTime, final Date arrivalTime, final String line,
 			final int[] lineColors, final int fromId, final String from, final int toId, final String to, final List<Part> parts)
@@ -85,22 +85,23 @@ public final class Connection implements Serializable
 
 	public final static class Trip implements Part
 	{
-		final public String line;
-		final public int[] lineColors;
-		final public int destinationId;
-		final public String destination;
-		final public Date departureTime;
-		final public String departurePosition;
-		final public int departureId;
-		final public String departure;
-		final public Date arrivalTime;
-		final public String arrivalPosition;
-		final public int arrivalId;
-		final public String arrival;
+		public final String line;
+		public final int[] lineColors;
+		public final int destinationId;
+		public final String destination;
+		public final Date departureTime;
+		public final String departurePosition;
+		public final int departureId;
+		public final String departure;
+		public final Date arrivalTime;
+		public final String arrivalPosition;
+		public final int arrivalId;
+		public final String arrival;
+		public final List<Stop> intermediateStops;
 
 		public Trip(final String line, final int[] lineColors, final int destinationId, final String destination, final Date departureTime,
 				final String departurePosition, final int departureId, final String departure, final Date arrivalTime, final String arrivalPosition,
-				final int arrivalId, final String arrival)
+				final int arrivalId, final String arrival, final List<Stop> intermediateStops)
 		{
 			this.line = line;
 			this.lineColors = lineColors;
@@ -114,6 +115,7 @@ public final class Connection implements Serializable
 			this.arrivalPosition = arrivalPosition;
 			this.arrivalId = arrivalId;
 			this.arrival = arrival;
+			this.intermediateStops = intermediateStops;
 		}
 
 		@Override
@@ -136,12 +138,12 @@ public final class Connection implements Serializable
 
 	public final static class Footway implements Part
 	{
-		final public int min;
-		final public int departureId;
-		final public String departure;
-		final public int arrivalId;
-		final public String arrival;
-		final public int arrivalLat, arrivalLon;
+		public final int min;
+		public final int departureId;
+		public final String departure;
+		public final int arrivalId;
+		public final String arrival;
+		public final int arrivalLat, arrivalLon;
 
 		public Footway(final int min, final int departureId, final String departure, final int arrivalId, final String arrival, final int arrivalLat,
 				final int arrivalLon)

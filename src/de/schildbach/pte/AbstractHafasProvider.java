@@ -443,7 +443,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 					if (min == 0 || line != null)
 					{
 						parts.add(new Connection.Trip(line, lineColors(line), 0, direction, departureTime, departurePos, departure.id,
-								departure.name, arrivalTime, arrivalPos, arrival.id, arrival.name));
+								departure.name, arrivalTime, arrivalPos, arrival.id, arrival.name, null));
 					}
 					else
 					{

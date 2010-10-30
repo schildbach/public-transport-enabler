@@ -30,6 +30,11 @@ public final class XmlPullUtil
 			throw new IllegalStateException("cannot find <" + tagName + " />");
 	}
 
+	public static void require(final XmlPullParser pp, final String tagName) throws XmlPullParserException, IOException
+	{
+		pp.require(XmlPullParser.START_TAG, null, tagName);
+	}
+
 	/**
 	 * enters current tag
 	 * 
@@ -45,7 +50,30 @@ public final class XmlPullUtil
 		pp.next();
 	}
 
+	public static void enter(final XmlPullParser pp, final String tagName) throws XmlPullParserException, IOException
+	{
+		pp.require(XmlPullParser.START_TAG, null, tagName);
+		enter(pp);
+	}
+
 	public static void exit(final XmlPullParser pp) throws XmlPullParserException, IOException
+	{
+		exitSkipToEnd(pp);
+
+		if (pp.getEventType() != XmlPullParser.END_TAG)
+			throw new IllegalStateException("expecting end tag to exit");
+
+		pp.next();
+	}
+
+	public static void exit(final XmlPullParser pp, final String tagName) throws XmlPullParserException, IOException
+	{
+		exitSkipToEnd(pp);
+		pp.require(XmlPullParser.END_TAG, null, tagName);
+		pp.next();
+	}
+
+	private static void exitSkipToEnd(final XmlPullParser pp) throws XmlPullParserException, IOException
 	{
 		while (pp.getEventType() != XmlPullParser.END_TAG)
 		{
@@ -56,11 +84,6 @@ public final class XmlPullUtil
 			else
 				throw new IllegalStateException();
 		}
-
-		if (pp.getEventType() != XmlPullParser.END_TAG)
-			throw new IllegalStateException("expecting end tag to exit");
-
-		pp.next();
 	}
 
 	public static boolean test(final XmlPullParser pp, final String tagName) throws XmlPullParserException
@@ -72,11 +95,6 @@ public final class XmlPullUtil
 	{
 		skipSubTree(pp);
 		pp.next();
-	}
-
-	public static void require(final XmlPullParser pp, final String tagName) throws XmlPullParserException, IOException
-	{
-		pp.require(XmlPullParser.START_TAG, null, tagName);
 	}
 
 	public static String attr(final XmlPullParser pp, final String attrName)
