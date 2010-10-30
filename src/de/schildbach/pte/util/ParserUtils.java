@@ -46,7 +46,7 @@ public final class ParserUtils
 	private static final String SCRAPE_USER_AGENT = "Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.10) Gecko/20100915 Ubuntu/10.04 (lucid) Firefox/3.6.10";
 	private static final int SCRAPE_INITIAL_CAPACITY = 4096;
 	private static final int SCRAPE_CONNECT_TIMEOUT = 5000;
-	private static final int SCRAPE_READ_TIMEOUT = 10000;
+	private static final int SCRAPE_READ_TIMEOUT = 15000;
 	private static final String SCRAPE_DEFAULT_ENCODING = "ISO-8859-1";
 
 	private static String stateCookie;
