@@ -746,7 +746,7 @@ public final class BvgProvider implements NetworkProvider
 
 	public int[] lineColors(final String line)
 	{
-		if (line.isEmpty())
+		if (line.length() == 0)
 			return null;
 		return LINES.get(line);
 	}
