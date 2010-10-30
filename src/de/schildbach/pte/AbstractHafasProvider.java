@@ -921,6 +921,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 	public final int[] lineColors(final String line)
 	{
+		if (line.isEmpty())
+			return null;
 		return LINES.get(line.charAt(0));
 	}
 
