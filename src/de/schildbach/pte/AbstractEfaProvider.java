@@ -687,8 +687,10 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 				final String location = normalizeLocationName(pp.nextText());
 
-				final Calendar departureTime = new GregorianCalendar();
-				departureTime.setTimeZone(timeZone());
+				final Calendar plannedDepartureTime = new GregorianCalendar();
+				plannedDepartureTime.setTimeZone(timeZone());
+				final Calendar predictedDepartureTime = new GregorianCalendar();
+				predictedDepartureTime.setTimeZone(timeZone());
 
 				final List<Line> lines = new ArrayList<Line>(4);
 
@@ -739,12 +741,13 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 							XmlPullUtil.enter(pp, "itdDeparture");
 
-							departureTime.clear();
-							processItdDateTime(pp, departureTime);
+							XmlPullUtil.require(pp, "itdDateTime");
+							plannedDepartureTime.clear();
+							processItdDateTime(pp, plannedDepartureTime);
 
-							// TODO
+							predictedDepartureTime.clear();
 							if (XmlPullUtil.test(pp, "itdRTDateTime"))
-								XmlPullUtil.next(pp);
+								processItdDateTime(pp, predictedDepartureTime);
 
 							XmlPullUtil.require(pp, "itdServingLine");
 							final String line = parseLine(pp.getAttributeValue(null, "motType"), pp.getAttributeValue(null, "number"), pp
@@ -753,8 +756,12 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 							final String destination = normalizeLocationName(pp.getAttributeValue(null, "direction"));
 							final int destinationId = Integer.parseInt(pp.getAttributeValue(null, "destID"));
 
-							departures.add(new Departure(!isRealtime ? departureTime.getTime() : null, isRealtime ? departureTime.getTime() : null,
-									line, lineColors(line), null, position, destinationId, destination, null));
+							if (isRealtime && !predictedDepartureTime.isSet(Calendar.HOUR_OF_DAY))
+								predictedDepartureTime.setTimeInMillis(plannedDepartureTime.getTimeInMillis());
+
+							departures.add(new Departure(plannedDepartureTime.getTime(),
+									predictedDepartureTime.isSet(Calendar.HOUR_OF_DAY) ? predictedDepartureTime.getTime() : null, line,
+									lineColors(line), null, position, destinationId, destination, null));
 						}
 						else
 						{
@@ -797,20 +804,12 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		}
 	}
 
-	private void findAndProcessItdDateTime(final XmlPullParser pp, final Calendar calendar) throws XmlPullParserException, IOException
-	{
-		if (!XmlPullUtil.nextStartTagInsideTree(pp, null, "itdDateTime"))
-			throw new IllegalStateException("itdDateTime not found:" + pp.getPositionDescription());
-
-		processItdDateTime(pp, calendar);
-	}
-
 	private void processItdDateTime(final XmlPullParser pp, final Calendar calendar) throws XmlPullParserException, IOException
 	{
-		XmlPullUtil.enter(pp, "itdDateTime");
+		XmlPullUtil.enter(pp);
 		processItdDate(pp, calendar);
 		processItdTime(pp, calendar);
-		XmlPullUtil.exit(pp, "itdDateTime");
+		XmlPullUtil.exit(pp);
 	}
 
 	private void processItdDate(final XmlPullParser pp, final Calendar calendar) throws XmlPullParserException, IOException
@@ -1010,6 +1009,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 						XmlPullUtil.enter(pp, "itdPoint");
 						if (XmlPullUtil.test(pp, "itdMapItemList"))
 							XmlPullUtil.next(pp);
+						XmlPullUtil.require(pp, "itdDateTime");
 						processItdDateTime(pp, departureTime);
 						if (firstDepartureTime == null)
 							firstDepartureTime = departureTime.getTime();
@@ -1026,6 +1026,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 						XmlPullUtil.enter(pp, "itdPoint");
 						if (XmlPullUtil.test(pp, "itdMapItemList"))
 							XmlPullUtil.next(pp);
+						XmlPullUtil.require(pp, "itdDateTime");
 						processItdDateTime(pp, arrivalTime);
 						lastArrivalTime = arrivalTime.getTime();
 						XmlPullUtil.exit(pp, "itdPoint");
@@ -1086,6 +1087,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 								final String stopPosition = normalizePlatform(pp.getAttributeValue(null, "platform"), pp.getAttributeValue(null,
 										"platformName"));
 								XmlPullUtil.enter(pp, "itdPoint");
+								XmlPullUtil.require(pp, "itdDateTime");
 								processItdDateTime(pp, stopTime);
 								XmlPullUtil.exit(pp, "itdPoint");
 								intermediateStops.add(new Stop(new Location(LocationType.STATION, stopId, 0, 0, stopName), stopPosition, stopTime
