@@ -1078,30 +1078,34 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 							if (XmlPullUtil.test(pp, "infoLink"))
 								XmlPullUtil.next(pp);
 
-							XmlPullUtil.enter(pp, "itdStopSeq");
-							final List<Stop> intermediateStops = new LinkedList<Stop>();
-							while (XmlPullUtil.test(pp, "itdPoint"))
+							List<Stop> intermediateStops = null;
+							if (XmlPullUtil.test(pp, "itdStopSeq"))
 							{
-								final int stopId = Integer.parseInt(pp.getAttributeValue(null, "stopID"));
-								final String stopName = normalizeLocationName(pp.getAttributeValue(null, "name"));
-								final String stopPosition = normalizePlatform(pp.getAttributeValue(null, "platform"), pp.getAttributeValue(null,
-										"platformName"));
-								XmlPullUtil.enter(pp, "itdPoint");
-								XmlPullUtil.require(pp, "itdDateTime");
-								processItdDateTime(pp, stopTime);
-								XmlPullUtil.exit(pp, "itdPoint");
-								intermediateStops.add(new Stop(new Location(LocationType.STATION, stopId, 0, 0, stopName), stopPosition, stopTime
-										.getTime()));
-							}
-							XmlPullUtil.exit(pp, "itdStopSeq");
+								XmlPullUtil.enter(pp, "itdStopSeq");
+								intermediateStops = new LinkedList<Stop>();
+								while (XmlPullUtil.test(pp, "itdPoint"))
+								{
+									final int stopId = Integer.parseInt(pp.getAttributeValue(null, "stopID"));
+									final String stopName = normalizeLocationName(pp.getAttributeValue(null, "name"));
+									final String stopPosition = normalizePlatform(pp.getAttributeValue(null, "platform"), pp.getAttributeValue(null,
+											"platformName"));
+									XmlPullUtil.enter(pp, "itdPoint");
+									XmlPullUtil.require(pp, "itdDateTime");
+									processItdDateTime(pp, stopTime);
+									XmlPullUtil.exit(pp, "itdPoint");
+									intermediateStops.add(new Stop(new Location(LocationType.STATION, stopId, 0, 0, stopName), stopPosition, stopTime
+											.getTime()));
+								}
+								XmlPullUtil.exit(pp, "itdStopSeq");
 
-							// remove first and last, because they are not intermediate
-							if (intermediateStops.get(0).location.id != departureId)
-								throw new IllegalStateException();
-							if (intermediateStops.get(intermediateStops.size() - 1).location.id != arrivalId)
-								throw new IllegalStateException();
-							intermediateStops.remove(0);
-							intermediateStops.remove(intermediateStops.size() - 1);
+								// remove first and last, because they are not intermediate
+								if (intermediateStops.get(0).location.id != departureId)
+									throw new IllegalStateException();
+								if (intermediateStops.get(intermediateStops.size() - 1).location.id != arrivalId)
+									throw new IllegalStateException();
+								intermediateStops.remove(0);
+								intermediateStops.remove(intermediateStops.size() - 1);
+							}
 
 							parts.add(new Connection.Trip(line, lineColors(line), destinationId, destination, departureTime.getTime(),
 									departurePosition, departureId, departure, arrivalTime.getTime(), arrivalPosition, arrivalId, arrival,
