@@ -614,8 +614,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return "I" + normalizedName;
 		if ("THA".equals(normalizedType)) // Thalys
 			return "I" + normalizedName;
-		// if ("THALYS".equals(normalizedType))
-		// return "I" + normalizedName;
+		if ("THALYS".equals(normalizedType)) // THALYS
+			return "I" + normalizedName;
 		if ("ES".equals(normalizedType)) // Eurostar Italia
 			return "I" + normalizedName;
 		if ("EST".equals(normalizedType)) // Eurostar
