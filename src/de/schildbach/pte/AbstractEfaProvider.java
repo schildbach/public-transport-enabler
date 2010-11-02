@@ -749,6 +749,9 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 							if (XmlPullUtil.test(pp, "itdRTDateTime"))
 								processItdDateTime(pp, predictedDepartureTime);
 
+							if (XmlPullUtil.test(pp, "itdFrequencyInfo"))
+								XmlPullUtil.next(pp);
+
 							XmlPullUtil.require(pp, "itdServingLine");
 							final String line = parseLine(pp.getAttributeValue(null, "motType"), pp.getAttributeValue(null, "number"), pp
 									.getAttributeValue(null, "number"));
@@ -983,6 +986,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 					final String id = pp.getAttributeValue(null, "routeIndex") + "-" + pp.getAttributeValue(null, "routeTripIndex");
 					XmlPullUtil.enter(pp, "itdRoute");
 
+					while (XmlPullUtil.test(pp, "itdDateTime"))
+						XmlPullUtil.next(pp);
 					if (XmlPullUtil.test(pp, "itdMapItemList"))
 						XmlPullUtil.next(pp);
 
