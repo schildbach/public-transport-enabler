@@ -20,8 +20,11 @@ package de.schildbach.pte;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.util.Color;
 import de.schildbach.pte.util.ParserUtils;
 
 /**
@@ -122,5 +125,33 @@ public class GvhProvider extends AbstractEfaProvider
 		appendCommonConnectionParams(uri);
 		uri.append("&command=").append(command);
 		return uri.toString();
+	}
+
+	private static final Map<String, int[]> LINES = new HashMap<String, int[]>();
+
+	static
+	{
+		// Hamburg
+		LINES.put("SS1", new int[] { Color.parseColor("#00933B"), Color.WHITE });
+		LINES.put("SS11", new int[] { Color.WHITE, Color.parseColor("#00933B"), Color.parseColor("#00933B") });
+		LINES.put("SS2", new int[] { Color.WHITE, Color.parseColor("#9D271A"), Color.parseColor("#9D271A") });
+		LINES.put("SS21", new int[] { Color.parseColor("#9D271A"), Color.WHITE });
+		LINES.put("SS3", new int[] { Color.parseColor("#411273"), Color.WHITE });
+		LINES.put("SS31", new int[] { Color.parseColor("#411273"), Color.WHITE });
+
+		LINES.put("UU1", new int[] { Color.BLUE, Color.WHITE });
+		LINES.put("UU2", new int[] { Color.parseColor("#DC2B19"), Color.WHITE });
+		LINES.put("UU3", new int[] { Color.parseColor("#EE9D16"), Color.WHITE });
+		LINES.put("UU4", new int[] { Color.parseColor("#13A59D"), Color.WHITE });
+	}
+
+	@Override
+	public int[] lineColors(final String line)
+	{
+		final int[] lineColors = LINES.get(line);
+		if (lineColors != null)
+			return lineColors;
+		else
+			return super.lineColors(line);
 	}
 }
