@@ -20,9 +20,12 @@ package de.schildbach.pte;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TimeZone;
 
 import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.util.Color;
 import de.schildbach.pte.util.ParserUtils;
 
 /**
@@ -129,5 +132,40 @@ public class TflProvider extends AbstractEfaProvider
 		appendCommonConnectionParams(uri);
 		uri.append("&command=").append(command);
 		return uri.toString();
+	}
+
+	private static final Map<String, int[]> LINES = new HashMap<String, int[]>();
+
+	static
+	{
+		// London
+		LINES.put("UBakerloo", new int[] { Color.parseColor("#9D5324"), Color.WHITE });
+		LINES.put("UCentral", new int[] { Color.parseColor("#D52B1E"), Color.WHITE });
+		LINES.put("UCircle", new int[] { Color.parseColor("#FECB00"), Color.BLACK });
+		LINES.put("UDistrict", new int[] { Color.parseColor("#007934"), Color.WHITE });
+		LINES.put("UEast London", new int[] { Color.parseColor("#FFA100"), Color.WHITE });
+		LINES.put("UHammersmith & City", new int[] { Color.parseColor("#C5858F"), Color.BLACK });
+		LINES.put("UJubilee", new int[] { Color.parseColor("#818A8F"), Color.WHITE });
+		LINES.put("UMetropolitan", new int[] { Color.parseColor("#850057"), Color.WHITE });
+		LINES.put("UNorthern", new int[] { Color.BLACK, Color.WHITE });
+		LINES.put("UPicadilly", new int[] { Color.parseColor("#0018A8"), Color.WHITE });
+		LINES.put("UVictoria", new int[] { Color.parseColor("#00A1DE"), Color.WHITE });
+		LINES.put("UWaterloo & City", new int[] { Color.parseColor("#76D2B6"), Color.BLACK });
+
+		LINES.put("SDLR", new int[] { Color.WHITE, Color.parseColor("#00B2A9") });
+
+		LINES.put("TTramlink 1", new int[] { Color.rgb(193, 215, 46), Color.WHITE });
+		LINES.put("TTramlink 2", new int[] { Color.rgb(193, 215, 46), Color.WHITE });
+		LINES.put("TTramlink 3", new int[] { Color.rgb(124, 194, 66), Color.BLACK });
+	}
+
+	@Override
+	public int[] lineColors(final String line)
+	{
+		final int[] lineColors = LINES.get(line);
+		if (lineColors != null)
+			return lineColors;
+		else
+			return super.lineColors(line);
 	}
 }
