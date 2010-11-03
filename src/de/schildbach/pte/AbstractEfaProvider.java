@@ -17,10 +17,8 @@
 
 package de.schildbach.pte;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -110,10 +108,6 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			return results;
 		}
 		catch (final XmlPullParserException x)
-		{
-			throw new RuntimeException(x);
-		}
-		catch (final SocketTimeoutException x)
 		{
 			throw new RuntimeException(x);
 		}
@@ -289,13 +283,13 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 					stations.add(ownStation);
 
 				if (maxStations == 0 || maxStations >= stations.size())
-					return new NearbyStationsResult(uri, stations);
+					return new NearbyStationsResult(stations);
 				else
-					return new NearbyStationsResult(uri, stations.subList(0, maxStations));
+					return new NearbyStationsResult(stations.subList(0, maxStations));
 			}
 			else if ("notidentified".equals(nameState))
 			{
-				return new NearbyStationsResult(uri, NearbyStationsResult.Status.INVALID_STATION);
+				return new NearbyStationsResult(NearbyStationsResult.Status.INVALID_STATION);
 			}
 			else
 			{
@@ -305,14 +299,6 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		catch (final XmlPullParserException x)
 		{
 			throw new RuntimeException(x);
-		}
-		catch (final FileNotFoundException x)
-		{
-			return new NearbyStationsResult(uri, NearbyStationsResult.Status.SERVICE_DOWN);
-		}
-		catch (final SocketTimeoutException x)
-		{
-			return new NearbyStationsResult(uri, NearbyStationsResult.Status.SERVICE_DOWN);
 		}
 		finally
 		{
@@ -792,14 +778,6 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		{
 			throw new RuntimeException(x);
 		}
-		catch (final FileNotFoundException x)
-		{
-			return new QueryDeparturesResult(QueryDeparturesResult.Status.SERVICE_DOWN, Integer.parseInt(stationId));
-		}
-		catch (final SocketTimeoutException x)
-		{
-			return new QueryDeparturesResult(QueryDeparturesResult.Status.SERVICE_DOWN, Integer.parseInt(stationId));
-		}
 		finally
 		{
 			if (is != null)
@@ -855,10 +833,6 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			is = ParserUtils.scrapeInputStream(uri);
 			return queryConnections(uri, is);
 		}
-		catch (final SocketTimeoutException x)
-		{
-			return new QueryConnectionsResult(QueryConnectionsResult.Status.SERVICE_DOWN);
-		}
 		finally
 		{
 			if (is != null)
@@ -873,10 +847,6 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		{
 			is = ParserUtils.scrapeInputStream(uri);
 			return queryConnections(uri, is);
-		}
-		catch (final SocketTimeoutException x)
-		{
-			return new QueryConnectionsResult(QueryConnectionsResult.Status.SERVICE_DOWN);
 		}
 		finally
 		{

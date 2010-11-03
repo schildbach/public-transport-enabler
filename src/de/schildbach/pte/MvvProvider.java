@@ -119,9 +119,9 @@ public class MvvProvider extends AbstractEfaProvider
 		}
 
 		if (maxStations == 0 || maxStations >= stations.size())
-			return new NearbyStationsResult(uri, stations);
+			return new NearbyStationsResult(stations);
 		else
-			return new NearbyStationsResult(uri, stations.subList(0, maxStations));
+			return new NearbyStationsResult(stations.subList(0, maxStations));
 	}
 
 	@Override

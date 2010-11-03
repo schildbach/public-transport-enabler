@@ -29,20 +29,17 @@ public final class NearbyStationsResult
 		OK, INVALID_STATION, SERVICE_DOWN
 	}
 
-	public final String uri;
 	public final Status status;
 	public final List<Station> stations;
 
-	public NearbyStationsResult(final String uri, List<Station> stations)
+	public NearbyStationsResult(final List<Station> stations)
 	{
-		this.uri = uri;
 		this.status = Status.OK;
 		this.stations = stations;
 	}
 
-	public NearbyStationsResult(final String uri, final Status status)
+	public NearbyStationsResult(final Status status)
 	{
-		this.uri = uri;
 		this.status = status;
 		this.stations = null;
 	}

@@ -19,7 +19,6 @@ package de.schildbach.pte;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.SocketTimeoutException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -178,10 +177,6 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		{
 			throw new RuntimeException(x);
 		}
-		catch (final SocketTimeoutException x)
-		{
-			throw new RuntimeException(x);
-		}
 		finally
 		{
 			if (is != null)
@@ -254,6 +249,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
 
 		InputStream is = null;
+
 		try
 		{
 			is = ParserUtils.scrapeInputStream(apiUri, wrap(request));
@@ -476,10 +472,6 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return new QueryConnectionsResult(null, from, via, to, context, connections);
 		}
 		catch (final XmlPullParserException x)
-		{
-			throw new RuntimeException(x);
-		}
-		catch (final SocketTimeoutException x)
 		{
 			throw new RuntimeException(x);
 		}
@@ -770,9 +762,9 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		}
 
 		if (maxStations == 0 || maxStations >= stations.size())
-			return new NearbyStationsResult(uri, stations);
+			return new NearbyStationsResult(stations);
 		else
-			return new NearbyStationsResult(uri, stations.subList(0, maxStations));
+			return new NearbyStationsResult(stations.subList(0, maxStations));
 	}
 
 	protected static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zÄÖÜäöüßáàâéèêíìîóòôúùû/-]+)[\\s-]*(.*)");
