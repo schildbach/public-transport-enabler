@@ -37,6 +37,7 @@ import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.Station;
+import de.schildbach.pte.exception.SessionExpiredException;
 import de.schildbach.pte.util.ParserUtils;
 
 /**
@@ -158,7 +159,7 @@ public final class BahnProvider extends AbstractHafasProvider
 			"<select name=\"(REQ0JourneyStopsS0K|REQ0JourneyStopsZ0K|REQ0JourneyStops1\\.0K)\"[^>]*>(.*?)</select>", Pattern.DOTALL);
 	private static final Pattern P_ADDRESSES = Pattern.compile("<option[^>]*>\\s*(.*?)\\s*</option>", Pattern.DOTALL);
 	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern
-			.compile("(zu dicht beieinander|mehrfach vorhanden oder identisch)|(leider konnte zu Ihrer Anfrage keine Verbindung gefunden werden)|(derzeit nur Ausk&#252;nfte vom)");
+			.compile("(zu dicht beieinander|mehrfach vorhanden oder identisch)|(leider konnte zu Ihrer Anfrage keine Verbindung gefunden werden)|(derzeit nur Ausk&#252;nfte vom)|(zwischenzeitlich nicht mehr gespeichert)");
 
 	@Override
 	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
@@ -166,17 +167,6 @@ public final class BahnProvider extends AbstractHafasProvider
 	{
 		final String uri = connectionsQueryUri(from, via, to, date, dep);
 		final CharSequence page = ParserUtils.scrape(uri);
-
-		final Matcher mError = P_CHECK_CONNECTIONS_ERROR.matcher(page);
-		if (mError.find())
-		{
-			if (mError.group(1) != null)
-				return QueryConnectionsResult.TOO_CLOSE;
-			if (mError.group(2) != null)
-				return QueryConnectionsResult.NO_CONNECTIONS;
-			if (mError.group(3) != null)
-				return QueryConnectionsResult.INVALID_DATE;
-		}
 
 		List<Location> fromAddresses = null;
 		List<Location> viaAddresses = null;
@@ -217,7 +207,6 @@ public final class BahnProvider extends AbstractHafasProvider
 	public QueryConnectionsResult queryMoreConnections(final String uri) throws IOException
 	{
 		final CharSequence page = ParserUtils.scrape(uri);
-
 		return queryConnections(uri, page);
 	}
 
@@ -237,6 +226,19 @@ public final class BahnProvider extends AbstractHafasProvider
 
 	private QueryConnectionsResult queryConnections(final String uri, final CharSequence page) throws IOException
 	{
+		final Matcher mError = P_CHECK_CONNECTIONS_ERROR.matcher(page);
+		if (mError.find())
+		{
+			if (mError.group(1) != null)
+				return QueryConnectionsResult.TOO_CLOSE;
+			if (mError.group(2) != null)
+				return QueryConnectionsResult.NO_CONNECTIONS;
+			if (mError.group(3) != null)
+				return QueryConnectionsResult.INVALID_DATE;
+			if (mError.group(4) != null)
+				throw new SessionExpiredException();
+		}
+
 		final Matcher mHead = P_CONNECTIONS_HEAD.matcher(page);
 		if (mHead.matches())
 		{
