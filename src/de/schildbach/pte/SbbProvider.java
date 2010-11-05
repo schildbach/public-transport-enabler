@@ -108,7 +108,8 @@ public class SbbProvider extends AbstractHafasProvider
 
 	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures) throws IOException
 	{
-		final CharSequence page = ParserUtils.scrape(departuresQueryUri(stationId, maxDepartures));
+		final String uri = departuresQueryUri(stationId, maxDepartures);
+		final CharSequence page = ParserUtils.scrape(uri);
 
 		// parse page
 		final Matcher mHeadCoarse = P_DEPARTURES_HEAD_COARSE.matcher(page);
@@ -131,16 +132,17 @@ public class SbbProvider extends AbstractHafasProvider
 						.parseTime(mHeadFine.group(2)));
 				final int locationId = Integer.parseInt(mHeadFine.group(4));
 				final List<Departure> departures = new ArrayList<Departure>(8);
-				String oldZebra = null;
+				// String oldZebra = null;
 
 				final Matcher mDepCoarse = P_DEPARTURES_COARSE.matcher(mHeadCoarse.group(2));
 				while (mDepCoarse.find())
 				{
-					final String zebra = mDepCoarse.group(1);
-					if (oldZebra != null && zebra.equals(oldZebra))
-						throw new IllegalArgumentException("missed row? last:" + zebra);
-					else
-						oldZebra = zebra;
+					// zebra mechanism is currently broken on service
+					// final String zebra = mDepCoarse.group(1);
+					// if (oldZebra != null && zebra.equals(oldZebra))
+					// throw new IllegalArgumentException("missed row? last:" + zebra);
+					// else
+					// oldZebra = zebra;
 
 					final Matcher mDepFine = P_DEPARTURES_FINE.matcher(mDepCoarse.group(2));
 					if (mDepFine.matches())
