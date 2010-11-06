@@ -582,6 +582,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'R' + str;
 			if (type.equals("GC")) // Grand Central, GB
 				return 'R' + str;
+			if (type.equals("IL")) // Island Line, GB
+				return 'R' + str;
 
 			if (type.equals("BSB")) // Breisgau-S-Bahn
 				return 'S' + str;
