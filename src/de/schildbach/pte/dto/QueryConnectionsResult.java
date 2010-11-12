@@ -27,10 +27,11 @@ public final class QueryConnectionsResult implements Serializable
 {
 	public enum Status
 	{
-		OK, AMBIGUOUS, TOO_CLOSE, NO_CONNECTIONS, INVALID_DATE, SERVICE_DOWN;
+		OK, AMBIGUOUS, TOO_CLOSE, UNRESOLVABLE_ADDRESS, NO_CONNECTIONS, INVALID_DATE, SERVICE_DOWN;
 	}
 
 	public static final QueryConnectionsResult TOO_CLOSE = new QueryConnectionsResult(Status.TOO_CLOSE);
+	public static final QueryConnectionsResult UNRESOLVABLE_ADDRESS = new QueryConnectionsResult(Status.UNRESOLVABLE_ADDRESS);
 	public static final QueryConnectionsResult NO_CONNECTIONS = new QueryConnectionsResult(Status.NO_CONNECTIONS);
 	public static final QueryConnectionsResult INVALID_DATE = new QueryConnectionsResult(Status.INVALID_DATE);
 
