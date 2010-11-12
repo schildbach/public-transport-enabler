@@ -311,13 +311,20 @@ public final class BahnProvider extends AbstractHafasProvider
 			+ "&#220;bergang.*?" //
 			+ "<span class=\"bold\">\\s*(.+?)\\s*</span><br />\n" // arrival
 			+ ")", Pattern.DOTALL);
-	private static final Pattern P_CONNECTION_DETAILS_MESSAGES = Pattern
-			.compile("Dauer: \\d+:\\d+|(Anschlusszug nicht mehr rechtzeitig)|(Anschlusszug jedoch erreicht werden)|(nur teilweise dargestellt)|(L&#228;ngerer Aufenthalt)|(&#228;quivalentem Bahnhof)|(Bahnhof wird mehrfach durchfahren)");
+	private static final Pattern P_CONNECTION_DETAILS_ERROR = Pattern.compile("(zwischenzeitlich nicht mehr gespeichert)");
+	private static final Pattern P_CONNECTION_DETAILS_MESSAGES = Pattern.compile("Dauer: \\d+:\\d+");
 
 	@Override
 	public GetConnectionDetailsResult getConnectionDetails(final String uri) throws IOException
 	{
 		final CharSequence page = ParserUtils.scrape(uri);
+
+		final Matcher mError = P_CONNECTION_DETAILS_ERROR.matcher(page);
+		if (mError.find())
+		{
+			if (mError.group(1) != null)
+				throw new SessionExpiredException();
+		}
 
 		final Matcher mHead = P_CONNECTION_DETAILS_HEAD.matcher(page);
 		if (mHead.matches())
