@@ -179,7 +179,7 @@ public final class BvgProvider implements NetworkProvider
 	private static final Pattern P_CHECK_FROM = Pattern.compile("Von:");
 	private static final Pattern P_CHECK_TO = Pattern.compile("Nach:");
 	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern
-			.compile("(zu dicht beieinander|mehrfach vorhanden oder identisch)|(keine Verbindung gefunden)|(derzeit nur Ausk&#252;nfte vom)");
+			.compile("(zu dicht beieinander|mehrfach vorhanden oder identisch)|(keine geeigneten Haltestellen)|(keine Verbindung gefunden)|(derzeit nur Ausk&#252;nfte vom)");
 
 	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
 			final String products, final WalkSpeed walkSpeed) throws IOException
@@ -193,8 +193,10 @@ public final class BvgProvider implements NetworkProvider
 			if (mError.group(1) != null)
 				return QueryConnectionsResult.TOO_CLOSE;
 			if (mError.group(2) != null)
-				return QueryConnectionsResult.NO_CONNECTIONS;
+				return QueryConnectionsResult.UNRESOLVABLE_ADDRESS;
 			if (mError.group(3) != null)
+				return QueryConnectionsResult.NO_CONNECTIONS;
+			if (mError.group(4) != null)
 				return QueryConnectionsResult.INVALID_DATE;
 		}
 

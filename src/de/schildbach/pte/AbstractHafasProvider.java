@@ -268,7 +268,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 				if (code.equals("K9380"))
 					return QueryConnectionsResult.TOO_CLOSE;
 				if (code.equals("K9220")) // Nearby to the given address stations could not be found
-					return QueryConnectionsResult.NO_CONNECTIONS;
+					return QueryConnectionsResult.UNRESOLVABLE_ADDRESS;
 				if (code.equals("K890")) // No connections found
 					return QueryConnectionsResult.NO_CONNECTIONS;
 				throw new IllegalStateException("error " + code + " " + XmlPullUtil.attr(pp, "text"));

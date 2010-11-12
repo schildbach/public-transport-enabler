@@ -159,7 +159,7 @@ public final class BahnProvider extends AbstractHafasProvider
 			"<select name=\"(REQ0JourneyStopsS0K|REQ0JourneyStopsZ0K|REQ0JourneyStops1\\.0K)\"[^>]*>(.*?)</select>", Pattern.DOTALL);
 	private static final Pattern P_ADDRESSES = Pattern.compile("<option[^>]*>\\s*(.*?)\\s*</option>", Pattern.DOTALL);
 	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern
-			.compile("(zu dicht beieinander|mehrfach vorhanden oder identisch)|(leider konnte zu Ihrer Anfrage keine Verbindung gefunden werden)|(derzeit nur Ausk&#252;nfte vom)|(zwischenzeitlich nicht mehr gespeichert)");
+			.compile("(zu dicht beieinander|mehrfach vorhanden oder identisch)|(keine geeigneten Haltestellen)|(keine Verbindung gefunden)|(derzeit nur Ausk&#252;nfte vom)|(zwischenzeitlich nicht mehr gespeichert)");
 
 	@Override
 	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
@@ -232,10 +232,12 @@ public final class BahnProvider extends AbstractHafasProvider
 			if (mError.group(1) != null)
 				return QueryConnectionsResult.TOO_CLOSE;
 			if (mError.group(2) != null)
-				return QueryConnectionsResult.NO_CONNECTIONS;
+				return QueryConnectionsResult.UNRESOLVABLE_ADDRESS;
 			if (mError.group(3) != null)
-				return QueryConnectionsResult.INVALID_DATE;
+				return QueryConnectionsResult.NO_CONNECTIONS;
 			if (mError.group(4) != null)
+				return QueryConnectionsResult.INVALID_DATE;
+			if (mError.group(5) != null)
 				throw new SessionExpiredException();
 		}
 
