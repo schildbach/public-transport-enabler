@@ -669,6 +669,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return "B" + normalizedName;
 		if ("NFB".equals(normalizedType)) // Niederflur-Bus
 			return "B" + normalizedName;
+		if ("N".equals(normalizedType)) // Nachtbus
+			return "B" + normalizedName;
 		if ("Tro".equals(normalizedType)) // Trolleybus
 			return "B" + normalizedName;
 		if ("Taxi".equals(normalizedType)) // Taxi
@@ -875,6 +877,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		if (ucType.equals("BUS")) // Generic Bus
 			return 'B';
 		if (ucType.equals("AST")) // Anruf-Sammel-Taxi
+			return 'B';
+		if (ucType.equals("RUF")) // Rufbus
 			return 'B';
 		if (ucType.equals("SEV")) // Schienen-Ersatz-Verkehr
 			return 'B';
