@@ -56,8 +56,6 @@ import de.schildbach.pte.util.XmlPullUtil;
  */
 public abstract class AbstractEfaProvider implements NetworkProvider
 {
-	private static final String DEFAULT_ENCODING = "ISO-8859-1";
-
 	protected TimeZone timeZone()
 	{
 		return TimeZone.getTimeZone("Europe/Berlin");
@@ -78,7 +76,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
 			final XmlPullParser pp = factory.newPullParser();
-			pp.setInput(is, DEFAULT_ENCODING);
+			pp.setInput(is, null);
 
 			assertItdRequest(pp);
 
@@ -219,7 +217,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
 			final XmlPullParser pp = factory.newPullParser();
-			pp.setInput(is, DEFAULT_ENCODING);
+			pp.setInput(is, null);
 
 			assertItdRequest(pp);
 
@@ -656,7 +654,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
 			final XmlPullParser pp = factory.newPullParser();
-			pp.setInput(is, DEFAULT_ENCODING);
+			pp.setInput(is, null);
 
 			assertItdRequest(pp);
 
@@ -863,7 +861,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		{
 			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
 			final XmlPullParser pp = factory.newPullParser();
-			pp.setInput(is, DEFAULT_ENCODING);
+			pp.setInput(is, null);
 
 			assertItdRequest(pp);
 			final String sessionId = pp.getAttributeValue(null, "sessionID");
