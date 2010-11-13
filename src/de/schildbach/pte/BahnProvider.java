@@ -314,7 +314,8 @@ public final class BahnProvider extends AbstractHafasProvider
 			+ "<span class=\"bold\">\\s*(.+?)\\s*</span><br />\n" // arrival
 			+ ")", Pattern.DOTALL);
 	private static final Pattern P_CONNECTION_DETAILS_ERROR = Pattern.compile("(zwischenzeitlich nicht mehr gespeichert)");
-	private static final Pattern P_CONNECTION_DETAILS_MESSAGES = Pattern.compile("Dauer: \\d+:\\d+");
+	private static final Pattern P_CONNECTION_DETAILS_MESSAGES = Pattern
+			.compile("Dauer: \\d+:\\d+|(Anschlusszug nicht mehr rechtzeitig)|(Anschlusszug jedoch erreicht werden)|(nur teilweise dargestellt)|(L&#228;ngerer Aufenthalt)|(&#228;quivalentem Bahnhof)|(Bahnhof wird mehrfach durchfahren)");
 
 	@Override
 	public GetConnectionDetailsResult getConnectionDetails(final String uri) throws IOException
