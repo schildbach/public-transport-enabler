@@ -48,6 +48,7 @@ public final class ParserUtils
 	private static final int SCRAPE_CONNECT_TIMEOUT = 5000;
 	private static final int SCRAPE_READ_TIMEOUT = 15000;
 	private static final String SCRAPE_DEFAULT_ENCODING = "ISO-8859-1";
+	private static final int SCRAPE_PAGE_EMPTY_THRESHOLD = 2;
 
 	private static String stateCookie;
 
@@ -111,7 +112,7 @@ public final class ParserUtils
 				copy(pageReader, buffer);
 				pageReader.close();
 
-				if (buffer.length() > 0)
+				if (buffer.length() > SCRAPE_PAGE_EMPTY_THRESHOLD)
 				{
 					if (cookieHandling)
 					{
@@ -134,10 +135,11 @@ public final class ParserUtils
 				}
 				else
 				{
+					final String message = "got empty page (length: " + buffer.length() + ")";
 					if (tries-- > 0)
-						System.out.println("got empty page, retrying...");
+						System.out.println(message + ", retrying...");
 					else
-						throw new IOException("got empty page: " + url);
+						throw new IOException(message + ": " + url);
 				}
 			}
 			catch (final SocketTimeoutException x)
