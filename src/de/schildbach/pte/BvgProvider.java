@@ -40,6 +40,7 @@ import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryDeparturesResult.Status;
+import de.schildbach.pte.exception.SessionExpiredException;
 import de.schildbach.pte.util.Color;
 import de.schildbach.pte.util.ParserUtils;
 
@@ -179,26 +180,13 @@ public final class BvgProvider implements NetworkProvider
 	private static final Pattern P_CHECK_FROM = Pattern.compile("Von:");
 	private static final Pattern P_CHECK_TO = Pattern.compile("Nach:");
 	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern
-			.compile("(zu dicht beieinander|mehrfach vorhanden oder identisch)|(keine geeigneten Haltestellen)|(keine Verbindung gefunden)|(derzeit nur Ausk&#252;nfte vom)");
+			.compile("(zu dicht beieinander|mehrfach vorhanden oder identisch)|(keine geeigneten Haltestellen)|(keine Verbindung gefunden)|(derzeit nur Ausk&#252;nfte vom)|(zwischenzeitlich nicht mehr gespeichert)");
 
 	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
 			final String products, final WalkSpeed walkSpeed) throws IOException
 	{
 		final String uri = connectionsQueryUri(from, via, to, date, dep, products);
 		final CharSequence page = ParserUtils.scrape(uri);
-
-		final Matcher mError = P_CHECK_CONNECTIONS_ERROR.matcher(page);
-		if (mError.find())
-		{
-			if (mError.group(1) != null)
-				return QueryConnectionsResult.TOO_CLOSE;
-			if (mError.group(2) != null)
-				return QueryConnectionsResult.UNRESOLVABLE_ADDRESS;
-			if (mError.group(3) != null)
-				return QueryConnectionsResult.NO_CONNECTIONS;
-			if (mError.group(4) != null)
-				return QueryConnectionsResult.INVALID_DATE;
-		}
 
 		final Matcher mAddress = P_CHECK_ADDRESS.matcher(page);
 
@@ -230,7 +218,6 @@ public final class BvgProvider implements NetworkProvider
 	public QueryConnectionsResult queryMoreConnections(final String uri) throws IOException
 	{
 		final CharSequence page = ParserUtils.scrape(uri);
-
 		return queryConnections(uri, page);
 	}
 
@@ -249,6 +236,21 @@ public final class BvgProvider implements NetworkProvider
 
 	private QueryConnectionsResult queryConnections(final String uri, final CharSequence page) throws IOException
 	{
+		final Matcher mError = P_CHECK_CONNECTIONS_ERROR.matcher(page);
+		if (mError.find())
+		{
+			if (mError.group(1) != null)
+				return QueryConnectionsResult.TOO_CLOSE;
+			if (mError.group(2) != null)
+				return QueryConnectionsResult.UNRESOLVABLE_ADDRESS;
+			if (mError.group(3) != null)
+				return QueryConnectionsResult.NO_CONNECTIONS;
+			if (mError.group(4) != null)
+				return QueryConnectionsResult.INVALID_DATE;
+			if (mError.group(5) != null)
+				throw new SessionExpiredException();
+		}
+
 		final Matcher mHead = P_CONNECTIONS_HEAD.matcher(page);
 		if (mHead.matches())
 		{
