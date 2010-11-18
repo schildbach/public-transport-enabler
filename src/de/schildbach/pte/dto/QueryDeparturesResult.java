@@ -49,4 +49,15 @@ public final class QueryDeparturesResult
 		this.departures = null;
 		this.lines = null;
 	}
+
+	@Override
+	public String toString()
+	{
+		final StringBuilder builder = new StringBuilder(getClass().getName());
+		builder.append("[").append(this.status).append(": ");
+		if (departures != null)
+			builder.append(departures.size()).append(" departures");
+		builder.append("]");
+		return builder.toString();
+	}
 }
