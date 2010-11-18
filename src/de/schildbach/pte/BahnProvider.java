@@ -438,7 +438,8 @@ public final class BahnProvider extends AbstractHafasProvider
 		uri.append(API_BASE).append("bhftafel.exe/dn");
 		uri.append("?productsFilter=11111111111111");
 		uri.append("&boardType=dep");
-		uri.append("&maxJourneys=").append(maxDepartures != 0 ? maxDepartures : 50); // default taken from railnavigator
+		// taken from railnavigator; ignore maxDepartures because result contains other stations
+		uri.append("&maxJourneys=50");
 		uri.append("&start=yes");
 		uri.append("&L=vs_java3");
 		uri.append("&input=").append(stationId);
