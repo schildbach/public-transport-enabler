@@ -583,7 +583,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		throw new IllegalArgumentException(location.type.toString());
 	}
 
-	private static final Pattern P_LINE_S = Pattern.compile("SN?\\d+");
+	private static final Pattern P_LINE_S = Pattern.compile("S\\d+");
+	private static final Pattern P_LINE_SN = Pattern.compile("SN\\d*");
 
 	private final String _normalizeLine(final String type, final String name, final String longCategory)
 	{
@@ -647,6 +648,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		if ("S".equals(normalizedType)) // S-Bahn
 			return "S" + normalizedName;
 		if (P_LINE_S.matcher(normalizedType).matches()) // diverse S-Bahnen
+			return "S" + normalizedType;
+		if (P_LINE_SN.matcher(normalizedType).matches()) // Nacht-S-Bahn
 			return "S" + normalizedType;
 
 		if ("Met".equals(normalizedType)) // Metro
