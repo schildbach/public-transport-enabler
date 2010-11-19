@@ -1008,7 +1008,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 						XmlPullUtil.test(pp, "itdMeansOfTransport");
 						final String productName = pp.getAttributeValue(null, "productName");
-						if ("Fussweg".equals(productName)) // type99
+						if ("Fussweg".equals(productName) || "Taxi".equals(productName))
 						{
 							final int min = (int) (arrivalTime.getTimeInMillis() - departureTime.getTimeInMillis()) / 1000 / 60;
 
