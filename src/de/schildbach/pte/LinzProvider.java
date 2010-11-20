@@ -20,6 +20,7 @@ package de.schildbach.pte;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.util.ParserUtils;
@@ -57,7 +58,7 @@ public class LinzProvider extends AbstractEfaProvider
 	@Override
 	protected String nearbyLatLonUri(final int lat, final int lon)
 	{
-		return String.format(NEARBY_LATLON_URI, latLonToDouble(lon), latLonToDouble(lat));
+		return String.format(Locale.ENGLISH, NEARBY_LATLON_URI, latLonToDouble(lon), latLonToDouble(lat));
 	}
 
 	private static final String NEARBY_STATION_URI = API_BASE
@@ -110,7 +111,7 @@ public class LinzProvider extends AbstractEfaProvider
 		uri.append("&ptOptionsActive=1");
 		uri.append("&changeSpeed=").append(WALKSPEED_MAP.get(walkSpeed));
 		uri.append(productParams(products));
-		
+
 		uri.append("&useRealtime=1");
 
 		return uri.toString();

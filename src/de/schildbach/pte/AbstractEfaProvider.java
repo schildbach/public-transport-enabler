@@ -26,6 +26,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
@@ -1160,8 +1161,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		if ((location.type == LocationType.POI || location.type == LocationType.ADDRESS) && location.lat != 0 && location.lon != 0)
 		{
 			uri.append("&type_").append(paramSuffix).append("=coord");
-			uri.append("&name_").append(paramSuffix).append("=").append(String.format("%2.6f:%2.6f", location.lon / 1E6, location.lat / 1E6)).append(
-					":WGS84[DD.dddddd]");
+			uri.append("&name_").append(paramSuffix).append("=").append(
+					String.format(Locale.ENGLISH, "%.6f:%.6f", location.lon / 1E6, location.lat / 1E6)).append(":WGS84");
 		}
 		else
 		{

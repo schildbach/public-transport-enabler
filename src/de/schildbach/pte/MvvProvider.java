@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -67,7 +68,7 @@ public class MvvProvider extends AbstractEfaProvider
 	@Override
 	protected String nearbyLatLonUri(final int lat, final int lon)
 	{
-		return String.format(NEARBY_LATLON_URI, latLonToDouble(lon), latLonToDouble(lat));
+		return String.format(Locale.ENGLISH, NEARBY_LATLON_URI, latLonToDouble(lon), latLonToDouble(lat));
 	}
 
 	private static final String NEARBY_STATION_URI = "http://efa.mvv-muenchen.de/ultralite/XML_DM_REQUEST"
