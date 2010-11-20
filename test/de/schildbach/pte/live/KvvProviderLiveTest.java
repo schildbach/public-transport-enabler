@@ -16,10 +16,16 @@
  */
 package de.schildbach.pte.live;
 
+import java.util.Date;
+
 import org.junit.Test;
 
 import de.schildbach.pte.KvvProvider;
+import de.schildbach.pte.NetworkProvider.WalkSpeed;
+import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 
 /**
@@ -28,6 +34,7 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 public class KvvProviderLiveTest
 {
 	private final KvvProvider provider = new KvvProvider();
+	private static final String ALL_PRODUCTS = "IRSUTBFC";
 
 	@Test
 	public void nearbyStation() throws Exception
@@ -43,5 +50,16 @@ public class KvvProviderLiveTest
 		final QueryDeparturesResult result = provider.queryDepartures("119", 0);
 
 		System.out.println(result.departures.size() + "  " + result.departures);
+	}
+
+	@Test
+	public void connectionBetweenAddresses() throws Exception
+	{
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, 48985089, 8402709,
+				"Konstanzer Straße 17, 76199 Karlsruhe, Deutschland"), null, new Location(LocationType.ADDRESS, 0, 49007706, 8356358,
+				"Durmersheimer Straße 6, 76185 Karlsruhe, Deutschland"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+		System.out.println(result);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
+		System.out.println(moreResult);
 	}
 }

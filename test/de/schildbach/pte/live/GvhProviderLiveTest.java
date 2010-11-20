@@ -99,4 +99,26 @@ public class GvhProviderLiveTest
 				null, new Location(LocationType.STATION, 25001141, 0, 0, "Hannover Bismarckstraße"), new Date(), true, ALL_PRODUCTS, WalkSpeed.FAST);
 		System.out.println(result);
 	}
+
+	@Test
+	public void connectionBetweenAnyAndAddress() throws Exception
+	{
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, 53069619, 8799202,
+				"bremen, neustadtswall 12"), null, new Location(LocationType.ADDRESS, 0, 53104124, 8788575, "Bremen Glücksburger Straße 37"),
+				new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+		System.out.println(result);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
+		System.out.println(moreResult);
+	}
+
+	@Test
+	public void connectionBetweenAddresses() throws Exception
+	{
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, 53622859, 10133545,
+				"Zamenhofweg 14, 22159 Hamburg, Deutschland"), null, new Location(LocationType.ADDRESS, 0, 53734260, 9674990,
+				"Lehmkuhlen 5, 25337 Elmshorn, Deutschland"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+		System.out.println(result);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
+		System.out.println(moreResult);
+	}
 }

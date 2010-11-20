@@ -83,4 +83,15 @@ public class MvvProviderLiveTest
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);
 	}
+
+	@Test
+	public void connectionBetweenStationAndAddress() throws Exception
+	{
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 1220, 0, 0, "Josephsburg"), null,
+				new Location(LocationType.ADDRESS, 0, 48188018, 11574239, "München Frankfurter Ring 35"), new Date(), true, ALL_PRODUCTS,
+				WalkSpeed.NORMAL);
+		System.out.println(result);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
+		System.out.println(moreResult);
+	}
 }
