@@ -139,7 +139,7 @@ public class GvhProvider extends AbstractEfaProvider
 		LINES.put("SS3", new int[] { Color.parseColor("#411273"), Color.WHITE });
 		LINES.put("SS31", new int[] { Color.parseColor("#411273"), Color.WHITE });
 
-		LINES.put("UU1", new int[] { Color.BLUE, Color.WHITE });
+		LINES.put("UU1", new int[] { Color.parseColor("#044895"), Color.WHITE });
 		LINES.put("UU2", new int[] { Color.parseColor("#DC2B19"), Color.WHITE });
 		LINES.put("UU3", new int[] { Color.parseColor("#EE9D16"), Color.WHITE });
 		LINES.put("UU4", new int[] { Color.parseColor("#13A59D"), Color.WHITE });
