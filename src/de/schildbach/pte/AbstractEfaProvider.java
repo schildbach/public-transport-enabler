@@ -286,6 +286,27 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				else
 					return new NearbyStationsResult(stations.subList(0, maxStations));
 			}
+			else if ("list".equals(nameState))
+			{
+				XmlPullUtil.enter(pp, "itdOdvName");
+				final List<Station> stations = new ArrayList<Station>();
+
+				if (XmlPullUtil.test(pp, "itdMessage"))
+					XmlPullUtil.next(pp);
+				while (XmlPullUtil.test(pp, "odvNameElem"))
+				{
+					final int stopId = Integer.parseInt(pp.getAttributeValue(null, "stopID"));
+					XmlPullUtil.enter(pp, "odvNameElem");
+					final String location = normalizeLocationName(pp.getText());
+					XmlPullUtil.exit(pp, "odvNameElem");
+
+					final Station newStation = new Station(stopId, location, 0, 0, 0, null, null);
+					if (!stations.contains(newStation))
+						stations.add(newStation);
+				}
+
+				return new NearbyStationsResult(stations);
+			}
 			else if ("notidentified".equals(nameState))
 			{
 				return new NearbyStationsResult(NearbyStationsResult.Status.INVALID_STATION);
