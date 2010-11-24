@@ -138,7 +138,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			type = LocationType.STATION;
 			id = Integer.parseInt(idStr);
 		}
-		else if ("poi".equals(anyType))
+		else if ("poi".equals(anyType) || "poiHierarchy".equals(anyType))
 		{
 			type = LocationType.POI;
 			id = Integer.parseInt(idStr);
