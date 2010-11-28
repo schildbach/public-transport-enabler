@@ -16,10 +16,16 @@
  */
 package de.schildbach.pte.live;
 
+import java.util.Date;
+
 import org.junit.Test;
 
 import de.schildbach.pte.TflProvider;
+import de.schildbach.pte.NetworkProvider.WalkSpeed;
+import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 
 /**
@@ -28,6 +34,7 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 public class TflProviderLiveTest
 {
 	private final TflProvider provider = new TflProvider();
+	private static final String ALL_PRODUCTS = "IRSUTBFC";
 
 	@Test
 	public void nearbyStation() throws Exception
@@ -43,5 +50,14 @@ public class TflProviderLiveTest
 		final QueryDeparturesResult result = provider.queryDepartures("1000086", 0);
 
 		System.out.println(result.departures.size() + "  " + result.departures);
+	}
+
+	@Test
+	public void postcodeConnection() throws Exception
+	{
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, 0, 0, "sw19 8ta"), null, new Location(
+				LocationType.STATION, 1016019, 51655903, -397249, "Watford (Herts), Watford Town Centre"), new Date(), true, ALL_PRODUCTS,
+				WalkSpeed.NORMAL);
+		System.out.println(result);
 	}
 }
