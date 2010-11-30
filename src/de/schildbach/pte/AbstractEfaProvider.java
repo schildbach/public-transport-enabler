@@ -84,11 +84,18 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			// parse odv name elements
 			if (!XmlPullUtil.jumpToStartTag(pp, null, "itdOdv") || !"origin".equals(pp.getAttributeValue(null, "usage")))
 				throw new IllegalStateException("cannot find <itdOdv usage=\"origin\" />");
-			if (!XmlPullUtil.nextStartTagInsideTree(pp, null, "itdOdvName"))
+			XmlPullUtil.enter(pp, "itdOdv");
+			XmlPullUtil.enter(pp, "itdOdvPlace");
+			XmlPullUtil.exit(pp, "itdOdvPlace");
+			if (!XmlPullUtil.test(pp, "itdOdvName"))
 				throw new IllegalStateException("cannot find <itdOdvName />");
-			final String nameState = pp.getAttributeValue(null, "state");
+			final String nameState = XmlPullUtil.attr(pp, "state");
+			XmlPullUtil.enter(pp, "itdOdvName");
+			if (XmlPullUtil.test(pp, "itdMessage"))
+				XmlPullUtil.next(pp);
+
 			if ("identified".equals(nameState) || "list".equals(nameState))
-				while (XmlPullUtil.nextStartTagInsideTree(pp, null, "odvNameElem"))
+				while (XmlPullUtil.test(pp, "odvNameElem"))
 					results.add(processOdvNameElem(pp));
 
 			// parse assigned stops
@@ -119,6 +126,9 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 	private Location processOdvNameElem(final XmlPullParser pp) throws XmlPullParserException, IOException
 	{
+		if (!XmlPullUtil.test(pp, "odvNameElem"))
+			throw new IllegalStateException("expecting <odvNameElem />");
+
 		final String anyType = pp.getAttributeValue(null, "anyType");
 		final String idStr = pp.getAttributeValue(null, "id");
 		final String stopIdStr = pp.getAttributeValue(null, "stopID");
@@ -179,7 +189,9 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			throw new IllegalArgumentException("unknown type: " + anyType + " " + idStr + " " + stopIdStr);
 		}
 
-		final String name = normalizeLocationName(pp.nextText());
+		XmlPullUtil.enter(pp, "odvNameElem");
+		final String name = normalizeLocationName(pp.getText());
+		XmlPullUtil.exit(pp, "odvNameElem");
 
 		return new Location(type, id, lat, lon, name);
 	}
@@ -543,6 +555,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'R' + str;
 			if (type.equals("ÖBA")) // Eisenbahn-Betriebsgesellschaft Ochsenhausen
 				return 'R' + str;
+			if (type.equals("MBS")) // Montafonerbahn
+				return 'R' + str;
 			if (type.equals("Abellio-Zug")) // Abellio
 				return 'R' + str;
 			if (type.equals("KBS")) // Kursbuchstrecke
@@ -620,6 +634,9 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'T' + str;
 			if (type.equals("STR")) // Nordhausen
 				return 'T' + str;
+
+			if (type.equals("BUS"))
+				return 'B' + str;
 
 			if (type.length() == 0)
 				return "?";
@@ -891,79 +908,98 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 			if (!XmlPullUtil.jumpToStartTag(pp, null, "itdTripRequest"))
 				throw new IllegalStateException("cannot find <itdTripRequest />");
+			XmlPullUtil.enter(pp, "itdTripRequest");
+
+			if (XmlPullUtil.test(pp, "itdMessage"))
+			{
+				final int code = XmlPullUtil.intAttr(pp, "code");
+				if (code == -4000) // no connection
+					return new QueryConnectionsResult(Status.NO_CONNECTIONS);
+				XmlPullUtil.next(pp);
+			}
+			if (XmlPullUtil.test(pp, "itdPrintConfiguration"))
+				XmlPullUtil.next(pp);
+			if (XmlPullUtil.test(pp, "itdAddress"))
+				XmlPullUtil.next(pp);
 
 			// parse odv name elements
 			List<Location> ambiguousFrom = null, ambiguousTo = null, ambiguousVia = null;
 			Location from = null, via = null, to = null;
 
-			if (!XmlPullUtil.jumpToStartTag(pp, null, "itdOdv") || !"origin".equals(pp.getAttributeValue(null, "usage")))
-				throw new IllegalStateException("cannot find <itdOdv usage=\"origin\" />");
-			XmlPullUtil.nextStartTagInsideTree(pp, null, "itdOdvName");
-			final String originState = pp.getAttributeValue(null, "state");
-			if ("list".equals(originState))
+			while (XmlPullUtil.test(pp, "itdOdv"))
 			{
-				ambiguousFrom = new ArrayList<Location>();
-				while (XmlPullUtil.nextStartTagInsideTree(pp, null, "odvNameElem"))
-					ambiguousFrom.add(processOdvNameElem(pp));
-			}
-			else if ("identified".equals(originState))
-			{
-				if (!XmlPullUtil.nextStartTagInsideTree(pp, null, "odvNameElem"))
-					throw new IllegalStateException("cannot find <odvNameElem />");
-				from = processOdvNameElem(pp);
-			}
+				final String usage = XmlPullUtil.attr(pp, "usage");
+				XmlPullUtil.enter(pp, "itdOdv");
+				XmlPullUtil.enter(pp, "itdOdvPlace");
+				XmlPullUtil.exit(pp, "itdOdvPlace");
+				if (!XmlPullUtil.test(pp, "itdOdvName"))
+					throw new IllegalStateException("cannot find <itdOdvName /> inside " + usage);
+				final String state = XmlPullUtil.attr(pp, "state");
+				XmlPullUtil.enter(pp, "itdOdvName");
+				if (XmlPullUtil.test(pp, "itdMessage"))
+					XmlPullUtil.next(pp);
 
-			if (!XmlPullUtil.jumpToStartTag(pp, null, "itdOdv") || !"destination".equals(pp.getAttributeValue(null, "usage")))
-				throw new IllegalStateException("cannot find <itdOdv usage=\"destination\" />");
-			XmlPullUtil.nextStartTagInsideTree(pp, null, "itdOdvName");
-			final String destinationState = pp.getAttributeValue(null, "state");
-			if ("list".equals(destinationState))
-			{
-				ambiguousTo = new ArrayList<Location>();
-				while (XmlPullUtil.nextStartTagInsideTree(pp, null, "odvNameElem"))
-					ambiguousTo.add(processOdvNameElem(pp));
-			}
-			else if ("identified".equals(destinationState))
-			{
-				if (!XmlPullUtil.nextStartTagInsideTree(pp, null, "odvNameElem"))
-					throw new IllegalStateException("cannot find <odvNameElem />");
-				to = processOdvNameElem(pp);
-			}
+				if ("list".equals(state))
+				{
+					if ("origin".equals(usage))
+					{
+						ambiguousFrom = new ArrayList<Location>();
+						while (XmlPullUtil.test(pp, "odvNameElem"))
+							ambiguousFrom.add(processOdvNameElem(pp));
+					}
+					else if ("via".equals(usage))
+					{
+						ambiguousVia = new ArrayList<Location>();
+						while (XmlPullUtil.test(pp, "odvNameElem"))
+							ambiguousVia.add(processOdvNameElem(pp));
+					}
+					else if ("destination".equals(usage))
+					{
+						ambiguousTo = new ArrayList<Location>();
+						while (XmlPullUtil.test(pp, "odvNameElem"))
+							ambiguousTo.add(processOdvNameElem(pp));
+					}
+					else
+					{
+						throw new IllegalStateException("unknown usage: " + usage);
+					}
+				}
+				else if ("identified".equals(state))
+				{
+					if (!XmlPullUtil.test(pp, "odvNameElem"))
+						throw new IllegalStateException("cannot find <odvNameElem /> inside " + usage);
 
-			if (!XmlPullUtil.jumpToStartTag(pp, null, "itdOdv") || !"via".equals(pp.getAttributeValue(null, "usage")))
-				throw new IllegalStateException("cannot find <itdOdv usage=\"via\" />");
-			XmlPullUtil.nextStartTagInsideTree(pp, null, "itdOdvName");
-			final String viaState = pp.getAttributeValue(null, "state");
-			if ("list".equals(viaState))
-			{
-				ambiguousVia = new ArrayList<Location>();
-				while (XmlPullUtil.nextStartTagInsideTree(pp, null, "odvNameElem"))
-					ambiguousVia.add(processOdvNameElem(pp));
-			}
-			else if ("identified".equals(viaState))
-			{
-				if (!XmlPullUtil.nextStartTagInsideTree(pp, null, "odvNameElem"))
-					throw new IllegalStateException("cannot find <odvNameElem />");
-				via = processOdvNameElem(pp);
+					if ("origin".equals(usage))
+						from = processOdvNameElem(pp);
+					else if ("via".equals(usage))
+						via = processOdvNameElem(pp);
+					else if ("destination".equals(usage))
+						to = processOdvNameElem(pp);
+					else
+						throw new IllegalStateException("unknown usage: " + usage);
+				}
+				XmlPullUtil.exit(pp, "itdOdvName");
+				XmlPullUtil.exit(pp, "itdOdv");
 			}
 
 			if (ambiguousFrom != null || ambiguousTo != null || ambiguousVia != null)
 				return new QueryConnectionsResult(ambiguousFrom, ambiguousVia, ambiguousTo);
 
-			if (!XmlPullUtil.jumpToStartTag(pp, null, "itdTripDateTime"))
-				throw new IllegalStateException("cannot find <itdTripDateTime />");
-			if (!XmlPullUtil.nextStartTagInsideTree(pp, null, "itdDateTime"))
-				throw new IllegalStateException("cannot find <itdDateTime />");
-			if (!XmlPullUtil.nextStartTagInsideTree(pp, null, "itdDate"))
+			XmlPullUtil.enter(pp, "itdTripDateTime");
+			XmlPullUtil.enter(pp, "itdDateTime");
+			if (!XmlPullUtil.test(pp, "itdDate"))
 				throw new IllegalStateException("cannot find <itdDate />");
 			if (!pp.isEmptyElementTag())
 			{
-				if (!XmlPullUtil.nextStartTagInsideTree(pp, null, "itdMessage"))
+				XmlPullUtil.enter(pp, "itdDate");
+				if (!XmlPullUtil.test(pp, "itdMessage"))
 					throw new IllegalStateException("cannot find <itdMessage />");
 				final String message = pp.nextText();
 				if (message.equals("invalid date"))
 					return new QueryConnectionsResult(Status.INVALID_DATE);
+				XmlPullUtil.exit(pp, "itdDate");
 			}
+			XmlPullUtil.exit(pp, "itdDateTime");
 
 			final Calendar departureTime = new GregorianCalendar(), arrivalTime = new GregorianCalendar(), stopTime = new GregorianCalendar();
 			departureTime.setTimeZone(timeZone());
@@ -1174,6 +1210,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 	protected static final void appendCommonConnectionParams(final StringBuilder uri)
 	{
 		uri.append("&outputFormat=XML");
+		uri.append("&coordListOutputFormat=STRING");
 		uri.append("&coordOutputFormat=WGS84");
 		uri.append("&calcNumberOfTrips=4");
 	}
