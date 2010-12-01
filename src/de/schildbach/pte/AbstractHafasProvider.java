@@ -453,7 +453,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 				XmlPullUtil.exit(pp);
 
 				connections.add(new Connection(id, null, firstDepartureTime, lastArrivalTime, null, null, departure.id, departure.name, arrival.id,
-						arrival.name, parts));
+						arrival.name, parts, null));
 			}
 
 			XmlPullUtil.exit(pp);

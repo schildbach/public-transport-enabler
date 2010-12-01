@@ -273,7 +273,7 @@ public class RmvProvider extends AbstractHafasProvider
 					else
 						line = null;
 					final Connection connection = new Connection(extractConnectionId(link), link, departureTime, arrivalTime, line,
-							line != null ? lineColors(line) : null, 0, from.name, 0, to.name, null);
+							line != null ? lineColors(line) : null, 0, from.name, 0, to.name, null, null);
 					connections.add(connection);
 				}
 				else
@@ -387,7 +387,7 @@ public class RmvProvider extends AbstractHafasProvider
 			}
 
 			return new GetConnectionDetailsResult(currentDate, new Connection(extractConnectionId(uri), uri, firstDepartureTime, lastArrivalTime,
-					null, null, 0, firstDeparture, 0, lastArrival, parts));
+					null, null, 0, firstDeparture, 0, lastArrival, parts, null));
 		}
 		else
 		{

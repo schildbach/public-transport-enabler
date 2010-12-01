@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Currency;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -38,6 +39,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.Departure;
+import de.schildbach.pte.dto.Fare;
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
@@ -1151,8 +1153,25 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 					XmlPullUtil.exit(pp, "itdPartialRouteList");
 
-					connections
-							.add(new Connection(id, uri, firstDepartureTime, lastArrivalTime, null, null, 0, firstDeparture, 0, lastArrival, parts));
+					Fare fare = null;
+					if (XmlPullUtil.test(pp, "itdFare") && !pp.isEmptyElementTag())
+					{
+						XmlPullUtil.enter(pp, "itdFare");
+						if (XmlPullUtil.test(pp, "itdSingleTicket"))
+						{
+							final String net = XmlPullUtil.attr(pp, "net");
+							final Currency currency = Currency.getInstance(XmlPullUtil.attr(pp, "currency"));
+							final float fareAdult = XmlPullUtil.floatAttr(pp, "fareAdult");
+							final float fareChild = XmlPullUtil.floatAttr(pp, "fareChild");
+							final String unitName = XmlPullUtil.attr(pp, "unitName");
+							final int unitsAdult = XmlPullUtil.intAttr(pp, "unitsAdult");
+							final int unitsChild = XmlPullUtil.intAttr(pp, "unitsChild");
+							fare = new Fare(net, currency, unitName, fareAdult, fareChild, unitsAdult, unitsChild);
+						}
+						XmlPullUtil.exit(pp, "itdFare");
+					}
+					connections.add(new Connection(id, uri, firstDepartureTime, lastArrivalTime, null, null, 0, firstDeparture, 0, lastArrival,
+							parts, fare));
 					XmlPullUtil.exit(pp, "itdRoute");
 				}
 

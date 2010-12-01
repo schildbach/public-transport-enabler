@@ -104,7 +104,12 @@ public final class XmlPullUtil
 
 	public static int intAttr(final XmlPullParser pp, final String attrName)
 	{
-		return Integer.parseInt(pp.getAttributeValue(null, attrName));
+		return Integer.parseInt(pp.getAttributeValue(null, attrName).trim());
+	}
+
+	public static float floatAttr(final XmlPullParser pp, final String attrName)
+	{
+		return Float.parseFloat(pp.getAttributeValue(null, attrName).trim());
 	}
 
 	public static void requireAttr(final XmlPullParser pp, final String attrName, final String requiredValue)
