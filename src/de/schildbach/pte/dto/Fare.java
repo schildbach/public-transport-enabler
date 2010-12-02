@@ -25,23 +25,25 @@ import java.util.Currency;
  */
 public final class Fare implements Serializable
 {
-	public final String network;
-	public final Currency currency;
-	public final String unitName;
-	public final float fareAdult;
-	public final float fareChild;
-	public final String unitsAdult;
-	public final String unitsChild;
+	public enum Type
+	{
+		ADULT, CHILD, STUDENT, SENIOR
+	}
 
-	public Fare(final String network, final Currency currency, final String unitName, final float fareAdult, final float fareChild,
-			final String unitsAdult, final String unitsChild)
+	public final String network;
+	public final Type type;
+	public final Currency currency;
+	public final float fare;
+	public final String unitName;
+	public final String units;
+
+	public Fare(final String network, final Type type, final Currency currency, final float fare, final String unitName, final String units)
 	{
 		this.network = network;
+		this.type = type;
 		this.currency = currency;
+		this.fare = fare;
 		this.unitName = unitName;
-		this.fareAdult = fareAdult;
-		this.fareChild = fareChild;
-		this.unitsAdult = unitsAdult;
-		this.unitsChild = unitsChild;
+		this.units = units;
 	}
 }

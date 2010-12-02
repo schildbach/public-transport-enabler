@@ -99,7 +99,7 @@ public final class XmlPullUtil
 
 	public static String attr(final XmlPullParser pp, final String attrName)
 	{
-		return pp.getAttributeValue(null, attrName);
+		return pp.getAttributeValue(null, attrName).trim();
 	}
 
 	public static int intAttr(final XmlPullParser pp, final String attrName)

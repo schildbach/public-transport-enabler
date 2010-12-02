@@ -38,10 +38,11 @@ public final class Connection implements Serializable
 	public final int toId;
 	public final String to;
 	public final List<Part> parts;
-	public final Fare fare;
+	public final List<Fare> fares;
 
 	public Connection(final String id, final String link, final Date departureTime, final Date arrivalTime, final String line,
-			final int[] lineColors, final int fromId, final String from, final int toId, final String to, final List<Part> parts, final Fare fare)
+			final int[] lineColors, final int fromId, final String from, final int toId, final String to, final List<Part> parts,
+			final List<Fare> fares)
 	{
 		this.id = id;
 		this.link = link;
@@ -54,7 +55,7 @@ public final class Connection implements Serializable
 		this.toId = toId;
 		this.to = to;
 		this.parts = parts;
-		this.fare = fare;
+		this.fares = fares;
 	}
 
 	@Override

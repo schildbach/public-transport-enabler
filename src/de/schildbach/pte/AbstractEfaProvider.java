@@ -49,6 +49,7 @@ import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.Station;
 import de.schildbach.pte.dto.Stop;
+import de.schildbach.pte.dto.Fare.Type;
 import de.schildbach.pte.dto.QueryConnectionsResult.Status;
 import de.schildbach.pte.util.Color;
 import de.schildbach.pte.util.ParserUtils;
@@ -1154,25 +1155,45 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 					XmlPullUtil.exit(pp, "itdPartialRouteList");
 
-					Fare fare = null;
+					final List<Fare> fares = new ArrayList<Fare>(2);
 					if (XmlPullUtil.test(pp, "itdFare") && !pp.isEmptyElementTag())
 					{
 						XmlPullUtil.enter(pp, "itdFare");
 						if (XmlPullUtil.test(pp, "itdSingleTicket"))
 						{
 							final String net = XmlPullUtil.attr(pp, "net");
-							final Currency currency = Currency.getInstance(XmlPullUtil.attr(pp, "currency"));
-							final float fareAdult = XmlPullUtil.floatAttr(pp, "fareAdult");
-							final float fareChild = XmlPullUtil.floatAttr(pp, "fareChild");
+							final Currency currency = parseCurrency(XmlPullUtil.attr(pp, "currency"));
+							final String fareAdult = XmlPullUtil.attr(pp, "fareAdult");
+							final String fareChild = XmlPullUtil.attr(pp, "fareChild");
 							final String unitName = XmlPullUtil.attr(pp, "unitName");
 							final String unitsAdult = XmlPullUtil.attr(pp, "unitsAdult");
 							final String unitsChild = XmlPullUtil.attr(pp, "unitsChild");
-							fare = new Fare(net, currency, unitName, fareAdult, fareChild, unitsAdult, unitsChild);
+							if (fareAdult != null && fareAdult.length() > 0)
+								fares.add(new Fare(net, Type.ADULT, currency, Float.parseFloat(fareAdult), unitName, unitsAdult));
+							if (fareChild != null && fareChild.length() > 0)
+								fares.add(new Fare(net, Type.CHILD, currency, Float.parseFloat(fareChild), unitName, unitsChild));
+
+							if (!pp.isEmptyElementTag())
+							{
+								XmlPullUtil.enter(pp, "itdSingleTicket");
+								if (XmlPullUtil.test(pp, "itdGenericTicketList"))
+								{
+									XmlPullUtil.enter(pp, "itdGenericTicketList");
+									while (XmlPullUtil.test(pp, "itdGenericTicketGroup"))
+									{
+										final Fare fare = processItdGenericTicketGroup(pp, net, currency);
+										if (fare != null)
+											fares.add(fare);
+									}
+									XmlPullUtil.exit(pp, "itdGenericTicketList");
+								}
+								XmlPullUtil.exit(pp, "itdSingleTicket");
+							}
 						}
 						XmlPullUtil.exit(pp, "itdFare");
 					}
 					connections.add(new Connection(id, uri, firstDepartureTime, lastArrivalTime, null, null, 0, firstDeparture, 0, lastArrival,
-							parts, fare));
+							parts, fares.isEmpty() ? null : fares));
 					XmlPullUtil.exit(pp, "itdRoute");
 				}
 
@@ -1189,6 +1210,54 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		{
 			throw new RuntimeException(x);
 		}
+	}
+
+	private Fare processItdGenericTicketGroup(final XmlPullParser pp, final String net, final Currency currency) throws XmlPullParserException,
+			IOException
+	{
+		XmlPullUtil.enter(pp, "itdGenericTicketGroup");
+
+		Type type = null;
+		float fare = 0;
+
+		while (XmlPullUtil.test(pp, "itdGenericTicket"))
+		{
+			XmlPullUtil.enter(pp, "itdGenericTicket");
+
+			XmlPullUtil.enter(pp, "ticket");
+			final String key = pp.getText().trim();
+			XmlPullUtil.exit(pp, "ticket");
+
+			String value = null;
+			XmlPullUtil.require(pp, "value");
+			if (!pp.isEmptyElementTag())
+			{
+				XmlPullUtil.enter(pp, "value");
+				value = pp.getText().trim();
+				XmlPullUtil.exit(pp, "value");
+			}
+
+			if (key.equals("FOR_RIDER"))
+				type = Type.valueOf(value.split(" ")[0].toUpperCase());
+			else if (key.equals("PRICE"))
+				fare = Float.parseFloat(value);
+
+			XmlPullUtil.exit(pp, "itdGenericTicket");
+		}
+
+		XmlPullUtil.exit(pp, "itdGenericTicketGroup");
+
+		if (type != null)
+			return new Fare(net, type, currency, fare, null, null);
+		else
+			return null;
+	}
+
+	private Currency parseCurrency(String currencyStr)
+	{
+		if (currencyStr.equals("Dirham"))
+			currencyStr = "AED";
+		return Currency.getInstance(currencyStr);
 	}
 
 	private static final Pattern P_PLATFORM_GLEIS = Pattern.compile("Gleis (\\d+[a-z]?)(?: ([A-Z])\\s*-\\s*([A-Z]))?");
