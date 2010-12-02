@@ -310,14 +310,13 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 					XmlPullUtil.next(pp);
 				while (XmlPullUtil.test(pp, "odvNameElem"))
 				{
-					final int stopId = Integer.parseInt(pp.getAttributeValue(null, "stopID"));
-					XmlPullUtil.enter(pp, "odvNameElem");
-					final String location = normalizeLocationName(pp.getText());
-					XmlPullUtil.exit(pp, "odvNameElem");
-
-					final Station newStation = new Station(stopId, location, 0, 0, 0, null, null);
-					if (!stations.contains(newStation))
-						stations.add(newStation);
+					final Location location = processOdvNameElem(pp);
+					if (location.type == LocationType.STATION)
+					{
+						final Station newStation = new Station(location.id, location.name, location.lat, location.lon, 0, null, null);
+						if (!stations.contains(newStation))
+							stations.add(newStation);
+					}
 				}
 
 				return new NearbyStationsResult(stations);
@@ -558,6 +557,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			if (type.equals("ÖBA")) // Eisenbahn-Betriebsgesellschaft Ochsenhausen
 				return 'R' + str;
 			if (type.equals("MBS")) // Montafonerbahn
+				return 'R' + str;
+			if (type.equals("SES")) // EGP - die Städtebahn GmbH
 				return 'R' + str;
 			if (type.equals("Abellio-Zug")) // Abellio
 				return 'R' + str;
