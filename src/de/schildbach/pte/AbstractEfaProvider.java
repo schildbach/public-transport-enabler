@@ -1165,8 +1165,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 							final float fareAdult = XmlPullUtil.floatAttr(pp, "fareAdult");
 							final float fareChild = XmlPullUtil.floatAttr(pp, "fareChild");
 							final String unitName = XmlPullUtil.attr(pp, "unitName");
-							final int unitsAdult = XmlPullUtil.intAttr(pp, "unitsAdult");
-							final int unitsChild = XmlPullUtil.intAttr(pp, "unitsChild");
+							final String unitsAdult = XmlPullUtil.attr(pp, "unitsAdult");
+							final String unitsChild = XmlPullUtil.attr(pp, "unitsChild");
 							fare = new Fare(net, currency, unitName, fareAdult, fareChild, unitsAdult, unitsChild);
 						}
 						XmlPullUtil.exit(pp, "itdFare");

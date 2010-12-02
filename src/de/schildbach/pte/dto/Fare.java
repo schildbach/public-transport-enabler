@@ -30,11 +30,11 @@ public final class Fare implements Serializable
 	public final String unitName;
 	public final float fareAdult;
 	public final float fareChild;
-	public final int unitsAdult;
-	public final int unitsChild;
+	public final String unitsAdult;
+	public final String unitsChild;
 
 	public Fare(final String network, final Currency currency, final String unitName, final float fareAdult, final float fareChild,
-			final int unitsAdult, final int unitsChild)
+			final String unitsAdult, final String unitsChild)
 	{
 		this.network = network;
 		this.currency = currency;
