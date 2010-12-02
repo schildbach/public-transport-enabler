@@ -1101,8 +1101,12 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 							final String destinationIdStr = pp.getAttributeValue(null, "destID");
 							final int destinationId = destinationIdStr.length() > 0 ? Integer.parseInt(destinationIdStr) : 0;
 							final String destination = normalizeLocationName(pp.getAttributeValue(null, "destination"));
-							final String line = parseLine(pp.getAttributeValue(null, "motType"), pp.getAttributeValue(null, "shortname"), pp
-									.getAttributeValue(null, "name"));
+							String line;
+							if ("AST".equals(pp.getAttributeValue(null, "symbol")))
+								line = "BAST";
+							else
+								line = parseLine(pp.getAttributeValue(null, "motType"), pp.getAttributeValue(null, "shortname"), pp
+										.getAttributeValue(null, "name"));
 
 							XmlPullUtil.enter(pp, "itdMeansOfTransport");
 							XmlPullUtil.exit(pp, "itdMeansOfTransport");
