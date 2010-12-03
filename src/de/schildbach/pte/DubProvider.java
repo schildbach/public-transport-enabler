@@ -19,6 +19,7 @@ package de.schildbach.pte;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.util.ParserUtils;
@@ -30,6 +31,12 @@ public class DubProvider extends AbstractEfaProvider
 {
 	public static final String NETWORK_ID = "wojhati.rta.ae";
 	private final static String API_BASE = "http://wojhati.rta.ae/dub/";
+
+	@Override
+	protected TimeZone timeZone()
+	{
+		return TimeZone.getTimeZone("Asia/Dubai");
+	}
 
 	public boolean hasCapabilities(Capability... capabilities)
 	{
