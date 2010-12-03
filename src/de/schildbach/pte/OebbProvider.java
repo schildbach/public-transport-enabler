@@ -56,7 +56,7 @@ public class OebbProvider extends AbstractHafasProvider
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
 		for (final Capability capability : capabilities)
-			if (capability == Capability.DEPARTURES || capability == Capability.CONNECTIONS)
+			if (capability == Capability.DEPARTURES)
 				return true;
 
 		return false;
