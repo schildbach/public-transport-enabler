@@ -156,9 +156,7 @@ public class OebbProvider extends AbstractHafasProvider
 		final StringBuilder uri = new StringBuilder();
 
 		uri.append("queryPageDisplayed=yes");
-		uri.append("&start.x=0");
-		uri.append("&start.y=0");
-		uri.append("&start=Suchen");
+		uri.append("&ignoreTypeCheck=yes");
 		uri.append("&REQ0JourneyStopsS0ID=").append(ParserUtils.urlEncode(locationId(from)));
 		if (via != null)
 			uri.append("&REQ0JourneyStops1.0ID=").append(ParserUtils.urlEncode(locationId(via)));
@@ -171,6 +169,7 @@ public class OebbProvider extends AbstractHafasProvider
 		uri.append("&REQ0JourneyDep_Foot_speed=").append(WALKSPEED_MAP.get(walkSpeed));
 		uri.append("&existBikeEverywhere=yes");
 		uri.append("&existHafasAttrInc=yes");
+		uri.append("&start=Verbindungen+suchen");
 
 		for (final char p : products.toCharArray())
 		{
