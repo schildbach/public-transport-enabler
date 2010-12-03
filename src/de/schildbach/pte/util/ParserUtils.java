@@ -307,6 +307,13 @@ public final class ParserUtils
 			System.out.println("group " + i + ":" + (m.group(i) != null ? "'" + m.group(i) + "'" : "null"));
 	}
 
+	public static void printXml(final CharSequence xml)
+	{
+		final Matcher m = Pattern.compile("(<.{80}.*?>)\\s*").matcher(xml);
+		while (m.find())
+			System.out.println(m.group(1));
+	}
+
 	public static String urlEncode(final String str)
 	{
 		try

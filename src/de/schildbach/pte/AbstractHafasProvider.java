@@ -244,7 +244,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			throws IOException
 	{
 		// System.out.println(request);
-		// System.out.println(ParserUtils.scrape(apiUri, true, wrap(request), null, false));
+		// ParserUtils.printXml(ParserUtils.scrape(apiUri, true, wrap(request), null, false));
 
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
 
@@ -358,9 +358,9 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 						String longCategory = null;
 						while (XmlPullUtil.test(pp, "JourneyAttribute"))
 						{
-							XmlPullUtil.enter(pp);
+							XmlPullUtil.enter(pp, "JourneyAttribute");
 							XmlPullUtil.require(pp, "Attribute");
-							final String attrName = XmlPullUtil.attr(pp, "type");
+							final String attrName = pp.getAttributeValue(null, "type");
 							XmlPullUtil.enter(pp);
 							final Map<String, String> attributeVariants = parseAttributeVariants(pp);
 							XmlPullUtil.exit(pp);
