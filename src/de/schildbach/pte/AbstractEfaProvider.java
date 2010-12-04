@@ -352,10 +352,30 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 	private static final Pattern P_LINE_S = Pattern.compile("^(?:%)?(S\\d+)");
 	private static final Pattern P_LINE_NUMBER = Pattern.compile("\\d+");
 
-	protected String parseLine(final String mot, final String name, final String longName)
+	protected String parseLine(final String mot, final String name, final String longName, final String noTrainName)
 	{
-		if (mot == null || name == null || longName == null)
-			throw new IllegalStateException("cannot normalize mot '" + mot + "' name '" + name + "' long '" + longName + "'");
+		if (mot == null)
+		{
+			if (noTrainName != null)
+			{
+				final String str = name != null ? name : "";
+				if (noTrainName.equals("S-Bahn"))
+					return 'S' + str;
+				if (noTrainName.equals("Citybus"))
+					return 'B' + str;
+				if (noTrainName.equals("Regionalbus"))
+					return 'B' + str;
+				if (noTrainName.equals("ÖBB-Postbus"))
+					return 'B' + str;
+				if (noTrainName.equals("Autobus"))
+					return 'B' + str;
+				if (noTrainName.equals("Anrufsammeltaxi"))
+					return 'B' + str;
+			}
+
+			throw new IllegalStateException("cannot normalize mot '" + mot + "' name '" + name + "' long '" + longName + "' noTrainName '"
+					+ noTrainName + "'");
+		}
 
 		final int t = Integer.parseInt(mot);
 
@@ -647,7 +667,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			if (P_LINE_NUMBER.matcher(type).matches())
 				return "?";
 
-			throw new IllegalArgumentException("cannot normalize: long '" + longName + "' type '" + type + "' str '" + str + "'");
+			throw new IllegalStateException("cannot normalize mot '" + mot + "' name '" + name + "' long '" + longName + "' noTrainName '"
+					+ noTrainName + "' type '" + type + "' str '" + str + "'");
 		}
 
 		if (t == 1)
@@ -682,7 +703,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		if (t == 11 || t == -1)
 			return '?' + name;
 
-		throw new IllegalStateException("cannot normalize mot '" + mot + "' name '" + name + "' long '" + longName + "'");
+		throw new IllegalStateException("cannot normalize mot '" + mot + "' name '" + name + "' long '" + longName + "' noTrainName '" + noTrainName
+				+ "'");
 	}
 
 	protected abstract String departuresQueryUri(String stationId, int maxDepartures);
@@ -730,24 +752,14 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 					XmlPullUtil.enter(pp, "itdServingLines");
 					while (XmlPullUtil.test(pp, "itdServingLine"))
 					{
-						try
-						{
-							final String lineStr = parseLine(pp.getAttributeValue(null, "motType"), pp.getAttributeValue(null, "number"), pp
-									.getAttributeValue(null, "number"));
-							final String destination = normalizeLocationName(pp.getAttributeValue(null, "direction"));
-							final String destinationIdStr = pp.getAttributeValue(null, "destID");
-							final int destinationId = destinationIdStr.length() > 0 ? Integer.parseInt(destinationIdStr) : 0;
-							final Line line = new Line(lineStr, lineColors(lineStr), destinationId, destination);
-							if (!lines.contains(line))
-								lines.add(line);
-						}
-						catch (final IllegalArgumentException x)
-						{
-							// swallow for now
-						}
+						final String destination = normalizeLocationName(pp.getAttributeValue(null, "direction"));
+						final String destinationIdStr = pp.getAttributeValue(null, "destID");
+						final int destinationId = destinationIdStr.length() > 0 ? Integer.parseInt(destinationIdStr) : 0;
 
-						XmlPullUtil.enter(pp);
-						XmlPullUtil.exit(pp);
+						final String lineStr = processItdServingLine(pp);
+						final Line line = new Line(lineStr, lineColors(lineStr), destinationId, destination);
+						if (!lines.contains(line))
+							lines.add(line);
 					}
 					XmlPullUtil.exit(pp, "itdServingLines");
 				}
@@ -783,11 +795,11 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 								XmlPullUtil.next(pp);
 
 							XmlPullUtil.require(pp, "itdServingLine");
-							final String line = parseLine(pp.getAttributeValue(null, "motType"), pp.getAttributeValue(null, "number"), pp
-									.getAttributeValue(null, "number"));
 							final boolean isRealtime = pp.getAttributeValue(null, "realtime").equals("1");
 							final String destination = normalizeLocationName(pp.getAttributeValue(null, "direction"));
 							final int destinationId = Integer.parseInt(pp.getAttributeValue(null, "destID"));
+
+							final String line = processItdServingLine(pp);
 
 							if (isRealtime && !predictedDepartureTime.isSet(Calendar.HOUR_OF_DAY))
 								predictedDepartureTime.setTimeInMillis(plannedDepartureTime.getTimeInMillis());
@@ -852,6 +864,21 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(pp.getAttributeValue(null, "hour")));
 		calendar.set(Calendar.MINUTE, Integer.parseInt(pp.getAttributeValue(null, "minute")));
 		XmlPullUtil.next(pp);
+	}
+
+	private String processItdServingLine(final XmlPullParser pp) throws XmlPullParserException, IOException
+	{
+		XmlPullUtil.require(pp, "itdServingLine");
+		final String motType = pp.getAttributeValue(null, "motType");
+		final String number = pp.getAttributeValue(null, "number");
+
+		XmlPullUtil.enter(pp, "itdServingLine");
+		String noTrainName = null;
+		if (XmlPullUtil.test(pp, "itdNoTrain"))
+			noTrainName = pp.getAttributeValue(null, "name");
+		XmlPullUtil.exit(pp, "itdServingLine");
+
+		return parseLine(motType, number, number, noTrainName);
 	}
 
 	private static final Pattern P_STATION_NAME_WHITESPACE = Pattern.compile("\\s+");
@@ -1106,7 +1133,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 								line = "BAST";
 							else
 								line = parseLine(pp.getAttributeValue(null, "motType"), pp.getAttributeValue(null, "shortname"), pp
-										.getAttributeValue(null, "name"));
+										.getAttributeValue(null, "name"), null);
 
 							XmlPullUtil.enter(pp, "itdMeansOfTransport");
 							XmlPullUtil.exit(pp, "itdMeansOfTransport");
