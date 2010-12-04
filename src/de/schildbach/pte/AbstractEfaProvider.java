@@ -361,6 +361,12 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				final String str = name != null ? name : "";
 				if (noTrainName.equals("S-Bahn"))
 					return 'S' + str;
+				if (noTrainName.equals("U-Bahn"))
+					return 'U' + str;
+				if (noTrainName.equals("Straßenbahn"))
+					return 'T' + str;
+				if (noTrainName.equals("Badner Bahn"))
+					return 'T' + str;
 				if (noTrainName.equals("Citybus"))
 					return 'B' + str;
 				if (noTrainName.equals("Regionalbus"))
@@ -369,7 +375,15 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 					return 'B' + str;
 				if (noTrainName.equals("Autobus"))
 					return 'B' + str;
+				if (noTrainName.equals("Discobus"))
+					return 'B' + str;
+				if (noTrainName.equals("Nachtbus"))
+					return 'B' + str;
 				if (noTrainName.equals("Anrufsammeltaxi"))
+					return 'B' + str;
+				if (noTrainName.equals("Ersatzverkehr"))
+					return 'B' + str;
+				if (noTrainName.equals("Vienna Airport Lines"))
 					return 'B' + str;
 			}
 
