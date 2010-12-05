@@ -1278,7 +1278,9 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			if (!pp.isEmptyElementTag())
 			{
 				XmlPullUtil.enter(pp, "value");
-				value = pp.getText().trim();
+				value = pp.getText();
+				if (value != null)
+					value = value.trim();
 				XmlPullUtil.exit(pp, "value");
 			}
 
