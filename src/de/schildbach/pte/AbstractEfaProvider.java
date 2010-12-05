@@ -595,6 +595,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'R' + str;
 			if (type.equals("SES")) // EGP - die Städtebahn GmbH
 				return 'R' + str;
+			if (type.equals("MEL")) // Museums-Eisenbahn Losheim
+				return 'R' + str;
 			if (type.equals("Abellio-Zug")) // Abellio
 				return 'R' + str;
 			if (type.equals("KBS")) // Kursbuchstrecke
