@@ -314,6 +314,13 @@ public final class ParserUtils
 			System.out.println(m.group(1));
 	}
 
+	public static void printPlain(final CharSequence plain)
+	{
+		final Matcher m = Pattern.compile("(.{1,80})").matcher(plain);
+		while (m.find())
+			System.out.println(m.group(1));
+	}
+
 	public static String urlEncode(final String str)
 	{
 		try
