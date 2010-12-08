@@ -437,9 +437,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 						}
 						else
 						{
-							parts
-									.add(new Connection.Footway(min, sectionDeparture.id, sectionDeparture.name, sectionArrival.id,
-											sectionArrival.name));
+							parts.add(new Connection.Footway(min, sectionDeparture.id, sectionDeparture.name, sectionArrival.id, sectionArrival.name));
 						}
 					}
 
@@ -651,6 +649,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return "S" + normalizedType;
 		if (P_LINE_SN.matcher(normalizedType).matches()) // Nacht-S-Bahn
 			return "S" + normalizedType;
+		if ("SPR".equals(normalizedType)) // Sprinter, Niederlande
+			return "S" + normalizedName;
 
 		if ("Met".equals(normalizedType)) // Metro
 			return "U" + normalizedName;
