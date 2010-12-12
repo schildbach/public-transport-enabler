@@ -81,8 +81,7 @@ public final class BahnProvider extends AbstractHafasProvider
 		{
 			final Matcher mMulti = P_MULTI_NAME.matcher(page);
 			while (mMulti.find())
-				results
-						.add(new Location(LocationType.STATION, Integer.parseInt(mMulti.group(1)), 0, 0, ParserUtils.resolveEntities(mMulti.group(2))));
+				results.add(new Location(LocationType.STATION, Integer.parseInt(mMulti.group(1)), 0, 0, ParserUtils.resolveEntities(mMulti.group(2))));
 		}
 
 		return results;
@@ -488,8 +487,8 @@ public final class BahnProvider extends AbstractHafasProvider
 			{
 				if (mDepFine.group(8) == null)
 				{
-					final Date plannedTime = ParserUtils.joinDateTime(ParserUtils.parseDate(mDepFine.group(2)), ParserUtils.parseTime(mDepFine
-							.group(1)));
+					final Date plannedTime = ParserUtils.joinDateTime(ParserUtils.parseDate(mDepFine.group(2)),
+							ParserUtils.parseTime(mDepFine.group(1)));
 
 					Date predictedTime = null;
 					if (mDepFine.group(3) != null)
@@ -813,6 +812,8 @@ public final class BahnProvider extends AbstractHafasProvider
 			if (type.equals("Schw")) // Schwebebahn, gilt als "Straßenbahn besonderer Bauart"
 				return "TSchw" + number;
 
+			if (type.equals("BUS"))
+				return "BBUS" + number;
 			if (type.startsWith("Bus"))
 				return "B" + type.substring(3) + number;
 			if (type.equals("O")) // Salzburg
@@ -851,9 +852,9 @@ public final class BahnProvider extends AbstractHafasProvider
 			if (type.equals("D"))
 				return "?D" + number;
 
-			throw new IllegalStateException("cannot normalize type " + type + " number " + number + " line " + line);
+			throw new IllegalStateException("cannot normalize type '" + type + "' number '" + number + "' line '" + line + "'");
 		}
 
-		throw new IllegalStateException("cannot normalize line " + line);
+		throw new IllegalStateException("cannot normalize line '" + line + "'");
 	}
 }
