@@ -294,7 +294,7 @@ public final class BahnProvider extends AbstractHafasProvider
 	}
 
 	private static final Pattern P_CONNECTION_DETAILS_HEAD = Pattern.compile(".*?" //
-			+ "<span class=\"bold\">Verbindungsdetails</span>.*", Pattern.DOTALL);
+			+ "<span class=\"bold\">Verbindungsdetails</span>(.*?)<div class=\"rline\"></div>.*?", Pattern.DOTALL);
 	private static final Pattern P_CONNECTION_DETAILS_COARSE = Pattern.compile("<div class=\"haupt rline\">\n(.+?>\n)</div>", Pattern.DOTALL);
 	static final Pattern P_CONNECTION_DETAILS_FINE = Pattern.compile("<span class=\"bold\">\\s*(.+?)\\s*</span>.*?" // departure
 			+ "(?:" //
@@ -340,7 +340,7 @@ public final class BahnProvider extends AbstractHafasProvider
 			String lastArrival = null;
 			Connection.Trip lastTrip = null;
 
-			final Matcher mDetCoarse = P_CONNECTION_DETAILS_COARSE.matcher(page);
+			final Matcher mDetCoarse = P_CONNECTION_DETAILS_COARSE.matcher(mHead.group(1));
 			while (mDetCoarse.find())
 			{
 				final String section = mDetCoarse.group(1);
@@ -421,7 +421,7 @@ public final class BahnProvider extends AbstractHafasProvider
 
 			// verify
 			if (firstDepartureTime == null || lastArrivalTime == null)
-				throw new IllegalStateException("could not parse all parts of:\n" + page + "\n" + parts);
+				throw new IllegalStateException("could not parse all parts of:\n" + mHead.group(1) + "\n" + parts);
 
 			return new GetConnectionDetailsResult(new Date(), new Connection(AbstractHafasProvider.extractConnectionId(uri), uri, firstDepartureTime,
 					lastArrivalTime, null, null, 0, firstDeparture, 0, lastArrival, parts, null));
