@@ -137,7 +137,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		InputStream is = null;
 		try
 		{
-			is = ParserUtils.scrapeInputStream(apiUri, wrap(request));
+			is = ParserUtils.scrapeInputStream(apiUri, wrap(request), 3);
 
 			final List<Location> results = new ArrayList<Location>();
 
@@ -252,7 +252,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 		try
 		{
-			is = ParserUtils.scrapeInputStream(apiUri, wrap(request));
+			is = ParserUtils.scrapeInputStream(apiUri, wrap(request), 3);
 
 			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
 			final XmlPullParser pp = factory.newPullParser();
