@@ -593,7 +593,13 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'R' + str;
 			if (type.equals("MBS")) // Montafonerbahn
 				return 'R' + str;
-			if (type.equals("SES")) // EGP - die Städtebahn GmbH
+			if (type.equals("EGP")) // EGP - die Städtebahn GmbH
+				return 'R' + str;
+			if (type.equals("agi")) // agilis
+				return 'R' + str;
+			if (type.equals("TLX")) // Trilex (Vogtlandbahn)
+				return 'R' + str;
+			if (type.equals("BE")) // Grensland-Express, Niederlande
 				return 'R' + str;
 			if (type.equals("MEL")) // Museums-Eisenbahn Losheim
 				return 'R' + str;
@@ -794,8 +800,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 					{
 						if (Integer.parseInt(pp.getAttributeValue(null, "stopID")) == locationId)
 						{
-							final String position = normalizePlatform(pp.getAttributeValue(null, "platform"), pp.getAttributeValue(null,
-									"platformName"));
+							final String position = normalizePlatform(pp.getAttributeValue(null, "platform"),
+									pp.getAttributeValue(null, "platformName"));
 
 							XmlPullUtil.enter(pp, "itdDeparture");
 
@@ -1085,8 +1091,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 						final String departure = normalizeLocationName(pp.getAttributeValue(null, "name"));
 						if (firstDeparture == null)
 							firstDeparture = departure;
-						final String departurePosition = normalizePlatform(pp.getAttributeValue(null, "platform"), pp.getAttributeValue(null,
-								"platformName"));
+						final String departurePosition = normalizePlatform(pp.getAttributeValue(null, "platform"),
+								pp.getAttributeValue(null, "platformName"));
 						XmlPullUtil.enter(pp, "itdPoint");
 						if (XmlPullUtil.test(pp, "itdMapItemList"))
 							XmlPullUtil.next(pp);
@@ -1102,8 +1108,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 						final int arrivalId = Integer.parseInt(pp.getAttributeValue(null, "stopID"));
 						final String arrival = normalizeLocationName(pp.getAttributeValue(null, "name"));
 						lastArrival = arrival;
-						final String arrivalPosition = normalizePlatform(pp.getAttributeValue(null, "platform"), pp.getAttributeValue(null,
-								"platformName"));
+						final String arrivalPosition = normalizePlatform(pp.getAttributeValue(null, "platform"),
+								pp.getAttributeValue(null, "platformName"));
 						XmlPullUtil.enter(pp, "itdPoint");
 						if (XmlPullUtil.test(pp, "itdMapItemList"))
 							XmlPullUtil.next(pp);
@@ -1148,8 +1154,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 							if ("AST".equals(pp.getAttributeValue(null, "symbol")))
 								line = "BAST";
 							else
-								line = parseLine(pp.getAttributeValue(null, "motType"), pp.getAttributeValue(null, "shortname"), pp
-										.getAttributeValue(null, "name"), null);
+								line = parseLine(pp.getAttributeValue(null, "motType"), pp.getAttributeValue(null, "shortname"),
+										pp.getAttributeValue(null, "name"), null);
 
 							XmlPullUtil.enter(pp, "itdMeansOfTransport");
 							XmlPullUtil.exit(pp, "itdMeansOfTransport");
@@ -1172,8 +1178,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 								{
 									final int stopId = Integer.parseInt(pp.getAttributeValue(null, "stopID"));
 									final String stopName = normalizeLocationName(pp.getAttributeValue(null, "name"));
-									final String stopPosition = normalizePlatform(pp.getAttributeValue(null, "platform"), pp.getAttributeValue(null,
-											"platformName"));
+									final String stopPosition = normalizePlatform(pp.getAttributeValue(null, "platform"),
+											pp.getAttributeValue(null, "platformName"));
 									XmlPullUtil.enter(pp, "itdPoint");
 									XmlPullUtil.require(pp, "itdDateTime");
 									processItdDateTime(pp, stopTime);
@@ -1358,8 +1364,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		if ((location.type == LocationType.POI || location.type == LocationType.ADDRESS) && location.lat != 0 && location.lon != 0)
 		{
 			uri.append("&type_").append(paramSuffix).append("=coord");
-			uri.append("&name_").append(paramSuffix).append("=").append(
-					String.format(Locale.ENGLISH, "%.6f:%.6f", location.lon / 1E6, location.lat / 1E6)).append(":WGS84");
+			uri.append("&name_").append(paramSuffix).append("=")
+					.append(String.format(Locale.ENGLISH, "%.6f:%.6f", location.lon / 1E6, location.lat / 1E6)).append(":WGS84");
 		}
 		else
 		{
