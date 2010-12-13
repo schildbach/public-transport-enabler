@@ -167,33 +167,47 @@ public final class ParserUtils
 
 	public static final InputStream scrapeInputStream(final String url) throws IOException
 	{
-		return scrapeInputStream(url, null);
+		return scrapeInputStream(url, null, 3);
 	}
 
-	public static final InputStream scrapeInputStream(final String url, final String postRequest) throws IOException
+	public static final InputStream scrapeInputStream(final String url, final String postRequest, int tries) throws IOException
 	{
-		final HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-
-		connection.setDoInput(true);
-		connection.setDoOutput(postRequest != null);
-		connection.setConnectTimeout(SCRAPE_CONNECT_TIMEOUT);
-		connection.setReadTimeout(SCRAPE_READ_TIMEOUT);
-		connection.addRequestProperty("User-Agent", SCRAPE_USER_AGENT);
-		// workaround to disable Vodafone compression
-		connection.addRequestProperty("Cache-Control", "no-cache");
-
-		if (postRequest != null)
+		while (true)
 		{
-			connection.setRequestMethod("POST");
-			connection.addRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-			connection.addRequestProperty("Content-Length", Integer.toString(postRequest.length()));
+			final HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
 
-			final Writer writer = new OutputStreamWriter(connection.getOutputStream(), SCRAPE_DEFAULT_ENCODING);
-			writer.write(postRequest);
-			writer.close();
+			connection.setDoInput(true);
+			connection.setDoOutput(postRequest != null);
+			connection.setConnectTimeout(SCRAPE_CONNECT_TIMEOUT);
+			connection.setReadTimeout(SCRAPE_READ_TIMEOUT);
+			connection.addRequestProperty("User-Agent", SCRAPE_USER_AGENT);
+			// workaround to disable Vodafone compression
+			connection.addRequestProperty("Cache-Control", "no-cache");
+
+			if (postRequest != null)
+			{
+				connection.setRequestMethod("POST");
+				connection.addRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+				connection.addRequestProperty("Content-Length", Integer.toString(postRequest.length()));
+
+				final Writer writer = new OutputStreamWriter(connection.getOutputStream(), SCRAPE_DEFAULT_ENCODING);
+				writer.write(postRequest);
+				writer.close();
+			}
+
+			if (connection.getContentType() != null)
+			{
+				return connection.getInputStream();
+			}
+			else
+			{
+				final String message = "got page without content type";
+				if (tries-- > 0)
+					System.out.println(message + ", retrying...");
+				else
+					throw new IOException(message + ": " + url);
+			}
 		}
-
-		return connection.getInputStream();
 	}
 
 	private static final Pattern P_ENTITY = Pattern.compile("&(?:#(x[\\da-f]+|\\d+)|(amp|quot|apos));");
