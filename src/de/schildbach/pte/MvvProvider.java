@@ -17,21 +17,13 @@
 
 package de.schildbach.pte;
 
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import de.schildbach.pte.dto.Location;
-import de.schildbach.pte.dto.NearbyStationsResult;
-import de.schildbach.pte.dto.Station;
 import de.schildbach.pte.util.Color;
 import de.schildbach.pte.util.ParserUtils;
 
@@ -45,12 +37,11 @@ public class MvvProvider extends AbstractEfaProvider
 
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
-		// TODO remove
 		for (final Capability capability : capabilities)
-			if (capability == Capability.NEARBY_STATIONS)
-				return false;
+			if (capability == Capability.DEPARTURES || capability == Capability.CONNECTIONS)
+				return true;
 
-		return true;
+		return false;
 	}
 
 	private static final String AUTOCOMPLETE_URI = API_BASE
@@ -62,67 +53,20 @@ public class MvvProvider extends AbstractEfaProvider
 		return String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), "ISO-8859-1"));
 	}
 
-	private static final String NEARBY_LATLON_URI = "http://efa.mvv-muenchen.de/ultralite/XML_DM_REQUEST"
-			+ "?coordOutputFormat=WGS84&type_dm=coord&name_dm=%2.6f:%2.6f:WGS84&mode=direct";
-
 	@Override
 	protected String nearbyLatLonUri(final int lat, final int lon)
 	{
-		return String.format(Locale.ENGLISH, NEARBY_LATLON_URI, latLonToDouble(lon), latLonToDouble(lat));
+		return null;
 	}
 
-	private static final String NEARBY_STATION_URI = "http://efa.mvv-muenchen.de/ultralite/XML_DM_REQUEST"
-			+ "?coordOutputFormat=WGS84&type_dm=stop&name_dm=%s&mode=direct";
+	private static final String NEARBY_STATION_URI = API_BASE
+			+ "XSLT_DM_REQUEST"
+			+ "?outputFormat=XML&coordOutputFormat=WGS84&name_dm=%s&type_dm=stop&itOptionsActive=1&ptOptionsActive=1&useProxFootSearch=1&mergeDep=1&useAllStops=1&mode=direct";
 
 	@Override
 	protected String nearbyStationUri(final String stationId)
 	{
-		return String.format(NEARBY_STATION_URI, stationId);
-	}
-
-	private static final Pattern P_NEARBY_COARSE = Pattern.compile("<dp>(.*?)</dp>");
-	private static final Pattern P_NEARBY_FINE = Pattern.compile(".*?<n>(.*?)</n>.*?<r>.*?<id>(.*?)</id>.*?</r>.*?(?:<c>(\\d+),(\\d+)</c>.*?)?");
-
-	@Override
-	public NearbyStationsResult nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
-			throws IOException
-	{
-		String uri;
-		if (lat != 0 || lon != 0)
-			uri = nearbyLatLonUri(lat, lon);
-		else if (stationId != null)
-			uri = nearbyStationUri(stationId);
-		else
-			throw new IllegalArgumentException("at least one of stationId or lat/lon must be given");
-
-		final CharSequence page = ParserUtils.scrape(uri);
-
-		final List<Station> stations = new ArrayList<Station>();
-
-		final Matcher mNearbyCoarse = P_NEARBY_COARSE.matcher(page);
-		while (mNearbyCoarse.find())
-		{
-			final Matcher mNearbyFine = P_NEARBY_FINE.matcher(mNearbyCoarse.group(1));
-			if (mNearbyFine.matches())
-			{
-				final String sName = mNearbyFine.group(1).trim();
-				final int sId = Integer.parseInt(mNearbyFine.group(2));
-				final int sLon = mNearbyFine.group(3) != null ? Integer.parseInt(mNearbyFine.group(3)) : 0;
-				final int sLat = mNearbyFine.group(4) != null ? Integer.parseInt(mNearbyFine.group(4)) : 0;
-
-				final Station station = new Station(sId, sName, sLat, sLon, 0, null, null);
-				stations.add(station);
-			}
-			else
-			{
-				throw new IllegalArgumentException("cannot parse '" + mNearbyCoarse.group(1) + "' on " + uri);
-			}
-		}
-
-		if (maxStations == 0 || maxStations >= stations.size())
-			return new NearbyStationsResult(stations);
-		else
-			return new NearbyStationsResult(stations.subList(0, maxStations));
+		return String.format(NEARBY_STATION_URI, ParserUtils.urlEncode(stationId));
 	}
 
 	@Override
