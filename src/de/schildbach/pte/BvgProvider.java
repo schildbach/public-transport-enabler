@@ -42,6 +42,7 @@ import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryDeparturesResult.Status;
+import de.schildbach.pte.dto.Station;
 import de.schildbach.pte.exception.SessionExpiredException;
 import de.schildbach.pte.util.Color;
 import de.schildbach.pte.util.ParserUtils;
@@ -49,7 +50,7 @@ import de.schildbach.pte.util.ParserUtils;
 /**
  * @author Andreas Schildbach
  */
-public final class BvgProvider implements NetworkProvider
+public final class BvgProvider extends AbstractHafasProvider
 {
 	public static final String NETWORK_ID = "mobil.bvg.de";
 
@@ -57,6 +58,12 @@ public final class BvgProvider implements NetworkProvider
 	private static final long PARSER_DAY_ROLLDOWN_THRESHOLD_MS = 6 * 60 * 60 * 1000;
 
 	private static final String BVG_BASE_URL = "http://mobil.bvg.de";
+	private static final String API_BASE = "http://mobil.bvg.de/Fahrinfo/bin/";
+
+	public BvgProvider()
+	{
+		super(null, null);
+	}
 
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
@@ -72,6 +79,7 @@ public final class BvgProvider implements NetworkProvider
 	private static final Pattern P_MULTI_NAME = Pattern.compile("<a href=\\\"/Fahrinfo/bin/stboard\\.bin/dox.*?input=(\\d+)&.*?\">\\s*(.*?)\\s*</a>",
 			Pattern.DOTALL);
 
+	@Override
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
 		final List<Location> results = new ArrayList<Location>();
@@ -93,10 +101,72 @@ public final class BvgProvider implements NetworkProvider
 		return results;
 	}
 
+	private final String NEARBY_URI = API_BASE + "stboard.bin/dn?distance=50&near&input=%s";
+
+	@Override
+	protected String nearbyStationUri(final String stationId)
+	{
+		return String.format(NEARBY_URI, ParserUtils.urlEncode(stationId));
+	}
+
+	private final static Pattern P_NEARBY_OWN = Pattern
+			.compile("/Stadtplan/index.*?location=(\\d+),HST,WGS84,(-?\\d+\\.\\d+),(-?\\d+\\.\\d+)&amp;label=([^\"]*)\"");
+	private final static Pattern P_NEARBY_PAGE = Pattern.compile("<table class=\"ivuTableOverview\".*?<tbody>(.*?)</tbody>", Pattern.DOTALL);
+	private final static Pattern P_NEARBY_COARSE = Pattern.compile("<tr>(.*?)</tr>", Pattern.DOTALL);
+	private final static Pattern P_NEARBY_FINE_LOCATION = Pattern.compile("input=(\\d+)&[^\"]*\">([^<]*)<");
+
+	@Override
 	public NearbyStationsResult nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
 			throws IOException
 	{
-		throw new UnsupportedOperationException();
+		if (stationId == null)
+			throw new IllegalArgumentException("stationId must be given");
+
+		final List<Station> stations = new ArrayList<Station>();
+
+		final String uri = nearbyStationUri(stationId);
+		final CharSequence page = ParserUtils.scrape(uri);
+
+		final Matcher mOwn = P_NEARBY_OWN.matcher(page);
+		if (mOwn.find())
+		{
+			final int parsedId = Integer.parseInt(mOwn.group(1));
+			final int parsedLon = (int) (Float.parseFloat(mOwn.group(2)) * 1E6);
+			final int parsedLat = (int) (Float.parseFloat(mOwn.group(3)) * 1E6);
+			final String parsedName = ParserUtils.urlDecode(mOwn.group(4), "ISO-8859-1");
+			stations.add(new Station(parsedId, parsedName, parsedLat, parsedLon, 0, null, null));
+		}
+
+		final Matcher mPage = P_NEARBY_PAGE.matcher(page);
+		if (mPage.find())
+		{
+			final Matcher mCoarse = P_NEARBY_COARSE.matcher(mPage.group(1));
+
+			while (mCoarse.find())
+			{
+				final Matcher mFineLocation = P_NEARBY_FINE_LOCATION.matcher(mCoarse.group(1));
+
+				if (mFineLocation.find())
+				{
+					final int parsedId = Integer.parseInt(mFineLocation.group(1));
+					final String parsedName = ParserUtils.resolveEntities(mFineLocation.group(2));
+					stations.add(new Station(parsedId, parsedName, 0, 0, 0, null, null));
+				}
+				else
+				{
+					throw new IllegalArgumentException("cannot parse '" + mCoarse.group(1) + "' on " + uri);
+				}
+			}
+
+			if (maxStations == 0 || maxStations >= stations.size())
+				return new NearbyStationsResult(stations);
+			else
+				return new NearbyStationsResult(stations.subList(0, maxStations));
+		}
+		else
+		{
+			throw new IllegalArgumentException("cannot parse '" + page + "' on " + uri);
+		}
 	}
 
 	public static final String STATION_URL_CONNECTION = "http://mobil.bvg.de/Fahrinfo/bin/query.bin/dox";
@@ -183,6 +253,7 @@ public final class BvgProvider implements NetworkProvider
 	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern
 			.compile("(zu dicht beieinander|mehrfach vorhanden oder identisch)|(keine geeigneten Haltestellen)|(keine Verbindung gefunden)|(derzeit nur Ausk&#252;nfte vom)|(zwischenzeitlich nicht mehr gespeichert)");
 
+	@Override
 	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
 			final String products, final WalkSpeed walkSpeed) throws IOException
 	{
@@ -216,6 +287,7 @@ public final class BvgProvider implements NetworkProvider
 		}
 	}
 
+	@Override
 	public QueryConnectionsResult queryMoreConnections(final String uri) throws IOException
 	{
 		final CharSequence page = ParserUtils.scrape(uri);
@@ -321,6 +393,7 @@ public final class BvgProvider implements NetworkProvider
 			+ "<strong>(.*?)</strong>|<a href=\"/Stadtplan.*?WGS84,(\\d+),(\\d+)&.*?\">([^<]*)</a>|<strong>([^<]*)</strong>).*?" // arrival
 			+ ").*?", Pattern.DOTALL);
 
+	@Override
 	public GetConnectionDetailsResult getConnectionDetails(final String uri) throws IOException
 	{
 		final CharSequence page = ParserUtils.scrape(uri);
@@ -648,15 +721,16 @@ public final class BvgProvider implements NetworkProvider
 		throw new IllegalStateException("cannot normalize line " + line);
 	}
 
+	@Override
+	protected char normalizeType(final String type)
+	{
+		throw new UnsupportedOperationException();
+	}
+
 	private static final Map<String, int[]> LINES = new HashMap<String, int[]>();
 
 	static
 	{
-		LINES.put("I", new int[] { Color.WHITE, Color.RED, Color.RED }); // generic
-		LINES.put("R", new int[] { Color.WHITE, Color.RED, Color.RED }); // generic
-		LINES.put("S", new int[] { Color.parseColor("#006e34"), Color.WHITE }); // generic
-		LINES.put("U", new int[] { Color.parseColor("#003090"), Color.WHITE }); // generic
-
 		LINES.put("SS1", new int[] { Color.rgb(221, 77, 174), Color.WHITE });
 		LINES.put("SS2", new int[] { Color.rgb(16, 132, 73), Color.WHITE });
 		LINES.put("SS25", new int[] { Color.rgb(16, 132, 73), Color.WHITE });
@@ -764,10 +838,13 @@ public final class BvgProvider implements NetworkProvider
 		LINES.put("RRB93", new int[] { Color.parseColor("#A7653F"), Color.WHITE });
 	}
 
+	@Override
 	public int[] lineColors(final String line)
 	{
-		if (line.length() == 0)
-			return null;
-		return LINES.get(line);
+		final int[] lineColors = LINES.get(line);
+		if (lineColors != null)
+			return lineColors;
+		else
+			return super.lineColors(line);
 	}
 }

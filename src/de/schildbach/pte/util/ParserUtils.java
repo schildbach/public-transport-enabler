@@ -27,6 +27,7 @@ import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -353,6 +354,18 @@ public final class ParserUtils
 		try
 		{
 			return URLEncoder.encode(str, enc);
+		}
+		catch (final UnsupportedEncodingException x)
+		{
+			throw new RuntimeException(x);
+		}
+	}
+
+	public static String urlDecode(final String str, final String enc)
+	{
+		try
+		{
+			return URLDecoder.decode(str, enc);
 		}
 		catch (final UnsupportedEncodingException x)
 		{

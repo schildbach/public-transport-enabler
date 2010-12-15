@@ -922,7 +922,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		LINES.put('?', new int[] { Color.DKGRAY, Color.WHITE });
 	}
 
-	public final int[] lineColors(final String line)
+	public int[] lineColors(final String line)
 	{
 		if (line.length() == 0)
 			return null;
