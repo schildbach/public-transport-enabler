@@ -23,6 +23,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -85,8 +87,7 @@ public final class BvgProvider implements NetworkProvider
 		{
 			final Matcher mMulti = P_MULTI_NAME.matcher(page);
 			while (mMulti.find())
-				results
-						.add(new Location(LocationType.STATION, Integer.parseInt(mMulti.group(1)), 0, 0, ParserUtils.resolveEntities(mMulti.group(2))));
+				results.add(new Location(LocationType.STATION, Integer.parseInt(mMulti.group(1)), 0, 0, ParserUtils.resolveEntities(mMulti.group(2))));
 		}
 
 		return results;
@@ -398,8 +399,8 @@ public final class BvgProvider implements NetworkProvider
 					{
 						final int arrivalId = mDetFine.group(12) != null ? Integer.parseInt(mDetFine.group(12)) : 0;
 
-						final String arrival = ParserUtils.resolveEntities(ParserUtils.selectNotNull(mDetFine.group(13), mDetFine.group(16), mDetFine
-								.group(17)));
+						final String arrival = ParserUtils.resolveEntities(ParserUtils.selectNotNull(mDetFine.group(13), mDetFine.group(16),
+								mDetFine.group(17)));
 
 						final int arrivalLon = mDetFine.group(14) != null ? Integer.parseInt(mDetFine.group(14)) : 0;
 
@@ -481,6 +482,8 @@ public final class BvgProvider implements NetworkProvider
 		if (P_DEPARTURES_SERVICE_DOWN.matcher(page).find())
 			return new QueryDeparturesResult(Status.SERVICE_DOWN, Integer.parseInt(stationId));
 
+		final boolean live = stationId.length() == 6;
+
 		// parse page
 		final Matcher mHead = P_DEPARTURES_HEAD.matcher(page);
 		if (mHead.matches())
@@ -493,7 +496,6 @@ public final class BvgProvider implements NetworkProvider
 			final Matcher mDepCoarse = P_DEPARTURES_COARSE.matcher(page);
 			while (mDepCoarse.find())
 			{
-				final boolean live = stationId.length() == 6;
 				final Matcher mDepFine = (live ? P_DEPARTURES_LIVE_FINE : P_DEPARTURES_PLAN_FINE).matcher(mDepCoarse.group(1));
 				if (mDepFine.matches())
 				{
@@ -533,6 +535,20 @@ public final class BvgProvider implements NetworkProvider
 				{
 					throw new IllegalArgumentException("cannot parse '" + mDepCoarse.group(1) + "' on " + stationId);
 				}
+			}
+
+			// workaround for live departures delivered unsorted
+			if (live)
+			{
+				Collections.sort(departures, new Comparator<Departure>()
+				{
+					public int compare(final Departure d1, final Departure d2)
+					{
+						final Date t1 = d1.predictedTime != null ? d1.predictedTime : d1.plannedTime;
+						final Date t2 = d2.predictedTime != null ? d2.predictedTime : d2.plannedTime;
+						return t1.compareTo(t2);
+					}
+				});
 			}
 
 			return new QueryDeparturesResult(new Location(LocationType.STATION, Integer.parseInt(stationId), 0, 0, location), departures, null);
