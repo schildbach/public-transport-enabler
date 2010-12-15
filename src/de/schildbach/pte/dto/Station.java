@@ -43,6 +43,21 @@ public final class Station
 	}
 
 	@Override
+	public String toString()
+	{
+		StringBuilder builder = new StringBuilder("Station(");
+		builder.append(id);
+		builder.append(",");
+		builder.append(name);
+		builder.append(",");
+		builder.append(latitude);
+		builder.append(",");
+		builder.append(longitude);
+		builder.append(")");
+		return builder.toString();
+	}
+
+	@Override
 	public boolean equals(Object o)
 	{
 		if (o == this)
