@@ -195,13 +195,14 @@ public final class ParserUtils
 				writer.close();
 			}
 
-			if (connection.getContentType() != null)
+			final int responseCode = connection.getResponseCode();
+			if (responseCode == HttpURLConnection.HTTP_OK)
 			{
 				return connection.getInputStream();
 			}
 			else
 			{
-				final String message = "got page without content type";
+				final String message = "got response: " + responseCode + " " + connection.getResponseMessage();
 				if (tries-- > 0)
 					System.out.println(message + ", retrying...");
 				else
