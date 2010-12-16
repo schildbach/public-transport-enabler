@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.regex.Pattern;
 
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.util.Color;
@@ -87,6 +88,17 @@ public class TflProvider extends AbstractEfaProvider
 		uri.append("&mode=direct");
 		uri.append("&useRealtime=1");
 		return uri.toString();
+	}
+
+	private static final Pattern P_LINE_Y = Pattern.compile("\\d+Y");
+
+	@Override
+	protected String parseLine(final String mot, final String name, final String longName, final String noTrainName)
+	{
+		if (P_LINE_Y.matcher(name).matches())
+			return "?" + name;
+		else
+			return super.parseLine(mot, name, longName, noTrainName);
 	}
 
 	@Override
