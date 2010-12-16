@@ -782,6 +782,8 @@ public final class BahnProvider extends AbstractHafasProvider
 				return "RVE" + number;
 			if (type.equals("DZ")) // Dampfzug Freiburg-Innsbruck
 				return "RDZ " + number;
+			if (type.equals("ag")) // Regensburg-Landshut
+				return "Rag " + number;
 
 			if (type.equals("S"))
 				return "SS" + number;

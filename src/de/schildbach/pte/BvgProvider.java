@@ -684,6 +684,8 @@ public final class BvgProvider extends AbstractHafasProvider
 				return "IEN" + number;
 			if (type.equals("CNL")) // CityNightLine
 				return "ICNL" + number;
+			if (type.equals("IR"))
+				return "R" + number;
 			if (type.equals("Zug"))
 				return "R" + number;
 			if (type.equals("ZUG"))
@@ -715,10 +717,10 @@ public final class BvgProvider extends AbstractHafasProvider
 			if (type.equals("F"))
 				return "FF" + number;
 
-			throw new IllegalStateException("cannot normalize type " + type + " line " + line);
+			throw new IllegalStateException("cannot normalize type '" + type + "' number '" + number + "' line '" + line + "'");
 		}
 
-		throw new IllegalStateException("cannot normalize line " + line);
+		throw new IllegalStateException("cannot normalize line '" + line + "'");
 	}
 
 	@Override
