@@ -610,20 +610,6 @@ public final class BvgProvider extends AbstractHafasProvider
 				}
 			}
 
-			// workaround for live departures delivered unsorted
-			if (live)
-			{
-				Collections.sort(departures, new Comparator<Departure>()
-				{
-					public int compare(final Departure d1, final Departure d2)
-					{
-						final Date t1 = d1.predictedTime != null ? d1.predictedTime : d1.plannedTime;
-						final Date t2 = d2.predictedTime != null ? d2.predictedTime : d2.plannedTime;
-						return t1.compareTo(t2);
-					}
-				});
-			}
-
 			return new QueryDeparturesResult(new Location(LocationType.STATION, Integer.parseInt(stationId), 0, 0, location), departures, null);
 		}
 		else
