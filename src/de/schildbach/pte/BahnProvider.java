@@ -760,6 +760,8 @@ public final class BahnProvider extends AbstractHafasProvider
 				return "RDPNCbahn" + number;
 			if (type.equals("LEO")) // Chiemgauer Lokalbahn
 				return "RLEO" + number;
+			if (type.equals("SBS")) // Städtebahn Sachsen
+				return "RSBS" + number;
 			if (type.equals("VEN")) // Rhenus Veniro
 				return "RVEN" + number;
 			if (type.equals("KD")) // Koleje Dolnośląskie (Niederschlesische Eisenbahn)
