@@ -32,8 +32,14 @@ import de.schildbach.pte.util.ParserUtils;
  */
 public class MvvProvider extends AbstractEfaProvider
 {
-	public static final String NETWORK_ID = "efa.mvv-muenchen.de";
+	public static final NetworkId NETWORK_ID = NetworkId.MVV;
+	public static final String OLD_NETWORK_ID = "efa.mvv-muenchen.de";
 	private static final String API_BASE = "http://efa.mvv-muenchen.de/mobile/";
+
+	public NetworkId id()
+	{
+		return NETWORK_ID;
+	}
 
 	public boolean hasCapabilities(final Capability... capabilities)
 	{

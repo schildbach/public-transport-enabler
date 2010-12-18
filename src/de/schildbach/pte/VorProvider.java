@@ -28,8 +28,14 @@ import de.schildbach.pte.util.ParserUtils;
  */
 public class VorProvider extends AbstractEfaProvider
 {
-	public static final String NETWORK_ID = "efa.vor.at";
+	public static final NetworkId NETWORK_ID = NetworkId.VOR;
+	public static final String OLD_NETWORK_ID = "efa.vor.at";
 	private final static String API_BASE = "http://efa.vor.at/wvb/";
+
+	public NetworkId id()
+	{
+		return NETWORK_ID;
+	}
 
 	public boolean hasCapabilities(Capability... capabilities)
 	{

@@ -28,8 +28,14 @@ import de.schildbach.pte.util.ParserUtils;
  */
 public class VrnProvider extends AbstractEfaProvider
 {
-	public static final String NETWORK_ID = "fahrplanauskunft.vrn.de";
+	public static final NetworkId NETWORK_ID = NetworkId.VRN;
+	public static final String OLD_NETWORK_ID = "fahrplanauskunft.vrn.de";
 	private static final String API_BASE = "http://fahrplanauskunft.vrn.de/vrn_mobile/";
+
+	public NetworkId id()
+	{
+		return NETWORK_ID;
+	}
 
 	public boolean hasCapabilities(final Capability... capabilities)
 	{

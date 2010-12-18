@@ -45,12 +45,18 @@ import de.schildbach.pte.util.ParserUtils;
 
 public class OebbProvider extends AbstractHafasProvider
 {
-	public static final String NETWORK_ID = "fahrplan.oebb.at";
+	public static final NetworkId NETWORK_ID = NetworkId.OEBB;
+	public static final String OLD_NETWORK_ID = "fahrplan.oebb.at";
 	private static final String API_BASE = "http://fahrplan.oebb.at/bin/";
 
 	public OebbProvider()
 	{
 		super(null, null);
+	}
+
+	public NetworkId id()
+	{
+		return NETWORK_ID;
 	}
 
 	public boolean hasCapabilities(final Capability... capabilities)

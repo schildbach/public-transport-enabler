@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package de.schildbach.pte;
 
 import java.text.DateFormat;
@@ -29,8 +30,14 @@ import de.schildbach.pte.util.ParserUtils;
  */
 public class DubProvider extends AbstractEfaProvider
 {
-	public static final String NETWORK_ID = "wojhati.rta.ae";
+	public static final NetworkId NETWORK_ID = NetworkId.DUB;
+	public static final String OLD_NETWORK_ID = "wojhati.rta.ae";
 	private final static String API_BASE = "http://wojhati.rta.ae/dub/";
+
+	public NetworkId id()
+	{
+		return NETWORK_ID;
+	}
 
 	@Override
 	protected TimeZone timeZone()

@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package de.schildbach.pte;
 
 import java.text.DateFormat;
@@ -28,8 +29,14 @@ import de.schildbach.pte.util.ParserUtils;
  */
 public class BvbProvider extends AbstractEfaProvider
 {
-	public static final String NETWORK_ID = "www.efa-bvb.ch";
+	public static final NetworkId NETWORK_ID = NetworkId.BVB;
+	public static final String OLD_NETWORK_ID = "www.efa-bvb.ch";
 	private final static String API_BASE = "http://www.efa-bvb.ch/bvb/";
+
+	public NetworkId id()
+	{
+		return NETWORK_ID;
+	}
 
 	public boolean hasCapabilities(Capability... capabilities)
 	{

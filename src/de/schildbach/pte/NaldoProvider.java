@@ -28,8 +28,14 @@ import de.schildbach.pte.util.ParserUtils;
  */
 public class NaldoProvider extends AbstractEfaProvider
 {
-	public static final String NETWORK_ID = "efa.naldo.de";
+	public static final NetworkId NETWORK_ID = NetworkId.NALDO;
+	public static final String OLD_NETWORK_ID = "efa.naldo.de";
 	private final static String API_BASE = "http://efa.naldo.de/naldo/";
+
+	public NetworkId id()
+	{
+		return NETWORK_ID;
+	}
 
 	public boolean hasCapabilities(Capability... capabilities)
 	{

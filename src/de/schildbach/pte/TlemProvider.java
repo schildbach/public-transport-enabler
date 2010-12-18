@@ -28,8 +28,14 @@ import de.schildbach.pte.util.ParserUtils;
  */
 public class TlemProvider extends AbstractEfaProvider
 {
-	public static final String NETWORK_ID = "www.travelineeastmidlands.co.uk";
+	public static final NetworkId NETWORK_ID = NetworkId.TLEM;
+	public static final String OLD_NETWORK_ID = "www.travelineeastmidlands.co.uk";
 	private final static String API_BASE = "http://www.travelineeastmidlands.co.uk/em/";
+
+	public NetworkId id()
+	{
+		return NETWORK_ID;
+	}
 
 	public boolean hasCapabilities(Capability... capabilities)
 	{

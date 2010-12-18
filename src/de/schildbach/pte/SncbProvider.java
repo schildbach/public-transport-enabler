@@ -38,15 +38,20 @@ import de.schildbach.pte.util.ParserUtils;
  */
 public class SncbProvider extends AbstractHafasProvider
 {
-	public static final String NETWORK_ID = "hari.b-rail.be";
+	public static final NetworkId NETWORK_ID = NetworkId.SNCB;
+	public static final String OLD_NETWORK_ID = "hari.b-rail.be";
+	private static final String API_URI = "http://hari.b-rail.be/Hafas/bin/extxml.exe";
 
 	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
-
-	private static final String API_URI = "http://hari.b-rail.be/Hafas/bin/extxml.exe";
 
 	public SncbProvider()
 	{
 		super(API_URI, null);
+	}
+
+	public NetworkId id()
+	{
+		return NETWORK_ID;
 	}
 
 	public boolean hasCapabilities(final Capability... capabilities)
@@ -86,7 +91,7 @@ public class SncbProvider extends AbstractHafasProvider
 			+ "(.*?)\r\n</div>" // departures
 			+ "|(Eingabe kann nicht interpretiert)|(Verbindung zum Server konnte leider nicht hergestellt werden))" //
 			+ ".*?", Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_HEAD_FINE = Pattern.compile("" // 
+	private static final Pattern P_DEPARTURES_HEAD_FINE = Pattern.compile("" //
 			+ "<strong>(.*?)</strong><br />\r\n" // location
 			+ "Abfahrt (\\d{1,2}:\\d{2}),\r\n" // time
 			+ "(\\d{2}/\\d{2}/\\d{2})" // date
@@ -119,8 +124,8 @@ public class SncbProvider extends AbstractHafasProvider
 			if (mHeadFine.matches())
 			{
 				final String location = ParserUtils.resolveEntities(mHeadFine.group(1));
-				final Date currentTime = ParserUtils.joinDateTime(ParserUtils.parseDateSlash(mHeadFine.group(3)), ParserUtils.parseTime(mHeadFine
-						.group(2)));
+				final Date currentTime = ParserUtils.joinDateTime(ParserUtils.parseDateSlash(mHeadFine.group(3)),
+						ParserUtils.parseTime(mHeadFine.group(2)));
 				final List<Departure> departures = new ArrayList<Departure>(8);
 
 				final Matcher mDepCoarse = P_DEPARTURES_COARSE.matcher(mHeadCoarse.group(2));

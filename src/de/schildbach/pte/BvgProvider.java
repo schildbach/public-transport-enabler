@@ -23,8 +23,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -52,7 +50,8 @@ import de.schildbach.pte.util.ParserUtils;
  */
 public final class BvgProvider extends AbstractHafasProvider
 {
-	public static final String NETWORK_ID = "mobil.bvg.de";
+	public static final NetworkId NETWORK_ID = NetworkId.BVG;
+	public static final String OLD_NETWORK_ID = "mobil.bvg.de";
 
 	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
 	private static final long PARSER_DAY_ROLLDOWN_THRESHOLD_MS = 6 * 60 * 60 * 1000;
@@ -63,6 +62,11 @@ public final class BvgProvider extends AbstractHafasProvider
 	public BvgProvider()
 	{
 		super(null, null);
+	}
+
+	public NetworkId id()
+	{
+		return NETWORK_ID;
 	}
 
 	public boolean hasCapabilities(final Capability... capabilities)

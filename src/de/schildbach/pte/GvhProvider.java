@@ -32,8 +32,14 @@ import de.schildbach.pte.util.ParserUtils;
  */
 public class GvhProvider extends AbstractEfaProvider
 {
-	public static final String NETWORK_ID = "mobil.gvh.de";
+	public static final NetworkId NETWORK_ID = NetworkId.GVH;
+	public static final String OLD_NETWORK_ID = "mobil.gvh.de";
 	private static final String API_BASE = "http://mobil.gvh.de/mobile2/";
+
+	public NetworkId id()
+	{
+		return NETWORK_ID;
+	}
 
 	public boolean hasCapabilities(final Capability... capabilities)
 	{

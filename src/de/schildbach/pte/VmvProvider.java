@@ -29,8 +29,14 @@ import de.schildbach.pte.util.ParserUtils;
  */
 public class VmvProvider extends AbstractEfaProvider
 {
-	public static final String NETWORK_ID = "80.146.180.107";
+	public static final NetworkId NETWORK_ID = NetworkId.VMV;
+	public static final String OLD_NETWORK_ID = "80.146.180.107";
 	private static final String API_BASE = "http://80.146.180.107/delfi/";
+
+	public NetworkId id()
+	{
+		return NETWORK_ID;
+	}
 
 	public boolean hasCapabilities(final Capability... capabilities)
 	{

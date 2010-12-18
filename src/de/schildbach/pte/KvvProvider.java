@@ -28,8 +28,14 @@ import de.schildbach.pte.util.ParserUtils;
  */
 public class KvvProvider extends AbstractEfaProvider
 {
-	public static final String NETWORK_ID = "213.144.24.66";
+	public static final NetworkId NETWORK_ID = NetworkId.KVV;
+	public static final String OLD_NETWORK_ID = "213.144.24.66";
 	private final static String API_BASE = "http://213.144.24.66/kvv/";
+
+	public NetworkId id()
+	{
+		return NETWORK_ID;
+	}
 
 	public boolean hasCapabilities(Capability... capabilities)
 	{

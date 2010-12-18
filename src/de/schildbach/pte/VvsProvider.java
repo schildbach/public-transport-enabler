@@ -29,8 +29,14 @@ import de.schildbach.pte.util.ParserUtils;
  */
 public class VvsProvider extends AbstractEfaProvider
 {
-	public static final String NETWORK_ID = "mobil.vvs.de";
+	public static final NetworkId NETWORK_ID = NetworkId.VVS;
+	public static final String OLD_NETWORK_ID = "mobil.vvs.de";
 	private static final String API_BASE = "http://mobil.vvs.de/mobile/";
+
+	public NetworkId id()
+	{
+		return NETWORK_ID;
+	}
 
 	public boolean hasCapabilities(final Capability... capabilities)
 	{

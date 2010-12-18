@@ -34,8 +34,14 @@ import de.schildbach.pte.util.ParserUtils;
  */
 public class TflProvider extends AbstractEfaProvider
 {
-	public static final String NETWORK_ID = "journeyplanner.tfl.gov.uk";
+	public static final NetworkId NETWORK_ID = NetworkId.TFL;
+	public static final String OLD_NETWORK_ID = "journeyplanner.tfl.gov.uk";
 	private static final String API_BASE = "http://journeyplanner.tfl.gov.uk/user/";
+
+	public NetworkId id()
+	{
+		return NETWORK_ID;
+	}
 
 	@Override
 	protected TimeZone timeZone()

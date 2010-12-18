@@ -42,7 +42,7 @@ import de.schildbach.pte.util.ParserUtils;
  */
 public class VgsProvider extends AbstractHafasProvider
 {
-	public static final String NETWORK_ID = "www.vgs-online.de";
+	public static final String OLD_NETWORK_ID = "www.vgs-online.de";
 	private static final String API_BASE = "http://www.vgs-online.de/cgi-bin/";
 
 	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
@@ -50,6 +50,11 @@ public class VgsProvider extends AbstractHafasProvider
 	public VgsProvider()
 	{
 		super(null, null);
+	}
+
+	public NetworkId id()
+	{
+		return NetworkId.VGS;
 	}
 
 	public boolean hasCapabilities(final Capability... capabilities)
@@ -100,7 +105,7 @@ public class VgsProvider extends AbstractHafasProvider
 	private static final Pattern P_DEPARTURES_HEAD_COARSE = Pattern
 			.compile(
 					".*?" //
-							+ "(?:" // 
+							+ "(?:" //
 							+ "<table class=\"hafasResult\"[^>]*>(.+?)</table>.*?" //
 							+ "(?:<table cellspacing=\"0\" class=\"hafasResult\"[^>]*>(.+?)</table>|(verkehren an dieser Haltestelle keine))"//
 							+ "|(Eingabe kann nicht interpretiert)|(Verbindung zum Server konnte leider nicht hergestellt werden|kann vom Server derzeit leider nicht bearbeitet werden))" //
@@ -146,8 +151,8 @@ public class VgsProvider extends AbstractHafasProvider
 			if (mHeadFine.matches())
 			{
 				final String location = ParserUtils.resolveEntities(mHeadFine.group(1));
-				final Date currentTime = ParserUtils.joinDateTime(ParserUtils.parseDate(mHeadFine.group(2)), ParserUtils
-						.parseTime(mHeadFine.group(3)));
+				final Date currentTime = ParserUtils.joinDateTime(ParserUtils.parseDate(mHeadFine.group(2)),
+						ParserUtils.parseTime(mHeadFine.group(3)));
 				final List<Departure> departures = new ArrayList<Departure>(8);
 				String oldZebra = null;
 

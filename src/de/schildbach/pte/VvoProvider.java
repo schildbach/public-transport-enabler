@@ -28,8 +28,14 @@ import de.schildbach.pte.util.ParserUtils;
  */
 public class VvoProvider extends AbstractEfaProvider
 {
-	public static final String NETWORK_ID = "efa.vvo-online.de";
+	public static final NetworkId NETWORK_ID = NetworkId.VVO;
+	public static final String OLD_NETWORK_ID = "efa.vvo-online.de";
 	private final static String API_BASE = "http://efa.vvo-online.de:8080/dvb/";
+
+	public NetworkId id()
+	{
+		return NETWORK_ID;
+	}
 
 	public boolean hasCapabilities(Capability... capabilities)
 	{

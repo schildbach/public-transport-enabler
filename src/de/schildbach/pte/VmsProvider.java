@@ -28,8 +28,14 @@ import de.schildbach.pte.util.ParserUtils;
  */
 public class VmsProvider extends AbstractEfaProvider
 {
-	public static final String NETWORK_ID = "www.vms-aktuell.de";
+	public static final NetworkId NETWORK_ID = NetworkId.VMS;
+	public static final String OLD_NETWORK_ID = "www.vms-aktuell.de";
 	private static final String API_BASE = "http://www.vms-aktuell.de/vms/";
+
+	public NetworkId id()
+	{
+		return NETWORK_ID;
+	}
 
 	public boolean hasCapabilities(final Capability... capabilities)
 	{

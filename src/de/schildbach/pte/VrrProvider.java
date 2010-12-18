@@ -28,9 +28,15 @@ import de.schildbach.pte.util.ParserUtils;
  */
 public class VrrProvider extends AbstractEfaProvider
 {
-	public static final String NETWORK_ID = "efa3.vrr.de";
+	public static final NetworkId NETWORK_ID = NetworkId.VRR;
+	public static final String OLD_NETWORK_ID = "efa3.vrr.de";
 	// private static final String API_BASE = "http://efa3.vrr.de/vrr_mobile/";
 	private static final String API_BASE = "http://efa.vrr.de/standard/";
+
+	public NetworkId id()
+	{
+		return NETWORK_ID;
+	}
 
 	public boolean hasCapabilities(final Capability... capabilities)
 	{

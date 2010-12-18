@@ -28,8 +28,14 @@ import de.schildbach.pte.util.ParserUtils;
  */
 public class MariborProvider extends AbstractEfaProvider
 {
-	public static final String NETWORK_ID = "164.8.32.183";
+	public static final NetworkId NETWORK_ID = NetworkId.MARIBOR;
+	public static final String OLD_NETWORK_ID = "164.8.32.183";
 	private final static String API_BASE = "http://164.8.32.183/slo/";
+
+	public NetworkId id()
+	{
+		return NETWORK_ID;
+	}
 
 	public boolean hasCapabilities(Capability... capabilities)
 	{

@@ -28,8 +28,14 @@ import de.schildbach.pte.util.ParserUtils;
  */
 public class SvvProvider extends AbstractEfaProvider
 {
-	public static final String NETWORK_ID = "efa.svv-info.at";
+	public static final NetworkId NETWORK_ID = NetworkId.SVV;
+	public static final String OLD_NETWORK_ID = "efa.svv-info.at";
 	private final static String API_BASE = "http://efa.svv-info.at/svv/";
+
+	public NetworkId id()
+	{
+		return NETWORK_ID;
+	}
 
 	public boolean hasCapabilities(Capability... capabilities)
 	{

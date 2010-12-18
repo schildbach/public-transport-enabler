@@ -28,8 +28,14 @@ import de.schildbach.pte.util.ParserUtils;
  */
 public class TlseProvider extends AbstractEfaProvider
 {
-	public static final String NETWORK_ID = "www.travelinesoutheast.org.uk";
+	public static final NetworkId NETWORK_ID = NetworkId.TLSE;
+	public static final String OLD_NETWORK_ID = "www.travelinesoutheast.org.uk";
 	private final static String API_BASE = "http://www.travelinesoutheast.org.uk/se/";
+
+	public NetworkId id()
+	{
+		return NETWORK_ID;
+	}
 
 	public boolean hasCapabilities(Capability... capabilities)
 	{

@@ -45,7 +45,8 @@ import de.schildbach.pte.util.ParserUtils;
  */
 public final class BahnProvider extends AbstractHafasProvider
 {
-	public static final String NETWORK_ID = "mobile.bahn.de";
+	public static final NetworkId NETWORK_ID = NetworkId.DB;
+	public static final String OLD_NETWORK_ID = "mobile.bahn.de";
 	private static final String API_BASE = "http://mobile.bahn.de/bin/mobil/";
 
 	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
@@ -53,6 +54,11 @@ public final class BahnProvider extends AbstractHafasProvider
 	public BahnProvider()
 	{
 		super(null, null);
+	}
+
+	public NetworkId id()
+	{
+		return NETWORK_ID;
 	}
 
 	public boolean hasCapabilities(final Capability... capabilities)

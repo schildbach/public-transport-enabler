@@ -45,8 +45,8 @@ import de.schildbach.pte.util.ParserUtils;
  */
 public class RmvProvider extends AbstractHafasProvider
 {
-	public static final String NETWORK_ID = "mobil.rmv.de";
-	public static final String NETWORK_ID_ALT = "www.rmv.de";
+	public static final NetworkId NETWORK_ID = NetworkId.RMV;
+	public static final String OLD_NETWORK_ID = "mobil.rmv.de";
 	private static final String API_BASE = "http://www.rmv.de/auskunft/bin/jp/";
 
 	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
@@ -54,6 +54,11 @@ public class RmvProvider extends AbstractHafasProvider
 	public RmvProvider()
 	{
 		super(null, null);
+	}
+
+	public NetworkId id()
+	{
+		return NETWORK_ID;
 	}
 
 	public boolean hasCapabilities(final Capability... capabilities)

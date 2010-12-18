@@ -42,7 +42,8 @@ import de.schildbach.pte.util.ParserUtils;
  */
 public class NasaProvider extends AbstractHafasProvider
 {
-	public static final String NETWORK_ID = "www.nasa.de";
+	public static final NetworkId NETWORK_ID = NetworkId.NASA;
+	public static final String OLD_NETWORK_ID = "www.nasa.de";
 	private static final String API_BASE = "http://www.nasa.de/delfi52/";
 
 	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
@@ -50,6 +51,11 @@ public class NasaProvider extends AbstractHafasProvider
 	public NasaProvider()
 	{
 		super(null, null);
+	}
+
+	public NetworkId id()
+	{
+		return NETWORK_ID;
 	}
 
 	public boolean hasCapabilities(final Capability... capabilities)

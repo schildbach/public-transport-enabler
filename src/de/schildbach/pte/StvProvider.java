@@ -28,8 +28,14 @@ import de.schildbach.pte.util.ParserUtils;
  */
 public class StvProvider extends AbstractEfaProvider
 {
-	public static final String NETWORK_ID = "fahrplan.verbundlinie.at";
+	public static final NetworkId NETWORK_ID = NetworkId.STV;
+	public static final String OLD_NETWORK_ID = "fahrplan.verbundlinie.at";
 	private final static String API_BASE = "http://fahrplan.verbundlinie.at/stv/";
+
+	public NetworkId id()
+	{
+		return NETWORK_ID;
+	}
 
 	public boolean hasCapabilities(Capability... capabilities)
 	{

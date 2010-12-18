@@ -30,8 +30,14 @@ import de.schildbach.pte.util.ParserUtils;
  */
 public class LinzProvider extends AbstractEfaProvider
 {
-	public static final String NETWORK_ID = "www.linzag.at";
+	public static final NetworkId NETWORK_ID = NetworkId.LINZ;
+	public static final String OLD_NETWORK_ID = "www.linzag.at";
 	public static final String API_BASE = "http://www.linzag.at/linz/";
+
+	public NetworkId id()
+	{
+		return NETWORK_ID;
+	}
 
 	public boolean hasCapabilities(final Capability... capabilities)
 	{

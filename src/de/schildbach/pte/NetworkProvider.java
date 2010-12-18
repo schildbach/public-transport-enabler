@@ -44,6 +44,8 @@ public interface NetworkProvider
 		SLOW, NORMAL, FAST
 	}
 
+	NetworkId id();
+
 	boolean hasCapabilities(Capability... capabilities);
 
 	/**
