@@ -17,12 +17,12 @@ public enum NetworkId
 	// Netherlands
 	NS,
 
-	// U.K.
+	// United Kingdom
 	TFL, TLEM, TLEA, TLSE, TLSW,
 
-	//
+	// Slovenia
 	MARIBOR,
 
-	// UAE
+	// United Arab Emirates
 	DUB
 }
