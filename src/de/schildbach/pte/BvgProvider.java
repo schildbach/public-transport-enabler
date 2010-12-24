@@ -518,7 +518,7 @@ public final class BvgProvider extends AbstractHafasProvider
 	}
 
 	private static final String DEPARTURE_URL_LIVE = "http://mobil.bvg.de/IstAbfahrtzeiten/index/mobil?";
-	private static final String DEPARTURE_URL_PLAN = "http://mobil.bvg.de/Fahrinfo/bin/stboard.bin/dox/dox?boardType=dep&start=yes&";
+	private static final String DEPARTURE_URL_PLAN = "http://mobil.bvg.de/Fahrinfo/bin/stboard.bin/dox/dox?boardType=dep&disableEquivs=yes&start=yes&";
 
 	private String departuresQueryUri(final String stationId, final int maxDepartures)
 	{
