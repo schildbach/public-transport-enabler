@@ -15,35 +15,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.schildbach.pte.dto;
+package de.schildbach.pte.live;
 
-import java.io.Serializable;
-import java.util.Currency;
+import org.junit.Test;
+
+import de.schildbach.pte.SfProvider;
+import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.QueryDeparturesResult;
 
 /**
  * @author Andreas Schildbach
  */
-public final class Fare implements Serializable
+public class SfProviderLiveTest
 {
-	public enum Type
+	private final SfProvider provider = new SfProvider();
+
+	@Test
+	public void nearbyStation() throws Exception
 	{
-		ADULT, CHILD, YOUTH, STUDENT, MILITARY, SENIOR, DISABLED
+		final NearbyStationsResult result = provider.nearbyStations("San Franzisco", 0, 0, 0, 0);
+
+		System.out.println(result.stations.size() + "  " + result.stations);
 	}
 
-	public final String network;
-	public final Type type;
-	public final Currency currency;
-	public final float fare;
-	public final String unitName;
-	public final String units;
-
-	public Fare(final String network, final Type type, final Currency currency, final float fare, final String unitName, final String units)
+	@Test
+	public void queryDepartures() throws Exception
 	{
-		this.network = network;
-		this.type = type;
-		this.currency = currency;
-		this.fare = fare;
-		this.unitName = unitName;
-		this.units = units;
+		final QueryDeparturesResult result = provider.queryDepartures("10010813", 0);
+
+		System.out.println(result.departures.size() + "  " + result.departures);
 	}
 }

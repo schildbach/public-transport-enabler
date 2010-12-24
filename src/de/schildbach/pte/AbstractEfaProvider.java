@@ -161,8 +161,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			type = LocationType.ANY;
 			id = 0;
 		}
-		else if ("postcode".equals(anyType) || "street".equals(anyType) || "address".equals(anyType) || "singlehouse".equals(anyType)
-				|| "buildingname".equals(anyType))
+		else if ("postcode".equals(anyType) || "street".equals(anyType) || "crossing".equals(anyType) || "address".equals(anyType)
+				|| "singlehouse".equals(anyType) || "buildingname".equals(anyType))
 		{
 			type = LocationType.ADDRESS;
 			id = 0;
@@ -680,6 +680,12 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'T' + str;
 			if (type.equals("STR")) // Nordhausen
 				return 'T' + str;
+			if ("California Cable Car".equals(name)) // San Francisco
+				return 'T' + name;
+			if ("Muni Rail".equals(noTrainName)) // San Francisco
+				return 'T' + name;
+			if ("Cable Car".equals(noTrainName)) // San Francisco
+				return 'T' + name;
 
 			if (type.equals("BUS"))
 				return 'B' + str;
@@ -1293,9 +1299,17 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			}
 
 			if (key.equals("FOR_RIDER"))
-				type = Type.valueOf(value.split(" ")[0].toUpperCase());
+			{
+				final String typeStr = value.split(" ")[0].toUpperCase();
+				if (typeStr.equals("REGULAR"))
+					type = Type.ADULT;
+				else
+					type = Type.valueOf(typeStr);
+			}
 			else if (key.equals("PRICE"))
-				fare = Float.parseFloat(value);
+			{
+				fare = Float.parseFloat(value) * (currency.getCurrencyCode().equals("US$") ? 0.01f : 1);
+			}
 
 			XmlPullUtil.exit(pp, "itdGenericTicket");
 		}

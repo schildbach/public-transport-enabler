@@ -44,5 +44,8 @@ public enum NetworkId
 	MARIBOR,
 
 	// United Arab Emirates
-	DUB
+	DUB,
+
+	// United States
+	SF
 }
