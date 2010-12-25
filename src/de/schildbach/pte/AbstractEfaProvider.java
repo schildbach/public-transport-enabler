@@ -665,6 +665,10 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'R' + str;
 			if (type.equals("IL")) // Island Line, GB
 				return 'R' + str;
+			if (type.equals("DB-Zug")) // VRR
+				return 'R' + name;
+			if (type.equals("Regionalexpress")) // VRR
+				return 'R' + name;
 			if ("CAPITOL".equals(name)) // San Francisco
 				return 'R' + name;
 
