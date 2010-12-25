@@ -92,8 +92,7 @@ public class RmvProvider extends AbstractHafasProvider
 		{
 			final Matcher mMulti = P_MULTI_NAME.matcher(page);
 			while (mMulti.find())
-				results
-						.add(new Location(LocationType.STATION, Integer.parseInt(mMulti.group(1)), 0, 0, ParserUtils.resolveEntities(mMulti.group(2))));
+				results.add(new Location(LocationType.STATION, Integer.parseInt(mMulti.group(1)), 0, 0, ParserUtils.resolveEntities(mMulti.group(2))));
 		}
 
 		return results;
@@ -353,7 +352,7 @@ public class RmvProvider extends AbstractHafasProvider
 					{
 						final String line = normalizeLine(ParserUtils.resolveEntities(mDetFine.group(1)));
 
-						final String destination = ParserUtils.resolveEntities(mDetFine.group(2));
+						final Location destination = new Location(LocationType.ANY, 0, 0, 0, ParserUtils.resolveEntities(mDetFine.group(2)));
 
 						final Date departureTime = upTime(lastTime, ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mDetFine.group(3))));
 
@@ -363,8 +362,8 @@ public class RmvProvider extends AbstractHafasProvider
 
 						final String arrivalPosition = ParserUtils.resolveEntities(mDetFine.group(6));
 
-						lastTrip = new Connection.Trip(line, line != null ? lineColors(line) : null, 0, destination, departureTime,
-								departurePosition, 0, departure, arrivalTime, arrivalPosition, 0, arrival, null);
+						lastTrip = new Connection.Trip(line, line != null ? lineColors(line) : null, destination, departureTime, departurePosition,
+								0, departure, arrivalTime, arrivalPosition, 0, arrival, null);
 						parts.add(lastTrip);
 
 						if (firstDepartureTime == null)
@@ -438,7 +437,7 @@ public class RmvProvider extends AbstractHafasProvider
 			+ ").*?", Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_HEAD_FINE = Pattern.compile("" //
 			+ "<b>(.*?)</b><br />.*?" //
-			+ "Abfahrt (\\d+:\\d+).*?" // 
+			+ "Abfahrt (\\d+:\\d+).*?" //
 			+ "Uhr, (\\d+\\.\\d+\\.\\d+).*?" //
 	, Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<p class=\"sq\">\n(.+?)</p>", Pattern.DOTALL);
@@ -476,8 +475,8 @@ public class RmvProvider extends AbstractHafasProvider
 			if (mHeadFine.matches())
 			{
 				final String location = ParserUtils.resolveEntities(mHeadFine.group(1));
-				final Date currentTime = ParserUtils.joinDateTime(ParserUtils.parseDate(mHeadFine.group(3)), ParserUtils
-						.parseTime(mHeadFine.group(2)));
+				final Date currentTime = ParserUtils.joinDateTime(ParserUtils.parseDate(mHeadFine.group(3)),
+						ParserUtils.parseTime(mHeadFine.group(2)));
 				final List<Departure> departures = new ArrayList<Departure>(8);
 
 				final Matcher mDepCoarse = P_DEPARTURES_COARSE.matcher(mHeadCoarse.group(2));

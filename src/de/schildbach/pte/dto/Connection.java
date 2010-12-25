@@ -90,8 +90,7 @@ public final class Connection implements Serializable
 	{
 		public final String line;
 		public final int[] lineColors;
-		public final int destinationId;
-		public final String destination;
+		public final Location destination;
 		public final Date departureTime;
 		public final String departurePosition;
 		public final int departureId;
@@ -102,13 +101,12 @@ public final class Connection implements Serializable
 		public final String arrival;
 		public final List<Stop> intermediateStops;
 
-		public Trip(final String line, final int[] lineColors, final int destinationId, final String destination, final Date departureTime,
-				final String departurePosition, final int departureId, final String departure, final Date arrivalTime, final String arrivalPosition,
-				final int arrivalId, final String arrival, final List<Stop> intermediateStops)
+		public Trip(final String line, final int[] lineColors, final Location destination, final Date departureTime, final String departurePosition,
+				final int departureId, final String departure, final Date arrivalTime, final String arrivalPosition, final int arrivalId,
+				final String arrival, final List<Stop> intermediateStops)
 		{
 			this.line = line;
 			this.lineColors = lineColors;
-			this.destinationId = destinationId;
 			this.destination = destination;
 			this.departureTime = departureTime;
 			this.departurePosition = departurePosition;
@@ -127,13 +125,13 @@ public final class Connection implements Serializable
 			final StringBuilder builder = new StringBuilder(getClass().getName() + "[");
 			builder.append("line=").append(line);
 			builder.append(",");
-			builder.append("destination=").append(destination).append("/").append(destinationId);
+			builder.append("destination=").append(destination).append("/").append(destination.id);
 			builder.append(",");
 			builder.append("departure=").append(departureTime).append("/").append(departurePosition).append("/").append(departureId).append("/")
 					.append(departure);
 			builder.append(",");
-			builder.append("arrival=").append(arrivalTime).append("/").append(arrivalPosition).append("/").append(arrivalId).append("/").append(
-					arrival);
+			builder.append("arrival=").append(arrivalTime).append("/").append(arrivalPosition).append("/").append(arrivalId).append("/")
+					.append(arrival);
 			builder.append("]");
 			return builder.toString();
 		}

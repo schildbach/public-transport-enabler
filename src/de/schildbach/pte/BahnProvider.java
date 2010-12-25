@@ -382,8 +382,8 @@ public final class BahnProvider extends AbstractHafasProvider
 
 							final Date departureDateTime = ParserUtils.joinDateTime(departureDate, departureTime);
 							final Date arrivalDateTime = ParserUtils.joinDateTime(arrivalDate, arrivalTime);
-							lastTrip = new Connection.Trip(line, line != null ? lineColors(line) : null, 0, null, departureDateTime,
-									departurePosition, 0, departure, arrivalDateTime, arrivalPosition, 0, arrival, null);
+							lastTrip = new Connection.Trip(line, line != null ? lineColors(line) : null, null, departureDateTime, departurePosition,
+									0, departure, arrivalDateTime, arrivalPosition, 0, arrival, null);
 							parts.add(lastTrip);
 
 							if (firstDepartureTime == null)

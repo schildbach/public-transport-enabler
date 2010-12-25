@@ -1176,8 +1176,10 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 						else
 						{
 							final String destinationIdStr = pp.getAttributeValue(null, "destID");
-							final int destinationId = destinationIdStr.length() > 0 ? Integer.parseInt(destinationIdStr) : 0;
-							final String destination = normalizeLocationName(pp.getAttributeValue(null, "destination"));
+							final String destinationName = normalizeLocationName(pp.getAttributeValue(null, "destination"));
+							final Location destination = destinationIdStr.length() > 0 ? new Location(LocationType.STATION,
+									Integer.parseInt(destinationIdStr), 0, 0, destinationName) : new Location(LocationType.ANY, 0, 0, 0,
+									destinationName);
 							String line;
 							if ("AST".equals(pp.getAttributeValue(null, "symbol")))
 								line = "BAST";
@@ -1226,9 +1228,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 								intermediateStops.remove(intermediateStops.size() - 1);
 							}
 
-							parts.add(new Connection.Trip(line, lineColors(line), destinationId, destination, departureTime.getTime(),
-									departurePosition, departureId, departure, arrivalTime.getTime(), arrivalPosition, arrivalId, arrival,
-									intermediateStops));
+							parts.add(new Connection.Trip(line, lineColors(line), destination, departureTime.getTime(), departurePosition,
+									departureId, departure, arrivalTime.getTime(), arrivalPosition, arrivalId, arrival, intermediateStops));
 						}
 
 						XmlPullUtil.exit(pp, "itdPartialRoute");

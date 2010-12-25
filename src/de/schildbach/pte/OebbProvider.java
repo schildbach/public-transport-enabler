@@ -297,7 +297,7 @@ public class OebbProvider extends AbstractHafasProvider
 			+ "(?:<a href=\"(http://fahrplan\\.oebb\\.at/bin/query\\.exe/dn?.*?&REQ0HafasScrollDir=2)\".*?)?" // linkEarlier
 			+ "(?:<a href=\"(http://fahrplan\\.oebb\\.at/bin/query\\.exe/dn?.*?&REQ0HafasScrollDir=1)\".*?)?" // linkLater
 	, Pattern.DOTALL);
-	private static final Pattern P_CONNECTIONS_COARSE = Pattern.compile("" //	
+	private static final Pattern P_CONNECTIONS_COARSE = Pattern.compile("" //
 			+ "<tr id=\"trOverview(C\\d+-\\d+)\" [^>]*>\n(.*?)</tr>\n" //
 			+ "<tr class=\"[^\"]*\" id=\"tr\\1\">\n(.*?)Seitenanfang.*?</tr>" //
 	, Pattern.DOTALL);
@@ -427,7 +427,7 @@ public class OebbProvider extends AbstractHafasProvider
 
 								final String arrivalPosition = mDetFine.group(12) != null ? ParserUtils.resolveEntities(mDetFine.group(12)) : null;
 
-								final Connection.Trip trip = new Connection.Trip(line, lineColors(line), 0, null, detailsDepartureDateTime,
+								final Connection.Trip trip = new Connection.Trip(line, lineColors(line), null, detailsDepartureDateTime,
 										departurePosition, departureId, departure, detailsArrivalDateTime, arrivalPosition, arrivalId, arrival, null);
 								connection.parts.add(trip);
 							}
@@ -524,8 +524,8 @@ public class OebbProvider extends AbstractHafasProvider
 					final JSONObject departure = aDeparture.optJSONObject(i);
 					if (departure != null)
 					{
-						final Date time = ParserUtils.joinDateTime(ParserUtils.parseDate(departure.getString("da")), ParserUtils.parseTime(departure
-								.getString("ti")));
+						final Date time = ParserUtils.joinDateTime(ParserUtils.parseDate(departure.getString("da")),
+								ParserUtils.parseTime(departure.getString("ti")));
 						final String line = normalizeLine(ParserUtils.resolveEntities(departure.getString("pr")));
 						final String destination = ParserUtils.resolveEntities(departure.getString("st"));
 						String position = departure.optString("tr");

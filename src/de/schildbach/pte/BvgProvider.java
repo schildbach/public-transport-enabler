@@ -450,7 +450,7 @@ public final class BvgProvider extends AbstractHafasProvider
 
 						final String line = normalizeLine(ParserUtils.resolveEntities(mDetFine.group(5)));
 
-						final String destination = ParserUtils.resolveEntities(mDetFine.group(6));
+						final Location destination = new Location(LocationType.ANY, 0, 0, 0, ParserUtils.resolveEntities(mDetFine.group(6)));
 
 						Date arrivalTime = ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mDetFine.group(7)));
 						if (departureTime.after(arrivalTime))
@@ -462,7 +462,7 @@ public final class BvgProvider extends AbstractHafasProvider
 
 						final String arrival = ParserUtils.resolveEntities(mDetFine.group(10));
 
-						parts.add(new Connection.Trip(line, line != null ? lineColors(line) : null, 0, destination, departureTime, departurePosition,
+						parts.add(new Connection.Trip(line, line != null ? lineColors(line) : null, destination, departureTime, departurePosition,
 								departureId, departure, arrivalTime, arrivalPosition, arrivalId, arrival, null));
 
 						if (firstDepartureTime == null)
