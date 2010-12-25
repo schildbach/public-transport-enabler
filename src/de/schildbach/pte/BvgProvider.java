@@ -359,7 +359,7 @@ public final class BvgProvider extends AbstractHafasProvider
 						arrivalTime = ParserUtils.addDays(arrivalTime, 1);
 					final String line = normalizeLine(ParserUtils.resolveEntities(mConFine.group(4)));
 					final Connection connection = new Connection(AbstractHafasProvider.extractConnectionId(link), link, departureTime, arrivalTime,
-							line, line != null ? LINES.get(line.charAt(0)) : null, 0, from.name, 0, to.name, null, null);
+							line, line != null ? lineColors(line) : null, 0, from.name, 0, to.name, null, null);
 					connections.add(connection);
 				}
 				else
@@ -462,7 +462,7 @@ public final class BvgProvider extends AbstractHafasProvider
 
 						final String arrival = ParserUtils.resolveEntities(mDetFine.group(10));
 
-						parts.add(new Connection.Trip(line, line != null ? LINES.get(line) : null, 0, destination, departureTime, departurePosition,
+						parts.add(new Connection.Trip(line, line != null ? lineColors(line) : null, 0, destination, departureTime, departurePosition,
 								departureId, departure, arrivalTime, arrivalPosition, arrivalId, arrival, null));
 
 						if (firstDepartureTime == null)
@@ -603,7 +603,7 @@ public final class BvgProvider extends AbstractHafasProvider
 
 					final String destination = ParserUtils.resolveEntities(mDepFine.group(live ? 4 : 5));
 
-					final Departure dep = new Departure(plannedTime, predictedTime, line, line != null ? LINES.get(line) : null, null, position,
+					final Departure dep = new Departure(plannedTime, predictedTime, line, line != null ? lineColors(line) : null, null, position,
 							destinationId, destination, null);
 					if (!departures.contains(dep))
 						departures.add(dep);
