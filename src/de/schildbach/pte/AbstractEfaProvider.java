@@ -40,17 +40,17 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.Fare;
+import de.schildbach.pte.dto.Fare.Type;
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
+import de.schildbach.pte.dto.QueryConnectionsResult.Status;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.Station;
 import de.schildbach.pte.dto.Stop;
-import de.schildbach.pte.dto.Fare.Type;
-import de.schildbach.pte.dto.QueryConnectionsResult.Status;
 import de.schildbach.pte.util.Color;
 import de.schildbach.pte.util.ParserUtils;
 import de.schildbach.pte.util.XmlPullUtil;
@@ -665,6 +665,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'R' + str;
 			if (type.equals("IL")) // Island Line, GB
 				return 'R' + str;
+			if ("CAPITOL".equals(name)) // San Francisco
+				return 'R' + name;
 
 			if (type.equals("BSB")) // Breisgau-S-Bahn
 				return 'S' + str;
@@ -675,6 +677,26 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 			if (P_LINE_U.matcher(type).matches())
 				return 'U' + str;
+			if ("Millbrae / Richmond".equals(name)) // San Francisco, BART
+				return 'U' + name;
+			if ("Richmond / Millbrae".equals(name)) // San Francisco, BART
+				return 'U' + name;
+			if ("Fremont / RIchmond".equals(name)) // San Francisco, BART
+				return 'U' + name;
+			if ("Richmond / Fremont".equals(name)) // San Francisco, BART
+				return 'U' + name;
+			if ("Pittsburg Bay Point / SFO".equals(name)) // San Francisco, BART
+				return 'U' + name;
+			if ("SFO / Pittsburg Bay Point".equals(name)) // San Francisco, BART
+				return 'U' + name;
+			if ("Dublin Pleasanton / Daly City".equals(name)) // San Francisco, BART
+				return 'U' + name;
+			if ("Daly City / Dublin Pleasanton".equals(name)) // San Francisco, BART
+				return 'U' + name;
+			if ("Fremont / Daly City".equals(name)) // San Francisco, BART
+				return 'U' + name;
+			if ("Daly City / Fremont".equals(name)) // San Francisco, BART
+				return 'U' + name;
 
 			if (type.equals("RT")) // RegioTram
 				return 'T' + str;
