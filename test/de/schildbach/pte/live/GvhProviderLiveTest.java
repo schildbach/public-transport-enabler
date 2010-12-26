@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package de.schildbach.pte.live;
 
 import java.util.Date;
@@ -87,8 +88,8 @@ public class GvhProviderLiveTest
 	@Test
 	public void incompleteConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, 0, 0, "hann"), null, new Location(
-				LocationType.ANY, 0, 0, 0, "laat"), new Date(), true, ALL_PRODUCTS, WalkSpeed.FAST);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, "hann"), null, new Location(
+				LocationType.ANY, 0, "laat"), new Date(), true, ALL_PRODUCTS, WalkSpeed.FAST);
 		System.out.println(result);
 	}
 
@@ -96,7 +97,7 @@ public class GvhProviderLiveTest
 	public void shortConnection() throws Exception
 	{
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 25000031, 0, 0, "Hannover Hauptbahnhof"),
-				null, new Location(LocationType.STATION, 25001141, 0, 0, "Hannover Bismarckstraße"), new Date(), true, ALL_PRODUCTS, WalkSpeed.FAST);
+				null, new Location(LocationType.STATION, 25001141, "Hannover Bismarckstraße"), new Date(), true, ALL_PRODUCTS, WalkSpeed.FAST);
 		System.out.println(result);
 	}
 

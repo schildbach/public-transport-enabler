@@ -79,16 +79,16 @@ public class LinzProviderLiveTest
 	@Test
 	public void incompleteConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, 0, 0, "linz"), null, new Location(
-				LocationType.ANY, 0, 0, 0, "gel"), new Date(), true, ALL_PRODUCTS, WalkSpeed.FAST);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, "linz"), null, new Location(
+				LocationType.ANY, 0, "gel"), new Date(), true, ALL_PRODUCTS, WalkSpeed.FAST);
 		System.out.println(result);
 	}
 
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 0, 0, 0, "Linz Hauptbahnhof"), null,
-				new Location(LocationType.STATION, 0, 0, 0, "Linz Auwiesen"), new Date(), true, ALL_PRODUCTS, WalkSpeed.FAST);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 0, "Linz Hauptbahnhof"), null,
+				new Location(LocationType.STATION, 0, "Linz Auwiesen"), new Date(), true, ALL_PRODUCTS, WalkSpeed.FAST);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);
@@ -97,8 +97,8 @@ public class LinzProviderLiveTest
 	@Test
 	public void longConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 0, 0, 0, "Linz Auwiesen"), null,
-				new Location(LocationType.STATION, 0, 0, 0, "Linz Hafen"), new Date(), true, ALL_PRODUCTS, WalkSpeed.SLOW);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 0, "Linz Auwiesen"), null, new Location(
+				LocationType.STATION, 0, "Linz Hafen"), new Date(), true, ALL_PRODUCTS, WalkSpeed.SLOW);
 		System.out.println(result);
 		// final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		// System.out.println(moreResult);

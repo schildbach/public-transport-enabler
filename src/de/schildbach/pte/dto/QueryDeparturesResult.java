@@ -45,7 +45,7 @@ public final class QueryDeparturesResult
 	public QueryDeparturesResult(final Status status, final int locationId)
 	{
 		this.status = status;
-		this.location = new Location(LocationType.STATION, locationId, 0, 0, null);
+		this.location = new Location(LocationType.STATION, locationId, null);
 		this.departures = null;
 		this.lines = null;
 	}

@@ -38,8 +38,8 @@ public class MvvProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, 0, 0, "Marienplatz"), null, new Location(
-				LocationType.ANY, 0, 0, 0, "Pasing"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, "Marienplatz"), null, new Location(
+				LocationType.ANY, 0, "Pasing"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);
@@ -48,8 +48,8 @@ public class MvvProviderLiveTest
 	@Test
 	public void longConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, 0, 0, "Starnberg, Arbeitsamt"), null,
-				new Location(LocationType.STATION, 0, 0, 0, "Ackermannstraße"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, "Starnberg, Arbeitsamt"), null,
+				new Location(LocationType.STATION, 0, "Ackermannstraße"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
 		// seems like there are no more connections all the time
 	}
@@ -68,7 +68,7 @@ public class MvvProviderLiveTest
 	public void connectionBetweenCoordinateAndStation() throws Exception
 	{
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, 48238341, 11478230, null), null,
-				new Location(LocationType.ANY, 0, 0, 0, "Ostbahnhof"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+				new Location(LocationType.ANY, 0, "Ostbahnhof"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);
@@ -77,8 +77,8 @@ public class MvvProviderLiveTest
 	@Test
 	public void connectionBetweenAddresses() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, 0, 0, "München, Maximilianstr. 1"),
-				null, new Location(LocationType.ADDRESS, 0, 0, 0, "Starnberg, Jahnstraße 50"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, "München, Maximilianstr. 1"), null,
+				new Location(LocationType.ADDRESS, 0, "Starnberg, Jahnstraße 50"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);
@@ -87,9 +87,8 @@ public class MvvProviderLiveTest
 	@Test
 	public void connectionBetweenStationAndAddress() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 1220, 0, 0, "Josephsburg"), null,
-				new Location(LocationType.ADDRESS, 0, 48188018, 11574239, "München Frankfurter Ring 35"), new Date(), true, ALL_PRODUCTS,
-				WalkSpeed.NORMAL);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 1220, "Josephsburg"), null, new Location(
+				LocationType.ADDRESS, 0, 48188018, 11574239, "München Frankfurter Ring 35"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);

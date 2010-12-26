@@ -106,7 +106,7 @@ public class NasaProvider extends AbstractHafasProvider
 	private static final Pattern P_DEPARTURES_HEAD_COARSE = Pattern
 			.compile(
 					".*?" //
-							+ "(?:" // 
+							+ "(?:" //
 							+ "<table class=\"hafasResult\"[^>]*>(.+?)</table>.*?" //
 							+ "(?:<table cellspacing=\"0\" class=\"hafasResult\"[^>]*>(.+?)</table>|(verkehren an dieser Haltestelle keine))"//
 							+ "|(Eingabe kann nicht interpretiert)|(Verbindung zum Server konnte leider nicht hergestellt werden|kann vom Server derzeit leider nicht bearbeitet werden))" //
@@ -152,8 +152,8 @@ public class NasaProvider extends AbstractHafasProvider
 			if (mHeadFine.matches())
 			{
 				final String location = ParserUtils.resolveEntities(mHeadFine.group(1));
-				final Date currentTime = ParserUtils.joinDateTime(ParserUtils.parseDate(mHeadFine.group(2)), ParserUtils
-						.parseTime(mHeadFine.group(3)));
+				final Date currentTime = ParserUtils.joinDateTime(ParserUtils.parseDate(mHeadFine.group(2)),
+						ParserUtils.parseTime(mHeadFine.group(3)));
 				final List<Departure> departures = new ArrayList<Departure>(8);
 				String oldZebra = null;
 
@@ -213,7 +213,7 @@ public class NasaProvider extends AbstractHafasProvider
 					}
 				}
 
-				return new QueryDeparturesResult(new Location(LocationType.STATION, Integer.parseInt(stationId), 0, 0, location), departures, null);
+				return new QueryDeparturesResult(new Location(LocationType.STATION, Integer.parseInt(stationId), location), departures, null);
 			}
 			else
 			{

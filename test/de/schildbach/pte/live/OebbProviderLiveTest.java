@@ -21,8 +21,8 @@ import java.util.Date;
 
 import org.junit.Test;
 
-import de.schildbach.pte.OebbProvider;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
+import de.schildbach.pte.OebbProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -47,8 +47,8 @@ public class OebbProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, 0, 0, "Linz"), null, new Location(
-				LocationType.ANY, 0, 0, 0, "Berlin"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, "Linz"), null, new Location(
+				LocationType.ANY, 0, "Berlin"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);
@@ -57,8 +57,8 @@ public class OebbProviderLiveTest
 	@Test
 	public void slowConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, 0, 0, "Ramsen, Zoll"), null, new Location(
-				LocationType.ANY, 0, 0, 0, "Azuga"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, "Ramsen, Zoll"), null, new Location(
+				LocationType.ANY, 0, "Azuga"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);
@@ -67,8 +67,8 @@ public class OebbProviderLiveTest
 	@Test
 	public void connectionWithFootway() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, 0, 0, "Graz, Haselweg"), null,
-				new Location(LocationType.ADDRESS, 0, 0, 0, "Innsbruck, Gumppstraße 69"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, "Graz, Haselweg"), null, new Location(
+				LocationType.ADDRESS, 0, "Innsbruck, Gumppstraße 69"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);
@@ -77,9 +77,8 @@ public class OebbProviderLiveTest
 	@Test
 	public void connectionWithFootway2() throws Exception
 	{
-		final QueryConnectionsResult result = provider
-				.queryConnections(new Location(LocationType.ANY, 0, 0, 0, "Wien, Krottenbachstraße 110!"), null, new Location(LocationType.ADDRESS,
-						0, 0, 0, "Wien, Meidlinger Hauptstraße 1"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, "Wien, Krottenbachstraße 110!"), null,
+				new Location(LocationType.ADDRESS, 0, "Wien, Meidlinger Hauptstraße 1"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);

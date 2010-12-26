@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package de.schildbach.pte.live;
 
 import java.util.Date;
@@ -21,8 +22,8 @@ import java.util.List;
 
 import org.junit.Test;
 
-import de.schildbach.pte.SncbProvider;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
+import de.schildbach.pte.SncbProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -43,7 +44,7 @@ public class SncbProviderLiveTest
 
 		System.out.println(result.status + "  " + result.departures.size() + "  " + result.departures);
 	}
-	
+
 	@Test
 	public void autocompleteIncomplete() throws Exception
 	{
@@ -63,8 +64,8 @@ public class SncbProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 100024, 0, 0, null), null, new Location(
-				LocationType.STATION, 100066, 0, 0, null), new Date(), true, null, WalkSpeed.FAST);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 100024, null), null, new Location(
+				LocationType.STATION, 100066, null), new Date(), true, null, WalkSpeed.FAST);
 
 		System.out.println(result.status + "  " + result.connections);
 	}
@@ -72,8 +73,8 @@ public class SncbProviderLiveTest
 	@Test
 	public void longConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 100024, 0, 0, null), null, new Location(
-				LocationType.STATION, 103624, 0, 0, null), new Date(), true, null, WalkSpeed.FAST);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 100024, null), null, new Location(
+				LocationType.STATION, 103624, null), new Date(), true, null, WalkSpeed.FAST);
 
 		System.out.println(result.status + "  " + result.connections);
 	}

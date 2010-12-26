@@ -95,7 +95,7 @@ public class SbbProvider extends AbstractHafasProvider
 			+ "|(Verbindung zum Server konnte leider nicht hergestellt werden|kann vom Server derzeit leider nicht bearbeitet werden)" // messages
 			+ ").*?" //
 	, Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_HEAD_FINE = Pattern.compile("" // 
+	private static final Pattern P_DEPARTURES_HEAD_FINE = Pattern.compile("" //
 			+ "<strong>([^<]*)</strong>(?:<br />)?\n" // location
 			+ "Abfahrt (\\d{1,2}:\\d{2})\n" // time
 			+ "Uhr, (\\d{2}\\.\\d{2}\\.\\d{2})\n" // date
@@ -134,8 +134,8 @@ public class SbbProvider extends AbstractHafasProvider
 			if (mHeadFine.matches())
 			{
 				final String location = ParserUtils.resolveEntities(mHeadFine.group(1));
-				final Date currentTime = ParserUtils.joinDateTime(ParserUtils.parseDate(mHeadFine.group(3)), ParserUtils
-						.parseTime(mHeadFine.group(2)));
+				final Date currentTime = ParserUtils.joinDateTime(ParserUtils.parseDate(mHeadFine.group(3)),
+						ParserUtils.parseTime(mHeadFine.group(2)));
 				final int locationId = Integer.parseInt(mHeadFine.group(4));
 				final List<Departure> departures = new ArrayList<Departure>(8);
 				// String oldZebra = null;
@@ -180,7 +180,7 @@ public class SbbProvider extends AbstractHafasProvider
 					}
 				}
 
-				return new QueryDeparturesResult(new Location(LocationType.STATION, locationId, 0, 0, location), departures, null);
+				return new QueryDeparturesResult(new Location(LocationType.STATION, locationId, location), departures, null);
 			}
 			else
 			{

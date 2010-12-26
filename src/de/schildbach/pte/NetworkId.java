@@ -23,7 +23,7 @@ package de.schildbach.pte;
 public enum NetworkId
 {
 	// Germany
-	DB, BVG, RMV, MVV, AVV, VMV, GVH, BSVAG, NASA, VVO, VMS, VGS, VRR, VRN, VVS, NALDO, DING, KVV,
+	DB, BVG, RMV, MVV, INVG, AVV, VMV, GVH, BSVAG, NASA, VVO, VMS, VGS, VRR, VRN, VVS, NALDO, DING, KVV,
 
 	// Austria
 	OEBB, VOR, LINZ, SVV, IVB, STV,
@@ -42,6 +42,9 @@ public enum NetworkId
 
 	// Slovenia
 	MARIBOR,
+
+	// Italy
+	ATC,
 
 	// United Arab Emirates
 	DUB,

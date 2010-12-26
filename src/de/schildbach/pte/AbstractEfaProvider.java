@@ -873,7 +873,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 					XmlPullUtil.exit(pp, "itdDepartureList");
 				}
 
-				return new QueryDeparturesResult(new Location(LocationType.STATION, locationId, 0, 0, location), departures, lines);
+				return new QueryDeparturesResult(new Location(LocationType.STATION, locationId, location), departures, lines);
 			}
 			else if ("notidentified".equals(nameState))
 			{
@@ -1182,8 +1182,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 							final String destinationIdStr = pp.getAttributeValue(null, "destID");
 							final String destinationName = normalizeLocationName(pp.getAttributeValue(null, "destination"));
 							final Location destination = destinationIdStr.length() > 0 ? new Location(LocationType.STATION,
-									Integer.parseInt(destinationIdStr), 0, 0, destinationName) : new Location(LocationType.ANY, 0, 0, 0,
-									destinationName);
+									Integer.parseInt(destinationIdStr), destinationName) : new Location(LocationType.ANY, 0, destinationName);
 							String line;
 							if ("AST".equals(pp.getAttributeValue(null, "symbol")))
 								line = "BAST";
@@ -1218,7 +1217,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 									XmlPullUtil.require(pp, "itdDateTime");
 									processItdDateTime(pp, stopTime);
 									XmlPullUtil.exit(pp, "itdPoint");
-									intermediateStops.add(new Stop(new Location(LocationType.STATION, stopId, 0, 0, stopName), stopPosition, stopTime
+									intermediateStops.add(new Stop(new Location(LocationType.STATION, stopId, stopName), stopPosition, stopTime
 											.getTime()));
 								}
 								XmlPullUtil.exit(pp, "itdStopSeq");

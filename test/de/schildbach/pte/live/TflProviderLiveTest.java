@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package de.schildbach.pte.live;
 
 import java.util.Date;
@@ -55,7 +56,7 @@ public class TflProviderLiveTest
 	@Test
 	public void postcodeConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, 0, 0, "sw19 8ta"), null, new Location(
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, "sw19 8ta"), null, new Location(
 				LocationType.STATION, 1016019, 51655903, -397249, "Watford (Herts), Watford Town Centre"), new Date(), true, ALL_PRODUCTS,
 				WalkSpeed.NORMAL);
 		System.out.println(result);

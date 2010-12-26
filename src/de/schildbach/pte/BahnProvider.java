@@ -81,13 +81,13 @@ public final class BahnProvider extends AbstractHafasProvider
 		final Matcher mSingle = P_SINGLE_NAME.matcher(page);
 		if (mSingle.matches())
 		{
-			results.add(new Location(LocationType.STATION, Integer.parseInt(mSingle.group(2)), 0, 0, ParserUtils.resolveEntities(mSingle.group(1))));
+			results.add(new Location(LocationType.STATION, Integer.parseInt(mSingle.group(2)), ParserUtils.resolveEntities(mSingle.group(1))));
 		}
 		else
 		{
 			final Matcher mMulti = P_MULTI_NAME.matcher(page);
 			while (mMulti.find())
-				results.add(new Location(LocationType.STATION, Integer.parseInt(mMulti.group(1)), 0, 0, ParserUtils.resolveEntities(mMulti.group(2))));
+				results.add(new Location(LocationType.STATION, Integer.parseInt(mMulti.group(1)), ParserUtils.resolveEntities(mMulti.group(2))));
 		}
 
 		return results;
@@ -189,7 +189,7 @@ public final class BahnProvider extends AbstractHafasProvider
 			{
 				final String address = ParserUtils.resolveEntities(mAddresses.group(1)).trim();
 				if (!addresses.contains(address))
-					addresses.add(new Location(LocationType.ANY, 0, 0, 0, address + "!"));
+					addresses.add(new Location(LocationType.ANY, 0, address + "!"));
 			}
 
 			if (type.equals("REQ0JourneyStopsS0K"))
@@ -249,8 +249,8 @@ public final class BahnProvider extends AbstractHafasProvider
 		final Matcher mHead = P_CONNECTIONS_HEAD.matcher(page);
 		if (mHead.matches())
 		{
-			final Location from = new Location(LocationType.ANY, 0, 0, 0, ParserUtils.resolveEntities(mHead.group(1)));
-			final Location to = new Location(LocationType.ANY, 0, 0, 0, ParserUtils.resolveEntities(mHead.group(2)));
+			final Location from = new Location(LocationType.ANY, 0, ParserUtils.resolveEntities(mHead.group(1)));
+			final Location to = new Location(LocationType.ANY, 0, ParserUtils.resolveEntities(mHead.group(2)));
 			final Date currentDate = ParserUtils.parseDate(mHead.group(3));
 			final String linkEarlier = mHead.group(4) != null ? ParserUtils.resolveEntities(mHead.group(4)) : null;
 			final String linkLater = mHead.group(5) != null ? ParserUtils.resolveEntities(mHead.group(5)) : null;
@@ -522,7 +522,7 @@ public final class BahnProvider extends AbstractHafasProvider
 			}
 		}
 
-		return new QueryDeparturesResult(new Location(LocationType.STATION, Integer.parseInt(stationId), 0, 0, null), departures, null);
+		return new QueryDeparturesResult(new Location(LocationType.STATION, Integer.parseInt(stationId), null), departures, null);
 	}
 
 	@Override

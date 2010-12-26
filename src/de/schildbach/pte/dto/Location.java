@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package de.schildbach.pte.dto;
 
 import java.io.Serializable;
@@ -34,6 +35,15 @@ public final class Location implements Serializable
 		this.id = id;
 		this.lat = lat;
 		this.lon = lon;
+		this.name = name;
+	}
+
+	public Location(final LocationType type, final int id, final String name)
+	{
+		this.type = type;
+		this.id = id;
+		this.lat = 0;
+		this.lon = 0;
 		this.name = name;
 	}
 
