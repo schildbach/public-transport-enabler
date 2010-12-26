@@ -118,6 +118,7 @@ public final class BvgProvider extends AbstractHafasProvider
 	private final static Pattern P_NEARBY_PAGE = Pattern.compile("<table class=\"ivuTableOverview\".*?<tbody>(.*?)</tbody>", Pattern.DOTALL);
 	private final static Pattern P_NEARBY_COARSE = Pattern.compile("<tr>(.*?)</tr>", Pattern.DOTALL);
 	private final static Pattern P_NEARBY_FINE_LOCATION = Pattern.compile("input=(\\d+)&[^\"]*\">([^<]*)<");
+	private static final Pattern P_NEARBY_ERRORS = Pattern.compile("(derzeit leider nicht bearbeitet werden)");
 
 	@Override
 	public NearbyStationsResult nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
@@ -130,6 +131,13 @@ public final class BvgProvider extends AbstractHafasProvider
 
 		final String uri = nearbyStationUri(stationId);
 		final CharSequence page = ParserUtils.scrape(uri);
+
+		final Matcher mError = P_NEARBY_ERRORS.matcher(page);
+		if (mError.find())
+		{
+			if (mError.group(1) != null)
+				return new NearbyStationsResult(NearbyStationsResult.Status.INVALID_STATION);
+		}
 
 		final Matcher mOwn = P_NEARBY_OWN.matcher(page);
 		if (mOwn.find())
@@ -550,14 +558,21 @@ public final class BvgProvider extends AbstractHafasProvider
 			+ "<a href=\"/Fahrinfo/bin/stboard\\.bin/dox/dox.*?evaId=(\\d+)&[^>]*>" // destinationId
 			+ "\\s*(.*?)\\s*</a>.*?" // destination
 	, Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_SERVICE_DOWN = Pattern.compile("Wartungsarbeiten");
+	private static final Pattern P_DEPARTURES_ERRORS = Pattern.compile("(derzeit leider nicht bearbeitet werden)|(Wartungsarbeiten)");
 
 	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures) throws IOException
 	{
-		final CharSequence page = ParserUtils.scrape(departuresQueryUri(stationId, maxDepartures));
+		final String uri = departuresQueryUri(stationId, maxDepartures);
+		final CharSequence page = ParserUtils.scrape(uri);
 
-		if (P_DEPARTURES_SERVICE_DOWN.matcher(page).find())
-			return new QueryDeparturesResult(Status.SERVICE_DOWN, Integer.parseInt(stationId));
+		final Matcher mError = P_DEPARTURES_ERRORS.matcher(page);
+		if (mError.find())
+		{
+			if (mError.group(1) != null)
+				return new QueryDeparturesResult(Status.INVALID_STATION, Integer.parseInt(stationId));
+			if (mError.group(2) != null)
+				return new QueryDeparturesResult(Status.SERVICE_DOWN, Integer.parseInt(stationId));
+		}
 
 		final boolean live = stationId.length() == 6;
 
@@ -610,7 +625,7 @@ public final class BvgProvider extends AbstractHafasProvider
 				}
 				else
 				{
-					throw new IllegalArgumentException("cannot parse '" + mDepCoarse.group(1) + "' on " + stationId);
+					throw new IllegalArgumentException("cannot parse '" + mDepCoarse.group(1) + "' on " + uri);
 				}
 			}
 
@@ -618,7 +633,7 @@ public final class BvgProvider extends AbstractHafasProvider
 		}
 		else
 		{
-			return new QueryDeparturesResult(Status.NO_INFO, Integer.parseInt(stationId));
+			throw new IllegalArgumentException("cannot parse '" + page + "' on " + uri);
 		}
 	}
 
