@@ -690,8 +690,8 @@ public final class BahnProvider extends AbstractHafasProvider
 				return "ROLA" + number;
 			if (type.equals("ME")) // metronom
 				return "RME" + number;
-			if (type.equals("MEr")) // metronom regional
-				return "RMEr" + number;
+			if (type.equals("MEr") || type.equals("MER")) // metronom regional
+				return "RMER" + number;
 			if (type.equals("ERB")) // eurobahn (Keolis Deutschland)
 				return "RERB" + number;
 			if (type.equals("EB")) // Erfurter Bahn
