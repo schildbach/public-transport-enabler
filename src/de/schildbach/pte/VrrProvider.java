@@ -19,6 +19,7 @@ package de.schildbach.pte;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.util.ParserUtils;
@@ -56,10 +57,14 @@ public class VrrProvider extends AbstractEfaProvider
 		return String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), "ISO-8859-1"));
 	}
 
+	private static final String NEARBY_LATLON_URI = API_BASE
+			+ "XSLT_DM_REQUEST"
+			+ "?outputFormat=XML&mode=direct&coordOutputFormat=WGS84&mergeDep=1&useAllStops=1&name_dm=%2.6f:%2.6f:WGS84&type_dm=coord&itOptionsActive=1&ptOptionsActive=1&useProxFootSearch=1";
+
 	@Override
 	protected String nearbyLatLonUri(final int lat, final int lon)
 	{
-		return null;
+		return String.format(Locale.ENGLISH, NEARBY_LATLON_URI, latLonToDouble(lon), latLonToDouble(lat));
 	}
 
 	private static final String NEARBY_STATION_URI = API_BASE
@@ -69,7 +74,7 @@ public class VrrProvider extends AbstractEfaProvider
 	@Override
 	protected String nearbyStationUri(final String stationId)
 	{
-		return String.format(NEARBY_STATION_URI, stationId);
+		return String.format(NEARBY_STATION_URI, ParserUtils.urlEncode(stationId, "ISO-8859-1"));
 	}
 
 	@Override
