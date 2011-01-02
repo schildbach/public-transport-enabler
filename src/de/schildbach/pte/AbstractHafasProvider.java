@@ -645,6 +645,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return "R" + normalizedName;
 		if ("ATZ".equals(normalizedType)) // Autotunnelzug
 			return "R" + normalizedName;
+		if ("EXT".equals(normalizedType)) // Extrazug
+			return "R" + normalizedName;
 
 		if ("S".equals(normalizedType)) // S-Bahn
 			return "S" + normalizedName;
