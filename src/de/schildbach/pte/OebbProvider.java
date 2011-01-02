@@ -183,19 +183,47 @@ public class OebbProvider extends AbstractHafasProvider
 		for (final char p : products.toCharArray())
 		{
 			if (p == 'I')
-				uri.append("&REQ0JourneyProduct_prod_section_0_0=1&REQ0JourneyProduct_prod_section_0_1=1&REQ0JourneyProduct_prod_section_0_2");
+			{
+				uri.append("&REQ0JourneyProduct_prod_section_0_0=1&REQ0JourneyProduct_prod_section_0_1=1&REQ0JourneyProduct_prod_section_0_2=1");
+				if (via != null)
+					uri.append("&REQ0JourneyProduct_prod_section_1_0=1&REQ0JourneyProduct_prod_section_1_1=1&REQ0JourneyProduct_prod_section_1_2=1");
+			}
 			if (p == 'R')
+			{
 				uri.append("&REQ0JourneyProduct_prod_section_0_3=1&REQ0JourneyProduct_prod_section_0_4=1");
+				if (via != null)
+					uri.append("&REQ0JourneyProduct_prod_section_1_3=1&REQ0JourneyProduct_prod_section_1_4=1");
+			}
 			if (p == 'S')
+			{
 				uri.append("&REQ0JourneyProduct_prod_section_0_5=1");
+				if (via != null)
+					uri.append("&REQ0JourneyProduct_prod_section_1_5=1");
+			}
 			if (p == 'U')
+			{
 				uri.append("&REQ0JourneyProduct_prod_section_0_8=1");
+				if (via != null)
+					uri.append("&REQ0JourneyProduct_prod_section_1_8=1");
+			}
 			if (p == 'T')
+			{
 				uri.append("&REQ0JourneyProduct_prod_section_0_9=1");
+				if (via != null)
+					uri.append("&REQ0JourneyProduct_prod_section_1_9=1");
+			}
 			if (p == 'B')
+			{
 				uri.append("&REQ0JourneyProduct_prod_section_0_6=1&REQ0JourneyProduct_prod_section_0_11=1");
+				if (via != null)
+					uri.append("&REQ0JourneyProduct_prod_section_1_6=1&REQ0JourneyProduct_prod_section_1_11=1");
+			}
 			if (p == 'F')
+			{
 				uri.append("&REQ0JourneyProduct_prod_section_0_7=1");
+				if (via != null)
+					uri.append("&REQ0JourneyProduct_prod_section_1_7=1");
+			}
 			// FIXME if (p == 'C')
 		}
 
@@ -224,6 +252,7 @@ public class OebbProvider extends AbstractHafasProvider
 
 		// query
 		final String query = connectionsQuery(from, via, to, date, dep, products, walkSpeed);
+		System.out.println(query);
 		final CharSequence page = ParserUtils.scrape(baseUri, true, query, null, true);
 
 		final Matcher mError = P_QUERY_CONNECTIONS_ERROR.matcher(page);
