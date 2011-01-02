@@ -252,7 +252,6 @@ public class OebbProvider extends AbstractHafasProvider
 
 		// query
 		final String query = connectionsQuery(from, via, to, date, dep, products, walkSpeed);
-		System.out.println(query);
 		final CharSequence page = ParserUtils.scrape(baseUri, true, query, null, true);
 
 		final Matcher mError = P_QUERY_CONNECTIONS_ERROR.matcher(page);
