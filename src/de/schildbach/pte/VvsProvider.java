@@ -69,7 +69,7 @@ public class VvsProvider extends AbstractEfaProvider
 	@Override
 	protected String nearbyStationUri(final String stationId)
 	{
-		return String.format(NEARBY_STATION_URI, stationId);
+		return String.format(NEARBY_STATION_URI, ParserUtils.urlEncode(stationId, "ISO-8859-1"));
 	}
 
 	@Override
