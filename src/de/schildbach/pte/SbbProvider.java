@@ -20,6 +20,7 @@ package de.schildbach.pte;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -123,7 +124,8 @@ public class SbbProvider extends AbstractHafasProvider
 		{
 			// messages
 			if (mHeadCoarse.group(3) != null)
-				return new QueryDeparturesResult(Status.NO_INFO, Integer.parseInt(stationId));
+				return new QueryDeparturesResult(new Location(LocationType.STATION, Integer.parseInt(stationId), null),
+						Collections.<Departure> emptyList(), null);
 			else if (mHeadCoarse.group(5) != null)
 				return new QueryDeparturesResult(Status.INVALID_STATION, Integer.parseInt(stationId));
 			else if (mHeadCoarse.group(6) != null)

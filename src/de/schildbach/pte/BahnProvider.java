@@ -22,6 +22,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -478,7 +479,8 @@ public final class BahnProvider extends AbstractHafasProvider
 			if (code.equals("H730")) // Your input is not valid
 				return new QueryDeparturesResult(QueryDeparturesResult.Status.INVALID_STATION, Integer.parseInt(stationId));
 			if (code.equals("H890")) // No trains in result
-				return new QueryDeparturesResult(QueryDeparturesResult.Status.NO_INFO, Integer.parseInt(stationId));
+				return new QueryDeparturesResult(new Location(LocationType.STATION, Integer.parseInt(stationId), null),
+						Collections.<Departure> emptyList(), null);
 			throw new IllegalArgumentException("unknown error " + code + ", " + text);
 		}
 

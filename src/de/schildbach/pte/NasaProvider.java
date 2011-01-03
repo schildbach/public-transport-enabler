@@ -22,6 +22,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -142,7 +143,8 @@ public class NasaProvider extends AbstractHafasProvider
 		{
 			// messages
 			if (mHeadCoarse.group(3) != null)
-				return new QueryDeparturesResult(Status.NO_INFO, Integer.parseInt(stationId));
+				return new QueryDeparturesResult(new Location(LocationType.STATION, Integer.parseInt(stationId), null),
+						Collections.<Departure> emptyList(), null);
 			else if (mHeadCoarse.group(4) != null)
 				return new QueryDeparturesResult(Status.INVALID_STATION, Integer.parseInt(stationId));
 			else if (mHeadCoarse.group(5) != null)
