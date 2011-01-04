@@ -800,6 +800,14 @@ public class OebbProvider extends AbstractHafasProvider
 			return 'R';
 		if (ucType.equals("P")) // Kasbachtalbahn, via JSON API
 			return 'R';
+		if (ucType.equals("SBS")) // Städtebahn Sachsen, via JSON API
+			return 'R';
+		if (ucType.equals("AG")) // Ingolstadt-Landshut, via JSON API
+			return 'R';
+		if (ucType.equals("TLX")) // Trilex (Vogtlandbahn), via JSON API
+			return 'R';
+		if (ucType.equals("BE")) // Grensland-Express, via JSON API
+			return 'R';
 
 		if (ucType.equals("RSB")) // Schnellbahn Wien
 			return 'S';
@@ -850,6 +858,8 @@ public class OebbProvider extends AbstractHafasProvider
 			return 'F';
 		if (ucType.equals("F")) // Fähre
 			return 'F';
+		if (ucType.equals("FÄHRE")) // via JSON API
+			return 'F';
 
 		if (ucType.equals("SB")) // Connections only?
 			return 'C';
@@ -858,6 +868,8 @@ public class OebbProvider extends AbstractHafasProvider
 		if (ucType.equals("SEILBAHN")) // via JSON API
 			return 'C';
 		if (ucType.equals("SSB")) // Graz Schlossbergbahn
+			return 'C';
+		if (ucType.equals("HBB")) // Innsbruck Hungerburgbahn, via JSON API
 			return 'C';
 
 		if (ucType.equals("FLUG")) // via JSON API
