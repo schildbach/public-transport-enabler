@@ -565,7 +565,7 @@ public final class BvgProvider extends AbstractHafasProvider
 			+ "<a href=\"/Fahrinfo/bin/stboard\\.bin/dox/dox.*?evaId=(\\d+)&[^>]*>" // destinationId
 			+ "\\s*(.*?)\\s*</a>.*?" // destination
 	, Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_LIVE_ERRORS = Pattern.compile("(Haltestelle:)");
+	private static final Pattern P_DEPARTURES_LIVE_ERRORS = Pattern.compile("(Haltestelle:)|(Wartungsgr&uuml;nden)");
 	private static final Pattern P_DEPARTURES_PLAN_ERRORS = Pattern.compile("(derzeit leider nicht bearbeitet werden)|(Wartungsarbeiten)");
 
 	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures) throws IOException
@@ -580,6 +580,8 @@ public final class BvgProvider extends AbstractHafasProvider
 			{
 				if (mError.group(1) != null)
 					return new QueryDeparturesResult(Status.INVALID_STATION, Integer.parseInt(stationId));
+				if (mError.group(2) != null)
+					return new QueryDeparturesResult(Status.SERVICE_DOWN, Integer.parseInt(stationId));
 			}
 
 			// parse page
