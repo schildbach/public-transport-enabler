@@ -794,6 +794,14 @@ public final class BahnProvider extends AbstractHafasProvider
 				return "RDZ " + number;
 			if (type.equals("ag")) // Regensburg-Landshut
 				return "Rag " + number;
+			if (type.equals("TLX")) // Trilex (Vogtlandbahn)
+				return "RTLX" + number;
+			if (type.equals("BE")) // Grensland-Express
+				return "RBE" + number;
+			if (type.equals("ATB")) // Autoschleuse Tauernbahn
+				return "RATB" + number;
+			if (type.equals("ARZ")) // Brig-Iselle di Trasquera
+				return "RARZ" + number;
 
 			if (type.equals("S"))
 				return "SS" + number;
