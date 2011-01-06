@@ -341,7 +341,7 @@ public class OebbProvider extends AbstractHafasProvider
 	private static final Pattern P_CONNECTION_DETAILS_COARSE = Pattern.compile("" //
 			+ "<tr class=\"tpDetails (?:conFirstSecFirstRow|intermediateSection|conLastSecLastRow)\">\n(.*?)</tr>\n" //
 			+ "<tr class=\"tpDetails (?:conFirstSecFirstRow|intermediateSection|conLastSecLastRow)\">\n(.*?)</tr>\n" //
-			+ "<tr class=\"tpDetails sectionInfo\">" //
+			+ "<tr class=\"tpDetails sectionInfo\">\n(.*?)</tr>\n" //
 	, Pattern.DOTALL);
 	private static final Pattern P_CONNECTION_DETAILS_FINE = Pattern.compile(".*?" //
 			+ "<td class=\"station\">(?:<a href=\"http://fahrplan\\.oebb\\.at/bin/stboard\\.exe/dn.*?input=(\\d+)&[^>]*>)?" // departureId
@@ -356,6 +356,7 @@ public class OebbProvider extends AbstractHafasProvider
 			+ "<td class=\"date\">(?:(\\d{2}\\.\\d{2}\\.\\d{2})|&nbsp;)</td>.*?" // arrivalDate
 			+ "<td class=\"timeValue\">\n?<span>an (\\d{2}:\\d{2}).*?" // arrivalTime
 			+ "<td class=\"platform\">\\s*(?:&nbsp;|(.*?))\\s*</td>.*?" // arrivalPosition
+			+ "<td[^>]* class=\"section_remarks\">(?:.*?Richtung\\:\\s*([^\n]*)\n)?.*?</td>?.*?" // destination
 	, Pattern.DOTALL);
 
 	private QueryConnectionsResult queryConnections(final String firstUri, final CharSequence firstPage) throws IOException
@@ -415,7 +416,7 @@ public class OebbProvider extends AbstractHafasProvider
 					final Matcher mDetCoarse = P_CONNECTION_DETAILS_COARSE.matcher(details);
 					while (mDetCoarse.find())
 					{
-						final String set = mDetCoarse.group(1) + mDetCoarse.group(2);
+						final String set = mDetCoarse.group(1) + mDetCoarse.group(2) + mDetCoarse.group(3);
 
 						final Matcher mDetFine = P_CONNECTION_DETAILS_FINE.matcher(set);
 						if (mDetFine.matches())
@@ -458,7 +459,10 @@ public class OebbProvider extends AbstractHafasProvider
 
 								final String arrivalPosition = mDetFine.group(12) != null ? ParserUtils.resolveEntities(mDetFine.group(12)) : null;
 
-								final Connection.Trip trip = new Connection.Trip(line, lineColors(line), null, detailsDepartureDateTime,
+								final Location destination = mDetFine.group(13) != null ? new Location(LocationType.ANY, 0,
+										ParserUtils.resolveEntities(mDetFine.group(13))) : null;
+
+								final Connection.Trip trip = new Connection.Trip(line, lineColors(line), destination, detailsDepartureDateTime,
 										departurePosition, departureId, departure, detailsArrivalDateTime, arrivalPosition, arrivalId, arrival, null);
 								connection.parts.add(trip);
 							}
