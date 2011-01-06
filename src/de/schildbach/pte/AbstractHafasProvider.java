@@ -343,7 +343,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 					// journey
 					String line = null;
-					String direction = null;
+					Location destination = null;
 					int min = 0;
 
 					final String tag = pp.getName();
@@ -377,7 +377,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 							}
 							else if ("DIRECTION".equals(attrName))
 							{
-								direction = attributeVariants.get("NORMAL");
+								destination = new Location(LocationType.ANY, 0, attributeVariants.get("NORMAL"));
 							}
 						}
 						XmlPullUtil.exit(pp);
@@ -424,9 +424,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 					if (min == 0 || line != null)
 					{
-						parts.add(new Connection.Trip(line, lineColors(line), new Location(LocationType.ANY, 0, direction), departureTime,
-								departurePos, sectionDeparture.id, sectionDeparture.name, arrivalTime, arrivalPos, sectionArrival.id,
-								sectionArrival.name, null));
+						parts.add(new Connection.Trip(line, lineColors(line), destination, departureTime, departurePos, sectionDeparture.id,
+								sectionDeparture.name, arrivalTime, arrivalPos, sectionArrival.id, sectionArrival.name, null));
 					}
 					else
 					{
