@@ -15,40 +15,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.schildbach.pte;
+package de.schildbach.pte.live;
+
+import org.junit.Test;
+
+import de.schildbach.pte.VvmProvider;
+import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.QueryDeparturesResult;
 
 /**
  * @author Andreas Schildbach
  */
-public enum NetworkId
+public class VvmProviderLiveTest
 {
-	// Germany
-	DB, BVG, RMV, MVV, INVG, AVV, VMV, SH, GVH, BSVAG, NASA, VVO, VMS, VGS, VRR, VRN, VVS, NALDO, DING, KVV, VVM,
+	private final VvmProvider provider = new VvmProvider();
 
-	// Austria
-	OEBB, VOR, LINZ, SVV, IVB, STV,
+	@Test
+	public void nearbyStation() throws Exception
+	{
+		final NearbyStationsResult result = provider.nearbyStations("Würzburg", 0, 0, 0, 0);
 
-	// Switzerland
-	SBB, BVB, VBL,
+		System.out.println(result.stations.size() + "  " + result.stations);
+	}
 
-	// Belgium
-	SNCB,
+	@Test
+	public void queryDepartures() throws Exception
+	{
+		final QueryDeparturesResult result = provider.queryDepartures("3000510", 0);
 
-	// Netherlands
-	NS,
-
-	// United Kingdom
-	TFL, TLEM, TLEA, TLSE, TLSW,
-
-	// Slovenia
-	MARIBOR,
-
-	// Italy
-	ATC,
-
-	// United Arab Emirates
-	DUB,
-
-	// United States
-	SF
+		System.out.println(result.departures.size() + "  " + result.departures);
+	}
 }
