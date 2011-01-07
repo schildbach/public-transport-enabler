@@ -14,11 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package de.schildbach.pte;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.util.ParserUtils;
@@ -35,6 +37,12 @@ public class TlseProvider extends AbstractEfaProvider
 	public NetworkId id()
 	{
 		return NETWORK_ID;
+	}
+
+	@Override
+	protected TimeZone timeZone()
+	{
+		return TimeZone.getTimeZone("Europe/London");
 	}
 
 	public boolean hasCapabilities(Capability... capabilities)
