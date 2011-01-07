@@ -891,10 +891,14 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return 'B';
 		if (ucType.equals("BUSSEV")) // Schienen-Ersatz-Verkehr
 			return 'B';
+		if (ucType.equals("BSV")) // Bus SEV
+			return 'B';
 		if (ucType.equals("FB")) // Luxemburg-Saarbrücken
 			return 'B';
 
 		// Ferry
+		if (ucType.equals("SCH")) // Schiff
+			return 'F';
 		if (ucType.equals("AS")) // SyltShuttle, eigentlich Autoreisezug
 			return 'F';
 

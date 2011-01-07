@@ -644,7 +644,7 @@ public final class BahnProvider extends AbstractHafasProvider
 				return "RVBG" + number;
 			if (type.equals("VX")) // Vogtland Express
 				return "RVX" + number;
-			if (type.equals("HzL")) // Hohenzollerische Landesbahn
+			if (type.equals("HzL") || type.equals("HZL")) // Hohenzollerische Landesbahn
 				return "RHzL" + number;
 			if (type.equals("BOB")) // Bayerische Oberlandbahn
 				return "RBOB" + number;
