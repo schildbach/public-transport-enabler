@@ -146,7 +146,7 @@ public final class BvgProvider extends AbstractHafasProvider
 			final int parsedLon = (int) (Float.parseFloat(mOwn.group(2)) * 1E6);
 			final int parsedLat = (int) (Float.parseFloat(mOwn.group(3)) * 1E6);
 			final String parsedName = ParserUtils.urlDecode(mOwn.group(4), "ISO-8859-1");
-			stations.add(new Station(parsedId, parsedName, parsedLat, parsedLon, 0, null, null));
+			stations.add(new Station(parsedId, null, parsedName, null, parsedLat, parsedLon, 0, null, null));
 		}
 
 		final Matcher mPage = P_NEARBY_PAGE.matcher(page);
@@ -162,7 +162,7 @@ public final class BvgProvider extends AbstractHafasProvider
 				{
 					final int parsedId = Integer.parseInt(mFineLocation.group(1));
 					final String parsedName = ParserUtils.resolveEntities(mFineLocation.group(2));
-					stations.add(new Station(parsedId, parsedName, 0, 0, 0, null, null));
+					stations.add(new Station(parsedId, null, parsedName, null, 0, 0, 0, null, null));
 				}
 				else
 				{

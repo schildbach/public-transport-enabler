@@ -766,7 +766,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 					parsedLat = Integer.parseInt(mFineCoords.group(2));
 				}
 
-				stations.add(new Station(parsedId, parsedName, parsedLat, parsedLon, 0, null, null));
+				stations.add(new Station(parsedId, null, parsedName, null, parsedLat, parsedLon, 0, null, null));
 			}
 			else
 			{

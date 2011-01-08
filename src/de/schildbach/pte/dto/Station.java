@@ -24,17 +24,21 @@ public final class Station
 {
 	// data
 	public final int id;
+	public final String place;
 	public final String name;
+	public final String longName;
 	public final int latitude, longitude;
 	public float distance;
 	public final String[] lines;
 	public final int[][] lineColors;
 
-	public Station(final int id, final String name, final int latitude, final int longitude, final float distance, final String[] lines,
-			final int[][] lineColors)
+	public Station(final int id, final String place, final String name, final String longName, final int latitude, final int longitude, final float distance,
+			final String[] lines, final int[][] lineColors)
 	{
 		this.id = id;
+		this.place = place;
 		this.name = name;
+		this.longName = longName;
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.distance = distance;
@@ -47,9 +51,13 @@ public final class Station
 	{
 		StringBuilder builder = new StringBuilder("Station(");
 		builder.append(id);
-		builder.append(",");
+		builder.append("|");
+		builder.append(place);
+		builder.append("|");
 		builder.append(name);
-		builder.append(",");
+		builder.append("|");
+		builder.append(longName);
+		builder.append("|");
 		builder.append(latitude);
 		builder.append(",");
 		builder.append(longitude);
