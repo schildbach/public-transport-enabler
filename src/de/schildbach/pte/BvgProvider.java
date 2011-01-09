@@ -146,7 +146,7 @@ public final class BvgProvider extends AbstractHafasProvider
 			final int parsedLon = (int) (Float.parseFloat(mOwn.group(2)) * 1E6);
 			final int parsedLat = (int) (Float.parseFloat(mOwn.group(3)) * 1E6);
 			final String parsedName = ParserUtils.urlDecode(mOwn.group(4), "ISO-8859-1");
-			stations.add(new Station(parsedId, null, parsedName, null, parsedLat, parsedLon, 0, null, null));
+			stations.add(newStation(parsedId, parsedName, parsedLat, parsedLon));
 		}
 
 		final Matcher mPage = P_NEARBY_PAGE.matcher(page);
@@ -162,7 +162,9 @@ public final class BvgProvider extends AbstractHafasProvider
 				{
 					final int parsedId = Integer.parseInt(mFineLocation.group(1));
 					final String parsedName = ParserUtils.resolveEntities(mFineLocation.group(2));
-					stations.add(new Station(parsedId, null, parsedName, null, 0, 0, 0, null, null));
+					final Station station = newStation(parsedId, parsedName, 0, 0);
+					if (!stations.contains(station))
+						stations.add(station);
 				}
 				else
 				{
@@ -179,6 +181,28 @@ public final class BvgProvider extends AbstractHafasProvider
 		{
 			throw new IllegalArgumentException("cannot parse '" + page + "' on " + uri);
 		}
+	}
+
+	private Station newStation(final int id, final String parsedName, final int lat, final int lon)
+	{
+		String place = null, name = null, longName = null;
+
+		if (parsedName.endsWith(" (Berlin)"))
+		{
+			place = "Berlin";
+			name = parsedName.substring(0, parsedName.length() - 9);
+		}
+		else if (parsedName.startsWith("Potsdam, "))
+		{
+			place = "Potsdam";
+			name = parsedName.substring(9);
+		}
+		else
+		{
+			longName = parsedName;
+		}
+
+		return new Station(id, place, name, longName, lat, lon, 0, null, null);
 	}
 
 	public static final String STATION_URL_CONNECTION = "http://mobil.bvg.de/Fahrinfo/bin/query.bin/dox";
