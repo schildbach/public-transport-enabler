@@ -53,6 +53,21 @@ public class SfProvider extends AbstractEfaProvider
 		return false;
 	}
 
+	@Override
+	protected String parseLine(String mot, String name, String longName, String noTrainName)
+	{
+		if ("NORTHBOUND".equals(name))
+			return "?" + name;
+		else if ("SOUTHBOUND".equals(name))
+			return "?" + name;
+		else if ("EASTBOUND".equals(name))
+			return "?" + name;
+		else if ("WESTBOUND".equals(name))
+			return "?" + name;
+		else
+			return super.parseLine(mot, name, longName, noTrainName);
+	}
+
 	private static final String AUTOCOMPLETE_URI = API_BASE
 			+ "XSLT_TRIP_REQUEST2?outputFormat=XML&coordOutputFormat=WGS84&locationServerActive=1&type_origin=any&name_origin=%s";
 
