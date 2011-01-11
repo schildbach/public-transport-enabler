@@ -44,7 +44,8 @@ import java.util.regex.Pattern;
  */
 public final class ParserUtils
 {
-	private static final String SCRAPE_USER_AGENT = "Mozilla/5.0 (X11; U; Linux x86_64; de; rv:1.9.2.13) Gecko/20101206 Ubuntu/10.04 (lucid) Firefox/3.6.13";
+	private static final String SCRAPE_USER_AGENT = "Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.13) Gecko/20101206 Ubuntu/10.04 (lucid) Firefox/3.6.13";
+	private static final String SCRAPE_ACCEPT = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
 	private static final int SCRAPE_INITIAL_CAPACITY = 4096;
 	private static final int SCRAPE_CONNECT_TIMEOUT = 5000;
 	private static final int SCRAPE_READ_TIMEOUT = 15000;
@@ -87,6 +88,7 @@ public final class ParserUtils
 				connection.setConnectTimeout(SCRAPE_CONNECT_TIMEOUT);
 				connection.setReadTimeout(SCRAPE_READ_TIMEOUT);
 				connection.addRequestProperty("User-Agent", SCRAPE_USER_AGENT);
+				connection.addRequestProperty("Accept", SCRAPE_ACCEPT);
 				// workaround to disable Vodafone compression
 				connection.addRequestProperty("Cache-Control", "no-cache");
 
