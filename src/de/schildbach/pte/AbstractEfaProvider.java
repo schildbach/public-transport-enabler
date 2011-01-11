@@ -637,6 +637,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'R' + str;
 			if (type.equals("CAT")) // City Airport Train Wien
 				return 'R' + str;
+			if (type.equals("DZ")) // Dampfzug, STV
+				return 'R' + str;
 			if (type.equals("CD"))
 				return 'R' + str;
 			if (type.equals("PR"))
