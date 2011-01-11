@@ -78,7 +78,7 @@ public final class BvgProvider extends AbstractHafasProvider
 		return true;
 	}
 
-	private static final String AUTOCOMPLETE_NAME_URL = "http://mobil.bvg.de/Fahrinfo/bin/stboard.bin/dox/dox?input=";
+	private static final String AUTOCOMPLETE_NAME_URL = "http://mobil.bvg.de/Fahrinfo/bin/stboard.bin/dox/dox?input=%s";
 	private static final Pattern P_SINGLE_NAME = Pattern.compile(".*?Haltestelleninfo.*?<strong>(.*?)</strong>.*?input=(\\d+)&.*?", Pattern.DOTALL);
 	private static final Pattern P_MULTI_NAME = Pattern.compile("<a href=\\\"/Fahrinfo/bin/stboard\\.bin/dox.*?input=(\\d+)&.*?\">\\s*(.*?)\\s*</a>",
 			Pattern.DOTALL);
@@ -88,7 +88,8 @@ public final class BvgProvider extends AbstractHafasProvider
 	{
 		final List<Location> results = new ArrayList<Location>();
 
-		final CharSequence page = ParserUtils.scrape(AUTOCOMPLETE_NAME_URL + ParserUtils.urlEncode(constraint.toString()));
+		final String uri = String.format(AUTOCOMPLETE_NAME_URL, ParserUtils.urlEncode(constraint.toString()));
+		final CharSequence page = ParserUtils.scrape(uri);
 
 		final Matcher mSingle = P_SINGLE_NAME.matcher(page);
 		if (mSingle.matches())

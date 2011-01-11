@@ -17,9 +17,12 @@
 
 package de.schildbach.pte.live;
 
+import java.util.List;
+
 import org.junit.Test;
 
 import de.schildbach.pte.BvgProvider;
+import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 
@@ -31,9 +34,25 @@ public class BvgProviderLiveTest
 	private BvgProvider provider = new BvgProvider();
 
 	@Test
+	public void autocompleteIncomplete() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("nol");
+
+		list(autocompletes);
+	}
+
+	private void list(final List<Location> autocompletes)
+	{
+		System.out.print(autocompletes.size() + " ");
+		for (final Location autocomplete : autocompletes)
+			System.out.print(autocomplete.toDebugString() + " ");
+		System.out.println();
+	}
+
+	@Test
 	public void nearbyStation() throws Exception
 	{
-		final NearbyStationsResult result = provider.nearbyStations("9415052", 0, 0, 0, 0);
+		final NearbyStationsResult result = provider.nearbyStations("9220302", 0, 0, 0, 0);
 		System.out.println(result.stations.size() + "  " + result.stations);
 	}
 
