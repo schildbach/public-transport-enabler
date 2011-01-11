@@ -88,8 +88,9 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			if (!XmlPullUtil.jumpToStartTag(pp, null, "itdOdv") || !"origin".equals(pp.getAttributeValue(null, "usage")))
 				throw new IllegalStateException("cannot find <itdOdv usage=\"origin\" />");
 			XmlPullUtil.enter(pp, "itdOdv");
-			XmlPullUtil.enter(pp, "itdOdvPlace");
-			XmlPullUtil.exit(pp, "itdOdvPlace");
+
+			final String place = processItdOdvPlace(pp);
+
 			if (!XmlPullUtil.test(pp, "itdOdvName"))
 				throw new IllegalStateException("cannot find <itdOdvName />");
 			final String nameState = XmlPullUtil.attr(pp, "state");
@@ -99,7 +100,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 			if ("identified".equals(nameState) || "list".equals(nameState))
 				while (XmlPullUtil.test(pp, "odvNameElem"))
-					results.add(processOdvNameElem(pp));
+					results.add(processOdvNameElem(pp, place));
 
 			// parse assigned stops
 			if (XmlPullUtil.jumpToStartTag(pp, null, "itdOdvAssignedStops"))
@@ -127,7 +128,30 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		}
 	}
 
-	private Location processOdvNameElem(final XmlPullParser pp) throws XmlPullParserException, IOException
+	private String processItdOdvPlace(final XmlPullParser pp) throws XmlPullParserException, IOException
+	{
+		if (!XmlPullUtil.test(pp, "itdOdvPlace"))
+			throw new IllegalStateException("expecting <itdOdvPlace />");
+
+		final String placeState = XmlPullUtil.attr(pp, "state");
+
+		XmlPullUtil.enter(pp, "itdOdvPlace");
+		String place = null;
+		if ("identified".equals(placeState))
+		{
+			if (XmlPullUtil.test(pp, "odvPlaceElem"))
+			{
+				XmlPullUtil.enter(pp, "odvPlaceElem");
+				place = normalizeLocationName(pp.getText());
+				XmlPullUtil.exit(pp, "odvPlaceElem");
+			}
+		}
+		XmlPullUtil.exit(pp, "itdOdvPlace");
+
+		return place;
+	}
+
+	private Location processOdvNameElem(final XmlPullParser pp, final String defaultPlace) throws XmlPullParserException, IOException
 	{
 		if (!XmlPullUtil.test(pp, "odvNameElem"))
 			throw new IllegalStateException("expecting <odvNameElem />");
@@ -137,6 +161,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		final String stopIdStr = pp.getAttributeValue(null, "stopID");
 		final String poiIdStr = pp.getAttributeValue(null, "poiID");
 		final String streetIdStr = pp.getAttributeValue(null, "streetID");
+		final String place = !"loc".equals(anyType) ? normalizeLocationName(pp.getAttributeValue(null, "locality")) : null;
+		final String name = normalizeLocationName(pp.getAttributeValue(null, "objectName"));
 		int lat = 0, lon = 0;
 		if ("WGS84".equals(pp.getAttributeValue(null, "mapName")))
 		{
@@ -193,10 +219,10 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		}
 
 		XmlPullUtil.enter(pp, "odvNameElem");
-		final String name = normalizeLocationName(pp.getText());
+		final String longName = normalizeLocationName(pp.getText());
 		XmlPullUtil.exit(pp, "odvNameElem");
 
-		return new Location(type, id, lat, lon, name);
+		return new Location(type, id, lat, lon, place != null ? place : defaultPlace, name != null ? name : longName);
 	}
 
 	private Location processItdOdvAssignedStop(final XmlPullParser pp)
@@ -209,7 +235,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			lon = Integer.parseInt(pp.getAttributeValue(null, "x"));
 		}
 		final String name = normalizeLocationName(pp.getAttributeValue(null, "nameWithPlace"));
-		return new Location(LocationType.STATION, id, lat, lon, name);
+		return new Location(LocationType.STATION, id, lat, lon, null, name);
 	}
 
 	protected abstract String nearbyLatLonUri(int lat, int lon);
@@ -242,17 +268,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				throw new IllegalStateException("cannot find <itdOdv usage=\"dm\" />");
 			XmlPullUtil.enter(pp, "itdOdv");
 
-			String place = null;
-			XmlPullUtil.require(pp, "itdOdvPlace");
-			final String placeState = pp.getAttributeValue(null, "state");
-			XmlPullUtil.enter(pp, "itdOdvPlace");
-			if ("identified".equals(placeState))
-			{
-				XmlPullUtil.enter(pp, "odvPlaceElem");
-				place = normalizeLocationName(pp.getText());
-				XmlPullUtil.exit(pp, "odvPlaceElem");
-			}
-			XmlPullUtil.exit(pp, "itdOdvPlace");
+			final String place = processItdOdvPlace(pp);
 
 			XmlPullUtil.require(pp, "itdOdvName");
 			final String nameState = pp.getAttributeValue(null, "state");
@@ -311,8 +327,15 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 						}
 						else
 						{
-							XmlPullUtil.enter(pp, "itdOdvAssignedStop");
-							XmlPullUtil.exit(pp, "itdOdvAssignedStop");
+							if (!pp.isEmptyElementTag())
+							{
+								XmlPullUtil.enter(pp, "itdOdvAssignedStop");
+								XmlPullUtil.exit(pp, "itdOdvAssignedStop");
+							}
+							else
+							{
+								XmlPullUtil.next(pp);
+							}
 						}
 					}
 				}
@@ -333,7 +356,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 					XmlPullUtil.next(pp);
 				while (XmlPullUtil.test(pp, "odvNameElem"))
 				{
-					final Location location = processOdvNameElem(pp);
+					final Location location = processOdvNameElem(pp, place);
 					if (location.type == LocationType.STATION)
 					{
 						final Station newStation = new Station(location.id, null, location.name, null, location.lat, location.lon, 0, null, null);
@@ -391,6 +414,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 					return 'T' + str;
 				if (noTrainName.equals("Badner Bahn"))
 					return 'T' + str;
+				if (noTrainName.equals("Stadtbus"))
+					return 'B' + str;
 				if (noTrainName.equals("Citybus"))
 					return 'B' + str;
 				if (noTrainName.equals("Regionalbus"))
@@ -967,6 +992,9 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 	protected static String normalizeLocationName(final String name)
 	{
+		if (name == null || name.length() == 0)
+			return null;
+
 		return P_STATION_NAME_WHITESPACE.matcher(name).replaceAll(" ");
 	}
 
@@ -1043,51 +1071,52 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			{
 				final String usage = XmlPullUtil.attr(pp, "usage");
 				XmlPullUtil.enter(pp, "itdOdv");
-				XmlPullUtil.enter(pp, "itdOdvPlace");
-				XmlPullUtil.exit(pp, "itdOdvPlace");
+
+				final String place = processItdOdvPlace(pp);
+
 				if (!XmlPullUtil.test(pp, "itdOdvName"))
 					throw new IllegalStateException("cannot find <itdOdvName /> inside " + usage);
-				final String state = XmlPullUtil.attr(pp, "state");
+				final String nameState = XmlPullUtil.attr(pp, "state");
 				XmlPullUtil.enter(pp, "itdOdvName");
 				if (XmlPullUtil.test(pp, "itdMessage"))
 					XmlPullUtil.next(pp);
 
-				if ("list".equals(state))
+				if ("list".equals(nameState))
 				{
 					if ("origin".equals(usage))
 					{
 						ambiguousFrom = new ArrayList<Location>();
 						while (XmlPullUtil.test(pp, "odvNameElem"))
-							ambiguousFrom.add(processOdvNameElem(pp));
+							ambiguousFrom.add(processOdvNameElem(pp, place));
 					}
 					else if ("via".equals(usage))
 					{
 						ambiguousVia = new ArrayList<Location>();
 						while (XmlPullUtil.test(pp, "odvNameElem"))
-							ambiguousVia.add(processOdvNameElem(pp));
+							ambiguousVia.add(processOdvNameElem(pp, place));
 					}
 					else if ("destination".equals(usage))
 					{
 						ambiguousTo = new ArrayList<Location>();
 						while (XmlPullUtil.test(pp, "odvNameElem"))
-							ambiguousTo.add(processOdvNameElem(pp));
+							ambiguousTo.add(processOdvNameElem(pp, place));
 					}
 					else
 					{
 						throw new IllegalStateException("unknown usage: " + usage);
 					}
 				}
-				else if ("identified".equals(state))
+				else if ("identified".equals(nameState))
 				{
 					if (!XmlPullUtil.test(pp, "odvNameElem"))
 						throw new IllegalStateException("cannot find <odvNameElem /> inside " + usage);
 
 					if ("origin".equals(usage))
-						from = processOdvNameElem(pp);
+						from = processOdvNameElem(pp, place);
 					else if ("via".equals(usage))
-						via = processOdvNameElem(pp);
+						via = processOdvNameElem(pp, place);
 					else if ("destination".equals(usage))
-						to = processOdvNameElem(pp);
+						to = processOdvNameElem(pp, place);
 					else
 						throw new IllegalStateException("unknown usage: " + usage);
 				}

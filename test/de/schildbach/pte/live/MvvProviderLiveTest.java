@@ -57,8 +57,8 @@ public class MvvProviderLiveTest
 	@Test
 	public void connectionBetweenCoordinates() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, 48165238, 11577473, null), null,
-				new Location(LocationType.ADDRESS, 0, 47987199, 11326532, null), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, 48165238, 11577473, null, null), null,
+				new Location(LocationType.ADDRESS, 0, 47987199, 11326532, null, null), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);
@@ -67,7 +67,7 @@ public class MvvProviderLiveTest
 	@Test
 	public void connectionBetweenCoordinateAndStation() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, 48238341, 11478230, null), null,
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, 48238341, 11478230, null, null), null,
 				new Location(LocationType.ANY, 0, "Ostbahnhof"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
@@ -88,7 +88,7 @@ public class MvvProviderLiveTest
 	public void connectionBetweenStationAndAddress() throws Exception
 	{
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 1220, "Josephsburg"), null, new Location(
-				LocationType.ADDRESS, 0, 48188018, 11574239, "München Frankfurter Ring 35"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+				LocationType.ADDRESS, 0, 48188018, 11574239, null, "München Frankfurter Ring 35"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);

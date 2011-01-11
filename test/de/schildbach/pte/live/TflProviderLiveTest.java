@@ -57,7 +57,7 @@ public class TflProviderLiveTest
 	public void postcodeConnection() throws Exception
 	{
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, "sw19 8ta"), null, new Location(
-				LocationType.STATION, 1016019, 51655903, -397249, "Watford (Herts), Watford Town Centre"), new Date(), true, ALL_PRODUCTS,
+				LocationType.STATION, 1016019, 51655903, -397249, null, "Watford (Herts), Watford Town Centre"), new Date(), true, ALL_PRODUCTS,
 				WalkSpeed.NORMAL);
 		System.out.println(result);
 	}

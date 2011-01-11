@@ -110,15 +110,15 @@ public class OebbProvider extends AbstractHafasProvider
 
 						if (type == 1) // station
 						{
-							results.add(new Location(LocationType.STATION, localId, lat, lon, value));
+							results.add(new Location(LocationType.STATION, localId, lat, lon, null, value));
 						}
 						else if (type == 2) // address
 						{
-							results.add(new Location(LocationType.ADDRESS, 0, lat, lon, value));
+							results.add(new Location(LocationType.ADDRESS, 0, lat, lon, null, value));
 						}
 						else if (type == 4) // poi
 						{
-							results.add(new Location(LocationType.POI, localId, lat, lon, value));
+							results.add(new Location(LocationType.POI, localId, lat, lon, null, value));
 						}
 						else
 						{

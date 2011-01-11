@@ -27,14 +27,16 @@ public final class Location implements Serializable
 	public final LocationType type;
 	public final int id;
 	public final int lat, lon;
+	public final String place;
 	public final String name;
 
-	public Location(final LocationType type, final int id, final int lat, final int lon, final String name)
+	public Location(final LocationType type, final int id, final int lat, final int lon, final String place, final String name)
 	{
 		this.type = type;
 		this.id = id;
 		this.lat = lat;
 		this.lon = lon;
+		this.place = place;
 		this.name = name;
 	}
 
@@ -44,6 +46,7 @@ public final class Location implements Serializable
 		this.id = id;
 		this.lat = 0;
 		this.lon = 0;
+		this.place = null;
 		this.name = name;
 	}
 
@@ -55,7 +58,7 @@ public final class Location implements Serializable
 
 	public String toDebugString()
 	{
-		return "[" + type + " " + id + " " + lat + "/" + lon + " '" + name + "']";
+		return "[" + type + " " + id + " " + lat + "/" + lon + " " + (place != null ? "'" + place + "'" : "null") + " '" + name + "']";
 	}
 
 	@Override

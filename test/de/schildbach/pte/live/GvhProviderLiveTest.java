@@ -96,16 +96,17 @@ public class GvhProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 25000031, 0, 0, "Hannover Hauptbahnhof"),
-				null, new Location(LocationType.STATION, 25001141, "Hannover Bismarckstraße"), new Date(), true, ALL_PRODUCTS, WalkSpeed.FAST);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 25000031, 0, 0, null,
+				"Hannover Hauptbahnhof"), null, new Location(LocationType.STATION, 25001141, "Hannover Bismarckstraße"), new Date(), true,
+				ALL_PRODUCTS, WalkSpeed.FAST);
 		System.out.println(result);
 	}
 
 	@Test
 	public void connectionBetweenAnyAndAddress() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, 53069619, 8799202,
-				"bremen, neustadtswall 12"), null, new Location(LocationType.ADDRESS, 0, 53104124, 8788575, "Bremen Glücksburger Straße 37"),
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, 53069619, 8799202, null,
+				"bremen, neustadtswall 12"), null, new Location(LocationType.ADDRESS, 0, 53104124, 8788575, null, "Bremen Glücksburger Straße 37"),
 				new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
@@ -115,8 +116,8 @@ public class GvhProviderLiveTest
 	@Test
 	public void connectionBetweenAddresses() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, 53622859, 10133545,
-				"Zamenhofweg 14, 22159 Hamburg, Deutschland"), null, new Location(LocationType.ADDRESS, 0, 53734260, 9674990,
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, 53622859, 10133545, null,
+				"Zamenhofweg 14, 22159 Hamburg, Deutschland"), null, new Location(LocationType.ADDRESS, 0, 53734260, 9674990, null,
 				"Lehmkuhlen 5, 25337 Elmshorn, Deutschland"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);

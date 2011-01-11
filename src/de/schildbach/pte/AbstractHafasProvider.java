@@ -81,7 +81,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			final int id = Integer.parseInt(pp.getAttributeValue(null, "externalStationNr"));
 			final int x = Integer.parseInt(pp.getAttributeValue(null, "x"));
 			final int y = Integer.parseInt(pp.getAttributeValue(null, "y"));
-			return new Location(LocationType.STATION, id, y, x, name);
+			return new Location(LocationType.STATION, id, y, x, null, name);
 		}
 		throw new IllegalStateException("cannot handle: " + type);
 	}
@@ -96,7 +96,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 				name = null;
 			final int x = Integer.parseInt(pp.getAttributeValue(null, "x"));
 			final int y = Integer.parseInt(pp.getAttributeValue(null, "y"));
-			return new Location(LocationType.POI, 0, y, x, name);
+			return new Location(LocationType.POI, 0, y, x, null, name);
 		}
 		throw new IllegalStateException("cannot handle: " + type);
 	}
@@ -111,7 +111,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 				name = null;
 			final int x = Integer.parseInt(pp.getAttributeValue(null, "x"));
 			final int y = Integer.parseInt(pp.getAttributeValue(null, "y"));
-			return new Location(LocationType.ADDRESS, 0, y, x, name);
+			return new Location(LocationType.ADDRESS, 0, y, x, null, name);
 		}
 		throw new IllegalStateException("cannot handle: " + type);
 	}
