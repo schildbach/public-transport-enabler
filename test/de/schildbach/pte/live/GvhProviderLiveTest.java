@@ -88,17 +88,16 @@ public class GvhProviderLiveTest
 	@Test
 	public void incompleteConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, "hann"), null, new Location(
-				LocationType.ANY, 0, "laat"), new Date(), true, ALL_PRODUCTS, WalkSpeed.FAST);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, null, "hann"), null, new Location(
+				LocationType.ANY, 0, null, "laat"), new Date(), true, ALL_PRODUCTS, WalkSpeed.FAST);
 		System.out.println(result);
 	}
 
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 25000031, 0, 0, null,
-				"Hannover Hauptbahnhof"), null, new Location(LocationType.STATION, 25001141, "Hannover Bismarckstraße"), new Date(), true,
-				ALL_PRODUCTS, WalkSpeed.FAST);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 25000031, null, "Hannover Hauptbahnhof"),
+				null, new Location(LocationType.STATION, 25001141, null, "Hannover Bismarckstraße"), new Date(), true, ALL_PRODUCTS, WalkSpeed.FAST);
 		System.out.println(result);
 	}
 

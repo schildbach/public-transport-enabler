@@ -143,7 +143,7 @@ public class NasaProvider extends AbstractHafasProvider
 		{
 			// messages
 			if (mHeadCoarse.group(3) != null)
-				return new QueryDeparturesResult(new Location(LocationType.STATION, Integer.parseInt(stationId), null),
+				return new QueryDeparturesResult(new Location(LocationType.STATION, Integer.parseInt(stationId)),
 						Collections.<Departure> emptyList(), null);
 			else if (mHeadCoarse.group(4) != null)
 				return new QueryDeparturesResult(Status.INVALID_STATION, Integer.parseInt(stationId));
@@ -215,7 +215,7 @@ public class NasaProvider extends AbstractHafasProvider
 					}
 				}
 
-				return new QueryDeparturesResult(new Location(LocationType.STATION, Integer.parseInt(stationId), location), departures, null);
+				return new QueryDeparturesResult(new Location(LocationType.STATION, Integer.parseInt(stationId), null, location), departures, null);
 			}
 			else
 			{

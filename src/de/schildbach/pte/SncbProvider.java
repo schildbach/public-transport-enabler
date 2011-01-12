@@ -161,7 +161,7 @@ public class SncbProvider extends AbstractHafasProvider
 					}
 				}
 
-				return new QueryDeparturesResult(new Location(LocationType.STATION, Integer.parseInt(stationId), location), departures, null);
+				return new QueryDeparturesResult(new Location(LocationType.STATION, Integer.parseInt(stationId), null, location), departures, null);
 			}
 			else
 			{

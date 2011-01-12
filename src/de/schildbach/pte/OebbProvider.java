@@ -281,7 +281,7 @@ public class OebbProvider extends AbstractHafasProvider
 			{
 				final String address = ParserUtils.resolveEntities(mAddresses.group(1)).trim();
 				if (!addresses.contains(address))
-					addresses.add(new Location(LocationType.ANY, 0, address + "!"));
+					addresses.add(new Location(LocationType.ANY, 0, null, address + "!"));
 			}
 
 			if (type.equals("REQ0JourneyStopsS0K"))
@@ -383,8 +383,8 @@ public class OebbProvider extends AbstractHafasProvider
 		final Matcher mHead = P_CONNECTIONS_HEAD.matcher(page);
 		if (mHead.matches())
 		{
-			final Location from = new Location(LocationType.ANY, 0, ParserUtils.resolveEntities(mHead.group(1)));
-			final Location to = new Location(LocationType.ANY, 0, ParserUtils.resolveEntities(mHead.group(2)));
+			final Location from = new Location(LocationType.ANY, 0, null, ParserUtils.resolveEntities(mHead.group(1)));
+			final Location to = new Location(LocationType.ANY, 0, null, ParserUtils.resolveEntities(mHead.group(2)));
 			final Date currentDate = ParserUtils.parseDate(mHead.group(3));
 			final String linkEarlier = mHead.group(4) != null ? ParserUtils.resolveEntities(mHead.group(4)) : null;
 			final String linkLater = mHead.group(5) != null ? ParserUtils.resolveEntities(mHead.group(5)) : null;
@@ -459,7 +459,7 @@ public class OebbProvider extends AbstractHafasProvider
 
 								final String arrivalPosition = mDetFine.group(12) != null ? ParserUtils.resolveEntities(mDetFine.group(12)) : null;
 
-								final Location destination = mDetFine.group(13) != null ? new Location(LocationType.ANY, 0,
+								final Location destination = mDetFine.group(13) != null ? new Location(LocationType.ANY, 0, null,
 										ParserUtils.resolveEntities(mDetFine.group(13))) : null;
 
 								final Connection.Trip trip = new Connection.Trip(line, lineColors(line), destination, detailsDepartureDateTime,
@@ -575,7 +575,7 @@ public class OebbProvider extends AbstractHafasProvider
 				}
 			}
 
-			return new QueryDeparturesResult(new Location(LocationType.STATION, locationId, location), departures, null);
+			return new QueryDeparturesResult(new Location(LocationType.STATION, locationId, null, location), departures, null);
 		}
 		catch (final JSONException x)
 		{

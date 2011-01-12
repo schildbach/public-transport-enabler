@@ -833,18 +833,16 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 			if (!XmlPullUtil.jumpToStartTag(pp, null, "itdOdv") || !"dm".equals(pp.getAttributeValue(null, "usage")))
 				throw new IllegalStateException("cannot find <itdOdv usage=\"dm\" />");
-			if (!XmlPullUtil.nextStartTagInsideTree(pp, null, "itdOdvName"))
-				throw new IllegalStateException("cannot find <itdOdvName />");
+			XmlPullUtil.enter(pp, "itdOdv");
+
+			final String place = processItdOdvPlace(pp);
+
+			XmlPullUtil.require(pp, "itdOdvName");
 			final String nameState = pp.getAttributeValue(null, "state");
+			XmlPullUtil.enter(pp, "itdOdvName");
 			if ("identified".equals(nameState))
 			{
-				XmlPullUtil.jumpToStartTag(pp, null, "odvNameElem");
-				String locationIdStr = pp.getAttributeValue(null, "stopID");
-				if (locationIdStr == null)
-					locationIdStr = pp.getAttributeValue(null, "id");
-				final int locationId = Integer.parseInt(locationIdStr);
-
-				final String location = normalizeLocationName(pp.nextText());
+				final Location location = processOdvNameElem(pp, place);
 
 				final Calendar plannedDepartureTime = new GregorianCalendar();
 				plannedDepartureTime.setTimeZone(timeZone());
@@ -883,7 +881,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 					XmlPullUtil.enter(pp, "itdDepartureList");
 					while (XmlPullUtil.test(pp, "itdDeparture"))
 					{
-						if (Integer.parseInt(pp.getAttributeValue(null, "stopID")) == locationId)
+						if (Integer.parseInt(pp.getAttributeValue(null, "stopID")) == location.id)
 						{
 							final String position = normalizePlatform(pp.getAttributeValue(null, "platform"),
 									pp.getAttributeValue(null, "platformName"));
@@ -926,7 +924,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 					XmlPullUtil.exit(pp, "itdDepartureList");
 				}
 
-				return new QueryDeparturesResult(new Location(LocationType.STATION, locationId, location), departures, lines);
+				return new QueryDeparturesResult(location, departures, lines);
 			}
 			else if ("notidentified".equals(nameState))
 			{
@@ -1239,7 +1237,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 							final String destinationIdStr = pp.getAttributeValue(null, "destID");
 							final String destinationName = normalizeLocationName(pp.getAttributeValue(null, "destination"));
 							final Location destination = destinationIdStr.length() > 0 ? new Location(LocationType.STATION,
-									Integer.parseInt(destinationIdStr), destinationName) : new Location(LocationType.ANY, 0, destinationName);
+									Integer.parseInt(destinationIdStr), null, destinationName) : new Location(LocationType.ANY, 0, null,
+									destinationName);
 							String line;
 							if ("AST".equals(pp.getAttributeValue(null, "symbol")))
 								line = "BAST";
@@ -1274,7 +1273,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 									XmlPullUtil.require(pp, "itdDateTime");
 									processItdDateTime(pp, stopTime);
 									XmlPullUtil.exit(pp, "itdPoint");
-									intermediateStops.add(new Stop(new Location(LocationType.STATION, stopId, stopName), stopPosition, stopTime
+									intermediateStops.add(new Stop(new Location(LocationType.STATION, stopId, null, stopName), stopPosition, stopTime
 											.getTime()));
 								}
 								XmlPullUtil.exit(pp, "itdStopSeq");

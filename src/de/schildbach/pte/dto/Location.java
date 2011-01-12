@@ -40,14 +40,34 @@ public final class Location implements Serializable
 		this.name = name;
 	}
 
-	public Location(final LocationType type, final int id, final String name)
+	public Location(final LocationType type, final int id, final String place, final String name)
+	{
+		this.type = type;
+		this.id = id;
+		this.lat = 0;
+		this.lon = 0;
+		this.place = place;
+		this.name = name;
+	}
+
+	public Location(final LocationType type, final int id, final int lat, final int lon)
+	{
+		this.type = type;
+		this.id = id;
+		this.lat = lat;
+		this.lon = lon;
+		this.place = null;
+		this.name = null;
+	}
+
+	public Location(final LocationType type, final int id)
 	{
 		this.type = type;
 		this.id = id;
 		this.lat = 0;
 		this.lon = 0;
 		this.place = null;
-		this.name = name;
+		this.name = null;
 	}
 
 	@Override

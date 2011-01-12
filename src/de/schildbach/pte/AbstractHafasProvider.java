@@ -123,7 +123,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		{
 			XmlPullUtil.requireAttr(pp, "type", "ADR");
 			final String name = pp.getAttributeValue(null, "output").trim();
-			return new Location(LocationType.ADDRESS, 0, name);
+			return new Location(LocationType.ADDRESS, 0, null, name);
 		}
 		throw new IllegalStateException("cannot handle: " + type);
 	}
@@ -377,7 +377,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 							}
 							else if ("DIRECTION".equals(attrName))
 							{
-								destination = new Location(LocationType.ANY, 0, attributeVariants.get("NORMAL"));
+								destination = new Location(LocationType.ANY, 0, null, attributeVariants.get("NORMAL"));
 							}
 						}
 						XmlPullUtil.exit(pp);
