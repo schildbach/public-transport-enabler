@@ -54,7 +54,7 @@ public final class BahnProvider extends AbstractHafasProvider
 
 	public BahnProvider()
 	{
-		super(null, null);
+		super("http://reiseauskunft.bahn.de/bin/extxml.exe", null);
 	}
 
 	public NetworkId id()
@@ -65,33 +65,6 @@ public final class BahnProvider extends AbstractHafasProvider
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
 		return true;
-	}
-
-	private static final String NAME_URL = API_BASE + "bhftafel.exe/dox?input=";
-	private static final Pattern P_SINGLE_NAME = Pattern.compile(".*<input type=\"hidden\" name=\"input\" value=\"(.+?)#(\\d+)\" />.*",
-			Pattern.DOTALL);
-	private static final Pattern P_MULTI_NAME = Pattern.compile("<option value=\".+?#(\\d+)\">(.+?)</option>", Pattern.DOTALL);
-
-	@Override
-	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
-	{
-		final CharSequence page = ParserUtils.scrape(NAME_URL + ParserUtils.urlEncode(constraint.toString()));
-
-		final List<Location> results = new ArrayList<Location>();
-
-		final Matcher mSingle = P_SINGLE_NAME.matcher(page);
-		if (mSingle.matches())
-		{
-			results.add(new Location(LocationType.STATION, Integer.parseInt(mSingle.group(2)), null, ParserUtils.resolveEntities(mSingle.group(1))));
-		}
-		else
-		{
-			final Matcher mMulti = P_MULTI_NAME.matcher(page);
-			while (mMulti.find())
-				results.add(new Location(LocationType.STATION, Integer.parseInt(mMulti.group(1)), null, ParserUtils.resolveEntities(mMulti.group(2))));
-		}
-
-		return results;
 	}
 
 	private final static Pattern P_NEARBY_STATIONS = Pattern
@@ -468,7 +441,8 @@ public final class BahnProvider extends AbstractHafasProvider
 
 	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures) throws IOException
 	{
-		final CharSequence page = ParserUtils.scrape(departuresQueryUri(stationId, maxDepartures));
+		final String uri = departuresQueryUri(stationId, maxDepartures);
+		final CharSequence page = ParserUtils.scrape(uri);
 
 		final Matcher mMessage = P_DEPARTURES_MESSAGES.matcher(page);
 		if (mMessage.find())

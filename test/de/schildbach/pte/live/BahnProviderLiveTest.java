@@ -18,6 +18,7 @@
 package de.schildbach.pte.live;
 
 import java.util.Date;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -42,6 +43,30 @@ public class BahnProviderLiveTest
 	{
 		final QueryDeparturesResult queryDepartures = provider.queryDepartures("692991", 0);
 		System.out.println(queryDepartures.departures);
+	}
+
+	@Test
+	public void autocompleteIncomplete() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("Be");
+
+		list(autocompletes);
+	}
+
+	@Test
+	public void autocompleteIdentified() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("Berlin");
+
+		list(autocompletes);
+	}
+
+	private void list(final List<Location> autocompletes)
+	{
+		System.out.print(autocompletes.size() + " ");
+		for (final Location autocomplete : autocompletes)
+			System.out.print(autocomplete.toDebugString() + " ");
+		System.out.println();
 	}
 
 	@Test
