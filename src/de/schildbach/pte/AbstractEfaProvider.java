@@ -275,28 +275,11 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			XmlPullUtil.enter(pp, "itdOdvName");
 			if ("identified".equals(nameState))
 			{
-				final List<Station> stations = new ArrayList<Station>();
+				final Location ownLocation = processOdvNameElem(pp, place);
+				final Station ownStation = ownLocation.type == LocationType.STATION ? new Station(ownLocation.id, ownLocation.place,
+						ownLocation.name, null, ownLocation.lat, ownLocation.lon, 0, null, null) : null;
 
-				Station ownStation = null;
-				XmlPullUtil.require(pp, "odvNameElem");
-				String parsedOwnLocationIdStr = pp.getAttributeValue(null, "stopID");
-				if (parsedOwnLocationIdStr == null)
-					parsedOwnLocationIdStr = pp.getAttributeValue(null, "id");
-				if (parsedOwnLocationIdStr != null)
-				{
-					final int parsedOwnLocationId = Integer.parseInt(parsedOwnLocationIdStr);
-					int parsedOwnLat = 0, parsedOwnLon = 0;
-					final String mapName = pp.getAttributeValue(null, "mapName");
-					if (mapName != null)
-					{
-						if (!"WGS84".equals(mapName))
-							throw new IllegalStateException("unknown mapName: " + mapName);
-						parsedOwnLon = Integer.parseInt(pp.getAttributeValue(null, "x"));
-						parsedOwnLat = Integer.parseInt(pp.getAttributeValue(null, "y"));
-					}
-					final String parsedOwnLocation = normalizeLocationName(pp.nextText());
-					ownStation = new Station(parsedOwnLocationId, place, parsedOwnLocation, null, parsedOwnLat, parsedOwnLon, 0, null, null);
-				}
+				final List<Station> stations = new ArrayList<Station>();
 
 				if (XmlPullUtil.jumpToStartTag(pp, null, "itdOdvAssignedStops"))
 				{
