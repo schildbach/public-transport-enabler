@@ -440,6 +440,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'I' + str;
 			if (type.equals("ICE")) // Intercity Express
 				return 'I' + str;
+			if (type.equals("X")) // InterConnex
+				return 'I' + str;
 			if (type.equals("CNL")) // City Night Line
 				return 'I' + str;
 			if (type.equals("THA")) // Thalys
@@ -627,7 +629,11 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'R' + str;
 			if (type.equals("EGP")) // EGP - die Städtebahn GmbH
 				return 'R' + str;
+			if (type.equals("SBS")) // EGP - die Städtebahn GmbH
+				return 'R' + str;
 			if (type.equals("agi")) // agilis
+				return 'R' + str;
+			if (type.equals("ag")) // agilis
 				return 'R' + str;
 			if (type.equals("TLX")) // Trilex (Vogtlandbahn)
 				return 'R' + str;
