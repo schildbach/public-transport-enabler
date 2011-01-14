@@ -64,7 +64,7 @@ public class DingProvider extends AbstractEfaProvider
 
 	private static final String NEARBY_STATION_URI = API_BASE
 			+ "XSLT_DM_REQUEST"
-			+ "?outputFormat=XML&coordOutputFormat=WGS84&name_dm=%s&type_dm=stop&itOptionsActive=1&ptOptionsActive=1&useProxFootSearch=1&mergeDep=1&useAllStops=1&mode=direct";
+			+ "?outputFormat=XML&coordOutputFormat=WGS84&type_dm=stop&name_dm=%s&itOptionsActive=1&ptOptionsActive=1&useProxFootSearch=1&mergeDep=1&useAllStops=1&mode=direct";
 
 	@Override
 	protected String nearbyStationUri(final String stationId)
