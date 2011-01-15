@@ -54,9 +54,11 @@ public final class QueryDeparturesResult
 	public String toString()
 	{
 		final StringBuilder builder = new StringBuilder(getClass().getName());
-		builder.append("[").append(this.status).append(": ");
+		builder.append("[").append(this.status);
+		if (location != null)
+			builder.append(" ").append(location.toDebugString());
 		if (departures != null)
-			builder.append(departures.size()).append(" departures");
+			builder.append(" ").append(departures.size()).append(" departures");
 		builder.append("]");
 		return builder.toString();
 	}
