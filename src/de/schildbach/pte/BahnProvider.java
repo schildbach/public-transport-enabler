@@ -67,8 +67,10 @@ public final class BahnProvider extends AbstractHafasProvider
 		return true;
 	}
 
-	private final static Pattern P_NEARBY_STATIONS = Pattern
+	private final static Pattern P_NEARBY_STATIONS_BY_COORDINATE = Pattern
 			.compile("<a class=\"uLine\" href=\".+?!X=(\\d+)!Y=(\\d+)!id=(\\d+)!dist=(\\d+).*?\">(.+?)</a>");
+	private final static Pattern P_NEARBY_STATIONS_BY_STATION = Pattern
+			.compile("<a href=\"http://mobile\\.bahn\\.de/bin/mobil/bhftafel.exe/dn[^\"]*?evaId=(\\d*)&[^\"]*?\">([^<]*)</a>");
 
 	@Override
 	protected String nearbyStationUri(final String stationId)
@@ -80,27 +82,42 @@ public final class BahnProvider extends AbstractHafasProvider
 	public NearbyStationsResult nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
 			throws IOException
 	{
-		if (lat == 0 && lon == 0)
-			throw new IllegalArgumentException("lat/lon must be given");
-
 		final List<Station> stations = new ArrayList<Station>();
 
-		final String uri = API_BASE + "query.exe/dox" + "?performLocating=2&tpl=stopsnear&look_maxdist=" + (maxDistance > 0 ? maxDistance : 5000)
-				+ "&look_stopclass=1023" + "&look_x=" + lon + "&look_y=" + lat;
-		final CharSequence page = ParserUtils.scrape(uri);
-
-		final Matcher m = P_NEARBY_STATIONS.matcher(page);
-		while (m.find())
+		if (lat == 0 && lon == 0)
 		{
-			final int sId = Integer.parseInt(m.group(3));
+			final String uri = API_BASE + "bhftafel.exe/dn?near=Anzeigen&distance=50&input=" + ParserUtils.urlEncode(stationId);
+			final CharSequence page = ParserUtils.scrape(uri);
 
-			final int sLon = Integer.parseInt(m.group(1));
-			final int sLat = Integer.parseInt(m.group(2));
-			final int sDist = Integer.parseInt(m.group(4));
-			final String sName = ParserUtils.resolveEntities(m.group(5).trim());
+			final Matcher m = P_NEARBY_STATIONS_BY_STATION.matcher(page);
+			while (m.find())
+			{
+				final int sId = Integer.parseInt(m.group(1));
+				final String sName = ParserUtils.resolveEntities(m.group(2).trim());
 
-			final Station station = new Station(sId, null, sName, null, sLat, sLon, sDist, null, null);
-			stations.add(station);
+				final Station station = new Station(sId, null, sName, null, 0, 0, 0, null, null);
+				stations.add(station);
+			}
+		}
+		else
+		{
+			final String uri = API_BASE + "query.exe/dox" + "?performLocating=2&tpl=stopsnear&look_maxdist=" + (maxDistance > 0 ? maxDistance : 5000)
+					+ "&look_stopclass=1023" + "&look_x=" + lon + "&look_y=" + lat;
+			final CharSequence page = ParserUtils.scrape(uri);
+
+			final Matcher m = P_NEARBY_STATIONS_BY_COORDINATE.matcher(page);
+			while (m.find())
+			{
+				final int sId = Integer.parseInt(m.group(3));
+
+				final int sLon = Integer.parseInt(m.group(1));
+				final int sLat = Integer.parseInt(m.group(2));
+				final int sDist = Integer.parseInt(m.group(4));
+				final String sName = ParserUtils.resolveEntities(m.group(5).trim());
+
+				final Station station = new Station(sId, null, sName, null, sLat, sLon, sDist, null, null);
+				stations.add(station);
+			}
 		}
 
 		if (maxStations == 0 || maxStations >= stations.size())
@@ -509,7 +526,7 @@ public final class BahnProvider extends AbstractHafasProvider
 
 	private static final Pattern P_NORMALIZE_LINE_NUMBER = Pattern.compile("\\d{2,5}");
 	private static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zÄÖÜäöüßáàâéèêíìîóòôúùû]+)[\\s-]*(.*)");
-	private static final Pattern P_NORMALIZE_LINE_RUSSIA = Pattern.compile("(?:D\\s*)?(\\d{1,3}[A-Z]{2})");
+	private static final Pattern P_NORMALIZE_LINE_RUSSIA = Pattern.compile("(?:D\\s*)?(\\d{1,3}(?:[A-Z]{2}|Y))");
 	private static final Pattern P_NORMALIZE_LINE_SBAHN = Pattern.compile("S\\w*\\d+");
 
 	private static String normalizeLine(final String line)
