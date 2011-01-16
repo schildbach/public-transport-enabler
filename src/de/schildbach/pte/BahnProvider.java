@@ -266,13 +266,8 @@ public final class BahnProvider extends AbstractHafasProvider
 					Date arrivalTime = ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mConFine.group(3)));
 					if (departureTime.after(arrivalTime))
 						arrivalTime = ParserUtils.addDays(arrivalTime, 1);
-					String line = ParserUtils.resolveEntities(mConFine.group(4));
-					if (line != null && !line.contains(","))
-						line = normalizeLine(line);
-					else
-						line = null;
 					final Connection connection = new Connection(AbstractHafasProvider.extractConnectionId(link), link, departureTime, arrivalTime,
-							line, 0, from.name, 0, to.name, null, null);
+							0, from.name, 0, to.name, null, null);
 					connections.add(connection);
 				}
 				else
@@ -420,7 +415,7 @@ public final class BahnProvider extends AbstractHafasProvider
 				throw new IllegalStateException("could not parse all parts of:\n" + mHead.group(1) + "\n" + parts);
 
 			return new GetConnectionDetailsResult(new Date(), new Connection(AbstractHafasProvider.extractConnectionId(uri), uri, firstDepartureTime,
-					lastArrivalTime, null, 0, firstDeparture, 0, lastArrival, parts, null));
+					lastArrivalTime, 0, firstDeparture, 0, lastArrival, parts, null));
 		}
 		else
 		{

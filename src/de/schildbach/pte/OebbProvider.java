@@ -409,8 +409,8 @@ public class OebbProvider extends AbstractHafasProvider
 							: overviewDepartureDate, ParserUtils.parseTime(mConFine.group(4)));
 					final String link = allDetailsUri; // TODO use print link?
 
-					final Connection connection = new Connection(id, link, overviewDepartureTime, overviewArrivalTime, null, 0, from.name, 0,
-							to.name, new ArrayList<Connection.Part>(1), null);
+					final Connection connection = new Connection(id, link, overviewDepartureTime, overviewArrivalTime, 0, from.name, 0, to.name,
+							new ArrayList<Connection.Part>(1), null);
 					connections.add(connection);
 
 					final Matcher mDetCoarse = P_CONNECTION_DETAILS_COARSE.matcher(details);

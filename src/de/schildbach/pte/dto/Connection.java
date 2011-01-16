@@ -31,7 +31,6 @@ public final class Connection implements Serializable
 	public final String link;
 	public final Date departureTime;
 	public final Date arrivalTime;
-	public final String line;
 	public final int fromId;
 	public final String from;
 	public final int toId;
@@ -39,14 +38,13 @@ public final class Connection implements Serializable
 	public final List<Part> parts;
 	public final List<Fare> fares;
 
-	public Connection(final String id, final String link, final Date departureTime, final Date arrivalTime, final String line, final int fromId,
-			final String from, final int toId, final String to, final List<Part> parts, final List<Fare> fares)
+	public Connection(final String id, final String link, final Date departureTime, final Date arrivalTime, final int fromId, final String from,
+			final int toId, final String to, final List<Part> parts, final List<Fare> fares)
 	{
 		this.id = id;
 		this.link = link;
 		this.departureTime = departureTime;
 		this.arrivalTime = arrivalTime;
-		this.line = line;
 		this.fromId = fromId;
 		this.from = from;
 		this.toId = toId;

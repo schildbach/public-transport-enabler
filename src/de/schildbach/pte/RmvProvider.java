@@ -228,8 +228,8 @@ public class RmvProvider extends AbstractHafasProvider
 	private static final Pattern P_CONNECTIONS_COARSE = Pattern.compile("<p class=\"con(?:L|D)\">(.+?)</p>", Pattern.DOTALL);
 	private static final Pattern P_CONNECTIONS_FINE = Pattern.compile(".*?" //
 			+ "<a href=\"(http://www.rmv.de/auskunft/bin/jp/query.exe/dox[^\"]*?)\">" // link
-			+ "(\\d+:\\d+)-(\\d+:\\d+)</a>" //
-			+ "(?:&nbsp;(.+?))?" //
+			+ "(\\d+:\\d+)-(\\d+:\\d+)</a>" // departureTime, arrivalTime
+			+ "(?:&nbsp;(.+?))?" // line
 	, Pattern.DOTALL);
 
 	@Override
@@ -271,12 +271,7 @@ public class RmvProvider extends AbstractHafasProvider
 					Date arrivalTime = ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mConFine.group(3)));
 					if (departureTime.after(arrivalTime))
 						arrivalTime = ParserUtils.addDays(arrivalTime, 1);
-					String line = mConFine.group(4);
-					if (line != null && !line.endsWith("Um."))
-						line = normalizeLine(line);
-					else
-						line = null;
-					final Connection connection = new Connection(extractConnectionId(link), link, departureTime, arrivalTime, line, 0, from.name, 0,
+					final Connection connection = new Connection(extractConnectionId(link), link, departureTime, arrivalTime, 0, from.name, 0,
 							to.name, null, null);
 					connections.add(connection);
 				}
@@ -390,8 +385,8 @@ public class RmvProvider extends AbstractHafasProvider
 				}
 			}
 
-			return new GetConnectionDetailsResult(currentDate, new Connection(extractConnectionId(uri), uri, firstDepartureTime, lastArrivalTime,
-					null, 0, firstDeparture, 0, lastArrival, parts, null));
+			return new GetConnectionDetailsResult(currentDate, new Connection(extractConnectionId(uri), uri, firstDepartureTime, lastArrivalTime, 0,
+					firstDeparture, 0, lastArrival, parts, null));
 		}
 		else
 		{

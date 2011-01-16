@@ -341,7 +341,8 @@ public final class BvgProvider extends AbstractHafasProvider
 	private static final Pattern P_CONNECTIONS_COARSE = Pattern.compile("<p class=\"con(?:L|D)\">(.+?)</p>", Pattern.DOTALL);
 	private static final Pattern P_CONNECTIONS_FINE = Pattern.compile(".*?" //
 			+ "<a href=\"(/Fahrinfo/bin/query\\.bin/dox[^\"]*?)\">" // link
-			+ "(\\d\\d:\\d\\d)-(\\d\\d:\\d\\d)</a>&nbsp;&nbsp;(?:\\d+ Umst\\.|([\\w\\d ]+)).*?" //
+			+ "(\\d\\d:\\d\\d)-(\\d\\d:\\d\\d)</a>&nbsp;&nbsp;" // departureTime, arrivalTime
+			+ "(?:\\d+ Umst\\.|([\\w\\d ]+)).*?" // line
 	, Pattern.DOTALL);
 
 	private QueryConnectionsResult queryConnections(final String uri, final CharSequence page) throws IOException
@@ -390,9 +391,8 @@ public final class BvgProvider extends AbstractHafasProvider
 					Date arrivalTime = ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mConFine.group(3)));
 					if (departureTime.after(arrivalTime))
 						arrivalTime = ParserUtils.addDays(arrivalTime, 1);
-					final String line = normalizeLine(ParserUtils.resolveEntities(mConFine.group(4)));
 					final Connection connection = new Connection(AbstractHafasProvider.extractConnectionId(link), link, departureTime, arrivalTime,
-							line, 0, from.name, 0, to.name, null, null);
+							0, from.name, 0, to.name, null, null);
 					connections.add(connection);
 				}
 				else
@@ -540,7 +540,7 @@ public final class BvgProvider extends AbstractHafasProvider
 
 			if (firstDepartureTime != null && lastArrivalTime != null)
 				return new GetConnectionDetailsResult(currentDate, new Connection(AbstractHafasProvider.extractConnectionId(uri), uri,
-						firstDepartureTime, lastArrivalTime, null, firstDepartureId, firstDeparture, lastArrivalId, lastArrival, parts, null));
+						firstDepartureTime, lastArrivalTime, firstDepartureId, firstDeparture, lastArrivalId, lastArrival, parts, null));
 			else
 				return new GetConnectionDetailsResult(currentDate, null);
 		}

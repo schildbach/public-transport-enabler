@@ -1330,8 +1330,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 						}
 						XmlPullUtil.exit(pp, "itdFare");
 					}
-					connections.add(new Connection(id, uri, firstDepartureTime, lastArrivalTime, null, 0, firstDeparture, 0, lastArrival, parts,
-							fares.isEmpty() ? null : fares));
+					connections.add(new Connection(id, uri, firstDepartureTime, lastArrivalTime, 0, firstDeparture, 0, lastArrival, parts, fares
+							.isEmpty() ? null : fares));
 					XmlPullUtil.exit(pp, "itdRoute");
 				}
 
