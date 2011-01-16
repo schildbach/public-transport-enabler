@@ -409,7 +409,7 @@ public class OebbProvider extends AbstractHafasProvider
 							: overviewDepartureDate, ParserUtils.parseTime(mConFine.group(4)));
 					final String link = allDetailsUri; // TODO use print link?
 
-					final Connection connection = new Connection(id, link, overviewDepartureTime, overviewArrivalTime, null, null, 0, from.name, 0,
+					final Connection connection = new Connection(id, link, overviewDepartureTime, overviewArrivalTime, null, 0, from.name, 0,
 							to.name, new ArrayList<Connection.Part>(1), null);
 					connections.add(connection);
 
@@ -462,8 +462,8 @@ public class OebbProvider extends AbstractHafasProvider
 								final Location destination = mDetFine.group(13) != null ? new Location(LocationType.ANY, 0, null,
 										ParserUtils.resolveEntities(mDetFine.group(13))) : null;
 
-								final Connection.Trip trip = new Connection.Trip(line, lineColors(line), destination, detailsDepartureDateTime,
-										departurePosition, departureId, departure, detailsArrivalDateTime, arrivalPosition, arrivalId, arrival, null);
+								final Connection.Trip trip = new Connection.Trip(line, destination, detailsDepartureDateTime, departurePosition,
+										departureId, departure, detailsArrivalDateTime, arrivalPosition, arrivalId, arrival, null);
 								connection.parts.add(trip);
 							}
 							else

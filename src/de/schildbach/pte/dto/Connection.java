@@ -32,7 +32,6 @@ public final class Connection implements Serializable
 	public final Date departureTime;
 	public final Date arrivalTime;
 	public final String line;
-	public final int[] lineColors;
 	public final int fromId;
 	public final String from;
 	public final int toId;
@@ -40,16 +39,14 @@ public final class Connection implements Serializable
 	public final List<Part> parts;
 	public final List<Fare> fares;
 
-	public Connection(final String id, final String link, final Date departureTime, final Date arrivalTime, final String line,
-			final int[] lineColors, final int fromId, final String from, final int toId, final String to, final List<Part> parts,
-			final List<Fare> fares)
+	public Connection(final String id, final String link, final Date departureTime, final Date arrivalTime, final String line, final int fromId,
+			final String from, final int toId, final String to, final List<Part> parts, final List<Fare> fares)
 	{
 		this.id = id;
 		this.link = link;
 		this.departureTime = departureTime;
 		this.arrivalTime = arrivalTime;
 		this.line = line;
-		this.lineColors = lineColors;
 		this.fromId = fromId;
 		this.from = from;
 		this.toId = toId;
@@ -89,7 +86,6 @@ public final class Connection implements Serializable
 	public final static class Trip implements Part
 	{
 		public final String line;
-		public final int[] lineColors;
 		public final Location destination;
 		public final Date departureTime;
 		public final String departurePosition;
@@ -101,12 +97,11 @@ public final class Connection implements Serializable
 		public final String arrival;
 		public final List<Stop> intermediateStops;
 
-		public Trip(final String line, final int[] lineColors, final Location destination, final Date departureTime, final String departurePosition,
-				final int departureId, final String departure, final Date arrivalTime, final String arrivalPosition, final int arrivalId,
-				final String arrival, final List<Stop> intermediateStops)
+		public Trip(final String line, final Location destination, final Date departureTime, final String departurePosition, final int departureId,
+				final String departure, final Date arrivalTime, final String arrivalPosition, final int arrivalId, final String arrival,
+				final List<Stop> intermediateStops)
 		{
 			this.line = line;
-			this.lineColors = lineColors;
 			this.destination = destination;
 			this.departureTime = departureTime;
 			this.departurePosition = departurePosition;

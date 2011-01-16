@@ -276,8 +276,8 @@ public class RmvProvider extends AbstractHafasProvider
 						line = normalizeLine(line);
 					else
 						line = null;
-					final Connection connection = new Connection(extractConnectionId(link), link, departureTime, arrivalTime, line,
-							line != null ? lineColors(line) : null, 0, from.name, 0, to.name, null, null);
+					final Connection connection = new Connection(extractConnectionId(link), link, departureTime, arrivalTime, line, 0, from.name, 0,
+							to.name, null, null);
 					connections.add(connection);
 				}
 				else
@@ -362,8 +362,8 @@ public class RmvProvider extends AbstractHafasProvider
 
 						final String arrivalPosition = ParserUtils.resolveEntities(mDetFine.group(6));
 
-						lastTrip = new Connection.Trip(line, line != null ? lineColors(line) : null, destination, departureTime, departurePosition,
-								0, departure, arrivalTime, arrivalPosition, 0, arrival, null);
+						lastTrip = new Connection.Trip(line, destination, departureTime, departurePosition, 0, departure, arrivalTime,
+								arrivalPosition, 0, arrival, null);
 						parts.add(lastTrip);
 
 						if (firstDepartureTime == null)
@@ -391,7 +391,7 @@ public class RmvProvider extends AbstractHafasProvider
 			}
 
 			return new GetConnectionDetailsResult(currentDate, new Connection(extractConnectionId(uri), uri, firstDepartureTime, lastArrivalTime,
-					null, null, 0, firstDeparture, 0, lastArrival, parts, null));
+					null, 0, firstDeparture, 0, lastArrival, parts, null));
 		}
 		else
 		{

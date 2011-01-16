@@ -392,7 +392,7 @@ public final class BvgProvider extends AbstractHafasProvider
 						arrivalTime = ParserUtils.addDays(arrivalTime, 1);
 					final String line = normalizeLine(ParserUtils.resolveEntities(mConFine.group(4)));
 					final Connection connection = new Connection(AbstractHafasProvider.extractConnectionId(link), link, departureTime, arrivalTime,
-							line, line != null ? lineColors(line) : null, 0, from.name, 0, to.name, null, null);
+							line, 0, from.name, 0, to.name, null, null);
 					connections.add(connection);
 				}
 				else
@@ -495,8 +495,8 @@ public final class BvgProvider extends AbstractHafasProvider
 
 						final String arrival = ParserUtils.resolveEntities(mDetFine.group(10));
 
-						parts.add(new Connection.Trip(line, line != null ? lineColors(line) : null, destination, departureTime, departurePosition,
-								departureId, departure, arrivalTime, arrivalPosition, arrivalId, arrival, null));
+						parts.add(new Connection.Trip(line, destination, departureTime, departurePosition, departureId, departure, arrivalTime,
+								arrivalPosition, arrivalId, arrival, null));
 
 						if (firstDepartureTime == null)
 							firstDepartureTime = departureTime;
@@ -540,7 +540,7 @@ public final class BvgProvider extends AbstractHafasProvider
 
 			if (firstDepartureTime != null && lastArrivalTime != null)
 				return new GetConnectionDetailsResult(currentDate, new Connection(AbstractHafasProvider.extractConnectionId(uri), uri,
-						firstDepartureTime, lastArrivalTime, null, null, firstDepartureId, firstDeparture, lastArrivalId, lastArrival, parts, null));
+						firstDepartureTime, lastArrivalTime, null, firstDepartureId, firstDeparture, lastArrivalId, lastArrival, parts, null));
 			else
 				return new GetConnectionDetailsResult(currentDate, null);
 		}

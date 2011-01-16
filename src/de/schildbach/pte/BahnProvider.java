@@ -272,7 +272,7 @@ public final class BahnProvider extends AbstractHafasProvider
 					else
 						line = null;
 					final Connection connection = new Connection(AbstractHafasProvider.extractConnectionId(link), link, departureTime, arrivalTime,
-							line, line != null ? lineColors(line) : null, 0, from.name, 0, to.name, null, null);
+							line, 0, from.name, 0, to.name, null, null);
 					connections.add(connection);
 				}
 				else
@@ -373,8 +373,8 @@ public final class BahnProvider extends AbstractHafasProvider
 
 							final Date departureDateTime = ParserUtils.joinDateTime(departureDate, departureTime);
 							final Date arrivalDateTime = ParserUtils.joinDateTime(arrivalDate, arrivalTime);
-							lastTrip = new Connection.Trip(line, line != null ? lineColors(line) : null, null, departureDateTime, departurePosition,
-									0, departure, arrivalDateTime, arrivalPosition, 0, arrival, null);
+							lastTrip = new Connection.Trip(line, null, departureDateTime, departurePosition, 0, departure, arrivalDateTime,
+									arrivalPosition, 0, arrival, null);
 							parts.add(lastTrip);
 
 							if (firstDepartureTime == null)
@@ -420,7 +420,7 @@ public final class BahnProvider extends AbstractHafasProvider
 				throw new IllegalStateException("could not parse all parts of:\n" + mHead.group(1) + "\n" + parts);
 
 			return new GetConnectionDetailsResult(new Date(), new Connection(AbstractHafasProvider.extractConnectionId(uri), uri, firstDepartureTime,
-					lastArrivalTime, null, null, 0, firstDeparture, 0, lastArrival, parts, null));
+					lastArrivalTime, null, 0, firstDeparture, 0, lastArrival, parts, null));
 		}
 		else
 		{

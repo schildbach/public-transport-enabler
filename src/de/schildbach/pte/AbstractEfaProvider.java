@@ -1284,8 +1284,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 								intermediateStops.remove(intermediateStops.size() - 1);
 							}
 
-							parts.add(new Connection.Trip(line, lineColors(line), destination, departureTime.getTime(), departurePosition,
-									departureId, departure, arrivalTime.getTime(), arrivalPosition, arrivalId, arrival, intermediateStops));
+							parts.add(new Connection.Trip(line, destination, departureTime.getTime(), departurePosition, departureId, departure,
+									arrivalTime.getTime(), arrivalPosition, arrivalId, arrival, intermediateStops));
 						}
 
 						XmlPullUtil.exit(pp, "itdPartialRoute");
@@ -1330,8 +1330,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 						}
 						XmlPullUtil.exit(pp, "itdFare");
 					}
-					connections.add(new Connection(id, uri, firstDepartureTime, lastArrivalTime, null, null, 0, firstDeparture, 0, lastArrival,
-							parts, fares.isEmpty() ? null : fares));
+					connections.add(new Connection(id, uri, firstDepartureTime, lastArrivalTime, null, 0, firstDeparture, 0, lastArrival, parts,
+							fares.isEmpty() ? null : fares));
 					XmlPullUtil.exit(pp, "itdRoute");
 				}
 

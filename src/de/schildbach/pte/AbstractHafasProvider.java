@@ -424,8 +424,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 					if (min == 0 || line != null)
 					{
-						parts.add(new Connection.Trip(line, lineColors(line), destination, departureTime, departurePos, sectionDeparture.id,
-								sectionDeparture.name, arrivalTime, arrivalPos, sectionArrival.id, sectionArrival.name, null));
+						parts.add(new Connection.Trip(line, destination, departureTime, departurePos, sectionDeparture.id, sectionDeparture.name,
+								arrivalTime, arrivalPos, sectionArrival.id, sectionArrival.name, null));
 					}
 					else
 					{
@@ -450,7 +450,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 				XmlPullUtil.exit(pp);
 
-				connections.add(new Connection(id, null, firstDepartureTime, lastArrivalTime, null, null, departure.id, departure.name, arrival.id,
+				connections.add(new Connection(id, null, firstDepartureTime, lastArrivalTime, null, departure.id, departure.name, arrival.id,
 						arrival.name, parts, null));
 			}
 
