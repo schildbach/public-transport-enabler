@@ -567,6 +567,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'R' + str;
 			if (type.equals("ALX")) // Arriva-Länderbahn-Express
 				return 'R' + str;
+			if (type.equals("EX")) // ALX verwandelt sich
+				return 'R' + str;
 			if (type.equals("MEr")) // metronom regional
 				return 'R' + str;
 			if (type.equals("AKN")) // AKN Eisenbahn
