@@ -30,7 +30,7 @@ import de.schildbach.pte.util.ParserUtils;
 public class VvmProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.VVM;
-	private final static String API_BASE = "http://efa.mobilitaetsverbund.de/web/"; // "http://87.234.63.51/bay/";
+	private final static String API_BASE = "http://efa.mobilitaetsverbund.de/web/";
 
 	public NetworkId id()
 	{
