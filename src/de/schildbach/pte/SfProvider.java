@@ -41,7 +41,7 @@ public class SfProvider extends AbstractEfaProvider
 	@Override
 	protected TimeZone timeZone()
 	{
-		return TimeZone.getTimeZone("PST");
+		return TimeZone.getTimeZone("America/Los_Angeles");
 	}
 
 	public boolean hasCapabilities(Capability... capabilities)
