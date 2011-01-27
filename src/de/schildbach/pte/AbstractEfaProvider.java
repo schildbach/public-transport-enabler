@@ -758,6 +758,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'T' + str;
 			if ("California Cable Car".equals(name)) // San Francisco
 				return 'T' + name;
+			if ("Muni".equals(type)) // San Francisco
+				return 'T' + name;
 			if ("Muni Rail".equals(noTrainName)) // San Francisco
 				return 'T' + name;
 			if ("Cable Car".equals(noTrainName)) // San Francisco
