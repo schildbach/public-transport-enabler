@@ -64,6 +64,11 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		this.accessId = accessId;
 	}
 
+	protected String[] splitNameAndPlace(final String name)
+	{
+		return new String[] { null, name };
+	}
+
 	private final String wrap(final String request)
 	{
 		return "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>" //
@@ -766,7 +771,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 					parsedLat = Integer.parseInt(mFineCoords.group(2));
 				}
 
-				stations.add(new Station(parsedId, null, parsedName, null, parsedLat, parsedLon, 0, null, null));
+				final String[] nameAndPlace = splitNameAndPlace(parsedName);
+				stations.add(new Station(parsedId, nameAndPlace[0], nameAndPlace[1], parsedName, parsedLat, parsedLon, 0, null, null));
 			}
 			else
 			{

@@ -14,12 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package de.schildbach.pte.live;
 
 import org.junit.Test;
 
 import de.schildbach.pte.RmvProvider;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.QueryDeparturesResult;
 
 /**
  * @author Andreas Schildbach
@@ -34,5 +36,13 @@ public class RmvProviderLiveTest
 		final NearbyStationsResult result = provider.nearbyStations("3000001", 0, 0, 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
+	}
+
+	@Test
+	public void departures() throws Exception
+	{
+		final QueryDeparturesResult queryDepartures = provider.queryDepartures("3000001", 0);
+
+		System.out.println(queryDepartures.departures);
 	}
 }

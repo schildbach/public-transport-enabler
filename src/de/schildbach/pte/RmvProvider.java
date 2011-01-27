@@ -70,6 +70,19 @@ public class RmvProvider extends AbstractHafasProvider
 		return false;
 	}
 
+	private static final String[] PLACES = { "Frankfurt (Main)", "Offenbach (Main)", "Mainz", "Wiesbaden", "Marburg", "Kassel", "Hanau", "Göttingen",
+			"Darmstadt", "Aschaffenburg" };
+
+	@Override
+	protected String[] splitNameAndPlace(final String name)
+	{
+		for (final String place : PLACES)
+			if (name.startsWith(place + " "))
+				return new String[] { place, name.substring(place.length() + 1) };
+
+		return super.splitNameAndPlace(name);
+	}
+
 	private static final String NAME_URL = API_BASE + "stboard.exe/dox?input=";
 	private static final Pattern P_SINGLE_NAME = Pattern.compile(".*<input type=\"hidden\" name=\"input\" value=\"(.+?)#(\\d+)\" />.*",
 			Pattern.DOTALL);
@@ -522,7 +535,8 @@ public class RmvProvider extends AbstractHafasProvider
 					}
 				}
 
-				return new QueryDeparturesResult(new Location(LocationType.STATION, locationId, null, location), departures, null);
+				final String[] nameAndPlace = splitNameAndPlace(location);
+				return new QueryDeparturesResult(new Location(LocationType.STATION, locationId, nameAndPlace[0], nameAndPlace[1]), departures, null);
 			}
 			else
 			{
