@@ -279,11 +279,35 @@ public final class ParserUtils
 		}
 	}
 
+	public static Date parseAmericanDate(final String str)
+	{
+		try
+		{
+			return new SimpleDateFormat("MM/dd/yyyy").parse(str);
+		}
+		catch (final ParseException x)
+		{
+			throw new RuntimeException(x);
+		}
+	}
+
 	public static Date parseTime(final String str)
 	{
 		try
 		{
 			return new SimpleDateFormat("HH:mm").parse(str);
+		}
+		catch (final ParseException x)
+		{
+			throw new RuntimeException(x);
+		}
+	}
+
+	public static Date parseAmericanTime(final String str)
+	{
+		try
+		{
+			return new SimpleDateFormat("h:mm a").parse(str);
 		}
 		catch (final ParseException x)
 		{
