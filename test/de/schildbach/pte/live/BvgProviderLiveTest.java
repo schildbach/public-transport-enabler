@@ -17,13 +17,18 @@
 
 package de.schildbach.pte.live;
 
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
 
 import de.schildbach.pte.BvgProvider;
+import de.schildbach.pte.NetworkProvider.WalkSpeed;
+import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 
 /**
@@ -32,6 +37,7 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 public class BvgProviderLiveTest
 {
 	private BvgProvider provider = new BvgProvider();
+	private static final String ALL_PRODUCTS = "IRSUTBFC";
 
 	@Test
 	public void autocompleteIncomplete() throws Exception
@@ -61,5 +67,17 @@ public class BvgProviderLiveTest
 	{
 		final QueryDeparturesResult queryDepartures = provider.queryDepartures("309557", 0);
 		System.out.println(queryDepartures.departures);
+	}
+
+	@Test
+	public void shortConnection() throws Exception
+	{
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 9056102, "Berlin", "Nollendorfplatz"),
+				null, new Location(LocationType.STATION, 9013103, "Berlin", "Prinzenstraße"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+		System.out.println(result);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
+		for (final Connection connection : result.connections)
+			provider.getConnectionDetails(connection.link);
+		System.out.println(moreResult);
 	}
 }

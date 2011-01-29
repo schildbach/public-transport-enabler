@@ -309,7 +309,7 @@ public final class BvgProvider extends AbstractHafasProvider
 
 		if (addresses.isEmpty())
 		{
-			return queryConnections(uri, page);
+			return queryConnections(uri, page, from, to);
 		}
 		else if (P_CHECK_FROM.matcher(page).find())
 		{
@@ -328,7 +328,21 @@ public final class BvgProvider extends AbstractHafasProvider
 	public QueryConnectionsResult queryMoreConnections(final String uri) throws IOException
 	{
 		final CharSequence page = ParserUtils.scrape(uri);
-		return queryConnections(uri, page);
+		return queryConnections(uri, page, null, null);
+	}
+
+	private static final Pattern P_LOCATION_ADDRESS = Pattern.compile("\\d{5}.*?,.*");
+
+	private Location location(final String str, final Location originalLocation)
+	{
+		if (P_LOCATION_ADDRESS.matcher(str).matches())
+			return new Location(LocationType.ADDRESS, 0, null, str);
+		else if (originalLocation != null && str.equals(originalLocation.name))
+			return originalLocation;
+		else if (originalLocation != null && originalLocation.type == LocationType.ADDRESS && str.length() == 0)
+			return originalLocation;
+		else
+			return new Location(LocationType.ANY, 0, null, str);
 	}
 
 	private static final Pattern P_CONNECTIONS_HEAD = Pattern.compile(".*?" //
@@ -345,7 +359,8 @@ public final class BvgProvider extends AbstractHafasProvider
 			+ "(?:\\d+ Umst\\.|([\\w\\d ]+)).*?" // line
 	, Pattern.DOTALL);
 
-	private QueryConnectionsResult queryConnections(final String uri, final CharSequence page) throws IOException
+	private QueryConnectionsResult queryConnections(final String uri, final CharSequence page, final Location originalFrom, final Location originalTo)
+			throws IOException
 	{
 		final Matcher mError = P_CHECK_CONNECTIONS_ERROR.matcher(page);
 		if (mError.find())
@@ -365,8 +380,8 @@ public final class BvgProvider extends AbstractHafasProvider
 		final Matcher mHead = P_CONNECTIONS_HEAD.matcher(page);
 		if (mHead.matches())
 		{
-			final Location from = new Location(LocationType.ANY, 0, null, ParserUtils.resolveEntities(mHead.group(1)));
-			final Location to = new Location(LocationType.ANY, 0, null, ParserUtils.resolveEntities(mHead.group(2)));
+			final Location from = location(ParserUtils.resolveEntities(mHead.group(1)), originalFrom);
+			final Location to = location(ParserUtils.resolveEntities(mHead.group(2)), originalTo);
 			final Date currentDate = ParserUtils.parseDate(mHead.group(3));
 			final String linkEarlier = mHead.group(4) != null ? BVG_BASE_URL + ParserUtils.resolveEntities(mHead.group(4)) : null;
 			final String linkLater = mHead.group(5) != null ? BVG_BASE_URL + ParserUtils.resolveEntities(mHead.group(5)) : null;
