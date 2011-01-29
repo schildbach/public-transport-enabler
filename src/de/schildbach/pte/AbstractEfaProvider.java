@@ -60,6 +60,20 @@ import de.schildbach.pte.util.XmlPullUtil;
  */
 public abstract class AbstractEfaProvider implements NetworkProvider
 {
+	final XmlPullParserFactory parserFactory;
+
+	public AbstractEfaProvider()
+	{
+		try
+		{
+			parserFactory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
+		}
+		catch (final XmlPullParserException x)
+		{
+			throw new RuntimeException(x);
+		}
+	}
+
 	protected TimeZone timeZone()
 	{
 		return TimeZone.getTimeZone("Europe/Berlin");
@@ -76,13 +90,11 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		{
 			is = ParserUtils.scrapeInputStream(uri);
 
-			final List<Location> results = new ArrayList<Location>();
-
-			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
-			final XmlPullParser pp = factory.newPullParser();
+			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
-
 			assertItdRequest(pp);
+
+			final List<Location> results = new ArrayList<Location>();
 
 			// parse odv name elements
 			if (!XmlPullUtil.jumpToStartTag(pp, null, "itdOdv") || !"origin".equals(pp.getAttributeValue(null, "usage")))
@@ -258,10 +270,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		{
 			is = ParserUtils.scrapeInputStream(uri);
 
-			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
-			final XmlPullParser pp = factory.newPullParser();
+			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
-
 			assertItdRequest(pp);
 
 			if (!XmlPullUtil.jumpToStartTag(pp, null, "itdOdv") || !"dm".equals(pp.getAttributeValue(null, "usage")))
@@ -826,10 +836,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		{
 			is = ParserUtils.scrapeInputStream(uri);
 
-			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
-			final XmlPullParser pp = factory.newPullParser();
+			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
-
 			assertItdRequest(pp);
 
 			if (!XmlPullUtil.jumpToStartTag(pp, null, "itdOdv") || !"dm".equals(pp.getAttributeValue(null, "usage")))
@@ -1039,11 +1047,10 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 	{
 		try
 		{
-			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
-			final XmlPullParser pp = factory.newPullParser();
+			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
-
 			assertItdRequest(pp);
+
 			final String sessionId = pp.getAttributeValue(null, "sessionID");
 
 			if (!XmlPullUtil.jumpToStartTag(pp, null, "itdTripRequest"))
