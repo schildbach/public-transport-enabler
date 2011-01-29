@@ -817,6 +817,8 @@ public final class BahnProvider extends AbstractHafasProvider
 				return "TRT" + number;
 			if (type.equals("Schw")) // Schwebebahn, gilt als "Straßenbahn besonderer Bauart"
 				return "TSchw" + number;
+			if (line.equals("SCHW-B")) // Schwebebahn
+				return "TSchwebebahn";
 
 			if (type.equals("BUS"))
 				return "BBUS" + number;
