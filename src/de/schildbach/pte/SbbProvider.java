@@ -242,6 +242,8 @@ public class SbbProvider extends AbstractHafasProvider
 			return 'I';
 		if (ucType.equals("AVE")) // Alta Velocidad Española, Spanien
 			return 'I';
+		if (ucType.equals("TAL")) // Talgo, Spanien
+			return 'I';
 		if (ucType.equals("EM")) // Barcelona-Alicante, Spanien
 			return 'I';
 		if (ucType.equals("FYR")) // Fyra, Amsterdam-Schiphol-Rotterdam
@@ -266,8 +268,6 @@ public class SbbProvider extends AbstractHafasProvider
 		if (ucType.equals("ALS")) // Spanien
 			return 'R';
 		if (ucType.equals("ARC")) // Spanien
-			return 'R';
-		if (ucType.equals("TAL")) // Spanien
 			return 'R';
 		if (ucType.equals("ATR")) // Spanien
 			return 'R';

@@ -630,6 +630,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return "I" + normalizedName;
 		if ("ALS".equals(normalizedType)) // Alaris, Spanien
 			return "I" + normalizedName;
+		if ("TAL".equals(normalizedType)) // Talgo, Spanien
+			return "I" + normalizedName;
 		if ("NZ".equals(normalizedType)) // Nacht-Zug
 			return "I" + normalizedName;
 		if ("FYR".equals(normalizedType)) // Fyra, Amsterdam-Schiphol-Rotterdam
