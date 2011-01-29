@@ -806,7 +806,9 @@ public final class BvgProvider extends AbstractHafasProvider
 			if (type.equals("CNL")) // CityNightLine
 				return "ICNL" + number;
 			if (type.equals("IR"))
-				return "R" + number;
+				return "RIR" + number;
+			if (type.equals("IRE"))
+				return "RIRE" + number;
 			if (type.equals("Zug"))
 				return "R" + number;
 			if (type.equals("ZUG"))
