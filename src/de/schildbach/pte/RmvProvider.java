@@ -71,13 +71,13 @@ public class RmvProvider extends AbstractHafasProvider
 	}
 
 	private static final String[] PLACES = { "Frankfurt (Main)", "Offenbach (Main)", "Mainz", "Wiesbaden", "Marburg", "Kassel", "Hanau", "Göttingen",
-			"Darmstadt", "Aschaffenburg" };
+			"Darmstadt", "Aschaffenburg", "Berlin" };
 
 	@Override
 	protected String[] splitNameAndPlace(final String name)
 	{
 		for (final String place : PLACES)
-			if (name.startsWith(place + " "))
+			if (name.startsWith(place + " ") || name.startsWith(place + "-"))
 				return new String[] { place, name.substring(place.length() + 1) };
 
 		return super.splitNameAndPlace(name);
@@ -440,7 +440,7 @@ public class RmvProvider extends AbstractHafasProvider
 			+ "<p class=\"qs\">\n(.*?)</p>\n" // head
 			+ "(.*?)<p class=\"links\">.*?" // departures
 			+ "input=(\\d+).*?" // locationId
-			+ "|(Eingabe kann nicht interpretiert)" // messages
+			+ "|(Eingabe kann nicht interpretiert|Eingabe ist nicht eindeutig)" // messages
 			+ "|(Internal Error)" // messages
 			+ ").*?", Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_HEAD_FINE = Pattern.compile("" //
