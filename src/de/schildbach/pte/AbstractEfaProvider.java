@@ -868,14 +868,23 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 					XmlPullUtil.enter(pp, "itdServingLines");
 					while (XmlPullUtil.test(pp, "itdServingLine"))
 					{
-						final String destination = normalizeLocationName(pp.getAttributeValue(null, "direction"));
-						final String destinationIdStr = pp.getAttributeValue(null, "destID");
-						final int destinationId = destinationIdStr.length() > 0 ? Integer.parseInt(destinationIdStr) : 0;
+						final String assignedStopId = pp.getAttributeValue(null, "assignedStopID");
+						if (assignedStopId == null || Integer.parseInt(assignedStopId) == location.id)
+						{
+							final String destination = normalizeLocationName(pp.getAttributeValue(null, "direction"));
+							final String destinationIdStr = pp.getAttributeValue(null, "destID");
+							final int destinationId = destinationIdStr.length() > 0 ? Integer.parseInt(destinationIdStr) : 0;
 
-						final String lineStr = processItdServingLine(pp);
-						final Line line = new Line(lineStr, lineColors(lineStr), destinationId, destination);
-						if (!lines.contains(line))
-							lines.add(line);
+							final String lineStr = processItdServingLine(pp);
+							final Line line = new Line(lineStr, lineColors(lineStr), destinationId, destination);
+							if (!lines.contains(line))
+								lines.add(line);
+						}
+						else
+						{
+							XmlPullUtil.enter(pp, "itdServingLine");
+							XmlPullUtil.exit(pp, "itdServingLine");
+						}
 					}
 					XmlPullUtil.exit(pp, "itdServingLines");
 				}
@@ -892,7 +901,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 					XmlPullUtil.enter(pp, "itdDepartureList");
 					while (XmlPullUtil.test(pp, "itdDeparture"))
 					{
-						if (Integer.parseInt(pp.getAttributeValue(null, "stopID")) == location.id)
+						if (XmlPullUtil.intAttr(pp, "stopID") == location.id)
 						{
 							final String position = normalizePlatform(pp.getAttributeValue(null, "platform"),
 									pp.getAttributeValue(null, "platformName"));
