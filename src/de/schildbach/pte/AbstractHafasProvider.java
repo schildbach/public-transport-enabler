@@ -550,9 +550,9 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 	{
 		if (location.type == LocationType.STATION && location.id != 0)
 			return "<Station externalId=\"" + location.id + "\" />";
-		if (location.type == LocationType.POI && (location.lat != 0 || location.lon != 0))
+		if (location.type == LocationType.POI && location.hasLocation())
 			return "<Poi type=\"WGS84\" x=\"" + location.lon + "\" y=\"" + location.lat + "\" />";
-		if (location.type == LocationType.ADDRESS && (location.lat != 0 || location.lon != 0))
+		if (location.type == LocationType.ADDRESS && location.hasLocation())
 			return "<Address type=\"WGS84\" x=\"" + location.lon + "\" y=\"" + location.lat + "\" />";
 
 		throw new IllegalArgumentException("cannot handle: " + location.toDebugString());
@@ -562,7 +562,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 	{
 		final StringBuilder builder = new StringBuilder();
 		builder.append("A=").append(locationType(location));
-		if (location.lat != 0 || location.lon != 0)
+		if (location.hasLocation())
 			builder.append("@X=" + location.lon + "@Y=" + location.lat);
 		if (location.name != null)
 			builder.append("@G=" + location.name);
@@ -577,7 +577,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return 1;
 		if (location.type == LocationType.POI)
 			return 4;
-		if (location.type == LocationType.ADDRESS && (location.lat != 0 || location.lon != 0))
+		if (location.type == LocationType.ADDRESS && location.hasLocation())
 			return 16;
 		if (location.type == LocationType.ADDRESS && location.name != null)
 			return 2;

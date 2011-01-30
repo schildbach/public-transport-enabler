@@ -253,7 +253,7 @@ public final class BvgProvider extends AbstractHafasProvider
 
 	private static final void appendLocationBvg(final StringBuilder uri, final Location location, final String paramSuffix, final String paramWgs)
 	{
-		if (location.type == LocationType.ADDRESS && location.lat != 0 && location.lon != 0 && paramWgs != null)
+		if (location.type == LocationType.ADDRESS && location.hasLocation() && paramWgs != null)
 		{
 			uri.append("&").append(paramWgs).append("=").append(ParserUtils.urlEncode("A=16@X=" + location.lon + "@Y=" + location.lat));
 		}

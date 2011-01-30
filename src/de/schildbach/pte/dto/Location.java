@@ -70,6 +70,11 @@ public final class Location implements Serializable
 		this.name = null;
 	}
 
+	public final boolean hasLocation()
+	{
+		return lat != 0 || lon != 0;
+	}
+
 	@Override
 	public String toString()
 	{

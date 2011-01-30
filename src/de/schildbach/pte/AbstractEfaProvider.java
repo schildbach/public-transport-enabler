@@ -1476,7 +1476,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 	protected void appendLocation(final StringBuilder uri, final Location location, final String paramSuffix)
 	{
-		if ((location.type == LocationType.POI || location.type == LocationType.ADDRESS) && location.lat != 0 && location.lon != 0)
+		if ((location.type == LocationType.POI || location.type == LocationType.ADDRESS) && location.hasLocation())
 		{
 			uri.append("&type_").append(paramSuffix).append("=coord");
 			uri.append("&name_").append(paramSuffix).append("=")
