@@ -831,7 +831,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures) throws IOException
 	{
-		final String uri = departuresQueryUri(stationId, maxDepartures);
+		final String uri = departuresQueryUri(stationId, maxDepartures) + "&deleteAssignedStops_dm=1";
 
 		InputStream is = null;
 		try
