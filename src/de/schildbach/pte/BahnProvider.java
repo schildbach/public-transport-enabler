@@ -750,6 +750,8 @@ public final class BahnProvider extends AbstractHafasProvider
 				return "RLEO" + number;
 			if (type.equals("SBS")) // Städtebahn Sachsen
 				return "RSBS" + number;
+			if (type.equals("SES")) // Städtebahn Sachsen
+				return "RSES" + number;
 			if (type.equals("VEN")) // Rhenus Veniro
 				return "RVEN" + number;
 			if (type.equals("KD")) // Koleje Dolnośląskie (Niederschlesische Eisenbahn)
