@@ -501,6 +501,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'R' + str;
 			if (type.equals("WFB")) // Westfalenbahn
 				return 'R' + str;
+			if ("Westfalenbahn".equals(type)) // Westfalenbahn
+				return 'R' + name;
 			if (type.equals("NWB")) // NordWestBahn
 				return 'R' + str;
 			if (type.equals("NordWestBahn"))
@@ -742,6 +744,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'S' + str;
 
 			if (P_LINE_U.matcher(type).matches())
+				return 'U' + str;
+			if ("Underground".equals(type)) // London Underground, GB
 				return 'U' + str;
 			if ("Millbrae / Richmond".equals(name)) // San Francisco, BART
 				return 'U' + name;
