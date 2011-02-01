@@ -198,6 +198,21 @@ public final class BvgProvider extends AbstractHafasProvider
 			place = "Potsdam";
 			name = parsedName.substring(9);
 		}
+		else if (parsedName.startsWith("Cottbus, "))
+		{
+			place = "Cottbus";
+			name = parsedName.substring(9);
+		}
+		else if (parsedName.startsWith("Brandenburg, "))
+		{
+			place = "Brandenburg";
+			name = parsedName.substring(13);
+		}
+		else if (parsedName.startsWith("Frankfurt (Oder), "))
+		{
+			place = "Frankfurt (Oder)";
+			name = parsedName.substring(19);
+		}
 		else
 		{
 			longName = parsedName;
