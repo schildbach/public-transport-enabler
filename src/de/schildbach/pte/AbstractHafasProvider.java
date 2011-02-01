@@ -42,6 +42,7 @@ import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
+import de.schildbach.pte.dto.QueryConnectionsResult.Status;
 import de.schildbach.pte.dto.Station;
 import de.schildbach.pte.util.Color;
 import de.schildbach.pte.util.ParserUtils;
@@ -264,10 +265,19 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			pp.setInput(is, DEFAULT_ENCODING);
 
 			assertResC(pp);
-			XmlPullUtil.enter(pp);
+			XmlPullUtil.enter(pp, "ResC");
+
+			if (XmlPullUtil.test(pp, "Err"))
+			{
+				final String code = XmlPullUtil.attr(pp, "code");
+				if (code.equals("F1")) // Spool: Error reading the spoolfile
+					return new QueryConnectionsResult(Status.SERVICE_DOWN);
+				throw new IllegalStateException("error " + code + " " + XmlPullUtil.attr(pp, "text"));
+			}
 
 			XmlPullUtil.enter(pp, "ConRes");
-			if (pp.getName().equals("Err"))
+
+			if (XmlPullUtil.test(pp, "Err"))
 			{
 				final String code = XmlPullUtil.attr(pp, "code");
 				if (code.equals("K9380"))
