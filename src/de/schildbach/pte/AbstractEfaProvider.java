@@ -352,7 +352,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 					final Location location = processOdvNameElem(pp, place);
 					if (location.type == LocationType.STATION)
 					{
-						final Station newStation = new Station(location.id, null, location.name, null, location.lat, location.lon, 0, null, null);
+						final Station newStation = new Station(location.id, null, null, location.name, location.lat, location.lon, 0, null, null);
 						if (!stations.contains(newStation))
 							stations.add(newStation);
 					}
