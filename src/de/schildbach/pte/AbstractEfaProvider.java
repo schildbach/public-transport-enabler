@@ -742,6 +742,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'S' + str;
 			if (type.equals("LO")) // London Overground, GB
 				return 'S' + str;
+			if ("A".equals(name) || "B".equals(name)) // SES
+				return 'S' + str;
 
 			if (P_LINE_U.matcher(type).matches())
 				return 'U' + str;
@@ -775,6 +777,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			if ("California Cable Car".equals(name)) // San Francisco
 				return 'T' + name;
 			if ("Muni".equals(type)) // San Francisco
+				return 'T' + name;
+			if ("Cable".equals(type)) // San Francisco
 				return 'T' + name;
 			if ("Muni Rail".equals(noTrainName)) // San Francisco
 				return 'T' + name;

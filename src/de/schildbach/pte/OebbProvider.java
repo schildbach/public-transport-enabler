@@ -853,6 +853,8 @@ public class OebbProvider extends AbstractHafasProvider
 			return 'B';
 		if (ucType.equals("BUSMKK")) // via JSON API
 			return 'B';
+		if (ucType.equals("BUSG")) // via JSON API
+			return 'B';
 		if (ucType.equals("O-B")) // Stadtbus, via JSON API
 			return 'B';
 
