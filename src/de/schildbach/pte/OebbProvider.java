@@ -146,7 +146,7 @@ public class OebbProvider extends AbstractHafasProvider
 	@Override
 	protected String nearbyStationUri(final String stationId)
 	{
-		return String.format(NEARBY_URI, stationId);
+		return String.format(NEARBY_URI, ParserUtils.urlEncode(stationId));
 	}
 
 	private static final Map<WalkSpeed, String> WALKSPEED_MAP = new HashMap<WalkSpeed, String>();

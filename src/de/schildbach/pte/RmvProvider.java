@@ -71,7 +71,7 @@ public class RmvProvider extends AbstractHafasProvider
 	}
 
 	private static final String[] PLACES = { "Frankfurt (Main)", "Offenbach (Main)", "Mainz", "Wiesbaden", "Marburg", "Kassel", "Hanau", "Göttingen",
-			"Darmstadt", "Aschaffenburg", "Berlin" };
+			"Darmstadt", "Aschaffenburg", "Berlin", "Fulda" };
 
 	@Override
 	protected String[] splitNameAndPlace(final String name)
@@ -116,7 +116,7 @@ public class RmvProvider extends AbstractHafasProvider
 	@Override
 	protected String nearbyStationUri(final String stationId)
 	{
-		return String.format(NEARBY_URI, stationId);
+		return String.format(NEARBY_URI, ParserUtils.urlEncode(stationId));
 	}
 
 	private static final Map<WalkSpeed, String> WALKSPEED_MAP = new HashMap<WalkSpeed, String>();

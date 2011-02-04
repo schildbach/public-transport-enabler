@@ -70,7 +70,7 @@ public class SbbProvider extends AbstractHafasProvider
 	@Override
 	protected String nearbyStationUri(final String stationId)
 	{
-		return String.format(NEARBY_URI, stationId);
+		return String.format(NEARBY_URI, ParserUtils.urlEncode(stationId));
 	}
 
 	private String departuresQueryUri(final String stationId, final int maxDepartures)
