@@ -302,8 +302,6 @@ public final class BvgProvider extends AbstractHafasProvider
 	private static final Pattern P_CHECK_ADDRESS = Pattern.compile("<option[^>]*>\\s*(.*?)\\s*</option>", Pattern.DOTALL);
 	private static final Pattern P_CHECK_FROM = Pattern.compile("Von:");
 	private static final Pattern P_CHECK_TO = Pattern.compile("Nach:");
-	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern
-			.compile("(zu dicht beieinander|mehrfach vorhanden oder identisch)|(keine geeigneten Haltestellen)|(keine Verbindung gefunden)|(derzeit nur Ausk&#252;nfte vom)|(zwischenzeitlich nicht mehr gespeichert)");
 
 	@Override
 	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
@@ -373,6 +371,9 @@ public final class BvgProvider extends AbstractHafasProvider
 			+ "(\\d\\d:\\d\\d)-(\\d\\d:\\d\\d)</a>&nbsp;&nbsp;" // departureTime, arrivalTime
 			+ "(?:\\d+ Umst\\.|([\\w\\d ]+)).*?" // line
 	, Pattern.DOTALL);
+	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern.compile("(zu dicht beieinander|mehrfach vorhanden oder identisch)|"
+			+ "(keine geeigneten Haltestellen)|(keine Verbindung gefunden)|"
+			+ "(derzeit nur Ausk&#252;nfte vom)|(zwischenzeitlich nicht mehr gespeichert)|(http-equiv=\"refresh\")", Pattern.CASE_INSENSITIVE);
 
 	private QueryConnectionsResult queryConnections(final String uri, final CharSequence page, final Location originalFrom, final Location originalTo)
 			throws IOException
@@ -390,6 +391,8 @@ public final class BvgProvider extends AbstractHafasProvider
 				return QueryConnectionsResult.INVALID_DATE;
 			if (mError.group(5) != null)
 				throw new SessionExpiredException();
+			if (mError.group(6) != null)
+				throw new IOException("connected to private wlan");
 		}
 
 		final Matcher mHead = P_CONNECTIONS_HEAD.matcher(page);
@@ -620,8 +623,10 @@ public final class BvgProvider extends AbstractHafasProvider
 			+ "<a href=\"/Fahrinfo/bin/stboard\\.bin/dox/dox.*?evaId=(\\d+)&[^>]*>" // destinationId
 			+ "\\s*(.*?)\\s*</a>.*?" // destination
 	, Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_LIVE_ERRORS = Pattern.compile("(Haltestelle:)|(Wartungsgr&uuml;nden)");
-	private static final Pattern P_DEPARTURES_PLAN_ERRORS = Pattern.compile("(derzeit leider nicht bearbeitet werden)|(Wartungsarbeiten)");
+	private static final Pattern P_DEPARTURES_LIVE_ERRORS = Pattern.compile("(Haltestelle:)|(Wartungsgr&uuml;nden)|(http-equiv=\"refresh\")",
+			Pattern.CASE_INSENSITIVE);
+	private static final Pattern P_DEPARTURES_PLAN_ERRORS = Pattern.compile("(derzeit leider nicht bearbeitet werden)|(Wartungsarbeiten)|"
+			+ "(http-equiv=\"refresh\")", Pattern.CASE_INSENSITIVE);
 
 	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures) throws IOException
 	{
@@ -637,6 +642,8 @@ public final class BvgProvider extends AbstractHafasProvider
 					return new QueryDeparturesResult(Status.INVALID_STATION, Integer.parseInt(stationId));
 				if (mError.group(2) != null)
 					return new QueryDeparturesResult(Status.SERVICE_DOWN, Integer.parseInt(stationId));
+				if (mError.group(3) != null)
+					throw new IOException("connected to private wlan");
 			}
 
 			// parse page
@@ -711,6 +718,8 @@ public final class BvgProvider extends AbstractHafasProvider
 					return new QueryDeparturesResult(Status.INVALID_STATION, Integer.parseInt(stationId));
 				if (mError.group(2) != null)
 					return new QueryDeparturesResult(Status.SERVICE_DOWN, Integer.parseInt(stationId));
+				if (mError.group(3) != null)
+					throw new IOException("connected to private wlan");
 			}
 
 			// parse page
