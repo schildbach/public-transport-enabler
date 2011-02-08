@@ -742,7 +742,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'S' + str;
 			if (type.equals("LO")) // London Overground, GB
 				return 'S' + str;
-			if ("A".equals(name) || "B".equals(name)) // SES
+			if ("A".equals(name) || "B".equals(name) || "C".equals(name)) // SES
 				return 'S' + str;
 
 			if (P_LINE_U.matcher(type).matches())
@@ -839,7 +839,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures) throws IOException
 	{
-		final String uri = departuresQueryUri(stationId, maxDepartures) + "&deleteAssignedStops_dm=1";
+		final String uri = departuresQueryUri(stationId, maxDepartures)
+				+ "&outputFormat=XML&coordOutputFormat=WGS84&deleteAssignedStops_dm=1&mode=direct";
 
 		InputStream is = null;
 		try

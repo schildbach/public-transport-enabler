@@ -77,11 +77,8 @@ public class BvbProvider extends AbstractEfaProvider
 	{
 		final StringBuilder uri = new StringBuilder();
 		uri.append(API_BASE).append("XSLT_DM_REQUEST");
-		uri.append("?outputFormat=XML");
-		uri.append("&coordOutputFormat=WGS84");
-		uri.append("&type_dm=stop");
-		uri.append("&name_dm=").append(stationId);
-		uri.append("&mode=direct");
+		uri.append("?type_dm=stop");
+		uri.append("&name_dm=").append(ParserUtils.urlEncode(stationId));
 		uri.append("&useRealtime=1");
 		return uri.toString();
 	}
