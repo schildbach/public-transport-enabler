@@ -41,6 +41,7 @@ import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryDeparturesResult.Status;
 import de.schildbach.pte.dto.Station;
+import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.exception.SessionExpiredException;
 import de.schildbach.pte.util.Color;
 import de.schildbach.pte.util.ParserUtils;
@@ -630,8 +631,11 @@ public final class BvgProvider extends AbstractHafasProvider
 
 	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures) throws IOException
 	{
+		final QueryDeparturesResult result = new QueryDeparturesResult();
+
 		if (stationId.length() == 6) // live
 		{
+			// scrape page
 			final String uri = departuresQueryLiveUri(stationId);
 			final CharSequence page = ParserUtils.scrape(uri);
 
@@ -639,9 +643,9 @@ public final class BvgProvider extends AbstractHafasProvider
 			if (mError.find())
 			{
 				if (mError.group(1) != null)
-					return new QueryDeparturesResult(Status.INVALID_STATION, Integer.parseInt(stationId));
+					return new QueryDeparturesResult(Status.INVALID_STATION);
 				if (mError.group(2) != null)
-					return new QueryDeparturesResult(Status.SERVICE_DOWN, Integer.parseInt(stationId));
+					return new QueryDeparturesResult(Status.SERVICE_DOWN);
 				if (mError.group(3) != null)
 					throw new IOException("connected to private wlan");
 			}
@@ -699,7 +703,9 @@ public final class BvgProvider extends AbstractHafasProvider
 					}
 				}
 
-				return new QueryDeparturesResult(new Location(LocationType.STATION, Integer.parseInt(stationId), null, location), departures, null);
+				result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, Integer.parseInt(stationId), null, location),
+						departures, null));
+				return result;
 			}
 			else
 			{
@@ -708,6 +714,7 @@ public final class BvgProvider extends AbstractHafasProvider
 		}
 		else
 		{
+			// scrape page
 			final String uri = departuresQueryPlanUri(stationId, maxDepartures);
 			final CharSequence page = ParserUtils.scrape(uri);
 
@@ -715,9 +722,9 @@ public final class BvgProvider extends AbstractHafasProvider
 			if (mError.find())
 			{
 				if (mError.group(1) != null)
-					return new QueryDeparturesResult(Status.INVALID_STATION, Integer.parseInt(stationId));
+					return new QueryDeparturesResult(Status.INVALID_STATION);
 				if (mError.group(2) != null)
-					return new QueryDeparturesResult(Status.SERVICE_DOWN, Integer.parseInt(stationId));
+					return new QueryDeparturesResult(Status.SERVICE_DOWN);
 				if (mError.group(3) != null)
 					throw new IOException("connected to private wlan");
 			}
@@ -768,7 +775,9 @@ public final class BvgProvider extends AbstractHafasProvider
 					}
 				}
 
-				return new QueryDeparturesResult(new Location(LocationType.STATION, Integer.parseInt(stationId), null, location), departures, null);
+				result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, Integer.parseInt(stationId), null, location),
+						departures, null));
+				return result;
 			}
 			else
 			{

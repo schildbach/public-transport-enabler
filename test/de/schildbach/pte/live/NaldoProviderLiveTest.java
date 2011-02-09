@@ -43,6 +43,6 @@ public class NaldoProviderLiveTest
 	{
 		final QueryDeparturesResult result = provider.queryDepartures("53019174", 0);
 
-		System.out.println(result.location.toDebugString() + "  " + result.departures.size() + "  " + result.departures);
+		System.out.println(result.stationDepartures);
 	}
 }

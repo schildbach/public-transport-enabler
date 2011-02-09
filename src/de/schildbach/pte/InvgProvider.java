@@ -34,6 +34,7 @@ import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryDeparturesResult.Status;
+import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.util.ParserUtils;
 
 /**
@@ -155,6 +156,8 @@ public class InvgProvider extends AbstractHafasProvider
 
 	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures) throws IOException
 	{
+		final QueryDeparturesResult result = new QueryDeparturesResult();
+
 		// scrape page
 		final String uri = departuresQueryUri(stationId, maxDepartures);
 		final CharSequence page = ParserUtils.scrape(uri);
@@ -165,12 +168,15 @@ public class InvgProvider extends AbstractHafasProvider
 		{
 			// messages
 			if (mHeadCoarse.group(4) != null)
-				return new QueryDeparturesResult(new Location(LocationType.STATION, Integer.parseInt(stationId)),
-						Collections.<Departure> emptyList(), null);
+			{
+				result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, Integer.parseInt(stationId)), Collections
+						.<Departure> emptyList(), null));
+				return result;
+			}
 			else if (mHeadCoarse.group(5) != null)
-				return new QueryDeparturesResult(Status.INVALID_STATION, Integer.parseInt(stationId));
+				return new QueryDeparturesResult(Status.INVALID_STATION);
 			else if (mHeadCoarse.group(6) != null)
-				return new QueryDeparturesResult(Status.SERVICE_DOWN, Integer.parseInt(stationId));
+				return new QueryDeparturesResult(Status.SERVICE_DOWN);
 
 			final int locationId = Integer.parseInt(mHeadCoarse.group(2));
 
@@ -240,7 +246,9 @@ public class InvgProvider extends AbstractHafasProvider
 				}
 
 				final String[] nameAndPlace = splitNameAndPlace(location);
-				return new QueryDeparturesResult(new Location(LocationType.STATION, locationId, nameAndPlace[0], nameAndPlace[1]), departures, null);
+				result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, locationId, nameAndPlace[0], nameAndPlace[1]),
+						departures, null));
+				return result;
 			}
 			else
 			{

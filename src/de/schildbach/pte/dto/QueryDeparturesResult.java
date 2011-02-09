@@ -17,6 +17,7 @@
 
 package de.schildbach.pte.dto;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -30,24 +31,16 @@ public final class QueryDeparturesResult
 	}
 
 	public final Status status;
-	public final Location location;
-	public final List<Departure> departures;
-	public final List<Line> lines;
+	public final List<StationDepartures> stationDepartures = new LinkedList<StationDepartures>();
 
-	public QueryDeparturesResult(final Location location, final List<Departure> departures, final List<Line> lines)
+	public QueryDeparturesResult()
 	{
 		this.status = Status.OK;
-		this.location = location;
-		this.departures = departures;
-		this.lines = lines;
 	}
 
-	public QueryDeparturesResult(final Status status, final int locationId)
+	public QueryDeparturesResult(final Status status)
 	{
 		this.status = status;
-		this.location = new Location(LocationType.STATION, locationId);
-		this.departures = null;
-		this.lines = null;
 	}
 
 	@Override
@@ -55,10 +48,7 @@ public final class QueryDeparturesResult
 	{
 		final StringBuilder builder = new StringBuilder(getClass().getName());
 		builder.append("[").append(this.status);
-		if (location != null)
-			builder.append(" ").append(location.toDebugString());
-		if (departures != null)
-			builder.append(" ").append(departures.size()).append(" departures");
+		builder.append(" ").append(stationDepartures);
 		builder.append("]");
 		return builder.toString();
 	}

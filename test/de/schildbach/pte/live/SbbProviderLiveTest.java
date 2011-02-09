@@ -67,7 +67,7 @@ public class SbbProviderLiveTest
 	{
 		final QueryDeparturesResult result = provider.queryDepartures("8500010", 0);
 
-		System.out.println(result.status + "  " + result.departures.size() + "  " + result.departures);
+		System.out.println(result.stationDepartures);
 	}
 
 	@Test

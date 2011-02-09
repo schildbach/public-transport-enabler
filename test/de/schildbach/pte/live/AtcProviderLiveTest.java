@@ -43,6 +43,6 @@ public class AtcProviderLiveTest
 	{
 		final QueryDeparturesResult result = provider.queryDepartures("Bologna", 0);
 
-		System.out.println(result.departures.size() + "  " + result.departures);
+		System.out.println(result.stationDepartures);
 	}
 }

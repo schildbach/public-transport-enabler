@@ -15,34 +15,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.schildbach.pte.live;
+package de.schildbach.pte.dto;
 
-import org.junit.Test;
-
-import de.schildbach.pte.VmsProvider;
-import de.schildbach.pte.dto.NearbyStationsResult;
-import de.schildbach.pte.dto.QueryDeparturesResult;
+import java.util.List;
 
 /**
  * @author Andreas Schildbach
  */
-public class VmsProviderLiveTest
+public final class StationDepartures
 {
-	private final VmsProvider provider = new VmsProvider();
+	public final Location location;
+	public final List<Departure> departures;
+	public final List<Line> lines;
 
-	@Test
-	public void nearbyStation() throws Exception
+	public StationDepartures(final Location location, final List<Departure> departures, final List<Line> lines)
 	{
-		final NearbyStationsResult result = provider.nearbyStations("Chemnitz", 0, 0, 0, 0);
-
-		System.out.println(result.stations.size() + "  " + result.stations);
+		this.location = location;
+		this.departures = departures;
+		this.lines = lines;
 	}
 
-	@Test
-	public void queryDepartures() throws Exception
+	@Override
+	public String toString()
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("Chemnitz", 0);
-
-		System.out.println(result.stationDepartures);
+		final StringBuilder builder = new StringBuilder(getClass().getName());
+		builder.append("[");
+		if (location != null)
+			builder.append(location.toDebugString());
+		if (departures != null)
+			builder.append(" ").append(departures.size()).append(" departures");
+		builder.append("]");
+		return builder.toString();
 	}
 }

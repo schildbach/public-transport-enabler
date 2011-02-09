@@ -36,6 +36,7 @@ import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryDeparturesResult.Status;
+import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.util.ParserUtils;
 
 /**
@@ -133,8 +134,11 @@ public class VgsProvider extends AbstractHafasProvider
 
 	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures) throws IOException
 	{
+		final QueryDeparturesResult result = new QueryDeparturesResult();
+
 		// scrape page
-		final CharSequence page = ParserUtils.scrape(departuresQueryUri(stationId, maxDepartures));
+		final String uri = departuresQueryUri(stationId, maxDepartures);
+		final CharSequence page = ParserUtils.scrape(uri);
 
 		// parse page
 		final Matcher mHeadCoarse = P_DEPARTURES_HEAD_COARSE.matcher(page);
@@ -142,12 +146,15 @@ public class VgsProvider extends AbstractHafasProvider
 		{
 			// messages
 			if (mHeadCoarse.group(3) != null)
-				return new QueryDeparturesResult(new Location(LocationType.STATION, Integer.parseInt(stationId)),
-						Collections.<Departure> emptyList(), null);
+			{
+				result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, Integer.parseInt(stationId)), Collections
+						.<Departure> emptyList(), null));
+				return result;
+			}
 			else if (mHeadCoarse.group(4) != null)
-				return new QueryDeparturesResult(Status.INVALID_STATION, Integer.parseInt(stationId));
+				return new QueryDeparturesResult(Status.INVALID_STATION);
 			else if (mHeadCoarse.group(5) != null)
-				return new QueryDeparturesResult(Status.SERVICE_DOWN, Integer.parseInt(stationId));
+				return new QueryDeparturesResult(Status.SERVICE_DOWN);
 
 			final Matcher mHeadFine = P_DEPARTURES_HEAD_FINE.matcher(mHeadCoarse.group(1));
 			if (mHeadFine.matches())
@@ -214,7 +221,9 @@ public class VgsProvider extends AbstractHafasProvider
 					}
 				}
 
-				return new QueryDeparturesResult(new Location(LocationType.STATION, Integer.parseInt(stationId), null, location), departures, null);
+				result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, Integer.parseInt(stationId), null, location),
+						departures, null));
+				return result;
 			}
 			else
 			{

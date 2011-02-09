@@ -38,6 +38,7 @@ import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.Station;
+import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.exception.SessionExpiredException;
 import de.schildbach.pte.util.ParserUtils;
 
@@ -453,9 +454,13 @@ public final class BahnProvider extends AbstractHafasProvider
 
 	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures) throws IOException
 	{
+		final QueryDeparturesResult result = new QueryDeparturesResult();
+
+		// scrape page
 		final String uri = departuresQueryUri(stationId, maxDepartures);
 		final CharSequence page = ParserUtils.scrape(uri);
 
+		// parse page
 		final Matcher mMessage = P_DEPARTURES_MESSAGES.matcher(page);
 		if (mMessage.find())
 		{
@@ -463,10 +468,13 @@ public final class BahnProvider extends AbstractHafasProvider
 			final String text = mMessage.group(2);
 
 			if (code.equals("H730")) // Your input is not valid
-				return new QueryDeparturesResult(QueryDeparturesResult.Status.INVALID_STATION, Integer.parseInt(stationId));
-			if (code.equals("H890")) // No trains in result
-				return new QueryDeparturesResult(new Location(LocationType.STATION, Integer.parseInt(stationId)),
-						Collections.<Departure> emptyList(), null);
+				return new QueryDeparturesResult(QueryDeparturesResult.Status.INVALID_STATION);
+			if (code.equals("H890"))
+			{
+				result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, Integer.parseInt(stationId)), Collections
+						.<Departure> emptyList(), null));
+				return result;
+			}
 			throw new IllegalArgumentException("unknown error " + code + ", " + text);
 		}
 
@@ -510,7 +518,8 @@ public final class BahnProvider extends AbstractHafasProvider
 			}
 		}
 
-		return new QueryDeparturesResult(new Location(LocationType.STATION, Integer.parseInt(stationId)), departures, null);
+		result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, Integer.parseInt(stationId)), departures, null));
+		return result;
 	}
 
 	@Override

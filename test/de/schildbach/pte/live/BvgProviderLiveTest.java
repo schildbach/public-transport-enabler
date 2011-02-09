@@ -63,10 +63,11 @@ public class BvgProviderLiveTest
 	}
 
 	@Test
-	public void departures() throws Exception
+	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult queryDepartures = provider.queryDepartures("309557", 0);
-		System.out.println(queryDepartures.departures);
+		final QueryDeparturesResult result = provider.queryDepartures("309557", 0);
+
+		System.out.println(result.stationDepartures);
 	}
 
 	@Test

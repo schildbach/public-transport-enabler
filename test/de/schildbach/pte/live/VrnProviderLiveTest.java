@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package de.schildbach.pte.live;
 
 import java.util.List;
@@ -81,10 +82,10 @@ public class VrnProviderLiveTest
 	}
 
 	@Test
-	public void departures() throws Exception
+	public void queryDepartures() throws Exception
 	{
 		final QueryDeparturesResult result = provider.queryDepartures("6032236", 0);
 
-		System.out.println(result.departures.size() + "  " + result.departures);
+		System.out.println(result.stationDepartures);
 	}
 }

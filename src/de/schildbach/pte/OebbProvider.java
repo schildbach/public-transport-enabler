@@ -40,6 +40,7 @@ import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryDeparturesResult.Status;
+import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.exception.SessionExpiredException;
 import de.schildbach.pte.util.ParserUtils;
 
@@ -530,14 +531,18 @@ public class OebbProvider extends AbstractHafasProvider
 
 	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures) throws IOException
 	{
-		// scrape page
-		final String page = ParserUtils.scrape(departuresQueryUri(stationId, maxDepartures)).toString().substring(14);
+		final QueryDeparturesResult result = new QueryDeparturesResult();
 
+		// scrape page
+		final String uri = departuresQueryUri(stationId, maxDepartures);
+		final String page = ParserUtils.scrape(uri).toString().substring(14);
+
+		// parse page
 		final Matcher mError = P_DEPARTURES_ERROR.matcher(page);
 		if (mError.find())
 		{
 			if (mError.group(1) != null)
-				return new QueryDeparturesResult(Status.SERVICE_DOWN, Integer.parseInt(stationId));
+				return new QueryDeparturesResult(Status.SERVICE_DOWN);
 		}
 
 		try
@@ -547,7 +552,7 @@ public class OebbProvider extends AbstractHafasProvider
 			final int locationId = head.optInt("stationEvaId", -1);
 			// final boolean rt = head.optBoolean("rtInfo");
 			if (locationId == -1)
-				return new QueryDeparturesResult(Status.INVALID_STATION, Integer.parseInt(stationId));
+				return new QueryDeparturesResult(Status.INVALID_STATION);
 
 			final List<Departure> departures = new ArrayList<Departure>(8);
 
@@ -575,7 +580,8 @@ public class OebbProvider extends AbstractHafasProvider
 				}
 			}
 
-			return new QueryDeparturesResult(new Location(LocationType.STATION, locationId, null, location), departures, null);
+			result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, locationId, null, location), departures, null));
+			return result;
 		}
 		catch (final JSONException x)
 		{

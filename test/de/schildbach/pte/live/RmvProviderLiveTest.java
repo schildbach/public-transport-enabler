@@ -39,10 +39,10 @@ public class RmvProviderLiveTest
 	}
 
 	@Test
-	public void departures() throws Exception
+	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult queryDepartures = provider.queryDepartures("3000001", 0);
+		final QueryDeparturesResult result = provider.queryDepartures("3000001", 0);
 
-		System.out.println(queryDepartures.departures);
+		System.out.println(result.stationDepartures);
 	}
 }

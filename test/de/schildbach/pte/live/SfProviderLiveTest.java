@@ -43,6 +43,6 @@ public class SfProviderLiveTest
 	{
 		final QueryDeparturesResult result = provider.queryDepartures("10010813", 0);
 
-		System.out.println(result.departures.size() + "  " + result.departures);
+		System.out.println(result.stationDepartures);
 	}
 }

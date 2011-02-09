@@ -43,6 +43,6 @@ public class InvgProviderLiveTest
 	{
 		final QueryDeparturesResult result = provider.queryDepartures("80301", 0);
 
-		System.out.println(result.departures.size() + "  " + result.departures);
+		System.out.println(result.stationDepartures);
 	}
 }

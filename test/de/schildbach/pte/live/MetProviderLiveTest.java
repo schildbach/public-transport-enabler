@@ -43,6 +43,6 @@ public class MetProviderLiveTest
 	{
 		final QueryDeparturesResult result = provider.queryDepartures("10001167", 0);
 
-		System.out.println(result.departures.size() + "  " + result.departures);
+		System.out.println(result.stationDepartures);
 	}
 }

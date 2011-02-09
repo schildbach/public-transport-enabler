@@ -43,6 +43,6 @@ public class VvmProviderLiveTest
 	{
 		final QueryDeparturesResult result = provider.queryDepartures("3000510", 0);
 
-		System.out.println(result.departures.size() + "  " + result.departures);
+		System.out.println(result.stationDepartures);
 	}
 }

@@ -43,6 +43,7 @@ import de.schildbach.pte.dto.Fare;
 import de.schildbach.pte.dto.Fare.Type;
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
 import de.schildbach.pte.dto.Line;
+import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -957,11 +958,13 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 					XmlPullUtil.exit(pp, "itdDepartureList");
 				}
 
-				return new QueryDeparturesResult(location, departures, lines);
+				final QueryDeparturesResult result = new QueryDeparturesResult();
+				result.stationDepartures.add(new StationDepartures(location, departures, lines));
+				return result;
 			}
 			else if ("notidentified".equals(nameState))
 			{
-				return new QueryDeparturesResult(QueryDeparturesResult.Status.INVALID_STATION, Integer.parseInt(stationId));
+				return new QueryDeparturesResult(QueryDeparturesResult.Status.INVALID_STATION);
 			}
 			else
 			{

@@ -42,7 +42,7 @@ public class NsProviderLiveTest
 	{
 		final QueryDeparturesResult result = provider.queryDepartures("100080", 0);
 
-		System.out.println(result.status + "  " + result.departures.size() + "  " + result.departures);
+		System.out.println(result.stationDepartures);
 	}
 
 	@Test

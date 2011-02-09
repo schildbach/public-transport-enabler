@@ -39,10 +39,11 @@ public class BahnProviderLiveTest
 	protected static final String ALL_PRODUCTS = "IRSUTBFC";
 
 	@Test
-	public void departures() throws Exception
+	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult queryDepartures = provider.queryDepartures("692991", 0);
-		System.out.println(queryDepartures.departures);
+		final QueryDeparturesResult result = provider.queryDepartures("692991", 0);
+
+		System.out.println(result.stationDepartures);
 	}
 
 	@Test
