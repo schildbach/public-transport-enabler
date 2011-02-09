@@ -735,6 +735,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'R' + name;
 			if ("CAPITOL".equals(name)) // San Francisco
 				return 'R' + name;
+			if (type.equals("ATB")) // Autoschleuse Tauernbahn
+				return 'R' + name;
 
 			if (type.equals("BSB")) // Breisgau-S-Bahn
 				return 'S' + str;
