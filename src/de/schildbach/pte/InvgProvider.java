@@ -25,7 +25,9 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,6 +37,7 @@ import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryDeparturesResult.Status;
 import de.schildbach.pte.dto.StationDepartures;
+import de.schildbach.pte.util.Color;
 import de.schildbach.pte.util.ParserUtils;
 
 /**
@@ -287,5 +290,80 @@ public class InvgProvider extends AbstractHafasProvider
 		{
 			throw new IllegalArgumentException("cannot parse '" + page + "' on " + stationId);
 		}
+	}
+
+	private static final Map<String, int[]> LINES = new HashMap<String, int[]>();
+
+	static
+	{
+		LINES.put("B10", new int[] { Color.parseColor("#DA2510"), Color.WHITE });
+		LINES.put("B11", new int[] { Color.parseColor("#EE9B78"), Color.BLACK });
+		LINES.put("B15", new int[] { Color.parseColor("#84C326"), Color.BLACK });
+		LINES.put("B16", new int[] { Color.parseColor("#5D452E"), Color.WHITE });
+		LINES.put("B17", new int[] { Color.parseColor("#AAAAAA"), Color.BLACK });
+		LINES.put("B20", new int[] { Color.parseColor("#EA891C"), Color.BLACK });
+		LINES.put("B21", new int[] { Color.parseColor("#31B2EA"), Color.BLACK });
+		LINES.put("B25", new int[] { Color.parseColor("#7F65A0"), Color.WHITE });
+		LINES.put("B26", new int[] { Color.parseColor("#00BF73"), Color.WHITE });
+		LINES.put("B30", new int[] { Color.parseColor("#901E78"), Color.WHITE });
+		LINES.put("B31", new int[] { Color.parseColor("#DCE722"), Color.BLACK });
+		LINES.put("B40", new int[] { Color.parseColor("#009240"), Color.WHITE });
+		LINES.put("B41", new int[] { Color.parseColor("#7BC5B1"), Color.BLACK });
+		LINES.put("B44", new int[] { Color.parseColor("#EA77A6"), Color.WHITE });
+		LINES.put("B50", new int[] { Color.parseColor("#FACF00"), Color.BLACK });
+		LINES.put("B53", new int[] { Color.parseColor("#BEB405"), Color.BLACK });
+		LINES.put("B55", new int[] { Color.parseColor("#FFF500"), Color.BLACK });
+		LINES.put("B60", new int[] { Color.parseColor("#0072B7"), Color.WHITE });
+		LINES.put("B61", new int[] { Color.rgb(204, 184, 122), Color.BLACK });
+		LINES.put("B62", new int[] { Color.rgb(204, 184, 122), Color.BLACK });
+		LINES.put("B65", new int[] { Color.parseColor("#B7DDD2"), Color.BLACK });
+		LINES.put("B70", new int[] { Color.parseColor("#D49016"), Color.BLACK });
+		LINES.put("B71", new int[] { Color.parseColor("#996600"), Color.BLACK });
+		LINES.put("B85", new int[] { Color.parseColor("#F6BAD3"), Color.BLACK });
+		LINES.put("B9221", new int[] { Color.rgb(217, 217, 255), Color.BLACK });
+		LINES.put("B9226", new int[] { Color.rgb(191, 255, 255), Color.BLACK });
+
+		LINES.put("BN1", new int[] { Color.parseColor("#00116C"), Color.WHITE });
+		LINES.put("BN2", new int[] { Color.parseColor("#00116C"), Color.WHITE });
+		LINES.put("BN3", new int[] { Color.parseColor("#00116C"), Color.WHITE });
+		LINES.put("BN4", new int[] { Color.parseColor("#00116C"), Color.WHITE });
+		LINES.put("BN5", new int[] { Color.parseColor("#00116C"), Color.WHITE });
+		LINES.put("BN6", new int[] { Color.parseColor("#00116C"), Color.WHITE });
+		LINES.put("BN7", new int[] { Color.parseColor("#00116C"), Color.WHITE });
+		LINES.put("BN8", new int[] { Color.parseColor("#00116C"), Color.WHITE });
+		LINES.put("BN9", new int[] { Color.parseColor("#00116C"), Color.WHITE });
+		LINES.put("BN10", new int[] { Color.parseColor("#00116C"), Color.WHITE });
+		LINES.put("BN11", new int[] { Color.parseColor("#00116C"), Color.WHITE });
+		LINES.put("BN12", new int[] { Color.parseColor("#00116C"), Color.WHITE });
+		LINES.put("BN13", new int[] { Color.parseColor("#00116C"), Color.WHITE });
+		LINES.put("BN14", new int[] { Color.parseColor("#00116C"), Color.WHITE });
+		LINES.put("BN15", new int[] { Color.parseColor("#00116C"), Color.WHITE });
+		LINES.put("BN16", new int[] { Color.parseColor("#00116C"), Color.WHITE });
+		LINES.put("BN17", new int[] { Color.parseColor("#00116C"), Color.WHITE });
+		LINES.put("BN18", new int[] { Color.parseColor("#00116C"), Color.WHITE });
+		LINES.put("BN19", new int[] { Color.parseColor("#00116C"), Color.WHITE });
+
+		LINES.put("BS1", new int[] { Color.rgb(178, 25, 0), Color.WHITE });
+		LINES.put("BS2", new int[] { Color.rgb(178, 25, 0), Color.WHITE });
+		LINES.put("BS3", new int[] { Color.rgb(178, 25, 0), Color.WHITE });
+		LINES.put("BS4", new int[] { Color.rgb(178, 25, 0), Color.WHITE });
+		LINES.put("BS5", new int[] { Color.rgb(178, 25, 0), Color.WHITE });
+		LINES.put("BS6", new int[] { Color.rgb(178, 25, 0), Color.WHITE });
+		LINES.put("BS7", new int[] { Color.rgb(178, 25, 0), Color.WHITE });
+		LINES.put("BS8", new int[] { Color.rgb(178, 25, 0), Color.WHITE });
+
+		// BX109?
+		LINES.put("BX11", new int[] { Color.parseColor("#EE9B78") });
+		LINES.put("BX80", new int[] { Color.parseColor("#FFFF40") });
+	}
+
+	@Override
+	public int[] lineColors(final String line)
+	{
+		final int[] lineColors = LINES.get(line);
+		if (lineColors != null)
+			return lineColors;
+		else
+			return super.lineColors(line);
 	}
 }
