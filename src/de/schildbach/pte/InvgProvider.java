@@ -92,12 +92,40 @@ public class InvgProvider extends AbstractHafasProvider
 		return String.format(NEARBY_URI, ParserUtils.urlEncode(stationId));
 	}
 
+	protected static final Pattern P_NORMALIZE_LINE_BUS = Pattern.compile("Bus\\s*(\\d+)");
+	protected static final Pattern P_NORMALIZE_LINE_NACHTBUS = Pattern.compile("Bus\\s*N\\s*(\\d+)");
+	protected static final Pattern P_NORMALIZE_LINE_BUS_S = Pattern.compile("Bus\\s*S\\s*(\\d+)");
+	protected static final Pattern P_NORMALIZE_LINE_BUS_X = Pattern.compile("Bus\\s*X\\s*(\\d+)");
+
+	@Override
+	protected String normalizeLine(final String type, final String line)
+	{
+		if ("1".equals(type))
+		{
+			final Matcher mBus = P_NORMALIZE_LINE_BUS.matcher(line);
+			if (mBus.matches())
+				return "B" + mBus.group(1);
+
+			final Matcher mNachtbus = P_NORMALIZE_LINE_NACHTBUS.matcher(line);
+			if (mNachtbus.matches())
+				return "BN" + mNachtbus.group(1);
+
+			final Matcher mBusS = P_NORMALIZE_LINE_BUS_S.matcher(line);
+			if (mBusS.matches())
+				return "BS" + mBusS.group(1);
+
+			final Matcher mBusX = P_NORMALIZE_LINE_BUS_X.matcher(line);
+			if (mBusX.matches())
+				return "BX" + mBusX.group(1);
+		}
+
+		return super.normalizeLine(type, line);
+	}
+
 	@Override
 	protected char normalizeType(final String type)
 	{
-		final String ucType = type.toUpperCase();
-
-		if ("1".equals(ucType))
+		if ("1".equals(type))
 			return 'B';
 
 		return 0;

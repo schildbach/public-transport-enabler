@@ -809,7 +809,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 	protected static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zÄÖÜäöüßáàâéèêíìîóòôúùû/-]+)[\\s-]*(.*)");
 
-	protected final String normalizeLine(final String type, final String line)
+	protected String normalizeLine(final String type, final String line)
 	{
 		final Matcher m = P_NORMALIZE_LINE.matcher(line);
 		final String strippedLine = m.matches() ? m.group(1) + m.group(2) : line;
