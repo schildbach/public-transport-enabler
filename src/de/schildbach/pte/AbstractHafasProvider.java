@@ -793,7 +793,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 				}
 
 				final String[] nameAndPlace = splitNameAndPlace(parsedName);
-				stations.add(new Station(parsedId, nameAndPlace[0], nameAndPlace[1], parsedName, parsedLat, parsedLon, 0, null, null));
+				stations.add(new Station(parsedId, nameAndPlace[0], nameAndPlace[1], parsedName, parsedLat, parsedLon));
 			}
 			else
 			{

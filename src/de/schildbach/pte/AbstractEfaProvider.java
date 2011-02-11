@@ -293,7 +293,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			{
 				final Location ownLocation = processOdvNameElem(pp, place);
 				final Station ownStation = ownLocation.type == LocationType.STATION ? new Station(ownLocation.id, ownLocation.place,
-						ownLocation.name, null, ownLocation.lat, ownLocation.lon, 0, null, null) : null;
+						ownLocation.name, null, ownLocation.lat, ownLocation.lon) : null;
 
 				final List<Station> stations = new ArrayList<Station>();
 
@@ -310,8 +310,6 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 							final String parsedPlace = normalizeLocationName(XmlPullUtil.attr(pp, "place"));
 							final int parsedLon = XmlPullUtil.intAttr(pp, "x");
 							final int parsedLat = XmlPullUtil.intAttr(pp, "y");
-							final String parsedDistStr = pp.getAttributeValue(null, "distance");
-							final int parsedDist = parsedDistStr != null ? Integer.parseInt(parsedDistStr) : 0;
 							XmlPullUtil.enter(pp, "itdOdvAssignedStop");
 							final String parsedName = normalizeLocationName(pp.getText());
 							XmlPullUtil.exit(pp, "itdOdvAssignedStop");
@@ -319,8 +317,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 							if (!"WGS84".equals(parsedMapName))
 								throw new IllegalStateException("unknown mapName: " + parsedMapName);
 
-							final Station newStation = new Station(parsedLocationId, parsedPlace, parsedName, parsedLongName, parsedLat, parsedLon,
-									parsedDist, null, null);
+							final Station newStation = new Station(parsedLocationId, parsedPlace, parsedName, parsedLongName, parsedLat, parsedLon);
 							if (!stations.contains(newStation))
 								stations.add(newStation);
 						}
@@ -358,7 +355,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 					final Location location = processOdvNameElem(pp, place);
 					if (location.type == LocationType.STATION)
 					{
-						final Station newStation = new Station(location.id, null, null, location.name, location.lat, location.lon, 0, null, null);
+						final Station newStation = new Station(location.id, null, null, location.name, location.lat, location.lon);
 						if (!stations.contains(newStation))
 							stations.add(newStation);
 					}

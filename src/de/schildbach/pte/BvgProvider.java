@@ -212,14 +212,14 @@ public final class BvgProvider extends AbstractHafasProvider
 		else if (parsedName.startsWith("Frankfurt (Oder), "))
 		{
 			place = "Frankfurt (Oder)";
-			name = parsedName.substring(19);
+			name = parsedName.substring(18);
 		}
 		else
 		{
 			longName = parsedName;
 		}
 
-		return new Station(id, place, name, longName, lat, lon, 0, null, null);
+		return new Station(id, place, name, longName, lat, lon);
 	}
 
 	public static final String STATION_URL_CONNECTION = "http://mobil.bvg.de/Fahrinfo/bin/query.bin/dox";

@@ -28,12 +28,8 @@ public final class Station
 	public final String name;
 	public final String longName;
 	public final int latitude, longitude;
-	public float distance;
-	public final String[] lines;
-	public final int[][] lineColors;
 
-	public Station(final int id, final String place, final String name, final String longName, final int latitude, final int longitude,
-			final float distance, final String[] lines, final int[][] lineColors)
+	public Station(final int id, final String place, final String name, final String longName, final int latitude, final int longitude)
 	{
 		this.id = id;
 		this.place = place;
@@ -41,9 +37,6 @@ public final class Station
 		this.longName = longName;
 		this.latitude = latitude;
 		this.longitude = longitude;
-		this.distance = distance;
-		this.lines = lines;
-		this.lineColors = lineColors;
 	}
 
 	public final boolean hasLocation()

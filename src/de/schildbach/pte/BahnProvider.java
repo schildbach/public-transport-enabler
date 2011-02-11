@@ -96,7 +96,7 @@ public final class BahnProvider extends AbstractHafasProvider
 				final int sId = Integer.parseInt(m.group(1));
 				final String sName = ParserUtils.resolveEntities(m.group(2).trim());
 
-				final Station station = new Station(sId, null, sName, null, 0, 0, 0, null, null);
+				final Station station = new Station(sId, null, sName, null, 0, 0);
 				stations.add(station);
 			}
 		}
@@ -113,10 +113,9 @@ public final class BahnProvider extends AbstractHafasProvider
 
 				final int sLon = Integer.parseInt(m.group(1));
 				final int sLat = Integer.parseInt(m.group(2));
-				final int sDist = Integer.parseInt(m.group(4));
 				final String sName = ParserUtils.resolveEntities(m.group(5).trim());
 
-				final Station station = new Station(sId, null, sName, null, sLat, sLon, sDist, null, null);
+				final Station station = new Station(sId, null, sName, null, sLat, sLon);
 				stations.add(station);
 			}
 		}
