@@ -30,9 +30,9 @@ public final class NearbyStationsResult
 	}
 
 	public final Status status;
-	public final List<Station> stations;
+	public final List<Location> stations;
 
-	public NearbyStationsResult(final List<Station> stations)
+	public NearbyStationsResult(final List<Location> stations)
 	{
 		this.status = Status.OK;
 		this.stations = stations;

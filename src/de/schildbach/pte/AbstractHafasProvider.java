@@ -43,7 +43,6 @@ import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult.Status;
-import de.schildbach.pte.dto.Station;
 import de.schildbach.pte.util.Color;
 import de.schildbach.pte.util.ParserUtils;
 import de.schildbach.pte.util.XmlPullUtil;
@@ -759,7 +758,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		if (stationId == null)
 			throw new IllegalArgumentException("stationId must be given");
 
-		final List<Station> stations = new ArrayList<Station>();
+		final List<Location> stations = new ArrayList<Location>();
 
 		final String uri = nearbyStationUri(stationId);
 		final CharSequence page = ParserUtils.scrape(uri);
@@ -793,7 +792,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 				}
 
 				final String[] nameAndPlace = splitNameAndPlace(parsedName);
-				stations.add(new Station(parsedId, nameAndPlace[0], nameAndPlace[1], parsedName, parsedLat, parsedLon));
+				stations.add(new Location(LocationType.STATION, parsedId, parsedLat, parsedLon, nameAndPlace[0], nameAndPlace[1]));
 			}
 			else
 			{

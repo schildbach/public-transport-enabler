@@ -49,7 +49,6 @@ import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult.Status;
 import de.schildbach.pte.dto.QueryDeparturesResult;
-import de.schildbach.pte.dto.Station;
 import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.dto.Stop;
 import de.schildbach.pte.util.Color;
@@ -292,10 +291,9 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			if ("identified".equals(nameState))
 			{
 				final Location ownLocation = processOdvNameElem(pp, place);
-				final Station ownStation = ownLocation.type == LocationType.STATION ? new Station(ownLocation.id, ownLocation.place,
-						ownLocation.name, null, ownLocation.lat, ownLocation.lon) : null;
+				final Location ownStation = ownLocation.type == LocationType.STATION ? ownLocation : null;
 
-				final List<Station> stations = new ArrayList<Station>();
+				final List<Location> stations = new ArrayList<Location>();
 
 				if (XmlPullUtil.jumpToStartTag(pp, null, "itdOdvAssignedStops"))
 				{
@@ -317,7 +315,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 							if (!"WGS84".equals(parsedMapName))
 								throw new IllegalStateException("unknown mapName: " + parsedMapName);
 
-							final Station newStation = new Station(parsedLocationId, parsedPlace, parsedName, parsedLongName, parsedLat, parsedLon);
+							final Location newStation = new Location(LocationType.STATION, parsedLocationId, parsedLat, parsedLon, parsedPlace,
+									parsedName);
 							if (!stations.contains(newStation))
 								stations.add(newStation);
 						}
@@ -346,19 +345,15 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			}
 			else if ("list".equals(nameState))
 			{
-				final List<Station> stations = new ArrayList<Station>();
+				final List<Location> stations = new ArrayList<Location>();
 
 				if (XmlPullUtil.test(pp, "itdMessage"))
 					XmlPullUtil.next(pp);
 				while (XmlPullUtil.test(pp, "odvNameElem"))
 				{
-					final Location location = processOdvNameElem(pp, place);
-					if (location.type == LocationType.STATION)
-					{
-						final Station newStation = new Station(location.id, null, null, location.name, location.lat, location.lon);
-						if (!stations.contains(newStation))
-							stations.add(newStation);
-					}
+					final Location newLocation = processOdvNameElem(pp, place);
+					if (newLocation.type == LocationType.STATION && !stations.contains(newLocation))
+						stations.add(newLocation);
 				}
 
 				return new NearbyStationsResult(stations);

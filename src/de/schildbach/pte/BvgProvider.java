@@ -40,7 +40,6 @@ import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryDeparturesResult.Status;
-import de.schildbach.pte.dto.Station;
 import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.exception.SessionExpiredException;
 import de.schildbach.pte.util.Color;
@@ -129,7 +128,7 @@ public final class BvgProvider extends AbstractHafasProvider
 		if (stationId == null)
 			throw new IllegalArgumentException("stationId must be given");
 
-		final List<Station> stations = new ArrayList<Station>();
+		final List<Location> stations = new ArrayList<Location>();
 
 		final String uri = nearbyStationUri(stationId);
 		final CharSequence page = ParserUtils.scrape(uri);
@@ -164,7 +163,7 @@ public final class BvgProvider extends AbstractHafasProvider
 				{
 					final int parsedId = Integer.parseInt(mFineLocation.group(1));
 					final String parsedName = ParserUtils.resolveEntities(mFineLocation.group(2));
-					final Station station = newStation(parsedId, parsedName, 0, 0);
+					final Location station = newStation(parsedId, parsedName, 0, 0);
 					if (!stations.contains(station))
 						stations.add(station);
 				}
@@ -185,9 +184,9 @@ public final class BvgProvider extends AbstractHafasProvider
 		}
 	}
 
-	private Station newStation(final int id, final String parsedName, final int lat, final int lon)
+	private Location newStation(final int id, final String parsedName, final int lat, final int lon)
 	{
-		String place = null, name = null, longName = null;
+		String place = null, name = null;
 
 		if (parsedName.endsWith(" (Berlin)"))
 		{
@@ -214,12 +213,8 @@ public final class BvgProvider extends AbstractHafasProvider
 			place = "Frankfurt (Oder)";
 			name = parsedName.substring(18);
 		}
-		else
-		{
-			longName = parsedName;
-		}
 
-		return new Station(id, place, name, longName, lat, lon);
+		return new Location(LocationType.STATION, id, lat, lon, place, name);
 	}
 
 	public static final String STATION_URL_CONNECTION = "http://mobil.bvg.de/Fahrinfo/bin/query.bin/dox";

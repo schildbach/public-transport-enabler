@@ -37,7 +37,6 @@ import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
-import de.schildbach.pte.dto.Station;
 import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.exception.SessionExpiredException;
 import de.schildbach.pte.util.ParserUtils;
@@ -83,7 +82,7 @@ public final class BahnProvider extends AbstractHafasProvider
 	public NearbyStationsResult nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
 			throws IOException
 	{
-		final List<Station> stations = new ArrayList<Station>();
+		final List<Location> stations = new ArrayList<Location>();
 
 		if (lat == 0 && lon == 0)
 		{
@@ -96,7 +95,7 @@ public final class BahnProvider extends AbstractHafasProvider
 				final int sId = Integer.parseInt(m.group(1));
 				final String sName = ParserUtils.resolveEntities(m.group(2).trim());
 
-				final Station station = new Station(sId, null, sName, null, 0, 0);
+				final Location station = new Location(LocationType.STATION, sId, null, sName);
 				stations.add(station);
 			}
 		}
@@ -115,7 +114,7 @@ public final class BahnProvider extends AbstractHafasProvider
 				final int sLat = Integer.parseInt(m.group(2));
 				final String sName = ParserUtils.resolveEntities(m.group(5).trim());
 
-				final Station station = new Station(sId, null, sName, null, sLat, sLon);
+				final Location station = new Location(LocationType.STATION, sId, sLat, sLon, null, sName);
 				stations.add(station);
 			}
 		}
