@@ -452,7 +452,7 @@ public final class BahnProvider extends AbstractHafasProvider
 	);
 	private static final Pattern P_DEPARTURES_MESSAGES = Pattern.compile("<Err code=\"([^\"]*)\" text=\"([^\"]*)\"");
 
-	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures) throws IOException
+	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
 		final QueryDeparturesResult result = new QueryDeparturesResult();
 

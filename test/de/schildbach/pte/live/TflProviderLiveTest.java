@@ -48,7 +48,7 @@ public class TflProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("1000086", 0);
+		final QueryDeparturesResult result = provider.queryDepartures("1000086", 0, false);
 
 		System.out.println(result.stationDepartures);
 	}

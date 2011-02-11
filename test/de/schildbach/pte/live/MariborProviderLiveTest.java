@@ -41,7 +41,7 @@ public class MariborProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("63203067", 0);
+		final QueryDeparturesResult result = provider.queryDepartures("63203067", 0, false);
 
 		System.out.println(result.stationDepartures);
 	}

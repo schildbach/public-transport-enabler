@@ -41,7 +41,7 @@ public class VvmProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("3000510", 0);
+		final QueryDeparturesResult result = provider.queryDepartures("3000510", 0, false);
 
 		System.out.println(result.stationDepartures);
 	}

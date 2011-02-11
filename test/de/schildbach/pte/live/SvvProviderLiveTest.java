@@ -41,7 +41,7 @@ public class SvvProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("60650002", 0);
+		final QueryDeparturesResult result = provider.queryDepartures("60650002", 0, false);
 
 		System.out.println(result.stationDepartures);
 	}

@@ -41,7 +41,7 @@ public class TlswProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("247616", 0);
+		final QueryDeparturesResult result = provider.queryDepartures("247616", 0, false);
 
 		System.out.println(result.stationDepartures);
 	}

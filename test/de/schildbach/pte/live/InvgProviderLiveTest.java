@@ -41,7 +41,7 @@ public class InvgProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("80301", 0);
+		final QueryDeparturesResult result = provider.queryDepartures("80301", 0, false);
 
 		System.out.println(result.stationDepartures);
 	}

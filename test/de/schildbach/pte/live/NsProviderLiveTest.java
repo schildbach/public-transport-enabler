@@ -40,7 +40,7 @@ public class NsProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("100080", 0);
+		final QueryDeparturesResult result = provider.queryDepartures("100080", 0, false);
 
 		System.out.println(result.stationDepartures);
 	}

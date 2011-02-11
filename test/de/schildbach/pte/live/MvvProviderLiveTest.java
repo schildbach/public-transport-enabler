@@ -18,6 +18,7 @@
 package de.schildbach.pte.live;
 
 import java.util.Date;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -27,6 +28,7 @@ import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
+import de.schildbach.pte.dto.QueryDeparturesResult;
 
 /**
  * @author Andreas Schildbach
@@ -37,11 +39,35 @@ public class MvvProviderLiveTest
 	private static final String ALL_PRODUCTS = "IRSUTBFC";
 
 	@Test
+	public void autocompleteIncomplete() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("Marien");
+
+		list(autocompletes);
+	}
+
+	private void list(final List<Location> autocompletes)
+	{
+		System.out.print(autocompletes.size() + " ");
+		for (final Location autocomplete : autocompletes)
+			System.out.print(autocomplete.toDebugString() + " ");
+		System.out.println();
+	}
+
+	@Test
 	public void nearbyStation() throws Exception
 	{
 		final NearbyStationsResult result = provider.nearbyStations("350", 0, 0, 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
+	}
+
+	@Test
+	public void queryDepartures() throws Exception
+	{
+		final QueryDeparturesResult result = provider.queryDepartures("2", 0, false);
+
+		System.out.println(result.stationDepartures);
 	}
 
 	@Test
@@ -96,8 +122,9 @@ public class MvvProviderLiveTest
 	@Test
 	public void connectionBetweenStationAndAddress() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 1220, null, "Josephsburg"), null, new Location(
-				LocationType.ADDRESS, 0, 48188018, 11574239, null, "München Frankfurter Ring 35"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 1220, null, "Josephsburg"), null,
+				new Location(LocationType.ADDRESS, 0, 48188018, 11574239, null, "München Frankfurter Ring 35"), new Date(), true, ALL_PRODUCTS,
+				WalkSpeed.NORMAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);

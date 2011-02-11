@@ -107,7 +107,7 @@ public class SncbProvider extends AbstractHafasProvider
 			+ "(?:<span class=\"delay\">([+-]?\\d+|Ausfall)</span>\r\n)?" // delay
 	, Pattern.DOTALL);
 
-	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures) throws IOException
+	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
 		final QueryDeparturesResult result = new QueryDeparturesResult();
 

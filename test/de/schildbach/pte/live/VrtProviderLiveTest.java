@@ -41,7 +41,7 @@ public class VrtProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("17001301", 0);
+		final QueryDeparturesResult result = provider.queryDepartures("17001301", 0, false);
 
 		System.out.println(result.stationDepartures);
 	}

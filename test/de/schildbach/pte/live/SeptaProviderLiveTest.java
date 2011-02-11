@@ -41,7 +41,7 @@ public class SeptaProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("1000002", 0);
+		final QueryDeparturesResult result = provider.queryDepartures("1000002", 0, false);
 
 		System.out.println(result.stationDepartures);
 	}

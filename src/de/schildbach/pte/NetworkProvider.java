@@ -128,10 +128,12 @@ public interface NetworkProvider
 	 *            id of the station
 	 * @param maxDepartures
 	 *            maximum number of departures to get or {@code 0}
+	 * @param equivs
+	 *            also query equivalent stations?
 	 * @return result object containing the departures
 	 * @throws IOException
 	 */
-	QueryDeparturesResult queryDepartures(String stationId, int maxDepartures) throws IOException;
+	QueryDeparturesResult queryDepartures(String stationId, int maxDepartures, boolean equivs) throws IOException;
 
 	/**
 	 * Get colors of line

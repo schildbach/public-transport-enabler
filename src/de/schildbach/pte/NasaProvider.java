@@ -133,7 +133,7 @@ public class NasaProvider extends AbstractHafasProvider
 			+ "(?:<td class=\"center sepline top\">\n(" + ParserUtils.P_PLATFORM + ").*?)?" // position
 	, Pattern.DOTALL);
 
-	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures) throws IOException
+	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
 		final QueryDeparturesResult result = new QueryDeparturesResult();
 

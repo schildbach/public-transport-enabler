@@ -629,7 +629,7 @@ public final class BvgProvider extends AbstractHafasProvider
 	private static final Pattern P_DEPARTURES_PLAN_ERRORS = Pattern.compile("(derzeit leider nicht bearbeitet werden)|(Wartungsarbeiten)|"
 			+ "(http-equiv=\"refresh\")", Pattern.CASE_INSENSITIVE);
 
-	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures) throws IOException
+	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
 		final QueryDeparturesResult result = new QueryDeparturesResult();
 
