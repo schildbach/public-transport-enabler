@@ -855,6 +855,9 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 			XmlPullUtil.enter(pp, "itdRequest");
 
+			if (XmlPullUtil.test(pp, "serverMetaInfo"))
+				XmlPullUtil.next(pp);
+
 			XmlPullUtil.enter(pp, "itdDepartureMonitorRequest");
 
 			if (!XmlPullUtil.test(pp, "itdOdv") || !"dm".equals(XmlPullUtil.attr(pp, "usage")))
@@ -897,6 +900,9 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 					XmlPullUtil.next(pp);
 
 				if (XmlPullUtil.test(pp, "itdTripOptions"))
+					XmlPullUtil.next(pp);
+
+				if (XmlPullUtil.test(pp, "itdMessage"))
 					XmlPullUtil.next(pp);
 
 				final Calendar plannedDepartureTime = new GregorianCalendar();
