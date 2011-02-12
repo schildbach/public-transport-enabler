@@ -840,8 +840,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
-		final String uri = departuresQueryUri(stationId, maxDepartures) + "&outputFormat=XML&coordOutputFormat=WGS84&deleteAssignedStops_dm="
-				+ (equivs ? '0' : '1') + "&mode=direct";
+		final String uri = departuresQueryUri(stationId, maxDepartures) + "&outputFormat=XML&coordOutputFormat=WGS84&mode=direct"
+				+ (equivs ? "&useProxFootSearch=1&ptOptionsActive=1" : "&deleteAssignedStops_dm=1");
 
 		InputStream is = null;
 		try
@@ -854,10 +854,16 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 			XmlPullUtil.enter(pp, "itdRequest");
 
+			if (XmlPullUtil.test(pp, "clientHeaderLines"))
+				XmlPullUtil.next(pp);
+
 			if (XmlPullUtil.test(pp, "serverMetaInfo"))
 				XmlPullUtil.next(pp);
 
 			if (XmlPullUtil.test(pp, "itdVersionInfo"))
+				XmlPullUtil.next(pp);
+
+			if (XmlPullUtil.test(pp, "itdInfoLinkList"))
 				XmlPullUtil.next(pp);
 
 			XmlPullUtil.enter(pp, "itdDepartureMonitorRequest");
@@ -918,7 +924,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 					XmlPullUtil.enter(pp, "itdServingLines");
 					while (XmlPullUtil.test(pp, "itdServingLine"))
 					{
-						final String assignedStopId = pp.getAttributeValue(null, "assignedStopID");
+						final String assignedStopIdStr = pp.getAttributeValue(null, "assignedStopID");
+						final int assignedStopId = assignedStopIdStr != null ? Integer.parseInt(assignedStopIdStr) : 0;
 						final String destination = normalizeLocationName(pp.getAttributeValue(null, "direction"));
 						final String destinationIdStr = pp.getAttributeValue(null, "destID");
 						final int destinationId = destinationIdStr.length() > 0 ? Integer.parseInt(destinationIdStr) : 0;
@@ -926,14 +933,18 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 						final String lineStr = processItdServingLine(pp);
 						final Line line = new Line(lineStr, lineColors(lineStr), destinationId, destination);
 
-						final List<Line> lines;
-						if (assignedStopId == null)
-							lines = result.stationDepartures.get(0).lines;
+						StationDepartures assignedStationDepartures;
+						if (assignedStopId == 0)
+							assignedStationDepartures = result.stationDepartures.get(0);
 						else
-							lines = findStationDepartures(result.stationDepartures, Integer.parseInt(assignedStopId)).lines;
+							assignedStationDepartures = findStationDepartures(result.stationDepartures, assignedStopId);
 
-						if (!lines.contains(line))
-							lines.add(line);
+						if (assignedStationDepartures == null)
+							assignedStationDepartures = new StationDepartures(new Location(LocationType.STATION, assignedStopId),
+									new LinkedList<Departure>(), new LinkedList<Line>());
+
+						if (!assignedStationDepartures.lines.contains(line))
+							assignedStationDepartures.lines.add(line);
 					}
 					XmlPullUtil.exit(pp, "itdServingLines");
 				}
@@ -948,7 +959,21 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 					XmlPullUtil.enter(pp, "itdDepartureList");
 					while (XmlPullUtil.test(pp, "itdDeparture"))
 					{
-						final int stopId = XmlPullUtil.intAttr(pp, "stopID");
+						final int assignedStopId = XmlPullUtil.intAttr(pp, "stopID");
+
+						StationDepartures assignedStationDepartures = findStationDepartures(result.stationDepartures, assignedStopId);
+						if (assignedStationDepartures == null)
+						{
+							final String mapName = pp.getAttributeValue(null, "mapName");
+							if (mapName == null || !"WGS84".equals(mapName))
+								throw new IllegalStateException("unknown mapName: " + mapName);
+							final int lon = XmlPullUtil.intAttr(pp, "x");
+							final int lat = XmlPullUtil.intAttr(pp, "y");
+							// final String name = normalizeLocationName(XmlPullUtil.attr(pp, "nameWO"));
+
+							assignedStationDepartures = new StationDepartures(new Location(LocationType.STATION, assignedStopId, lat, lon),
+									new LinkedList<Departure>(), new LinkedList<Line>());
+						}
 
 						final String position = normalizePlatform(pp.getAttributeValue(null, "platform"), pp.getAttributeValue(null, "platformName"));
 
@@ -975,10 +1000,10 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 						if (isRealtime && !predictedDepartureTime.isSet(Calendar.HOUR_OF_DAY))
 							predictedDepartureTime.setTimeInMillis(plannedDepartureTime.getTimeInMillis());
 
-						final List<Departure> departures = findStationDepartures(result.stationDepartures, stopId).departures;
-						departures.add(new Departure(plannedDepartureTime.getTime(),
+						final Departure departure = new Departure(plannedDepartureTime.getTime(),
 								predictedDepartureTime.isSet(Calendar.HOUR_OF_DAY) ? predictedDepartureTime.getTime() : null, line, lineColors(line),
-								null, position, destinationId, destination, null));
+								null, position, destinationId, destination, null);
+						assignedStationDepartures.departures.add(departure);
 
 						XmlPullUtil.exit(pp, "itdDeparture");
 					}
