@@ -246,10 +246,9 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			lon = Integer.parseInt(pp.getAttributeValue(null, "x"));
 		}
 		final String place = normalizeLocationName(XmlPullUtil.attr(pp, "place"));
-		final String name = normalizeLocationName(pp.getAttributeValue(null, "nameWithPlace"));
 
 		XmlPullUtil.enter(pp, "itdOdvAssignedStop");
-		// final String name = normalizeLocationName(pp.getText());
+		final String name = normalizeLocationName(pp.getText());
 		XmlPullUtil.exit(pp, "itdOdvAssignedStop");
 
 		return new Location(LocationType.STATION, id, lat, lon, place, name);
@@ -856,6 +855,9 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			XmlPullUtil.enter(pp, "itdRequest");
 
 			if (XmlPullUtil.test(pp, "serverMetaInfo"))
+				XmlPullUtil.next(pp);
+
+			if (XmlPullUtil.test(pp, "itdVersionInfo"))
 				XmlPullUtil.next(pp);
 
 			XmlPullUtil.enter(pp, "itdDepartureMonitorRequest");
