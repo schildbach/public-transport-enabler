@@ -788,6 +788,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 			if (type.equals("BUS"))
 				return 'B' + str;
+			if ("SEV-Bus".equals(type))
+				return 'B' + str;
 
 			if (type.length() == 0)
 				return "?";
