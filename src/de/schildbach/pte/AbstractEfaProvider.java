@@ -859,13 +859,13 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			if (XmlPullUtil.test(pp, "clientHeaderLines"))
 				XmlPullUtil.next(pp);
 
-			if (XmlPullUtil.test(pp, "serverMetaInfo"))
-				XmlPullUtil.next(pp);
-
 			if (XmlPullUtil.test(pp, "itdVersionInfo"))
 				XmlPullUtil.next(pp);
 
 			if (XmlPullUtil.test(pp, "itdInfoLinkList"))
+				XmlPullUtil.next(pp);
+
+			if (XmlPullUtil.test(pp, "serverMetaInfo"))
 				XmlPullUtil.next(pp);
 
 			XmlPullUtil.enter(pp, "itdDepartureMonitorRequest");
