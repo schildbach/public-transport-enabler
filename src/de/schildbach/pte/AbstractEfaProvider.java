@@ -463,6 +463,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'I' + str;
 			if (type.equals("HT")) // First Hull Trains, GB
 				return 'I' + str;
+			if (type.equals("MT")) // Müller Touren, Schnee Express
+				return 'I' + str;
 
 			if (type.equals("IR")) // Interregio
 				return 'R' + str;
