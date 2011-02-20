@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.GZIPInputStream;
 
 /**
  * @author Andreas Schildbach
@@ -184,6 +185,7 @@ public final class ParserUtils
 			connection.setConnectTimeout(SCRAPE_CONNECT_TIMEOUT);
 			connection.setReadTimeout(SCRAPE_READ_TIMEOUT);
 			connection.addRequestProperty("User-Agent", SCRAPE_USER_AGENT);
+			connection.addRequestProperty("Accept-Encoding", "gzip");
 			// workaround to disable Vodafone compression
 			connection.addRequestProperty("Cache-Control", "no-cache");
 
@@ -201,7 +203,13 @@ public final class ParserUtils
 			final int responseCode = connection.getResponseCode();
 			if (responseCode == HttpURLConnection.HTTP_OK)
 			{
-				return connection.getInputStream();
+				final String contentEncoding = connection.getContentEncoding();
+				final InputStream is = connection.getInputStream();
+
+				if ("gzip".equalsIgnoreCase(contentEncoding))
+					return new GZIPInputStream(is);
+
+				return is;
 			}
 			else
 			{
