@@ -130,7 +130,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		}
 		catch (final XmlPullParserException x)
 		{
-			throw new RuntimeException(x);
+			throw new IOException(x);
 		}
 		finally
 		{
@@ -369,7 +369,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		}
 		catch (final XmlPullParserException x)
 		{
-			throw new RuntimeException(x);
+			throw new IOException(x);
 		}
 		finally
 		{
@@ -1028,7 +1028,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		}
 		catch (final XmlPullParserException x)
 		{
-			throw new RuntimeException(x);
+			throw new IOException(x);
 		}
 		finally
 		{
@@ -1448,7 +1448,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		}
 		catch (final XmlPullParserException x)
 		{
-			throw new RuntimeException(x);
+			throw new IOException(x);
 		}
 	}
 
