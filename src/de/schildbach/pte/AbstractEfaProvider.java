@@ -51,6 +51,7 @@ import de.schildbach.pte.dto.QueryConnectionsResult.Status;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.dto.Stop;
+import de.schildbach.pte.exception.ParserException;
 import de.schildbach.pte.util.Color;
 import de.schildbach.pte.util.ParserUtils;
 import de.schildbach.pte.util.XmlPullUtil;
@@ -130,7 +131,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		}
 		catch (final XmlPullParserException x)
 		{
-			throw new IOException(x);
+			throw new ParserException(x);
 		}
 		finally
 		{
@@ -369,7 +370,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		}
 		catch (final XmlPullParserException x)
 		{
-			throw new IOException(x);
+			throw new ParserException(x);
 		}
 		finally
 		{
@@ -1028,7 +1029,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		}
 		catch (final XmlPullParserException x)
 		{
-			throw new IOException(x);
+			throw new ParserException(x);
 		}
 		finally
 		{
@@ -1448,7 +1449,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		}
 		catch (final XmlPullParserException x)
 		{
-			throw new IOException(x);
+			throw new ParserException(x);
 		}
 	}
 
