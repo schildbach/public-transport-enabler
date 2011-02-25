@@ -46,7 +46,7 @@ public class NasaProvider extends AbstractHafasProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.NASA;
 	public static final String OLD_NETWORK_ID = "www.nasa.de";
-	private static final String API_BASE = "http://www.nasa.de/delfi52/";
+	private static final String API_BASE = "http://reiseauskunft.insa.de/bin/";
 
 	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
 
@@ -125,9 +125,9 @@ public class NasaProvider extends AbstractHafasProvider
 			+ "(?:<td class=\"[\\w ]*prognosis[\\w ]*\">\n" //
 			+ "(?:&nbsp;|<span class=\"rtLimit\\d\">(p&#252;nktlich|\\d{1,2}:\\d{2})</span>)\n</td>\n" // predictedTime
 			+ ")?.*?" //
-			+ "<img src=\"/img52/(\\w+)_pic\\.gif\"[^>]*>\\s*(.*?)\\s*</.*?" // type, line
+			+ "<img src=\"/hafas-res/img/(\\w+)_pic\\.gif\"[^>]*>\\s*(.*?)\\s*</.*?" // type, line
 			+ "<span class=\"bold\">\n" //
-			+ "<a href=\"/delfi52/stboard\\.exe/dn\\?input=(\\d+)&[^>]*>" // destinationId
+			+ "<a href=\"/bin/stboard\\.exe/dn\\?input=(\\d+)&[^>]*>" // destinationId
 			+ "\\s*(.*?)\\s*</a>\n" // destination
 			+ "</span>.*?" //
 			+ "(?:<td class=\"center sepline top\">\n(" + ParserUtils.P_PLATFORM + ").*?)?" // position
@@ -247,6 +247,8 @@ public class NasaProvider extends AbstractHafasProvider
 			return t;
 
 		if (ucType.equals("D")) // Rußland Schlafwagenzug
+			return 'I';
+		if (ucType.equals("ECW"))
 			return 'I';
 
 		if (ucType.equals("DPF")) // mit Dampflok bespannter Zug
