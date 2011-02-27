@@ -1551,10 +1551,12 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			return null;
 	}
 
-	private Currency parseCurrency(String currencyStr)
+	private Currency parseCurrency(final String currencyStr)
 	{
+		if (currencyStr.equals("US$"))
+			return Currency.getInstance("USD");
 		if (currencyStr.equals("Dirham"))
-			currencyStr = "AED";
+			return Currency.getInstance("AED");
 		return Currency.getInstance(currencyStr);
 	}
 
