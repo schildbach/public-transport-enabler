@@ -525,7 +525,7 @@ public final class BvgProvider extends AbstractHafasProvider
 						final String arrival = ParserUtils.resolveEntities(mDetFine.group(10));
 
 						parts.add(new Connection.Trip(line, destination, departureTime, departurePosition, departureId, departure, arrivalTime,
-								arrivalPosition, arrivalId, arrival, null));
+								arrivalPosition, arrivalId, arrival, null, null));
 
 						if (firstDepartureTime == null)
 							firstDepartureTime = departureTime;
@@ -549,12 +549,12 @@ public final class BvgProvider extends AbstractHafasProvider
 						{
 							final Connection.Footway lastFootway = (Connection.Footway) parts.remove(parts.size() - 1);
 							parts.add(new Connection.Footway(lastFootway.min + Integer.parseInt(min), lastFootway.departureId, lastFootway.departure,
-									arrivalId, arrival, arrivalLat, arrivalLon));
+									arrivalId, arrival, arrivalLat, arrivalLon, null));
 						}
 						else
 						{
 							parts.add(new Connection.Footway(Integer.parseInt(min), departureId, departure, arrivalId, arrival, arrivalLat,
-									arrivalLon));
+									arrivalLon, null));
 						}
 
 						lastArrival = arrival;

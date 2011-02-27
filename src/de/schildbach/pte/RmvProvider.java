@@ -372,7 +372,7 @@ public class RmvProvider extends AbstractHafasProvider
 						final String arrivalPosition = ParserUtils.resolveEntities(mDetFine.group(6));
 
 						lastTrip = new Connection.Trip(line, destination, departureTime, departurePosition, 0, departure, arrivalTime,
-								arrivalPosition, 0, arrival, null);
+								arrivalPosition, 0, arrival, null, null);
 						parts.add(lastTrip);
 
 						if (firstDepartureTime == null)
@@ -385,11 +385,11 @@ public class RmvProvider extends AbstractHafasProvider
 						if (parts.size() > 0 && parts.get(parts.size() - 1) instanceof Connection.Footway)
 						{
 							final Connection.Footway lastFootway = (Connection.Footway) parts.remove(parts.size() - 1);
-							parts.add(new Connection.Footway(lastFootway.min + Integer.parseInt(min), 0, lastFootway.departure, 0, arrival));
+							parts.add(new Connection.Footway(lastFootway.min + Integer.parseInt(min), 0, lastFootway.departure, 0, arrival, null));
 						}
 						else
 						{
-							parts.add(new Connection.Footway(Integer.parseInt(min), 0, departure, 0, arrival));
+							parts.add(new Connection.Footway(Integer.parseInt(min), 0, departure, 0, arrival, null));
 						}
 					}
 				}

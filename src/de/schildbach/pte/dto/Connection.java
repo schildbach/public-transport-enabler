@@ -77,11 +77,17 @@ public final class Connection implements Serializable
 		return id.hashCode();
 	}
 
-	public static interface Part extends Serializable
+	public static class Part implements Serializable
 	{
+		public final List<Point> path;
+
+		public Part(final List<Point> path)
+		{
+			this.path = path;
+		}
 	}
 
-	public final static class Trip implements Part
+	public final static class Trip extends Part
 	{
 		public final String line;
 		public final Location destination;
@@ -97,8 +103,10 @@ public final class Connection implements Serializable
 
 		public Trip(final String line, final Location destination, final Date departureTime, final String departurePosition, final int departureId,
 				final String departure, final Date arrivalTime, final String arrivalPosition, final int arrivalId, final String arrival,
-				final List<Stop> intermediateStops)
+				final List<Stop> intermediateStops, final List<Point> path)
 		{
+			super(path);
+
 			this.line = line;
 			this.destination = destination;
 			this.departureTime = departureTime;
@@ -130,7 +138,7 @@ public final class Connection implements Serializable
 		}
 	}
 
-	public final static class Footway implements Part
+	public final static class Footway extends Part
 	{
 		public final int min;
 		public final int departureId;
@@ -140,8 +148,10 @@ public final class Connection implements Serializable
 		public final int arrivalLat, arrivalLon;
 
 		public Footway(final int min, final int departureId, final String departure, final int arrivalId, final String arrival, final int arrivalLat,
-				final int arrivalLon)
+				final int arrivalLon, final List<Point> path)
 		{
+			super(path);
+
 			this.min = min;
 			this.departureId = departureId;
 			this.departure = departure;
@@ -151,8 +161,10 @@ public final class Connection implements Serializable
 			this.arrivalLon = arrivalLon;
 		}
 
-		public Footway(final int min, final int departureId, final String departure, final int arrivalId, final String arrival)
+		public Footway(final int min, final int departureId, final String departure, final int arrivalId, final String arrival, final List<Point> path)
 		{
+			super(path);
+
 			this.min = min;
 			this.departureId = departureId;
 			this.departure = departure;

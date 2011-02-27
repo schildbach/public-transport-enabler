@@ -368,7 +368,7 @@ public final class BahnProvider extends AbstractHafasProvider
 							final Date departureDateTime = ParserUtils.joinDateTime(departureDate, departureTime);
 							final Date arrivalDateTime = ParserUtils.joinDateTime(arrivalDate, arrivalTime);
 							lastTrip = new Connection.Trip(line, null, departureDateTime, departurePosition, 0, departure, arrivalDateTime,
-									arrivalPosition, 0, arrival, null);
+									arrivalPosition, 0, arrival, null, null);
 							parts.add(lastTrip);
 
 							if (firstDepartureTime == null)
@@ -386,11 +386,11 @@ public final class BahnProvider extends AbstractHafasProvider
 							if (parts.size() > 0 && parts.get(parts.size() - 1) instanceof Connection.Footway)
 							{
 								final Connection.Footway lastFootway = (Connection.Footway) parts.remove(parts.size() - 1);
-								parts.add(new Connection.Footway(lastFootway.min + Integer.parseInt(min), 0, lastFootway.departure, 0, arrival));
+								parts.add(new Connection.Footway(lastFootway.min + Integer.parseInt(min), 0, lastFootway.departure, 0, arrival, null));
 							}
 							else
 							{
-								parts.add(new Connection.Footway(Integer.parseInt(min), 0, departure, 0, arrival));
+								parts.add(new Connection.Footway(Integer.parseInt(min), 0, departure, 0, arrival, null));
 							}
 
 							lastArrival = arrival;
@@ -399,7 +399,7 @@ public final class BahnProvider extends AbstractHafasProvider
 						{
 							final String arrival = ParserUtils.resolveEntities(mDetFine.group(12));
 
-							parts.add(new Connection.Footway(0, 0, departure, 0, arrival));
+							parts.add(new Connection.Footway(0, 0, departure, 0, arrival, null));
 						}
 					}
 					else

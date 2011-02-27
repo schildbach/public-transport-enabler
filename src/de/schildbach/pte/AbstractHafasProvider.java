@@ -448,7 +448,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 					if (min == 0 || line != null)
 					{
 						parts.add(new Connection.Trip(line, destination, departureTime, departurePos, sectionDeparture.id, sectionDeparture.name,
-								arrivalTime, arrivalPos, sectionArrival.id, sectionArrival.name, null));
+								arrivalTime, arrivalPos, sectionArrival.id, sectionArrival.name, null, null));
 					}
 					else
 					{
@@ -456,11 +456,12 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 						{
 							final Connection.Footway lastFootway = (Connection.Footway) parts.remove(parts.size() - 1);
 							parts.add(new Connection.Footway(lastFootway.min + min, lastFootway.departureId, lastFootway.departure,
-									sectionArrival.id, sectionArrival.name));
+									sectionArrival.id, sectionArrival.name, null));
 						}
 						else
 						{
-							parts.add(new Connection.Footway(min, sectionDeparture.id, sectionDeparture.name, sectionArrival.id, sectionArrival.name));
+							parts.add(new Connection.Footway(min, sectionDeparture.id, sectionDeparture.name, sectionArrival.id, sectionArrival.name,
+									null));
 						}
 					}
 

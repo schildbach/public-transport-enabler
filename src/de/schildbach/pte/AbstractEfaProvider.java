@@ -46,6 +46,7 @@ import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult.Status;
 import de.schildbach.pte.dto.QueryDeparturesResult;
@@ -1311,19 +1312,28 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 						{
 							final int min = (int) (arrivalTime.getTimeInMillis() - departureTime.getTimeInMillis()) / 1000 / 60;
 
+							XmlPullUtil.enter(pp, "itdMeansOfTransport");
+							XmlPullUtil.exit(pp, "itdMeansOfTransport");
+
+							if (XmlPullUtil.test(pp, "itdStopSeq"))
+								XmlPullUtil.next(pp);
+
+							List<Point> path = null;
+							if (XmlPullUtil.test(pp, "itdPathCoordinates"))
+								path = processItdPathCoordinates(pp);
+
 							if (parts.size() > 0 && parts.get(parts.size() - 1) instanceof Connection.Footway)
 							{
 								final Connection.Footway lastFootway = (Connection.Footway) parts.remove(parts.size() - 1);
+								if (path != null && lastFootway.path != null)
+									path.addAll(0, lastFootway.path);
 								parts.add(new Connection.Footway(lastFootway.min + min, lastFootway.departureId, lastFootway.departure, arrivalId,
-										arrival));
+										arrival, path));
 							}
 							else
 							{
-								parts.add(new Connection.Footway(min, departureId, departure, arrivalId, arrival));
+								parts.add(new Connection.Footway(min, departureId, departure, arrivalId, arrival, path));
 							}
-
-							XmlPullUtil.enter(pp, "itdMeansOfTransport");
-							XmlPullUtil.exit(pp, "itdMeansOfTransport");
 						}
 						else if ("gesicherter Anschluss".equals(productName) || "nicht umsteigen".equals(productName)) // type97
 						{
@@ -1387,8 +1397,12 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 								intermediateStops.remove(intermediateStops.size() - 1);
 							}
 
+							List<Point> path = null;
+							if (XmlPullUtil.test(pp, "itdPathCoordinates"))
+								path = processItdPathCoordinates(pp);
+
 							parts.add(new Connection.Trip(line, destination, departureTime.getTime(), departurePosition, departureId, departure,
-									arrivalTime.getTime(), arrivalPosition, arrivalId, arrival, intermediateStops));
+									arrivalTime.getTime(), arrivalPosition, arrivalId, arrival, intermediateStops, path));
 						}
 
 						XmlPullUtil.exit(pp, "itdPartialRoute");
@@ -1451,6 +1465,39 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		{
 			throw new ParserException(x);
 		}
+	}
+
+	private List<Point> processItdPathCoordinates(final XmlPullParser pp) throws XmlPullParserException, IOException
+	{
+		final List<Point> path = new LinkedList<Point>();
+
+		XmlPullUtil.enter(pp, "itdPathCoordinates");
+
+		XmlPullUtil.enter(pp, "coordEllipsoid");
+		final String ellipsoid = pp.getText();
+		XmlPullUtil.exit(pp, "coordEllipsoid");
+
+		if (!"WGS84".equals(ellipsoid))
+			throw new IllegalStateException("unknown ellipsoid: " + ellipsoid);
+
+		XmlPullUtil.enter(pp, "coordType");
+		final String type = pp.getText();
+		XmlPullUtil.exit(pp, "coordType");
+
+		if (!"GEO_DECIMAL".equals(type))
+			throw new IllegalStateException("unknown type: " + type);
+
+		XmlPullUtil.enter(pp, "itdCoordinateString");
+		for (final String coordStr : pp.getText().split(" "))
+		{
+			final String[] coordsStr = coordStr.split(",");
+			path.add(new Point(Integer.parseInt(coordsStr[1]), Integer.parseInt(coordsStr[0])));
+		}
+		XmlPullUtil.exit(pp, "itdCoordinateString");
+
+		XmlPullUtil.exit(pp, "itdPathCoordinates");
+
+		return path;
 	}
 
 	private Fare processItdGenericTicketGroup(final XmlPullParser pp, final String net, final Currency currency) throws XmlPullParserException,

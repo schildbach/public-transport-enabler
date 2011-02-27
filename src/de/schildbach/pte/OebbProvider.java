@@ -464,14 +464,14 @@ public class OebbProvider extends AbstractHafasProvider
 										ParserUtils.resolveEntities(mDetFine.group(13))) : null;
 
 								final Connection.Trip trip = new Connection.Trip(line, destination, detailsDepartureDateTime, departurePosition,
-										departureId, departure, detailsArrivalDateTime, arrivalPosition, arrivalId, arrival, null);
+										departureId, departure, detailsArrivalDateTime, arrivalPosition, arrivalId, arrival, null, null);
 								connection.parts.add(trip);
 							}
 							else
 							{
 								final int min = (int) (detailsArrivalDateTime.getTime() - detailsDepartureDateTime.getTime()) / 1000 / 60;
 
-								final Connection.Footway footway = new Connection.Footway(min, departureId, departure, arrivalId, arrival);
+								final Connection.Footway footway = new Connection.Footway(min, departureId, departure, arrivalId, arrival, null);
 								connection.parts.add(footway);
 							}
 						}
