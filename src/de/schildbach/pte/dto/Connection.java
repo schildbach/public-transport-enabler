@@ -118,11 +118,11 @@ public final class Connection implements Serializable
 			final StringBuilder builder = new StringBuilder(getClass().getName() + "[");
 			builder.append("line=").append(line);
 			builder.append(",");
-			builder.append("destination=").append(destination);
+			builder.append("destination=").append(destination.toDebugString());
 			builder.append(",");
-			builder.append("departure=").append(departureTime).append("/").append(departurePosition).append("/").append(departure);
+			builder.append("departure=").append(departureTime).append("/").append(departurePosition).append("/").append(departure.toDebugString());
 			builder.append(",");
-			builder.append("arrival=").append(arrivalTime).append("/").append(arrivalPosition).append("/").append(arrival);
+			builder.append("arrival=").append(arrivalTime).append("/").append(arrivalPosition).append("/").append(arrival.toDebugString());
 			builder.append("]");
 			return builder.toString();
 		}
@@ -145,9 +145,9 @@ public final class Connection implements Serializable
 			final StringBuilder builder = new StringBuilder(getClass().getName() + "[");
 			builder.append("min=").append(min);
 			builder.append(",");
-			builder.append("departure=").append(departure);
+			builder.append("departure=").append(departure.toDebugString());
 			builder.append(",");
-			builder.append("arrival=").append(arrival);
+			builder.append("arrival=").append(arrival.toDebugString());
 			builder.append("]");
 			return builder.toString();
 		}
