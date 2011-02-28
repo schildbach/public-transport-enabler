@@ -1263,9 +1263,9 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 					XmlPullUtil.enter(pp, "itdPartialRouteList");
 					final List<Connection.Part> parts = new LinkedList<Connection.Part>();
-					String firstDeparture = null;
+					Location firstDeparture = null;
 					Date firstDepartureTime = null;
-					String lastArrival = null;
+					Location lastArrival = null;
 					Date lastArrivalTime = null;
 
 					while (XmlPullUtil.test(pp, "itdPartialRoute"))
@@ -1276,7 +1276,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 						if (!"departure".equals(pp.getAttributeValue(null, "usage")))
 							throw new IllegalStateException();
 						final int departureId = Integer.parseInt(pp.getAttributeValue(null, "stopID"));
-						final String departure = normalizeLocationName(pp.getAttributeValue(null, "name"));
+						final String departureName = normalizeLocationName(pp.getAttributeValue(null, "name"));
+						final Location departure = new Location(LocationType.STATION, departureId, null, departureName);
 						if (firstDeparture == null)
 							firstDeparture = departure;
 						final String departurePosition = normalizePlatform(pp.getAttributeValue(null, "platform"),
@@ -1294,7 +1295,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 						if (!"arrival".equals(pp.getAttributeValue(null, "usage")))
 							throw new IllegalStateException();
 						final int arrivalId = Integer.parseInt(pp.getAttributeValue(null, "stopID"));
-						final String arrival = normalizeLocationName(pp.getAttributeValue(null, "name"));
+						final String arrivalName = normalizeLocationName(pp.getAttributeValue(null, "name"));
+						final Location arrival = new Location(LocationType.STATION, arrivalId, null, arrivalName);
 						lastArrival = arrival;
 						final String arrivalPosition = normalizePlatform(pp.getAttributeValue(null, "platform"),
 								pp.getAttributeValue(null, "platformName"));
@@ -1327,12 +1329,11 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 								final Connection.Footway lastFootway = (Connection.Footway) parts.remove(parts.size() - 1);
 								if (path != null && lastFootway.path != null)
 									path.addAll(0, lastFootway.path);
-								parts.add(new Connection.Footway(lastFootway.min + min, lastFootway.departureId, lastFootway.departure, arrivalId,
-										arrival, path));
+								parts.add(new Connection.Footway(lastFootway.min + min, lastFootway.departure, arrival, path));
 							}
 							else
 							{
-								parts.add(new Connection.Footway(min, departureId, departure, arrivalId, arrival, path));
+								parts.add(new Connection.Footway(min, departure, arrival, path));
 							}
 						}
 						else if ("gesicherter Anschluss".equals(productName) || "nicht umsteigen".equals(productName)) // type97
@@ -1401,8 +1402,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 							if (XmlPullUtil.test(pp, "itdPathCoordinates"))
 								path = processItdPathCoordinates(pp);
 
-							parts.add(new Connection.Trip(line, destination, departureTime.getTime(), departurePosition, departureId, departure,
-									arrivalTime.getTime(), arrivalPosition, arrivalId, arrival, intermediateStops, path));
+							parts.add(new Connection.Trip(line, destination, departureTime.getTime(), departurePosition, departure, arrivalTime
+									.getTime(), arrivalPosition, arrival, intermediateStops, path));
 						}
 
 						XmlPullUtil.exit(pp, "itdPartialRoute");
@@ -1447,8 +1448,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 						}
 						XmlPullUtil.exit(pp, "itdFare");
 					}
-					connections.add(new Connection(id, uri, firstDepartureTime, lastArrivalTime, 0, firstDeparture, 0, lastArrival, parts, fares
-							.isEmpty() ? null : fares));
+					connections.add(new Connection(id, uri, firstDepartureTime, lastArrivalTime, firstDeparture, lastArrival, parts,
+							fares.isEmpty() ? null : fares));
 					XmlPullUtil.exit(pp, "itdRoute");
 				}
 

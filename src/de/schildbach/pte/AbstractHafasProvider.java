@@ -447,21 +447,19 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 					if (min == 0 || line != null)
 					{
-						parts.add(new Connection.Trip(line, destination, departureTime, departurePos, sectionDeparture.id, sectionDeparture.name,
-								arrivalTime, arrivalPos, sectionArrival.id, sectionArrival.name, null, null));
+						parts.add(new Connection.Trip(line, destination, departureTime, departurePos, sectionDeparture, arrivalTime, arrivalPos,
+								sectionArrival, null, null));
 					}
 					else
 					{
 						if (parts.size() > 0 && parts.get(parts.size() - 1) instanceof Connection.Footway)
 						{
 							final Connection.Footway lastFootway = (Connection.Footway) parts.remove(parts.size() - 1);
-							parts.add(new Connection.Footway(lastFootway.min + min, lastFootway.departureId, lastFootway.departure,
-									sectionArrival.id, sectionArrival.name, null));
+							parts.add(new Connection.Footway(lastFootway.min + min, lastFootway.departure, sectionArrival, null));
 						}
 						else
 						{
-							parts.add(new Connection.Footway(min, sectionDeparture.id, sectionDeparture.name, sectionArrival.id, sectionArrival.name,
-									null));
+							parts.add(new Connection.Footway(min, sectionDeparture, sectionArrival, null));
 						}
 					}
 
@@ -474,8 +472,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 				XmlPullUtil.exit(pp);
 
-				connections.add(new Connection(id, null, firstDepartureTime, lastArrivalTime, departure.id, departure.name, arrival.id, arrival.name,
-						parts, null));
+				connections.add(new Connection(id, null, firstDepartureTime, lastArrivalTime, departure, arrival, parts, null));
 			}
 
 			XmlPullUtil.exit(pp);

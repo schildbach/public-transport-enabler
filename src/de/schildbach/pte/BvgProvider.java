@@ -421,7 +421,7 @@ public final class BvgProvider extends AbstractHafasProvider
 					if (departureTime.after(arrivalTime))
 						arrivalTime = ParserUtils.addDays(arrivalTime, 1);
 					final Connection connection = new Connection(AbstractHafasProvider.extractConnectionId(link), link, departureTime, arrivalTime,
-							0, from.name, 0, to.name, null, null);
+							from, to, null, null);
 					connections.add(connection);
 				}
 				else
@@ -471,11 +471,9 @@ public final class BvgProvider extends AbstractHafasProvider
 			final List<Connection.Part> parts = new ArrayList<Connection.Part>(4);
 
 			Date firstDepartureTime = null;
-			String firstDeparture = null;
-			int firstDepartureId = 0;
+			Location firstDeparture = null;
 			Date lastArrivalTime = null;
-			String lastArrival = null;
-			int lastArrivalId = 0;
+			Location lastArrival = null;
 
 			final Matcher mDetCoarse = P_CONNECTION_DETAILS_COARSE.matcher(page);
 			while (mDetCoarse.find())
@@ -483,23 +481,20 @@ public final class BvgProvider extends AbstractHafasProvider
 				final Matcher mDetFine = P_CONNECTION_DETAILS_FINE.matcher(mDetCoarse.group(1));
 				if (mDetFine.matches())
 				{
-					int departureId = 0;
-					String departure = ParserUtils.resolveEntities(mDetFine.group(2));
-					if (departure == null)
+					final String departureName = ParserUtils.resolveEntities(mDetFine.group(2));
+					final Location departure;
+					if (departureName != null)
 					{
-						departure = lastArrival;
-						departureId = lastArrivalId;
+						final int departureId = Integer.parseInt(mDetFine.group(1));
+						departure = new Location(departureId != 0 ? LocationType.STATION : LocationType.ANY, departureId, null, departureName);
 					}
 					else
 					{
-						departureId = Integer.parseInt(mDetFine.group(1));
+						departure = lastArrival;
 					}
 
 					if (departure != null && firstDeparture == null)
-					{
 						firstDeparture = departure;
-						firstDepartureId = departureId;
-					}
 
 					final String min = mDetFine.group(11);
 					if (min == null)
@@ -522,43 +517,42 @@ public final class BvgProvider extends AbstractHafasProvider
 
 						final int arrivalId = Integer.parseInt(mDetFine.group(9));
 
-						final String arrival = ParserUtils.resolveEntities(mDetFine.group(10));
+						final Location arrival = new Location(LocationType.STATION, arrivalId, null, ParserUtils.resolveEntities(mDetFine.group(10)));
 
-						parts.add(new Connection.Trip(line, destination, departureTime, departurePosition, departureId, departure, arrivalTime,
-								arrivalPosition, arrivalId, arrival, null, null));
+						parts.add(new Connection.Trip(line, destination, departureTime, departurePosition, departure, arrivalTime, arrivalPosition,
+								arrival, null, null));
 
 						if (firstDepartureTime == null)
 							firstDepartureTime = departureTime;
 
 						lastArrival = arrival;
-						lastArrivalId = arrivalId;
 						lastArrivalTime = arrivalTime;
 					}
 					else
 					{
 						final int arrivalId = mDetFine.group(12) != null ? Integer.parseInt(mDetFine.group(12)) : 0;
 
-						final String arrival = ParserUtils.resolveEntities(ParserUtils.selectNotNull(mDetFine.group(13), mDetFine.group(16),
-								mDetFine.group(17)));
-
 						final int arrivalLon = mDetFine.group(14) != null ? Integer.parseInt(mDetFine.group(14)) : 0;
 
 						final int arrivalLat = mDetFine.group(15) != null ? Integer.parseInt(mDetFine.group(15)) : 0;
 
+						final String arrivalName = ParserUtils.resolveEntities(ParserUtils.selectNotNull(mDetFine.group(13), mDetFine.group(16),
+								mDetFine.group(17)));
+
+						final Location arrival = new Location(arrivalId != 0 ? LocationType.STATION : LocationType.ANY, arrivalId, arrivalLat,
+								arrivalLon, null, arrivalName);
+
 						if (parts.size() > 0 && parts.get(parts.size() - 1) instanceof Connection.Footway)
 						{
 							final Connection.Footway lastFootway = (Connection.Footway) parts.remove(parts.size() - 1);
-							parts.add(new Connection.Footway(lastFootway.min + Integer.parseInt(min), lastFootway.departureId, lastFootway.departure,
-									arrivalId, arrival, arrivalLat, arrivalLon, null));
+							parts.add(new Connection.Footway(lastFootway.min + Integer.parseInt(min), lastFootway.departure, arrival, null));
 						}
 						else
 						{
-							parts.add(new Connection.Footway(Integer.parseInt(min), departureId, departure, arrivalId, arrival, arrivalLat,
-									arrivalLon, null));
+							parts.add(new Connection.Footway(Integer.parseInt(min), departure, arrival, null));
 						}
 
 						lastArrival = arrival;
-						lastArrivalId = arrivalId;
 					}
 				}
 				else
@@ -569,7 +563,7 @@ public final class BvgProvider extends AbstractHafasProvider
 
 			if (firstDepartureTime != null && lastArrivalTime != null)
 				return new GetConnectionDetailsResult(currentDate, new Connection(AbstractHafasProvider.extractConnectionId(uri), uri,
-						firstDepartureTime, lastArrivalTime, firstDepartureId, firstDeparture, lastArrivalId, lastArrival, parts, null));
+						firstDepartureTime, lastArrivalTime, firstDeparture, lastArrival, parts, null));
 			else
 				return new GetConnectionDetailsResult(currentDate, null);
 		}

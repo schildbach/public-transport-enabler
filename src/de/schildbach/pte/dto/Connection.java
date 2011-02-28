@@ -31,23 +31,19 @@ public final class Connection implements Serializable
 	public final String link;
 	public final Date departureTime;
 	public final Date arrivalTime;
-	public final int fromId;
-	public final String from;
-	public final int toId;
-	public final String to;
+	public final Location from;
+	public final Location to;
 	public final List<Part> parts;
 	public final List<Fare> fares;
 
-	public Connection(final String id, final String link, final Date departureTime, final Date arrivalTime, final int fromId, final String from,
-			final int toId, final String to, final List<Part> parts, final List<Fare> fares)
+	public Connection(final String id, final String link, final Date departureTime, final Date arrivalTime, final Location from, final Location to,
+			final List<Part> parts, final List<Fare> fares)
 	{
 		this.id = id;
 		this.link = link;
 		this.departureTime = departureTime;
 		this.arrivalTime = arrivalTime;
-		this.fromId = fromId;
 		this.from = from;
-		this.toId = toId;
 		this.to = to;
 		this.parts = parts;
 		this.fares = fares;
@@ -79,10 +75,14 @@ public final class Connection implements Serializable
 
 	public static class Part implements Serializable
 	{
+		public final Location departure;
+		public final Location arrival;
 		public final List<Point> path;
 
-		public Part(final List<Point> path)
+		public Part(final Location departure, final Location arrival, final List<Point> path)
 		{
+			this.departure = departure;
+			this.arrival = arrival;
 			this.path = path;
 		}
 	}
@@ -93,30 +93,22 @@ public final class Connection implements Serializable
 		public final Location destination;
 		public final Date departureTime;
 		public final String departurePosition;
-		public final int departureId;
-		public final String departure;
 		public final Date arrivalTime;
 		public final String arrivalPosition;
-		public final int arrivalId;
-		public final String arrival;
 		public final List<Stop> intermediateStops;
 
-		public Trip(final String line, final Location destination, final Date departureTime, final String departurePosition, final int departureId,
-				final String departure, final Date arrivalTime, final String arrivalPosition, final int arrivalId, final String arrival,
+		public Trip(final String line, final Location destination, final Date departureTime, final String departurePosition,
+				final Location departure, final Date arrivalTime, final String arrivalPosition, final Location arrival,
 				final List<Stop> intermediateStops, final List<Point> path)
 		{
-			super(path);
+			super(departure, arrival, path);
 
 			this.line = line;
 			this.destination = destination;
 			this.departureTime = departureTime;
 			this.departurePosition = departurePosition;
-			this.departureId = departureId;
-			this.departure = departure;
 			this.arrivalTime = arrivalTime;
 			this.arrivalPosition = arrivalPosition;
-			this.arrivalId = arrivalId;
-			this.arrival = arrival;
 			this.intermediateStops = intermediateStops;
 		}
 
@@ -128,10 +120,10 @@ public final class Connection implements Serializable
 			builder.append(",");
 			builder.append("destination=").append(destination).append("/").append(destination.id);
 			builder.append(",");
-			builder.append("departure=").append(departureTime).append("/").append(departurePosition).append("/").append(departureId).append("/")
+			builder.append("departure=").append(departureTime).append("/").append(departurePosition).append("/").append(departure).append("/")
 					.append(departure);
 			builder.append(",");
-			builder.append("arrival=").append(arrivalTime).append("/").append(arrivalPosition).append("/").append(arrivalId).append("/")
+			builder.append("arrival=").append(arrivalTime).append("/").append(arrivalPosition).append("/").append(arrival).append("/")
 					.append(arrival);
 			builder.append("]");
 			return builder.toString();
@@ -141,37 +133,12 @@ public final class Connection implements Serializable
 	public final static class Footway extends Part
 	{
 		public final int min;
-		public final int departureId;
-		public final String departure;
-		public final int arrivalId;
-		public final String arrival;
-		public final int arrivalLat, arrivalLon;
 
-		public Footway(final int min, final int departureId, final String departure, final int arrivalId, final String arrival, final int arrivalLat,
-				final int arrivalLon, final List<Point> path)
+		public Footway(final int min, final Location departure, final Location arrival, final List<Point> path)
 		{
-			super(path);
+			super(departure, arrival, path);
 
 			this.min = min;
-			this.departureId = departureId;
-			this.departure = departure;
-			this.arrivalId = arrivalId;
-			this.arrival = arrival;
-			this.arrivalLat = arrivalLat;
-			this.arrivalLon = arrivalLon;
-		}
-
-		public Footway(final int min, final int departureId, final String departure, final int arrivalId, final String arrival, final List<Point> path)
-		{
-			super(path);
-
-			this.min = min;
-			this.departureId = departureId;
-			this.departure = departure;
-			this.arrivalId = arrivalId;
-			this.arrival = arrival;
-			this.arrivalLat = 0;
-			this.arrivalLon = 0;
 		}
 
 		@Override
@@ -180,9 +147,9 @@ public final class Connection implements Serializable
 			final StringBuilder builder = new StringBuilder(getClass().getName() + "[");
 			builder.append("min=").append(min);
 			builder.append(",");
-			builder.append("departure=").append(departureId).append("/").append(departure);
+			builder.append("departure=").append(departure);
 			builder.append(",");
-			builder.append("arrival=").append(arrivalId).append("/").append(arrival).append("/").append(arrivalLat).append(",").append(arrivalLon);
+			builder.append("arrival=").append(arrival);
 			builder.append("]");
 			return builder.toString();
 		}

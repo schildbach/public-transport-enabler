@@ -410,7 +410,7 @@ public class OebbProvider extends AbstractHafasProvider
 							: overviewDepartureDate, ParserUtils.parseTime(mConFine.group(4)));
 					final String link = allDetailsUri; // TODO use print link?
 
-					final Connection connection = new Connection(id, link, overviewDepartureTime, overviewArrivalTime, 0, from.name, 0, to.name,
+					final Connection connection = new Connection(id, link, overviewDepartureTime, overviewArrivalTime, from, to,
 							new ArrayList<Connection.Part>(1), null);
 					connections.add(connection);
 
@@ -424,7 +424,8 @@ public class OebbProvider extends AbstractHafasProvider
 						{
 							final int departureId = mDetFine.group(1) != null ? Integer.parseInt(mDetFine.group(1)) : 0;
 
-							final String departure = ParserUtils.resolveEntities(mDetFine.group(2));
+							final Location departure = new Location(departureId != 0 ? LocationType.STATION : LocationType.ANY, departureId, null,
+									ParserUtils.resolveEntities(mDetFine.group(2)));
 
 							Date detailsDepartureDate = mDetFine.group(3) != null ? ParserUtils.parseDate(mDetFine.group(3)) : lastDate;
 							if (detailsDepartureDate != null)
@@ -437,7 +438,8 @@ public class OebbProvider extends AbstractHafasProvider
 
 							final int arrivalId = mDetFine.group(8) != null ? Integer.parseInt(mDetFine.group(8)) : 0;
 
-							final String arrival = ParserUtils.resolveEntities(mDetFine.group(9));
+							final Location arrival = new Location(arrivalId != 0 ? LocationType.STATION : LocationType.ANY, arrivalId, null,
+									ParserUtils.resolveEntities(mDetFine.group(9)));
 
 							Date detailsArrivalDate = mDetFine.group(10) != null ? ParserUtils.parseDate(mDetFine.group(10)) : lastDate;
 							if (detailsArrivalDate != null)
@@ -464,14 +466,14 @@ public class OebbProvider extends AbstractHafasProvider
 										ParserUtils.resolveEntities(mDetFine.group(13))) : null;
 
 								final Connection.Trip trip = new Connection.Trip(line, destination, detailsDepartureDateTime, departurePosition,
-										departureId, departure, detailsArrivalDateTime, arrivalPosition, arrivalId, arrival, null, null);
+										departure, detailsArrivalDateTime, arrivalPosition, arrival, null, null);
 								connection.parts.add(trip);
 							}
 							else
 							{
 								final int min = (int) (detailsArrivalDateTime.getTime() - detailsDepartureDateTime.getTime()) / 1000 / 60;
 
-								final Connection.Footway footway = new Connection.Footway(min, departureId, departure, arrivalId, arrival, null);
+								final Connection.Footway footway = new Connection.Footway(min, departure, arrival, null);
 								connection.parts.add(footway);
 							}
 						}

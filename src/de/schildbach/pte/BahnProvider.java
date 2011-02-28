@@ -266,7 +266,7 @@ public final class BahnProvider extends AbstractHafasProvider
 					if (departureTime.after(arrivalTime))
 						arrivalTime = ParserUtils.addDays(arrivalTime, 1);
 					final Connection connection = new Connection(AbstractHafasProvider.extractConnectionId(link), link, departureTime, arrivalTime,
-							0, from.name, 0, to.name, null, null);
+							from, to, null, null);
 					connections.add(connection);
 				}
 				else
@@ -325,9 +325,9 @@ public final class BahnProvider extends AbstractHafasProvider
 			final List<Connection.Part> parts = new ArrayList<Connection.Part>(4);
 
 			Date firstDepartureTime = null;
-			String firstDeparture = null;
+			Location firstDeparture = null;
 			Date lastArrivalTime = null;
-			String lastArrival = null;
+			Location lastArrival = null;
 			Connection.Trip lastTrip = null;
 
 			final Matcher mDetCoarse = P_CONNECTION_DETAILS_COARSE.matcher(mHead.group(1));
@@ -343,7 +343,7 @@ public final class BahnProvider extends AbstractHafasProvider
 					final Matcher mDetFine = P_CONNECTION_DETAILS_FINE.matcher(section);
 					if (mDetFine.matches())
 					{
-						final String departure = ParserUtils.resolveEntities(mDetFine.group(1));
+						final Location departure = new Location(LocationType.ANY, 0, null, ParserUtils.resolveEntities(mDetFine.group(1)));
 						if (departure != null && firstDeparture == null)
 							firstDeparture = departure;
 
@@ -357,7 +357,7 @@ public final class BahnProvider extends AbstractHafasProvider
 
 							final Date departureDate = ParserUtils.parseDate(mDetFine.group(5));
 
-							final String arrival = ParserUtils.resolveEntities(mDetFine.group(6));
+							final Location arrival = new Location(LocationType.ANY, 0, null, ParserUtils.resolveEntities(mDetFine.group(6)));
 
 							final Date arrivalTime = ParserUtils.parseTime(mDetFine.group(7));
 
@@ -367,8 +367,8 @@ public final class BahnProvider extends AbstractHafasProvider
 
 							final Date departureDateTime = ParserUtils.joinDateTime(departureDate, departureTime);
 							final Date arrivalDateTime = ParserUtils.joinDateTime(arrivalDate, arrivalTime);
-							lastTrip = new Connection.Trip(line, null, departureDateTime, departurePosition, 0, departure, arrivalDateTime,
-									arrivalPosition, 0, arrival, null, null);
+							lastTrip = new Connection.Trip(line, null, departureDateTime, departurePosition, departure, arrivalDateTime,
+									arrivalPosition, arrival, null, null);
 							parts.add(lastTrip);
 
 							if (firstDepartureTime == null)
@@ -381,25 +381,25 @@ public final class BahnProvider extends AbstractHafasProvider
 						{
 							final String min = mDetFine.group(10);
 
-							final String arrival = ParserUtils.resolveEntities(mDetFine.group(11));
+							final Location arrival = new Location(LocationType.ANY, 0, null, ParserUtils.resolveEntities(mDetFine.group(11)));
 
 							if (parts.size() > 0 && parts.get(parts.size() - 1) instanceof Connection.Footway)
 							{
 								final Connection.Footway lastFootway = (Connection.Footway) parts.remove(parts.size() - 1);
-								parts.add(new Connection.Footway(lastFootway.min + Integer.parseInt(min), 0, lastFootway.departure, 0, arrival, null));
+								parts.add(new Connection.Footway(lastFootway.min + Integer.parseInt(min), lastFootway.departure, arrival, null));
 							}
 							else
 							{
-								parts.add(new Connection.Footway(Integer.parseInt(min), 0, departure, 0, arrival, null));
+								parts.add(new Connection.Footway(Integer.parseInt(min), departure, arrival, null));
 							}
 
 							lastArrival = arrival;
 						}
 						else
 						{
-							final String arrival = ParserUtils.resolveEntities(mDetFine.group(12));
+							final Location arrival = new Location(LocationType.ANY, 0, null, ParserUtils.resolveEntities(mDetFine.group(12)));
 
-							parts.add(new Connection.Footway(0, 0, departure, 0, arrival, null));
+							parts.add(new Connection.Footway(0, departure, arrival, null));
 						}
 					}
 					else
@@ -414,7 +414,7 @@ public final class BahnProvider extends AbstractHafasProvider
 				throw new IllegalStateException("could not parse all parts of:\n" + mHead.group(1) + "\n" + parts);
 
 			return new GetConnectionDetailsResult(new Date(), new Connection(AbstractHafasProvider.extractConnectionId(uri), uri, firstDepartureTime,
-					lastArrivalTime, 0, firstDeparture, 0, lastArrival, parts, null));
+					lastArrivalTime, firstDeparture, lastArrival, parts, null));
 		}
 		else
 		{
