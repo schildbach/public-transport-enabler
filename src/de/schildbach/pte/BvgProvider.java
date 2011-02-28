@@ -146,8 +146,8 @@ public final class BvgProvider extends AbstractHafasProvider
 			final int parsedId = Integer.parseInt(mOwn.group(1));
 			final int parsedLon = (int) (Float.parseFloat(mOwn.group(2)) * 1E6);
 			final int parsedLat = (int) (Float.parseFloat(mOwn.group(3)) * 1E6);
-			final String parsedName = ParserUtils.urlDecode(mOwn.group(4), "ISO-8859-1");
-			stations.add(newStation(parsedId, parsedName, parsedLat, parsedLon));
+			final String[] parsedPlaceAndName = splitNameAndPlace(ParserUtils.urlDecode(mOwn.group(4), "ISO-8859-1"));
+			stations.add(new Location(LocationType.STATION, parsedId, parsedLat, parsedLon, parsedPlaceAndName[0], parsedPlaceAndName[1]));
 		}
 
 		final Matcher mPage = P_NEARBY_PAGE.matcher(page);
@@ -162,8 +162,8 @@ public final class BvgProvider extends AbstractHafasProvider
 				if (mFineLocation.find())
 				{
 					final int parsedId = Integer.parseInt(mFineLocation.group(1));
-					final String parsedName = ParserUtils.resolveEntities(mFineLocation.group(2));
-					final Location station = newStation(parsedId, parsedName, 0, 0);
+					final String[] parsedPlaceAndName = splitNameAndPlace(ParserUtils.resolveEntities(mFineLocation.group(2)));
+					final Location station = new Location(LocationType.STATION, parsedId, parsedPlaceAndName[0], parsedPlaceAndName[1]);
 					if (!stations.contains(station))
 						stations.add(station);
 				}
@@ -184,37 +184,21 @@ public final class BvgProvider extends AbstractHafasProvider
 		}
 	}
 
-	private Location newStation(final int id, final String parsedName, final int lat, final int lon)
+	@Override
+	protected String[] splitNameAndPlace(final String name)
 	{
-		String place = null, name = null;
+		if (name.endsWith(" (Berlin)"))
+			return new String[] { "Berlin", name.substring(0, name.length() - 9) };
+		else if (name.startsWith("Potsdam, "))
+			return new String[] { "Potsdam", name.substring(9) };
+		else if (name.startsWith("Cottbus, "))
+			return new String[] { "Cottbus", name.substring(9) };
+		else if (name.startsWith("Brandenburg, "))
+			return new String[] { "Brandenburg", name.substring(13) };
+		else if (name.startsWith("Frankfurt (Oder), "))
+			return new String[] { "Frankfurt (Oder)", name.substring(18) };
 
-		if (parsedName.endsWith(" (Berlin)"))
-		{
-			place = "Berlin";
-			name = parsedName.substring(0, parsedName.length() - 9);
-		}
-		else if (parsedName.startsWith("Potsdam, "))
-		{
-			place = "Potsdam";
-			name = parsedName.substring(9);
-		}
-		else if (parsedName.startsWith("Cottbus, "))
-		{
-			place = "Cottbus";
-			name = parsedName.substring(9);
-		}
-		else if (parsedName.startsWith("Brandenburg, "))
-		{
-			place = "Brandenburg";
-			name = parsedName.substring(13);
-		}
-		else if (parsedName.startsWith("Frankfurt (Oder), "))
-		{
-			place = "Frankfurt (Oder)";
-			name = parsedName.substring(18);
-		}
-
-		return new Location(LocationType.STATION, id, lat, lon, place, name);
+		return super.splitNameAndPlace(name);
 	}
 
 	public static final String STATION_URL_CONNECTION = "http://mobil.bvg.de/Fahrinfo/bin/query.bin/dox";
@@ -494,10 +478,15 @@ public final class BvgProvider extends AbstractHafasProvider
 
 					final Location departure;
 					if (departureName != null)
+					{
+						final String[] placeAndName = splitNameAndPlace(departureName);
 						departure = new Location(departureId != 0 ? LocationType.STATION : LocationType.ANY, departureId, departureLat, departureLon,
-								null, departureName);
+								placeAndName[0], placeAndName[1]);
+					}
 					else
+					{
 						departure = lastArrival;
+					}
 
 					if (departure != null && firstDeparture == null)
 						firstDeparture = departure;
@@ -513,7 +502,9 @@ public final class BvgProvider extends AbstractHafasProvider
 
 						final String line = normalizeLine(ParserUtils.resolveEntities(mDetFine.group(8)));
 
-						final Location destination = new Location(LocationType.ANY, 0, null, ParserUtils.resolveEntities(mDetFine.group(9)));
+						final String[] destinationPlaceAndName = splitNameAndPlace(ParserUtils.resolveEntities(mDetFine.group(9)));
+
+						final Location destination = new Location(LocationType.ANY, 0, destinationPlaceAndName[0], destinationPlaceAndName[1]);
 
 						Date arrivalTime = ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mDetFine.group(10)));
 						if (departureTime.after(arrivalTime))
@@ -523,7 +514,9 @@ public final class BvgProvider extends AbstractHafasProvider
 
 						final int arrivalId = Integer.parseInt(mDetFine.group(12));
 
-						final Location arrival = new Location(LocationType.STATION, arrivalId, null, ParserUtils.resolveEntities(mDetFine.group(13)));
+						final String[] arrivalPlaceAndName = splitNameAndPlace(ParserUtils.resolveEntities(mDetFine.group(13)));
+
+						final Location arrival = new Location(LocationType.STATION, arrivalId, arrivalPlaceAndName[0], arrivalPlaceAndName[1]);
 
 						parts.add(new Connection.Trip(line, destination, departureTime, departurePosition, departure, arrivalTime, arrivalPosition,
 								arrival, null, null));
@@ -541,11 +534,11 @@ public final class BvgProvider extends AbstractHafasProvider
 						final int arrivalLon = mDetFine.group(17) != null ? Integer.parseInt(mDetFine.group(17)) : 0;
 						final int arrivalLat = mDetFine.group(18) != null ? Integer.parseInt(mDetFine.group(18)) : 0;
 
-						final String arrivalName = ParserUtils.resolveEntities(ParserUtils.selectNotNull(mDetFine.group(16), mDetFine.group(19),
-								mDetFine.group(20)));
+						final String[] arrivalPlaceAndName = splitNameAndPlace(ParserUtils.resolveEntities(ParserUtils.selectNotNull(
+								mDetFine.group(16), mDetFine.group(19), mDetFine.group(20))));
 
 						final Location arrival = new Location(arrivalId != 0 ? LocationType.STATION : LocationType.ANY, arrivalId, arrivalLat,
-								arrivalLon, null, arrivalName);
+								arrivalLon, arrivalPlaceAndName[0], arrivalPlaceAndName[1]);
 
 						if (parts.size() > 0 && parts.get(parts.size() - 1) instanceof Connection.Footway)
 						{
