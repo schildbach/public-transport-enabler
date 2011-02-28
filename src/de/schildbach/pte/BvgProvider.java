@@ -440,8 +440,13 @@ public final class BvgProvider extends AbstractHafasProvider
 
 	private static final Pattern P_CONNECTION_DETAILS_HEAD = Pattern.compile(".*(?:Datum|Abfahrt): (\\d\\d\\.\\d\\d\\.\\d\\d).*", Pattern.DOTALL);
 	private static final Pattern P_CONNECTION_DETAILS_COARSE = Pattern.compile("<p class=\"con\\w\">\n(.+?)</p>", Pattern.DOTALL);
-	static final Pattern P_CONNECTION_DETAILS_FINE = Pattern.compile("(?:<a href=\"/Fahrinfo[^\"]*?input=(\\d+)\">(?:\n<strong>)?" // departureId
-			+ "(.+?)(?:</strong>\n)?</a>)?.*?" // departure
+	static final Pattern P_CONNECTION_DETAILS_FINE = Pattern.compile("" //
+			+ "(?:" //
+			+ "<a href=\"/Fahrinfo[^\"]*?input=(\\d+)\">(?:\n<strong>)?" // departureId
+			+ "(.+?)(?:</strong>\n)?</a>" // departureName
+			+ "|" //
+			+ "<a href=\"/Stadtplan.*?WGS84,(\\d+),(\\d+)&.*?\">([^<]*)</a>" // departureLat,departureLon,departureName
+			+ ")?.*?" //
 			+ "(?:" //
 			+ "ab (\\d+:\\d+)\n" // departureTime
 			+ "(Gl\\. \\d+)?.*?" // departurePosition
@@ -450,13 +455,13 @@ public final class BvgProvider extends AbstractHafasProvider
 			+ "an (\\d+:\\d+)\n" // arrivalTime
 			+ "(Gl\\. \\d+)?.*?" // arrivalPosition
 			+ "<a href=\"/Fahrinfo[^\"]*?input=(\\d+)\">\n" // arrivalId
-			+ "<strong>([^<]*)</strong>" // arrival
+			+ "<strong>([^<]*)</strong>" // arrivalName
 			+ "|" //
 			+ "(\\d+) Min\\.\n" // footway
 			+ "(?:Fussweg|&#220;bergang)\n" //
 			+ "<br />\n" //
 			+ "(?:<a href=\"/Fahrinfo[^\"]*?input=(\\d+)\">\n" // arrivalId
-			+ "<strong>([^<]*)</strong>|<a href=\"/Stadtplan.*?WGS84,(\\d+),(\\d+)&.*?\">([^<]*)</a>|<strong>([^<]*)</strong>).*?" // arrival
+			+ "<strong>([^<]*)</strong>|<a href=\"/Stadtplan.*?WGS84,(\\d+),(\\d+)&.*?\">([^<]*)</a>|<strong>([^<]*)</strong>).*?" // arrivalName,arrivalLat,arrivalLon,arrivalName,arrivalName
 			+ ").*?", Pattern.DOTALL);
 
 	@Override
@@ -481,43 +486,44 @@ public final class BvgProvider extends AbstractHafasProvider
 				final Matcher mDetFine = P_CONNECTION_DETAILS_FINE.matcher(mDetCoarse.group(1));
 				if (mDetFine.matches())
 				{
-					final String departureName = ParserUtils.resolveEntities(mDetFine.group(2));
+					final String departureName = ParserUtils.resolveEntities(ParserUtils.selectNotNull(mDetFine.group(2), mDetFine.group(5)));
+
+					final int departureId = mDetFine.group(1) != null ? Integer.parseInt(mDetFine.group(1)) : 0;
+					final int departureLon = mDetFine.group(3) != null ? Integer.parseInt(mDetFine.group(3)) : 0;
+					final int departureLat = mDetFine.group(4) != null ? Integer.parseInt(mDetFine.group(4)) : 0;
+
 					final Location departure;
 					if (departureName != null)
-					{
-						final int departureId = Integer.parseInt(mDetFine.group(1));
-						departure = new Location(departureId != 0 ? LocationType.STATION : LocationType.ANY, departureId, null, departureName);
-					}
+						departure = new Location(departureId != 0 ? LocationType.STATION : LocationType.ANY, departureId, departureLat, departureLon,
+								null, departureName);
 					else
-					{
 						departure = lastArrival;
-					}
 
 					if (departure != null && firstDeparture == null)
 						firstDeparture = departure;
 
-					final String min = mDetFine.group(11);
+					final String min = mDetFine.group(14);
 					if (min == null)
 					{
-						Date departureTime = ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mDetFine.group(3)));
+						Date departureTime = ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mDetFine.group(6)));
 						if (lastArrivalTime != null && departureTime.before(lastArrivalTime))
 							departureTime = ParserUtils.addDays(departureTime, 1);
 
-						final String departurePosition = mDetFine.group(4);
+						final String departurePosition = mDetFine.group(7);
 
-						final String line = normalizeLine(ParserUtils.resolveEntities(mDetFine.group(5)));
+						final String line = normalizeLine(ParserUtils.resolveEntities(mDetFine.group(8)));
 
-						final Location destination = new Location(LocationType.ANY, 0, null, ParserUtils.resolveEntities(mDetFine.group(6)));
+						final Location destination = new Location(LocationType.ANY, 0, null, ParserUtils.resolveEntities(mDetFine.group(9)));
 
-						Date arrivalTime = ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mDetFine.group(7)));
+						Date arrivalTime = ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mDetFine.group(10)));
 						if (departureTime.after(arrivalTime))
 							arrivalTime = ParserUtils.addDays(arrivalTime, 1);
 
-						final String arrivalPosition = mDetFine.group(8);
+						final String arrivalPosition = mDetFine.group(11);
 
-						final int arrivalId = Integer.parseInt(mDetFine.group(9));
+						final int arrivalId = Integer.parseInt(mDetFine.group(12));
 
-						final Location arrival = new Location(LocationType.STATION, arrivalId, null, ParserUtils.resolveEntities(mDetFine.group(10)));
+						final Location arrival = new Location(LocationType.STATION, arrivalId, null, ParserUtils.resolveEntities(mDetFine.group(13)));
 
 						parts.add(new Connection.Trip(line, destination, departureTime, departurePosition, departure, arrivalTime, arrivalPosition,
 								arrival, null, null));
@@ -530,14 +536,13 @@ public final class BvgProvider extends AbstractHafasProvider
 					}
 					else
 					{
-						final int arrivalId = mDetFine.group(12) != null ? Integer.parseInt(mDetFine.group(12)) : 0;
+						final int arrivalId = mDetFine.group(15) != null ? Integer.parseInt(mDetFine.group(15)) : 0;
 
-						final int arrivalLon = mDetFine.group(14) != null ? Integer.parseInt(mDetFine.group(14)) : 0;
+						final int arrivalLon = mDetFine.group(17) != null ? Integer.parseInt(mDetFine.group(17)) : 0;
+						final int arrivalLat = mDetFine.group(18) != null ? Integer.parseInt(mDetFine.group(18)) : 0;
 
-						final int arrivalLat = mDetFine.group(15) != null ? Integer.parseInt(mDetFine.group(15)) : 0;
-
-						final String arrivalName = ParserUtils.resolveEntities(ParserUtils.selectNotNull(mDetFine.group(13), mDetFine.group(16),
-								mDetFine.group(17)));
+						final String arrivalName = ParserUtils.resolveEntities(ParserUtils.selectNotNull(mDetFine.group(16), mDetFine.group(19),
+								mDetFine.group(20)));
 
 						final Location arrival = new Location(arrivalId != 0 ? LocationType.STATION : LocationType.ANY, arrivalId, arrivalLat,
 								arrivalLon, null, arrivalName);
