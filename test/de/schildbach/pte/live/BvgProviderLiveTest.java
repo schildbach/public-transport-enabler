@@ -81,4 +81,16 @@ public class BvgProviderLiveTest
 			provider.getConnectionDetails(connection.link);
 		System.out.println(moreResult);
 	}
+
+	@Test
+	public void connectionBetweenCoordinates() throws Exception
+	{
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, 52501507, 13357026), null,
+				new Location(LocationType.ADDRESS, 0, 52513639, 13568648), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+		System.out.println(result);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
+		for (final Connection connection : result.connections)
+			provider.getConnectionDetails(connection.link);
+		System.out.println(moreResult);
+	}
 }
