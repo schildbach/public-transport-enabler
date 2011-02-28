@@ -440,7 +440,7 @@ public final class BvgProvider extends AbstractHafasProvider
 
 	private static final Pattern P_CONNECTION_DETAILS_HEAD = Pattern.compile(".*(?:Datum|Abfahrt): (\\d\\d\\.\\d\\d\\.\\d\\d).*", Pattern.DOTALL);
 	private static final Pattern P_CONNECTION_DETAILS_COARSE = Pattern.compile("<p class=\"con\\w\">\n(.+?)</p>", Pattern.DOTALL);
-	static final Pattern P_CONNECTION_DETAILS_FINE = Pattern.compile("(?:<a href=\"/Fahrinfo[^\"]*input=(\\d+)\">(?:\n<strong>)?" // departureId
+	static final Pattern P_CONNECTION_DETAILS_FINE = Pattern.compile("(?:<a href=\"/Fahrinfo[^\"]*?input=(\\d+)\">(?:\n<strong>)?" // departureId
 			+ "(.+?)(?:</strong>\n)?</a>)?.*?" // departure
 			+ "(?:" //
 			+ "ab (\\d+:\\d+)\n" // departureTime
@@ -449,13 +449,13 @@ public final class BvgProvider extends AbstractHafasProvider
 			+ "Ri\\. (.*?)[\n\\.]*<.*?" // destination
 			+ "an (\\d+:\\d+)\n" // arrivalTime
 			+ "(Gl\\. \\d+)?.*?" // arrivalPosition
-			+ "<a href=\"/Fahrinfo[^\"]*input=(\\d+)\">\n" // arrivalId
+			+ "<a href=\"/Fahrinfo[^\"]*?input=(\\d+)\">\n" // arrivalId
 			+ "<strong>([^<]*)</strong>" // arrival
 			+ "|" //
 			+ "(\\d+) Min\\.\n" // footway
 			+ "(?:Fussweg|&#220;bergang)\n" //
 			+ "<br />\n" //
-			+ "(?:<a href=\"/Fahrinfo[^\"]*input=(\\d+)\">\n" // arrivalId
+			+ "(?:<a href=\"/Fahrinfo[^\"]*?input=(\\d+)\">\n" // arrivalId
 			+ "<strong>([^<]*)</strong>|<a href=\"/Stadtplan.*?WGS84,(\\d+),(\\d+)&.*?\">([^<]*)</a>|<strong>([^<]*)</strong>).*?" // arrival
 			+ ").*?", Pattern.DOTALL);
 
