@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package de.schildbach.pte;
 
 import java.text.DateFormat;
@@ -31,7 +32,7 @@ public class VvsProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.VVS;
 	public static final String OLD_NETWORK_ID = "mobil.vvs.de";
-	private static final String API_BASE = "http://mobil.vvs.de/mobile/";
+	private static final String API_BASE = "http://mobil.vvs.de/mobile/"; // http://www2.vvs.de/vvs/
 
 	public NetworkId id()
 	{
@@ -119,7 +120,7 @@ public class VvsProvider extends AbstractEfaProvider
 	@Override
 	protected void appendLocation(final StringBuilder uri, final Location location, final String paramSuffix)
 	{
-		if (location.type == LocationType.POI && location.id != 0)
+		if (location.type == LocationType.POI && location.hasId())
 		{
 			uri.append("&type_").append(paramSuffix).append("=poiID");
 			uri.append("&name_").append(paramSuffix).append("=").append(location.id);

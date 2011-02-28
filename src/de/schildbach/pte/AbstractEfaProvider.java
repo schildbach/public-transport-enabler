@@ -1636,7 +1636,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 	protected static final String locationValue(final Location location)
 	{
-		if ((location.type == LocationType.STATION || location.type == LocationType.POI) && location.id != 0)
+		if ((location.type == LocationType.STATION || location.type == LocationType.POI) && location.hasId())
 			return Integer.toString(location.id);
 		else
 			return location.name;

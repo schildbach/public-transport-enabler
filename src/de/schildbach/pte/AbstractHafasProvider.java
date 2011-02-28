@@ -564,7 +564,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 	private static final String location(final Location location)
 	{
-		if (location.type == LocationType.STATION && location.id != 0)
+		if (location.type == LocationType.STATION && location.hasId())
 			return "<Station externalId=\"" + location.id + "\" />";
 		if (location.type == LocationType.POI && location.hasLocation())
 			return "<Poi type=\"WGS84\" x=\"" + location.lon + "\" y=\"" + location.lat + "\" />";
@@ -582,7 +582,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			builder.append("@X=" + location.lon + "@Y=" + location.lat);
 		if (location.name != null)
 			builder.append("@G=" + location.name);
-		if (location.type == LocationType.STATION && location.id != 0)
+		if (location.type == LocationType.STATION && location.hasId())
 			builder.append("@L=").append(location.id);
 		return builder.toString();
 	}

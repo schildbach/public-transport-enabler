@@ -119,7 +119,7 @@ public class VmvProvider extends AbstractEfaProvider
 	@Override
 	protected void appendLocation(final StringBuilder uri, final Location location, final String paramSuffix)
 	{
-		if (location.type == LocationType.POI && location.id != 0)
+		if (location.type == LocationType.POI && location.hasId())
 		{
 			uri.append("&type_").append(paramSuffix).append("=poiID");
 			uri.append("&name_").append(paramSuffix).append("=").append(location.id);
