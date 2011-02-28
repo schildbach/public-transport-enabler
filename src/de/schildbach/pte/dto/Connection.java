@@ -118,13 +118,11 @@ public final class Connection implements Serializable
 			final StringBuilder builder = new StringBuilder(getClass().getName() + "[");
 			builder.append("line=").append(line);
 			builder.append(",");
-			builder.append("destination=").append(destination).append("/").append(destination.id);
+			builder.append("destination=").append(destination);
 			builder.append(",");
-			builder.append("departure=").append(departureTime).append("/").append(departurePosition).append("/").append(departure).append("/")
-					.append(departure);
+			builder.append("departure=").append(departureTime).append("/").append(departurePosition).append("/").append(departure);
 			builder.append(",");
-			builder.append("arrival=").append(arrivalTime).append("/").append(arrivalPosition).append("/").append(arrival).append("/")
-					.append(arrival);
+			builder.append("arrival=").append(arrivalTime).append("/").append(arrivalPosition).append("/").append(arrival);
 			builder.append("]");
 			return builder.toString();
 		}
