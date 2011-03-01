@@ -846,8 +846,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
-		final String uri = departuresQueryUri(stationId, maxDepartures) + "&outputFormat=XML&coordOutputFormat=WGS84&mode=direct"
-				+ (equivs ? "&useProxFootSearch=1&ptOptionsActive=1" : "&deleteAssignedStops_dm=1");
+		final String uri = departuresQueryUri(stationId, maxDepartures)
+				+ "&outputFormat=XML&coordOutputFormat=WGS84&mode=direct&deleteAssignedStops_dm=" + (equivs ? "0" : "1");
 
 		InputStream is = null;
 		try
