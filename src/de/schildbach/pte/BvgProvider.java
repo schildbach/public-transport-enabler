@@ -334,8 +334,10 @@ public final class BvgProvider extends AbstractHafasProvider
 			return originalLocation;
 		else if (originalLocation != null && originalLocation.type == LocationType.ADDRESS && str.length() == 0)
 			return originalLocation;
-		else
+		else if (str.length() > 0)
 			return new Location(LocationType.ANY, 0, null, str);
+		else
+			return null;
 	}
 
 	private static final Pattern P_CONNECTIONS_HEAD = Pattern.compile(".*?" //
