@@ -808,12 +808,22 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 	protected String normalizeLine(final String type, final String line)
 	{
-		final Matcher m = P_NORMALIZE_LINE.matcher(line);
-		final String strippedLine = m.matches() ? m.group(1) + m.group(2) : line;
-
 		final char normalizedType = normalizeType(type);
+
 		if (normalizedType != 0)
-			return normalizedType + strippedLine;
+		{
+			if (line != null)
+			{
+				final Matcher m = P_NORMALIZE_LINE.matcher(line);
+				final String strippedLine = m.matches() ? m.group(1) + m.group(2) : line;
+
+				return normalizedType + strippedLine;
+			}
+			else
+			{
+				return Character.toString(normalizedType);
+			}
+		}
 
 		throw new IllegalStateException("cannot normalize type '" + type + "' line '" + line + "'");
 	}
