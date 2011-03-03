@@ -738,6 +738,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'R' + name;
 			if ("Regional Train :".equals(longName))
 				return "R";
+			if ("Regional Train".equals(noTrainName)) // Melbourne
+				return "R" + name;
 			if (type.equals("ATB")) // Autoschleuse Tauernbahn
 				return 'R' + name;
 
