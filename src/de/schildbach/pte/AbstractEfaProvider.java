@@ -1146,10 +1146,11 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			pp.setInput(is, null);
 			assertItdRequest(pp);
 
-			final String sessionId = pp.getAttributeValue(null, "sessionID");
+			final String sessionId = XmlPullUtil.attr(pp, "sessionID");
 
 			if (!XmlPullUtil.jumpToStartTag(pp, null, "itdTripRequest"))
 				throw new IllegalStateException("cannot find <itdTripRequest />");
+			final String requestId = XmlPullUtil.attr(pp, "requestID");
 			XmlPullUtil.enter(pp, "itdTripRequest");
 
 			if (XmlPullUtil.test(pp, "itdMessage"))
@@ -1457,7 +1458,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 				XmlPullUtil.exit(pp, "itdRouteList");
 
-				return new QueryConnectionsResult(uri, from, via, to, commandLink(sessionId, "tripNext"), connections);
+				return new QueryConnectionsResult(uri, from, via, to, commandLink(sessionId, requestId, "tripNext"), connections);
 			}
 			else
 			{
@@ -1597,7 +1598,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 	protected abstract String connectionsQueryUri(Location from, Location via, Location to, Date date, boolean dep, String products,
 			WalkSpeed walkSpeed);
 
-	protected abstract String commandLink(String sessionId, String command);
+	protected abstract String commandLink(String sessionId, String requestId, String command);
 
 	protected static final void appendCommonConnectionParams(final StringBuilder uri)
 	{

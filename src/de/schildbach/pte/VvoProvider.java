@@ -115,12 +115,13 @@ public class VvoProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	protected String commandLink(final String sessionId, final String command)
+	protected String commandLink(final String sessionId, final String requestId, final String command)
 	{
 		final StringBuilder uri = new StringBuilder();
 		uri.append(API_BASE);
 		uri.append("XSLT_TRIP_REQUEST2");
 		uri.append("?sessionID=").append(sessionId);
+		uri.append("&requestID=").append(requestId);
 		appendCommonConnectionParams(uri);
 		uri.append("&command=").append(command);
 		return uri.toString();

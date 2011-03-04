@@ -116,7 +116,7 @@ public class VagfrProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	protected String commandLink(final String sessionId, final String command)
+	protected String commandLink(final String sessionId, final String requestId, final String command)
 	{
 		final StringBuilder uri = new StringBuilder();
 		uri.append(API_BASE);
