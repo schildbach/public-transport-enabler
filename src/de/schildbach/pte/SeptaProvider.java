@@ -72,6 +72,8 @@ public class SeptaProvider extends AbstractHafasProvider
 		// Subway
 		if (ucType.equals("BSS"))
 			return 'U';
+		if (ucType.equals("BSL"))
+			return 'U';
 		if (ucType.equals("MFL"))
 			return 'U';
 
@@ -83,6 +85,8 @@ public class SeptaProvider extends AbstractHafasProvider
 
 		// Bus
 		if (ucType.equals("BUS"))
+			return 'B';
+		if (ucType.equals("TRO"))
 			return 'B';
 
 		return 0;
