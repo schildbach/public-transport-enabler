@@ -313,11 +313,13 @@ public class RmvProvider extends AbstractHafasProvider
 	private static final Pattern P_CONNECTION_DETAILS_FINE = Pattern.compile("<br />\n" //
 			+ "(?:(.*?) nach (.*?)\n" // line, destination
 			+ "<br />\n" //
-			+ "ab (\\d{1,2}:\\d{2})\n" // departureTime
-			+ "(?:(.*?)\\s*\n)?" // departurePosition
+			+ "ab (\\d{1,2}:\\d{2})\n" // plannedDepartureTime
+			+ "(?:<span class=\"red\">\nca\\.(\\d{1,2}:\\d{2})\n</span>\n)?" // predictedDepartureTime
+			+ "(?:Gl\\. (.+?)\\s*\n)?" // departurePosition
 			+ "<br />\n" //
-			+ "an (\\d{1,2}:\\d{2})\n" // arrivalTime
-			+ "(?:(.*?)\\s*\n)?" // arrivalPosition
+			+ "an (\\d{1,2}:\\d{2})\n" // plannedArrivalTime
+			+ "(?:<span class=\"red\">ca\\.(\\d{1,2}:\\d{2})</span>\n)?" // predictedArrivalTime
+			+ "(?:Gl\\. (.+?)\\s*\n)?" // arrivalPosition
 			+ "<br />\n|" //
 			+ "<a href=[^>]*>\n" //
 			+ "Fussweg\\s*\n" //
@@ -353,10 +355,10 @@ public class RmvProvider extends AbstractHafasProvider
 				{
 					final Location departure = lastArrival != null ? lastArrival : firstDeparture;
 
-					final Location arrival = new Location(LocationType.ANY, 0, null, ParserUtils.resolveEntities(mDetFine.group(8)));
+					final Location arrival = new Location(LocationType.ANY, 0, null, ParserUtils.resolveEntities(mDetFine.group(10)));
 					lastArrival = arrival;
 
-					final String min = mDetFine.group(7);
+					final String min = mDetFine.group(9);
 					if (min == null)
 					{
 						final String lineStr = normalizeLine(ParserUtils.resolveEntities(mDetFine.group(1)));
@@ -364,13 +366,21 @@ public class RmvProvider extends AbstractHafasProvider
 
 						final Location destination = new Location(LocationType.ANY, 0, null, ParserUtils.resolveEntities(mDetFine.group(2)));
 
-						final Date departureTime = upTime(lastTime, ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mDetFine.group(3))));
+						final Date plannedDepartureTime = upTime(lastTime,
+								ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mDetFine.group(3))));
+						final Date predictedDepartureTime = mDetFine.group(4) != null ? upTime(lastTime,
+								ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mDetFine.group(4)))) : null;
+						final Date departureTime = predictedDepartureTime != null ? predictedDepartureTime : plannedDepartureTime;
 
-						final String departurePosition = ParserUtils.resolveEntities(mDetFine.group(4));
+						final String departurePosition = ParserUtils.resolveEntities(mDetFine.group(5));
 
-						final Date arrivalTime = upTime(lastTime, ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mDetFine.group(5))));
+						final Date plannedArrivalTime = upTime(lastTime,
+								ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mDetFine.group(6))));
+						final Date predictedArrivalTime = mDetFine.group(7) != null ? upTime(lastTime,
+								ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mDetFine.group(7)))) : null;
+						final Date arrivalTime = predictedArrivalTime != null ? predictedArrivalTime : plannedArrivalTime;
 
-						final String arrivalPosition = ParserUtils.resolveEntities(mDetFine.group(6));
+						final String arrivalPosition = ParserUtils.resolveEntities(mDetFine.group(8));
 
 						lastTrip = new Connection.Trip(line, destination, departureTime, departurePosition, departure, arrivalTime, arrivalPosition,
 								arrival, null, null);
