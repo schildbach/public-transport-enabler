@@ -291,11 +291,11 @@ public final class BahnProvider extends AbstractHafasProvider
 			+ "(?:" //
 			+ "<span class=\"bold\">\\s*(.+?)\\s*</span>.*?" // line
 			+ "ab\\s+(?:<span[^>]*>.*?</span>)?\\s*(\\d{1,2}:\\d{2})\\s*(?:<span[^>]*>.*?</span>)?" // departureTime
-			+ "\\s*(Gl\\. .+?)?\\s*\n" // departurePosition
+			+ "\\s*(?:Gl\\. (.+?))?\\s*\n" // departurePosition
 			+ "am\\s+(\\d{2}\\.\\d{2}\\.\\d{2}).*?" // departureDate
 			+ "<span class=\"bold\">\\s*(.+?)\\s*</span><br />.*?" // arrival
 			+ "an\\s+(?:<span[^>]*>.*?</span>)?\\s*(\\d{1,2}:\\d{2})\\s*(?:<span[^>]*>.*?</span>)?" // arrivalTime
-			+ "\\s*(Gl\\. .+?)?\\s*\n" // arrivalPosition
+			+ "\\s*(?:Gl\\. (.+?))?\\s*\n" // arrivalPosition
 			+ "am\\s+(\\d{2}\\.\\d{2}\\.\\d{2}).*?" // arrivalDate
 			+ "|" //
 			+ "(\\d+) Min\\..*?" // footway
@@ -355,7 +355,7 @@ public final class BahnProvider extends AbstractHafasProvider
 
 							final Date departureTime = ParserUtils.parseTime(mDetFine.group(3));
 
-							final String departurePosition = mDetFine.group(4) != null ? ParserUtils.resolveEntities(mDetFine.group(4)) : null;
+							final String departurePosition = ParserUtils.resolveEntities(mDetFine.group(4));
 
 							final Date departureDate = ParserUtils.parseDate(mDetFine.group(5));
 
@@ -363,7 +363,7 @@ public final class BahnProvider extends AbstractHafasProvider
 
 							final Date arrivalTime = ParserUtils.parseTime(mDetFine.group(7));
 
-							final String arrivalPosition = mDetFine.group(8) != null ? ParserUtils.resolveEntities(mDetFine.group(8)) : null;
+							final String arrivalPosition = ParserUtils.resolveEntities(mDetFine.group(8));
 
 							final Date arrivalDate = ParserUtils.parseDate(mDetFine.group(9));
 

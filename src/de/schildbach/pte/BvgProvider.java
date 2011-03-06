@@ -436,11 +436,11 @@ public final class BvgProvider extends AbstractHafasProvider
 			+ ")?.*?" //
 			+ "(?:" //
 			+ "ab (\\d+:\\d+)\n" // departureTime
-			+ "(Gl\\. \\d+)?.*?" // departurePosition
+			+ "(?:Gl\\. (.+?))?.*?" // departurePosition
 			+ "<strong>\\s*(.*?)\\s*</strong>.*?" // line
 			+ "Ri\\. (.*?)[\n\\.]*<.*?" // destination
 			+ "an (\\d+:\\d+)\n" // arrivalTime
-			+ "(Gl\\. \\d+)?.*?" // arrivalPosition
+			+ "(?:Gl\\. (.+?))?.*?" // arrivalPosition
 			+ "<a href=\"/Fahrinfo[^\"]*?input=(\\d+)\">\n" // arrivalId
 			+ "<strong>([^<]*)</strong>" // arrivalName
 			+ "|" //

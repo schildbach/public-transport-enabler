@@ -1568,7 +1568,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		return Currency.getInstance(currencyStr);
 	}
 
-	private static final Pattern P_PLATFORM_GLEIS = Pattern.compile("Gleis (\\d+[a-z]?)(?: ([A-Z])\\s*-\\s*([A-Z]))?");
+	private static final Pattern P_PLATFORM_GLEIS = Pattern.compile("(Gleis|Bstg\\.)\\s*(\\d+[a-z]?)(?: ([A-Z])\\s*-\\s*([A-Z]))?");
 
 	private static final String normalizePlatform(final String platform, final String platformName)
 	{
@@ -1577,10 +1577,12 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			final Matcher mGleis = P_PLATFORM_GLEIS.matcher(platformName);
 			if (mGleis.matches())
 			{
-				if (mGleis.group(2) == null)
-					return "Gl. " + mGleis.group(1);
+				if (mGleis.group(3) == null)
+					return mGleis.group(2);
+				else if (mGleis.group(1).equals("Gleis"))
+					return "Gl. " + mGleis.group(2) + " " + mGleis.group(3) + "-" + mGleis.group(4);
 				else
-					return "Gl. " + mGleis.group(1) + " " + mGleis.group(2) + "-" + mGleis.group(3);
+					return mGleis.group(1) + " " + mGleis.group(2) + " " + mGleis.group(3) + "-" + mGleis.group(4);
 			}
 			else
 			{
