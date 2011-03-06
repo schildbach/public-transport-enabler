@@ -42,7 +42,7 @@ import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.Fare;
 import de.schildbach.pte.dto.Fare.Type;
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
-import de.schildbach.pte.dto.Line;
+import de.schildbach.pte.dto.LineDestination;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -892,7 +892,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				final QueryDeparturesResult result = new QueryDeparturesResult();
 
 				final Location location = processOdvNameElem(pp, place);
-				result.stationDepartures.add(new StationDepartures(location, new LinkedList<Departure>(), new LinkedList<Line>()));
+				result.stationDepartures.add(new StationDepartures(location, new LinkedList<Departure>(), new LinkedList<LineDestination>()));
 
 				XmlPullUtil.exit(pp, "itdOdvName");
 
@@ -904,7 +904,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 						final Location assignedLocation = processItdOdvAssignedStop(pp);
 						if (findStationDepartures(result.stationDepartures, assignedLocation.id) == null)
 							result.stationDepartures
-									.add(new StationDepartures(assignedLocation, new LinkedList<Departure>(), new LinkedList<Line>()));
+									.add(new StationDepartures(assignedLocation, new LinkedList<Departure>(), new LinkedList<LineDestination>()));
 					}
 					XmlPullUtil.exit(pp, "itdOdvAssignedStops");
 				}
@@ -941,7 +941,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 						final int destinationId = destinationIdStr.length() > 0 ? Integer.parseInt(destinationIdStr) : 0;
 
 						final String lineStr = processItdServingLine(pp);
-						final Line line = new Line(lineStr, lineColors(lineStr), destinationId, destination);
+						final LineDestination line = new LineDestination(lineStr, lineColors(lineStr), destinationId, destination);
 
 						StationDepartures assignedStationDepartures;
 						if (assignedStopId == 0)
@@ -951,7 +951,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 						if (assignedStationDepartures == null)
 							assignedStationDepartures = new StationDepartures(new Location(LocationType.STATION, assignedStopId),
-									new LinkedList<Departure>(), new LinkedList<Line>());
+									new LinkedList<Departure>(), new LinkedList<LineDestination>());
 
 						if (!assignedStationDepartures.lines.contains(line))
 							assignedStationDepartures.lines.add(line);
@@ -982,7 +982,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 							// final String name = normalizeLocationName(XmlPullUtil.attr(pp, "nameWO"));
 
 							assignedStationDepartures = new StationDepartures(new Location(LocationType.STATION, assignedStopId, lat, lon),
-									new LinkedList<Departure>(), new LinkedList<Line>());
+									new LinkedList<Departure>(), new LinkedList<LineDestination>());
 						}
 
 						final String position = normalizePlatform(pp.getAttributeValue(null, "platform"), pp.getAttributeValue(null, "platformName"));

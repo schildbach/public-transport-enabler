@@ -26,9 +26,9 @@ public final class StationDepartures
 {
 	public final Location location;
 	public final List<Departure> departures;
-	public final List<Line> lines;
+	public final List<LineDestination> lines;
 
-	public StationDepartures(final Location location, final List<Departure> departures, final List<Line> lines)
+	public StationDepartures(final Location location, final List<Departure> departures, final List<LineDestination> lines)
 	{
 		this.location = location;
 		this.departures = departures;

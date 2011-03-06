@@ -20,14 +20,14 @@ package de.schildbach.pte.dto;
 /**
  * @author Andreas Schildbach
  */
-public final class Line
+public final class LineDestination
 {
 	final public String line;
 	final public int[] lineColors;
 	final public int destinationId;
 	final public String destination;
 
-	public Line(final String line, final int[] lineColors, final int destinationId, final String destination)
+	public LineDestination(final String line, final int[] lineColors, final int destinationId, final String destination)
 	{
 		this.line = line;
 		this.lineColors = lineColors;
@@ -53,9 +53,9 @@ public final class Line
 	{
 		if (o == this)
 			return true;
-		if (!(o instanceof Line))
+		if (!(o instanceof LineDestination))
 			return false;
-		final Line other = (Line) o;
+		final LineDestination other = (LineDestination) o;
 		if (!nullSafeEquals(this.line, other.line))
 			return false;
 		if (this.destinationId != other.destinationId)
