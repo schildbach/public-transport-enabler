@@ -33,6 +33,7 @@ import java.util.regex.Pattern;
 import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
+import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.QueryConnectionsResult;
@@ -358,7 +359,8 @@ public class RmvProvider extends AbstractHafasProvider
 					final String min = mDetFine.group(7);
 					if (min == null)
 					{
-						final String line = normalizeLine(ParserUtils.resolveEntities(mDetFine.group(1)));
+						final String lineStr = normalizeLine(ParserUtils.resolveEntities(mDetFine.group(1)));
+						final Line line = new Line(lineStr, lineColors(lineStr));
 
 						final Location destination = new Location(LocationType.ANY, 0, null, ParserUtils.resolveEntities(mDetFine.group(2)));
 

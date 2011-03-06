@@ -89,7 +89,7 @@ public final class Connection implements Serializable
 
 	public final static class Trip extends Part
 	{
-		public final String line;
+		public final Line line;
 		public final Location destination;
 		public final Date departureTime;
 		public final String departurePosition;
@@ -97,9 +97,9 @@ public final class Connection implements Serializable
 		public final String arrivalPosition;
 		public final List<Stop> intermediateStops;
 
-		public Trip(final String line, final Location destination, final Date departureTime, final String departurePosition,
-				final Location departure, final Date arrivalTime, final String arrivalPosition, final Location arrival,
-				final List<Stop> intermediateStops, final List<Point> path)
+		public Trip(final Line line, final Location destination, final Date departureTime, final String departurePosition, final Location departure,
+				final Date arrivalTime, final String arrivalPosition, final Location arrival, final List<Stop> intermediateStops,
+				final List<Point> path)
 		{
 			super(departure, arrival, path);
 

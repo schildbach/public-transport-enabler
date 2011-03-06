@@ -32,6 +32,7 @@ import java.util.regex.Pattern;
 import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
+import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -349,7 +350,8 @@ public final class BahnProvider extends AbstractHafasProvider
 
 						if (mDetFine.group(2) != null)
 						{
-							final String line = normalizeLine(ParserUtils.resolveEntities(mDetFine.group(2)));
+							final String lineStr = normalizeLine(ParserUtils.resolveEntities(mDetFine.group(2)));
+							final Line line = new Line(lineStr, lineColors(lineStr));
 
 							final Date departureTime = ParserUtils.parseTime(mDetFine.group(3));
 

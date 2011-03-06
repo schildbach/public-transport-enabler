@@ -35,6 +35,7 @@ import org.json.JSONObject;
 import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
+import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.QueryConnectionsResult;
@@ -455,7 +456,8 @@ public class OebbProvider extends AbstractHafasProvider
 
 								final String departurePosition = mDetFine.group(5) != null ? ParserUtils.resolveEntities(mDetFine.group(5)) : null;
 
-								final String line = normalizeLine(lineType, ParserUtils.resolveEntities(mDetFine.group(7)));
+								final String lineStr = normalizeLine(lineType, ParserUtils.resolveEntities(mDetFine.group(7)));
+								final Line line = new Line(lineStr, lineColors(lineStr));
 
 								if (arrivalId == 0)
 									throw new IllegalStateException("arrivalId");

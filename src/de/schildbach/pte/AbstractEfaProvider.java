@@ -42,6 +42,7 @@ import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.Fare;
 import de.schildbach.pte.dto.Fare.Type;
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
+import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.LineDestination;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
@@ -903,8 +904,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 					{
 						final Location assignedLocation = processItdOdvAssignedStop(pp);
 						if (findStationDepartures(result.stationDepartures, assignedLocation.id) == null)
-							result.stationDepartures
-									.add(new StationDepartures(assignedLocation, new LinkedList<Departure>(), new LinkedList<LineDestination>()));
+							result.stationDepartures.add(new StationDepartures(assignedLocation, new LinkedList<Departure>(),
+									new LinkedList<LineDestination>()));
 					}
 					XmlPullUtil.exit(pp, "itdOdvAssignedStops");
 				}
@@ -1355,12 +1356,13 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 							final Location destination = destinationIdStr.length() > 0 ? new Location(LocationType.STATION,
 									Integer.parseInt(destinationIdStr), null, destinationName) : new Location(LocationType.ANY, 0, null,
 									destinationName);
-							String line;
+							final String lineStr;
 							if ("AST".equals(pp.getAttributeValue(null, "symbol")))
-								line = "BAST";
+								lineStr = "BAST";
 							else
-								line = parseLine(pp.getAttributeValue(null, "motType"), pp.getAttributeValue(null, "shortname"),
+								lineStr = parseLine(pp.getAttributeValue(null, "motType"), pp.getAttributeValue(null, "shortname"),
 										pp.getAttributeValue(null, "name"), null);
+							final Line line = new Line(lineStr, lineColors(lineStr));
 
 							XmlPullUtil.enter(pp, "itdMeansOfTransport");
 							XmlPullUtil.exit(pp, "itdMeansOfTransport");

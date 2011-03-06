@@ -38,6 +38,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
+import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -365,7 +366,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 					XmlPullUtil.exit(pp);
 
 					// journey
-					String line = null;
+					final Line line;
 					Location destination = null;
 					int min = 0;
 
@@ -406,7 +407,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 						XmlPullUtil.exit(pp);
 						XmlPullUtil.exit(pp);
 
-						line = _normalizeLine(category, name, longCategory);
+						final String lineStr = _normalizeLine(category, name, longCategory);
+						line = new Line(lineStr, lineColors(lineStr));
 					}
 					else if (tag.equals("Walk") || tag.equals("Transfer") || tag.equals("GisRoute"))
 					{
@@ -416,6 +418,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 						min = parseDuration(XmlPullUtil.text(pp).substring(3, 8));
 						XmlPullUtil.exit(pp);
 						XmlPullUtil.exit(pp);
+
+						line = null;
 					}
 					else
 					{
