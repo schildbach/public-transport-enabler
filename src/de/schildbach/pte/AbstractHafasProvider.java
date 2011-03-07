@@ -673,6 +673,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return "R" + normalizedName;
 		if ("EXT".equals(normalizedType)) // Extrazug
 			return "R" + normalizedName;
+		if ("CAT".equals(normalizedType)) // City Airport Train
+			return "R" + normalizedName;
 
 		if ("S".equals(normalizedType)) // S-Bahn
 			return "S" + normalizedName;
@@ -691,6 +693,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return "U" + normalizedName;
 
 		if ("Tram".equals(normalizedType)) // Tram
+			return "T" + normalizedName;
+		if ("TRAM".equals(normalizedType)) // Tram
 			return "T" + normalizedName;
 		if ("T".equals(normalizedType)) // Tram
 			return "T" + normalizedName;
@@ -715,6 +719,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		if ("BAT".equals(normalizedType)) // Schiff
 			return "F" + normalizedName;
 
+		if ("GB".equals(normalizedType)) // Gondelbahn
+			return "C" + normalizedName;
 		if ("LB".equals(normalizedType)) // Luftseilbahn
 			return "C" + normalizedName;
 		if ("FUN".equals(normalizedType)) // Standseilbahn

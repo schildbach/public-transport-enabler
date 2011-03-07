@@ -612,6 +612,8 @@ public final class BahnProvider extends AbstractHafasProvider
 				return "IEIC" + number;
 			if (type.equals("FYR")) // Fyra, Amsterdam-Schiphol-Rotterdam
 				return "IFYR" + number;
+			if (type.equals("MT")) // Müller Touren, Schnee Express
+				return "IMT" + number;
 
 			if (type.equals("R"))
 				return "R" + number;
