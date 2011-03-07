@@ -34,7 +34,7 @@ public class GvhProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.GVH;
 	public static final String OLD_NETWORK_ID = "mobil.gvh.de";
-	private static final String API_BASE = "http://mobil.gvh.de/mobile2/";
+	private static final String API_BASE = "http://mobil.efa.de/mobile3/";
 
 	public NetworkId id()
 	{
@@ -43,6 +43,10 @@ public class GvhProvider extends AbstractEfaProvider
 
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
+		for (final Capability capability : capabilities)
+			if (capability == Capability.DEPARTURES || capability == Capability.CONNECTIONS)
+				return true;
+
 		return false;
 	}
 
