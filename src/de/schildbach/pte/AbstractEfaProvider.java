@@ -1568,30 +1568,44 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		return Currency.getInstance(currencyStr);
 	}
 
-	private static final Pattern P_PLATFORM_GLEIS = Pattern.compile("(Gleis|Bstg\\.)\\s*(\\d+[a-z]?)(?: ([A-Z])\\s*-\\s*([A-Z]))?");
+	private static final Pattern P_PLATFORM = Pattern.compile("#?(\\d+)", Pattern.CASE_INSENSITIVE);
+	private static final Pattern P_PLATFORM_NAME = Pattern.compile("(?:Gleis|Gl\\.|Bstg\\.)?\\s*" + //
+			"(\\d+)\\s*" + //
+			"(?:([A-Z])\\s*(?:-\\s*([A-Z]))?)?", Pattern.CASE_INSENSITIVE);
 
 	private static final String normalizePlatform(final String platform, final String platformName)
 	{
+		if (platform != null && platform.length() > 0)
+		{
+			final Matcher m = P_PLATFORM.matcher(platform);
+			if (m.matches())
+			{
+				return Integer.toString(Integer.parseInt(m.group(1)));
+			}
+			else
+			{
+				return platform;
+			}
+		}
+
 		if (platformName != null && platformName.length() > 0)
 		{
-			final Matcher mGleis = P_PLATFORM_GLEIS.matcher(platformName);
-			if (mGleis.matches())
+			final Matcher m = P_PLATFORM_NAME.matcher(platformName);
+			if (m.matches())
 			{
-				if (mGleis.group(3) == null)
-					return mGleis.group(2);
-				else if (mGleis.group(1).equals("Gleis"))
-					return "Gl. " + mGleis.group(2) + " " + mGleis.group(3) + "-" + mGleis.group(4);
+				final String simple = Integer.toString(Integer.parseInt(m.group(1)));
+				if (m.group(2) != null && m.group(3) != null)
+					return simple + m.group(2) + "-" + m.group(3);
+				else if (m.group(2) != null)
+					return simple + m.group(2);
 				else
-					return mGleis.group(1) + " " + mGleis.group(2) + " " + mGleis.group(3) + "-" + mGleis.group(4);
+					return simple;
 			}
 			else
 			{
 				return platformName;
 			}
 		}
-
-		if (platform != null && platform.length() > 0)
-			return platform;
 
 		return null;
 	}
