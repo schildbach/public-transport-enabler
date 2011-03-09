@@ -36,6 +36,11 @@ public class GvhProvider extends AbstractEfaProvider
 	public static final String OLD_NETWORK_ID = "mobil.gvh.de";
 	private static final String API_BASE = "http://mobil.efa.de/mobile3/";
 
+	public GvhProvider(final String additionalQueryParameter)
+	{
+		super(additionalQueryParameter);
+	}
+
 	public NetworkId id()
 	{
 		return NETWORK_ID;

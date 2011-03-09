@@ -64,8 +64,14 @@ import de.schildbach.pte.util.XmlPullUtil;
 public abstract class AbstractEfaProvider implements NetworkProvider
 {
 	final XmlPullParserFactory parserFactory;
+	final String additionalQueryParameter;
 
 	public AbstractEfaProvider()
+	{
+		this(null);
+	}
+
+	public AbstractEfaProvider(final String additionalQueryParameter)
 	{
 		try
 		{
@@ -75,6 +81,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		{
 			throw new RuntimeException(x);
 		}
+
+		this.additionalQueryParameter = additionalQueryParameter;
 	}
 
 	protected TimeZone timeZone()
@@ -82,11 +90,19 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		return TimeZone.getTimeZone("Europe/Berlin");
 	}
 
+	private String wrapUri(final String uri)
+	{
+		if (additionalQueryParameter == null)
+			return uri;
+		else
+			return uri + "&" + additionalQueryParameter;
+	}
+
 	protected abstract String autocompleteUri(final CharSequence constraint);
 
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
-		final String uri = autocompleteUri(constraint);
+		final String uri = wrapUri(autocompleteUri(constraint));
 
 		InputStream is = null;
 		try
@@ -266,9 +282,9 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 	{
 		String uri = null;
 		if (uri == null && stationId != null)
-			uri = nearbyStationUri(stationId);
+			uri = wrapUri(nearbyStationUri(stationId));
 		if (uri == null && (lat != 0 || lon != 0))
-			uri = nearbyLatLonUri(lat, lon);
+			uri = wrapUri(nearbyLatLonUri(lat, lon));
 		if (uri == null)
 			throw new IllegalArgumentException("at least one of stationId or lat/lon must be given");
 
@@ -851,8 +867,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
-		final String uri = departuresQueryUri(stationId, maxDepartures)
-				+ "&outputFormat=XML&coordOutputFormat=WGS84&mode=direct&deleteAssignedStops_dm=" + (equivs ? "0" : "1");
+		final String uri = wrapUri(departuresQueryUri(stationId, maxDepartures)
+				+ "&outputFormat=XML&coordOutputFormat=WGS84&mode=direct&deleteAssignedStops_dm=" + (equivs ? "0" : "1"));
 
 		InputStream is = null;
 		try
@@ -1111,7 +1127,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
 			final String products, final WalkSpeed walkSpeed) throws IOException
 	{
-		final String uri = connectionsQueryUri(from, via, to, date, dep, products, walkSpeed) + "&sessionID=0";
+		final String uri = wrapUri(connectionsQueryUri(from, via, to, date, dep, products, walkSpeed) + "&sessionID=0");
 
 		InputStream is = null;
 		try

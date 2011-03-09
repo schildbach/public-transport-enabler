@@ -34,7 +34,7 @@ import de.schildbach.pte.dto.QueryConnectionsResult;
  */
 public class GvhProviderLiveTest
 {
-	private final GvhProvider provider = new GvhProvider();
+	private final GvhProvider provider = new GvhProvider(null);
 	private static final String ALL_PRODUCTS = "IRSUTBFC";
 
 	@Test
