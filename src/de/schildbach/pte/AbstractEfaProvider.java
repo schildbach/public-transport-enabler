@@ -1127,7 +1127,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
 			final String products, final WalkSpeed walkSpeed) throws IOException
 	{
-		final String uri = wrapUri(connectionsQueryUri(from, via, to, date, dep, products, walkSpeed) + "&sessionID=0");
+		final String uri = wrapUri(connectionsQueryUri(from, via, to, date, dep, products, walkSpeed) + "&sessionID=0&requestID=0");
 
 		InputStream is = null;
 		try
