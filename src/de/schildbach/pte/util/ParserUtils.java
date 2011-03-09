@@ -178,8 +178,6 @@ public final class ParserUtils
 	{
 		while (true)
 		{
-			System.out.println(url);
-			
 			final HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
 
 			connection.setDoInput(true);
