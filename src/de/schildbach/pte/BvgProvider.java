@@ -19,7 +19,6 @@ package de.schildbach.pte;
 
 import java.io.IOException;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -28,6 +27,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -53,6 +53,7 @@ public final class BvgProvider extends AbstractHafasProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.BVG;
 	public static final String OLD_NETWORK_ID = "mobil.bvg.de";
+	private static final TimeZone TIME_ZONE = TimeZone.getTimeZone("Europe/Berlin");
 
 	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
 	private static final long PARSER_DAY_ROLLDOWN_THRESHOLD_MS = 6 * 60 * 60 * 1000;
@@ -383,7 +384,9 @@ public final class BvgProvider extends AbstractHafasProvider
 		{
 			final Location from = location(ParserUtils.resolveEntities(mHead.group(1)), originalFrom);
 			final Location to = location(ParserUtils.resolveEntities(mHead.group(2)), originalTo);
-			final Date currentDate = ParserUtils.parseDate(mHead.group(3));
+			final Calendar currentDate = new GregorianCalendar(TIME_ZONE);
+			currentDate.clear();
+			ParserUtils.parseGermanDate(currentDate, mHead.group(3));
 			final String linkEarlier = mHead.group(4) != null ? BVG_BASE_URL + ParserUtils.resolveEntities(mHead.group(4)) : null;
 			final String linkLater = mHead.group(5) != null ? BVG_BASE_URL + ParserUtils.resolveEntities(mHead.group(5)) : null;
 			final List<Connection> connections = new ArrayList<Connection>();
@@ -395,20 +398,24 @@ public final class BvgProvider extends AbstractHafasProvider
 				if (mConFine.matches())
 				{
 					final String link = BVG_BASE_URL + ParserUtils.resolveEntities(mConFine.group(1));
-					Date departureTime = ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mConFine.group(2)));
+					final Calendar departureTime = new GregorianCalendar(TIME_ZONE);
+					departureTime.setTimeInMillis(currentDate.getTimeInMillis());
+					ParserUtils.parseEuropeanTime(departureTime, mConFine.group(2));
 					if (!connections.isEmpty())
 					{
-						final long diff = ParserUtils.timeDiff(departureTime, connections.get(connections.size() - 1).departureTime);
+						final long diff = departureTime.getTimeInMillis() - connections.get(connections.size() - 1).departureTime.getTime();
 						if (diff > PARSER_DAY_ROLLOVER_THRESHOLD_MS)
-							departureTime = ParserUtils.addDays(departureTime, -1);
+							departureTime.add(Calendar.DAY_OF_YEAR, -1);
 						else if (diff < -PARSER_DAY_ROLLDOWN_THRESHOLD_MS)
-							departureTime = ParserUtils.addDays(departureTime, 1);
+							departureTime.add(Calendar.DAY_OF_YEAR, 1);
 					}
-					Date arrivalTime = ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mConFine.group(3)));
+					final Calendar arrivalTime = new GregorianCalendar(TIME_ZONE);
+					arrivalTime.setTimeInMillis(currentDate.getTimeInMillis());
+					ParserUtils.parseEuropeanTime(arrivalTime, mConFine.group(3));
 					if (departureTime.after(arrivalTime))
-						arrivalTime = ParserUtils.addDays(arrivalTime, 1);
-					final Connection connection = new Connection(AbstractHafasProvider.extractConnectionId(link), link, departureTime, arrivalTime,
-							from, to, null, null);
+						arrivalTime.add(Calendar.DAY_OF_YEAR, 1);
+					final Connection connection = new Connection(AbstractHafasProvider.extractConnectionId(link), link, departureTime.getTime(),
+							arrivalTime.getTime(), from, to, null, null);
 					connections.add(connection);
 				}
 				else
@@ -459,7 +466,9 @@ public final class BvgProvider extends AbstractHafasProvider
 		final Matcher mHead = P_CONNECTION_DETAILS_HEAD.matcher(page);
 		if (mHead.matches())
 		{
-			final Date currentDate = ParserUtils.parseDate(mHead.group(1));
+			final Calendar currentDate = new GregorianCalendar(TIME_ZONE);
+			currentDate.clear();
+			ParserUtils.parseGermanDate(currentDate, mHead.group(1));
 			final List<Connection.Part> parts = new ArrayList<Connection.Part>(4);
 
 			Date firstDepartureTime = null;
@@ -497,9 +506,11 @@ public final class BvgProvider extends AbstractHafasProvider
 					final String min = mDetFine.group(14);
 					if (min == null)
 					{
-						Date departureTime = ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mDetFine.group(6)));
-						if (lastArrivalTime != null && departureTime.before(lastArrivalTime))
-							departureTime = ParserUtils.addDays(departureTime, 1);
+						final Calendar departureTime = new GregorianCalendar(TIME_ZONE);
+						departureTime.setTimeInMillis(currentDate.getTimeInMillis());
+						ParserUtils.parseEuropeanTime(departureTime, mDetFine.group(6));
+						if (lastArrivalTime != null && departureTime.getTime().before(lastArrivalTime))
+							departureTime.add(Calendar.DAY_OF_YEAR, 1);
 
 						final String departurePosition = mDetFine.group(7);
 
@@ -510,9 +521,11 @@ public final class BvgProvider extends AbstractHafasProvider
 
 						final Location destination = new Location(LocationType.ANY, 0, destinationPlaceAndName[0], destinationPlaceAndName[1]);
 
-						Date arrivalTime = ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mDetFine.group(10)));
+						final Calendar arrivalTime = new GregorianCalendar(TIME_ZONE);
+						arrivalTime.setTimeInMillis(currentDate.getTimeInMillis());
+						ParserUtils.parseEuropeanTime(arrivalTime, mDetFine.group(10));
 						if (departureTime.after(arrivalTime))
-							arrivalTime = ParserUtils.addDays(arrivalTime, 1);
+							arrivalTime.add(Calendar.DAY_OF_YEAR, 1);
 
 						final String arrivalPosition = mDetFine.group(11);
 
@@ -522,14 +535,14 @@ public final class BvgProvider extends AbstractHafasProvider
 
 						final Location arrival = new Location(LocationType.STATION, arrivalId, arrivalPlaceAndName[0], arrivalPlaceAndName[1]);
 
-						parts.add(new Connection.Trip(line, destination, departureTime, departurePosition, departure, arrivalTime, arrivalPosition,
-								arrival, null, null));
+						parts.add(new Connection.Trip(line, destination, departureTime.getTime(), departurePosition, departure,
+								arrivalTime.getTime(), arrivalPosition, arrival, null, null));
 
 						if (firstDepartureTime == null)
-							firstDepartureTime = departureTime;
+							firstDepartureTime = departureTime.getTime();
 
 						lastArrival = arrival;
-						lastArrivalTime = arrivalTime;
+						lastArrivalTime = arrivalTime.getTime();
 					}
 					else
 					{
@@ -564,10 +577,10 @@ public final class BvgProvider extends AbstractHafasProvider
 			}
 
 			if (firstDepartureTime != null && lastArrivalTime != null)
-				return new GetConnectionDetailsResult(currentDate, new Connection(AbstractHafasProvider.extractConnectionId(uri), uri,
+				return new GetConnectionDetailsResult(currentDate.getTime(), new Connection(AbstractHafasProvider.extractConnectionId(uri), uri,
 						firstDepartureTime, lastArrivalTime, firstDeparture, lastArrival, parts, null));
 			else
-				return new GetConnectionDetailsResult(currentDate, null);
+				return new GetConnectionDetailsResult(currentDate.getTime(), null);
 		}
 		else
 		{
@@ -597,7 +610,7 @@ public final class BvgProvider extends AbstractHafasProvider
 	}
 
 	private static final Pattern P_DEPARTURES_HEAD = Pattern.compile(".*?" //
-			+ "<strong>(.*?)</strong>.*?Datum:(.*?)<br />.*" //
+			+ "<strong>(.*?)</strong>.*?Datum:\\s*([^<\n]+)[<\n].*?" //
 	, Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("" //
 			+ "<tr class=\"ivu_table_bg\\d\">\\s*((?:<td class=\"ivu_table_c_dep\">|<td>).+?)\\s*</tr>" //
@@ -646,7 +659,9 @@ public final class BvgProvider extends AbstractHafasProvider
 			if (mHead.matches())
 			{
 				final String location = ParserUtils.resolveEntities(mHead.group(1));
-				final Date currentTime = parseDate(mHead.group(2));
+				final Calendar currentTime = new GregorianCalendar(TIME_ZONE);
+				currentTime.clear();
+				parseDateTime(currentTime, mHead.group(2));
 				final List<Departure> departures = new ArrayList<Departure>(8);
 
 				// choose matcher
@@ -656,24 +671,21 @@ public final class BvgProvider extends AbstractHafasProvider
 					final Matcher mDepFine = P_DEPARTURES_LIVE_FINE.matcher(mDepCoarse.group(1));
 					if (mDepFine.matches())
 					{
-						final Calendar current = new GregorianCalendar();
-						current.setTime(currentTime);
-						final Calendar parsed = new GregorianCalendar();
-						parsed.setTime(ParserUtils.parseTime(mDepFine.group(1)));
-						parsed.set(Calendar.YEAR, current.get(Calendar.YEAR));
-						parsed.set(Calendar.MONTH, current.get(Calendar.MONTH));
-						parsed.set(Calendar.DAY_OF_MONTH, current.get(Calendar.DAY_OF_MONTH));
-						if (ParserUtils.timeDiff(parsed.getTime(), currentTime) < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
-							parsed.add(Calendar.DAY_OF_MONTH, 1);
+						final Calendar parsedTime = new GregorianCalendar(TIME_ZONE);
+						parsedTime.setTimeInMillis(currentTime.getTimeInMillis());
+						ParserUtils.parseEuropeanTime(parsedTime, mDepFine.group(1));
+
+						if (parsedTime.getTimeInMillis() - currentTime.getTimeInMillis() < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
+							parsedTime.add(Calendar.DAY_OF_MONTH, 1);
 
 						boolean isPlanned = mDepFine.group(2) != null;
 
 						Date plannedTime = null;
 						Date predictedTime = null;
 						if (!isPlanned)
-							predictedTime = parsed.getTime();
+							predictedTime = parsedTime.getTime();
 						else
-							plannedTime = parsed.getTime();
+							plannedTime = parsedTime.getTime();
 
 						final String line = normalizeLine(ParserUtils.resolveEntities(mDepFine.group(3)));
 
@@ -725,7 +737,9 @@ public final class BvgProvider extends AbstractHafasProvider
 			if (mHead.matches())
 			{
 				final String location = ParserUtils.resolveEntities(mHead.group(1));
-				final Date currentTime = parseDate(mHead.group(2));
+				final Calendar currentTime = new GregorianCalendar(TIME_ZONE);
+				currentTime.clear();
+				ParserUtils.parseGermanDate(currentTime, mHead.group(2));
 				final List<Departure> departures = new ArrayList<Departure>(8);
 
 				// choose matcher
@@ -735,17 +749,14 @@ public final class BvgProvider extends AbstractHafasProvider
 					final Matcher mDepFine = P_DEPARTURES_PLAN_FINE.matcher(mDepCoarse.group(1));
 					if (mDepFine.matches())
 					{
-						final Calendar current = new GregorianCalendar();
-						current.setTime(currentTime);
-						final Calendar parsed = new GregorianCalendar();
-						parsed.setTime(ParserUtils.parseTime(mDepFine.group(1)));
-						parsed.set(Calendar.YEAR, current.get(Calendar.YEAR));
-						parsed.set(Calendar.MONTH, current.get(Calendar.MONTH));
-						parsed.set(Calendar.DAY_OF_MONTH, current.get(Calendar.DAY_OF_MONTH));
-						if (ParserUtils.timeDiff(parsed.getTime(), currentTime) < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
-							parsed.add(Calendar.DAY_OF_MONTH, 1);
+						final Calendar parsedTime = new GregorianCalendar(TIME_ZONE);
+						parsedTime.setTimeInMillis(currentTime.getTimeInMillis());
+						ParserUtils.parseEuropeanTime(parsedTime, mDepFine.group(1));
 
-						final Date plannedTime = parsed.getTime();
+						if (parsedTime.getTimeInMillis() - currentTime.getTimeInMillis() < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
+							parsedTime.add(Calendar.DAY_OF_MONTH, 1);
+
+						final Date plannedTime = parsedTime.getTime();
 
 						final String line = normalizeLine(ParserUtils.resolveEntities(mDepFine.group(2)));
 
@@ -777,23 +788,16 @@ public final class BvgProvider extends AbstractHafasProvider
 		}
 	}
 
-	private static final Date parseDate(String str)
+	private static final Pattern P_DATE_TIME = Pattern.compile("([^,]*), (.*?)");
+
+	private static final void parseDateTime(final Calendar calendar, final CharSequence str)
 	{
-		try
-		{
-			return new SimpleDateFormat("dd.MM.yyyy, HH:mm:ss").parse(str);
-		}
-		catch (ParseException x1)
-		{
-			try
-			{
-				return new SimpleDateFormat("dd.MM.yy").parse(str);
-			}
-			catch (ParseException x2)
-			{
-				throw new RuntimeException(x2);
-			}
-		}
+		final Matcher m = P_DATE_TIME.matcher(str);
+		if (!m.matches())
+			throw new RuntimeException("cannot parse: '" + str + "'");
+
+		ParserUtils.parseGermanDate(calendar, m.group(1));
+		ParserUtils.parseEuropeanTime(calendar, m.group(2));
 	}
 
 	private static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zÄÖÜäöüßáàâéèêíìîóòôúùû]+)[\\s-]*(.*)");

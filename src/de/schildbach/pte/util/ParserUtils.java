@@ -311,6 +311,33 @@ public final class ParserUtils
 		}
 	}
 
+	private static final Pattern P_GERMAN_DATE = Pattern.compile("(\\d{2})\\.(\\d{2})\\.(\\d{2,4})");
+
+	public static final void parseGermanDate(final Calendar calendar, final CharSequence str)
+	{
+		final Matcher m = P_GERMAN_DATE.matcher(str);
+		if (!m.matches())
+			throw new RuntimeException("cannot parse: '" + str + "'");
+
+		calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(m.group(1)));
+		calendar.set(Calendar.MONTH, Integer.parseInt(m.group(2)) - 1);
+		final int year = Integer.parseInt(m.group(3));
+		calendar.set(Calendar.YEAR, year >= 100 ? year : year + 2000);
+	}
+
+	private static final Pattern P_EUROPEAN_TIME = Pattern.compile("(\\d{1,2}):(\\d{2})(?::(\\d{2}))?");
+
+	public static final void parseEuropeanTime(final Calendar calendar, final CharSequence str)
+	{
+		final Matcher m = P_EUROPEAN_TIME.matcher(str);
+		if (!m.matches())
+			throw new RuntimeException("cannot parse: '" + str + "'");
+
+		calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(m.group(1)));
+		calendar.set(Calendar.MINUTE, Integer.parseInt(m.group(2)));
+		calendar.set(Calendar.SECOND, m.group(3) != null ? Integer.parseInt(m.group(3)) : 0);
+	}
+
 	public static Date parseAmericanTime(final String str)
 	{
 		try
