@@ -46,6 +46,14 @@ public class SbbProviderLiveTest
 		list(autocompletes);
 	}
 
+	@Test
+	public void autoCompleteAddress() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("Dorfstrasse 10, Dällikon, Schweiz");
+
+		list(autocompletes);
+	}
+
 	private void list(final List<Location> autocompletes)
 	{
 		System.out.print(autocompletes.size() + " ");
@@ -99,4 +107,16 @@ public class SbbProviderLiveTest
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);
 	}
+
+	@Test
+	public void connectionFromAddress() throws Exception
+	{
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, null,
+				"Dorfstrasse 10, Dällikon, Schweiz"), null, new Location(LocationType.STATION, 8500010, null, "Basel"), new Date(), true,
+				ALL_PRODUCTS, WalkSpeed.NORMAL);
+		System.out.println(result);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
+		System.out.println(moreResult);
+	}
+
 }

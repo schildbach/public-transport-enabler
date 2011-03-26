@@ -198,7 +198,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 	public QueryConnectionsResult queryConnections(Location from, Location via, Location to, final Date date, final boolean dep,
 			final String products, final WalkSpeed walkSpeed) throws IOException
 	{
-		if (from.type == LocationType.ANY)
+		if (from.type == LocationType.ANY || (from.type == LocationType.ADDRESS && !from.hasLocation()))
 		{
 			final List<Location> autocompletes = autocompleteStations(from.name);
 			if (autocompletes.isEmpty())
@@ -208,7 +208,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			from = autocompletes.get(0);
 		}
 
-		if (via != null && via.type == LocationType.ANY)
+		if (via != null && (via.type == LocationType.ANY || (via.type == LocationType.ADDRESS && !via.hasLocation())))
 		{
 			final List<Location> autocompletes = autocompleteStations(via.name);
 			if (autocompletes.isEmpty())
@@ -218,7 +218,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			via = autocompletes.get(0);
 		}
 
-		if (to.type == LocationType.ANY)
+		if (to.type == LocationType.ANY || (to.type == LocationType.ADDRESS && !to.hasLocation()))
 		{
 			final List<Location> autocompletes = autocompleteStations(to.name);
 			if (autocompletes.isEmpty())
