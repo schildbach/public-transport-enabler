@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -56,6 +57,12 @@ public class SeptaProvider extends AbstractHafasProvider
 	public NetworkId id()
 	{
 		return NETWORK_ID;
+	}
+
+	@Override
+	protected TimeZone timeZone()
+	{
+		return TimeZone.getTimeZone("EST");
 	}
 
 	@Override
@@ -182,8 +189,10 @@ public class SeptaProvider extends AbstractHafasProvider
 				return new QueryDeparturesResult(Status.SERVICE_DOWN);
 
 			final String location = ParserUtils.resolveEntities(mPageCoarse.group(1));
-			final Date currentTime = ParserUtils.joinDateTime(ParserUtils.parseAmericanDate(mPageCoarse.group(2)),
-					ParserUtils.parseAmericanTime(mPageCoarse.group(3)));
+			final Calendar currentTime = new GregorianCalendar(timeZone());
+			currentTime.clear();
+			ParserUtils.parseAmericanDate(currentTime, mPageCoarse.group(2));
+			ParserUtils.parseAmericanTime(currentTime, mPageCoarse.group(3));
 
 			final List<Departure> departures = new ArrayList<Departure>(8);
 			String oldZebra = null;
@@ -200,26 +209,31 @@ public class SeptaProvider extends AbstractHafasProvider
 				final Matcher mDepFine = P_DEPARTURES_FINE.matcher(mDepCoarse.group(2));
 				if (mDepFine.matches())
 				{
-					final Calendar current = new GregorianCalendar();
-					current.setTime(currentTime);
-					final Calendar parsed = new GregorianCalendar();
-					parsed.setTime(ParserUtils.parseAmericanTime(mDepFine.group(1)));
-					parsed.set(Calendar.YEAR, current.get(Calendar.YEAR));
-					parsed.set(Calendar.MONTH, current.get(Calendar.MONTH));
-					parsed.set(Calendar.DAY_OF_MONTH, current.get(Calendar.DAY_OF_MONTH));
-					if (ParserUtils.timeDiff(parsed.getTime(), currentTime) < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
-						parsed.add(Calendar.DAY_OF_MONTH, 1);
+					final Calendar plannedTime = new GregorianCalendar(timeZone());
+					plannedTime.setTimeInMillis(currentTime.getTimeInMillis());
+					ParserUtils.parseAmericanTime(plannedTime, mDepFine.group(1));
 
-					final Date plannedTime = parsed.getTime();
+					if (plannedTime.getTimeInMillis() - currentTime.getTimeInMillis() < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
+						plannedTime.add(Calendar.DAY_OF_MONTH, 1);
 
-					Date predictedTime = null;
+					final Calendar predictedTime;
 					final String prognosis = ParserUtils.resolveEntities(mDepFine.group(2));
 					if (prognosis != null)
 					{
+						predictedTime = new GregorianCalendar(timeZone());
 						if (prognosis.equals("pünktlich"))
-							predictedTime = plannedTime;
+						{
+							predictedTime.setTimeInMillis(plannedTime.getTimeInMillis());
+						}
 						else
-							predictedTime = ParserUtils.joinDateTime(currentTime, ParserUtils.parseAmericanTime(prognosis));
+						{
+							predictedTime.setTimeInMillis(currentTime.getTimeInMillis());
+							ParserUtils.parseAmericanTime(predictedTime, prognosis);
+						}
+					}
+					else
+					{
+						predictedTime = null;
 					}
 
 					final String lineType = mDepFine.group(3);
@@ -232,8 +246,8 @@ public class SeptaProvider extends AbstractHafasProvider
 
 					final String position = mDepFine.group(7) != null ? "Gl. " + ParserUtils.resolveEntities(mDepFine.group(7)) : null;
 
-					final Departure dep = new Departure(plannedTime, predictedTime, line, line != null ? lineColors(line) : null, null, position,
-							destinationId, destination, null);
+					final Departure dep = new Departure(plannedTime.getTime(), predictedTime != null ? predictedTime.getTime() : null, line,
+							line != null ? lineColors(line) : null, null, position, destinationId, destination, null);
 
 					if (!departures.contains(dep))
 						departures.add(dep);

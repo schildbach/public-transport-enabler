@@ -322,7 +322,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 						if (parsedMapName != null)
 						{
 							final int parsedLocationId = XmlPullUtil.intAttr(pp, "stopID");
-							final String parsedLongName = normalizeLocationName(XmlPullUtil.attr(pp, "nameWithPlace"));
+							// final String parsedLongName = normalizeLocationName(XmlPullUtil.attr(pp,
+							// "nameWithPlace"));
 							final String parsedPlace = normalizeLocationName(XmlPullUtil.attr(pp, "place"));
 							final int parsedLon = XmlPullUtil.intAttr(pp, "x");
 							final int parsedLat = XmlPullUtil.intAttr(pp, "y");
@@ -755,6 +756,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'R' + name;
 			if ("CAPITOL".equals(name)) // San Francisco
 				return 'R' + name;
+			if ("Train".equals(noTrainName)) // San Francisco
+				return "R" + name;
 			if ("Regional Train :".equals(longName))
 				return "R";
 			if ("Regional Train".equals(noTrainName)) // Melbourne
@@ -940,10 +943,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				if (XmlPullUtil.test(pp, "itdMessage"))
 					XmlPullUtil.next(pp);
 
-				final Calendar plannedDepartureTime = new GregorianCalendar();
-				plannedDepartureTime.setTimeZone(timeZone());
-				final Calendar predictedDepartureTime = new GregorianCalendar();
-				predictedDepartureTime.setTimeZone(timeZone());
+				final Calendar plannedDepartureTime = new GregorianCalendar(timeZone());
+				final Calendar predictedDepartureTime = new GregorianCalendar(timeZone());
 
 				XmlPullUtil.require(pp, "itdServingLines");
 				if (!pp.isEmptyElementTag())
@@ -1072,6 +1073,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 	private void processItdDateTime(final XmlPullParser pp, final Calendar calendar) throws XmlPullParserException, IOException
 	{
 		XmlPullUtil.enter(pp);
+		calendar.clear();
 		processItdDate(pp, calendar);
 		processItdTime(pp, calendar);
 		XmlPullUtil.exit(pp);
@@ -1264,9 +1266,9 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			}
 			XmlPullUtil.exit(pp, "itdDateTime");
 
-			final Calendar departureTime = new GregorianCalendar(), arrivalTime = new GregorianCalendar(), stopTime = new GregorianCalendar();
-			departureTime.setTimeZone(timeZone());
-			arrivalTime.setTimeZone(timeZone());
+			final Calendar departureTime = new GregorianCalendar(timeZone());
+			final Calendar arrivalTime = new GregorianCalendar(timeZone());
+			final Calendar stopTime = new GregorianCalendar(timeZone());
 			final List<Connection> connections = new ArrayList<Connection>();
 
 			if (XmlPullUtil.jumpToStartTag(pp, null, "itdRouteList"))

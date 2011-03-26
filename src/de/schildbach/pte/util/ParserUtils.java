@@ -29,8 +29,6 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -263,55 +261,7 @@ public final class ParserUtils
 		return builder.toString();
 	}
 
-	public static Date parseDate(final String str)
-	{
-		try
-		{
-			return new SimpleDateFormat("dd.MM.yy").parse(str);
-		}
-		catch (final ParseException x)
-		{
-			throw new RuntimeException(x);
-		}
-	}
-
-	public static Date parseDateSlash(final String str)
-	{
-		try
-		{
-			return new SimpleDateFormat("dd/MM/yy").parse(str);
-		}
-		catch (final ParseException x)
-		{
-			throw new RuntimeException(x);
-		}
-	}
-
-	public static Date parseAmericanDate(final String str)
-	{
-		try
-		{
-			return new SimpleDateFormat("MM/dd/yyyy").parse(str);
-		}
-		catch (final ParseException x)
-		{
-			throw new RuntimeException(x);
-		}
-	}
-
-	public static Date parseTime(final String str)
-	{
-		try
-		{
-			return new SimpleDateFormat("HH:mm").parse(str);
-		}
-		catch (final ParseException x)
-		{
-			throw new RuntimeException(x);
-		}
-	}
-
-	private static final Pattern P_GERMAN_DATE = Pattern.compile("(\\d{2})\\.(\\d{2})\\.(\\d{2,4})");
+	private static final Pattern P_GERMAN_DATE = Pattern.compile("(\\d{2})[\\./](\\d{2})[\\./](\\d{2,4})");
 
 	public static final void parseGermanDate(final Calendar calendar, final CharSequence str)
 	{
@@ -321,6 +271,20 @@ public final class ParserUtils
 
 		calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(m.group(1)));
 		calendar.set(Calendar.MONTH, Integer.parseInt(m.group(2)) - 1);
+		final int year = Integer.parseInt(m.group(3));
+		calendar.set(Calendar.YEAR, year >= 100 ? year : year + 2000);
+	}
+
+	private static final Pattern P_AMERICAN_DATE = Pattern.compile("(\\d{2})/(\\d{2})/(\\d{2,4})");
+
+	public static final void parseAmericanDate(final Calendar calendar, final CharSequence str)
+	{
+		final Matcher m = P_AMERICAN_DATE.matcher(str);
+		if (!m.matches())
+			throw new RuntimeException("cannot parse: '" + str + "'");
+
+		calendar.set(Calendar.MONTH, Integer.parseInt(m.group(1)) - 1);
+		calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(m.group(2)));
 		final int year = Integer.parseInt(m.group(3));
 		calendar.set(Calendar.YEAR, year >= 100 ? year : year + 2000);
 	}
@@ -338,28 +302,18 @@ public final class ParserUtils
 		calendar.set(Calendar.SECOND, m.group(3) != null ? Integer.parseInt(m.group(3)) : 0);
 	}
 
-	public static Date parseAmericanTime(final String str)
-	{
-		try
-		{
-			return new SimpleDateFormat("h:mm a").parse(str);
-		}
-		catch (final ParseException x)
-		{
-			throw new RuntimeException(x);
-		}
-	}
+	private static final Pattern P_AMERICAN_TIME = Pattern.compile("(\\d{1,2}):(\\d{2})(?::(\\d{2}))? (AM|PM)");
 
-	public static Date joinDateTime(final Date date, final Date time)
+	public static final void parseAmericanTime(final Calendar calendar, final CharSequence str)
 	{
-		final Calendar cDate = new GregorianCalendar();
-		cDate.setTime(date);
-		final Calendar cTime = new GregorianCalendar();
-		cTime.setTime(time);
-		cTime.set(Calendar.YEAR, cDate.get(Calendar.YEAR));
-		cTime.set(Calendar.MONTH, cDate.get(Calendar.MONTH));
-		cTime.set(Calendar.DAY_OF_MONTH, cDate.get(Calendar.DAY_OF_MONTH));
-		return cTime.getTime();
+		final Matcher m = P_AMERICAN_TIME.matcher(str);
+		if (!m.matches())
+			throw new RuntimeException("cannot parse: '" + str + "'");
+
+		calendar.set(Calendar.HOUR, Integer.parseInt(m.group(1)));
+		calendar.set(Calendar.MINUTE, Integer.parseInt(m.group(2)));
+		calendar.set(Calendar.SECOND, m.group(3) != null ? Integer.parseInt(m.group(3)) : 0);
+		calendar.set(Calendar.AM_PM, m.group(4).equals("AM") ? Calendar.AM : Calendar.PM);
 	}
 
 	public static long timeDiff(final Date d1, final Date d2)

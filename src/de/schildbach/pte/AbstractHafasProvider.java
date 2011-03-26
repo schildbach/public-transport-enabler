@@ -20,7 +20,6 @@ package de.schildbach.pte;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -29,6 +28,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -63,6 +63,11 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 	{
 		this.apiUri = apiUri;
 		this.accessId = accessId;
+	}
+
+	protected TimeZone timeZone()
+	{
+		return TimeZone.getTimeZone("CET");
 	}
 
 	protected String[] splitNameAndPlace(final String name)
@@ -252,8 +257,6 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		// System.out.println(request);
 		// ParserUtils.printXml(ParserUtils.scrape(apiUri, true, wrap(request), null, false));
 
-		final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
-
 		InputStream is = null;
 
 		try
@@ -314,8 +317,9 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 				XmlPullUtil.enter(pp, "Overview");
 
 				XmlPullUtil.require(pp, "Date");
-				final Calendar currentDate = new GregorianCalendar();
-				currentDate.setTime(DATE_FORMAT.parse(XmlPullUtil.text(pp)));
+				final Calendar currentDate = new GregorianCalendar(timeZone());
+				currentDate.clear();
+				parseDate(currentDate, XmlPullUtil.text(pp));
 				XmlPullUtil.enter(pp, "Departure");
 				XmlPullUtil.enter(pp, "BasicStop");
 				while (pp.getName().equals("StAttrList"))
@@ -352,7 +356,9 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 					final Location sectionDeparture = parseLocation(pp);
 					XmlPullUtil.enter(pp, "Dep");
 					XmlPullUtil.require(pp, "Time");
-					final Date departureTime = parseTime(currentDate, XmlPullUtil.text(pp));
+					final Calendar departureTime = new GregorianCalendar(timeZone());
+					departureTime.setTimeInMillis(currentDate.getTimeInMillis());
+					parseTime(departureTime, XmlPullUtil.text(pp));
 					XmlPullUtil.enter(pp, "Platform");
 					XmlPullUtil.require(pp, "Text");
 					String departurePos = XmlPullUtil.text(pp).trim();
@@ -434,7 +440,9 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 					final Location sectionArrival = parseLocation(pp);
 					XmlPullUtil.enter(pp, "Arr");
 					XmlPullUtil.require(pp, "Time");
-					final Date arrivalTime = parseTime(currentDate, XmlPullUtil.text(pp));
+					final Calendar arrivalTime = new GregorianCalendar(timeZone());
+					arrivalTime.setTimeInMillis(currentDate.getTimeInMillis());
+					parseTime(arrivalTime, XmlPullUtil.text(pp));
 					XmlPullUtil.enter(pp, "Platform");
 					XmlPullUtil.require(pp, "Text");
 					String arrivalPos = XmlPullUtil.text(pp).trim();
@@ -451,8 +459,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 					if (min == 0 || line != null)
 					{
-						parts.add(new Connection.Trip(line, destination, departureTime, departurePos, sectionDeparture, arrivalTime, arrivalPos,
-								sectionArrival, null, null));
+						parts.add(new Connection.Trip(line, destination, departureTime.getTime(), departurePos, sectionDeparture, arrivalTime
+								.getTime(), arrivalPos, sectionArrival, null, null));
 					}
 					else
 					{
@@ -468,8 +476,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 					}
 
 					if (firstDepartureTime == null)
-						firstDepartureTime = departureTime;
-					lastArrivalTime = arrivalTime;
+						firstDepartureTime = departureTime.getTime();
+					lastArrivalTime = arrivalTime.getTime();
 				}
 
 				XmlPullUtil.exit(pp);
@@ -484,10 +492,6 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return new QueryConnectionsResult(null, from, via, to, context, connections);
 		}
 		catch (final XmlPullParserException x)
-		{
-			throw new RuntimeException(x);
-		}
-		catch (final ParseException x)
 		{
 			throw new RuntimeException(x);
 		}
@@ -531,39 +535,43 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		return attributeVariants;
 	}
 
+	private static final Pattern P_DATE = Pattern.compile("(\\d{4})(\\d{2})(\\d{2})");
+
+	private static final void parseDate(final Calendar calendar, final CharSequence str)
+	{
+		final Matcher m = P_DATE.matcher(str);
+		if (!m.matches())
+			throw new RuntimeException("cannot parse: '" + str + "'");
+
+		calendar.set(Calendar.YEAR, Integer.parseInt(m.group(1)));
+		calendar.set(Calendar.MONTH, Integer.parseInt(m.group(2)) - 1);
+		calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(m.group(3)));
+	}
+
 	private static final Pattern P_TIME = Pattern.compile("(\\d+)d(\\d+):(\\d{2}):(\\d{2})");
 
-	private Date parseTime(final Calendar currentDate, final String str)
+	private static void parseTime(final Calendar calendar, final CharSequence str)
 	{
 		final Matcher m = P_TIME.matcher(str);
-		if (m.matches())
-		{
-			final Calendar c = new GregorianCalendar();
-			c.set(Calendar.YEAR, currentDate.get(Calendar.YEAR));
-			c.set(Calendar.MONTH, currentDate.get(Calendar.MONTH));
-			c.set(Calendar.DAY_OF_MONTH, currentDate.get(Calendar.DAY_OF_MONTH));
-			c.set(Calendar.HOUR_OF_DAY, Integer.parseInt(m.group(2)));
-			c.set(Calendar.MINUTE, Integer.parseInt(m.group(3)));
-			c.set(Calendar.SECOND, Integer.parseInt(m.group(4)));
-			c.set(Calendar.MILLISECOND, 0);
-			c.add(Calendar.DAY_OF_MONTH, Integer.parseInt(m.group(1)));
-			return c.getTime();
-		}
-		else
-		{
-			throw new IllegalArgumentException("cannot parse duration: " + str);
-		}
+		if (!m.matches())
+			throw new IllegalArgumentException("cannot parse: '" + str + "'");
+
+		calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(m.group(2)));
+		calendar.set(Calendar.MINUTE, Integer.parseInt(m.group(3)));
+		calendar.set(Calendar.SECOND, Integer.parseInt(m.group(4)));
+		calendar.set(Calendar.MILLISECOND, 0);
+		calendar.add(Calendar.DAY_OF_MONTH, Integer.parseInt(m.group(1)));
 	}
 
 	private static final Pattern P_DURATION = Pattern.compile("(\\d+):(\\d{2})");
 
-	private final int parseDuration(final String str)
+	private static final int parseDuration(final CharSequence str)
 	{
 		final Matcher m = P_DURATION.matcher(str);
 		if (m.matches())
 			return Integer.parseInt(m.group(1)) * 60 + Integer.parseInt(m.group(2));
 		else
-			throw new IllegalArgumentException("cannot parse duration: " + str);
+			throw new IllegalArgumentException("cannot parse duration: '" + str + "'");
 	}
 
 	private static final String location(final Location location)

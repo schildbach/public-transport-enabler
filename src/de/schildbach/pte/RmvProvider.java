@@ -262,8 +262,10 @@ public class RmvProvider extends AbstractHafasProvider
 		{
 			final Location from = new Location(LocationType.ANY, 0, null, ParserUtils.resolveEntities(mHead.group(1)));
 			final Location to = new Location(LocationType.ANY, 0, null, ParserUtils.resolveEntities(mHead.group(2)));
-			final Date currentDate = ParserUtils.parseDate(mHead.group(3));
-			final String linkEarlier = mHead.group(4) != null ? ParserUtils.resolveEntities(mHead.group(4)) : null;
+			final Calendar currentDate = new GregorianCalendar(timeZone());
+			currentDate.clear();
+			ParserUtils.parseGermanDate(currentDate, mHead.group(3));
+			// final String linkEarlier = mHead.group(4) != null ? ParserUtils.resolveEntities(mHead.group(4)) : null;
 			final String linkLater = mHead.group(5) != null ? ParserUtils.resolveEntities(mHead.group(5)) : null;
 			final List<Connection> connections = new ArrayList<Connection>();
 
@@ -274,19 +276,24 @@ public class RmvProvider extends AbstractHafasProvider
 				if (mConFine.matches())
 				{
 					final String link = ParserUtils.resolveEntities(mConFine.group(1));
-					Date departureTime = ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mConFine.group(2)));
+					final Calendar departureTime = new GregorianCalendar(timeZone());
+					departureTime.setTimeInMillis(currentDate.getTimeInMillis());
+					ParserUtils.parseEuropeanTime(departureTime, mConFine.group(2));
 					if (!connections.isEmpty())
 					{
-						final long diff = ParserUtils.timeDiff(departureTime, connections.get(connections.size() - 1).departureTime);
+						final long diff = departureTime.getTimeInMillis() - connections.get(connections.size() - 1).departureTime.getTime();
 						if (diff > PARSER_DAY_ROLLOVER_THRESHOLD_MS)
-							departureTime = ParserUtils.addDays(departureTime, -1);
+							departureTime.add(Calendar.DAY_OF_YEAR, -1);
 						else if (diff < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
-							departureTime = ParserUtils.addDays(departureTime, 1);
+							departureTime.add(Calendar.DAY_OF_YEAR, 1);
 					}
-					Date arrivalTime = ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mConFine.group(3)));
+					final Calendar arrivalTime = new GregorianCalendar(timeZone());
+					arrivalTime.setTimeInMillis(currentDate.getTimeInMillis());
+					ParserUtils.parseEuropeanTime(arrivalTime, mConFine.group(3));
 					if (departureTime.after(arrivalTime))
-						arrivalTime = ParserUtils.addDays(arrivalTime, 1);
-					final Connection connection = new Connection(extractConnectionId(link), link, departureTime, arrivalTime, from, to, null, null);
+						arrivalTime.add(Calendar.DAY_OF_YEAR, 1);
+					final Connection connection = new Connection(extractConnectionId(link), link, departureTime.getTime(), arrivalTime.getTime(),
+							from, to, null, null);
 					connections.add(connection);
 				}
 				else
@@ -337,15 +344,21 @@ public class RmvProvider extends AbstractHafasProvider
 		if (mHead.matches())
 		{
 			final Location firstDeparture = new Location(LocationType.ANY, 0, null, ParserUtils.resolveEntities(mHead.group(1)));
-			final Date currentDate = ParserUtils.parseDate(mHead.group(2));
-			final List<Connection.Part> parts = new ArrayList<Connection.Part>(4);
+			final Calendar currentDate = new GregorianCalendar(timeZone());
+			currentDate.clear();
+			ParserUtils.parseGermanDate(currentDate, mHead.group(2));
 
-			Date lastTime = currentDate;
+			final Calendar time = new GregorianCalendar(timeZone());
+			time.setTimeInMillis(currentDate.getTimeInMillis());
+
+			Date lastTime = time.getTime();
 
 			Date firstDepartureTime = null;
 			Date lastArrivalTime = null;
 			Location lastArrival = null;
 			Connection.Trip lastTrip = null;
+
+			final List<Connection.Part> parts = new ArrayList<Connection.Part>(4);
 
 			final Matcher mDetCoarse = P_CONNECTION_DETAILS_COARSE.matcher(page);
 			while (mDetCoarse.find())
@@ -366,18 +379,50 @@ public class RmvProvider extends AbstractHafasProvider
 
 						final Location destination = new Location(LocationType.ANY, 0, null, ParserUtils.resolveEntities(mDetFine.group(2)));
 
-						final Date plannedDepartureTime = upTime(lastTime,
-								ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mDetFine.group(3))));
-						final Date predictedDepartureTime = mDetFine.group(4) != null ? upTime(lastTime,
-								ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mDetFine.group(4)))) : null;
+						ParserUtils.parseEuropeanTime(time, mDetFine.group(3));
+						if (time.getTime().before(lastTime))
+							time.add(Calendar.DAY_OF_YEAR, 1);
+						final Date plannedDepartureTime = time.getTime();
+						lastTime.setTime(time.getTimeInMillis());
+
+						final Date predictedDepartureTime;
+						if (mDetFine.group(4) != null)
+						{
+							ParserUtils.parseEuropeanTime(time, mDetFine.group(4));
+							if (time.getTime().before(lastTime))
+								time.add(Calendar.DAY_OF_YEAR, 1);
+							predictedDepartureTime = time.getTime();
+							lastTime.setTime(time.getTimeInMillis());
+						}
+						else
+						{
+							predictedDepartureTime = null;
+						}
+
 						final Date departureTime = predictedDepartureTime != null ? predictedDepartureTime : plannedDepartureTime;
 
 						final String departurePosition = ParserUtils.resolveEntities(mDetFine.group(5));
 
-						final Date plannedArrivalTime = upTime(lastTime,
-								ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mDetFine.group(6))));
-						final Date predictedArrivalTime = mDetFine.group(7) != null ? upTime(lastTime,
-								ParserUtils.joinDateTime(currentDate, ParserUtils.parseTime(mDetFine.group(7)))) : null;
+						ParserUtils.parseEuropeanTime(time, mDetFine.group(6));
+						if (time.getTime().before(lastTime))
+							time.add(Calendar.DAY_OF_YEAR, 1);
+						final Date plannedArrivalTime = time.getTime();
+						lastTime.setTime(time.getTimeInMillis());
+
+						final Date predictedArrivalTime;
+						if (mDetFine.group(7) != null)
+						{
+							ParserUtils.parseEuropeanTime(time, mDetFine.group(7));
+							if (time.getTime().before(lastTime))
+								time.add(Calendar.DAY_OF_YEAR, 1);
+							predictedArrivalTime = time.getTime();
+							lastTime.setTime(time.getTimeInMillis());
+						}
+						else
+						{
+							predictedArrivalTime = null;
+						}
+
 						final Date arrivalTime = predictedArrivalTime != null ? predictedArrivalTime : plannedArrivalTime;
 
 						final String arrivalPosition = ParserUtils.resolveEntities(mDetFine.group(8));
@@ -410,23 +455,13 @@ public class RmvProvider extends AbstractHafasProvider
 				}
 			}
 
-			return new GetConnectionDetailsResult(currentDate, new Connection(extractConnectionId(uri), uri, firstDepartureTime, lastArrivalTime,
-					firstDeparture, lastArrival, parts, null));
+			return new GetConnectionDetailsResult(currentDate.getTime(), new Connection(extractConnectionId(uri), uri, firstDepartureTime,
+					lastArrivalTime, firstDeparture, lastArrival, parts, null));
 		}
 		else
 		{
 			throw new IOException(page.toString());
 		}
-	}
-
-	private static Date upTime(final Date lastTime, Date time)
-	{
-		while (time.before(lastTime))
-			time = ParserUtils.addDays(time, 1);
-
-		lastTime.setTime(time.getTime());
-
-		return time;
 	}
 
 	private String departuresQueryUri(final String stationId, final int maxDepartures)
@@ -499,8 +534,10 @@ public class RmvProvider extends AbstractHafasProvider
 			if (mHeadFine.matches())
 			{
 				final String location = ParserUtils.resolveEntities(mHeadFine.group(1));
-				final Date currentTime = ParserUtils.joinDateTime(ParserUtils.parseDate(mHeadFine.group(3)),
-						ParserUtils.parseTime(mHeadFine.group(2)));
+				final Calendar currentTime = new GregorianCalendar(timeZone());
+				currentTime.clear();
+				ParserUtils.parseEuropeanTime(currentTime, mHeadFine.group(2));
+				ParserUtils.parseGermanDate(currentTime, mHeadFine.group(3));
 				final List<Departure> departures = new ArrayList<Departure>(8);
 
 				final Matcher mDepCoarse = P_DEPARTURES_COARSE.matcher(mHeadCoarse.group(2));
@@ -513,34 +550,32 @@ public class RmvProvider extends AbstractHafasProvider
 
 						final String destination = ParserUtils.resolveEntities(mDepFine.group(2));
 
-						final Calendar current = new GregorianCalendar();
-						current.setTime(currentTime);
-						final Calendar parsed = new GregorianCalendar();
+						final Calendar plannedTime = new GregorianCalendar(timeZone());
+						plannedTime.setTimeInMillis(currentTime.getTimeInMillis());
+						ParserUtils.parseEuropeanTime(plannedTime, mDepFine.group(3));
 
-						parsed.setTime(ParserUtils.parseTime(mDepFine.group(3)));
-						parsed.set(Calendar.YEAR, current.get(Calendar.YEAR));
-						parsed.set(Calendar.MONTH, current.get(Calendar.MONTH));
-						parsed.set(Calendar.DAY_OF_MONTH, current.get(Calendar.DAY_OF_MONTH));
-						if (ParserUtils.timeDiff(parsed.getTime(), currentTime) < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
-							parsed.add(Calendar.DAY_OF_MONTH, 1);
-						final Date plannedTime = parsed.getTime();
+						if (plannedTime.getTimeInMillis() - currentTime.getTimeInMillis() < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
+							plannedTime.add(Calendar.DAY_OF_MONTH, 1);
 
-						Date predictedTime = null;
+						final Calendar predictedTime;
 						if (mDepFine.group(4) != null)
 						{
-							parsed.setTime(ParserUtils.parseTime(mDepFine.group(4)));
-							parsed.set(Calendar.YEAR, current.get(Calendar.YEAR));
-							parsed.set(Calendar.MONTH, current.get(Calendar.MONTH));
-							parsed.set(Calendar.DAY_OF_MONTH, current.get(Calendar.DAY_OF_MONTH));
-							if (ParserUtils.timeDiff(parsed.getTime(), currentTime) < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
-								parsed.add(Calendar.DAY_OF_MONTH, 1);
-							predictedTime = parsed.getTime();
+							predictedTime = new GregorianCalendar(timeZone());
+							predictedTime.setTimeInMillis(currentTime.getTimeInMillis());
+							ParserUtils.parseEuropeanTime(predictedTime, mDepFine.group(4));
+
+							if (predictedTime.getTimeInMillis() - currentTime.getTimeInMillis() < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
+								predictedTime.add(Calendar.DAY_OF_MONTH, 1);
+						}
+						else
+						{
+							predictedTime = null;
 						}
 
 						final String position = ParserUtils.resolveEntities(ParserUtils.selectNotNull(mDepFine.group(5), mDepFine.group(6)));
 
-						final Departure dep = new Departure(plannedTime, predictedTime, line, line != null ? lineColors(line) : null, null, position,
-								0, destination, null);
+						final Departure dep = new Departure(plannedTime.getTime(), predictedTime != null ? predictedTime.getTime() : null, line,
+								line != null ? lineColors(line) : null, null, position, 0, destination, null);
 
 						if (!departures.contains(dep))
 							departures.add(dep);

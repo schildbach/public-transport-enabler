@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -43,7 +42,7 @@ public class SbbProvider extends AbstractHafasProvider
 	public static final NetworkId NETWORK_ID = NetworkId.SBB;
 	public static final String OLD_NETWORK_ID = "fahrplan.sbb.ch";
 	private static final String API_BASE = "http://fahrplan.sbb.ch/bin/";
-	private static final String API_URI = "http://fahrplan.sbb.ch/bin/extxml.exe";
+	private static final String API_URI = "http://fahrplan.sbb.ch/bin/extxml.exe"; // xmlfahrplan.sbb.ch
 
 	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
 
@@ -143,8 +142,10 @@ public class SbbProvider extends AbstractHafasProvider
 			if (mHeadFine.matches())
 			{
 				final String location = ParserUtils.resolveEntities(mHeadFine.group(1));
-				final Date currentTime = ParserUtils.joinDateTime(ParserUtils.parseDate(mHeadFine.group(3)),
-						ParserUtils.parseTime(mHeadFine.group(2)));
+				final Calendar currentTime = new GregorianCalendar(timeZone());
+				currentTime.clear();
+				ParserUtils.parseEuropeanTime(currentTime, mHeadFine.group(2));
+				ParserUtils.parseGermanDate(currentTime, mHeadFine.group(3));
 				final int locationId = Integer.parseInt(mHeadFine.group(4));
 				final List<Departure> departures = new ArrayList<Departure>(8);
 				// String oldZebra = null;
@@ -166,19 +167,17 @@ public class SbbProvider extends AbstractHafasProvider
 
 						final String destination = ParserUtils.resolveEntities(mDepFine.group(2));
 
-						final Calendar current = new GregorianCalendar();
-						current.setTime(currentTime);
-						final Calendar parsed = new GregorianCalendar();
-						parsed.setTime(ParserUtils.parseTime(mDepFine.group(3)));
-						parsed.set(Calendar.YEAR, current.get(Calendar.YEAR));
-						parsed.set(Calendar.MONTH, current.get(Calendar.MONTH));
-						parsed.set(Calendar.DAY_OF_MONTH, current.get(Calendar.DAY_OF_MONTH));
-						if (ParserUtils.timeDiff(parsed.getTime(), currentTime) < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
-							parsed.add(Calendar.DAY_OF_MONTH, 1);
+						final Calendar parsedTime = new GregorianCalendar(timeZone());
+						parsedTime.setTimeInMillis(currentTime.getTimeInMillis());
+						ParserUtils.parseEuropeanTime(parsedTime, mDepFine.group(3));
+
+						if (parsedTime.getTimeInMillis() - currentTime.getTimeInMillis() < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
+							parsedTime.add(Calendar.DAY_OF_MONTH, 1);
 
 						final String position = ParserUtils.resolveEntities(mDepFine.group(4));
 
-						final Departure dep = new Departure(parsed.getTime(), line, line != null ? lineColors(line) : null, position, 0, destination);
+						final Departure dep = new Departure(parsedTime.getTime(), line, line != null ? lineColors(line) : null, position, 0,
+								destination);
 
 						if (!departures.contains(dep))
 							departures.add(dep);

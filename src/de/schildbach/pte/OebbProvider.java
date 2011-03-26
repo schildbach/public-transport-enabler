@@ -21,7 +21,9 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -387,12 +389,12 @@ public class OebbProvider extends AbstractHafasProvider
 		{
 			final Location from = new Location(LocationType.ANY, 0, null, ParserUtils.resolveEntities(mHead.group(1)));
 			final Location to = new Location(LocationType.ANY, 0, null, ParserUtils.resolveEntities(mHead.group(2)));
-			final Date currentDate = ParserUtils.parseDate(mHead.group(3));
-			final String linkEarlier = mHead.group(4) != null ? ParserUtils.resolveEntities(mHead.group(4)) : null;
+			final Calendar time = new GregorianCalendar(timeZone());
+			time.clear();
+			ParserUtils.parseGermanDate(time, mHead.group(3));
+			// final String linkEarlier = mHead.group(4) != null ? ParserUtils.resolveEntities(mHead.group(4)) : null;
 			final String linkLater = mHead.group(5) != null ? ParserUtils.resolveEntities(mHead.group(5)) : null;
 			final List<Connection> connections = new ArrayList<Connection>();
-
-			Date lastDate = currentDate;
 
 			final Matcher mConCoarse = P_CONNECTIONS_COARSE.matcher(page);
 			while (mConCoarse.find())
@@ -404,14 +406,20 @@ public class OebbProvider extends AbstractHafasProvider
 				final Matcher mConFine = P_CONNECTIONS_FINE.matcher(overview);
 				if (mConFine.matches())
 				{
-					final Date overviewDepartureDate = ParserUtils.parseDate(mConFine.group(1));
-					final Date overviewArrivalDate = mConFine.group(2) != null ? ParserUtils.parseDate(mConFine.group(2)) : null;
-					final Date overviewDepartureTime = ParserUtils.joinDateTime(overviewDepartureDate, ParserUtils.parseTime(mConFine.group(3)));
-					final Date overviewArrivalTime = ParserUtils.joinDateTime(overviewArrivalDate != null ? overviewArrivalDate
-							: overviewDepartureDate, ParserUtils.parseTime(mConFine.group(4)));
+					final Calendar overviewDepartureTime = new GregorianCalendar(timeZone());
+					overviewDepartureTime.clear();
+					ParserUtils.parseGermanDate(overviewDepartureTime, mConFine.group(1));
+					ParserUtils.parseEuropeanTime(overviewDepartureTime, mConFine.group(3));
+
+					final Calendar overviewArrivalTime = new GregorianCalendar(timeZone());
+					overviewArrivalTime.setTimeInMillis(overviewDepartureTime.getTimeInMillis());
+					if (mConFine.group(2) != null)
+						ParserUtils.parseGermanDate(overviewArrivalTime, mConFine.group(2));
+					ParserUtils.parseEuropeanTime(overviewArrivalTime, mConFine.group(4));
+
 					final String link = allDetailsUri; // TODO use print link?
 
-					final Connection connection = new Connection(id, link, overviewDepartureTime, overviewArrivalTime, from, to,
+					final Connection connection = new Connection(id, link, overviewDepartureTime.getTime(), overviewArrivalTime.getTime(), from, to,
 							new ArrayList<Connection.Part>(1), null);
 					connections.add(connection);
 
@@ -428,12 +436,10 @@ public class OebbProvider extends AbstractHafasProvider
 							final Location departure = new Location(departureId != 0 ? LocationType.STATION : LocationType.ANY, departureId, null,
 									ParserUtils.resolveEntities(mDetFine.group(2)));
 
-							Date detailsDepartureDate = mDetFine.group(3) != null ? ParserUtils.parseDate(mDetFine.group(3)) : lastDate;
-							if (detailsDepartureDate != null)
-								lastDate = detailsDepartureDate;
-
-							final Date detailsDepartureTime = ParserUtils.parseTime(mDetFine.group(4));
-							final Date detailsDepartureDateTime = ParserUtils.joinDateTime(detailsDepartureDate, detailsDepartureTime);
+							if (mDetFine.group(3) != null)
+								ParserUtils.parseGermanDate(time, mDetFine.group(3));
+							ParserUtils.parseEuropeanTime(time, mDetFine.group(4));
+							final Date detailsDepartureTime = time.getTime();
 
 							final String lineType = mDetFine.group(6);
 
@@ -442,12 +448,10 @@ public class OebbProvider extends AbstractHafasProvider
 							final Location arrival = new Location(arrivalId != 0 ? LocationType.STATION : LocationType.ANY, arrivalId, null,
 									ParserUtils.resolveEntities(mDetFine.group(9)));
 
-							Date detailsArrivalDate = mDetFine.group(10) != null ? ParserUtils.parseDate(mDetFine.group(10)) : lastDate;
-							if (detailsArrivalDate != null)
-								lastDate = detailsArrivalDate;
-
-							final Date detailsArrivalTime = ParserUtils.parseTime(mDetFine.group(11));
-							final Date detailsArrivalDateTime = ParserUtils.joinDateTime(detailsArrivalDate, detailsArrivalTime);
+							if (mDetFine.group(10) != null)
+								ParserUtils.parseGermanDate(time, mDetFine.group(10));
+							ParserUtils.parseEuropeanTime(time, mDetFine.group(11));
+							final Date detailsArrivalTime = time.getTime();
 
 							if (!lineType.equals("fuss"))
 							{
@@ -467,13 +471,13 @@ public class OebbProvider extends AbstractHafasProvider
 								final Location destination = mDetFine.group(13) != null ? new Location(LocationType.ANY, 0, null,
 										ParserUtils.resolveEntities(mDetFine.group(13))) : null;
 
-								final Connection.Trip trip = new Connection.Trip(line, destination, detailsDepartureDateTime, departurePosition,
-										departure, detailsArrivalDateTime, arrivalPosition, arrival, null, null);
+								final Connection.Trip trip = new Connection.Trip(line, destination, detailsDepartureTime, departurePosition,
+										departure, detailsArrivalTime, arrivalPosition, arrival, null, null);
 								connection.parts.add(trip);
 							}
 							else
 							{
-								final int min = (int) (detailsArrivalDateTime.getTime() - detailsDepartureDateTime.getTime()) / 1000 / 60;
+								final int min = (int) (detailsArrivalTime.getTime() - detailsDepartureTime.getTime()) / 1000 / 60;
 
 								final Connection.Footway footway = new Connection.Footway(min, departure, arrival, null);
 								connection.parts.add(footway);
@@ -568,8 +572,10 @@ public class OebbProvider extends AbstractHafasProvider
 					final JSONObject departure = aDeparture.optJSONObject(i);
 					if (departure != null)
 					{
-						final Date time = ParserUtils.joinDateTime(ParserUtils.parseDate(departure.getString("da")),
-								ParserUtils.parseTime(departure.getString("ti")));
+						final Calendar parsedTime = new GregorianCalendar(timeZone());
+						parsedTime.clear();
+						ParserUtils.parseGermanDate(parsedTime, departure.getString("da"));
+						ParserUtils.parseEuropeanTime(parsedTime, departure.getString("ti"));
 						final String line = normalizeLine(ParserUtils.resolveEntities(departure.getString("pr")));
 						final String destination = ParserUtils.resolveEntities(departure.getString("st"));
 						String position = departure.optString("tr");
@@ -578,8 +584,8 @@ public class OebbProvider extends AbstractHafasProvider
 						final boolean rt = head.optBoolean("rt", false);
 						final String lineLink = departure.optString("tinfoline");
 
-						departures.add(new Departure(!rt ? time : null, rt ? time : null, line, line != null ? lineColors(line) : null, lineLink,
-								position, 0, destination, null));
+						departures.add(new Departure(!rt ? parsedTime.getTime() : null, rt ? parsedTime.getTime() : null, line,
+								line != null ? lineColors(line) : null, lineLink, position, 0, destination, null));
 					}
 				}
 			}

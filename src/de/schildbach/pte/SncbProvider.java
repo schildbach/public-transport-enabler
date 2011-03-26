@@ -20,7 +20,6 @@ package de.schildbach.pte;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -129,8 +128,10 @@ public class SncbProvider extends AbstractHafasProvider
 			if (mHeadFine.matches())
 			{
 				final String location = ParserUtils.resolveEntities(mHeadFine.group(1));
-				final Date currentTime = ParserUtils.joinDateTime(ParserUtils.parseDateSlash(mHeadFine.group(3)),
-						ParserUtils.parseTime(mHeadFine.group(2)));
+				final Calendar currentTime = new GregorianCalendar(timeZone());
+				currentTime.clear();
+				ParserUtils.parseEuropeanTime(currentTime, mHeadFine.group(2));
+				ParserUtils.parseGermanDate(currentTime, mHeadFine.group(3));
 				final List<Departure> departures = new ArrayList<Departure>(8);
 
 				final Matcher mDepCoarse = P_DEPARTURES_COARSE.matcher(mHeadCoarse.group(2));
@@ -143,19 +144,16 @@ public class SncbProvider extends AbstractHafasProvider
 
 						final String destination = ParserUtils.resolveEntities(mDepFine.group(2));
 
-						final Calendar current = new GregorianCalendar();
-						current.setTime(currentTime);
-						final Calendar parsed = new GregorianCalendar();
-						parsed.setTime(ParserUtils.parseTime(mDepFine.group(3)));
-						parsed.set(Calendar.YEAR, current.get(Calendar.YEAR));
-						parsed.set(Calendar.MONTH, current.get(Calendar.MONTH));
-						parsed.set(Calendar.DAY_OF_MONTH, current.get(Calendar.DAY_OF_MONTH));
-						if (ParserUtils.timeDiff(parsed.getTime(), currentTime) < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
-							parsed.add(Calendar.DAY_OF_MONTH, 1);
+						final Calendar parsedTime = new GregorianCalendar(timeZone());
+						parsedTime.setTimeInMillis(currentTime.getTimeInMillis());
+						ParserUtils.parseEuropeanTime(parsedTime, mDepFine.group(3));
+
+						if (parsedTime.getTimeInMillis() - currentTime.getTimeInMillis() < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
+							parsedTime.add(Calendar.DAY_OF_MONTH, 1);
 
 						mDepFine.group(4); // TODO delay
 
-						final Departure dep = new Departure(parsed.getTime(), line, line != null ? lineColors(line) : null, null, 0, destination);
+						final Departure dep = new Departure(parsedTime.getTime(), line, line != null ? lineColors(line) : null, null, 0, destination);
 
 						if (!departures.contains(dep))
 							departures.add(dep);

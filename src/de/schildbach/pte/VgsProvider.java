@@ -160,8 +160,10 @@ public class VgsProvider extends AbstractHafasProvider
 			if (mHeadFine.matches())
 			{
 				final String location = ParserUtils.resolveEntities(mHeadFine.group(1));
-				final Date currentTime = ParserUtils.joinDateTime(ParserUtils.parseDate(mHeadFine.group(2)),
-						ParserUtils.parseTime(mHeadFine.group(3)));
+				final Calendar currentTime = new GregorianCalendar(timeZone());
+				currentTime.clear();
+				ParserUtils.parseGermanDate(currentTime, mHeadFine.group(2));
+				ParserUtils.parseEuropeanTime(currentTime, mHeadFine.group(3));
 				final List<Departure> departures = new ArrayList<Departure>(8);
 				String oldZebra = null;
 
@@ -177,26 +179,31 @@ public class VgsProvider extends AbstractHafasProvider
 					final Matcher mDepFine = P_DEPARTURES_FINE.matcher(mDepCoarse.group(2));
 					if (mDepFine.matches())
 					{
-						final Calendar current = new GregorianCalendar();
-						current.setTime(currentTime);
-						final Calendar parsed = new GregorianCalendar();
-						parsed.setTime(ParserUtils.parseTime(mDepFine.group(1)));
-						parsed.set(Calendar.YEAR, current.get(Calendar.YEAR));
-						parsed.set(Calendar.MONTH, current.get(Calendar.MONTH));
-						parsed.set(Calendar.DAY_OF_MONTH, current.get(Calendar.DAY_OF_MONTH));
-						if (ParserUtils.timeDiff(parsed.getTime(), currentTime) < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
-							parsed.add(Calendar.DAY_OF_MONTH, 1);
+						final Calendar plannedTime = new GregorianCalendar(timeZone());
+						plannedTime.setTimeInMillis(currentTime.getTimeInMillis());
+						ParserUtils.parseEuropeanTime(plannedTime, mDepFine.group(1));
 
-						final Date plannedTime = parsed.getTime();
+						if (plannedTime.getTimeInMillis() - currentTime.getTimeInMillis() < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
+							plannedTime.add(Calendar.DAY_OF_MONTH, 1);
 
-						Date predictedTime = null;
+						final Calendar predictedTime;
 						final String prognosis = ParserUtils.resolveEntities(mDepFine.group(2));
 						if (prognosis != null)
 						{
-							if (prognosis.equals("pünktlich"))
-								predictedTime = plannedTime;
+							predictedTime = new GregorianCalendar(timeZone());
+							if (!prognosis.equals("pünktlich"))
+							{
+								predictedTime.setTimeInMillis(plannedTime.getTimeInMillis());
+							}
 							else
-								predictedTime = ParserUtils.joinDateTime(currentTime, ParserUtils.parseTime(prognosis));
+							{
+								predictedTime.setTimeInMillis(currentTime.getTimeInMillis());
+								ParserUtils.parseEuropeanTime(predictedTime, prognosis);
+							}
+						}
+						else
+						{
+							predictedTime = null;
 						}
 
 						final String lineType = mDepFine.group(3);
@@ -209,8 +216,8 @@ public class VgsProvider extends AbstractHafasProvider
 
 						final String position = mDepFine.group(7) != null ? "Gl. " + ParserUtils.resolveEntities(mDepFine.group(7)) : null;
 
-						final Departure dep = new Departure(plannedTime, predictedTime, line, line != null ? lineColors(line) : null, null, position,
-								destinationId, destination, null);
+						final Departure dep = new Departure(plannedTime.getTime(), predictedTime != null ? predictedTime.getTime() : null, line,
+								line != null ? lineColors(line) : null, null, position, destinationId, destination, null);
 
 						if (!departures.contains(dep))
 							departures.add(dep);

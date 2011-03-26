@@ -17,10 +17,17 @@
 
 package de.schildbach.pte.live;
 
+import java.util.Date;
+
 import org.junit.Test;
 
 import de.schildbach.pte.RmvProvider;
+import de.schildbach.pte.NetworkProvider.WalkSpeed;
+import de.schildbach.pte.dto.Connection;
+import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 
 /**
@@ -29,6 +36,7 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 public class RmvProviderLiveTest
 {
 	private final RmvProvider provider = new RmvProvider();
+	protected static final String ALL_PRODUCTS = "IRSUTBFC";
 
 	@Test
 	public void nearbyStation() throws Exception
@@ -44,5 +52,17 @@ public class RmvProviderLiveTest
 		final QueryDeparturesResult result = provider.queryDepartures("3000001", 0, false);
 
 		System.out.println(result.stationDepartures);
+	}
+
+	@Test
+	public void shortConnection() throws Exception
+	{
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, null, "Hanau Hauptbahnhof!"), null,
+				new Location(LocationType.ANY, 0, null, "Frankfurt Hauptbahnhof!"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+		System.out.println(result);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
+		for (final Connection connection : result.connections)
+			provider.getConnectionDetails(connection.link);
+		System.out.println(moreResult);
 	}
 }
