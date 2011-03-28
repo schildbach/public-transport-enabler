@@ -19,8 +19,6 @@ package de.schildbach.pte;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -228,14 +226,22 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			to = autocompletes.get(0);
 		}
 
-		final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
-		final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
+		final Calendar c = new GregorianCalendar(timeZone());
+		c.setTime(date);
 
 		final String request = "<ConReq>" //
-				+ "<Start>" + location(from) + "<Prod bike=\"0\" couchette=\"0\" direct=\"0\" sleeper=\"0\"/></Start>" //
+				+ "<Start>"
+				+ location(from)
+				+ "<Prod bike=\"0\" couchette=\"0\" direct=\"0\" sleeper=\"0\"/></Start>" //
 				+ (via != null ? "<Via>" + location(via) + "</Via>" : "") //
-				+ "<Dest>" + location(to) + "</Dest>" //
-				+ "<ReqT a=\"" + (dep ? 0 : 1) + "\" date=\"" + DATE_FORMAT.format(date) + "\" time=\"" + TIME_FORMAT.format(date) + "\"/>" //
+				+ "<Dest>"
+				+ location(to)
+				+ "</Dest>" //
+				+ "<ReqT a=\"" + (dep ? 0 : 1)
+				+ "\" date=\""
+				+ String.format("%04d.%02d.%02d", c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH))
+				+ "\" time=\""
+				+ String.format("%02d:%02d", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE)) + "\"/>" //
 				+ "<RFlags b=\"0\" chExtension=\"0\" f=\"4\" sMode=\"N\"/>" //
 				+ "</ConReq>";
 
@@ -855,11 +861,13 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return 'I';
 		if (ucType.equals("EN")) // EuroNight
 			return 'I';
+		if (ucType.equals("EIC")) // Ekspres InterCity, Polen
+			return 'I';
 		if (ucType.equals("ICE")) // InterCityExpress
 			return 'I';
 		if (ucType.equals("IC")) // InterCity
 			return 'I';
-		if (ucType.equals("EN")) // EuroNight
+		if (ucType.equals("ICT")) // InterCity
 			return 'I';
 		if (ucType.equals("CNL")) // CityNightLine
 			return 'I';
@@ -890,7 +898,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		if (ucType.equals("IRX")) // IC
 			return 'I';
 
-		// Regional Germany
+		// Regional
 		if (ucType.equals("ZUG")) // Generic Train
 			return 'R';
 		if (ucType.equals("R")) // Generic Regional Train
@@ -913,11 +921,9 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return 'R';
 		if (ucType.equals("REX")) // RegionalExpress, Österreich
 			return 'R';
-
-		// Regional Poland
-		if (ucType.equals("OS")) // Chop-Cierna nas Tisou
+		if (ucType.equals("OS")) // Osobný vlak, Slovakia oder Osobní vlak, Czech Republic
 			return 'R';
-		if (ucType.equals("SP")) // Polen
+		if (ucType.equals("SP")) // Spěšný vlak, Czech Republic
 			return 'R';
 
 		// Suburban Trains

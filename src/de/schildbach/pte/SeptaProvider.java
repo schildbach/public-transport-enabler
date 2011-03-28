@@ -18,12 +18,9 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TimeZone;
@@ -119,16 +116,17 @@ public class SeptaProvider extends AbstractHafasProvider
 
 	private String departuresQueryUri(final String stationId, final int maxDepartures)
 	{
-		final DateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy");
-		final DateFormat TIME_FORMAT = new SimpleDateFormat("h:mm a");
-		final Date now = new Date();
+		final Calendar now = new GregorianCalendar(timeZone());
 
 		final StringBuilder uri = new StringBuilder();
 		uri.append(API_BASE).append("stboard.exe/en");
 		uri.append("?input=").append(stationId);
 		uri.append("&boardType=dep");
-		uri.append("&time=").append(ParserUtils.urlEncode(TIME_FORMAT.format(now)));
-		uri.append("&date=").append(ParserUtils.urlEncode(DATE_FORMAT.format(now)));
+		uri.append("&time=").append(
+				ParserUtils.urlEncode(String.format("%02d:%02d %s", now.get(Calendar.HOUR), now.get(Calendar.MINUTE),
+						now.get(Calendar.AM_PM) == Calendar.AM ? "am" : "pm")));
+		uri.append("&date=").append(
+				String.format("%02d%02d%04d", now.get(Calendar.MONTH) + 1, now.get(Calendar.DAY_OF_MONTH), now.get(Calendar.YEAR)));
 		uri.append("&productsFilter=1111");
 		if (maxDepartures != 0)
 			uri.append("&maxJourneys=").append(maxDepartures);

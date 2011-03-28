@@ -18,8 +18,6 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -132,15 +130,17 @@ public class RmvProvider extends AbstractHafasProvider
 	private String connectionsQueryUri(final Location from, final Location via, final Location to, final Date date, final boolean dep,
 			final String products, final WalkSpeed walkSpeed)
 	{
-		final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yy");
-		final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
+		final Calendar c = new GregorianCalendar(timeZone());
+		c.setTime(date);
+
 		final StringBuilder uri = new StringBuilder();
 
 		uri.append(API_BASE).append("query.exe/dox");
 		uri.append("?REQ0HafasInitialSelection=0");
 		uri.append("&REQ0HafasSearchForw=").append(dep ? "1" : "0");
-		uri.append("&REQ0JourneyDate=").append(ParserUtils.urlEncode(DATE_FORMAT.format(date)));
-		uri.append("&REQ0JourneyTime=").append(ParserUtils.urlEncode(TIME_FORMAT.format(date)));
+		uri.append("&REQ0JourneyDate=").append(
+				String.format("%02d.%02d.%02d", c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.MONTH) + 1, c.get(Calendar.YEAR) - 2000));
+		uri.append("&REQ0JourneyTime=").append(String.format("%02d:%02d", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE)));
 		uri.append("&REQ0JourneyStopsS0ID=").append(ParserUtils.urlEncode(locationId(from)));
 		if (via != null)
 			uri.append("&REQ0JourneyStops1.0ID=").append(ParserUtils.urlEncode(locationId(via)));
@@ -466,19 +466,20 @@ public class RmvProvider extends AbstractHafasProvider
 
 	private String departuresQueryUri(final String stationId, final int maxDepartures)
 	{
-		final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yy");
-		final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
-		final Date now = new Date();
+		final Calendar c = new GregorianCalendar(timeZone());
 
 		final StringBuilder uri = new StringBuilder();
+
 		uri.append(API_BASE).append("stboard.exe/dox");
 		uri.append("?input=").append(stationId);
 		uri.append("&boardType=dep"); // show departures
 		uri.append("&maxJourneys=").append(maxDepartures != 0 ? maxDepartures : 50); // maximum taken from RMV site
-		uri.append("&time=").append(TIME_FORMAT.format(now));
-		uri.append("&date=").append(DATE_FORMAT.format(now));
+		uri.append("&date=").append(
+				String.format("%02d.%02d.%02d", c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.MONTH) + 1, c.get(Calendar.YEAR) - 2000));
+		uri.append("&time=").append(String.format("%02d:%02d", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE)));
 		uri.append("&disableEquivs=yes"); // don't use nearby stations
 		uri.append("&start=yes");
+
 		return uri.toString();
 	}
 

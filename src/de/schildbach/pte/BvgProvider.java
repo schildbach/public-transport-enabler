@@ -18,8 +18,6 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -206,8 +204,9 @@ public final class BvgProvider extends AbstractHafasProvider
 	private String connectionsQueryUri(final Location from, final Location via, final Location to, final Date date, final boolean dep,
 			final String products)
 	{
-		final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yy");
-		final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
+		final Calendar c = new GregorianCalendar(timeZone());
+		c.setTime(date);
+
 		final StringBuilder uri = new StringBuilder();
 
 		uri.append("http://mobil.bvg.de/Fahrinfo/bin/query.bin/dox");
@@ -219,8 +218,9 @@ public final class BvgProvider extends AbstractHafasProvider
 			appendLocationBvg(uri, via, "1", null);
 
 		uri.append("&REQ0HafasSearchForw=").append(dep ? "1" : "0");
-		uri.append("&REQ0JourneyDate=").append(ParserUtils.urlEncode(DATE_FORMAT.format(date)));
-		uri.append("&REQ0JourneyTime=").append(ParserUtils.urlEncode(TIME_FORMAT.format(date)));
+		uri.append("&REQ0JourneyDate=").append(
+				String.format("%02d.%02d.%02d", c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.MONTH) + 1, c.get(Calendar.YEAR) - 2000));
+		uri.append("&REQ0JourneyTime=").append(String.format("%02d:%02d", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE)));
 
 		for (final char p : products.toCharArray())
 		{

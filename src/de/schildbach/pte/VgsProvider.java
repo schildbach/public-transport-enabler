@@ -18,8 +18,6 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -85,16 +83,11 @@ public class VgsProvider extends AbstractHafasProvider
 
 	private String departuresQueryUri(final String stationId, final int maxDepartures)
 	{
-		final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yy");
-		final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
-		final Date now = new Date();
-
 		final StringBuilder uri = new StringBuilder();
+
 		uri.append(API_BASE).append("stboard.exe/dn");
 		uri.append("?input=").append(stationId);
 		uri.append("&boardType=dep");
-		uri.append("&time=").append(TIME_FORMAT.format(now));
-		uri.append("&date=").append(DATE_FORMAT.format(now));
 		uri.append("&productsFilter=11111111111");
 		if (maxDepartures != 0)
 			uri.append("&maxJourneys=").append(maxDepartures);
