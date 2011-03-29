@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 the original author or authors.
+ * Copyright 2010, 2011 the original author or authors.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,6 +36,15 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 public class SncbProviderLiveTest
 {
 	private final SncbProvider provider = new SncbProvider();
+	private static final String ALL_PRODUCTS = "IRSUTBFC";
+
+	@Test
+	public void nearbyStation() throws Exception
+	{
+		final NearbyStationsResult result = provider.nearbyStations("100080", 0, 0, 0, 0);
+
+		System.out.println(result.stations.size() + "  " + result.stations);
+	}
 
 	@Test
 	public void queryDepartures() throws Exception
@@ -49,6 +58,14 @@ public class SncbProviderLiveTest
 	public void autocompleteIncomplete() throws Exception
 	{
 		final List<Location> autocompletes = provider.autocompleteStations("Brussel S");
+
+		list(autocompletes);
+	}
+
+	@Test
+	public void autoCompleteAddress() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("Rue Paul Janson 9, 1030 Bruxelles");
 
 		list(autocompletes);
 	}
@@ -80,10 +97,13 @@ public class SncbProviderLiveTest
 	}
 
 	@Test
-	public void nearbyStation() throws Exception
+	public void connectionFromAddress() throws Exception
 	{
-		final NearbyStationsResult result = provider.nearbyStations("100080", 0, 0, 0, 0);
-
-		System.out.println(result.stations.size() + "  " + result.stations);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, null,
+				"Bruxelles - Haren, Rue Paul Janson 9"), null, new Location(LocationType.STATION, 8500010, null, "Basel"), new Date(), true,
+				ALL_PRODUCTS, WalkSpeed.NORMAL);
+		System.out.println(result);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
+		System.out.println(moreResult);
 	}
 }

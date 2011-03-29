@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 the original author or authors.
+ * Copyright 2010, 2011 the original author or authors.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package de.schildbach.pte;
 
 import java.text.DateFormat;
@@ -31,7 +32,7 @@ public class VmvProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.VMV;
 	public static final String OLD_NETWORK_ID = "80.146.180.107";
-	private static final String API_BASE = "http://80.146.180.107/delfi/";
+	private static final String API_BASE = "http://80.146.180.107/delfi/"; // http://80.146.180.107/vmv/
 
 	public NetworkId id()
 	{

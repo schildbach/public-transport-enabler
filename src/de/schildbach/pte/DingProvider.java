@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 the original author or authors.
+ * Copyright 2010, 2011 the original author or authors.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ public class DingProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.DING;
 	public static final String OLD_NETWORK_ID = "www.ding-ulm.de";
-	private final static String API_BASE = "http://www.ding-ulm.de/ding2/";
+	private final static String API_BASE = "http://www.ding-ulm.de/ding2/"; // http://www.ding.eu/swu
 
 	public NetworkId id()
 	{
