@@ -392,7 +392,6 @@ public class RmvProvider extends AbstractHafasProvider
 							if (time.getTime().before(lastTime))
 								time.add(Calendar.DAY_OF_YEAR, 1);
 							predictedDepartureTime = time.getTime();
-							lastTime.setTime(time.getTimeInMillis());
 						}
 						else
 						{
@@ -416,7 +415,6 @@ public class RmvProvider extends AbstractHafasProvider
 							if (time.getTime().before(lastTime))
 								time.add(Calendar.DAY_OF_YEAR, 1);
 							predictedArrivalTime = time.getTime();
-							lastTime.setTime(time.getTimeInMillis());
 						}
 						else
 						{
