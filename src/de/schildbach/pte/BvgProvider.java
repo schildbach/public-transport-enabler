@@ -672,7 +672,7 @@ public final class BvgProvider extends AbstractHafasProvider
 			final Matcher mHead = P_DEPARTURES_LIVE_HEAD.matcher(page);
 			if (mHead.matches())
 			{
-				final String location = ParserUtils.resolveEntities(mHead.group(1));
+				final String[] placeAndName = splitNameAndPlace(ParserUtils.resolveEntities(mHead.group(1)));
 				final Calendar currentTime = new GregorianCalendar(timeZone());
 				currentTime.clear();
 				parseDateTime(currentTime, mHead.group(2));
@@ -738,8 +738,8 @@ public final class BvgProvider extends AbstractHafasProvider
 					}
 				}
 
-				result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, Integer.parseInt(stationId), null, location),
-						departures, null));
+				result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, Integer.parseInt(stationId), placeAndName[0],
+						placeAndName[1]), departures, null));
 				return result;
 			}
 			else
@@ -768,7 +768,7 @@ public final class BvgProvider extends AbstractHafasProvider
 			final Matcher mHead = P_DEPARTURES_PLAN_HEAD.matcher(page);
 			if (mHead.matches())
 			{
-				final String location = ParserUtils.resolveEntities(mHead.group(1));
+				final String[] placeAndName = splitNameAndPlace(ParserUtils.resolveEntities(mHead.group(1)));
 				final Calendar currentTime = new GregorianCalendar(timeZone());
 				currentTime.clear();
 				ParserUtils.parseGermanDate(currentTime, mHead.group(2));
@@ -808,8 +808,8 @@ public final class BvgProvider extends AbstractHafasProvider
 					}
 				}
 
-				result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, Integer.parseInt(stationId), null, location),
-						departures, null));
+				result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, Integer.parseInt(stationId), placeAndName[0],
+						placeAndName[1]), departures, null));
 				return result;
 			}
 			else
