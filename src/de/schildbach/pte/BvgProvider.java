@@ -608,17 +608,11 @@ public final class BvgProvider extends AbstractHafasProvider
 		return uri.toString();
 	}
 
-	private static final Pattern P_DEPARTURES_HEAD = Pattern.compile(".*?" //
+	private static final Pattern P_DEPARTURES_PLAN_HEAD = Pattern.compile(".*?" //
 			+ "<strong>(.*?)</strong>.*?Datum:\\s*([^<\n]+)[<\n].*?" //
 	, Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("" //
+	private static final Pattern P_DEPARTURES_PLAN_COARSE = Pattern.compile("" //
 			+ "<tr class=\"ivu_table_bg\\d\">\\s*((?:<td class=\"ivu_table_c_dep\">|<td>).+?)\\s*</tr>" //
-	, Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_LIVE_FINE = Pattern.compile("" //
-			+ "<td class=\"ivu_table_c_dep\">\\s*(\\d{1,2}:\\d{2})\\s*" // time
-			+ "(\\*)?\\s*</td>\\s*" // planned
-			+ "<td class=\"ivu_table_c_line\">\\s*(.*?)\\s*</td>\\s*" // line
-			+ "<td>.*?<a.*?[^-]>\\s*(.*?)\\s*</a>.*?</td>" // destination
 	, Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_PLAN_FINE = Pattern.compile("" //
 			+ "<td><strong>(\\d{1,2}:\\d{2})</strong></td>.*?" // time
@@ -627,10 +621,31 @@ public final class BvgProvider extends AbstractHafasProvider
 			+ "<a href=\"/Fahrinfo/bin/stboard\\.bin/dox/dox.*?evaId=(\\d+)&[^>]*>" // destinationId
 			+ "\\s*(.*?)\\s*</a>.*?" // destination
 	, Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_LIVE_ERRORS = Pattern.compile("(Haltestelle:)|(Wartungsgr&uuml;nden)|(http-equiv=\"refresh\")",
-			Pattern.CASE_INSENSITIVE);
 	private static final Pattern P_DEPARTURES_PLAN_ERRORS = Pattern.compile("(derzeit leider nicht bearbeitet werden)|(Wartungsarbeiten)|"
 			+ "(http-equiv=\"refresh\")", Pattern.CASE_INSENSITIVE);
+
+	private static final Pattern P_DEPARTURES_LIVE_HEAD = Pattern.compile(".*?" //
+			+ "<strong>(.*?)</strong>.*?Datum:\\s*([^<\n]+)[<\n].*?" //
+	, Pattern.DOTALL);
+	private static final Pattern P_DEPARTURES_LIVE_COARSE = Pattern.compile("" //
+			+ "<tr class=\"ivu_table_bg\\d\">\\s*((?:<td class=\"ivu_table_c_dep\">|<td>).+?)\\s*</tr>" //
+	, Pattern.DOTALL);
+	private static final Pattern P_DEPARTURES_LIVE_FINE = Pattern.compile("" //
+			+ "<td class=\"ivu_table_c_dep\">\\s*(\\d{1,2}:\\d{2})\\s*" // time
+			+ "(\\*)?\\s*</td>\\s*" // planned
+			+ "<td class=\"ivu_table_c_line\">\\s*(.*?)\\s*</td>\\s*" // line
+			+ "<td>.*?<a.*?[^-]>\\s*(.*?)\\s*</a>.*?</td>" // destination
+	, Pattern.DOTALL);
+	private static final Pattern P_DEPARTURES_LIVE_MSGS_COARSE = Pattern.compile("" //
+			+ "<tr class=\"ivu_table_bg\\d\">\\s*(<td class=\"ivu_table_c_line\">.+?)\\s*</tr>" //
+	, Pattern.DOTALL);
+	private static final Pattern P_DEPARTURES_LIVE_MSGS_FINE = Pattern.compile("" //
+			+ "<td class=\"ivu_table_c_line\">\\s*(.*?)\\s*</td>\\s*" // line
+			+ "<td class=\"ivu_table_c_dep\">\\s*(\\d{2}\\.\\d{2}\\.\\d{4})\\s*</td>\\s*" // date
+			+ "<td>([^<]*)</td>" // message
+	, Pattern.DOTALL);
+	private static final Pattern P_DEPARTURES_LIVE_ERRORS = Pattern.compile("(Haltestelle:)|(Wartungsgr&uuml;nden)|(http-equiv=\"refresh\")",
+			Pattern.CASE_INSENSITIVE);
 
 	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
@@ -654,17 +669,35 @@ public final class BvgProvider extends AbstractHafasProvider
 			}
 
 			// parse page
-			final Matcher mHead = P_DEPARTURES_HEAD.matcher(page);
+			final Matcher mHead = P_DEPARTURES_LIVE_HEAD.matcher(page);
 			if (mHead.matches())
 			{
 				final String location = ParserUtils.resolveEntities(mHead.group(1));
 				final Calendar currentTime = new GregorianCalendar(timeZone());
 				currentTime.clear();
 				parseDateTime(currentTime, mHead.group(2));
+
+				final Map<String, String> messages = new HashMap<String, String>();
+
+				final Matcher mMsgsCoarse = P_DEPARTURES_LIVE_MSGS_COARSE.matcher(page);
+				while (mMsgsCoarse.find())
+				{
+					final Matcher mMsgsFine = P_DEPARTURES_LIVE_MSGS_FINE.matcher(mMsgsCoarse.group(1));
+					if (mMsgsFine.matches())
+					{
+						final String line = normalizeLine(ParserUtils.resolveEntities(mMsgsFine.group(1)));
+						final String message = ParserUtils.resolveEntities(mMsgsFine.group(3));
+						messages.put(line, message);
+					}
+					else
+					{
+						throw new IllegalArgumentException("cannot parse '" + mMsgsCoarse.group(1) + "' on " + uri);
+					}
+				}
+
 				final List<Departure> departures = new ArrayList<Departure>(8);
 
-				// choose matcher
-				final Matcher mDepCoarse = P_DEPARTURES_COARSE.matcher(page);
+				final Matcher mDepCoarse = P_DEPARTURES_LIVE_COARSE.matcher(page);
 				while (mDepCoarse.find())
 				{
 					final Matcher mDepFine = P_DEPARTURES_LIVE_FINE.matcher(mDepCoarse.group(1));
@@ -695,7 +728,7 @@ public final class BvgProvider extends AbstractHafasProvider
 						final String destination = ParserUtils.resolveEntities(mDepFine.group(4));
 
 						final Departure dep = new Departure(plannedTime, predictedTime, line, line != null ? lineColors(line) : null, null, position,
-								destinationId, destination, null);
+								destinationId, destination, messages.get(line));
 						if (!departures.contains(dep))
 							departures.add(dep);
 					}
@@ -732,7 +765,7 @@ public final class BvgProvider extends AbstractHafasProvider
 			}
 
 			// parse page
-			final Matcher mHead = P_DEPARTURES_HEAD.matcher(page);
+			final Matcher mHead = P_DEPARTURES_PLAN_HEAD.matcher(page);
 			if (mHead.matches())
 			{
 				final String location = ParserUtils.resolveEntities(mHead.group(1));
@@ -741,8 +774,7 @@ public final class BvgProvider extends AbstractHafasProvider
 				ParserUtils.parseGermanDate(currentTime, mHead.group(2));
 				final List<Departure> departures = new ArrayList<Departure>(8);
 
-				// choose matcher
-				final Matcher mDepCoarse = P_DEPARTURES_COARSE.matcher(page);
+				final Matcher mDepCoarse = P_DEPARTURES_PLAN_COARSE.matcher(page);
 				while (mDepCoarse.find())
 				{
 					final Matcher mDepFine = P_DEPARTURES_PLAN_FINE.matcher(mDepCoarse.group(1));
