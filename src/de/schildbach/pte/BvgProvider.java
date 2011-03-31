@@ -686,7 +686,7 @@ public final class BvgProvider extends AbstractHafasProvider
 					if (mMsgsFine.matches())
 					{
 						final String line = normalizeLine(ParserUtils.resolveEntities(mMsgsFine.group(1)));
-						final String message = ParserUtils.resolveEntities(mMsgsFine.group(3));
+						final String message = ParserUtils.resolveEntities(mMsgsFine.group(3)).replace('\n', ' ');
 						messages.put(line, message);
 					}
 					else
