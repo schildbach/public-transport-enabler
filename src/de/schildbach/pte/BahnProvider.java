@@ -215,7 +215,7 @@ public final class BahnProvider extends AbstractHafasProvider
 	, Pattern.DOTALL);
 	private static final Pattern P_CONNECTIONS_COARSE = Pattern.compile("<tr><td class=\"overview timelink\">(.+?)</td></tr>", Pattern.DOTALL);
 	private static final Pattern P_CONNECTIONS_FINE = Pattern.compile(".*?" //
-			+ "<a href=\"(http://mobile.bahn.de/bin/mobil/query.exe/dox[^\"]*?)\">" // link
+			+ "<a href=\"(http://mobile.bahn.de/bin/mobil/query2?.exe/dox[^\"]*?)\">" // link
 			+ "(\\d{1,2}:\\d{2})<br />(\\d{1,2}:\\d{2})</a></td>.+?" // departureTime, arrivalTime
 			+ "<td class=\"overview iphonepfeil\">(.*?)<br />.*?" // line
 	, Pattern.DOTALL);
