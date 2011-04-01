@@ -518,10 +518,10 @@ public final class BahnProvider extends AbstractHafasProvider
 
 					final String line = normalizeLine(ParserUtils.resolveEntities(mDepFine.group(7)));
 
-					final String message = ParserUtils.resolveEntities(mDepFine.group(9));
+					final String message = ParserUtils.resolveEntities(mDepFine.group(9)).trim();
 
 					departures.add(new Departure(plannedTime.getTime(), predictedTime != null ? predictedTime.getTime() : null, line,
-							line != null ? lineColors(line) : null, null, position, 0, destination, message));
+							line != null ? lineColors(line) : null, null, position, 0, destination, message.length() > 0 ? message : null));
 				}
 			}
 			else
