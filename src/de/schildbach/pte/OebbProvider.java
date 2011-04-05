@@ -453,7 +453,7 @@ public class OebbProvider extends AbstractHafasProvider
 							ParserUtils.parseEuropeanTime(time, mDetFine.group(11));
 							final Date detailsArrivalTime = time.getTime();
 
-							if (!lineType.equals("fuss"))
+							if (!("fuss".equals(lineType) || "transfer".equals(lineType)))
 							{
 								if (departureId == 0)
 									throw new IllegalStateException("departureId");
