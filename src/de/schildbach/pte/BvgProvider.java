@@ -23,6 +23,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -39,6 +40,7 @@ import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryDeparturesResult.Status;
 import de.schildbach.pte.dto.StationDepartures;
+import de.schildbach.pte.dto.Stop;
 import de.schildbach.pte.exception.SessionExpiredException;
 import de.schildbach.pte.util.Color;
 import de.schildbach.pte.util.ParserUtils;
@@ -441,11 +443,12 @@ public final class BvgProvider extends AbstractHafasProvider
 			+ "<a href=\"/Stadtplan.*?WGS84,(\\d+),(\\d+)&.*?\">([^<]*)</a>" // departureLat,departureLon,departureName
 			+ ")?.*?" //
 			+ "(?:" //
-			+ "ab (\\d+:\\d+)\n" // departureTime
+			+ "ab (\\d{1,2}:\\d{2})\n" // departureTime
 			+ "(?:Gl\\. (.+?))?.*?" // departurePosition
 			+ "<strong>\\s*(.*?)\\s*</strong>.*?" // line
-			+ "Ri\\. (.*?)[\n\\.]*<.*?" // destination
-			+ "an (\\d+:\\d+)\n" // arrivalTime
+			+ "Ri\\. (.*?)[\n\\.]*<.*?\n" // destination
+			+ "(.*?)\n" // intermediates
+			+ "an (\\d{1,2}:\\d{2})\n" // arrivalTime
 			+ "(?:Gl\\. (.+?))?.*?" // arrivalPosition
 			+ "<a href=\"/Fahrinfo[^\"]*?input=(\\d+)\">\n" // arrivalId
 			+ "<strong>([^<]*)</strong>" // arrivalName
@@ -456,11 +459,33 @@ public final class BvgProvider extends AbstractHafasProvider
 			+ "(?:<a href=\"/Fahrinfo[^\"]*?input=(\\d+)\">\n" // arrivalId
 			+ "<strong>([^<]*)</strong>|<a href=\"/Stadtplan.*?WGS84,(\\d+),(\\d+)&.*?\">([^<]*)</a>|<strong>([^<]*)</strong>).*?" // arrivalName,arrivalLat,arrivalLon,arrivalName,arrivalName
 			+ ").*?", Pattern.DOTALL);
+	private static final Pattern P_CONNECTION_DETAILS_INTERMEDIATES_ACTION = Pattern.compile("<a href=\"([^\"]*)\">Zwischenhalte anzeigen</a>",
+			Pattern.DOTALL);
+	private static final Pattern P_CONNECTION_DETAILS_INTERMEDIATES = Pattern.compile("-\n" //
+			+ "<a href=\"[^\"]*?input=(\\d+)\">\n" //
+			+ "([^\n]*)\n" //
+			+ "</a>\n" //
+			+ "&nbsp;(\\d{1,2}:\\d{2})&nbsp;\n", Pattern.DOTALL);
 
 	@Override
 	public GetConnectionDetailsResult getConnectionDetails(final String uri) throws IOException
 	{
-		final CharSequence page = ParserUtils.scrape(uri);
+		// fetch page without intermediate stops
+		CharSequence page = ParserUtils.scrape(uri);
+
+		// fetch page with intermediate stops
+		final Matcher mIntermediatesAction = P_CONNECTION_DETAILS_INTERMEDIATES_ACTION.matcher(page);
+		if (mIntermediatesAction.find())
+		{
+			try
+			{
+				page = ParserUtils.scrape(BVG_BASE_URL + ParserUtils.resolveEntities(mIntermediatesAction.group(1)));
+			}
+			catch (final IOException x)
+			{
+				// swallow
+			}
+		}
 
 		final Matcher mHead = P_CONNECTION_DETAILS_HEAD.matcher(page);
 		if (mHead.matches())
@@ -474,6 +499,9 @@ public final class BvgProvider extends AbstractHafasProvider
 			Location firstDeparture = null;
 			Date lastArrivalTime = null;
 			Location lastArrival = null;
+			Date lastTime = null;
+			final Calendar time = new GregorianCalendar(timeZone());
+			time.setTimeInMillis(currentDate.getTimeInMillis());
 
 			final Matcher mDetCoarse = P_CONNECTION_DETAILS_COARSE.matcher(page);
 			while (mDetCoarse.find())
@@ -502,14 +530,14 @@ public final class BvgProvider extends AbstractHafasProvider
 					if (departure != null && firstDeparture == null)
 						firstDeparture = departure;
 
-					final String min = mDetFine.group(14);
+					final String min = mDetFine.group(15);
 					if (min == null)
 					{
-						final Calendar departureTime = new GregorianCalendar(timeZone());
-						departureTime.setTimeInMillis(currentDate.getTimeInMillis());
-						ParserUtils.parseEuropeanTime(departureTime, mDetFine.group(6));
-						if (lastArrivalTime != null && departureTime.getTime().before(lastArrivalTime))
-							departureTime.add(Calendar.DAY_OF_YEAR, 1);
+						ParserUtils.parseEuropeanTime(time, mDetFine.group(6));
+						if (lastTime != null && time.getTime().before(lastTime))
+							time.add(Calendar.DAY_OF_YEAR, 1);
+						lastTime = time.getTime();
+						final Date departureTime = time.getTime();
 
 						final String departurePosition = mDetFine.group(7);
 
@@ -520,38 +548,55 @@ public final class BvgProvider extends AbstractHafasProvider
 
 						final Location destination = new Location(LocationType.ANY, 0, destinationPlaceAndName[0], destinationPlaceAndName[1]);
 
-						final Calendar arrivalTime = new GregorianCalendar(timeZone());
-						arrivalTime.setTimeInMillis(currentDate.getTimeInMillis());
-						ParserUtils.parseEuropeanTime(arrivalTime, mDetFine.group(10));
-						if (departureTime.after(arrivalTime))
-							arrivalTime.add(Calendar.DAY_OF_YEAR, 1);
+						final List<Stop> intermediateStops = new LinkedList<Stop>();
+						final Matcher mIntermediates = P_CONNECTION_DETAILS_INTERMEDIATES.matcher(mDetFine.group(10));
+						while (mIntermediates.find())
+						{
+							final int id = Integer.parseInt(mIntermediates.group(1));
 
-						final String arrivalPosition = mDetFine.group(11);
+							final String[] placeAndName = splitNameAndPlace(ParserUtils.resolveEntities(mIntermediates.group(2)));
 
-						final int arrivalId = Integer.parseInt(mDetFine.group(12));
+							ParserUtils.parseEuropeanTime(time, mIntermediates.group(3));
+							if (lastTime != null && time.getTime().before(lastTime))
+								time.add(Calendar.DAY_OF_YEAR, 1);
+							lastTime = time.getTime();
 
-						final String[] arrivalPlaceAndName = splitNameAndPlace(ParserUtils.resolveEntities(mDetFine.group(13)));
+							final Stop stop = new Stop(new Location(LocationType.STATION, id, placeAndName[0], placeAndName[1]), null, time.getTime());
+							intermediateStops.add(stop);
+						}
+
+						ParserUtils.parseEuropeanTime(time, mDetFine.group(11));
+						if (lastTime.after(time.getTime()))
+							time.add(Calendar.DAY_OF_YEAR, 1);
+						lastTime = time.getTime();
+						final Date arrivalTime = time.getTime();
+
+						final String arrivalPosition = mDetFine.group(12);
+
+						final int arrivalId = Integer.parseInt(mDetFine.group(13));
+
+						final String[] arrivalPlaceAndName = splitNameAndPlace(ParserUtils.resolveEntities(mDetFine.group(14)));
 
 						final Location arrival = new Location(LocationType.STATION, arrivalId, arrivalPlaceAndName[0], arrivalPlaceAndName[1]);
 
-						parts.add(new Connection.Trip(line, destination, departureTime.getTime(), departurePosition, departure,
-								arrivalTime.getTime(), arrivalPosition, arrival, null, null));
+						parts.add(new Connection.Trip(line, destination, departureTime, departurePosition, departure, arrivalTime, arrivalPosition,
+								arrival, intermediateStops, null));
 
 						if (firstDepartureTime == null)
-							firstDepartureTime = departureTime.getTime();
+							firstDepartureTime = departureTime;
 
 						lastArrival = arrival;
-						lastArrivalTime = arrivalTime.getTime();
+						lastArrivalTime = arrivalTime;
 					}
 					else
 					{
-						final int arrivalId = mDetFine.group(15) != null ? Integer.parseInt(mDetFine.group(15)) : 0;
+						final int arrivalId = mDetFine.group(16) != null ? Integer.parseInt(mDetFine.group(16)) : 0;
 
-						final int arrivalLon = mDetFine.group(17) != null ? Integer.parseInt(mDetFine.group(17)) : 0;
-						final int arrivalLat = mDetFine.group(18) != null ? Integer.parseInt(mDetFine.group(18)) : 0;
+						final int arrivalLon = mDetFine.group(18) != null ? Integer.parseInt(mDetFine.group(18)) : 0;
+						final int arrivalLat = mDetFine.group(19) != null ? Integer.parseInt(mDetFine.group(19)) : 0;
 
 						final String[] arrivalPlaceAndName = splitNameAndPlace(ParserUtils.resolveEntities(ParserUtils.selectNotNull(
-								mDetFine.group(16), mDetFine.group(19), mDetFine.group(20))));
+								mDetFine.group(17), mDetFine.group(20), mDetFine.group(21))));
 
 						final Location arrival = new Location(arrivalId != 0 ? LocationType.STATION : LocationType.ANY, arrivalId, arrivalLat,
 								arrivalLon, arrivalPlaceAndName[0], arrivalPlaceAndName[1]);
