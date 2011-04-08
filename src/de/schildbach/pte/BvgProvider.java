@@ -466,6 +466,7 @@ public final class BvgProvider extends AbstractHafasProvider
 			+ "([^\n]*)\n" //
 			+ "</a>\n" //
 			+ "&nbsp;(\\d{1,2}:\\d{2})&nbsp;\n", Pattern.DOTALL);
+	private static final Pattern P_CONNECTION_DETAILS_ERROR = Pattern.compile("(zwischenzeitlich nicht mehr gespeichert)", Pattern.CASE_INSENSITIVE);
 
 	@Override
 	public GetConnectionDetailsResult getConnectionDetails(final String uri) throws IOException
@@ -486,6 +487,10 @@ public final class BvgProvider extends AbstractHafasProvider
 				// swallow
 			}
 		}
+
+		final Matcher mError = P_CONNECTION_DETAILS_ERROR.matcher(page);
+		if (mError.find())
+			throw new SessionExpiredException();
 
 		final Matcher mHead = P_CONNECTION_DETAILS_HEAD.matcher(page);
 		if (mHead.matches())
