@@ -425,7 +425,7 @@ public final class BvgProvider extends AbstractHafasProvider
 
 	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern.compile("(zu dicht beieinander|mehrfach vorhanden oder identisch)|"
 			+ "(keine geeigneten Haltestellen)|(keine Verbindung gefunden)|"
-			+ "(derzeit nur Ausk&#252;nfte vom)|(zwischenzeitlich nicht mehr gespeichert)|(http-equiv=\"refresh\")", Pattern.CASE_INSENSITIVE);
+			+ "(derzeit nur Ausk&uuml;nfte vom)|(zwischenzeitlich nicht mehr gespeichert)|(http-equiv=\"refresh\")", Pattern.CASE_INSENSITIVE);
 
 	private QueryConnectionsResult queryConnections(final String firstUri, CharSequence firstPage) throws IOException
 	{
