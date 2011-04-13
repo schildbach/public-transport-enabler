@@ -210,12 +210,13 @@ public final class BvgProvider extends AbstractHafasProvider
 		final StringBuilder uri = new StringBuilder();
 
 		uri.append(API_BASE).append("query.bin/dn");
-		uri.append("?REQ0HafasInitialSelection=0");
 
-		appendLocationBvg(uri, from, "S0", "SID");
-		appendLocationBvg(uri, to, "Z0", "ZID");
+		uri.append("?start=Suchen");
+
+		appendLocationBvg(uri, from, "S0");
+		appendLocationBvg(uri, to, "Z0");
 		if (via != null)
-			appendLocationBvg(uri, via, "1", null);
+			appendLocationBvg(uri, via, "1.0");
 
 		uri.append("&REQ0HafasSearchForw=").append(dep ? "1" : "0");
 		uri.append("&REQ0JourneyDate=").append(
@@ -270,24 +271,24 @@ public final class BvgProvider extends AbstractHafasProvider
 			// TODO Ruftaxi wäre wohl &REQ0JourneyProduct_prod_section_0_7=1
 		}
 
-		uri.append("&start=Suchen");
-
 		return uri.toString();
 	}
 
-	private static final void appendLocationBvg(final StringBuilder uri, final Location location, final String paramSuffix, final String paramWgs)
+	private static final void appendLocationBvg(final StringBuilder uri, final Location location, final String paramSuffix)
 	{
-		if (location.type == LocationType.ADDRESS && location.hasLocation() && paramWgs != null)
+		uri.append("&REQ0JourneyStops").append(paramSuffix).append("A=").append(locationTypeValue(location));
+
+		if (location.type == LocationType.STATION && location.hasId() && location.id >= 1000000)
+			uri.append("&REQ0JourneyStops").append(paramSuffix).append("L=").append(location.id);
+
+		if (location.hasLocation())
 		{
-			final String v = ParserUtils.urlEncode("A=16@X=" + location.lon + "@Y=" + location.lat
-					+ (location.name != null ? "@O=" + location.name : ""), "ISO-8859-1");
-			uri.append("&").append(paramWgs).append("=").append(v);
+			uri.append("&REQ0JourneyStops").append(paramSuffix).append("X=").append(location.lon);
+			uri.append("&REQ0JourneyStops").append(paramSuffix).append("Y=").append(location.lat);
 		}
-		else
-		{
-			uri.append("&REQ0JourneyStops").append(paramSuffix).append("A=").append(locationTypeValue(location));
-			uri.append("&REQ0JourneyStops").append(paramSuffix).append("G=").append(ParserUtils.urlEncode(locationValue(location)));
-		}
+
+		if (location.name != null)
+			uri.append("&REQ0JourneyStops").append(paramSuffix).append("G=").append(ParserUtils.urlEncode(location.name));
 	}
 
 	private static final int locationTypeValue(final Location location)
@@ -300,14 +301,6 @@ public final class BvgProvider extends AbstractHafasProvider
 		if (type == LocationType.ANY)
 			return 255;
 		throw new IllegalArgumentException(type.toString());
-	}
-
-	private static final String locationValue(final Location location)
-	{
-		if (location.type == LocationType.STATION && location.id >= 1000000)
-			return Integer.toString(location.id);
-		else
-			return location.name;
 	}
 
 	private static final Pattern P_CHECK_ADDRESS = Pattern.compile("<option[^>]*>\\s*(.*?)\\s*</option>", Pattern.DOTALL);
