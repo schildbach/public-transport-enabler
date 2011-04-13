@@ -56,9 +56,8 @@ public final class BvgProvider extends AbstractHafasProvider
 
 	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
 
-	private static final String BVG_MOBIL_BASE_URL = "http://mobil.bvg.de";
-	private static final String BVG_BASE_URL = "http://www.fahrinfo-berlin.de";
-	private static final String API_BASE = "http://mobil.bvg.de/Fahrinfo/bin/";
+	private static final String BASE_URL = "http://mobil.bvg.de";
+	private static final String API_BASE = BASE_URL + "/Fahrinfo/bin/";
 
 	public BvgProvider()
 	{
@@ -281,7 +280,7 @@ public final class BvgProvider extends AbstractHafasProvider
 		if (location.type == LocationType.ADDRESS && location.hasLocation() && paramWgs != null)
 		{
 			final String v = ParserUtils.urlEncode("A=16@X=" + location.lon + "@Y=" + location.lat
-					+ (location.name != null ? "@O=" + location.name : ""));
+					+ (location.name != null ? "@O=" + location.name : ""), "ISO-8859-1");
 			uri.append("&").append(paramWgs).append("=").append(v);
 		}
 		else
@@ -451,7 +450,7 @@ public final class BvgProvider extends AbstractHafasProvider
 		if (!mAllDetailsAction.find())
 			throw new IOException("cannot find all details link in '" + firstPage + "' on " + firstUri);
 
-		final String allDetailsUri = BVG_BASE_URL + ParserUtils.resolveEntities(mAllDetailsAction.group(1));
+		final String allDetailsUri = BASE_URL + ParserUtils.resolveEntities(mAllDetailsAction.group(1));
 		final CharSequence page = ParserUtils.scrape(allDetailsUri);
 
 		final Matcher mHead = P_CONNECTIONS_HEAD.matcher(page);
@@ -467,7 +466,7 @@ public final class BvgProvider extends AbstractHafasProvider
 			ParserUtils.parseGermanDate(currentDate, mHead.group(12));
 			// final String linkEarlier = mHead.group(13) != null ? BVG_BASE_URL +
 			// ParserUtils.resolveEntities(mHead.group(13)) : null;
-			final String linkLater = mHead.group(14) != null ? BVG_BASE_URL + ParserUtils.resolveEntities(mHead.group(14)) : null;
+			final String linkLater = mHead.group(14) != null ? BASE_URL + ParserUtils.resolveEntities(mHead.group(14)) : null;
 			final List<Connection> connections = new ArrayList<Connection>();
 
 			final Matcher mConCoarse = P_CONNECTIONS_COARSE.matcher(page);
@@ -608,7 +607,7 @@ public final class BvgProvider extends AbstractHafasProvider
 		throw new UnsupportedOperationException();
 	}
 
-	private static final String DEPARTURE_URL_LIVE = BVG_MOBIL_BASE_URL + "/IstAbfahrtzeiten/index/mobil?";
+	private static final String DEPARTURE_URL_LIVE = BASE_URL + "/IstAbfahrtzeiten/index/mobil?";
 
 	private String departuresQueryLiveUri(final String stationId)
 	{
