@@ -528,11 +528,12 @@ public final class BvgProvider extends AbstractHafasProvider
 
 						if (tArr[2].equals("walk"))
 						{
-							final String[] tArr2 = track.size() > 1 ? tArr : tracks.get(iTrack + 1).get(0);
+							final boolean grabFromNext = track.size() == 1;
+							final String[] tArr2 = grabFromNext ? tracks.get(iTrack + 1).get(0) : tArr;
 
 							final Location arrival = location(tArr2);
 
-							ParserUtils.parseEuropeanTime(time, tArr2[7]);
+							ParserUtils.parseEuropeanTime(time, tArr2[grabFromNext ? 8 : 7]);
 							if (lastTime != null && time.getTime().before(lastTime))
 								time.add(Calendar.DAY_OF_YEAR, 1);
 							lastTime = time.getTime();
