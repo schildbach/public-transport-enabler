@@ -303,9 +303,9 @@ public final class BvgProvider extends AbstractHafasProvider
 		throw new IllegalArgumentException(type.toString());
 	}
 
-	private static final Pattern P_CHECK_ADDRESS = Pattern.compile("<option[^>]*>\\s*(.*?)\\s*</option>", Pattern.DOTALL);
-	private static final Pattern P_CHECK_FROM = Pattern.compile("Von:");
-	private static final Pattern P_CHECK_TO = Pattern.compile("Nach:");
+	private static final Pattern P_PRE_ADDRESS = Pattern.compile(
+			"<select[^>]*name=\"(REQ0JourneyStopsS0K|REQ0JourneyStopsZ0K|REQ0JourneyStops1\\.0K)\"[^>]*>\n(.*?)</select>", Pattern.DOTALL);
+	private static final Pattern P_ADDRESSES = Pattern.compile("<option[^>]*>\\s*(.*?)\\s*</option>", Pattern.DOTALL);
 
 	@Override
 	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
@@ -314,31 +314,39 @@ public final class BvgProvider extends AbstractHafasProvider
 		final String uri = connectionsQueryUri(from, via, to, date, dep, products);
 		final CharSequence page = ParserUtils.scrape(uri);
 
-		final Matcher mAddress = P_CHECK_ADDRESS.matcher(page);
+		List<Location> fromAddresses = null;
+		List<Location> viaAddresses = null;
+		List<Location> toAddresses = null;
 
-		final List<Location> addresses = new ArrayList<Location>();
-		while (mAddress.find())
+		final Matcher mPreAddress = P_PRE_ADDRESS.matcher(page);
+		while (mPreAddress.find())
 		{
-			final String address = ParserUtils.resolveEntities(mAddress.group(1));
-			if (!addresses.contains(address))
-				addresses.add(new Location(LocationType.ANY, 0, null, address + "!"));
-		}
+			final String type = mPreAddress.group(1);
+			final String options = mPreAddress.group(2);
 
-		if (addresses.isEmpty())
-		{
-			return queryConnections(uri, page);
-		}
-		else if (P_CHECK_FROM.matcher(page).find())
-		{
-			if (P_CHECK_TO.matcher(page).find())
-				return new QueryConnectionsResult(null, addresses, null);
+			final Matcher mAddresses = P_ADDRESSES.matcher(options);
+			final List<Location> addresses = new ArrayList<Location>();
+			while (mAddresses.find())
+			{
+				final String address = ParserUtils.resolveEntities(mAddresses.group(1)).trim();
+				if (!addresses.contains(address))
+					addresses.add(new Location(LocationType.ANY, 0, null, address + "!"));
+			}
+
+			if (type.equals("REQ0JourneyStopsS0K"))
+				fromAddresses = addresses;
+			else if (type.equals("REQ0JourneyStopsZ0K"))
+				toAddresses = addresses;
+			else if (type.equals("REQ0JourneyStops1.0K"))
+				viaAddresses = addresses;
 			else
-				return new QueryConnectionsResult(null, null, addresses);
+				throw new IllegalStateException(type);
 		}
+
+		if (fromAddresses != null || viaAddresses != null || toAddresses != null)
+			return new QueryConnectionsResult(fromAddresses, viaAddresses, toAddresses);
 		else
-		{
-			return new QueryConnectionsResult(addresses, null, null);
-		}
+			return queryConnections(uri, page);
 	}
 
 	@Override
