@@ -21,22 +21,20 @@ import java.util.List;
 
 import org.junit.Test;
 
-import de.schildbach.pte.VrtProvider;
+import de.schildbach.pte.DubProvider;
 import de.schildbach.pte.dto.Location;
-import de.schildbach.pte.dto.NearbyStationsResult;
-import de.schildbach.pte.dto.QueryDeparturesResult;
 
 /**
  * @author Andreas Schildbach
  */
-public class VrtProviderLiveTest
+public class DubProviderLiveTest
 {
-	private final VrtProvider provider = new VrtProvider();
+	private final DubProvider provider = new DubProvider();
 
 	@Test
 	public void autocompleteIncomplete() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("Kur");
+		final List<Location> autocompletes = provider.autocompleteStations("Airport");
 
 		list(autocompletes);
 	}
@@ -47,21 +45,5 @@ public class VrtProviderLiveTest
 		for (final Location autocomplete : autocompletes)
 			System.out.print(autocomplete.toDebugString() + " ");
 		System.out.println();
-	}
-
-	@Test
-	public void nearbyStation() throws Exception
-	{
-		final NearbyStationsResult result = provider.nearbyStations("Trier", 0, 0, 0, 0);
-
-		System.out.println(result.stations.size() + "  " + result.stations);
-	}
-
-	@Test
-	public void queryDepartures() throws Exception
-	{
-		final QueryDeparturesResult result = provider.queryDepartures("17001301", 0, false);
-
-		System.out.println(result.stationDepartures);
 	}
 }

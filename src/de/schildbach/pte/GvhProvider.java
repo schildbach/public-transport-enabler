@@ -17,10 +17,12 @@
 
 package de.schildbach.pte;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import de.schildbach.pte.dto.Location;
@@ -38,7 +40,7 @@ public class GvhProvider extends AbstractEfaProvider
 
 	public GvhProvider(final String additionalQueryParameter)
 	{
-		super(additionalQueryParameter);
+		super(API_BASE, additionalQueryParameter);
 	}
 
 	public NetworkId id()
@@ -55,13 +57,10 @@ public class GvhProvider extends AbstractEfaProvider
 		return false;
 	}
 
-	private static final String AUTOCOMPLETE_URI = API_BASE
-			+ "XSLT_TRIP_REQUEST2?outputFormat=XML&coordOutputFormat=WGS84&locationServerActive=1&type_origin=any&name_origin=%s";
-
 	@Override
-	protected String autocompleteUri(final CharSequence constraint)
+	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
-		return String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), "ISO-8859-1"));
+		return xmlStopfinderRequest(constraint);
 	}
 
 	private static final String NEARBY_STATION_URI = API_BASE

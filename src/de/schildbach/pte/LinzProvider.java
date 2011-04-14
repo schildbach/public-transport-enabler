@@ -34,6 +34,11 @@ public class LinzProvider extends AbstractEfaProvider
 	public static final String OLD_NETWORK_ID = "www.linzag.at";
 	public static final String API_BASE = "http://www.linzag.at/linz/";
 
+	public LinzProvider()
+	{
+		super(API_BASE, null);
+	}
+
 	public NetworkId id()
 	{
 		return NETWORK_ID;
@@ -46,15 +51,6 @@ public class LinzProvider extends AbstractEfaProvider
 				return true;
 
 		return false;
-	}
-
-	private static final String AUTOCOMPLETE_URI = API_BASE
-			+ "XSLT_TRIP_REQUEST2?outputFormat=XML&coordOutputFormat=WGS84&type_origin=any&name_origin=%s";
-
-	@Override
-	protected String autocompleteUri(final CharSequence constraint)
-	{
-		return String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), "ISO-8859-1"));
 	}
 
 	private static final String NEARBY_LATLON_URI = API_BASE

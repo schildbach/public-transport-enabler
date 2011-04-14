@@ -17,26 +17,21 @@
 
 package de.schildbach.pte.live;
 
-import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
 
-import de.schildbach.pte.KvvProvider;
-import de.schildbach.pte.NetworkProvider.WalkSpeed;
+import de.schildbach.pte.TleaProvider;
 import de.schildbach.pte.dto.Location;
-import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
-import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 
 /**
  * @author Andreas Schildbach
  */
-public class KvvProviderLiveTest
+public class TleaProviderLiveTest
 {
-	private final KvvProvider provider = new KvvProvider();
-	private static final String ALL_PRODUCTS = "IRSUTBFC";
+	private final TleaProvider provider = new TleaProvider();
 
 	@Test
 	public void autocompleteIncomplete() throws Exception
@@ -57,7 +52,7 @@ public class KvvProviderLiveTest
 	@Test
 	public void nearbyStation() throws Exception
 	{
-		final NearbyStationsResult result = provider.nearbyStations("Karlsruhe", 0, 0, 0, 0);
+		final NearbyStationsResult result = provider.nearbyStations("London", 0, 0, 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
 	}
@@ -65,19 +60,8 @@ public class KvvProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("119", 0, false);
+		final QueryDeparturesResult result = provider.queryDepartures("London", 0, false);
 
 		System.out.println(result.stationDepartures);
-	}
-
-	@Test
-	public void connectionBetweenAddresses() throws Exception
-	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, 48985089, 8402709, null,
-				"Konstanzer Straße 17, 76199 Karlsruhe, Deutschland"), null, new Location(LocationType.ADDRESS, 0, 49007706, 8356358, null,
-				"Durmersheimer Straße 6, 76185 Karlsruhe, Deutschland"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
-		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
-		System.out.println(moreResult);
 	}
 }

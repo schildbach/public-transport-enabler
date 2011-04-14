@@ -17,10 +17,12 @@
 
 package de.schildbach.pte;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import de.schildbach.pte.dto.Location;
@@ -36,6 +38,11 @@ public class MvvProvider extends AbstractEfaProvider
 	public static final String OLD_NETWORK_ID = "efa.mvv-muenchen.de";
 	private static final String API_BASE = "http://efa.mvv-muenchen.de/mobile/";
 
+	public MvvProvider()
+	{
+		super(API_BASE, null);
+	}
+
 	public NetworkId id()
 	{
 		return NETWORK_ID;
@@ -50,13 +57,10 @@ public class MvvProvider extends AbstractEfaProvider
 		return false;
 	}
 
-	private static final String AUTOCOMPLETE_URI = API_BASE
-			+ "XSLT_TRIP_REQUEST2?outputFormat=XML&coordOutputFormat=WGS84&locationServerActive=1&type_origin=any&name_origin=%s";
-
 	@Override
-	protected String autocompleteUri(final CharSequence constraint)
+	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
-		return String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), "ISO-8859-1"));
+		return xmlStopfinderRequest(constraint);
 	}
 
 	@Override

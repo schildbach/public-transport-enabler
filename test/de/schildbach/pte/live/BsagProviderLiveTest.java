@@ -17,9 +17,12 @@
 
 package de.schildbach.pte.live;
 
+import java.util.List;
+
 import org.junit.Test;
 
 import de.schildbach.pte.BsagProvider;
+import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.NearbyStationsResult;
 
 /**
@@ -28,6 +31,22 @@ import de.schildbach.pte.dto.NearbyStationsResult;
 public class BsagProviderLiveTest
 {
 	private final BsagProvider provider = new BsagProvider();
+
+	@Test
+	public void autocompleteIncomplete() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("Kur");
+
+		list(autocompletes);
+	}
+
+	private void list(final List<Location> autocompletes)
+	{
+		System.out.print(autocompletes.size() + " ");
+		for (final Location autocomplete : autocompletes)
+			System.out.print(autocomplete.toDebugString() + " ");
+		System.out.println();
+	}
 
 	@Test
 	public void nearbyStation() throws Exception

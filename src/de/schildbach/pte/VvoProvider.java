@@ -33,6 +33,11 @@ public class VvoProvider extends AbstractEfaProvider
 	public static final String OLD_NETWORK_ID = "efa.vvo-online.de";
 	private final static String API_BASE = "http://efa.vvo-online.de:8080/dvb/";
 
+	public VvoProvider()
+	{
+		super(API_BASE, null);
+	}
+
 	public NetworkId id()
 	{
 		return NETWORK_ID;
@@ -45,15 +50,6 @@ public class VvoProvider extends AbstractEfaProvider
 				return true;
 
 		return false;
-	}
-
-	private static final String AUTOCOMPLETE_URI = API_BASE
-			+ "XSLT_TRIP_REQUEST2?outputFormat=XML&coordOutputFormat=WGS84&type_origin=any&name_origin=%s";
-
-	@Override
-	protected String autocompleteUri(final CharSequence constraint)
-	{
-		return String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), "ISO-8859-1"));
 	}
 
 	@Override

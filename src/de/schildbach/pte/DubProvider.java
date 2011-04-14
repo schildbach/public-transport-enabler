@@ -34,6 +34,11 @@ public class DubProvider extends AbstractEfaProvider
 	public static final String OLD_NETWORK_ID = "wojhati.rta.ae";
 	private final static String API_BASE = "http://wojhati.rta.ae/dub/";
 
+	public DubProvider()
+	{
+		super(API_BASE, null);
+	}
+
 	public NetworkId id()
 	{
 		return NETWORK_ID;
@@ -52,15 +57,6 @@ public class DubProvider extends AbstractEfaProvider
 				return true;
 
 		return false;
-	}
-
-	private static final String AUTOCOMPLETE_URI = API_BASE
-			+ "XSLT_TRIP_REQUEST2?outputFormat=XML&coordOutputFormat=WGS84&locationServerActive=1&type_origin=any&name_origin=%s";
-
-	@Override
-	protected String autocompleteUri(final CharSequence constraint)
-	{
-		return String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), "ISO-8859-1"));
 	}
 
 	@Override

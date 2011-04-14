@@ -63,15 +63,16 @@ import de.schildbach.pte.util.XmlPullUtil;
  */
 public abstract class AbstractEfaProvider implements NetworkProvider
 {
-	final XmlPullParserFactory parserFactory;
-	final String additionalQueryParameter;
+	private final String apiBase;
+	private final String additionalQueryParameter;
+	private final XmlPullParserFactory parserFactory;
 
 	public AbstractEfaProvider()
 	{
-		this(null);
+		this(null, null);
 	}
 
-	public AbstractEfaProvider(final String additionalQueryParameter)
+	public AbstractEfaProvider(final String apiBase, final String additionalQueryParameter)
 	{
 		try
 		{
@@ -82,6 +83,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			throw new RuntimeException(x);
 		}
 
+		this.apiBase = apiBase;
 		this.additionalQueryParameter = additionalQueryParameter;
 	}
 
@@ -98,7 +100,85 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			return uri + "&" + additionalQueryParameter;
 	}
 
-	protected abstract String autocompleteUri(final CharSequence constraint);
+	protected List<Location> xmlStopfinderRequest(final CharSequence constraint) throws IOException
+	{
+		final StringBuilder uri = new StringBuilder(apiBase);
+		uri.append("XML_STOPFINDER_REQUEST?coordOutputFormat=WGS84&locationServerActive=1&name_sf=");
+		uri.append(ParserUtils.urlEncode(constraint.toString(), "ISO-8859-1"));
+		uri.append("&type_sf=any&SpEncId=0");
+		uri.append("&anyObjFilter_sf=126"); // 1=place 2=stop 4=street 8=address 16=crossing 32=poi 64=postcode
+		uri.append("&reducedAnyPostcodeObjFilter_sf=64&reducedAnyTooManyObjFilter_sf=2&useHouseNumberList=true&regionID_sf=1");
+		if (additionalQueryParameter != null)
+			uri.append('&').append(additionalQueryParameter);
+
+		InputStream is = null;
+		try
+		{
+			is = ParserUtils.scrapeInputStream(uri.toString());
+
+			final XmlPullParser pp = parserFactory.newPullParser();
+			pp.setInput(is, null);
+			assertItdRequest(pp);
+
+			XmlPullUtil.enter(pp, "itdRequest");
+
+			if (XmlPullUtil.test(pp, "clientHeaderLines"))
+				XmlPullUtil.next(pp);
+
+			if (XmlPullUtil.test(pp, "itdVersionInfo"))
+				XmlPullUtil.next(pp);
+
+			if (XmlPullUtil.test(pp, "itdInfoLinkList"))
+				XmlPullUtil.next(pp);
+
+			if (XmlPullUtil.test(pp, "serverMetaInfo"))
+				XmlPullUtil.next(pp);
+
+			final List<Location> results = new ArrayList<Location>();
+
+			XmlPullUtil.enter(pp, "itdStopFinderRequest");
+
+			XmlPullUtil.require(pp, "itdOdv");
+			if (!"sf".equals(pp.getAttributeValue(null, "usage")))
+				throw new IllegalStateException("cannot find <itdOdv usage=\"sf\" />");
+			XmlPullUtil.enter(pp, "itdOdv");
+
+			XmlPullUtil.require(pp, "itdOdvPlace");
+			XmlPullUtil.next(pp);
+
+			XmlPullUtil.enter(pp, "itdOdvName");
+
+			if (XmlPullUtil.test(pp, "itdMessage"))
+				XmlPullUtil.next(pp);
+
+			while (XmlPullUtil.test(pp, "odvNameElem"))
+				results.add(processOdvNameElem(pp, null));
+
+			XmlPullUtil.exit(pp, "itdOdvName");
+
+			XmlPullUtil.exit(pp, "itdOdv");
+
+			XmlPullUtil.exit(pp, "itdStopFinderRequest");
+
+			return results;
+		}
+		catch (final XmlPullParserException x)
+		{
+			throw new ParserException(x);
+		}
+		finally
+		{
+			if (is != null)
+				is.close();
+		}
+	}
+
+	private String autocompleteUri(final CharSequence constraint)
+	{
+		final String AUTOCOMPLETE_URI = apiBase + "XSLT_TRIP_REQUEST2?outputFormat=XML&coordOutputFormat=WGS84&type_origin=any&name_origin=%s";
+
+		return String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), "ISO-8859-1"));
+	}
 
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
