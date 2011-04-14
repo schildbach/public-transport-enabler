@@ -17,11 +17,9 @@
 
 package de.schildbach.pte;
 
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.util.ParserUtils;
@@ -52,12 +50,6 @@ public class BvbProvider extends AbstractEfaProvider
 				return true;
 
 		return false;
-	}
-
-	@Override
-	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
-	{
-		return xmlStopfinderRequest(constraint);
 	}
 
 	@Override
