@@ -516,24 +516,23 @@ public final class BvgProvider extends AbstractHafasProvider
 
 						final Location departure = location(tDep);
 
-						ParserUtils.parseEuropeanTime(time, tDep[8]);
-						if (lastTime != null && time.getTime().before(lastTime))
-							time.add(Calendar.DAY_OF_YEAR, 1);
-						lastTime = time.getTime();
-						final Date departureTime = time.getTime();
-						if (firstDepartureTime == null)
-							firstDepartureTime = departureTime;
-
 						final String departurePosition = !mDetails.group(1).equals("&nbsp;") ? ParserUtils.resolveEntities(mDetails.group(1)) : null;
 
 						if (tArr[2].equals("walk"))
 						{
-							final boolean grabFromNext = track.size() == 1;
-							final String[] tArr2 = grabFromNext ? tracks.get(iTrack + 1).get(0) : tArr;
+							ParserUtils.parseEuropeanTime(time, tDep[tDep[8].length() > 0 ? 8 : 7]);
+							if (lastTime != null && time.getTime().before(lastTime))
+								time.add(Calendar.DAY_OF_YEAR, 1);
+							lastTime = time.getTime();
+							final Date departureTime = time.getTime();
+							if (firstDepartureTime == null)
+								firstDepartureTime = departureTime;
+
+							final String[] tArr2 = track.size() == 1 ? tracks.get(iTrack + 1).get(0) : tArr;
 
 							final Location arrival = location(tArr2);
 
-							ParserUtils.parseEuropeanTime(time, tArr2[grabFromNext ? 8 : 7]);
+							ParserUtils.parseEuropeanTime(time, tArr2[tArr2[7].length() > 0 ? 7 : 8]);
 							if (lastTime != null && time.getTime().before(lastTime))
 								time.add(Calendar.DAY_OF_YEAR, 1);
 							lastTime = time.getTime();
@@ -546,6 +545,14 @@ public final class BvgProvider extends AbstractHafasProvider
 						}
 						else
 						{
+							ParserUtils.parseEuropeanTime(time, tDep[8]);
+							if (lastTime != null && time.getTime().before(lastTime))
+								time.add(Calendar.DAY_OF_YEAR, 1);
+							lastTime = time.getTime();
+							final Date departureTime = time.getTime();
+							if (firstDepartureTime == null)
+								firstDepartureTime = departureTime;
+
 							final List<Stop> intermediateStops = new LinkedList<Stop>();
 							for (final String[] tStop : track.subList(1, track.size() - 1))
 							{
