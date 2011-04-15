@@ -36,7 +36,7 @@ public class AtcProviderLiveTest
 	@Test
 	public void autocomplete() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("Bologna");
+		final List<Location> autocompletes = provider.autocompleteStations("ponte");
 
 		list(autocompletes);
 	}

@@ -36,7 +36,7 @@ public class BvbProviderLiveTest
 	@Test
 	public void autocomplete() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("Basel");
+		final List<Location> autocompletes = provider.autocompleteStations("Haupt");
 
 		list(autocompletes);
 	}

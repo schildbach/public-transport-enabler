@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.util.Color;
 import de.schildbach.pte.util.ParserUtils;
 
@@ -60,7 +61,7 @@ public class GvhProvider extends AbstractEfaProvider
 	@Override
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
-		return xmlStopfinderRequest(constraint);
+		return xmlStopfinderRequest(new Location(LocationType.ANY, 0, null, constraint.toString()));
 	}
 
 	private static final String NEARBY_STATION_URI = API_BASE

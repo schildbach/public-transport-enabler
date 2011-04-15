@@ -40,7 +40,7 @@ public class LinzProviderLiveTest
 	@Test
 	public void autocompleteIncomplete() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("Linz, H");
+		final List<Location> autocompletes = provider.autocompleteStations("Friedhof");
 
 		list(autocompletes);
 	}
@@ -56,7 +56,7 @@ public class LinzProviderLiveTest
 	@Test
 	public void autocompleteCity() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("Linz");
+		final List<Location> autocompletes = provider.autocompleteStations("Leonding");
 
 		list(autocompletes);
 	}

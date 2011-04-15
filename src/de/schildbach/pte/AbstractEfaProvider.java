@@ -100,14 +100,18 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			return uri + "&" + additionalQueryParameter;
 	}
 
-	protected List<Location> xmlStopfinderRequest(final CharSequence constraint) throws IOException
+	protected List<Location> xmlStopfinderRequest(final Location constraint) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(apiBase);
-		uri.append("XML_STOPFINDER_REQUEST?coordOutputFormat=WGS84&locationServerActive=1&name_sf=");
-		uri.append(ParserUtils.urlEncode(constraint.toString(), "ISO-8859-1"));
-		uri.append("&type_sf=any&SpEncId=0");
-		uri.append("&anyObjFilter_sf=126"); // 1=place 2=stop 4=street 8=address 16=crossing 32=poi 64=postcode
-		uri.append("&reducedAnyPostcodeObjFilter_sf=64&reducedAnyTooManyObjFilter_sf=2&useHouseNumberList=true&regionID_sf=1");
+		uri.append("XML_STOPFINDER_REQUEST?coordOutputFormat=WGS84&locationServerActive=1");
+		appendLocation(uri, constraint, "sf");
+		if (constraint.type == LocationType.ANY)
+		{
+			uri.append("&SpEncId=0");
+			uri.append("&anyObjFilter_sf=126"); // 1=place 2=stop 4=street 8=address 16=crossing 32=poi 64=postcode
+			uri.append("&reducedAnyPostcodeObjFilter_sf=64&reducedAnyTooManyObjFilter_sf=2");
+			uri.append("&useHouseNumberList=true&regionID_sf=1");
+		}
 		if (additionalQueryParameter != null)
 			uri.append('&').append(additionalQueryParameter);
 
@@ -146,13 +150,26 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			XmlPullUtil.require(pp, "itdOdvPlace");
 			XmlPullUtil.next(pp);
 
+			XmlPullUtil.require(pp, "itdOdvName");
+			final String nameState = pp.getAttributeValue(null, "state");
 			XmlPullUtil.enter(pp, "itdOdvName");
 
 			if (XmlPullUtil.test(pp, "itdMessage"))
 				XmlPullUtil.next(pp);
 
-			while (XmlPullUtil.test(pp, "odvNameElem"))
-				results.add(processOdvNameElem(pp, null));
+			if ("identified".equals(nameState) || "list".equals(nameState))
+			{
+				while (XmlPullUtil.test(pp, "odvNameElem"))
+					results.add(processOdvNameElem(pp, null));
+			}
+			else if ("notidentified".equals(nameState))
+			{
+				// do nothing
+			}
+			else
+			{
+				throw new RuntimeException("unknown nameState '" + nameState + "' on " + uri);
+			}
 
 			XmlPullUtil.exit(pp, "itdOdvName");
 

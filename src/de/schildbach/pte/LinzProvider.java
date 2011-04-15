@@ -17,12 +17,15 @@
 
 package de.schildbach.pte;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.util.ParserUtils;
 
 /**
@@ -47,10 +50,16 @@ public class LinzProvider extends AbstractEfaProvider
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
 		for (final Capability capability : capabilities)
-			if (capability == Capability.DEPARTURES || capability == Capability.CONNECTIONS)
+			if (capability == Capability.AUTOCOMPLETE_ONE_LINE || capability == Capability.DEPARTURES || capability == Capability.CONNECTIONS)
 				return true;
 
 		return false;
+	}
+
+	@Override
+	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
+	{
+		return xmlStopfinderRequest(new Location(LocationType.STATION, 0, null, constraint.toString()));
 	}
 
 	private static final String NEARBY_LATLON_URI = API_BASE

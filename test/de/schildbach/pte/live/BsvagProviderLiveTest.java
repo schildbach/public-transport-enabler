@@ -35,7 +35,7 @@ public class BsvagProviderLiveTest
 	@Test
 	public void autocompleteIncomplete() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("Kur");
+		final List<Location> autocompletes = provider.autocompleteStations("Kurf");
 
 		list(autocompletes);
 	}
