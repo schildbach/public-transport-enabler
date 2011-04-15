@@ -59,9 +59,13 @@ public final class BvgProvider extends AbstractHafasProvider
 	private static final String BASE_URL = "http://mobil.bvg.de";
 	private static final String API_BASE = BASE_URL + "/Fahrinfo/bin/";
 
-	public BvgProvider()
+	private final String additionalQueryParameter;
+
+	public BvgProvider(final String additionalQueryParameter)
 	{
 		super(null, null);
+
+		this.additionalQueryParameter = additionalQueryParameter;
 	}
 
 	public NetworkId id()
@@ -78,7 +82,6 @@ public final class BvgProvider extends AbstractHafasProvider
 		return true;
 	}
 
-	private static final String AUTOCOMPLETE_NAME_URL = API_BASE + "stboard.bin/dox/dox?input=%s";
 	private static final Pattern P_SINGLE_NAME = Pattern.compile(".*?Haltestelleninfo.*?<strong>(.*?)</strong>.*?input=(\\d+)&.*?", Pattern.DOTALL);
 	private static final Pattern P_MULTI_NAME = Pattern.compile("<a href=\\\"/Fahrinfo/bin/stboard\\.bin/dox.*?input=(\\d+)&.*?\">\\s*(.*?)\\s*</a>",
 			Pattern.DOTALL);
@@ -86,10 +89,14 @@ public final class BvgProvider extends AbstractHafasProvider
 	@Override
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
-		final List<Location> results = new ArrayList<Location>();
+		final StringBuilder uri = new StringBuilder(API_BASE).append("stboard.bin/dox/dox");
+		uri.append("?input=").append(ParserUtils.urlEncode(constraint.toString()));
+		if (additionalQueryParameter != null)
+			uri.append('&').append(additionalQueryParameter);
 
-		final String uri = String.format(AUTOCOMPLETE_NAME_URL, ParserUtils.urlEncode(constraint.toString()));
-		final CharSequence page = ParserUtils.scrape(uri);
+		final CharSequence page = ParserUtils.scrape(uri.toString());
+
+		final List<Location> results = new ArrayList<Location>();
 
 		final Matcher mSingle = P_SINGLE_NAME.matcher(page);
 		if (mSingle.matches())
@@ -270,6 +277,9 @@ public final class BvgProvider extends AbstractHafasProvider
 			// FIXME if (p == 'C')
 			// TODO Ruftaxi wäre wohl &REQ0JourneyProduct_prod_section_0_7=1
 		}
+
+		if (additionalQueryParameter != null)
+			uri.append('&').append(additionalQueryParameter);
 
 		return uri.toString();
 	}
@@ -627,6 +637,8 @@ public final class BvgProvider extends AbstractHafasProvider
 		final StringBuilder uri = new StringBuilder();
 		uri.append(DEPARTURE_URL_LIVE);
 		uri.append("input=").append(stationId);
+		if (additionalQueryParameter != null)
+			uri.append('&').append(additionalQueryParameter);
 		return uri.toString();
 	}
 
@@ -638,6 +650,8 @@ public final class BvgProvider extends AbstractHafasProvider
 		uri.append(DEPARTURE_URL_PLAN);
 		uri.append("input=").append(stationId);
 		uri.append("&maxJourneys=").append(maxDepartures != 0 ? maxDepartures : 50);
+		if (additionalQueryParameter != null)
+			uri.append('&').append(additionalQueryParameter);
 		return uri.toString();
 	}
 
