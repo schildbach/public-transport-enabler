@@ -36,7 +36,7 @@ public interface NetworkProvider
 {
 	public enum Capability
 	{
-		NEARBY_STATIONS, DEPARTURES, CONNECTIONS
+		AUTOCOMPLETE_ONE_LINE, NEARBY_STATIONS, DEPARTURES, CONNECTIONS
 	}
 
 	public enum WalkSpeed
