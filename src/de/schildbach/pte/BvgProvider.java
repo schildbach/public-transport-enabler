@@ -288,7 +288,11 @@ public final class BvgProvider extends AbstractHafasProvider
 		}
 
 		if (location.name != null)
+		{
 			uri.append("&REQ0JourneyStops").append(paramSuffix).append("G=").append(ParserUtils.urlEncode(location.name));
+			if (location.type != LocationType.ANY)
+				uri.append('!');
+		}
 	}
 
 	private static final int locationTypeValue(final Location location)
