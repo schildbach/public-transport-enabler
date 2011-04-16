@@ -319,7 +319,7 @@ public final class BvgProvider extends AbstractHafasProvider
 
 	private static final Pattern P_PRE_ADDRESS = Pattern.compile(
 			"<select[^>]*name=\"(REQ0JourneyStopsS0K|REQ0JourneyStopsZ0K|REQ0JourneyStops1\\.0K)\"[^>]*>\n(.*?)</select>", Pattern.DOTALL);
-	private static final Pattern P_ADDRESSES = Pattern.compile("<option[^>]*>\\s*(.*?)\\s*</option>", Pattern.DOTALL);
+	private static final Pattern P_ADDRESSES = Pattern.compile("<option[^>]*>\\s*(.*?)\\s*(?:\\[([^\\]]*)\\]\\s*)?</option>", Pattern.DOTALL);
 
 	@Override
 	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
@@ -335,26 +335,40 @@ public final class BvgProvider extends AbstractHafasProvider
 		final Matcher mPreAddress = P_PRE_ADDRESS.matcher(page);
 		while (mPreAddress.find())
 		{
-			final String type = mPreAddress.group(1);
+			final String optionsType = mPreAddress.group(1);
 			final String options = mPreAddress.group(2);
 
 			final Matcher mAddresses = P_ADDRESSES.matcher(options);
 			final List<Location> addresses = new ArrayList<Location>();
 			while (mAddresses.find())
 			{
-				final String address = ParserUtils.resolveEntities(mAddresses.group(1)).trim();
-				if (!addresses.contains(address))
-					addresses.add(new Location(LocationType.ANY, 0, null, address + "!"));
+				final String name = ParserUtils.resolveEntities(mAddresses.group(1)).trim();
+				final String typeStr = ParserUtils.resolveEntities(mAddresses.group(2));
+				final LocationType type;
+				if (typeStr == null)
+					type = LocationType.ANY;
+				else if ("Haltestelle".equals(typeStr))
+					type = LocationType.STATION;
+				else if ("Sonderziel".equals(typeStr))
+					type = LocationType.POI;
+				else if ("Straße Hausnummer".equals(typeStr))
+					type = LocationType.ADDRESS;
+				else
+					throw new IllegalStateException("cannot handle: '" + typeStr + "'");
+
+				final Location location = new Location(type, 0, null, name + "!");
+				if (!addresses.contains(location))
+					addresses.add(location);
 			}
 
-			if (type.equals("REQ0JourneyStopsS0K"))
+			if (optionsType.equals("REQ0JourneyStopsS0K"))
 				fromAddresses = addresses;
-			else if (type.equals("REQ0JourneyStopsZ0K"))
+			else if (optionsType.equals("REQ0JourneyStopsZ0K"))
 				toAddresses = addresses;
-			else if (type.equals("REQ0JourneyStops1.0K"))
+			else if (optionsType.equals("REQ0JourneyStops1.0K"))
 				viaAddresses = addresses;
 			else
-				throw new IllegalStateException(type);
+				throw new IllegalStateException("cannot handle: '" + optionsType + "'");
 		}
 
 		if (fromAddresses != null || viaAddresses != null || toAddresses != null)
