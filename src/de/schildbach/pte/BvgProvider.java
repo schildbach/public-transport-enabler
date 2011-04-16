@@ -312,6 +312,8 @@ public final class BvgProvider extends AbstractHafasProvider
 			return 1;
 		if (type == LocationType.ADDRESS)
 			return 2;
+		if (type == LocationType.POI)
+			return 4;
 		if (type == LocationType.ANY)
 			return 255;
 		throw new IllegalArgumentException(type.toString());
@@ -396,6 +398,8 @@ public final class BvgProvider extends AbstractHafasProvider
 			type = LocationType.ANY;
 		else if ("HST".equals(typeStr))
 			type = LocationType.STATION;
+		else if ("POI".equals(typeStr))
+			type = LocationType.POI;
 		else if ("ADR".equals(typeStr))
 			type = LocationType.ADDRESS;
 		else
