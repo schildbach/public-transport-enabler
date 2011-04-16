@@ -155,7 +155,8 @@ public class TflProvider extends AbstractEfaProvider
 		LINES.put("UVictoria", new int[] { Color.parseColor("#00A1DE"), Color.WHITE });
 		LINES.put("UWaterloo & City", new int[] { Color.parseColor("#76D2B6"), Color.BLACK });
 
-		LINES.put("SDLR", new int[] { Color.WHITE, Color.parseColor("#00B2A9") });
+		LINES.put("SDLR", new int[] { Color.parseColor("#00B2A9"), Color.WHITE });
+		LINES.put("SLO", new int[] { Color.parseColor("#f46f1a"), Color.WHITE });
 
 		LINES.put("TTramlink 1", new int[] { Color.rgb(193, 215, 46), Color.WHITE });
 		LINES.put("TTramlink 2", new int[] { Color.rgb(193, 215, 46), Color.WHITE });
@@ -168,7 +169,8 @@ public class TflProvider extends AbstractEfaProvider
 		final int[] lineColors = LINES.get(line);
 		if (lineColors != null)
 			return lineColors;
-		else
-			return super.lineColors(line);
+		if (line.startsWith("SLO"))
+			return LINES.get("SLO");
+		return super.lineColors(line);
 	}
 }
