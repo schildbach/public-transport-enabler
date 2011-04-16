@@ -23,6 +23,7 @@ import org.junit.Test;
 
 import de.schildbach.pte.DubProvider;
 import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.dto.NearbyStationsResult;
 
 /**
  * @author Andreas Schildbach
@@ -45,5 +46,13 @@ public class DubProviderLiveTest
 		for (final Location autocomplete : autocompletes)
 			System.out.print(autocomplete.toDebugString() + " ");
 		System.out.println();
+	}
+
+	@Test
+	public void nearbyStationsByCoordinate() throws Exception
+	{
+		final NearbyStationsResult result = provider.nearbyStations(null, 25269008, 55312672, 0, 0);
+
+		System.out.println(result.stations.size() + "  " + result.stations);
 	}
 }

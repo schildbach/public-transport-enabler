@@ -58,6 +58,14 @@ public class SydneyProviderLiveTest
 	}
 
 	@Test
+	public void nearbyStationsByCoordinate() throws Exception
+	{
+		final NearbyStationsResult result = provider.nearbyStations(null, -32823911, 151462824, 0, 0);
+
+		System.out.println(result.stations.size() + "  " + result.stations);
+	}
+
+	@Test
 	public void queryDepartures() throws Exception
 	{
 		final QueryDeparturesResult result = provider.queryDepartures("10101452", 0, false);

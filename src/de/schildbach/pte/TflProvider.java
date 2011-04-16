@@ -81,12 +81,6 @@ public class TflProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	protected String nearbyLatLonUri(int lat, int lon)
-	{
-		return null;
-	}
-
-	@Override
 	protected String departuresQueryUri(final String stationId, final int maxDepartures)
 	{
 		final StringBuilder uri = new StringBuilder();

@@ -74,12 +74,6 @@ public class GvhProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	protected String nearbyLatLonUri(final int lat, final int lon)
-	{
-		return null;
-	}
-
-	@Override
 	protected String departuresQueryUri(String stationId, int maxDepartures)
 	{
 		final StringBuilder uri = new StringBuilder();

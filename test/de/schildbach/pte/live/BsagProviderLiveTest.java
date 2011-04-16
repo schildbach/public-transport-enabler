@@ -55,4 +55,12 @@ public class BsagProviderLiveTest
 
 		System.out.println(result.stations.size() + "  " + result.stations);
 	}
+
+	@Test
+	public void nearbyStationsByCoordinate() throws Exception
+	{
+		final NearbyStationsResult result = provider.nearbyStations(null, 53076146, 8806858, 0, 0);
+
+		System.out.println(result.stations.size() + "  " + result.stations);
+	}
 }

@@ -190,6 +190,89 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		}
 	}
 
+	protected List<Location> xmlCoordRequest(final int lat, final int lon, final int maxDistance, final int maxStations) throws IOException
+	{
+		final StringBuilder uri = new StringBuilder(apiBase);
+		uri.append("XML_COORD_REQUEST?coord=");
+		uri.append(String.format("%2.6f:%2.6f:WGS84", latLonToDouble(lon), latLonToDouble(lat)));
+		uri.append("&coordOutputFormat=WGS84&coordListOutputFormat=STRING");
+		uri.append("&max=").append(maxStations != 0 ? maxStations : 50);
+		uri.append("&inclFilter=1&radius_1=").append(maxDistance != 0 ? maxDistance : 1320);
+		uri.append("&type_1=STOP");
+		if (additionalQueryParameter != null)
+			uri.append('&').append(additionalQueryParameter);
+
+		InputStream is = null;
+		try
+		{
+			is = ParserUtils.scrapeInputStream(uri.toString());
+
+			final XmlPullParser pp = parserFactory.newPullParser();
+			pp.setInput(is, null);
+			assertItdRequest(pp);
+
+			XmlPullUtil.enter(pp, "itdRequest");
+
+			if (XmlPullUtil.test(pp, "clientHeaderLines"))
+				XmlPullUtil.next(pp);
+
+			if (XmlPullUtil.test(pp, "itdVersionInfo"))
+				XmlPullUtil.next(pp);
+
+			if (XmlPullUtil.test(pp, "itdInfoLinkList"))
+				XmlPullUtil.next(pp);
+
+			if (XmlPullUtil.test(pp, "serverMetaInfo"))
+				XmlPullUtil.next(pp);
+
+			XmlPullUtil.enter(pp, "itdCoordInfoRequest");
+
+			XmlPullUtil.enter(pp, "itdCoordInfo");
+
+			XmlPullUtil.enter(pp, "coordInfoRequest");
+			XmlPullUtil.exit(pp, "coordInfoRequest");
+
+			final List<Location> results = new ArrayList<Location>();
+
+			if (XmlPullUtil.test(pp, "coordInfoItemList"))
+			{
+				XmlPullUtil.enter(pp, "coordInfoItemList");
+
+				while (XmlPullUtil.test(pp, "coordInfoItem"))
+				{
+					if (!"STOP".equals(pp.getAttributeValue(null, "type")))
+						throw new RuntimeException("unknown type");
+
+					final int id = XmlPullUtil.intAttr(pp, "id");
+					final String name = normalizeLocationName(XmlPullUtil.attr(pp, "name"));
+					final String place = normalizeLocationName(XmlPullUtil.attr(pp, "locality"));
+
+					XmlPullUtil.enter(pp, "coordInfoItem");
+
+					// FIXME this is always only one coordinate
+					final Point coord = processItdPathCoordinates(pp).get(0);
+
+					XmlPullUtil.exit(pp, "coordInfoItem");
+
+					results.add(new Location(LocationType.STATION, id, coord.lat, coord.lon, place, name));
+				}
+
+				XmlPullUtil.exit(pp, "coordInfoItemList");
+			}
+
+			return results;
+		}
+		catch (final XmlPullParserException x)
+		{
+			throw new ParserException(x);
+		}
+		finally
+		{
+			if (is != null)
+				is.close();
+		}
+	}
+
 	private String autocompleteUri(final CharSequence constraint)
 	{
 		final String AUTOCOMPLETE_URI = apiBase + "XSLT_TRIP_REQUEST2?outputFormat=XML&coordOutputFormat=WGS84&type_origin=any&name_origin=%s";
@@ -370,18 +453,17 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		return new Location(LocationType.STATION, id, lat, lon, place, name);
 	}
 
-	protected abstract String nearbyLatLonUri(int lat, int lon);
-
 	protected abstract String nearbyStationUri(String stationId);
 
 	public NearbyStationsResult nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
 			throws IOException
 	{
+		if (lat != 0 || lon != 0)
+			return new NearbyStationsResult(xmlCoordRequest(lat, lon, maxDistance, maxStations));
+
 		String uri = null;
 		if (uri == null && stationId != null)
 			uri = wrapUri(nearbyStationUri(stationId));
-		if (uri == null && (lat != 0 || lon != 0))
-			uri = wrapUri(nearbyLatLonUri(lat, lon));
 		if (uri == null)
 			throw new IllegalArgumentException("at least one of stationId or lat/lon must be given");
 

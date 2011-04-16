@@ -61,12 +61,6 @@ public class BsvagProvider extends AbstractEfaProvider
 		return xmlStopfinderRequest(new Location(LocationType.STATION, 0, null, constraint.toString()));
 	}
 
-	@Override
-	protected String nearbyLatLonUri(final int lat, final int lon)
-	{
-		return null;
-	}
-
 	private static final String NEARBY_STATION_URI = API_BASE
 			+ "XSLT_DM_REQUEST"
 			+ "?outputFormat=XML&coordOutputFormat=WGS84&type_dm=stop&name_dm=%s&itOptionsActive=1&ptOptionsActive=1&useProxFootSearch=1&mergeDep=1&useAllStops=1&mode=direct";
