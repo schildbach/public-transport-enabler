@@ -26,6 +26,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -295,6 +296,9 @@ public final class BvgProvider extends AbstractHafasProvider
 		{
 			uri.append("&REQ0JourneyStops").append(paramSuffix).append("X=").append(location.lon);
 			uri.append("&REQ0JourneyStops").append(paramSuffix).append("Y=").append(location.lat);
+			if (location.name == null)
+				uri.append("&REQ0JourneyStops").append(paramSuffix).append("O=")
+						.append(ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%.6f, %.6f", location.lat / 1E6, location.lon / 1E6)));
 		}
 
 		if (location.name != null)
@@ -430,15 +434,13 @@ public final class BvgProvider extends AbstractHafasProvider
 	private static final Pattern P_CONNECTIONS_ALL_DETAILS = Pattern.compile("<a href=\"([^\"]*)\"[^>]*>Details f&uuml;r alle</a>");
 	private static final Pattern P_CONNECTIONS_HEAD = Pattern.compile(".*?" //
 			+ "<td headers=\"ivuAnfFrom\"[^>]*>\n" //
-			+ "([^\n]*)\n" // from name
-			+ "<a href=\"[^\"]*location=(?:(\\d+)|),(?:(\\w+)|),WGS84,(\\d+\\.\\d+),(\\d+\\.\\d+)&.*?" // from id, lat,
-																										// lon
+			+ "(?:([^\n]*)\n)?" // from name
+			+ "<a href=\"[^\"]*location=(?:(\\d+)|),(?:(\\w+)|),WGS84,(\\d+\\.\\d+),(\\d+\\.\\d+)&.*?" // fr id,lat,lon
 			+ "(?:<td headers=\"ivuAnfVia1\"[^>]*>\n" //
 			+ "([^\n]*)<.*?)?" // via name
 			+ "<td headers=\"ivuAnfTo\"[^>]*>\n" //
-			+ "([^\n]*)\n" // to name
-			+ "<a href=\"[^\"]*location=(?:(\\d+)|),(?:(\\w+)|),WGS84,(\\d+\\.\\d+),(\\d+\\.\\d+)&.*?" // to id, lat,
-																										// lon
+			+ "(?:([^\n]*)\n)?" // to name
+			+ "<a href=\"[^\"]*location=(?:(\\d+)|),(?:(\\w+)|),WGS84,(\\d+\\.\\d+),(\\d+\\.\\d+)&.*?" // to id,lat,lon
 			+ "<td headers=\"ivuAnfTime\"[^>]*>.., (\\d{2}\\.\\d{2}\\.\\d{2}) \\d{1,2}:\\d{2}</td>.*?" // date
 			+ "(?:<a href=\"([^\"]*)\" title=\"fr&uuml;here Verbindungen\"[^>]*?>.*?)?" // linkEarlier
 			+ "(?:<a href=\"([^\"]*)\" title=\"sp&auml;tere Verbindungen\"[^>]*?>.*?)?" // linkLater
@@ -489,11 +491,11 @@ public final class BvgProvider extends AbstractHafasProvider
 		final Matcher mHead = P_CONNECTIONS_HEAD.matcher(page);
 		if (mHead.matches())
 		{
-			final Location from = location(mHead.group(3), mHead.group(2), mHead.group(5), mHead.group(4),
-					ParserUtils.resolveEntities(mHead.group(1)));
+			final Location from = mHead.group(1) != null ? location(mHead.group(3), mHead.group(2), mHead.group(5), mHead.group(4),
+					ParserUtils.resolveEntities(mHead.group(1))) : null;
 			final Location via = mHead.group(6) != null ? location(null, null, null, null, ParserUtils.resolveEntities(mHead.group(6))) : null;
-			final Location to = location(mHead.group(9), mHead.group(8), mHead.group(11), mHead.group(10),
-					ParserUtils.resolveEntities(mHead.group(7)));
+			final Location to = mHead.group(7) != null ? location(mHead.group(9), mHead.group(8), mHead.group(11), mHead.group(10),
+					ParserUtils.resolveEntities(mHead.group(7))) : null;
 			final Calendar currentDate = new GregorianCalendar(timeZone());
 			currentDate.clear();
 			ParserUtils.parseGermanDate(currentDate, mHead.group(12));
