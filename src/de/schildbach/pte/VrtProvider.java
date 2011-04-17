@@ -71,17 +71,6 @@ public class VrtProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	protected String departuresQueryUri(final String stationId, final int maxDepartures)
-	{
-		final StringBuilder uri = new StringBuilder();
-		uri.append(API_BASE).append("XSLT_DM_REQUEST");
-		uri.append("?type_dm=stop");
-		uri.append("&name_dm=").append(ParserUtils.urlEncode(stationId));
-		uri.append("&useRealtime=1");
-		return uri.toString();
-	}
-
-	@Override
 	protected String connectionsQueryUri(final Location from, final Location via, final Location to, final Date date, final boolean dep,
 			final String products, final WalkSpeed walkSpeed)
 	{

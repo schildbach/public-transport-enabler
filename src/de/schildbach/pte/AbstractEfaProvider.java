@@ -1045,17 +1045,20 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				+ "'");
 	}
 
-	protected abstract String departuresQueryUri(String stationId, int maxDepartures);
-
 	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
-		final String uri = wrapUri(departuresQueryUri(stationId, maxDepartures)
-				+ "&outputFormat=XML&coordOutputFormat=WGS84&mode=direct&deleteAssignedStops_dm=" + (equivs ? "0" : "1"));
+		final StringBuilder uri = new StringBuilder();
+		uri.append(apiBase).append("XSLT_DM_REQUEST");
+		uri.append("?outputFormat=XML&coordOutputFormat=WGS84&type_dm=stop&useRealtime=1&mode=direct");
+		uri.append("&name_dm=").append(ParserUtils.urlEncode(stationId));
+		uri.append("&deleteAssignedStops_dm=").append(equivs ? '0' : '1');
+		if (maxDepartures > 0)
+			uri.append("&limit=").append(maxDepartures);
 
 		InputStream is = null;
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri);
+			is = ParserUtils.scrapeInputStream(wrapUri(uri.toString()));
 
 			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
