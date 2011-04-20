@@ -218,9 +218,15 @@ public class OebbProvider extends AbstractHafasProvider
 			}
 			if (p == 'B')
 			{
-				uri.append("&REQ0JourneyProduct_prod_section_0_6=1&REQ0JourneyProduct_prod_section_0_11=1");
+				uri.append("&REQ0JourneyProduct_prod_section_0_6=1");
 				if (via != null)
-					uri.append("&REQ0JourneyProduct_prod_section_1_6=1&REQ0JourneyProduct_prod_section_1_11=1");
+					uri.append("&REQ0JourneyProduct_prod_section_1_6=1");
+			}
+			if (p == 'P')
+			{
+				uri.append("&REQ0JourneyProduct_prod_section_0_11=1");
+				if (via != null)
+					uri.append("&REQ0JourneyProduct_prod_section_1_11=1");
 			}
 			if (p == 'F')
 			{

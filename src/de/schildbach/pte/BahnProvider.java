@@ -183,9 +183,15 @@ public final class BahnProvider extends AbstractHafasProvider
 			}
 			if (p == 'B')
 			{
-				uri.append("&REQ0JourneyProduct_prod_section_0_5=1&REQ0JourneyProduct_prod_section_0_9=1");
+				uri.append("&REQ0JourneyProduct_prod_section_0_5=1");
 				if (via != null)
-					uri.append("&REQ0JourneyProduct_prod_section_1_5=1&REQ0JourneyProduct_prod_section_1_9=1");
+					uri.append("&REQ0JourneyProduct_prod_section_1_5=1");
+			}
+			if (p == 'P')
+			{
+				uri.append("&REQ0JourneyProduct_prod_section_0_9=1");
+				if (via != null)
+					uri.append("&REQ0JourneyProduct_prod_section_1_9=1");
 			}
 			if (p == 'F')
 			{

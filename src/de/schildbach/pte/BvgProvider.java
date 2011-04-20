@@ -269,14 +269,18 @@ public final class BvgProvider extends AbstractHafasProvider
 				if (via != null)
 					uri.append("&REQ0JourneyProduct_prod_section_1_3=1");
 			}
+			if (p == 'P')
+			{
+				uri.append("&REQ0JourneyProduct_prod_section_0_7=1");
+				if (via != null)
+					uri.append("&REQ0JourneyProduct_prod_section_1_7=1");
+			}
 			if (p == 'F')
 			{
 				uri.append("&REQ0JourneyProduct_prod_section_0_4=1");
 				if (via != null)
 					uri.append("&REQ0JourneyProduct_prod_section_1_4=1");
 			}
-			// FIXME if (p == 'C')
-			// TODO Ruftaxi wäre wohl &REQ0JourneyProduct_prod_section_0_7=1
 		}
 
 		if (additionalQueryParameter != null)

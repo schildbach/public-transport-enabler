@@ -1883,7 +1883,9 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			if (p == 'T')
 				params.append("&inclMOT_3=on&inclMOT_4=on");
 			if (p == 'B')
-				params.append("&inclMOT_5=on&inclMOT_6=on&inclMOT_7=on&inclMOT_10=on");
+				params.append("&inclMOT_5=on&inclMOT_6=on&inclMOT_7=on");
+			if (p == 'P')
+				params.append("&inclMOT_10=on");
 			if (p == 'F')
 				params.append("&inclMOT_9=on");
 			if (p == 'C')

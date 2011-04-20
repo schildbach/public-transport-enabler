@@ -160,9 +160,11 @@ public class RmvProvider extends AbstractHafasProvider
 			if (p == 'T')
 				uri.append("&REQ0JourneyProduct_prod_list_5=0000010000000000");
 			if (p == 'B')
-				uri.append("&REQ0JourneyProduct_prod_list_6=0000001101000000");
+				uri.append("&REQ0JourneyProduct_prod_list_6=0000001100000000");
+			if (p == 'P')
+				uri.append("&REQ0JourneyProduct_prod_list_7=0000000001000000");
 			if (p == 'F')
-				uri.append("&REQ0JourneyProduct_prod_list_7=0000000010000000");
+				uri.append("&REQ0JourneyProduct_prod_list_8=0000000010000000");
 			// FIXME if (p == 'C')
 		}
 
