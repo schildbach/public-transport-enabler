@@ -636,6 +636,8 @@ public class RmvProvider extends AbstractHafasProvider
 				return "RSE" + number;
 			if (type.equals("R"))
 				return "R" + number;
+			if (type.equals("ZUG"))
+				return "R" + number;
 			if (type.equals("S"))
 				return "SS" + number;
 			if (type.equals("U"))
