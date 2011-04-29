@@ -38,7 +38,7 @@ public class VrrProvider extends AbstractEfaProvider
 
 	public VrrProvider()
 	{
-		super(API_BASE, null);
+		super(API_BASE, null, false);
 	}
 
 	public NetworkId id()

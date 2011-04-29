@@ -35,7 +35,7 @@ public class VvsProvider extends AbstractEfaProvider
 
 	public VvsProvider()
 	{
-		super(API_BASE, null);
+		super(API_BASE, null, true);
 	}
 
 	public NetworkId id()
@@ -66,19 +66,5 @@ public class VvsProvider extends AbstractEfaProvider
 	protected String nearbyStationUri(final String stationId)
 	{
 		return String.format(NEARBY_STATION_URI, ParserUtils.urlEncode(stationId, "ISO-8859-1"));
-	}
-
-	@Override
-	protected void appendLocation(final StringBuilder uri, final Location location, final String paramSuffix)
-	{
-		if (location.type == LocationType.POI && location.hasId())
-		{
-			uri.append("&type_").append(paramSuffix).append("=poiID");
-			uri.append("&name_").append(paramSuffix).append("=").append(location.id);
-		}
-		else
-		{
-			super.appendLocation(uri, location, paramSuffix);
-		}
 	}
 }

@@ -67,6 +67,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 {
 	private final String apiBase;
 	private final String additionalQueryParameter;
+	private final boolean canAcceptPoiID;
 	private final XmlPullParserFactory parserFactory;
 
 	public AbstractEfaProvider()
@@ -75,6 +76,11 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 	}
 
 	public AbstractEfaProvider(final String apiBase, final String additionalQueryParameter)
+	{
+		this(apiBase, additionalQueryParameter, false);
+	}
+
+	public AbstractEfaProvider(final String apiBase, final String additionalQueryParameter, final boolean canAcceptPoiID)
 	{
 		try
 		{
@@ -87,6 +93,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 		this.apiBase = apiBase;
 		this.additionalQueryParameter = additionalQueryParameter;
+		this.canAcceptPoiID = canAcceptPoiID;
 	}
 
 	protected TimeZone timeZone()
@@ -410,15 +417,15 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			type = LocationType.STATION;
 			id = Integer.parseInt(stopIdStr);
 		}
-		else if (stopIdStr == null && idStr == null && (lat != 0 || lon != 0))
-		{
-			type = LocationType.ADDRESS;
-			id = 0;
-		}
 		else if (poiIdStr != null)
 		{
 			type = LocationType.POI;
 			id = Integer.parseInt(poiIdStr);
+		}
+		else if (stopIdStr == null && idStr == null && (lat != 0 || lon != 0))
+		{
+			type = LocationType.ADDRESS;
+			id = 0;
 		}
 		else if (streetIdStr != null)
 		{
@@ -1888,7 +1895,12 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 	protected void appendLocation(final StringBuilder uri, final Location location, final String paramSuffix)
 	{
-		if ((location.type == LocationType.POI || location.type == LocationType.ADDRESS) && location.hasLocation())
+		if (canAcceptPoiID && location.type == LocationType.POI && location.hasId())
+		{
+			uri.append("&type_").append(paramSuffix).append("=poiID");
+			uri.append("&name_").append(paramSuffix).append("=").append(location.id);
+		}
+		else if ((location.type == LocationType.POI || location.type == LocationType.ADDRESS) && location.hasLocation())
 		{
 			uri.append("&type_").append(paramSuffix).append("=coord");
 			uri.append("&name_").append(paramSuffix).append("=")
