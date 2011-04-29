@@ -1468,9 +1468,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			}
 			XmlPullUtil.exit(pp, "itdDateTime");
 
-			final Calendar departureTime = new GregorianCalendar(timeZone());
-			final Calendar arrivalTime = new GregorianCalendar(timeZone());
-			final Calendar stopTime = new GregorianCalendar(timeZone());
+			final Calendar time = new GregorianCalendar(timeZone());
 			final List<Connection> connections = new ArrayList<Connection>();
 
 			if (XmlPullUtil.jumpToStartTag(pp, null, "itdRouteList"))
@@ -1512,9 +1510,20 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 						if (XmlPullUtil.test(pp, "itdMapItemList"))
 							XmlPullUtil.next(pp);
 						XmlPullUtil.require(pp, "itdDateTime");
-						processItdDateTime(pp, departureTime);
+						processItdDateTime(pp, time);
+						final Date departureTime = time.getTime();
 						if (firstDepartureTime == null)
-							firstDepartureTime = departureTime.getTime();
+							firstDepartureTime = departureTime;
+						final Date departureTargetTime;
+						if (XmlPullUtil.test(pp, "itdDateTimeTarget"))
+						{
+							processItdDateTime(pp, time);
+							departureTargetTime = time.getTime();
+						}
+						else
+						{
+							departureTargetTime = null;
+						}
 						XmlPullUtil.exit(pp, "itdPoint");
 
 						XmlPullUtil.test(pp, "itdPoint");
@@ -1530,15 +1539,26 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 						if (XmlPullUtil.test(pp, "itdMapItemList"))
 							XmlPullUtil.next(pp);
 						XmlPullUtil.require(pp, "itdDateTime");
-						processItdDateTime(pp, arrivalTime);
-						lastArrivalTime = arrivalTime.getTime();
+						processItdDateTime(pp, time);
+						final Date arrivalTime = time.getTime();
+						lastArrivalTime = arrivalTime;
+						final Date arrivalTargetTime;
+						if (XmlPullUtil.test(pp, "itdDateTimeTarget"))
+						{
+							processItdDateTime(pp, time);
+							arrivalTargetTime = time.getTime();
+						}
+						else
+						{
+							arrivalTargetTime = null;
+						}
 						XmlPullUtil.exit(pp, "itdPoint");
 
 						XmlPullUtil.test(pp, "itdMeansOfTransport");
 						final String productName = pp.getAttributeValue(null, "productName");
 						if ("Fussweg".equals(productName) || "Taxi".equals(productName))
 						{
-							final int min = (int) (arrivalTime.getTimeInMillis() - departureTime.getTimeInMillis()) / 1000 / 60;
+							final int min = (int) (arrivalTime.getTime() - departureTime.getTime()) / 1000 / 60;
 
 							XmlPullUtil.enter(pp, "itdMeansOfTransport");
 							XmlPullUtil.exit(pp, "itdMeansOfTransport");
@@ -1609,13 +1629,13 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 											pp.getAttributeValue(null, "platformName"));
 									XmlPullUtil.enter(pp, "itdPoint");
 									XmlPullUtil.require(pp, "itdDateTime");
-									final boolean success1 = processItdDateTime(pp, stopTime);
-									final boolean success2 = XmlPullUtil.test(pp, "itdDateTime") ? processItdDateTime(pp, stopTime) : false;
+									final boolean success1 = processItdDateTime(pp, time);
+									final boolean success2 = XmlPullUtil.test(pp, "itdDateTime") ? processItdDateTime(pp, time) : false;
 									XmlPullUtil.exit(pp, "itdPoint");
 
 									if (success1 || success2)
-										intermediateStops.add(new Stop(new Location(LocationType.STATION, stopId, null, stopName), stopPosition,
-												stopTime.getTime()));
+										intermediateStops.add(new Stop(new Location(LocationType.STATION, stopId, null, stopName), stopPosition, time
+												.getTime()));
 								}
 								XmlPullUtil.exit(pp, "itdStopSeq");
 
@@ -1637,8 +1657,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 							if (XmlPullUtil.test(pp, "itdPathCoordinates"))
 								path = processItdPathCoordinates(pp);
 
-							parts.add(new Connection.Trip(line, destination, departureTime.getTime(), departurePosition, departure, arrivalTime
-									.getTime(), arrivalPosition, arrival, intermediateStops, path));
+							parts.add(new Connection.Trip(line, destination, departureTime, departurePosition, departure, arrivalTime,
+									arrivalPosition, arrival, intermediateStops, path));
 						}
 
 						XmlPullUtil.exit(pp, "itdPartialRoute");
