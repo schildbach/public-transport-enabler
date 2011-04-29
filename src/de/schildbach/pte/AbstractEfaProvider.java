@@ -131,21 +131,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
-			assertItdRequest(pp);
-
-			XmlPullUtil.enter(pp, "itdRequest");
-
-			if (XmlPullUtil.test(pp, "clientHeaderLines"))
-				XmlPullUtil.next(pp);
-
-			if (XmlPullUtil.test(pp, "itdVersionInfo"))
-				XmlPullUtil.next(pp);
-
-			if (XmlPullUtil.test(pp, "itdInfoLinkList"))
-				XmlPullUtil.next(pp);
-
-			if (XmlPullUtil.test(pp, "serverMetaInfo"))
-				XmlPullUtil.next(pp);
+			enterItdRequest(pp);
 
 			final List<Location> results = new ArrayList<Location>();
 
@@ -218,21 +204,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
-			assertItdRequest(pp);
-
-			XmlPullUtil.enter(pp, "itdRequest");
-
-			if (XmlPullUtil.test(pp, "clientHeaderLines"))
-				XmlPullUtil.next(pp);
-
-			if (XmlPullUtil.test(pp, "itdVersionInfo"))
-				XmlPullUtil.next(pp);
-
-			if (XmlPullUtil.test(pp, "itdInfoLinkList"))
-				XmlPullUtil.next(pp);
-
-			if (XmlPullUtil.test(pp, "serverMetaInfo"))
-				XmlPullUtil.next(pp);
+			enterItdRequest(pp);
 
 			XmlPullUtil.enter(pp, "itdCoordInfoRequest");
 
@@ -300,7 +272,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
-			assertItdRequest(pp);
+			enterItdRequest(pp);
 
 			final List<Location> results = new ArrayList<Location>();
 
@@ -483,7 +455,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
-			assertItdRequest(pp);
+			enterItdRequest(pp);
 
 			if (!XmlPullUtil.jumpToStartTag(pp, null, "itdOdv") || !"dm".equals(pp.getAttributeValue(null, "usage")))
 				throw new IllegalStateException("cannot find <itdOdv usage=\"dm\" />");
@@ -1071,21 +1043,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
-			assertItdRequest(pp);
-
-			XmlPullUtil.enter(pp, "itdRequest");
-
-			if (XmlPullUtil.test(pp, "clientHeaderLines"))
-				XmlPullUtil.next(pp);
-
-			if (XmlPullUtil.test(pp, "itdVersionInfo"))
-				XmlPullUtil.next(pp);
-
-			if (XmlPullUtil.test(pp, "itdInfoLinkList"))
-				XmlPullUtil.next(pp);
-
-			if (XmlPullUtil.test(pp, "serverMetaInfo"))
-				XmlPullUtil.next(pp);
+			enterItdRequest(pp);
 
 			XmlPullUtil.enter(pp, "itdDepartureMonitorRequest");
 
@@ -1367,12 +1325,9 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		{
 			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
-			assertItdRequest(pp);
+			final String sessionId = enterItdRequest(pp);
 
-			final String sessionId = XmlPullUtil.attr(pp, "sessionID");
-
-			if (!XmlPullUtil.jumpToStartTag(pp, null, "itdTripRequest"))
-				throw new IllegalStateException("cannot find <itdTripRequest />");
+			XmlPullUtil.require(pp, "itdTripRequest");
 			final String requestId = XmlPullUtil.attr(pp, "requestID");
 			XmlPullUtil.enter(pp, "itdTripRequest");
 
@@ -2034,9 +1989,29 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		return LINES.get(line.charAt(0));
 	}
 
-	private void assertItdRequest(final XmlPullParser pp) throws XmlPullParserException, IOException
+	private String enterItdRequest(final XmlPullParser pp) throws XmlPullParserException, IOException
 	{
-		if (!XmlPullUtil.jumpToStartTag(pp, null, "itdRequest"))
-			throw new IOException("cannot find <itdRequest />");
+		if (pp.getEventType() == XmlPullParser.START_DOCUMENT)
+			pp.next();
+
+		XmlPullUtil.require(pp, "itdRequest");
+
+		final String sessionId = XmlPullUtil.attr(pp, "sessionID");
+
+		XmlPullUtil.enter(pp, "itdRequest");
+
+		if (XmlPullUtil.test(pp, "clientHeaderLines"))
+			XmlPullUtil.next(pp);
+
+		if (XmlPullUtil.test(pp, "itdVersionInfo"))
+			XmlPullUtil.next(pp);
+
+		if (XmlPullUtil.test(pp, "itdInfoLinkList"))
+			XmlPullUtil.next(pp);
+
+		if (XmlPullUtil.test(pp, "serverMetaInfo"))
+			XmlPullUtil.next(pp);
+
+		return sessionId;
 	}
 }
