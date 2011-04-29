@@ -1252,22 +1252,33 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		return null;
 	}
 
-	private void processItdDateTime(final XmlPullParser pp, final Calendar calendar) throws XmlPullParserException, IOException
+	private boolean processItdDateTime(final XmlPullParser pp, final Calendar calendar) throws XmlPullParserException, IOException
 	{
 		XmlPullUtil.enter(pp);
 		calendar.clear();
-		processItdDate(pp, calendar);
-		processItdTime(pp, calendar);
+		final boolean success = processItdDate(pp, calendar);
+		if (success)
+			processItdTime(pp, calendar);
 		XmlPullUtil.exit(pp);
+
+		return success;
 	}
 
-	private void processItdDate(final XmlPullParser pp, final Calendar calendar) throws XmlPullParserException, IOException
+	private boolean processItdDate(final XmlPullParser pp, final Calendar calendar) throws XmlPullParserException, IOException
 	{
 		XmlPullUtil.require(pp, "itdDate");
-		calendar.set(Calendar.YEAR, Integer.parseInt(pp.getAttributeValue(null, "year")));
-		calendar.set(Calendar.MONTH, Integer.parseInt(pp.getAttributeValue(null, "month")) - 1);
-		calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(pp.getAttributeValue(null, "day")));
+		final int year = Integer.parseInt(pp.getAttributeValue(null, "year"));
+		final int month = Integer.parseInt(pp.getAttributeValue(null, "month")) - 1;
+		final int day = Integer.parseInt(pp.getAttributeValue(null, "day"));
 		XmlPullUtil.next(pp);
+
+		if (year == 0)
+			return false;
+
+		calendar.set(Calendar.YEAR, year);
+		calendar.set(Calendar.MONTH, month);
+		calendar.set(Calendar.DAY_OF_MONTH, day);
+		return true;
 	}
 
 	private void processItdTime(final XmlPullParser pp, final Calendar calendar) throws XmlPullParserException, IOException
@@ -1589,10 +1600,13 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 											pp.getAttributeValue(null, "platformName"));
 									XmlPullUtil.enter(pp, "itdPoint");
 									XmlPullUtil.require(pp, "itdDateTime");
-									processItdDateTime(pp, stopTime);
+									final boolean success1 = processItdDateTime(pp, stopTime);
+									final boolean success2 = XmlPullUtil.test(pp, "itdDateTime") ? processItdDateTime(pp, stopTime) : false;
 									XmlPullUtil.exit(pp, "itdPoint");
-									intermediateStops.add(new Stop(new Location(LocationType.STATION, stopId, null, stopName), stopPosition, stopTime
-											.getTime()));
+
+									if (success1 || success2)
+										intermediateStops.add(new Stop(new Location(LocationType.STATION, stopId, null, stopName), stopPosition,
+												stopTime.getTime()));
 								}
 								XmlPullUtil.exit(pp, "itdStopSeq");
 
