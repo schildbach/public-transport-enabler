@@ -1611,12 +1611,17 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 								XmlPullUtil.exit(pp, "itdStopSeq");
 
 								// remove first and last, because they are not intermediate
-								if (intermediateStops.get(0).location.id != departureId)
-									throw new IllegalStateException();
-								if (intermediateStops.get(intermediateStops.size() - 1).location.id != arrivalId)
-									throw new IllegalStateException();
-								intermediateStops.remove(0);
-								intermediateStops.remove(intermediateStops.size() - 1);
+								final int size = intermediateStops.size();
+								if (size >= 2)
+								{
+									if (intermediateStops.get(size - 1).location.id != arrivalId)
+										throw new IllegalStateException();
+									intermediateStops.remove(size - 1);
+
+									if (intermediateStops.get(0).location.id != departureId)
+										throw new IllegalStateException();
+									intermediateStops.remove(0);
+								}
 							}
 
 							List<Point> path = null;
