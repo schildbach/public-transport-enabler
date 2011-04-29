@@ -18,9 +18,6 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import de.schildbach.pte.dto.Location;
@@ -72,39 +69,6 @@ public class VvsProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	protected String connectionsQueryUri(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final String products, final WalkSpeed walkSpeed)
-	{
-		final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
-		final DateFormat TIME_FORMAT = new SimpleDateFormat("HHmm");
-
-		final StringBuilder uri = new StringBuilder();
-		uri.append(API_BASE);
-		uri.append("XSLT_TRIP_REQUEST2");
-
-		uri.append("?language=de");
-		appendCommonConnectionParams(uri);
-
-		appendLocation(uri, from, "origin");
-		appendLocation(uri, to, "destination");
-		if (via != null)
-			appendLocation(uri, via, "via");
-
-		uri.append("&itdDate=").append(ParserUtils.urlEncode(DATE_FORMAT.format(date)));
-		uri.append("&itdTime=").append(ParserUtils.urlEncode(TIME_FORMAT.format(date)));
-		uri.append("&itdTripDateTimeDepArr=").append(dep ? "dep" : "arr");
-
-		uri.append("&ptOptionsActive=1");
-		uri.append("&changeSpeed=").append(WALKSPEED_MAP.get(walkSpeed));
-		uri.append(productParams(products));
-
-		uri.append("&locationServerActive=1");
-		uri.append("&useRealtime=1");
-
-		return uri.toString();
-	}
-
-	@Override
 	protected void appendLocation(final StringBuilder uri, final Location location, final String paramSuffix)
 	{
 		if (location.type == LocationType.POI && location.hasId())
@@ -116,18 +80,5 @@ public class VvsProvider extends AbstractEfaProvider
 		{
 			super.appendLocation(uri, location, paramSuffix);
 		}
-	}
-
-	@Override
-	protected String commandLink(final String sessionId, final String requestId, final String command)
-	{
-		final StringBuilder uri = new StringBuilder();
-		uri.append(API_BASE);
-		uri.append("XSLT_TRIP_REQUEST2");
-		uri.append("?sessionID=").append(sessionId);
-		uri.append("&requestID=").append(requestId);
-		appendCommonConnectionParams(uri);
-		uri.append("&command=").append(command);
-		return uri.toString();
 	}
 }

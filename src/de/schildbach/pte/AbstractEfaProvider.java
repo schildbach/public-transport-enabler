@@ -19,6 +19,8 @@ package de.schildbach.pte;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Currency;
@@ -1834,12 +1836,49 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		throw new UnsupportedOperationException();
 	}
 
-	protected abstract String connectionsQueryUri(Location from, Location via, Location to, Date date, boolean dep, String products,
-			WalkSpeed walkSpeed);
+	private String connectionsQueryUri(final Location from, final Location via, final Location to, final Date date, final boolean dep,
+			final String products, final WalkSpeed walkSpeed)
+	{
+		final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
+		final DateFormat TIME_FORMAT = new SimpleDateFormat("HHmm");
 
-	protected abstract String commandLink(String sessionId, String requestId, String command);
+		final StringBuilder uri = new StringBuilder(apiBase);
+		uri.append("XSLT_TRIP_REQUEST2");
 
-	protected static final void appendCommonConnectionParams(final StringBuilder uri)
+		uri.append("?language=de");
+		appendCommonConnectionParams(uri);
+
+		appendLocation(uri, from, "origin");
+		appendLocation(uri, to, "destination");
+		if (via != null)
+			appendLocation(uri, via, "via");
+
+		uri.append("&itdDate=").append(ParserUtils.urlEncode(DATE_FORMAT.format(date)));
+		uri.append("&itdTime=").append(ParserUtils.urlEncode(TIME_FORMAT.format(date)));
+		uri.append("&itdTripDateTimeDepArr=").append(dep ? "dep" : "arr");
+
+		uri.append("&ptOptionsActive=1");
+		uri.append("&changeSpeed=").append(WALKSPEED_MAP.get(walkSpeed));
+		uri.append(productParams(products));
+
+		uri.append("&locationServerActive=1");
+		uri.append("&useRealtime=1");
+
+		return uri.toString();
+	}
+
+	private String commandLink(final String sessionId, final String requestId, final String command)
+	{
+		final StringBuilder uri = new StringBuilder(apiBase);
+		uri.append("XSLT_TRIP_REQUEST2");
+		uri.append("?sessionID=").append(sessionId);
+		uri.append("&requestID=").append(requestId);
+		appendCommonConnectionParams(uri);
+		uri.append("&command=").append(command);
+		return uri.toString();
+	}
+
+	private static final void appendCommonConnectionParams(final StringBuilder uri)
 	{
 		uri.append("&outputFormat=XML");
 		uri.append("&coordListOutputFormat=STRING");

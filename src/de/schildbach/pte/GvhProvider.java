@@ -18,9 +18,6 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,52 +68,6 @@ public class GvhProvider extends AbstractEfaProvider
 	protected String nearbyStationUri(final String stationId)
 	{
 		return String.format(NEARBY_STATION_URI, ParserUtils.urlEncode(stationId, "ISO-8859-1"));
-	}
-
-	@Override
-	protected String connectionsQueryUri(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final String products, final WalkSpeed walkSpeed)
-	{
-		final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
-		final DateFormat TIME_FORMAT = new SimpleDateFormat("HHmm");
-
-		final StringBuilder uri = new StringBuilder();
-		uri.append(API_BASE);
-		uri.append("XSLT_TRIP_REQUEST2");
-
-		uri.append("?language=de");
-		appendCommonConnectionParams(uri);
-
-		appendLocation(uri, from, "origin");
-		appendLocation(uri, to, "destination");
-		if (via != null)
-			appendLocation(uri, via, "via");
-
-		uri.append("&itdDate=").append(ParserUtils.urlEncode(DATE_FORMAT.format(date)));
-		uri.append("&itdTime=").append(ParserUtils.urlEncode(TIME_FORMAT.format(date)));
-		uri.append("&itdTripDateTimeDepArr=").append(dep ? "dep" : "arr");
-
-		uri.append("&ptOptionsActive=1");
-		uri.append("&changeSpeed=").append(WALKSPEED_MAP.get(walkSpeed));
-		uri.append(productParams(products));
-
-		uri.append("&locationServerActive=1");
-		uri.append("&useRealtime=1");
-
-		return uri.toString();
-	}
-
-	@Override
-	protected String commandLink(final String sessionId, final String requestId, final String command)
-	{
-		final StringBuilder uri = new StringBuilder();
-		uri.append(API_BASE);
-		uri.append("XSLT_TRIP_REQUEST2");
-		uri.append("?sessionID=").append(sessionId);
-		uri.append("&requestID=").append(requestId);
-		appendCommonConnectionParams(uri);
-		uri.append("&command=").append(command);
-		return uri.toString();
 	}
 
 	private static final Map<String, int[]> LINES = new HashMap<String, int[]>();
