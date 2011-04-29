@@ -1935,33 +1935,50 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			return location.name;
 	}
 
-	protected static final String productParams(final String products)
+	private static final String productParams(final String products)
 	{
 		if (products == null)
 			return "";
 
 		final StringBuilder params = new StringBuilder("&includedMeans=checkbox");
 
+		boolean hasI = false;
 		for (final char p : products.toCharArray())
 		{
 			if (p == 'I' || p == 'R')
+			{
 				params.append("&inclMOT_0=on");
+				if (p == 'I')
+					hasI = true;
+			}
+
 			if (p == 'S')
 				params.append("&inclMOT_1=on");
+
 			if (p == 'U')
 				params.append("&inclMOT_2=on");
+
 			if (p == 'T')
 				params.append("&inclMOT_3=on&inclMOT_4=on");
+
 			if (p == 'B')
 				params.append("&inclMOT_5=on&inclMOT_6=on&inclMOT_7=on");
+
 			if (p == 'P')
 				params.append("&inclMOT_10=on");
+
 			if (p == 'F')
 				params.append("&inclMOT_9=on");
+
 			if (p == 'C')
 				params.append("&inclMOT_8=on");
+
 			params.append("&inclMOT_11=on"); // TODO always show 'others', for now
 		}
+
+		// workaround for highspeed trains: fails when you want highspeed, but not regional
+		if (!hasI)
+			params.append("&lineRestriction=403"); // means: all but ice
 
 		return params.toString();
 	}
