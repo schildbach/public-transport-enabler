@@ -1890,6 +1890,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 		uri.append("&locationServerActive=1");
 		uri.append("&useRealtime=1");
+		uri.append("&useProxFootSearch=1"); // walk if it makes journeys quicker
 
 		return uri.toString();
 	}
