@@ -1456,7 +1456,18 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 							throw new IllegalStateException();
 						final int departureId = Integer.parseInt(pp.getAttributeValue(null, "stopID"));
 						final String departureName = normalizeLocationName(pp.getAttributeValue(null, "name"));
-						final Location departure = new Location(LocationType.STATION, departureId, null, departureName);
+						final int departureLat, departureLon;
+						if ("WGS84".equals(pp.getAttributeValue(null, "mapName")))
+						{
+							departureLat = Integer.parseInt(pp.getAttributeValue(null, "y"));
+							departureLon = Integer.parseInt(pp.getAttributeValue(null, "x"));
+						}
+						else
+						{
+							departureLat = 0;
+							departureLon = 0;
+						}
+						final Location departure = new Location(LocationType.STATION, departureId, departureLat, departureLon, null, departureName);
 						if (firstDeparture == null)
 							firstDeparture = departure;
 						final String departurePosition = normalizePlatform(pp.getAttributeValue(null, "platform"),
@@ -1486,7 +1497,18 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 							throw new IllegalStateException();
 						final int arrivalId = Integer.parseInt(pp.getAttributeValue(null, "stopID"));
 						final String arrivalName = normalizeLocationName(pp.getAttributeValue(null, "name"));
-						final Location arrival = new Location(LocationType.STATION, arrivalId, null, arrivalName);
+						final int arrivalLat, arrivalLon;
+						if ("WGS84".equals(pp.getAttributeValue(null, "mapName")))
+						{
+							arrivalLat = Integer.parseInt(pp.getAttributeValue(null, "y"));
+							arrivalLon = Integer.parseInt(pp.getAttributeValue(null, "x"));
+						}
+						else
+						{
+							arrivalLat = 0;
+							arrivalLon = 0;
+						}
+						final Location arrival = new Location(LocationType.STATION, arrivalId, arrivalLat, arrivalLon, null, arrivalName);
 						lastArrival = arrival;
 						final String arrivalPosition = normalizePlatform(pp.getAttributeValue(null, "platform"),
 								pp.getAttributeValue(null, "platformName"));
@@ -1583,6 +1605,17 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 								{
 									final int stopId = Integer.parseInt(pp.getAttributeValue(null, "stopID"));
 									final String stopName = normalizeLocationName(pp.getAttributeValue(null, "name"));
+									final int stopLat, stopLon;
+									if ("WGS84".equals(pp.getAttributeValue(null, "mapName")))
+									{
+										stopLat = Integer.parseInt(pp.getAttributeValue(null, "y"));
+										stopLon = Integer.parseInt(pp.getAttributeValue(null, "x"));
+									}
+									else
+									{
+										stopLat = 0;
+										stopLon = 0;
+									}
 									final String stopPosition = normalizePlatform(pp.getAttributeValue(null, "platform"),
 											pp.getAttributeValue(null, "platformName"));
 									XmlPullUtil.enter(pp, "itdPoint");
@@ -1592,8 +1625,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 									XmlPullUtil.exit(pp, "itdPoint");
 
 									if (success1 || success2)
-										intermediateStops.add(new Stop(new Location(LocationType.STATION, stopId, null, stopName), stopPosition, time
-												.getTime()));
+										intermediateStops.add(new Stop(new Location(LocationType.STATION, stopId, stopLat, stopLon, null, stopName),
+												stopPosition, time.getTime()));
 								}
 								XmlPullUtil.exit(pp, "itdStopSeq");
 
