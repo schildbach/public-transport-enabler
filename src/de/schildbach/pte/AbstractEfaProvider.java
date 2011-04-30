@@ -101,18 +101,20 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		return TimeZone.getTimeZone("Europe/Berlin");
 	}
 
-	private String wrapUri(final String uri)
+	private final void appendCommonRequestParams(final StringBuilder uri)
 	{
-		if (additionalQueryParameter == null)
-			return uri;
-		else
-			return uri + "&" + additionalQueryParameter;
+		uri.append("?outputFormat=XML");
+		uri.append("&coordOutputFormat=WGS84");
+		if (additionalQueryParameter != null)
+			uri.append('&').append(additionalQueryParameter);
 	}
 
 	protected List<Location> xmlStopfinderRequest(final Location constraint) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(apiBase);
-		uri.append("XML_STOPFINDER_REQUEST?coordOutputFormat=WGS84&locationServerActive=1");
+		uri.append("XML_STOPFINDER_REQUEST");
+		appendCommonRequestParams(uri);
+		uri.append("&locationServerActive=1");
 		appendLocation(uri, constraint, "sf");
 		if (constraint.type == LocationType.ANY)
 		{
@@ -121,8 +123,6 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			uri.append("&reducedAnyPostcodeObjFilter_sf=64&reducedAnyTooManyObjFilter_sf=2");
 			uri.append("&useHouseNumberList=true&regionID_sf=1");
 		}
-		if (additionalQueryParameter != null)
-			uri.append('&').append(additionalQueryParameter);
 
 		InputStream is = null;
 		try
@@ -188,14 +188,13 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 	protected List<Location> xmlCoordRequest(final int lat, final int lon, final int maxDistance, final int maxStations) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(apiBase);
-		uri.append("XML_COORD_REQUEST?coord=");
-		uri.append(String.format("%2.6f:%2.6f:WGS84", latLonToDouble(lon), latLonToDouble(lat)));
-		uri.append("&coordOutputFormat=WGS84&coordListOutputFormat=STRING");
+		uri.append("XML_COORD_REQUEST");
+		appendCommonRequestParams(uri);
+		uri.append("&coord=").append(String.format("%2.6f:%2.6f:WGS84", latLonToDouble(lon), latLonToDouble(lat)));
+		uri.append("&coordListOutputFormat=STRING");
 		uri.append("&max=").append(maxStations != 0 ? maxStations : 50);
 		uri.append("&inclFilter=1&radius_1=").append(maxDistance != 0 ? maxDistance : 1320);
 		uri.append("&type_1=STOP");
-		if (additionalQueryParameter != null)
-			uri.append('&').append(additionalQueryParameter);
 
 		InputStream is = null;
 		try
@@ -254,21 +253,18 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		}
 	}
 
-	private String autocompleteUri(final CharSequence constraint)
-	{
-		final String AUTOCOMPLETE_URI = apiBase + "XSLT_TRIP_REQUEST2?outputFormat=XML&coordOutputFormat=WGS84&type_origin=any&name_origin=%s";
-
-		return String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), "ISO-8859-1"));
-	}
-
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
-		final String uri = wrapUri(autocompleteUri(constraint));
+		final StringBuilder uri = new StringBuilder(apiBase);
+		uri.append("XSLT_TRIP_REQUEST2");
+		appendCommonRequestParams(uri);
+		uri.append("&type_origin=any");
+		uri.append("&name_origin=").append(ParserUtils.urlEncode(constraint.toString(), "ISO-8859-1"));
 
 		InputStream is = null;
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri);
+			is = ParserUtils.scrapeInputStream(uri.toString());
 
 			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
@@ -444,7 +440,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 		String uri = null;
 		if (uri == null && stationId != null)
-			uri = wrapUri(nearbyStationUri(stationId));
+			uri = nearbyStationUri(stationId);
 		if (uri == null)
 			throw new IllegalArgumentException("at least one of stationId or lat/lon must be given");
 
@@ -1028,9 +1024,10 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
-		final StringBuilder uri = new StringBuilder();
-		uri.append(apiBase).append("XSLT_DM_REQUEST");
-		uri.append("?outputFormat=XML&coordOutputFormat=WGS84&type_dm=stop&useRealtime=1&mode=direct");
+		final StringBuilder uri = new StringBuilder(apiBase);
+		uri.append("XSLT_DM_REQUEST");
+		appendCommonRequestParams(uri);
+		uri.append("&type_dm=stop&useRealtime=1&mode=direct");
 		uri.append("&name_dm=").append(ParserUtils.urlEncode(stationId));
 		uri.append("&deleteAssignedStops_dm=").append(equivs ? '0' : '1');
 		if (maxDepartures > 0)
@@ -1039,7 +1036,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		InputStream is = null;
 		try
 		{
-			is = ParserUtils.scrapeInputStream(wrapUri(uri.toString()));
+			is = ParserUtils.scrapeInputStream(uri.toString());
 
 			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
@@ -1286,10 +1283,107 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		return (double) value / 1000000;
 	}
 
+	private String xsltTripRequest2Uri(final Location from, final Location via, final Location to, final Date date, final boolean dep,
+			final String products, final WalkSpeed walkSpeed)
+	{
+		final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
+		final DateFormat TIME_FORMAT = new SimpleDateFormat("HHmm");
+
+		final StringBuilder uri = new StringBuilder(apiBase);
+		uri.append("XSLT_TRIP_REQUEST2");
+		appendCommonRequestParams(uri);
+
+		uri.append("&sessionID=0");
+		uri.append("&requestID=0");
+		uri.append("&language=de");
+
+		appendCommonXsltTripRequest2Params(uri);
+
+		appendLocation(uri, from, "origin");
+		appendLocation(uri, to, "destination");
+		if (via != null)
+			appendLocation(uri, via, "via");
+
+		uri.append("&itdDate=").append(ParserUtils.urlEncode(DATE_FORMAT.format(date)));
+		uri.append("&itdTime=").append(ParserUtils.urlEncode(TIME_FORMAT.format(date)));
+		uri.append("&itdTripDateTimeDepArr=").append(dep ? "dep" : "arr");
+
+		uri.append("&ptOptionsActive=1");
+		uri.append("&changeSpeed=").append(WALKSPEED_MAP.get(walkSpeed));
+
+		if (products != null)
+		{
+			uri.append("&includedMeans=checkbox");
+
+			boolean hasI = false;
+			for (final char p : products.toCharArray())
+			{
+				if (p == 'I' || p == 'R')
+				{
+					uri.append("&inclMOT_0=on");
+					if (p == 'I')
+						hasI = true;
+				}
+
+				if (p == 'S')
+					uri.append("&inclMOT_1=on");
+
+				if (p == 'U')
+					uri.append("&inclMOT_2=on");
+
+				if (p == 'T')
+					uri.append("&inclMOT_3=on&inclMOT_4=on");
+
+				if (p == 'B')
+					uri.append("&inclMOT_5=on&inclMOT_6=on&inclMOT_7=on");
+
+				if (p == 'P')
+					uri.append("&inclMOT_10=on");
+
+				if (p == 'F')
+					uri.append("&inclMOT_9=on");
+
+				if (p == 'C')
+					uri.append("&inclMOT_8=on");
+
+				uri.append("&inclMOT_11=on"); // TODO always show 'others', for now
+			}
+
+			// workaround for highspeed trains: fails when you want highspeed, but not regional
+			if (!hasI)
+				uri.append("&lineRestriction=403"); // means: all but ice
+		}
+
+		uri.append("&locationServerActive=1");
+		uri.append("&useRealtime=1");
+		uri.append("&useProxFootSearch=1"); // walk if it makes journeys quicker
+
+		return uri.toString();
+	}
+
+	private String commandLink(final String sessionId, final String requestId, final String command)
+	{
+		final StringBuilder uri = new StringBuilder(apiBase);
+		uri.append("XSLT_TRIP_REQUEST2");
+
+		uri.append("?sessionID=").append(sessionId);
+		uri.append("&requestID=").append(requestId);
+		appendCommonXsltTripRequest2Params(uri);
+		uri.append("&command=").append(command);
+
+		return uri.toString();
+	}
+
+	private static final void appendCommonXsltTripRequest2Params(final StringBuilder uri)
+	{
+		uri.append("&coordListOutputFormat=STRING");
+		uri.append("&calcNumberOfTrips=4");
+	}
+
 	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
 			final String products, final WalkSpeed walkSpeed) throws IOException
 	{
-		final String uri = wrapUri(connectionsQueryUri(from, via, to, date, dep, products, walkSpeed) + "&sessionID=0&requestID=0");
+		final String uri = xsltTripRequest2Uri(from, via, to, date, dep, products, walkSpeed);
 
 		InputStream is = null;
 		try
@@ -1854,58 +1948,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		throw new UnsupportedOperationException();
 	}
 
-	private String connectionsQueryUri(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final String products, final WalkSpeed walkSpeed)
-	{
-		final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
-		final DateFormat TIME_FORMAT = new SimpleDateFormat("HHmm");
-
-		final StringBuilder uri = new StringBuilder(apiBase);
-		uri.append("XSLT_TRIP_REQUEST2");
-
-		uri.append("?language=de");
-		appendCommonConnectionParams(uri);
-
-		appendLocation(uri, from, "origin");
-		appendLocation(uri, to, "destination");
-		if (via != null)
-			appendLocation(uri, via, "via");
-
-		uri.append("&itdDate=").append(ParserUtils.urlEncode(DATE_FORMAT.format(date)));
-		uri.append("&itdTime=").append(ParserUtils.urlEncode(TIME_FORMAT.format(date)));
-		uri.append("&itdTripDateTimeDepArr=").append(dep ? "dep" : "arr");
-
-		uri.append("&ptOptionsActive=1");
-		uri.append("&changeSpeed=").append(WALKSPEED_MAP.get(walkSpeed));
-		uri.append(productParams(products));
-
-		uri.append("&locationServerActive=1");
-		uri.append("&useRealtime=1");
-		uri.append("&useProxFootSearch=1"); // walk if it makes journeys quicker
-
-		return uri.toString();
-	}
-
-	private String commandLink(final String sessionId, final String requestId, final String command)
-	{
-		final StringBuilder uri = new StringBuilder(apiBase);
-		uri.append("XSLT_TRIP_REQUEST2");
-		uri.append("?sessionID=").append(sessionId);
-		uri.append("&requestID=").append(requestId);
-		appendCommonConnectionParams(uri);
-		uri.append("&command=").append(command);
-		return uri.toString();
-	}
-
-	private static final void appendCommonConnectionParams(final StringBuilder uri)
-	{
-		uri.append("&outputFormat=XML");
-		uri.append("&coordListOutputFormat=STRING");
-		uri.append("&coordOutputFormat=WGS84");
-		uri.append("&calcNumberOfTrips=4");
-	}
-
-	protected void appendLocation(final StringBuilder uri, final Location location, final String paramSuffix)
+	private void appendLocation(final StringBuilder uri, final Location location, final String paramSuffix)
 	{
 		if (canAcceptPoiID && location.type == LocationType.POI && location.hasId())
 		{
@@ -1945,54 +1988,6 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			return Integer.toString(location.id);
 		else
 			return location.name;
-	}
-
-	private static final String productParams(final String products)
-	{
-		if (products == null)
-			return "";
-
-		final StringBuilder params = new StringBuilder("&includedMeans=checkbox");
-
-		boolean hasI = false;
-		for (final char p : products.toCharArray())
-		{
-			if (p == 'I' || p == 'R')
-			{
-				params.append("&inclMOT_0=on");
-				if (p == 'I')
-					hasI = true;
-			}
-
-			if (p == 'S')
-				params.append("&inclMOT_1=on");
-
-			if (p == 'U')
-				params.append("&inclMOT_2=on");
-
-			if (p == 'T')
-				params.append("&inclMOT_3=on&inclMOT_4=on");
-
-			if (p == 'B')
-				params.append("&inclMOT_5=on&inclMOT_6=on&inclMOT_7=on");
-
-			if (p == 'P')
-				params.append("&inclMOT_10=on");
-
-			if (p == 'F')
-				params.append("&inclMOT_9=on");
-
-			if (p == 'C')
-				params.append("&inclMOT_8=on");
-
-			params.append("&inclMOT_11=on"); // TODO always show 'others', for now
-		}
-
-		// workaround for highspeed trains: fails when you want highspeed, but not regional
-		if (!hasI)
-			params.append("&lineRestriction=403"); // means: all but ice
-
-		return params.toString();
 	}
 
 	protected static final Map<WalkSpeed, String> WALKSPEED_MAP = new HashMap<WalkSpeed, String>();
