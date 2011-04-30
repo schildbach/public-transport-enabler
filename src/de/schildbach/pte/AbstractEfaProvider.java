@@ -56,6 +56,7 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.dto.Stop;
 import de.schildbach.pte.exception.ParserException;
+import de.schildbach.pte.exception.SessionExpiredException;
 import de.schildbach.pte.util.Color;
 import de.schildbach.pte.util.ParserUtils;
 import de.schildbach.pte.util.XmlPullUtil;
@@ -1391,6 +1392,10 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			is = ParserUtils.scrapeInputStream(uri);
 			return queryConnections(uri, is);
 		}
+		catch (final XmlPullParserException x)
+		{
+			throw new ParserException(x);
+		}
 		finally
 		{
 			if (is != null)
@@ -1406,6 +1411,13 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			is = ParserUtils.scrapeInputStream(uri);
 			return queryConnections(uri, is);
 		}
+		catch (final XmlPullParserException x)
+		{
+			if (x.getMessage().startsWith("expected: START_TAG {null}itdRequest"))
+				throw new SessionExpiredException();
+			else
+				throw new ParserException(x);
+		}
 		finally
 		{
 			if (is != null)
@@ -1413,398 +1425,390 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		}
 	}
 
-	private QueryConnectionsResult queryConnections(final String uri, final InputStream is) throws IOException
+	private QueryConnectionsResult queryConnections(final String uri, final InputStream is) throws XmlPullParserException, IOException
 	{
-		try
+		final XmlPullParser pp = parserFactory.newPullParser();
+		pp.setInput(is, null);
+		final String sessionId = enterItdRequest(pp);
+
+		XmlPullUtil.require(pp, "itdTripRequest");
+		final String requestId = XmlPullUtil.attr(pp, "requestID");
+		XmlPullUtil.enter(pp, "itdTripRequest");
+
+		if (XmlPullUtil.test(pp, "itdMessage"))
 		{
-			final XmlPullParser pp = parserFactory.newPullParser();
-			pp.setInput(is, null);
-			final String sessionId = enterItdRequest(pp);
+			final int code = XmlPullUtil.intAttr(pp, "code");
+			if (code == -4000) // no connection
+				return new QueryConnectionsResult(Status.NO_CONNECTIONS);
+			XmlPullUtil.next(pp);
+		}
+		if (XmlPullUtil.test(pp, "itdPrintConfiguration"))
+			XmlPullUtil.next(pp);
+		if (XmlPullUtil.test(pp, "itdAddress"))
+			XmlPullUtil.next(pp);
 
-			XmlPullUtil.require(pp, "itdTripRequest");
-			final String requestId = XmlPullUtil.attr(pp, "requestID");
-			XmlPullUtil.enter(pp, "itdTripRequest");
+		// parse odv name elements
+		List<Location> ambiguousFrom = null, ambiguousTo = null, ambiguousVia = null;
+		Location from = null, via = null, to = null;
 
+		while (XmlPullUtil.test(pp, "itdOdv"))
+		{
+			final String usage = XmlPullUtil.attr(pp, "usage");
+			XmlPullUtil.enter(pp, "itdOdv");
+
+			final String place = processItdOdvPlace(pp);
+
+			if (!XmlPullUtil.test(pp, "itdOdvName"))
+				throw new IllegalStateException("cannot find <itdOdvName /> inside " + usage);
+			final String nameState = XmlPullUtil.attr(pp, "state");
+			XmlPullUtil.enter(pp, "itdOdvName");
 			if (XmlPullUtil.test(pp, "itdMessage"))
-			{
-				final int code = XmlPullUtil.intAttr(pp, "code");
-				if (code == -4000) // no connection
-					return new QueryConnectionsResult(Status.NO_CONNECTIONS);
 				XmlPullUtil.next(pp);
+
+			if ("list".equals(nameState))
+			{
+				if ("origin".equals(usage))
+				{
+					ambiguousFrom = new ArrayList<Location>();
+					while (XmlPullUtil.test(pp, "odvNameElem"))
+						ambiguousFrom.add(processOdvNameElem(pp, place));
+				}
+				else if ("via".equals(usage))
+				{
+					ambiguousVia = new ArrayList<Location>();
+					while (XmlPullUtil.test(pp, "odvNameElem"))
+						ambiguousVia.add(processOdvNameElem(pp, place));
+				}
+				else if ("destination".equals(usage))
+				{
+					ambiguousTo = new ArrayList<Location>();
+					while (XmlPullUtil.test(pp, "odvNameElem"))
+						ambiguousTo.add(processOdvNameElem(pp, place));
+				}
+				else
+				{
+					throw new IllegalStateException("unknown usage: " + usage);
+				}
 			}
-			if (XmlPullUtil.test(pp, "itdPrintConfiguration"))
-				XmlPullUtil.next(pp);
-			if (XmlPullUtil.test(pp, "itdAddress"))
-				XmlPullUtil.next(pp);
-
-			// parse odv name elements
-			List<Location> ambiguousFrom = null, ambiguousTo = null, ambiguousVia = null;
-			Location from = null, via = null, to = null;
-
-			while (XmlPullUtil.test(pp, "itdOdv"))
+			else if ("identified".equals(nameState))
 			{
-				final String usage = XmlPullUtil.attr(pp, "usage");
-				XmlPullUtil.enter(pp, "itdOdv");
+				if (!XmlPullUtil.test(pp, "odvNameElem"))
+					throw new IllegalStateException("cannot find <odvNameElem /> inside " + usage);
 
-				final String place = processItdOdvPlace(pp);
+				if ("origin".equals(usage))
+					from = processOdvNameElem(pp, place);
+				else if ("via".equals(usage))
+					via = processOdvNameElem(pp, place);
+				else if ("destination".equals(usage))
+					to = processOdvNameElem(pp, place);
+				else
+					throw new IllegalStateException("unknown usage: " + usage);
+			}
+			XmlPullUtil.exit(pp, "itdOdvName");
+			XmlPullUtil.exit(pp, "itdOdv");
+		}
 
-				if (!XmlPullUtil.test(pp, "itdOdvName"))
-					throw new IllegalStateException("cannot find <itdOdvName /> inside " + usage);
-				final String nameState = XmlPullUtil.attr(pp, "state");
-				XmlPullUtil.enter(pp, "itdOdvName");
-				if (XmlPullUtil.test(pp, "itdMessage"))
+		if (ambiguousFrom != null || ambiguousTo != null || ambiguousVia != null)
+			return new QueryConnectionsResult(ambiguousFrom, ambiguousVia, ambiguousTo);
+
+		XmlPullUtil.enter(pp, "itdTripDateTime");
+		XmlPullUtil.enter(pp, "itdDateTime");
+		if (!XmlPullUtil.test(pp, "itdDate"))
+			throw new IllegalStateException("cannot find <itdDate />");
+		if (!pp.isEmptyElementTag())
+		{
+			XmlPullUtil.enter(pp, "itdDate");
+			if (!XmlPullUtil.test(pp, "itdMessage"))
+				throw new IllegalStateException("cannot find <itdMessage />");
+			final String message = pp.nextText();
+			if (message.equals("invalid date"))
+				return new QueryConnectionsResult(Status.INVALID_DATE);
+			XmlPullUtil.exit(pp, "itdDate");
+		}
+		XmlPullUtil.exit(pp, "itdDateTime");
+
+		final Calendar time = new GregorianCalendar(timeZone());
+		final List<Connection> connections = new ArrayList<Connection>();
+
+		if (XmlPullUtil.jumpToStartTag(pp, null, "itdRouteList"))
+		{
+			XmlPullUtil.enter(pp, "itdRouteList");
+
+			while (XmlPullUtil.test(pp, "itdRoute"))
+			{
+				final String id = pp.getAttributeValue(null, "routeIndex") + "-" + pp.getAttributeValue(null, "routeTripIndex");
+				XmlPullUtil.enter(pp, "itdRoute");
+
+				while (XmlPullUtil.test(pp, "itdDateTime"))
+					XmlPullUtil.next(pp);
+				if (XmlPullUtil.test(pp, "itdMapItemList"))
 					XmlPullUtil.next(pp);
 
-				if ("list".equals(nameState))
+				XmlPullUtil.enter(pp, "itdPartialRouteList");
+				final List<Connection.Part> parts = new LinkedList<Connection.Part>();
+				Location firstDeparture = null;
+				Date firstDepartureTime = null;
+				Location lastArrival = null;
+				Date lastArrivalTime = null;
+
+				while (XmlPullUtil.test(pp, "itdPartialRoute"))
 				{
-					if ("origin".equals(usage))
+					XmlPullUtil.enter(pp, "itdPartialRoute");
+
+					XmlPullUtil.test(pp, "itdPoint");
+					if (!"departure".equals(pp.getAttributeValue(null, "usage")))
+						throw new IllegalStateException();
+					final int departureId = Integer.parseInt(pp.getAttributeValue(null, "stopID"));
+					final String departureName = normalizeLocationName(pp.getAttributeValue(null, "name"));
+					final int departureLat, departureLon;
+					if ("WGS84".equals(pp.getAttributeValue(null, "mapName")))
 					{
-						ambiguousFrom = new ArrayList<Location>();
-						while (XmlPullUtil.test(pp, "odvNameElem"))
-							ambiguousFrom.add(processOdvNameElem(pp, place));
-					}
-					else if ("via".equals(usage))
-					{
-						ambiguousVia = new ArrayList<Location>();
-						while (XmlPullUtil.test(pp, "odvNameElem"))
-							ambiguousVia.add(processOdvNameElem(pp, place));
-					}
-					else if ("destination".equals(usage))
-					{
-						ambiguousTo = new ArrayList<Location>();
-						while (XmlPullUtil.test(pp, "odvNameElem"))
-							ambiguousTo.add(processOdvNameElem(pp, place));
+						departureLat = Integer.parseInt(pp.getAttributeValue(null, "y"));
+						departureLon = Integer.parseInt(pp.getAttributeValue(null, "x"));
 					}
 					else
 					{
-						throw new IllegalStateException("unknown usage: " + usage);
+						departureLat = 0;
+						departureLon = 0;
 					}
-				}
-				else if ("identified".equals(nameState))
-				{
-					if (!XmlPullUtil.test(pp, "odvNameElem"))
-						throw new IllegalStateException("cannot find <odvNameElem /> inside " + usage);
-
-					if ("origin".equals(usage))
-						from = processOdvNameElem(pp, place);
-					else if ("via".equals(usage))
-						via = processOdvNameElem(pp, place);
-					else if ("destination".equals(usage))
-						to = processOdvNameElem(pp, place);
-					else
-						throw new IllegalStateException("unknown usage: " + usage);
-				}
-				XmlPullUtil.exit(pp, "itdOdvName");
-				XmlPullUtil.exit(pp, "itdOdv");
-			}
-
-			if (ambiguousFrom != null || ambiguousTo != null || ambiguousVia != null)
-				return new QueryConnectionsResult(ambiguousFrom, ambiguousVia, ambiguousTo);
-
-			XmlPullUtil.enter(pp, "itdTripDateTime");
-			XmlPullUtil.enter(pp, "itdDateTime");
-			if (!XmlPullUtil.test(pp, "itdDate"))
-				throw new IllegalStateException("cannot find <itdDate />");
-			if (!pp.isEmptyElementTag())
-			{
-				XmlPullUtil.enter(pp, "itdDate");
-				if (!XmlPullUtil.test(pp, "itdMessage"))
-					throw new IllegalStateException("cannot find <itdMessage />");
-				final String message = pp.nextText();
-				if (message.equals("invalid date"))
-					return new QueryConnectionsResult(Status.INVALID_DATE);
-				XmlPullUtil.exit(pp, "itdDate");
-			}
-			XmlPullUtil.exit(pp, "itdDateTime");
-
-			final Calendar time = new GregorianCalendar(timeZone());
-			final List<Connection> connections = new ArrayList<Connection>();
-
-			if (XmlPullUtil.jumpToStartTag(pp, null, "itdRouteList"))
-			{
-				XmlPullUtil.enter(pp, "itdRouteList");
-
-				while (XmlPullUtil.test(pp, "itdRoute"))
-				{
-					final String id = pp.getAttributeValue(null, "routeIndex") + "-" + pp.getAttributeValue(null, "routeTripIndex");
-					XmlPullUtil.enter(pp, "itdRoute");
-
-					while (XmlPullUtil.test(pp, "itdDateTime"))
-						XmlPullUtil.next(pp);
+					final Location departure = new Location(LocationType.STATION, departureId, departureLat, departureLon, null, departureName);
+					if (firstDeparture == null)
+						firstDeparture = departure;
+					final String departurePosition = normalizePlatform(pp.getAttributeValue(null, "platform"),
+							pp.getAttributeValue(null, "platformName"));
+					XmlPullUtil.enter(pp, "itdPoint");
 					if (XmlPullUtil.test(pp, "itdMapItemList"))
 						XmlPullUtil.next(pp);
-
-					XmlPullUtil.enter(pp, "itdPartialRouteList");
-					final List<Connection.Part> parts = new LinkedList<Connection.Part>();
-					Location firstDeparture = null;
-					Date firstDepartureTime = null;
-					Location lastArrival = null;
-					Date lastArrivalTime = null;
-
-					while (XmlPullUtil.test(pp, "itdPartialRoute"))
+					XmlPullUtil.require(pp, "itdDateTime");
+					processItdDateTime(pp, time);
+					final Date departureTime = time.getTime();
+					if (firstDepartureTime == null)
+						firstDepartureTime = departureTime;
+					final Date departureTargetTime;
+					if (XmlPullUtil.test(pp, "itdDateTimeTarget"))
 					{
-						XmlPullUtil.enter(pp, "itdPartialRoute");
-
-						XmlPullUtil.test(pp, "itdPoint");
-						if (!"departure".equals(pp.getAttributeValue(null, "usage")))
-							throw new IllegalStateException();
-						final int departureId = Integer.parseInt(pp.getAttributeValue(null, "stopID"));
-						final String departureName = normalizeLocationName(pp.getAttributeValue(null, "name"));
-						final int departureLat, departureLon;
-						if ("WGS84".equals(pp.getAttributeValue(null, "mapName")))
-						{
-							departureLat = Integer.parseInt(pp.getAttributeValue(null, "y"));
-							departureLon = Integer.parseInt(pp.getAttributeValue(null, "x"));
-						}
-						else
-						{
-							departureLat = 0;
-							departureLon = 0;
-						}
-						final Location departure = new Location(LocationType.STATION, departureId, departureLat, departureLon, null, departureName);
-						if (firstDeparture == null)
-							firstDeparture = departure;
-						final String departurePosition = normalizePlatform(pp.getAttributeValue(null, "platform"),
-								pp.getAttributeValue(null, "platformName"));
-						XmlPullUtil.enter(pp, "itdPoint");
-						if (XmlPullUtil.test(pp, "itdMapItemList"))
-							XmlPullUtil.next(pp);
-						XmlPullUtil.require(pp, "itdDateTime");
 						processItdDateTime(pp, time);
-						final Date departureTime = time.getTime();
-						if (firstDepartureTime == null)
-							firstDepartureTime = departureTime;
-						final Date departureTargetTime;
-						if (XmlPullUtil.test(pp, "itdDateTimeTarget"))
-						{
-							processItdDateTime(pp, time);
-							departureTargetTime = time.getTime();
-						}
-						else
-						{
-							departureTargetTime = null;
-						}
-						XmlPullUtil.exit(pp, "itdPoint");
+						departureTargetTime = time.getTime();
+					}
+					else
+					{
+						departureTargetTime = null;
+					}
+					XmlPullUtil.exit(pp, "itdPoint");
 
-						XmlPullUtil.test(pp, "itdPoint");
-						if (!"arrival".equals(pp.getAttributeValue(null, "usage")))
-							throw new IllegalStateException();
-						final int arrivalId = Integer.parseInt(pp.getAttributeValue(null, "stopID"));
-						final String arrivalName = normalizeLocationName(pp.getAttributeValue(null, "name"));
-						final int arrivalLat, arrivalLon;
-						if ("WGS84".equals(pp.getAttributeValue(null, "mapName")))
-						{
-							arrivalLat = Integer.parseInt(pp.getAttributeValue(null, "y"));
-							arrivalLon = Integer.parseInt(pp.getAttributeValue(null, "x"));
-						}
-						else
-						{
-							arrivalLat = 0;
-							arrivalLon = 0;
-						}
-						final Location arrival = new Location(LocationType.STATION, arrivalId, arrivalLat, arrivalLon, null, arrivalName);
-						lastArrival = arrival;
-						final String arrivalPosition = normalizePlatform(pp.getAttributeValue(null, "platform"),
-								pp.getAttributeValue(null, "platformName"));
-						XmlPullUtil.enter(pp, "itdPoint");
-						if (XmlPullUtil.test(pp, "itdMapItemList"))
-							XmlPullUtil.next(pp);
-						XmlPullUtil.require(pp, "itdDateTime");
+					XmlPullUtil.test(pp, "itdPoint");
+					if (!"arrival".equals(pp.getAttributeValue(null, "usage")))
+						throw new IllegalStateException();
+					final int arrivalId = Integer.parseInt(pp.getAttributeValue(null, "stopID"));
+					final String arrivalName = normalizeLocationName(pp.getAttributeValue(null, "name"));
+					final int arrivalLat, arrivalLon;
+					if ("WGS84".equals(pp.getAttributeValue(null, "mapName")))
+					{
+						arrivalLat = Integer.parseInt(pp.getAttributeValue(null, "y"));
+						arrivalLon = Integer.parseInt(pp.getAttributeValue(null, "x"));
+					}
+					else
+					{
+						arrivalLat = 0;
+						arrivalLon = 0;
+					}
+					final Location arrival = new Location(LocationType.STATION, arrivalId, arrivalLat, arrivalLon, null, arrivalName);
+					lastArrival = arrival;
+					final String arrivalPosition = normalizePlatform(pp.getAttributeValue(null, "platform"),
+							pp.getAttributeValue(null, "platformName"));
+					XmlPullUtil.enter(pp, "itdPoint");
+					if (XmlPullUtil.test(pp, "itdMapItemList"))
+						XmlPullUtil.next(pp);
+					XmlPullUtil.require(pp, "itdDateTime");
+					processItdDateTime(pp, time);
+					final Date arrivalTime = time.getTime();
+					lastArrivalTime = arrivalTime;
+					final Date arrivalTargetTime;
+					if (XmlPullUtil.test(pp, "itdDateTimeTarget"))
+					{
 						processItdDateTime(pp, time);
-						final Date arrivalTime = time.getTime();
-						lastArrivalTime = arrivalTime;
-						final Date arrivalTargetTime;
-						if (XmlPullUtil.test(pp, "itdDateTimeTarget"))
+						arrivalTargetTime = time.getTime();
+					}
+					else
+					{
+						arrivalTargetTime = null;
+					}
+					XmlPullUtil.exit(pp, "itdPoint");
+
+					XmlPullUtil.test(pp, "itdMeansOfTransport");
+					final String productName = pp.getAttributeValue(null, "productName");
+					if ("Fussweg".equals(productName) || "Taxi".equals(productName))
+					{
+						final int min = (int) (arrivalTime.getTime() - departureTime.getTime()) / 1000 / 60;
+
+						XmlPullUtil.enter(pp, "itdMeansOfTransport");
+						XmlPullUtil.exit(pp, "itdMeansOfTransport");
+
+						if (XmlPullUtil.test(pp, "itdStopSeq"))
+							XmlPullUtil.next(pp);
+
+						if (XmlPullUtil.test(pp, "itdFootPathInfo"))
+							XmlPullUtil.next(pp);
+
+						List<Point> path = null;
+						if (XmlPullUtil.test(pp, "itdPathCoordinates"))
+							path = processItdPathCoordinates(pp);
+
+						if (parts.size() > 0 && parts.get(parts.size() - 1) instanceof Connection.Footway)
 						{
-							processItdDateTime(pp, time);
-							arrivalTargetTime = time.getTime();
+							final Connection.Footway lastFootway = (Connection.Footway) parts.remove(parts.size() - 1);
+							if (path != null && lastFootway.path != null)
+								path.addAll(0, lastFootway.path);
+							parts.add(new Connection.Footway(lastFootway.min + min, lastFootway.departure, arrival, path));
 						}
 						else
 						{
-							arrivalTargetTime = null;
+							parts.add(new Connection.Footway(min, departure, arrival, path));
 						}
-						XmlPullUtil.exit(pp, "itdPoint");
+					}
+					else if ("gesicherter Anschluss".equals(productName) || "nicht umsteigen".equals(productName)) // type97
+					{
+						// ignore
 
-						XmlPullUtil.test(pp, "itdMeansOfTransport");
-						final String productName = pp.getAttributeValue(null, "productName");
-						if ("Fussweg".equals(productName) || "Taxi".equals(productName))
-						{
-							final int min = (int) (arrivalTime.getTime() - departureTime.getTime()) / 1000 / 60;
-
-							XmlPullUtil.enter(pp, "itdMeansOfTransport");
-							XmlPullUtil.exit(pp, "itdMeansOfTransport");
-
-							if (XmlPullUtil.test(pp, "itdStopSeq"))
-								XmlPullUtil.next(pp);
-
-							if (XmlPullUtil.test(pp, "itdFootPathInfo"))
-								XmlPullUtil.next(pp);
-
-							List<Point> path = null;
-							if (XmlPullUtil.test(pp, "itdPathCoordinates"))
-								path = processItdPathCoordinates(pp);
-
-							if (parts.size() > 0 && parts.get(parts.size() - 1) instanceof Connection.Footway)
-							{
-								final Connection.Footway lastFootway = (Connection.Footway) parts.remove(parts.size() - 1);
-								if (path != null && lastFootway.path != null)
-									path.addAll(0, lastFootway.path);
-								parts.add(new Connection.Footway(lastFootway.min + min, lastFootway.departure, arrival, path));
-							}
-							else
-							{
-								parts.add(new Connection.Footway(min, departure, arrival, path));
-							}
-						}
-						else if ("gesicherter Anschluss".equals(productName) || "nicht umsteigen".equals(productName)) // type97
-						{
-							// ignore
-
-							XmlPullUtil.enter(pp, "itdMeansOfTransport");
-							XmlPullUtil.exit(pp, "itdMeansOfTransport");
-						}
+						XmlPullUtil.enter(pp, "itdMeansOfTransport");
+						XmlPullUtil.exit(pp, "itdMeansOfTransport");
+					}
+					else
+					{
+						final String destinationIdStr = pp.getAttributeValue(null, "destID");
+						final String destinationName = normalizeLocationName(pp.getAttributeValue(null, "destination"));
+						final Location destination = destinationIdStr.length() > 0 ? new Location(LocationType.STATION,
+								Integer.parseInt(destinationIdStr), null, destinationName) : new Location(LocationType.ANY, 0, null, destinationName);
+						final String lineStr;
+						if ("AST".equals(pp.getAttributeValue(null, "symbol")))
+							lineStr = "BAST";
 						else
+							lineStr = parseLine(pp.getAttributeValue(null, "motType"), pp.getAttributeValue(null, "shortname"),
+									pp.getAttributeValue(null, "name"), null);
+						final Line line = new Line(lineStr, lineColors(lineStr));
+
+						XmlPullUtil.enter(pp, "itdMeansOfTransport");
+						XmlPullUtil.exit(pp, "itdMeansOfTransport");
+
+						if (XmlPullUtil.test(pp, "itdRBLControlled"))
+							XmlPullUtil.next(pp);
+						if (XmlPullUtil.test(pp, "itdInfoTextList"))
+							XmlPullUtil.next(pp);
+						if (XmlPullUtil.test(pp, "itdFootPathInfo"))
+							XmlPullUtil.next(pp);
+						if (XmlPullUtil.test(pp, "infoLink"))
+							XmlPullUtil.next(pp);
+
+						List<Stop> intermediateStops = null;
+						if (XmlPullUtil.test(pp, "itdStopSeq"))
 						{
-							final String destinationIdStr = pp.getAttributeValue(null, "destID");
-							final String destinationName = normalizeLocationName(pp.getAttributeValue(null, "destination"));
-							final Location destination = destinationIdStr.length() > 0 ? new Location(LocationType.STATION,
-									Integer.parseInt(destinationIdStr), null, destinationName) : new Location(LocationType.ANY, 0, null,
-									destinationName);
-							final String lineStr;
-							if ("AST".equals(pp.getAttributeValue(null, "symbol")))
-								lineStr = "BAST";
-							else
-								lineStr = parseLine(pp.getAttributeValue(null, "motType"), pp.getAttributeValue(null, "shortname"),
-										pp.getAttributeValue(null, "name"), null);
-							final Line line = new Line(lineStr, lineColors(lineStr));
-
-							XmlPullUtil.enter(pp, "itdMeansOfTransport");
-							XmlPullUtil.exit(pp, "itdMeansOfTransport");
-
-							if (XmlPullUtil.test(pp, "itdRBLControlled"))
-								XmlPullUtil.next(pp);
-							if (XmlPullUtil.test(pp, "itdInfoTextList"))
-								XmlPullUtil.next(pp);
-							if (XmlPullUtil.test(pp, "itdFootPathInfo"))
-								XmlPullUtil.next(pp);
-							if (XmlPullUtil.test(pp, "infoLink"))
-								XmlPullUtil.next(pp);
-
-							List<Stop> intermediateStops = null;
-							if (XmlPullUtil.test(pp, "itdStopSeq"))
+							XmlPullUtil.enter(pp, "itdStopSeq");
+							intermediateStops = new LinkedList<Stop>();
+							while (XmlPullUtil.test(pp, "itdPoint"))
 							{
-								XmlPullUtil.enter(pp, "itdStopSeq");
-								intermediateStops = new LinkedList<Stop>();
-								while (XmlPullUtil.test(pp, "itdPoint"))
+								final int stopId = Integer.parseInt(pp.getAttributeValue(null, "stopID"));
+								final String stopName = normalizeLocationName(pp.getAttributeValue(null, "name"));
+								final int stopLat, stopLon;
+								if ("WGS84".equals(pp.getAttributeValue(null, "mapName")))
 								{
-									final int stopId = Integer.parseInt(pp.getAttributeValue(null, "stopID"));
-									final String stopName = normalizeLocationName(pp.getAttributeValue(null, "name"));
-									final int stopLat, stopLon;
-									if ("WGS84".equals(pp.getAttributeValue(null, "mapName")))
-									{
-										stopLat = Integer.parseInt(pp.getAttributeValue(null, "y"));
-										stopLon = Integer.parseInt(pp.getAttributeValue(null, "x"));
-									}
-									else
-									{
-										stopLat = 0;
-										stopLon = 0;
-									}
-									final String stopPosition = normalizePlatform(pp.getAttributeValue(null, "platform"),
-											pp.getAttributeValue(null, "platformName"));
-									XmlPullUtil.enter(pp, "itdPoint");
-									XmlPullUtil.require(pp, "itdDateTime");
-									final boolean success1 = processItdDateTime(pp, time);
-									final boolean success2 = XmlPullUtil.test(pp, "itdDateTime") ? processItdDateTime(pp, time) : false;
-									XmlPullUtil.exit(pp, "itdPoint");
-
-									if (success1 || success2)
-										intermediateStops.add(new Stop(new Location(LocationType.STATION, stopId, stopLat, stopLon, null, stopName),
-												stopPosition, time.getTime()));
+									stopLat = Integer.parseInt(pp.getAttributeValue(null, "y"));
+									stopLon = Integer.parseInt(pp.getAttributeValue(null, "x"));
 								}
-								XmlPullUtil.exit(pp, "itdStopSeq");
-
-								// remove first and last, because they are not intermediate
-								final int size = intermediateStops.size();
-								if (size >= 2)
+								else
 								{
-									if (intermediateStops.get(size - 1).location.id != arrivalId)
-										throw new IllegalStateException();
-									intermediateStops.remove(size - 1);
-
-									if (intermediateStops.get(0).location.id != departureId)
-										throw new IllegalStateException();
-									intermediateStops.remove(0);
+									stopLat = 0;
+									stopLon = 0;
 								}
+								final String stopPosition = normalizePlatform(pp.getAttributeValue(null, "platform"),
+										pp.getAttributeValue(null, "platformName"));
+								XmlPullUtil.enter(pp, "itdPoint");
+								XmlPullUtil.require(pp, "itdDateTime");
+								final boolean success1 = processItdDateTime(pp, time);
+								final boolean success2 = XmlPullUtil.test(pp, "itdDateTime") ? processItdDateTime(pp, time) : false;
+								XmlPullUtil.exit(pp, "itdPoint");
+
+								if (success1 || success2)
+									intermediateStops.add(new Stop(new Location(LocationType.STATION, stopId, stopLat, stopLon, null, stopName),
+											stopPosition, time.getTime()));
 							}
+							XmlPullUtil.exit(pp, "itdStopSeq");
 
-							List<Point> path = null;
-							if (XmlPullUtil.test(pp, "itdPathCoordinates"))
-								path = processItdPathCoordinates(pp);
+							// remove first and last, because they are not intermediate
+							final int size = intermediateStops.size();
+							if (size >= 2)
+							{
+								if (intermediateStops.get(size - 1).location.id != arrivalId)
+									throw new IllegalStateException();
+								intermediateStops.remove(size - 1);
 
-							parts.add(new Connection.Trip(line, destination, departureTime, departurePosition, departure, arrivalTime,
-									arrivalPosition, arrival, intermediateStops, path));
+								if (intermediateStops.get(0).location.id != departureId)
+									throw new IllegalStateException();
+								intermediateStops.remove(0);
+							}
 						}
 
-						XmlPullUtil.exit(pp, "itdPartialRoute");
+						List<Point> path = null;
+						if (XmlPullUtil.test(pp, "itdPathCoordinates"))
+							path = processItdPathCoordinates(pp);
+
+						parts.add(new Connection.Trip(line, destination, departureTime, departurePosition, departure, arrivalTime, arrivalPosition,
+								arrival, intermediateStops, path));
 					}
 
-					XmlPullUtil.exit(pp, "itdPartialRouteList");
-
-					final List<Fare> fares = new ArrayList<Fare>(2);
-					if (XmlPullUtil.test(pp, "itdFare") && !pp.isEmptyElementTag())
-					{
-						XmlPullUtil.enter(pp, "itdFare");
-						if (XmlPullUtil.test(pp, "itdSingleTicket"))
-						{
-							final String net = XmlPullUtil.attr(pp, "net");
-							final Currency currency = parseCurrency(XmlPullUtil.attr(pp, "currency"));
-							final String fareAdult = XmlPullUtil.attr(pp, "fareAdult");
-							final String fareChild = XmlPullUtil.attr(pp, "fareChild");
-							final String unitName = XmlPullUtil.attr(pp, "unitName");
-							final String unitsAdult = XmlPullUtil.attr(pp, "unitsAdult");
-							final String unitsChild = XmlPullUtil.attr(pp, "unitsChild");
-							if (fareAdult != null && fareAdult.length() > 0)
-								fares.add(new Fare(net, Type.ADULT, currency, Float.parseFloat(fareAdult), unitName, unitsAdult));
-							if (fareChild != null && fareChild.length() > 0)
-								fares.add(new Fare(net, Type.CHILD, currency, Float.parseFloat(fareChild), unitName, unitsChild));
-
-							if (!pp.isEmptyElementTag())
-							{
-								XmlPullUtil.enter(pp, "itdSingleTicket");
-								if (XmlPullUtil.test(pp, "itdGenericTicketList"))
-								{
-									XmlPullUtil.enter(pp, "itdGenericTicketList");
-									while (XmlPullUtil.test(pp, "itdGenericTicketGroup"))
-									{
-										final Fare fare = processItdGenericTicketGroup(pp, net, currency);
-										if (fare != null)
-											fares.add(fare);
-									}
-									XmlPullUtil.exit(pp, "itdGenericTicketList");
-								}
-								XmlPullUtil.exit(pp, "itdSingleTicket");
-							}
-						}
-						XmlPullUtil.exit(pp, "itdFare");
-					}
-					connections.add(new Connection(id, uri, firstDepartureTime, lastArrivalTime, firstDeparture, lastArrival, parts,
-							fares.isEmpty() ? null : fares));
-					XmlPullUtil.exit(pp, "itdRoute");
+					XmlPullUtil.exit(pp, "itdPartialRoute");
 				}
 
-				XmlPullUtil.exit(pp, "itdRouteList");
+				XmlPullUtil.exit(pp, "itdPartialRouteList");
 
-				return new QueryConnectionsResult(uri, from, via, to, commandLink(sessionId, requestId, "tripNext"), connections);
+				final List<Fare> fares = new ArrayList<Fare>(2);
+				if (XmlPullUtil.test(pp, "itdFare") && !pp.isEmptyElementTag())
+				{
+					XmlPullUtil.enter(pp, "itdFare");
+					if (XmlPullUtil.test(pp, "itdSingleTicket"))
+					{
+						final String net = XmlPullUtil.attr(pp, "net");
+						final Currency currency = parseCurrency(XmlPullUtil.attr(pp, "currency"));
+						final String fareAdult = XmlPullUtil.attr(pp, "fareAdult");
+						final String fareChild = XmlPullUtil.attr(pp, "fareChild");
+						final String unitName = XmlPullUtil.attr(pp, "unitName");
+						final String unitsAdult = XmlPullUtil.attr(pp, "unitsAdult");
+						final String unitsChild = XmlPullUtil.attr(pp, "unitsChild");
+						if (fareAdult != null && fareAdult.length() > 0)
+							fares.add(new Fare(net, Type.ADULT, currency, Float.parseFloat(fareAdult), unitName, unitsAdult));
+						if (fareChild != null && fareChild.length() > 0)
+							fares.add(new Fare(net, Type.CHILD, currency, Float.parseFloat(fareChild), unitName, unitsChild));
+
+						if (!pp.isEmptyElementTag())
+						{
+							XmlPullUtil.enter(pp, "itdSingleTicket");
+							if (XmlPullUtil.test(pp, "itdGenericTicketList"))
+							{
+								XmlPullUtil.enter(pp, "itdGenericTicketList");
+								while (XmlPullUtil.test(pp, "itdGenericTicketGroup"))
+								{
+									final Fare fare = processItdGenericTicketGroup(pp, net, currency);
+									if (fare != null)
+										fares.add(fare);
+								}
+								XmlPullUtil.exit(pp, "itdGenericTicketList");
+							}
+							XmlPullUtil.exit(pp, "itdSingleTicket");
+						}
+					}
+					XmlPullUtil.exit(pp, "itdFare");
+				}
+				connections.add(new Connection(id, uri, firstDepartureTime, lastArrivalTime, firstDeparture, lastArrival, parts,
+						fares.isEmpty() ? null : fares));
+				XmlPullUtil.exit(pp, "itdRoute");
 			}
-			else
-			{
-				return new QueryConnectionsResult(Status.NO_CONNECTIONS);
-			}
+
+			XmlPullUtil.exit(pp, "itdRouteList");
+
+			return new QueryConnectionsResult(uri, from, via, to, commandLink(sessionId, requestId, "tripNext"), connections);
 		}
-		catch (final XmlPullParserException x)
+		else
 		{
-			throw new ParserException(x);
+			return new QueryConnectionsResult(Status.NO_CONNECTIONS);
 		}
 	}
 
