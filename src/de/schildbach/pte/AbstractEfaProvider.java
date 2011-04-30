@@ -1521,6 +1521,9 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 							if (XmlPullUtil.test(pp, "itdStopSeq"))
 								XmlPullUtil.next(pp);
 
+							if (XmlPullUtil.test(pp, "itdFootPathInfo"))
+								XmlPullUtil.next(pp);
+
 							List<Point> path = null;
 							if (XmlPullUtil.test(pp, "itdPathCoordinates"))
 								path = processItdPathCoordinates(pp);
