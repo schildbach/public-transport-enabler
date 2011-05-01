@@ -663,6 +663,11 @@ public class RmvProvider extends AbstractHafasProvider
 			throw new IllegalStateException("cannot normalize type " + type + " number " + number + " line " + line);
 		}
 
+		if ("11".equals(line))
+			return "T11";
+		if ("12".equals(line))
+			return "T12";
+
 		throw new IllegalStateException("cannot normalize line " + line);
 	}
 
