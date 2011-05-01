@@ -37,6 +37,9 @@ public enum NetworkId
 	// Netherlands
 	NS,
 
+	// Denmark
+	DSB,
+
 	// United Kingdom
 	TFL, TLEM, TLEA, TLSE, TLSW,
 

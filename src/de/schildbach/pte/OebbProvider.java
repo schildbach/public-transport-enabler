@@ -76,71 +76,13 @@ public class OebbProvider extends AbstractHafasProvider
 	private static final String AUTOCOMPLETE_URI = API_BASE
 			+ "ajax-getstop.exe/dny?start=1&tpl=suggest2json&REQ0JourneyStopsS0A=255&REQ0JourneyStopsB=12&S=%s?&js=true&";
 	private static final String ENCODING = "ISO-8859-1";
-	private static final Pattern P_AUTOCOMPLETE_JSON = Pattern.compile("SLs\\.sls=(.*?);SLs\\.showSuggestion\\(\\);", Pattern.DOTALL);
-	private static final Pattern P_AUTOCOMPLETE_ID = Pattern.compile(".*?@L=(\\d+)@.*?");
 
 	@Override
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
 		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING));
-		final CharSequence page = ParserUtils.scrape(uri);
 
-		final Matcher mJson = P_AUTOCOMPLETE_JSON.matcher(page);
-		if (mJson.matches())
-		{
-			final String json = mJson.group(1);
-			final List<Location> results = new ArrayList<Location>();
-
-			try
-			{
-				final JSONObject head = new JSONObject(json);
-				final JSONArray aSuggestions = head.getJSONArray("suggestions");
-
-				for (int i = 0; i < aSuggestions.length(); i++)
-				{
-					final JSONObject suggestion = aSuggestions.optJSONObject(i);
-					if (suggestion != null)
-					{
-						final int type = suggestion.getInt("type");
-						final String value = suggestion.getString("value");
-						final int lat = suggestion.getInt("ycoord");
-						final int lon = suggestion.getInt("xcoord");
-						int localId = 0;
-						final Matcher m = P_AUTOCOMPLETE_ID.matcher(suggestion.getString("id"));
-						if (m.matches())
-							localId = Integer.parseInt(m.group(1));
-
-						if (type == 1) // station
-						{
-							results.add(new Location(LocationType.STATION, localId, lat, lon, null, value));
-						}
-						else if (type == 2) // address
-						{
-							results.add(new Location(LocationType.ADDRESS, 0, lat, lon, null, value));
-						}
-						else if (type == 4) // poi
-						{
-							results.add(new Location(LocationType.POI, localId, lat, lon, null, value));
-						}
-						else
-						{
-							throw new IllegalStateException("unknown type " + type + " on " + uri);
-						}
-					}
-				}
-
-				return results;
-			}
-			catch (final JSONException x)
-			{
-				x.printStackTrace();
-				throw new RuntimeException("cannot parse: '" + json + "' on " + uri, x);
-			}
-		}
-		else
-		{
-			throw new RuntimeException("cannot parse: '" + page + "' on " + uri);
-		}
+		return ajaxGetStops(uri);
 	}
 
 	private final String NEARBY_URI = API_BASE + "stboard.exe/dn?distance=50&near=Suchen&input=%s";
@@ -604,7 +546,8 @@ public class OebbProvider extends AbstractHafasProvider
 	private static final Pattern P_NORMALIZE_LINE_RUSSIA = Pattern.compile("\\d{1,3}[A-Z]{2}");
 	private static final Pattern P_NORMALIZE_LINE_RUSSIA_INT = Pattern.compile("\\d{3}Y");
 
-	private String normalizeLine(final String line)
+	@Override
+	protected String normalizeLine(final String line)
 	{
 		final Matcher m = P_NORMALIZE_LINE.matcher(line);
 		if (m.matches())

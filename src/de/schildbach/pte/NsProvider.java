@@ -40,7 +40,7 @@ public class NsProvider extends AbstractHafasProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.NS;
 	public static final String OLD_NETWORK_ID = "hafas.bene-system.com";
-	private static final String API_URI = "http://hafas.bene-system.com/bin/extxml.exe";
+	private static final String API_URI = "http://hafas.bene-system.com/bin/extxml.exe"; // http://plannerint.b-rail.be/bin/extxml.exe
 
 	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
 
@@ -177,27 +177,6 @@ public class NsProvider extends AbstractHafasProvider
 		{
 			throw new IllegalArgumentException("cannot parse '" + page + "' on " + stationId);
 		}
-	}
-
-	private String normalizeLine(final String line)
-	{
-		if (line == null || line.length() == 0)
-			return null;
-
-		final Matcher m = P_NORMALIZE_LINE.matcher(line);
-		if (m.matches())
-		{
-			final String type = m.group(1);
-			final String number = m.group(2);
-
-			final char normalizedType = normalizeType(type);
-			if (normalizedType != 0)
-				return normalizedType + type + number;
-
-			throw new IllegalStateException("cannot normalize type " + type + " number " + number + " line " + line);
-		}
-
-		throw new IllegalStateException("cannot normalize line " + line);
 	}
 
 	@Override

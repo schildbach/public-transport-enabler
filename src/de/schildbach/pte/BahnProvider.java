@@ -20,7 +20,6 @@ package de.schildbach.pte;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -28,7 +27,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.schildbach.pte.dto.Connection;
-import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
@@ -36,7 +34,6 @@ import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
-import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.exception.SessionExpiredException;
 import de.schildbach.pte.util.ParserUtils;
 
@@ -485,107 +482,18 @@ public final class BahnProvider extends AbstractHafasProvider
 		}
 	}
 
-	private String departuresQueryUri(final String stationId, final int maxDepartures)
+	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder();
 		uri.append(API_BASE).append("bhftafel.exe/dn");
 		uri.append("?productsFilter=11111111111111");
 		uri.append("&boardType=dep");
-		// taken from railnavigator; ignore maxDepartures because result contains other stations
-		uri.append("&maxJourneys=50");
+		uri.append("&maxJourneys=50"); // ignore maxDepartures because result contains other stations
 		uri.append("&start=yes");
 		uri.append("&L=vs_java3");
 		uri.append("&input=").append(stationId);
-		return uri.toString();
-	}
 
-	static final Pattern P_DEPARTURES_COARSE = Pattern.compile("\\G<Journey (.*?)/?>(?:\n|\\z)", Pattern.DOTALL);
-	static final Pattern P_DEPARTURES_FINE = Pattern.compile("" //
-			+ "fpTime=\"(\\d{1,2}:\\d{2})\" fpDate=\"(\\d{2}\\.\\d{2}\\.\\d{2})\" \n" // time, date
-			+ "delay=\"(?:-|k\\.A\\.?|cancel|\\+?\\s*(\\d+))\" \n" // delay
-			+ "(?:platform =\"([^\"]*)\" \n)?" // position
-			+ "(?:newpl =\"([^\"]*)\" \n)?" //
-			+ "targetLoc=\"(.*?)\" \n" // destination
-			+ "prod=\"([^\"]*)\" \n" // line
-			+ "(?:dir=[^\n]*\n)?" // (destination)
-			+ "(?:depStation=\"(.*?)\"\n)?" //
-			+ "delayReason=\"([^\"]*)\"\n" // message
-	);
-	private static final Pattern P_DEPARTURES_MESSAGES = Pattern.compile("<Err code=\"([^\"]*)\" text=\"([^\"]*)\"");
-
-	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
-	{
-		final QueryDeparturesResult result = new QueryDeparturesResult();
-
-		// scrape page
-		final String uri = departuresQueryUri(stationId, maxDepartures);
-		final CharSequence page = ParserUtils.scrape(uri);
-
-		// parse page
-		final Matcher mMessage = P_DEPARTURES_MESSAGES.matcher(page);
-		if (mMessage.find())
-		{
-			final String code = mMessage.group(1);
-			final String text = mMessage.group(2);
-
-			if (code.equals("H730")) // Your input is not valid
-				return new QueryDeparturesResult(QueryDeparturesResult.Status.INVALID_STATION);
-			if (code.equals("H890"))
-			{
-				result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, Integer.parseInt(stationId)), Collections
-						.<Departure> emptyList(), null));
-				return result;
-			}
-			throw new IllegalArgumentException("unknown error " + code + ", " + text);
-		}
-
-		final List<Departure> departures = new ArrayList<Departure>(8);
-
-		final Matcher mDepCoarse = P_DEPARTURES_COARSE.matcher(page);
-		while (mDepCoarse.find())
-		{
-			final Matcher mDepFine = P_DEPARTURES_FINE.matcher(mDepCoarse.group(1));
-			if (mDepFine.matches())
-			{
-				if (mDepFine.group(8) == null)
-				{
-					final Calendar plannedTime = new GregorianCalendar(timeZone());
-					plannedTime.clear();
-					ParserUtils.parseEuropeanTime(plannedTime, mDepFine.group(1));
-					ParserUtils.parseGermanDate(plannedTime, mDepFine.group(2));
-
-					final Calendar predictedTime;
-					if (mDepFine.group(3) != null)
-					{
-						predictedTime = new GregorianCalendar(timeZone());
-						predictedTime.setTimeInMillis(plannedTime.getTimeInMillis());
-						predictedTime.add(Calendar.MINUTE, Integer.parseInt(mDepFine.group(3)));
-					}
-					else
-					{
-						predictedTime = null;
-					}
-
-					final String position = mDepFine.group(4) != null ? "Gl. " + ParserUtils.resolveEntities(mDepFine.group(4)) : null;
-
-					final String destination = ParserUtils.resolveEntities(mDepFine.group(6)).trim();
-
-					final String line = normalizeLine(ParserUtils.resolveEntities(mDepFine.group(7)));
-
-					final String message = ParserUtils.resolveEntities(mDepFine.group(9)).trim();
-
-					departures.add(new Departure(plannedTime.getTime(), predictedTime != null ? predictedTime.getTime() : null, line,
-							line != null ? lineColors(line) : null, null, position, 0, destination, message.length() > 0 ? message : null));
-				}
-			}
-			else
-			{
-				throw new IllegalArgumentException("cannot parse '" + mDepCoarse.group(1) + "' on " + stationId);
-			}
-		}
-
-		result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, Integer.parseInt(stationId)), departures, null));
-		return result;
+		return xmlQueryDepartures(uri.toString(), Integer.parseInt(stationId));
 	}
 
 	@Override
@@ -599,7 +507,8 @@ public final class BahnProvider extends AbstractHafasProvider
 	private static final Pattern P_NORMALIZE_LINE_RUSSIA = Pattern.compile("(?:D\\s*)?(\\d{1,3}(?:[A-Z]{2}|Y))");
 	private static final Pattern P_NORMALIZE_LINE_SBAHN = Pattern.compile("S\\w*\\d+");
 
-	private static String normalizeLine(final String line)
+	@Override
+	protected final String normalizeLine(final String line)
 	{
 		// TODO ARZ Simplon Tunnel: Brig - Iselle di Trasquera
 		// ARZ29171

@@ -179,27 +179,6 @@ public class SncbProvider extends AbstractHafasProvider
 		}
 	}
 
-	private String normalizeLine(final String line)
-	{
-		if (line == null || line.length() == 0)
-			return null;
-
-		final Matcher m = P_NORMALIZE_LINE.matcher(line);
-		if (m.matches())
-		{
-			final String type = m.group(1);
-			final String number = m.group(2);
-
-			final char normalizedType = normalizeType(type);
-			if (normalizedType != 0)
-				return normalizedType + type + number;
-
-			throw new IllegalStateException("cannot normalize type " + type + " number " + number + " line " + line);
-		}
-
-		throw new IllegalStateException("cannot normalize line " + line);
-	}
-
 	@Override
 	protected char normalizeType(final String type)
 	{

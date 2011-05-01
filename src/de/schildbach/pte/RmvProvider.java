@@ -603,7 +603,8 @@ public class RmvProvider extends AbstractHafasProvider
 		}
 	}
 
-	private static String normalizeLine(final String line)
+	@Override
+	protected String normalizeLine(final String line)
 	{
 		if (line == null || line.length() == 0)
 			return null;

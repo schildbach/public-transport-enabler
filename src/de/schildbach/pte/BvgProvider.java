@@ -906,7 +906,8 @@ public final class BvgProvider extends AbstractHafasProvider
 	private static final Pattern P_NORMALIZE_LINE_SPECIAL_NUMBER = Pattern.compile("\\d{4,}");
 	private static final Pattern P_NORMALIZE_LINE_SPECIAL_BUS = Pattern.compile("Bus[A-Z]");
 
-	private static String normalizeLine(final String line)
+	@Override
+	protected String normalizeLine(final String line)
 	{
 		if (line == null || line.length() == 0)
 			return null;

@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -30,11 +31,15 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 import de.schildbach.pte.dto.Connection;
+import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
@@ -42,6 +47,8 @@ import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult.Status;
+import de.schildbach.pte.dto.QueryDeparturesResult;
+import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.util.Color;
 import de.schildbach.pte.util.ParserUtils;
 import de.schildbach.pte.util.XmlPullUtil;
@@ -191,6 +198,178 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			if (is != null)
 				is.close();
 		}
+	}
+
+	private static final Pattern P_AJAX_GET_STOPS_JSON = Pattern.compile("SLs\\.sls=(.*?);SLs\\.showSuggestion\\(\\);", Pattern.DOTALL);
+	private static final Pattern P_AJAX_GET_STOPS_ID = Pattern.compile(".*?@L=(\\d+)@.*?");
+
+	protected final List<Location> ajaxGetStops(final String uri) throws IOException
+	{
+		final CharSequence page = ParserUtils.scrape(uri);
+
+		final Matcher mJson = P_AJAX_GET_STOPS_JSON.matcher(page);
+		if (mJson.matches())
+		{
+			final String json = mJson.group(1);
+			final List<Location> results = new ArrayList<Location>();
+
+			try
+			{
+				final JSONObject head = new JSONObject(json);
+				final JSONArray aSuggestions = head.getJSONArray("suggestions");
+
+				for (int i = 0; i < aSuggestions.length(); i++)
+				{
+					final JSONObject suggestion = aSuggestions.optJSONObject(i);
+					if (suggestion != null)
+					{
+						final int type = suggestion.getInt("type");
+						final String value = suggestion.getString("value");
+						final int lat = suggestion.getInt("ycoord");
+						final int lon = suggestion.getInt("xcoord");
+						int localId = 0;
+						final Matcher m = P_AJAX_GET_STOPS_ID.matcher(suggestion.getString("id"));
+						if (m.matches())
+							localId = Integer.parseInt(m.group(1));
+
+						if (type == 1) // station
+						{
+							results.add(new Location(LocationType.STATION, localId, lat, lon, null, value));
+						}
+						else if (type == 2) // address
+						{
+							results.add(new Location(LocationType.ADDRESS, 0, lat, lon, null, value));
+						}
+						else if (type == 4) // poi
+						{
+							results.add(new Location(LocationType.POI, localId, lat, lon, null, value));
+						}
+						else
+						{
+							throw new IllegalStateException("unknown type " + type + " on " + uri);
+						}
+					}
+				}
+
+				return results;
+			}
+			catch (final JSONException x)
+			{
+				x.printStackTrace();
+				throw new RuntimeException("cannot parse: '" + json + "' on " + uri, x);
+			}
+		}
+		else
+		{
+			throw new RuntimeException("cannot parse: '" + page + "' on " + uri);
+		}
+	}
+
+	private static final Pattern P_XML_QUERY_DEPARTURES_COARSE = Pattern.compile("\\G<Journey (.*?)(?:/>|><HIMMessage (.*?)/></Journey>)(?:\n|\\z)",
+			Pattern.DOTALL);
+	private static final Pattern P_XML_QUERY_DEPARTURES_FINE = Pattern.compile("" //
+			+ "fpTime\\s*=\"(\\d{1,2}:\\d{2})\"\\s*" // time
+			+ "fpDate\\s*=\"(\\d{2}\\.\\d{2}\\.\\d{2})\"\\s*" // date
+			+ "delay\\s*=\"(?:-|k\\.A\\.?|cancel|\\+?\\s*(\\d+))\"\\s*" // delay
+			+ "(?:e_delay\\s*=\"\\d+\"\\s*)?" // (???)
+			+ "(?:newpl\\s*=\"([^\"]*)\"\\s*)?" //
+			+ "(?:platform\\s*=\"([^\"]*)\"\\s*)?" // position
+			+ "targetLoc\\s*=\"([^\"]*)\"\\s*" // destination
+			+ "(?:hafasname\\s*=\"[^\"]*\"\\s*)?" // (???)
+			+ "prod\\s*=\"([^\"]*)\"\\s*" // line
+			+ "(?:class\\s*=\"[^\"]*\"\\s*)?" // (???)
+			+ "(?:dir\\s*=\"[^\"]*\"\\s*)?" // (destination)
+			+ "(?:depStation\\s*=\"(.*?)\"\\s*)?" //
+			+ "(?:delayReason\\s*=\"([^\"]*)\"\\s*)?" // message
+			+ "(?:is_reachable\\s*=\"([^\"]*)\"\\s*)?" // (???)
+	);
+	private static final Pattern P_XML_QUERY_DEPARTURES_MESSAGES = Pattern.compile("<Err code=\"([^\"]*)\" text=\"([^\"]*)\"");
+
+	protected QueryDeparturesResult xmlQueryDepartures(final String uri, final int stationId) throws IOException
+	{
+		// scrape page
+		final CharSequence page = ParserUtils.scrape(uri);
+
+		final QueryDeparturesResult result = new QueryDeparturesResult();
+
+		// parse page
+		final Matcher mMessage = P_XML_QUERY_DEPARTURES_MESSAGES.matcher(page);
+		if (mMessage.find())
+		{
+			final String code = mMessage.group(1);
+			final String text = mMessage.group(2);
+
+			if (code.equals("H730")) // Your input is not valid
+				return new QueryDeparturesResult(QueryDeparturesResult.Status.INVALID_STATION);
+			if (code.equals("H890"))
+			{
+				result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, stationId),
+						Collections.<Departure> emptyList(), null));
+				return result;
+			}
+			throw new IllegalArgumentException("unknown error " + code + ", " + text);
+		}
+
+		final List<Departure> departures = new ArrayList<Departure>(8);
+
+		final Matcher mCoarse = P_XML_QUERY_DEPARTURES_COARSE.matcher(page);
+		while (mCoarse.find())
+		{
+			// TODO parse HIMMessage
+
+			final Matcher mFine = P_XML_QUERY_DEPARTURES_FINE.matcher(mCoarse.group(1));
+			if (mFine.matches())
+			{
+				if (mFine.group(8) == null)
+				{
+					final Calendar plannedTime = new GregorianCalendar(timeZone());
+					plannedTime.clear();
+					ParserUtils.parseEuropeanTime(plannedTime, mFine.group(1));
+					ParserUtils.parseGermanDate(plannedTime, mFine.group(2));
+
+					final Calendar predictedTime;
+					if (mFine.group(3) != null)
+					{
+						predictedTime = new GregorianCalendar(timeZone());
+						predictedTime.setTimeInMillis(plannedTime.getTimeInMillis());
+						predictedTime.add(Calendar.MINUTE, Integer.parseInt(mFine.group(3)));
+					}
+					else
+					{
+						predictedTime = null;
+					}
+
+					// TODO parse newpl if present
+
+					final String position = mFine.group(5) != null ? "Gl. " + ParserUtils.resolveEntities(mFine.group(5)) : null;
+
+					final String destination = ParserUtils.resolveEntities(mFine.group(6)).trim();
+
+					final String line = normalizeLine(ParserUtils.resolveEntities(mFine.group(7)));
+
+					final String message;
+					if (mFine.group(9) != null)
+					{
+						final String m = ParserUtils.resolveEntities(mFine.group(9)).trim();
+						message = m.length() > 0 ? m : null;
+					}
+					else
+					{
+						message = null;
+					}
+
+					departures.add(new Departure(plannedTime.getTime(), predictedTime != null ? predictedTime.getTime() : null, line,
+							line != null ? lineColors(line) : null, null, position, 0, destination, message));
+				}
+			}
+			else
+			{
+				throw new IllegalArgumentException("cannot parse '" + mCoarse.group(1) + "' on " + uri);
+			}
+		}
+
+		result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, stationId), departures, null));
+		return result;
 	}
 
 	public QueryConnectionsResult queryConnections(Location from, Location via, Location to, final Date date, final boolean dep,
@@ -620,6 +799,290 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		throw new IllegalArgumentException(location.type.toString());
 	}
 
+	private final static Pattern P_WHITESPACE = Pattern.compile("\\s+");
+
+	private final String normalizeWhitespace(final String str)
+	{
+		return P_WHITESPACE.matcher(str).replaceAll("");
+	}
+
+	public GetConnectionDetailsResult getConnectionDetails(String connectionUri) throws IOException
+	{
+		throw new UnsupportedOperationException();
+	}
+
+	private static final Pattern P_XML_NEARBY_STATIONS_COARSE = Pattern.compile("\\G<St\\s*(.*?)/?>(?:\n|\\z)", Pattern.DOTALL);
+	private static final Pattern P_XML_NEARBY_STATIONS_FINE = Pattern.compile("" //
+			+ "evaId=\"(\\d+)\"\\s*" // id
+			+ "name=\"([^\"]+)\".*?" // name
+			+ "x=\"(\\d+)\"\\s*" // x
+			+ "y=\"(\\d+)\"\\s*" // y
+	);
+	private static final Pattern P_XML_NEARBY_STATIONS_MESSAGES = Pattern.compile("<Err code=\"([^\"]*)\" text=\"([^\"]*)\"");
+
+	protected final NearbyStationsResult xmlNearbyStations(final String uri) throws IOException
+	{
+		// scrape page
+		final CharSequence page = ParserUtils.scrape(uri);
+
+		final List<Location> stations = new ArrayList<Location>();
+
+		// parse page
+		final Matcher mMessage = P_XML_NEARBY_STATIONS_MESSAGES.matcher(page);
+		if (mMessage.find())
+		{
+			final String code = mMessage.group(1);
+			final String text = mMessage.group(2);
+
+			if (code.equals("H730")) // Your input is not valid
+				return new NearbyStationsResult(NearbyStationsResult.Status.INVALID_STATION);
+			if (code.equals("H890")) // No trains in result
+				return new NearbyStationsResult(stations);
+			throw new IllegalArgumentException("unknown error " + code + ", " + text);
+		}
+
+		final Matcher mCoarse = P_XML_NEARBY_STATIONS_COARSE.matcher(page);
+		while (mCoarse.find())
+		{
+			final Matcher mFine = P_XML_NEARBY_STATIONS_FINE.matcher(mCoarse.group(1));
+			if (mFine.matches())
+			{
+				final int parsedId = Integer.parseInt(mFine.group(1));
+
+				final String parsedName = ParserUtils.resolveEntities(mFine.group(2)).trim();
+
+				final int parsedLon = Integer.parseInt(mFine.group(3));
+
+				final int parsedLat = Integer.parseInt(mFine.group(4));
+
+				stations.add(new Location(LocationType.STATION, parsedId, parsedLat, parsedLon, null, parsedName));
+			}
+			else
+			{
+				throw new IllegalArgumentException("cannot parse '" + mCoarse.group(1) + "' on " + uri);
+			}
+		}
+
+		return new NearbyStationsResult(stations);
+	}
+
+	private final static Pattern P_NEARBY_COARSE = Pattern.compile("<tr class=\"(zebra[^\"]*)\">(.*?)</tr>", Pattern.DOTALL);
+	private final static Pattern P_NEARBY_FINE_COORDS = Pattern
+			.compile("REQMapRoute0\\.Location0\\.X=(-?\\d+)&(?:amp;)?REQMapRoute0\\.Location0\\.Y=(-?\\d+)&");
+	private final static Pattern P_NEARBY_FINE_LOCATION = Pattern.compile("[\\?&]input=(\\d+)&[^\"]*\">([^<]*)<");
+
+	protected abstract String nearbyStationUri(String stationId);
+
+	public NearbyStationsResult nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
+			throws IOException
+	{
+		if (stationId == null)
+			throw new IllegalArgumentException("stationId must be given");
+
+		final List<Location> stations = new ArrayList<Location>();
+
+		final String uri = nearbyStationUri(stationId);
+		final CharSequence page = ParserUtils.scrape(uri);
+		String oldZebra = null;
+
+		final Matcher mCoarse = P_NEARBY_COARSE.matcher(page);
+
+		while (mCoarse.find())
+		{
+			final String zebra = mCoarse.group(1);
+			if (oldZebra != null && zebra.equals(oldZebra))
+				throw new IllegalArgumentException("missed row? last:" + zebra);
+			else
+				oldZebra = zebra;
+
+			final Matcher mFineLocation = P_NEARBY_FINE_LOCATION.matcher(mCoarse.group(2));
+
+			if (mFineLocation.find())
+			{
+				int parsedLon = 0;
+				int parsedLat = 0;
+				final int parsedId = Integer.parseInt(mFineLocation.group(1));
+				final String parsedName = ParserUtils.resolveEntities(mFineLocation.group(2));
+
+				final Matcher mFineCoords = P_NEARBY_FINE_COORDS.matcher(mCoarse.group(2));
+
+				if (mFineCoords.find())
+				{
+					parsedLon = Integer.parseInt(mFineCoords.group(1));
+					parsedLat = Integer.parseInt(mFineCoords.group(2));
+				}
+
+				final String[] nameAndPlace = splitNameAndPlace(parsedName);
+				stations.add(new Location(LocationType.STATION, parsedId, parsedLat, parsedLon, nameAndPlace[0], nameAndPlace[1]));
+			}
+			else
+			{
+				throw new IllegalArgumentException("cannot parse '" + mCoarse.group(2) + "' on " + uri);
+			}
+		}
+
+		if (maxStations == 0 || maxStations >= stations.size())
+			return new NearbyStationsResult(stations);
+		else
+			return new NearbyStationsResult(stations.subList(0, maxStations));
+	}
+
+	protected static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zÄÖÜäöüßáàâéèêíìîóòôúùûØ/-]+)[\\s-]*(.*)");
+
+	protected String normalizeLine(final String type, final String line)
+	{
+		final char normalizedType = normalizeType(type);
+
+		if (normalizedType != 0)
+		{
+			if (line != null)
+			{
+				final Matcher m = P_NORMALIZE_LINE.matcher(line);
+				final String strippedLine = m.matches() ? m.group(1) + m.group(2) : line;
+
+				return normalizedType + strippedLine;
+			}
+			else
+			{
+				return Character.toString(normalizedType);
+			}
+		}
+
+		throw new IllegalStateException("cannot normalize type '" + type + "' line '" + line + "'");
+	}
+
+	protected abstract char normalizeType(String type);
+
+	protected final char normalizeCommonTypes(final String ucType)
+	{
+		// Intercity
+		if (ucType.equals("EC")) // EuroCity
+			return 'I';
+		if (ucType.equals("EN")) // EuroNight
+			return 'I';
+		if (ucType.equals("EIC")) // Ekspres InterCity, Polen
+			return 'I';
+		if (ucType.equals("ICE")) // InterCityExpress
+			return 'I';
+		if (ucType.equals("IC")) // InterCity
+			return 'I';
+		if (ucType.equals("ICT")) // InterCity
+			return 'I';
+		if (ucType.equals("CNL")) // CityNightLine
+			return 'I';
+		if (ucType.equals("OEC")) // ÖBB-EuroCity
+			return 'I';
+		if (ucType.equals("OIC")) // ÖBB-InterCity
+			return 'I';
+		if (ucType.equals("RJ")) // RailJet, Österreichische Bundesbahnen
+			return 'I';
+		if (ucType.equals("THA")) // Thalys
+			return 'I';
+		if (ucType.equals("TGV")) // Train à Grande Vitesse
+			return 'I';
+		if (ucType.equals("DNZ")) // Berlin-Saratov, Berlin-Moskva, Connections only?
+			return 'I';
+		if (ucType.equals("AIR")) // Generic Flight
+			return 'I';
+		if (ucType.equals("ECB")) // EC, Verona-München
+			return 'I';
+		if (ucType.equals("INZ")) // Nacht
+			return 'I';
+		if (ucType.equals("RHI")) // ICE
+			return 'I';
+		if (ucType.equals("RHT")) // TGV
+			return 'I';
+		if (ucType.equals("TGD")) // TGV
+			return 'I';
+		if (ucType.equals("IRX")) // IC
+			return 'I';
+
+		// Regional
+		if (ucType.equals("ZUG")) // Generic Train
+			return 'R';
+		if (ucType.equals("R")) // Generic Regional Train
+			return 'R';
+		if (ucType.equals("DPN")) // Dritter Personen Nahverkehr
+			return 'R';
+		if (ucType.equals("RB")) // RegionalBahn
+			return 'R';
+		if (ucType.equals("RE")) // RegionalExpress
+			return 'R';
+		if (ucType.equals("IR")) // Interregio
+			return 'R';
+		if (ucType.equals("IRE")) // Interregio Express
+			return 'R';
+		if (ucType.equals("HEX")) // Harz-Berlin-Express, Veolia
+			return 'R';
+		if (ucType.equals("WFB")) // Westfalenbahn
+			return 'R';
+		if (ucType.equals("RT")) // RegioTram
+			return 'R';
+		if (ucType.equals("REX")) // RegionalExpress, Österreich
+			return 'R';
+		if (ucType.equals("OS")) // Osobný vlak, Slovakia oder Osobní vlak, Czech Republic
+			return 'R';
+		if (ucType.equals("SP")) // Spěšný vlak, Czech Republic
+			return 'R';
+
+		// Suburban Trains
+		if (ucType.equals("S")) // Generic S-Bahn
+			return 'S';
+
+		// Subway
+		if (ucType.equals("U")) // Generic U-Bahn
+			return 'U';
+
+		// Tram
+		if (ucType.equals("STR")) // Generic Tram
+			return 'T';
+
+		// Bus
+		if (ucType.equals("BUS")) // Generic Bus
+			return 'B';
+		if (ucType.equals("AST")) // Anruf-Sammel-Taxi
+			return 'B';
+		if (ucType.equals("RUF")) // Rufbus
+			return 'B';
+		if (ucType.equals("SEV")) // Schienen-Ersatz-Verkehr
+			return 'B';
+		if (ucType.equals("BUSSEV")) // Schienen-Ersatz-Verkehr
+			return 'B';
+		if (ucType.equals("BSV")) // Bus SEV
+			return 'B';
+		if (ucType.equals("FB")) // Luxemburg-Saarbrücken
+			return 'B';
+
+		// Ferry
+		if (ucType.equals("SCH")) // Schiff
+			return 'F';
+		if (ucType.equals("AS")) // SyltShuttle, eigentlich Autoreisezug
+			return 'F';
+
+		return 0;
+	}
+
+	protected String normalizeLine(final String line)
+	{
+		if (line == null || line.length() == 0)
+			return null;
+
+		final Matcher m = P_NORMALIZE_LINE.matcher(line);
+		if (m.matches())
+		{
+			final String type = m.group(1);
+			final String number = m.group(2);
+
+			final char normalizedType = normalizeType(type);
+			if (normalizedType != 0)
+				return normalizedType + type + number;
+
+			throw new IllegalStateException("cannot normalize type " + type + " number " + number + " line " + line);
+		}
+
+		throw new IllegalStateException("cannot normalize line " + line);
+	}
+
 	private static final Pattern P_LINE_S = Pattern.compile("S\\d+");
 	private static final Pattern P_LINE_SN = Pattern.compile("SN\\d*");
 
@@ -753,214 +1216,6 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 		throw new IllegalStateException("cannot normalize type '" + normalizedType + "' (" + type + ") name '" + normalizedName + "' longCategory '"
 				+ longCategory + "'");
-	}
-
-	private final static Pattern P_WHITESPACE = Pattern.compile("\\s+");
-
-	private final String normalizeWhitespace(final String str)
-	{
-		return P_WHITESPACE.matcher(str).replaceAll("");
-	}
-
-	public GetConnectionDetailsResult getConnectionDetails(String connectionUri) throws IOException
-	{
-		throw new UnsupportedOperationException();
-	}
-
-	private final static Pattern P_NEARBY_COARSE = Pattern.compile("<tr class=\"(zebra[^\"]*)\">(.*?)</tr>", Pattern.DOTALL);
-	private final static Pattern P_NEARBY_FINE_COORDS = Pattern
-			.compile("REQMapRoute0\\.Location0\\.X=(-?\\d+)&(?:amp;)?REQMapRoute0\\.Location0\\.Y=(-?\\d+)&");
-	private final static Pattern P_NEARBY_FINE_LOCATION = Pattern.compile("[\\?&]input=(\\d+)&[^\"]*\">([^<]*)<");
-
-	protected abstract String nearbyStationUri(String stationId);
-
-	public NearbyStationsResult nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
-			throws IOException
-	{
-		if (stationId == null)
-			throw new IllegalArgumentException("stationId must be given");
-
-		final List<Location> stations = new ArrayList<Location>();
-
-		final String uri = nearbyStationUri(stationId);
-		final CharSequence page = ParserUtils.scrape(uri);
-		String oldZebra = null;
-
-		final Matcher mCoarse = P_NEARBY_COARSE.matcher(page);
-
-		while (mCoarse.find())
-		{
-			final String zebra = mCoarse.group(1);
-			if (oldZebra != null && zebra.equals(oldZebra))
-				throw new IllegalArgumentException("missed row? last:" + zebra);
-			else
-				oldZebra = zebra;
-
-			final Matcher mFineLocation = P_NEARBY_FINE_LOCATION.matcher(mCoarse.group(2));
-
-			if (mFineLocation.find())
-			{
-				int parsedLon = 0;
-				int parsedLat = 0;
-				final int parsedId = Integer.parseInt(mFineLocation.group(1));
-				final String parsedName = ParserUtils.resolveEntities(mFineLocation.group(2));
-
-				final Matcher mFineCoords = P_NEARBY_FINE_COORDS.matcher(mCoarse.group(2));
-
-				if (mFineCoords.find())
-				{
-					parsedLon = Integer.parseInt(mFineCoords.group(1));
-					parsedLat = Integer.parseInt(mFineCoords.group(2));
-				}
-
-				final String[] nameAndPlace = splitNameAndPlace(parsedName);
-				stations.add(new Location(LocationType.STATION, parsedId, parsedLat, parsedLon, nameAndPlace[0], nameAndPlace[1]));
-			}
-			else
-			{
-				throw new IllegalArgumentException("cannot parse '" + mCoarse.group(2) + "' on " + uri);
-			}
-		}
-
-		if (maxStations == 0 || maxStations >= stations.size())
-			return new NearbyStationsResult(stations);
-		else
-			return new NearbyStationsResult(stations.subList(0, maxStations));
-	}
-
-	protected static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zÄÖÜäöüßáàâéèêíìîóòôúùû/-]+)[\\s-]*(.*)");
-
-	protected String normalizeLine(final String type, final String line)
-	{
-		final char normalizedType = normalizeType(type);
-
-		if (normalizedType != 0)
-		{
-			if (line != null)
-			{
-				final Matcher m = P_NORMALIZE_LINE.matcher(line);
-				final String strippedLine = m.matches() ? m.group(1) + m.group(2) : line;
-
-				return normalizedType + strippedLine;
-			}
-			else
-			{
-				return Character.toString(normalizedType);
-			}
-		}
-
-		throw new IllegalStateException("cannot normalize type '" + type + "' line '" + line + "'");
-	}
-
-	protected abstract char normalizeType(String type);
-
-	protected final char normalizeCommonTypes(final String ucType)
-	{
-		// Intercity
-		if (ucType.equals("EC")) // EuroCity
-			return 'I';
-		if (ucType.equals("EN")) // EuroNight
-			return 'I';
-		if (ucType.equals("EIC")) // Ekspres InterCity, Polen
-			return 'I';
-		if (ucType.equals("ICE")) // InterCityExpress
-			return 'I';
-		if (ucType.equals("IC")) // InterCity
-			return 'I';
-		if (ucType.equals("ICT")) // InterCity
-			return 'I';
-		if (ucType.equals("CNL")) // CityNightLine
-			return 'I';
-		if (ucType.equals("OEC")) // ÖBB-EuroCity
-			return 'I';
-		if (ucType.equals("OIC")) // ÖBB-InterCity
-			return 'I';
-		if (ucType.equals("RJ")) // RailJet, Österreichische Bundesbahnen
-			return 'I';
-		if (ucType.equals("THA")) // Thalys
-			return 'I';
-		if (ucType.equals("TGV")) // Train à Grande Vitesse
-			return 'I';
-		if (ucType.equals("DNZ")) // Berlin-Saratov, Berlin-Moskva, Connections only?
-			return 'I';
-		if (ucType.equals("AIR")) // Generic Flight
-			return 'I';
-		if (ucType.equals("ECB")) // EC, Verona-München
-			return 'I';
-		if (ucType.equals("INZ")) // Nacht
-			return 'I';
-		if (ucType.equals("RHI")) // ICE
-			return 'I';
-		if (ucType.equals("RHT")) // TGV
-			return 'I';
-		if (ucType.equals("TGD")) // TGV
-			return 'I';
-		if (ucType.equals("IRX")) // IC
-			return 'I';
-
-		// Regional
-		if (ucType.equals("ZUG")) // Generic Train
-			return 'R';
-		if (ucType.equals("R")) // Generic Regional Train
-			return 'R';
-		if (ucType.equals("DPN")) // Dritter Personen Nahverkehr
-			return 'R';
-		if (ucType.equals("RB")) // RegionalBahn
-			return 'R';
-		if (ucType.equals("RE")) // RegionalExpress
-			return 'R';
-		if (ucType.equals("IR")) // Interregio
-			return 'R';
-		if (ucType.equals("IRE")) // Interregio Express
-			return 'R';
-		if (ucType.equals("HEX")) // Harz-Berlin-Express, Veolia
-			return 'R';
-		if (ucType.equals("WFB")) // Westfalenbahn
-			return 'R';
-		if (ucType.equals("RT")) // RegioTram
-			return 'R';
-		if (ucType.equals("REX")) // RegionalExpress, Österreich
-			return 'R';
-		if (ucType.equals("OS")) // Osobný vlak, Slovakia oder Osobní vlak, Czech Republic
-			return 'R';
-		if (ucType.equals("SP")) // Spěšný vlak, Czech Republic
-			return 'R';
-
-		// Suburban Trains
-		if (ucType.equals("S")) // Generic S-Bahn
-			return 'S';
-
-		// Subway
-		if (ucType.equals("U")) // Generic U-Bahn
-			return 'U';
-
-		// Tram
-		if (ucType.equals("STR")) // Generic Tram
-			return 'T';
-
-		// Bus
-		if (ucType.equals("BUS")) // Generic Bus
-			return 'B';
-		if (ucType.equals("AST")) // Anruf-Sammel-Taxi
-			return 'B';
-		if (ucType.equals("RUF")) // Rufbus
-			return 'B';
-		if (ucType.equals("SEV")) // Schienen-Ersatz-Verkehr
-			return 'B';
-		if (ucType.equals("BUSSEV")) // Schienen-Ersatz-Verkehr
-			return 'B';
-		if (ucType.equals("BSV")) // Bus SEV
-			return 'B';
-		if (ucType.equals("FB")) // Luxemburg-Saarbrücken
-			return 'B';
-
-		// Ferry
-		if (ucType.equals("SCH")) // Schiff
-			return 'F';
-		if (ucType.equals("AS")) // SyltShuttle, eigentlich Autoreisezug
-			return 'F';
-
-		return 0;
 	}
 
 	private static final Pattern P_CONNECTION_ID = Pattern.compile("co=(C\\d+-\\d+)&");
