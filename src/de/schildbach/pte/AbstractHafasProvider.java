@@ -200,7 +200,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		}
 	}
 
-	private static final Pattern P_AJAX_GET_STOPS_JSON = Pattern.compile("SLs\\.sls=(.*?);SLs\\.showSuggestion\\(\\);", Pattern.DOTALL);
+	private static final Pattern P_AJAX_GET_STOPS_JSON = Pattern.compile("SLs\\.sls\\s*=\\s*(.*?);\\s*SLs\\.showSuggestion\\(\\);", Pattern.DOTALL);
 	private static final Pattern P_AJAX_GET_STOPS_ID = Pattern.compile(".*?@L=(\\d+)@.*?");
 
 	protected final List<Location> ajaxGetStops(final String uri) throws IOException
