@@ -17,9 +17,12 @@
 
 package de.schildbach.pte.live;
 
+import java.util.List;
+
 import org.junit.Test;
 
 import de.schildbach.pte.VgsProvider;
+import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 
@@ -29,6 +32,22 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 public class VgsProviderLiveTest
 {
 	private final VgsProvider provider = new VgsProvider();
+
+	@Test
+	public void autocomplete() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("Flughafen");
+
+		list(autocompletes);
+	}
+
+	private void list(final List<Location> autocompletes)
+	{
+		System.out.print(autocompletes.size() + " ");
+		for (final Location autocomplete : autocompletes)
+			System.out.print(autocomplete.toDebugString() + " ");
+		System.out.println();
+	}
 
 	@Test
 	public void nearbyStation() throws Exception

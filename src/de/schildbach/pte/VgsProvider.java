@@ -43,7 +43,7 @@ import de.schildbach.pte.util.ParserUtils;
 public class VgsProvider extends AbstractHafasProvider
 {
 	public static final String OLD_NETWORK_ID = "www.vgs-online.de";
-	private static final String API_BASE = "http://www.vgs-online.de/cgi-bin/";
+	private static final String API_BASE = "http://www.vgs-online.de/cgi-bin/"; // "http://www.saarfahrplan.de/cgi-bin/";
 
 	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
 
@@ -66,10 +66,16 @@ public class VgsProvider extends AbstractHafasProvider
 		return false;
 	}
 
+	private static final String AUTOCOMPLETE_URI = API_BASE
+			+ "ajax-getstop.exe/eny?start=1&tpl=suggest2json&REQ0JourneyStopsS0A=1&getstop=1&noSession=yes&REQ0JourneyStopsB=12&REQ0JourneyStopsS0G=%s?&js=true&";
+	private static final String ENCODING = "ISO-8859-1";
+
 	@Override
-	public List<Location> autocompleteStations(CharSequence constraint) throws IOException
+	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
-		throw new UnsupportedOperationException();
+		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING));
+
+		return ajaxGetStops(uri);
 	}
 
 	private final String NEARBY_URI = API_BASE

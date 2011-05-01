@@ -62,6 +62,27 @@ public class SeptaProvider extends AbstractHafasProvider
 		return TimeZone.getTimeZone("EST");
 	}
 
+	public boolean hasCapabilities(final Capability... capabilities)
+	{
+		for (final Capability capability : capabilities)
+			if (capability == Capability.DEPARTURES)
+				return true;
+
+		return false;
+	}
+
+	private static final String AUTOCOMPLETE_URI = API_BASE
+			+ "ajax-getstop.exe/dny?start=1&tpl=suggest2json&REQ0JourneyStopsS0A=255&REQ0JourneyStopsB=12&S=%s?&js=true&";
+	private static final String ENCODING = "ISO-8859-1";
+
+	@Override
+	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
+	{
+		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING));
+
+		return ajaxGetStops(uri);
+	}
+
 	@Override
 	protected char normalizeType(final String type)
 	{
@@ -94,15 +115,6 @@ public class SeptaProvider extends AbstractHafasProvider
 			return 'B';
 
 		return 0;
-	}
-
-	public boolean hasCapabilities(final Capability... capabilities)
-	{
-		for (final Capability capability : capabilities)
-			if (capability == Capability.DEPARTURES)
-				return true;
-
-		return false;
 	}
 
 	private final String NEARBY_URI = API_BASE

@@ -40,6 +40,7 @@ public class SncbProvider extends AbstractHafasProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.SNCB;
 	public static final String OLD_NETWORK_ID = "hari.b-rail.be";
+	private static final String API_BASE = "http://hari.b-rail.be/Hafas/bin/";
 	private static final String API_URI = "http://hari.b-rail.be/Hafas/bin/extxml.exe";
 
 	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
@@ -61,6 +62,18 @@ public class SncbProvider extends AbstractHafasProvider
 				return true;
 
 		return false;
+	}
+
+	private static final String AUTOCOMPLETE_URI = API_BASE
+			+ "ajax-getstop.exe/dny?start=1&tpl=suggest2json&REQ0JourneyStopsS0A=255&REQ0JourneyStopsB=12&S=%s?&js=true&";
+	private static final String ENCODING = "ISO-8859-1";
+
+	@Override
+	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
+	{
+		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING));
+
+		return ajaxGetStops(uri);
 	}
 
 	private final String NEARBY_URI = "http://hari.b-rail.be/HAFAS/bin/stboard.exe/en?input=%s&distance=50&near=Anzeigen";

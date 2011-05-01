@@ -244,6 +244,10 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 						{
 							results.add(new Location(LocationType.POI, localId, lat, lon, null, value));
 						}
+						else if (type == 71) // strange (VBN)
+						{
+							// TODO don't know what to do
+						}
 						else
 						{
 							throw new IllegalStateException("unknown type " + type + " on " + uri);
