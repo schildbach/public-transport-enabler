@@ -689,7 +689,12 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 						XmlPullUtil.exit(pp);
 						XmlPullUtil.exit(pp);
 
-						final String lineStr = _normalizeLine(category, name, longCategory);
+						final char type = normalizeType(category);
+						final String lineStr;
+						if (type != 0)
+							lineStr = type + name;
+						else
+							lineStr = _normalizeLine(category, name); // for compatibility
 						line = new Line(lineStr, lineColors(lineStr));
 					}
 					else if (tag.equals("Walk") || tag.equals("Transfer") || tag.equals("GisRoute"))
@@ -1188,7 +1193,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 	private static final Pattern P_LINE_S = Pattern.compile("S\\d+");
 	private static final Pattern P_LINE_SN = Pattern.compile("SN\\d*");
 
-	private final String _normalizeLine(final String type, final String name, final String longCategory)
+	private final String _normalizeLine(final String type, final String name)
 	{
 		final String normalizedType = type.split(" ", 2)[0];
 		final String normalizedName = normalizeWhitespace(name);
@@ -1316,8 +1321,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		if ("TRN".equals(normalizedType))
 			return "?" + normalizedName;
 
-		throw new IllegalStateException("cannot normalize type '" + normalizedType + "' (" + type + ") name '" + normalizedName + "' longCategory '"
-				+ longCategory + "'");
+		throw new IllegalStateException("cannot normalize type '" + normalizedType + "' (" + type + ") name '" + normalizedName + "'");
 	}
 
 	private static final Pattern P_CONNECTION_ID = Pattern.compile("co=(C\\d+-\\d+)&");

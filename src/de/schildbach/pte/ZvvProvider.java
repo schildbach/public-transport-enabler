@@ -48,7 +48,7 @@ public class ZvvProvider extends AbstractHafasProvider
 	public boolean hasCapabilities(Capability... capabilities)
 	{
 		for (final Capability capability : capabilities)
-			if (capability == Capability.DEPARTURES)
+			if (capability == Capability.DEPARTURES || capability == Capability.CONNECTIONS)
 				return true;
 
 		return false;

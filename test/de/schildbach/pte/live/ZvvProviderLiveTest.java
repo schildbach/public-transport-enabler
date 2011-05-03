@@ -17,13 +17,17 @@
 
 package de.schildbach.pte.live;
 
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
 
 import de.schildbach.pte.ZvvProvider;
+import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 
 /**
@@ -32,6 +36,7 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 public class ZvvProviderLiveTest
 {
 	private final ZvvProvider provider = new ZvvProvider();
+	private static final String ALL_PRODUCTS = "IRSUTBFC";
 
 	@Test
 	public void autocomplete() throws Exception
@@ -63,5 +68,15 @@ public class ZvvProviderLiveTest
 		final QueryDeparturesResult result = provider.queryDepartures("183400", 0, false);
 
 		System.out.println(result.stationDepartures);
+	}
+
+	@Test
+	public void shortConnection() throws Exception
+	{
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 8503000, null, "Zürich HB"), null,
+				new Location(LocationType.STATION, 8507785, null, "Bern, Hauptbahnhof"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+		System.out.println(result);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
+		System.out.println(moreResult);
 	}
 }
