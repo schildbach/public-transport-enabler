@@ -269,7 +269,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		}
 	}
 
-	private static final Pattern P_XML_QUERY_DEPARTURES_COARSE = Pattern.compile("\\G<Journey (.*?)(?:/>|><HIMMessage (.*?)/></Journey>)(?:\n|\\z)",
+	private static final Pattern P_XML_QUERY_DEPARTURES_COARSE = Pattern.compile("\\G<Journey ([^>]*?)(?:/>|><HIMMessage ([^>]*?)/></Journey>)(?:\n|\\z)",
 			Pattern.DOTALL);
 	private static final Pattern P_XML_QUERY_DEPARTURES_FINE = Pattern.compile("" //
 			+ "fpTime\\s*=\"(\\d{1,2}:\\d{2})\"\\s*" // time
