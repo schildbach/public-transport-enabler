@@ -269,8 +269,90 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		}
 	}
 
-	private static final Pattern P_XML_QUERY_DEPARTURES_COARSE = Pattern.compile("\\G<Journey ([^>]*?)(?:/>|><HIMMessage ([^>]*?)/></Journey>)(?:\n|\\z)",
-			Pattern.DOTALL);
+	private static final Pattern P_XML_MLC_REQ_ID = Pattern.compile(".*?@L=(\\d+)@.*?");
+	private static final Pattern P_XML_MLC_REQ_LONLAT = Pattern.compile(".*?@X=(\\d+)@Y=(\\d+)@.*?");
+
+	protected final List<Location> xmlMLcReq(final CharSequence constraint) throws IOException
+	{
+		final String request = "<MLcReq><MLc n=\"" + constraint + "?\" t=\"ALLTYPE\" /></MLcReq>";
+
+		// ParserUtils.printXml(ParserUtils.scrape(apiUri, true, wrap(request), null, false));
+
+		InputStream is = null;
+
+		try
+		{
+			is = ParserUtils.scrapeInputStream(apiUri, wrap(request), 3);
+
+			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
+			final XmlPullParser pp = factory.newPullParser();
+			pp.setInput(is, DEFAULT_ENCODING);
+
+			final List<Location> results = new ArrayList<Location>();
+
+			assertResC(pp);
+			XmlPullUtil.enter(pp, "ResC");
+			XmlPullUtil.enter(pp, "MLcRes");
+
+			while (XmlPullUtil.test(pp, "MLc"))
+			{
+				final String t = XmlPullUtil.attr(pp, "t");
+				final LocationType type;
+				if ("ST".equals(t))
+					type = LocationType.STATION;
+				else if ("POI".equals(t))
+					type = LocationType.POI;
+				else if ("ADR".equals(t))
+					type = LocationType.ADDRESS;
+				else
+					throw new IllegalStateException("cannot handle: '" + t + "'");
+
+				final int id;
+				final String i = pp.getAttributeValue(null, "i");
+				if (i != null)
+				{
+					final Matcher iMatcherId = P_XML_MLC_REQ_ID.matcher(i);
+					if (!iMatcherId.matches())
+						throw new IllegalStateException("cannot parse id: '" + i + "'");
+					id = Integer.parseInt(iMatcherId.group(1));
+				}
+				else
+				{
+					id = 0;
+				}
+
+				final String name = XmlPullUtil.attr(pp, "n");
+
+				final String r = pp.getAttributeValue(null, "r");
+				final Matcher iMatcherLonLat = P_XML_MLC_REQ_LONLAT.matcher(i != null ? i : r);
+				if (!iMatcherLonLat.matches())
+					throw new IllegalStateException("cannot parse lon/lat: '" + i + "'");
+				final int lon = Integer.parseInt(iMatcherLonLat.group(1));
+				final int lat = Integer.parseInt(iMatcherLonLat.group(2));
+
+				results.add(new Location(type, id, lat, lon, null, name));
+
+				XmlPullUtil.next(pp);
+			}
+
+			XmlPullUtil.exit(pp, "MLcRes");
+			XmlPullUtil.exit(pp, "ResC");
+
+			return results;
+		}
+		catch (final XmlPullParserException x)
+		{
+			throw new RuntimeException(x);
+		}
+		finally
+		{
+			if (is != null)
+				is.close();
+		}
+	}
+
+	private static final Pattern P_XML_QUERY_DEPARTURES_COARSE = Pattern.compile(
+			"\\G<Journey ([^>]*?)(?:/>|><HIMMessage ([^>]*?)/></Journey>)(?:\n|\\z)", Pattern.DOTALL);
 	private static final Pattern P_XML_QUERY_DEPARTURES_FINE = Pattern.compile("" //
 			+ "fpTime\\s*=\"(\\d{1,2}:\\d{2})\"\\s*" // time
 			+ "fpDate\\s*=\"(\\d{2}\\.\\d{2}\\.\\d{2}|\\d{4}-\\d{2}-\\d{2})\"\\s*" // date

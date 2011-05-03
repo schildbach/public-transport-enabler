@@ -37,7 +37,7 @@ public class ZvvProvider extends AbstractHafasProvider
 
 	public ZvvProvider()
 	{
-		super(null, null);
+		super(API_BASE + "query.exe/dn", null);
 	}
 
 	public NetworkId id()
@@ -54,16 +54,10 @@ public class ZvvProvider extends AbstractHafasProvider
 		return false;
 	}
 
-	private static final String AUTOCOMPLETE_URI = API_BASE
-			+ "ajax-getstop.exe/dny?start=1&tpl=suggest2json&REQ0JourneyStopsS0A=255&REQ0JourneyStopsS0B=5&REQ0JourneyStopsB=12&getstop=1&noSession=yes&REQ0JourneyStopsS0G=%s?&js=true&";
-	private static final String ENCODING = "ISO-8859-1";
-
 	@Override
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
-		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING));
-
-		return ajaxGetStops(uri);
+		return xmlMLcReq(constraint);
 	}
 
 	@Override
@@ -127,6 +121,8 @@ public class ZvvProvider extends AbstractHafasProvider
 			return 'R';
 		if ("EXT".equals(ucType))
 			return 'R';
+		if ("ATZ".equals(ucType)) // Autotunnelzug
+			return 'R';
 
 		if ("S-BAHN".equals(ucType))
 			return 'S';
@@ -161,6 +157,8 @@ public class ZvvProvider extends AbstractHafasProvider
 		if ("GB".equals(ucType)) // Gondelbahn
 			return 'C';
 		if ("LB".equals(ucType)) // Luftseilbahn
+			return 'C';
+		if ("SL".equals(ucType)) // Sessel-Lift
 			return 'C';
 
 		if ("UNB".equals(ucType))
