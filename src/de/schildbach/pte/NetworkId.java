@@ -29,7 +29,7 @@ public enum NetworkId
 	OEBB, VOR, LINZ, SVV, VVV, IVB, STV,
 
 	// Switzerland
-	SBB, BVB, VBL,
+	SBB, BVB, VBL, ZVV,
 
 	// Belgium
 	SNCB,

@@ -263,6 +263,19 @@ public final class ParserUtils
 		return builder.toString();
 	}
 
+	private static final Pattern P_ISO_DATE = Pattern.compile("(\\d{4})-(\\d{2})-(\\d{2})");
+
+	public static final void parseIsoDate(final Calendar calendar, final CharSequence str)
+	{
+		final Matcher m = P_ISO_DATE.matcher(str);
+		if (!m.matches())
+			throw new RuntimeException("cannot parse: '" + str + "'");
+
+		calendar.set(Calendar.YEAR, Integer.parseInt(m.group(3)));
+		calendar.set(Calendar.MONTH, Integer.parseInt(m.group(2)) - 1);
+		calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(m.group(3)));
+	}
+
 	private static final Pattern P_GERMAN_DATE = Pattern.compile("(\\d{2})[\\./](\\d{2})[\\./](\\d{2,4})");
 
 	public static final void parseGermanDate(final Calendar calendar, final CharSequence str)

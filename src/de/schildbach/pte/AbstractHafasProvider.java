@@ -273,7 +273,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			Pattern.DOTALL);
 	private static final Pattern P_XML_QUERY_DEPARTURES_FINE = Pattern.compile("" //
 			+ "fpTime\\s*=\"(\\d{1,2}:\\d{2})\"\\s*" // time
-			+ "fpDate\\s*=\"(\\d{2}\\.\\d{2}\\.\\d{2})\"\\s*" // date
+			+ "fpDate\\s*=\"(\\d{2}\\.\\d{2}\\.\\d{2}|\\d{4}-\\d{2}-\\d{2})\"\\s*" // date
 			+ "delay\\s*=\"(?:-|k\\.A\\.?|cancel|\\+?\\s*(\\d+))\"\\s*" // delay
 			+ "(?:e_delay\\s*=\"\\d+\"\\s*)?" // (???)
 			+ "(?:newpl\\s*=\"([^\"]*)\"\\s*)?" //
@@ -283,6 +283,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			+ "prod\\s*=\"([^\"]*)\"\\s*" // line
 			+ "(?:class\\s*=\"[^\"]*\"\\s*)?" // (???)
 			+ "(?:dir\\s*=\"[^\"]*\"\\s*)?" // (destination)
+			+ "(?:capacity\\s*=\"[^\"]*\"\\s*)?" // (???)
 			+ "(?:depStation\\s*=\"(.*?)\"\\s*)?" //
 			+ "(?:delayReason\\s*=\"([^\"]*)\"\\s*)?" // message
 			+ "(?:is_reachable\\s*=\"([^\"]*)\"\\s*)?" // (???)
@@ -329,7 +330,11 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 					final Calendar plannedTime = new GregorianCalendar(timeZone());
 					plannedTime.clear();
 					ParserUtils.parseEuropeanTime(plannedTime, mFine.group(1));
-					ParserUtils.parseGermanDate(plannedTime, mFine.group(2));
+					final String dateStr = mFine.group(2);
+					if (dateStr.length() == 8)
+						ParserUtils.parseGermanDate(plannedTime, dateStr);
+					else
+						ParserUtils.parseIsoDate(plannedTime, dateStr);
 
 					final Calendar predictedTime;
 					if (mFine.group(3) != null)
@@ -815,13 +820,13 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		throw new UnsupportedOperationException();
 	}
 
-	private static final Pattern P_XML_NEARBY_STATIONS_COARSE = Pattern.compile("\\G<St\\s*(.*?)/?>(?:\n|\\z)", Pattern.DOTALL);
+	private static final Pattern P_XML_NEARBY_STATIONS_COARSE = Pattern.compile("\\G<\\s*St\\s*(.*?)/?>(?:\n|\\z)", Pattern.DOTALL);
 	private static final Pattern P_XML_NEARBY_STATIONS_FINE = Pattern.compile("" //
 			+ "evaId=\"(\\d+)\"\\s*" // id
 			+ "name=\"([^\"]+)\".*?" // name
-			+ "x=\"(\\d+)\"\\s*" // x
-			+ "y=\"(\\d+)\"\\s*" // y
-	);
+			+ "(?:x=\"(\\d+)\"\\s*)?" // x
+			+ "(?:y=\"(\\d+)\"\\s*)?" // y
+	, Pattern.DOTALL);
 	private static final Pattern P_XML_NEARBY_STATIONS_MESSAGES = Pattern.compile("<Err code=\"([^\"]*)\" text=\"([^\"]*)\"");
 
 	protected final NearbyStationsResult xmlNearbyStations(final String uri) throws IOException
@@ -855,9 +860,18 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 				final String parsedName = ParserUtils.resolveEntities(mFine.group(2)).trim();
 
-				final int parsedLon = Integer.parseInt(mFine.group(3));
-
-				final int parsedLat = Integer.parseInt(mFine.group(4));
+				final int parsedLon;
+				final int parsedLat;
+				if (mFine.group(3) != null && mFine.group(4) != null)
+				{
+					parsedLon = Integer.parseInt(mFine.group(3));
+					parsedLat = Integer.parseInt(mFine.group(4));
+				}
+				else
+				{
+					parsedLon = 0;
+					parsedLat = 0;
+				}
 
 				stations.add(new Location(LocationType.STATION, parsedId, parsedLat, parsedLon, null, parsedName));
 			}
@@ -931,7 +945,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return new NearbyStationsResult(stations.subList(0, maxStations));
 	}
 
-	protected static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zÄÖÜäöüßáàâéèêíìîóòôúùûØ/-]+)[\\s-]*(.*)");
+	protected static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zßÄÅäáàâåéèêíìîÖöóòôÜüúùûØ/-]+)[\\s-]*(.*)");
 
 	protected String normalizeLine(final String type, final String line)
 	{
@@ -1047,6 +1061,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		if (ucType.equals("AST")) // Anruf-Sammel-Taxi
 			return 'B';
 		if (ucType.equals("RUF")) // Rufbus
+			return 'B';
+		if ("RFT".equals(ucType)) // Ruftaxi
 			return 'B';
 		if (ucType.equals("SEV")) // Schienen-Ersatz-Verkehr
 			return 'B';
