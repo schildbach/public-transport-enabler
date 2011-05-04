@@ -27,6 +27,7 @@ import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
+import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 
@@ -37,6 +38,22 @@ public class BahnProviderLiveTest
 {
 	private BahnProvider provider = new BahnProvider();
 	protected static final String ALL_PRODUCTS = "IRSUTBFC";
+
+	@Test
+	public void nearbyStations() throws Exception
+	{
+		final NearbyStationsResult result = provider.nearbyStations("692991", 0, 0, 0, 0);
+
+		System.out.println(result.stations.size() + "  " + result.stations);
+	}
+
+	@Test
+	public void nearbyStationsByCoordinate() throws Exception
+	{
+		final NearbyStationsResult result = provider.nearbyStations(null, 52525589, 13369548, 0, 0);
+
+		System.out.println(result.stations.size() + "  " + result.stations);
+	}
 
 	@Test
 	public void queryDepartures() throws Exception
@@ -73,8 +90,8 @@ public class BahnProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, null, "Berlin"), null, new Location(
-				LocationType.ANY, 0, null, "Leipzig"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 8011160, null, "Berlin Hbf"), null,
+				new Location(LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		for (final Connection connection : result.connections)
