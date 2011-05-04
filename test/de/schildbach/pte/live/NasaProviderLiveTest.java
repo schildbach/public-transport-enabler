@@ -17,13 +17,17 @@
 
 package de.schildbach.pte.live;
 
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
 
 import de.schildbach.pte.NasaProvider;
+import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 
 /**
@@ -32,6 +36,7 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 public class NasaProviderLiveTest
 {
 	private final NasaProvider provider = new NasaProvider();
+	private static final String ALL_PRODUCTS = "IRSUTBFC";
 
 	@Test
 	public void autocomplete() throws Exception
@@ -63,5 +68,15 @@ public class NasaProviderLiveTest
 		final QueryDeparturesResult result = provider.queryDepartures("13000", 0, false);
 
 		System.out.println(result.stationDepartures);
+	}
+
+	@Test
+	public void shortConnection() throws Exception
+	{
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 13002, null, "Leipzig, Augustusplatz"),
+				null, new Location(LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+		System.out.println(result);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
+		System.out.println(moreResult);
 	}
 }
