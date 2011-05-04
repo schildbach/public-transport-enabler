@@ -42,13 +42,12 @@ public class SeptaProvider extends AbstractHafasProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.SEPTA;
 	private static final String API_BASE = "http://airs1.septa.org/bin/";
-	private static final String API_URI = "http://airs1.septa.org/bin/extxml.exe";
 
 	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
 
 	public SeptaProvider()
 	{
-		super(API_URI, null);
+		super(API_BASE + "query.exe/en", null);
 	}
 
 	public NetworkId id()
@@ -65,7 +64,7 @@ public class SeptaProvider extends AbstractHafasProvider
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
 		for (final Capability capability : capabilities)
-			if (capability == Capability.DEPARTURES)
+			if (capability == Capability.AUTOCOMPLETE_ONE_LINE || capability == Capability.DEPARTURES || capability == Capability.CONNECTIONS)
 				return true;
 
 		return false;
@@ -111,6 +110,17 @@ public class SeptaProvider extends AbstractHafasProvider
 		if (ucType.equals("BUS"))
 			return 'B';
 		if (ucType.equals("TRO"))
+			return 'B';
+
+		// from Connections:
+
+		if (ucType.equals("RAIL"))
+			return 'R';
+
+		if (ucType.equals("SUBWAY"))
+			return 'U';
+
+		if (ucType.equals("TROLLEY"))
 			return 'B';
 
 		return 0;

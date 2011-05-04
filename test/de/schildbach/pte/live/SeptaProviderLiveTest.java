@@ -17,13 +17,17 @@
 
 package de.schildbach.pte.live;
 
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
 
+import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.SeptaProvider;
 import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 
 /**
@@ -32,6 +36,7 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 public class SeptaProviderLiveTest
 {
 	private final SeptaProvider provider = new SeptaProvider();
+	private static final String ALL_PRODUCTS = "IRSUTBFC";
 
 	@Test
 	public void autocomplete() throws Exception
@@ -52,7 +57,7 @@ public class SeptaProviderLiveTest
 	@Test
 	public void nearbyStation() throws Exception
 	{
-		final NearbyStationsResult result = provider.nearbyStations("1000001", 0, 0, 0, 0);
+		final NearbyStationsResult result = provider.nearbyStations("2090227", 0, 0, 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
 	}
@@ -60,8 +65,18 @@ public class SeptaProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("1000002", 0, false);
+		final QueryDeparturesResult result = provider.queryDepartures("2090227", 0, false);
 
 		System.out.println(result.stationDepartures);
+	}
+
+	@Test
+	public void shortConnection() throws Exception
+	{
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 2090227, null, "Main Street"), null,
+				new Location(LocationType.STATION, 1015755, null, "Harbison Av + Unruh Av"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+		System.out.println(result);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
+		System.out.println(moreResult);
 	}
 }

@@ -587,7 +587,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			{
 				final String id = XmlPullUtil.attr(pp, "id");
 
-				XmlPullUtil.enter(pp);
+				XmlPullUtil.enter(pp, "Connection");
 				while (pp.getName().equals("RtStateList"))
 					XmlPullUtil.next(pp);
 				XmlPullUtil.enter(pp, "Overview");
@@ -614,11 +614,11 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 				XmlPullUtil.exit(pp, "Overview");
 
-				XmlPullUtil.enter(pp, "ConSectionList");
-
 				final List<Connection.Part> parts = new ArrayList<Connection.Part>(4);
 				Date firstDepartureTime = null;
 				Date lastArrivalTime = null;
+
+				XmlPullUtil.enter(pp, "ConSectionList");
 
 				while (XmlPullUtil.test(pp, "ConSection"))
 				{
@@ -736,7 +736,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 					XmlPullUtil.exit(pp, "BasicStop");
 					XmlPullUtil.exit(pp, "Arrival");
 
-					XmlPullUtil.exit(pp);
+					XmlPullUtil.exit(pp, "ConSection");
 
 					if (min == 0 || line != null)
 					{
@@ -761,9 +761,9 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 					lastArrivalTime = arrivalTime.getTime();
 				}
 
-				XmlPullUtil.exit(pp);
+				XmlPullUtil.exit(pp, "ConSectionList");
 
-				XmlPullUtil.exit(pp);
+				XmlPullUtil.exit(pp, "Connection");
 
 				connections.add(new Connection(id, null, firstDepartureTime, lastArrivalTime, departure, arrival, parts, null));
 			}
