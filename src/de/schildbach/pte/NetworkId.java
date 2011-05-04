@@ -40,6 +40,9 @@ public enum NetworkId
 	// Denmark
 	DSB,
 
+	// Luxembourg
+	LU,
+
 	// United Kingdom
 	TFL, TLEM, TLEA, TLSE, TLSW,
 
