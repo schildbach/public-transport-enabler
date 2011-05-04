@@ -77,7 +77,6 @@ public class OebbProvider extends AbstractHafasProvider
 			+ "ajax-getstop.exe/dny?start=1&tpl=suggest2json&REQ0JourneyStopsS0A=255&REQ0JourneyStopsB=12&S=%s?&js=true&";
 	private static final String ENCODING = "ISO-8859-1";
 
-	@Override
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
 		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING));

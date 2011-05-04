@@ -89,7 +89,6 @@ public class RmvProvider extends AbstractHafasProvider
 	private static final Pattern P_MULTI_NAME = Pattern.compile("<a href=\"/auskunft/bin/jp/stboard.exe/dox.*?input=(\\d+)&.*?\">\\s*(.*?)\\s*</a>",
 			Pattern.DOTALL);
 
-	@Override
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
 		final CharSequence page = ParserUtils.scrape(NAME_URL + ParserUtils.urlEncode(constraint.toString()));

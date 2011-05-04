@@ -63,6 +63,11 @@ public class NsProvider extends AbstractHafasProvider
 		return false;
 	}
 
+	public List<Location> autocompleteStations(CharSequence constraint) throws IOException
+	{
+		throw new UnsupportedOperationException();
+	}
+
 	private final String NEARBY_URI = "http://hari.b-rail.be/HAFAS/bin/stboard.exe/en?input=%s&distance=50&near=Anzeigen";
 
 	@Override

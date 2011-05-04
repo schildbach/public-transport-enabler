@@ -68,6 +68,11 @@ public class InvgProvider extends AbstractHafasProvider
 
 	}
 
+	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
+	{
+		return xmlMLcReq(constraint);
+	}
+
 	private static final String[] PLACES = { "Ingolstadt", "München" };
 
 	@Override

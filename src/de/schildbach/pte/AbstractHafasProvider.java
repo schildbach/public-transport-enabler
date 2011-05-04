@@ -144,7 +144,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		throw new IllegalStateException("cannot handle: " + type);
 	}
 
-	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
+	public List<Location> xmlLocValReq(final CharSequence constraint) throws IOException
 	{
 		final String request = "<LocValReq id=\"req\" maxNr=\"20\"><ReqLoc match=\"" + constraint + "\" type=\"ALLTYPE\"/></LocValReq>";
 

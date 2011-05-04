@@ -64,7 +64,7 @@ public final class BvgProvider extends AbstractHafasProvider
 
 	public BvgProvider(final String additionalQueryParameter)
 	{
-		super(null, null);
+		super(API_BASE + "query.bin/dn", null);
 
 		this.additionalQueryParameter = additionalQueryParameter;
 	}
@@ -83,35 +83,9 @@ public final class BvgProvider extends AbstractHafasProvider
 		return true;
 	}
 
-	private static final Pattern P_SINGLE_NAME = Pattern.compile(".*?Haltestelleninfo.*?<strong>(.*?)</strong>.*?input=(\\d+)&.*?", Pattern.DOTALL);
-	private static final Pattern P_MULTI_NAME = Pattern.compile("<a href=\\\"/Fahrinfo/bin/stboard\\.bin/dox.*?input=(\\d+)&.*?\">\\s*(.*?)\\s*</a>",
-			Pattern.DOTALL);
-
-	@Override
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
-		final StringBuilder uri = new StringBuilder(API_BASE).append("stboard.bin/dox/dox");
-		uri.append("?input=").append(ParserUtils.urlEncode(constraint.toString()));
-		if (additionalQueryParameter != null)
-			uri.append('&').append(additionalQueryParameter);
-
-		final CharSequence page = ParserUtils.scrape(uri.toString());
-
-		final List<Location> results = new ArrayList<Location>();
-
-		final Matcher mSingle = P_SINGLE_NAME.matcher(page);
-		if (mSingle.matches())
-		{
-			results.add(new Location(LocationType.STATION, Integer.parseInt(mSingle.group(2)), null, ParserUtils.resolveEntities(mSingle.group(1))));
-		}
-		else
-		{
-			final Matcher mMulti = P_MULTI_NAME.matcher(page);
-			while (mMulti.find())
-				results.add(new Location(LocationType.STATION, Integer.parseInt(mMulti.group(1)), null, ParserUtils.resolveEntities(mMulti.group(2))));
-		}
-
-		return results;
+		return xmlMLcReq(constraint);
 	}
 
 	private final String NEARBY_URI = API_BASE + "stboard.bin/dn?distance=50&near&input=%s";

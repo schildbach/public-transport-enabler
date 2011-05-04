@@ -18,6 +18,7 @@
 package de.schildbach.pte.live;
 
 import java.util.Date;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -37,6 +38,22 @@ public class RmvProviderLiveTest
 {
 	private final RmvProvider provider = new RmvProvider();
 	protected static final String ALL_PRODUCTS = "IRSUTBFC";
+
+	@Test
+	public void autocomplete() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("Flughafen");
+
+		list(autocompletes);
+	}
+
+	private void list(final List<Location> autocompletes)
+	{
+		System.out.print(autocompletes.size() + " ");
+		for (final Location autocomplete : autocompletes)
+			System.out.print(autocomplete.toDebugString() + " ");
+		System.out.println();
+	}
 
 	@Test
 	public void nearbyStation() throws Exception

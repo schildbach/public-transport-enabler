@@ -65,6 +65,11 @@ public class SbbProvider extends AbstractHafasProvider
 		return false;
 	}
 
+	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
+	{
+		return xmlMLcReq(constraint);
+	}
+
 	private final static String NEARBY_URI = API_BASE + "bhftafel.exe/dn?input=%s&distance=50&near=Anzeigen";
 
 	@Override

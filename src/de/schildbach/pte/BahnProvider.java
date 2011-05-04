@@ -66,7 +66,6 @@ public final class BahnProvider extends AbstractHafasProvider
 	private static final String AUTOCOMPLETE_URI = API_BASE + "ajax-getstop.exe/dn?getstop=1&REQ0JourneyStopsS0A=255&S=%s?&js=true&";
 	private static final String ENCODING = "ISO-8859-1";
 
-	@Override
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
 		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING));

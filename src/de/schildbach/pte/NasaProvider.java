@@ -50,7 +50,7 @@ public class NasaProvider extends AbstractHafasProvider
 
 	public NasaProvider()
 	{
-		super(null, null);
+		super(API_BASE + "query.exe/dn", null);
 	}
 
 	public NetworkId id()
@@ -67,10 +67,9 @@ public class NasaProvider extends AbstractHafasProvider
 		return false;
 	}
 
-	@Override
-	public List<Location> autocompleteStations(CharSequence constraint) throws IOException
+	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
-		throw new UnsupportedOperationException();
+		return xmlMLcReq(constraint);
 	}
 
 	private final String NEARBY_URI = API_BASE

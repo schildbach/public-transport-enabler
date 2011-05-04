@@ -70,7 +70,6 @@ public class VgsProvider extends AbstractHafasProvider
 			+ "ajax-getstop.exe/eny?start=1&tpl=suggest2json&REQ0JourneyStopsS0A=1&getstop=1&noSession=yes&REQ0JourneyStopsB=12&REQ0JourneyStopsS0G=%s?&js=true&";
 	private static final String ENCODING = "ISO-8859-1";
 
-	@Override
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
 		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING));

@@ -54,7 +54,6 @@ public class ZvvProvider extends AbstractHafasProvider
 		return false;
 	}
 
-	@Override
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
 		return xmlMLcReq(constraint);
