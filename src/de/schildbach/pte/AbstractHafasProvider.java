@@ -622,7 +622,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 				while (XmlPullUtil.test(pp, "ConSection"))
 				{
-					XmlPullUtil.enter(pp);
+					XmlPullUtil.enter(pp, "ConSection");
 
 					// departure
 					XmlPullUtil.enter(pp, "Departure");
@@ -642,10 +642,10 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 						departurePos = null;
 					XmlPullUtil.exit(pp, "Platform");
 
-					XmlPullUtil.exit(pp);
+					XmlPullUtil.exit(pp, "Dep");
 
-					XmlPullUtil.exit(pp);
-					XmlPullUtil.exit(pp);
+					XmlPullUtil.exit(pp, "BasicStop");
+					XmlPullUtil.exit(pp, "Departure");
 
 					// journey
 					final Line line;
@@ -731,10 +731,10 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 						arrivalPos = null;
 					XmlPullUtil.exit(pp, "Platform");
 
-					XmlPullUtil.exit(pp);
+					XmlPullUtil.exit(pp, "Arr");
 
-					XmlPullUtil.exit(pp);
-					XmlPullUtil.exit(pp);
+					XmlPullUtil.exit(pp, "BasicStop");
+					XmlPullUtil.exit(pp, "Arrival");
 
 					XmlPullUtil.exit(pp);
 
