@@ -103,7 +103,7 @@ public class ZvvProvider extends AbstractHafasProvider
 		throw new IllegalStateException("cannot normalize line " + line);
 	}
 
-	private static final Pattern P_NORMALIZE_LINE_S = Pattern.compile("S\\d+");
+	private static final Pattern P_NORMALIZE_LINE_S = Pattern.compile("SN?\\d+");
 
 	@Override
 	protected char normalizeType(final String type)
