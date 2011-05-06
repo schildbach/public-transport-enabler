@@ -225,8 +225,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 					{
 						final int type = suggestion.getInt("type");
 						final String value = suggestion.getString("value");
-						final int lat = suggestion.getInt("ycoord");
-						final int lon = suggestion.getInt("xcoord");
+						final int lat = suggestion.optInt("ycoord");
+						final int lon = suggestion.optInt("xcoord");
 						int localId = 0;
 						final Matcher m = P_AJAX_GET_STOPS_ID.matcher(suggestion.getString("id"));
 						if (m.matches())
@@ -270,7 +270,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 	}
 
 	private static final Pattern P_XML_MLC_REQ_ID = Pattern.compile(".*?@L=(\\d+)@.*?");
-	private static final Pattern P_XML_MLC_REQ_LONLAT = Pattern.compile(".*?@X=(\\d+)@Y=(\\d+)@.*?");
+	private static final Pattern P_XML_MLC_REQ_LONLAT = Pattern.compile(".*?@X=(-?\\d+)@Y=(-?\\d+)@.*?");
 
 	protected final List<Location> xmlMLcReq(final CharSequence constraint) throws IOException
 	{
@@ -326,7 +326,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 				final String r = pp.getAttributeValue(null, "r");
 				final Matcher iMatcherLonLat = P_XML_MLC_REQ_LONLAT.matcher(i != null ? i : r);
 				if (!iMatcherLonLat.matches())
-					throw new IllegalStateException("cannot parse lon/lat: '" + i + "'");
+					throw new IllegalStateException("cannot parse lon/lat: '" + i + "' or '" + r + "'");
 				final int lon = Integer.parseInt(iMatcherLonLat.group(1));
 				final int lat = Integer.parseInt(iMatcherLonLat.group(2));
 
