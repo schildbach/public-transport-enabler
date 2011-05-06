@@ -913,7 +913,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'R' + name;
 			if ("CAPITOL".equals(name)) // San Francisco
 				return 'R' + name;
-			if ("Train".equals(noTrainName)) // San Francisco
+			if ("Train".equals(noTrainName) || "Train".equals(type)) // San Francisco
 				return "R" + name;
 			if ("Regional Train :".equals(longName))
 				return "R";
@@ -1271,7 +1271,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 	private static final Pattern P_STATION_NAME_WHITESPACE = Pattern.compile("\\s+");
 
-	protected static String normalizeLocationName(final String name)
+	protected String normalizeLocationName(final String name)
 	{
 		if (name == null || name.length() == 0)
 			return null;

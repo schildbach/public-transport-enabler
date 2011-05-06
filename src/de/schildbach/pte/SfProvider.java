@@ -49,7 +49,7 @@ public class SfProvider extends AbstractEfaProvider
 		return TimeZone.getTimeZone("America/Los_Angeles");
 	}
 
-	public boolean hasCapabilities(Capability... capabilities)
+	public boolean hasCapabilities(final Capability... capabilities)
 	{
 		for (final Capability capability : capabilities)
 			if (capability == Capability.AUTOCOMPLETE_ONE_LINE || capability == Capability.DEPARTURES || capability == Capability.CONNECTIONS)
@@ -59,7 +59,16 @@ public class SfProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	protected String parseLine(String mot, String name, String longName, String noTrainName)
+	protected String normalizeLocationName(final String name)
+	{
+		if (name == null || name.length() == 0)
+			return null;
+
+		return super.normalizeLocationName(name).replace("$XINT$", "&");
+	}
+
+	@Override
+	protected String parseLine(final String mot, final String name, final String longName, final String noTrainName)
 	{
 		if ("NORTHBOUND".equals(name))
 			return "?" + name;
