@@ -1882,7 +1882,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			}
 			else if (key.equals("PRICE"))
 			{
-				fare = Float.parseFloat(value) * (currency.getCurrencyCode().equals("US$") ? 0.01f : 1);
+				fare = Float.parseFloat(value) * (currency.getCurrencyCode().equals("USD") ? 0.01f : 1);
 			}
 
 			XmlPullUtil.exit(pp, "itdGenericTicket");
