@@ -54,6 +54,20 @@ public class ZvvProvider extends AbstractHafasProvider
 		return false;
 	}
 
+	private static final String[] PLACES = { "Zürich" };
+
+	@Override
+	protected String[] splitNameAndPlace(final String name)
+	{
+		for (final String place : PLACES)
+		{
+			if (name.startsWith(place + ", "))
+				return new String[] { place, name.substring(place.length() + 2) };
+		}
+
+		return super.splitNameAndPlace(name);
+	}
+
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
 		return xmlMLcReq(constraint);
@@ -70,16 +84,30 @@ public class ZvvProvider extends AbstractHafasProvider
 			throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(API_BASE);
-		uri.append("stboard.exe/dn");
-		uri.append("?productsFilter=1111111111");
-		uri.append("&boardType=dep");
-		uri.append("&input=").append(ParserUtils.urlEncode(stationId));
-		uri.append("&sTI=1&start=yes&hcount=0");
-		uri.append("&L=vs_java3");
 
-		// &inputTripelId=A%3d1%40O%3dCopenhagen%20Airport%40X%3d12646941%40Y%3d55629753%40U%3d86%40L%3d900000011%40B%3d1
+		if (lat != 0 || lon != 0)
+		{
+			uri.append("query.exe/dny");
+			uri.append("?performLocating=2&tpl=stop2json");
+			uri.append("&look_maxno=").append(maxStations != 0 ? maxStations : 150);
+			uri.append("&look_maxdist=").append(maxDistance != 0 ? maxDistance : 5000);
+			uri.append("&look_stopclass=1023");
+			uri.append("&look_x=").append(lon);
+			uri.append("&look_y=").append(lat);
 
-		return xmlNearbyStations(uri.toString());
+			return jsonNearbyStations(uri.toString());
+		}
+		else
+		{
+			uri.append("stboard.exe/dn");
+			uri.append("?productsFilter=1111111111");
+			uri.append("&boardType=dep");
+			uri.append("&input=").append(ParserUtils.urlEncode(stationId));
+			uri.append("&sTI=1&start=yes&hcount=0");
+			uri.append("&L=vs_java3");
+
+			return xmlNearbyStations(uri.toString());
+		}
 	}
 
 	private static final Pattern P_NORMALIZE_LINE_AND_TYPE = Pattern.compile("([^#]*)#(.*)");

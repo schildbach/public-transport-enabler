@@ -991,6 +991,38 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		return new NearbyStationsResult(stations);
 	}
 
+	protected NearbyStationsResult jsonNearbyStations(final String uri) throws IOException
+	{
+		final CharSequence page = ParserUtils.scrape(uri);
+
+		final List<Location> stations = new ArrayList<Location>();
+
+		try
+		{
+			final JSONObject head = new JSONObject(page.toString());
+			final JSONArray aStops = head.getJSONArray("stops");
+
+			for (int i = 0; i < aStops.length(); i++)
+			{
+				final JSONObject stop = aStops.optJSONObject(i);
+				final int id = stop.getInt("extId");
+				final String name = ParserUtils.resolveEntities(stop.getString("name"));
+				final int lat = stop.optInt("y");
+				final int lon = stop.optInt("x");
+
+				final String[] nameAndPlace = splitNameAndPlace(name);
+				stations.add(new Location(LocationType.STATION, id, lat, lon, nameAndPlace[0], nameAndPlace[1]));
+			}
+		}
+		catch (final JSONException x)
+		{
+			x.printStackTrace();
+			throw new RuntimeException("cannot parse: '" + page + "' on " + uri, x);
+		}
+
+		return new NearbyStationsResult(stations);
+	}
+
 	private final static Pattern P_NEARBY_COARSE = Pattern.compile("<tr class=\"(zebra[^\"]*)\">(.*?)</tr>", Pattern.DOTALL);
 	private final static Pattern P_NEARBY_FINE_COORDS = Pattern
 			.compile("REQMapRoute0\\.Location0\\.X=(-?\\d+)&(?:amp;)?REQMapRoute0\\.Location0\\.Y=(-?\\d+)&");

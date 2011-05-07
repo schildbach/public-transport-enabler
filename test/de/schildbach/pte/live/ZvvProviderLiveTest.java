@@ -55,9 +55,17 @@ public class ZvvProviderLiveTest
 	}
 
 	@Test
-	public void nearbyStation() throws Exception
+	public void nearbyStationsByStation() throws Exception
 	{
 		final NearbyStationsResult result = provider.nearbyStations("183400", 0, 0, 0, 0);
+
+		System.out.println(result.stations.size() + "  " + result.stations);
+	}
+
+	@Test
+	public void nearbyStationsByCoordinate() throws Exception
+	{
+		final NearbyStationsResult result = provider.nearbyStations(null, 47378968, 8540534, 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
 	}
