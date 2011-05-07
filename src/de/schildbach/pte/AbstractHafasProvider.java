@@ -64,16 +64,16 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 	private final String apiUri;
 	private final int numProductBits;
 	private final String accessId;
-	private final String jsonGetStopsEncoding;
+	private final String jsonEncoding;
 	private final String xmlMlcResEncoding;
 
-	public AbstractHafasProvider(final String apiUri, final int numProductBits, final String accessId, final String jsonGetStopsEncoding,
+	public AbstractHafasProvider(final String apiUri, final int numProductBits, final String accessId, final String jsonEncoding,
 			final String xmlMlcResEncoding)
 	{
 		this.apiUri = apiUri;
 		this.numProductBits = numProductBits;
 		this.accessId = accessId;
-		this.jsonGetStopsEncoding = jsonGetStopsEncoding;
+		this.jsonEncoding = jsonEncoding;
 		this.xmlMlcResEncoding = xmlMlcResEncoding;
 	}
 
@@ -82,7 +82,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		this.apiUri = apiUri;
 		this.numProductBits = numProductBits;
 		this.accessId = accessId;
-		this.jsonGetStopsEncoding = DEFAULT_ENCODING;
+		this.jsonEncoding = DEFAULT_ENCODING;
 		this.xmlMlcResEncoding = DEFAULT_ENCODING;
 	}
 
@@ -234,7 +234,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 	protected final List<Location> jsonGetStops(final String uri) throws IOException
 	{
-		final CharSequence page = ParserUtils.scrape(uri, false, null, jsonGetStopsEncoding, false);
+		final CharSequence page = ParserUtils.scrape(uri, false, null, jsonEncoding, false);
 
 		final Matcher mJson = P_AJAX_GET_STOPS_JSON.matcher(page);
 		if (mJson.matches())
@@ -1018,7 +1018,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 	protected final NearbyStationsResult jsonNearbyStations(final String uri) throws IOException
 	{
-		final CharSequence page = ParserUtils.scrape(uri);
+		final CharSequence page = ParserUtils.scrape(uri, false, null, jsonEncoding, false);
 
 		final List<Location> stations = new ArrayList<Location>();
 
