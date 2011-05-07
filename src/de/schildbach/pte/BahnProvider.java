@@ -70,7 +70,7 @@ public final class BahnProvider extends AbstractHafasProvider
 	{
 		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING));
 
-		return ajaxGetStops(uri);
+		return jsonGetStops(uri);
 	}
 
 	private final static Pattern P_NEARBY_STATIONS_BY_COORDINATE = Pattern

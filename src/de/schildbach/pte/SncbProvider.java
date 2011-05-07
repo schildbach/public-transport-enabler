@@ -72,7 +72,7 @@ public class SncbProvider extends AbstractHafasProvider
 	{
 		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING));
 
-		return ajaxGetStops(uri);
+		return jsonGetStops(uri);
 	}
 
 	private final String NEARBY_URI = "http://hari.b-rail.be/HAFAS/bin/stboard.exe/en?input=%s&distance=50&near=Anzeigen";

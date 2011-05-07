@@ -63,23 +63,23 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 	private final String apiUri;
 	private static final String prod = "hafas";
 	private final String accessId;
-	private final String ajaxGetStopsEncoding;
-	private final String mlcResEncoding;
+	private final String jsonGetStopsEncoding;
+	private final String xmlMlcResEncoding;
 
-	public AbstractHafasProvider(final String apiUri, final String accessId, final String ajaxGetStopsEncoding, final String mlcResEncoding)
+	public AbstractHafasProvider(final String apiUri, final String accessId, final String jsonGetStopsEncoding, final String xmlMlcResEncoding)
 	{
 		this.apiUri = apiUri;
 		this.accessId = accessId;
-		this.ajaxGetStopsEncoding = ajaxGetStopsEncoding;
-		this.mlcResEncoding = mlcResEncoding;
+		this.jsonGetStopsEncoding = jsonGetStopsEncoding;
+		this.xmlMlcResEncoding = xmlMlcResEncoding;
 	}
 
 	public AbstractHafasProvider(final String apiUri, final String accessId)
 	{
 		this.apiUri = apiUri;
 		this.accessId = accessId;
-		this.ajaxGetStopsEncoding = DEFAULT_ENCODING;
-		this.mlcResEncoding = DEFAULT_ENCODING;
+		this.jsonGetStopsEncoding = DEFAULT_ENCODING;
+		this.xmlMlcResEncoding = DEFAULT_ENCODING;
 	}
 
 	protected TimeZone timeZone()
@@ -215,9 +215,9 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 	private static final Pattern P_AJAX_GET_STOPS_JSON = Pattern.compile("SLs\\.sls\\s*=\\s*(.*?);\\s*SLs\\.showSuggestion\\(\\);", Pattern.DOTALL);
 	private static final Pattern P_AJAX_GET_STOPS_ID = Pattern.compile(".*?@L=(\\d+)@.*?");
 
-	protected final List<Location> ajaxGetStops(final String uri) throws IOException
+	protected final List<Location> jsonGetStops(final String uri) throws IOException
 	{
-		final CharSequence page = ParserUtils.scrape(uri, false, null, ajaxGetStopsEncoding, false);
+		final CharSequence page = ParserUtils.scrape(uri, false, null, jsonGetStopsEncoding, false);
 
 		final Matcher mJson = P_AJAX_GET_STOPS_JSON.matcher(page);
 		if (mJson.matches())
@@ -299,7 +299,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
 			final XmlPullParser pp = factory.newPullParser();
-			pp.setInput(is, mlcResEncoding);
+			pp.setInput(is, xmlMlcResEncoding);
 
 			final List<Location> results = new ArrayList<Location>();
 

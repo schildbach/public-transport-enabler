@@ -74,7 +74,7 @@ public class VgsProvider extends AbstractHafasProvider
 	{
 		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING));
 
-		return ajaxGetStops(uri);
+		return jsonGetStops(uri);
 	}
 
 	private final String NEARBY_URI = API_BASE

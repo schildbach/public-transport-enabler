@@ -61,7 +61,7 @@ public class DsbProvider extends AbstractHafasProvider
 	{
 		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING));
 
-		return ajaxGetStops(uri);
+		return jsonGetStops(uri);
 	}
 
 	@Override
