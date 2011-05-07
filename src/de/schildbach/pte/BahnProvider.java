@@ -60,7 +60,12 @@ public final class BahnProvider extends AbstractHafasProvider
 
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
-		return true;
+		for (final Capability capability : capabilities)
+			if (capability == Capability.NEARBY_STATIONS || capability == Capability.DEPARTURES || capability == Capability.AUTOCOMPLETE_ONE_LINE
+					|| capability == Capability.CONNECTIONS)
+				return true;
+
+		return false;
 	}
 
 	private static final String AUTOCOMPLETE_URI = API_BASE + "ajax-getstop.exe/dn?getstop=1&REQ0JourneyStopsS0A=255&S=%s?&js=true&";
