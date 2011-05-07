@@ -272,6 +272,10 @@ public class PlProvider extends AbstractHafasProvider
 			return 'R';
 		if ("CAT".equals(ucType)) // City Airport Train
 			return 'R';
+		if ("LEO".equals(ucType)) // Chiemgauer Lokalbahn
+			return 'R';
+		if ("MSB".equals(ucType)) // Mainschleifenbahn
+			return 'R';
 		if ("ATR".equals(ucType)) // Spanien
 			return 'R';
 		if ("N".equals(ucType)) // St. Pierre des Corps - Tours
