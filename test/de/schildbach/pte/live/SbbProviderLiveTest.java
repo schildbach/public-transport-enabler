@@ -39,6 +39,30 @@ public class SbbProviderLiveTest
 	private static final String ALL_PRODUCTS = "IRSUTBFC";
 
 	@Test
+	public void nearbyStations() throws Exception
+	{
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 8500010), 0, 0);
+
+		System.out.println(result.status + "  " + result.stations.size() + "  " + result.stations);
+	}
+
+	@Test
+	public void nearbyStationsByCoordinate() throws Exception
+	{
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 52525589, 13369548), 0, 0);
+
+		System.out.println(result.stations.size() + "  " + result.stations);
+	}
+
+	@Test
+	public void queryDepartures() throws Exception
+	{
+		final QueryDeparturesResult result = provider.queryDepartures("8500010", 0, false);
+
+		System.out.println(result.stationDepartures);
+	}
+
+	@Test
 	public void autoComplete() throws Exception
 	{
 		final List<Location> autocompletes = provider.autocompleteStations("haupt");
@@ -60,22 +84,6 @@ public class SbbProviderLiveTest
 		for (final Location autocomplete : autocompletes)
 			System.out.print(autocomplete.toDebugString() + " ");
 		System.out.println();
-	}
-
-	@Test
-	public void nearbyStations() throws Exception
-	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 8500010), 0, 0);
-
-		System.out.println(result.status + "  " + result.stations.size() + "  " + result.stations);
-	}
-
-	@Test
-	public void queryDepartures() throws Exception
-	{
-		final QueryDeparturesResult result = provider.queryDepartures("8500010", 0, false);
-
-		System.out.println(result.stationDepartures);
 	}
 
 	@Test

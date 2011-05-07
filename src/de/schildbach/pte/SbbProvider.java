@@ -75,7 +75,19 @@ public class SbbProvider extends AbstractHafasProvider
 	{
 		final StringBuilder uri = new StringBuilder(API_BASE);
 
-		if (location.type == LocationType.STATION && location.hasId())
+		if (location.hasLocation())
+		{
+			uri.append("query.exe/dny");
+			uri.append("?performLocating=2&tpl=stop2json");
+			uri.append("&look_maxno=").append(maxStations != 0 ? maxStations : 200);
+			uri.append("&look_maxdist=").append(maxDistance != 0 ? maxDistance : 5000);
+			uri.append("&look_stopclass=").append(allProductsInt());
+			uri.append("&look_x=").append(location.lon);
+			uri.append("&look_y=").append(location.lat);
+
+			return jsonNearbyStations(uri.toString());
+		}
+		else if (location.type == LocationType.STATION && location.hasId())
 		{
 			uri.append("bhftafel.exe/dn?near=Anzeigen");
 			uri.append("&distance=").append(maxDistance != 0 ? maxDistance / 1000 : 50);
