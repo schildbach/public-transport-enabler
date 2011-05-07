@@ -147,7 +147,7 @@ public class InvgProvider extends AbstractHafasProvider
 		return 0;
 	}
 
-	private String departuresQueryUri(final String stationId, final int maxDepartures)
+	private String departuresQueryUri(final int stationId, final int maxDepartures)
 	{
 		final StringBuilder uri = new StringBuilder();
 
@@ -193,7 +193,7 @@ public class InvgProvider extends AbstractHafasProvider
 			+ "(?:<td class=\"center sepline top\">\n(" + ParserUtils.P_PLATFORM + ").*?)?" // position
 	, Pattern.DOTALL);
 
-	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
+	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
 		final QueryDeparturesResult result = new QueryDeparturesResult();
 
@@ -208,8 +208,8 @@ public class InvgProvider extends AbstractHafasProvider
 			// messages
 			if (mHeadCoarse.group(4) != null)
 			{
-				result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, Integer.parseInt(stationId)), Collections
-						.<Departure> emptyList(), null));
+				result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, stationId),
+						Collections.<Departure> emptyList(), null));
 				return result;
 			}
 			else if (mHeadCoarse.group(5) != null)

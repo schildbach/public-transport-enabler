@@ -101,7 +101,7 @@ public class SbbProvider extends AbstractHafasProvider
 		}
 	}
 
-	private String departuresQueryUri(final String stationId, final int maxDepartures)
+	private String departuresQueryUri(final int stationId, final int maxDepartures)
 	{
 		final StringBuilder uri = new StringBuilder();
 		uri.append(API_BASE).append("bhftafel.exe/dox");
@@ -141,7 +141,7 @@ public class SbbProvider extends AbstractHafasProvider
 			+ ".*?" //
 	, Pattern.DOTALL);
 
-	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
+	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
 		final QueryDeparturesResult result = new QueryDeparturesResult();
 
@@ -156,8 +156,8 @@ public class SbbProvider extends AbstractHafasProvider
 			// messages
 			if (mHeadCoarse.group(3) != null)
 			{
-				result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, Integer.parseInt(stationId)), Collections
-						.<Departure> emptyList(), null));
+				result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, stationId),
+						Collections.<Departure> emptyList(), null));
 				return result;
 			}
 			else if (mHeadCoarse.group(5) != null)

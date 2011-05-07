@@ -311,7 +311,7 @@ public class PlProvider extends AbstractHafasProvider
 		return 0;
 	}
 
-	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
+	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder();
 		uri.append(API_BASE).append("stboard.exe/pn");
@@ -322,6 +322,6 @@ public class PlProvider extends AbstractHafasProvider
 		uri.append("&L=vs_java3");
 		uri.append("&input=").append(stationId);
 
-		return xmlQueryDepartures(uri.toString(), Integer.parseInt(stationId));
+		return xmlQueryDepartures(uri.toString(), stationId);
 	}
 }

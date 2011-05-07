@@ -129,7 +129,7 @@ public interface NetworkProvider
 	 * @return result object containing the departures
 	 * @throws IOException
 	 */
-	QueryDeparturesResult queryDepartures(String stationId, int maxDepartures, boolean equivs) throws IOException;
+	QueryDeparturesResult queryDepartures(int stationId, int maxDepartures, boolean equivs) throws IOException;
 
 	/**
 	 * Get colors of line

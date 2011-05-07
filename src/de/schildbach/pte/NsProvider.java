@@ -87,7 +87,7 @@ public class NsProvider extends AbstractHafasProvider
 		}
 	}
 
-	private String departuresQueryUri(final String stationId, final int maxDepartures)
+	private String departuresQueryUri(final int stationId, final int maxDepartures)
 	{
 		final StringBuilder uri = new StringBuilder();
 		uri.append("http://hari.b-rail.be/hari3/webserver1/bin/stboard.exe/dox");
@@ -122,7 +122,7 @@ public class NsProvider extends AbstractHafasProvider
 			+ "(?:<span class=\"delay\">([+-]?\\d+|Ausfall)</span>\r\n)?" // delay
 	, Pattern.DOTALL);
 
-	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
+	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
 		final QueryDeparturesResult result = new QueryDeparturesResult();
 
@@ -180,8 +180,7 @@ public class NsProvider extends AbstractHafasProvider
 					}
 				}
 
-				result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, Integer.parseInt(stationId), null, location),
-						departures, null));
+				result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, stationId, null, location), departures, null));
 				return result;
 			}
 			else

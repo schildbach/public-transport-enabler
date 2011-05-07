@@ -474,7 +474,7 @@ public class RmvProvider extends AbstractHafasProvider
 		}
 	}
 
-	private String departuresQueryUri(final String stationId, final int maxDepartures)
+	private String departuresQueryUri(final int stationId, final int maxDepartures)
 	{
 		final Calendar c = new GregorianCalendar(timeZone());
 
@@ -521,7 +521,7 @@ public class RmvProvider extends AbstractHafasProvider
 			+ "(?:<img src=\".+?\" alt=\"\" />\n<b>[^<]*</b>\n<br />\n)*" // (messages)
 	, Pattern.DOTALL);
 
-	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
+	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
 		final QueryDeparturesResult result = new QueryDeparturesResult();
 

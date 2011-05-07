@@ -69,7 +69,7 @@ public class SfProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("10001017", 0, false);
+		final QueryDeparturesResult result = provider.queryDepartures(10001017, 0, false);
 
 		System.out.println(result.stationDepartures);
 	}

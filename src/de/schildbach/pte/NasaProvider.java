@@ -88,7 +88,7 @@ public class NasaProvider extends AbstractHafasProvider
 		}
 	}
 
-	private String departuresQueryUri(final String stationId, final int maxDepartures)
+	private String departuresQueryUri(final int stationId, final int maxDepartures)
 	{
 		final StringBuilder uri = new StringBuilder();
 
@@ -132,7 +132,7 @@ public class NasaProvider extends AbstractHafasProvider
 			+ "(?:<td class=\"center sepline top\">\n(" + ParserUtils.P_PLATFORM + ").*?)?" // position
 	, Pattern.DOTALL);
 
-	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
+	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
 		final QueryDeparturesResult result = new QueryDeparturesResult();
 
@@ -147,8 +147,8 @@ public class NasaProvider extends AbstractHafasProvider
 			// messages
 			if (mHeadCoarse.group(3) != null)
 			{
-				result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, Integer.parseInt(stationId)), Collections
-						.<Departure> emptyList(), null));
+				result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, stationId),
+						Collections.<Departure> emptyList(), null));
 				return result;
 			}
 			else if (mHeadCoarse.group(4) != null)
@@ -228,8 +228,7 @@ public class NasaProvider extends AbstractHafasProvider
 					}
 				}
 
-				result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, Integer.parseInt(stationId), null, location),
-						departures, null));
+				result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, stationId, null, location), departures, null));
 				return result;
 			}
 			else

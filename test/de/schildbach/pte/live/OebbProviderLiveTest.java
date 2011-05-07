@@ -56,7 +56,7 @@ public class OebbProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("902006", 0, false);
+		final QueryDeparturesResult result = provider.queryDepartures(902006, 0, false);
 
 		System.out.println(result.stationDepartures);
 	}

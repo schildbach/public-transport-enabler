@@ -1026,13 +1026,13 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				+ "'");
 	}
 
-	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
+	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(apiBase);
 		uri.append("XSLT_DM_REQUEST");
 		appendCommonRequestParams(uri);
 		uri.append("&type_dm=stop&useRealtime=1&mode=direct");
-		uri.append("&name_dm=").append(ParserUtils.urlEncode(stationId));
+		uri.append("&name_dm=").append(stationId);
 		uri.append("&deleteAssignedStops_dm=").append(equivs ? '0' : '1');
 		if (maxDepartures > 0)
 			uri.append("&limit=").append(maxDepartures);

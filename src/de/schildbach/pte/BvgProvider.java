@@ -629,7 +629,7 @@ public final class BvgProvider extends AbstractHafasProvider
 
 	private static final String DEPARTURE_URL_LIVE = BASE_URL + "/IstAbfahrtzeiten/index/mobil?";
 
-	private String departuresQueryLiveUri(final String stationId)
+	private String departuresQueryLiveUri(final int stationId)
 	{
 		final StringBuilder uri = new StringBuilder();
 		uri.append(DEPARTURE_URL_LIVE);
@@ -641,7 +641,7 @@ public final class BvgProvider extends AbstractHafasProvider
 
 	private static final String DEPARTURE_URL_PLAN = API_BASE + "stboard.bin/dox/dox?boardType=dep&disableEquivs=yes&start=yes&";
 
-	private String departuresQueryPlanUri(final String stationId, final int maxDepartures)
+	private String departuresQueryPlanUri(final int stationId, final int maxDepartures)
 	{
 		final StringBuilder uri = new StringBuilder();
 		uri.append(DEPARTURE_URL_PLAN);
@@ -691,11 +691,11 @@ public final class BvgProvider extends AbstractHafasProvider
 	private static final Pattern P_DEPARTURES_LIVE_ERRORS = Pattern.compile("(Haltestelle:)|(Wartungsgr&uuml;nden)|(http-equiv=\"refresh\")",
 			Pattern.CASE_INSENSITIVE);
 
-	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
+	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
 		final QueryDeparturesResult result = new QueryDeparturesResult();
 
-		if (stationId.length() == 6) // live
+		if (stationId < 1000000) // live
 		{
 			// scrape page
 			final String uri = departuresQueryLiveUri(stationId);
@@ -782,8 +782,8 @@ public final class BvgProvider extends AbstractHafasProvider
 					}
 				}
 
-				result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, Integer.parseInt(stationId), placeAndName[0],
-						placeAndName[1]), departures, null));
+				result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, stationId, placeAndName[0], placeAndName[1]),
+						departures, null));
 				return result;
 			}
 			else
@@ -852,8 +852,8 @@ public final class BvgProvider extends AbstractHafasProvider
 					}
 				}
 
-				result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, Integer.parseInt(stationId), placeAndName[0],
-						placeAndName[1]), departures, null));
+				result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, stationId, placeAndName[0], placeAndName[1]),
+						departures, null));
 				return result;
 			}
 			else
