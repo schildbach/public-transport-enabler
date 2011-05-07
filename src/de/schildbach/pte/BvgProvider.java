@@ -64,7 +64,7 @@ public final class BvgProvider extends AbstractHafasProvider
 
 	public BvgProvider(final String additionalQueryParameter)
 	{
-		super(API_BASE + "query.bin/dn", null);
+		super(API_BASE + "query.bin/dn", 8, null);
 
 		this.additionalQueryParameter = additionalQueryParameter;
 	}

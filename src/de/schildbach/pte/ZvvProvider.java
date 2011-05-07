@@ -37,7 +37,7 @@ public class ZvvProvider extends AbstractHafasProvider
 
 	public ZvvProvider()
 	{
-		super(API_BASE + "query.exe/dn", null);
+		super(API_BASE + "query.exe/dn", 10, null);
 	}
 
 	public NetworkId id()
@@ -91,7 +91,7 @@ public class ZvvProvider extends AbstractHafasProvider
 			uri.append("?performLocating=2&tpl=stop2json");
 			uri.append("&look_maxno=").append(maxStations != 0 ? maxStations : 150);
 			uri.append("&look_maxdist=").append(maxDistance != 0 ? maxDistance : 5000);
-			uri.append("&look_stopclass=1023");
+			uri.append("&look_stopclass=").append(allProductsInt());
 			uri.append("&look_x=").append(lon);
 			uri.append("&look_y=").append(lat);
 
@@ -100,7 +100,7 @@ public class ZvvProvider extends AbstractHafasProvider
 		else
 		{
 			uri.append("stboard.exe/dn");
-			uri.append("?productsFilter=1111111111");
+			uri.append("?productsFilter=").append(allProductsString());
 			uri.append("&boardType=dep");
 			uri.append("&input=").append(ParserUtils.urlEncode(stationId));
 			uri.append("&sTI=1&start=yes&hcount=0");
@@ -197,7 +197,7 @@ public class ZvvProvider extends AbstractHafasProvider
 	{
 		final StringBuilder uri = new StringBuilder();
 		uri.append(API_BASE).append("stboard.exe/dn");
-		uri.append("?productsFilter=1111111111");
+		uri.append("?productsFilter=").append(allProductsString());
 		uri.append("&boardType=dep");
 		uri.append("&maxJourneys=50"); // ignore maxDepartures because result contains other stations
 		uri.append("&start=yes");

@@ -59,24 +59,28 @@ import de.schildbach.pte.util.XmlPullUtil;
 public abstract class AbstractHafasProvider implements NetworkProvider
 {
 	private static final String DEFAULT_ENCODING = "ISO-8859-1";
+	private static final String prod = "hafas";
 
 	private final String apiUri;
-	private static final String prod = "hafas";
+	private final int numProductBits;
 	private final String accessId;
 	private final String jsonGetStopsEncoding;
 	private final String xmlMlcResEncoding;
 
-	public AbstractHafasProvider(final String apiUri, final String accessId, final String jsonGetStopsEncoding, final String xmlMlcResEncoding)
+	public AbstractHafasProvider(final String apiUri, final int numProductBits, final String accessId, final String jsonGetStopsEncoding,
+			final String xmlMlcResEncoding)
 	{
 		this.apiUri = apiUri;
+		this.numProductBits = numProductBits;
 		this.accessId = accessId;
 		this.jsonGetStopsEncoding = jsonGetStopsEncoding;
 		this.xmlMlcResEncoding = xmlMlcResEncoding;
 	}
 
-	public AbstractHafasProvider(final String apiUri, final String accessId)
+	public AbstractHafasProvider(final String apiUri, final int numProductBits, final String accessId)
 	{
 		this.apiUri = apiUri;
+		this.numProductBits = numProductBits;
 		this.accessId = accessId;
 		this.jsonGetStopsEncoding = DEFAULT_ENCODING;
 		this.xmlMlcResEncoding = DEFAULT_ENCODING;
@@ -85,6 +89,19 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 	protected TimeZone timeZone()
 	{
 		return TimeZone.getTimeZone("CET");
+	}
+
+	protected final String allProductsString()
+	{
+		final StringBuilder allProducts = new StringBuilder(numProductBits);
+		for (int i = 0; i < numProductBits; i++)
+			allProducts.append('1');
+		return allProducts.toString();
+	}
+
+	protected final int allProductsInt()
+	{
+		return (1 << numProductBits) - 1;
 	}
 
 	protected String[] splitNameAndPlace(final String name)

@@ -37,7 +37,7 @@ public class DsbProvider extends AbstractHafasProvider
 
 	public DsbProvider()
 	{
-		super(null, null);
+		super(null, 11, null);
 	}
 
 	public NetworkId id()
@@ -82,7 +82,7 @@ public class DsbProvider extends AbstractHafasProvider
 			uri.append("?performLocating=2&tpl=stop2json");
 			uri.append("&look_maxno=").append(maxStations != 0 ? maxStations : 200);
 			uri.append("&look_maxdist=").append(maxDistance != 0 ? maxDistance : 5000);
-			uri.append("&look_stopclass=2047");
+			uri.append("&look_stopclass=").append(allProductsInt());
 			uri.append("&look_x=").append(lon);
 			uri.append("&look_y=").append(lat);
 
@@ -91,7 +91,7 @@ public class DsbProvider extends AbstractHafasProvider
 		else
 		{
 			uri.append("stboard.exe/mn");
-			uri.append("?productsFilter=11111111111");
+			uri.append("?productsFilter=").append(allProductsString());
 			uri.append("&boardType=dep");
 			uri.append("&input=").append(ParserUtils.urlEncode(stationId));
 			uri.append("&sTI=1&start=yes&hcount=0");
@@ -173,7 +173,7 @@ public class DsbProvider extends AbstractHafasProvider
 	{
 		final StringBuilder uri = new StringBuilder();
 		uri.append(API_BASE).append("stboard.exe/mn");
-		uri.append("?productsFilter=11111111111");
+		uri.append("?productsFilter=").append(allProductsString());
 		uri.append("&boardType=dep");
 		uri.append("&maxJourneys=50"); // ignore maxDepartures because result contains other stations
 		uri.append("&start=yes");

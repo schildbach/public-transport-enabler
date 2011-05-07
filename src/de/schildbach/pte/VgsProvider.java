@@ -49,7 +49,7 @@ public class VgsProvider extends AbstractHafasProvider
 
 	public VgsProvider()
 	{
-		super(null, null);
+		super(null, 11, null);
 	}
 
 	public NetworkId id()
@@ -77,8 +77,8 @@ public class VgsProvider extends AbstractHafasProvider
 		return jsonGetStops(uri);
 	}
 
-	private final String NEARBY_URI = API_BASE
-			+ "stboard.exe/dn?input=%s&selectDate=today&boardType=dep&productsFilter=11111111&distance=50&near=Anzeigen";
+	private final String NEARBY_URI = API_BASE + "stboard.exe/dn?input=%s&selectDate=today&boardType=dep&productsFilter=" + allProductsString()
+			+ "&distance=50&near=Anzeigen";
 
 	@Override
 	protected String nearbyStationUri(final String stationId)
@@ -93,7 +93,7 @@ public class VgsProvider extends AbstractHafasProvider
 		uri.append(API_BASE).append("stboard.exe/dn");
 		uri.append("?input=").append(stationId);
 		uri.append("&boardType=dep");
-		uri.append("&productsFilter=11111111111");
+		uri.append("&productsFilter=").append(allProductsString());
 		if (maxDepartures != 0)
 			uri.append("&maxJourneys=").append(maxDepartures);
 		uri.append("&disableEquivs=yes"); // don't use nearby stations

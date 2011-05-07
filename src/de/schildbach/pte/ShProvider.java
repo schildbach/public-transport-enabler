@@ -46,7 +46,7 @@ public class ShProvider extends AbstractHafasProvider
 
 	public ShProvider()
 	{
-		super(API_BASE + "query.exe/dn", null);
+		super(API_BASE + "query.exe/dn", 16, null);
 	}
 
 	public NetworkId id()
@@ -68,8 +68,8 @@ public class ShProvider extends AbstractHafasProvider
 		return xmlMLcReq(constraint);
 	}
 
-	private final String NEARBY_URI = API_BASE
-			+ "stboard.exe/dn?input=%s&selectDate=today&boardType=dep&productsFilter=1111111111111111&distance=50&near=Anzeigen";
+	private final String NEARBY_URI = API_BASE + "stboard.exe/dn?input=%s&selectDate=today&boardType=dep&productsFilter=" + allProductsString()
+			+ "&distance=50&near=Anzeigen";
 
 	@Override
 	protected String nearbyStationUri(final String stationId)
@@ -118,7 +118,7 @@ public class ShProvider extends AbstractHafasProvider
 		uri.append(API_BASE).append("stboard.exe/dn");
 		uri.append("?input=").append(stationId);
 		uri.append("&boardType=dep");
-		uri.append("&productsFilter=11111111");
+		uri.append("&productsFilter=").append(allProductsString());
 		if (maxDepartures != 0)
 			uri.append("&maxJourneys=").append(maxDepartures);
 		uri.append("&disableEquivs=yes"); // don't use nearby stations

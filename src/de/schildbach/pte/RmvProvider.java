@@ -53,7 +53,7 @@ public class RmvProvider extends AbstractHafasProvider
 
 	public RmvProvider()
 	{
-		super(null, null);
+		super(null, 17, null);
 	}
 
 	public NetworkId id()

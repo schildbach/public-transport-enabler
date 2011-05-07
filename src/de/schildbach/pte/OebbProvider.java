@@ -57,7 +57,7 @@ public class OebbProvider extends AbstractHafasProvider
 
 	public OebbProvider()
 	{
-		super(null, null);
+		super(null, 12, null);
 	}
 
 	public NetworkId id()
@@ -105,7 +105,7 @@ public class OebbProvider extends AbstractHafasProvider
 			uri.append("?performLocating=2&tpl=stop2json");
 			uri.append("&look_maxno=").append(maxStations != 0 ? maxStations : 200);
 			uri.append("&look_maxdist=").append(maxDistance != 0 ? maxDistance : 5000);
-			uri.append("&look_stopclass=2047");
+			uri.append("&look_stopclass=").append(allProductsInt());
 			uri.append("&look_x=").append(lon);
 			uri.append("&look_y=").append(lat);
 
@@ -490,7 +490,7 @@ public class OebbProvider extends AbstractHafasProvider
 		uri.append("stboard.exe/dn?L=vs_scotty.vs_stb");
 		uri.append("&input=").append(stationId);
 		uri.append("&boardType=dep");
-		uri.append("&productsFilter=111111111111");
+		uri.append("&productsFilter=").append(allProductsString());
 		uri.append("&additionalTime=0");
 		uri.append("&maxJourneys=").append(maxDepartures != 0 ? maxDepartures : 20);
 		uri.append("&start=yes");

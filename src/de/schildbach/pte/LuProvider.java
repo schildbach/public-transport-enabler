@@ -37,7 +37,7 @@ public class LuProvider extends AbstractHafasProvider
 
 	public LuProvider()
 	{
-		super(API_BASE + "query.exe/dn", null);
+		super(API_BASE + "query.exe/dn", 10, null);
 	}
 
 	public NetworkId id()
@@ -71,7 +71,7 @@ public class LuProvider extends AbstractHafasProvider
 	{
 		final StringBuilder uri = new StringBuilder(API_BASE);
 		uri.append("stboard.exe/dn");
-		uri.append("?productsFilter=11111111111111");
+		uri.append("?productsFilter=").append(allProductsString());
 		uri.append("&boardType=dep");
 		uri.append("&input=").append(ParserUtils.urlEncode(stationId));
 		uri.append("&sTI=1&start=yes&hcount=0&L=vs_java3");
@@ -119,7 +119,7 @@ public class LuProvider extends AbstractHafasProvider
 	{
 		final StringBuilder uri = new StringBuilder();
 		uri.append(API_BASE).append("stboard.exe/dn");
-		uri.append("?productsFilter=11111111111");
+		uri.append("?productsFilter=").append(allProductsString());
 		uri.append("&boardType=dep");
 		uri.append("&maxJourneys=50"); // ignore maxDepartures because result contains other stations
 		uri.append("&start=yes");

@@ -50,7 +50,7 @@ public class InvgProvider extends AbstractHafasProvider
 
 	public InvgProvider()
 	{
-		super(API_URI, null);
+		super(API_URI, 10, null);
 	}
 
 	public NetworkId id()
@@ -143,7 +143,7 @@ public class InvgProvider extends AbstractHafasProvider
 		uri.append(API_BASE).append("stboard.exe/dn");
 		uri.append("?input=").append(stationId);
 		uri.append("&boardType=dep");
-		uri.append("&productsFilter=1111111111");
+		uri.append("&productsFilter=").append(allProductsString());
 		if (maxDepartures != 0)
 			uri.append("&maxJourneys=").append(maxDepartures);
 		uri.append("&disableEquivs=yes"); // don't use nearby stations

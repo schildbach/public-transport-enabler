@@ -47,7 +47,7 @@ public class SeptaProvider extends AbstractHafasProvider
 
 	public SeptaProvider()
 	{
-		super(API_BASE + "query.exe/en", null);
+		super(API_BASE + "query.exe/en", 4, null);
 	}
 
 	public NetworkId id()
@@ -126,8 +126,8 @@ public class SeptaProvider extends AbstractHafasProvider
 		return 0;
 	}
 
-	private final String NEARBY_URI = API_BASE
-			+ "stboard.exe/en?input=%s&selectDate=today&boardType=dep&productsFilter=1111&distance=50&near=Anzeigen";
+	private final String NEARBY_URI = API_BASE + "stboard.exe/en?input=%s&selectDate=today&boardType=dep&productsFilter=" + allProductsString()
+			+ "&distance=50&near=Anzeigen";
 
 	@Override
 	protected String nearbyStationUri(final String stationId)
@@ -148,7 +148,7 @@ public class SeptaProvider extends AbstractHafasProvider
 						now.get(Calendar.AM_PM) == Calendar.AM ? "am" : "pm")));
 		uri.append("&date=").append(
 				String.format("%02d%02d%04d", now.get(Calendar.MONTH) + 1, now.get(Calendar.DAY_OF_MONTH), now.get(Calendar.YEAR)));
-		uri.append("&productsFilter=1111");
+		uri.append("&productsFilter=").append(allProductsString());
 		if (maxDepartures != 0)
 			uri.append("&maxJourneys=").append(maxDepartures);
 		uri.append("&disableEquivs=yes"); // don't use nearby stations

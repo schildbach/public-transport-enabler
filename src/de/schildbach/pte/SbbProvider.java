@@ -48,7 +48,7 @@ public class SbbProvider extends AbstractHafasProvider
 
 	public SbbProvider(final String accessId)
 	{
-		super(API_URI, accessId);
+		super(API_URI, 10, accessId);
 	}
 
 	public NetworkId id()
@@ -86,7 +86,7 @@ public class SbbProvider extends AbstractHafasProvider
 		if (maxDepartures != 0)
 			uri.append("&maxJourneys=").append(maxDepartures);
 		uri.append("&boardType=dep");
-		uri.append("&productsFilter=1111111111000000");
+		uri.append("&productsFilter=").append(allProductsString());
 		uri.append("&input=").append(stationId);
 		uri.append("&disableEquivs=yes"); // don't use nearby stations
 		return uri.toString();

@@ -47,7 +47,7 @@ public class SncbProvider extends AbstractHafasProvider
 
 	public SncbProvider()
 	{
-		super(API_URI, null);
+		super(API_URI, 16, null);
 	}
 
 	public NetworkId id()
@@ -90,7 +90,7 @@ public class SncbProvider extends AbstractHafasProvider
 		uri.append("?input=").append(stationId);
 		uri.append("&boardType=dep");
 		uri.append("&maxJourneys=").append(maxDepartures != 0 ? maxDepartures : 50); // maximum taken from SNCB site
-		uri.append("&productsFilter=1:1111111111111111");
+		uri.append("&productsFilter=").append(allProductsString());
 		uri.append("&disableEquivs=yes"); // don't use nearby stations
 		uri.append("&start=yes");
 		return uri.toString();

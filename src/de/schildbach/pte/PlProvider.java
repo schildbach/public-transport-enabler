@@ -37,7 +37,7 @@ public class PlProvider extends AbstractHafasProvider
 
 	public PlProvider()
 	{
-		super(API_BASE + "query.exe/pn", null, null, "UTF-8");
+		super(API_BASE + "query.exe/pn", 7, null, null, "UTF-8");
 	}
 
 	public NetworkId id()
@@ -87,7 +87,7 @@ public class PlProvider extends AbstractHafasProvider
 	{
 		final StringBuilder uri = new StringBuilder(API_BASE);
 		uri.append("stboard.exe/pn");
-		uri.append("?productsFilter=1111111");
+		uri.append("?productsFilter=").append(allProductsString());
 		uri.append("&boardType=dep");
 		uri.append("&input=").append(ParserUtils.urlEncode(stationId));
 		uri.append("&sTI=1&start=yes&hcount=0");
@@ -316,7 +316,7 @@ public class PlProvider extends AbstractHafasProvider
 	{
 		final StringBuilder uri = new StringBuilder();
 		uri.append(API_BASE).append("stboard.exe/pn");
-		uri.append("?productsFilter=1111111");
+		uri.append("?productsFilter=").append(allProductsString());
 		uri.append("&boardType=dep");
 		uri.append("&maxJourneys=50"); // ignore maxDepartures because result contains other stations
 		uri.append("&start=yes");

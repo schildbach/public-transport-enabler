@@ -50,7 +50,7 @@ public final class BahnProvider extends AbstractHafasProvider
 
 	public BahnProvider()
 	{
-		super("http://reiseauskunft.bahn.de/bin/extxml.exe", null);
+		super("http://reiseauskunft.bahn.de/bin/extxml.exe", 14, null);
 	}
 
 	public NetworkId id()
@@ -108,7 +108,8 @@ public final class BahnProvider extends AbstractHafasProvider
 		else
 		{
 			final String uri = API_BASE + "query.exe/dox" + "?performLocating=2&tpl=stopsnear&look_maxdist=" + (maxDistance > 0 ? maxDistance : 5000)
-					+ "&look_stopclass=1023" + "&look_x=" + lon + "&look_y=" + lat;
+					+ "&look_stopclass=" + allProductsInt() + "&look_x=" + lon + "&look_y=" + lat;
+			System.out.println(uri);
 			final CharSequence page = ParserUtils.scrape(uri);
 
 			final Matcher m = P_NEARBY_STATIONS_BY_COORDINATE.matcher(page);
@@ -496,7 +497,7 @@ public final class BahnProvider extends AbstractHafasProvider
 	{
 		final StringBuilder uri = new StringBuilder();
 		uri.append(API_BASE).append("bhftafel.exe/dn");
-		uri.append("?productsFilter=11111111111111");
+		uri.append("?productsFilter=").append(allProductsString());
 		uri.append("&boardType=dep");
 		uri.append("&maxJourneys=50"); // ignore maxDepartures because result contains other stations
 		uri.append("&start=yes");
