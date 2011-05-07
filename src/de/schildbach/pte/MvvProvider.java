@@ -25,7 +25,6 @@ import java.util.Map;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.util.Color;
-import de.schildbach.pte.util.ParserUtils;
 
 /**
  * @author Andreas Schildbach
@@ -66,9 +65,9 @@ public class MvvProvider extends AbstractEfaProvider
 			+ "?outputFormat=XML&coordOutputFormat=WGS84&type_dm=stop&name_dm=%s&itOptionsActive=1&ptOptionsActive=1&useProxFootSearch=1&mergeDep=1&useAllStops=1&mode=direct";
 
 	@Override
-	protected String nearbyStationUri(final String stationId)
+	protected String nearbyStationUri(final int stationId)
 	{
-		return String.format(NEARBY_STATION_URI, ParserUtils.urlEncode(stationId));
+		return String.format(NEARBY_STATION_URI, stationId);
 	}
 
 	private static final Map<String, int[]> LINES = new HashMap<String, int[]>();

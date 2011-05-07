@@ -55,9 +55,9 @@ public class PlProviderLiveTest
 	}
 
 	@Test
-	public void nearbyStation() throws Exception
+	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.nearbyStations("5100065", 0, 0, 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 5100065), 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
 	}

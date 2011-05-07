@@ -40,7 +40,7 @@ public class OebbProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.nearbyStations("902006", 0, 0, 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 902006), 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
 	}
@@ -48,7 +48,7 @@ public class OebbProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.nearbyStations(null, 48200239, 16370773, 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 48200239, 16370773), 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
 	}

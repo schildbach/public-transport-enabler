@@ -23,6 +23,7 @@ import org.junit.Test;
 
 import de.schildbach.pte.TlemProvider;
 import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 
@@ -50,9 +51,9 @@ public class TlemProviderLiveTest
 	}
 
 	@Test
-	public void nearbyStation() throws Exception
+	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.nearbyStations("London", 0, 0, 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 1001003), 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
 	}
@@ -60,7 +61,7 @@ public class TlemProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.nearbyStations(null, 51507161, -0127144, 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 51507161, -0127144), 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
 	}
@@ -68,7 +69,7 @@ public class TlemProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("London", 0, false);
+		final QueryDeparturesResult result = provider.queryDepartures("1001003", 0, false);
 
 		System.out.println(result.stationDepartures);
 	}

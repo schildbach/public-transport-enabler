@@ -23,6 +23,7 @@ import org.junit.Test;
 
 import de.schildbach.pte.NaldoProvider;
 import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 
@@ -50,9 +51,9 @@ public class NaldoProviderLiveTest
 	}
 
 	@Test
-	public void nearbyStation() throws Exception
+	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.nearbyStations("53019174", 0, 0, 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 53019174), 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
 	}
@@ -60,7 +61,7 @@ public class NaldoProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.nearbyStations(null, 48493550, 9205656, 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 48493550, 9205656), 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
 	}

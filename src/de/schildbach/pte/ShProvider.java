@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
+import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryDeparturesResult.Status;
 import de.schildbach.pte.dto.StationDepartures;
@@ -68,13 +69,22 @@ public class ShProvider extends AbstractHafasProvider
 		return xmlMLcReq(constraint);
 	}
 
-	private final String NEARBY_URI = API_BASE + "stboard.exe/dn?input=%s&selectDate=today&boardType=dep&productsFilter=" + allProductsString()
-			+ "&distance=50&near=Anzeigen";
-
-	@Override
-	protected String nearbyStationUri(final String stationId)
+	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
-		return String.format(NEARBY_URI, ParserUtils.urlEncode(stationId));
+		final StringBuilder uri = new StringBuilder(API_BASE);
+
+		if (location.type == LocationType.STATION && location.hasId())
+		{
+			uri.append("stboard.exe/dn?near=Anzeigen");
+			uri.append("&distance=").append(maxDistance != 0 ? maxDistance / 1000 : 50);
+			uri.append("&input=").append(location.id);
+
+			return htmlNearbyStations(uri.toString());
+		}
+		else
+		{
+			throw new IllegalArgumentException("cannot handle: " + location.toDebugString());
+		}
 	}
 
 	@Override

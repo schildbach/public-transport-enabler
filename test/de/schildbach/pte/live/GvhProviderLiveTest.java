@@ -78,9 +78,9 @@ public class GvhProviderLiveTest
 	}
 
 	@Test
-	public void nearbyStation() throws Exception
+	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.nearbyStations("25000031", 0, 0, 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 25000031), 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
 	}
@@ -88,7 +88,7 @@ public class GvhProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.nearbyStations(null, 52379497, 9735832, 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 52379497, 9735832), 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
 	}

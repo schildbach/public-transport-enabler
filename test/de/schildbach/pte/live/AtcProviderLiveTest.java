@@ -23,6 +23,7 @@ import org.junit.Test;
 
 import de.schildbach.pte.AtcProvider;
 import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 
@@ -50,9 +51,9 @@ public class AtcProviderLiveTest
 	}
 
 	@Test
-	public void nearbyStation() throws Exception
+	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.nearbyStations("Bologna, ISTITUTO ALDINI", 0, 0, 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 740), 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
 	}
@@ -60,7 +61,8 @@ public class AtcProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.nearbyStations(null, 8168907, 10609969, 0, 0); // bad coordinate!
+		// TODO bad coordinate!
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 8168907, 10609969), 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
 	}
@@ -68,7 +70,7 @@ public class AtcProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("Bologna", 0, false);
+		final QueryDeparturesResult result = provider.queryDepartures("740", 0, false);
 
 		System.out.println(result.stationDepartures);
 	}

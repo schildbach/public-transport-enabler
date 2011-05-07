@@ -23,6 +23,7 @@ import org.junit.Test;
 
 import de.schildbach.pte.BsvagProvider;
 import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 
 /**
@@ -49,9 +50,9 @@ public class BsvagProviderLiveTest
 	}
 
 	@Test
-	public void nearbyStation() throws Exception
+	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.nearbyStations("Braunschweig", 0, 0, 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 26000178), 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
 	}
@@ -59,7 +60,7 @@ public class BsvagProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.nearbyStations(null, 52272065, 10524788, 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 52272065, 10524788), 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
 	}

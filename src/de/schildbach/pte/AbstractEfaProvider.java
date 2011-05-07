@@ -431,19 +431,20 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		return new Location(LocationType.STATION, id, lat, lon, place, name);
 	}
 
-	protected abstract String nearbyStationUri(String stationId);
+	protected abstract String nearbyStationUri(int stationId);
 
-	public NearbyStationsResult nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
-			throws IOException
+	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
-		if (lat != 0 || lon != 0)
-			return new NearbyStationsResult(xmlCoordRequest(lat, lon, maxDistance, maxStations));
+		if (location.hasLocation())
+			return new NearbyStationsResult(xmlCoordRequest(location.lat, location.lon, maxDistance, maxStations));
 
-		String uri = null;
-		if (uri == null && stationId != null)
-			uri = nearbyStationUri(stationId);
-		if (uri == null)
+		if (location.type != LocationType.STATION)
+			throw new IllegalArgumentException("cannot handle: " + location.type);
+
+		if (!location.hasId())
 			throw new IllegalArgumentException("at least one of stationId or lat/lon must be given");
+
+		final String uri = nearbyStationUri(location.id);
 
 		InputStream is = null;
 		try
@@ -643,6 +644,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			if (type.equals("MT")) // Müller Touren, Schnee Express
 				return 'I' + str;
 			if (type.equals("HKX")) // Hamburg-Koeln-Express
+				return 'I' + str;
+			if (type.equals("DNZ")) // Nachtzug Basel-Moskau
 				return 'I' + str;
 
 			if (type.equals("IR")) // Interregio

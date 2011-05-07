@@ -23,6 +23,7 @@ import org.junit.Test;
 
 import de.schildbach.pte.VvoProvider;
 import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 
@@ -50,9 +51,9 @@ public class VvoProviderLiveTest
 	}
 
 	@Test
-	public void nearbyStation() throws Exception
+	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.nearbyStations("100", 0, 0, 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 100), 0, 0);
 
 		System.out.println(result.status + "  " + result.stations.size() + "  " + result.stations);
 	}
@@ -60,7 +61,7 @@ public class VvoProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.nearbyStations(null, 51052467, 13733196, 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 51052467, 13733196), 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
 	}

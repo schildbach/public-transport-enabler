@@ -73,7 +73,7 @@ public class LinzProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.nearbyStations(null, 48305726, 14287863, 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 48305726, 14287863), 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
 	}

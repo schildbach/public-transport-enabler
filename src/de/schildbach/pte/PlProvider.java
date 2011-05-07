@@ -23,9 +23,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
-import de.schildbach.pte.util.ParserUtils;
 
 /**
  * @author Andreas Schildbach
@@ -75,27 +75,26 @@ public class PlProvider extends AbstractHafasProvider
 		return xmlMLcReq(constraint);
 	}
 
-	@Override
-	protected String nearbyStationUri(String stationId)
+	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
-		throw new UnsupportedOperationException();
-	}
+		if (location.type == LocationType.STATION && location.hasId())
+		{
+			final StringBuilder uri = new StringBuilder(API_BASE);
+			uri.append("stboard.exe/pn");
+			uri.append("?productsFilter=").append(allProductsString());
+			uri.append("&boardType=dep");
+			uri.append("&input=").append(location.id);
+			uri.append("&sTI=1&start=yes&hcount=0");
+			uri.append("&L=vs_java3");
 
-	@Override
-	public NearbyStationsResult nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
-			throws IOException
-	{
-		final StringBuilder uri = new StringBuilder(API_BASE);
-		uri.append("stboard.exe/pn");
-		uri.append("?productsFilter=").append(allProductsString());
-		uri.append("&boardType=dep");
-		uri.append("&input=").append(ParserUtils.urlEncode(stationId));
-		uri.append("&sTI=1&start=yes&hcount=0");
-		uri.append("&L=vs_java3");
+			// &inputTripelId=A%3d1%40O%3dCopenhagen%20Airport%40X%3d12646941%40Y%3d55629753%40U%3d86%40L%3d900000011%40B%3d1
 
-		// &inputTripelId=A%3d1%40O%3dCopenhagen%20Airport%40X%3d12646941%40Y%3d55629753%40U%3d86%40L%3d900000011%40B%3d1
-
-		return xmlNearbyStations(uri.toString());
+			return xmlNearbyStations(uri.toString());
+		}
+		else
+		{
+			throw new IllegalArgumentException("cannot handle: " + location.toDebugString());
+		}
 	}
 
 	private static final Pattern P_NORMALIZE_LINE_RUSSIA = Pattern.compile("(?:D\\s*)?(\\d{1,3}(?:[A-Z]{2}|Y))");

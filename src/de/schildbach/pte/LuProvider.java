@@ -23,9 +23,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
-import de.schildbach.pte.util.ParserUtils;
 
 /**
  * @author Andreas Schildbach
@@ -59,24 +59,23 @@ public class LuProvider extends AbstractHafasProvider
 		return xmlMLcReq(constraint);
 	}
 
-	@Override
-	protected String nearbyStationUri(String stationId)
+	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
-		throw new UnsupportedOperationException();
-	}
+		if (location.type == LocationType.STATION && location.hasId())
+		{
+			final StringBuilder uri = new StringBuilder(API_BASE);
+			uri.append("stboard.exe/dn");
+			uri.append("?productsFilter=").append(allProductsString());
+			uri.append("&boardType=dep");
+			uri.append("&input=").append(location.id);
+			uri.append("&sTI=1&start=yes&hcount=0&L=vs_java3");
 
-	@Override
-	public NearbyStationsResult nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
-			throws IOException
-	{
-		final StringBuilder uri = new StringBuilder(API_BASE);
-		uri.append("stboard.exe/dn");
-		uri.append("?productsFilter=").append(allProductsString());
-		uri.append("&boardType=dep");
-		uri.append("&input=").append(ParserUtils.urlEncode(stationId));
-		uri.append("&sTI=1&start=yes&hcount=0&L=vs_java3");
-
-		return xmlNearbyStations(uri.toString());
+			return xmlNearbyStations(uri.toString());
+		}
+		else
+		{
+			throw new IllegalArgumentException("cannot handle: " + location.toDebugString());
+		}
 	}
 
 	private static final Pattern P_NORMALIZE_LINE_AND_TYPE = Pattern.compile("([^#]*)#(.*)");

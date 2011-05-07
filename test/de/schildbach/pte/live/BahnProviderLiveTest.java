@@ -42,7 +42,7 @@ public class BahnProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.nearbyStations("692991", 0, 0, 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 692991), 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
 	}
@@ -50,7 +50,7 @@ public class BahnProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.nearbyStations(null, 52525589, 13369548, 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 52525589, 13369548), 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
 	}

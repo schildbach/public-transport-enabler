@@ -23,6 +23,7 @@ import org.junit.Test;
 
 import de.schildbach.pte.DsbProvider;
 import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 
@@ -52,7 +53,7 @@ public class DsbProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.nearbyStations("8600858", 0, 0, 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 8600858), 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
 	}
@@ -60,7 +61,7 @@ public class DsbProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.nearbyStations(null, 55670305, 12554169, 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 55670305, 12554169), 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
 	}

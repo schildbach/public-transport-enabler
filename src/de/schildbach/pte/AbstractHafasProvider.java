@@ -278,6 +278,14 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 						{
 							// TODO don't know what to do
 						}
+						else if (type == 87) // strange (ZTM)
+						{
+							// TODO don't know what to do
+						}
+						else if (type == 128) // strange (SEPTA)
+						{
+							// TODO don't know what to do
+						}
 						else
 						{
 							throw new IllegalStateException("unknown type " + type + " on " + uri);
@@ -1008,7 +1016,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		return new NearbyStationsResult(stations);
 	}
 
-	protected NearbyStationsResult jsonNearbyStations(final String uri) throws IOException
+	protected final NearbyStationsResult jsonNearbyStations(final String uri) throws IOException
 	{
 		final CharSequence page = ParserUtils.scrape(uri);
 
@@ -1045,17 +1053,10 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			.compile("REQMapRoute0\\.Location0\\.X=(-?\\d+)&(?:amp;)?REQMapRoute0\\.Location0\\.Y=(-?\\d+)&");
 	private final static Pattern P_NEARBY_FINE_LOCATION = Pattern.compile("[\\?&]input=(\\d+)&[^\"]*\">([^<]*)<");
 
-	protected abstract String nearbyStationUri(String stationId);
-
-	public NearbyStationsResult nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
-			throws IOException
+	protected final NearbyStationsResult htmlNearbyStations(final String uri) throws IOException
 	{
-		if (stationId == null)
-			throw new IllegalArgumentException("stationId must be given");
-
 		final List<Location> stations = new ArrayList<Location>();
 
-		final String uri = nearbyStationUri(stationId);
 		final CharSequence page = ParserUtils.scrape(uri);
 		String oldZebra = null;
 
@@ -1095,10 +1096,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			}
 		}
 
-		if (maxStations == 0 || maxStations >= stations.size())
-			return new NearbyStationsResult(stations);
-		else
-			return new NearbyStationsResult(stations.subList(0, maxStations));
+		return new NearbyStationsResult(stations);
 	}
 
 	protected static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zßÄÅäáàâåéèêíìîÖöóòôÜüúùûØ/-]+)[\\s-]*(.*)");

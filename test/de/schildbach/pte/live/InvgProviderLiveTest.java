@@ -17,13 +17,17 @@
 
 package de.schildbach.pte.live;
 
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
 
 import de.schildbach.pte.InvgProvider;
+import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 
 /**
@@ -32,6 +36,7 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 public class InvgProviderLiveTest
 {
 	private final InvgProvider provider = new InvgProvider();
+	private static final String ALL_PRODUCTS = "IRSUTBFC";
 
 	@Test
 	public void autocomplete() throws Exception
@@ -50,9 +55,9 @@ public class InvgProviderLiveTest
 	}
 
 	@Test
-	public void nearbyStation() throws Exception
+	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.nearbyStations("80301", 0, 0, 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 80301), 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
 	}
@@ -63,5 +68,16 @@ public class InvgProviderLiveTest
 		final QueryDeparturesResult result = provider.queryDepartures("80301", 0, false);
 
 		System.out.println(result.stationDepartures);
+	}
+
+	@Test
+	public void shortConnection() throws Exception
+	{
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 80302, null,
+				"Ingolstadt, Hauptbahnhof Stadteinwärts"), null, new Location(LocationType.STATION, 181102, null, "Elisabethstraße"), new Date(),
+				true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+		System.out.println(result);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
+		System.out.println(moreResult);
 	}
 }

@@ -88,14 +88,6 @@ public final class BvgProvider extends AbstractHafasProvider
 		return xmlMLcReq(constraint);
 	}
 
-	private final String NEARBY_URI = API_BASE + "stboard.bin/dn?distance=50&near&input=%s";
-
-	@Override
-	protected String nearbyStationUri(final String stationId)
-	{
-		return String.format(NEARBY_URI, ParserUtils.urlEncode(stationId));
-	}
-
 	private final static Pattern P_NEARBY_OWN = Pattern
 			.compile("/Stadtplan/index.*?location=(\\d+),HST,WGS84,(-?\\d+\\.\\d+),(-?\\d+\\.\\d+)&amp;label=([^\"]*)\"");
 	private final static Pattern P_NEARBY_PAGE = Pattern.compile("<table class=\"ivuTableOverview\".*?<tbody>(.*?)</tbody>", Pattern.DOTALL);
@@ -103,66 +95,73 @@ public final class BvgProvider extends AbstractHafasProvider
 	private final static Pattern P_NEARBY_FINE_LOCATION = Pattern.compile("input=(\\d+)&[^\"]*\">([^<]*)<");
 	private static final Pattern P_NEARBY_ERRORS = Pattern.compile("(derzeit leider nicht bearbeitet werden)");
 
-	@Override
-	public NearbyStationsResult nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
-			throws IOException
+	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
-		if (stationId == null)
-			throw new IllegalArgumentException("stationId must be given");
+		final StringBuilder uri = new StringBuilder(API_BASE);
 
-		final List<Location> stations = new ArrayList<Location>();
-
-		final String uri = nearbyStationUri(stationId);
-		final CharSequence page = ParserUtils.scrape(uri);
-
-		final Matcher mError = P_NEARBY_ERRORS.matcher(page);
-		if (mError.find())
+		if (location.type == LocationType.STATION && location.hasId())
 		{
-			if (mError.group(1) != null)
-				return new NearbyStationsResult(NearbyStationsResult.Status.INVALID_STATION);
-		}
+			uri.append("stboard.bin/dn?near=Anzeigen");
+			uri.append("&distance=").append(maxDistance != 0 ? maxDistance / 1000 : 50);
+			uri.append("&input=").append(location.id);
 
-		final Matcher mOwn = P_NEARBY_OWN.matcher(page);
-		if (mOwn.find())
-		{
-			final int parsedId = Integer.parseInt(mOwn.group(1));
-			final int parsedLon = (int) (Float.parseFloat(mOwn.group(2)) * 1E6);
-			final int parsedLat = (int) (Float.parseFloat(mOwn.group(3)) * 1E6);
-			final String[] parsedPlaceAndName = splitNameAndPlace(ParserUtils.urlDecode(mOwn.group(4), "ISO-8859-1"));
-			stations.add(new Location(LocationType.STATION, parsedId, parsedLat, parsedLon, parsedPlaceAndName[0], parsedPlaceAndName[1]));
-		}
+			final CharSequence page = ParserUtils.scrape(uri.toString());
 
-		final Matcher mPage = P_NEARBY_PAGE.matcher(page);
-		if (mPage.find())
-		{
-			final Matcher mCoarse = P_NEARBY_COARSE.matcher(mPage.group(1));
-
-			while (mCoarse.find())
+			final Matcher mError = P_NEARBY_ERRORS.matcher(page);
+			if (mError.find())
 			{
-				final Matcher mFineLocation = P_NEARBY_FINE_LOCATION.matcher(mCoarse.group(1));
-
-				if (mFineLocation.find())
-				{
-					final int parsedId = Integer.parseInt(mFineLocation.group(1));
-					final String[] parsedPlaceAndName = splitNameAndPlace(ParserUtils.resolveEntities(mFineLocation.group(2)));
-					final Location station = new Location(LocationType.STATION, parsedId, parsedPlaceAndName[0], parsedPlaceAndName[1]);
-					if (!stations.contains(station))
-						stations.add(station);
-				}
-				else
-				{
-					throw new IllegalArgumentException("cannot parse '" + mCoarse.group(1) + "' on " + uri);
-				}
+				if (mError.group(1) != null)
+					return new NearbyStationsResult(NearbyStationsResult.Status.INVALID_STATION);
 			}
 
-			if (maxStations == 0 || maxStations >= stations.size())
-				return new NearbyStationsResult(stations);
+			final List<Location> stations = new ArrayList<Location>();
+
+			final Matcher mOwn = P_NEARBY_OWN.matcher(page);
+			if (mOwn.find())
+			{
+				final int parsedId = Integer.parseInt(mOwn.group(1));
+				final int parsedLon = (int) (Float.parseFloat(mOwn.group(2)) * 1E6);
+				final int parsedLat = (int) (Float.parseFloat(mOwn.group(3)) * 1E6);
+				final String[] parsedPlaceAndName = splitNameAndPlace(ParserUtils.urlDecode(mOwn.group(4), "ISO-8859-1"));
+				stations.add(new Location(LocationType.STATION, parsedId, parsedLat, parsedLon, parsedPlaceAndName[0], parsedPlaceAndName[1]));
+			}
+
+			final Matcher mPage = P_NEARBY_PAGE.matcher(page);
+			if (mPage.find())
+			{
+				final Matcher mCoarse = P_NEARBY_COARSE.matcher(mPage.group(1));
+
+				while (mCoarse.find())
+				{
+					final Matcher mFineLocation = P_NEARBY_FINE_LOCATION.matcher(mCoarse.group(1));
+
+					if (mFineLocation.find())
+					{
+						final int parsedId = Integer.parseInt(mFineLocation.group(1));
+						final String[] parsedPlaceAndName = splitNameAndPlace(ParserUtils.resolveEntities(mFineLocation.group(2)));
+						final Location station = new Location(LocationType.STATION, parsedId, parsedPlaceAndName[0], parsedPlaceAndName[1]);
+						if (!stations.contains(station))
+							stations.add(station);
+					}
+					else
+					{
+						throw new IllegalArgumentException("cannot parse '" + mCoarse.group(1) + "' on " + uri);
+					}
+				}
+
+				if (maxStations == 0 || maxStations >= stations.size())
+					return new NearbyStationsResult(stations);
+				else
+					return new NearbyStationsResult(stations.subList(0, maxStations));
+			}
 			else
-				return new NearbyStationsResult(stations.subList(0, maxStations));
+			{
+				throw new IllegalArgumentException("cannot parse '" + page + "' on " + uri);
+			}
 		}
 		else
 		{
-			throw new IllegalArgumentException("cannot parse '" + page + "' on " + uri);
+			throw new IllegalArgumentException("cannot handle: " + location.toDebugString());
 		}
 	}
 

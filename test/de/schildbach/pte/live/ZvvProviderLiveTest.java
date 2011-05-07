@@ -22,8 +22,8 @@ import java.util.List;
 
 import org.junit.Test;
 
-import de.schildbach.pte.ZvvProvider;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
+import de.schildbach.pte.ZvvProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -57,7 +57,7 @@ public class ZvvProviderLiveTest
 	@Test
 	public void nearbyStationsByStation() throws Exception
 	{
-		final NearbyStationsResult result = provider.nearbyStations("183400", 0, 0, 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 183400), 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
 	}
@@ -65,7 +65,7 @@ public class ZvvProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.nearbyStations(null, 47378968, 8540534, 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 47378968, 8540534), 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
 	}

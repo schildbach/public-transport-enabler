@@ -81,33 +81,28 @@ public final class BahnProvider extends AbstractHafasProvider
 	private final static Pattern P_NEARBY_STATIONS_BY_STATION = Pattern
 			.compile("<a href=\"http://mobile\\.bahn\\.de/bin/mobil/bhftafel.exe/dn[^\"]*?evaId=(\\d*)&[^\"]*?\">([^<]*)</a>");
 
-	@Override
-	protected String nearbyStationUri(final String stationId)
-	{
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public NearbyStationsResult nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
-			throws IOException
+	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(API_BASE);
 
-		if (lat != 0 || lon != 0)
+		if (location.hasLocation())
 		{
 			uri.append("query.exe/dny");
 			uri.append("?performLocating=2&tpl=stop2json");
 			uri.append("&look_maxno=").append(maxStations != 0 ? maxStations : 200);
 			uri.append("&look_maxdist=").append(maxDistance != 0 ? maxDistance : 5000);
 			uri.append("&look_stopclass=").append(allProductsInt());
-			uri.append("&look_x=").append(lon);
-			uri.append("&look_y=").append(lat);
+			uri.append("&look_x=").append(location.lon);
+			uri.append("&look_y=").append(location.lat);
 
 			return jsonNearbyStations(uri.toString());
 		}
-		else
+		else if (location.type == LocationType.STATION && location.hasId())
 		{
-			uri.append("bhftafel.exe/dn?near=Anzeigen&distance=50&input=").append(ParserUtils.urlEncode(stationId));
+			uri.append("bhftafel.exe/dn");
+			uri.append("?near=Anzeigen");
+			uri.append("&distance=").append(maxDistance != 0 ? maxDistance / 1000 : 50);
+			uri.append("&input=").append(location.id);
 
 			final CharSequence page = ParserUtils.scrape(uri.toString());
 
@@ -127,6 +122,10 @@ public final class BahnProvider extends AbstractHafasProvider
 				return new NearbyStationsResult(stations);
 			else
 				return new NearbyStationsResult(stations.subList(0, maxStations));
+		}
+		else
+		{
+			throw new IllegalArgumentException("cannot handle: " + location.toDebugString());
 		}
 	}
 

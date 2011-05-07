@@ -55,9 +55,9 @@ public class TflProviderLiveTest
 	}
 
 	@Test
-	public void nearbyStation() throws Exception
+	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.nearbyStations("1000086", 0, 0, 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 1000086), 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
 	}
@@ -65,7 +65,7 @@ public class TflProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.nearbyStations(null, 51507161, -0127144, 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 51507161, -0127144), 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
 	}

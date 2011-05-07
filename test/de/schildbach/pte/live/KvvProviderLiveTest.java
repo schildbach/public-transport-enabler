@@ -55,9 +55,9 @@ public class KvvProviderLiveTest
 	}
 
 	@Test
-	public void nearbyStation() throws Exception
+	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.nearbyStations("Karlsruhe", 0, 0, 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 7000090), 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
 	}
@@ -65,7 +65,7 @@ public class KvvProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.nearbyStations(null, 49008184, 8400736, 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 49008184, 8400736), 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
 	}
@@ -73,7 +73,7 @@ public class KvvProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("119", 0, false);
+		final QueryDeparturesResult result = provider.queryDepartures("7000090", 0, false);
 
 		System.out.println(result.stationDepartures);
 	}

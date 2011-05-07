@@ -55,9 +55,9 @@ public class MvvProviderLiveTest
 	}
 
 	@Test
-	public void nearbyStation() throws Exception
+	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.nearbyStations("350", 0, 0, 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 350), 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
 	}
@@ -65,7 +65,7 @@ public class MvvProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.nearbyStations(null, 48135232, 11560650, 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 48135232, 11560650), 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
 	}

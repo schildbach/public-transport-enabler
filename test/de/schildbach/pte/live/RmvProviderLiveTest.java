@@ -22,8 +22,8 @@ import java.util.List;
 
 import org.junit.Test;
 
-import de.schildbach.pte.RmvProvider;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
+import de.schildbach.pte.RmvProvider;
 import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
@@ -56,9 +56,9 @@ public class RmvProviderLiveTest
 	}
 
 	@Test
-	public void nearbyStation() throws Exception
+	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.nearbyStations("3000001", 0, 0, 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 3000001), 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
 	}

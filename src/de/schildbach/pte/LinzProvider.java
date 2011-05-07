@@ -22,7 +22,6 @@ import java.util.List;
 
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.util.ParserUtils;
 
 /**
  * @author Andreas Schildbach
@@ -63,8 +62,8 @@ public class LinzProvider extends AbstractEfaProvider
 			+ "?outputFormat=XML&mode=direct&coordOutputFormat=WGS84&mergeDep=1&useAllStops=1&type_dm=stop&name_dm=%s&itOptionsActive=1&ptOptionsActive=1&useProxFootSearch=1&excludedMeans=checkbox";
 
 	@Override
-	protected String nearbyStationUri(final String stationId)
+	protected String nearbyStationUri(final int stationId)
 	{
-		return String.format(NEARBY_STATION_URI, ParserUtils.urlEncode(stationId, "ISO-8859-1"));
+		return String.format(NEARBY_STATION_URI, stationId);
 	}
 }

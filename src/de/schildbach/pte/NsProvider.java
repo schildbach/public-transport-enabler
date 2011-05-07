@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
+import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryDeparturesResult.Status;
 import de.schildbach.pte.dto.StationDepartures;
@@ -41,6 +42,7 @@ public class NsProvider extends AbstractHafasProvider
 	public static final NetworkId NETWORK_ID = NetworkId.NS;
 	public static final String OLD_NETWORK_ID = "hafas.bene-system.com";
 	private static final String API_URI = "http://hafas.bene-system.com/bin/extxml.exe"; // http://plannerint.b-rail.be/bin/extxml.exe
+	private static final String API_BASE = "http://hari.b-rail.be/HAFAS/bin/"; // FIXME!
 
 	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
 
@@ -63,17 +65,26 @@ public class NsProvider extends AbstractHafasProvider
 		return false;
 	}
 
-	public List<Location> autocompleteStations(CharSequence constraint) throws IOException
+	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
 		throw new UnsupportedOperationException();
 	}
 
-	private final String NEARBY_URI = "http://hari.b-rail.be/HAFAS/bin/stboard.exe/en?input=%s&distance=50&near=Anzeigen";
-
-	@Override
-	protected String nearbyStationUri(final String stationId)
+	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
-		return String.format(NEARBY_URI, ParserUtils.urlEncode(stationId));
+		if (location.type == LocationType.STATION && location.hasId())
+		{
+			final StringBuilder uri = new StringBuilder(API_BASE);
+			uri.append("stboard.exe/en");
+			uri.append("&distance=").append(maxDistance != 0 ? maxDistance / 1000 : 50);
+			uri.append("&input=").append(location.id);
+
+			return htmlNearbyStations(uri.toString());
+		}
+		else
+		{
+			throw new IllegalArgumentException("cannot handle: " + location.toDebugString());
+		}
 	}
 
 	private String departuresQueryUri(final String stationId, final int maxDepartures)

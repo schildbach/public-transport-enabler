@@ -70,6 +70,16 @@ public final class Location implements Serializable
 		this.name = null;
 	}
 
+	public Location(final LocationType type, final int lat, final int lon)
+	{
+		this.type = type;
+		this.id = 0;
+		this.lat = lat;
+		this.lon = lon;
+		this.place = null;
+		this.name = null;
+	}
+
 	public final boolean hasId()
 	{
 		return id != 0;

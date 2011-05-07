@@ -23,6 +23,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.util.ParserUtils;
@@ -64,40 +65,37 @@ public class DsbProvider extends AbstractHafasProvider
 		return jsonGetStops(uri);
 	}
 
-	@Override
-	protected String nearbyStationUri(String stationId)
-	{
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public NearbyStationsResult nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
+	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations)
 			throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(API_BASE);
 
-		if (lat != 0 || lon != 0)
+		if (location.hasLocation())
 		{
 			uri.append("query.exe/mny");
 			uri.append("?performLocating=2&tpl=stop2json");
 			uri.append("&look_maxno=").append(maxStations != 0 ? maxStations : 200);
 			uri.append("&look_maxdist=").append(maxDistance != 0 ? maxDistance : 5000);
 			uri.append("&look_stopclass=").append(allProductsInt());
-			uri.append("&look_x=").append(lon);
-			uri.append("&look_y=").append(lat);
+			uri.append("&look_x=").append(location.lon);
+			uri.append("&look_y=").append(location.lat);
 
 			return jsonNearbyStations(uri.toString());
 		}
-		else
+		else if (location.type == LocationType.STATION && location.hasId())
 		{
 			uri.append("stboard.exe/mn");
 			uri.append("?productsFilter=").append(allProductsString());
 			uri.append("&boardType=dep");
-			uri.append("&input=").append(ParserUtils.urlEncode(stationId));
+			uri.append("&input=").append(location.id);
 			uri.append("&sTI=1&start=yes&hcount=0");
 			uri.append("&L=vs_java3");
 
 			return xmlNearbyStations(uri.toString());
+		}
+		else
+		{
+			throw new IllegalArgumentException("cannot handle: '" + location.toDebugString());
 		}
 	}
 

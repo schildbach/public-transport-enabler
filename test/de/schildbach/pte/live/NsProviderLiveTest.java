@@ -22,8 +22,8 @@ import java.util.List;
 
 import org.junit.Test;
 
-import de.schildbach.pte.NsProvider;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
+import de.schildbach.pte.NsProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -80,9 +80,9 @@ public class NsProviderLiveTest
 	}
 
 	@Test
-	public void nearbyStation() throws Exception
+	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.nearbyStations("100080", 0, 0, 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 100080), 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
 	}
