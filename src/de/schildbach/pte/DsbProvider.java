@@ -75,16 +75,30 @@ public class DsbProvider extends AbstractHafasProvider
 			throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(API_BASE);
-		uri.append("stboard.exe/dn");
-		uri.append("?productsFilter=11111111111");
-		uri.append("&boardType=dep");
-		uri.append("&input=").append(ParserUtils.urlEncode(stationId));
-		uri.append("&sTI=1&start=yes&hcount=0");
-		uri.append("&L=vs_java3");
 
-		// &inputTripelId=A%3d1%40O%3dCopenhagen%20Airport%40X%3d12646941%40Y%3d55629753%40U%3d86%40L%3d900000011%40B%3d1
+		if (lat != 0 || lon != 0)
+		{
+			uri.append("query.exe/mny");
+			uri.append("?performLocating=2&tpl=stop2json");
+			uri.append("&look_maxno=").append(maxStations != 0 ? maxStations : 200);
+			uri.append("&look_maxdist=").append(maxDistance != 0 ? maxDistance : 5000);
+			uri.append("&look_stopclass=2047");
+			uri.append("&look_x=").append(lon);
+			uri.append("&look_y=").append(lat);
 
-		return xmlNearbyStations(uri.toString());
+			return jsonNearbyStations(uri.toString());
+		}
+		else
+		{
+			uri.append("stboard.exe/mn");
+			uri.append("?productsFilter=11111111111");
+			uri.append("&boardType=dep");
+			uri.append("&input=").append(ParserUtils.urlEncode(stationId));
+			uri.append("&sTI=1&start=yes&hcount=0");
+			uri.append("&L=vs_java3");
+
+			return xmlNearbyStations(uri.toString());
+		}
 	}
 
 	private static final Pattern P_NORMALIZE_LINE_AND_TYPE = Pattern.compile("([^#]*)#(.*)");
@@ -158,7 +172,7 @@ public class DsbProvider extends AbstractHafasProvider
 	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder();
-		uri.append(API_BASE).append("stboard.exe/dn");
+		uri.append(API_BASE).append("stboard.exe/mn");
 		uri.append("?productsFilter=11111111111");
 		uri.append("&boardType=dep");
 		uri.append("&maxJourneys=50"); // ignore maxDepartures because result contains other stations

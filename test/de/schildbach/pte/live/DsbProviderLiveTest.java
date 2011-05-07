@@ -50,9 +50,17 @@ public class DsbProviderLiveTest
 	}
 
 	@Test
-	public void nearbyStation() throws Exception
+	public void nearbyStations() throws Exception
 	{
 		final NearbyStationsResult result = provider.nearbyStations("8600858", 0, 0, 0, 0);
+
+		System.out.println(result.stations.size() + "  " + result.stations);
+	}
+
+	@Test
+	public void nearbyStationsByCoordinate() throws Exception
+	{
+		final NearbyStationsResult result = provider.nearbyStations(null, 55670305, 12554169, 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
 	}
