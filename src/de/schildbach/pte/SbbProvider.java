@@ -219,8 +219,6 @@ public class SbbProvider extends AbstractHafasProvider
 		if (t != 0)
 			return t;
 
-		if (ucType.equals("ICN")) // Intercity-Neigezug, Schweiz
-			return 'I';
 		if (ucType.equals("X")) // InterConnex
 			return 'I';
 		if (ucType.equals("ES")) // Eurostar Italia
@@ -235,11 +233,9 @@ public class SbbProvider extends AbstractHafasProvider
 			return 'I';
 		if (ucType.equals("TAL")) // Talgo, Spanien
 			return 'I';
-		if (ucType.equals("EM")) // Barcelona-Alicante, Spanien
+		if (ucType.equals("EM")) // EuroMed, Barcelona-Alicante, Spanien
 			return 'I';
 		if (ucType.equals("FYR")) // Fyra, Amsterdam-Schiphol-Rotterdam
-			return 'I';
-		if (ucType.equals("ARZ")) // Frankreich, Nacht
 			return 'I';
 
 		if (ucType.equals("D"))
@@ -269,10 +265,6 @@ public class SbbProvider extends AbstractHafasProvider
 		if (ucType.equals("MET")) // Lausanne
 			return 'U';
 
-		if (ucType.equals("TRAM"))
-			return 'T';
-		if (ucType.equals("TRA"))
-			return 'T';
 		if (ucType.equals("M")) // Lausanne
 			return 'T';
 		if (ucType.equals("T"))

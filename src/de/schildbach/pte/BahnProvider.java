@@ -520,13 +520,6 @@ public final class BahnProvider extends AbstractHafasProvider
 	@Override
 	protected final String normalizeLine(final String line)
 	{
-		// TODO ARZ Simplon Tunnel: Brig - Iselle di Trasquera
-		// ARZ29171
-		// ARZ29172
-		// ARZ29173
-		// ARZ29177
-		// ARZ29178
-
 		if (line == null)
 			return null;
 

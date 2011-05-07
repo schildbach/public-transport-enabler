@@ -212,9 +212,6 @@ public class NsProvider extends AbstractHafasProvider
 		if (ucType.equals("MÉT"))
 			return 'U';
 
-		if (ucType.equals("TRA"))
-			return 'T';
-
 		return 0;
 	}
 }

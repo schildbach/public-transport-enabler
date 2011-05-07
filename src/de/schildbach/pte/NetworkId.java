@@ -49,6 +49,9 @@ public enum NetworkId
 	// Slovenia
 	MARIBOR,
 
+	// Poland
+	PL,
+
 	// Italy
 	ATC,
 

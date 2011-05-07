@@ -63,11 +63,23 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 	private final String apiUri;
 	private static final String prod = "hafas";
 	private final String accessId;
+	private final String ajaxGetStopsEncoding;
+	private final String mlcResEncoding;
+
+	public AbstractHafasProvider(final String apiUri, final String accessId, final String ajaxGetStopsEncoding, final String mlcResEncoding)
+	{
+		this.apiUri = apiUri;
+		this.accessId = accessId;
+		this.ajaxGetStopsEncoding = ajaxGetStopsEncoding;
+		this.mlcResEncoding = mlcResEncoding;
+	}
 
 	public AbstractHafasProvider(final String apiUri, final String accessId)
 	{
 		this.apiUri = apiUri;
 		this.accessId = accessId;
+		this.ajaxGetStopsEncoding = DEFAULT_ENCODING;
+		this.mlcResEncoding = DEFAULT_ENCODING;
 	}
 
 	protected TimeZone timeZone()
@@ -205,7 +217,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 	protected final List<Location> ajaxGetStops(final String uri) throws IOException
 	{
-		final CharSequence page = ParserUtils.scrape(uri);
+		final CharSequence page = ParserUtils.scrape(uri, false, null, ajaxGetStopsEncoding, false);
 
 		final Matcher mJson = P_AJAX_GET_STOPS_JSON.matcher(page);
 		if (mJson.matches())
@@ -234,7 +246,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 						if (type == 1) // station
 						{
-							results.add(new Location(LocationType.STATION, localId, lat, lon, null, value));
+							final String[] nameAndPlace = splitNameAndPlace(value);
+							results.add(new Location(LocationType.STATION, localId, lat, lon, nameAndPlace[0], nameAndPlace[1]));
 						}
 						else if (type == 2) // address
 						{
@@ -276,7 +289,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 	{
 		final String request = "<MLcReq><MLc n=\"" + constraint + "?\" t=\"ALLTYPE\" /></MLcReq>";
 
-		// ParserUtils.printXml(ParserUtils.scrape(apiUri, true, wrap(request), null, false));
+		// ParserUtils.printXml(ParserUtils.scrape(apiUri, true, wrap(request), mlcResEncoding, false));
 
 		InputStream is = null;
 
@@ -286,7 +299,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
 			final XmlPullParser pp = factory.newPullParser();
-			pp.setInput(is, DEFAULT_ENCODING);
+			pp.setInput(is, mlcResEncoding);
 
 			final List<Location> results = new ArrayList<Location>();
 
@@ -330,7 +343,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 				final int lon = Integer.parseInt(iMatcherLonLat.group(1));
 				final int lat = Integer.parseInt(iMatcherLonLat.group(2));
 
-				results.add(new Location(type, id, lat, lon, null, name));
+				final String[] nameAndPlace = splitNameAndPlace(name);
+				results.add(new Location(type, id, lat, lon, nameAndPlace[0], nameAndPlace[1]));
 
 				XmlPullUtil.next(pp);
 			}
@@ -661,6 +675,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 						XmlPullUtil.enter(pp, "JourneyAttributeList");
 						String name = null;
 						String category = null;
+						String shortCategory = null;
 						String longCategory = null;
 						while (XmlPullUtil.test(pp, "JourneyAttribute"))
 						{
@@ -678,6 +693,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 							}
 							else if ("CATEGORY".equals(attrName))
 							{
+								shortCategory = attributeVariants.get("SHORT");
 								category = attributeVariants.get("NORMAL");
 								longCategory = attributeVariants.get("LONG");
 							}
@@ -688,6 +704,9 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 						}
 						XmlPullUtil.exit(pp);
 						XmlPullUtil.exit(pp);
+
+						if (category == null)
+							category = shortCategory;
 
 						final char type = normalizeType(category);
 						final String lineStr;
@@ -960,7 +979,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 					parsedLat = 0;
 				}
 
-				stations.add(new Location(LocationType.STATION, parsedId, parsedLat, parsedLon, null, parsedName));
+				final String[] nameAndPlace = splitNameAndPlace(parsedName);
+				stations.add(new Location(LocationType.STATION, parsedId, parsedLat, parsedLon, nameAndPlace[0], nameAndPlace[1]));
 			}
 			else
 			{
@@ -1073,6 +1093,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return 'I';
 		if (ucType.equals("ICT")) // InterCity
 			return 'I';
+		if ("ICN".equals(ucType)) // Intercity-Neigezug, Schweiz
+			return 'I';
 		if (ucType.equals("CNL")) // CityNightLine
 			return 'I';
 		if (ucType.equals("OEC")) // ÖBB-EuroCity
@@ -1085,7 +1107,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return 'I';
 		if (ucType.equals("TGV")) // Train à Grande Vitesse
 			return 'I';
-		if (ucType.equals("DNZ")) // Berlin-Saratov, Berlin-Moskva, Connections only?
+		if (ucType.equals("DNZ")) // Nachtzug Basel-Moskau
 			return 'I';
 		if (ucType.equals("AIR")) // Generic Flight
 			return 'I';
@@ -1100,6 +1122,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		if (ucType.equals("TGD")) // TGV
 			return 'I';
 		if (ucType.equals("IRX")) // IC
+			return 'I';
+		if ("FLUG".equals(ucType))
 			return 'I';
 
 		// Regional
@@ -1129,6 +1153,10 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return 'R';
 		if (ucType.equals("SP")) // Spěšný vlak, Czech Republic
 			return 'R';
+		if ("EZ".equals(ucType)) // ÖBB ErlebnisBahn
+			return 'R';
+		if ("ARZ".equals(ucType)) // Auto-Reisezug Brig - Iselle di Trasquera
+			return 'R';
 
 		// Suburban Trains
 		if (ucType.equals("S")) // Generic S-Bahn
@@ -1140,6 +1168,10 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 		// Tram
 		if (ucType.equals("STR")) // Generic Tram
+			return 'T';
+		if ("TRAM".equals(ucType))
+			return 'T';
+		if ("TRA".equals(ucType))
 			return 'T';
 
 		// Bus
@@ -1165,6 +1197,16 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return 'F';
 		if (ucType.equals("AS")) // SyltShuttle, eigentlich Autoreisezug
 			return 'F';
+		if ("SCHIFF".equals(ucType))
+			return 'F';
+		if ("KAT".equals(ucType)) // Katamaran
+			return 'F';
+
+		// Cable Car
+		if ("SB".equals(ucType)) // Seilbahn
+			return 'C';
+		if ("ZAHNR".equals(ucType)) // Zahnradbahn, u.a. Zugspitzbahn
+			return 'C';
 
 		return 0;
 	}

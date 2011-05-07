@@ -113,9 +113,6 @@ public class ZvvProvider extends AbstractHafasProvider
 		// E-Bus: Bus, Tram oder Zug?
 		// TX: Ruftaxi?
 
-		if ("ICN".equals(ucType))
-			return 'I';
-
 		if ("D".equals(ucType))
 			return 'R';
 		if ("EXT".equals(ucType))
@@ -140,8 +137,6 @@ public class ZvvProvider extends AbstractHafasProvider
 		if ("TRO".equals(ucType))
 			return 'B';
 
-		if ("SCHIFF".equals(ucType))
-			return 'F';
 		if ("D-SCHIFF".equals(ucType))
 			return 'F';
 		if ("FAE".equals(ucType))
