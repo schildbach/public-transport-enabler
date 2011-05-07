@@ -24,6 +24,8 @@ import java.io.Serializable;
  */
 public final class Location implements Serializable
 {
+	private static final long serialVersionUID = 2168486169241327168L;
+
 	public final LocationType type;
 	public final int id;
 	public final int lat, lon;
