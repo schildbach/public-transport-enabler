@@ -73,8 +73,6 @@ public final class BahnProvider extends AbstractHafasProvider
 		return jsonGetStops(uri);
 	}
 
-	private final static Pattern P_NEARBY_STATIONS_BY_COORDINATE = Pattern
-			.compile("<a class=\"uLine\" href=\".+?!X=(\\d+)!Y=(\\d+)!id=(\\d+)!dist=(\\d+).*?\">(.+?)</a>");
 	private final static Pattern P_NEARBY_STATIONS_BY_STATION = Pattern
 			.compile("<a href=\"http://mobile\\.bahn\\.de/bin/mobil/bhftafel.exe/dn[^\"]*?evaId=(\\d*)&[^\"]*?\">([^<]*)</a>");
 
@@ -88,14 +86,29 @@ public final class BahnProvider extends AbstractHafasProvider
 	public NearbyStationsResult nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
 			throws IOException
 	{
-		final List<Location> stations = new ArrayList<Location>();
+		final StringBuilder uri = new StringBuilder(API_BASE);
 
-		if (lat == 0 && lon == 0)
+		if (lat != 0 || lon != 0)
 		{
-			final String uri = API_BASE + "bhftafel.exe/dn?near=Anzeigen&distance=50&input=" + ParserUtils.urlEncode(stationId);
-			final CharSequence page = ParserUtils.scrape(uri);
+			uri.append("query.exe/dny");
+			uri.append("?performLocating=2&tpl=stop2json");
+			uri.append("&look_maxno=").append(maxStations != 0 ? maxStations : 200);
+			uri.append("&look_maxdist=").append(maxDistance != 0 ? maxDistance : 5000);
+			uri.append("&look_stopclass=").append(allProductsInt());
+			uri.append("&look_x=").append(lon);
+			uri.append("&look_y=").append(lat);
+
+			return jsonNearbyStations(uri.toString());
+		}
+		else
+		{
+			uri.append("bhftafel.exe/dn?near=Anzeigen&distance=50&input=").append(ParserUtils.urlEncode(stationId));
+
+			final CharSequence page = ParserUtils.scrape(uri.toString());
 
 			final Matcher m = P_NEARBY_STATIONS_BY_STATION.matcher(page);
+
+			final List<Location> stations = new ArrayList<Location>();
 			while (m.find())
 			{
 				final int sId = Integer.parseInt(m.group(1));
@@ -104,32 +117,12 @@ public final class BahnProvider extends AbstractHafasProvider
 				final Location station = new Location(LocationType.STATION, sId, null, sName);
 				stations.add(station);
 			}
+
+			if (maxStations == 0 || maxStations >= stations.size())
+				return new NearbyStationsResult(stations);
+			else
+				return new NearbyStationsResult(stations.subList(0, maxStations));
 		}
-		else
-		{
-			final String uri = API_BASE + "query.exe/dox" + "?performLocating=2&tpl=stopsnear&look_maxdist=" + (maxDistance > 0 ? maxDistance : 5000)
-					+ "&look_stopclass=" + allProductsInt() + "&look_x=" + lon + "&look_y=" + lat;
-			System.out.println(uri);
-			final CharSequence page = ParserUtils.scrape(uri);
-
-			final Matcher m = P_NEARBY_STATIONS_BY_COORDINATE.matcher(page);
-			while (m.find())
-			{
-				final int sId = Integer.parseInt(m.group(3));
-
-				final int sLon = Integer.parseInt(m.group(1));
-				final int sLat = Integer.parseInt(m.group(2));
-				final String sName = ParserUtils.resolveEntities(m.group(5).trim());
-
-				final Location station = new Location(LocationType.STATION, sId, sLat, sLon, null, sName);
-				stations.add(station);
-			}
-		}
-
-		if (maxStations == 0 || maxStations >= stations.size())
-			return new NearbyStationsResult(stations);
-		else
-			return new NearbyStationsResult(stations.subList(0, maxStations));
 	}
 
 	private String connectionsQueryUri(final Location from, final Location via, final Location to, final Date date, final boolean dep,
