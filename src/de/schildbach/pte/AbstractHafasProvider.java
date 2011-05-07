@@ -1007,8 +1007,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 				final JSONObject stop = aStops.optJSONObject(i);
 				final int id = stop.getInt("extId");
 				final String name = ParserUtils.resolveEntities(stop.getString("name"));
-				final int lat = stop.optInt("y");
-				final int lon = stop.optInt("x");
+				final int lat = stop.getInt("y");
+				final int lon = stop.getInt("x");
 
 				final String[] nameAndPlace = splitNameAndPlace(name);
 				stations.add(new Location(LocationType.STATION, id, lat, lon, nameAndPlace[0], nameAndPlace[1]));
