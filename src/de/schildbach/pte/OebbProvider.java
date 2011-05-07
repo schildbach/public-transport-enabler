@@ -38,6 +38,7 @@ import de.schildbach.pte.dto.GetConnectionDetailsResult;
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
+import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryDeparturesResult.Status;
@@ -90,6 +91,30 @@ public class OebbProvider extends AbstractHafasProvider
 	protected String nearbyStationUri(final String stationId)
 	{
 		return String.format(NEARBY_URI, ParserUtils.urlEncode(stationId));
+	}
+
+	@Override
+	public NearbyStationsResult nearbyStations(final String stationId, final int lat, final int lon, final int maxDistance, final int maxStations)
+			throws IOException
+	{
+		final StringBuilder uri = new StringBuilder(API_BASE);
+
+		if (lat != 0 || lon != 0)
+		{
+			uri.append("query.exe/dny");
+			uri.append("?performLocating=2&tpl=stop2json");
+			uri.append("&look_maxno=").append(maxStations != 0 ? maxStations : 200);
+			uri.append("&look_maxdist=").append(maxDistance != 0 ? maxDistance : 5000);
+			uri.append("&look_stopclass=2047");
+			uri.append("&look_x=").append(lon);
+			uri.append("&look_y=").append(lat);
+
+			return jsonNearbyStations(uri.toString());
+		}
+		else
+		{
+			return super.nearbyStations(stationId, lat, lon, maxDistance, maxStations);
+		}
 	}
 
 	private static final Map<WalkSpeed, String> WALKSPEED_MAP = new HashMap<WalkSpeed, String>();
