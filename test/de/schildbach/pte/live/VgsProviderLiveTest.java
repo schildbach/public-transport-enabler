@@ -35,6 +35,22 @@ public class VgsProviderLiveTest
 	private final VgsProvider provider = new VgsProvider();
 
 	@Test
+	public void nearbyStations() throws Exception
+	{
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 8000244), 0, 0);
+
+		System.out.println(result.stations.size() + "  " + result.stations);
+	}
+
+	@Test
+	public void nearbyStationsByCoordinate() throws Exception
+	{
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 49234783, 6995687), 0, 0);
+
+		System.out.println(result.stations.size() + "  " + result.stations);
+	}
+
+	@Test
 	public void autocomplete() throws Exception
 	{
 		final List<Location> autocompletes = provider.autocompleteStations("Flughafen");
@@ -48,14 +64,6 @@ public class VgsProviderLiveTest
 		for (final Location autocomplete : autocompletes)
 			System.out.print(autocomplete.toDebugString() + " ");
 		System.out.println();
-	}
-
-	@Test
-	public void nearbyStations() throws Exception
-	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 8000244), 0, 0);
-
-		System.out.println(result.stations.size() + "  " + result.stations);
 	}
 
 	@Test
