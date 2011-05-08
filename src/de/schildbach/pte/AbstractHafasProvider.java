@@ -1204,6 +1204,14 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return 'R';
 		if ("ARZ".equals(ucType)) // Auto-Reisezug Brig - Iselle di Trasquera
 			return 'R';
+		if ("OE".equals(ucType)) // Ostdeutsche Eisenbahn
+			return 'R';
+		if ("MR".equals(ucType)) // Märkische Regionalbahn
+			return 'R';
+		if ("PE".equals(ucType)) // Prignitzer Eisenbahn GmbH
+			return 'R';
+		if ("NE".equals(ucType)) // NEB Betriebsgesellschaft mbH
+			return 'R';
 
 		// Suburban Trains
 		if (ucType.equals("S")) // Generic S-Bahn
@@ -1240,11 +1248,13 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return 'B';
 
 		// Ferry
+		if ("SCHIFF".equals(ucType))
+			return 'F';
+		if ("FÄHRE".equals(ucType))
+			return 'F';
 		if (ucType.equals("SCH")) // Schiff
 			return 'F';
 		if (ucType.equals("AS")) // SyltShuttle, eigentlich Autoreisezug
-			return 'F';
-		if ("SCHIFF".equals(ucType))
 			return 'F';
 		if ("KAT".equals(ucType)) // Katamaran
 			return 'F';

@@ -23,7 +23,7 @@ package de.schildbach.pte;
 public enum NetworkId
 {
 	// Germany
-	DB, BVG, RMV, VRT, MVV, INVG, AVV, VMV, SH, GVH, BSVAG, BSAG, NASA, VVO, VMS, VGS, VRR, MVG, VRN, VVS, NALDO, DING, KVV, VVM, VAGFR, NVBW,
+	DB, BVG, VBB, RMV, VRT, MVV, INVG, AVV, VMV, SH, GVH, BSVAG, BSAG, NASA, VVO, VMS, VGS, VRR, MVG, VRN, VVS, NALDO, DING, KVV, VVM, VAGFR, NVBW,
 
 	// Austria
 	OEBB, VOR, LINZ, SVV, VVV, IVB, STV,
