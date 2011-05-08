@@ -660,6 +660,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'R' + str;
 			if (type.equals("REX")) // RegionalExpress, Österreich
 				return 'R' + str;
+			if ("EZ".equals(type)) // ÖBB ErlebnisBahn
+				return 'R' + str;
 			if (P_LINE_RE.matcher(type).matches())
 				return 'R' + str;
 			if (type.equals("RB")) // Regionalbahn
