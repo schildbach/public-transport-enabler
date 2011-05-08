@@ -154,57 +154,60 @@ public final class BahnProvider extends AbstractHafasProvider
 		uri.append("&existProductNahverkehr=yes");
 		uri.append("&start=Suchen");
 
-		for (final char p : products.toCharArray())
+		if (products != null)
 		{
-			if (p == 'I')
+			for (final char p : products.toCharArray())
 			{
-				uri.append("&REQ0JourneyProduct_prod_section_0_0=1&REQ0JourneyProduct_prod_section_0_1=1");
-				if (via != null)
-					uri.append("&REQ0JourneyProduct_prod_section_1_0=1&REQ0JourneyProduct_prod_section_1_1=1");
+				if (p == 'I')
+				{
+					uri.append("&REQ0JourneyProduct_prod_section_0_0=1&REQ0JourneyProduct_prod_section_0_1=1");
+					if (via != null)
+						uri.append("&REQ0JourneyProduct_prod_section_1_0=1&REQ0JourneyProduct_prod_section_1_1=1");
+				}
+				if (p == 'R')
+				{
+					uri.append("&REQ0JourneyProduct_prod_section_0_2=1&REQ0JourneyProduct_prod_section_0_3=1");
+					if (via != null)
+						uri.append("&REQ0JourneyProduct_prod_section_1_2=1&REQ0JourneyProduct_prod_section_1_3=1");
+				}
+				if (p == 'S')
+				{
+					uri.append("&REQ0JourneyProduct_prod_section_0_4=1");
+					if (via != null)
+						uri.append("&REQ0JourneyProduct_prod_section_1_4=1");
+				}
+				if (p == 'U')
+				{
+					uri.append("&REQ0JourneyProduct_prod_section_0_7=1");
+					if (via != null)
+						uri.append("&REQ0JourneyProduct_prod_section_1_7=1");
+				}
+				if (p == 'T')
+				{
+					uri.append("&REQ0JourneyProduct_prod_section_0_8=1");
+					if (via != null)
+						uri.append("&REQ0JourneyProduct_prod_section_1_8=1");
+				}
+				if (p == 'B')
+				{
+					uri.append("&REQ0JourneyProduct_prod_section_0_5=1");
+					if (via != null)
+						uri.append("&REQ0JourneyProduct_prod_section_1_5=1");
+				}
+				if (p == 'P')
+				{
+					uri.append("&REQ0JourneyProduct_prod_section_0_9=1");
+					if (via != null)
+						uri.append("&REQ0JourneyProduct_prod_section_1_9=1");
+				}
+				if (p == 'F')
+				{
+					uri.append("&REQ0JourneyProduct_prod_section_0_6=1");
+					if (via != null)
+						uri.append("&REQ0JourneyProduct_prod_section_1_6=1");
+				}
+				// FIXME if (p == 'C')
 			}
-			if (p == 'R')
-			{
-				uri.append("&REQ0JourneyProduct_prod_section_0_2=1&REQ0JourneyProduct_prod_section_0_3=1");
-				if (via != null)
-					uri.append("&REQ0JourneyProduct_prod_section_1_2=1&REQ0JourneyProduct_prod_section_1_3=1");
-			}
-			if (p == 'S')
-			{
-				uri.append("&REQ0JourneyProduct_prod_section_0_4=1");
-				if (via != null)
-					uri.append("&REQ0JourneyProduct_prod_section_1_4=1");
-			}
-			if (p == 'U')
-			{
-				uri.append("&REQ0JourneyProduct_prod_section_0_7=1");
-				if (via != null)
-					uri.append("&REQ0JourneyProduct_prod_section_1_7=1");
-			}
-			if (p == 'T')
-			{
-				uri.append("&REQ0JourneyProduct_prod_section_0_8=1");
-				if (via != null)
-					uri.append("&REQ0JourneyProduct_prod_section_1_8=1");
-			}
-			if (p == 'B')
-			{
-				uri.append("&REQ0JourneyProduct_prod_section_0_5=1");
-				if (via != null)
-					uri.append("&REQ0JourneyProduct_prod_section_1_5=1");
-			}
-			if (p == 'P')
-			{
-				uri.append("&REQ0JourneyProduct_prod_section_0_9=1");
-				if (via != null)
-					uri.append("&REQ0JourneyProduct_prod_section_1_9=1");
-			}
-			if (p == 'F')
-			{
-				uri.append("&REQ0JourneyProduct_prod_section_0_6=1");
-				if (via != null)
-					uri.append("&REQ0JourneyProduct_prod_section_1_6=1");
-			}
-			// FIXME if (p == 'C')
 		}
 
 		return uri.toString();
