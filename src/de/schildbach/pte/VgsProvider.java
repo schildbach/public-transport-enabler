@@ -21,18 +21,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.schildbach.pte.dto.Departure;
-import de.schildbach.pte.dto.GetConnectionDetailsResult;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
-import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryDeparturesResult.Status;
 import de.schildbach.pte.dto.StationDepartures;
@@ -50,7 +47,7 @@ public class VgsProvider extends AbstractHafasProvider
 
 	public VgsProvider()
 	{
-		super(null, 11, null);
+		super(API_BASE + "query.exe/dn", 11, null);
 	}
 
 	public NetworkId id()
@@ -61,7 +58,7 @@ public class VgsProvider extends AbstractHafasProvider
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
 		for (final Capability capability : capabilities)
-			if (capability == Capability.DEPARTURES)
+			if (capability == Capability.AUTOCOMPLETE_ONE_LINE || capability == Capability.DEPARTURES || capability == Capability.CONNECTIONS)
 				return true;
 
 		return false;
@@ -288,24 +285,5 @@ public class VgsProvider extends AbstractHafasProvider
 			return '?';
 
 		return 0;
-	}
-
-	@Override
-	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final String products, final WalkSpeed walkSpeed) throws IOException
-	{
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public QueryConnectionsResult queryMoreConnections(String uri) throws IOException
-	{
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public GetConnectionDetailsResult getConnectionDetails(String connectionUri) throws IOException
-	{
-		throw new UnsupportedOperationException();
 	}
 }
