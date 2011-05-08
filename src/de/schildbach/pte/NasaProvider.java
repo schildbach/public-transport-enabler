@@ -247,12 +247,6 @@ public class NasaProvider extends AbstractHafasProvider
 	{
 		final String ucType = type.toUpperCase();
 
-		final char t = normalizeCommonTypes(ucType);
-		if (t != 0)
-			return t;
-
-		if (ucType.equals("D")) // Rußland Schlafwagenzug
-			return 'I';
 		if (ucType.equals("ECW"))
 			return 'I';
 
@@ -277,6 +271,10 @@ public class NasaProvider extends AbstractHafasProvider
 			return 'B';
 		if (ucType.equals("RBS")) // Rufbus
 			return 'B';
+
+		final char t = super.normalizeType(type);
+		if (t != 0)
+			return t;
 
 		if (ucType.equals("EB")) // Europa-Park, vermutlich "Erlebnisbahn"
 			return '?';

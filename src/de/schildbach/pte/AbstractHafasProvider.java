@@ -733,12 +733,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 						if (category == null)
 							category = shortCategory;
 
-						final char type = normalizeType(category);
-						final String lineStr;
-						if (type != 0)
-							lineStr = type + name;
-						else
-							lineStr = _normalizeLine(category, name); // for compatibility
+						final String lineStr = normalizeLine(category, name);
 						line = new Line(lineStr, lineColors(lineStr));
 					}
 					else if (tag.equals("Walk") || tag.equals("Transfer") || tag.equals("GisRoute"))
@@ -1099,6 +1094,228 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		return new NearbyStationsResult(stations);
 	}
 
+	private static final Pattern P_LINE_S = Pattern.compile("SN?\\d*");
+
+	protected char normalizeType(final String type)
+	{
+		final String ucType = type.toUpperCase();
+
+		// Intercity
+		if ("EC".equals(ucType)) // EuroCity
+			return 'I';
+		if ("EN".equals(ucType)) // EuroNight
+			return 'I';
+		if ("D".equals(ucType)) // EuroNight, Sitzwagenabteil
+			return 'I';
+		if ("EIC".equals(ucType)) // Ekspres InterCity, Polen
+			return 'I';
+		if ("ICE".equals(ucType)) // InterCityExpress
+			return 'I';
+		if ("IC".equals(ucType)) // InterCity
+			return 'I';
+		if ("ICT".equals(ucType)) // InterCity
+			return 'I';
+		if ("ICN".equals(ucType)) // Intercity-Neigezug, Schweiz
+			return 'I';
+		if ("CNL".equals(ucType)) // CityNightLine
+			return 'I';
+		if ("OEC".equals(ucType)) // ÖBB-EuroCity
+			return 'I';
+		if ("OIC".equals(ucType)) // ÖBB-InterCity
+			return 'I';
+		if ("RJ".equals(ucType)) // RailJet, Österreichische Bundesbahnen
+			return 'I';
+		if ("THA".equals(ucType)) // Thalys
+			return 'I';
+		if ("TGV".equals(ucType)) // Train à Grande Vitesse
+			return 'I';
+		if ("DNZ".equals(ucType)) // Nachtzug Basel-Moskau
+			return 'I';
+		if ("AIR".equals(ucType)) // Generic Flight
+			return 'I';
+		if ("ECB".equals(ucType)) // EC, Verona-München
+			return 'I';
+		if ("NZ".equals(ucType)) // Schweden, Nacht
+			return 'I';
+		if ("INZ".equals(ucType)) // Nacht
+			return 'I';
+		if ("RHI".equals(ucType)) // ICE
+			return 'I';
+		if ("RHT".equals(ucType)) // TGV
+			return 'I';
+		if ("TGD".equals(ucType)) // TGV
+			return 'I';
+		if ("IRX".equals(ucType)) // IC
+			return 'I';
+		if ("ES".equals(ucType)) // Eurostar Italia
+			return 'I';
+		if ("EST".equals(ucType)) // Eurostar Frankreich
+			return 'I';
+		if ("EM".equals(ucType)) // Euromed, Barcelona-Alicante, Spanien
+			return 'I';
+		if ("AVE".equals(ucType)) // Alta Velocidad Española, Spanien
+			return 'I';
+		if ("ARC".equals(ucType)) // Arco (Renfe), Spanien
+			return 'I';
+		if ("ALS".equals(ucType)) // Alaris (Renfe), Spanien
+			return 'I';
+		if ("ATR".equals(ucType)) // Altaria (Renfe), Spanien
+			return 'R';
+		if ("TAL".equals(ucType)) // Talgo, Spanien
+			return 'I';
+		if ("X2".equals(ucType)) // X2000 Neigezug, Schweden
+			return 'I';
+		if ("FYR".equals(ucType)) // Fyra, Amsterdam-Schiphol-Rotterdam
+			return 'I';
+		if ("FLUG".equals(ucType))
+			return 'I';
+
+		// Regional
+		if ("ZUG".equals(ucType)) // Generic Train
+			return 'R';
+		if ("R".equals(ucType)) // Generic Regional Train
+			return 'R';
+		if ("DPN".equals(ucType)) // Dritter Personen Nahverkehr
+			return 'R';
+		if ("RB".equals(ucType)) // RegionalBahn
+			return 'R';
+		if ("RE".equals(ucType)) // RegionalExpress
+			return 'R';
+		if ("IR".equals(ucType)) // Interregio
+			return 'R';
+		if ("IRE".equals(ucType)) // Interregio Express
+			return 'R';
+		if ("HEX".equals(ucType)) // Harz-Berlin-Express, Veolia
+			return 'R';
+		if ("WFB".equals(ucType)) // Westfalenbahn
+			return 'R';
+		if ("RT".equals(ucType)) // RegioTram
+			return 'R';
+		if ("REX".equals(ucType)) // RegionalExpress, Österreich
+			return 'R';
+		if ("OS".equals(ucType)) // Osobný vlak, Slovakia oder Osobní vlak, Czech Republic
+			return 'R';
+		if ("SP".equals(ucType)) // Spěšný vlak, Czech Republic
+			return 'R';
+		if ("EZ".equals(ucType)) // ÖBB ErlebnisBahn
+			return 'R';
+		if ("ARZ".equals(ucType)) // Auto-Reisezug Brig - Iselle di Trasquera
+			return 'R';
+		if ("OE".equals(ucType)) // Ostdeutsche Eisenbahn
+			return 'R';
+		if ("MR".equals(ucType)) // Märkische Regionalbahn
+			return 'R';
+		if ("PE".equals(ucType)) // Prignitzer Eisenbahn GmbH
+			return 'R';
+		if ("NE".equals(ucType)) // NEB Betriebsgesellschaft mbH
+			return 'R';
+		if ("MRB".equals(ucType)) // Mitteldeutsche Regiobahn
+			return 'R';
+		if ("ATZ".equals(ucType)) // Autotunnelzug
+			return 'R';
+		if ("CAT".equals(ucType)) // City Airport Train
+			return 'R';
+		if ("EXT".equals(ucType)) // Extrazug
+			return 'R';
+		if ("KD".equals(ucType)) // Koleje Dolnośląskie (Niederschlesische Eisenbahn)
+			return 'R';
+		// if ("E".equals(normalizedType)) // Eilzug, stimmt wahrscheinlich nicht
+		// return "R" + normalizedName;
+
+		// Suburban Trains
+		if (P_LINE_S.matcher(ucType).matches()) // Generic (Night) S-Bahn
+			return 'S';
+		// if ("SPR".equals(normalizedType)) // Sprinter, Niederlande
+		// return "S" + normalizedName;
+
+		// Subway
+		if ("U".equals(ucType)) // Generic U-Bahn
+			return 'U';
+		if ("MET".equals(ucType))
+			return 'U';
+		// if ("M".equals(normalizedType)) // Metro
+		// return "U" + normalizedName;
+		// if ("Métro".equals(normalizedType))
+		// return "U" + normalizedName;
+
+		// Tram
+		if ("STR".equals(ucType)) // Generic Tram
+			return 'T';
+		if ("TRAM".equals(ucType))
+			return 'T';
+		if ("TRA".equals(ucType))
+			return 'T';
+		// if ("T".equals(normalizedType)) // Tram
+		// return "T" + normalizedName;
+		// if ("Tramway".equals(normalizedType))
+		// return "T" + normalizedName;
+
+		// Bus
+		if ("BUS".equals(ucType)) // Generic Bus
+			return 'B';
+		if ("NFB".equals(ucType)) // Niederflur-Bus
+			return 'B';
+		if ("SEV".equals(ucType)) // Schienen-Ersatz-Verkehr
+			return 'B';
+		if ("BUSSEV".equals(ucType)) // Schienen-Ersatz-Verkehr
+			return 'B';
+		if ("BSV".equals(ucType)) // Bus SEV
+			return 'B';
+		if ("FB".equals(ucType)) // Fernbus? Luxemburg-Saarbrücken
+			return 'B';
+		if ("TRO".equals(ucType)) // Trolleybus
+			return 'B';
+		if ("AST".equals(ucType)) // Anruf-Sammel-Taxi
+			return 'B';
+		if ("RUF".equals(ucType)) // Rufbus
+			return 'B';
+		if ("RFT".equals(ucType)) // Ruftaxi
+			return 'B';
+		// if ("N".equals(normalizedType)) // Nachtbus
+		// return "B" + normalizedName;
+		// if ("Taxi".equals(normalizedType)) // Taxi
+		// return "B" + normalizedName;
+		// if ("TX".equals(normalizedType)) // Taxi
+		// return "B" + normalizedName;
+
+		// Ferry
+		if ("SCHIFF".equals(ucType))
+			return 'F';
+		if ("FÄHRE".equals(ucType))
+			return 'F';
+		if ("SCH".equals(ucType)) // Schiff
+			return 'F';
+		if ("AS".equals(ucType)) // SyltShuttle, eigentlich Autoreisezug
+			return 'F';
+		if ("KAT".equals(ucType)) // Katamaran, e.g. Friedrichshafen - Konstanz
+			return 'F';
+		if ("BAT".equals(ucType)) // Boots Anlege Terminal?
+			return 'F';
+
+		// Cable Car
+		if ("SB".equals(ucType)) // Seilbahn
+			return 'C';
+		if ("ZAHNR".equals(ucType)) // Zahnradbahn, u.a. Zugspitzbahn
+			return 'C';
+		if ("GB".equals(ucType)) // Gondelbahn
+			return 'C';
+		if ("LB".equals(ucType)) // Luftseilbahn
+			return 'C';
+		if ("FUN".equals(ucType)) // Funiculaire (Standseilbahn)
+			return 'C';
+
+		// if ("L".equals(normalizedType))
+		// return "?" + normalizedName;
+		// if ("P".equals(normalizedType))
+		// return "?" + normalizedName;
+		// if ("CR".equals(normalizedType))
+		// return "?" + normalizedName;
+		// if ("TRN".equals(normalizedType))
+		// return "?" + normalizedName;
+
+		return 0;
+	}
+
 	protected static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zßÄÅäáàâåéèêíìîÖöóòôÜüúùûØ/-]+)[\\s-]*(.*)");
 
 	protected String normalizeLine(final String type, final String line)
@@ -1123,151 +1340,6 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		throw new IllegalStateException("cannot normalize type '" + type + "' line '" + line + "'");
 	}
 
-	protected abstract char normalizeType(String type);
-
-	protected final char normalizeCommonTypes(final String ucType)
-	{
-		// Intercity
-		if (ucType.equals("EC")) // EuroCity
-			return 'I';
-		if (ucType.equals("EN")) // EuroNight
-			return 'I';
-		if (ucType.equals("EIC")) // Ekspres InterCity, Polen
-			return 'I';
-		if (ucType.equals("ICE")) // InterCityExpress
-			return 'I';
-		if (ucType.equals("IC")) // InterCity
-			return 'I';
-		if (ucType.equals("ICT")) // InterCity
-			return 'I';
-		if ("ICN".equals(ucType)) // Intercity-Neigezug, Schweiz
-			return 'I';
-		if (ucType.equals("CNL")) // CityNightLine
-			return 'I';
-		if (ucType.equals("OEC")) // ÖBB-EuroCity
-			return 'I';
-		if (ucType.equals("OIC")) // ÖBB-InterCity
-			return 'I';
-		if (ucType.equals("RJ")) // RailJet, Österreichische Bundesbahnen
-			return 'I';
-		if (ucType.equals("THA")) // Thalys
-			return 'I';
-		if (ucType.equals("TGV")) // Train à Grande Vitesse
-			return 'I';
-		if (ucType.equals("DNZ")) // Nachtzug Basel-Moskau
-			return 'I';
-		if (ucType.equals("AIR")) // Generic Flight
-			return 'I';
-		if (ucType.equals("ECB")) // EC, Verona-München
-			return 'I';
-		if (ucType.equals("INZ")) // Nacht
-			return 'I';
-		if (ucType.equals("RHI")) // ICE
-			return 'I';
-		if (ucType.equals("RHT")) // TGV
-			return 'I';
-		if (ucType.equals("TGD")) // TGV
-			return 'I';
-		if (ucType.equals("IRX")) // IC
-			return 'I';
-		if ("FLUG".equals(ucType))
-			return 'I';
-
-		// Regional
-		if (ucType.equals("ZUG")) // Generic Train
-			return 'R';
-		if (ucType.equals("R")) // Generic Regional Train
-			return 'R';
-		if (ucType.equals("DPN")) // Dritter Personen Nahverkehr
-			return 'R';
-		if (ucType.equals("RB")) // RegionalBahn
-			return 'R';
-		if (ucType.equals("RE")) // RegionalExpress
-			return 'R';
-		if (ucType.equals("IR")) // Interregio
-			return 'R';
-		if (ucType.equals("IRE")) // Interregio Express
-			return 'R';
-		if (ucType.equals("HEX")) // Harz-Berlin-Express, Veolia
-			return 'R';
-		if (ucType.equals("WFB")) // Westfalenbahn
-			return 'R';
-		if (ucType.equals("RT")) // RegioTram
-			return 'R';
-		if (ucType.equals("REX")) // RegionalExpress, Österreich
-			return 'R';
-		if (ucType.equals("OS")) // Osobný vlak, Slovakia oder Osobní vlak, Czech Republic
-			return 'R';
-		if (ucType.equals("SP")) // Spěšný vlak, Czech Republic
-			return 'R';
-		if ("EZ".equals(ucType)) // ÖBB ErlebnisBahn
-			return 'R';
-		if ("ARZ".equals(ucType)) // Auto-Reisezug Brig - Iselle di Trasquera
-			return 'R';
-		if ("OE".equals(ucType)) // Ostdeutsche Eisenbahn
-			return 'R';
-		if ("MR".equals(ucType)) // Märkische Regionalbahn
-			return 'R';
-		if ("PE".equals(ucType)) // Prignitzer Eisenbahn GmbH
-			return 'R';
-		if ("NE".equals(ucType)) // NEB Betriebsgesellschaft mbH
-			return 'R';
-
-		// Suburban Trains
-		if (ucType.equals("S")) // Generic S-Bahn
-			return 'S';
-
-		// Subway
-		if (ucType.equals("U")) // Generic U-Bahn
-			return 'U';
-
-		// Tram
-		if (ucType.equals("STR")) // Generic Tram
-			return 'T';
-		if ("TRAM".equals(ucType))
-			return 'T';
-		if ("TRA".equals(ucType))
-			return 'T';
-
-		// Bus
-		if (ucType.equals("BUS")) // Generic Bus
-			return 'B';
-		if (ucType.equals("AST")) // Anruf-Sammel-Taxi
-			return 'B';
-		if (ucType.equals("RUF")) // Rufbus
-			return 'B';
-		if ("RFT".equals(ucType)) // Ruftaxi
-			return 'B';
-		if (ucType.equals("SEV")) // Schienen-Ersatz-Verkehr
-			return 'B';
-		if (ucType.equals("BUSSEV")) // Schienen-Ersatz-Verkehr
-			return 'B';
-		if (ucType.equals("BSV")) // Bus SEV
-			return 'B';
-		if (ucType.equals("FB")) // Luxemburg-Saarbrücken
-			return 'B';
-
-		// Ferry
-		if ("SCHIFF".equals(ucType))
-			return 'F';
-		if ("FÄHRE".equals(ucType))
-			return 'F';
-		if (ucType.equals("SCH")) // Schiff
-			return 'F';
-		if (ucType.equals("AS")) // SyltShuttle, eigentlich Autoreisezug
-			return 'F';
-		if ("KAT".equals(ucType)) // Katamaran
-			return 'F';
-
-		// Cable Car
-		if ("SB".equals(ucType)) // Seilbahn
-			return 'C';
-		if ("ZAHNR".equals(ucType)) // Zahnradbahn, u.a. Zugspitzbahn
-			return 'C';
-
-		return 0;
-	}
-
 	protected String normalizeLine(final String line)
 	{
 		if (line == null || line.length() == 0)
@@ -1287,140 +1359,6 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		}
 
 		throw new IllegalStateException("cannot normalize line " + line);
-	}
-
-	private static final Pattern P_LINE_S = Pattern.compile("S\\d+");
-	private static final Pattern P_LINE_SN = Pattern.compile("SN\\d*");
-
-	private final String _normalizeLine(final String type, final String name)
-	{
-		final String normalizedType = type.split(" ", 2)[0];
-		final String normalizedName = normalizeWhitespace(name);
-
-		if ("EN".equals(normalizedType)) // EuroNight
-			return "I" + normalizedName;
-		if ("EC".equals(normalizedType)) // EuroCity
-			return "I" + normalizedName;
-		if ("ICE".equals(normalizedType)) // InterCityExpress
-			return "I" + normalizedName;
-		if ("IC".equals(normalizedType)) // InterCity
-			return "I" + normalizedName;
-		if ("ICN".equals(normalizedType)) // IC-Neigezug
-			return "I" + normalizedName;
-		if ("CNL".equals(normalizedType)) // CityNightLine
-			return "I" + normalizedName;
-		if ("OEC".equals(normalizedType)) // ÖBB EuroCity
-			return "I" + normalizedName;
-		if ("OIC".equals(normalizedType)) // ÖBB InterCity
-			return "I" + normalizedName;
-		if ("TGV".equals(normalizedType)) // Train à grande vit.
-			return "I" + normalizedName;
-		if ("THA".equals(normalizedType)) // Thalys
-			return "I" + normalizedName;
-		if ("THALYS".equals(normalizedType)) // THALYS
-			return "I" + normalizedName;
-		if ("ES".equals(normalizedType)) // Eurostar Italia
-			return "I" + normalizedName;
-		if ("EST".equals(normalizedType)) // Eurostar
-			return "I" + normalizedName;
-		if ("X2".equals(normalizedType)) // X2000 Neigezug, Schweden
-			return "I" + normalizedName;
-		if ("RJ".equals(normalizedType)) // Railjet
-			return "I" + normalizedName;
-		if ("AVE".equals(normalizedType)) // Alta Velocidad ES
-			return "I" + normalizedName;
-		if ("ARC".equals(normalizedType)) // Arco, Spanien
-			return "I" + normalizedName;
-		if ("ALS".equals(normalizedType)) // Alaris, Spanien
-			return "I" + normalizedName;
-		if ("TAL".equals(normalizedType)) // Talgo, Spanien
-			return "I" + normalizedName;
-		if ("NZ".equals(normalizedType)) // Nacht-Zug
-			return "I" + normalizedName;
-		if ("FYR".equals(normalizedType)) // Fyra, Amsterdam-Schiphol-Rotterdam
-			return "I" + normalizedName;
-
-		if ("R".equals(normalizedType)) // Regio
-			return "R" + normalizedName;
-		if ("D".equals(normalizedType)) // Schnellzug
-			return "R" + normalizedName;
-		if ("E".equals(normalizedType)) // Eilzug
-			return "R" + normalizedName;
-		if ("RE".equals(normalizedType)) // RegioExpress
-			return "R" + normalizedName;
-		if ("IR".equals(normalizedType)) // InterRegio
-			return "R" + normalizedName;
-		if ("IRE".equals(normalizedType)) // InterRegioExpress
-			return "R" + normalizedName;
-		if ("ATZ".equals(normalizedType)) // Autotunnelzug
-			return "R" + normalizedName;
-		if ("EXT".equals(normalizedType)) // Extrazug
-			return "R" + normalizedName;
-		if ("CAT".equals(normalizedType)) // City Airport Train
-			return "R" + normalizedName;
-
-		if ("S".equals(normalizedType)) // S-Bahn
-			return "S" + normalizedName;
-		if (P_LINE_S.matcher(normalizedType).matches()) // diverse S-Bahnen
-			return "S" + normalizedType;
-		if (P_LINE_SN.matcher(normalizedType).matches()) // Nacht-S-Bahn
-			return "S" + normalizedType;
-		if ("SPR".equals(normalizedType)) // Sprinter, Niederlande
-			return "S" + normalizedName;
-
-		if ("Met".equals(normalizedType)) // Metro
-			return "U" + normalizedName;
-		if ("M".equals(normalizedType)) // Metro
-			return "U" + normalizedName;
-		if ("Métro".equals(normalizedType))
-			return "U" + normalizedName;
-
-		if ("Tram".equals(normalizedType)) // Tram
-			return "T" + normalizedName;
-		if ("TRAM".equals(normalizedType)) // Tram
-			return "T" + normalizedName;
-		if ("T".equals(normalizedType)) // Tram
-			return "T" + normalizedName;
-		if ("Tramway".equals(normalizedType))
-			return "T" + normalizedName;
-
-		if ("BUS".equals(normalizedType)) // Bus
-			return "B" + normalizedName;
-		if ("Bus".equals(normalizedType)) // Niederflurbus
-			return "B" + normalizedName;
-		if ("NFB".equals(normalizedType)) // Niederflur-Bus
-			return "B" + normalizedName;
-		if ("N".equals(normalizedType)) // Nachtbus
-			return "B" + normalizedName;
-		if ("Tro".equals(normalizedType)) // Trolleybus
-			return "B" + normalizedName;
-		if ("Taxi".equals(normalizedType)) // Taxi
-			return "B" + normalizedName;
-		if ("TX".equals(normalizedType)) // Taxi
-			return "B" + normalizedName;
-
-		if ("BAT".equals(normalizedType)) // Schiff
-			return "F" + normalizedName;
-
-		if ("GB".equals(normalizedType)) // Gondelbahn
-			return "C" + normalizedName;
-		if ("LB".equals(normalizedType)) // Luftseilbahn
-			return "C" + normalizedName;
-		if ("FUN".equals(normalizedType)) // Standseilbahn
-			return "C" + normalizedName;
-		if ("Fun".equals(normalizedType)) // Funiculaire
-			return "C" + normalizedName;
-
-		if ("L".equals(normalizedType))
-			return "?" + normalizedName;
-		if ("P".equals(normalizedType))
-			return "?" + normalizedName;
-		if ("CR".equals(normalizedType))
-			return "?" + normalizedName;
-		if ("TRN".equals(normalizedType))
-			return "?" + normalizedName;
-
-		throw new IllegalStateException("cannot normalize type '" + normalizedType + "' (" + type + ") name '" + normalizedName + "'");
 	}
 
 	private static final Pattern P_CONNECTION_ID = Pattern.compile("co=(C\\d+-\\d+)&");

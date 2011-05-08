@@ -606,15 +606,9 @@ public class OebbProvider extends AbstractHafasProvider
 	{
 		final String ucType = type.toUpperCase();
 
-		final char t = normalizeCommonTypes(ucType);
-		if (t != 0)
-			return t;
-
 		// if (ucType.equals("X")) // Interconnex, Connections only?
 		// return 'I';
 		if (ucType.equals("INT")) // Rußland, Connections only?
-			return 'I';
-		if (ucType.equals("D")) // Rußland
 			return 'I';
 		if (ucType.equals("RR")) // Finnland, Connections only?
 			return 'I';
@@ -624,29 +618,15 @@ public class OebbProvider extends AbstractHafasProvider
 			return 'I';
 		if (ucType.equals("SC")) // SuperCity, Tschechien
 			return 'I';
-		if (ucType.equals("EST")) // Eurostar Frankreich
-			return 'I';
-		if (ucType.equals("ALS")) // Spanien
-			return 'I';
-		if (ucType.equals("ARC")) // Spanien
-			return 'I';
 		if (ucType.equals("TLG")) // Spanien, Madrid
 			return 'I';
 		if (ucType.equals("HOT")) // Spanien, Nacht
 			return 'I';
-		if (ucType.equals("AVE")) // Alta Velocidad Española, Spanien
-			return 'I';
-		if (ucType.equals("NZ")) // Schweden, Nacht, via JSON API
-			return 'I';
 		if (ucType.equals("OZ")) // Schweden, Oeresundzug, Connections only?
-			return 'I';
-		if (ucType.equals("X2")) // Schweden, Connections only?
 			return 'I';
 		if (ucType.equals("X")) // Schweden, via JSON API
 			return 'I';
 		if (ucType.equals("LYN")) // Dänemark
-			return 'I';
-		if (ucType.equals("ES")) // Eurostar Italia
 			return 'I';
 		if (ucType.equals("UUU")) // Italien, Nacht, Connections only?
 			return 'I';
@@ -682,8 +662,6 @@ public class OebbProvider extends AbstractHafasProvider
 		if (ucType.equals("IP")) // Ozd, Ungarn
 			return 'R';
 		if (ucType.equals("ZR")) // Bratislava, Slovakai
-			return 'R';
-		if (ucType.equals("CAT")) // Stockholm-Arlanda, Arlanda Express
 			return 'R';
 		if (ucType.equals("N")) // Frankreich, Tours
 			return 'R';
@@ -724,8 +702,6 @@ public class OebbProvider extends AbstractHafasProvider
 		if (ucType.equals("OSB")) // Ortenau-S-Bahn, via JSON API
 			return 'R';
 		if (ucType.equals("NOB")) // Nord-Ostsee-Bahn, via JSON API
-			return 'R';
-		if (ucType.equals("MRB")) // Mitteldeutsche Regiobahn, via JSON API
 			return 'R';
 		if (ucType.equals("ARR")) // Ostfriesland, via JSON API
 			return 'R';
@@ -846,6 +822,10 @@ public class OebbProvider extends AbstractHafasProvider
 			return 'C';
 		if (ucType.equals("HBB")) // Innsbruck Hungerburgbahn, via JSON API
 			return 'C';
+
+		final char t = super.normalizeType(type);
+		if (t != 0)
+			return t;
 
 		if (ucType.equals("U70")) // U.K., Connections only?
 			return '?';

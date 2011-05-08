@@ -230,7 +230,6 @@ public class SbbProvider extends AbstractHafasProvider
 		}
 	}
 
-	private static final Pattern P_NORMALIZE_TYPE_SBAHN = Pattern.compile("SN?\\d*");
 	private static final Pattern P_NORMALIZE_TYPE_BUS = Pattern.compile("BUS\\w*");
 
 	@Override
@@ -238,55 +237,15 @@ public class SbbProvider extends AbstractHafasProvider
 	{
 		final String ucType = type.toUpperCase();
 
-		final char t = normalizeCommonTypes(ucType);
-		if (t != 0)
-			return t;
-
 		if (ucType.equals("X")) // InterConnex
-			return 'I';
-		if (ucType.equals("ES")) // Eurostar Italia
-			return 'I';
-		if (ucType.equals("EST")) // Eurostar Frankreich
-			return 'I';
-		if (ucType.equals("NZ")) // Nachtzug?
 			return 'I';
 		if (ucType.equals("IN")) // Oslo
 			return 'I';
-		if (ucType.equals("AVE")) // Alta Velocidad Española, Spanien
-			return 'I';
-		if (ucType.equals("TAL")) // Talgo, Spanien
-			return 'I';
-		if (ucType.equals("EM")) // EuroMed, Barcelona-Alicante, Spanien
-			return 'I';
-		if (ucType.equals("FYR")) // Fyra, Amsterdam-Schiphol-Rotterdam
-			return 'I';
 
-		if (ucType.equals("D"))
-			return 'R';
 		if (ucType.equals("E"))
-			return 'R';
-		if (ucType.equals("EXT"))
-			return 'R';
-		if (ucType.equals("ATZ"))
 			return 'R';
 		if (ucType.equals("RSB"))
 			return 'R';
-		if (ucType.equals("SN"))
-			return 'R';
-		if (ucType.equals("CAT")) // City Airport Train Wien
-			return 'R';
-		if (ucType.equals("ALS")) // Spanien
-			return 'R';
-		if (ucType.equals("ARC")) // Spanien
-			return 'R';
-		if (ucType.equals("ATR")) // Spanien
-			return 'R';
-
-		if (P_NORMALIZE_TYPE_SBAHN.matcher(ucType).matches())
-			return 'S';
-
-		if (ucType.equals("MET")) // Lausanne
-			return 'U';
 
 		if (ucType.equals("M")) // Lausanne
 			return 'T';
@@ -295,11 +254,7 @@ public class SbbProvider extends AbstractHafasProvider
 		if (ucType.equals("NTR"))
 			return 'T';
 
-		if (ucType.equals("TRO"))
-			return 'B';
 		if (ucType.equals("NTO")) // Niederflurtrolleybus zwischen Bern, Bahnhofsplatz und Bern, Wankdorf Bahnhof
-			return 'B';
-		if (ucType.equals("NFB"))
 			return 'B';
 		if (ucType.equals("NBU"))
 			return 'B';
@@ -318,26 +273,20 @@ public class SbbProvider extends AbstractHafasProvider
 		if (P_NORMALIZE_TYPE_BUS.matcher(ucType).matches())
 			return 'B';
 
-		if (ucType.equals("BAT"))
-			return 'F';
 		if (ucType.equals("BAV"))
 			return 'F';
 		if (ucType.equals("FAE"))
 			return 'F';
-		if (ucType.equals("KAT")) // z.B. Friedrichshafen <-> Konstanz
-			return 'F';
 
-		if (ucType.equals("GB")) // Gondelbahn
-			return 'C';
 		if (ucType.equals("SL")) // Sessel-Lift
-			return 'C';
-		if (ucType.equals("LB"))
-			return 'C';
-		if (ucType.equals("FUN")) // Standseilbahn
 			return 'C';
 
 		if (ucType.equals("P"))
 			return '?';
+
+		final char t = super.normalizeType(type);
+		if (t != 0)
+			return t;
 
 		return 0;
 	}

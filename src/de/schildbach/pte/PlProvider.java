@@ -103,6 +103,10 @@ public class PlProvider extends AbstractHafasProvider
 	@Override
 	protected String normalizeLine(String line)
 	{
+		// replace badly encoded character (stations 8530643 and 8530644)
+		if (line.equals("F\u0084hre"))
+			line = "Fähre";
+
 		final Matcher mRussia = P_NORMALIZE_LINE_RUSSIA.matcher(line);
 		if (mRussia.matches())
 			return 'R' + mRussia.group(1);
@@ -122,44 +126,22 @@ public class PlProvider extends AbstractHafasProvider
 			return 'I';
 		if ("X".equals(ucType)) // Schweden
 			return 'I';
-		if ("NZ".equals(ucType)) // Schweden, Nacht
-			return 'I';
 		if ("LYN".equals(ucType)) // Dänemark
 			return 'I';
 		if ("HOT".equals(ucType)) // Spanien, Nacht
 			return 'I';
-		if ("AVE".equals(ucType)) // Alta Velocidad Española, Spanien
-			return 'I';
 		if ("TLG".equals(ucType)) // Spanien, Madrid
-			return 'I';
-		if ("ALS".equals(ucType)) // Spanien
-			return 'I';
-		if ("ARC".equals(ucType)) // Spanien
-			return 'I';
-		if ("EM".equals(ucType)) // EuroMed, Barcelona-Alicante, Spanien
-			return 'I';
-		if ("ES".equals(ucType)) // Eurostar Italia
 			return 'I';
 		if ("SC".equals(ucType)) // SuperCity, Tschechien
 			return 'I';
-		if ("EST".equals(ucType)) // Eurostar Frankreich
-			return 'I';
-		if ("FYR".equals(ucType)) // Fyra, Amsterdam-Schiphol-Rotterdam
-			return 'I';
 
-		if ("D".equals(ucType))
-			return 'R';
 		if ("KM".equals(ucType)) // Koleje Mazowieckie
-			return 'R';
-		if ("KD".equals(ucType)) // Koleje Dolnoslaskie
 			return 'R';
 		if ("AR".equals(ucType)) // Arriva Polaczen
 			return 'R';
 		if ("NEB".equals(ucType)) // Niederbarnimer Eisenbahn
 			return 'R';
 		if ("NWB".equals(ucType)) // NordWestBahn
-			return 'R';
-		if ("MRB".equals(ucType)) // Mitteldeutsche Regiobahn
 			return 'R';
 		if ("HZL".equals(ucType)) // Hohenzollerische Landesbahn
 			return 'R';
@@ -265,13 +247,9 @@ public class PlProvider extends AbstractHafasProvider
 			return 'R';
 		if ("BE".equals(ucType)) // Grensland-Express
 			return 'R';
-		if ("CAT".equals(ucType)) // City Airport Train
-			return 'R';
 		if ("LEO".equals(ucType)) // Chiemgauer Lokalbahn
 			return 'R';
 		if ("MSB".equals(ucType)) // Mainschleifenbahn
-			return 'R';
-		if ("ATR".equals(ucType)) // Spanien
 			return 'R';
 		if ("N".equals(ucType)) // St. Pierre des Corps - Tours
 			return 'R';
@@ -297,7 +275,7 @@ public class PlProvider extends AbstractHafasProvider
 		if ("BUSMKK".equals(ucType)) // Main-Kinz-Kreis
 			return 'B';
 
-		final char t = normalizeCommonTypes(ucType);
+		final char t = super.normalizeType(type);
 		if (t != 0)
 			return t;
 

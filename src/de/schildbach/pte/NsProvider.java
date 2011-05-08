@@ -199,12 +199,6 @@ public class NsProvider extends AbstractHafasProvider
 	{
 		final String ucType = type.toUpperCase();
 
-		final char t = normalizeCommonTypes(ucType);
-		if (t != 0)
-			return t;
-
-		if (ucType.equals("EST")) // Eurostar Frankreich
-			return 'I';
 		if (ucType.equals("INT")) // Zürich-Brüssel
 			return 'I';
 
@@ -221,6 +215,10 @@ public class NsProvider extends AbstractHafasProvider
 
 		if (ucType.equals("MÉT"))
 			return 'U';
+
+		final char t = super.normalizeType(type);
+		if (t != 0)
+			return t;
 
 		return 0;
 	}

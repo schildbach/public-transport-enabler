@@ -139,21 +139,6 @@ public class VbbProvider extends AbstractHafasProvider
 		throw new IllegalStateException("cannot normalize line " + line);
 	}
 
-	@Override
-	protected char normalizeType(final String type)
-	{
-		final String ucType = type.toUpperCase();
-
-		if ("D".equals(ucType)) // DB Regio AG, e.g. Berlin - Prag
-			return 'I';
-
-		final char t = normalizeCommonTypes(ucType);
-		if (t != 0)
-			return t;
-
-		return 0;
-	}
-
 	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder();

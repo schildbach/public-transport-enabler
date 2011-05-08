@@ -260,13 +260,9 @@ public class VgsProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected char normalizeType(String type)
+	protected char normalizeType(final String type)
 	{
 		final String ucType = type.toUpperCase();
-
-		final char t = normalizeCommonTypes(ucType);
-		if (t != 0)
-			return t;
 
 		if (ucType.equals("INT")) // Zürich-Brüssel
 			return 'I';
@@ -283,6 +279,10 @@ public class VgsProvider extends AbstractHafasProvider
 
 		if (ucType.equals("T84")) // U.K.
 			return '?';
+
+		final char t = super.normalizeType(type);
+		if (t != 0)
+			return t;
 
 		return 0;
 	}

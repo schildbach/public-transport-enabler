@@ -127,8 +127,6 @@ public class ZvvProvider extends AbstractHafasProvider
 		throw new IllegalStateException("cannot normalize line " + line);
 	}
 
-	private static final Pattern P_NORMALIZE_LINE_S = Pattern.compile("SN?\\d+");
-
 	@Override
 	protected char normalizeType(final String type)
 	{
@@ -137,16 +135,7 @@ public class ZvvProvider extends AbstractHafasProvider
 		// E-Bus: Bus, Tram oder Zug?
 		// TX: Ruftaxi?
 
-		if ("D".equals(ucType))
-			return 'R';
-		if ("EXT".equals(ucType))
-			return 'R';
-		if ("ATZ".equals(ucType)) // Autotunnelzug
-			return 'R';
-
 		if ("S-BAHN".equals(ucType))
-			return 'S';
-		if (P_NORMALIZE_LINE_S.matcher(type).matches())
 			return 'S';
 
 		if ("T".equals(ucType))
@@ -158,8 +147,6 @@ public class ZvvProvider extends AbstractHafasProvider
 
 		if ("BUS-NF".equals(ucType)) // Niederflur
 			return 'B';
-		if ("TRO".equals(ucType))
-			return 'B';
 
 		if ("D-SCHIFF".equals(ucType))
 			return 'F';
@@ -170,19 +157,13 @@ public class ZvvProvider extends AbstractHafasProvider
 			return 'C';
 		if ("SEILBAHN".equals(ucType))
 			return 'C';
-		if ("FUN".equals(ucType)) // Standseilbahn
-			return 'C';
-		if ("GB".equals(ucType)) // Gondelbahn
-			return 'C';
-		if ("LB".equals(ucType)) // Luftseilbahn
-			return 'C';
 		if ("SL".equals(ucType)) // Sessel-Lift
 			return 'C';
 
 		if ("UNB".equals(ucType))
 			return '?';
 
-		final char t = normalizeCommonTypes(ucType);
+		final char t = super.normalizeType(type);
 		if (t != 0)
 			return t;
 

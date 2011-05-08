@@ -140,9 +140,6 @@ public class DsbProvider extends AbstractHafasProvider
 		if ("S-TOG".equals(ucType))
 			return 'S';
 
-		if ("MET".equals(ucType))
-			return 'U';
-
 		if ("BYBUS".equals(ucType))
 			return 'B';
 		if ("X-BUS".equals(ucType))
@@ -160,7 +157,7 @@ public class DsbProvider extends AbstractHafasProvider
 		if ("FÆRGE".equals(ucType))
 			return 'F';
 
-		final char t = normalizeCommonTypes(ucType);
+		final char t = super.normalizeType(type);
 		if (t != 0)
 			return t;
 

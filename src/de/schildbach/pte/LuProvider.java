@@ -107,7 +107,7 @@ public class LuProvider extends AbstractHafasProvider
 		if ("CRE".equals(ucType))
 			return 'R';
 
-		final char t = normalizeCommonTypes(ucType);
+		final char t = super.normalizeType(type);
 		if (t != 0)
 			return t;
 

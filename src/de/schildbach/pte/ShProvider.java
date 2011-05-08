@@ -114,7 +114,7 @@ public class ShProvider extends AbstractHafasProvider
 		if ("NBE".equals(ucType)) // Nordbahn Eisenbahngesellschaft
 			return 'R';
 
-		final char t = normalizeCommonTypes(ucType);
+		final char t = super.normalizeType(type);
 		if (t != 0)
 			return t;
 
