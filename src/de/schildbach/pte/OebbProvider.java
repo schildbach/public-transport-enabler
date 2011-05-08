@@ -841,8 +841,6 @@ public class OebbProvider extends AbstractHafasProvider
 			return 'F';
 		if (ucType.equals("F")) // Fähre
 			return 'F';
-		if (ucType.equals("FÄHRE")) // via JSON API
-			return 'F';
 
 		if (ucType.equals("LIF"))
 			return 'C';
