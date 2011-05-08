@@ -159,10 +159,6 @@ public class PlProvider extends AbstractHafasProvider
 			return 'R';
 		if ("NWB".equals(ucType)) // NordWestBahn
 			return 'R';
-		if ("OE".equals(ucType)) // Ostdeutsche Eisenbahn
-			return 'R';
-		if ("MR".equals(ucType)) // Märkische Regionalbahn
-			return 'R';
 		if ("MRB".equals(ucType)) // Mitteldeutsche Regiobahn
 			return 'R';
 		if ("HZL".equals(ucType)) // Hohenzollerische Landesbahn

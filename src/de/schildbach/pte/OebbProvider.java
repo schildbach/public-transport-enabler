@@ -749,11 +749,7 @@ public class OebbProvider extends AbstractHafasProvider
 			return 'R';
 		if (ucType.equals("RBG")) // Regental Bahnbetriebs GmbH, via JSON API
 			return 'R';
-		if (ucType.equals("OE")) // Ostdeutsche Eisenbahn, via JSON API
-			return 'R';
 		if (ucType.equals("CB")) // City Bahn Chemnitz, via JSON API
-			return 'R';
-		if (ucType.equals("MR")) // Märkische Regionalbahn, via JSON API
 			return 'R';
 		if (ucType.equals("OLA")) // Ostseeland Verkehr, via JSON API
 			return 'R';
