@@ -59,7 +59,7 @@ import de.schildbach.pte.util.XmlPullUtil;
 public abstract class AbstractHafasProvider implements NetworkProvider
 {
 	private static final String DEFAULT_ENCODING = "ISO-8859-1";
-	private static final String prod = "hafas";
+	private static final String PROD = "hafas";
 
 	private final String apiUri;
 	private final int numProductBits;
@@ -104,6 +104,11 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		return (1 << numProductBits) - 1;
 	}
 
+	protected char intToProduct(final int value)
+	{
+		return 0;
+	}
+
 	protected String[] splitNameAndPlace(final String name)
 	{
 		return new String[] { null, name };
@@ -112,7 +117,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 	private final String wrap(final String request)
 	{
 		return "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>" //
-				+ "<ReqC ver=\"1.1\" prod=\"" + prod + "\" lang=\"DE\"" + (accessId != null ? " accessId=\"" + accessId + "\"" : "") + ">" //
+				+ "<ReqC ver=\"1.1\" prod=\"" + PROD + "\" lang=\"DE\"" + (accessId != null ? " accessId=\"" + accessId + "\"" : "") + ">" //
 				+ request //
 				+ "</ReqC>";
 	}
@@ -400,9 +405,9 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			+ "(?:newpl\\s*=\"([^\"]*)\"\\s*)?" //
 			+ "(?:platform\\s*=\"([^\"]*)\"\\s*)?" // position
 			+ "targetLoc\\s*=\"([^\"]*)\"\\s*" // destination
-			+ "(?:hafasname\\s*=\"[^\"]*\"\\s*)?" // (???)
+			+ "(?:hafasname\\s*=\"([^\"]*)\"\\s*)?" // line
 			+ "prod\\s*=\"([^\"]*)\"\\s*" // line
-			+ "(?:class\\s*=\"[^\"]*\"\\s*)?" // (???)
+			+ "(?:class\\s*=\"([^\"]*)\"\\s*)?" // class
 			+ "(?:dir\\s*=\"[^\"]*\"\\s*)?" // (destination)
 			+ "(?:capacity\\s*=\"[^\"]*\"\\s*)?" // (???)
 			+ "(?:depStation\\s*=\"(.*?)\"\\s*)?" //
@@ -446,7 +451,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			final Matcher mFine = P_XML_QUERY_DEPARTURES_FINE.matcher(mCoarse.group(1));
 			if (mFine.matches())
 			{
-				if (mFine.group(8) == null)
+				if (mFine.group(10) == null)
 				{
 					final Calendar plannedTime = new GregorianCalendar(timeZone());
 					plannedTime.clear();
@@ -475,13 +480,22 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 					final String destination = ParserUtils.resolveEntities(mFine.group(6)).trim();
 
-					final String line = normalizeLine(ParserUtils.resolveEntities(mFine.group(7)));
+					final String hafasName = ParserUtils.resolveEntities(mFine.group(7));
+
+					String prod = ParserUtils.resolveEntities(mFine.group(8));
+					final Matcher m = P_NORMALIZE_LINE.matcher(prod);
+					if (m.matches())
+						prod = m.group(1) + m.group(2);
+
+					final char product = mFine.group(9) != null ? intToProduct(Integer.parseInt(mFine.group(9))) : 0;
+
+					final String line = product != 0 ? product + prod : normalizeLine(prod);
 
 					final String message;
-					if (mFine.group(9) != null)
+					if (mFine.group(11) != null)
 					{
-						final String m = ParserUtils.resolveEntities(mFine.group(9)).trim();
-						message = m.length() > 0 ? m : null;
+						final String msg = ParserUtils.resolveEntities(mFine.group(11)).trim();
+						message = msg.length() > 0 ? msg : null;
 					}
 					else
 					{
@@ -932,13 +946,6 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		if (location.type == LocationType.ANY)
 			return 255;
 		throw new IllegalArgumentException(location.type.toString());
-	}
-
-	private final static Pattern P_WHITESPACE = Pattern.compile("\\s+");
-
-	private final String normalizeWhitespace(final String str)
-	{
-		return P_WHITESPACE.matcher(str).replaceAll("");
 	}
 
 	public GetConnectionDetailsResult getConnectionDetails(String connectionUri) throws IOException

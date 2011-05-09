@@ -40,6 +40,9 @@ public enum NetworkId
 	// Denmark
 	DSB,
 
+	// Sweden
+	SE,
+
 	// Luxembourg
 	LU,
 
