@@ -271,7 +271,7 @@ public final class ParserUtils
 		if (!m.matches())
 			throw new RuntimeException("cannot parse: '" + str + "'");
 
-		calendar.set(Calendar.YEAR, Integer.parseInt(m.group(3)));
+		calendar.set(Calendar.YEAR, Integer.parseInt(m.group(1)));
 		calendar.set(Calendar.MONTH, Integer.parseInt(m.group(2)) - 1);
 		calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(m.group(3)));
 	}
