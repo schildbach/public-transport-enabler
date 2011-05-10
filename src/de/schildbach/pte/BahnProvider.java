@@ -594,6 +594,8 @@ public final class BahnProvider extends AbstractHafasProvider
 				return "IFYR" + number;
 			if (type.equals("MT")) // Müller Touren, Schnee Express
 				return "IMT" + number;
+			if (type.equals("HKX")) // Hamburg-Köln-Express
+				return "IHKX" + number;
 
 			if (type.equals("R"))
 				return "R" + number;
@@ -801,6 +803,12 @@ public final class BahnProvider extends AbstractHafasProvider
 				return "UU" + number;
 
 			if (type.equals("STR"))
+				return "T" + number;
+			if (type.equals("STRM"))
+				return "T" + number;
+			if (type.equals("STRE"))
+				return "T" + number;
+			if (type.equals("STBU"))
 				return "T" + number;
 			if (type.equals("STRNE"))
 				return "T" + number;
