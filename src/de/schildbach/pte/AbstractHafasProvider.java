@@ -630,8 +630,12 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 				throw new IllegalStateException("error " + code + " " + XmlPullUtil.attr(pp, "text"));
 			}
 
-			XmlPullUtil.require(pp, "ConResCtxt");
-			final String context = XmlPullUtil.text(pp);
+			final String context;
+			if (XmlPullUtil.test(pp, "ConResCtxt"))
+				context = XmlPullUtil.text(pp);
+			else
+				context = null;
+
 			XmlPullUtil.enter(pp, "ConnectionList");
 
 			final List<Connection> connections = new ArrayList<Connection>();
@@ -1253,8 +1257,6 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		if ("TRA".equals(ucType))
 			return 'T';
 		// if ("T".equals(normalizedType)) // Tram
-		// return "T" + normalizedName;
-		// if ("Tramway".equals(normalizedType))
 		// return "T" + normalizedName;
 
 		// Bus

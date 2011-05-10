@@ -223,6 +223,9 @@ public class SncbProvider extends AbstractHafasProvider
 		if (ucType.equals("MÉT"))
 			return 'U';
 
+		if (ucType.equals("TRAMWAY"))
+			return 'T';
+
 		final char t = super.normalizeType(type);
 		if (t != 0)
 			return t;

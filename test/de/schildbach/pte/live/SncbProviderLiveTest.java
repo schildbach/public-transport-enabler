@@ -83,8 +83,13 @@ public class SncbProviderLiveTest
 	{
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 100024), null, new Location(
 				LocationType.STATION, 100066), new Date(), true, null, WalkSpeed.FAST);
-
 		System.out.println(result.status + "  " + result.connections);
+
+		if (result.context != null)
+		{
+			final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
+			System.out.println(moreResult.status + " " + moreResult.connections);
+		}
 	}
 
 	@Test
@@ -92,8 +97,13 @@ public class SncbProviderLiveTest
 	{
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 100024), null, new Location(
 				LocationType.STATION, 103624), new Date(), true, null, WalkSpeed.FAST);
-
 		System.out.println(result.status + "  " + result.connections);
+
+		if (result.context != null)
+		{
+			final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
+			System.out.println(moreResult.status + " " + moreResult.connections);
+		}
 	}
 
 	@Test
@@ -102,8 +112,12 @@ public class SncbProviderLiveTest
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, null,
 				"Bruxelles - Haren, Rue Paul Janson 9"), null, new Location(LocationType.STATION, 8500010, null, "Basel"), new Date(), true,
 				ALL_PRODUCTS, WalkSpeed.NORMAL);
-		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
-		System.out.println(moreResult);
+		System.out.println(result.status + "  " + result.connections);
+
+		if (result.context != null)
+		{
+			final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
+			System.out.println(moreResult.status + " " + moreResult.connections);
+		}
 	}
 }
