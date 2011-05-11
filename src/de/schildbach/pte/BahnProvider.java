@@ -681,8 +681,6 @@ public final class BahnProvider extends AbstractHafasProvider
 				return "RVIA" + number;
 			if (type.equals("CAN")) // cantus Verkehrsgesellschaft
 				return "RCAN" + number;
-			if (type.equals("PEG")) // Prignitzer Eisenbahn
-				return "RPEG" + number;
 			if (type.equals("BLB")) // Berchtesgadener Land Bahn
 				return "RBLB" + number;
 			if (type.equals("PRE")) // Pressnitztalbahn
