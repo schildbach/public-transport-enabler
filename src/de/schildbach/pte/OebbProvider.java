@@ -606,8 +606,6 @@ public class OebbProvider extends AbstractHafasProvider
 	{
 		final String ucType = type.toUpperCase();
 
-		// if (ucType.equals("X")) // Interconnex, Connections only?
-		// return 'I';
 		if (ucType.equals("INT")) // Rußland, Connections only?
 			return 'I';
 		if (ucType.equals("RR")) // Finnland, Connections only?
@@ -624,8 +622,6 @@ public class OebbProvider extends AbstractHafasProvider
 			return 'I';
 		if (ucType.equals("OZ")) // Schweden, Oeresundzug, Connections only?
 			return 'I';
-		if (ucType.equals("X")) // Schweden, via JSON API
-			return 'I';
 		if (ucType.equals("LYN")) // Dänemark
 			return 'I';
 		if (ucType.equals("UUU")) // Italien, Nacht, Connections only?
@@ -637,14 +633,6 @@ public class OebbProvider extends AbstractHafasProvider
 			return 'R';
 		if (ucType.equals("DPN")) // Connections only? TODO nicht evtl. doch eher ne S-Bahn?
 			return 'R';
-		if (ucType.equals("BRB")) // ABELLIO Rail, via JSON API
-			return 'R';
-		if (ucType.equals("ABR")) // Bayerische Regiobahn, via JSON API
-			return 'R';
-		if (ucType.equals("RTB")) // Rurtalbahn, via JSON API
-			return 'R';
-		if (ucType.equals("VIA"))
-			return 'R';
 		if (ucType.equals("PCC")) // Polen
 			return 'R';
 		if (ucType.equals("KM")) // Polen
@@ -652,10 +640,6 @@ public class OebbProvider extends AbstractHafasProvider
 		if (ucType.equals("SKM")) // Polen
 			return 'R';
 		if (ucType.equals("SKW")) // Polen
-			return 'R';
-		if (ucType.equals("EX")) // Polen
-			return 'R';
-		if (ucType.equals("NEB")) // Kostrzyn-Berlin, via JSON API
 			return 'R';
 		if (ucType.equals("E")) // Budapest, Ungarn
 			return 'R';
@@ -667,108 +651,18 @@ public class OebbProvider extends AbstractHafasProvider
 			return 'R';
 		if (ucType.equals("DPF")) // VX=Vogtland Express, Connections only?
 			return 'R';
-		if (ucType.equals("VBG")) // Vogtlandbahn, via JSON API
-			return 'R';
 		if (ucType.equals("SBE")) // Zittau-Seifhennersdorf, via JSON API
-			return 'R';
-		if (ucType.equals("UBB")) // Usedomer Bäderbahn, via JSON API
-			return 'R';
-		if (ucType.equals("HZL")) // Hohenzollerische Landesbahn, via JSON API
-			return 'R';
-		if (ucType.equals("ME")) // metronom Eisenbahngesellschaft, via JSON API
-			return 'R';
-		if (ucType.equals("MER")) // metronom regional, via JSON API
-			return 'R';
-		if (ucType.equals("PEG")) // Prignitzer Eisenbahn, via JSON API
-			return 'R';
-		if (ucType.equals("HLB")) // Hessische Landesbahn, via JSON API
-			return 'R';
-		if (ucType.equals("NWB")) // NordWestBahn, via JSON API
-			return 'R';
-		if (ucType.equals("VEN")) // Rhenus Veniro, via JSON API
-			return 'R';
-		if (ucType.equals("BOB")) // Bayerische Oberlandbahn, via JSON API
-			return 'R';
-		if (ucType.equals("SBB")) // Schweizerische Bundesbahnen, via JSON API
-			return 'R';
-		if (ucType.equals("ERB")) // eurobahn (Keolis Deutschland), via JSON API
-			return 'R';
-		if (ucType.equals("CAN")) // cantus Verkehrsgesellschaft, via JSON API
-			return 'R';
-		if (ucType.equals("ALX")) // Arriva-Länderbahn-Express, via JSON API
-			return 'R';
-		if (ucType.equals("VEC")) // vectus Verkehrsgesellschaft, via JSON API
-			return 'R';
-		if (ucType.equals("OSB")) // Ortenau-S-Bahn, via JSON API
-			return 'R';
-		if (ucType.equals("NOB")) // Nord-Ostsee-Bahn, via JSON API
-			return 'R';
-		if (ucType.equals("ARR")) // Ostfriesland, via JSON API
-			return 'R';
-		if (ucType.equals("SHB")) // Schleswig-Holstein-Bahn, via JSON API
-			return 'R';
-		if (ucType.equals("BLB")) // Berchtesgadener Land Bahn, via JSON API
-			return 'R';
-		if (ucType.equals("AKN")) // AKN Eisenbahn AG, via JSON API
-			return 'R';
-		if (ucType.equals("EVB")) // Eisenbahnen und Verkehrsbetriebe Elbe-Weser, via JSON API
-			return 'R';
-		if (ucType.equals("EB")) // Erfurter Bahn, via JSON API
-			return 'R';
-		if (ucType.equals("HTB")) // Hörseltalbahn, via JSON API
-			return 'R';
-		if (ucType.equals("NBE")) // nordbahn, via JSON API
-			return 'R';
-		if (ucType.equals("DAB")) // Daadetalbahn, via JSON API
-			return 'R';
-		if (ucType.equals("WEG")) // Württembergische Eisenbahn-Gesellschaft, via JSON API
-			return 'R';
-		if (ucType.equals("RBG")) // Regental Bahnbetriebs GmbH, via JSON API
-			return 'R';
-		if (ucType.equals("CB")) // City Bahn Chemnitz, via JSON API
-			return 'R';
-		if (ucType.equals("OLA")) // Ostseeland Verkehr, via JSON API
 			return 'R';
 		if (ucType.equals("VX")) // Vogtland Express, via JSON API
 			return 'R';
-		if (ucType.equals("STB")) // Süd-Thüringen-Bahn, via JSON API
-			return 'R';
 		if (ucType.equals("RNV")) // Rhein-Neckar-Verkehr GmbH, via JSON API
 			return 'R';
-		if (ucType.equals("MBB")) // Mecklenburgische Bäderbahn Molli, via JSON API
-			return 'R';
-		if (ucType.equals("HSB")) // Harzer Schmalspurbahnen, via JSON API
-			return 'R';
-		if (ucType.equals("VE")) // Lutherstadt Wittenberg, via JSON API
-			return 'R';
-		if (ucType.equals("PRE")) // Pressnitztalbahn, via JSON API
-			return 'R';
-		if (ucType.equals("SDG")) // Sächsische Dampfeisenbahngesellschaft, via JSON API
-			return 'R';
-		if (ucType.equals("SOE")) // Sächsisch-Oberlausitzer Eisenbahngesellschaft, via JSON API
-			return 'R';
-		if (ucType.equals("FEG")) // Freiberger Eisenbahngesellschaft, via JSON API
-			return 'R';
-		if (ucType.equals("NEG")) // Norddeutsche Eisenbahngesellschaft Niebüll, via JSON API
-			return 'R';
 		if (ucType.equals("P")) // Kasbachtalbahn, via JSON API
-			return 'R';
-		if (ucType.equals("SBS")) // Städtebahn Sachsen, via JSON API
-			return 'R';
-		if (ucType.equals("AG")) // Ingolstadt-Landshut, via JSON API
-			return 'R';
-		if (ucType.equals("TLX")) // Trilex (Vogtlandbahn), via JSON API
-			return 'R';
-		if (ucType.equals("BE")) // Grensland-Express, via JSON API
 			return 'R';
 
 		if (ucType.equals("RSB")) // Schnellbahn Wien
 			return 'S';
-		if (ucType.equals("BSB")) // Breisgau S-Bahn, via JSON API
-			return 'S';
 		if (ucType.equals("DPN")) // S3 Bad Reichenhall-Freilassing, via JSON API
-			return 'S';
-		if (ucType.equals("SWE")) // Südwestdeutsche Verkehrs-AG, Ortenau-S-Bahn, via JSON API
 			return 'S';
 		if (ucType.equals("RER")) // Réseau Express Régional, Frankreich
 			return 'S';
@@ -780,8 +674,6 @@ public class OebbProvider extends AbstractHafasProvider
 		if (ucType.equals("WLB")) // via JSON API
 			return 'T';
 
-		if (ucType.equals("RFB"))
-			return 'B';
 		if (ucType.equals("OBU")) // Connections only?
 			return 'B';
 		if (ucType.equals("ASTSV")) // via JSON API
@@ -789,22 +681,6 @@ public class OebbProvider extends AbstractHafasProvider
 		if (ucType.equals("ICB")) // ÖBB ICBus
 			return 'B';
 		if (ucType.equals("BSV")) // Deutschland, Connections only?
-			return 'B';
-		if (ucType.equals("LT")) // Linien-Taxi, Connections only?
-			return 'B';
-		if (ucType.equals("BUSS")) // via JSON API
-			return 'B';
-		if (ucType.equals("BUSSV")) // via JSON API
-			return 'B';
-		if (ucType.equals("BUSLEOBE")) // Rufbus, via JSON API
-			return 'B';
-		if (ucType.equals("BUSTN/TW")) // via JSON API
-			return 'B';
-		if (ucType.equals("BUSMKK")) // Main-Kinz-Kreis, via JSON API
-			return 'B';
-		if (ucType.equals("BUSG")) // via JSON API
-			return 'B';
-		if (ucType.equals("BUSNL")) // via JSON API
 			return 'B';
 		if (ucType.equals("O-B")) // Stadtbus, via JSON API
 			return 'B';

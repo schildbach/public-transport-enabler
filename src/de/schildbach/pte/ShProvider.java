@@ -97,23 +97,6 @@ public class ShProvider extends AbstractHafasProvider
 		if ("KB1".equals(ucType))
 			return 'B';
 
-		// from connections:
-
-		if ("NOB".equals(ucType)) // Nord-Ostsee-Bahn
-			return 'R';
-		if ("ME".equals(ucType)) // metronom
-			return 'R';
-		if ("MER".equals(ucType)) // metronom regional
-			return 'R';
-		if ("AKN".equals(ucType)) // AKN Eisenbahn AG
-			return 'R';
-		if ("SHB".equals(ucType)) // Schleswig-Holstein-Bahn
-			return 'R';
-		if ("NEG".equals(ucType)) // Norddeutsche Eisenbahngesellschaft Niebüll
-			return 'R';
-		if ("NBE".equals(ucType)) // Nordbahn Eisenbahngesellschaft
-			return 'R';
-
 		final char t = super.normalizeType(type);
 		if (t != 0)
 			return t;

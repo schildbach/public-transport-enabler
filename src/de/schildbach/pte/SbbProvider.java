@@ -230,15 +230,11 @@ public class SbbProvider extends AbstractHafasProvider
 		}
 	}
 
-	private static final Pattern P_NORMALIZE_TYPE_BUS = Pattern.compile("BUS\\w*");
-
 	@Override
 	protected char normalizeType(final String type)
 	{
 		final String ucType = type.toUpperCase();
 
-		if (ucType.equals("X")) // InterConnex
-			return 'I';
 		if (ucType.equals("IN")) // Oslo
 			return 'I';
 
@@ -266,11 +262,7 @@ public class SbbProvider extends AbstractHafasProvider
 			return 'B';
 		if (ucType.equals("TX"))
 			return 'B';
-		if (ucType.equals("TAXI"))
-			return 'B';
 		if (ucType.equals("BUXI"))
-			return 'B';
-		if (P_NORMALIZE_TYPE_BUS.matcher(ucType).matches())
 			return 'B';
 
 		if (ucType.equals("BAV"))

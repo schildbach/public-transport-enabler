@@ -267,8 +267,6 @@ public class VgsProvider extends AbstractHafasProvider
 		if (ucType.equals("INT")) // Zürich-Brüssel
 			return 'I';
 
-		if (ucType.equals("SBS"))
-			return 'S';
 		if (ucType.equals("E")) // Stadtbahn Karlsruhe: S4/S31/xxxxx
 			return 'S';
 

@@ -124,8 +124,6 @@ public class PlProvider extends AbstractHafasProvider
 
 		if ("TLK".equals(ucType)) // Tanie Linie Kolejowe, Polen
 			return 'I';
-		if ("X".equals(ucType)) // Schweden
-			return 'I';
 		if ("LYN".equals(ucType)) // Dänemark
 			return 'I';
 		if ("HOT".equals(ucType)) // Spanien, Nacht
@@ -135,117 +133,21 @@ public class PlProvider extends AbstractHafasProvider
 		if ("SC".equals(ucType)) // SuperCity, Tschechien
 			return 'I';
 
+		if ("REG".equals(ucType))
+			return 'R';
 		if ("KM".equals(ucType)) // Koleje Mazowieckie
 			return 'R';
 		if ("AR".equals(ucType)) // Arriva Polaczen
 			return 'R';
-		if ("NEB".equals(ucType)) // Niederbarnimer Eisenbahn
-			return 'R';
-		if ("NWB".equals(ucType)) // NordWestBahn
-			return 'R';
-		if ("HZL".equals(ucType)) // Hohenzollerische Landesbahn
-			return 'R';
-		if ("PEG".equals(ucType)) // Prignitzer Eisenbahn
-			return 'R';
-		if ("HLB".equals(ucType)) // Hessische Landesbahn
-			return 'R';
-		if ("VBG".equals(ucType)) // Vogtlandbahn
-			return 'R';
-		if ("CAN".equals(ucType)) // cantus Verkehrsgesellschaft
-			return 'R';
-		if ("TLX".equals(ucType)) // Trilex (Vogtlandbahn)
-			return 'R';
-		if ("SBB".equals(ucType)) // Schweizerische Bundesbahnen
-			return 'R';
-		if ("HSB".equals(ucType)) // Harzer Schmalspurbahnen
-			return 'R';
-		if ("OLA".equals(ucType)) // Ostseeland Verkehr
-			return 'R';
 		if ("ÖBA".equals(ucType)) // Öchsle-Bahn Betriebsgesellschaft
-			return 'R';
-		if ("BOB".equals(ucType)) // Bayerische Oberlandbahn
-			return 'R';
-		if ("VEC".equals(ucType)) // vectus Verkehrsgesellschaft
-			return 'R';
-		if ("OSB".equals(ucType)) // Ortenau-S-Bahn
-			return 'R';
-		if ("FEG".equals(ucType)) // Freiberger Eisenbahngesellschaft
-			return 'R';
-		if ("BRB".equals(ucType)) // ABELLIO Rail
-			return 'R';
-		if ("EB".equals(ucType)) // Erfurter Bahn
-			return 'R';
-		if ("SBS".equals(ucType)) // Städtebahn Sachsen
-			return 'R';
-		if ("WEG".equals(ucType)) // Württembergische Eisenbahn-Gesellschaft
-			return 'R';
-		if ("EX".equals(ucType)) // Polen
-			return 'R';
-		if ("ERB".equals(ucType)) // eurobahn (Keolis Deutschland)
-			return 'R';
-		if ("UBB".equals(ucType)) // Usedomer Bäderbahn
-			return 'R';
-		if ("RTB".equals(ucType)) // Rurtalbahn
-			return 'R';
-		if ("EVB".equals(ucType)) // Eisenbahnen und Verkehrsbetriebe Elbe-Weser
 			return 'R';
 		if ("RNV".equals(ucType)) // Rhein-Neckar-Verkehr GmbH
 			return 'R';
-		if ("VIA".equals(ucType))
-			return 'R';
-		if ("ME".equals(ucType)) // metronom Eisenbahngesellschaft
-			return 'R';
-		if ("MER".equals(ucType)) // metronom regional
-			return 'R';
-		if ("ALX".equals(ucType)) // Arriva-Länderbahn-Express
-			return 'R';
-		if ("STB".equals(ucType)) // Süd-Thüringen-Bahn
-			return 'R';
-		if ("CB".equals(ucType)) // City Bahn Chemnitz
-			return 'R';
-		if ("HTB".equals(ucType)) // Hörseltalbahn
-			return 'R';
-		if ("NOB".equals(ucType)) // Nord-Ostsee-Bahn
-			return 'R';
-		if ("ARR".equals(ucType)) // Ostfriesland
-			return 'R';
-		if ("ABR".equals(ucType)) // Bayerische Regiobahn
-			return 'R';
-		if ("AG".equals(ucType)) // Ingolstadt-Landshut
-			return 'R';
-		if ("PRE".equals(ucType)) // Pressnitztalbahn
-			return 'R';
 		if ("ZR".equals(ucType)) // Bratislava, Slovakai
-			return 'R';
-		if ("AKN".equals(ucType)) // AKN Eisenbahn AG
-			return 'R';
-		if ("SHB".equals(ucType)) // Schleswig-Holstein-Bahn
 			return 'R';
 		if ("P".equals(ucType)) // Kasbachtalbahn
 			return 'R';
-		if ("NBE".equals(ucType)) // nordbahn
-			return 'R';
-		if ("SDG".equals(ucType)) // Sächsische Dampfeisenbahngesellschaft
-			return 'R';
-		if ("MBB".equals(ucType)) // Mecklenburgische Bäderbahn Molli
-			return 'R';
-		if ("VE".equals(ucType)) // Lutherstadt Wittenberg
-			return 'R';
-		if ("SOE".equals(ucType)) // Sächsisch-Oberlausitzer Eisenbahngesellschaft
-			return 'R';
-		if ("BLB".equals(ucType)) // Berchtesgadener Land Bahn
-			return 'R';
-		if ("DAB".equals(ucType)) // Daadetalbahn
-			return 'R';
-		if ("VEN".equals(ucType)) // Rhenus Veniro
-			return 'R';
-		if ("NEG".equals(ucType)) // Norddeutsche Eisenbahngesellschaft Niebüll
-			return 'R';
-		if ("WTB".equals(ucType)) // Wutachtalbahn e.V.
-			return 'R';
 		if ("KTB".equals(ucType)) // Kandertalbahn
-			return 'R';
-		if ("BE".equals(ucType)) // Grensland-Express
 			return 'R';
 		if ("LEO".equals(ucType)) // Chiemgauer Lokalbahn
 			return 'R';
@@ -264,16 +166,9 @@ public class PlProvider extends AbstractHafasProvider
 			return 'S';
 		if ("RER".equals(ucType)) // Réseau Express Régional, Frankreich
 			return 'S';
-		if ("SWE".equals(ucType)) // Südwestdeutsche Verkehrs-AG, Ortenau-S-Bahn
-			return 'S';
-		if ("BSB".equals(ucType)) // Breisgau S-Bahn
-			return 'S';
 
 		if ("METRO".equals(ucType))
 			return 'U';
-
-		if ("BUSMKK".equals(ucType)) // Main-Kinz-Kreis
-			return 'B';
 
 		final char t = super.normalizeType(type);
 		if (t != 0)

@@ -254,20 +254,11 @@ public class NasaProvider extends AbstractHafasProvider
 			return 'R';
 		if (ucType.equals("RR")) // Polen
 			return 'R';
-		if (ucType.equals("NWB"))
-			return 'R';
 
 		if (ucType.equals("E")) // Stadtbahn Karlsruhe: S4/S31/xxxxx
 			return 'S';
 
-		if (ucType.equals("STB"))
-			return 'T';
-		if ("STRB".equals(ucType))
-			return 'T';
-
 		if (ucType.equals("BSV"))
-			return 'B';
-		if (ucType.equals("RFB")) // Rufbus
 			return 'B';
 		if (ucType.equals("RBS")) // Rufbus
 			return 'B';
@@ -275,9 +266,6 @@ public class NasaProvider extends AbstractHafasProvider
 		final char t = super.normalizeType(type);
 		if (t != 0)
 			return t;
-
-		if (ucType.equals("EB")) // Europa-Park, vermutlich "Erlebnisbahn"
-			return '?';
 
 		return 0;
 	}
