@@ -92,6 +92,7 @@ public final class BahnProvider extends AbstractHafasProvider
 			uri.append("&look_maxno=").append(maxStations != 0 ? maxStations : 200);
 			uri.append("&look_maxdist=").append(maxDistance != 0 ? maxDistance : 5000);
 			uri.append("&look_stopclass=").append(allProductsInt());
+			uri.append("&look_nv=get_stopweight|yes");
 			uri.append("&look_x=").append(location.lon);
 			uri.append("&look_y=").append(location.lat);
 
@@ -807,6 +808,8 @@ public final class BahnProvider extends AbstractHafasProvider
 			if (type.equals("STRE"))
 				return "T" + number;
 			if (type.equals("STBU"))
+				return "T" + number;
+			if (type.equals("STRN"))
 				return "T" + number;
 			if (type.equals("STRNE"))
 				return "T" + number;
