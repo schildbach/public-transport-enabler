@@ -431,6 +431,7 @@ public final class BvgProvider extends AbstractHafasProvider
 			+ ".*?", Pattern.DOTALL);
 	private static final Pattern P_CONNECTION_DETAILS = Pattern.compile("" //
 			+ "<td[^>]*headers=\"hafasDTL\\d+_Platform\"[^>]*>\n\\s*([^\\s\n]*?)\\s*\n</td>.*?" // departure platform
+			+ "(Fu&szlig;weg<br />.*?)?" // special walk between equivs
 			+ "(?:\nRichtung: ([^\n]*)\n.*?)?" // destination
 			+ "<td[^>]*headers=\"hafasDTL\\d+_Platform\"[^>]*>\n\\s*([^\\s\n]*?)\\s*\n</td>" // arrival platform
 	, Pattern.DOTALL);
@@ -487,7 +488,8 @@ public final class BvgProvider extends AbstractHafasProvider
 			{
 				if (++iCon != Integer.parseInt(mConCoarse.group(1)))
 					throw new IllegalStateException("missing connection: " + iCon);
-				final Matcher mConFine = P_CONNECTIONS_FINE.matcher(mConCoarse.group(2));
+				final String connectionSection = mConCoarse.group(2);
+				final Matcher mConFine = P_CONNECTIONS_FINE.matcher(connectionSection);
 				if (mConFine.matches())
 				{
 					final Calendar time = new GregorianCalendar(timeZone());
@@ -514,12 +516,18 @@ public final class BvgProvider extends AbstractHafasProvider
 						tracks.get(i).add(partElements);
 					}
 
-					final Matcher mDetails = P_CONNECTION_DETAILS.matcher(mConCoarse.group(2));
+					final Matcher mDetails = P_CONNECTION_DETAILS.matcher(connectionSection);
 
 					final List<Connection.Part> parts = new ArrayList<Connection.Part>(tracks.size());
 					for (int iTrack = 0; iTrack < tracks.size(); iTrack++)
 					{
-						mDetails.find();
+						if (!mDetails.find())
+							throw new IllegalStateException();
+
+						// FIXME ugly hack, just swallow footway to equiv station
+						if (mDetails.group(2) != null)
+							if (!mDetails.find())
+								throw new IllegalStateException();
 
 						final List<String[]> track = tracks.get(iTrack);
 						final String[] tDep = track.get(0);
@@ -583,20 +591,21 @@ public final class BvgProvider extends AbstractHafasProvider
 							final Date arrivalTime = time.getTime();
 							lastArrivalTime = arrivalTime;
 
-							final String arrivalPosition = !mDetails.group(3).equals("&nbsp;") ? ParserUtils.resolveEntities(mDetails.group(3))
+							final String arrivalPosition = !mDetails.group(4).equals("&nbsp;") ? ParserUtils.resolveEntities(mDetails.group(4))
 									: null;
 
 							final String lineStr = normalizeLine(ParserUtils.resolveEntities(tDep[3]));
 							final Line line = new Line(lineStr, lineColors(lineStr));
 
 							final Location destination;
-							if (mDetails.group(2) != null)
+							if (mDetails.group(3) != null)
 							{
-								final String[] destinationPlaceAndName = splitNameAndPlace(ParserUtils.resolveEntities(mDetails.group(2)));
+								final String[] destinationPlaceAndName = splitNameAndPlace(ParserUtils.resolveEntities(mDetails.group(3)));
 								destination = new Location(LocationType.ANY, 0, destinationPlaceAndName[0], destinationPlaceAndName[1]);
 							}
 							else
 							{
+								// should never happen?
 								destination = null;
 							}
 
@@ -943,8 +952,6 @@ public final class BvgProvider extends AbstractHafasProvider
 				return "F" + number;
 			if (type.equals("F"))
 				return "FF" + number;
-			if (type.equals("WT")) // Wassertaxi
-				return "FWT" + number;
 
 			throw new IllegalStateException("cannot normalize type '" + type + "' number '" + number + "' line '" + line + "'");
 		}
