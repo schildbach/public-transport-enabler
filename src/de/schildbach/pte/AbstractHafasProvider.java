@@ -1040,9 +1040,13 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 				final String name = ParserUtils.resolveEntities(stop.getString("name"));
 				final int lat = stop.getInt("y");
 				final int lon = stop.getInt("x");
+				final int stopWeight = stop.optInt("stopweight", -1);
 
-				final String[] nameAndPlace = splitNameAndPlace(name);
-				stations.add(new Location(LocationType.STATION, id, lat, lon, nameAndPlace[0], nameAndPlace[1]));
+				if (stopWeight != 0)
+				{
+					final String[] nameAndPlace = splitNameAndPlace(name);
+					stations.add(new Location(LocationType.STATION, id, lat, lon, nameAndPlace[0], nameAndPlace[1]));
+				}
 			}
 		}
 		catch (final JSONException x)
