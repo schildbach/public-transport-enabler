@@ -186,7 +186,7 @@ public class RmvProvider extends AbstractHafasProvider
 	private static final Pattern P_PRE_ADDRESS = Pattern.compile("(?:Geben Sie einen (Startort|Zielort) an.*?)?Bitte w&#228;hlen Sie aus der Liste",
 			Pattern.DOTALL);
 	private static final Pattern P_ADDRESSES = Pattern.compile(
-			"<span class=\"tplight\">.*?<a href=\"http://www.rmv.de/auskunft/bin/jp/query.exe/dox.*?\">\\s*(.*?)\\s*</a>.*?</span>", Pattern.DOTALL);
+			"<span class=\"tplight\">.*?<a href=\"/auskunft/bin/jp/query.exe/dox.*?\">\\s*(.*?)\\s*</a>.*?</span>", Pattern.DOTALL);
 	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern.compile(
 			"(mehrfach vorhanden oder identisch)|(keine geeigneten Haltestellen)|(keine Verbindung gefunden)|(derzeit nur Ausk&#252;nfte vom)",
 			Pattern.CASE_INSENSITIVE);
@@ -254,7 +254,7 @@ public class RmvProvider extends AbstractHafasProvider
 	, Pattern.DOTALL);
 	private static final Pattern P_CONNECTIONS_COARSE = Pattern.compile("<p class=\"con(?:L|D)\">(.+?)</p>", Pattern.DOTALL);
 	private static final Pattern P_CONNECTIONS_FINE = Pattern.compile(".*?" //
-			+ "<a href=\"(http://www.rmv.de/auskunft/bin/jp/query.exe/dox[^\"]*?)\">" // link
+			+ "<a href=\"(/auskunft/bin/jp/query.exe/dox[^\"]*?)\">" // link
 			+ "(\\d+:\\d+)-(\\d+:\\d+)</a>" // departureTime, arrivalTime
 			+ "(?:&nbsp;(.+?))?" // line
 	, Pattern.DOTALL);
@@ -287,7 +287,7 @@ public class RmvProvider extends AbstractHafasProvider
 				final Matcher mConFine = P_CONNECTIONS_FINE.matcher(mConCoarse.group(1));
 				if (mConFine.matches())
 				{
-					final String link = ParserUtils.resolveEntities(mConFine.group(1));
+					final String link = "http://www.rmv.de" + ParserUtils.resolveEntities(mConFine.group(1));
 					final Calendar departureTime = new GregorianCalendar(timeZone());
 					departureTime.setTimeInMillis(currentDate.getTimeInMillis());
 					ParserUtils.parseEuropeanTime(departureTime, mConFine.group(2));
@@ -330,7 +330,7 @@ public class RmvProvider extends AbstractHafasProvider
 	, Pattern.DOTALL);
 	private static final Pattern P_CONNECTION_DETAILS_COARSE = Pattern.compile("/b> -\n(.*?- <b>[^<]*)<", Pattern.DOTALL);
 	private static final Pattern P_CONNECTION_DETAILS_FINE = Pattern.compile("<br />\n" //
-			+ "(?:(.*?) nach (.*?)\n" // line, destination
+			+ "(?:(.*?) nach ([^\n]*)\n" // line, destination
 			+ "<br />\n" //
 			+ "ab (\\d{1,2}:\\d{2})\n" // plannedDepartureTime
 			+ "(?:<span class=\"red\">\nca\\.(\\d{1,2}:\\d{2})\n</span>\n)?" // predictedDepartureTime

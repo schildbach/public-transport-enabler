@@ -82,4 +82,12 @@ public class RmvProviderLiveTest
 			provider.getConnectionDetails(connection.link);
 		System.out.println(moreResult);
 	}
+	
+	@Test
+	public void shortConnectionByName() throws Exception
+	{
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, null, "Hanau Hauptbahnhof"), null,
+				new Location(LocationType.ANY, 0, null, "Frankfurt Hauptbahnhof"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+		System.out.println(result);
+	}
 }
