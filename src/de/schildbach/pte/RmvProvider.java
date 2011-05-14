@@ -20,22 +20,15 @@ package de.schildbach.pte;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.Departure;
-import de.schildbach.pte.dto.GetConnectionDetailsResult;
-import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
-import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryDeparturesResult.Status;
 import de.schildbach.pte.dto.StationDepartures;
@@ -54,7 +47,7 @@ public class RmvProvider extends AbstractHafasProvider
 
 	public RmvProvider()
 	{
-		super(null, 17, null);
+		super(API_BASE + "query.exe/dn", 17, null, "UTF-8", null);
 	}
 
 	public NetworkId id()
@@ -84,38 +77,34 @@ public class RmvProvider extends AbstractHafasProvider
 		return super.splitNameAndPlace(name);
 	}
 
-	private static final String NAME_URL = API_BASE + "stboard.exe/dox?input=";
-	private static final Pattern P_SINGLE_NAME = Pattern.compile(".*<input type=\"hidden\" name=\"input\" value=\"(.+?)#(\\d+)\" />.*",
-			Pattern.DOTALL);
-	private static final Pattern P_MULTI_NAME = Pattern.compile("<a href=\"/auskunft/bin/jp/stboard.exe/dox.*?input=(\\d+)&.*?\">\\s*(.*?)\\s*</a>",
-			Pattern.DOTALL);
+	private static final String AUTOCOMPLETE_URI = API_BASE + "ajax-getstop.exe/dn?getstop=1&REQ0JourneyStopsS0A=255&S=%s?&js=true&";
+	private static final String ENCODING = "ISO-8859-1";
 
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
-		final CharSequence page = ParserUtils.scrape(NAME_URL + ParserUtils.urlEncode(constraint.toString()));
+		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING));
 
-		final List<Location> results = new ArrayList<Location>();
-
-		final Matcher mSingle = P_SINGLE_NAME.matcher(page);
-		if (mSingle.matches())
-		{
-			results.add(new Location(LocationType.STATION, Integer.parseInt(mSingle.group(2)), null, ParserUtils.resolveEntities(mSingle.group(1))));
-		}
-		else
-		{
-			final Matcher mMulti = P_MULTI_NAME.matcher(page);
-			while (mMulti.find())
-				results.add(new Location(LocationType.STATION, Integer.parseInt(mMulti.group(1)), null, ParserUtils.resolveEntities(mMulti.group(2))));
-		}
-
-		return results;
+		return jsonGetStops(uri);
 	}
 
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(API_BASE);
 
-		if (location.type == LocationType.STATION && location.hasId())
+		if (location.hasLocation())
+		{
+			uri.append("query.exe/dny");
+			uri.append("?performLocating=2&tpl=stop2json");
+			uri.append("&look_maxno=").append(maxStations != 0 ? maxStations : 200);
+			uri.append("&look_maxdist=").append(maxDistance != 0 ? maxDistance : 5000);
+			uri.append("&look_stopclass=").append(allProductsInt());
+			uri.append("&look_nv=get_stopweight|yes");
+			uri.append("&look_x=").append(location.lon);
+			uri.append("&look_y=").append(location.lat);
+
+			return jsonNearbyStations(uri.toString());
+		}
+		else if (location.type == LocationType.STATION && location.hasId())
 		{
 			uri.append("stboard.exe/dn?L=vs_rmv&near=Anzeigen");
 			uri.append("&distance=").append(maxDistance != 0 ? maxDistance / 1000 : 50);
@@ -126,351 +115,6 @@ public class RmvProvider extends AbstractHafasProvider
 		else
 		{
 			throw new IllegalArgumentException("cannot handle: " + location.toDebugString());
-		}
-	}
-
-	private static final Map<WalkSpeed, String> WALKSPEED_MAP = new HashMap<WalkSpeed, String>();
-	static
-	{
-		WALKSPEED_MAP.put(WalkSpeed.SLOW, "115");
-		WALKSPEED_MAP.put(WalkSpeed.NORMAL, "100");
-		WALKSPEED_MAP.put(WalkSpeed.FAST, "85");
-	}
-
-	private String connectionsQueryUri(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final String products, final WalkSpeed walkSpeed)
-	{
-		final Calendar c = new GregorianCalendar(timeZone());
-		c.setTime(date);
-
-		final StringBuilder uri = new StringBuilder();
-
-		uri.append(API_BASE).append("query.exe/dox");
-		uri.append("?REQ0HafasInitialSelection=0");
-		uri.append("&REQ0HafasSearchForw=").append(dep ? "1" : "0");
-		uri.append("&REQ0JourneyDate=").append(
-				String.format("%02d.%02d.%02d", c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.MONTH) + 1, c.get(Calendar.YEAR) - 2000));
-		uri.append("&REQ0JourneyTime=").append(String.format("%02d:%02d", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE)));
-		uri.append("&REQ0JourneyStopsS0ID=").append(ParserUtils.urlEncode(locationId(from)));
-		if (via != null)
-			uri.append("&REQ0JourneyStops1.0ID=").append(ParserUtils.urlEncode(locationId(via)));
-		uri.append("&REQ0JourneyStopsZ0ID=").append(ParserUtils.urlEncode(locationId(to)));
-		uri.append("&REQ0JourneyDep_Foot_speed=").append(WALKSPEED_MAP.get(walkSpeed));
-
-		for (final char p : products.toCharArray())
-		{
-			if (p == 'I')
-				uri.append("&REQ0JourneyProduct_prod_list_1=1000000000000000");
-			if (p == 'R')
-				uri.append("&REQ0JourneyProduct_prod_list_2=0110000000100000");
-			if (p == 'S')
-				uri.append("&REQ0JourneyProduct_prod_list_3=0001000000000000");
-			if (p == 'U')
-				uri.append("&REQ0JourneyProduct_prod_list_4=0000100000000000");
-			if (p == 'T')
-				uri.append("&REQ0JourneyProduct_prod_list_5=0000010000000000");
-			if (p == 'B')
-				uri.append("&REQ0JourneyProduct_prod_list_6=0000001100000000");
-			if (p == 'P')
-				uri.append("&REQ0JourneyProduct_prod_list_7=0000000001000000");
-			if (p == 'F')
-				uri.append("&REQ0JourneyProduct_prod_list_8=0000000010000000");
-			// FIXME if (p == 'C')
-		}
-
-		uri.append("&start=Suchen");
-
-		return uri.toString();
-	}
-
-	private static final Pattern P_PRE_ADDRESS = Pattern.compile("(?:Geben Sie einen (Startort|Zielort) an.*?)?Bitte w&#228;hlen Sie aus der Liste",
-			Pattern.DOTALL);
-	private static final Pattern P_ADDRESSES = Pattern.compile(
-			"<span class=\"tplight\">.*?<a href=\"/auskunft/bin/jp/query.exe/dox.*?\">\\s*(.*?)\\s*</a>.*?</span>", Pattern.DOTALL);
-	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern.compile(
-			"(mehrfach vorhanden oder identisch)|(keine geeigneten Haltestellen)|(keine Verbindung gefunden)|(derzeit nur Ausk&#252;nfte vom)",
-			Pattern.CASE_INSENSITIVE);
-
-	@Override
-	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final String products, final WalkSpeed walkSpeed) throws IOException
-	{
-		final String uri = connectionsQueryUri(from, via, to, date, dep, products, walkSpeed);
-		final CharSequence page = ParserUtils.scrape(uri);
-
-		final Matcher mError = P_CHECK_CONNECTIONS_ERROR.matcher(page);
-		if (mError.find())
-		{
-			if (mError.group(1) != null)
-				return QueryConnectionsResult.TOO_CLOSE;
-			if (mError.group(2) != null)
-				return QueryConnectionsResult.UNRESOLVABLE_ADDRESS;
-			if (mError.group(3) != null)
-				return QueryConnectionsResult.NO_CONNECTIONS;
-			if (mError.group(4) != null)
-				return QueryConnectionsResult.INVALID_DATE;
-		}
-
-		List<Location> fromAddresses = null;
-		List<Location> viaAddresses = null;
-		List<Location> toAddresses = null;
-
-		final Matcher mPreAddress = P_PRE_ADDRESS.matcher(page);
-		while (mPreAddress.find())
-		{
-			final String type = mPreAddress.group(1);
-
-			final Matcher mAddresses = P_ADDRESSES.matcher(page);
-			final List<Location> addresses = new ArrayList<Location>();
-			while (mAddresses.find())
-			{
-				final String address = ParserUtils.resolveEntities(mAddresses.group(1)).trim();
-				if (!addresses.contains(address))
-					addresses.add(new Location(LocationType.ANY, 0, null, address + "!"));
-			}
-
-			if (type == null)
-				viaAddresses = addresses;
-			else if (type.equals("Startort"))
-				fromAddresses = addresses;
-			else if (type.equals("Zielort"))
-				toAddresses = addresses;
-			else
-				throw new IllegalStateException(type);
-		}
-
-		if (fromAddresses != null || viaAddresses != null || toAddresses != null)
-			return new QueryConnectionsResult(fromAddresses, viaAddresses, toAddresses);
-		else
-			return queryConnections(uri, page);
-	}
-
-	private static final Pattern P_CONNECTIONS_HEAD = Pattern.compile(".*?" //
-			+ "Von: <b>(.*?)</b>.*?" // from
-			+ "Nach: <b>(.*?)</b>.*?" // to
-			+ "Datum: .., (\\d+\\..\\d+\\.\\d+).*?" // currentDate
-			+ "(?:<a href=\"(http://www.rmv.de/auskunft/bin/jp/query.exe/dox[^\"]*?REQ0HafasScrollDir=2)\".*?)?" // linkEarlier
-			+ "(?:<a href=\"(http://www.rmv.de/auskunft/bin/jp/query.exe/dox[^\"]*?REQ0HafasScrollDir=1)\".*?)?" // linkLater
-	, Pattern.DOTALL);
-	private static final Pattern P_CONNECTIONS_COARSE = Pattern.compile("<p class=\"con(?:L|D)\">(.+?)</p>", Pattern.DOTALL);
-	private static final Pattern P_CONNECTIONS_FINE = Pattern.compile(".*?" //
-			+ "<a href=\"(/auskunft/bin/jp/query.exe/dox[^\"]*?)\">" // link
-			+ "(\\d+:\\d+)-(\\d+:\\d+)</a>" // departureTime, arrivalTime
-			+ "(?:&nbsp;(.+?))?" // line
-	, Pattern.DOTALL);
-
-	@Override
-	public QueryConnectionsResult queryMoreConnections(final String uri) throws IOException
-	{
-		final CharSequence page = ParserUtils.scrape(uri);
-
-		return queryConnections(uri, page);
-	}
-
-	private QueryConnectionsResult queryConnections(final String uri, final CharSequence page) throws IOException
-	{
-		final Matcher mHead = P_CONNECTIONS_HEAD.matcher(page);
-		if (mHead.matches())
-		{
-			final Location from = new Location(LocationType.ANY, 0, null, ParserUtils.resolveEntities(mHead.group(1)));
-			final Location to = new Location(LocationType.ANY, 0, null, ParserUtils.resolveEntities(mHead.group(2)));
-			final Calendar currentDate = new GregorianCalendar(timeZone());
-			currentDate.clear();
-			ParserUtils.parseGermanDate(currentDate, mHead.group(3));
-			// final String linkEarlier = mHead.group(4) != null ? ParserUtils.resolveEntities(mHead.group(4)) : null;
-			final String linkLater = mHead.group(5) != null ? ParserUtils.resolveEntities(mHead.group(5)) : null;
-			final List<Connection> connections = new ArrayList<Connection>();
-
-			final Matcher mConCoarse = P_CONNECTIONS_COARSE.matcher(page);
-			while (mConCoarse.find())
-			{
-				final Matcher mConFine = P_CONNECTIONS_FINE.matcher(mConCoarse.group(1));
-				if (mConFine.matches())
-				{
-					final String link = "http://www.rmv.de" + ParserUtils.resolveEntities(mConFine.group(1));
-					final Calendar departureTime = new GregorianCalendar(timeZone());
-					departureTime.setTimeInMillis(currentDate.getTimeInMillis());
-					ParserUtils.parseEuropeanTime(departureTime, mConFine.group(2));
-					if (!connections.isEmpty())
-					{
-						final long diff = departureTime.getTimeInMillis() - connections.get(connections.size() - 1).departureTime.getTime();
-						if (diff > PARSER_DAY_ROLLOVER_THRESHOLD_MS)
-							departureTime.add(Calendar.DAY_OF_YEAR, -1);
-						else if (diff < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
-							departureTime.add(Calendar.DAY_OF_YEAR, 1);
-					}
-					final Calendar arrivalTime = new GregorianCalendar(timeZone());
-					arrivalTime.setTimeInMillis(currentDate.getTimeInMillis());
-					ParserUtils.parseEuropeanTime(arrivalTime, mConFine.group(3));
-					if (departureTime.after(arrivalTime))
-						arrivalTime.add(Calendar.DAY_OF_YEAR, 1);
-					final Connection connection = new Connection(extractConnectionId(link), link, departureTime.getTime(), arrivalTime.getTime(),
-							from, to, null, null);
-					connections.add(connection);
-				}
-				else
-				{
-					throw new IllegalArgumentException("cannot parse '" + mConCoarse.group(1) + "' on " + uri);
-				}
-			}
-
-			return new QueryConnectionsResult(uri, from, null, to, linkLater, connections);
-		}
-		else
-		{
-			throw new IOException(page.toString());
-		}
-	}
-
-	private static final Pattern P_CONNECTION_DETAILS_HEAD = Pattern.compile(".*?<p class=\"details\">\n" //
-			+ "- <b>(.*?)</b> -.*?" // firstDeparture
-			+ "Abfahrt: (\\d{2}\\.\\d{2}\\.\\d{2})<br />\n"// date
-			+ "(?:Ankunft: \\d{2}\\.\\d{2}\\.\\d{2}<br />\n)?" //
-			+ "Dauer: (\\d{1,2}:\\d{2})<br />.*?" // duration
-	, Pattern.DOTALL);
-	private static final Pattern P_CONNECTION_DETAILS_COARSE = Pattern.compile("/b> -\n(.*?- <b>[^<]*)<", Pattern.DOTALL);
-	private static final Pattern P_CONNECTION_DETAILS_FINE = Pattern.compile("<br />\n" //
-			+ "(?:(.*?) nach ([^\n]*)\n" // line, destination
-			+ "<br />\n" //
-			+ "ab (\\d{1,2}:\\d{2})\n" // plannedDepartureTime
-			+ "(?:<span class=\"red\">\nca\\.(\\d{1,2}:\\d{2})\n</span>\n)?" // predictedDepartureTime
-			+ "(?:Gl\\. (.+?)\\s*\n)?" // departurePosition
-			+ "<br />\n" //
-			+ "an (\\d{1,2}:\\d{2})\n" // plannedArrivalTime
-			+ "(?:<span class=\"red\">ca\\.(\\d{1,2}:\\d{2})</span>\n)?" // predictedArrivalTime
-			+ "(?:Gl\\. (.+?)\\s*\n)?" // arrivalPosition
-			+ "<br />\n|" //
-			+ "<a href=[^>]*>\n" //
-			+ "Fussweg\\s*\n" //
-			+ "</a>\n" //
-			+ "(\\d+) Min.<br />\n)" // footway
-			+ "- <b>(.*?)" // arrival
-	, Pattern.DOTALL);
-
-	@Override
-	public GetConnectionDetailsResult getConnectionDetails(final String uri) throws IOException
-	{
-		final CharSequence page = ParserUtils.scrape(uri);
-
-		final Matcher mHead = P_CONNECTION_DETAILS_HEAD.matcher(page);
-		if (mHead.matches())
-		{
-			final Location firstDeparture = new Location(LocationType.ANY, 0, null, ParserUtils.resolveEntities(mHead.group(1)));
-			final Calendar currentDate = new GregorianCalendar(timeZone());
-			currentDate.clear();
-			ParserUtils.parseGermanDate(currentDate, mHead.group(2));
-
-			final Calendar time = new GregorianCalendar(timeZone());
-			time.setTimeInMillis(currentDate.getTimeInMillis());
-
-			Date lastTime = time.getTime();
-
-			Date firstDepartureTime = null;
-			Date lastArrivalTime = null;
-			Location lastArrival = null;
-			Connection.Trip lastTrip = null;
-
-			final List<Connection.Part> parts = new ArrayList<Connection.Part>(4);
-
-			final Matcher mDetCoarse = P_CONNECTION_DETAILS_COARSE.matcher(page);
-			while (mDetCoarse.find())
-			{
-				final Matcher mDetFine = P_CONNECTION_DETAILS_FINE.matcher(mDetCoarse.group(1));
-				if (mDetFine.matches())
-				{
-					final Location departure = lastArrival != null ? lastArrival : firstDeparture;
-
-					final Location arrival = new Location(LocationType.ANY, 0, null, ParserUtils.resolveEntities(mDetFine.group(10)));
-					lastArrival = arrival;
-
-					final String min = mDetFine.group(9);
-					if (min == null)
-					{
-						final String lineStr = normalizeLine(ParserUtils.resolveEntities(mDetFine.group(1)));
-						final Line line = new Line(lineStr, lineColors(lineStr));
-
-						final Location destination = new Location(LocationType.ANY, 0, null, ParserUtils.resolveEntities(mDetFine.group(2)));
-
-						ParserUtils.parseEuropeanTime(time, mDetFine.group(3));
-						if (time.getTime().before(lastTime))
-							time.add(Calendar.DAY_OF_YEAR, 1);
-						final Date plannedDepartureTime = time.getTime();
-						lastTime.setTime(time.getTimeInMillis());
-
-						final Date predictedDepartureTime;
-						if (mDetFine.group(4) != null)
-						{
-							ParserUtils.parseEuropeanTime(time, mDetFine.group(4));
-							if (time.getTime().before(lastTime))
-								time.add(Calendar.DAY_OF_YEAR, 1);
-							predictedDepartureTime = time.getTime();
-						}
-						else
-						{
-							predictedDepartureTime = null;
-						}
-
-						final Date departureTime = predictedDepartureTime != null ? predictedDepartureTime : plannedDepartureTime;
-
-						final String departurePosition = ParserUtils.resolveEntities(mDetFine.group(5));
-
-						ParserUtils.parseEuropeanTime(time, mDetFine.group(6));
-						if (time.getTime().before(lastTime))
-							time.add(Calendar.DAY_OF_YEAR, 1);
-						final Date plannedArrivalTime = time.getTime();
-						lastTime.setTime(time.getTimeInMillis());
-
-						final Date predictedArrivalTime;
-						if (mDetFine.group(7) != null)
-						{
-							ParserUtils.parseEuropeanTime(time, mDetFine.group(7));
-							if (time.getTime().before(lastTime))
-								time.add(Calendar.DAY_OF_YEAR, 1);
-							predictedArrivalTime = time.getTime();
-						}
-						else
-						{
-							predictedArrivalTime = null;
-						}
-
-						final Date arrivalTime = predictedArrivalTime != null ? predictedArrivalTime : plannedArrivalTime;
-
-						final String arrivalPosition = ParserUtils.resolveEntities(mDetFine.group(8));
-
-						lastTrip = new Connection.Trip(line, destination, departureTime, departurePosition, departure, arrivalTime, arrivalPosition,
-								arrival, null, null);
-						parts.add(lastTrip);
-
-						if (firstDepartureTime == null)
-							firstDepartureTime = departureTime;
-
-						lastArrivalTime = arrivalTime;
-					}
-					else
-					{
-						if (parts.size() > 0 && parts.get(parts.size() - 1) instanceof Connection.Footway)
-						{
-							final Connection.Footway lastFootway = (Connection.Footway) parts.remove(parts.size() - 1);
-							parts.add(new Connection.Footway(lastFootway.min + Integer.parseInt(min), lastFootway.departure, arrival, null));
-						}
-						else
-						{
-							parts.add(new Connection.Footway(Integer.parseInt(min), departure, arrival, null));
-						}
-					}
-				}
-				else
-				{
-					throw new IllegalArgumentException("cannot parse '" + mDetCoarse.group(1) + "' on " + uri);
-				}
-			}
-
-			return new GetConnectionDetailsResult(currentDate.getTime(), new Connection(extractConnectionId(uri), uri, firstDepartureTime,
-					lastArrivalTime, firstDeparture, lastArrival, parts, null));
-		}
-		else
-		{
-			throw new IOException(page.toString());
 		}
 	}
 
@@ -507,10 +151,10 @@ public class RmvProvider extends AbstractHafasProvider
 			+ "Uhr, (\\d+\\.\\d+\\.\\d+).*?" //
 	, Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<p class=\"sq\">\n(.+?)</p>", Pattern.DOTALL);
-	static final Pattern P_DEPARTURES_FINE = Pattern.compile("" //
-			+ "<b>\\s*(.*?)\\s*</b>.*?" // line
+	private static final Pattern P_DEPARTURES_FINE = Pattern.compile("" //
+			+ "<b>([^<]*)</b>\n" // line
 			+ "&gt;&gt;\n" //
-			+ "(.*?)\n" // destination
+			+ "([^\n]*)\n" // destination
 			+ "<br />\n" //
 			+ "<b>(\\d{1,2}:\\d{2})</b>\n" // plannedTime
 			+ "(?:keine Prognose verf&#252;gbar\n)?" //
@@ -519,7 +163,7 @@ public class RmvProvider extends AbstractHafasProvider
 			+ "(?:(Gl\\. " + ParserUtils.P_PLATFORM + ")<br />\n)?" // position
 			+ "(?:<span class=\"red\">([^>]*)</span>\n)?" // message
 			+ "(?:<img src=\".+?\" alt=\"\" />\n<b>[^<]*</b>\n<br />\n)*" // (messages)
-	, Pattern.DOTALL);
+			+ ".*?", Pattern.DOTALL);
 
 	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
@@ -659,6 +303,10 @@ public class RmvProvider extends AbstractHafasProvider
 				return "TRT" + number;
 			if (type.startsWith("Bus"))
 				return "B" + type.substring(3) + number;
+			if (type.equals("AS")) // Anruf-Sammel-Taxi
+				return "BAS" + number;
+			if (type.equals("ASOF-")) // Anruf-Sammel-Taxi
+				return "BASOF" + number;
 			if (type.startsWith("AST")) // Anruf-Sammel-Taxi
 				return "BAST" + type.substring(3) + number;
 			if (type.startsWith("ALT")) // Anruf-Linien-Taxi
@@ -684,6 +332,15 @@ public class RmvProvider extends AbstractHafasProvider
 	@Override
 	protected char normalizeType(final String type)
 	{
-		throw new UnsupportedOperationException();
+		final String ucType = type.toUpperCase();
+
+		if ("U-BAHN".equals(ucType))
+			return 'U';
+
+		final char t = super.normalizeType(type);
+		if (t != 0)
+			return t;
+
+		return 0;
 	}
 }

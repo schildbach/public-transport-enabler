@@ -24,7 +24,6 @@ import org.junit.Test;
 
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.RmvProvider;
-import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -38,6 +37,30 @@ public class RmvProviderLiveTest
 {
 	private final RmvProvider provider = new RmvProvider();
 	protected static final String ALL_PRODUCTS = "IRSUTBFC";
+
+	@Test
+	public void nearbyStations() throws Exception
+	{
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 3000001), 0, 0);
+
+		System.out.println(result.stations.size() + "  " + result.stations);
+	}
+
+	@Test
+	public void nearbyStationsByCoordinate() throws Exception
+	{
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 50108625, 8669604), 0, 0);
+
+		System.out.println(result.stations.size() + "  " + result.stations);
+	}
+
+	@Test
+	public void queryDepartures() throws Exception
+	{
+		final QueryDeparturesResult result = provider.queryDepartures(3000408, 0, false);
+
+		System.out.println(result.stationDepartures);
+	}
 
 	@Test
 	public void autocomplete() throws Exception
@@ -56,33 +79,15 @@ public class RmvProviderLiveTest
 	}
 
 	@Test
-	public void nearbyStations() throws Exception
-	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 3000001), 0, 0);
-
-		System.out.println(result.stations.size() + "  " + result.stations);
-	}
-
-	@Test
-	public void queryDepartures() throws Exception
-	{
-		final QueryDeparturesResult result = provider.queryDepartures(3000001, 0, false);
-
-		System.out.println(result.stationDepartures);
-	}
-
-	@Test
 	public void shortConnection() throws Exception
 	{
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, null, "Hanau Hauptbahnhof!"), null,
 				new Location(LocationType.ANY, 0, null, "Frankfurt Hauptbahnhof!"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
-		for (final Connection connection : result.connections)
-			provider.getConnectionDetails(connection.link);
 		System.out.println(moreResult);
 	}
-	
+
 	@Test
 	public void shortConnectionByName() throws Exception
 	{
