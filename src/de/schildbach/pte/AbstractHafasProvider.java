@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -49,6 +50,7 @@ import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult.Status;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.StationDepartures;
+import de.schildbach.pte.dto.Stop;
 import de.schildbach.pte.util.Color;
 import de.schildbach.pte.util.ParserUtils;
 import de.schildbach.pte.util.XmlPullUtil;
@@ -176,6 +178,19 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return new Location(LocationType.ADDRESS, 0, null, name);
 		}
 		throw new IllegalStateException("cannot handle: " + type);
+	}
+
+	private static final String parsePlatform(final XmlPullParser pp) throws XmlPullParserException, IOException
+	{
+		XmlPullUtil.enter(pp, "Platform");
+		XmlPullUtil.require(pp, "Text");
+		final String position = XmlPullUtil.text(pp).trim();
+		XmlPullUtil.exit(pp, "Platform");
+
+		if (position.length() == 0)
+			return null;
+		else
+			return position;
 	}
 
 	public List<Location> xmlLocValReq(final CharSequence constraint) throws IOException
@@ -677,6 +692,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 				XmlPullUtil.enter(pp, "ConSectionList");
 
+				final Calendar time = new GregorianCalendar(timeZone());
+
 				while (XmlPullUtil.test(pp, "ConSection"))
 				{
 					XmlPullUtil.enter(pp, "ConSection");
@@ -689,16 +706,10 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 					final Location sectionDeparture = parseLocation(pp);
 					XmlPullUtil.enter(pp, "Dep");
 					XmlPullUtil.require(pp, "Time");
-					final Calendar departureTime = new GregorianCalendar(timeZone());
-					departureTime.setTimeInMillis(currentDate.getTimeInMillis());
-					parseTime(departureTime, XmlPullUtil.text(pp));
-					XmlPullUtil.enter(pp, "Platform");
-					XmlPullUtil.require(pp, "Text");
-					String departurePos = XmlPullUtil.text(pp).trim();
-					if (departurePos.length() == 0)
-						departurePos = null;
-					XmlPullUtil.exit(pp, "Platform");
-
+					time.setTimeInMillis(currentDate.getTimeInMillis());
+					parseTime(time, XmlPullUtil.text(pp));
+					final Date departureTime = time.getTime();
+					final String departurePos = parsePlatform(pp);
 					XmlPullUtil.exit(pp, "Dep");
 
 					XmlPullUtil.exit(pp, "BasicStop");
@@ -709,10 +720,12 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 					Location destination = null;
 					int min = 0;
 
+					final List<Stop> intermediateStops = new LinkedList<Stop>();
+
 					final String tag = pp.getName();
 					if (tag.equals("Journey"))
 					{
-						XmlPullUtil.enter(pp);
+						XmlPullUtil.enter(pp, "Journey");
 						while (pp.getName().equals("JHandle"))
 							XmlPullUtil.next(pp);
 						XmlPullUtil.enter(pp, "JourneyAttributeList");
@@ -728,7 +741,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 							XmlPullUtil.enter(pp);
 							final Map<String, String> attributeVariants = parseAttributeVariants(pp);
 							XmlPullUtil.exit(pp);
-							XmlPullUtil.exit(pp);
+							XmlPullUtil.exit(pp, "JourneyAttribute");
 
 							if ("NAME".equals(attrName))
 							{
@@ -745,8 +758,33 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 								destination = new Location(LocationType.ANY, 0, null, attributeVariants.get("NORMAL"));
 							}
 						}
-						XmlPullUtil.exit(pp);
-						XmlPullUtil.exit(pp);
+						XmlPullUtil.exit(pp, "JourneyAttributeList");
+
+						XmlPullUtil.enter(pp, "PassList");
+						while (XmlPullUtil.test(pp, "BasicStop"))
+						{
+							XmlPullUtil.enter(pp, "BasicStop");
+							while (XmlPullUtil.test(pp, "StAttrList"))
+								XmlPullUtil.next(pp);
+							final Location location = parseLocation(pp);
+							if (XmlPullUtil.test(pp, "Arr"))
+								XmlPullUtil.next(pp);
+							if (XmlPullUtil.test(pp, "Dep"))
+							{
+								XmlPullUtil.enter(pp, "Dep");
+								XmlPullUtil.require(pp, "Time");
+								time.setTimeInMillis(currentDate.getTimeInMillis());
+								parseTime(time, XmlPullUtil.text(pp));
+								final String position = parsePlatform(pp);
+								XmlPullUtil.exit(pp, "Dep");
+
+								intermediateStops.add(new Stop(location, position, time.getTime()));
+							}
+							XmlPullUtil.exit(pp, "BasicStop");
+						}
+
+						XmlPullUtil.exit(pp, "PassList");
+						XmlPullUtil.exit(pp, "Journey");
 
 						if (category == null)
 							category = shortCategory;
@@ -778,27 +816,32 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 					final Location sectionArrival = parseLocation(pp);
 					XmlPullUtil.enter(pp, "Arr");
 					XmlPullUtil.require(pp, "Time");
-					final Calendar arrivalTime = new GregorianCalendar(timeZone());
-					arrivalTime.setTimeInMillis(currentDate.getTimeInMillis());
-					parseTime(arrivalTime, XmlPullUtil.text(pp));
-					XmlPullUtil.enter(pp, "Platform");
-					XmlPullUtil.require(pp, "Text");
-					String arrivalPos = XmlPullUtil.text(pp).trim();
-					if (arrivalPos.length() == 0)
-						arrivalPos = null;
-					XmlPullUtil.exit(pp, "Platform");
-
+					time.setTimeInMillis(currentDate.getTimeInMillis());
+					parseTime(time, XmlPullUtil.text(pp));
+					final Date arrivalTime = time.getTime();
+					final String arrivalPos = parsePlatform(pp);
 					XmlPullUtil.exit(pp, "Arr");
 
 					XmlPullUtil.exit(pp, "BasicStop");
 					XmlPullUtil.exit(pp, "Arrival");
 
+					// remove first and last, because they are not intermediate
+					final int size = intermediateStops.size();
+					if (size >= 2)
+					{
+						if (intermediateStops.get(size - 1).location.id == sectionArrival.id)
+							intermediateStops.remove(size - 1);
+
+						if (intermediateStops.get(0).location.id == sectionDeparture.id)
+							intermediateStops.remove(0);
+					}
+
 					XmlPullUtil.exit(pp, "ConSection");
 
 					if (min == 0 || line != null)
 					{
-						parts.add(new Connection.Trip(line, destination, departureTime.getTime(), departurePos, sectionDeparture, arrivalTime
-								.getTime(), arrivalPos, sectionArrival, null, null));
+						parts.add(new Connection.Trip(line, destination, departureTime, departurePos, sectionDeparture, arrivalTime, arrivalPos,
+								sectionArrival, intermediateStops, null));
 					}
 					else
 					{
@@ -814,8 +857,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 					}
 
 					if (firstDepartureTime == null)
-						firstDepartureTime = departureTime.getTime();
-					lastArrivalTime = arrivalTime.getTime();
+						firstDepartureTime = departureTime;
+					lastArrivalTime = arrivalTime;
 				}
 
 				XmlPullUtil.exit(pp, "ConSectionList");
