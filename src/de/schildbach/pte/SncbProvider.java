@@ -208,6 +208,8 @@ public class SncbProvider extends AbstractHafasProvider
 
 		if (ucType.equals("INT")) // Zürich-Brüssel
 			return 'I';
+		if (ucType.equals("IC A"))
+			return 'I';
 
 		if (ucType.equals("L"))
 			return 'R';
