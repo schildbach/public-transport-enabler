@@ -767,18 +767,21 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 							while (XmlPullUtil.test(pp, "StAttrList"))
 								XmlPullUtil.next(pp);
 							final Location location = parseLocation(pp);
-							if (XmlPullUtil.test(pp, "Arr"))
-								XmlPullUtil.next(pp);
-							if (XmlPullUtil.test(pp, "Dep"))
+							if (location.id != sectionDeparture.id)
 							{
-								XmlPullUtil.enter(pp, "Dep");
-								XmlPullUtil.require(pp, "Time");
-								time.setTimeInMillis(currentDate.getTimeInMillis());
-								parseTime(time, XmlPullUtil.text(pp));
-								final String position = parsePlatform(pp);
-								XmlPullUtil.exit(pp, "Dep");
+								if (XmlPullUtil.test(pp, "Arr"))
+									XmlPullUtil.next(pp);
+								if (XmlPullUtil.test(pp, "Dep"))
+								{
+									XmlPullUtil.enter(pp, "Dep");
+									XmlPullUtil.require(pp, "Time");
+									time.setTimeInMillis(currentDate.getTimeInMillis());
+									parseTime(time, XmlPullUtil.text(pp));
+									final String position = parsePlatform(pp);
+									XmlPullUtil.exit(pp, "Dep");
 
-								intermediateStops.add(new Stop(location, position, time.getTime()));
+									intermediateStops.add(new Stop(location, position, time.getTime()));
+								}
 							}
 							XmlPullUtil.exit(pp, "BasicStop");
 						}
@@ -825,16 +828,11 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 					XmlPullUtil.exit(pp, "BasicStop");
 					XmlPullUtil.exit(pp, "Arrival");
 
-					// remove first and last, because they are not intermediate
+					// remove last intermediate
 					final int size = intermediateStops.size();
-					if (size >= 2)
-					{
+					if (size >= 1)
 						if (intermediateStops.get(size - 1).location.id == sectionArrival.id)
 							intermediateStops.remove(size - 1);
-
-						if (intermediateStops.get(0).location.id == sectionDeparture.id)
-							intermediateStops.remove(0);
-					}
 
 					XmlPullUtil.exit(pp, "ConSection");
 
