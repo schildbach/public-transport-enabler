@@ -47,7 +47,7 @@ public class RmvProvider extends AbstractHafasProvider
 
 	public RmvProvider()
 	{
-		super(API_BASE + "query.exe/dn", 17, null, "UTF-8", null);
+		super(API_BASE + "query.exe/dn", 16, null, "UTF-8", null);
 	}
 
 	public NetworkId id()
@@ -303,6 +303,12 @@ public class RmvProvider extends AbstractHafasProvider
 				return "TRT" + number;
 			if (type.startsWith("Bus"))
 				return "B" + type.substring(3) + number;
+			if (type.equals("B"))
+				return "B" + number;
+			if (type.equals("BN"))
+				return "BN" + number;
+			if (type.equals("N"))
+				return "BN" + number;
 			if (type.equals("AS")) // Anruf-Sammel-Taxi
 				return "BAS" + number;
 			if (type.equals("ASOF-")) // Anruf-Sammel-Taxi
