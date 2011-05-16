@@ -43,6 +43,9 @@ public enum NetworkId
 	// Sweden
 	SE,
 
+	// Norway
+	NRI,
+
 	// Luxembourg
 	LU,
 
