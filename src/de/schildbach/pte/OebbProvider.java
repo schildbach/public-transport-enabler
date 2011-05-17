@@ -54,6 +54,7 @@ public class OebbProvider extends AbstractHafasProvider
 	public static final NetworkId NETWORK_ID = NetworkId.OEBB;
 	public static final String OLD_NETWORK_ID = "fahrplan.oebb.at";
 	private static final String API_BASE = "http://fahrplan.oebb.at/bin/";
+	private static final String URL_ENCODING = "ISO-8859-1";
 
 	public OebbProvider()
 	{
@@ -77,11 +78,10 @@ public class OebbProvider extends AbstractHafasProvider
 
 	private static final String AUTOCOMPLETE_URI = API_BASE
 			+ "ajax-getstop.exe/dny?start=1&tpl=suggest2json&REQ0JourneyStopsS0A=255&REQ0JourneyStopsB=12&S=%s?&js=true&";
-	private static final String ENCODING = "ISO-8859-1";
 
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
-		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING));
+		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), URL_ENCODING));
 
 		return jsonGetStops(uri);
 	}
@@ -134,10 +134,10 @@ public class OebbProvider extends AbstractHafasProvider
 
 		uri.append("queryPageDisplayed=yes");
 		uri.append("&ignoreTypeCheck=yes");
-		uri.append("&REQ0JourneyStopsS0ID=").append(ParserUtils.urlEncode(locationId(from)));
+		uri.append("&REQ0JourneyStopsS0ID=").append(ParserUtils.urlEncode(locationId(from), URL_ENCODING));
 		if (via != null)
-			uri.append("&REQ0JourneyStops1.0ID=").append(ParserUtils.urlEncode(locationId(via)));
-		uri.append("&REQ0JourneyStopsZ0ID=").append(ParserUtils.urlEncode(locationId(to)));
+			uri.append("&REQ0JourneyStops1.0ID=").append(ParserUtils.urlEncode(locationId(via), URL_ENCODING));
+		uri.append("&REQ0JourneyStopsZ0ID=").append(ParserUtils.urlEncode(locationId(to), URL_ENCODING));
 		uri.append("&REQ0JourneyDate=").append(
 				String.format("%02d.%02d.%02d", c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.MONTH) + 1, c.get(Calendar.YEAR) - 2000));
 		uri.append("&wDayExt0=").append(ParserUtils.urlEncode("Mo|Di|Mi|Do|Fr|Sa|So"));
