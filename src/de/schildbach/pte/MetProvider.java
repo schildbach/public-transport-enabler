@@ -18,11 +18,14 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
+import de.schildbach.pte.util.Color;
 
 /**
  * @author Andreas Schildbach
@@ -71,5 +74,27 @@ public class MetProvider extends AbstractEfaProvider
 	protected String nearbyStationUri(final int stationId)
 	{
 		return String.format(NEARBY_STATION_URI, stationId);
+	}
+
+	private static final Map<Character, int[]> LINES = new HashMap<Character, int[]>();
+
+	static
+	{
+		LINES.put('R', new int[] { Color.parseColor("#a24ba3"), Color.WHITE });
+		LINES.put('S', new int[] { Color.parseColor("#3a75c4"), Color.WHITE });
+		LINES.put('T', new int[] { Color.parseColor("#5bbf21"), Color.WHITE });
+		LINES.put('B', new int[] { Color.parseColor("#f77f00"), Color.WHITE });
+	}
+
+	@Override
+	public int[] lineColors(final String line)
+	{
+		// TODO NightRider buses (buses with numbers > 940): #f26522
+
+		final int[] lineColors = LINES.get(line.charAt(0));
+		if (lineColors != null)
+			return lineColors;
+		else
+			return super.lineColors(line);
 	}
 }
