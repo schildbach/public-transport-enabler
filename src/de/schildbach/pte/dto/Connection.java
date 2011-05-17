@@ -75,9 +75,11 @@ public final class Connection implements Serializable
 
 	public static class Part implements Serializable
 	{
+		private static final long serialVersionUID = 8498461220084523265L;
+
 		public final Location departure;
 		public final Location arrival;
-		public final List<Point> path;
+		public List<Point> path;
 
 		public Part(final Location departure, final Location arrival, final List<Point> path)
 		{
