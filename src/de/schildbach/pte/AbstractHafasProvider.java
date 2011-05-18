@@ -124,7 +124,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 				+ "</ReqC>";
 	}
 
-	private static final Location parseStation(final XmlPullParser pp)
+	private final Location parseStation(final XmlPullParser pp)
 	{
 		final String type = pp.getName();
 		if ("Station".equals(type))
@@ -133,7 +133,9 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			final int id = Integer.parseInt(pp.getAttributeValue(null, "externalStationNr"));
 			final int x = Integer.parseInt(pp.getAttributeValue(null, "x"));
 			final int y = Integer.parseInt(pp.getAttributeValue(null, "y"));
-			return new Location(LocationType.STATION, id, y, x, null, name);
+
+			final String[] nameAndPlace = splitNameAndPlace(name);
+			return new Location(LocationType.STATION, id, y, x, nameAndPlace[0], nameAndPlace[1]);
 		}
 		throw new IllegalStateException("cannot handle: " + type);
 	}
