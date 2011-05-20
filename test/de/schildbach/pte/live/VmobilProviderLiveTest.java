@@ -21,7 +21,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import de.schildbach.pte.VvvProvider;
+import de.schildbach.pte.VmobilProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -30,9 +30,9 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 /**
  * @author Andreas Schildbach
  */
-public class VvvProviderLiveTest
+public class VmobilProviderLiveTest
 {
-	private final VvvProvider provider = new VvvProvider();
+	private final VmobilProvider provider = new VmobilProvider();
 
 	@Test
 	public void autocompleteIncomplete() throws Exception

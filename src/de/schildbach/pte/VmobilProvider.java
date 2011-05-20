@@ -24,14 +24,15 @@ import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 
 /**
+ * Verkehrsverbund Vorarlberg
  * @author Andreas Schildbach
  */
-public class VvvProvider extends AbstractEfaProvider
+public class VmobilProvider extends AbstractEfaProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.VVV;
+	public static final NetworkId NETWORK_ID = NetworkId.VMOBIL;
 	private final static String API_BASE = "http://efaneu.vmobil.at/vvvmobile/";
 
-	public VvvProvider()
+	public VmobilProvider()
 	{
 		super(API_BASE, null);
 	}
