@@ -1408,8 +1408,6 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return 'U';
 		// if ("M".equals(normalizedType)) // Metro
 		// return "U" + normalizedName;
-		// if ("Métro".equals(normalizedType))
-		// return "U" + normalizedName;
 
 		// Tram
 		if (P_LINE_TRAM.matcher(ucType).matches()) // Generic Tram
