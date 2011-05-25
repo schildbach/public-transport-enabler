@@ -206,31 +206,33 @@ public class SncbProvider extends AbstractHafasProvider
 	{
 		final String ucType = type.toUpperCase();
 
-		if (ucType.equals("INT")) // Zürich-Brüssel
+		if ("INT".equals(ucType)) // Zürich-Brüssel
 			return 'I';
-		if (ucType.startsWith("IC "))
+		if ("IC ".startsWith(ucType))
+			return 'I';
+		if ("THA".equals(ucType)) // Thalys
 			return 'I';
 
-		if (ucType.startsWith("IR "))
+		if ("IR ".startsWith(ucType))
 			return 'R';
 
-		if (ucType.equals("L"))
+		if ("L".equals(ucType))
 			return 'R';
-		if (ucType.equals("P"))
+		if ("P".equals(ucType))
 			return 'R';
-		if (ucType.equals("CR"))
+		if ("CR".equals(ucType))
 			return 'R';
-		if (ucType.equals("ICT")) // Brügge
+		if ("ICT".equals(ucType)) // Brügge
 			return 'R';
-		if (ucType.equals("TRN")) // Mons
+		if ("TRN".equals(ucType)) // Mons
 			return 'R';
 
-		if (ucType.equals("MÉT"))
+		if ("MÉT".equals(ucType))
 			return 'U';
-		if (ucType.equals("MÉTRO"))
+		if ("MÉTRO".equals(ucType))
 			return 'U';
 
-		if (ucType.equals("TRAMWAY"))
+		if ("TRAMWAY".equals(ucType))
 			return 'T';
 
 		final char t = super.normalizeType(type);

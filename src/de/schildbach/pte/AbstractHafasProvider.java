@@ -1406,8 +1406,6 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return 'U';
 		if ("MET".equals(ucType))
 			return 'U';
-		// if ("M".equals(normalizedType)) // Metro
-		// return "U" + normalizedName;
 
 		// Tram
 		if (P_LINE_TRAM.matcher(ucType).matches()) // Generic Tram
@@ -1416,8 +1414,6 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return 'T';
 		if ("TRA".equals(ucType))
 			return 'T';
-		// if ("T".equals(normalizedType)) // Tram
-		// return "T" + normalizedName;
 
 		// Bus
 		if (P_LINE_BUS.matcher(ucType).matches()) // Generic Bus
@@ -1450,13 +1446,13 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return 'B';
 		// if ("N".equals(normalizedType)) // Nachtbus
 		// return "B" + normalizedName;
-		// if ("TX".equals(normalizedType)) // Taxi
-		// return "B" + normalizedName;
 
 		// Ferry
 		if ("SCHIFF".equals(ucType))
 			return 'F';
 		if ("FÄHRE".equals(ucType))
+			return 'F';
+		if ("FAE".equals(ucType))
 			return 'F';
 		if ("SCH".equals(ucType)) // Schiff
 			return 'F';

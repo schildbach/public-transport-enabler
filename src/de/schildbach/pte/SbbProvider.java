@@ -141,18 +141,18 @@ public class SbbProvider extends AbstractHafasProvider
 	{
 		final String ucType = type.toUpperCase();
 
-		if (ucType.equals("IN")) // Italien Roma-Lecce
+		if ("IN".equals(ucType)) // Italien Roma-Lecce
 			return 'I';
 
-		if (ucType.equals("E"))
+		if ("E".equals(ucType))
 			return 'R';
-		if (ucType.equals("T"))
+		if ("T".equals(ucType))
 			return 'R';
 
-		if (ucType.equals("M")) // Metro Wien
+		if ("M".equals(ucType)) // Metro Wien
 			return 'U';
 
-		if (ucType.equals("TX"))
+		if ("TX".equals(ucType))
 			return 'B';
 
 		final char t = super.normalizeType(type);

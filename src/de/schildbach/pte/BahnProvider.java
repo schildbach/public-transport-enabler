@@ -797,6 +797,8 @@ public final class BahnProvider extends AbstractHafasProvider
 				return "SDPN" + number;
 			if (type.equals("WKD")) // Warszawska Kolej Dojazdowa (Warsaw Suburban Railway)
 				return "SWKD" + number;
+			if (type.equals("SE")) // S-Bahn Kopenhagen
+				return "SE" + number;
 
 			if (type.equals("U"))
 				return "UU" + number;
@@ -836,6 +838,8 @@ public final class BahnProvider extends AbstractHafasProvider
 				return "BRFB" + type.substring(3) + number;
 			if (type.equals("RNV")) // Rhein-Neckar-Verkehr GmbH - TODO aufteilen in Tram/Bus/Fähre
 				return "BRNV" + number;
+			if (type.equals("LTT"))
+				return "BLTT" + number;
 
 			if (type.equals("Fähre"))
 				return "F" + number;

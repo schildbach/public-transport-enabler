@@ -287,6 +287,8 @@ public class RmvProvider extends AbstractHafasProvider
 				return "RRB" + number;
 			if (type.equals("RE")) // RegionalExpress
 				return "RRE" + number;
+			if (type.equals("IRE")) // Interregio Express
+				return "RIRE" + number;
 			if (type.equals("SE")) // StadtExpress
 				return "RSE" + number;
 			if (type.equals("R"))
