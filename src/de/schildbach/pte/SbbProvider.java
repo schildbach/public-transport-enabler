@@ -18,21 +18,14 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
-import de.schildbach.pte.dto.QueryDeparturesResult.Status;
-import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.util.ParserUtils;
 
 /**
@@ -45,11 +38,9 @@ public class SbbProvider extends AbstractHafasProvider
 	private static final String API_BASE = "http://fahrplan.sbb.ch/bin/";
 	private static final String API_URI = "http://fahrplan.sbb.ch/bin/extxml.exe"; // xmlfahrplan.sbb.ch
 
-	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
-
 	public SbbProvider(final String accessId)
 	{
-		super(API_URI, 10, accessId);
+		super(API_URI + "query.exe/dn", 10, accessId);
 	}
 
 	public NetworkId id()
@@ -66,9 +57,14 @@ public class SbbProvider extends AbstractHafasProvider
 		return false;
 	}
 
+	private static final String AUTOCOMPLETE_URI = API_BASE + "ajax-getstop.exe/dn?getstop=1&REQ0JourneyStopsS0A=255&S=%s?&js=true&";
+	private static final String ENCODING = "ISO-8859-1";
+
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
-		return xmlMLcReq(constraint);
+		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING));
+
+		return jsonGetStops(uri);
 	}
 
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
@@ -89,11 +85,14 @@ public class SbbProvider extends AbstractHafasProvider
 		}
 		else if (location.type == LocationType.STATION && location.hasId())
 		{
-			uri.append("bhftafel.exe/dn?near=Anzeigen");
-			uri.append("&distance=").append(maxDistance != 0 ? maxDistance / 1000 : 50);
+			uri.append("stboard.exe/dn");
+			uri.append("?productsFilter=").append(allProductsString());
+			uri.append("&boardType=dep");
 			uri.append("&input=").append(location.id);
+			uri.append("&sTI=1&start=yes&hcount=0");
+			uri.append("&L=vs_java3");
 
-			return htmlNearbyStations(uri.toString());
+			return xmlNearbyStations(uri.toString());
 		}
 		else
 		{
@@ -101,133 +100,40 @@ public class SbbProvider extends AbstractHafasProvider
 		}
 	}
 
-	private String departuresQueryUri(final int stationId, final int maxDepartures)
-	{
-		final StringBuilder uri = new StringBuilder();
-		uri.append(API_BASE).append("bhftafel.exe/dox");
-		uri.append("?start=");
-		if (maxDepartures != 0)
-			uri.append("&maxJourneys=").append(maxDepartures);
-		uri.append("&boardType=dep");
-		uri.append("&productsFilter=").append(allProductsString());
-		uri.append("&input=").append(stationId);
-		uri.append("&disableEquivs=yes"); // don't use nearby stations
-		return uri.toString();
-	}
-
-	private static final Pattern P_DEPARTURES_HEAD_COARSE = Pattern.compile(".*?" //
-			+ "(?:" //
-			+ "<p class=\"querysummary\">\n(.*?)</p>\n" // head
-			+ "(?:(.*?)|(an dieser Haltestelle keines))\n" // departures
-			+ "<p class=\"link1\">\n(.*?)</p>\n" // footer
-			+ "|(Informationen zu)" // messages
-			+ "|(Verbindung zum Server konnte leider nicht hergestellt werden|kann vom Server derzeit leider nicht bearbeitet werden)" // messages
-			+ ").*?" //
-	, Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_HEAD_FINE = Pattern.compile("" //
-			+ "<strong>([^<]*)</strong>(?:<br />)?\n" // location
-			+ "Abfahrt (\\d{1,2}:\\d{2})\n" // time
-			+ "Uhr, (\\d{2}\\.\\d{2}\\.\\d{2})\n" // date
-			+ ".*?input=(\\d+)&.*?" // locationId
-	, Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<p class=\"(journey con_\\d+)\">\n(.*?)</p>", Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_FINE = Pattern.compile("" //
-			+ "<strong>(.*?)</strong>\n" // line
-			+ "&gt;&gt;\n" //
-			+ "(.*?)\n" // destination
-			+ "<br />\n" //
-			+ "<strong>(\\d+:\\d+)</strong>\n" // time
-			+ "(?:Gl\\. (" + ParserUtils.P_PLATFORM + ")\n)?" // position
-			+ ".*?" //
-	, Pattern.DOTALL);
-
 	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
-		final QueryDeparturesResult result = new QueryDeparturesResult();
+		final StringBuilder uri = new StringBuilder();
+		uri.append(API_BASE).append("stboard.exe/dn");
+		uri.append("?productsFilter=").append(allProductsString());
+		uri.append("&boardType=dep");
+		uri.append("&disableEquivs=").append(equivs ? "no" : "yes"); // don't use nearby stations
+		uri.append("&maxJourneys=50"); // ignore maxDepartures because result contains other stations
+		uri.append("&start=yes");
+		uri.append("&L=vs_java3");
+		uri.append("&input=").append(stationId);
 
-		// scrape page
-		final String uri = departuresQueryUri(stationId, maxDepartures);
-		final CharSequence page = ParserUtils.scrape(uri);
+		return xmlQueryDepartures(uri.toString(), stationId);
+	}
 
-		// parse page
-		final Matcher mHeadCoarse = P_DEPARTURES_HEAD_COARSE.matcher(page);
-		if (mHeadCoarse.matches())
+	private static final Pattern P_NORMALIZE_LINE_AND_TYPE = Pattern.compile("([^#]*)#(.*)");
+
+	@Override
+	protected String normalizeLine(final String line)
+	{
+		final Matcher m = P_NORMALIZE_LINE_AND_TYPE.matcher(line);
+		if (m.matches())
 		{
-			// messages
-			if (mHeadCoarse.group(3) != null)
-			{
-				result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, stationId),
-						Collections.<Departure> emptyList(), null));
-				return result;
-			}
-			else if (mHeadCoarse.group(5) != null)
-				return new QueryDeparturesResult(Status.INVALID_STATION);
-			else if (mHeadCoarse.group(6) != null)
-				return new QueryDeparturesResult(Status.SERVICE_DOWN);
+			final String number = m.group(1).replaceAll("\\s+", " ");
+			final String type = m.group(2);
 
-			final String head = mHeadCoarse.group(1) + mHeadCoarse.group(4);
-			final Matcher mHeadFine = P_DEPARTURES_HEAD_FINE.matcher(head);
-			if (mHeadFine.matches())
-			{
-				final String location = ParserUtils.resolveEntities(mHeadFine.group(1));
-				final Calendar currentTime = new GregorianCalendar(timeZone());
-				currentTime.clear();
-				ParserUtils.parseEuropeanTime(currentTime, mHeadFine.group(2));
-				ParserUtils.parseGermanDate(currentTime, mHeadFine.group(3));
-				final int locationId = Integer.parseInt(mHeadFine.group(4));
-				final List<Departure> departures = new ArrayList<Departure>(8);
-				// String oldZebra = null;
+			final char normalizedType = normalizeType(type);
+			if (normalizedType != 0)
+				return normalizedType + number;
 
-				final Matcher mDepCoarse = P_DEPARTURES_COARSE.matcher(mHeadCoarse.group(2));
-				while (mDepCoarse.find())
-				{
-					// zebra mechanism is currently broken on service
-					// final String zebra = mDepCoarse.group(1);
-					// if (oldZebra != null && zebra.equals(oldZebra))
-					// throw new IllegalArgumentException("missed row? last:" + zebra);
-					// else
-					// oldZebra = zebra;
-
-					final Matcher mDepFine = P_DEPARTURES_FINE.matcher(mDepCoarse.group(2));
-					if (mDepFine.matches())
-					{
-						final String line = normalizeLine(ParserUtils.resolveEntities(mDepFine.group(1)));
-
-						final String destination = ParserUtils.resolveEntities(mDepFine.group(2));
-
-						final Calendar parsedTime = new GregorianCalendar(timeZone());
-						parsedTime.setTimeInMillis(currentTime.getTimeInMillis());
-						ParserUtils.parseEuropeanTime(parsedTime, mDepFine.group(3));
-
-						if (parsedTime.getTimeInMillis() - currentTime.getTimeInMillis() < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
-							parsedTime.add(Calendar.DAY_OF_MONTH, 1);
-
-						final String position = ParserUtils.resolveEntities(mDepFine.group(4));
-
-						final Departure dep = new Departure(parsedTime.getTime(), line, line != null ? lineColors(line) : null, position, 0,
-								destination);
-
-						if (!departures.contains(dep))
-							departures.add(dep);
-					}
-					else
-					{
-						throw new IllegalArgumentException("cannot parse '" + mDepCoarse.group(1) + "' on " + stationId);
-					}
-				}
-
-				result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, locationId, null, location), departures, null));
-				return result;
-			}
-			else
-			{
-				throw new IllegalArgumentException("cannot parse '" + head + "' on " + stationId);
-			}
+			throw new IllegalStateException("cannot normalize type " + type + " number " + number + " line " + line);
 		}
-		else
-		{
-			throw new IllegalArgumentException("cannot parse '" + page + "' on " + stationId);
-		}
+
+		throw new IllegalStateException("cannot normalize line " + line);
 	}
 
 	@Override
@@ -235,46 +141,19 @@ public class SbbProvider extends AbstractHafasProvider
 	{
 		final String ucType = type.toUpperCase();
 
-		if (ucType.equals("IN")) // Oslo
+		if (ucType.equals("IN")) // Italien Roma-Lecce
 			return 'I';
 
 		if (ucType.equals("E"))
 			return 'R';
-		if (ucType.equals("RSB"))
+		if (ucType.equals("T"))
 			return 'R';
 
-		if (ucType.equals("M")) // Lausanne
-			return 'T';
-		if (ucType.equals("T"))
-			return 'T';
-		if (ucType.equals("NTR"))
-			return 'T';
+		if (ucType.equals("M")) // Metro Wien
+			return 'U';
 
-		if (ucType.equals("NTO")) // Niederflurtrolleybus zwischen Bern, Bahnhofsplatz und Bern, Wankdorf Bahnhof
-			return 'B';
-		if (ucType.equals("NBU"))
-			return 'B';
-		if (ucType.equals("MIN"))
-			return 'B';
-		if (ucType.equals("MID"))
-			return 'B';
-		if (ucType.equals("N"))
-			return 'B';
 		if (ucType.equals("TX"))
 			return 'B';
-		if (ucType.equals("BUXI"))
-			return 'B';
-
-		if (ucType.equals("BAV"))
-			return 'F';
-		if (ucType.equals("FAE"))
-			return 'F';
-
-		if (ucType.equals("SL")) // Sessel-Lift
-			return 'C';
-
-		if (ucType.equals("P"))
-			return '?';
 
 		final char t = super.normalizeType(type);
 		if (t != 0)

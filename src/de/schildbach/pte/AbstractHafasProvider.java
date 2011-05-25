@@ -1466,6 +1466,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return 'F';
 		if ("BAT".equals(ucType)) // Boots Anlege Terminal?
 			return 'F';
+		if ("BAV".equals(ucType)) // Boots Anlege?
+			return 'F';
 
 		// Cable Car
 		if ("SB".equals(ucType)) // Seilbahn
@@ -1477,6 +1479,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		if ("LB".equals(ucType)) // Luftseilbahn
 			return 'C';
 		if ("FUN".equals(ucType)) // Funiculaire (Standseilbahn)
+			return 'C';
+		if ("SL".equals(ucType)) // Sessel-Lift
 			return 'C';
 
 		// if ("L".equals(normalizedType))
