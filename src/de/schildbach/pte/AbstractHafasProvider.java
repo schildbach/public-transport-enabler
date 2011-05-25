@@ -421,15 +421,16 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			+ "(?:e_delay\\s*=\"\\d+\"\\s*)?" // (???)
 			+ "(?:newpl\\s*=\"([^\"]*)\"\\s*)?" //
 			+ "(?:platform\\s*=\"([^\"]*)\"\\s*)?" // position
-			+ "targetLoc\\s*=\"([^\"]*)\"\\s*" // destination
+			+ "(?:targetLoc\\s*=\"([^\"]*)\"\\s*)?" // destination
 			+ "(?:hafasname\\s*=\"([^\"]*)\"\\s*)?" // line
 			+ "prod\\s*=\"([^\"]*)\"\\s*" // line
 			+ "(?:class\\s*=\"([^\"]*)\"\\s*)?" // class
-			+ "(?:dir\\s*=\"[^\"]*\"\\s*)?" // (destination)
+			+ "(?:dir\\s*=\"([^\"]*)\"\\s*)?" // destination
 			+ "(?:capacity\\s*=\"[^\"]*\"\\s*)?" // (???)
 			+ "(?:depStation\\s*=\"(.*?)\"\\s*)?" //
 			+ "(?:delayReason\\s*=\"([^\"]*)\"\\s*)?" // message
-			+ "(?:is_reachable\\s*=\"([^\"]*)\"\\s*)?" // (???)
+			+ "(?:is_reachable\\s*=\"[^\"]*\"\\s*)?" // (???)
+			+ "(?:disableTrainInfo\\s*=\"[^\"]*\"\\s*)?" // (???)
 	);
 	private static final Pattern P_XML_QUERY_DEPARTURES_MESSAGES = Pattern.compile("<Err code=\"([^\"]*)\" text=\"([^\"]*)\"");
 
@@ -468,7 +469,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			final Matcher mFine = P_XML_QUERY_DEPARTURES_FINE.matcher(mCoarse.group(1));
 			if (mFine.matches())
 			{
-				if (mFine.group(10) == null)
+				if (mFine.group(11) == null)
 				{
 					final Calendar plannedTime = new GregorianCalendar(timeZone());
 					plannedTime.clear();
@@ -495,7 +496,13 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 					final String position = mFine.group(5) != null ? "Gl. " + ParserUtils.resolveEntities(mFine.group(5)) : null;
 
-					final String destination = ParserUtils.resolveEntities(mFine.group(6)).trim();
+					final String destination;
+					if (mFine.group(10) != null)
+						destination = ParserUtils.resolveEntities(mFine.group(10)).trim();
+					else if (mFine.group(6) != null)
+						destination = ParserUtils.resolveEntities(mFine.group(6)).trim();
+					else
+						destination = null;
 
 					final String hafasName = ParserUtils.resolveEntities(mFine.group(7));
 
@@ -509,9 +516,9 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 					final String line = product != 0 ? product + prod : normalizeLine(prod);
 
 					final String message;
-					if (mFine.group(11) != null)
+					if (mFine.group(12) != null)
 					{
-						final String msg = ParserUtils.resolveEntities(mFine.group(11)).trim();
+						final String msg = ParserUtils.resolveEntities(mFine.group(12)).trim();
 						message = msg.length() > 0 ? msg : null;
 					}
 					else
