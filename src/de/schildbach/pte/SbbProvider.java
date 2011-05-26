@@ -40,7 +40,7 @@ public class SbbProvider extends AbstractHafasProvider
 
 	public SbbProvider(final String accessId)
 	{
-		super(API_URI + "query.exe/dn", 10, accessId);
+		super(API_URI, 10, accessId);
 	}
 
 	public NetworkId id()
