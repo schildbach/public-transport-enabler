@@ -34,22 +34,6 @@ public class BsvagProviderLiveTest
 	private final BsvagProvider provider = new BsvagProvider();
 
 	@Test
-	public void autocompleteIncomplete() throws Exception
-	{
-		final List<Location> autocompletes = provider.autocompleteStations("Kurf");
-
-		list(autocompletes);
-	}
-
-	private void list(final List<Location> autocompletes)
-	{
-		System.out.print(autocompletes.size() + " ");
-		for (final Location autocomplete : autocompletes)
-			System.out.print(autocomplete.toDebugString() + " ");
-		System.out.println();
-	}
-
-	@Test
 	public void nearbyStations() throws Exception
 	{
 		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 26000178), 0, 0);
@@ -63,5 +47,21 @@ public class BsvagProviderLiveTest
 		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 52272065, 10524788), 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
+	}
+
+	@Test
+	public void autocompleteIncomplete() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("Kurf");
+
+		list(autocompletes);
+	}
+
+	private void list(final List<Location> autocompletes)
+	{
+		System.out.print(autocompletes.size() + " ");
+		for (final Location autocomplete : autocompletes)
+			System.out.print(autocomplete.toDebugString() + " ");
+		System.out.println();
 	}
 }

@@ -39,6 +39,30 @@ public class InvgProviderLiveTest
 	private static final String ALL_PRODUCTS = "IRSUTBFC";
 
 	@Test
+	public void nearbyStations() throws Exception
+	{
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 80301), 0, 0);
+
+		System.out.println(result.stations.size() + "  " + result.stations);
+	}
+
+	@Test
+	public void nearbyStationsByCoordinate() throws Exception
+	{
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 48744678, 11437941), 0, 0);
+
+		System.out.println(result.stations.size() + "  " + result.stations);
+	}
+
+	@Test
+	public void queryDepartures() throws Exception
+	{
+		final QueryDeparturesResult result = provider.queryDepartures(80301, 0, false);
+
+		System.out.println(result.stationDepartures);
+	}
+
+	@Test
 	public void autocomplete() throws Exception
 	{
 		final List<Location> autocompletes = provider.autocompleteStations("Flughafen");
@@ -52,22 +76,6 @@ public class InvgProviderLiveTest
 		for (final Location autocomplete : autocompletes)
 			System.out.print(autocomplete.toDebugString() + " ");
 		System.out.println();
-	}
-
-	@Test
-	public void nearbyStations() throws Exception
-	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 80301), 0, 0);
-
-		System.out.println(result.stations.size() + "  " + result.stations);
-	}
-
-	@Test
-	public void queryDepartures() throws Exception
-	{
-		final QueryDeparturesResult result = provider.queryDepartures(80301, 0, false);
-
-		System.out.println(result.stationDepartures);
 	}
 
 	@Test

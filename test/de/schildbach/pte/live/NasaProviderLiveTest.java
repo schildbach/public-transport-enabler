@@ -39,22 +39,6 @@ public class NasaProviderLiveTest
 	private static final String ALL_PRODUCTS = "IRSUTBFC";
 
 	@Test
-	public void autocomplete() throws Exception
-	{
-		final List<Location> autocompletes = provider.autocompleteStations("Flughafen");
-
-		list(autocompletes);
-	}
-
-	private void list(final List<Location> autocompletes)
-	{
-		System.out.print(autocompletes.size() + " ");
-		for (final Location autocomplete : autocompletes)
-			System.out.print(autocomplete.toDebugString() + " ");
-		System.out.println();
-	}
-
-	@Test
 	public void nearbyStations() throws Exception
 	{
 		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 13000), 0, 0);
@@ -68,6 +52,22 @@ public class NasaProviderLiveTest
 		final QueryDeparturesResult result = provider.queryDepartures(13000, 0, false);
 
 		System.out.println(result.stationDepartures);
+	}
+
+	@Test
+	public void autocomplete() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("Flughafen");
+
+		list(autocompletes);
+	}
+
+	private void list(final List<Location> autocompletes)
+	{
+		System.out.print(autocompletes.size() + " ");
+		for (final Location autocomplete : autocompletes)
+			System.out.print(autocomplete.toDebugString() + " ");
+		System.out.println();
 	}
 
 	@Test

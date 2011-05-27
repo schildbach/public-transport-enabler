@@ -35,22 +35,6 @@ public class DsbProviderLiveTest
 	private final DsbProvider provider = new DsbProvider();
 
 	@Test
-	public void autocomplete() throws Exception
-	{
-		final List<Location> autocompletes = provider.autocompleteStations("Airport");
-
-		list(autocompletes);
-	}
-
-	private void list(final List<Location> autocompletes)
-	{
-		System.out.print(autocompletes.size() + " ");
-		for (final Location autocomplete : autocompletes)
-			System.out.print(autocomplete.toDebugString() + " ");
-		System.out.println();
-	}
-
-	@Test
 	public void nearbyStations() throws Exception
 	{
 		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 8600858), 0, 0);
@@ -72,5 +56,21 @@ public class DsbProviderLiveTest
 		final QueryDeparturesResult result = provider.queryDepartures(8600858, 0, false);
 
 		System.out.println(result.stationDepartures);
+	}
+
+	@Test
+	public void autocomplete() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("Airport");
+
+		list(autocompletes);
+	}
+
+	private void list(final List<Location> autocompletes)
+	{
+		System.out.print(autocompletes.size() + " ");
+		for (final Location autocomplete : autocompletes)
+			System.out.print(autocomplete.toDebugString() + " ");
+		System.out.println();
 	}
 }

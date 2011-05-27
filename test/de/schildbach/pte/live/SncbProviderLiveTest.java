@@ -47,6 +47,14 @@ public class SncbProviderLiveTest
 	}
 
 	@Test
+	public void nearbyStationsByCoordinate() throws Exception
+	{
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 50748017, 3407118), 0, 0);
+
+		System.out.println(result.stations.size() + "  " + result.stations);
+	}
+
+	@Test
 	public void queryDepartures() throws Exception
 	{
 		final QueryDeparturesResult result = provider.queryDepartures(100080, 0, false);

@@ -39,6 +39,29 @@ public class LinzProviderLiveTest
 	private static final String ALL_PRODUCTS = "IRSUTBFC";
 
 	@Test
+	public void nearbyStations() throws Exception
+	{
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 60500090), 0, 0);
+
+		System.out.println(result.stations.size() + "  " + result.stations);
+	}
+
+	@Test
+	public void nearbyStationsByCoordinate() throws Exception
+	{
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 48305726, 14287863), 0, 0);
+
+		System.out.println(result.stations.size() + "  " + result.stations);
+	}
+
+	@Test
+	public void queryDepartures() throws Exception
+	{
+		final QueryDeparturesResult result = provider.queryDepartures(60501720, 0, false);
+		System.out.println(result);
+	}
+
+	@Test
 	public void autocompleteIncomplete() throws Exception
 	{
 		final List<Location> autocompletes = provider.autocompleteStations("Friedhof");
@@ -68,21 +91,6 @@ public class LinzProviderLiveTest
 		for (final Location autocomplete : autocompletes)
 			System.out.print(autocomplete.toDebugString() + " ");
 		System.out.println();
-	}
-
-	@Test
-	public void nearbyStationsByCoordinate() throws Exception
-	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 48305726, 14287863), 0, 0);
-
-		System.out.println(result.stations.size() + "  " + result.stations);
-	}
-
-	@Test
-	public void queryDepartures() throws Exception
-	{
-		final QueryDeparturesResult result = provider.queryDepartures(60501720, 0, false);
-		System.out.println(result);
 	}
 
 	@Test

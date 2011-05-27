@@ -38,6 +38,22 @@ public class NsProviderLiveTest
 	private final NsProvider provider = new NsProvider();
 
 	@Test
+	public void nearbyStations() throws Exception
+	{
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 100080), 0, 0);
+
+		System.out.println(result.stations.size() + "  " + result.stations);
+	}
+
+	@Test
+	public void nearbyStationsByCoordinate() throws Exception
+	{
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 52377548, 4901218), 0, 0);
+
+		System.out.println(result.stations.size() + "  " + result.stations);
+	}
+
+	@Test
 	public void queryDepartures() throws Exception
 	{
 		final QueryDeparturesResult result = provider.queryDepartures(100080, 0, false);
@@ -77,13 +93,5 @@ public class NsProviderLiveTest
 				LocationType.STATION, 103624), new Date(), true, null, WalkSpeed.FAST);
 
 		System.out.println(result.status + "  " + result.connections);
-	}
-
-	@Test
-	public void nearbyStations() throws Exception
-	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 100080), 0, 0);
-
-		System.out.println(result.stations.size() + "  " + result.stations);
 	}
 }

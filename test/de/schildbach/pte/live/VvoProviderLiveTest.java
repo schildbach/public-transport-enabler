@@ -35,22 +35,6 @@ public class VvoProviderLiveTest
 	private final VvoProvider provider = new VvoProvider();
 
 	@Test
-	public void autocompleteIncomplete() throws Exception
-	{
-		final List<Location> autocompletes = provider.autocompleteStations("Kur");
-
-		list(autocompletes);
-	}
-
-	private void list(final List<Location> autocompletes)
-	{
-		System.out.print(autocompletes.size() + " ");
-		for (final Location autocomplete : autocompletes)
-			System.out.print(autocomplete.toDebugString() + " ");
-		System.out.println();
-	}
-
-	@Test
 	public void nearbyStations() throws Exception
 	{
 		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 100), 0, 0);
@@ -72,5 +56,21 @@ public class VvoProviderLiveTest
 		final QueryDeparturesResult result = provider.queryDepartures(100, 0, false);
 
 		System.out.println(result.stationDepartures);
+	}
+
+	@Test
+	public void autocompleteIncomplete() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("Kur");
+
+		list(autocompletes);
+	}
+
+	private void list(final List<Location> autocompletes)
+	{
+		System.out.print(autocompletes.size() + " ");
+		for (final Location autocomplete : autocompletes)
+			System.out.print(autocomplete.toDebugString() + " ");
+		System.out.println();
 	}
 }

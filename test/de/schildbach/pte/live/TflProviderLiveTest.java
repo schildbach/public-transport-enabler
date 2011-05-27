@@ -39,22 +39,6 @@ public class TflProviderLiveTest
 	private static final String ALL_PRODUCTS = "IRSUTBFC";
 
 	@Test
-	public void autocompleteIncomplete() throws Exception
-	{
-		final List<Location> autocompletes = provider.autocompleteStations("Kur");
-
-		list(autocompletes);
-	}
-
-	private void list(final List<Location> autocompletes)
-	{
-		System.out.print(autocompletes.size() + " ");
-		for (final Location autocomplete : autocompletes)
-			System.out.print(autocomplete.toDebugString() + " ");
-		System.out.println();
-	}
-
-	@Test
 	public void nearbyStations() throws Exception
 	{
 		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 1000086), 0, 0);
@@ -76,6 +60,22 @@ public class TflProviderLiveTest
 		final QueryDeparturesResult result = provider.queryDepartures(1000086, 0, false);
 
 		System.out.println(result.stationDepartures);
+	}
+
+	@Test
+	public void autocompleteIncomplete() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("Kur");
+
+		list(autocompletes);
+	}
+
+	private void list(final List<Location> autocompletes)
+	{
+		System.out.print(autocompletes.size() + " ");
+		for (final Location autocomplete : autocompletes)
+			System.out.print(autocomplete.toDebugString() + " ");
+		System.out.println();
 	}
 
 	@Test

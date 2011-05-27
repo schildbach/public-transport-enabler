@@ -28,6 +28,7 @@ import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
+import de.schildbach.pte.dto.QueryDeparturesResult;
 
 /**
  * @author Andreas Schildbach
@@ -36,6 +37,30 @@ public class GvhProviderLiveTest
 {
 	private final GvhProvider provider = new GvhProvider(null);
 	private static final String ALL_PRODUCTS = "IRSUTBFC";
+
+	@Test
+	public void nearbyStations() throws Exception
+	{
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 25000031), 0, 0);
+
+		System.out.println(result.stations.size() + "  " + result.stations);
+	}
+
+	@Test
+	public void nearbyStationsByCoordinate() throws Exception
+	{
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 52379497, 9735832), 0, 0);
+
+		System.out.println(result.stations.size() + "  " + result.stations);
+	}
+
+	@Test
+	public void queryDepartures() throws Exception
+	{
+		final QueryDeparturesResult result = provider.queryDepartures(25000031, 0, false);
+
+		System.out.println(result.stationDepartures);
+	}
 
 	@Test
 	public void autocompleteIncomplete() throws Exception
@@ -75,22 +100,6 @@ public class GvhProviderLiveTest
 		final List<Location> results = provider.autocompleteStations("Hannover");
 
 		System.out.println(results.size() + "  " + results);
-	}
-
-	@Test
-	public void nearbyStations() throws Exception
-	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 25000031), 0, 0);
-
-		System.out.println(result.stations.size() + "  " + result.stations);
-	}
-
-	@Test
-	public void nearbyStationsByCoordinate() throws Exception
-	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 52379497, 9735832), 0, 0);
-
-		System.out.println(result.stations.size() + "  " + result.stations);
 	}
 
 	@Test

@@ -39,22 +39,6 @@ public class ZvvProviderLiveTest
 	private static final String ALL_PRODUCTS = "IRSUTBFC";
 
 	@Test
-	public void autocomplete() throws Exception
-	{
-		final List<Location> autocompletes = provider.autocompleteStations("Flughafen");
-
-		list(autocompletes);
-	}
-
-	private void list(final List<Location> autocompletes)
-	{
-		System.out.print(autocompletes.size() + " ");
-		for (final Location autocomplete : autocompletes)
-			System.out.print(autocomplete.toDebugString() + " ");
-		System.out.println();
-	}
-
-	@Test
 	public void nearbyStationsByStation() throws Exception
 	{
 		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 183400), 0, 0);
@@ -76,6 +60,22 @@ public class ZvvProviderLiveTest
 		final QueryDeparturesResult result = provider.queryDepartures(183400, 0, false);
 
 		System.out.println(result.stationDepartures);
+	}
+
+	@Test
+	public void autocomplete() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("Flughafen");
+
+		list(autocompletes);
+	}
+
+	private void list(final List<Location> autocompletes)
+	{
+		System.out.print(autocompletes.size() + " ");
+		for (final Location autocomplete : autocompletes)
+			System.out.print(autocomplete.toDebugString() + " ");
+		System.out.println();
 	}
 
 	@Test

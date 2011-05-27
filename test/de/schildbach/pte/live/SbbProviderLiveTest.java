@@ -126,5 +126,4 @@ public class SbbProviderLiveTest
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);
 	}
-
 }
