@@ -18,6 +18,7 @@
 package de.schildbach.pte.live;
 
 import java.util.Date;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -62,10 +63,26 @@ public class OebbProviderLiveTest
 	}
 
 	@Test
+	public void autoComplete() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("Wien");
+
+		list(autocompletes);
+	}
+
+	private void list(final List<Location> autocompletes)
+	{
+		System.out.print(autocompletes.size() + " ");
+		for (final Location autocomplete : autocompletes)
+			System.out.print(autocomplete.toDebugString() + " ");
+		System.out.println();
+	}
+
+	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, null, "Linz"), null, new Location(
-				LocationType.ANY, 0, null, "Berlin"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 1140101, null, "Linz"), null,
+				new Location(LocationType.STATION, 1190100, null, "Wien"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);

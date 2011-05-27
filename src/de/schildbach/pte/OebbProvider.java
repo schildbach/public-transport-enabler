@@ -403,14 +403,14 @@ public class OebbProvider extends AbstractHafasProvider
 			+ "<tr class=\"tpDetails sectionInfo\">\n(.*?)</tr>\n" //
 	, Pattern.DOTALL);
 	private static final Pattern P_CONNECTION_DETAILS_FINE = Pattern.compile(".*?" //
-			+ "<td class=\"station\">(?:<a href=\"http://fahrplan\\.oebb\\.at/bin/stboard\\.exe/dn.*?input=(\\d+)&[^>]*>)?" // departureId
+			+ "<td class=\"station\">\n?(?:<a href=\"http://fahrplan\\.oebb\\.at/bin/stboard\\.exe/dn.*?input=(\\d+)&[^>]*>)?" // departureId
 			+ "([^\n<]*).*?" // departure
 			+ "<td class=\"date\">(?:(\\d{2}\\.\\d{2}\\.\\d{2})|&nbsp;)</td>.*?" // departureDate
 			+ "<td class=\"timeValue\">\n?<span>ab (\\d{2}:\\d{2}).*?" // departureTime
 			+ "<td class=\"platform\">\\s*(?:&nbsp;|(.*?))\\s*</td>.*?" // departurePosition
 			+ "<img class=\"product\" src=\"/img/vs_oebb/(\\w+?)_pic.gif\".*?" // lineType
 			+ "(?:<a href=\"http://fahrplan\\.oebb\\.at/bin/traininfo\\.exe/dn[^>]*>(.*?)</a>.*?)?" // line
-			+ "<td class=\"station\">(?:<a href=\"http://fahrplan\\.oebb\\.at/bin/stboard\\.exe/dn.*?input=(\\d+)&[^>]*>)?" // arrivalId
+			+ "<td class=\"station\">\n?(?:<a href=\"http://fahrplan\\.oebb\\.at/bin/stboard\\.exe/dn.*?input=(\\d+)&[^>]*>)?" // arrivalId
 			+ "([^\n<]*).*?" // arrival
 			+ "<td class=\"date\">(?:(\\d{2}\\.\\d{2}\\.\\d{2})|&nbsp;)</td>.*?" // arrivalDate
 			+ "<td class=\"timeValue\">\n?<span>an (\\d{2}:\\d{2}).*?" // arrivalTime
