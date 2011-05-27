@@ -71,62 +71,6 @@ public class SeptaProvider extends AbstractHafasProvider
 		return false;
 	}
 
-	private static final String AUTOCOMPLETE_URI = API_BASE
-			+ "ajax-getstop.exe/dny?start=1&tpl=suggest2json&REQ0JourneyStopsS0A=255&REQ0JourneyStopsB=12&S=%s?&js=true&";
-	private static final String ENCODING = "ISO-8859-1";
-
-	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
-	{
-		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING));
-
-		return jsonGetStops(uri);
-	}
-
-	@Override
-	protected char normalizeType(final String type)
-	{
-		final String ucType = type.toUpperCase();
-
-		// skip parsing of "common" lines, because this is America
-
-		// Regional
-		if (ucType.equals("RAI"))
-			return 'R';
-
-		// Subway
-		if (ucType.equals("BSS"))
-			return 'U';
-		if (ucType.equals("BSL"))
-			return 'U';
-		if (ucType.equals("MFL"))
-			return 'U';
-
-		// Tram
-		if (ucType.equals("TRM"))
-			return 'T';
-		if (ucType.equals("NHS")) // Tro NHSL
-			return 'T';
-
-		// Bus
-		if (ucType.equals("BUS"))
-			return 'B';
-		if (ucType.equals("TRO"))
-			return 'B';
-
-		// from Connections:
-
-		if (ucType.equals("RAIL"))
-			return 'R';
-
-		if (ucType.equals("SUBWAY"))
-			return 'U';
-
-		if (ucType.equals("TROLLEY"))
-			return 'B';
-
-		return 0;
-	}
-
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(API_BASE);
@@ -294,5 +238,61 @@ public class SeptaProvider extends AbstractHafasProvider
 		{
 			throw new IllegalArgumentException("cannot parse '" + page + "' on " + stationId);
 		}
+	}
+
+	private static final String AUTOCOMPLETE_URI = API_BASE
+			+ "ajax-getstop.exe/dny?start=1&tpl=suggest2json&REQ0JourneyStopsS0A=255&REQ0JourneyStopsB=12&S=%s?&js=true&";
+	private static final String ENCODING = "ISO-8859-1";
+
+	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
+	{
+		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING));
+
+		return jsonGetStops(uri);
+	}
+
+	@Override
+	protected char normalizeType(final String type)
+	{
+		final String ucType = type.toUpperCase();
+
+		// skip parsing of "common" lines, because this is America
+
+		// Regional
+		if (ucType.equals("RAI"))
+			return 'R';
+
+		// Subway
+		if (ucType.equals("BSS"))
+			return 'U';
+		if (ucType.equals("BSL"))
+			return 'U';
+		if (ucType.equals("MFL"))
+			return 'U';
+
+		// Tram
+		if (ucType.equals("TRM"))
+			return 'T';
+		if (ucType.equals("NHS")) // Tro NHSL
+			return 'T';
+
+		// Bus
+		if (ucType.equals("BUS"))
+			return 'B';
+		if (ucType.equals("TRO"))
+			return 'B';
+
+		// from Connections:
+
+		if (ucType.equals("RAIL"))
+			return 'R';
+
+		if (ucType.equals("SUBWAY"))
+			return 'U';
+
+		if (ucType.equals("TROLLEY"))
+			return 'B';
+
+		return 0;
 	}
 }

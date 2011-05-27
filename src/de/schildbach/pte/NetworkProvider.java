@@ -49,16 +49,6 @@ public interface NetworkProvider
 	boolean hasCapabilities(Capability... capabilities);
 
 	/**
-	 * Meant for auto-completion of station names, like in an {@link android.widget.AutoCompleteTextView}
-	 * 
-	 * @param constraint
-	 *            input by user so far
-	 * @return auto-complete suggestions
-	 * @throws IOException
-	 */
-	List<Location> autocompleteStations(CharSequence constraint) throws IOException;
-
-	/**
 	 * Determine stations near to given location. At least one of stationId or lat/lon pair must be present.
 	 * 
 	 * @param location
@@ -71,6 +61,30 @@ public interface NetworkProvider
 	 * @throws IOException
 	 */
 	NearbyStationsResult queryNearbyStations(Location location, int maxDistance, int maxStations) throws IOException;
+
+	/**
+	 * Get departures at a given station, probably live
+	 * 
+	 * @param stationId
+	 *            id of the station
+	 * @param maxDepartures
+	 *            maximum number of departures to get or {@code 0}
+	 * @param equivs
+	 *            also query equivalent stations?
+	 * @return result object containing the departures
+	 * @throws IOException
+	 */
+	QueryDeparturesResult queryDepartures(int stationId, int maxDepartures, boolean equivs) throws IOException;
+
+	/**
+	 * Meant for auto-completion of station names, like in an {@link android.widget.AutoCompleteTextView}
+	 * 
+	 * @param constraint
+	 *            input by user so far
+	 * @return auto-complete suggestions
+	 * @throws IOException
+	 */
+	List<Location> autocompleteStations(CharSequence constraint) throws IOException;
 
 	/**
 	 * Query connections, asking for any ambiguousnesses
@@ -116,20 +130,6 @@ public interface NetworkProvider
 	 * @throws IOException
 	 */
 	GetConnectionDetailsResult getConnectionDetails(String connectionUri) throws IOException;
-
-	/**
-	 * Get departures at a given station, probably live
-	 * 
-	 * @param stationId
-	 *            id of the station
-	 * @param maxDepartures
-	 *            maximum number of departures to get or {@code 0}
-	 * @param equivs
-	 *            also query equivalent stations?
-	 * @return result object containing the departures
-	 * @throws IOException
-	 */
-	QueryDeparturesResult queryDepartures(int stationId, int maxDepartures, boolean equivs) throws IOException;
 
 	/**
 	 * Get colors of line

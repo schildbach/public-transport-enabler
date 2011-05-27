@@ -68,11 +68,6 @@ public class ZvvProvider extends AbstractHafasProvider
 		return super.splitNameAndPlace(name);
 	}
 
-	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
-	{
-		return xmlMLcReq(constraint);
-	}
-
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(API_BASE);
@@ -104,6 +99,26 @@ public class ZvvProvider extends AbstractHafasProvider
 		{
 			throw new IllegalArgumentException("cannot handle: " + location.toDebugString());
 		}
+	}
+
+	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
+	{
+		final StringBuilder uri = new StringBuilder();
+		uri.append(API_BASE).append("stboard.exe/dn");
+		uri.append("?productsFilter=").append(allProductsString());
+		uri.append("&boardType=dep");
+		uri.append("&disableEquivs=").append(equivs ? "no" : "yes"); // don't use nearby stations
+		uri.append("&maxJourneys=50"); // ignore maxDepartures because result contains other stations
+		uri.append("&start=yes");
+		uri.append("&L=vs_java3");
+		uri.append("&input=").append(stationId);
+
+		return xmlQueryDepartures(uri.toString(), stationId);
+	}
+
+	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
+	{
+		return xmlMLcReq(constraint);
 	}
 
 	private static final Pattern P_NORMALIZE_LINE_AND_TYPE = Pattern.compile("([^#]*)#(.*)");
@@ -164,20 +179,5 @@ public class ZvvProvider extends AbstractHafasProvider
 			return t;
 
 		return 0;
-	}
-
-	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
-	{
-		final StringBuilder uri = new StringBuilder();
-		uri.append(API_BASE).append("stboard.exe/dn");
-		uri.append("?productsFilter=").append(allProductsString());
-		uri.append("&boardType=dep");
-		uri.append("&disableEquivs=").append(equivs ? "no" : "yes"); // don't use nearby stations
-		uri.append("&maxJourneys=50"); // ignore maxDepartures because result contains other stations
-		uri.append("&start=yes");
-		uri.append("&L=vs_java3");
-		uri.append("&input=").append(stationId);
-
-		return xmlQueryDepartures(uri.toString(), stationId);
 	}
 }

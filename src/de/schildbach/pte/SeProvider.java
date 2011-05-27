@@ -96,17 +96,6 @@ public class SeProvider extends AbstractHafasProvider
 		return super.splitNameAndPlace(name);
 	}
 
-	private static final String AUTOCOMPLETE_URI = API_BASE
-			+ "ajax-getstop.exe/sny?start=1&tpl=suggest2json&REQ0JourneyStopsS0A=7&getstop=1&noSession=yes&REQ0JourneyStopsB=12&REQ0JourneyStopsS0G=&S=%s";
-	private static final String ENCODING = "ISO-8859-1";
-
-	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
-	{
-		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING));
-
-		return jsonGetStops(uri);
-	}
-
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(API_BASE);
@@ -139,12 +128,6 @@ public class SeProvider extends AbstractHafasProvider
 		}
 	}
 
-	@Override
-	protected char normalizeType(final String type)
-	{
-		throw new UnsupportedOperationException();
-	}
-
 	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder();
@@ -158,5 +141,22 @@ public class SeProvider extends AbstractHafasProvider
 		uri.append("&input=").append(stationId);
 
 		return xmlQueryDepartures(uri.toString(), stationId);
+	}
+
+	private static final String AUTOCOMPLETE_URI = API_BASE
+			+ "ajax-getstop.exe/sny?start=1&tpl=suggest2json&REQ0JourneyStopsS0A=7&getstop=1&noSession=yes&REQ0JourneyStopsB=12&REQ0JourneyStopsS0G=&S=%s";
+	private static final String ENCODING = "ISO-8859-1";
+
+	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
+	{
+		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING));
+
+		return jsonGetStops(uri);
+	}
+
+	@Override
+	protected char normalizeType(final String type)
+	{
+		throw new UnsupportedOperationException();
 	}
 }

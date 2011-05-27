@@ -64,11 +64,6 @@ public class ShProvider extends AbstractHafasProvider
 		return false;
 	}
 
-	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
-	{
-		return xmlMLcReq(constraint);
-	}
-
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(API_BASE);
@@ -85,23 +80,6 @@ public class ShProvider extends AbstractHafasProvider
 		{
 			throw new IllegalArgumentException("cannot handle: " + location.toDebugString());
 		}
-	}
-
-	@Override
-	protected char normalizeType(final String type)
-	{
-		final String ucType = type.toUpperCase();
-
-		if ("KBS".equals(ucType))
-			return 'B';
-		if ("KB1".equals(ucType))
-			return 'B';
-
-		final char t = super.normalizeType(type);
-		if (t != 0)
-			return t;
-
-		return 0;
 	}
 
 	private String departuresQueryUri(final int stationId, final int maxDepartures)
@@ -256,5 +234,27 @@ public class ShProvider extends AbstractHafasProvider
 		{
 			throw new IllegalArgumentException("cannot parse '" + page + "' on " + stationId);
 		}
+	}
+
+	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
+	{
+		return xmlMLcReq(constraint);
+	}
+
+	@Override
+	protected char normalizeType(final String type)
+	{
+		final String ucType = type.toUpperCase();
+
+		if ("KBS".equals(ucType))
+			return 'B';
+		if ("KB1".equals(ucType))
+			return 'B';
+
+		final char t = super.normalizeType(type);
+		if (t != 0)
+			return t;
+
+		return 0;
 	}
 }

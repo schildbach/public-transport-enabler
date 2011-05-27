@@ -76,16 +76,6 @@ public class OebbProvider extends AbstractHafasProvider
 		return false;
 	}
 
-	private static final String AUTOCOMPLETE_URI = API_BASE
-			+ "ajax-getstop.exe/dny?start=1&tpl=suggest2json&REQ0JourneyStopsS0A=255&REQ0JourneyStopsB=12&S=%s?&js=true&";
-
-	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
-	{
-		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), URL_ENCODING));
-
-		return jsonGetStops(uri);
-	}
-
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(API_BASE);
@@ -114,6 +104,100 @@ public class OebbProvider extends AbstractHafasProvider
 		{
 			throw new IllegalArgumentException("cannot handle: " + location.toDebugString());
 		}
+	}
+
+	private String departuresQueryUri(final int stationId, final int maxDepartures)
+	{
+		final StringBuilder uri = new StringBuilder();
+
+		uri.append(API_BASE);
+		uri.append("stboard.exe/dn?L=vs_scotty.vs_stb");
+		uri.append("&input=").append(stationId);
+		uri.append("&boardType=dep");
+		uri.append("&productsFilter=").append(allProductsString());
+		uri.append("&additionalTime=0");
+		uri.append("&maxJourneys=").append(maxDepartures != 0 ? maxDepartures : 20);
+		uri.append("&start=yes");
+		uri.append("&monitor=1");
+		uri.append("&requestType=0");
+		uri.append("&view=preview");
+		uri.append("&disableEquivs=yes"); // don't use nearby stations
+
+		return uri.toString();
+	}
+
+	private static final Pattern P_DEPARTURES_ERROR = Pattern.compile("(Verbindung zum Server konnte leider nicht hergestellt werden)");
+
+	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
+	{
+		final QueryDeparturesResult result = new QueryDeparturesResult();
+
+		// scrape page
+		final String uri = departuresQueryUri(stationId, maxDepartures);
+		final String page = ParserUtils.scrape(uri).toString().substring(14);
+
+		// parse page
+		final Matcher mError = P_DEPARTURES_ERROR.matcher(page);
+		if (mError.find())
+		{
+			if (mError.group(1) != null)
+				return new QueryDeparturesResult(Status.SERVICE_DOWN);
+		}
+
+		try
+		{
+			final JSONObject head = new JSONObject(page);
+			final String location = ParserUtils.resolveEntities(head.getString("stationName"));
+			final int locationId = head.optInt("stationEvaId", -1);
+			// final boolean rt = head.optBoolean("rtInfo");
+			if (locationId == -1)
+				return new QueryDeparturesResult(Status.INVALID_STATION);
+
+			final List<Departure> departures = new ArrayList<Departure>(8);
+
+			final JSONArray aDeparture = head.optJSONArray("journey");
+			if (aDeparture != null)
+			{
+				for (int i = 0; i < aDeparture.length(); i++)
+				{
+					final JSONObject departure = aDeparture.optJSONObject(i);
+					if (departure != null)
+					{
+						final Calendar parsedTime = new GregorianCalendar(timeZone());
+						parsedTime.clear();
+						ParserUtils.parseGermanDate(parsedTime, departure.getString("da"));
+						ParserUtils.parseEuropeanTime(parsedTime, departure.getString("ti"));
+						final String line = normalizeLine(ParserUtils.resolveEntities(departure.getString("pr")));
+						final String destination = ParserUtils.resolveEntities(departure.getString("st"));
+						String position = departure.optString("tr");
+						if (position != null)
+							position = "Gl. " + position;
+						final boolean rt = head.optBoolean("rt", false);
+						final String lineLink = departure.optString("tinfoline");
+
+						departures.add(new Departure(!rt ? parsedTime.getTime() : null, rt ? parsedTime.getTime() : null, line,
+								line != null ? lineColors(line) : null, lineLink, position, 0, destination, null));
+					}
+				}
+			}
+
+			result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, locationId, null, location), departures, null));
+			return result;
+		}
+		catch (final JSONException x)
+		{
+			throw new RuntimeException("cannot parse: '" + page + "' on " + stationId, x);
+		}
+	}
+
+	private static final String AUTOCOMPLETE_URI = API_BASE
+			+ "ajax-getstop.exe/dny?start=1&tpl=suggest2json&REQ0JourneyStopsS0A=255&REQ0JourneyStopsB=12&S=%s?&js=true&";
+
+	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
+	{
+		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), URL_ENCODING));
+
+		return jsonGetStops(uri);
 	}
 
 	private static final Map<WalkSpeed, String> WALKSPEED_MAP = new HashMap<WalkSpeed, String>();
@@ -479,90 +563,6 @@ public class OebbProvider extends AbstractHafasProvider
 	public GetConnectionDetailsResult getConnectionDetails(final String connectionUri) throws IOException
 	{
 		throw new UnsupportedOperationException();
-	}
-
-	private String departuresQueryUri(final int stationId, final int maxDepartures)
-	{
-		final StringBuilder uri = new StringBuilder();
-
-		uri.append(API_BASE);
-		uri.append("stboard.exe/dn?L=vs_scotty.vs_stb");
-		uri.append("&input=").append(stationId);
-		uri.append("&boardType=dep");
-		uri.append("&productsFilter=").append(allProductsString());
-		uri.append("&additionalTime=0");
-		uri.append("&maxJourneys=").append(maxDepartures != 0 ? maxDepartures : 20);
-		uri.append("&start=yes");
-		uri.append("&monitor=1");
-		uri.append("&requestType=0");
-		uri.append("&view=preview");
-		uri.append("&disableEquivs=yes"); // don't use nearby stations
-
-		return uri.toString();
-	}
-
-	private static final Pattern P_DEPARTURES_ERROR = Pattern.compile("(Verbindung zum Server konnte leider nicht hergestellt werden)");
-
-	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
-	{
-		final QueryDeparturesResult result = new QueryDeparturesResult();
-
-		// scrape page
-		final String uri = departuresQueryUri(stationId, maxDepartures);
-		final String page = ParserUtils.scrape(uri).toString().substring(14);
-
-		// parse page
-		final Matcher mError = P_DEPARTURES_ERROR.matcher(page);
-		if (mError.find())
-		{
-			if (mError.group(1) != null)
-				return new QueryDeparturesResult(Status.SERVICE_DOWN);
-		}
-
-		try
-		{
-			final JSONObject head = new JSONObject(page);
-			final String location = ParserUtils.resolveEntities(head.getString("stationName"));
-			final int locationId = head.optInt("stationEvaId", -1);
-			// final boolean rt = head.optBoolean("rtInfo");
-			if (locationId == -1)
-				return new QueryDeparturesResult(Status.INVALID_STATION);
-
-			final List<Departure> departures = new ArrayList<Departure>(8);
-
-			final JSONArray aDeparture = head.optJSONArray("journey");
-			if (aDeparture != null)
-			{
-				for (int i = 0; i < aDeparture.length(); i++)
-				{
-					final JSONObject departure = aDeparture.optJSONObject(i);
-					if (departure != null)
-					{
-						final Calendar parsedTime = new GregorianCalendar(timeZone());
-						parsedTime.clear();
-						ParserUtils.parseGermanDate(parsedTime, departure.getString("da"));
-						ParserUtils.parseEuropeanTime(parsedTime, departure.getString("ti"));
-						final String line = normalizeLine(ParserUtils.resolveEntities(departure.getString("pr")));
-						final String destination = ParserUtils.resolveEntities(departure.getString("st"));
-						String position = departure.optString("tr");
-						if (position != null)
-							position = "Gl. " + position;
-						final boolean rt = head.optBoolean("rt", false);
-						final String lineLink = departure.optString("tinfoline");
-
-						departures.add(new Departure(!rt ? parsedTime.getTime() : null, rt ? parsedTime.getTime() : null, line,
-								line != null ? lineColors(line) : null, lineLink, position, 0, destination, null));
-					}
-				}
-			}
-
-			result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, locationId, null, location), departures, null));
-			return result;
-		}
-		catch (final JSONException x)
-		{
-			throw new RuntimeException("cannot parse: '" + page + "' on " + stationId, x);
-		}
 	}
 
 	private static final Pattern P_NORMALIZE_LINE_NUMBER = Pattern.compile("\\d{2,5}");

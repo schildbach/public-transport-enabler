@@ -75,16 +75,6 @@ public class VbbProvider extends AbstractHafasProvider
 		return super.splitNameAndPlace(name);
 	}
 
-	private static final String AUTOCOMPLETE_URI = API_BASE + "ajax-getstop.exe/dn?getstop=1&REQ0JourneyStopsS0A=255&S=%s?&js=true&";
-	private static final String ENCODING = "ISO-8859-1";
-
-	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
-	{
-		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING));
-
-		return jsonGetStops(uri);
-	}
-
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(API_BASE);
@@ -118,6 +108,31 @@ public class VbbProvider extends AbstractHafasProvider
 		}
 	}
 
+	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
+	{
+		final StringBuilder uri = new StringBuilder();
+		uri.append(API_BASE).append("stboard.exe/dn");
+		uri.append("?productsFilter=").append(allProductsString());
+		uri.append("&boardType=dep");
+		uri.append("&disableEquivs=").append(equivs ? "no" : "yes"); // don't use nearby stations
+		uri.append("&maxJourneys=50"); // ignore maxDepartures because result contains other stations
+		uri.append("&start=yes");
+		uri.append("&L=vs_java3");
+		uri.append("&input=").append(stationId);
+
+		return xmlQueryDepartures(uri.toString(), stationId);
+	}
+
+	private static final String AUTOCOMPLETE_URI = API_BASE + "ajax-getstop.exe/dn?getstop=1&REQ0JourneyStopsS0A=255&S=%s?&js=true&";
+	private static final String ENCODING = "ISO-8859-1";
+
+	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
+	{
+		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING));
+
+		return jsonGetStops(uri);
+	}
+
 	private static final Pattern P_NORMALIZE_LINE_AND_TYPE = Pattern.compile("([^#]*)#(.*)");
 
 	@Override
@@ -137,20 +152,5 @@ public class VbbProvider extends AbstractHafasProvider
 		}
 
 		throw new IllegalStateException("cannot normalize line " + line);
-	}
-
-	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
-	{
-		final StringBuilder uri = new StringBuilder();
-		uri.append(API_BASE).append("stboard.exe/dn");
-		uri.append("?productsFilter=").append(allProductsString());
-		uri.append("&boardType=dep");
-		uri.append("&disableEquivs=").append(equivs ? "no" : "yes"); // don't use nearby stations
-		uri.append("&maxJourneys=50"); // ignore maxDepartures because result contains other stations
-		uri.append("&start=yes");
-		uri.append("&L=vs_java3");
-		uri.append("&input=").append(stationId);
-
-		return xmlQueryDepartures(uri.toString(), stationId);
 	}
 }

@@ -65,11 +65,6 @@ public class NasaProvider extends AbstractHafasProvider
 		return false;
 	}
 
-	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
-	{
-		return xmlMLcReq(constraint);
-	}
-
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(API_BASE);
@@ -240,6 +235,11 @@ public class NasaProvider extends AbstractHafasProvider
 		{
 			throw new IllegalArgumentException("cannot parse '" + page + "' on " + stationId);
 		}
+	}
+
+	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
+	{
+		return xmlMLcReq(constraint);
 	}
 
 	@Override

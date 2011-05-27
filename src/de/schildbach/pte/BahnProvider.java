@@ -68,16 +68,6 @@ public final class BahnProvider extends AbstractHafasProvider
 		return false;
 	}
 
-	private static final String AUTOCOMPLETE_URI = API_BASE + "ajax-getstop.exe/dn?getstop=1&REQ0JourneyStopsS0A=255&S=%s?&js=true&";
-	private static final String ENCODING = "ISO-8859-1";
-
-	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
-	{
-		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING));
-
-		return jsonGetStops(uri);
-	}
-
 	private final static Pattern P_NEARBY_STATIONS_BY_STATION = Pattern
 			.compile("<a href=\"http://mobile\\.bahn\\.de/bin/mobil/bhftafel.exe/dn[^\"]*?evaId=(\\d*)&[^\"]*?\">([^<]*)</a>");
 
@@ -128,6 +118,16 @@ public final class BahnProvider extends AbstractHafasProvider
 		{
 			throw new IllegalArgumentException("cannot handle: " + location.toDebugString());
 		}
+	}
+
+	private static final String AUTOCOMPLETE_URI = API_BASE + "ajax-getstop.exe/dn?getstop=1&REQ0JourneyStopsS0A=255&S=%s?&js=true&";
+	private static final String ENCODING = "ISO-8859-1";
+
+	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
+	{
+		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING));
+
+		return jsonGetStops(uri);
 	}
 
 	private String connectionsQueryUri(final Location from, final Location via, final Location to, final Date date, final boolean dep,
