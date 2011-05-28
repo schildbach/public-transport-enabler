@@ -218,8 +218,6 @@ public class SncbProvider extends AbstractHafasProvider
 
 		if ("L".equals(ucType))
 			return 'R';
-		if ("P".equals(ucType))
-			return 'R';
 		if ("CR".equals(ucType))
 			return 'R';
 		if ("ICT".equals(ucType)) // Brügge

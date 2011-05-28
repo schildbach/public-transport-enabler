@@ -1385,6 +1385,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return 'R';
 		if ("MBB".equals(ucType)) // Mecklenburgische Bäderbahn Molli
 			return 'R';
+		if ("P".equals(ucType)) // Kasbachtalbahn
+			return 'R';
 		if ("ATZ".equals(ucType)) // Autotunnelzug
 			return 'R';
 		if ("CAT".equals(ucType)) // City Airport Train
@@ -1420,6 +1422,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		if ("TRAM".equals(ucType))
 			return 'T';
 		if ("TRA".equals(ucType))
+			return 'T';
+		if ("STRWLB".equals(ucType)) // Wiener Lokalbahnen
 			return 'T';
 
 		// Bus
@@ -1473,6 +1477,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return 'F';
 
 		// Cable Car
+		if ("SEILBAHN".equals(ucType))
+			return 'C';
 		if ("SB".equals(ucType)) // Seilbahn
 			return 'C';
 		if ("ZAHNR".equals(ucType)) // Zahnradbahn, u.a. Zugspitzbahn
@@ -1487,8 +1493,6 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return 'C';
 
 		// if ("L".equals(normalizedType))
-		// return "?" + normalizedName;
-		// if ("P".equals(normalizedType))
 		// return "?" + normalizedName;
 		// if ("CR".equals(normalizedType))
 		// return "?" + normalizedName;

@@ -160,8 +160,6 @@ public class PlProvider extends AbstractHafasProvider
 			return 'R';
 		if ("ZR".equals(ucType)) // Bratislava, Slovakai
 			return 'R';
-		if ("P".equals(ucType)) // Kasbachtalbahn
-			return 'R';
 		if ("KTB".equals(ucType)) // Kandertalbahn
 			return 'R';
 		if ("LEO".equals(ucType)) // Chiemgauer Lokalbahn

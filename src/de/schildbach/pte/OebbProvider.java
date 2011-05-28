@@ -580,8 +580,6 @@ public class OebbProvider extends AbstractHafasProvider
 		// return 'R';
 		// if (ucType.equals("RNV")) // Rhein-Neckar-Verkehr GmbH, via JSON API
 		// return 'R';
-		// if (ucType.equals("P")) // Kasbachtalbahn, via JSON API
-		// return 'R';
 		if ("UAU".equals(ucType)) // Rußland
 			return 'R';
 
@@ -617,8 +615,6 @@ public class OebbProvider extends AbstractHafasProvider
 
 		if (ucType.equals("LIF"))
 			return 'C';
-		// if (ucType.equals("SEILBAHN")) // via JSON API
-		// return 'C';
 		if (ucType.equals("SSB")) // Graz Schlossbergbahn
 			return 'C';
 		// if (ucType.equals("HBB")) // Innsbruck Hungerburgbahn, via JSON API

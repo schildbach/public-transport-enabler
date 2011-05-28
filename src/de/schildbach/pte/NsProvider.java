@@ -204,8 +204,6 @@ public class NsProvider extends AbstractHafasProvider
 
 		if (ucType.equals("L"))
 			return 'R';
-		if (ucType.equals("P"))
-			return 'R';
 		if (ucType.equals("CR"))
 			return 'R';
 		if (ucType.equals("ICT")) // Brügge

@@ -168,8 +168,6 @@ public class ZvvProvider extends AbstractHafasProvider
 
 		if ("BERGBAHN".equals(ucType))
 			return 'C';
-		if ("SEILBAHN".equals(ucType))
-			return 'C';
 
 		if ("UNB".equals(ucType))
 			return '?';
