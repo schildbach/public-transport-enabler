@@ -28,12 +28,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import de.schildbach.pte.dto.Connection;
-import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
@@ -41,8 +36,6 @@ import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
-import de.schildbach.pte.dto.QueryDeparturesResult.Status;
-import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.exception.SessionExpiredException;
 import de.schildbach.pte.util.ParserUtils;
 
@@ -106,88 +99,19 @@ public class OebbProvider extends AbstractHafasProvider
 		}
 	}
 
-	private String departuresQueryUri(final int stationId, final int maxDepartures)
-	{
-		final StringBuilder uri = new StringBuilder();
-
-		uri.append(API_BASE);
-		uri.append("stboard.exe/dn?L=vs_scotty.vs_stb");
-		uri.append("&input=").append(stationId);
-		uri.append("&boardType=dep");
-		uri.append("&productsFilter=").append(allProductsString());
-		uri.append("&additionalTime=0");
-		uri.append("&maxJourneys=").append(maxDepartures != 0 ? maxDepartures : 20);
-		uri.append("&start=yes");
-		uri.append("&monitor=1");
-		uri.append("&requestType=0");
-		uri.append("&view=preview");
-		uri.append("&disableEquivs=yes"); // don't use nearby stations
-
-		return uri.toString();
-	}
-
-	private static final Pattern P_DEPARTURES_ERROR = Pattern.compile("(Verbindung zum Server konnte leider nicht hergestellt werden)");
-
 	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
-		final QueryDeparturesResult result = new QueryDeparturesResult();
+		final StringBuilder uri = new StringBuilder();
+		uri.append(API_BASE).append("stboard.exe/dn");
+		uri.append("?productsFilter=").append(allProductsString());
+		uri.append("&boardType=dep");
+		uri.append("&disableEquivs=").append(equivs ? "no" : "yes"); // don't use nearby stations
+		uri.append("&maxJourneys=50"); // ignore maxDepartures because result contains other stations
+		uri.append("&start=yes");
+		uri.append("&L=vs_java3");
+		uri.append("&input=").append(stationId);
 
-		// scrape page
-		final String uri = departuresQueryUri(stationId, maxDepartures);
-		final String page = ParserUtils.scrape(uri).toString().substring(14);
-
-		// parse page
-		final Matcher mError = P_DEPARTURES_ERROR.matcher(page);
-		if (mError.find())
-		{
-			if (mError.group(1) != null)
-				return new QueryDeparturesResult(Status.SERVICE_DOWN);
-		}
-
-		try
-		{
-			final JSONObject head = new JSONObject(page);
-			final String location = ParserUtils.resolveEntities(head.getString("stationName"));
-			final int locationId = head.optInt("stationEvaId", -1);
-			// final boolean rt = head.optBoolean("rtInfo");
-			if (locationId == -1)
-				return new QueryDeparturesResult(Status.INVALID_STATION);
-
-			final List<Departure> departures = new ArrayList<Departure>(8);
-
-			final JSONArray aDeparture = head.optJSONArray("journey");
-			if (aDeparture != null)
-			{
-				for (int i = 0; i < aDeparture.length(); i++)
-				{
-					final JSONObject departure = aDeparture.optJSONObject(i);
-					if (departure != null)
-					{
-						final Calendar parsedTime = new GregorianCalendar(timeZone());
-						parsedTime.clear();
-						ParserUtils.parseGermanDate(parsedTime, departure.getString("da"));
-						ParserUtils.parseEuropeanTime(parsedTime, departure.getString("ti"));
-						final String line = normalizeLine(ParserUtils.resolveEntities(departure.getString("pr")));
-						final String destination = ParserUtils.resolveEntities(departure.getString("st"));
-						String position = departure.optString("tr");
-						if (position != null)
-							position = "Gl. " + position;
-						final boolean rt = head.optBoolean("rt", false);
-						final String lineLink = departure.optString("tinfoline");
-
-						departures.add(new Departure(!rt ? parsedTime.getTime() : null, rt ? parsedTime.getTime() : null, line,
-								line != null ? lineColors(line) : null, lineLink, position, 0, destination, null));
-					}
-				}
-			}
-
-			result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, locationId, null, location), departures, null));
-			return result;
-		}
-		catch (final JSONException x)
-		{
-			throw new RuntimeException("cannot parse: '" + page + "' on " + stationId, x);
-		}
+		return xmlQueryDepartures(uri.toString(), stationId);
 	}
 
 	private static final String AUTOCOMPLETE_URI = API_BASE
@@ -233,57 +157,60 @@ public class OebbProvider extends AbstractHafasProvider
 		uri.append("&existHafasAttrInc=yes");
 		uri.append("&start=Verbindungen+suchen");
 
-		for (final char p : products.toCharArray())
+		if (products != null)
 		{
-			if (p == 'I')
+			for (final char p : products.toCharArray())
 			{
-				uri.append("&REQ0JourneyProduct_prod_section_0_0=1&REQ0JourneyProduct_prod_section_0_1=1&REQ0JourneyProduct_prod_section_0_2=1");
-				if (via != null)
-					uri.append("&REQ0JourneyProduct_prod_section_1_0=1&REQ0JourneyProduct_prod_section_1_1=1&REQ0JourneyProduct_prod_section_1_2=1");
+				if (p == 'I')
+				{
+					uri.append("&REQ0JourneyProduct_prod_section_0_0=1&REQ0JourneyProduct_prod_section_0_1=1&REQ0JourneyProduct_prod_section_0_2=1");
+					if (via != null)
+						uri.append("&REQ0JourneyProduct_prod_section_1_0=1&REQ0JourneyProduct_prod_section_1_1=1&REQ0JourneyProduct_prod_section_1_2=1");
+				}
+				if (p == 'R')
+				{
+					uri.append("&REQ0JourneyProduct_prod_section_0_3=1&REQ0JourneyProduct_prod_section_0_4=1");
+					if (via != null)
+						uri.append("&REQ0JourneyProduct_prod_section_1_3=1&REQ0JourneyProduct_prod_section_1_4=1");
+				}
+				if (p == 'S')
+				{
+					uri.append("&REQ0JourneyProduct_prod_section_0_5=1");
+					if (via != null)
+						uri.append("&REQ0JourneyProduct_prod_section_1_5=1");
+				}
+				if (p == 'U')
+				{
+					uri.append("&REQ0JourneyProduct_prod_section_0_8=1");
+					if (via != null)
+						uri.append("&REQ0JourneyProduct_prod_section_1_8=1");
+				}
+				if (p == 'T')
+				{
+					uri.append("&REQ0JourneyProduct_prod_section_0_9=1");
+					if (via != null)
+						uri.append("&REQ0JourneyProduct_prod_section_1_9=1");
+				}
+				if (p == 'B')
+				{
+					uri.append("&REQ0JourneyProduct_prod_section_0_6=1");
+					if (via != null)
+						uri.append("&REQ0JourneyProduct_prod_section_1_6=1");
+				}
+				if (p == 'P')
+				{
+					uri.append("&REQ0JourneyProduct_prod_section_0_11=1");
+					if (via != null)
+						uri.append("&REQ0JourneyProduct_prod_section_1_11=1");
+				}
+				if (p == 'F')
+				{
+					uri.append("&REQ0JourneyProduct_prod_section_0_7=1");
+					if (via != null)
+						uri.append("&REQ0JourneyProduct_prod_section_1_7=1");
+				}
+				// FIXME if (p == 'C')
 			}
-			if (p == 'R')
-			{
-				uri.append("&REQ0JourneyProduct_prod_section_0_3=1&REQ0JourneyProduct_prod_section_0_4=1");
-				if (via != null)
-					uri.append("&REQ0JourneyProduct_prod_section_1_3=1&REQ0JourneyProduct_prod_section_1_4=1");
-			}
-			if (p == 'S')
-			{
-				uri.append("&REQ0JourneyProduct_prod_section_0_5=1");
-				if (via != null)
-					uri.append("&REQ0JourneyProduct_prod_section_1_5=1");
-			}
-			if (p == 'U')
-			{
-				uri.append("&REQ0JourneyProduct_prod_section_0_8=1");
-				if (via != null)
-					uri.append("&REQ0JourneyProduct_prod_section_1_8=1");
-			}
-			if (p == 'T')
-			{
-				uri.append("&REQ0JourneyProduct_prod_section_0_9=1");
-				if (via != null)
-					uri.append("&REQ0JourneyProduct_prod_section_1_9=1");
-			}
-			if (p == 'B')
-			{
-				uri.append("&REQ0JourneyProduct_prod_section_0_6=1");
-				if (via != null)
-					uri.append("&REQ0JourneyProduct_prod_section_1_6=1");
-			}
-			if (p == 'P')
-			{
-				uri.append("&REQ0JourneyProduct_prod_section_0_11=1");
-				if (via != null)
-					uri.append("&REQ0JourneyProduct_prod_section_1_11=1");
-			}
-			if (p == 'F')
-			{
-				uri.append("&REQ0JourneyProduct_prod_section_0_7=1");
-				if (via != null)
-					uri.append("&REQ0JourneyProduct_prod_section_1_7=1");
-			}
-			// FIXME if (p == 'C')
 		}
 
 		return uri.toString();
@@ -565,38 +492,34 @@ public class OebbProvider extends AbstractHafasProvider
 		throw new UnsupportedOperationException();
 	}
 
+	private static final Pattern P_NORMALIZE_LINE_AND_TYPE = Pattern.compile("([^#]*)#(.*)");
 	private static final Pattern P_NORMALIZE_LINE_NUMBER = Pattern.compile("\\d{2,5}");
-	private static final Pattern P_NORMALIZE_LINE_RUSSIA = Pattern.compile("\\d{1,3}[A-Z]{2}");
-	private static final Pattern P_NORMALIZE_LINE_RUSSIA_INT = Pattern.compile("\\d{3}Y");
 
 	@Override
 	protected String normalizeLine(final String line)
 	{
-		final Matcher m = P_NORMALIZE_LINE.matcher(line);
+		final Matcher m = P_NORMALIZE_LINE_AND_TYPE.matcher(line);
 		if (m.matches())
 		{
-			final String type = m.group(1);
-			final String number = m.group(2);
+			final String number = m.group(1).replaceAll("\\s+", " ");
+			final String type = m.group(2);
 
-			final char normalizedType = normalizeType(type);
-			if (normalizedType != 0)
-				return normalizedType + type + number;
+			if (type.length() == 0)
+			{
+				if (number.length() == 0)
+					return "?";
+				if (P_NORMALIZE_LINE_NUMBER.matcher(number).matches())
+					return "?" + number;
+			}
+			else
+			{
+				final char normalizedType = normalizeType(type);
+				if (normalizedType != 0)
+					return normalizedType + number;
+			}
 
-			// return '?' + strippedLine;
-			throw new IllegalStateException("cannot normalize type " + type + " line " + line);
+			throw new IllegalStateException("cannot normalize type " + type + " number " + number + " line " + line);
 		}
-
-		if (line.length() == 0)
-			return "?";
-
-		if (P_NORMALIZE_LINE_RUSSIA.matcher(line).matches())
-			return "R" + line;
-
-		if (P_NORMALIZE_LINE_RUSSIA_INT.matcher(line).matches())
-			return "I" + line;
-
-		if (P_NORMALIZE_LINE_NUMBER.matcher(line).matches())
-			return "?" + line;
 
 		throw new IllegalStateException("cannot normalize line " + line);
 	}
@@ -651,19 +574,21 @@ public class OebbProvider extends AbstractHafasProvider
 			return 'R';
 		if (ucType.equals("DPF")) // VX=Vogtland Express, Connections only?
 			return 'R';
-		if (ucType.equals("SBE")) // Zittau-Seifhennersdorf, via JSON API
-			return 'R';
-		if (ucType.equals("VX")) // Vogtland Express, via JSON API
-			return 'R';
-		if (ucType.equals("RNV")) // Rhein-Neckar-Verkehr GmbH, via JSON API
-			return 'R';
-		if (ucType.equals("P")) // Kasbachtalbahn, via JSON API
+		// if (ucType.equals("SBE")) // Zittau-Seifhennersdorf, via JSON API
+		// return 'R';
+		// if (ucType.equals("VX")) // Vogtland Express, via JSON API
+		// return 'R';
+		// if (ucType.equals("RNV")) // Rhein-Neckar-Verkehr GmbH, via JSON API
+		// return 'R';
+		// if (ucType.equals("P")) // Kasbachtalbahn, via JSON API
+		// return 'R';
+		if ("UAU".equals(ucType)) // Rußland
 			return 'R';
 
 		if (ucType.equals("RSB")) // Schnellbahn Wien
 			return 'S';
-		if (ucType.equals("DPN")) // S3 Bad Reichenhall-Freilassing, via JSON API
-			return 'S';
+		// if (ucType.equals("DPN")) // S3 Bad Reichenhall-Freilassing, via JSON API
+		// return 'S';
 		if (ucType.equals("RER")) // Réseau Express Régional, Frankreich
 			return 'S';
 		if (ucType.equals("WKD")) // Warszawska Kolej Dojazdowa (Warsaw Suburban Railway)
@@ -671,18 +596,18 @@ public class OebbProvider extends AbstractHafasProvider
 
 		if (ucType.equals("LKB")) // Connections only?
 			return 'T';
-		if (ucType.equals("WLB")) // via JSON API
-			return 'T';
+		// if (ucType.equals("WLB")) // via JSON API
+		// return 'T';
 
 		if (ucType.equals("OBU")) // Connections only?
 			return 'B';
-		if (ucType.equals("ASTSV")) // via JSON API
-			return 'B';
+		// if (ucType.equals("ASTSV")) // via JSON API
+		// return 'B';
 		if (ucType.equals("ICB")) // ÖBB ICBus
 			return 'B';
 		if (ucType.equals("BSV")) // Deutschland, Connections only?
 			return 'B';
-		if (ucType.equals("O-B")) // Stadtbus, via JSON API
+		if (ucType.equals("O-BUS")) // Stadtbus
 			return 'B';
 
 		if (ucType.equals("SCH")) // Connections only?
@@ -692,12 +617,12 @@ public class OebbProvider extends AbstractHafasProvider
 
 		if (ucType.equals("LIF"))
 			return 'C';
-		if (ucType.equals("SEILBAHN")) // via JSON API
-			return 'C';
+		// if (ucType.equals("SEILBAHN")) // via JSON API
+		// return 'C';
 		if (ucType.equals("SSB")) // Graz Schlossbergbahn
 			return 'C';
-		if (ucType.equals("HBB")) // Innsbruck Hungerburgbahn, via JSON API
-			return 'C';
+		// if (ucType.equals("HBB")) // Innsbruck Hungerburgbahn, via JSON API
+		// return 'C';
 
 		final char t = super.normalizeType(type);
 		if (t != 0)
