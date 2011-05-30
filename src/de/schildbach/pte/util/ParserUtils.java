@@ -60,17 +60,17 @@ public final class ParserUtils
 
 	public static final CharSequence scrape(final String url) throws IOException
 	{
-		return scrape(url, false, null, null, false);
+		return scrape(url, false, null, null, null);
 	}
 
 	public static final CharSequence scrape(final String url, final boolean isPost, final String request, String encoding,
-			final boolean cookieHandling) throws IOException
+			final String sessionCookieName) throws IOException
 	{
-		return scrape(url, isPost, request, encoding, cookieHandling, 3);
+		return scrape(url, isPost, request, encoding, sessionCookieName, 3);
 	}
 
 	public static final CharSequence scrape(final String url, final boolean isPost, final String request, String encoding,
-			final boolean cookieHandling, int tries) throws IOException
+			final String sessionCookieName, int tries) throws IOException
 	{
 		if (encoding == null)
 			encoding = SCRAPE_DEFAULT_ENCODING;
@@ -91,7 +91,7 @@ public final class ParserUtils
 				// workaround to disable Vodafone compression
 				connection.addRequestProperty("Cache-Control", "no-cache");
 
-				if (cookieHandling && stateCookie != null)
+				if (sessionCookieName != null && stateCookie != null)
 					connection.addRequestProperty("Cookie", stateCookie);
 
 				if (request != null)
@@ -114,7 +114,7 @@ public final class ParserUtils
 
 				if (buffer.length() > SCRAPE_PAGE_EMPTY_THRESHOLD)
 				{
-					if (cookieHandling)
+					if (sessionCookieName != null)
 					{
 						for (final Map.Entry<String, List<String>> entry : connection.getHeaderFields().entrySet())
 						{
@@ -122,7 +122,7 @@ public final class ParserUtils
 							{
 								for (final String value : entry.getValue())
 								{
-									if (value.startsWith("NSC_") || value.startsWith("HASESSIONID"))
+									if (value.startsWith(sessionCookieName))
 									{
 										stateCookie = value.split(";", 2)[0];
 									}
@@ -167,10 +167,10 @@ public final class ParserUtils
 
 	public static final InputStream scrapeInputStream(final String url) throws IOException
 	{
-		return scrapeInputStream(url, null, false, 3);
+		return scrapeInputStream(url, null, null, 3);
 	}
 
-	public static final InputStream scrapeInputStream(final String url, final String postRequest, final boolean cookieHandling, int tries)
+	public static final InputStream scrapeInputStream(final String url, final String postRequest, final String sessionCookieName, int tries)
 			throws IOException
 	{
 		while (true)
@@ -186,7 +186,7 @@ public final class ParserUtils
 			// workaround to disable Vodafone compression
 			connection.addRequestProperty("Cache-Control", "no-cache");
 
-			if (cookieHandling && stateCookie != null)
+			if (sessionCookieName != null && stateCookie != null)
 				connection.addRequestProperty("Cookie", stateCookie);
 
 			if (postRequest != null)
@@ -206,7 +206,7 @@ public final class ParserUtils
 				final String contentEncoding = connection.getContentEncoding();
 				final InputStream is = connection.getInputStream();
 
-				if (cookieHandling)
+				if (sessionCookieName != null)
 				{
 					for (final Map.Entry<String, List<String>> entry : connection.getHeaderFields().entrySet())
 					{
@@ -214,10 +214,9 @@ public final class ParserUtils
 						{
 							for (final String value : entry.getValue())
 							{
-								if (value.startsWith("NSC_") || value.startsWith("HASESSIONID"))
+								if (value.startsWith(sessionCookieName))
 								{
 									stateCookie = value.split(";", 2)[0];
-									System.out.println(stateCookie);
 								}
 							}
 						}

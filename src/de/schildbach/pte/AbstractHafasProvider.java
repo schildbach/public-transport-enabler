@@ -204,7 +204,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		InputStream is = null;
 		try
 		{
-			is = ParserUtils.scrapeInputStream(apiUri, wrap(request), false, 3);
+			is = ParserUtils.scrapeInputStream(apiUri, wrap(request), null, 3);
 
 			final List<Location> results = new ArrayList<Location>();
 
@@ -256,7 +256,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 	protected final List<Location> jsonGetStops(final String uri) throws IOException
 	{
-		final CharSequence page = ParserUtils.scrape(uri, false, null, jsonEncoding, false);
+		final CharSequence page = ParserUtils.scrape(uri, false, null, jsonEncoding, null);
 
 		final Matcher mJson = P_AJAX_GET_STOPS_JSON.matcher(page);
 		if (mJson.matches())
@@ -342,7 +342,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 		try
 		{
-			is = ParserUtils.scrapeInputStream(apiUri, wrap(request), false, 3);
+			is = ParserUtils.scrapeInputStream(apiUri, wrap(request), null, 3);
 
 			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
 			final XmlPullParser pp = factory.newPullParser();
@@ -614,7 +614,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 		try
 		{
-			is = ParserUtils.scrapeInputStream(apiUri, wrap(request), false, 3);
+			is = ParserUtils.scrapeInputStream(apiUri, wrap(request), null, 3);
 
 			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
 			final XmlPullParser pp = factory.newPullParser();
@@ -1080,7 +1080,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 	protected final NearbyStationsResult jsonNearbyStations(final String uri) throws IOException
 	{
-		final CharSequence page = ParserUtils.scrape(uri, false, null, jsonEncoding, false);
+		final CharSequence page = ParserUtils.scrape(uri, false, null, jsonEncoding, null);
 
 		final List<Location> stations = new ArrayList<Location>();
 

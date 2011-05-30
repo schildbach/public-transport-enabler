@@ -230,7 +230,7 @@ public class OebbProvider extends AbstractHafasProvider
 			final String products, final WalkSpeed walkSpeed) throws IOException
 	{
 		// get base url and cookies from form
-		final CharSequence form = ParserUtils.scrape(QUERY_CONNECTIONS_FORM_URL, false, null, null, true);
+		final CharSequence form = ParserUtils.scrape(QUERY_CONNECTIONS_FORM_URL, false, null, null, "NSC_");
 		final Matcher m = P_QUERY_CONNECTIONS_FORM_ACTION.matcher(form);
 		if (!m.find())
 			throw new IllegalStateException("cannot find form: '" + form + "' on " + QUERY_CONNECTIONS_FORM_URL);
@@ -238,7 +238,7 @@ public class OebbProvider extends AbstractHafasProvider
 
 		// query
 		final String query = connectionsQuery(from, via, to, date, dep, products, walkSpeed);
-		final CharSequence page = ParserUtils.scrape(baseUri, true, query, null, true);
+		final CharSequence page = ParserUtils.scrape(baseUri, true, query, null, "NSC_");
 
 		final Matcher mError = P_QUERY_CONNECTIONS_ERROR.matcher(page);
 		if (mError.find())
@@ -289,7 +289,7 @@ public class OebbProvider extends AbstractHafasProvider
 	@Override
 	public QueryConnectionsResult queryMoreConnections(final String uri) throws IOException
 	{
-		final CharSequence page = ParserUtils.scrape(uri, false, null, null, true);
+		final CharSequence page = ParserUtils.scrape(uri, false, null, null, "NSC_");
 
 		final Matcher mError = P_QUERY_CONNECTIONS_ERROR.matcher(page);
 		if (mError.find())
@@ -352,7 +352,7 @@ public class OebbProvider extends AbstractHafasProvider
 		if (!mAllDetailsAction.find())
 			throw new IOException("cannot find all details link in '" + firstPage + "' on " + firstUri);
 		final String allDetailsUri = mAllDetailsAction.group(1);
-		final CharSequence page = ParserUtils.scrape(allDetailsUri, false, null, null, true);
+		final CharSequence page = ParserUtils.scrape(allDetailsUri, false, null, null, "NSC_");
 
 		final Matcher mError = P_QUERY_CONNECTIONS_ERROR.matcher(page);
 		if (mError.find())
