@@ -62,6 +62,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 {
 	private static final String DEFAULT_ENCODING = "ISO-8859-1";
 	private static final String PROD = "hafas";
+	private static final int NUM_CONNECTIONS = 6;
 
 	private final String apiUri;
 	private final int numProductBits;
@@ -589,7 +590,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 				+ String.format("%04d.%02d.%02d", c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH))
 				+ "\" time=\""
 				+ String.format("%02d:%02d", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE)) + "\"/>" //
-				+ "<RFlags b=\"0\" chExtension=\"0\" f=\"4\" sMode=\"N\"/>" //
+				+ "<RFlags b=\"0\" chExtension=\"0\" f=\"" + NUM_CONNECTIONS + "\" sMode=\"N\"/>" //
 				+ "</ConReq>";
 
 		return queryConnections(request, from, via, to);
@@ -597,7 +598,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 	public QueryConnectionsResult queryMoreConnections(final String context) throws IOException
 	{
-		final String request = "<ConScrReq scr=\"F\" nrCons=\"4\">" //
+		final String request = "<ConScrReq scr=\"F\" nrCons=\"" + NUM_CONNECTIONS + "\">" //
 				+ "<ConResCtxt>" + context + "</ConResCtxt>" //
 				+ "</ConScrReq>";
 
@@ -614,7 +615,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 		try
 		{
-			is = ParserUtils.scrapeInputStream(apiUri, wrap(request), null, 3);
+			is = ParserUtils.scrapeInputStream(apiUri, wrap(request), "bla", 3);
 
 			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
 			final XmlPullParser pp = factory.newPullParser();
