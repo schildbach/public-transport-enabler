@@ -952,6 +952,8 @@ public final class BvgProvider extends AbstractHafasProvider
 				return "F" + number;
 			if (type.equals("F"))
 				return "FF" + number;
+			if (type.equals("WT"))
+				return "FWT" + number;
 
 			throw new IllegalStateException("cannot normalize type '" + type + "' number '" + number + "' line '" + line + "'");
 		}
