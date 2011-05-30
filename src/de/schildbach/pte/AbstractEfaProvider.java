@@ -1396,7 +1396,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		InputStream is = null;
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri);
+			is = ParserUtils.scrapeInputStream(uri, null, true, 3);
 			return queryConnections(uri, is);
 		}
 		catch (final XmlPullParserException x)
@@ -1415,7 +1415,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		InputStream is = null;
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri);
+			is = ParserUtils.scrapeInputStream(uri, null, true, 3);
 			return queryConnections(uri, is);
 		}
 		catch (final XmlPullParserException x)

@@ -92,9 +92,7 @@ public final class ParserUtils
 				connection.addRequestProperty("Cache-Control", "no-cache");
 
 				if (cookieHandling && stateCookie != null)
-				{
 					connection.addRequestProperty("Cookie", stateCookie);
-				}
 
 				if (request != null)
 				{
@@ -124,7 +122,7 @@ public final class ParserUtils
 							{
 								for (final String value : entry.getValue())
 								{
-									if (value.startsWith("NSC_"))
+									if (value.startsWith("NSC_") || value.startsWith("HASESSIONID"))
 									{
 										stateCookie = value.split(";", 2)[0];
 									}
@@ -169,10 +167,11 @@ public final class ParserUtils
 
 	public static final InputStream scrapeInputStream(final String url) throws IOException
 	{
-		return scrapeInputStream(url, null, 3);
+		return scrapeInputStream(url, null, false, 3);
 	}
 
-	public static final InputStream scrapeInputStream(final String url, final String postRequest, int tries) throws IOException
+	public static final InputStream scrapeInputStream(final String url, final String postRequest, final boolean cookieHandling, int tries)
+			throws IOException
 	{
 		while (true)
 		{
@@ -186,6 +185,9 @@ public final class ParserUtils
 			connection.addRequestProperty("Accept-Encoding", "gzip");
 			// workaround to disable Vodafone compression
 			connection.addRequestProperty("Cache-Control", "no-cache");
+
+			if (cookieHandling && stateCookie != null)
+				connection.addRequestProperty("Cookie", stateCookie);
 
 			if (postRequest != null)
 			{
@@ -203,6 +205,24 @@ public final class ParserUtils
 			{
 				final String contentEncoding = connection.getContentEncoding();
 				final InputStream is = connection.getInputStream();
+
+				if (cookieHandling)
+				{
+					for (final Map.Entry<String, List<String>> entry : connection.getHeaderFields().entrySet())
+					{
+						if ("set-cookie".equalsIgnoreCase(entry.getKey()))
+						{
+							for (final String value : entry.getValue())
+							{
+								if (value.startsWith("NSC_") || value.startsWith("HASESSIONID"))
+								{
+									stateCookie = value.split(";", 2)[0];
+									System.out.println(stateCookie);
+								}
+							}
+						}
+					}
+				}
 
 				if ("gzip".equalsIgnoreCase(contentEncoding))
 					return new GZIPInputStream(is);

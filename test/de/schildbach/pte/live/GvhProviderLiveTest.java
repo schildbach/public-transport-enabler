@@ -116,6 +116,8 @@ public class GvhProviderLiveTest
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 25000031, null, "Hannover Hauptbahnhof"),
 				null, new Location(LocationType.STATION, 25001141, null, "Hannover Bismarckstraße"), new Date(), true, ALL_PRODUCTS, WalkSpeed.FAST);
 		System.out.println(result);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
+		System.out.println(moreResult);
 	}
 
 	@Test
