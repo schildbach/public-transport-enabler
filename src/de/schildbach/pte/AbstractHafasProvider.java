@@ -424,6 +424,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			+ "(?:platform\\s*=\"([^\"]*)\"\\s*)?" // position
 			+ "(?:targetLoc\\s*=\"([^\"]*)\"\\s*)?" // destination
 			+ "(?:hafasname\\s*=\"([^\"]*)\"\\s*)?" // line
+			+ "(?:dirnr\\s*=\"\\d+\"\\s*)?" // (destination id)
 			+ "prod\\s*=\"([^\"]*)\"\\s*" // line
 			+ "(?:class\\s*=\"([^\"]*)\"\\s*)?" // class
 			+ "(?:dir\\s*=\"([^\"]*)\"\\s*)?" // destination
