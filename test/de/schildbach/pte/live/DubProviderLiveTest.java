@@ -17,14 +17,17 @@
 
 package de.schildbach.pte.live;
 
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
 
 import de.schildbach.pte.DubProvider;
+import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.QueryConnectionsResult;
 
 /**
  * @author Andreas Schildbach
@@ -32,6 +35,7 @@ import de.schildbach.pte.dto.NearbyStationsResult;
 public class DubProviderLiveTest
 {
 	private final DubProvider provider = new DubProvider();
+	private static final String ALL_PRODUCTS = "IRSUTBFC";
 
 	@Test
 	public void nearbyStations() throws Exception
@@ -63,5 +67,16 @@ public class DubProviderLiveTest
 		for (final Location autocomplete : autocompletes)
 			System.out.print(autocomplete.toDebugString() + " ");
 		System.out.println();
+	}
+
+	@Test
+	public void shortConnection() throws Exception
+	{
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 3505565, null,
+				"Airport Terminal 1, Arrival"), null, new Location(LocationType.STATION, 3505445, null, "Airport Terminal 3"), new Date(), true,
+				ALL_PRODUCTS, WalkSpeed.NORMAL);
+		System.out.println(result);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
+		System.out.println(moreResult);
 	}
 }

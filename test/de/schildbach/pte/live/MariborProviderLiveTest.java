@@ -17,14 +17,17 @@
 
 package de.schildbach.pte.live;
 
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
 
 import de.schildbach.pte.MariborProvider;
+import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 
 /**
@@ -33,6 +36,7 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 public class MariborProviderLiveTest
 {
 	private final MariborProvider provider = new MariborProvider();
+	private static final String ALL_PRODUCTS = "IRSUTBFC";
 
 	@Test
 	public void nearbyStations() throws Exception
@@ -72,5 +76,15 @@ public class MariborProviderLiveTest
 		for (final Location autocomplete : autocompletes)
 			System.out.print(autocomplete.toDebugString() + " ");
 		System.out.println();
+	}
+
+	@Test
+	public void shortConnection() throws Exception
+	{
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 63202999, null, "Graz Marburger Straße"),
+				null, new Location(LocationType.STATION, 63201746, null, "Flughafen Graz Bahnhof"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+		System.out.println(result);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
+		System.out.println(moreResult);
 	}
 }
