@@ -110,12 +110,13 @@ public class SncbProvider extends AbstractHafasProvider
 	, Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<p class=\"journey\">\r\n(.*?)</p>", Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_FINE = Pattern.compile(".*?" //
-			+ "<strong>(.*?)</strong>.*?" // line
+			+ "<strong>([^<]*)</strong>.*?" // line
 			+ "&gt;&gt;\r\n" //
 			+ "(.*?)\r\n" // destination
 			+ "<br />\r\n" //
 			+ "<strong>(\\d{1,2}:\\d{2})</strong>\r\n" // time
 			+ "(?:<span class=\"delay\">([+-]?\\d+|Ausfall)</span>\r\n)?" // delay
+			+ "(?:<span class=\"delay\">Aktivierung</span>\r\n)?" + "(?:([^<]*)<br />\r\n)?" // position
 	, Pattern.DOTALL);
 
 	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
@@ -165,7 +166,10 @@ public class SncbProvider extends AbstractHafasProvider
 
 						mDepFine.group(4); // TODO delay
 
-						final Departure dep = new Departure(parsedTime.getTime(), line, line != null ? lineColors(line) : null, null, 0, destination);
+						final String position = mDepFine.group(5);
+
+						final Departure dep = new Departure(parsedTime.getTime(), line, line != null ? lineColors(line) : null, position, 0,
+								destination);
 
 						if (!departures.contains(dep))
 							departures.add(dep);
