@@ -629,7 +629,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 		try
 		{
-			is = ParserUtils.scrapeInputStream(apiUri, wrap(request), "bla", 3);
+			is = ParserUtils.scrapeInputStream(apiUri, wrap(request), null, 3);
 
 			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
 			final XmlPullParser pp = factory.newPullParser();
