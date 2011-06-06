@@ -220,7 +220,7 @@ public class RmvProvider extends AbstractHafasProvider
 						final String position = ParserUtils.resolveEntities(ParserUtils.selectNotNull(mDepFine.group(5), mDepFine.group(6)));
 
 						final Departure dep = new Departure(plannedTime.getTime(), predictedTime != null ? predictedTime.getTime() : null, line,
-								line != null ? lineColors(line) : null, null, position, 0, destination, null);
+								line != null ? lineColors(line) : null, null, position, 0, destination, null, null);
 
 						if (!departures.contains(dep))
 							departures.add(dep);

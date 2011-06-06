@@ -428,7 +428,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			+ "prod\\s*=\"([^\"]*)\"\\s*" // line
 			+ "(?:class\\s*=\"([^\"]*)\"\\s*)?" // class
 			+ "(?:dir\\s*=\"([^\"]*)\"\\s*)?" // destination
-			+ "(?:capacity\\s*=\"[^\"]*\"\\s*)?" // (???)
+			+ "(?:capacity\\s*=\"([^\"]*)\"\\s*)?" // capacity 1st class|2nd class
 			+ "(?:depStation\\s*=\"(.*?)\"\\s*)?" //
 			+ "(?:delayReason\\s*=\"([^\"]*)\"\\s*)?" // message
 			+ "(?:is_reachable\\s*=\"[^\"]*\"\\s*)?" // (???)
@@ -471,7 +471,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			final Matcher mFine = P_XML_QUERY_DEPARTURES_FINE.matcher(mCoarse.group(1));
 			if (mFine.matches())
 			{
-				if (mFine.group(11) == null)
+				if (mFine.group(12) == null)
 				{
 					final Calendar plannedTime = new GregorianCalendar(timeZone());
 					plannedTime.clear();
@@ -517,10 +517,23 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 					final String line = product != 0 ? product + prod : normalizeLine(prod);
 
-					final String message;
-					if (mFine.group(12) != null)
+					final String capacityStr = mFine.group(11);
+					final int[] capacity;
+					if (capacityStr != null && !"0|0".equals(capacityStr))
 					{
-						final String msg = ParserUtils.resolveEntities(mFine.group(12)).trim();
+						final String[] capacityParts = capacityStr.split("\\|");
+						capacity = new int[] { Integer.parseInt(capacityParts[0]), Integer.parseInt(capacityParts[1]) };
+					}
+					else
+					{
+						capacity = null;
+					}
+
+					final String messageStr = mFine.group(13);
+					final String message;
+					if (messageStr != null)
+					{
+						final String msg = ParserUtils.resolveEntities(messageStr).trim();
 						message = msg.length() > 0 ? msg : null;
 					}
 					else
@@ -529,7 +542,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 					}
 
 					departures.add(new Departure(plannedTime.getTime(), predictedTime != null ? predictedTime.getTime() : null, line,
-							line != null ? lineColors(line) : null, null, position, 0, destination, message));
+							line != null ? lineColors(line) : null, null, position, 0, destination, capacity, message));
 				}
 			}
 			else

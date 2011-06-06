@@ -1184,7 +1184,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 						final Departure departure = new Departure(plannedDepartureTime.getTime(),
 								predictedDepartureTime.isSet(Calendar.HOUR_OF_DAY) ? predictedDepartureTime.getTime() : null, line, lineColors(line),
-								null, position, destinationId, destination, null);
+								null, position, destinationId, destination, null, null);
 						assignedStationDepartures.departures.add(departure);
 
 						XmlPullUtil.exit(pp, "itdDeparture");

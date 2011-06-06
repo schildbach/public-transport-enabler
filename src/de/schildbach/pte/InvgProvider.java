@@ -235,7 +235,7 @@ public class InvgProvider extends AbstractHafasProvider
 						final String position = mDepFine.group(7) != null ? "Gl. " + ParserUtils.resolveEntities(mDepFine.group(7)) : null;
 
 						final Departure dep = new Departure(plannedTime.getTime(), predictedTime != null ? predictedTime.getTime() : null, line,
-								line != null ? lineColors(line) : null, null, position, destinationId, destination, null);
+								line != null ? lineColors(line) : null, null, position, destinationId, destination, null, null);
 
 						if (!departures.contains(dep))
 							departures.add(dep);
