@@ -342,7 +342,7 @@ public class OebbProvider extends AbstractHafasProvider
 			+ "<td class=\"date\">(?:(\\d{2}\\.\\d{2}\\.\\d{2})|&nbsp;)</td>.*?" // arrivalDate
 			+ "<td class=\"timeValue\">\n?<span>an (\\d{2}:\\d{2}).*?" // arrivalTime
 			+ "<td class=\"platform\">\\s*(?:&nbsp;|(.*?))\\s*</td>.*?" // arrivalPosition
-			+ "<td[^>]* class=\"section_remarks\">(?:.*?Richtung\\:\\s*([^\n]*)\n)?.*?</td>?.*?" // destination
+			+ "<td[^>]* class=\"section_remarks\">(?:.*?Richtung\\:</span>\\s*([^\n]*)\n)?.*?</td>?.*?" // destination
 	, Pattern.DOTALL);
 
 	private QueryConnectionsResult queryConnections(final String firstUri, final CharSequence firstPage) throws IOException
