@@ -134,7 +134,7 @@ public class SeProvider extends AbstractHafasProvider
 		uri.append(API_BASE).append("stboard.exe/sn");
 		uri.append("?productsFilter=").append(allProductsString());
 		uri.append("&boardType=dep");
-		uri.append("&disableEquivs=").append(equivs ? "no" : "yes"); // don't use nearby stations
+		uri.append("&disableEquivs=yes"); // don't use nearby stations
 		uri.append("&maxJourneys=50"); // ignore maxDepartures because result contains other stations
 		uri.append("&start=yes");
 		uri.append("&L=vs_java3");
