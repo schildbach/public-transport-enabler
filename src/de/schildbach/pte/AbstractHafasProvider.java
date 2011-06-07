@@ -669,6 +669,10 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 				throw new IllegalStateException("error " + code + " " + XmlPullUtil.attr(pp, "text"));
 			}
 
+			// workaround for broken firstConDiffersFromReqDate="true" as text node
+			if (pp.getEventType() == XmlPullParser.TEXT)
+				pp.nextTag();
+
 			final String context;
 			if (XmlPullUtil.test(pp, "ConResCtxt"))
 				context = XmlPullUtil.text(pp);
