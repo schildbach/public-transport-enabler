@@ -623,7 +623,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			throws IOException
 	{
 		// System.out.println(request);
-		// ParserUtils.printXml(ParserUtils.scrape(apiUri, true, wrap(request), null, false));
+		// ParserUtils.printXml(ParserUtils.scrape(apiUri, true, wrap(request), null, null));
 
 		InputStream is = null;
 
@@ -697,6 +697,35 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 				while (pp.getName().equals("StAttrList"))
 					XmlPullUtil.next(pp);
 				final Location departure = parseLocation(pp);
+				XmlPullUtil.enter(pp, "Dep");
+				XmlPullUtil.exit(pp, "Dep");
+				final int[] capacity;
+				if (XmlPullUtil.test(pp, "StopPrognosis"))
+				{
+					XmlPullUtil.enter(pp, "StopPrognosis");
+					if (XmlPullUtil.test(pp, "Arr"))
+						XmlPullUtil.next(pp);
+					if (XmlPullUtil.test(pp, "Dep"))
+						XmlPullUtil.next(pp);
+					XmlPullUtil.enter(pp, "Status");
+					XmlPullUtil.exit(pp, "Status");
+					if (XmlPullUtil.test(pp, "Capacity1st"))
+					{
+						final int capacity1st = Integer.parseInt(XmlPullUtil.text(pp));
+						XmlPullUtil.require(pp, "Capacity2nd");
+						final int capacity2nd = Integer.parseInt(XmlPullUtil.text(pp));
+						capacity = new int[] { capacity1st, capacity2nd };
+					}
+					else
+					{
+						capacity = null;
+					}
+					XmlPullUtil.exit(pp, "StopPrognosis");
+				}
+				else
+				{
+					capacity = null;
+				}
 				XmlPullUtil.exit(pp, "BasicStop");
 				XmlPullUtil.exit(pp, "Departure");
 
@@ -893,7 +922,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 				XmlPullUtil.exit(pp, "Connection");
 
-				connections.add(new Connection(id, null, firstDepartureTime, lastArrivalTime, departure, arrival, parts, null));
+				connections.add(new Connection(id, null, firstDepartureTime, lastArrivalTime, departure, arrival, parts, null, capacity));
 			}
 
 			XmlPullUtil.exit(pp);

@@ -850,7 +850,7 @@ public final class BvgProvider extends AbstractHafasProvider
 						}
 					}
 
-					connections.add(new Connection(id, firstUri, firstDepartureTime, lastArrivalTime, from, to, parts, null));
+					connections.add(new Connection(id, firstUri, firstDepartureTime, lastArrivalTime, from, to, parts, null, null));
 				}
 				else
 				{

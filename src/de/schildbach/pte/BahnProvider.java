@@ -336,7 +336,7 @@ public final class BahnProvider extends AbstractHafasProvider
 					if (departureTime.after(arrivalTime))
 						arrivalTime.add(Calendar.DAY_OF_YEAR, 1);
 					final Connection connection = new Connection(AbstractHafasProvider.extractConnectionId(link), link, departureTime.getTime(),
-							arrivalTime.getTime(), from, to, null, null);
+							arrivalTime.getTime(), from, to, null, null, null);
 					connections.add(connection);
 				}
 				else
@@ -486,7 +486,7 @@ public final class BahnProvider extends AbstractHafasProvider
 
 			return new GetConnectionDetailsResult(new GregorianCalendar(timeZone()).getTime(), new Connection(
 					AbstractHafasProvider.extractConnectionId(uri), uri, firstDepartureTime, lastArrivalTime, firstDeparture, lastArrival, parts,
-					null));
+					null, null));
 		}
 		else
 		{

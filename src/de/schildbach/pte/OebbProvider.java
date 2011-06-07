@@ -402,7 +402,7 @@ public class OebbProvider extends AbstractHafasProvider
 					final String link = allDetailsUri; // TODO use print link?
 
 					final Connection connection = new Connection(id, link, overviewDepartureTime.getTime(), overviewArrivalTime.getTime(), from, to,
-							new ArrayList<Connection.Part>(1), null);
+							new ArrayList<Connection.Part>(1), null, null);
 					connections.add(connection);
 
 					final Matcher mDetCoarse = P_CONNECTION_DETAILS_COARSE.matcher(details);

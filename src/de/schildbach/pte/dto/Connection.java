@@ -27,6 +27,8 @@ import java.util.List;
  */
 public final class Connection implements Serializable
 {
+	private static final long serialVersionUID = 2508466068307110312L;
+
 	public final String id;
 	public final String link;
 	public final Date departureTime;
@@ -35,9 +37,10 @@ public final class Connection implements Serializable
 	public final Location to;
 	public final List<Part> parts;
 	public final List<Fare> fares;
+	public final int[] capacity;
 
 	public Connection(final String id, final String link, final Date departureTime, final Date arrivalTime, final Location from, final Location to,
-			final List<Part> parts, final List<Fare> fares)
+			final List<Part> parts, final List<Fare> fares, final int[] capacity)
 	{
 		this.id = id;
 		this.link = link;
@@ -47,6 +50,7 @@ public final class Connection implements Serializable
 		this.to = to;
 		this.parts = parts;
 		this.fares = fares;
+		this.capacity = capacity;
 	}
 
 	@Override
