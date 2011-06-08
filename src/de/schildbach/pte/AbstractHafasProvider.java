@@ -162,7 +162,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		throw new IllegalStateException("cannot handle: " + type);
 	}
 
-	private static final Location parseAddress(final XmlPullParser pp)
+	private final Location parseAddress(final XmlPullParser pp)
 	{
 		final String type = pp.getName();
 		if ("Address".equals(type))
@@ -172,7 +172,9 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 				name = null;
 			final int x = Integer.parseInt(pp.getAttributeValue(null, "x"));
 			final int y = Integer.parseInt(pp.getAttributeValue(null, "y"));
-			return new Location(LocationType.ADDRESS, 0, y, x, null, name);
+
+			final String[] placeAndName = splitPlaceAndName(name);
+			return new Location(LocationType.ADDRESS, 0, y, x, placeAndName[0], placeAndName[1]);
 		}
 		throw new IllegalStateException("cannot handle: " + type);
 	}
@@ -1030,7 +1032,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		if (location.type == LocationType.POI && location.hasLocation())
 			return "<Poi type=\"WGS84\" x=\"" + location.lon + "\" y=\"" + location.lat + "\" />";
 		if (location.type == LocationType.ADDRESS && location.hasLocation())
-			return "<Address type=\"WGS84\" x=\"" + location.lon + "\" y=\"" + location.lat + "\" />";
+			return "<Address type=\"WGS84\" x=\"" + location.lon + "\" y=\"" + location.lat + "\" name=\""
+					+ (location.place != null ? location.place + ", " : "") + location.name + "\" />";
 
 		throw new IllegalArgumentException("cannot handle: " + location.toDebugString());
 	}
