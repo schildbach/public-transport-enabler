@@ -71,6 +71,18 @@ public class SeptaProvider extends AbstractHafasProvider
 		return false;
 	}
 
+	private static final Pattern P_SPLIT_ADDRESS = Pattern.compile("(.*),\\s+([^,]+\\s+\\d{4,5})");
+
+	@Override
+	protected String[] splitPlaceAndName(final String name)
+	{
+		final Matcher matcher = P_SPLIT_ADDRESS.matcher(name);
+		if (matcher.matches())
+			return new String[] { matcher.group(2), matcher.group(1) };
+		else
+			return super.splitPlaceAndName(name);
+	}
+
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(API_BASE);
