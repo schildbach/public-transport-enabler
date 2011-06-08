@@ -112,7 +112,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		return 0;
 	}
 
-	protected String[] splitNameAndPlace(final String name)
+	protected String[] splitPlaceAndName(final String name)
 	{
 		return new String[] { null, name };
 	}
@@ -135,8 +135,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			final int x = Integer.parseInt(pp.getAttributeValue(null, "x"));
 			final int y = Integer.parseInt(pp.getAttributeValue(null, "y"));
 
-			final String[] nameAndPlace = splitNameAndPlace(name);
-			return new Location(LocationType.STATION, id, y, x, nameAndPlace[0], nameAndPlace[1]);
+			final String[] placeAndName = splitPlaceAndName(name);
+			return new Location(LocationType.STATION, id, y, x, placeAndName[0], placeAndName[1]);
 		}
 		throw new IllegalStateException("cannot handle: " + type);
 	}
@@ -286,8 +286,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 						if (type == 1) // station
 						{
-							final String[] nameAndPlace = splitNameAndPlace(value);
-							results.add(new Location(LocationType.STATION, localId, lat, lon, nameAndPlace[0], nameAndPlace[1]));
+							final String[] placeAndName = splitPlaceAndName(value);
+							results.add(new Location(LocationType.STATION, localId, lat, lon, placeAndName[0], placeAndName[1]));
 						}
 						else if (type == 2) // address
 						{
@@ -391,8 +391,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 				final int lon = Integer.parseInt(iMatcherLonLat.group(1));
 				final int lat = Integer.parseInt(iMatcherLonLat.group(2));
 
-				final String[] nameAndPlace = splitNameAndPlace(name);
-				results.add(new Location(type, id, lat, lon, nameAndPlace[0], nameAndPlace[1]));
+				final String[] placeAndName = splitPlaceAndName(name);
+				results.add(new Location(type, id, lat, lon, placeAndName[0], placeAndName[1]));
 
 				XmlPullUtil.next(pp);
 			}
@@ -1114,8 +1114,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 					parsedLat = 0;
 				}
 
-				final String[] nameAndPlace = splitNameAndPlace(parsedName);
-				stations.add(new Location(LocationType.STATION, parsedId, parsedLat, parsedLon, nameAndPlace[0], nameAndPlace[1]));
+				final String[] placeAndName = splitPlaceAndName(parsedName);
+				stations.add(new Location(LocationType.STATION, parsedId, parsedLat, parsedLon, placeAndName[0], placeAndName[1]));
 			}
 			else
 			{
@@ -1148,8 +1148,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 				if (stopWeight != 0)
 				{
-					final String[] nameAndPlace = splitNameAndPlace(name);
-					stations.add(new Location(LocationType.STATION, id, lat, lon, nameAndPlace[0], nameAndPlace[1]));
+					final String[] placeAndName = splitPlaceAndName(name);
+					stations.add(new Location(LocationType.STATION, id, lat, lon, placeAndName[0], placeAndName[1]));
 				}
 			}
 		}
@@ -1201,8 +1201,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 					parsedLat = Integer.parseInt(mFineCoords.group(2));
 				}
 
-				final String[] nameAndPlace = splitNameAndPlace(parsedName);
-				stations.add(new Location(LocationType.STATION, parsedId, parsedLat, parsedLon, nameAndPlace[0], nameAndPlace[1]));
+				final String[] placeAndName = splitPlaceAndName(parsedName);
+				stations.add(new Location(LocationType.STATION, parsedId, parsedLat, parsedLon, placeAndName[0], placeAndName[1]));
 			}
 			else
 			{

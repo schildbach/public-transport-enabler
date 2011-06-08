@@ -59,7 +59,7 @@ public class VbbProvider extends AbstractHafasProvider
 	private static final Pattern P_SPLIT_NAME_COMMA = Pattern.compile("([^,]*), ([^,]*)");
 
 	@Override
-	protected String[] splitNameAndPlace(final String name)
+	protected String[] splitPlaceAndName(final String name)
 	{
 		final Matcher mParen = P_SPLIT_NAME_PAREN.matcher(name);
 		if (mParen.matches())
@@ -72,7 +72,7 @@ public class VbbProvider extends AbstractHafasProvider
 		if (mComma.matches())
 			return new String[] { mComma.group(1), mComma.group(2) };
 
-		return super.splitNameAndPlace(name);
+		return super.splitPlaceAndName(name);
 	}
 
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException

@@ -87,13 +87,13 @@ public class SeProvider extends AbstractHafasProvider
 	private static final Pattern P_SPLIT_NAME_KN = Pattern.compile("(.*?) \\((.*?) kn\\)");
 
 	@Override
-	protected String[] splitNameAndPlace(final String name)
+	protected String[] splitPlaceAndName(final String name)
 	{
 		final Matcher m = P_SPLIT_NAME_KN.matcher(name);
 		if (m.matches())
 			return new String[] { m.group(2), m.group(1) };
 
-		return super.splitNameAndPlace(name);
+		return super.splitPlaceAndName(name);
 	}
 
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException

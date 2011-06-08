@@ -84,7 +84,7 @@ public final class BvgProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected String[] splitNameAndPlace(final String name)
+	protected String[] splitPlaceAndName(final String name)
 	{
 		if (name.endsWith(" (Berlin)"))
 			return new String[] { "Berlin", name.substring(0, name.length() - 9) };
@@ -97,7 +97,7 @@ public final class BvgProvider extends AbstractHafasProvider
 		else if (name.startsWith("Frankfurt (Oder), "))
 			return new String[] { "Frankfurt (Oder)", name.substring(18) };
 
-		return super.splitNameAndPlace(name);
+		return super.splitPlaceAndName(name);
 	}
 
 	private final static Pattern P_NEARBY_OWN = Pattern
@@ -134,7 +134,7 @@ public final class BvgProvider extends AbstractHafasProvider
 				final int parsedId = Integer.parseInt(mOwn.group(1));
 				final int parsedLon = (int) (Float.parseFloat(mOwn.group(2)) * 1E6);
 				final int parsedLat = (int) (Float.parseFloat(mOwn.group(3)) * 1E6);
-				final String[] parsedPlaceAndName = splitNameAndPlace(ParserUtils.urlDecode(mOwn.group(4), "ISO-8859-1"));
+				final String[] parsedPlaceAndName = splitPlaceAndName(ParserUtils.urlDecode(mOwn.group(4), "ISO-8859-1"));
 				stations.add(new Location(LocationType.STATION, parsedId, parsedLat, parsedLon, parsedPlaceAndName[0], parsedPlaceAndName[1]));
 			}
 
@@ -150,7 +150,7 @@ public final class BvgProvider extends AbstractHafasProvider
 					if (mFineLocation.find())
 					{
 						final int parsedId = Integer.parseInt(mFineLocation.group(1));
-						final String[] parsedPlaceAndName = splitNameAndPlace(ParserUtils.resolveEntities(mFineLocation.group(2)));
+						final String[] parsedPlaceAndName = splitPlaceAndName(ParserUtils.resolveEntities(mFineLocation.group(2)));
 						final Location station = new Location(LocationType.STATION, parsedId, parsedPlaceAndName[0], parsedPlaceAndName[1]);
 						if (!stations.contains(station))
 							stations.add(station);
@@ -266,7 +266,7 @@ public final class BvgProvider extends AbstractHafasProvider
 			final Matcher mHead = P_DEPARTURES_LIVE_HEAD.matcher(page);
 			if (mHead.matches())
 			{
-				final String[] placeAndName = splitNameAndPlace(ParserUtils.resolveEntities(mHead.group(1)));
+				final String[] placeAndName = splitPlaceAndName(ParserUtils.resolveEntities(mHead.group(1)));
 				final Calendar currentTime = new GregorianCalendar(timeZone());
 				currentTime.clear();
 				parseDateTime(currentTime, mHead.group(2));
@@ -362,7 +362,7 @@ public final class BvgProvider extends AbstractHafasProvider
 			final Matcher mHead = P_DEPARTURES_PLAN_HEAD.matcher(page);
 			if (mHead.matches())
 			{
-				final String[] placeAndName = splitNameAndPlace(ParserUtils.resolveEntities(mHead.group(1)));
+				final String[] placeAndName = splitPlaceAndName(ParserUtils.resolveEntities(mHead.group(1)));
 				final Calendar currentTime = new GregorianCalendar(timeZone());
 				currentTime.clear();
 				ParserUtils.parseGermanDate(currentTime, mHead.group(2));
@@ -608,7 +608,7 @@ public final class BvgProvider extends AbstractHafasProvider
 		final int id = idStr != null ? Integer.parseInt(idStr) : 0;
 		final int lat = latStr != null ? (int) (Float.parseFloat(latStr) * 1E6) : 0;
 		final int lon = lonStr != null ? (int) (Float.parseFloat(lonStr) * 1E6) : 0;
-		final String[] placeAndName = splitNameAndPlace(nameStr);
+		final String[] placeAndName = splitPlaceAndName(nameStr);
 
 		final LocationType type;
 		if (typeStr == null)
@@ -630,7 +630,7 @@ public final class BvgProvider extends AbstractHafasProvider
 		final int id = track[4].length() > 0 ? Integer.parseInt(track[4]) : 0;
 		final int lat = Integer.parseInt(track[6]);
 		final int lon = Integer.parseInt(track[5]);
-		final String[] placeAndName = splitNameAndPlace(ParserUtils.resolveEntities(track[9]));
+		final String[] placeAndName = splitPlaceAndName(ParserUtils.resolveEntities(track[9]));
 		final String typeStr = track[1];
 
 		final LocationType type;
@@ -836,7 +836,7 @@ public final class BvgProvider extends AbstractHafasProvider
 							final Location destination;
 							if (mDetails.group(3) != null)
 							{
-								final String[] destinationPlaceAndName = splitNameAndPlace(ParserUtils.resolveEntities(mDetails.group(3)));
+								final String[] destinationPlaceAndName = splitPlaceAndName(ParserUtils.resolveEntities(mDetails.group(3)));
 								destination = new Location(LocationType.ANY, 0, destinationPlaceAndName[0], destinationPlaceAndName[1]);
 							}
 							else

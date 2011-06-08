@@ -57,7 +57,7 @@ public class ZvvProvider extends AbstractHafasProvider
 	private static final String[] PLACES = { "Zürich" };
 
 	@Override
-	protected String[] splitNameAndPlace(final String name)
+	protected String[] splitPlaceAndName(final String name)
 	{
 		for (final String place : PLACES)
 		{
@@ -65,7 +65,7 @@ public class ZvvProvider extends AbstractHafasProvider
 				return new String[] { place, name.substring(place.length() + 2) };
 		}
 
-		return super.splitNameAndPlace(name);
+		return super.splitPlaceAndName(name);
 	}
 
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
