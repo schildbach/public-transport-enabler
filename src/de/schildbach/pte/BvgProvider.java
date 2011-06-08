@@ -1064,7 +1064,7 @@ public final class BvgProvider extends AbstractHafasProvider
 		LINES.put("ROE46", new int[] { Color.parseColor("#DB6EAB"), Color.WHITE });
 		LINES.put("RMR51", new int[] { Color.parseColor("#DB6EAB"), Color.WHITE });
 		LINES.put("RRB51", new int[] { Color.parseColor("#DB6EAB"), Color.WHITE });
-		LINES.put("RRB54", new int[] { Color.parseColor("#FFD403"), Color.parseColor("#333333") });
+		LINES.put("RRB54", new int[] { Color.parseColor("#FFD403"), Color.BLACK });
 		LINES.put("RRB55", new int[] { Color.parseColor("#F57921"), Color.WHITE });
 		LINES.put("ROE60", new int[] { Color.parseColor("#60BB46"), Color.WHITE });
 		LINES.put("ROE63", new int[] { Color.parseColor("#FFD403"), Color.BLACK });
