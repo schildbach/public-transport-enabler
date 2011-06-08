@@ -112,9 +112,15 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		return 0;
 	}
 
+	private static final Pattern P_SPLIT_ADDRESS = Pattern.compile("(\\d{5}\\s+[^,]+),\\s+(.*)");
+
 	protected String[] splitPlaceAndName(final String name)
 	{
-		return new String[] { null, name };
+		final Matcher matcher = P_SPLIT_ADDRESS.matcher(name);
+		if (matcher.matches())
+			return new String[] { matcher.group(1), matcher.group(2) };
+		else
+			return new String[] { null, name };
 	}
 
 	private final String wrap(final String request)
@@ -291,7 +297,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 						}
 						else if (type == 2) // address
 						{
-							results.add(new Location(LocationType.ADDRESS, 0, lat, lon, null, value));
+							final String[] placeAndName = splitPlaceAndName(value);
+							results.add(new Location(LocationType.ADDRESS, 0, lat, lon, placeAndName[0], placeAndName[1]));
 						}
 						else if (type == 4) // poi
 						{
