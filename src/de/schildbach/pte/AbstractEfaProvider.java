@@ -1566,7 +1566,10 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 					if (!"departure".equals(pp.getAttributeValue(null, "usage")))
 						throw new IllegalStateException();
 					final int departureId = Integer.parseInt(pp.getAttributeValue(null, "stopID"));
-					final String departureName = normalizeLocationName(pp.getAttributeValue(null, "name"));
+					final String departurePlace = normalizeLocationName(pp.getAttributeValue(null, "locality"));
+					String departureName = normalizeLocationName(pp.getAttributeValue(null, "nameWO"));
+					if (departureName == null)
+						departureName = normalizeLocationName(pp.getAttributeValue(null, "name"));
 					final int departureLat, departureLon;
 					if ("WGS84".equals(pp.getAttributeValue(null, "mapName")))
 					{
@@ -1578,7 +1581,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 						departureLat = 0;
 						departureLon = 0;
 					}
-					final Location departure = new Location(LocationType.STATION, departureId, departureLat, departureLon, null, departureName);
+					final Location departure = new Location(LocationType.STATION, departureId, departureLat, departureLon, departurePlace,
+							departureName);
 					if (firstDeparture == null)
 						firstDeparture = departure;
 					final String departurePosition = normalizePlatform(pp.getAttributeValue(null, "platform"),
@@ -1607,7 +1611,10 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 					if (!"arrival".equals(pp.getAttributeValue(null, "usage")))
 						throw new IllegalStateException();
 					final int arrivalId = Integer.parseInt(pp.getAttributeValue(null, "stopID"));
-					final String arrivalName = normalizeLocationName(pp.getAttributeValue(null, "name"));
+					final String arrivalPlace = normalizeLocationName(pp.getAttributeValue(null, "locality"));
+					String arrivalName = normalizeLocationName(pp.getAttributeValue(null, "nameWO"));
+					if (arrivalName == null)
+						arrivalName = normalizeLocationName(pp.getAttributeValue(null, "name"));
 					final int arrivalLat, arrivalLon;
 					if ("WGS84".equals(pp.getAttributeValue(null, "mapName")))
 					{
@@ -1619,7 +1626,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 						arrivalLat = 0;
 						arrivalLon = 0;
 					}
-					final Location arrival = new Location(LocationType.STATION, arrivalId, arrivalLat, arrivalLon, null, arrivalName);
+					final Location arrival = new Location(LocationType.STATION, arrivalId, arrivalLat, arrivalLon, arrivalPlace, arrivalName);
 					lastArrival = arrival;
 					final String arrivalPosition = normalizePlatform(pp.getAttributeValue(null, "platform"),
 							pp.getAttributeValue(null, "platformName"));
