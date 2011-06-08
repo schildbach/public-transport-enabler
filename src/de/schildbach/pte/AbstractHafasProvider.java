@@ -112,7 +112,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		return 0;
 	}
 
-	private static final Pattern P_SPLIT_ADDRESS = Pattern.compile("(\\d{5}\\s+[^,]+),\\s+(.*)");
+	private static final Pattern P_SPLIT_ADDRESS = Pattern.compile("(\\d{4,5}\\s+[^,]+),\\s+(.*)");
 
 	protected String[] splitPlaceAndName(final String name)
 	{
