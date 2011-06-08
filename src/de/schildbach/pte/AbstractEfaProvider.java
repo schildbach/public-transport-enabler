@@ -191,7 +191,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		final StringBuilder uri = new StringBuilder(apiBase);
 		uri.append("XML_COORD_REQUEST");
 		appendCommonRequestParams(uri);
-		uri.append("&coord=").append(String.format("%2.6f:%2.6f:WGS84", latLonToDouble(lon), latLonToDouble(lat)));
+		uri.append("&coord=").append(String.format(Locale.ENGLISH, "%2.6f:%2.6f:WGS84", latLonToDouble(lon), latLonToDouble(lat)));
 		uri.append("&coordListOutputFormat=STRING");
 		uri.append("&max=").append(maxStations != 0 ? maxStations : 50);
 		uri.append("&inclFilter=1&radius_1=").append(maxDistance != 0 ? maxDistance : 1320);
