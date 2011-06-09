@@ -130,9 +130,9 @@ public class VgsProvider extends AbstractHafasProvider
 			+ "(?:<td class=\"[\\w ]*prognosis[\\w ]*\">\n" //
 			+ "(?:&nbsp;|<span class=\"rtLimit\\d\">(p&#252;nktlich|\\d{1,2}:\\d{2})</span>)\n</td>\n" // predictedTime
 			+ ")?.*?" //
-			+ "<img src=\"/hafas-res/img/(\\w+)_pic\\.gif\"[^>]*>\\s*(.*?)\\s*</.*?" // type, line
+			+ "<img src=\"/hafas-res/img/(\\w+)_pic\\.gif\"[^>]*>\\s*(.*?)\\s*<.*?" // type, line
 			+ "<span class=\"bold\">\n" //
-			+ "<a href=\"http://www\\.vgs-online\\.de/cgi-bin/stboard\\.exe/dn\\?input=(\\d+)&[^>]*>" // destinationId
+			+ "<a href=\"http://www\\.saarfahrplan\\.de/cgi-bin/stboard\\.exe/dn\\?input=(\\d+)&[^>]*>" // destinationId
 			+ "\\s*(.*?)\\s*</a>\n" // destination
 			+ "</span>.*?" //
 			+ "(?:<td class=\"center sepline top\">\n(" + ParserUtils.P_PLATFORM + ").*?)?" // position
