@@ -510,7 +510,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 					final String position = mFine.group(5) != null ? "Gl. " + ParserUtils.resolveEntities(mFine.group(5)) : null;
 
 					final String destination;
-					if (mFine.group(10) != null)
+					if (mFine.group(11) != null)
 						destination = ParserUtils.resolveEntities(mFine.group(11)).trim();
 					else if (mFine.group(6) != null)
 						destination = ParserUtils.resolveEntities(mFine.group(6)).trim();
@@ -534,7 +534,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 					final String line = product != 0 ? product + prod : normalizeLine(prod);
 
-					final String capacityStr = mFine.group(11);
+					final String capacityStr = mFine.group(12);
 					final int[] capacity;
 					if (capacityStr != null && !"0|0".equals(capacityStr))
 					{
