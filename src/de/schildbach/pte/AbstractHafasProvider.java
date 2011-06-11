@@ -426,14 +426,14 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			"\\G<Journey ([^>]*?)(?:/>|><HIMMessage ([^>]*?)/></Journey>)(?:\n|\\z)", Pattern.DOTALL);
 	private static final Pattern P_XML_QUERY_DEPARTURES_FINE = Pattern.compile("" //
 			+ "fpTime\\s*=\"(\\d{1,2}:\\d{2})\"\\s*" // time
-			+ "fpDate\\s*=\"(\\d{2}\\.\\d{2}\\.\\d{2}|\\d{4}-\\d{2}-\\d{2})\"\\s*" // date
+			+ "fpDate\\s*=\"(\\d{2}[\\.-]\\d{2}[\\.-]\\d{2}|\\d{4}-\\d{2}-\\d{2})\"\\s*" // date
 			+ "delay\\s*=\"(?:-|k\\.A\\.?|cancel|\\+?\\s*(\\d+))\"\\s*" // delay
 			+ "(?:e_delay\\s*=\"\\d+\"\\s*)?" // (???)
 			+ "(?:newpl\\s*=\"([^\"]*)\"\\s*)?" //
 			+ "(?:platform\\s*=\"([^\"]*)\"\\s*)?" // position
 			+ "(?:targetLoc\\s*=\"([^\"]*)\"\\s*)?" // destination
 			+ "(?:hafasname\\s*=\"([^\"]*)\"\\s*)?" // line
-			+ "(?:dirnr\\s*=\"\\d+\"\\s*)?" // (destination id)
+			+ "(?:dirnr\\s*=\"(\\d+)\"\\s*)?" // destination id
 			+ "prod\\s*=\"([^\"]*)\"\\s*" // line
 			+ "(?:class\\s*=\"([^\"]*)\"\\s*)?" // class
 			+ "(?:dir\\s*=\"([^\"]*)\"\\s*)?" // destination
@@ -480,7 +480,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			final Matcher mFine = P_XML_QUERY_DEPARTURES_FINE.matcher(mCoarse.group(1));
 			if (mFine.matches())
 			{
-				if (mFine.group(12) == null)
+				if (mFine.group(13) == null)
 				{
 					final Calendar plannedTime = new GregorianCalendar(timeZone());
 					plannedTime.clear();
@@ -488,8 +488,10 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 					final String dateStr = mFine.group(2);
 					if (dateStr.length() == 8)
 						ParserUtils.parseGermanDate(plannedTime, dateStr);
-					else
+					else if (dateStr.length() == 10)
 						ParserUtils.parseIsoDate(plannedTime, dateStr);
+					else
+						throw new IllegalStateException("cannot parse: '" + dateStr + "'");
 
 					final Calendar predictedTime;
 					if (mFine.group(3) != null)
@@ -509,20 +511,26 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 					final String destination;
 					if (mFine.group(10) != null)
-						destination = ParserUtils.resolveEntities(mFine.group(10)).trim();
+						destination = ParserUtils.resolveEntities(mFine.group(11)).trim();
 					else if (mFine.group(6) != null)
 						destination = ParserUtils.resolveEntities(mFine.group(6)).trim();
 					else
 						destination = null;
 
+					final int destinationId;
+					if (mFine.group(8) != null)
+						destinationId = Integer.parseInt(mFine.group(8));
+					else
+						destinationId = 0;
+
 					final String hafasName = ParserUtils.resolveEntities(mFine.group(7));
 
-					String prod = ParserUtils.resolveEntities(mFine.group(8));
+					String prod = ParserUtils.resolveEntities(mFine.group(9));
 					final Matcher m = P_NORMALIZE_LINE.matcher(prod);
 					if (m.matches())
 						prod = m.group(1) + m.group(2);
 
-					final char product = mFine.group(9) != null ? intToProduct(Integer.parseInt(mFine.group(9))) : 0;
+					final char product = mFine.group(10) != null ? intToProduct(Integer.parseInt(mFine.group(10))) : 0;
 
 					final String line = product != 0 ? product + prod : normalizeLine(prod);
 
@@ -551,7 +559,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 					}
 
 					departures.add(new Departure(plannedTime.getTime(), predictedTime != null ? predictedTime.getTime() : null, line,
-							line != null ? lineColors(line) : null, null, position, 0, destination, capacity, message));
+							line != null ? lineColors(line) : null, null, position, destinationId, destination, capacity, message));
 				}
 			}
 			else
