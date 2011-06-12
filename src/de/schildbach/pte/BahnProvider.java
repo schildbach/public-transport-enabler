@@ -497,7 +497,7 @@ public final class BahnProvider extends AbstractHafasProvider
 	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder();
-		uri.append(API_BASE).append("bhftafel.exe/dn");
+		uri.append(API_BASE).append("stboard.exe/dn");
 		uri.append("?productsFilter=").append(allProductsString());
 		uri.append("&boardType=dep");
 		uri.append("&disableEquivs=yes"); // don't use nearby stations
