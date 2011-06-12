@@ -1275,6 +1275,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return 'I';
 		if ("ECB".equals(ucType)) // EC, Verona-München
 			return 'I';
+		if ("LYN".equals(ucType)) // Dänemark
+			return 'I';
 		if ("NZ".equals(ucType)) // Schweden, Nacht
 			return 'I';
 		if ("INZ".equals(ucType)) // Nacht
@@ -1303,13 +1305,21 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return 'R';
 		if ("TAL".equals(ucType)) // Talgo, Spanien
 			return 'I';
+		if ("TLG".equals(ucType)) // Spanien, Madrid
+			return 'I';
+		if ("HOT".equals(ucType)) // Spanien, Nacht
+			return 'I';
 		if ("X2".equals(ucType)) // X2000 Neigezug, Schweden
 			return 'I';
 		if ("X".equals(ucType)) // InterConnex
 			return 'I';
 		if ("FYR".equals(ucType)) // Fyra, Amsterdam-Schiphol-Rotterdam
 			return 'I';
+		if ("SC".equals(ucType)) // SuperCity, Tschechien
+			return 'I';
 		if ("FLUG".equals(ucType))
+			return 'I';
+		if ("TLK".equals(ucType)) // Tanie Linie Kolejowe, Polen
 			return 'I';
 
 		// Regional
@@ -1451,9 +1461,13 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return 'R';
 		if ("MBB".equals(ucType)) // Mecklenburgische Bäderbahn Molli
 			return 'R';
+		if ("VEB".equals(ucType)) // Vulkan-Eifel-Bahn Betriebsgesellschaft
+			return 'R';
 		if ("P".equals(ucType)) // Kasbachtalbahn
 			return 'R';
 		if ("ATZ".equals(ucType)) // Autotunnelzug
+			return 'R';
+		if ("ATB".equals(ucType)) // Autoschleuse Tauernbahn
 			return 'R';
 		if ("CAT".equals(ucType)) // City Airport Train
 			return 'R';
@@ -1461,8 +1475,15 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return 'R';
 		if ("KD".equals(ucType)) // Koleje Dolnośląskie (Niederschlesische Eisenbahn)
 			return 'R';
+		if ("KM".equals(ucType)) // Koleje Mazowieckie
+			return 'R';
 		if ("EX".equals(ucType)) // Polen
 			return 'R';
+		if ("PCC".equals(ucType)) // PCC Rail, Polen
+			return 'R';
+		if ("ZR".equals(ucType)) // ZSR (Slovakian Republic Railways)
+			return 'R';
+
 		// if ("E".equals(normalizedType)) // Eilzug, stimmt wahrscheinlich nicht
 		// return "R" + normalizedName;
 
@@ -1472,6 +1493,14 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		if ("BSB".equals(ucType)) // Breisgau S-Bahn
 			return 'S';
 		if ("SWE".equals(ucType)) // Südwestdeutsche Verkehrs-AG, Ortenau-S-Bahn
+			return 'S';
+		if ("RER".equals(ucType)) // Réseau Express Régional, Frankreich
+			return 'S';
+		if ("WKD".equals(ucType)) // Warszawska Kolej Dojazdowa (Warsaw Suburban Railway)
+			return 'S';
+		if ("SKM".equals(ucType)) // Szybka Kolej Miejska Tricity
+			return 'S';
+		if ("SKW".equals(ucType)) // Szybka Kolej Miejska Warschau
 			return 'S';
 		// if ("SPR".equals(normalizedType)) // Sprinter, Niederlande
 		// return "S" + normalizedName;

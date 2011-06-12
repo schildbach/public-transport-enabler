@@ -22,6 +22,9 @@ package de.schildbach.pte;
  */
 public enum NetworkId
 {
+	// Europe
+	RT,
+
 	// Germany
 	DB, BVG, VBB, RMV, VRT, MVV, INVG, AVV, VMV, SH, GVH, BSVAG, BSAG, VBN, NASA, VVO, VMS, VGS, VRR, MVG, VRN, VVS, NALDO, DING, KVV, VVM, VAGFR, NVBW,
 

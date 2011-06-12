@@ -31,16 +31,14 @@ import de.schildbach.pte.util.ParserUtils;
 /**
  * @author Andreas Schildbach
  */
-public class SbbProvider extends AbstractHafasProvider
+public class RtProvider extends AbstractHafasProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.SBB;
-	public static final String OLD_NETWORK_ID = "fahrplan.sbb.ch";
-	private static final String API_BASE = "http://fahrplan.sbb.ch/bin/";
-	private static final String API_URI = "http://fahrplan.sbb.ch/bin/extxml.exe"; // xmlfahrplan.sbb.ch
+	public static final NetworkId NETWORK_ID = NetworkId.RT;
+	private static final String API_BASE = "http://railteam.hafas.de/bin/";
 
-	public SbbProvider(final String accessId)
+	public RtProvider()
 	{
-		super(API_URI, 10, accessId);
+		super(API_BASE + "query.exe/dn", 10, null);
 	}
 
 	public NetworkId id()
@@ -120,6 +118,9 @@ public class SbbProvider extends AbstractHafasProvider
 	@Override
 	protected String normalizeLine(final String line)
 	{
+		if (line.equals("#"))
+			return "?";
+
 		final Matcher m = P_NORMALIZE_LINE_AND_TYPE.matcher(line);
 		if (m.matches())
 		{
@@ -134,33 +135,5 @@ public class SbbProvider extends AbstractHafasProvider
 		}
 
 		throw new IllegalStateException("cannot normalize line " + line);
-	}
-
-	@Override
-	protected char normalizeType(final String type)
-	{
-		final String ucType = type.toUpperCase();
-
-		if ("IN".equals(ucType)) // Italien Roma-Lecce
-			return 'I';
-
-		if ("E".equals(ucType))
-			return 'R';
-		if ("T".equals(ucType))
-			return 'R';
-
-		if ("M".equals(ucType)) // Metro Wien
-			return 'U';
-
-		if ("TX".equals(ucType))
-			return 'B';
-		if ("NFO".equals(ucType))
-			return 'B';
-
-		final char t = super.normalizeType(type);
-		if (t != 0)
-			return t;
-
-		return 0;
 	}
 }

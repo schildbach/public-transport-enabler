@@ -533,19 +533,9 @@ public class OebbProvider extends AbstractHafasProvider
 			return 'I';
 		if (ucType.equals("RR")) // Finnland, Connections only?
 			return 'I';
-		if (ucType.equals("TLK")) // Tanie Linie Kolejowe, Polen
-			return 'I';
 		if (ucType.equals("EE")) // Rumänien, Connections only?
 			return 'I';
-		if (ucType.equals("SC")) // SuperCity, Tschechien
-			return 'I';
-		if (ucType.equals("TLG")) // Spanien, Madrid
-			return 'I';
-		if (ucType.equals("HOT")) // Spanien, Nacht
-			return 'I';
 		if (ucType.equals("OZ")) // Schweden, Oeresundzug, Connections only?
-			return 'I';
-		if (ucType.equals("LYN")) // Dänemark
 			return 'I';
 		if (ucType.equals("UUU")) // Italien, Nacht, Connections only?
 			return 'I';
@@ -556,19 +546,9 @@ public class OebbProvider extends AbstractHafasProvider
 			return 'R';
 		if (ucType.equals("DPN")) // Connections only? TODO nicht evtl. doch eher ne S-Bahn?
 			return 'R';
-		if (ucType.equals("PCC")) // Polen
-			return 'R';
-		if (ucType.equals("KM")) // Polen
-			return 'R';
-		if (ucType.equals("SKM")) // Polen
-			return 'R';
-		if (ucType.equals("SKW")) // Polen
-			return 'R';
 		if (ucType.equals("E")) // Budapest, Ungarn
 			return 'R';
 		if (ucType.equals("IP")) // Ozd, Ungarn
-			return 'R';
-		if (ucType.equals("ZR")) // Bratislava, Slovakai
 			return 'R';
 		if (ucType.equals("N")) // Frankreich, Tours
 			return 'R';
@@ -587,10 +567,6 @@ public class OebbProvider extends AbstractHafasProvider
 			return 'S';
 		// if (ucType.equals("DPN")) // S3 Bad Reichenhall-Freilassing, via JSON API
 		// return 'S';
-		if (ucType.equals("RER")) // Réseau Express Régional, Frankreich
-			return 'S';
-		if (ucType.equals("WKD")) // Warszawska Kolej Dojazdowa (Warsaw Suburban Railway)
-			return 'S';
 
 		if (ucType.equals("LKB")) // Connections only?
 			return 'T';

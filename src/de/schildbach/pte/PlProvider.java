@@ -137,28 +137,13 @@ public class PlProvider extends AbstractHafasProvider
 	{
 		final String ucType = type.toUpperCase();
 
-		if ("TLK".equals(ucType)) // Tanie Linie Kolejowe, Polen
-			return 'I';
-		if ("LYN".equals(ucType)) // Dänemark
-			return 'I';
-		if ("HOT".equals(ucType)) // Spanien, Nacht
-			return 'I';
-		if ("TLG".equals(ucType)) // Spanien, Madrid
-			return 'I';
-		if ("SC".equals(ucType)) // SuperCity, Tschechien
-			return 'I';
-
 		if ("REG".equals(ucType))
-			return 'R';
-		if ("KM".equals(ucType)) // Koleje Mazowieckie
 			return 'R';
 		if ("AR".equals(ucType)) // Arriva Polaczen
 			return 'R';
 		if ("ÖBA".equals(ucType)) // Öchsle-Bahn Betriebsgesellschaft
 			return 'R';
 		if ("RNV".equals(ucType)) // Rhein-Neckar-Verkehr GmbH
-			return 'R';
-		if ("ZR".equals(ucType)) // Bratislava, Slovakai
 			return 'R';
 		if ("KTB".equals(ucType)) // Kandertalbahn
 			return 'R';
@@ -170,15 +155,6 @@ public class PlProvider extends AbstractHafasProvider
 			return 'R';
 		// if ("INT".equals(ucType)) // Rußland
 		// return 'R';
-
-		if ("SKM".equals(ucType)) // Szybka Kolej Miejska Tricity
-			return 'S';
-		if ("SKW".equals(ucType)) // Szybka Kolej Miejska Warschau
-			return 'S';
-		if ("WKD".equals(ucType)) // Warszawska Kolej Dojazdowa
-			return 'S';
-		if ("RER".equals(ucType)) // Réseau Express Régional, Frankreich
-			return 'S';
 
 		if ("METRO".equals(ucType))
 			return 'U';

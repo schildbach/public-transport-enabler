@@ -295,7 +295,7 @@ public final class ParserUtils
 		calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(m.group(3)));
 	}
 
-	private static final Pattern P_GERMAN_DATE = Pattern.compile("(\\d{2})[\\./](\\d{2})[\\./](\\d{2,4})");
+	private static final Pattern P_GERMAN_DATE = Pattern.compile("(\\d{2})[\\./-](\\d{2})[\\./-](\\d{2,4})");
 
 	public static final void parseGermanDate(final Calendar calendar, final CharSequence str)
 	{
