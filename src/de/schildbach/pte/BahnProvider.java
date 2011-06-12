@@ -355,7 +355,7 @@ public final class BahnProvider extends AbstractHafasProvider
 
 	private static final Pattern P_CONNECTION_DETAILS_HEAD = Pattern.compile(".*?" //
 			+ "<span class=\"bold\">Verbindungsdetails</span>(.*?)<div class=\"rline\"></div>.*?", Pattern.DOTALL);
-	private static final Pattern P_CONNECTION_DETAILS_COARSE = Pattern.compile("<div class=\"haupt rline\">\n(.+?>\n)</div>", Pattern.DOTALL);
+	private static final Pattern P_CONNECTION_DETAILS_COARSE = Pattern.compile("<div class=\"rline haupt\"\\s*>\n(.+?>\n)</div>", Pattern.DOTALL);
 	static final Pattern P_CONNECTION_DETAILS_FINE = Pattern.compile("<span class=\"bold\">\\s*(.+?)\\s*</span>.*?" // departure
 			+ "(?:" //
 			+ "<span class=\"bold\">\\s*(.+?)\\s*</span>.*?" // line
