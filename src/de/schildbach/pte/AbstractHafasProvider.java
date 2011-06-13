@@ -429,8 +429,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			+ "fpDate\\s*=\"(\\d{2}[\\.-]\\d{2}[\\.-]\\d{2}|\\d{4}-\\d{2}-\\d{2})\"\\s*" // date
 			+ "delay\\s*=\"(?:-|k\\.A\\.?|cancel|\\+?\\s*(\\d+))\"\\s*" // delay
 			+ "(?:e_delay\\s*=\"\\d+\"\\s*)?" // (???)
-			+ "(?:newpl\\s*=\"([^\"]*)\"\\s*)?" //
 			+ "(?:platform\\s*=\"([^\"]*)\"\\s*)?" // position
+			+ "(?:newpl\\s*=\"([^\"]*)\"\\s*)?" //
 			+ "(?:targetLoc\\s*=\"([^\"]*)\"\\s*)?" // destination
 			+ "(?:hafasname\\s*=\"([^\"]*)\"\\s*)?" // line
 			+ "(?:dirnr\\s*=\"(\\d+)\"\\s*)?" // destination id
