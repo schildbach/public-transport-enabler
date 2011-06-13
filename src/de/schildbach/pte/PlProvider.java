@@ -147,10 +147,6 @@ public class PlProvider extends AbstractHafasProvider
 			return 'R';
 		if ("KTB".equals(ucType)) // Kandertalbahn
 			return 'R';
-		if ("LEO".equals(ucType)) // Chiemgauer Lokalbahn
-			return 'R';
-		if ("MSB".equals(ucType)) // Mainschleifenbahn
-			return 'R';
 		if ("N".equals(ucType)) // St. Pierre des Corps - Tours
 			return 'R';
 		// if ("INT".equals(ucType)) // Rußland

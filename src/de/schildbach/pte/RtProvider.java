@@ -113,14 +113,13 @@ public class RtProvider extends AbstractHafasProvider
 		return jsonGetStops(uri);
 	}
 
+	private static final Pattern P_NORMALIZE_LINE_RUSSIA = Pattern.compile("(\\d{3}(BJ|FJ|IJ|MJ|NJ|OJ|TJ|SZ))");
+	private static final Pattern P_NORMALIZE_LINE_NUMBER = Pattern.compile("\\d{2,5}");
 	private static final Pattern P_NORMALIZE_LINE_AND_TYPE = Pattern.compile("([^#]*)#(.*)");
 
 	@Override
 	protected String normalizeLine(final String line)
 	{
-		if (line.equals("#"))
-			return "?";
-
 		final Matcher m = P_NORMALIZE_LINE_AND_TYPE.matcher(line);
 		if (m.matches())
 		{
@@ -131,9 +130,41 @@ public class RtProvider extends AbstractHafasProvider
 			if (normalizedType != 0)
 				return normalizedType + number;
 
+			if (type.length() == 0)
+			{
+				if (P_NORMALIZE_LINE_RUSSIA.matcher(number).matches())
+					return 'R' + number;
+
+				if (P_NORMALIZE_LINE_NUMBER.matcher(number).matches())
+					return '?' + number;
+
+				if (number.length() == 0)
+					return "?";
+			}
+
 			throw new IllegalStateException("cannot normalize type " + type + " number " + number + " line " + line);
 		}
 
 		throw new IllegalStateException("cannot normalize line " + line);
+	}
+
+	@Override
+	protected char normalizeType(final String type)
+	{
+		final String ucType = type.toUpperCase();
+
+		if ("A".equals(ucType)) // Spain, Highspeed
+			return 'I';
+
+		if ("E".equals(ucType)) // Romania, Croatia
+			return 'R';
+		if ("N".equals(ucType)) // Frankreich, Tours
+			return 'R';
+
+		final char t = super.normalizeType(type);
+		if (t != 0)
+			return t;
+
+		return 0;
 	}
 }

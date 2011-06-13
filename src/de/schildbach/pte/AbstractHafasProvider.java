@@ -1463,6 +1463,12 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return 'R';
 		if ("VEB".equals(ucType)) // Vulkan-Eifel-Bahn Betriebsgesellschaft
 			return 'R';
+		if ("LEO".equals(ucType)) // Chiemgauer Lokalbahn
+			return 'R';
+		if ("VX".equals(ucType)) // Vogtland Express
+			return 'R';
+		if ("MSB".equals(ucType)) // Mainschleifenbahn
+			return 'R';
 		if ("P".equals(ucType)) // Kasbachtalbahn
 			return 'R';
 		if ("ATZ".equals(ucType)) // Autotunnelzug
