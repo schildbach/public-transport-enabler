@@ -600,6 +600,8 @@ public class OebbProvider extends AbstractHafasProvider
 
 		if (ucType.equals("U70")) // U.K., Connections only?
 			return '?';
+		if (ucType.equals("X70")) // U.K., Connections only?
+			return '?';
 		if (ucType.equals("R84")) // U.K., Connections only?
 			return '?';
 		if (ucType.equals("S84")) // U.K., Connections only?

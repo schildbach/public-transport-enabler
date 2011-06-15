@@ -148,7 +148,6 @@ public class ZvvProvider extends AbstractHafasProvider
 		final String ucType = type.toUpperCase();
 
 		// E-Bus: Bus, Tram oder Zug?
-		// TX: Ruftaxi?
 
 		if ("S-BAHN".equals(ucType))
 			return 'S';
@@ -161,6 +160,12 @@ public class ZvvProvider extends AbstractHafasProvider
 			return 'T';
 
 		if ("BUS-NF".equals(ucType)) // Niederflur
+			return 'B';
+		if ("TRO-NF".equals(ucType)) // Niederflur
+			return 'B';
+		if ("BUXI".equals(ucType))
+			return 'B';
+		if ("TX".equals(ucType))
 			return 'B';
 
 		if ("D-SCHIFF".equals(ucType))
