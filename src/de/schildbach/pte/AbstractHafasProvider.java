@@ -422,119 +422,126 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		}
 	}
 
-	private static final Pattern P_XML_QUERY_DEPARTURES_COARSE = Pattern.compile(
-			"\\G<Journey ([^>]*?)(?:/>|><HIMMessage ([^>]*?)/></Journey>)(?:\n|\\z)", Pattern.DOTALL);
-	private static final Pattern P_XML_QUERY_DEPARTURES_FINE = Pattern.compile("" //
-			+ "fpTime\\s*=\"(\\d{1,2}:\\d{2})\"\\s*" // time
-			+ "fpDate\\s*=\"(\\d{2}[\\.-]\\d{2}[\\.-]\\d{2}|\\d{4}-\\d{2}-\\d{2})\"\\s*" // date
-			+ "delay\\s*=\"(?:-|k\\.A\\.?|cancel|\\+?\\s*(\\d+))\"\\s*" // delay
-			+ "(?:e_delay\\s*=\"\\d+\"\\s*)?" // (???)
-			+ "(?:platform\\s*=\"([^\"]*)\"\\s*)?" // position
-			+ "(?:newpl\\s*=\"([^\"]*)\"\\s*)?" //
-			+ "(?:targetLoc\\s*=\"([^\"]*)\"\\s*)?" // destination
-			+ "(?:hafasname\\s*=\"([^\"]*)\"\\s*)?" // line
-			+ "(?:dirnr\\s*=\"(\\d+)\"\\s*)?" // destination id
-			+ "prod\\s*=\"([^\"]*)\"\\s*" // line
-			+ "(?:class\\s*=\"([^\"]*)\"\\s*)?" // class
-			+ "(?:dir\\s*=\"([^\"]*)\"\\s*)?" // destination
-			+ "(?:capacity\\s*=\"([^\"]*)\"\\s*)?" // capacity 1st class|2nd class
-			+ "(?:depStation\\s*=\"(.*?)\"\\s*)?" //
-			+ "(?:delayReason\\s*=\"([^\"]*)\"\\s*)?" // message
-			+ "(?:is_reachable\\s*=\"[^\"]*\"\\s*)?" // (???)
-			+ "(?:disableTrainInfo\\s*=\"[^\"]*\"\\s*)?" // (???)
-	);
-	private static final Pattern P_XML_QUERY_DEPARTURES_MESSAGES = Pattern.compile("<Err code=\"([^\"]*)\" text=\"([^\"]*)\"");
+	private static final Pattern P_XML_QUERY_DEPARTURES_DELAY = Pattern.compile("(?:-|k\\.A\\.?|cancel|\\+?\\s*(\\d+))");
 
 	protected QueryDeparturesResult xmlQueryDepartures(final String uri, final int stationId) throws IOException
 	{
-		// scrape page
-		final CharSequence page = ParserUtils.scrape(uri);
+		// System.out.println(uri);
 
-		final QueryDeparturesResult result = new QueryDeparturesResult();
+		InputStream is = null;
 
-		// parse page
-		final Matcher mMessage = P_XML_QUERY_DEPARTURES_MESSAGES.matcher(page);
-		if (mMessage.find())
+		try
 		{
-			final String code = mMessage.group(1);
-			final String text = mMessage.group(2);
+			is = ParserUtils.scrapeInputStream(uri);
 
-			if (code.equals("H730")) // Your input is not valid
-				return new QueryDeparturesResult(QueryDeparturesResult.Status.INVALID_STATION);
-			if (code.equals("H890"))
+			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
+			final XmlPullParser pp = factory.newPullParser();
+			pp.setInput(is, DEFAULT_ENCODING);
+
+			pp.nextTag();
+
+			final QueryDeparturesResult result = new QueryDeparturesResult();
+			final List<Departure> departures = new ArrayList<Departure>(8);
+
+			if (XmlPullUtil.test(pp, "Err"))
 			{
-				result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, stationId),
-						Collections.<Departure> emptyList(), null));
-				return result;
+				final String code = XmlPullUtil.attr(pp, "code");
+				final String text = XmlPullUtil.attr(pp, "text");
+
+				if (code.equals("H730")) // Your input is not valid
+					return new QueryDeparturesResult(QueryDeparturesResult.Status.INVALID_STATION);
+				if (code.equals("H890"))
+				{
+					result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, stationId), Collections
+							.<Departure> emptyList(), null));
+					return result;
+				}
+				throw new IllegalArgumentException("unknown error " + code + ", " + text);
 			}
-			throw new IllegalArgumentException("unknown error " + code + ", " + text);
-		}
 
-		final List<Departure> departures = new ArrayList<Departure>(8);
-
-		final Matcher mCoarse = P_XML_QUERY_DEPARTURES_COARSE.matcher(page);
-		while (mCoarse.find())
-		{
-			// TODO parse HIMMessage
-
-			final Matcher mFine = P_XML_QUERY_DEPARTURES_FINE.matcher(mCoarse.group(1));
-			if (mFine.matches())
+			while (XmlPullUtil.test(pp, "Journey"))
 			{
-				if (mFine.group(13) == null)
+				final String fpTime = XmlPullUtil.attr(pp, "fpTime");
+				final String fpDate = XmlPullUtil.attr(pp, "fpDate");
+				final String delay = XmlPullUtil.attr(pp, "delay");
+				// TODO e_delay
+				final String platform = pp.getAttributeValue(null, "platform");
+				// TODO newpl
+				final String targetLoc = pp.getAttributeValue(null, "targetLoc");
+				// TODO hafasname
+				final String dirnr = pp.getAttributeValue(null, "dirnr");
+				String prod = XmlPullUtil.attr(pp, "prod");
+				final String classStr = pp.getAttributeValue(null, "class");
+				final String dir = pp.getAttributeValue(null, "dir");
+				final String capacityStr = pp.getAttributeValue(null, "capacity");
+				final String depStation = pp.getAttributeValue(null, "depStation");
+				final String delayReason = pp.getAttributeValue(null, "delayReason");
+				// TODO is_reachable
+				// TODO disableTrainInfo
+
+				if (depStation == null)
 				{
 					final Calendar plannedTime = new GregorianCalendar(timeZone());
 					plannedTime.clear();
-					ParserUtils.parseEuropeanTime(plannedTime, mFine.group(1));
-					final String dateStr = mFine.group(2);
-					if (dateStr.length() == 8)
-						ParserUtils.parseGermanDate(plannedTime, dateStr);
-					else if (dateStr.length() == 10)
-						ParserUtils.parseIsoDate(plannedTime, dateStr);
+					ParserUtils.parseEuropeanTime(plannedTime, fpTime);
+					if (fpDate.length() == 8)
+						ParserUtils.parseGermanDate(plannedTime, fpDate);
+					else if (fpDate.length() == 10)
+						ParserUtils.parseIsoDate(plannedTime, fpDate);
 					else
-						throw new IllegalStateException("cannot parse: '" + dateStr + "'");
+						throw new IllegalStateException("cannot parse: '" + fpDate + "'");
 
 					final Calendar predictedTime;
-					if (mFine.group(3) != null)
+					if (delay != null)
 					{
-						predictedTime = new GregorianCalendar(timeZone());
-						predictedTime.setTimeInMillis(plannedTime.getTimeInMillis());
-						predictedTime.add(Calendar.MINUTE, Integer.parseInt(mFine.group(3)));
+						final Matcher m = P_XML_QUERY_DEPARTURES_DELAY.matcher(delay);
+						if (m.matches())
+						{
+							if (m.group(1) != null)
+							{
+								predictedTime = new GregorianCalendar(timeZone());
+								predictedTime.setTimeInMillis(plannedTime.getTimeInMillis());
+								predictedTime.add(Calendar.MINUTE, Integer.parseInt(m.group(1)));
+							}
+							else
+							{
+								predictedTime = null;
+							}
+						}
+						else
+						{
+							throw new RuntimeException("cannot parse delay: '" + delay + "'");
+						}
 					}
 					else
 					{
 						predictedTime = null;
 					}
 
-					// TODO parse newpl if present
-
-					final String position = mFine.group(5) != null ? "Gl. " + ParserUtils.resolveEntities(mFine.group(5)) : null;
+					final String position = platform != null ? "Gl. " + ParserUtils.resolveEntities(platform) : null;
 
 					final String destination;
-					if (mFine.group(11) != null)
-						destination = ParserUtils.resolveEntities(mFine.group(11)).trim();
-					else if (mFine.group(6) != null)
-						destination = ParserUtils.resolveEntities(mFine.group(6)).trim();
+					if (dir != null)
+						destination = dir.trim();
+					else if (targetLoc != null)
+						destination = targetLoc.trim();
 					else
 						destination = null;
 
 					final int destinationId;
-					if (mFine.group(8) != null)
-						destinationId = Integer.parseInt(mFine.group(8));
+					if (dirnr != null)
+						destinationId = Integer.parseInt(dirnr);
 					else
 						destinationId = 0;
 
-					final String hafasName = ParserUtils.resolveEntities(mFine.group(7));
-
-					String prod = ParserUtils.resolveEntities(mFine.group(9));
 					final Matcher m = P_NORMALIZE_LINE.matcher(prod);
 					if (m.matches())
 						prod = m.group(1) + m.group(2);
 
-					final char product = mFine.group(10) != null ? intToProduct(Integer.parseInt(mFine.group(10))) : 0;
+					final char product = classStr != null ? intToProduct(Integer.parseInt(classStr)) : 0;
 
 					final String line = product != 0 ? product + prod : normalizeLine(prod);
 
-					final String capacityStr = mFine.group(12);
 					final int[] capacity;
 					if (capacityStr != null && !"0|0".equals(capacityStr))
 					{
@@ -546,11 +553,10 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 						capacity = null;
 					}
 
-					final String messageStr = mFine.group(13);
 					final String message;
-					if (messageStr != null)
+					if (delayReason != null)
 					{
-						final String msg = ParserUtils.resolveEntities(messageStr).trim();
+						final String msg = delayReason.trim();
 						message = msg.length() > 0 ? msg : null;
 					}
 					else
@@ -558,18 +564,34 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 						message = null;
 					}
 
-					departures.add(new Departure(plannedTime.getTime(), predictedTime != null ? predictedTime.getTime() : null, new Line(null, line,
-							line != null ? lineColors(line) : null), position, destinationId, destination, capacity, message));
+					final Departure departure = new Departure(plannedTime.getTime(), predictedTime != null ? predictedTime.getTime() : null,
+							new Line(null, line, line != null ? lineColors(line) : null), position, destinationId, destination, capacity, message);
+					departures.add(departure);
+				}
+
+				if (pp.isEmptyElementTag())
+				{
+					XmlPullUtil.next(pp);
+				}
+				else
+				{
+					XmlPullUtil.enter(pp, "Journey");
+					XmlPullUtil.exit(pp, "Journey");
 				}
 			}
-			else
-			{
-				throw new IllegalArgumentException("cannot parse '" + mCoarse.group(1) + "' on " + uri);
-			}
-		}
 
-		result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, stationId), departures, null));
-		return result;
+			result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, stationId), departures, null));
+			return result;
+		}
+		catch (final XmlPullParserException x)
+		{
+			throw new RuntimeException(x);
+		}
+		finally
+		{
+			if (is != null)
+				is.close();
+		}
 	}
 
 	public QueryConnectionsResult queryConnections(Location from, Location via, Location to, final Date date, final boolean dep,
