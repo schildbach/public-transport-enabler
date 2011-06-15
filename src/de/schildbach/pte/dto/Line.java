@@ -24,11 +24,15 @@ import java.io.Serializable;
  */
 public final class Line implements Serializable
 {
+	private static final long serialVersionUID = -5642533805998375070L;
+
+	final public String id;
 	final public String label;
 	final public int[] colors;
 
-	public Line(final String label, final int[] colors)
+	public Line(final String id, final String label, final int[] colors)
 	{
+		this.id = id;
 		this.label = label;
 		this.colors = colors;
 	}

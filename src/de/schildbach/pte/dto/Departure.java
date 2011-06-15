@@ -26,43 +26,24 @@ public final class Departure
 {
 	final public Date plannedTime;
 	final public Date predictedTime;
-	final public String line;
-	final public int[] lineColors;
-	final public String lineLink;
+	final public Line line;
 	final public String position;
 	final public int destinationId;
 	final public String destination;
 	final public int[] capacity;
 	final public String message;
 
-	public Departure(final Date plannedTime, final Date predictedTime, final String line, final int[] lineColors, final String lineLink,
-			final String position, final int destinationId, final String destination, final int[] capacity, final String message)
+	public Departure(final Date plannedTime, final Date predictedTime, final Line line, final String position, final int destinationId,
+			final String destination, final int[] capacity, final String message)
 	{
 		this.plannedTime = plannedTime;
 		this.predictedTime = predictedTime;
 		this.line = line;
-		this.lineColors = lineColors;
-		this.lineLink = lineLink;
 		this.position = position;
 		this.destinationId = destinationId;
 		this.destination = destination;
 		this.capacity = capacity;
 		this.message = message;
-	}
-
-	public Departure(final Date plannedTime, final String line, final int[] lineColors, final String position, final int destinationId,
-			final String destination)
-	{
-		this.plannedTime = plannedTime;
-		this.predictedTime = null;
-		this.line = line;
-		this.lineColors = lineColors;
-		this.lineLink = null;
-		this.position = position;
-		this.destinationId = destinationId;
-		this.destination = destination;
-		this.capacity = null;
-		this.message = null;
 	}
 
 	@Override

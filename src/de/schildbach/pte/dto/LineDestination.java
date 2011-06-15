@@ -22,15 +22,13 @@ package de.schildbach.pte.dto;
  */
 public final class LineDestination
 {
-	final public String line;
-	final public int[] lineColors;
+	final public Line line;
 	final public int destinationId;
 	final public String destination;
 
-	public LineDestination(final String line, final int[] lineColors, final int destinationId, final String destination)
+	public LineDestination(final Line line, final int destinationId, final String destination)
 	{
 		this.line = line;
-		this.lineColors = lineColors;
 		this.destinationId = destinationId;
 		this.destination = destination;
 	}
@@ -38,7 +36,7 @@ public final class LineDestination
 	@Override
 	public String toString()
 	{
-		StringBuilder builder = new StringBuilder("Line(");
+		StringBuilder builder = new StringBuilder("LineDestination(");
 		builder.append(line != null ? line : "null");
 		builder.append(",");
 		builder.append(destinationId);

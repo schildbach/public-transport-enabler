@@ -420,7 +420,7 @@ public final class BahnProvider extends AbstractHafasProvider
 						if (mDetFine.group(2) != null)
 						{
 							final String lineStr = normalizeLine(ParserUtils.resolveEntities(mDetFine.group(2)));
-							final Line line = new Line(lineStr, lineColors(lineStr));
+							final Line line = new Line(null, lineStr, lineColors(lineStr));
 
 							final Calendar departureTime = new GregorianCalendar(timeZone());
 							departureTime.clear();

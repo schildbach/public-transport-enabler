@@ -443,7 +443,7 @@ public class OebbProvider extends AbstractHafasProvider
 								final String departurePosition = mDetFine.group(5) != null ? ParserUtils.resolveEntities(mDetFine.group(5)) : null;
 
 								final String lineStr = normalizeLine(lineType, ParserUtils.resolveEntities(mDetFine.group(7)));
-								final Line line = new Line(lineStr, lineColors(lineStr));
+								final Line line = new Line(null, lineStr, lineColors(lineStr));
 
 								if (arrivalId == 0)
 									throw new IllegalStateException("arrivalId");

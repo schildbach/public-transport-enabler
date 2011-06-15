@@ -558,8 +558,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 						message = null;
 					}
 
-					departures.add(new Departure(plannedTime.getTime(), predictedTime != null ? predictedTime.getTime() : null, line,
-							line != null ? lineColors(line) : null, null, position, destinationId, destination, capacity, message));
+					departures.add(new Departure(plannedTime.getTime(), predictedTime != null ? predictedTime.getTime() : null, new Line(null, line,
+							line != null ? lineColors(line) : null), position, destinationId, destination, capacity, message));
 				}
 			}
 			else
@@ -873,7 +873,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 							category = shortCategory;
 
 						final String lineStr = normalizeLine(category, name);
-						line = new Line(lineStr, lineColors(lineStr));
+						line = new Line(null, lineStr, lineColors(lineStr));
 					}
 					else if (tag.equals("Walk") || tag.equals("Transfer") || tag.equals("GisRoute"))
 					{

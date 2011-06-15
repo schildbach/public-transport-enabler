@@ -321,8 +321,8 @@ public final class BvgProvider extends AbstractHafasProvider
 
 						final String destination = ParserUtils.resolveEntities(mDepFine.group(4));
 
-						final Departure dep = new Departure(plannedTime, predictedTime, line, line != null ? lineColors(line) : null, null, position,
-								destinationId, destination, null, messages.get(line));
+						final Departure dep = new Departure(plannedTime, predictedTime, new Line(null, line, line != null ? lineColors(line) : null),
+								position, destinationId, destination, null, messages.get(line));
 						if (!departures.contains(dep))
 							departures.add(dep);
 					}
@@ -391,8 +391,8 @@ public final class BvgProvider extends AbstractHafasProvider
 
 						final String destination = ParserUtils.resolveEntities(mDepFine.group(5));
 
-						final Departure dep = new Departure(plannedTime, null, line, line != null ? lineColors(line) : null, null, position,
-								destinationId, destination, null, null);
+						final Departure dep = new Departure(plannedTime, null, new Line(null, line, line != null ? lineColors(line) : null),
+								position, destinationId, destination, null, null);
 						if (!departures.contains(dep))
 							departures.add(dep);
 					}
@@ -831,7 +831,7 @@ public final class BvgProvider extends AbstractHafasProvider
 									: null;
 
 							final String lineStr = normalizeLine(ParserUtils.resolveEntities(tDep[3]));
-							final Line line = new Line(lineStr, lineColors(lineStr));
+							final Line line = new Line(null, lineStr, lineColors(lineStr));
 
 							final Location destination;
 							if (mDetails.group(3) != null)

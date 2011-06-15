@@ -26,6 +26,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.schildbach.pte.dto.Departure;
+import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -219,8 +220,8 @@ public class RmvProvider extends AbstractHafasProvider
 
 						final String position = ParserUtils.resolveEntities(ParserUtils.selectNotNull(mDepFine.group(5), mDepFine.group(6)));
 
-						final Departure dep = new Departure(plannedTime.getTime(), predictedTime != null ? predictedTime.getTime() : null, line,
-								line != null ? lineColors(line) : null, null, position, 0, destination, null, null);
+						final Departure dep = new Departure(plannedTime.getTime(), predictedTime != null ? predictedTime.getTime() : null, new Line(
+								null, line, line != null ? lineColors(line) : null), position, 0, destination, null, null);
 
 						if (!departures.contains(dep))
 							departures.add(dep);

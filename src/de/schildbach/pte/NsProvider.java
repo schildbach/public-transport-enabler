@@ -26,6 +26,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.schildbach.pte.dto.Departure;
+import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -164,7 +165,8 @@ public class NsProvider extends AbstractHafasProvider
 
 						mDepFine.group(4); // TODO delay
 
-						final Departure dep = new Departure(parsedTime.getTime(), line, line != null ? lineColors(line) : null, null, 0, destination);
+						final Departure dep = new Departure(parsedTime.getTime(), null, new Line(null, line, line != null ? lineColors(line) : null),
+								null, 0, destination, null, null);
 
 						if (!departures.contains(dep))
 							departures.add(dep);

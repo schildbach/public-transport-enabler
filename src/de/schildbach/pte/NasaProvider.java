@@ -27,6 +27,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.schildbach.pte.dto.Departure;
+import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -211,8 +212,8 @@ public class NasaProvider extends AbstractHafasProvider
 
 						final String position = mDepFine.group(7) != null ? "Gl. " + ParserUtils.resolveEntities(mDepFine.group(7)) : null;
 
-						final Departure dep = new Departure(plannedTime.getTime(), predictedTime != null ? predictedTime.getTime() : null, line,
-								line != null ? lineColors(line) : null, null, position, destinationId, destination, null, null);
+						final Departure dep = new Departure(plannedTime.getTime(), predictedTime != null ? predictedTime.getTime() : null, new Line(
+								null, line, line != null ? lineColors(line) : null), position, destinationId, destination, null, null);
 
 						if (!departures.contains(dep))
 							departures.add(dep);
