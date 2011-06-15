@@ -1685,16 +1685,20 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 						final String destinationName = normalizeLocationName(pp.getAttributeValue(null, "destination"));
 						final Location destination = destinationIdStr.length() > 0 ? new Location(LocationType.STATION,
 								Integer.parseInt(destinationIdStr), null, destinationName) : new Location(LocationType.ANY, 0, null, destinationName);
-						final String lineStr;
+						final String lineLabel;
 						if ("AST".equals(pp.getAttributeValue(null, "symbol")))
-							lineStr = "BAST";
+							lineLabel = "BAST";
 						else
-							lineStr = parseLine(pp.getAttributeValue(null, "motType"), pp.getAttributeValue(null, "shortname"),
+							lineLabel = parseLine(pp.getAttributeValue(null, "motType"), pp.getAttributeValue(null, "shortname"),
 									pp.getAttributeValue(null, "name"), null);
-						final Line line = new Line(null, lineStr, lineColors(lineStr));
-
 						XmlPullUtil.enter(pp, "itdMeansOfTransport");
+						XmlPullUtil.require(pp, "motDivaParams");
+						final String lineId = XmlPullUtil.attr(pp, "network") + ':' + XmlPullUtil.attr(pp, "line") + ':'
+								+ XmlPullUtil.attr(pp, "supplement") + ':' + XmlPullUtil.attr(pp, "direction") + ':'
+								+ XmlPullUtil.attr(pp, "project");
 						XmlPullUtil.exit(pp, "itdMeansOfTransport");
+
+						final Line line = new Line(lineId, lineLabel, lineColors(lineLabel));
 
 						if (XmlPullUtil.test(pp, "itdRBLControlled"))
 							XmlPullUtil.next(pp);
