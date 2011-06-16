@@ -1006,8 +1006,11 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		{
 			final String type = XmlPullUtil.attr(pp, "type");
 			XmlPullUtil.enter(pp);
-			XmlPullUtil.require(pp, "Text");
-			final String value = XmlPullUtil.text(pp).trim();
+			final String value;
+			if (XmlPullUtil.test(pp, "Text"))
+				value = XmlPullUtil.text(pp).trim();
+			else
+				value = null;
 			XmlPullUtil.exit(pp);
 
 			attributeVariants.put(type, value);
