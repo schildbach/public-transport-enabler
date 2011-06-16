@@ -386,6 +386,18 @@ public final class ParserUtils
 			System.out.println(m.group(1));
 	}
 
+	public static void printFromReader(final Reader reader) throws IOException
+	{
+		while (true)
+		{
+			final int c = reader.read();
+			if (c == -1)
+				return;
+
+			System.out.print((char) c);
+		}
+	}
+
 	public static String urlEncode(final String str)
 	{
 		try

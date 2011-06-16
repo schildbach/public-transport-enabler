@@ -19,6 +19,7 @@ package de.schildbach.pte;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -53,6 +54,7 @@ import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.dto.Stop;
 import de.schildbach.pte.util.Color;
 import de.schildbach.pte.util.ParserUtils;
+import de.schildbach.pte.util.StringReplaceReader;
 import de.schildbach.pte.util.XmlPullUtil;
 
 /**
@@ -426,17 +428,20 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 	protected QueryDeparturesResult xmlQueryDepartures(final String uri, final int stationId) throws IOException
 	{
-		// System.out.println(uri);
-
-		InputStream is = null;
+		StringReplaceReader reader = null;
 
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri);
+			reader = new StringReplaceReader(new InputStreamReader(ParserUtils.scrapeInputStream(uri), DEFAULT_ENCODING), "Ringbahn ->",
+					"Ringbahn -&gt;");
+			reader.replace("Ringbahn <-", "Ringbahn &lt;-");
+
+			// System.out.println(uri);
+			// ParserUtils.printFromReader(reader);
 
 			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
 			final XmlPullParser pp = factory.newPullParser();
-			pp.setInput(is, DEFAULT_ENCODING);
+			pp.setInput(reader);
 
 			pp.nextTag();
 
@@ -589,8 +594,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		}
 		finally
 		{
-			if (is != null)
-				is.close();
+			if (reader != null)
+				reader.close();
 		}
 	}
 
