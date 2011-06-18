@@ -430,10 +430,10 @@ public final class BvgProvider extends AbstractHafasProvider
 
 		uri.append("?start=Suchen");
 
-		appendLocationBvg(uri, from, "S0");
-		appendLocationBvg(uri, to, "Z0");
+		uri.append("&REQ0JourneyStopsS0ID=").append(ParserUtils.urlEncode(locationId(from)));
+		uri.append("&REQ0JourneyStopsZ0ID=").append(ParserUtils.urlEncode(locationId(to)));
 		if (via != null)
-			appendLocationBvg(uri, via, "1.0");
+			uri.append("&REQ0JourneyStops1.0ID=").append(ParserUtils.urlEncode(locationId(via)));
 
 		uri.append("&REQ0HafasSearchForw=").append(dep ? "1" : "0");
 		uri.append("&REQ0JourneyDate=").append(
@@ -498,42 +498,10 @@ public final class BvgProvider extends AbstractHafasProvider
 		return uri.toString();
 	}
 
-	private static final void appendLocationBvg(final StringBuilder uri, final Location location, final String paramSuffix)
+	@Override
+	protected boolean isValidStationId(int id)
 	{
-		uri.append("&REQ0JourneyStops").append(paramSuffix).append("A=").append(locationTypeValue(location));
-
-		if (location.type == LocationType.STATION && location.hasId() && location.id >= 1000000)
-			uri.append("&REQ0JourneyStops").append(paramSuffix).append("L=").append(location.id);
-
-		if (location.hasLocation())
-		{
-			uri.append("&REQ0JourneyStops").append(paramSuffix).append("X=").append(location.lon);
-			uri.append("&REQ0JourneyStops").append(paramSuffix).append("Y=").append(location.lat);
-			if (location.name == null)
-				uri.append("&REQ0JourneyStops").append(paramSuffix).append("O=")
-						.append(ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%.6f, %.6f", location.lat / 1E6, location.lon / 1E6)));
-		}
-
-		if (location.name != null)
-		{
-			uri.append("&REQ0JourneyStops").append(paramSuffix).append("G=").append(ParserUtils.urlEncode(location.name));
-			if (location.type != LocationType.ANY)
-				uri.append('!');
-		}
-	}
-
-	private static final int locationTypeValue(final Location location)
-	{
-		final LocationType type = location.type;
-		if (type == LocationType.STATION)
-			return 1;
-		if (type == LocationType.ADDRESS)
-			return 2;
-		if (type == LocationType.POI)
-			return 4;
-		if (type == LocationType.ANY)
-			return 255;
-		throw new IllegalArgumentException(type.toString());
+		return id >= 1000000;
 	}
 
 	private static final Pattern P_PRE_ADDRESS = Pattern.compile(

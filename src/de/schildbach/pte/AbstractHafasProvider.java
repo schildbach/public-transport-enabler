@@ -28,6 +28,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
@@ -1076,32 +1077,52 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		throw new IllegalArgumentException("cannot handle: " + location.toDebugString());
 	}
 
-	protected static final String locationId(final Location location)
+	protected final String locationId(final Location location)
 	{
-		final StringBuilder builder = new StringBuilder();
-		builder.append("A=").append(locationType(location));
-		if (location.hasLocation())
-			builder.append("@X=" + location.lon + "@Y=" + location.lat);
-		if (location.name != null)
-			builder.append("@G=" + location.name);
-		if (location.type == LocationType.STATION && location.hasId())
-			builder.append("@L=").append(location.id);
-		return builder.toString();
+		final StringBuilder id = new StringBuilder();
+
+		id.append("A=").append(locationType(location));
+
+		if (location.type == LocationType.STATION && location.hasId() && isValidStationId(location.id))
+		{
+			id.append("@L=").append(location.id);
+		}
+		else if (location.hasLocation())
+		{
+			id.append("@X=").append(location.lon);
+			id.append("@Y=").append(location.lat);
+			id.append("@O=").append(
+					location.name != null ? location.name : String.format(Locale.ENGLISH, "%.6f, %.6f", location.lat / 1E6, location.lon / 1E6));
+		}
+		else if (location.name != null)
+		{
+			id.append("@G=").append(location.name);
+			if (location.type != LocationType.ANY)
+				id.append('!');
+		}
+
+		return id.toString();
 	}
 
 	protected static final int locationType(final Location location)
 	{
-		if (location.type == LocationType.STATION)
+		final LocationType type = location.type;
+		if (type == LocationType.STATION)
 			return 1;
-		if (location.type == LocationType.POI)
+		if (type == LocationType.POI)
 			return 4;
-		if (location.type == LocationType.ADDRESS && location.hasLocation())
+		if (type == LocationType.ADDRESS && location.hasLocation())
 			return 16;
-		if (location.type == LocationType.ADDRESS && location.name != null)
+		if (type == LocationType.ADDRESS && location.name != null)
 			return 2;
-		if (location.type == LocationType.ANY)
+		if (type == LocationType.ANY)
 			return 255;
 		throw new IllegalArgumentException(location.type.toString());
+	}
+
+	protected boolean isValidStationId(int id)
+	{
+		return true;
 	}
 
 	public GetConnectionDetailsResult getConnectionDetails(String connectionUri) throws IOException
