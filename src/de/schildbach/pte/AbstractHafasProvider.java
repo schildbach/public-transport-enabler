@@ -644,26 +644,22 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		for (final char p : products.toCharArray())
 			setProductBits(productsStr, p);
 
-		final String request = "<ConReq>" //
-				+ "<Start>"
-				+ location(from)
-				+ "<Prod prod=\""
-				+ productsStr
-				+ "\" bike=\"0\" couchette=\"0\" direct=\"0\" sleeper=\"0\"/>" //
-				+ "</Start>" //
-				+ (via != null ? "<Via>" + location(via) + "</Via>" : "") //
-				+ "<Dest>"
-				+ location(to)
-				+ "</Dest>" //
-				+ "<ReqT a=\"" + (dep ? 0 : 1)
-				+ "\" date=\""
-				+ String.format("%04d.%02d.%02d", c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH))
-				+ "\" time=\""
-				+ String.format("%02d:%02d", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE)) + "\"/>" //
-				+ "<RFlags b=\"0\" chExtension=\"0\" f=\"" + NUM_CONNECTIONS + "\" sMode=\"N\"/>" //
-				+ "</ConReq>";
+		final StringBuilder request = new StringBuilder("<ConReq>");
 
-		return queryConnections(request, from, via, to);
+		request.append("<Start>").append(location(from));
+		request.append("<Prod prod=\"").append(productsStr).append("\" bike=\"0\" couchette=\"0\" direct=\"0\" sleeper=\"0\"/>");
+		request.append("</Start>");
+		if (via != null)
+			request.append("<Via>").append(location(via)).append("</Via>");
+		request.append("<Dest>").append(location(to)).append("</Dest>");
+		request.append("<ReqT a=\"").append(dep ? 0 : 1).append("\" date=\"")
+				.append(String.format("%04d.%02d.%02d", c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH)))
+				.append("\" time=\"").append(String.format("%02d:%02d", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE)) + "\"/>");
+		request.append("<RFlags b=\"0\" chExtension=\"").append(walkSpeed == WalkSpeed.SLOW ? 50 : 0).append("\" f=\"").append(NUM_CONNECTIONS)
+				.append("\" sMode=\"N\"/>");
+		request.append("</ConReq>");
+
+		return queryConnections(request.toString(), from, via, to);
 	}
 
 	public QueryConnectionsResult queryMoreConnections(final String context) throws IOException
