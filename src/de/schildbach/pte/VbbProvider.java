@@ -86,6 +86,9 @@ public class VbbProvider extends AbstractHafasProvider
 		{
 			productBits.setCharAt(4, '1');
 		}
+		else if (product == 'C')
+		{
+		}
 		else
 		{
 			throw new IllegalArgumentException("cannot handle: " + product);
