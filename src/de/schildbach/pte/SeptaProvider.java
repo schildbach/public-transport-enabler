@@ -72,6 +72,37 @@ public class SeptaProvider extends AbstractHafasProvider
 		return false;
 	}
 
+	@Override
+	protected void setProductBits(final StringBuilder productBits, final char product)
+	{
+		if (product == 'I')
+		{
+		}
+		else if (product == 'R' || product == 'S')
+		{
+			productBits.setCharAt(3, '1'); // Regional Rail
+		}
+		else if (product == 'U')
+		{
+			productBits.setCharAt(0, '1'); // Subway
+		}
+		else if (product == 'T')
+		{
+			productBits.setCharAt(1, '1'); // Trolley
+		}
+		else if (product == 'B')
+		{
+			productBits.setCharAt(2, '1'); // Bus
+		}
+		else if (product == 'P' || product == 'F' || product == 'C')
+		{
+		}
+		else
+		{
+			throw new IllegalArgumentException("cannot handle: " + product);
+		}
+	}
+
 	private static final Pattern P_SPLIT_ADDRESS = Pattern.compile("(.*),\\s+([^,]+\\s+\\d{4,5})");
 
 	@Override

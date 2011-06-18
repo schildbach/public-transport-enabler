@@ -65,6 +65,53 @@ public class RmvProvider extends AbstractHafasProvider
 		return false;
 	}
 
+	@Override
+	protected void setProductBits(final StringBuilder productBits, final char product)
+	{
+		if (product == 'I')
+		{
+			productBits.setCharAt(0, '1'); // ICE
+		}
+		else if (product == 'R')
+		{
+			productBits.setCharAt(1, '1'); // Zug
+			productBits.setCharAt(2, '1'); // Zug
+			productBits.setCharAt(10, '1'); // Zug
+		}
+		else if (product == 'S')
+		{
+			productBits.setCharAt(3, '1'); // S-Bahn
+		}
+		else if (product == 'U')
+		{
+			productBits.setCharAt(4, '1'); // U-Bahn
+		}
+		else if (product == 'T')
+		{
+			productBits.setCharAt(5, '1'); // Straßenbahn
+		}
+		else if (product == 'B')
+		{
+			productBits.setCharAt(6, '1'); // Niederflurbus
+			productBits.setCharAt(7, '1'); // Bus
+		}
+		else if (product == 'P')
+		{
+			productBits.setCharAt(9, '1'); // AST/Rufbus
+		}
+		else if (product == 'F')
+		{
+			productBits.setCharAt(8, '1'); // Fähre/Schiff
+		}
+		else if (product == 'C')
+		{
+		}
+		else
+		{
+			throw new IllegalArgumentException("cannot handle: " + product);
+		}
+	}
+
 	private static final String[] PLACES = { "Frankfurt (Main)", "Offenbach (Main)", "Mainz", "Wiesbaden", "Marburg", "Kassel", "Hanau", "Göttingen",
 			"Darmstadt", "Aschaffenburg", "Berlin", "Fulda" };
 

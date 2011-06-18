@@ -66,6 +66,41 @@ public class NasaProvider extends AbstractHafasProvider
 		return false;
 	}
 
+	@Override
+	protected void setProductBits(final StringBuilder productBits, final char product)
+	{
+		if (product == 'I')
+		{
+			productBits.setCharAt(0, '1'); // ICE
+			productBits.setCharAt(1, '1'); // IC/EC
+		}
+		else if (product == 'R')
+		{
+			productBits.setCharAt(3, '1'); // RE/RB
+			productBits.setCharAt(7, '1'); // Tourismus-Züge
+			productBits.setCharAt(2, '1'); // undokumentiert
+		}
+		else if (product == 'S' || product == 'U')
+		{
+			productBits.setCharAt(4, '1'); // S/U
+		}
+		else if (product == 'T')
+		{
+			productBits.setCharAt(5, '1'); // Straßenbahn
+		}
+		else if (product == 'B' || product == 'P')
+		{
+			productBits.setCharAt(6, '1'); // Bus
+		}
+		else if (product == 'F' || product == 'C')
+		{
+		}
+		else
+		{
+			throw new IllegalArgumentException("cannot handle: " + product);
+		}
+	}
+
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(API_BASE);

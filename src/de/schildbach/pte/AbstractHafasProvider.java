@@ -115,6 +115,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		return 0;
 	}
 
+	protected abstract void setProductBits(StringBuilder productBits, char product);
+
 	private static final Pattern P_SPLIT_ADDRESS = Pattern.compile("(\\d{4,5}\\s+[^,]+),\\s+(.*)");
 
 	protected String[] splitPlaceAndName(final String name)
@@ -636,10 +638,19 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		final Calendar c = new GregorianCalendar(timeZone());
 		c.setTime(date);
 
+		final StringBuilder productsStr = new StringBuilder(numProductBits);
+		for (int i = 0; i < numProductBits; i++)
+			productsStr.append('0');
+		for (final char p : products.toCharArray())
+			setProductBits(productsStr, p);
+
 		final String request = "<ConReq>" //
 				+ "<Start>"
 				+ location(from)
-				+ "<Prod bike=\"0\" couchette=\"0\" direct=\"0\" sleeper=\"0\"/></Start>" //
+				+ "<Prod prod=\""
+				+ productsStr
+				+ "\" bike=\"0\" couchette=\"0\" direct=\"0\" sleeper=\"0\"/>" //
+				+ "</Start>" //
 				+ (via != null ? "<Via>" + location(via) + "</Via>" : "") //
 				+ "<Dest>"
 				+ location(to)
@@ -667,7 +678,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 	private QueryConnectionsResult queryConnections(final String request, final Location from, final Location via, final Location to)
 			throws IOException
 	{
-		// System.out.println(request);
+		System.out.println(request);
 		// ParserUtils.printXml(ParserUtils.scrape(apiUri, true, wrap(request), null, null));
 
 		InputStream is = null;

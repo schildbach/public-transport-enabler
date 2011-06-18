@@ -53,6 +53,46 @@ public class NriProvider extends AbstractHafasProvider
 		return false;
 	}
 
+	@Override
+	protected void setProductBits(final StringBuilder productBits, final char product)
+	{
+		if (product == 'I')
+		{
+			productBits.setCharAt(0, '1'); // Flugzeug
+		}
+		else if (product == 'R')
+		{
+			productBits.setCharAt(1, '1'); // Regionalverkehrszug
+			productBits.setCharAt(7, '1'); // Tourismus-Züge
+			productBits.setCharAt(2, '1'); // undokumentiert
+		}
+		else if (product == 'S' || product == 'T')
+		{
+			productBits.setCharAt(3, '1'); // Stadtbahn
+		}
+		else if (product == 'U')
+		{
+			productBits.setCharAt(4, '1'); // U-Bahn
+		}
+		else if (product == 'B' || product == 'P')
+		{
+			productBits.setCharAt(2, '1'); // Bus
+		}
+		else if (product == 'F')
+		{
+			productBits.setCharAt(5, '1'); // Express-Boot
+			productBits.setCharAt(6, '1'); // Schiff
+			productBits.setCharAt(7, '1'); // Fähre
+		}
+		else if (product == 'C')
+		{
+		}
+		else
+		{
+			throw new IllegalArgumentException("cannot handle: " + product);
+		}
+	}
+
 	private static final String[] PLACES = { "Oslo", "Bergen" };
 
 	@Override

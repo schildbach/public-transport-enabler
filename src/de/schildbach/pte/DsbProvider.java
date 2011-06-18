@@ -55,6 +55,12 @@ public class DsbProvider extends AbstractHafasProvider
 		return false;
 	}
 
+	@Override
+	protected void setProductBits(final StringBuilder productBits, final char product)
+	{
+		throw new UnsupportedOperationException();
+	}
+
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(API_BASE);

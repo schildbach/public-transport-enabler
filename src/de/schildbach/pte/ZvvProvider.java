@@ -54,6 +54,48 @@ public class ZvvProvider extends AbstractHafasProvider
 		return false;
 	}
 
+	@Override
+	protected void setProductBits(final StringBuilder productBits, final char product)
+	{
+		if (product == 'I')
+		{
+			productBits.setCharAt(0, '1'); // ICE/EN/CNL/CIS/ES/MET/NZ/PEN/TGV/THA/X2
+			productBits.setCharAt(1, '1'); // EuroCity/InterCity/InterCityNight/SuperCity
+		}
+		else if (product == 'R')
+		{
+			productBits.setCharAt(2, '1'); // InterRegio
+			productBits.setCharAt(3, '1'); // Schnellzug/RegioExpress
+		}
+		else if (product == 'S')
+		{
+			productBits.setCharAt(5, '1'); // S-Bahn/StadtExpress/Eilzug/Regionalzug
+		}
+		else if (product == 'U')
+		{
+		}
+		else if (product == 'T')
+		{
+			productBits.setCharAt(9, '1'); // Tram
+		}
+		else if (product == 'B' || product == 'P')
+		{
+			productBits.setCharAt(6, '1'); // Postauto/Bus
+		}
+		else if (product == 'F')
+		{
+			productBits.setCharAt(4, '1'); // Schiff/Fähre/Dampfschiff
+		}
+		else if (product == 'C')
+		{
+			productBits.setCharAt(7, '1'); // Luftseilbahn/Standseilbahn/Bergbahn
+		}
+		else
+		{
+			throw new IllegalArgumentException("cannot handle: " + product);
+		}
+	}
+
 	private static final String[] PLACES = { "Zürich" };
 
 	@Override
@@ -162,6 +204,8 @@ public class ZvvProvider extends AbstractHafasProvider
 		if ("BUS-NF".equals(ucType)) // Niederflur
 			return 'B';
 		if ("TRO-NF".equals(ucType)) // Niederflur
+			return 'B';
+		if ("N".equals(ucType)) // Nachtbus
 			return 'B';
 		if ("BUXI".equals(ucType))
 			return 'B';

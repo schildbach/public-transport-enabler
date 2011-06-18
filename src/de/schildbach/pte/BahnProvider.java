@@ -68,6 +68,12 @@ public final class BahnProvider extends AbstractHafasProvider
 		return false;
 	}
 
+	@Override
+	protected void setProductBits(final StringBuilder productBits, final char product)
+	{
+		throw new UnsupportedOperationException();
+	}
+
 	private final static Pattern P_NEARBY_STATIONS_BY_STATION = Pattern
 			.compile("<a href=\"http://mobile\\.bahn\\.de/bin/mobil/bhftafel.exe/dn[^\"]*?evaId=(\\d*)&[^\"]*?\">([^<]*)</a>");
 

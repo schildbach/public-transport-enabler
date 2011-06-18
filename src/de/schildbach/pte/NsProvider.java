@@ -66,6 +66,12 @@ public class NsProvider extends AbstractHafasProvider
 		return false;
 	}
 
+	@Override
+	protected void setProductBits(final StringBuilder productBits, final char product)
+	{
+		throw new UnsupportedOperationException();
+	}
+
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
 		if (location.type == LocationType.STATION && location.hasId())

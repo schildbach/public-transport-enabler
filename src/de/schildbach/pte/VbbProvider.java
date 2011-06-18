@@ -55,6 +55,43 @@ public class VbbProvider extends AbstractHafasProvider
 		return false;
 	}
 
+	@Override
+	protected void setProductBits(final StringBuilder productBits, final char product)
+	{
+		if (product == 'I')
+		{
+			productBits.setCharAt(5, '1');
+		}
+		else if (product == 'R')
+		{
+			productBits.setCharAt(6, '1');
+		}
+		else if (product == 'S')
+		{
+			productBits.setCharAt(0, '1');
+		}
+		else if (product == 'U')
+		{
+			productBits.setCharAt(1, '1');
+		}
+		else if (product == 'T')
+		{
+			productBits.setCharAt(2, '1');
+		}
+		else if (product == 'B' || product == 'P')
+		{
+			productBits.setCharAt(3, '1');
+		}
+		else if (product == 'F')
+		{
+			productBits.setCharAt(4, '1');
+		}
+		else
+		{
+			throw new IllegalArgumentException("cannot handle: " + product);
+		}
+	}
+
 	private static final Pattern P_SPLIT_NAME_PAREN = Pattern.compile("(.*?) \\((.{4,}?)\\)(?: \\((U|S|S\\+U)\\))?");
 	private static final Pattern P_SPLIT_NAME_COMMA = Pattern.compile("([^,]*), ([^,]*)");
 

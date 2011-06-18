@@ -57,6 +57,46 @@ public class SbbProvider extends AbstractHafasProvider
 		return false;
 	}
 
+	@Override
+	protected void setProductBits(final StringBuilder productBits, final char product)
+	{
+		if (product == 'I')
+		{
+			productBits.setCharAt(0, '1'); // ICE/TGV/IRJ
+			productBits.setCharAt(1, '1'); // EC/IC
+		}
+		else if (product == 'R')
+		{
+			productBits.setCharAt(2, '1'); // IR
+			productBits.setCharAt(3, '1'); // RE/D
+			productBits.setCharAt(8, '1'); // ARZ/EXT
+		}
+		else if (product == 'S')
+		{
+			productBits.setCharAt(5, '1'); // S/SN/R
+		}
+		else if (product == 'U' || product == 'T')
+		{
+			productBits.setCharAt(7, '1'); // Tram/Metro
+		}
+		else if (product == 'B' || product == 'P')
+		{
+			productBits.setCharAt(6, '1'); // Bus
+		}
+		else if (product == 'F')
+		{
+			productBits.setCharAt(4, '1'); // Schiff
+		}
+		else if (product == 'C')
+		{
+			productBits.setCharAt(7, '1'); // Seilbahn
+		}
+		else
+		{
+			throw new IllegalArgumentException("cannot handle: " + product);
+		}
+	}
+
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(API_BASE);

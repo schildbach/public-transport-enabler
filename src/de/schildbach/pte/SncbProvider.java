@@ -66,6 +66,39 @@ public class SncbProvider extends AbstractHafasProvider
 		return false;
 	}
 
+	@Override
+	protected void setProductBits(final StringBuilder productBits, final char product)
+	{
+		if (product == 'I')
+		{
+			productBits.setCharAt(0, '1'); // Hochgeschwindigkeitszug
+			productBits.setCharAt(2, '1'); // IC/IR/P/ICT
+		}
+		else if (product == 'R'||product == 'S')
+		{
+			productBits.setCharAt(6, '1'); // Zug
+		}
+		else if (product == 'U')
+		{
+			productBits.setCharAt(8, '1'); // Metro
+		}
+		else if (product == 'T')
+		{
+			productBits.setCharAt(10, '1'); // Stadtbahn
+		}
+		else if (product == 'B' || product == 'P')
+		{
+			productBits.setCharAt(9, '1'); // Bus
+		}
+		else if (product == 'F' || product == 'C')
+		{
+		}
+		else
+		{
+			throw new IllegalArgumentException("cannot handle: " + product);
+		}
+	}
+
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(API_BASE);

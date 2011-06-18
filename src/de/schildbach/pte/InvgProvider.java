@@ -69,6 +69,12 @@ public class InvgProvider extends AbstractHafasProvider
 		return false;
 	}
 
+	@Override
+	protected void setProductBits(final StringBuilder productBits, final char product)
+	{
+		throw new UnsupportedOperationException();
+	}
+
 	private static final String[] PLACES = { "Ingolstadt", "München" };
 
 	@Override

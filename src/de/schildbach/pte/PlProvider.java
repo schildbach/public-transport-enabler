@@ -54,6 +54,40 @@ public class PlProvider extends AbstractHafasProvider
 		return false;
 	}
 
+	@Override
+	protected void setProductBits(final StringBuilder productBits, final char product)
+	{
+		if (product == 'I')
+		{
+			productBits.setCharAt(0, '1'); // Hochgeschwindigkeitszug
+			productBits.setCharAt(1, '1'); // EC/IC/EIC/Ex
+		}
+		else if (product == 'R')
+		{
+			productBits.setCharAt(2, '1'); // TLK/IR/D
+			productBits.setCharAt(3, '1'); // Regionalverkehrszug
+		}
+		else if (product == 'S' || product == 'T')
+		{
+			productBits.setCharAt(5, '1'); // Stadtbahn
+		}
+		else if (product == 'U')
+		{
+			productBits.setCharAt(6, '1'); // U-Bahn
+		}
+		else if (product == 'B' || product == 'P')
+		{
+			productBits.setCharAt(4, '1'); // Bus
+		}
+		else if (product == 'F' || product == 'C')
+		{
+		}
+		else
+		{
+			throw new IllegalArgumentException("cannot handle: " + product);
+		}
+	}
+
 	private static final String[] PLACES = { "Warszawa", "Kraków" };
 
 	@Override

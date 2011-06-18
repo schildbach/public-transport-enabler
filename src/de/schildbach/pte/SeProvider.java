@@ -84,6 +84,12 @@ public class SeProvider extends AbstractHafasProvider
 		throw new IllegalArgumentException("cannot handle: " + value);
 	}
 
+	@Override
+	protected void setProductBits(final StringBuilder productBits, final char product)
+	{
+		throw new UnsupportedOperationException();
+	}
+
 	private static final Pattern P_SPLIT_NAME_KN = Pattern.compile("(.*?) \\((.*?) kn\\)");
 
 	@Override
