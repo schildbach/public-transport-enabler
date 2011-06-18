@@ -678,7 +678,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 	private QueryConnectionsResult queryConnections(final String request, final Location from, final Location via, final Location to)
 			throws IOException
 	{
-		System.out.println(request);
+		// System.out.println(request);
 		// ParserUtils.printXml(ParserUtils.scrape(apiUri, true, wrap(request), null, null));
 
 		InputStream is = null;
