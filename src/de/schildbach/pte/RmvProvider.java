@@ -71,10 +71,10 @@ public class RmvProvider extends AbstractHafasProvider
 		if (product == 'I')
 		{
 			productBits.setCharAt(0, '1'); // ICE
+			productBits.setCharAt(1, '1'); // Zug, scheinbar IC?
 		}
 		else if (product == 'R')
 		{
-			productBits.setCharAt(1, '1'); // Zug
 			productBits.setCharAt(2, '1'); // Zug
 			productBits.setCharAt(10, '1'); // Zug
 		}
