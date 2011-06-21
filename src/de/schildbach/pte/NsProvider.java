@@ -207,9 +207,6 @@ public class NsProvider extends AbstractHafasProvider
 	{
 		final String ucType = type.toUpperCase();
 
-		if (ucType.equals("INT")) // Zürich-Brüssel
-			return 'I';
-
 		if (ucType.equals("L"))
 			return 'R';
 		if (ucType.equals("CR"))

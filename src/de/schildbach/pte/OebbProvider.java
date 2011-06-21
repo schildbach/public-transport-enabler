@@ -535,8 +535,6 @@ public class OebbProvider extends AbstractHafasProvider
 	{
 		final String ucType = type.toUpperCase();
 
-		if (ucType.equals("INT")) // Rußland, Connections only?
-			return 'I';
 		if (ucType.equals("RR")) // Finnland, Connections only?
 			return 'I';
 		if (ucType.equals("EE")) // Rumänien, Connections only?

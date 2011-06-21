@@ -64,7 +64,7 @@ public class VgsProvider extends AbstractHafasProvider
 
 		return false;
 	}
-	
+
 	@Override
 	protected void setProductBits(final StringBuilder productBits, final char product)
 	{
@@ -111,7 +111,6 @@ public class VgsProvider extends AbstractHafasProvider
 			throw new IllegalArgumentException("cannot handle: " + product);
 		}
 	}
-
 
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
@@ -313,9 +312,6 @@ public class VgsProvider extends AbstractHafasProvider
 	{
 		final String ucType = type.toUpperCase();
 
-		if (ucType.equals("INT")) // Zürich-Brüssel
-			return 'I';
-
 		if (ucType.equals("E")) // Stadtbahn Karlsruhe: S4/S31/xxxxx
 			return 'S';
 
@@ -324,12 +320,12 @@ public class VgsProvider extends AbstractHafasProvider
 		if (ucType.equals("BOV"))
 			return 'B';
 
-		if (ucType.equals("T84")) // U.K.
-			return '?';
-
 		final char t = super.normalizeType(type);
 		if (t != 0)
 			return t;
+
+		if (ucType.equals("T84")) // U.K.
+			return '?';
 
 		return 0;
 	}

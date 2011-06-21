@@ -393,6 +393,9 @@ public class RmvProvider extends AbstractHafasProvider
 		if ("U-BAHN".equals(ucType))
 			return 'U';
 
+		if ("LTAXI".equals(ucType))
+			return 'B';
+
 		final char t = super.normalizeType(type);
 		if (t != 0)
 			return t;

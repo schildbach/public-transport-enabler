@@ -190,6 +190,10 @@ public class NriProvider extends AbstractHafasProvider
 
 		if ("EXP".equals(ucType))
 			return 'F';
+		if ("EXP.BOAT".equals(ucType))
+			return 'F';
+		if ("FERRY".equals(ucType))
+			return 'F';
 		if ("FER".equals(ucType))
 			return 'F';
 		if ("SHIP".equals(ucType))

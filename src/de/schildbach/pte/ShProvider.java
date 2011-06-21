@@ -297,6 +297,8 @@ public class ShProvider extends AbstractHafasProvider
 			return 'B';
 		if ("KB1".equals(ucType))
 			return 'B';
+		if ("KLB".equals(ucType))
+			return 'B';
 
 		final char t = super.normalizeType(type);
 		if (t != 0)

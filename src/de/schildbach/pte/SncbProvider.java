@@ -74,7 +74,7 @@ public class SncbProvider extends AbstractHafasProvider
 			productBits.setCharAt(0, '1'); // Hochgeschwindigkeitszug
 			productBits.setCharAt(2, '1'); // IC/IR/P/ICT
 		}
-		else if (product == 'R'||product == 'S')
+		else if (product == 'R' || product == 'S')
 		{
 			productBits.setCharAt(6, '1'); // Zug
 		}
@@ -244,8 +244,6 @@ public class SncbProvider extends AbstractHafasProvider
 	{
 		final String ucType = type.toUpperCase();
 
-		if ("INT".equals(ucType)) // Zürich-Brüssel
-			return 'I';
 		if (ucType.startsWith("IC "))
 			return 'I';
 		if ("THALYS".equals(ucType)) // Thalys

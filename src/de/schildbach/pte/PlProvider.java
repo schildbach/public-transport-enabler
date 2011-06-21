@@ -183,8 +183,6 @@ public class PlProvider extends AbstractHafasProvider
 			return 'R';
 		if ("N".equals(ucType)) // St. Pierre des Corps - Tours
 			return 'R';
-		// if ("INT".equals(ucType)) // Rußland
-		// return 'R';
 
 		if ("METRO".equals(ucType))
 			return 'U';

@@ -1379,6 +1379,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return 'I';
 		if ("TLK".equals(ucType)) // Tanie Linie Kolejowe, Polen
 			return 'I';
+		if ("INT".equals(ucType)) // Zürich-Brüssel - Budapest-Istanbul
+			return 'I';
 
 		// Regional
 		if ("ZUG".equals(ucType)) // Generic Train
