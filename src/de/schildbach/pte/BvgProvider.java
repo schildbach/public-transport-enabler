@@ -26,6 +26,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -440,8 +441,32 @@ public final class BvgProvider extends AbstractHafasProvider
 
 		uri.append("&REQ0JourneyStopsS0ID=").append(ParserUtils.urlEncode(locationId(from), URL_ENCODING));
 		uri.append("&REQ0JourneyStopsZ0ID=").append(ParserUtils.urlEncode(locationId(to), URL_ENCODING));
+
 		if (via != null)
-			uri.append("&REQ0JourneyStops1.0ID=").append(ParserUtils.urlEncode(locationId(via), URL_ENCODING));
+		{
+			// workaround, for there does not seem to be a REQ0JourneyStops1.0ID parameter
+
+			uri.append("&REQ0JourneyStops1.0A=").append(locationType(via));
+
+			if (via.type == LocationType.STATION && via.hasId() && isValidStationId(via.id))
+			{
+				uri.append("&REQ0JourneyStops1.0L=").append(via.id);
+			}
+			else if (via.hasLocation())
+			{
+				uri.append("&REQ0JourneyStops1.0X=").append(via.lon);
+				uri.append("&REQ0JourneyStops1.0Y=").append(via.lat);
+				if (via.name == null)
+					uri.append("&REQ0JourneyStops1.0O=").append(
+							ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%.6f, %.6f", via.lat / 1E6, via.lon / 1E6), URL_ENCODING));
+			}
+			else if (via.name != null)
+			{
+				uri.append("&REQ0JourneyStops1.0G=").append(ParserUtils.urlEncode(via.name, URL_ENCODING));
+				if (via.type != LocationType.ANY)
+					uri.append('!');
+			}
+		}
 
 		uri.append("&REQ0HafasSearchForw=").append(dep ? "1" : "0");
 		uri.append("&REQ0JourneyDate=").append(

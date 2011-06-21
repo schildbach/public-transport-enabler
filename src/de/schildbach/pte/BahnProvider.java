@@ -23,6 +23,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -146,10 +147,36 @@ public final class BahnProvider extends AbstractHafasProvider
 
 		uri.append(API_BASE).append("query.exe/dox");
 		uri.append("?REQ0HafasOptimize1=0:1");
+
 		uri.append("&REQ0JourneyStopsS0ID=").append(ParserUtils.urlEncode(locationId(from)));
-		if (via != null)
-			uri.append("&REQ0JourneyStops1.0ID=").append(ParserUtils.urlEncode(locationId(via)));
 		uri.append("&REQ0JourneyStopsZ0ID=").append(ParserUtils.urlEncode(locationId(to)));
+
+		if (via != null)
+		{
+			// workaround, for there does not seem to be a REQ0JourneyStops1.0ID parameter
+
+			uri.append("&REQ0JourneyStops1.0A=").append(locationType(via));
+
+			if (via.type == LocationType.STATION && via.hasId() && isValidStationId(via.id))
+			{
+				uri.append("&REQ0JourneyStops1.0L=").append(via.id);
+			}
+			else if (via.hasLocation())
+			{
+				uri.append("&REQ0JourneyStops1.0X=").append(via.lon);
+				uri.append("&REQ0JourneyStops1.0Y=").append(via.lat);
+				if (via.name == null)
+					uri.append("&REQ0JourneyStops1.0O=").append(
+							ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%.6f, %.6f", via.lat / 1E6, via.lon / 1E6)));
+			}
+			else if (via.name != null)
+			{
+				uri.append("&REQ0JourneyStops1.0G=").append(ParserUtils.urlEncode(via.name));
+				if (via.type != LocationType.ANY)
+					uri.append('!');
+			}
+		}
+
 		uri.append("&REQ0HafasSearchForw=").append(dep ? "1" : "0");
 		uri.append("&REQ0JourneyDate=").append(
 				String.format("%02d.%02d.%02d", c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.MONTH) + 1, c.get(Calendar.YEAR) - 2000));
