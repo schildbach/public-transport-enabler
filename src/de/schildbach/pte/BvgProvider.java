@@ -43,6 +43,7 @@ import de.schildbach.pte.dto.QueryDeparturesResult.Status;
 import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.dto.Stop;
 import de.schildbach.pte.exception.SessionExpiredException;
+import de.schildbach.pte.exception.UnexpectedRedirectException;
 import de.schildbach.pte.util.Color;
 import de.schildbach.pte.util.ParserUtils;
 
@@ -264,7 +265,7 @@ public final class BvgProvider extends AbstractHafasProvider
 				if (mError.group(2) != null)
 					return new QueryDeparturesResult(Status.SERVICE_DOWN);
 				if (mError.group(3) != null)
-					throw new IOException("connected to private wlan");
+					throw new UnexpectedRedirectException();
 			}
 
 			// parse page
@@ -360,7 +361,7 @@ public final class BvgProvider extends AbstractHafasProvider
 				if (mError.group(2) != null)
 					return new QueryDeparturesResult(Status.SERVICE_DOWN);
 				if (mError.group(3) != null)
-					throw new IOException("connected to private wlan");
+					throw new UnexpectedRedirectException();
 			}
 
 			// parse page
@@ -667,7 +668,7 @@ public final class BvgProvider extends AbstractHafasProvider
 			if (mError.group(5) != null)
 				throw new SessionExpiredException();
 			if (mError.group(6) != null)
-				throw new IOException("connected to private wlan");
+				throw new UnexpectedRedirectException();
 		}
 
 		final Matcher mAllDetailsAction = P_CONNECTIONS_ALL_DETAILS.matcher(firstPage);

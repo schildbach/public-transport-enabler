@@ -38,6 +38,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
+import de.schildbach.pte.exception.UnexpectedRedirectException;
+
 /**
  * @author Andreas Schildbach
  */
@@ -69,7 +71,7 @@ public final class ParserUtils
 		return scrape(url, isPost, request, encoding, sessionCookieName, 3);
 	}
 
-	public static final CharSequence scrape(final String url, final boolean isPost, final String request, String encoding,
+	public static final CharSequence scrape(final String urlStr, final boolean isPost, final String request, String encoding,
 			final String sessionCookieName, int tries) throws IOException
 	{
 		if (encoding == null)
@@ -80,7 +82,8 @@ public final class ParserUtils
 			try
 			{
 				final StringBuilder buffer = new StringBuilder(SCRAPE_INITIAL_CAPACITY);
-				final HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+				final URL url = new URL(urlStr);
+				final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
 				connection.setDoInput(true);
 				connection.setDoOutput(request != null);
@@ -109,6 +112,8 @@ public final class ParserUtils
 				}
 
 				final Reader pageReader = new InputStreamReader(connection.getInputStream(), encoding);
+				if (!url.equals(connection.getURL()))
+					throw new UnexpectedRedirectException(url, connection.getURL());
 				copy(pageReader, buffer);
 				pageReader.close();
 
@@ -170,12 +175,13 @@ public final class ParserUtils
 		return scrapeInputStream(url, null, null, 3);
 	}
 
-	public static final InputStream scrapeInputStream(final String url, final String postRequest, final String sessionCookieName, int tries)
+	public static final InputStream scrapeInputStream(final String urlStr, final String postRequest, final String sessionCookieName, int tries)
 			throws IOException
 	{
 		while (true)
 		{
-			final HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+			final URL url = new URL(urlStr);
+			final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
 			connection.setDoInput(true);
 			connection.setDoOutput(postRequest != null);
@@ -205,6 +211,8 @@ public final class ParserUtils
 			{
 				final String contentEncoding = connection.getContentEncoding();
 				final InputStream is = connection.getInputStream();
+				if (!url.equals(connection.getURL()))
+					throw new UnexpectedRedirectException(url, connection.getURL());
 
 				if (sessionCookieName != null)
 				{
