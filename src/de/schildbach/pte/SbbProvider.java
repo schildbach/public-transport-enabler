@@ -77,7 +77,7 @@ public class SbbProvider extends AbstractHafasProvider
 		}
 		else if (product == 'U' || product == 'T')
 		{
-			productBits.setCharAt(7, '1'); // Tram/Metro
+			productBits.setCharAt(9, '1'); // Tram/Metro
 		}
 		else if (product == 'B' || product == 'P')
 		{
