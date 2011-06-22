@@ -646,12 +646,12 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 		final StringBuilder request = new StringBuilder("<ConReq>");
 
-		request.append("<Start>").append(location(from));
+		request.append("<Start>").append(locationXml(from));
 		request.append("<Prod prod=\"").append(productsStr).append("\" bike=\"0\" couchette=\"0\" direct=\"0\" sleeper=\"0\"/>");
 		request.append("</Start>");
 		if (via != null)
-			request.append("<Via>").append(location(via)).append("</Via>");
-		request.append("<Dest>").append(location(to)).append("</Dest>");
+			request.append("<Via>").append(locationXml(via)).append("</Via>");
+		request.append("<Dest>").append(locationXml(to)).append("</Dest>");
 		request.append("<ReqT a=\"").append(dep ? 0 : 1).append("\" date=\"")
 				.append(String.format("%04d.%02d.%02d", c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH)))
 				.append("\" time=\"").append(String.format("%02d:%02d", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE)) + "\"/>");
@@ -1071,17 +1071,17 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			throw new IllegalArgumentException("cannot parse duration: '" + str + "'");
 	}
 
-	private static final String location(final Location location)
+	private static final String locationXml(final Location location)
 	{
 		if (location.type == LocationType.STATION && location.hasId())
 			return "<Station externalId=\"" + location.id + "\" />";
-		if (location.type == LocationType.POI && location.hasLocation())
+		else if (location.type == LocationType.POI && location.hasLocation())
 			return "<Poi type=\"WGS84\" x=\"" + location.lon + "\" y=\"" + location.lat + "\" />";
-		if (location.type == LocationType.ADDRESS && location.hasLocation())
+		else if (location.type == LocationType.ADDRESS && location.hasLocation())
 			return "<Address type=\"WGS84\" x=\"" + location.lon + "\" y=\"" + location.lat + "\" name=\""
 					+ (location.place != null ? location.place + ", " : "") + location.name + "\" />";
-
-		throw new IllegalArgumentException("cannot handle: " + location.toDebugString());
+		else
+			throw new IllegalArgumentException("cannot handle: " + location.toDebugString());
 	}
 
 	protected final String locationId(final Location location)
