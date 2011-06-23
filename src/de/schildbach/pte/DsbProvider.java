@@ -34,11 +34,14 @@ import de.schildbach.pte.util.ParserUtils;
 public class DsbProvider extends AbstractHafasProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.DSB;
-	private static final String API_BASE = "http://mobil.rejseplanen.dk/mobil-bin/";
+	private static final String API_BASE = "http://dk.hafas.de/bin/mobile/";
+
+	// http://dk.hafas.de/bin/fat/
+	// http://mobil.rejseplanen.dk/mobil-bin/
 
 	public DsbProvider()
 	{
-		super(null, 11, null);
+		super(API_BASE + "query.exe/dn", 11, null);
 	}
 
 	public NetworkId id()
@@ -49,7 +52,7 @@ public class DsbProvider extends AbstractHafasProvider
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
 		for (final Capability capability : capabilities)
-			if (capability == Capability.DEPARTURES)
+			if (capability == Capability.AUTOCOMPLETE_ONE_LINE || capability == Capability.DEPARTURES || capability == Capability.CONNECTIONS)
 				return true;
 
 		return false;
@@ -58,7 +61,48 @@ public class DsbProvider extends AbstractHafasProvider
 	@Override
 	protected void setProductBits(final StringBuilder productBits, final char product)
 	{
-		throw new UnsupportedOperationException();
+		if (product == 'I')
+		{
+			productBits.setCharAt(0, '1'); // Intercity
+			productBits.setCharAt(1, '1'); // InterCityExpress
+		}
+		else if (product == 'R')
+		{
+			productBits.setCharAt(2, '1'); // Regionalzug
+			productBits.setCharAt(3, '1'); // sonstige Züge
+		}
+		else if (product == 'S')
+		{
+			productBits.setCharAt(4, '1'); // S-Bahn
+		}
+		else if (product == 'U')
+		{
+			productBits.setCharAt(10, '1'); // U-Bahn
+		}
+		else if (product == 'T')
+		{
+		}
+		else if (product == 'B')
+		{
+			productBits.setCharAt(5, '1'); // Bus
+			productBits.setCharAt(6, '1'); // ExpressBus
+			productBits.setCharAt(7, '1'); // Nachtbus
+		}
+		else if (product == 'P')
+		{
+			productBits.setCharAt(8, '1'); // Telebus/andere
+		}
+		else if (product == 'F')
+		{
+			productBits.setCharAt(9, '1'); // Schiff
+		}
+		else if (product == 'C')
+		{
+		}
+		else
+		{
+			throw new IllegalArgumentException("cannot handle: " + product);
+		}
 	}
 
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
