@@ -639,10 +639,17 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		c.setTime(date);
 
 		final StringBuilder productsStr = new StringBuilder(numProductBits);
-		for (int i = 0; i < numProductBits; i++)
-			productsStr.append('0');
-		for (final char p : products.toCharArray())
-			setProductBits(productsStr, p);
+		if (products != null)
+		{
+			for (int i = 0; i < numProductBits; i++)
+				productsStr.append('0');
+			for (final char p : products.toCharArray())
+				setProductBits(productsStr, p);
+		}
+		else
+		{
+			productsStr.append(allProductsString());
+		}
 
 		final StringBuilder request = new StringBuilder("<ConReq>");
 
