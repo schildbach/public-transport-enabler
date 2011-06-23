@@ -123,8 +123,11 @@ public final class Connection implements Serializable
 		{
 			final StringBuilder builder = new StringBuilder(getClass().getName() + "[");
 			builder.append("line=").append(line);
-			builder.append(",");
-			builder.append("destination=").append(destination.toDebugString());
+			if (destination != null)
+			{
+				builder.append(",");
+				builder.append("destination=").append(destination.toDebugString());
+			}
 			builder.append(",");
 			builder.append("departure=").append(departureTime).append("/").append(departurePosition).append("/").append(departure.toDebugString());
 			builder.append(",");
