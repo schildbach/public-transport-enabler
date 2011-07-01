@@ -22,19 +22,24 @@ import java.io.Serializable;
 /**
  * @author Andreas Schildbach
  */
-public final class Line implements Serializable
+public final class Line implements Serializable, Comparable<Line>
 {
 	private static final long serialVersionUID = -5642533805998375070L;
 
 	final public String id;
+	final private transient char product; // TODO make true field
 	final public String label;
 	final public int[] colors;
+
+	private static final String PRODUCT_ORDER = "IRSUTBPFC";
 
 	public Line(final String id, final String label, final int[] colors)
 	{
 		this.id = id;
 		this.label = label;
 		this.colors = colors;
+
+		product = label.charAt(0);
 	}
 
 	@Override
@@ -61,5 +66,18 @@ public final class Line implements Serializable
 	public int hashCode()
 	{
 		return label.hashCode();
+	}
+
+	public int compareTo(final Line other)
+	{
+		final int productThis = PRODUCT_ORDER.indexOf(this.product);
+		final int productOther = PRODUCT_ORDER.indexOf(other.product);
+
+		final int compareProduct = new Integer(productThis >= 0 ? productThis : Integer.MAX_VALUE).compareTo(productOther >= 0 ? productOther
+				: Integer.MAX_VALUE);
+		if (compareProduct != 0)
+			return compareProduct;
+
+		return label.compareTo(other.label);
 	}
 }
