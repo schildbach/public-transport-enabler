@@ -978,14 +978,14 @@ public final class BvgProvider extends AbstractHafasProvider
 		LINES.put("SS3", new int[] { Color.rgb(22, 106, 184), Color.WHITE });
 		LINES.put("SS41", new int[] { Color.rgb(162, 63, 48), Color.WHITE });
 		LINES.put("SS42", new int[] { Color.rgb(191, 90, 42), Color.WHITE });
-		LINES.put("SS45", new int[] { Color.rgb(191, 128, 55), Color.WHITE });
+		LINES.put("SS45", new int[] { Color.WHITE, Color.rgb(191, 128, 55) });
 		LINES.put("SS46", new int[] { Color.rgb(191, 128, 55), Color.WHITE });
 		LINES.put("SS47", new int[] { Color.rgb(191, 128, 55), Color.WHITE });
 		LINES.put("SS5", new int[] { Color.rgb(243, 103, 23), Color.WHITE });
 		LINES.put("SS7", new int[] { Color.rgb(119, 96, 176), Color.WHITE });
 		LINES.put("SS75", new int[] { Color.rgb(119, 96, 176), Color.WHITE });
 		LINES.put("SS8", new int[] { Color.rgb(85, 184, 49), Color.WHITE });
-		LINES.put("SS85", new int[] { Color.rgb(85, 184, 49), Color.WHITE });
+		LINES.put("SS85", new int[] { Color.WHITE, Color.rgb(85, 184, 49) });
 		LINES.put("SS9", new int[] { Color.rgb(148, 36, 64), Color.WHITE });
 
 		LINES.put("UU1", new int[] { Color.rgb(84, 131, 47), Color.WHITE });
@@ -999,29 +999,29 @@ public final class BvgProvider extends AbstractHafasProvider
 		LINES.put("UU8", new int[] { Color.rgb(24, 25, 83), Color.WHITE });
 		LINES.put("UU9", new int[] { Color.rgb(255, 90, 34), Color.WHITE });
 
-		LINES.put("TM1", new int[] { Color.rgb(204, 51, 0), Color.WHITE });
-		LINES.put("TM2", new int[] { Color.rgb(116, 192, 67), Color.WHITE });
-		LINES.put("TM4", new int[] { Color.rgb(208, 28, 34), Color.WHITE });
-		LINES.put("TM5", new int[] { Color.rgb(204, 153, 51), Color.WHITE });
-		LINES.put("TM6", new int[] { Color.rgb(0, 0, 255), Color.WHITE });
-		LINES.put("TM8", new int[] { Color.rgb(255, 102, 0), Color.WHITE });
-		LINES.put("TM10", new int[] { Color.rgb(0, 153, 51), Color.WHITE });
-		LINES.put("TM13", new int[] { Color.rgb(51, 153, 102), Color.WHITE });
-		LINES.put("TM17", new int[] { Color.rgb(153, 102, 51), Color.WHITE });
+		LINES.put("TM1", new int[] { Color.parseColor("#eb8614"), Color.WHITE });
+		LINES.put("TM2", new int[] { Color.parseColor("#68c52f"), Color.WHITE });
+		LINES.put("TM4", new int[] { Color.parseColor("#cf1b22"), Color.WHITE });
+		LINES.put("TM5", new int[] { Color.parseColor("#bf8037"), Color.WHITE });
+		LINES.put("TM6", new int[] { Color.parseColor("#1e5ca2"), Color.WHITE });
+		LINES.put("TM8", new int[] { Color.parseColor("#f46717"), Color.WHITE });
+		LINES.put("TM10", new int[] { Color.parseColor("#108449"), Color.WHITE });
+		LINES.put("TM13", new int[] { Color.parseColor("#36ab94"), Color.WHITE });
+		LINES.put("TM17", new int[] { Color.parseColor("#a23f30"), Color.WHITE });
 
-		LINES.put("B12", new int[] { Color.rgb(153, 102, 255), Color.WHITE });
-		LINES.put("B16", new int[] { Color.rgb(0, 0, 255), Color.WHITE });
-		LINES.put("B18", new int[] { Color.rgb(255, 102, 0), Color.WHITE });
-		LINES.put("B21", new int[] { Color.rgb(153, 102, 255), Color.WHITE });
-		LINES.put("B27", new int[] { Color.rgb(153, 102, 51), Color.WHITE });
-		LINES.put("B37", new int[] { Color.rgb(153, 102, 51), Color.WHITE });
-		LINES.put("B50", new int[] { Color.rgb(51, 153, 102), Color.WHITE });
-		LINES.put("B60", new int[] { Color.rgb(0, 153, 51), Color.WHITE });
-		LINES.put("B61", new int[] { Color.rgb(0, 153, 51), Color.WHITE });
-		LINES.put("B62", new int[] { Color.rgb(0, 102, 51), Color.WHITE });
-		LINES.put("B63", new int[] { Color.rgb(51, 153, 102), Color.WHITE });
-		LINES.put("B67", new int[] { Color.rgb(0, 102, 51), Color.WHITE });
-		LINES.put("B68", new int[] { Color.rgb(0, 153, 51), Color.WHITE });
+		LINES.put("T12", new int[] { Color.parseColor("#7d64b2"), Color.WHITE });
+		LINES.put("T16", new int[] { Color.parseColor("#1e5ca2"), Color.WHITE });
+		LINES.put("T18", new int[] { Color.parseColor("#f46717"), Color.WHITE });
+		LINES.put("T21", new int[] { Color.parseColor("#7d64b2"), Color.WHITE });
+		LINES.put("T27", new int[] { Color.parseColor("#a23f30"), Color.WHITE });
+		LINES.put("T37", new int[] { Color.parseColor("#a23f30"), Color.WHITE });
+		LINES.put("T50", new int[] { Color.parseColor("#36ab94"), Color.WHITE });
+		LINES.put("T60", new int[] { Color.parseColor("#108449"), Color.WHITE });
+		LINES.put("T61", new int[] { Color.parseColor("#108449"), Color.WHITE });
+		LINES.put("T62", new int[] { Color.parseColor("#125030"), Color.WHITE });
+		LINES.put("T63", new int[] { Color.parseColor("#36ab94"), Color.WHITE });
+		LINES.put("T67", new int[] { Color.parseColor("#108449"), Color.WHITE });
+		LINES.put("T68", new int[] { Color.parseColor("#108449"), Color.WHITE });
 
 		LINES.put("FF1", new int[] { Color.BLUE, Color.WHITE }); // Potsdam
 		LINES.put("FF10", new int[] { Color.BLUE, Color.WHITE });
