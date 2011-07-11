@@ -211,6 +211,8 @@ public class RtProvider extends AbstractHafasProvider
 		if (t != 0)
 			return t;
 
+		if (ucType.equals("U70"))
+			return '?';
 		if (ucType.equals("X70"))
 			return '?';
 		if (ucType.equals("T84"))
