@@ -607,18 +607,18 @@ public final class BvgProvider extends AbstractHafasProvider
 	private Location location(final String typeStr, final String idStr, final String latStr, final String lonStr, final String nameStr)
 	{
 		final int id = idStr != null ? Integer.parseInt(idStr) : 0;
-		final int lat = latStr != null ? (int) (Float.parseFloat(latStr) * 1E6) : 0;
-		final int lon = lonStr != null ? (int) (Float.parseFloat(lonStr) * 1E6) : 0;
+		final int lat = latStr != null ? Integer.parseInt(latStr) : 0;
+		final int lon = lonStr != null ? Integer.parseInt(lonStr) : 0;
 		final String[] placeAndName = splitPlaceAndName(nameStr);
 
 		final LocationType type;
 		if (typeStr == null)
 			type = LocationType.ANY;
-		else if ("HST".equals(typeStr))
+		else if ("STATION".equals(typeStr))
 			type = LocationType.STATION;
 		else if ("POI".equals(typeStr))
 			type = LocationType.POI;
-		else if ("ADR".equals(typeStr))
+		else if ("ADDRESS".equals(typeStr))
 			type = LocationType.ADDRESS;
 		else
 			throw new IllegalArgumentException("cannot handle: " + typeStr);
@@ -649,12 +649,14 @@ public final class BvgProvider extends AbstractHafasProvider
 	private static final Pattern P_CONNECTIONS_HEAD = Pattern.compile(".*?" //
 			+ "<td headers=\"ivuAnfFrom\"[^>]*>\n" //
 			+ "(?:([^\n]*)\n)?" // from name
-			+ "<a href=\"[^\"]*location=(?:(\\d+)|),(?:(\\w+)|),WGS84,(\\d+\\.\\d+),(\\d+\\.\\d+)&.*?" // fr id,lat,lon
+			+ "<a href=\"/Fahrinfo/[^\"]*?MapLocation\\.X=(\\d+)&MapLocation\\.Y=(\\d+)&[^\"]*?" // from lat, lon
+			+ "MapLocation\\.type=(\\w+)&(?:MapLocation.extId=(\\d+)&)?.*?" // from type, id
 			+ "(?:<td headers=\"ivuAnfVia1\"[^>]*>\n" //
 			+ "([^\n]*)<.*?)?" // via name
 			+ "<td headers=\"ivuAnfTo\"[^>]*>\n" //
 			+ "(?:([^\n]*)\n)?" // to name
-			+ "<a href=\"[^\"]*location=(?:(\\d+)|),(?:(\\w+)|),WGS84,(\\d+\\.\\d+),(\\d+\\.\\d+)&.*?" // to id,lat,lon
+			+ "<a href=\"/Fahrinfo/[^\"]*?MapLocation\\.X=(\\d+)&MapLocation\\.Y=(\\d+)&[^\"]*?" // to lat, lon
+			+ "MapLocation\\.type=(\\w+)&(?:MapLocation.extId=(\\d+)&)?.*?" // to type, id
 			+ "<td headers=\"ivuAnfTime\"[^>]*>.., (\\d{2}\\.\\d{2}\\.\\d{2}) \\d{1,2}:\\d{2}</td>.*?" // date
 			+ "(?:<a href=\"([^\"]*)\" title=\"fr&uuml;here Verbindungen\"[^>]*?>.*?)?" // linkEarlier
 			+ "(?:<a href=\"([^\"]*)\" title=\"sp&auml;tere Verbindungen\"[^>]*?>.*?)?" // linkLater
@@ -706,10 +708,10 @@ public final class BvgProvider extends AbstractHafasProvider
 		final Matcher mHead = P_CONNECTIONS_HEAD.matcher(page);
 		if (mHead.matches())
 		{
-			final Location from = mHead.group(1) != null ? location(mHead.group(3), mHead.group(2), mHead.group(5), mHead.group(4),
+			final Location from = mHead.group(1) != null ? location(mHead.group(4), mHead.group(5), mHead.group(2), mHead.group(3),
 					ParserUtils.resolveEntities(mHead.group(1))) : null;
 			final Location via = mHead.group(6) != null ? location(null, null, null, null, ParserUtils.resolveEntities(mHead.group(6))) : null;
-			final Location to = mHead.group(7) != null ? location(mHead.group(9), mHead.group(8), mHead.group(11), mHead.group(10),
+			final Location to = mHead.group(7) != null ? location(mHead.group(10), mHead.group(11), mHead.group(8), mHead.group(9),
 					ParserUtils.resolveEntities(mHead.group(7))) : null;
 			final Calendar currentDate = new GregorianCalendar(timeZone());
 			currentDate.clear();
