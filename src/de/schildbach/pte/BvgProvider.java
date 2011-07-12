@@ -618,7 +618,7 @@ public final class BvgProvider extends AbstractHafasProvider
 			type = LocationType.STATION;
 		else if ("POI".equals(typeStr))
 			type = LocationType.POI;
-		else if ("ADDRESS".equals(typeStr))
+		else if ("ADDRESS".equals(typeStr) || "".equals(typeStr))
 			type = LocationType.ADDRESS;
 		else
 			throw new IllegalArgumentException("cannot handle: " + typeStr);
@@ -650,13 +650,13 @@ public final class BvgProvider extends AbstractHafasProvider
 			+ "<td headers=\"ivuAnfFrom\"[^>]*>\n" //
 			+ "(?:([^\n]*)\n)?" // from name
 			+ "<a href=\"/Fahrinfo/[^\"]*?MapLocation\\.X=(\\d+)&MapLocation\\.Y=(\\d+)&[^\"]*?" // from lat, lon
-			+ "MapLocation\\.type=(\\w+)&(?:MapLocation.extId=(\\d+)&)?.*?" // from type, id
+			+ "MapLocation\\.type=(\\w*)&(?:MapLocation.extId=(\\d+)&)?.*?" // from type, id
 			+ "(?:<td headers=\"ivuAnfVia1\"[^>]*>\n" //
 			+ "([^\n]*)<.*?)?" // via name
 			+ "<td headers=\"ivuAnfTo\"[^>]*>\n" //
 			+ "(?:([^\n]*)\n)?" // to name
 			+ "<a href=\"/Fahrinfo/[^\"]*?MapLocation\\.X=(\\d+)&MapLocation\\.Y=(\\d+)&[^\"]*?" // to lat, lon
-			+ "MapLocation\\.type=(\\w+)&(?:MapLocation.extId=(\\d+)&)?.*?" // to type, id
+			+ "MapLocation\\.type=(\\w*)&(?:MapLocation.extId=(\\d+)&)?.*?" // to type, id
 			+ "<td headers=\"ivuAnfTime\"[^>]*>.., (\\d{2}\\.\\d{2}\\.\\d{2}) \\d{1,2}:\\d{2}</td>.*?" // date
 			+ "(?:<a href=\"([^\"]*)\" title=\"fr&uuml;here Verbindungen\"[^>]*?>.*?)?" // linkEarlier
 			+ "(?:<a href=\"([^\"]*)\" title=\"sp&auml;tere Verbindungen\"[^>]*?>.*?)?" // linkLater
