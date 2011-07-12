@@ -374,8 +374,8 @@ public class InvgProvider extends AbstractHafasProvider
 		LINES.put("BS8", new int[] { Color.rgb(178, 25, 0), Color.WHITE });
 
 		// BX109?
-		LINES.put("BX11", new int[] { Color.parseColor("#EE9B78") });
-		LINES.put("BX80", new int[] { Color.parseColor("#FFFF40") });
+		LINES.put("BX11", new int[] { Color.parseColor("#EE9B78"), Color.BLACK });
+		LINES.put("BX80", new int[] { Color.parseColor("#FFFF40"), Color.BLACK });
 	}
 
 	@Override
