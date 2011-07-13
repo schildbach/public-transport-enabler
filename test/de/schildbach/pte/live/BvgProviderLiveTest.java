@@ -101,6 +101,17 @@ public class BvgProviderLiveTest
 	}
 
 	@Test
+	public void connectionBetweenCoordinatesAndAddresses() throws Exception
+	{
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, 52536099, 13426309, null,
+				"Christburger Straße 1, 10405 Berlin, Deutschland"), null, new Location(LocationType.ADDRESS, 0, 52486400, 13350744, null,
+				"Eisenacher Straße 70, 10823 Berlin, Deutschland"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+		System.out.println(result);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
+		System.out.println(moreResult);
+	}
+
+	@Test
 	public void viaConnectionBetweenCoordinates() throws Exception
 	{
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, 52501507, 13357026, null, null),
