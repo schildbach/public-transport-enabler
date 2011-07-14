@@ -649,13 +649,13 @@ public final class BvgProvider extends AbstractHafasProvider
 	private static final Pattern P_CONNECTIONS_HEAD = Pattern.compile(".*?" //
 			+ "<td headers=\"ivuAnfFrom\"[^>]*>\n" //
 			+ "(?:([^\n]*)\n)?" // from name
-			+ "<a href=\"/Fahrinfo/[^\"]*?MapLocation\\.X=(\\d+)&MapLocation\\.Y=(\\d+)&[^\"]*?" // from lat, lon
+			+ "<a href=\"/Fahrinfo/[^\"]*?MapLocation\\.X=(\\d+)&MapLocation\\.Y=(\\d+)&[^\"]*?" // from lon, lat
 			+ "MapLocation\\.type=(\\w*)&(?:MapLocation.extId=(\\d+)&)?.*?" // from type, id
 			+ "(?:<td headers=\"ivuAnfVia1\"[^>]*>\n" //
 			+ "([^\n]*)<.*?)?" // via name
 			+ "<td headers=\"ivuAnfTo\"[^>]*>\n" //
 			+ "(?:([^\n]*)\n)?" // to name
-			+ "<a href=\"/Fahrinfo/[^\"]*?MapLocation\\.X=(\\d+)&MapLocation\\.Y=(\\d+)&[^\"]*?" // to lat, lon
+			+ "<a href=\"/Fahrinfo/[^\"]*?MapLocation\\.X=(\\d+)&MapLocation\\.Y=(\\d+)&[^\"]*?" // to lon, lat
 			+ "MapLocation\\.type=(\\w*)&(?:MapLocation.extId=(\\d+)&)?.*?" // to type, id
 			+ "<td headers=\"ivuAnfTime\"[^>]*>.., (\\d{2}\\.\\d{2}\\.\\d{2}) \\d{1,2}:\\d{2}</td>.*?" // date
 			+ "(?:<a href=\"([^\"]*)\" title=\"fr&uuml;here Verbindungen\"[^>]*?>.*?)?" // linkEarlier
@@ -708,10 +708,10 @@ public final class BvgProvider extends AbstractHafasProvider
 		final Matcher mHead = P_CONNECTIONS_HEAD.matcher(page);
 		if (mHead.matches())
 		{
-			final Location from = mHead.group(1) != null ? location(mHead.group(4), mHead.group(5), mHead.group(2), mHead.group(3),
+			final Location from = mHead.group(1) != null ? location(mHead.group(4), mHead.group(5), mHead.group(3), mHead.group(2),
 					ParserUtils.resolveEntities(mHead.group(1))) : null;
 			final Location via = mHead.group(6) != null ? location(null, null, null, null, ParserUtils.resolveEntities(mHead.group(6))) : null;
-			final Location to = mHead.group(7) != null ? location(mHead.group(10), mHead.group(11), mHead.group(8), mHead.group(9),
+			final Location to = mHead.group(7) != null ? location(mHead.group(10), mHead.group(11), mHead.group(9), mHead.group(8),
 					ParserUtils.resolveEntities(mHead.group(7))) : null;
 			final Calendar currentDate = new GregorianCalendar(timeZone());
 			currentDate.clear();
