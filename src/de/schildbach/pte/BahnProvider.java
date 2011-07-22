@@ -814,6 +814,8 @@ public final class BahnProvider extends AbstractHafasProvider
 				return "RATB" + number;
 			if (type.equals("ARZ")) // Brig-Iselle di Trasquera
 				return "RARZ" + number;
+			if ("DWE".equals(type)) // Dessau-Wörlitzer Eisenbahn
+				return "RDWE" + number;
 
 			if (type.equals("S"))
 				return "SS" + number;
