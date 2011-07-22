@@ -842,6 +842,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'R' + str;
 			if (type.equals("Abellio-Zug")) // Abellio
 				return 'R' + str;
+			if ("SWEG-Zug".equals(type)) // Südwestdeutschen Verkehrs-Aktiengesellschaft, evtl. S-Bahn?
+				return 'R' + str;
 			if (type.equals("KBS")) // Kursbuchstrecke
 				return 'R' + str;
 			if (type.equals("Zug"))
@@ -923,6 +925,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			if ("Regional Train :".equals(longName))
 				return "R";
 			if ("Regional Train".equals(noTrainName)) // Melbourne
+				return "R" + name;
+			if ("Regional".equals(type)) // Melbourne
 				return "R" + name;
 			if (type.equals("ATB")) // Autoschleuse Tauernbahn
 				return 'R' + name;
