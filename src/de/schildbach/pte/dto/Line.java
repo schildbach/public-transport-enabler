@@ -31,7 +31,7 @@ public final class Line implements Serializable, Comparable<Line>
 	final public String label;
 	final public int[] colors;
 
-	private static final String PRODUCT_ORDER = "IRSUTBPFC";
+	private static final String PRODUCT_ORDER = "IRSUTBPFC?";
 
 	public Line(final String id, final String label, final int[] colors)
 	{
@@ -39,7 +39,7 @@ public final class Line implements Serializable, Comparable<Line>
 		this.label = label;
 		this.colors = colors;
 
-		product = label.charAt(0);
+		product = label != null ? label.charAt(0) : '?';
 	}
 
 	@Override
