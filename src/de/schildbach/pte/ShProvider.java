@@ -160,7 +160,7 @@ public class ShProvider extends AbstractHafasProvider
 	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<tr class=\"(depboard-\\w*)\">(.*?)</tr>", Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_FINE = Pattern.compile("\n" //
 			+ "<td class=\"time\">(\\d{1,2}:\\d{2}).*?" // plannedTime
-			+ "<img class=\"product\" src=\"/hafas-res/img/products/(\\w+)_pic\\.png\"[^>]*>\\s*([^<]*)<.*?" // type,line
+			+ "<img class=\"product\" src=\"/hafas-res/[^\"]*?(\\w+)_pic\\.png\"[^>]*>\\s*([^<]*)<.*?" // type,line
 			+ "<a href=\"http://nah\\.sh\\.hafas\\.de/bin/stboard\\.exe/dn\\?input=(\\d+)&[^>]*>\n" // destinationId
 			+ "([^\n]*)\n.*?" // destination
 			+ "(?:<td class=\"center sepline top\">\n(" + ParserUtils.P_PLATFORM + ").*?)?" // position
