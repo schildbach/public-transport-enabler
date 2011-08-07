@@ -941,6 +941,9 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'S' + str;
 			if ("A".equals(name) || "B".equals(name) || "C".equals(name)) // SES
 				return 'S' + str;
+			final Matcher m = P_LINE_S.matcher(name);
+			if (m.find())
+				return 'S' + m.group(1);
 
 			if (P_LINE_U.matcher(type).matches())
 				return 'U' + str;
