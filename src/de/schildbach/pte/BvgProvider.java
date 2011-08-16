@@ -110,8 +110,8 @@ public final class BvgProvider extends AbstractHafasProvider
 		return super.splitPlaceAndName(name);
 	}
 
-	private final static Pattern P_NEARBY_OWN = Pattern
-			.compile("/Stadtplan/index.*?location=(\\d+),HST,WGS84,(-?\\d+\\.\\d+),(-?\\d+\\.\\d+)&amp;label=([^\"]*)\"");
+	private final static Pattern P_NEARBY_OWN = Pattern.compile("/Fahrinfo/bin/query\\.bin.*?"
+			+ "location=(\\d+),HST,WGS84,(-?\\d+\\.\\d+),(-?\\d+\\.\\d+)&amp;label=([^\"]*)\"");
 	private final static Pattern P_NEARBY_PAGE = Pattern.compile("<table class=\"ivuTableOverview\".*?<tbody>(.*?)</tbody>", Pattern.DOTALL);
 	private final static Pattern P_NEARBY_COARSE = Pattern.compile("<tr>(.*?)</tr>", Pattern.DOTALL);
 	private final static Pattern P_NEARBY_FINE_LOCATION = Pattern.compile("input=(\\d+)&[^\"]*\">([^<]*)<");
