@@ -700,6 +700,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			if (XmlPullUtil.test(pp, "Err"))
 			{
 				final String code = XmlPullUtil.attr(pp, "code");
+				if (code.equals("I3")) // Input: date outside of the timetable period
+					return new QueryConnectionsResult(Status.INVALID_DATE);
 				if (code.equals("F1")) // Spool: Error reading the spoolfile
 					return new QueryConnectionsResult(Status.SERVICE_DOWN);
 				throw new IllegalStateException("error " + code + " " + XmlPullUtil.attr(pp, "text"));

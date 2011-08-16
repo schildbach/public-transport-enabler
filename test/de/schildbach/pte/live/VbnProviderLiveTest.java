@@ -17,6 +17,8 @@
 
 package de.schildbach.pte.live;
 
+import static junit.framework.Assert.assertEquals;
+
 import java.util.Date;
 import java.util.List;
 
@@ -83,8 +85,17 @@ public class VbnProviderLiveTest
 	{
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 8096109, null, "Oldenburg"), null,
 				new Location(LocationType.STATION, 625398, null, "Bremerhaven"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+		assertEquals(QueryConnectionsResult.Status.OK, result.status);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);
+	}
+
+	@Test
+	public void connectionDateOutsideTimetablePeriod() throws Exception
+	{
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 8096109, null, "Oldenburg"), null,
+				new Location(LocationType.STATION, 625398, null, "Bremerhaven"), new Date(1155822689759l), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+		assertEquals(QueryConnectionsResult.Status.INVALID_DATE, result.status);
 	}
 }
