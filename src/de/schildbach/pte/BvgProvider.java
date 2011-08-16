@@ -90,19 +90,22 @@ public final class BvgProvider extends AbstractHafasProvider
 		throw new UnsupportedOperationException();
 	}
 
+	private static final Pattern P_SPLIT_NAME_PAREN = Pattern.compile("(.*?) \\((.{4,}?)\\)(?: \\((U|S|S\\+U)\\))?");
+	private static final Pattern P_SPLIT_NAME_COMMA = Pattern.compile("([^,]*), ([^,]*)");
+
 	@Override
 	protected String[] splitPlaceAndName(final String name)
 	{
-		if (name.endsWith(" (Berlin)"))
-			return new String[] { "Berlin", name.substring(0, name.length() - 9) };
-		else if (name.startsWith("Potsdam, "))
-			return new String[] { "Potsdam", name.substring(9) };
-		else if (name.startsWith("Cottbus, "))
-			return new String[] { "Cottbus", name.substring(9) };
-		else if (name.startsWith("Brandenburg, "))
-			return new String[] { "Brandenburg", name.substring(13) };
-		else if (name.startsWith("Frankfurt (Oder), "))
-			return new String[] { "Frankfurt (Oder)", name.substring(18) };
+		final Matcher mParen = P_SPLIT_NAME_PAREN.matcher(name);
+		if (mParen.matches())
+		{
+			final String su = mParen.group(3);
+			return new String[] { mParen.group(2), mParen.group(1) + (su != null ? " (" + su + ")" : "") };
+		}
+
+		final Matcher mComma = P_SPLIT_NAME_COMMA.matcher(name);
+		if (mComma.matches())
+			return new String[] { mComma.group(1), mComma.group(2) };
 
 		return super.splitPlaceAndName(name);
 	}
