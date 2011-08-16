@@ -17,6 +17,8 @@
 
 package de.schildbach.pte.live;
 
+import static junit.framework.Assert.assertEquals;
+
 import java.util.Date;
 import java.util.List;
 
@@ -42,15 +44,37 @@ public class BvgProviderLiveTest
 	public void nearbyStations() throws Exception
 	{
 		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 9220302), 0, 0);
+		assertEquals(NearbyStationsResult.Status.OK, result.status);
 		System.out.println(result.stations.size() + "  " + result.stations);
+	}
+
+	@Test
+	public void nearbyStationsInvalidStation() throws Exception
+	{
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 2449475), 0, 0);
+		assertEquals(NearbyStationsResult.Status.INVALID_STATION, result.status);
 	}
 
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(309557, 0, false);
+		final QueryDeparturesResult resultLive = provider.queryDepartures(309557, 0, false);
+		assertEquals(QueryDeparturesResult.Status.OK, resultLive.status);
+		System.out.println(resultLive.stationDepartures);
 
-		System.out.println(result.stationDepartures);
+		final QueryDeparturesResult resultPlan = provider.queryDepartures(9100003, 0, false);
+		assertEquals(QueryDeparturesResult.Status.OK, resultPlan.status);
+		System.out.println(resultPlan.stationDepartures);
+	}
+
+	@Test
+	public void queryDeparturesInvalidStation() throws Exception
+	{
+		final QueryDeparturesResult resultLive = provider.queryDepartures(111111, 0, false);
+		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, resultLive.status);
+
+		final QueryDeparturesResult resultPlan = provider.queryDepartures(2449475, 0, false);
+		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, resultPlan.status);
 	}
 
 	@Test
