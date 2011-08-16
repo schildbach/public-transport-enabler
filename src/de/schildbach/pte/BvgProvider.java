@@ -225,7 +225,7 @@ public final class BvgProvider extends AbstractHafasProvider
 			+ "<a href=\"/Fahrinfo/bin/stboard\\.bin/dox/dox.*?evaId=(\\d+)&[^>]*>" // destinationId
 			+ "\\s*(.*?)\\s*</a>.*?" // destination
 	, Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_PLAN_ERRORS = Pattern.compile("(Bhf\\./Hst\\.:)|(Wartungsarbeiten)|"
+	private static final Pattern P_DEPARTURES_PLAN_ERRORS = Pattern.compile("(Bhf\\./Hst\\.:)|(Wartungsarbeiten)|" //
 			+ "(http-equiv=\"refresh\")", Pattern.CASE_INSENSITIVE);
 
 	private static final Pattern P_DEPARTURES_LIVE_HEAD = Pattern.compile(".*?" //
@@ -905,6 +905,8 @@ public final class BvgProvider extends AbstractHafasProvider
 			return "R" + line;
 		if (line.equals("11"))
 			return "?11";
+		if (line.equals("R"))
+			return "R"; // Polen
 		if (P_NORMALIZE_LINE_SPECIAL_NUMBER.matcher(line).matches())
 			return "R" + line;
 
