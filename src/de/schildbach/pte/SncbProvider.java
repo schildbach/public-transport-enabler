@@ -18,21 +18,14 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.schildbach.pte.dto.Departure;
-import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
-import de.schildbach.pte.dto.QueryDeparturesResult.Status;
-import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.util.ParserUtils;
 
 /**
@@ -44,8 +37,6 @@ public class SncbProvider extends AbstractHafasProvider
 	public static final String OLD_NETWORK_ID = "hari.b-rail.be";
 	private static final String API_BASE = "http://hari.b-rail.be/Hafas/bin/";
 	private static final String API_URI = "http://hari.b-rail.be/Hafas/bin/extxml.exe";
-
-	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
 
 	public SncbProvider()
 	{
@@ -117,115 +108,19 @@ public class SncbProvider extends AbstractHafasProvider
 		}
 	}
 
-	private String departuresQueryUri(final int stationId, final int maxDepartures)
-	{
-		final StringBuilder uri = new StringBuilder();
-		uri.append("http://hari.b-rail.be/hari3/webserver1/bin/stboard.exe/dox");
-		uri.append("?input=").append(stationId);
-		uri.append("&boardType=dep");
-		uri.append("&maxJourneys=").append(maxDepartures != 0 ? maxDepartures : 50); // maximum taken from SNCB site
-		uri.append("&productsFilter=").append(allProductsString());
-		uri.append("&disableEquivs=yes"); // don't use nearby stations
-		uri.append("&start=yes");
-		return uri.toString();
-	}
-
-	private static final Pattern P_DEPARTURES_HEAD_COARSE = Pattern.compile(".*?" //
-			+ "(?:" //
-			+ "<div id=\"hfs_content\">\r\n" //
-			+ "<p class=\"qs\">\r\n(.*?)\r\n</p>\r\n" // head
-			+ "(.*?)\r\n</div>" // departures
-			+ "|(Eingabe kann nicht interpretiert)|(Verbindung zum Server konnte leider nicht hergestellt werden))" //
-			+ ".*?", Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_HEAD_FINE = Pattern.compile("" //
-			+ "<strong>(.*?)</strong><br />\r\n" // location
-			+ "Abfahrt (\\d{1,2}:\\d{2}),\r\n" // time
-			+ "(\\d{2}/\\d{2}/\\d{2})" // date
-	, Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<p class=\"journey\">\r\n(.*?)</p>", Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_FINE = Pattern.compile(".*?" //
-			+ "<strong>([^<]*)</strong>.*?" // line
-			+ "&gt;&gt;\r\n" //
-			+ "(.*?)\r\n" // destination
-			+ "<br />\r\n" //
-			+ "<strong>(\\d{1,2}:\\d{2})</strong>\r\n" // time
-			+ "(?:<span class=\"delay\">([+-]?\\d+|Ausfall)</span>\r\n)?" // delay
-			+ "(?:<span class=\"delay\">Aktivierung</span>\r\n)?" + "(?:([^<]*)<br />\r\n)?" // position
-	, Pattern.DOTALL);
-
 	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
-		final QueryDeparturesResult result = new QueryDeparturesResult();
+		final StringBuilder uri = new StringBuilder();
+		uri.append(API_BASE).append("stboard.exe/on");
+		uri.append("?productsFilter=").append(allProductsString());
+		uri.append("&boardType=dep");
+		uri.append("&disableEquivs=yes"); // don't use nearby stations
+		uri.append("&maxJourneys=50"); // ignore maxDepartures because result contains other stations
+		uri.append("&start=yes");
+		uri.append("&L=vs_java3");
+		uri.append("&input=").append(stationId);
 
-		// scrape page
-		final String uri = departuresQueryUri(stationId, maxDepartures);
-		final CharSequence page = ParserUtils.scrape(uri);
-
-		// parse page
-		final Matcher mHeadCoarse = P_DEPARTURES_HEAD_COARSE.matcher(page);
-		if (mHeadCoarse.matches())
-		{
-			// messages
-			if (mHeadCoarse.group(3) != null)
-				return new QueryDeparturesResult(Status.INVALID_STATION);
-			else if (mHeadCoarse.group(4) != null)
-				return new QueryDeparturesResult(Status.SERVICE_DOWN);
-
-			final Matcher mHeadFine = P_DEPARTURES_HEAD_FINE.matcher(mHeadCoarse.group(1));
-			if (mHeadFine.matches())
-			{
-				final String location = ParserUtils.resolveEntities(mHeadFine.group(1));
-				final Calendar currentTime = new GregorianCalendar(timeZone());
-				currentTime.clear();
-				ParserUtils.parseEuropeanTime(currentTime, mHeadFine.group(2));
-				ParserUtils.parseGermanDate(currentTime, mHeadFine.group(3));
-				final List<Departure> departures = new ArrayList<Departure>(8);
-
-				final Matcher mDepCoarse = P_DEPARTURES_COARSE.matcher(mHeadCoarse.group(2));
-				while (mDepCoarse.find())
-				{
-					final Matcher mDepFine = P_DEPARTURES_FINE.matcher(mDepCoarse.group(1));
-					if (mDepFine.matches())
-					{
-						final String line = normalizeLine(ParserUtils.resolveEntities(mDepFine.group(1)));
-
-						final String destination = ParserUtils.resolveEntities(mDepFine.group(2));
-
-						final Calendar parsedTime = new GregorianCalendar(timeZone());
-						parsedTime.setTimeInMillis(currentTime.getTimeInMillis());
-						ParserUtils.parseEuropeanTime(parsedTime, mDepFine.group(3));
-
-						if (parsedTime.getTimeInMillis() - currentTime.getTimeInMillis() < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
-							parsedTime.add(Calendar.DAY_OF_MONTH, 1);
-
-						mDepFine.group(4); // TODO delay
-
-						final String position = mDepFine.group(5);
-
-						final Departure dep = new Departure(parsedTime.getTime(), null, new Line(null, line, line != null ? lineColors(line) : null),
-								position, 0, destination, null, null);
-
-						if (!departures.contains(dep))
-							departures.add(dep);
-					}
-					else
-					{
-						throw new IllegalArgumentException("cannot parse '" + mDepCoarse.group(1) + "' on " + stationId);
-					}
-				}
-
-				result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, stationId, null, location), departures, null));
-				return result;
-			}
-			else
-			{
-				throw new IllegalArgumentException("cannot parse '" + mHeadCoarse.group(1) + "' on " + stationId);
-			}
-		}
-		else
-		{
-			throw new IllegalArgumentException("cannot parse '" + page + "' on " + stationId);
-		}
+		return xmlQueryDepartures(uri.toString(), stationId);
 	}
 
 	private static final String AUTOCOMPLETE_URI = API_BASE
@@ -237,6 +132,38 @@ public class SncbProvider extends AbstractHafasProvider
 		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING));
 
 		return jsonGetStops(uri);
+	}
+
+	private static final Pattern P_NORMALIZE_LINE_AND_TYPE = Pattern.compile("([^#]*)#(.*)");
+	private static final Pattern P_NORMALIZE_LINE_NUMBER = Pattern.compile("\\d{2,5}");
+
+	@Override
+	protected String normalizeLine(final String line)
+	{
+		final Matcher m = P_NORMALIZE_LINE_AND_TYPE.matcher(line);
+		if (m.matches())
+		{
+			final String number = m.group(1).replaceAll("\\s+", " ");
+			final String type = m.group(2);
+
+			if (type.length() == 0)
+			{
+				if (number.length() == 0)
+					return "?";
+				if (P_NORMALIZE_LINE_NUMBER.matcher(number).matches())
+					return "?" + number;
+			}
+			else
+			{
+				final char normalizedType = normalizeType(type);
+				if (normalizedType != 0)
+					return normalizedType + number;
+			}
+
+			throw new IllegalStateException("cannot normalize type " + type + " number " + number + " line " + line);
+		}
+
+		throw new IllegalStateException("cannot normalize line " + line);
 	}
 
 	@Override
