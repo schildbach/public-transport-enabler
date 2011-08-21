@@ -89,8 +89,8 @@ public class SncbProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 100024), null, new Location(
-				LocationType.STATION, 100066), new Date(), true, null, WalkSpeed.FAST);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 8821006, "Antwerpen", "Centraal"), null,
+				new Location(LocationType.STATION, 8813003, "Brussel", "Centraal"), new Date(), true, null, WalkSpeed.FAST);
 		System.out.println(result.status + "  " + result.connections);
 
 		if (result.context != null)
@@ -103,8 +103,8 @@ public class SncbProviderLiveTest
 	@Test
 	public void longConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 100024), null, new Location(
-				LocationType.STATION, 103624), new Date(), true, null, WalkSpeed.FAST);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 207280, "Brussel", "Wannecouter"), null,
+				new Location(LocationType.STATION, 207272, "Brussel", "Stadion"), new Date(), true, null, WalkSpeed.FAST);
 		System.out.println(result.status + "  " + result.connections);
 
 		if (result.context != null)
