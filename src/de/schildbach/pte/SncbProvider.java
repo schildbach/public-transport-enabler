@@ -96,7 +96,7 @@ public class SncbProvider extends AbstractHafasProvider
 	protected String[] splitPlaceAndName(final String name)
 	{
 		for (final String place : PLACES)
-			if (name.startsWith(place + " "))
+			if (name.startsWith(place + " ") || name.startsWith(place + "-"))
 				return new String[] { place, name.substring(place.length() + 1) };
 
 		return super.splitPlaceAndName(name);
