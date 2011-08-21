@@ -1546,7 +1546,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return 'R';
 		if ("CAT".equals(ucType)) // City Airport Train
 			return 'R';
-		if ("EXT".equals(ucType)) // Extrazug
+		if ("EXTRA".equals(ucType) || "EXT".equals(ucType)) // Extrazug
 			return 'R';
 		if ("KD".equals(ucType)) // Koleje Dolnośląskie (Niederschlesische Eisenbahn)
 			return 'R';
