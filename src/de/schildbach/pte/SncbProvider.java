@@ -108,7 +108,7 @@ public class SncbProvider extends AbstractHafasProvider
 
 		if (location.type == LocationType.STATION && location.hasId())
 		{
-			uri.append("stboard.exe/en?near=Anzeigen");
+			uri.append("stboard.exe/nn?near=Zoek");
 			uri.append("&distance=").append(maxDistance != 0 ? maxDistance / 1000 : 50);
 			uri.append("&input=").append(location.id);
 
@@ -123,7 +123,7 @@ public class SncbProvider extends AbstractHafasProvider
 	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder();
-		uri.append(API_BASE).append("stboard.exe/on");
+		uri.append(API_BASE).append("stboard.exe/nn");
 		uri.append("?productsFilter=").append(allProductsString());
 		uri.append("&boardType=dep");
 		uri.append("&disableEquivs=yes"); // don't use nearby stations
@@ -136,7 +136,7 @@ public class SncbProvider extends AbstractHafasProvider
 	}
 
 	private static final String AUTOCOMPLETE_URI = API_BASE
-			+ "ajax-getstop.exe/dny?start=1&tpl=suggest2json&REQ0JourneyStopsS0A=255&REQ0JourneyStopsB=12&S=%s?&js=true&";
+			+ "ajax-getstop.exe/nny?start=1&tpl=suggest2json&REQ0JourneyStopsS0A=255&REQ0JourneyStopsB=12&S=%s?&js=true&";
 	private static final String ENCODING = "ISO-8859-1";
 
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
