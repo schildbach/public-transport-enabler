@@ -92,6 +92,14 @@ public final class Location implements Serializable
 		return lat != 0 || lon != 0;
 	}
 
+	public final String uniqueShortName()
+	{
+		if ("Bahnhof".equals(name))
+			return place + ", " + name;
+		else
+			return name;
+	}
+
 	@Override
 	public String toString()
 	{
