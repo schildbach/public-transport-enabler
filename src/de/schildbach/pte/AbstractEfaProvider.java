@@ -647,6 +647,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'I' + str;
 			if (type.equals("DNZ")) // Nachtzug Basel-Moskau
 				return 'I' + str;
+			if ("Eurocity".equals(noTrainName)) // Liechtenstein
+				return 'I' + name;
 
 			if (type.equals("IR")) // Interregio
 				return 'R' + str;
@@ -931,6 +933,10 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			if (type.equals("ATB")) // Autoschleuse Tauernbahn
 				return 'R' + name;
 			if ("Chiemsee-Bahn".equals(type))
+				return 'R' + name;
+			if ("Regionalzug".equals(noTrainName)) // Liechtenstein
+				return 'R' + name;
+			if ("RegionalExpress".equals(noTrainName)) // Liechtenstein
 				return 'R' + name;
 
 			if (type.equals("BSB")) // Breisgau-S-Bahn
