@@ -58,7 +58,7 @@ public final class LineDestination
 			return false;
 		if (this.destinationId != other.destinationId)
 			return false;
-		if (!this.destination.equals(other.destination))
+		if (!nullSafeEquals(this.destination, other.destination))
 			return false;
 		return true;
 	}
@@ -71,7 +71,7 @@ public final class LineDestination
 		hashCode *= 29;
 		hashCode += destinationId;
 		hashCode *= 29;
-		hashCode += destination.hashCode();
+		hashCode += nullSafeHashCode(destination);
 		return hashCode;
 	}
 
