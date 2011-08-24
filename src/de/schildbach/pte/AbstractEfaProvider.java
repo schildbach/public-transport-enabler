@@ -1097,6 +1097,9 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				if (XmlPullUtil.test(pp, "itdDateTime"))
 					XmlPullUtil.next(pp);
 
+				if (XmlPullUtil.test(pp, "itdDMDateTime"))
+					XmlPullUtil.next(pp);
+
 				if (XmlPullUtil.test(pp, "itdDateRange"))
 					XmlPullUtil.next(pp);
 
