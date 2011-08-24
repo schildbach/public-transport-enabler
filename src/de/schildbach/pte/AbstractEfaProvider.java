@@ -354,8 +354,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		int lat = 0, lon = 0;
 		if ("WGS84".equals(pp.getAttributeValue(null, "mapName")))
 		{
-			lat = Integer.parseInt(pp.getAttributeValue(null, "y"));
-			lon = Integer.parseInt(pp.getAttributeValue(null, "x"));
+			lat = Math.round(XmlPullUtil.floatAttr(pp, "y"));
+			lon = Math.round(XmlPullUtil.floatAttr(pp, "x"));
 		}
 
 		LocationType type;
@@ -419,8 +419,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		int lat = 0, lon = 0;
 		if ("WGS84".equals(pp.getAttributeValue(null, "mapName")))
 		{
-			lat = Integer.parseInt(pp.getAttributeValue(null, "y"));
-			lon = Integer.parseInt(pp.getAttributeValue(null, "x"));
+			lat = Math.round(XmlPullUtil.floatAttr(pp, "y"));
+			lon = Math.round(XmlPullUtil.floatAttr(pp, "x"));
 		}
 		final String place = normalizeLocationName(XmlPullUtil.attr(pp, "place"));
 
@@ -483,8 +483,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 							// final String parsedLongName = normalizeLocationName(XmlPullUtil.attr(pp,
 							// "nameWithPlace"));
 							final String parsedPlace = normalizeLocationName(XmlPullUtil.attr(pp, "place"));
-							final int parsedLon = XmlPullUtil.intAttr(pp, "x");
-							final int parsedLat = XmlPullUtil.intAttr(pp, "y");
+							final int parsedLon = Math.round(XmlPullUtil.floatAttr(pp, "x"));
+							final int parsedLat = Math.round(XmlPullUtil.floatAttr(pp, "y"));
 							XmlPullUtil.enter(pp, "itdOdvAssignedStop");
 							final String parsedName = normalizeLocationName(pp.getText());
 							XmlPullUtil.exit(pp, "itdOdvAssignedStop");
@@ -1157,8 +1157,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 							final String mapName = pp.getAttributeValue(null, "mapName");
 							if (mapName == null || !"WGS84".equals(mapName))
 								throw new IllegalStateException("unknown mapName: " + mapName);
-							final int lon = XmlPullUtil.intAttr(pp, "x");
-							final int lat = XmlPullUtil.intAttr(pp, "y");
+							final int lon = Math.round(XmlPullUtil.floatAttr(pp, "x"));
+							final int lat = Math.round(XmlPullUtil.floatAttr(pp, "y"));
 							// final String name = normalizeLocationName(XmlPullUtil.attr(pp, "nameWO"));
 
 							assignedStationDepartures = new StationDepartures(new Location(LocationType.STATION, assignedStopId, lat, lon),
@@ -1244,8 +1244,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		final int lat, lon;
 		if ("WGS84".equals(pp.getAttributeValue(null, "mapName")))
 		{
-			lat = Integer.parseInt(pp.getAttributeValue(null, "y"));
-			lon = Integer.parseInt(pp.getAttributeValue(null, "x"));
+			lat = Math.round(XmlPullUtil.floatAttr(pp, "y"));
+			lon = Math.round(XmlPullUtil.floatAttr(pp, "x"));
 		}
 		else
 		{
