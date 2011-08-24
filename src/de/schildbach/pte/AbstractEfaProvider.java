@@ -1842,7 +1842,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		for (final String coordStr : pp.getText().split(" "))
 		{
 			final String[] coordsStr = coordStr.split(",");
-			path.add(new Point(Integer.parseInt(coordsStr[1]), Integer.parseInt(coordsStr[0])));
+			path.add(new Point(Math.round(Float.parseFloat(coordsStr[1])), Math.round(Float.parseFloat(coordsStr[0]))));
 		}
 		XmlPullUtil.exit(pp, "itdCoordinateString");
 
