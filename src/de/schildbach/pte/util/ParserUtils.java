@@ -247,7 +247,7 @@ public final class ParserUtils
 		}
 	}
 
-	private static final Pattern P_ENTITY = Pattern.compile("&(?:#(x[\\da-f]+|\\d+)|(amp|quot|apos|szlig));");
+	private static final Pattern P_ENTITY = Pattern.compile("&(?:#(x[\\da-f]+|\\d+)|(amp|quot|apos|szlig|nbsp));");
 
 	public static String resolveEntities(final CharSequence str)
 	{
@@ -279,6 +279,8 @@ public final class ParserUtils
 					c = '\'';
 				else if (namedEntity.equals("szlig"))
 					c = 'ß';
+				else if (namedEntity.equals("nbsp"))
+					c = ' ';
 				else
 					throw new IllegalStateException("unknown entity: " + namedEntity);
 			}
