@@ -1542,6 +1542,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return 'R';
 		if ("ÖBA".equals(ucType)) // Öchsle-Bahn Betriebsgesellschaft
 			return 'R';
+		if ("KTB".equals(ucType)) // Kandertalbahn
+			return 'R';
 		if ("ATZ".equals(ucType)) // Autotunnelzug
 			return 'R';
 		if ("ATB".equals(ucType)) // Autoschleuse Tauernbahn

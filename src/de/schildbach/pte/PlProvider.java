@@ -177,8 +177,6 @@ public class PlProvider extends AbstractHafasProvider
 			return 'R';
 		if ("RNV".equals(ucType)) // Rhein-Neckar-Verkehr GmbH
 			return 'R';
-		if ("KTB".equals(ucType)) // Kandertalbahn
-			return 'R';
 		if ("N".equals(ucType)) // St. Pierre des Corps - Tours
 			return 'R';
 
