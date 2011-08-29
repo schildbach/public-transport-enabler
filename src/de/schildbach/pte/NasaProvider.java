@@ -136,7 +136,15 @@ public class NasaProvider extends AbstractHafasProvider
 
 		if (ucType.equals("DPF")) // mit Dampflok bespannter Zug
 			return 'R';
+		if ("DAM".equals(ucType)) // Harzer Schmalspurbahnen: mit Dampflok bespannter Zug
+			return 'R';
+		if ("TW".equals(ucType)) // Harzer Schmalspurbahnen: Triebwagen
+			return 'R';
 		if (ucType.equals("RR")) // Polen
+			return 'R';
+		if ("DBG".equals(ucType)) // Döllnitzbahn GmbH
+			return 'R';
+		if ("ZUGBAHN".equals(ucType))
 			return 'R';
 
 		if (ucType.equals("E")) // Stadtbahn Karlsruhe: S4/S31/xxxxx
