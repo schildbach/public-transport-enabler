@@ -816,6 +816,8 @@ public final class BahnProvider extends AbstractHafasProvider
 				return "RARZ" + number;
 			if ("DWE".equals(type)) // Dessau-Wörlitzer Eisenbahn
 				return "RDWE" + number;
+			if ("DBG".equals(type)) // Döllnitzbahn GmbH
+				return "RDBG" + number;
 
 			if (type.equals("S"))
 				return "SS" + number;
