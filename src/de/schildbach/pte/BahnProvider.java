@@ -818,6 +818,8 @@ public final class BahnProvider extends AbstractHafasProvider
 				return "RDWE" + number;
 			if ("DBG".equals(type)) // Döllnitzbahn GmbH
 				return "RDBG" + number;
+			if ("EZ".equals(type)) // ÖBB ErlebnisBahn
+				return "REZ" + number;
 
 			if (type.equals("S"))
 				return "SS" + number;
