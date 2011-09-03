@@ -44,7 +44,7 @@ public enum NetworkId
 	DSB,
 
 	// Sweden
-	SE,
+	SE, STOCKHOLM,
 
 	// Norway
 	NRI,
