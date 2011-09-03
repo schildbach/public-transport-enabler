@@ -87,7 +87,46 @@ public class SeProvider extends AbstractHafasProvider
 	@Override
 	protected void setProductBits(final StringBuilder productBits, final char product)
 	{
-		throw new UnsupportedOperationException();
+		if (product == 'I')
+		{
+			productBits.setCharAt(0, '1'); // Flyg
+			productBits.setCharAt(1, '1'); // Snabbtåg
+		}
+		else if (product == 'R')
+		{
+			productBits.setCharAt(2, '1'); // Tåg
+			productBits.setCharAt(4, '1'); // Lokaltåg
+		}
+		else if (product == 'S')
+		{
+		}
+		else if (product == 'U')
+		{
+			productBits.setCharAt(5, '1'); // Tunnelbana
+		}
+		else if (product == 'T')
+		{
+			productBits.setCharAt(6, '1'); // Spårvagn
+		}
+		else if (product == 'B')
+		{
+			productBits.setCharAt(3, '1'); // Expressbuss
+			productBits.setCharAt(7, '1'); // Buss
+		}
+		else if (product == 'P')
+		{
+		}
+		else if (product == 'F')
+		{
+			productBits.setCharAt(8, '1'); // Båt
+		}
+		else if (product == 'C')
+		{
+		}
+		else
+		{
+			throw new IllegalArgumentException("cannot handle: " + product);
+		}
 	}
 
 	private static final Pattern P_SPLIT_NAME_KN = Pattern.compile("(.*?) \\((.*?) kn\\)");
@@ -163,6 +202,10 @@ public class SeProvider extends AbstractHafasProvider
 	@Override
 	protected char normalizeType(final String type)
 	{
-		throw new UnsupportedOperationException();
+		final char t = super.normalizeType(type);
+		if (t != 0)
+			return t;
+
+		return 0;
 	}
 }
