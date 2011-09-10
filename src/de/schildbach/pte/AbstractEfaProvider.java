@@ -940,6 +940,96 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'R' + name;
 			if ("RegionalExpress".equals(noTrainName)) // Liechtenstein
 				return 'R' + name;
+			if ("Ostdeutsche".equals(type)) // Bayern
+				return 'R' + type;
+			if ("Südwestdeutsche".equals(type)) // Bayern
+				return 'R' + type;
+			if ("Mitteldeutsche".equals(type)) // Bayern
+				return 'R' + type;
+			if ("Norddeutsche".equals(type)) // Bayern
+				return 'R' + type;
+			if ("Hellertalbahn".equals(type)) // Bayern
+				return 'R' + type;
+			if ("Veolia".equals(type)) // Bayern
+				return 'R' + type;
+			if ("vectus".equals(type)) // Bayern
+				return 'R' + type;
+			if ("Hessische".equals(type)) // Bayern
+				return 'R' + type;
+			if ("Niederbarnimer".equals(type)) // Bayern
+				return 'R' + type;
+			if ("Rurtalbahn".equals(type)) // Bayern
+				return 'R' + type;
+			if ("Rhenus".equals(type)) // Bayern
+				return 'R' + type;
+			if ("Mittelrheinbahn".equals(type)) // Bayern
+				return 'R' + type;
+			if ("Hohenzollerische".equals(type)) // Bayern
+				return 'R' + type;
+			if ("Städtebahn".equals(type)) // Bayern
+				return 'R' + type;
+			if ("Ortenau-S-Bahn".equals(type)) // Bayern
+				return 'R' + type;
+			if ("Daadetalbahn".equals(type)) // Bayern
+				return 'R' + type;
+			if ("Mainschleifenbahn".equals(type)) // Bayern
+				return 'R' + type;
+			if ("Nordbahn".equals(type)) // Bayern
+				return 'R' + type;
+			if ("Harzer".equals(type)) // Bayern
+				return 'R' + type;
+			if ("cantus".equals(type)) // Bayern
+				return 'R' + type;
+			if ("DPF".equals(type)) // Bayern, Vogtland-Express
+				return 'R' + type;
+			if ("Freiberger".equals(type)) // Bayern
+				return 'R' + type;
+			if ("metronom".equals(type)) // Bayern
+				return 'R' + type;
+			if ("Prignitzer".equals(type)) // Bayern
+				return 'R' + type;
+			if ("Sächsisch-Oberlausitzer".equals(type)) // Bayern
+				return 'R' + type;
+			if ("Ostseeland".equals(type)) // Bayern
+				return 'R' + type;
+			if ("NordOstseeBahn".equals(type)) // Bayern
+				return 'R' + type;
+			if ("ELBE-WESER".equals(type)) // Bayern
+				return 'R' + type;
+			if ("TRILEX".equals(type)) // Bayern
+				return 'R' + type;
+			if ("Schleswig-Holstein-Bahn".equals(type)) // Bayern
+				return 'R' + type;
+			if ("Vetter".equals(type)) // Bayern
+				return 'R' + type;
+			if ("Dessau-Wörlitzer".equals(type)) // Bayern
+				return 'R' + type;
+			if ("NATURPARK-EXPRESS".equals(type)) // Bayern
+				return 'R' + type;
+			if ("Usedomer".equals(type)) // Bayern
+				return 'R' + type;
+			if ("Märkische".equals(type)) // Bayern
+				return 'R' + type;
+			if ("Vulkan-Eifel-Bahn".equals(type)) // Bayern
+				return 'R' + type;
+			if ("Kandertalbahn".equals(type)) // Bayern
+				return 'R' + type;
+			if ("RAD-WANDER-SHUTTLE".equals(type)) // Bayern, Hohenzollerische Landesbahn
+				return 'R' + type;
+			if ("RADEXPRESS".equals(type)) // Bayern, RADEXPRESS EYACHTÄLER
+				return 'R' + type;
+			if ("Dampfzug".equals(type)) // Bayern
+				return 'R' + type;
+			if ("Wutachtalbahn".equals(type)) // Bayern
+				return 'R' + type;
+			if ("Grensland-Express".equals(type)) // Bayern
+				return 'R' + type;
+			if ("Mecklenburgische".equals(type)) // Bayern
+				return 'R' + type;
+			if ("Bentheimer".equals(type)) // Bayern
+				return 'R' + type;
+			if ("Pressnitztalbahn".equals(type)) // Bayern
+				return 'R' + type;
 
 			if (type.equals("BSB")) // Breisgau-S-Bahn
 				return 'S' + str;
@@ -952,6 +1042,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			final Matcher m = P_LINE_S.matcher(name);
 			if (m.find())
 				return 'S' + m.group(1);
+			if ("Breisgau-S-Bahn".equals(type)) // Bayern
+				return 'S' + type;
 
 			if (P_LINE_U.matcher(type).matches())
 				return 'U' + str;
