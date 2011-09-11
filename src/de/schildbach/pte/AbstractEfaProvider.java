@@ -1035,6 +1035,10 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'R' + type;
 			if ("Pressnitztalbahn".equals(type)) // Bayern
 				return 'R' + type;
+			if ("Regental".equals(type)) // Bayern
+				return 'R' + type;
+			if ("Döllnitzbahn".equals(type)) // Bayern
+				return 'R' + type;
 			if ("Schneeberg".equals(type)) // VOR
 				return 'R' + type;
 
