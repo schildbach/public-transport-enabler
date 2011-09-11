@@ -49,8 +49,8 @@ import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
-import de.schildbach.pte.dto.QueryConnectionsResult.Status;
 import de.schildbach.pte.dto.QueryDeparturesResult;
+import de.schildbach.pte.dto.ResultHeader;
 import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.dto.Stop;
 import de.schildbach.pte.util.Color;
@@ -63,6 +63,8 @@ import de.schildbach.pte.util.XmlPullUtil;
  */
 public abstract class AbstractHafasProvider implements NetworkProvider
 {
+	protected final static String SERVER_PRODUCT = "HAFAS";
+
 	private static final String DEFAULT_ENCODING = "ISO-8859-1";
 	private static final String PROD = "hafas";
 	private static final int NUM_CONNECTIONS = 6;
@@ -448,7 +450,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 			pp.nextTag();
 
-			final QueryDeparturesResult result = new QueryDeparturesResult();
+			final ResultHeader header = new ResultHeader(SERVER_PRODUCT);
+			final QueryDeparturesResult result = new QueryDeparturesResult(header);
 			final List<Departure> departures = new ArrayList<Departure>(8);
 
 			if (XmlPullUtil.test(pp, "Err"))
@@ -457,7 +460,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 				final String text = XmlPullUtil.attr(pp, "text");
 
 				if (code.equals("H730")) // Your input is not valid
-					return new QueryDeparturesResult(QueryDeparturesResult.Status.INVALID_STATION);
+					return new QueryDeparturesResult(header, QueryDeparturesResult.Status.INVALID_STATION);
 				if (code.equals("H890"))
 				{
 					result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, stationId), Collections
@@ -605,13 +608,15 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 	public QueryConnectionsResult queryConnections(Location from, Location via, Location to, final Date date, final boolean dep,
 			final String products, final WalkSpeed walkSpeed) throws IOException
 	{
+		final ResultHeader header = new ResultHeader(SERVER_PRODUCT);
+
 		if (from.type == LocationType.ANY || (from.type == LocationType.ADDRESS && !from.hasLocation()))
 		{
 			final List<Location> autocompletes = autocompleteStations(from.name);
 			if (autocompletes.isEmpty())
-				return new QueryConnectionsResult(QueryConnectionsResult.Status.NO_CONNECTIONS); // TODO
+				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.NO_CONNECTIONS); // TODO
 			if (autocompletes.size() > 1)
-				return new QueryConnectionsResult(autocompletes, null, null);
+				return new QueryConnectionsResult(header, autocompletes, null, null);
 			from = autocompletes.get(0);
 		}
 
@@ -619,9 +624,9 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		{
 			final List<Location> autocompletes = autocompleteStations(via.name);
 			if (autocompletes.isEmpty())
-				return new QueryConnectionsResult(QueryConnectionsResult.Status.NO_CONNECTIONS); // TODO
+				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.NO_CONNECTIONS); // TODO
 			if (autocompletes.size() > 1)
-				return new QueryConnectionsResult(null, autocompletes, null);
+				return new QueryConnectionsResult(header, null, autocompletes, null);
 			via = autocompletes.get(0);
 		}
 
@@ -629,9 +634,9 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		{
 			final List<Location> autocompletes = autocompleteStations(to.name);
 			if (autocompletes.isEmpty())
-				return new QueryConnectionsResult(QueryConnectionsResult.Status.NO_CONNECTIONS); // TODO
+				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.NO_CONNECTIONS); // TODO
 			if (autocompletes.size() > 1)
-				return new QueryConnectionsResult(null, null, autocompletes);
+				return new QueryConnectionsResult(header, null, null, autocompletes);
 			to = autocompletes.get(0);
 		}
 
@@ -695,15 +700,17 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			pp.setInput(is, DEFAULT_ENCODING);
 
 			assertResC(pp);
+			final String product = XmlPullUtil.attr(pp, "prod");
+			final ResultHeader header = new ResultHeader(SERVER_PRODUCT, product, 0, null);
 			XmlPullUtil.enter(pp, "ResC");
 
 			if (XmlPullUtil.test(pp, "Err"))
 			{
 				final String code = XmlPullUtil.attr(pp, "code");
 				if (code.equals("I3")) // Input: date outside of the timetable period
-					return new QueryConnectionsResult(Status.INVALID_DATE);
+					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.INVALID_DATE);
 				if (code.equals("F1")) // Spool: Error reading the spoolfile
-					return new QueryConnectionsResult(Status.SERVICE_DOWN);
+					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.SERVICE_DOWN);
 				throw new IllegalStateException("error " + code + " " + XmlPullUtil.attr(pp, "text"));
 			}
 
@@ -713,19 +720,19 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			{
 				final String code = XmlPullUtil.attr(pp, "code");
 				if (code.equals("K9380") || code.equals("K895")) // Departure/Arrival are too near
-					return QueryConnectionsResult.TOO_CLOSE;
+					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.TOO_CLOSE);
 				if (code.equals("K9220")) // Nearby to the given address stations could not be found
-					return QueryConnectionsResult.UNRESOLVABLE_ADDRESS;
+					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.UNRESOLVABLE_ADDRESS);
 				if (code.equals("K9240")) // Internal error
-					return new QueryConnectionsResult(Status.SERVICE_DOWN);
+					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.SERVICE_DOWN);
 				if (code.equals("K9260")) // Departure station does not exist
-					return QueryConnectionsResult.NO_CONNECTIONS;
+					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.NO_CONNECTIONS);
 				if (code.equals("K890")) // No connections found
-					return QueryConnectionsResult.NO_CONNECTIONS;
+					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.NO_CONNECTIONS);
 				if (code.equals("K891")) // No route found (try entering an intermediate station)
-					return QueryConnectionsResult.NO_CONNECTIONS;
+					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.NO_CONNECTIONS);
 				if (code.equals("K899")) // An error occurred
-					return new QueryConnectionsResult(Status.SERVICE_DOWN);
+					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.SERVICE_DOWN);
 				// if (code.equals("K1:890")) // Unsuccessful or incomplete search (direction: forward)
 				throw new IllegalStateException("error " + code + " " + XmlPullUtil.attr(pp, "text"));
 			}
@@ -992,7 +999,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 			XmlPullUtil.exit(pp);
 
-			return new QueryConnectionsResult(null, from, via, to, context, connections);
+			return new QueryConnectionsResult(header, null, from, via, to, context, connections);
 		}
 		catch (final XmlPullParserException x)
 		{

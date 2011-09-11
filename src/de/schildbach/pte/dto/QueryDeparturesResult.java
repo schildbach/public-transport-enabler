@@ -30,16 +30,19 @@ public final class QueryDeparturesResult
 		OK, INVALID_STATION, SERVICE_DOWN
 	}
 
+	public final ResultHeader header;
 	public final Status status;
 	public final List<StationDepartures> stationDepartures = new LinkedList<StationDepartures>();
 
-	public QueryDeparturesResult()
+	public QueryDeparturesResult(final ResultHeader header)
 	{
+		this.header = header;
 		this.status = Status.OK;
 	}
 
-	public QueryDeparturesResult(final Status status)
+	public QueryDeparturesResult(final ResultHeader header, final Status status)
 	{
+		this.header = header;
 		this.status = status;
 	}
 

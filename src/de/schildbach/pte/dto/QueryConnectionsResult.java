@@ -30,11 +30,7 @@ public final class QueryConnectionsResult implements Serializable
 		OK, AMBIGUOUS, TOO_CLOSE, UNRESOLVABLE_ADDRESS, NO_CONNECTIONS, INVALID_DATE, SERVICE_DOWN;
 	}
 
-	public static final QueryConnectionsResult TOO_CLOSE = new QueryConnectionsResult(Status.TOO_CLOSE);
-	public static final QueryConnectionsResult UNRESOLVABLE_ADDRESS = new QueryConnectionsResult(Status.UNRESOLVABLE_ADDRESS);
-	public static final QueryConnectionsResult NO_CONNECTIONS = new QueryConnectionsResult(Status.NO_CONNECTIONS);
-	public static final QueryConnectionsResult INVALID_DATE = new QueryConnectionsResult(Status.INVALID_DATE);
-
+	public final ResultHeader header;
 	public final Status status;
 
 	public final List<Location> ambiguousFrom;
@@ -48,9 +44,10 @@ public final class QueryConnectionsResult implements Serializable
 	public final String context;
 	public final List<Connection> connections;
 
-	public QueryConnectionsResult(final String queryUri, final Location from, final Location via, final Location to, final String context,
-			final List<Connection> connections)
+	public QueryConnectionsResult(final ResultHeader header, final String queryUri, final Location from, final Location via, final Location to,
+			final String context, final List<Connection> connections)
 	{
+		this.header = header;
 		this.status = Status.OK;
 		this.queryUri = queryUri;
 		this.from = from;
@@ -64,8 +61,10 @@ public final class QueryConnectionsResult implements Serializable
 		this.ambiguousTo = null;
 	}
 
-	public QueryConnectionsResult(final List<Location> ambiguousFrom, final List<Location> ambiguousVia, final List<Location> ambiguousTo)
+	public QueryConnectionsResult(final ResultHeader header, final List<Location> ambiguousFrom, final List<Location> ambiguousVia,
+			final List<Location> ambiguousTo)
 	{
+		this.header = header;
 		this.status = Status.AMBIGUOUS;
 		this.ambiguousFrom = ambiguousFrom;
 		this.ambiguousVia = ambiguousVia;
@@ -79,8 +78,9 @@ public final class QueryConnectionsResult implements Serializable
 		this.connections = null;
 	}
 
-	public QueryConnectionsResult(final Status status)
+	public QueryConnectionsResult(final ResultHeader header, final Status status)
 	{
+		this.header = header;
 		this.status = status;
 
 		this.ambiguousFrom = null;

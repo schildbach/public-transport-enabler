@@ -40,7 +40,7 @@ import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
-import de.schildbach.pte.dto.QueryDeparturesResult.Status;
+import de.schildbach.pte.dto.ResultHeader;
 import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.dto.Stop;
 import de.schildbach.pte.exception.SessionExpiredException;
@@ -253,7 +253,8 @@ public final class BvgProvider extends AbstractHafasProvider
 
 	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
-		final QueryDeparturesResult result = new QueryDeparturesResult();
+		final ResultHeader header = new ResultHeader(SERVER_PRODUCT);
+		final QueryDeparturesResult result = new QueryDeparturesResult(header);
 
 		if (stationId < 1000000) // live
 		{
@@ -265,9 +266,9 @@ public final class BvgProvider extends AbstractHafasProvider
 			if (mError.find())
 			{
 				if (mError.group(1) != null)
-					return new QueryDeparturesResult(Status.INVALID_STATION);
+					return new QueryDeparturesResult(header, QueryDeparturesResult.Status.INVALID_STATION);
 				if (mError.group(2) != null)
-					return new QueryDeparturesResult(Status.SERVICE_DOWN);
+					return new QueryDeparturesResult(header, QueryDeparturesResult.Status.SERVICE_DOWN);
 				if (mError.group(3) != null)
 					throw new UnexpectedRedirectException();
 			}
@@ -361,9 +362,9 @@ public final class BvgProvider extends AbstractHafasProvider
 			if (mError.find())
 			{
 				if (mError.group(1) != null)
-					return new QueryDeparturesResult(Status.INVALID_STATION);
+					return new QueryDeparturesResult(header, QueryDeparturesResult.Status.INVALID_STATION);
 				if (mError.group(2) != null)
-					return new QueryDeparturesResult(Status.SERVICE_DOWN);
+					return new QueryDeparturesResult(header, QueryDeparturesResult.Status.SERVICE_DOWN);
 				if (mError.group(3) != null)
 					throw new UnexpectedRedirectException();
 			}
@@ -595,7 +596,7 @@ public final class BvgProvider extends AbstractHafasProvider
 		}
 
 		if (fromAddresses != null || viaAddresses != null || toAddresses != null)
-			return new QueryConnectionsResult(fromAddresses, viaAddresses, toAddresses);
+			return new QueryConnectionsResult(new ResultHeader(SERVER_PRODUCT), fromAddresses, viaAddresses, toAddresses);
 		else
 			return queryConnections(uri, page);
 	}
@@ -688,13 +689,13 @@ public final class BvgProvider extends AbstractHafasProvider
 		if (mError.find())
 		{
 			if (mError.group(1) != null)
-				return QueryConnectionsResult.TOO_CLOSE;
+				return new QueryConnectionsResult(null, QueryConnectionsResult.Status.TOO_CLOSE);
 			if (mError.group(2) != null)
-				return QueryConnectionsResult.UNRESOLVABLE_ADDRESS;
+				return new QueryConnectionsResult(null, QueryConnectionsResult.Status.UNRESOLVABLE_ADDRESS);
 			if (mError.group(3) != null)
-				return QueryConnectionsResult.NO_CONNECTIONS;
+				return new QueryConnectionsResult(null, QueryConnectionsResult.Status.NO_CONNECTIONS);
 			if (mError.group(4) != null)
-				return QueryConnectionsResult.INVALID_DATE;
+				return new QueryConnectionsResult(null, QueryConnectionsResult.Status.INVALID_DATE);
 			if (mError.group(5) != null)
 				throw new SessionExpiredException();
 			if (mError.group(6) != null)
@@ -864,7 +865,7 @@ public final class BvgProvider extends AbstractHafasProvider
 				}
 			}
 
-			return new QueryConnectionsResult(firstUri, from, via, to, linkLater, connections);
+			return new QueryConnectionsResult(new ResultHeader(SERVER_PRODUCT), firstUri, from, via, to, linkLater, connections);
 		}
 		else
 		{

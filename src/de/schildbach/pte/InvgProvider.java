@@ -35,6 +35,7 @@ import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryDeparturesResult.Status;
+import de.schildbach.pte.dto.ResultHeader;
 import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.util.Color;
 import de.schildbach.pte.util.ParserUtils;
@@ -157,7 +158,8 @@ public class InvgProvider extends AbstractHafasProvider
 
 	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
-		final QueryDeparturesResult result = new QueryDeparturesResult();
+		final ResultHeader header = new ResultHeader(SERVER_PRODUCT);
+		final QueryDeparturesResult result = new QueryDeparturesResult(header);
 
 		// scrape page
 		final String uri = departuresQueryUri(stationId, maxDepartures);
@@ -175,9 +177,9 @@ public class InvgProvider extends AbstractHafasProvider
 				return result;
 			}
 			else if (mHeadCoarse.group(5) != null)
-				return new QueryDeparturesResult(Status.INVALID_STATION);
+				return new QueryDeparturesResult(header, Status.INVALID_STATION);
 			else if (mHeadCoarse.group(6) != null)
-				return new QueryDeparturesResult(Status.SERVICE_DOWN);
+				return new QueryDeparturesResult(header, Status.SERVICE_DOWN);
 
 			final int locationId = Integer.parseInt(mHeadCoarse.group(2));
 

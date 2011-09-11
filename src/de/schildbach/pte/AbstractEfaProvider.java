@@ -20,6 +20,7 @@ package de.schildbach.pte;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -51,8 +52,8 @@ import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.QueryConnectionsResult;
-import de.schildbach.pte.dto.QueryConnectionsResult.Status;
 import de.schildbach.pte.dto.QueryDeparturesResult;
+import de.schildbach.pte.dto.ResultHeader;
 import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.dto.Stop;
 import de.schildbach.pte.exception.ParserException;
@@ -66,6 +67,8 @@ import de.schildbach.pte.util.XmlPullUtil;
  */
 public abstract class AbstractEfaProvider implements NetworkProvider
 {
+	protected final static String SERVER_PRODUCT = "EFA";
+
 	private final String apiBase;
 	private final String additionalQueryParameter;
 	private final boolean canAcceptPoiID;
@@ -195,7 +198,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		uri.append("&coordListOutputFormat=STRING");
 		uri.append("&max=").append(maxStations != 0 ? maxStations : 50);
 		uri.append("&inclFilter=1&radius_1=").append(maxDistance != 0 ? maxDistance : 1320);
-		uri.append("&type_1=STOP");
+		uri.append("&type_1=STOP"); // ENTRANCE, BUS_POINT, POI_POINT
 
 		InputStream is = null;
 		try
@@ -1030,6 +1033,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'R' + type;
 			if ("Pressnitztalbahn".equals(type)) // Bayern
 				return 'R' + type;
+			if ("Schneeberg".equals(type)) // VOR
+				return 'R' + type;
 
 			if (type.equals("BSB")) // Breisgau-S-Bahn
 				return 'S' + str;
@@ -1157,7 +1162,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
-			enterItdRequest(pp);
+			final ResultHeader header = enterItdRequest(pp);
 
 			XmlPullUtil.enter(pp, "itdDepartureMonitorRequest");
 
@@ -1172,7 +1177,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			XmlPullUtil.enter(pp, "itdOdvName");
 			if ("identified".equals(nameState))
 			{
-				final QueryDeparturesResult result = new QueryDeparturesResult();
+				final QueryDeparturesResult result = new QueryDeparturesResult(header);
 
 				final Location location = processOdvNameElem(pp, place);
 				result.stationDepartures.add(new StationDepartures(location, new LinkedList<Departure>(), new LinkedList<LineDestination>()));
@@ -1308,7 +1313,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			}
 			else if ("notidentified".equals(nameState))
 			{
-				return new QueryDeparturesResult(QueryDeparturesResult.Status.INVALID_STATION);
+				return new QueryDeparturesResult(header, QueryDeparturesResult.Status.INVALID_STATION);
 			}
 			else
 			{
@@ -1573,7 +1578,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 	{
 		final XmlPullParser pp = parserFactory.newPullParser();
 		pp.setInput(is, null);
-		final String sessionId = enterItdRequest(pp);
+		final ResultHeader header = enterItdRequest(pp);
+		final String context = header.context;
 
 		XmlPullUtil.require(pp, "itdTripRequest");
 		final String requestId = XmlPullUtil.attr(pp, "requestID");
@@ -1583,7 +1589,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		{
 			final int code = XmlPullUtil.intAttr(pp, "code");
 			if (code == -4000) // no connection
-				return new QueryConnectionsResult(Status.NO_CONNECTIONS);
+				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.NO_CONNECTIONS);
 			XmlPullUtil.next(pp);
 		}
 		if (XmlPullUtil.test(pp, "itdPrintConfiguration"))
@@ -1653,7 +1659,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		}
 
 		if (ambiguousFrom != null || ambiguousTo != null || ambiguousVia != null)
-			return new QueryConnectionsResult(ambiguousFrom, ambiguousVia, ambiguousTo);
+			return new QueryConnectionsResult(header, ambiguousFrom, ambiguousVia, ambiguousTo);
 
 		XmlPullUtil.enter(pp, "itdTripDateTime");
 		XmlPullUtil.enter(pp, "itdDateTime");
@@ -1666,7 +1672,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				throw new IllegalStateException("cannot find <itdMessage />");
 			final String message = pp.nextText();
 			if (message.equals("invalid date"))
-				return new QueryConnectionsResult(Status.INVALID_DATE);
+				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.INVALID_DATE);
 			XmlPullUtil.exit(pp, "itdDate");
 		}
 		XmlPullUtil.exit(pp, "itdDateTime");
@@ -1913,11 +1919,11 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 			XmlPullUtil.exit(pp, "itdRouteList");
 
-			return new QueryConnectionsResult(uri, from, via, to, commandLink(sessionId, requestId, "tripNext"), connections);
+			return new QueryConnectionsResult(header, uri, from, via, to, commandLink(context, requestId, "tripNext"), connections);
 		}
 		else
 		{
-			return new QueryConnectionsResult(Status.NO_CONNECTIONS);
+			return new QueryConnectionsResult(header, QueryConnectionsResult.Status.NO_CONNECTIONS);
 		}
 	}
 
@@ -2133,14 +2139,29 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		return LINES.get(line.charAt(0));
 	}
 
-	private String enterItdRequest(final XmlPullParser pp) throws XmlPullParserException, IOException
+	private ResultHeader enterItdRequest(final XmlPullParser pp) throws XmlPullParserException, IOException
 	{
 		if (pp.getEventType() == XmlPullParser.START_DOCUMENT)
 			pp.next();
 
 		XmlPullUtil.require(pp, "itdRequest");
 
+		final String serverVersion = XmlPullUtil.attr(pp, "version");
+		final String now = XmlPullUtil.attr(pp, "now") + " " + timeZone().getDisplayName(true, TimeZone.SHORT);
 		final String sessionId = XmlPullUtil.attr(pp, "sessionID");
+
+		final DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss z");
+		long serverTime = 0;
+		try
+		{
+			serverTime = format.parse(now).getTime();
+		}
+		catch (final ParseException x)
+		{
+			System.out.println("cannot parse time: '" + now + "'");
+		}
+
+		final ResultHeader header = new ResultHeader(SERVER_PRODUCT, serverVersion, serverTime, sessionId);
 
 		XmlPullUtil.enter(pp, "itdRequest");
 
@@ -2156,6 +2177,6 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		if (XmlPullUtil.test(pp, "serverMetaInfo"))
 			XmlPullUtil.next(pp);
 
-		return sessionId;
+		return header;
 	}
 }

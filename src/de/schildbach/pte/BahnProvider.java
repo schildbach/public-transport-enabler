@@ -35,6 +35,7 @@ import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
+import de.schildbach.pte.dto.ResultHeader;
 import de.schildbach.pte.exception.SessionExpiredException;
 import de.schildbach.pte.util.ParserUtils;
 
@@ -290,7 +291,7 @@ public final class BahnProvider extends AbstractHafasProvider
 		}
 
 		if (fromAddresses != null || viaAddresses != null || toAddresses != null)
-			return new QueryConnectionsResult(fromAddresses, viaAddresses, toAddresses);
+			return new QueryConnectionsResult(new ResultHeader(SERVER_PRODUCT), fromAddresses, viaAddresses, toAddresses);
 		else
 			return queryConnections(uri, page);
 	}
@@ -322,13 +323,13 @@ public final class BahnProvider extends AbstractHafasProvider
 		if (mError.find())
 		{
 			if (mError.group(1) != null)
-				return QueryConnectionsResult.TOO_CLOSE;
+				return new QueryConnectionsResult(null, QueryConnectionsResult.Status.TOO_CLOSE);
 			if (mError.group(2) != null)
-				return QueryConnectionsResult.UNRESOLVABLE_ADDRESS;
+				return new QueryConnectionsResult(null, QueryConnectionsResult.Status.UNRESOLVABLE_ADDRESS);
 			if (mError.group(3) != null)
-				return QueryConnectionsResult.NO_CONNECTIONS;
+				return new QueryConnectionsResult(null, QueryConnectionsResult.Status.NO_CONNECTIONS);
 			if (mError.group(4) != null)
-				return QueryConnectionsResult.INVALID_DATE;
+				return new QueryConnectionsResult(null, QueryConnectionsResult.Status.INVALID_DATE);
 			if (mError.group(5) != null)
 				throw new SessionExpiredException();
 		}
@@ -378,7 +379,7 @@ public final class BahnProvider extends AbstractHafasProvider
 				}
 			}
 
-			return new QueryConnectionsResult(uri, from, null, to, linkLater, connections);
+			return new QueryConnectionsResult(new ResultHeader(SERVER_PRODUCT), uri, from, null, to, linkLater, connections);
 		}
 		else
 		{
