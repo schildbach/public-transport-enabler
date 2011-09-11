@@ -17,10 +17,12 @@
 
 package de.schildbach.pte.dto;
 
+import java.io.Serializable;
+
 /**
  * @author Andreas Schildbach
  */
-public final class ResultHeader
+public final class ResultHeader implements Serializable
 {
 	public final String serverProduct;
 	public final String serverVersion;
