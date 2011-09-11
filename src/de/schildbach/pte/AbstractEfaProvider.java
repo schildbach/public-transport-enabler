@@ -652,6 +652,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'I' + str;
 			if ("Eurocity".equals(noTrainName)) // Liechtenstein
 				return 'I' + name;
+			if ("INT".equals(type)) // SVV
+				return 'I' + name;
 
 			if (type.equals("IR")) // Interregio
 				return 'R' + str;
