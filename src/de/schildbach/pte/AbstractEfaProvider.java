@@ -2150,6 +2150,9 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		if (pp.getEventType() == XmlPullParser.START_DOCUMENT)
 			pp.next();
 
+		if (XmlPullUtil.test(pp, "html"))
+			throw new IllegalStateException("html");
+
 		XmlPullUtil.require(pp, "itdRequest");
 
 		final String serverVersion = XmlPullUtil.attr(pp, "version");
