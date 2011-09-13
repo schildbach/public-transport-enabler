@@ -67,7 +67,7 @@ import de.schildbach.pte.util.XmlPullUtil;
  */
 public abstract class AbstractEfaProvider implements NetworkProvider
 {
-	protected final static String SERVER_PRODUCT = "EFA";
+	protected final static String SERVER_PRODUCT = "efa";
 
 	private final String apiBase;
 	private final String additionalQueryParameter;

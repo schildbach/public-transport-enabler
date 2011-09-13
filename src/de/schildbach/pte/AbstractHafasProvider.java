@@ -63,7 +63,7 @@ import de.schildbach.pte.util.XmlPullUtil;
  */
 public abstract class AbstractHafasProvider implements NetworkProvider
 {
-	protected final static String SERVER_PRODUCT = "HAFAS";
+	protected final static String SERVER_PRODUCT = "hafas";
 
 	private static final String DEFAULT_ENCODING = "ISO-8859-1";
 	private static final String PROD = "hafas";
