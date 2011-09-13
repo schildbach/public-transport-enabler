@@ -700,7 +700,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			pp.setInput(is, DEFAULT_ENCODING);
 
 			assertResC(pp);
-			final String product = XmlPullUtil.attr(pp, "prod");
+			final String product = XmlPullUtil.attr(pp, "prod").split(" ")[0];
 			final ResultHeader header = new ResultHeader(SERVER_PRODUCT, product, 0, null);
 			XmlPullUtil.enter(pp, "ResC");
 
