@@ -1397,6 +1397,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return 'I';
 		if ("INT".equals(ucType)) // Zürich-Brüssel - Budapest-Istanbul
 			return 'I';
+		if ("HKX".equals(ucType)) // Hamburg-Koeln-Express
+			return 'I';
 
 		// Regional
 		if ("ZUG".equals(ucType)) // Generic Train
