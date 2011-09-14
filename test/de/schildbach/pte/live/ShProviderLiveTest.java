@@ -65,7 +65,7 @@ public class ShProviderLiveTest
 	@Test
 	public void autocomplete() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("Flughafen");
+		final List<Location> autocompletes = provider.autocompleteStations("Lübeck");
 
 		list(autocompletes);
 	}
