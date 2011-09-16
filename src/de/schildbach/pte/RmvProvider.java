@@ -373,6 +373,8 @@ public class RmvProvider extends AbstractHafasProvider
 				return "BAST" + type.substring(3) + number;
 			if (type.startsWith("ALT")) // Anruf-Linien-Taxi
 				return "BALT" + type.substring(3) + number;
+			if (type.equals("ALFB")) // Anruf-Linien-Taxi
+				return "BALFB" + number;
 			if (type.equals("LTaxi"))
 				return "BLTaxi" + number;
 			if (type.equals("AT")) // AnschlußSammelTaxi
