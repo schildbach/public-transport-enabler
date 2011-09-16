@@ -361,6 +361,8 @@ public class RmvProvider extends AbstractHafasProvider
 				return "BN" + number;
 			if ("BuFB".equals(type))
 				return "BBuFB" + number;
+			if ("A".equals(type))
+				return "BA" + number;
 			if (type.equals("N"))
 				return "BN" + number;
 			if (type.equals("AS")) // Anruf-Sammel-Taxi
