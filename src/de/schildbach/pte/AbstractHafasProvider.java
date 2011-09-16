@@ -1685,7 +1685,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		return 0;
 	}
 
-	protected static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zßÄÅäáàâåéèêíìîÖöóòôÜüúùûØ/-]+)[\\s-]*(.*)");
+	protected static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zßÄÅäáàâåéèêíìîÖöóòôÜüúùûØ/]+)[\\s-]*(.*)");
 
 	protected String normalizeLine(final String type, final String line)
 	{
