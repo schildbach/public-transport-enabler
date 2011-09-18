@@ -20,7 +20,6 @@ package de.schildbach.pte;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -2156,21 +2155,14 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		XmlPullUtil.require(pp, "itdRequest");
 
 		final String serverVersion = XmlPullUtil.attr(pp, "version");
-		final String now = XmlPullUtil.attr(pp, "now") + " " + timeZone().getDisplayName(true, TimeZone.SHORT);
+		final String now = XmlPullUtil.attr(pp, "now");
 		final String sessionId = XmlPullUtil.attr(pp, "sessionID");
 
-		final DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss z");
-		long serverTime = 0;
-		try
-		{
-			serverTime = format.parse(now).getTime();
-		}
-		catch (final ParseException x)
-		{
-			System.out.println("cannot parse time: '" + now + "'");
-		}
+		final Calendar serverTime = new GregorianCalendar(timeZone());
+		ParserUtils.parseIsoDate(serverTime, now.substring(0, 10));
+		ParserUtils.parseEuropeanTime(serverTime, now.substring(11));
 
-		final ResultHeader header = new ResultHeader(SERVER_PRODUCT, serverVersion, serverTime, sessionId);
+		final ResultHeader header = new ResultHeader(SERVER_PRODUCT, serverVersion, serverTime.getTimeInMillis(), sessionId);
 
 		XmlPullUtil.enter(pp, "itdRequest");
 
