@@ -188,7 +188,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		}
 	}
 
-	protected List<Location> xmlCoordRequest(final int lat, final int lon, final int maxDistance, final int maxStations) throws IOException
+	protected NearbyStationsResult xmlCoordRequest(final int lat, final int lon, final int maxDistance, final int maxStations) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(apiBase);
 		uri.append("XML_COORD_REQUEST");
@@ -206,7 +206,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
-			enterItdRequest(pp);
+			final ResultHeader header = enterItdRequest(pp);
 
 			XmlPullUtil.enter(pp, "itdCoordInfoRequest");
 
@@ -215,7 +215,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 			XmlPullUtil.enter(pp, "coordInfoRequest");
 			XmlPullUtil.exit(pp, "coordInfoRequest");
 
-			final List<Location> results = new ArrayList<Location>();
+			final List<Location> stations = new ArrayList<Location>();
 
 			if (XmlPullUtil.test(pp, "coordInfoItemList"))
 			{
@@ -237,13 +237,13 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 					XmlPullUtil.exit(pp, "coordInfoItem");
 
-					results.add(new Location(LocationType.STATION, id, coord.lat, coord.lon, place, name));
+					stations.add(new Location(LocationType.STATION, id, coord.lat, coord.lon, place, name));
 				}
 
 				XmlPullUtil.exit(pp, "coordInfoItemList");
 			}
 
-			return results;
+			return new NearbyStationsResult(header, stations);
 		}
 		catch (final XmlPullParserException x)
 		{
@@ -438,7 +438,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
 		if (location.hasLocation())
-			return new NearbyStationsResult(xmlCoordRequest(location.lat, location.lon, maxDistance, maxStations));
+			return xmlCoordRequest(location.lat, location.lon, maxDistance, maxStations);
 
 		if (location.type != LocationType.STATION)
 			throw new IllegalArgumentException("cannot handle: " + location.type);
@@ -455,7 +455,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
-			enterItdRequest(pp);
+			final ResultHeader header = enterItdRequest(pp);
 
 			if (!XmlPullUtil.jumpToStartTag(pp, null, "itdOdv") || !"dm".equals(pp.getAttributeValue(null, "usage")))
 				throw new IllegalStateException("cannot find <itdOdv usage=\"dm\" />");
@@ -518,9 +518,9 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 					stations.add(ownStation);
 
 				if (maxStations == 0 || maxStations >= stations.size())
-					return new NearbyStationsResult(stations);
+					return new NearbyStationsResult(header, stations);
 				else
-					return new NearbyStationsResult(stations.subList(0, maxStations));
+					return new NearbyStationsResult(header, stations.subList(0, maxStations));
 			}
 			else if ("list".equals(nameState))
 			{
@@ -535,11 +535,11 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 						stations.add(newLocation);
 				}
 
-				return new NearbyStationsResult(stations);
+				return new NearbyStationsResult(header, stations);
 			}
 			else if ("notidentified".equals(nameState))
 			{
-				return new NearbyStationsResult(NearbyStationsResult.Status.INVALID_STATION);
+				return new NearbyStationsResult(header, NearbyStationsResult.Status.INVALID_STATION);
 			}
 			else
 			{

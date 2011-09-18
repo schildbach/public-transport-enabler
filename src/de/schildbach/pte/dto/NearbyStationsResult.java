@@ -29,17 +29,20 @@ public final class NearbyStationsResult
 		OK, INVALID_STATION, SERVICE_DOWN
 	}
 
+	public final ResultHeader header;
 	public final Status status;
 	public final List<Location> stations;
 
-	public NearbyStationsResult(final List<Location> stations)
+	public NearbyStationsResult(final ResultHeader header, final List<Location> stations)
 	{
+		this.header = header;
 		this.status = Status.OK;
 		this.stations = stations;
 	}
 
-	public NearbyStationsResult(final Status status)
+	public NearbyStationsResult(final ResultHeader header, final Status status)
 	{
+		this.header = header;
 		this.status = status;
 		this.stations = null;
 	}

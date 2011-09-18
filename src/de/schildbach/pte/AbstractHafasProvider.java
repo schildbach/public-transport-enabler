@@ -1177,9 +1177,9 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			final String text = mMessage.group(2);
 
 			if (code.equals("H730")) // Your input is not valid
-				return new NearbyStationsResult(NearbyStationsResult.Status.INVALID_STATION);
+				return new NearbyStationsResult(null, NearbyStationsResult.Status.INVALID_STATION);
 			if (code.equals("H890")) // No trains in result
-				return new NearbyStationsResult(stations);
+				return new NearbyStationsResult(null, stations);
 			throw new IllegalArgumentException("unknown error " + code + ", " + text);
 		}
 
@@ -1215,7 +1215,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			}
 		}
 
-		return new NearbyStationsResult(stations);
+		return new NearbyStationsResult(null, stations);
 	}
 
 	protected final NearbyStationsResult jsonNearbyStations(final String uri) throws IOException
@@ -1251,7 +1251,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			throw new RuntimeException("cannot parse: '" + page + "' on " + uri, x);
 		}
 
-		return new NearbyStationsResult(stations);
+		return new NearbyStationsResult(null, stations);
 	}
 
 	private final static Pattern P_NEARBY_COARSE = Pattern.compile("<tr class=\"(zebra[^\"]*)\">(.*?)</tr>", Pattern.DOTALL);
@@ -1302,7 +1302,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			}
 		}
 
-		return new NearbyStationsResult(stations);
+		return new NearbyStationsResult(null, stations);
 	}
 
 	private static final Pattern P_LINE_SBAHN = Pattern.compile("SN?\\d*");

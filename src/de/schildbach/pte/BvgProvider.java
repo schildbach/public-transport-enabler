@@ -133,7 +133,7 @@ public final class BvgProvider extends AbstractHafasProvider
 			if (mError.find())
 			{
 				if (mError.group(1) != null)
-					return new NearbyStationsResult(NearbyStationsResult.Status.INVALID_STATION);
+					return new NearbyStationsResult(null, NearbyStationsResult.Status.INVALID_STATION);
 			}
 
 			final List<Location> stations = new ArrayList<Location>();
@@ -172,9 +172,9 @@ public final class BvgProvider extends AbstractHafasProvider
 				}
 
 				if (maxStations == 0 || maxStations >= stations.size())
-					return new NearbyStationsResult(stations);
+					return new NearbyStationsResult(null, stations);
 				else
-					return new NearbyStationsResult(stations.subList(0, maxStations));
+					return new NearbyStationsResult(null, stations.subList(0, maxStations));
 			}
 			else
 			{

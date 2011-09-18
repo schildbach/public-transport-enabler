@@ -118,9 +118,9 @@ public final class BahnProvider extends AbstractHafasProvider
 			}
 
 			if (maxStations == 0 || maxStations >= stations.size())
-				return new NearbyStationsResult(stations);
+				return new NearbyStationsResult(null, stations);
 			else
-				return new NearbyStationsResult(stations.subList(0, maxStations));
+				return new NearbyStationsResult(null, stations.subList(0, maxStations));
 		}
 		else
 		{
