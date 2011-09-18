@@ -1040,6 +1040,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'R' + type;
 			if ("Schneeberg".equals(type)) // VOR
 				return 'R' + type;
+			if ("DWE".equals(type)) // Dessau-Wörlitzer Eisenbahn
+				return 'R' + type;
 
 			if (type.equals("BSB")) // Breisgau-S-Bahn
 				return 'S' + str;
