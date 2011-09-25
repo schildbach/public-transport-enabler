@@ -481,7 +481,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 				final String targetLoc = pp.getAttributeValue(null, "targetLoc");
 				// TODO hafasname
 				final String dirnr = pp.getAttributeValue(null, "dirnr");
-				String prod = XmlPullUtil.attr(pp, "prod");
+				final String prod = XmlPullUtil.attr(pp, "prod");
 				final String classStr = pp.getAttributeValue(null, "class");
 				final String dir = pp.getAttributeValue(null, "dir");
 				final String capacityStr = pp.getAttributeValue(null, "capacity");
@@ -545,13 +545,21 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 					else
 						destinationId = 0;
 
-					final Matcher m = P_NORMALIZE_LINE.matcher(prod);
-					if (m.matches())
-						prod = m.group(1) + m.group(2);
-
-					final char product = classStr != null ? intToProduct(Integer.parseInt(classStr)) : 0;
-
-					final String line = product != 0 ? product + prod : normalizeLine(prod);
+					final String lineStr;
+					if (classStr != null)
+					{
+						final char classChar = intToProduct(Integer.parseInt(classStr));
+						final Matcher m = P_NORMALIZE_LINE.matcher(prod);
+						if (m.matches())
+							lineStr = classChar + m.group(1) + m.group(2);
+						else
+							lineStr = classChar + prod;
+					}
+					else
+					{
+						lineStr = normalizeLine(prod);
+					}
+					final Line line = new Line(null, lineStr, lineStr != null ? lineColors(lineStr) : null);
 
 					final int[] capacity;
 					if (capacityStr != null && !"0|0".equals(capacityStr))
@@ -575,8 +583,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 						message = null;
 					}
 
-					final Departure departure = new Departure(plannedTime.getTime(), predictedTime != null ? predictedTime.getTime() : null,
-							new Line(null, line, line != null ? lineColors(line) : null), position, destinationId, destination, capacity, message);
+					final Departure departure = new Departure(plannedTime.getTime(), predictedTime != null ? predictedTime.getTime() : null, line,
+							position, destinationId, destination, capacity, message);
 					departures.add(departure);
 				}
 
