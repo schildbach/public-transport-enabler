@@ -923,8 +923,7 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 						if (category == null)
 							category = shortCategory;
 
-						final String lineStr = normalizeLine(category, name);
-						line = new Line(null, lineStr, lineColors(lineStr));
+						line = parseLine(category, name);
 					}
 					else if (tag.equals("Walk") || tag.equals("Transfer") || tag.equals("GisRoute"))
 					{
@@ -1687,26 +1686,32 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 
 	protected static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zßÄÅäáàâåéèêíìîÖöóòôÜüúùûØ/]+)[\\s-]*(.*)");
 
-	protected String normalizeLine(final String type, final String line)
+	protected Line parseLine(final String type, final String line)
 	{
 		final char normalizedType = normalizeType(type);
 
 		if (normalizedType != 0)
 		{
+			final String lineStr;
+
 			if (line != null)
 			{
 				final Matcher m = P_NORMALIZE_LINE.matcher(line);
 				final String strippedLine = m.matches() ? m.group(1) + m.group(2) : line;
 
-				return normalizedType + strippedLine;
+				lineStr = normalizedType + strippedLine;
 			}
 			else
 			{
-				return Character.toString(normalizedType);
+				lineStr = Character.toString(normalizedType);
 			}
-		}
 
-		throw new IllegalStateException("cannot normalize type '" + type + "' line '" + line + "'");
+			return new Line(null, lineStr, lineColors(lineStr));
+		}
+		else
+		{
+			throw new IllegalStateException("cannot normalize type '" + type + "' line '" + line + "'");
+		}
 	}
 
 	protected String normalizeLine(final String line)

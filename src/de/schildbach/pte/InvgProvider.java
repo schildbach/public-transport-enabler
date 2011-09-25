@@ -235,7 +235,7 @@ public class InvgProvider extends AbstractHafasProvider
 
 						final String lineType = mDepFine.group(3);
 
-						final String line = normalizeLine(lineType, ParserUtils.resolveEntities(mDepFine.group(4)));
+						final Line line = parseLine(lineType, ParserUtils.resolveEntities(mDepFine.group(4)));
 
 						final int destinationId = mDepFine.group(5) != null ? Integer.parseInt(mDepFine.group(5)) : 0;
 
@@ -243,8 +243,8 @@ public class InvgProvider extends AbstractHafasProvider
 
 						final String position = mDepFine.group(7) != null ? "Gl. " + ParserUtils.resolveEntities(mDepFine.group(7)) : null;
 
-						final Departure dep = new Departure(plannedTime.getTime(), predictedTime != null ? predictedTime.getTime() : null, new Line(
-								null, line, line != null ? lineColors(line) : null), position, destinationId, destination, null, null);
+						final Departure dep = new Departure(plannedTime.getTime(), predictedTime != null ? predictedTime.getTime() : null, line,
+								position, destinationId, destination, null, null);
 
 						if (!departures.contains(dep))
 							departures.add(dep);
@@ -282,28 +282,40 @@ public class InvgProvider extends AbstractHafasProvider
 	protected static final Pattern P_NORMALIZE_LINE_BUS_X = Pattern.compile("Bus\\s*X\\s*(\\d+)");
 
 	@Override
-	protected String normalizeLine(final String type, final String line)
+	protected Line parseLine(final String type, final String line)
 	{
 		if ("1".equals(type))
 		{
 			final Matcher mBus = P_NORMALIZE_LINE_BUS.matcher(line);
 			if (mBus.matches())
-				return "B" + mBus.group(1);
+			{
+				final String lineStr = "B" + mBus.group(1);
+				return new Line(null, lineStr, lineColors(lineStr));
+			}
 
 			final Matcher mNachtbus = P_NORMALIZE_LINE_NACHTBUS.matcher(line);
 			if (mNachtbus.matches())
-				return "BN" + mNachtbus.group(1);
+			{
+				final String lineStr = "BN" + mNachtbus.group(1);
+				return new Line(null, lineStr, lineColors(lineStr));
+			}
 
 			final Matcher mBusS = P_NORMALIZE_LINE_BUS_S.matcher(line);
 			if (mBusS.matches())
-				return "BS" + mBusS.group(1);
+			{
+				final String lineStr = "BS" + mBusS.group(1);
+				return new Line(null, lineStr, lineColors(lineStr));
+			}
 
 			final Matcher mBusX = P_NORMALIZE_LINE_BUS_X.matcher(line);
 			if (mBusX.matches())
-				return "BX" + mBusX.group(1);
+			{
+				final String lineStr = "BX" + mBusX.group(1);
+				return new Line(null, lineStr, lineColors(lineStr));
+			}
 		}
 
-		return super.normalizeLine(type, line);
+		return super.parseLine(type, line);
 	}
 
 	@Override
