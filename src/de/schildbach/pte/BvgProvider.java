@@ -891,91 +891,39 @@ public final class BvgProvider extends AbstractHafasProvider
 		ParserUtils.parseEuropeanTime(calendar, m.group(2));
 	}
 
-	private static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zÄÖÜäöüßáàâéèêíìîóòôúùû]+)[\\s-]*(.*)");
-	private static final Pattern P_NORMALIZE_LINE_SPECIAL_NUMBER = Pattern.compile("\\d{4,}");
-	private static final Pattern P_NORMALIZE_LINE_SPECIAL_BUS = Pattern.compile("Bus[A-Z]");
+	private static final Pattern P_LINE_REGIONAL = Pattern.compile("Zug\\s+(\\d+)");
+	private static final Pattern P_LINE_TRAM = Pattern.compile("Tram?\\s+([\\dA-Z/-]+)");
+	private static final Pattern P_LINE_BUS = Pattern.compile("Bus\\s+([\\dA-Z/-]+)");
+	private static final Pattern P_LINE_BUS_SPECIAL = Pattern.compile("Bus([A-F]/\\d+)");
+	private static final Pattern P_LINE_FERRY = Pattern.compile("F\\d+|WT");
+	private static final Pattern P_LINE_NUMBER = Pattern.compile("\\d{4,}");
 
 	@Override
 	protected String normalizeLine(final String line)
 	{
-		if (line == null || line.length() == 0)
-			return null;
+		final Matcher mRegional = P_LINE_REGIONAL.matcher(line);
+		if (mRegional.matches())
+			return "R" + mRegional.group(1);
 
-		if (line.startsWith("RE") || line.startsWith("RB") || line.startsWith("NE") || line.startsWith("OE") || line.startsWith("MR")
-				|| line.startsWith("PE"))
+		final Matcher mTram = P_LINE_TRAM.matcher(line);
+		if (mTram.matches())
+			return "T" + mTram.group(1);
+
+		final Matcher mBus = P_LINE_BUS.matcher(line);
+		if (mBus.matches())
+			return "B" + mBus.group(1);
+
+		if (P_LINE_FERRY.matcher(line).matches())
+			return "F" + line;
+
+		final Matcher mBusSpecial = P_LINE_BUS_SPECIAL.matcher(line);
+		if (mBusSpecial.matches())
+			return "B" + mBusSpecial.group(1);
+
+		if (P_LINE_NUMBER.matcher(line).matches())
 			return "R" + line;
-		if (line.equals("11"))
-			return "?11";
-		if (line.equals("R"))
-			return "R"; // Polen
-		if (P_NORMALIZE_LINE_SPECIAL_NUMBER.matcher(line).matches())
-			return "R" + line;
 
-		final Matcher m = P_NORMALIZE_LINE.matcher(line);
-		if (m.matches())
-		{
-			final String type = m.group(1);
-			final String number = m.group(2).replace(" ", "");
-
-			if (type.equals("ICE")) // InterCityExpress
-				return "IICE" + number;
-			if (type.equals("IC")) // InterCity
-				return "IIC" + number;
-			if (type.equals("EC")) // EuroCity
-				return "IEC" + number;
-			if (type.equals("EN")) // EuroNight
-				return "IEN" + number;
-			if (type.equals("CNL")) // CityNightLine
-				return "ICNL" + number;
-			if (type.equals("IR"))
-				return "RIR" + number;
-			if (type.equals("IRE"))
-				return "RIRE" + number;
-			if (type.equals("Zug"))
-				return "R" + number;
-			if (type.equals("ZUG"))
-				return "R" + number;
-			if (type.equals("D")) // D-Zug?
-				return "RD" + number;
-			if (type.equals("DNZ")) // unklar, aber vermutlich Russland
-				return "RDNZ" + (number.equals("DNZ") ? "" : number);
-			if (type.equals("KBS")) // Kursbuchstrecke
-				return "RKBS" + number;
-			if (type.equals("BKB")) // Buckower Kleinbahn
-				return "RBKB" + number;
-			if (type.equals("Ausfl")) // Umgebung Berlin
-				return "RAusfl" + number;
-			if (type.equals("PKP")) // Polen
-				return "RPKP" + number;
-			if (type.equals("S"))
-				return "SS" + number;
-			if (type.equals("U"))
-				return "UU" + number;
-			if (type.equals("Tra") || type.equals("Tram"))
-				return "T" + number;
-			if (type.equals("Bus"))
-				return "B" + number;
-			if (P_NORMALIZE_LINE_SPECIAL_BUS.matcher(type).matches()) // workaround for weird scheme BusF/526
-				return "B" + line.substring(3);
-			if (type.equals("Fäh"))
-				return "F" + number;
-			if (type.equals("F"))
-				return "FF" + number;
-			if (type.equals("WT"))
-				return "FWT" + number;
-			if ("Potsd".equals(type))
-				return "?Potsd" + number;
-
-			throw new IllegalStateException("cannot normalize type '" + type + "' number '" + number + "' line '" + line + "'");
-		}
-
-		throw new IllegalStateException("cannot normalize line '" + line + "'");
-	}
-
-	@Override
-	protected char normalizeType(final String type)
-	{
-		throw new UnsupportedOperationException();
+		return super.normalizeLine(line);
 	}
 
 	private static final Map<String, int[]> LINES = new HashMap<String, int[]>();
