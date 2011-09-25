@@ -1735,6 +1735,42 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 		throw new IllegalStateException("cannot normalize line " + line);
 	}
 
+	private static final Pattern P_NORMALIZE_LINE_AND_TYPE = Pattern.compile("([^#]*)#(.*)");
+	private static final Pattern P_NORMALIZE_LINE_NUMBER = Pattern.compile("\\d{2,5}");
+	// saved from RtProvider
+	private static final Pattern P_NORMALIZE_LINE_RUSSIA = Pattern.compile("(\\d{3}(BJ|FJ|IJ|MJ|NJ|OJ|TJ|SZ))");
+
+	protected final String parseLineAndType(final String lineAndType)
+	{
+		final Matcher m = P_NORMALIZE_LINE_AND_TYPE.matcher(lineAndType);
+		if (m.matches())
+		{
+			final String number = m.group(1).replaceAll("\\s+", " ");
+			final String type = m.group(2);
+
+			if (type.length() == 0)
+			{
+				if (number.length() == 0)
+					return "?";
+				if (P_NORMALIZE_LINE_NUMBER.matcher(number).matches())
+					return "?" + number;
+				// saved from RtProvider
+				// if (P_NORMALIZE_LINE_RUSSIA.matcher(number).matches())
+				// return 'R' + number;
+			}
+			else
+			{
+				final char normalizedType = normalizeType(type);
+				if (normalizedType != 0)
+					return normalizedType + number;
+			}
+
+			throw new IllegalStateException("cannot normalize type " + type + " number " + number + " line#type " + lineAndType);
+		}
+
+		throw new IllegalStateException("cannot normalize line#type " + lineAndType);
+	}
+
 	private static final Pattern P_CONNECTION_ID = Pattern.compile("co=(C\\d+-\\d+)&");
 
 	protected static String extractConnectionId(final String link)

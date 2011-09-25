@@ -19,8 +19,6 @@ package de.schildbach.pte;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
@@ -146,36 +144,10 @@ public class SncbProvider extends AbstractHafasProvider
 		return jsonGetStops(uri);
 	}
 
-	private static final Pattern P_NORMALIZE_LINE_AND_TYPE = Pattern.compile("([^#]*)#(.*)");
-	private static final Pattern P_NORMALIZE_LINE_NUMBER = Pattern.compile("\\d{2,5}");
-
 	@Override
 	protected String normalizeLine(final String line)
 	{
-		final Matcher m = P_NORMALIZE_LINE_AND_TYPE.matcher(line);
-		if (m.matches())
-		{
-			final String number = m.group(1).replaceAll("\\s+", " ");
-			final String type = m.group(2);
-
-			if (type.length() == 0)
-			{
-				if (number.length() == 0)
-					return "?";
-				if (P_NORMALIZE_LINE_NUMBER.matcher(number).matches())
-					return "?" + number;
-			}
-			else
-			{
-				final char normalizedType = normalizeType(type);
-				if (normalizedType != 0)
-					return normalizedType + number;
-			}
-
-			throw new IllegalStateException("cannot normalize type " + type + " number " + number + " line " + line);
-		}
-
-		throw new IllegalStateException("cannot normalize line " + line);
+		return parseLineAndType(line);
 	}
 
 	@Override
