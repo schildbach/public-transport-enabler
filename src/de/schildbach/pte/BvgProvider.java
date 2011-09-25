@@ -926,6 +926,21 @@ public final class BvgProvider extends AbstractHafasProvider
 		return super.normalizeLine(line);
 	}
 
+	@Override
+	protected char normalizeType(final String type)
+	{
+		final String ucType = type.toUpperCase();
+
+		if ("AUSFL".equals(ucType)) // Umgebung Berlin
+			return 'R';
+
+		final char t = super.normalizeType(type);
+		if (t != 0)
+			return t;
+
+		return 0;
+	}
+
 	private static final Map<String, int[]> LINES = new HashMap<String, int[]>();
 
 	static
