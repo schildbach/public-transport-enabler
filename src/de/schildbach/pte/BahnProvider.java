@@ -545,369 +545,54 @@ public final class BahnProvider extends AbstractHafasProvider
 	@Override
 	protected char normalizeType(String type)
 	{
-		throw new UnsupportedOperationException();
+		final String ucType = type.toUpperCase();
+
+		if ("RNV".equals(ucType))
+			return 'R';
+		if ("DZ".equals(ucType)) // Dampfzug
+			return 'R';
+
+		if ("LTT".equals(ucType))
+			return 'B';
+
+		if (ucType.startsWith("AST")) // Anruf-Sammel-Taxi
+			return 'P';
+		if (ucType.startsWith("ALT")) // Anruf-Linien-Taxi
+			return 'P';
+		if (ucType.startsWith("RFB")) // Rufbus
+			return 'P';
+
+		final char t = super.normalizeType(type);
+		if (t != 0)
+			return t;
+
+		if ("E".equals(ucType))
+			return '?';
+
+		return 0;
 	}
 
-	private static final Pattern P_NORMALIZE_LINE_NUMBER = Pattern.compile("\\d{2,5}");
-	private static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zÄÖÜäöüßáàâéèêíìîóòôúùû]+)[\\s-]*(.*)");
-	private static final Pattern P_NORMALIZE_LINE_RUSSIA = Pattern.compile("(?:D\\s*)?(\\d{1,3}(?:[A-Z]{2}|Y))");
-	private static final Pattern P_NORMALIZE_LINE_SBAHN = Pattern.compile("S\\w*\\d+");
+	private static final Pattern P_LINE_BUS_SPECIAL = Pattern.compile("Bus([A-Z]/[\\dA-Z]+)");
+	private static final Pattern P_LINE_RUSSIA = Pattern
+			.compile("\\d{3}(?:AJ|BJ|DJ|FJ|IJ|KJ|LJ|NJ|MJ|OJ|RJ|SJ|TJ|VJ|ZJ|CH|KH|ZH|EI|JA|JI|MZ|SH|PC|Y)");
+	private static final Pattern P_LINE_NUMBER = Pattern.compile("\\d{2,5}");
 
 	@Override
 	protected final String normalizeLine(final String line)
 	{
-		if (line == null)
-			return null;
 
-		if (line.length() == 0)
-			return "?";
+		if ("Schw-B".equals(line)) // Schwebebahn, gilt als "Straßenbahn besonderer Bauart"
+			return 'T' + line;
 
-		if (line.equals("---"))
-			return "?---";
+		if (P_LINE_BUS_SPECIAL.matcher(line).matches())
+			return "B" + line;
 
-		if (P_NORMALIZE_LINE_NUMBER.matcher(line).matches()) // just numbers
+		if (P_LINE_RUSSIA.matcher(line).matches())
+			return 'R' + line;
+
+		if (P_LINE_NUMBER.matcher(line).matches())
 			return "?" + line;
 
-		final Matcher mRussia = P_NORMALIZE_LINE_RUSSIA.matcher(line);
-		if (mRussia.matches())
-			return "R" + mRussia.group(1);
-
-		final Matcher m = P_NORMALIZE_LINE.matcher(line);
-		if (m.matches())
-		{
-			final String type = m.group(1);
-			final String number = m.group(2).replace(" ", "");
-
-			if (type.equals("ICE")) // InterCityExpress
-				return "IICE" + number;
-			if (type.equals("IC")) // InterCity
-				return "IIC" + number;
-			if (type.equals("EC")) // EuroCity
-				return "IEC" + number;
-			if (type.equals("EN")) // EuroNight
-				return "IEN" + number;
-			if (type.equals("CNL")) // CityNightLine
-				return "ICNL" + number;
-			if (type.equals("X")) // InterConnex
-				return "IX" + number;
-			if (type.equals("TLK")) // Tanie Linie Kolejowe (Polen)
-				return "ITLK" + number;
-			if (type.equals("TGV")) // Train à Grande Vitesse
-				return "ITGV" + number;
-			if (type.equals("THA")) // Thalys
-				return "ITHA" + number;
-			if (type.equals("RJ")) // RailJet, Österreichische Bundesbahnen
-				return "IRJ" + number;
-			if (type.equals("OEC")) // ÖBB-EuroCity
-				return "IOEC" + number;
-			if (type.equals("OIC")) // ÖBB-InterCity
-				return "IOIC" + number;
-			if (type.equals("ICN")) // Intercity-Neigezug, Schweiz
-				return "IICN" + number;
-			if (type.equals("AVE")) // Alta Velocidad Española, Spanien
-				return "IAVE" + number;
-			if (type.equals("SC")) // SuperCity, Tschechien
-				return "ISC" + number;
-			if (type.equals("EST")) // Eurostar Frankreich
-				return "IEST" + number;
-			if (type.equals("ES")) // Eurostar Italia
-				return "IES" + number;
-			if (type.equals("ALS")) // Spanien
-				return "IALS" + number;
-			if (type.equals("ARC")) // Spanien
-				return "IARC" + number;
-			if (type.equals("TLG")) // Spanien
-				return "ITLG" + number;
-			if (type.equals("HOT")) // Spanien, Nacht
-				return "IHOT" + number;
-			if (type.equals("EM")) // EuroMed, Spanien
-				return "IEM" + number;
-			if (type.equals("EIC")) // Polen
-				return "IEIC" + number;
-			if (type.equals("FYR")) // Fyra, Amsterdam-Schiphol-Rotterdam
-				return "IFYR" + number;
-			if (type.equals("MT")) // Müller Touren, Schnee Express
-				return "IMT" + number;
-			if (type.equals("HKX")) // Hamburg-Köln-Express
-				return "IHKX" + number;
-
-			if (type.equals("R"))
-				return "R" + number;
-			if (type.equals("IR")) // InterRegio
-				return "RIR" + number;
-			if (type.equals("RB")) // RegionalBahn, evtl. auch Regental Bahnbetriebs GmbH
-				return "RRB" + number;
-			if (type.equals("RBG")) // Regental Bahnbetriebs GmbH
-				return "RRBG" + number;
-			if (type.equals("RE")) // RegionalExpress
-				return "RRE" + number;
-			if (type.equals("IRE")) // Interregio Express
-				return "RIRE" + number;
-			if (type.equals("RFB")) // Reichenbachfall-Bahn
-				return "RRFB" + number;
-			if (type.equals("VEC")) // vectus Verkehrsgesellschaft
-				return "RVEC" + number;
-			if (type.equals("HTB")) // Hörseltalbahn
-				return "RHTB" + number;
-			if (type.equals("HLB")) // Hessenbahn
-				return "RHLB" + number;
-			if (type.equals("MRB")) // Mitteldeutsche Regiobahn
-				return "RMRB" + number;
-			if (type.equals("VBG")) // Vogtlandbahn
-				return "RVBG" + number;
-			if (type.equals("VX")) // Vogtland Express
-				return "RVX" + number;
-			if (type.equals("HzL") || type.equals("HZL")) // Hohenzollerische Landesbahn
-				return "RHzL" + number;
-			if (type.equals("BOB")) // Bayerische Oberlandbahn
-				return "RBOB" + number;
-			if (type.equals("BRB")) // Bayerische Regiobahn
-				return "RBRB" + number;
-			if (type.equals("ALX")) // Arriva-Länderbahn-Express
-				return "RALX" + number;
-			if (type.equals("NWB")) // NordWestBahn
-				return "RNWB" + number;
-			if (type.equals("HEX")) // Harz-Berlin-Express, Veolia
-				return "RHEX" + number;
-			if (type.equals("PEG")) // Prignitzer Eisenbahn
-				return "RPEG" + number;
-			if (type.equals("STB")) // Süd-Thüringen-Bahn
-				return "RSTB" + number;
-			if (type.equals("HSB")) // Harzer Schmalspurbahnen
-				return "RHSB" + number;
-			if (type.equals("EVB")) // Eisenbahnen und Verkehrsbetriebe Elbe-Weser
-				return "REVB" + number;
-			if (type.equals("NOB")) // Nord-Ostsee-Bahn
-				return "RNOB" + number;
-			if (type.equals("WFB")) // Westfalenbahn
-				return "RWFB" + number;
-			if (type.equals("FEG")) // Freiberger Eisenbahngesellschaft
-				return "RFEG" + number;
-			if (type.equals("SHB")) // Schleswig-Holstein-Bahn
-				return "RSHB" + number;
-			if (type.equals("OSB")) // Ortenau-S-Bahn
-				return "ROSB" + number;
-			if (type.equals("WEG")) // Württembergische Eisenbahn-Gesellschaft
-				return "RWEG" + number;
-			if (type.equals("MR")) // Märkische Regionalbahn
-				return "RMR" + number;
-			if (type.equals("OE")) // Ostdeutsche Eisenbahn
-				return "ROE" + number;
-			if (type.equals("UBB")) // Usedomer Bäderbahn
-				return "RUBB" + number;
-			if (type.equals("NEB")) // Niederbarnimer Eisenbahn
-				return "RNEB" + number;
-			if (type.equals("AKN")) // AKN Eisenbahn AG
-				return "RAKN" + number;
-			if (type.equals("SBB")) // Schweizerische Bundesbahnen
-				return "RSBB" + number;
-			if (type.equals("OLA")) // Ostseeland Verkehr
-				return "ROLA" + number;
-			if (type.equals("ME")) // metronom
-				return "RME" + number;
-			if (type.equals("MEr") || type.equals("MER")) // metronom regional
-				return "RMER" + number;
-			if (type.equals("ERB")) // eurobahn (Keolis Deutschland)
-				return "RERB" + number;
-			if (type.equals("EB")) // Erfurter Bahn
-				return "REB" + number;
-			if (type.equals("VIA")) // VIAS
-				return "RVIA" + number;
-			if (type.equals("CAN")) // cantus Verkehrsgesellschaft
-				return "RCAN" + number;
-			if (type.equals("BLB")) // Berchtesgadener Land Bahn
-				return "RBLB" + number;
-			if (type.equals("PRE")) // Pressnitztalbahn
-				return "RPRE" + number;
-			if (type.equals("neg")) // Norddeutsche Eisenbahngesellschaft Niebüll
-				return "Rneg" + number;
-			if (type.equals("NBE")) // nordbahn
-				return "RNBE" + number;
-			if (type.equals("MBB")) // Mecklenburgische Bäderbahn Molli
-				return "RMBB" + number;
-			if (type.equals("ABR")) // Abellio Rail NRW
-				return "RABR" + number;
-			if (type.equals("ABG")) // Anhaltische Bahngesellschaft
-				return "RABG" + number;
-			if (type.equals("Sp")) // EgroNet?
-				return "RSp" + number;
-			if (type.equals("Os")) // EgroNet?
-				return "ROs" + number;
-			if (type.equals("REX")) // Österreich?
-				return "RREX" + number;
-			if (type.equals("SB")) // Säntis-Bahn, Schweiz - evtl. auch SaarBahn+Bus?
-				return "RSB" + number;
-			if (type.equals("LT"))
-				return "RLT" + number;
-			if (type.equals("CB")) // City Bahn Chemnitz
-				return "RCB" + number;
-			if (type.equals("SWE")) // SWEG
-				return "RSWE" + number;
-			if (type.equals("ÖBA")) // Öchsle-Bahn Betriebsgesellschaft
-				return "RÖBA" + number;
-			if (type.equals("RTB")) // Rurtalbahn
-				return "RRTB" + number;
-			if (type.equals("SOE")) // Sächsisch-Oberlausitzer Eisenbahngesellschaft
-				return "RSOE" + number;
-			if (type.equals("SBE")) // Sächsisch-Böhmische Eisenbahngesellschaft
-				return "RSBE" + number;
-			if (type.equals("Dab")) // Daadetalbahn
-				return "RDab" + number;
-			if (type.equals("SDG")) // Sächsische Dampfeisenbahngesellschaft
-				return "RSDG" + number;
-			if (type.equals("ARR")) // Ostfriesland
-				return "RARR" + number;
-			if (type.equals("MEL")) // Museumsbahn Merzig-Losheim
-				return "RMEL" + number;
-			if (type.equals("VEB")) // Vulkan-Eifel-Bahn Betriebsgesellschaft
-				return "RVEB" + number;
-			if (type.equals("P")) // Kasbachtalbahn
-				return "RP" + number;
-			if (type.equals("MSB")) // Mainschleifenbahn
-				return "RMSB" + number;
-			if (type.equals("KTB")) // Kandertalbahn
-				return "RKTB" + number;
-			if (type.equals("WTB")) // Wutachtalbahn
-				return "RWTB" + number;
-			if (type.equals("DPNCbahn")) // Chiemsee-Bahn
-				return "RDPNCbahn" + number;
-			if (type.equals("LEO")) // Chiemgauer Lokalbahn
-				return "RLEO" + number;
-			if (type.equals("SBS")) // Städtebahn Sachsen
-				return "RSBS" + number;
-			if (type.equals("SES")) // Städtebahn Sachsen
-				return "RSES" + number;
-			if (type.equals("VEN")) // Rhenus Veniro
-				return "RVEN" + number;
-			if (type.equals("KD")) // Koleje Dolnośląskie (Niederschlesische Eisenbahn)
-				return "RKD" + number;
-			if (type.equals("SKW")) // Polen
-				return "RSKW" + number;
-			if (type.equals("KM")) // Polen
-				return "RKM" + number;
-			if (type.equals("PCC")) // Polen
-				return "RPCC" + number;
-			if (type.equals("SKM")) // Polen
-				return "RSKM" + number;
-			if (type.equals("LYN")) // Dänemark
-				return "RLYN" + number;
-			if (type.equals("EX")) // Norwegen
-				return "REX" + number;
-			if (type.equals("NZ")) // Norwegen
-				return "RNZ" + number;
-			if (type.equals("IP")) // InterPici, Ungarn
-				return "RIP" + number;
-			if (type.equals("Zr")) // ZSR, Slovakai
-				return "RZr" + number;
-			if (type.equals("N")) // Frankreich, Tours, Orléans
-				return "RN" + number;
-			if (type.equals("VE")) // Lutherstadt Wittenberg
-				return "RVE" + number;
-			if (type.equals("DZ")) // Dampfzug Freiburg-Innsbruck
-				return "RDZ " + number;
-			if (type.equals("ag")) // Regensburg-Landshut
-				return "Rag " + number;
-			if (type.equals("TLX")) // Trilex (Vogtlandbahn)
-				return "RTLX" + number;
-			if (type.equals("BE")) // Grensland-Express
-				return "RBE" + number;
-			if (type.equals("ATB")) // Autoschleuse Tauernbahn
-				return "RATB" + number;
-			if (type.equals("ARZ")) // Brig-Iselle di Trasquera
-				return "RARZ" + number;
-			if ("DWE".equals(type)) // Dessau-Wörlitzer Eisenbahn
-				return "RDWE" + number;
-			if ("DBG".equals(type)) // Döllnitzbahn GmbH
-				return "RDBG" + number;
-			if ("EZ".equals(type)) // ÖBB ErlebnisBahn
-				return "REZ" + number;
-
-			if (type.equals("S"))
-				return "SS" + number;
-			if (type.equals("BSB")) // Breisgau S-Bahn
-				return "SBSB" + number;
-			if (type.equals("RER")) // Réseau Express Régional, Frankreich
-				return "SRER" + number;
-			if (type.equals("RSB")) // Schnellbahn Wien
-				return "SRSB" + number;
-			if (type.equals("CAT")) // City Airport Train, Schweden
-				return "SCAT" + number;
-			if (type.equals("DPN")) // S3 Bad Reichenhall-Freilassing
-				return "SDPN" + number;
-			if (type.equals("WKD")) // Warszawska Kolej Dojazdowa (Warsaw Suburban Railway)
-				return "SWKD" + number;
-			if (type.equals("SE")) // S-Bahn Kopenhagen
-				return "SE" + number;
-
-			if (type.equals("U"))
-				return "UU" + number;
-
-			if (type.equals("STR"))
-				return "T" + number;
-			if (type.equals("STRM"))
-				return "T" + number;
-			if (type.equals("STRE"))
-				return "T" + number;
-			if (type.equals("STBU"))
-				return "T" + number;
-			if (type.equals("STRN"))
-				return "T" + number;
-			if (type.equals("STRNE"))
-				return "T" + number;
-			if (type.equals("STRKbahn"))
-				return "TKbahn" + number;
-			if (type.equals("RT")) // RegioTram
-				return "TRT" + number;
-			if (type.equals("Schw")) // Schwebebahn, gilt als "Straßenbahn besonderer Bauart"
-				return "TSchw" + number;
-			if (line.equals("SCHW-B")) // Schwebebahn
-				return "TSchwebebahn";
-
-			if (type.equals("BUS"))
-				return "BBUS" + number;
-			if (type.startsWith("Bus"))
-				return "B" + type.substring(3) + number;
-			if (type.equals("O")) // Salzburg
-				return "BO" + number;
-			if (type.startsWith("AST")) // Anruf-Sammel-Taxi
-				return "BAST" + type.substring(3) + number;
-			if (type.startsWith("ALT")) // Anruf-Linien-Taxi
-				return "BALT" + type.substring(3) + number;
-			if (type.startsWith("RFB")) // Rufbus
-				return "BRFB" + type.substring(3) + number;
-			if (type.equals("RNV")) // Rhein-Neckar-Verkehr GmbH - TODO aufteilen in Tram/Bus/Fähre
-				return "BRNV" + number;
-			if (type.equals("LTT"))
-				return "BLTT" + number;
-
-			if (type.equals("Fähre"))
-				return "F" + number;
-			if (type.equals("Fäh"))
-				return "F" + number;
-			if (type.equals("Schiff"))
-				return "FSchiff" + number;
-			if (type.equals("KAT")) // z.B. Friedrichshafen <-> Konstanz
-				return "FKAT" + number;
-			if (type.equals("AS")) // SyltShuttle
-				return "FAS" + number;
-
-			if (type.equals("ZahnR")) // Zahnradbahn, u.a. Zugspitzbahn
-				return "RZahnR" + number;
-			if (type.equals("Flug"))
-				return "IFlug" + number;
-			if (type.equals("E"))
-			{
-				if (P_NORMALIZE_LINE_SBAHN.matcher(number).matches())
-					return "S" + number;
-				else
-					return "RE" + number;
-			}
-			if (type.equals("D"))
-				return "?D" + number;
-
-			throw new IllegalStateException("cannot normalize type '" + type + "' number '" + number + "' line '" + line + "'");
-		}
-
-		throw new IllegalStateException("cannot normalize line '" + line + "'");
+		return super.normalizeLine(line);
 	}
 }
