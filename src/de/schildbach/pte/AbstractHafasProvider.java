@@ -470,6 +470,13 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 				throw new IllegalArgumentException("unknown error " + code + ", " + text);
 			}
 
+			if (XmlPullUtil.test(pp, "StationTable"))
+			{
+				XmlPullUtil.enter(pp, "StationTable");
+				if (pp.getEventType() == XmlPullParser.TEXT)
+					pp.nextTag();
+			}
+
 			while (XmlPullUtil.test(pp, "Journey"))
 			{
 				final String fpTime = XmlPullUtil.attr(pp, "fpTime");
@@ -597,6 +604,9 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 					XmlPullUtil.enter(pp, "Journey");
 					XmlPullUtil.exit(pp, "Journey");
 				}
+
+				if (pp.getEventType() == XmlPullParser.TEXT)
+					pp.nextTag();
 			}
 
 			result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, stationId), departures, null));
