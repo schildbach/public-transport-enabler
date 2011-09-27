@@ -71,6 +71,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 	private final String apiBase;
 	private final String additionalQueryParameter;
 	private final boolean canAcceptPoiID;
+	private final boolean needsSpEncId;
 	private final XmlPullParserFactory parserFactory;
 
 	public AbstractEfaProvider()
@@ -85,6 +86,11 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 
 	public AbstractEfaProvider(final String apiBase, final String additionalQueryParameter, final boolean canAcceptPoiID)
 	{
+		this(apiBase, additionalQueryParameter, false, false);
+	}
+
+	public AbstractEfaProvider(final String apiBase, final String additionalQueryParameter, final boolean canAcceptPoiID, final boolean needsSpEncId)
+	{
 		try
 		{
 			parserFactory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
@@ -97,6 +103,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		this.apiBase = apiBase;
 		this.additionalQueryParameter = additionalQueryParameter;
 		this.canAcceptPoiID = canAcceptPoiID;
+		this.needsSpEncId = needsSpEncId;
 	}
 
 	protected TimeZone timeZone()
@@ -121,8 +128,10 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		appendLocation(uri, constraint, "sf");
 		if (constraint.type == LocationType.ANY)
 		{
-			uri.append("&SpEncId=0");
-			uri.append("&anyObjFilter_sf=126"); // 1=place 2=stop 4=street 8=address 16=crossing 32=poi 64=postcode
+			if (needsSpEncId)
+				uri.append("&SpEncId=0");
+			// 1=place 2=stop 4=street 8=address 16=crossing 32=poi 64=postcode
+			uri.append("&anyObjFilter_sf=").append(2 + 4 + 8 + 16 + 32 + 64);
 			uri.append("&reducedAnyPostcodeObjFilter_sf=64&reducedAnyTooManyObjFilter_sf=2");
 			uri.append("&useHouseNumberList=true&regionID_sf=1");
 		}

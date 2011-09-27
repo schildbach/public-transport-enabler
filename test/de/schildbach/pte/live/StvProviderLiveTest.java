@@ -70,6 +70,14 @@ public class StvProviderLiveTest
 		list(autocompletes);
 	}
 
+	@Test
+	public void autocompleteWithUmlaut() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("grün");
+
+		list(autocompletes);
+	}
+
 	private void list(final List<Location> autocompletes)
 	{
 		System.out.print(autocompletes.size() + " ");
@@ -77,12 +85,12 @@ public class StvProviderLiveTest
 			System.out.print(autocomplete.toDebugString() + " ");
 		System.out.println();
 	}
-	
+
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 0, null, "Hauptwache"),
-				null, new Location(LocationType.STATION, 0, null, "Südbahnhof"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 0, null, "Hauptwache"), null,
+				new Location(LocationType.STATION, 0, null, "Südbahnhof"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);

@@ -61,6 +61,14 @@ public class BsvagProviderLiveTest
 		list(autocompletes);
 	}
 
+	@Test
+	public void autocompleteWithUmlaut() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("grün");
+
+		list(autocompletes);
+	}
+
 	private void list(final List<Location> autocompletes)
 	{
 		System.out.print(autocompletes.size() + " ");

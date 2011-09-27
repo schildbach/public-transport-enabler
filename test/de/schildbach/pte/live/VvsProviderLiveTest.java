@@ -70,6 +70,14 @@ public class VvsProviderLiveTest
 		list(autocompletes);
 	}
 
+	@Test
+	public void autocompleteWithUmlaut() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("grün");
+
+		list(autocompletes);
+	}
+
 	private void list(final List<Location> autocompletes)
 	{
 		System.out.print(autocompletes.size() + " ");
@@ -77,7 +85,7 @@ public class VvsProviderLiveTest
 			System.out.print(autocomplete.toDebugString() + " ");
 		System.out.println();
 	}
-	
+
 	@Test
 	public void shortConnection() throws Exception
 	{

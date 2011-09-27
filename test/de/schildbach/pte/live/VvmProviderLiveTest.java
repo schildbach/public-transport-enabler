@@ -22,8 +22,8 @@ import java.util.List;
 
 import org.junit.Test;
 
-import de.schildbach.pte.VvmProvider;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
+import de.schildbach.pte.VvmProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -70,6 +70,14 @@ public class VvmProviderLiveTest
 		list(autocompletes);
 	}
 
+	@Test
+	public void autocompleteWithUmlaut() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("grün");
+
+		list(autocompletes);
+	}
+
 	private void list(final List<Location> autocompletes)
 	{
 		System.out.print(autocompletes.size() + " ");
@@ -77,7 +85,7 @@ public class VvmProviderLiveTest
 			System.out.print(autocomplete.toDebugString() + " ");
 		System.out.println();
 	}
-	
+
 	@Test
 	public void shortConnection() throws Exception
 	{

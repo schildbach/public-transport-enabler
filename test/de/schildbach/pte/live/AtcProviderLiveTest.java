@@ -71,6 +71,14 @@ public class AtcProviderLiveTest
 		list(autocompletes);
 	}
 
+	@Test
+	public void autocompleteWithUmlaut() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("grünwink");
+
+		list(autocompletes);
+	}
+
 	private void list(final List<Location> autocompletes)
 	{
 		System.out.print(autocompletes.size() + " ");
@@ -78,7 +86,7 @@ public class AtcProviderLiveTest
 			System.out.print(autocomplete.toDebugString() + " ");
 		System.out.println();
 	}
-	
+
 	@Test
 	public void shortConnection() throws Exception
 	{

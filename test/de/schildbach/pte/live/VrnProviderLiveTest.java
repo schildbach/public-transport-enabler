@@ -63,6 +63,14 @@ public class VrnProviderLiveTest
 	}
 
 	@Test
+	public void autocompleteWithUmlaut() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("grün");
+
+		list(autocompletes);
+	}
+
+	@Test
 	public void autocompleteIncomplete() throws Exception
 	{
 		final List<Location> autocompletes = provider.autocompleteStations("Kur");
@@ -101,7 +109,7 @@ public class VrnProviderLiveTest
 			System.out.print(autocomplete.toDebugString() + " ");
 		System.out.println();
 	}
-	
+
 	@Test
 	public void shortConnection() throws Exception
 	{

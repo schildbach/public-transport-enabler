@@ -68,6 +68,15 @@ public class LinzProviderLiveTest
 
 		list(autocompletes);
 	}
+	
+	
+	@Test
+	public void autocompleteWithUmlaut() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("grün");
+
+		list(autocompletes);
+	}
 
 	@Test
 	public void autocompleteIdentified() throws Exception
