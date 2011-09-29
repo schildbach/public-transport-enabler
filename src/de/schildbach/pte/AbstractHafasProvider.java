@@ -1663,6 +1663,8 @@ public abstract class AbstractHafasProvider implements NetworkProvider
 			return 'F';
 		if ("FÄHRE".equals(ucType))
 			return 'F';
+		if ("FÄH".equals(ucType))
+			return 'F';
 		if ("FAE".equals(ucType))
 			return 'F';
 		if ("SCH".equals(ucType)) // Schiff
