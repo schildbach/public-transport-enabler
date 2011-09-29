@@ -1168,6 +1168,7 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		uri.append("&type_dm=stop&useRealtime=1&mode=direct");
 		uri.append("&name_dm=").append(stationId);
 		uri.append("&deleteAssignedStops_dm=").append(equivs ? '0' : '1');
+		uri.append("&mergeDep=1"); // merge departures
 		if (maxDepartures > 0)
 			uri.append("&limit=").append(maxDepartures);
 
