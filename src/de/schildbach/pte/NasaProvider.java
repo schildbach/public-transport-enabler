@@ -146,6 +146,8 @@ public class NasaProvider extends AbstractHafasProvider
 			return 'R';
 		if ("ZUGBAHN".equals(ucType))
 			return 'R';
+		if ("DAMPFZUG".equals(ucType))
+			return 'R';
 
 		if (ucType.equals("E")) // Stadtbahn Karlsruhe: S4/S31/xxxxx
 			return 'S';
