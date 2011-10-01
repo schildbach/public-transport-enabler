@@ -662,6 +662,8 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 				return 'I' + name;
 			if ("INT".equals(type)) // SVV
 				return 'I' + name;
+			if ("IXB".equals(type)) // ICE International
+				return 'I' + name;
 
 			if (type.equals("IR")) // Interregio
 				return 'R' + str;
