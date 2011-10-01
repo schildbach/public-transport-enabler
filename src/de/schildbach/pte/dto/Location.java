@@ -94,7 +94,7 @@ public final class Location implements Serializable
 
 	public final String uniqueShortName()
 	{
-		if ("Bahnhof".equals(name) || "Dorf".equals(name))
+		if ("Bahnhof".equals(name) || "Dorf".equals(name) || "Kirche".equals(name))
 			return place + ", " + name;
 		else
 			return name;
