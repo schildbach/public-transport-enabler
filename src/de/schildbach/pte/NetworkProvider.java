@@ -24,6 +24,7 @@ import java.util.List;
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 
@@ -139,4 +140,11 @@ public interface NetworkProvider
 	 * @return array containing background, foreground and border (optional) colors
 	 */
 	int[] lineColors(String line);
+
+	/**
+	 * Gets the primary covered area of the network
+	 * 
+	 * @return array containing points of a polygon (special case: just one coordinate defines just a center point)
+	 */
+	Point[] getArea();
 }

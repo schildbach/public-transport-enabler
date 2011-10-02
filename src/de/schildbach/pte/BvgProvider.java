@@ -38,6 +38,7 @@ import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.ResultHeader;
@@ -45,6 +46,7 @@ import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.dto.Stop;
 import de.schildbach.pte.exception.SessionExpiredException;
 import de.schildbach.pte.exception.UnexpectedRedirectException;
+import de.schildbach.pte.geo.Berlin;
 import de.schildbach.pte.util.Color;
 import de.schildbach.pte.util.ParserUtils;
 
@@ -1060,5 +1062,11 @@ public final class BvgProvider extends AbstractHafasProvider
 			return lineColors;
 		else
 			return super.lineColors(line);
+	}
+
+	@Override
+	public Point[] getArea()
+	{
+		return Berlin.BOUNDARY;
 	}
 }

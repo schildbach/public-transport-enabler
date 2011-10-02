@@ -22,6 +22,7 @@ import java.util.List;
 
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
+import de.schildbach.pte.dto.Point;
 
 /**
  * @author Andreas Schildbach
@@ -65,5 +66,11 @@ public class VvsProvider extends AbstractEfaProvider
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
 		return xmlStopfinderRequest(new Location(LocationType.ANY, 0, null, constraint.toString()));
+	}
+
+	@Override
+	public Point[] getArea()
+	{
+		return new Point[] { new Point(48.784068f, 9.181713f) };
 	}
 }

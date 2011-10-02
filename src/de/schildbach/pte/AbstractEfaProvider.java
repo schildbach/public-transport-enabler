@@ -57,14 +57,13 @@ import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.dto.Stop;
 import de.schildbach.pte.exception.ParserException;
 import de.schildbach.pte.exception.SessionExpiredException;
-import de.schildbach.pte.util.Color;
 import de.schildbach.pte.util.ParserUtils;
 import de.schildbach.pte.util.XmlPullUtil;
 
 /**
  * @author Andreas Schildbach
  */
-public abstract class AbstractEfaProvider implements NetworkProvider
+public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 {
 	protected final static String SERVER_PRODUCT = "efa";
 
@@ -2137,27 +2136,6 @@ public abstract class AbstractEfaProvider implements NetworkProvider
 		WALKSPEED_MAP.put(WalkSpeed.SLOW, "slow");
 		WALKSPEED_MAP.put(WalkSpeed.NORMAL, "normal");
 		WALKSPEED_MAP.put(WalkSpeed.FAST, "fast");
-	}
-
-	private static final Map<Character, int[]> LINES = new HashMap<Character, int[]>();
-
-	static
-	{
-		LINES.put('I', new int[] { Color.WHITE, Color.RED, Color.RED });
-		LINES.put('R', new int[] { Color.GRAY, Color.WHITE });
-		LINES.put('S', new int[] { Color.parseColor("#006e34"), Color.WHITE });
-		LINES.put('U', new int[] { Color.parseColor("#003090"), Color.WHITE });
-		LINES.put('T', new int[] { Color.parseColor("#cc0000"), Color.WHITE });
-		LINES.put('B', new int[] { Color.parseColor("#993399"), Color.WHITE });
-		LINES.put('F', new int[] { Color.BLUE, Color.WHITE });
-		LINES.put('?', new int[] { Color.DKGRAY, Color.WHITE });
-	}
-
-	public int[] lineColors(final String line)
-	{
-		if (line.length() == 0)
-			return null;
-		return LINES.get(line.charAt(0));
 	}
 
 	private ResultHeader enterItdRequest(final XmlPullParser pp) throws XmlPullParserException, IOException

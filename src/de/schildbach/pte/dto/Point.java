@@ -26,6 +26,12 @@ public final class Point implements Serializable
 {
 	public final int lat, lon;
 
+	public Point(final float lat, final float lon)
+	{
+		this.lat = (int) Math.round(lat * 1E6);
+		this.lon = (int) Math.round(lon * 1E6);
+	}
+
 	public Point(final int lat, final int lon)
 	{
 		this.lat = lat;

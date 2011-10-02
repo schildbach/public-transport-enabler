@@ -24,6 +24,7 @@ import java.util.Map;
 
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
+import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.util.Color;
 
 /**
@@ -118,5 +119,11 @@ public class MvvProvider extends AbstractEfaProvider
 			return lineColors;
 		else
 			return super.lineColors(line);
+	}
+
+	@Override
+	public Point[] getArea()
+	{
+		return new Point[] { new Point(48.140377f, 11.560643f) };
 	}
 }
