@@ -131,16 +131,16 @@ public class NasaProvider extends AbstractHafasProvider
 	{
 		final String ucType = type.toUpperCase();
 
-		if (ucType.equals("ECW"))
+		if ("ECW".equals(ucType))
 			return 'I';
 
-		if (ucType.equals("DPF")) // mit Dampflok bespannter Zug
+		if ("DPF".equals(ucType)) // mit Dampflok bespannter Zug
 			return 'R';
 		if ("DAM".equals(ucType)) // Harzer Schmalspurbahnen: mit Dampflok bespannter Zug
 			return 'R';
 		if ("TW".equals(ucType)) // Harzer Schmalspurbahnen: Triebwagen
 			return 'R';
-		if (ucType.equals("RR")) // Polen
+		if ("RR".equals(ucType)) // Polen
 			return 'R';
 		if ("DBG".equals(ucType)) // Döllnitzbahn GmbH
 			return 'R';
@@ -149,12 +149,14 @@ public class NasaProvider extends AbstractHafasProvider
 		if ("DAMPFZUG".equals(ucType))
 			return 'R';
 
-		if (ucType.equals("E")) // Stadtbahn Karlsruhe: S4/S31/xxxxx
+		if ("E".equals(ucType)) // Stadtbahn Karlsruhe: S4/S31/xxxxx
 			return 'S';
 
-		if (ucType.equals("BSV"))
+		if ("BSV".equals(ucType))
 			return 'B';
-		if (ucType.equals("RBS")) // Rufbus
+		if ("RUFBUS".equals(ucType)) // Rufbus
+			return 'B';
+		if ("RBS".equals(ucType)) // Rufbus
 			return 'B';
 
 		final char t = super.normalizeType(type);
