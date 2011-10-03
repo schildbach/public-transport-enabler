@@ -1968,7 +1968,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			throw new IllegalStateException("unknown type: " + type);
 
 		XmlPullUtil.enter(pp, "itdCoordinateString");
-		for (final String coordStr : pp.getText().split(" "))
+		for (final String coordStr : pp.getText().split(" +"))
 		{
 			final String[] coordsStr = coordStr.split(",");
 			path.add(new Point(Math.round(Float.parseFloat(coordsStr[1])), Math.round(Float.parseFloat(coordsStr[0]))));
