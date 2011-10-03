@@ -27,10 +27,12 @@ import java.util.Currency;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -1558,7 +1560,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		InputStream is = null;
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri, null, "HASESSIONID", 3);
+			is = ParserUtils.scrapeInputStream(uri, null, "NSC_", 3);
 			return queryConnections(uri, is);
 		}
 		catch (final XmlPullParserException x)
@@ -1577,7 +1579,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		InputStream is = null;
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri, null, "HASESSIONID", 3);
+			is = ParserUtils.scrapeInputStream(uri, null, "NSC_", 3);
 			return queryConnections(uri, is);
 		}
 		catch (final XmlPullParserException x)
@@ -1596,6 +1598,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	private QueryConnectionsResult queryConnections(final String uri, final InputStream is) throws XmlPullParserException, IOException
 	{
+		// System.out.println(uri);
+
 		final XmlPullParser pp = parserFactory.newPullParser();
 		pp.setInput(is, null);
 		final ResultHeader header = enterItdRequest(pp);
@@ -1836,8 +1840,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 								+ XmlPullUtil.attr(pp, "project");
 						XmlPullUtil.exit(pp, "itdMeansOfTransport");
 
-						final Line line = new Line(lineId, lineLabel, lineColors(lineLabel));
-
 						if (XmlPullUtil.test(pp, "itdRBLControlled"))
 							XmlPullUtil.next(pp);
 						if (XmlPullUtil.test(pp, "itdInfoTextList"))
@@ -1885,6 +1887,31 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						List<Point> path = null;
 						if (XmlPullUtil.test(pp, "itdPathCoordinates"))
 							path = processItdPathCoordinates(pp);
+
+						final Set<Line.Attr> lineAttrs = new HashSet<Line.Attr>();
+						if (XmlPullUtil.test(pp, "genAttrList"))
+						{
+							XmlPullUtil.enter(pp, "genAttrList");
+							while (XmlPullUtil.test(pp, "genAttrElem"))
+							{
+								XmlPullUtil.enter(pp, "genAttrElem");
+								XmlPullUtil.enter(pp, "name");
+								final String name = pp.getText();
+								XmlPullUtil.exit(pp, "name");
+								XmlPullUtil.enter(pp, "value");
+								final String value = pp.getText();
+								XmlPullUtil.exit(pp, "value");
+								XmlPullUtil.exit(pp, "genAttrElem");
+
+								// System.out.println("genAttrElem: name='" + name + "' value='" + value + "'");
+
+								if ("PlanWheelChairAccess".equals(name) && "1".equals(value))
+									lineAttrs.add(Line.Attr.WHEEL_CHAIR_ACCESS);
+							}
+							XmlPullUtil.exit(pp, "genAttrList");
+						}
+
+						final Line line = new Line(lineId, lineLabel, lineColors(lineLabel), lineAttrs);
 
 						parts.add(new Connection.Trip(line, destination, departureTime, departurePosition, departure, arrivalTime, arrivalPosition,
 								arrival, intermediateStops, path));

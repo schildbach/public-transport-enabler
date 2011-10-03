@@ -18,28 +18,46 @@
 package de.schildbach.pte.dto;
 
 import java.io.Serializable;
+import java.util.Set;
 
 /**
  * @author Andreas Schildbach
  */
 public final class Line implements Serializable, Comparable<Line>
 {
+	public enum Attr
+	{
+		WHEEL_CHAIR_ACCESS
+	}
+
 	private static final long serialVersionUID = -5642533805998375070L;
 
 	final public String id;
 	final private transient char product; // TODO make true field
 	final public String label;
 	final public int[] colors;
+	final private Set<Attr> attrs;
 
 	private static final String PRODUCT_ORDER = "IRSUTBPFC?";
 
 	public Line(final String id, final String label, final int[] colors)
 	{
+		this(id, label, colors, null);
+	}
+
+	public Line(final String id, final String label, final int[] colors, final Set<Attr> attrs)
+	{
 		this.id = id;
 		this.label = label;
 		this.colors = colors;
+		this.attrs = attrs;
 
 		product = label != null ? label.charAt(0) : '?';
+	}
+
+	public boolean hasAttr(final Attr attr)
+	{
+		return attrs != null && attrs.contains(attr);
 	}
 
 	@Override
