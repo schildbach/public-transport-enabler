@@ -58,6 +58,7 @@ import de.schildbach.pte.dto.ResultHeader;
 import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.dto.Stop;
 import de.schildbach.pte.exception.ParserException;
+import de.schildbach.pte.exception.ProtocolException;
 import de.schildbach.pte.exception.SessionExpiredException;
 import de.schildbach.pte.util.ParserUtils;
 import de.schildbach.pte.util.XmlPullUtil;
@@ -2171,7 +2172,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			pp.next();
 
 		if (XmlPullUtil.test(pp, "html"))
-			throw new IllegalStateException("html");
+			throw new ProtocolException("html");
 
 		XmlPullUtil.require(pp, "itdRequest");
 
