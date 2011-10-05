@@ -580,7 +580,6 @@ public final class BahnProvider extends AbstractHafasProvider
 	@Override
 	protected final String normalizeLine(final String line)
 	{
-
 		if ("Schw-B".equals(line)) // Schwebebahn, gilt als "Straßenbahn besonderer Bauart"
 			return 'T' + line;
 
@@ -591,6 +590,9 @@ public final class BahnProvider extends AbstractHafasProvider
 			return 'R' + line;
 
 		if (P_LINE_NUMBER.matcher(line).matches())
+			return "?" + line;
+
+		if ("---".equals(line))
 			return "?" + line;
 
 		return super.normalizeLine(line);
