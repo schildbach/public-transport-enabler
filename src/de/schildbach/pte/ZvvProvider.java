@@ -19,6 +19,7 @@ package de.schildbach.pte;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.regex.Matcher;
 
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
@@ -166,6 +167,35 @@ public class ZvvProvider extends AbstractHafasProvider
 	protected Line normalizeLine(final String line)
 	{
 		return parseLineAndType(line);
+	}
+
+	@Override
+	protected Line parseLineAndType(final String lineAndType)
+	{
+		final Matcher m = P_NORMALIZE_LINE_AND_TYPE.matcher(lineAndType);
+		if (m.matches())
+		{
+			final String number = m.group(1).replaceAll("\\s+", " ");
+			final String type = m.group(2);
+
+			if ("Bus-NF".equals(type))
+				return newLine('B' + number, Line.Attr.WHEEL_CHAIR_ACCESS);
+			if ("Tro-NF".equals(type))
+				return newLine('B' + number, Line.Attr.WHEEL_CHAIR_ACCESS);
+			if ("Trm-NF".equals(type))
+				return newLine('T' + number, Line.Attr.WHEEL_CHAIR_ACCESS);
+
+			if (type.length() > 0)
+			{
+				final char normalizedType = normalizeType(type);
+				if (normalizedType != 0)
+					return newLine(normalizedType + number);
+			}
+
+			throw new IllegalStateException("cannot normalize type " + type + " number " + number + " line#type " + lineAndType);
+		}
+
+		throw new IllegalStateException("cannot normalize line#type " + lineAndType);
 	}
 
 	@Override

@@ -26,10 +26,12 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -1757,17 +1759,27 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		throw new IllegalStateException("cannot normalize line " + line);
 	}
 
-	protected final Line newLine(final String lineStr)
+	protected final Line newLine(final String lineStr, final Line.Attr... attrs)
 	{
-		return new Line(null, lineStr, lineColors(lineStr));
+		if (attrs.length == 0)
+		{
+			return new Line(null, lineStr, lineColors(lineStr));
+		}
+		else
+		{
+			final Set<Line.Attr> attrSet = new HashSet<Line.Attr>();
+			for (final Line.Attr attr : attrs)
+				attrSet.add(attr);
+			return new Line(null, lineStr, lineColors(lineStr), attrSet);
+		}
 	}
 
-	private static final Pattern P_NORMALIZE_LINE_AND_TYPE = Pattern.compile("([^#]*)#(.*)");
+	protected static final Pattern P_NORMALIZE_LINE_AND_TYPE = Pattern.compile("([^#]*)#(.*)");
 	private static final Pattern P_NORMALIZE_LINE_NUMBER = Pattern.compile("\\d{2,5}");
 	// saved from RtProvider
 	private static final Pattern P_NORMALIZE_LINE_RUSSIA = Pattern.compile("(\\d{3}(BJ|FJ|IJ|MJ|NJ|OJ|TJ|SZ))");
 
-	protected final Line parseLineAndType(final String lineAndType)
+	protected Line parseLineAndType(final String lineAndType)
 	{
 		final Matcher m = P_NORMALIZE_LINE_AND_TYPE.matcher(lineAndType);
 		if (m.matches())
