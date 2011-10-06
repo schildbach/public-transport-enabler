@@ -77,13 +77,13 @@ public final class Line implements Serializable, Comparable<Line>
 		if (!(o instanceof Line))
 			return false;
 		final Line other = (Line) o;
-		return (this.label.equals(other.label));
+		return nullSafeEquals(this.label, other.label);
 	}
 
 	@Override
 	public int hashCode()
 	{
-		return label.hashCode();
+		return nullSafeHashCode(label);
 	}
 
 	public int compareTo(final Line other)
@@ -96,6 +96,22 @@ public final class Line implements Serializable, Comparable<Line>
 		if (compareProduct != 0)
 			return compareProduct;
 
-		return label.compareTo(other.label);
+		return this.label.compareTo(other.label);
+	}
+
+	private boolean nullSafeEquals(final Object o1, final Object o2)
+	{
+		if (o1 == null && o2 == null)
+			return true;
+		if (o1 != null && o1.equals(o2))
+			return true;
+		return false;
+	}
+
+	private int nullSafeHashCode(final Object o)
+	{
+		if (o == null)
+			return 0;
+		return o.hashCode();
 	}
 }
