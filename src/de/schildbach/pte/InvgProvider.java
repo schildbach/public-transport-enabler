@@ -235,7 +235,7 @@ public class InvgProvider extends AbstractHafasProvider
 
 						final String lineType = mDepFine.group(3);
 
-						final Line line = parseLine(lineType, ParserUtils.resolveEntities(mDepFine.group(4)));
+						final Line line = parseLine(lineType, ParserUtils.resolveEntities(mDepFine.group(4)), false);
 
 						final int destinationId = mDepFine.group(5) != null ? Integer.parseInt(mDepFine.group(5)) : 0;
 
@@ -282,7 +282,7 @@ public class InvgProvider extends AbstractHafasProvider
 	protected static final Pattern P_NORMALIZE_LINE_BUS_X = Pattern.compile("Bus\\s*X\\s*(\\d+)");
 
 	@Override
-	protected Line parseLine(final String type, final String line)
+	protected Line parseLine(final String type, final String line, final boolean wheelchairAccess)
 	{
 		if ("1".equals(type))
 		{
@@ -315,7 +315,7 @@ public class InvgProvider extends AbstractHafasProvider
 			}
 		}
 
-		return super.parseLine(type, line);
+		return super.parseLine(type, line, wheelchairAccess);
 	}
 
 	@Override

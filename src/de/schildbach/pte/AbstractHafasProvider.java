@@ -874,6 +874,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						while (pp.getName().equals("JHandle"))
 							XmlPullUtil.next(pp);
 						XmlPullUtil.enter(pp, "JourneyAttributeList");
+						boolean wheelchairAccess = false;
 						String name = null;
 						String category = null;
 						String shortCategory = null;
@@ -883,12 +884,17 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 							XmlPullUtil.enter(pp, "JourneyAttribute");
 							XmlPullUtil.require(pp, "Attribute");
 							final String attrName = pp.getAttributeValue(null, "type");
-							XmlPullUtil.enter(pp);
+							final String code = pp.getAttributeValue(null, "code");
+							XmlPullUtil.enter(pp, "Attribute");
 							final Map<String, String> attributeVariants = parseAttributeVariants(pp);
-							XmlPullUtil.exit(pp);
+							XmlPullUtil.exit(pp, "Attribute");
 							XmlPullUtil.exit(pp, "JourneyAttribute");
 
-							if ("NAME".equals(attrName))
+							if ("bf".equals(code))
+							{
+								wheelchairAccess = true;
+							}
+							else if ("NAME".equals(attrName))
 							{
 								name = attributeVariants.get("NORMAL");
 							}
@@ -943,7 +949,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						if (category == null)
 							category = shortCategory;
 
-						line = parseLine(category, name);
+						line = parseLine(category, name, wheelchairAccess);
 					}
 					else if (tag.equals("Walk") || tag.equals("Transfer") || tag.equals("GisRoute"))
 					{
@@ -1710,7 +1716,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 	protected static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zßÄÅäáàâåéèêíìîÖöóòôÜüúùûØ/]+)[\\s-]*(.*)");
 
-	protected Line parseLine(final String type, final String line)
+	protected Line parseLine(final String type, final String line, final boolean wheelchairAccess)
 	{
 		final char normalizedType = normalizeType(type);
 
@@ -1730,7 +1736,10 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				lineStr = Character.toString(normalizedType);
 			}
 
-			return newLine(lineStr);
+			if (wheelchairAccess)
+				return newLine(lineStr, Line.Attr.WHEEL_CHAIR_ACCESS);
+			else
+				return newLine(lineStr);
 		}
 		else
 		{

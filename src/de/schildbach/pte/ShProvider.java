@@ -222,7 +222,7 @@ public class ShProvider extends AbstractHafasProvider
 
 					final String lineType = mDepFine.group(2);
 
-					final Line line = parseLine(lineType, ParserUtils.resolveEntities(mDepFine.group(3).trim()));
+					final Line line = parseLine(lineType, ParserUtils.resolveEntities(mDepFine.group(3).trim()), false);
 
 					final int destinationId = mDepFine.group(4) != null ? Integer.parseInt(mDepFine.group(4)) : 0;
 

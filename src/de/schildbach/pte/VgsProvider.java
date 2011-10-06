@@ -264,7 +264,7 @@ public class VgsProvider extends AbstractHafasProvider
 
 						final String lineType = mDepFine.group(3);
 
-						final Line line = parseLine(lineType, ParserUtils.resolveEntities(mDepFine.group(4)));
+						final Line line = parseLine(lineType, ParserUtils.resolveEntities(mDepFine.group(4)), false);
 
 						final int destinationId = mDepFine.group(5) != null ? Integer.parseInt(mDepFine.group(5)) : 0;
 
