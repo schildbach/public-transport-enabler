@@ -170,8 +170,6 @@ public class VbnProvider extends AbstractHafasProvider
 			return 'B';
 		if ("RFTAST".equals(ucType))
 			return 'B';
-		if ("ALTN".equals(ucType))
-			return 'B';
 
 		if ("BUSFÄHRE".equals(ucType)) // Blexen - Bremerhaven
 			return 'F';

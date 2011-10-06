@@ -453,8 +453,7 @@ public final class BahnProvider extends AbstractHafasProvider
 
 						if (mDetFine.group(2) != null)
 						{
-							final String lineStr = normalizeLine(ParserUtils.resolveEntities(mDetFine.group(2)));
-							final Line line = new Line(null, lineStr, lineColors(lineStr));
+							final Line line = normalizeLine(ParserUtils.resolveEntities(mDetFine.group(2)));
 
 							final Calendar departureTime = new GregorianCalendar(timeZone());
 							departureTime.clear();
@@ -555,10 +554,6 @@ public final class BahnProvider extends AbstractHafasProvider
 		if ("LTT".equals(ucType))
 			return 'B';
 
-		if (ucType.startsWith("AST")) // Anruf-Sammel-Taxi
-			return 'P';
-		if (ucType.startsWith("ALT")) // Anruf-Linien-Taxi
-			return 'P';
 		if (ucType.startsWith("RFB")) // Rufbus
 			return 'P';
 
@@ -578,22 +573,22 @@ public final class BahnProvider extends AbstractHafasProvider
 	private static final Pattern P_LINE_NUMBER = Pattern.compile("\\d{2,5}");
 
 	@Override
-	protected final String normalizeLine(final String line)
+	protected final Line normalizeLine(final String line)
 	{
 		if ("Schw-B".equals(line)) // Schwebebahn, gilt als "Straßenbahn besonderer Bauart"
-			return 'T' + line;
+			return newLine('T' + line);
 
 		if (P_LINE_BUS_SPECIAL.matcher(line).matches())
-			return "B" + line;
+			return newLine('B' + line);
 
 		if (P_LINE_RUSSIA.matcher(line).matches())
-			return 'R' + line;
+			return newLine('R' + line);
 
 		if (P_LINE_NUMBER.matcher(line).matches())
-			return "?" + line;
+			return newLine('?' + line);
 
 		if ("---".equals(line))
-			return "?" + line;
+			return newLine('?' + line);
 
 		return super.normalizeLine(line);
 	}

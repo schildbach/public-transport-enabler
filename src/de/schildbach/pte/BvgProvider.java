@@ -292,9 +292,9 @@ public final class BvgProvider extends AbstractHafasProvider
 					final Matcher mMsgsFine = P_DEPARTURES_LIVE_MSGS_FINE.matcher(mMsgsCoarse.group(1));
 					if (mMsgsFine.matches())
 					{
-						final String line = normalizeLine(ParserUtils.resolveEntities(mMsgsFine.group(1)));
+						final Line line = normalizeLine(ParserUtils.resolveEntities(mMsgsFine.group(1)));
 						final String message = ParserUtils.resolveEntities(mMsgsFine.group(3)).replace('\n', ' ');
-						messages.put(line, message);
+						messages.put(line.label, message);
 					}
 					else
 					{
@@ -326,7 +326,7 @@ public final class BvgProvider extends AbstractHafasProvider
 						else
 							plannedTime = parsedTime.getTime();
 
-						final String line = normalizeLine(ParserUtils.resolveEntities(mDepFine.group(3)));
+						final Line line = normalizeLine(ParserUtils.resolveEntities(mDepFine.group(3)));
 
 						final String position = null;
 
@@ -334,8 +334,8 @@ public final class BvgProvider extends AbstractHafasProvider
 
 						final String destination = ParserUtils.resolveEntities(mDepFine.group(4));
 
-						final Departure dep = new Departure(plannedTime, predictedTime, new Line(null, line, line != null ? lineColors(line) : null),
-								position, destinationId, destination, null, messages.get(line));
+						final Departure dep = new Departure(plannedTime, predictedTime, line, position, destinationId, destination, null,
+								messages.get(line.label));
 						if (!departures.contains(dep))
 							departures.add(dep);
 					}
@@ -396,7 +396,7 @@ public final class BvgProvider extends AbstractHafasProvider
 
 						final Date plannedTime = parsedTime.getTime();
 
-						final String line = normalizeLine(ParserUtils.resolveEntities(mDepFine.group(2)));
+						final Line line = normalizeLine(ParserUtils.resolveEntities(mDepFine.group(2)));
 
 						final String position = ParserUtils.resolveEntities(mDepFine.group(3));
 
@@ -404,8 +404,7 @@ public final class BvgProvider extends AbstractHafasProvider
 
 						final String destination = ParserUtils.resolveEntities(mDepFine.group(5));
 
-						final Departure dep = new Departure(plannedTime, null, new Line(null, line, line != null ? lineColors(line) : null),
-								position, destinationId, destination, null, null);
+						final Departure dep = new Departure(plannedTime, null, line, position, destinationId, destination, null, null);
 						if (!departures.contains(dep))
 							departures.add(dep);
 					}
@@ -839,8 +838,7 @@ public final class BvgProvider extends AbstractHafasProvider
 							final String arrivalPosition = !mDetails.group(4).equals("&nbsp;") ? ParserUtils.resolveEntities(mDetails.group(4))
 									: null;
 
-							final String lineStr = normalizeLine(ParserUtils.resolveEntities(tDep[3]));
-							final Line line = new Line(null, lineStr, lineColors(lineStr));
+							final Line line = normalizeLine(ParserUtils.resolveEntities(tDep[3]));
 
 							final Location destination;
 							if (mDetails.group(3) != null)
@@ -901,29 +899,29 @@ public final class BvgProvider extends AbstractHafasProvider
 	private static final Pattern P_LINE_NUMBER = Pattern.compile("\\d{4,}");
 
 	@Override
-	protected String normalizeLine(final String line)
+	protected Line normalizeLine(final String line)
 	{
 		final Matcher mRegional = P_LINE_REGIONAL.matcher(line);
 		if (mRegional.matches())
-			return "R" + mRegional.group(1);
+			return newLine('R' + mRegional.group(1));
 
 		final Matcher mTram = P_LINE_TRAM.matcher(line);
 		if (mTram.matches())
-			return "T" + mTram.group(1);
+			return newLine('T' + mTram.group(1));
 
 		final Matcher mBus = P_LINE_BUS.matcher(line);
 		if (mBus.matches())
-			return "B" + mBus.group(1);
+			return newLine('B' + mBus.group(1));
 
 		if (P_LINE_FERRY.matcher(line).matches())
-			return "F" + line;
+			return newLine('F' + line);
 
 		final Matcher mBusSpecial = P_LINE_BUS_SPECIAL.matcher(line);
 		if (mBusSpecial.matches())
-			return "B" + mBusSpecial.group(1);
+			return newLine('B' + mBusSpecial.group(1));
 
 		if (P_LINE_NUMBER.matcher(line).matches())
-			return "R" + line;
+			return newLine('R' + line);
 
 		return super.normalizeLine(line);
 	}

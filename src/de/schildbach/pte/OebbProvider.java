@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -169,6 +170,12 @@ public class OebbProvider extends AbstractHafasProvider
 	}
 
 	@Override
+	protected Line normalizeLine(final String line)
+	{
+		return parseLineAndType(line);
+	}
+
+	@Override
 	protected char normalizeType(final String type)
 	{
 		final String ucType = type.toUpperCase();
@@ -215,8 +222,6 @@ public class OebbProvider extends AbstractHafasProvider
 
 		if (ucType.equals("OBU")) // Connections only?
 			return 'B';
-		// if (ucType.equals("ASTSV")) // via JSON API
-		// return 'B';
 		if (ucType.equals("ICB")) // ÖBB ICBus
 			return 'B';
 		if (ucType.equals("BSV")) // Deutschland, Connections only?

@@ -20,6 +20,7 @@ package de.schildbach.pte;
 import java.io.IOException;
 import java.util.List;
 
+import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -154,7 +155,7 @@ public class SbbProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected String normalizeLine(final String line)
+	protected Line normalizeLine(final String line)
 	{
 		return parseLineAndType(line);
 	}

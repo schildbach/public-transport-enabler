@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -174,7 +175,7 @@ public class VbbProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected String normalizeLine(final String line)
+	protected Line normalizeLine(final String line)
 	{
 		return parseLineAndType(line);
 	}

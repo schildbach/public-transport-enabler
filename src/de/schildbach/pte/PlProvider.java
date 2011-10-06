@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -150,7 +151,7 @@ public class PlProvider extends AbstractHafasProvider
 	private static final Pattern P_NORMALIZE_LINE_NUMBER = Pattern.compile("\\d{2,5}");
 
 	@Override
-	protected String normalizeLine(String line)
+	protected Line normalizeLine(String line)
 	{
 		// replace badly encoded character (stations 8530643 and 8530644)
 		if (line.equals("F\u0084hre"))
@@ -158,10 +159,10 @@ public class PlProvider extends AbstractHafasProvider
 
 		final Matcher mRussia = P_NORMALIZE_LINE_RUSSIA.matcher(line);
 		if (mRussia.matches())
-			return 'R' + mRussia.group(1);
+			return newLine('R' + mRussia.group(1));
 
 		if (P_NORMALIZE_LINE_NUMBER.matcher(line).matches())
-			return 'R' + line;
+			return newLine('R' + line);
 
 		return super.normalizeLine(line);
 	}

@@ -160,7 +160,7 @@ public class NsProvider extends AbstractHafasProvider
 					final Matcher mDepFine = P_DEPARTURES_FINE.matcher(mDepCoarse.group(1));
 					if (mDepFine.matches())
 					{
-						final String line = normalizeLine(ParserUtils.resolveEntities(mDepFine.group(1)));
+						final Line line = normalizeLine(ParserUtils.resolveEntities(mDepFine.group(1)));
 
 						final String destination = ParserUtils.resolveEntities(mDepFine.group(2));
 
@@ -173,8 +173,7 @@ public class NsProvider extends AbstractHafasProvider
 
 						mDepFine.group(4); // TODO delay
 
-						final Departure dep = new Departure(parsedTime.getTime(), null, new Line(null, line, line != null ? lineColors(line) : null),
-								null, 0, destination, null, null);
+						final Departure dep = new Departure(parsedTime.getTime(), null, line, null, 0, destination, null, null);
 
 						if (!departures.contains(dep))
 							departures.add(dep);

@@ -551,21 +551,22 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					else
 						destinationId = 0;
 
-					final String lineStr;
+					final Line line;
 					if (classStr != null)
 					{
 						final char classChar = intToProduct(Integer.parseInt(classStr));
 						final Matcher m = P_NORMALIZE_LINE.matcher(prod);
+						final String lineStr;
 						if (m.matches())
 							lineStr = classChar + m.group(1) + m.group(2);
 						else
 							lineStr = classChar + prod;
+						line = new Line(null, lineStr, lineStr != null ? lineColors(lineStr) : null);
 					}
 					else
 					{
-						lineStr = normalizeLine(prod);
+						line = normalizeLine(prod);
 					}
-					final Line line = new Line(null, lineStr, lineStr != null ? lineColors(lineStr) : null);
 
 					final int[] capacity;
 					if (capacityStr != null && !"0|0".equals(capacityStr))
@@ -1640,8 +1641,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			return 'B';
 		if ("TRO".equals(ucType)) // Trolleybus
 			return 'B';
-		if ("AST".equals(ucType)) // Anruf-Sammel-Taxi
-			return 'B';
 		if ("RFB".equals(ucType)) // Rufbus
 			return 'B';
 		if ("RUF".equals(ucType)) // Rufbus
@@ -1652,10 +1651,14 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			return 'B';
 		if ("LT".equals(ucType)) // Linien-Taxi
 			return 'B';
-		if ("ALT".equals(ucType)) // Anruf-Linien-Taxi
-			return 'B';
 		// if ("N".equals(normalizedType)) // Nachtbus
 		// return "B" + normalizedName;
+
+		// Phone
+		if (ucType.startsWith("AST")) // Anruf-Sammel-Taxi
+			return 'P';
+		if (ucType.startsWith("ALT")) // Anruf-Linien-Taxi
+			return 'P';
 
 		// Ferry
 		if ("SCHIFF".equals(ucType))
@@ -1725,7 +1728,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				lineStr = Character.toString(normalizedType);
 			}
 
-			return new Line(null, lineStr, lineColors(lineStr));
+			return newLine(lineStr);
 		}
 		else
 		{
@@ -1733,7 +1736,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 	}
 
-	protected String normalizeLine(final String line)
+	protected Line normalizeLine(final String line)
 	{
 		if (line == null || line.length() == 0)
 			return null;
@@ -1746,7 +1749,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 			final char normalizedType = normalizeType(type);
 			if (normalizedType != 0)
-				return normalizedType + type + number;
+				return newLine(normalizedType + type + number);
 
 			throw new IllegalStateException("cannot normalize type " + type + " number " + number + " line " + line);
 		}
@@ -1754,12 +1757,17 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		throw new IllegalStateException("cannot normalize line " + line);
 	}
 
+	protected final Line newLine(final String lineStr)
+	{
+		return new Line(null, lineStr, lineColors(lineStr));
+	}
+
 	private static final Pattern P_NORMALIZE_LINE_AND_TYPE = Pattern.compile("([^#]*)#(.*)");
 	private static final Pattern P_NORMALIZE_LINE_NUMBER = Pattern.compile("\\d{2,5}");
 	// saved from RtProvider
 	private static final Pattern P_NORMALIZE_LINE_RUSSIA = Pattern.compile("(\\d{3}(BJ|FJ|IJ|MJ|NJ|OJ|TJ|SZ))");
 
-	protected final String parseLineAndType(final String lineAndType)
+	protected final Line parseLineAndType(final String lineAndType)
 	{
 		final Matcher m = P_NORMALIZE_LINE_AND_TYPE.matcher(lineAndType);
 		if (m.matches())
@@ -1770,9 +1778,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			if (type.length() == 0)
 			{
 				if (number.length() == 0)
-					return "?";
+					return newLine("?");
 				if (P_NORMALIZE_LINE_NUMBER.matcher(number).matches())
-					return "?" + number;
+					return newLine("?" + number);
 				// saved from RtProvider
 				// if (P_NORMALIZE_LINE_RUSSIA.matcher(number).matches())
 				// return 'R' + number;
@@ -1781,7 +1789,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			{
 				final char normalizedType = normalizeType(type);
 				if (normalizedType != 0)
-					return normalizedType + number;
+					return newLine(normalizedType + number);
 			}
 
 			throw new IllegalStateException("cannot normalize type " + type + " number " + number + " line#type " + lineAndType);
