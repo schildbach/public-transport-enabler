@@ -927,6 +927,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return 'R' + str;
 			if (type.equals("IL")) // Island Line, GB
 				return 'R' + str;
+			if ("FCC".equals(type)) // First Capital Connect, GB
+				return 'R' + str;
 			if (type.equals("BR")) // ??, GB
 				return 'R' + str;
 			if (type.equals("OO")) // ??, GB
