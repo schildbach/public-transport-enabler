@@ -87,4 +87,15 @@ public class SeptaProviderLiveTest
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);
 	}
+
+	@Test
+	public void addressConnection() throws Exception
+	{
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, 40015670, -75209400,
+				"Philadelphia 19127", "3601 Main St"), null, new Location(LocationType.STATION, 2090227, null, "Main Street"), new Date(), true,
+				ALL_PRODUCTS, WalkSpeed.NORMAL);
+		System.out.println(result);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
+		System.out.println(moreResult);
+	}
 }
