@@ -23,6 +23,7 @@ import java.util.List;
 import org.junit.Test;
 
 import de.schildbach.pte.InvgProvider;
+import de.schildbach.pte.NetworkProvider.Accessibility;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
@@ -83,7 +84,7 @@ public class InvgProviderLiveTest
 	{
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 80302, null,
 				"Ingolstadt, Hauptbahnhof Stadteinwärts"), null, new Location(LocationType.STATION, 181102, null, "Elisabethstraße"), new Date(),
-				true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+				true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);

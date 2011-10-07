@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import de.schildbach.pte.NetworkProvider.Accessibility;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.TflProvider;
 import de.schildbach.pte.dto.Location;
@@ -81,8 +82,9 @@ public class TflProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 1008730, null, "King & Queen Wharf"), null,
-				new Location(LocationType.STATION, 1006433, null, "Edinburgh Court"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 1008730, null, "King & Queen Wharf"),
+				null, new Location(LocationType.STATION, 1006433, null, "Edinburgh Court"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
+				Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);
@@ -93,7 +95,7 @@ public class TflProviderLiveTest
 	{
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, null, "sw19 8ta"), null, new Location(
 				LocationType.STATION, 1016019, 51655903, -397249, null, "Watford (Herts), Watford Town Centre"), new Date(), true, ALL_PRODUCTS,
-				WalkSpeed.NORMAL);
+				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 	}
 }

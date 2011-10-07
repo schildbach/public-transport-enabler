@@ -23,6 +23,7 @@ import java.util.List;
 import org.junit.Test;
 
 import de.schildbach.pte.NasaProvider;
+import de.schildbach.pte.NetworkProvider.Accessibility;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
@@ -74,7 +75,8 @@ public class NasaProviderLiveTest
 	public void shortConnection() throws Exception
 	{
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 13002, null, "Leipzig, Augustusplatz"),
-				null, new Location(LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+				null, new Location(LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
+				Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);
@@ -85,7 +87,7 @@ public class NasaProviderLiveTest
 	{
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, 51334078, 12478331,
 				"04319 Leipzig-Engelsdorf", "August-Bebel-Platz"), null, new Location(LocationType.STATION, 8010205, null, "Leipzig Hbf"),
-				new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+				new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);

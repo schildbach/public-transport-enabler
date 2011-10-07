@@ -23,6 +23,7 @@ import java.util.List;
 import org.junit.Test;
 
 import de.schildbach.pte.DsbProvider;
+import de.schildbach.pte.NetworkProvider.Accessibility;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
@@ -82,7 +83,8 @@ public class DsbProviderLiveTest
 	public void shortConnection() throws Exception
 	{
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 900000011, null, "Copenhagen Airport"),
-				null, new Location(LocationType.STATION, 551922500, null, "Billund Airport"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+				null, new Location(LocationType.STATION, 551922500, null, "Billund Airport"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
+				Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);

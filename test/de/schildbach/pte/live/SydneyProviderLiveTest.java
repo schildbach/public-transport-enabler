@@ -22,8 +22,9 @@ import java.util.List;
 
 import org.junit.Test;
 
-import de.schildbach.pte.SydneyProvider;
+import de.schildbach.pte.NetworkProvider.Accessibility;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
+import de.schildbach.pte.SydneyProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -81,8 +82,9 @@ public class SydneyProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 10101100, "Sydney", "Central Station"), null,
-				new Location(LocationType.STATION, 0, "Sydney", "Capitol Square"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 10101100, "Sydney", "Central Station"),
+				null, new Location(LocationType.STATION, 0, "Sydney", "Capitol Square"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
+				Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);

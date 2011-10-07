@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import de.schildbach.pte.NetworkProvider.Accessibility;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.SncbProvider;
 import de.schildbach.pte.dto.Location;
@@ -90,7 +91,7 @@ public class SncbProviderLiveTest
 	public void shortConnection() throws Exception
 	{
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 8821006, "Antwerpen", "Centraal"), null,
-				new Location(LocationType.STATION, 8813003, "Brussel", "Centraal"), new Date(), true, null, WalkSpeed.FAST);
+				new Location(LocationType.STATION, 8813003, "Brussel", "Centraal"), new Date(), true, null, WalkSpeed.FAST, Accessibility.NEUTRAL);
 		System.out.println(result.status + "  " + result.connections);
 
 		if (result.context != null)
@@ -104,7 +105,7 @@ public class SncbProviderLiveTest
 	public void longConnection() throws Exception
 	{
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 207280, "Brussel", "Wannecouter"), null,
-				new Location(LocationType.STATION, 207272, "Brussel", "Stadion"), new Date(), true, null, WalkSpeed.FAST);
+				new Location(LocationType.STATION, 207272, "Brussel", "Stadion"), new Date(), true, null, WalkSpeed.FAST, Accessibility.NEUTRAL);
 		System.out.println(result.status + "  " + result.connections);
 
 		if (result.context != null)
@@ -119,7 +120,7 @@ public class SncbProviderLiveTest
 	{
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, null,
 				"Bruxelles - Haren, Rue Paul Janson 9"), null, new Location(LocationType.STATION, 8500010, null, "Basel"), new Date(), true,
-				ALL_PRODUCTS, WalkSpeed.NORMAL);
+				ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result.status + "  " + result.connections);
 
 		if (result.context != null)

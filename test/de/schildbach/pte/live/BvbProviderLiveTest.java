@@ -23,6 +23,7 @@ import java.util.List;
 import org.junit.Test;
 
 import de.schildbach.pte.BvbProvider;
+import de.schildbach.pte.NetworkProvider.Accessibility;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
@@ -69,7 +70,7 @@ public class BvbProviderLiveTest
 
 		list(autocompletes);
 	}
-	
+
 	@Test
 	public void autocompleteWithUmlaut() throws Exception
 	{
@@ -77,7 +78,6 @@ public class BvbProviderLiveTest
 
 		list(autocompletes);
 	}
-
 
 	private void list(final List<Location> autocompletes)
 	{
@@ -91,7 +91,7 @@ public class BvbProviderLiveTest
 	public void shortConnection() throws Exception
 	{
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 10000, null, "Bahnhof"), null,
-				new Location(LocationType.STATION, 86, null, "Markthalle"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+				new Location(LocationType.STATION, 86, null, "Markthalle"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);

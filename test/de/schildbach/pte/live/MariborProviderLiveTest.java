@@ -23,6 +23,7 @@ import java.util.List;
 import org.junit.Test;
 
 import de.schildbach.pte.MariborProvider;
+import de.schildbach.pte.NetworkProvider.Accessibility;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
@@ -82,7 +83,8 @@ public class MariborProviderLiveTest
 	public void shortConnection() throws Exception
 	{
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 63202999, null, "Graz Marburger Straße"),
-				null, new Location(LocationType.STATION, 63201746, null, "Flughafen Graz Bahnhof"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+				null, new Location(LocationType.STATION, 63201746, null, "Flughafen Graz Bahnhof"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
+				Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);

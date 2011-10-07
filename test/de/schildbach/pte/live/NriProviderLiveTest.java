@@ -22,8 +22,9 @@ import java.util.List;
 
 import org.junit.Test;
 
-import de.schildbach.pte.NriProvider;
+import de.schildbach.pte.NetworkProvider.Accessibility;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
+import de.schildbach.pte.NriProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -82,7 +83,7 @@ public class NriProviderLiveTest
 	public void shortConnection() throws Exception
 	{
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 8059, null, "Oslo"), null, new Location(
-				LocationType.STATION, 6642, null, "Bergen BGO"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+				LocationType.STATION, 6642, null, "Bergen BGO"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);

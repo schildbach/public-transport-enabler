@@ -23,6 +23,7 @@ import java.util.List;
 import org.junit.Test;
 
 import de.schildbach.pte.LuProvider;
+import de.schildbach.pte.NetworkProvider.Accessibility;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
@@ -82,7 +83,8 @@ public class LuProviderLiveTest
 	public void shortConnection() throws Exception
 	{
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 9409001, null, "Echternach, Bel Air"),
-				null, new Location(LocationType.STATION, 9440001, null, "Echternach, Gare"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+				null, new Location(LocationType.STATION, 9440001, null, "Echternach, Gare"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
+				Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);
@@ -93,7 +95,7 @@ public class LuProviderLiveTest
 	{
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, 49611610, 6130265, null,
 				"Luxembourg, Rue Génistre 2"), null, new Location(LocationType.STATION, 9217081, null, "Luxembourg, Gare Centrale"), new Date(),
-				true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+				true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);

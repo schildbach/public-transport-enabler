@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import de.schildbach.pte.NetworkProvider.Accessibility;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.NsProvider;
 import de.schildbach.pte.dto.Location;
@@ -81,7 +82,7 @@ public class NsProviderLiveTest
 	public void shortConnection() throws Exception
 	{
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 100024), null, new Location(
-				LocationType.STATION, 100066), new Date(), true, null, WalkSpeed.FAST);
+				LocationType.STATION, 100066), new Date(), true, null, WalkSpeed.FAST, Accessibility.NEUTRAL);
 
 		System.out.println(result.status + "  " + result.connections);
 	}
@@ -90,7 +91,7 @@ public class NsProviderLiveTest
 	public void longConnection() throws Exception
 	{
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 100024), null, new Location(
-				LocationType.STATION, 103624), new Date(), true, null, WalkSpeed.FAST);
+				LocationType.STATION, 103624), new Date(), true, null, WalkSpeed.FAST, Accessibility.NEUTRAL);
 
 		System.out.println(result.status + "  " + result.connections);
 	}

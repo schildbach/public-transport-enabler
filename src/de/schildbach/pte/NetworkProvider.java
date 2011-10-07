@@ -45,6 +45,11 @@ public interface NetworkProvider
 		SLOW, NORMAL, FAST
 	}
 
+	public enum Accessibility
+	{
+		NEUTRAL, LIMITED, BARRIER_FREE
+	}
+
 	NetworkId id();
 
 	boolean hasCapabilities(Capability... capabilities);
@@ -101,16 +106,16 @@ public interface NetworkProvider
 	 * @param dep
 	 *            date is departure date? {@code true} for departure, {@code false} for arrival
 	 * @param products
-	 *            TODO
+	 *            products to take into account
 	 * @param walkSpeed
 	 *            how fast can you walk?
-	 * @param products
-	 *            products to take into account
+	 * @param accessibility
+	 *            how accessible do you need the route to be?
 	 * @return result object that can contain alternatives to clear up ambiguousnesses, or contains possible connections
 	 * @throws IOException
 	 */
-	QueryConnectionsResult queryConnections(Location from, Location via, Location to, Date date, boolean dep, String products, WalkSpeed walkSpeed)
-			throws IOException;
+	QueryConnectionsResult queryConnections(Location from, Location via, Location to, Date date, boolean dep, String products, WalkSpeed walkSpeed,
+			Accessibility accessibility) throws IOException;
 
 	/**
 	 * Query more connections (e.g. earlier or later)

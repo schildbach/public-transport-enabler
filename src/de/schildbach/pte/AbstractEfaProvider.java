@@ -1459,7 +1459,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	}
 
 	private String xsltTripRequest2Uri(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final String products, final WalkSpeed walkSpeed)
+			final String products, final WalkSpeed walkSpeed, final Accessibility accessibility)
 	{
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
 		final DateFormat TIME_FORMAT = new SimpleDateFormat("HHmm");
@@ -1485,6 +1485,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		uri.append("&ptOptionsActive=1");
 		uri.append("&changeSpeed=").append(WALKSPEED_MAP.get(walkSpeed));
+
+		if (accessibility == Accessibility.BARRIER_FREE)
+			uri.append("&imparedOptionsActive=1").append("&wheelchair=on").append("&noSolidStairs=on");
+		else if (accessibility == Accessibility.LIMITED)
+			uri.append("&imparedOptionsActive=1").append("&wheelchair=on").append("&lowPlatformVhcl=on").append("&noSolidStairs=on");
 
 		if (products != null)
 		{
@@ -1556,9 +1561,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	}
 
 	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final String products, final WalkSpeed walkSpeed) throws IOException
+			final String products, final WalkSpeed walkSpeed, final Accessibility accessibility) throws IOException
 	{
-		final String uri = xsltTripRequest2Uri(from, via, to, date, dep, products, walkSpeed);
+		final String uri = xsltTripRequest2Uri(from, via, to, date, dep, products, walkSpeed, accessibility);
 
 		InputStream is = null;
 		try

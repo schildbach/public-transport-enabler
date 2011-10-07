@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import de.schildbach.pte.NetworkProvider.Accessibility;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.SeptaProvider;
 import de.schildbach.pte.dto.Location;
@@ -82,7 +83,8 @@ public class SeptaProviderLiveTest
 	public void shortConnection() throws Exception
 	{
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 2090227, null, "Main Street"), null,
-				new Location(LocationType.STATION, 1015755, null, "Harbison Av + Unruh Av"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+				new Location(LocationType.STATION, 1015755, null, "Harbison Av + Unruh Av"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
+				Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);
@@ -93,7 +95,7 @@ public class SeptaProviderLiveTest
 	{
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, 40015670, -75209400,
 				"Philadelphia 19127", "3601 Main St"), null, new Location(LocationType.STATION, 2090227, null, "Main Street"), new Date(), true,
-				ALL_PRODUCTS, WalkSpeed.NORMAL);
+				ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);

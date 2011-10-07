@@ -23,6 +23,7 @@ import java.util.List;
 import org.junit.Test;
 
 import de.schildbach.pte.LinzProvider;
+import de.schildbach.pte.NetworkProvider.Accessibility;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
@@ -68,8 +69,7 @@ public class LinzProviderLiveTest
 
 		list(autocompletes);
 	}
-	
-	
+
 	@Test
 	public void autocompleteWithUmlaut() throws Exception
 	{
@@ -106,7 +106,7 @@ public class LinzProviderLiveTest
 	public void incompleteConnection() throws Exception
 	{
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, null, "linz"), null, new Location(
-				LocationType.ANY, 0, null, "gel"), new Date(), true, ALL_PRODUCTS, WalkSpeed.FAST);
+				LocationType.ANY, 0, null, "gel"), new Date(), true, ALL_PRODUCTS, WalkSpeed.FAST, Accessibility.NEUTRAL);
 		System.out.println(result);
 	}
 
@@ -114,7 +114,7 @@ public class LinzProviderLiveTest
 	public void shortConnection() throws Exception
 	{
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 0, null, "Linz Hauptbahnhof"), null,
-				new Location(LocationType.STATION, 0, null, "Linz Auwiesen"), new Date(), true, ALL_PRODUCTS, WalkSpeed.FAST);
+				new Location(LocationType.STATION, 0, null, "Linz Auwiesen"), new Date(), true, ALL_PRODUCTS, WalkSpeed.FAST, Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);
@@ -124,7 +124,7 @@ public class LinzProviderLiveTest
 	public void longConnection() throws Exception
 	{
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 0, null, "Linz Auwiesen"), null,
-				new Location(LocationType.STATION, 0, null, "Linz Hafen"), new Date(), true, ALL_PRODUCTS, WalkSpeed.SLOW);
+				new Location(LocationType.STATION, 0, null, "Linz Hafen"), new Date(), true, ALL_PRODUCTS, WalkSpeed.SLOW, Accessibility.NEUTRAL);
 		System.out.println(result);
 		// final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		// System.out.println(moreResult);
