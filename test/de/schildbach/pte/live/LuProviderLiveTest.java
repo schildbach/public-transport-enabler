@@ -87,4 +87,15 @@ public class LuProviderLiveTest
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);
 	}
+
+	@Test
+	public void addressConnection() throws Exception
+	{
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, 49611610, 6130265, null,
+				"Luxembourg, Rue Génistre 2"), null, new Location(LocationType.STATION, 9217081, null, "Luxembourg, Gare Centrale"), new Date(),
+				true, ALL_PRODUCTS, WalkSpeed.NORMAL);
+		System.out.println(result);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
+		System.out.println(moreResult);
+	}
 }
