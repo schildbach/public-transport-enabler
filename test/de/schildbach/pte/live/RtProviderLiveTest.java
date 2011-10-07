@@ -119,9 +119,9 @@ public class RtProviderLiveTest
 	@Test
 	public void connectionFromAddress() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, null,
-				"Dorfstrasse 10, Dällikon, Schweiz"), null, new Location(LocationType.STATION, 8500010, null, "Basel"), new Date(), true,
-				ALL_PRODUCTS, WalkSpeed.NORMAL);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, 51521886, -51447, null,
+				"26 Coopers Close, Poplar, Greater London E1 4, Vereinigtes Königreich"), null, new Location(LocationType.STATION, 8096022, 50941312,
+				6967206, null, "COLOGNE"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL);
 		System.out.println(result);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);
