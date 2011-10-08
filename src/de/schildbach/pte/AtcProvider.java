@@ -29,7 +29,7 @@ import de.schildbach.pte.dto.LocationType;
 public class AtcProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.ATC;
-	private final static String API_BASE = "http://tpweb.atc.bo.it/atc2/";
+	private final static String API_BASE = "http://tpweb.atc.bo.it/atc2/"; // "http://82.187.83.50/TravelPlanner/"
 
 	public AtcProvider()
 	{
