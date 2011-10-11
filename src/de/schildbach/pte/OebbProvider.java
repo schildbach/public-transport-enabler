@@ -60,6 +60,35 @@ public class OebbProvider extends AbstractHafasProvider
 	}
 
 	@Override
+	protected char intToProduct(final int value)
+	{
+		if (value == 1)
+			return 'I';
+		if (value == 2)
+			return 'I';
+		if (value == 4)
+			return 'I';
+		if (value == 8)
+			return 'R';
+		if (value == 16)
+			return 'R';
+		if (value == 32)
+			return 'S';
+		if (value == 64)
+			return 'B';
+		if (value == 128)
+			return 'F';
+		if (value == 256)
+			return 'U';
+		if (value == 512)
+			return 'T';
+		if (value == 2048)
+			return 'P';
+
+		throw new IllegalArgumentException("cannot handle: " + value);
+	}
+
+	@Override
 	protected void setProductBits(final StringBuilder productBits, final char product)
 	{
 		if (product == 'I')
