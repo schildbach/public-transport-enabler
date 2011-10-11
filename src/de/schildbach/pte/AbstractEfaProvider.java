@@ -1060,19 +1060,21 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			if ("KTB".equals(type)) // Kandertalbahn
 				return 'R' + type;
 
-			if (type.equals("BSB")) // Breisgau-S-Bahn
+			if ("BSB".equals(type)) // Breisgau-S-Bahn
 				return 'S' + str;
-			if (type.equals("RER")) // Réseau Express Régional, Frankreich
+			if ("BSB-Zug".equals(type)) // Breisgau-S-Bahn
 				return 'S' + str;
-			if (type.equals("LO")) // London Overground, GB
+			if ("Breisgau-S-Bahn".equals(type)) // Bayern
+				return 'S' + type;
+			if ("RER".equals(type)) // Réseau Express Régional, Frankreich
+				return 'S' + str;
+			if ("LO".equals(type)) // London Overground, GB
 				return 'S' + str;
 			if ("A".equals(name) || "B".equals(name) || "C".equals(name)) // SES
 				return 'S' + str;
 			final Matcher m = P_LINE_S.matcher(name);
 			if (m.find())
 				return 'S' + m.group(1);
-			if ("Breisgau-S-Bahn".equals(type)) // Bayern
-				return 'S' + type;
 
 			if (P_LINE_U.matcher(type).matches())
 				return 'U' + str;
