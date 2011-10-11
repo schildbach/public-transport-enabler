@@ -1714,7 +1714,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		return 0;
 	}
 
-	protected static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zßÄÅäáàâåéèêíìîÖöóòôÜüúùûØ/]+)[\\s-]*(.*)");
+	protected static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zßÄÅäáàâåéèêíìîÖöóòôÜüúùûØ/]+)[\\s-]*([^#]*).*");
 
 	protected Line parseLine(final String type, final String line, final boolean wheelchairAccess)
 	{
@@ -1786,7 +1786,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	protected static final Pattern P_NORMALIZE_LINE_AND_TYPE = Pattern.compile("([^#]*)#(.*)");
 	private static final Pattern P_NORMALIZE_LINE_NUMBER = Pattern.compile("\\d{2,5}");
 	// saved from RtProvider
-	private static final Pattern P_NORMALIZE_LINE_RUSSIA = Pattern.compile("(\\d{3}(BJ|FJ|IJ|MJ|NJ|OJ|TJ|SZ))");
+	// private static final Pattern P_NORMALIZE_LINE_RUSSIA = Pattern.compile("(\\d{3}(BJ|FJ|IJ|MJ|NJ|OJ|TJ|SZ))");
 
 	protected Line parseLineAndType(final String lineAndType)
 	{
