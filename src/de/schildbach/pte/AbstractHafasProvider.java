@@ -1394,6 +1394,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			return 'I';
 		if ("EM".equals(ucType)) // Euromed, Barcelona-Alicante, Spanien
 			return 'I';
+		if ("A".equals(ucType)) // Spain, Highspeed
+			return 'I';
 		if ("AVE".equals(ucType)) // Alta Velocidad Española, Spanien
 			return 'I';
 		if ("ARC".equals(ucType)) // Arco (Renfe), Spanien
@@ -1785,6 +1787,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 	protected static final Pattern P_NORMALIZE_LINE_AND_TYPE = Pattern.compile("([^#]*)#(.*)");
 	private static final Pattern P_NORMALIZE_LINE_NUMBER = Pattern.compile("\\d{2,5}");
+
 	// saved from RtProvider
 	// private static final Pattern P_NORMALIZE_LINE_RUSSIA = Pattern.compile("(\\d{3}(BJ|FJ|IJ|MJ|NJ|OJ|TJ|SZ))");
 

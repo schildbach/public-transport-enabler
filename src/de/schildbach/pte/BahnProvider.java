@@ -546,9 +546,6 @@ public final class BahnProvider extends AbstractHafasProvider
 	{
 		final String ucType = type.toUpperCase();
 
-		if ("A".equals(ucType)) // Spain, Highspeed
-			return 'I';
-
 		if ("RNV".equals(ucType))
 			return 'R';
 		if ("DZ".equals(ucType)) // Dampfzug
