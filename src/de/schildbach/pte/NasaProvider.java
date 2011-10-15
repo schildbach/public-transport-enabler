@@ -19,7 +19,9 @@ package de.schildbach.pte;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.regex.Pattern;
 
+import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -140,6 +142,17 @@ public class NasaProvider extends AbstractHafasProvider
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
 		return xmlMLcReq(constraint);
+	}
+
+	private static final Pattern P_LINE_NUMBER = Pattern.compile("\\d{4,}");
+
+	@Override
+	protected Line normalizeLine(final String line)
+	{
+		if (P_LINE_NUMBER.matcher(line).matches())
+			return newLine('?' + line);
+
+		return super.normalizeLine(line);
 	}
 
 	@Override
