@@ -1338,7 +1338,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 				return result;
 			}
-			else if ("notidentified".equals(nameState))
+			else if ("notidentified".equals(nameState) || "list".equals(nameState))
 			{
 				return new QueryDeparturesResult(header, QueryDeparturesResult.Status.INVALID_STATION);
 			}
