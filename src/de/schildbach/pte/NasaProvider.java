@@ -162,6 +162,8 @@ public class NasaProvider extends AbstractHafasProvider
 
 		if ("ECW".equals(ucType))
 			return 'I';
+		if ("IXB".equals(ucType)) // ICE International
+			return 'I';
 
 		if ("DPF".equals(ucType)) // mit Dampflok bespannter Zug
 			return 'R';
