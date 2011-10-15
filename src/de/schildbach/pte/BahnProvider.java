@@ -567,7 +567,6 @@ public final class BahnProvider extends AbstractHafasProvider
 		return 0;
 	}
 
-	private static final Pattern P_LINE_BUS_SPECIAL = Pattern.compile("Bus([A-Z]/[\\dA-Z]+)");
 	private static final Pattern P_LINE_RUSSIA = Pattern
 			.compile("\\d{3}(?:AJ|BJ|DJ|FJ|GJ|IJ|KJ|LJ|NJ|MJ|OJ|RJ|SJ|TJ|VJ|ZJ|CH|KH|ZH|EI|JA|JI|MZ|SH|PC|Y)");
 	private static final Pattern P_LINE_NUMBER = Pattern.compile("\\d{2,5}");
@@ -577,9 +576,6 @@ public final class BahnProvider extends AbstractHafasProvider
 	{
 		if ("Schw-B".equals(line)) // Schwebebahn, gilt als "Straßenbahn besonderer Bauart"
 			return newLine('T' + line);
-
-		if (P_LINE_BUS_SPECIAL.matcher(line).matches())
-			return newLine('B' + line);
 
 		if (P_LINE_RUSSIA.matcher(line).matches())
 			return newLine('R' + line);

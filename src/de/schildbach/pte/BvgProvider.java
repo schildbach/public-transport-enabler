@@ -894,7 +894,6 @@ public final class BvgProvider extends AbstractHafasProvider
 	private static final Pattern P_LINE_REGIONAL = Pattern.compile("Zug\\s+(\\d+)");
 	private static final Pattern P_LINE_TRAM = Pattern.compile("Tram?\\s+([\\dA-Z/-]+)");
 	private static final Pattern P_LINE_BUS = Pattern.compile("Bus\\s+([\\dA-Z/-]+)");
-	private static final Pattern P_LINE_BUS_SPECIAL = Pattern.compile("Bus([A-F]/\\d+)");
 	private static final Pattern P_LINE_FERRY = Pattern.compile("F\\d+|WT");
 	private static final Pattern P_LINE_NUMBER = Pattern.compile("\\d{4,}");
 
@@ -915,10 +914,6 @@ public final class BvgProvider extends AbstractHafasProvider
 
 		if (P_LINE_FERRY.matcher(line).matches())
 			return newLine('F' + line);
-
-		final Matcher mBusSpecial = P_LINE_BUS_SPECIAL.matcher(line);
-		if (mBusSpecial.matches())
-			return newLine('B' + mBusSpecial.group(1));
 
 		if (P_LINE_NUMBER.matcher(line).matches())
 			return newLine('R' + line);
