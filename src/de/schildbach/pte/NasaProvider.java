@@ -88,6 +88,22 @@ public class NasaProvider extends AbstractHafasProvider
 		}
 	}
 
+	private static final String[] PLACES = { "Leipzig", "Halle (Saale)", "Halle" };
+
+	@Override
+	protected String[] splitPlaceAndName(final String name)
+	{
+		for (final String place : PLACES)
+		{
+			if (name.startsWith(place + " ") || name.startsWith(place + "-"))
+				return new String[] { place, name.substring(place.length() + 1) };
+			else if (name.startsWith(place + ", "))
+				return new String[] { place, name.substring(place.length() + 2) };
+		}
+
+		return super.splitPlaceAndName(name);
+	}
+
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(API_BASE);
