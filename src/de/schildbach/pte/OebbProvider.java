@@ -82,6 +82,8 @@ public class OebbProvider extends AbstractHafasProvider
 			return 'U';
 		if (value == 512)
 			return 'T';
+		if (value == 1024) // Autoreisezug
+			return 'I';
 		if (value == 2048)
 			return 'P';
 
@@ -96,6 +98,7 @@ public class OebbProvider extends AbstractHafasProvider
 			productBits.setCharAt(0, '1'); // railjet/ICE
 			productBits.setCharAt(1, '1'); // ÖBB EC/ÖBB IC
 			productBits.setCharAt(2, '1'); // EC/IC
+			productBits.setCharAt(10, '1'); // Autoreisezug
 		}
 		else if (product == 'R')
 		{
