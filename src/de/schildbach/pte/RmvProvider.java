@@ -353,6 +353,8 @@ public class RmvProvider extends AbstractHafasProvider
 			return 'B';
 		if ("BN".equals(ucType)) // BN Venus
 			return 'B';
+		if ("ASOF".equals(ucType))
+			return 'B';
 
 		final char t = super.normalizeType(type);
 		if (t != 0)
