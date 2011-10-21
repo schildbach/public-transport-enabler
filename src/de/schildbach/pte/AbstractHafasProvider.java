@@ -1247,27 +1247,41 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	{
 		final CharSequence page = ParserUtils.scrape(uri, false, null, jsonEncoding, null);
 
-		final List<Location> stations = new ArrayList<Location>();
-
 		try
 		{
 			final JSONObject head = new JSONObject(page.toString());
-			final JSONArray aStops = head.getJSONArray("stops");
-
-			for (int i = 0; i < aStops.length(); i++)
+			final int error = head.getInt("error");
+			if (error == 0)
 			{
-				final JSONObject stop = aStops.optJSONObject(i);
-				final int id = stop.getInt("extId");
-				final String name = ParserUtils.resolveEntities(stop.getString("name"));
-				final int lat = stop.getInt("y");
-				final int lon = stop.getInt("x");
-				final int stopWeight = stop.optInt("stopweight", -1);
+				final JSONArray aStops = head.getJSONArray("stops");
+				final int nStops = aStops.length();
+				final List<Location> stations = new ArrayList<Location>(nStops);
 
-				if (stopWeight != 0)
+				for (int i = 0; i < nStops; i++)
 				{
-					final String[] placeAndName = splitPlaceAndName(name);
-					stations.add(new Location(LocationType.STATION, id, lat, lon, placeAndName[0], placeAndName[1]));
+					final JSONObject stop = aStops.optJSONObject(i);
+					final int id = stop.getInt("extId");
+					final String name = ParserUtils.resolveEntities(stop.getString("name"));
+					final int lat = stop.getInt("y");
+					final int lon = stop.getInt("x");
+					final int stopWeight = stop.optInt("stopweight", -1);
+
+					if (stopWeight != 0)
+					{
+						final String[] placeAndName = splitPlaceAndName(name);
+						stations.add(new Location(LocationType.STATION, id, lat, lon, placeAndName[0], placeAndName[1]));
+					}
 				}
+
+				return new NearbyStationsResult(null, stations);
+			}
+			else if (error == 2)
+			{
+				return new NearbyStationsResult(null, NearbyStationsResult.Status.SERVICE_DOWN);
+			}
+			else
+			{
+				throw new RuntimeException("unknown error: " + error);
 			}
 		}
 		catch (final JSONException x)
@@ -1275,8 +1289,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			x.printStackTrace();
 			throw new RuntimeException("cannot parse: '" + page + "' on " + uri, x);
 		}
-
-		return new NearbyStationsResult(null, stations);
 	}
 
 	private final static Pattern P_NEARBY_COARSE = Pattern.compile("<tr class=\"(zebra[^\"]*)\">(.*?)</tr>", Pattern.DOTALL);
