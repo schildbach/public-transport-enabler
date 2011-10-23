@@ -1731,9 +1731,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				XmlPullUtil.enter(pp, "itdPartialRouteList");
 				final List<Connection.Part> parts = new LinkedList<Connection.Part>();
 				Location firstDeparture = null;
-				Date firstDepartureTime = null;
 				Location lastArrival = null;
-				Date lastArrivalTime = null;
 
 				while (XmlPullUtil.test(pp, "itdPartialRoute"))
 				{
@@ -1753,8 +1751,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					XmlPullUtil.require(pp, "itdDateTime");
 					processItdDateTime(pp, time);
 					final Date departureTime = time.getTime();
-					if (firstDepartureTime == null)
-						firstDepartureTime = departureTime;
 					final Date departureTargetTime;
 					if (XmlPullUtil.test(pp, "itdDateTimeTarget"))
 					{
@@ -1780,7 +1776,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					XmlPullUtil.require(pp, "itdDateTime");
 					processItdDateTime(pp, time);
 					final Date arrivalTime = time.getTime();
-					lastArrivalTime = arrivalTime;
 					final Date arrivalTargetTime;
 					if (XmlPullUtil.test(pp, "itdDateTimeTarget"))
 					{
@@ -1970,8 +1965,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					}
 					XmlPullUtil.exit(pp, "itdFare");
 				}
-				connections.add(new Connection(id, uri, firstDepartureTime, lastArrivalTime, firstDeparture, lastArrival, parts,
-						fares.isEmpty() ? null : fares, null));
+				connections.add(new Connection(id, uri, firstDeparture, lastArrival, parts, fares.isEmpty() ? null : fares, null));
 				XmlPullUtil.exit(pp, "itdRoute");
 			}
 

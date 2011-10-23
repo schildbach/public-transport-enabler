@@ -31,21 +31,17 @@ public final class Connection implements Serializable
 
 	public final String id;
 	public final String link;
-	public final Date departureTime;
-	public final Date arrivalTime;
 	public final Location from;
 	public final Location to;
 	public final List<Part> parts;
 	public final List<Fare> fares;
 	public final int[] capacity;
 
-	public Connection(final String id, final String link, final Date departureTime, final Date arrivalTime, final Location from, final Location to,
-			final List<Part> parts, final List<Fare> fares, final int[] capacity)
+	public Connection(final String id, final String link, final Location from, final Location to, final List<Part> parts, final List<Fare> fares,
+			final int[] capacity)
 	{
 		this.id = id;
 		this.link = link;
-		this.departureTime = departureTime;
-		this.arrivalTime = arrivalTime;
 		this.from = from;
 		this.to = to;
 		this.parts = parts;
@@ -53,11 +49,36 @@ public final class Connection implements Serializable
 		this.capacity = capacity;
 	}
 
+	public Date getFirstTripDepartureTime()
+	{
+		if (parts != null)
+			for (final Part part : parts)
+				if (part instanceof Trip)
+					return ((Trip) part).getDepartureTime();
+
+		return null;
+	}
+
+	public Date getFirstTripArrivalTime()
+	{
+		if (parts != null)
+		{
+			for (int i = parts.size() - 1; i >= 0; i--)
+			{
+				final Part part = parts.get(i);
+				if (part instanceof Trip)
+					return ((Trip) part).getArrivalTime();
+			}
+		}
+
+		return null;
+	}
+
 	@Override
 	public String toString()
 	{
 		final SimpleDateFormat FORMAT = new SimpleDateFormat("E HH:mm");
-		return id + " " + FORMAT.format(departureTime) + "-" + FORMAT.format(arrivalTime);
+		return id + " " + FORMAT.format(getFirstTripDepartureTime()) + "-" + FORMAT.format(getFirstTripArrivalTime());
 	}
 
 	@Override

@@ -832,8 +832,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				XmlPullUtil.exit(pp, "Overview");
 
 				final List<Connection.Part> parts = new ArrayList<Connection.Part>(4);
-				Date firstDepartureTime = null;
-				Date lastArrivalTime = null;
 
 				XmlPullUtil.enter(pp, "ConSectionList");
 
@@ -1009,17 +1007,13 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 							parts.add(new Connection.Footway(min, sectionDeparture, sectionArrival, null));
 						}
 					}
-
-					if (firstDepartureTime == null)
-						firstDepartureTime = departureTime;
-					lastArrivalTime = arrivalTime;
 				}
 
 				XmlPullUtil.exit(pp, "ConSectionList");
 
 				XmlPullUtil.exit(pp, "Connection");
 
-				connections.add(new Connection(id, null, firstDepartureTime, lastArrivalTime, departure, arrival, parts, null, capacity));
+				connections.add(new Connection(id, null, departure, arrival, parts, null, capacity));
 			}
 
 			XmlPullUtil.exit(pp);

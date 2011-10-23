@@ -48,8 +48,6 @@ public final class BahnProvider extends AbstractHafasProvider
 	public static final String OLD_NETWORK_ID = "mobile.bahn.de";
 	private static final String API_BASE = "http://mobile.bahn.de/bin/mobil/";
 
-	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
-
 	public BahnProvider()
 	{
 		super("http://reiseauskunft.bahn.de/bin/extxml.exe", 14, null);
@@ -353,24 +351,7 @@ public final class BahnProvider extends AbstractHafasProvider
 				if (mConFine.matches())
 				{
 					final String link = ParserUtils.resolveEntities(mConFine.group(1));
-					final Calendar departureTime = new GregorianCalendar(timeZone());
-					departureTime.setTimeInMillis(currentDate.getTimeInMillis());
-					ParserUtils.parseEuropeanTime(departureTime, mConFine.group(2));
-					if (!connections.isEmpty())
-					{
-						final long diff = departureTime.getTimeInMillis() - connections.get(connections.size() - 1).departureTime.getTime();
-						if (diff > PARSER_DAY_ROLLOVER_THRESHOLD_MS)
-							departureTime.add(Calendar.DAY_OF_YEAR, -1);
-						else if (diff < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
-							departureTime.add(Calendar.DAY_OF_YEAR, 1);
-					}
-					final Calendar arrivalTime = new GregorianCalendar(timeZone());
-					arrivalTime.setTimeInMillis(currentDate.getTimeInMillis());
-					ParserUtils.parseEuropeanTime(arrivalTime, mConFine.group(3));
-					if (departureTime.after(arrivalTime))
-						arrivalTime.add(Calendar.DAY_OF_YEAR, 1);
-					final Connection connection = new Connection(AbstractHafasProvider.extractConnectionId(link), link, departureTime.getTime(),
-							arrivalTime.getTime(), from, to, null, null, null);
+					final Connection connection = new Connection(AbstractHafasProvider.extractConnectionId(link), link, from, to, null, null, null);
 					connections.add(connection);
 				}
 				else
@@ -429,9 +410,7 @@ public final class BahnProvider extends AbstractHafasProvider
 		{
 			final List<Connection.Part> parts = new ArrayList<Connection.Part>(4);
 
-			Date firstDepartureTime = null;
 			Location firstDeparture = null;
-			Date lastArrivalTime = null;
 			Location lastArrival = null;
 
 			final Matcher mDetCoarse = P_CONNECTION_DETAILS_COARSE.matcher(mHead.group(1));
@@ -474,11 +453,7 @@ public final class BahnProvider extends AbstractHafasProvider
 							parts.add(new Connection.Trip(line, null, departureTime.getTime(), null, departurePosition, departure, arrivalTime
 									.getTime(), null, arrivalPosition, arrival, null, null));
 
-							if (firstDepartureTime == null)
-								firstDepartureTime = departureTime.getTime();
-
 							lastArrival = arrival;
-							lastArrivalTime = arrivalTime.getTime();
 						}
 						else if (mDetFine.group(10) != null)
 						{
@@ -512,13 +487,8 @@ public final class BahnProvider extends AbstractHafasProvider
 				}
 			}
 
-			// verify
-			if (firstDepartureTime == null || lastArrivalTime == null)
-				throw new IllegalStateException("could not parse all parts of:\n" + mHead.group(1) + "\n" + parts);
-
 			return new GetConnectionDetailsResult(new GregorianCalendar(timeZone()).getTime(), new Connection(
-					AbstractHafasProvider.extractConnectionId(uri), uri, firstDepartureTime, lastArrivalTime, firstDeparture, lastArrival, parts,
-					null, null));
+					AbstractHafasProvider.extractConnectionId(uri), uri, firstDeparture, lastArrival, parts, null, null));
 		}
 		else
 		{

@@ -741,9 +741,6 @@ public final class BvgProvider extends AbstractHafasProvider
 					ParserUtils.parseGermanDate(time, mConFine.group(1));
 					Date lastTime = null;
 
-					Date firstDepartureTime = null;
-					Date lastArrivalTime = null;
-
 					final String id = mConFine.group(2);
 
 					final String[] trackParts = mConFine.group(3).split("\\*");
@@ -788,8 +785,6 @@ public final class BvgProvider extends AbstractHafasProvider
 								time.add(Calendar.DAY_OF_YEAR, 1);
 							lastTime = time.getTime();
 							final Date departureTime = time.getTime();
-							if (firstDepartureTime == null)
-								firstDepartureTime = departureTime;
 
 							final String[] tArr2 = track.size() == 1 ? tracks.get(iTrack + 1).get(0) : tArr;
 
@@ -800,7 +795,6 @@ public final class BvgProvider extends AbstractHafasProvider
 								time.add(Calendar.DAY_OF_YEAR, 1);
 							lastTime = time.getTime();
 							final Date arrivalTime = time.getTime();
-							lastArrivalTime = arrivalTime;
 
 							final int mins = (int) ((arrivalTime.getTime() - departureTime.getTime()) / 1000 / 60);
 
@@ -813,8 +807,6 @@ public final class BvgProvider extends AbstractHafasProvider
 								time.add(Calendar.DAY_OF_YEAR, 1);
 							lastTime = time.getTime();
 							final Date departureTime = time.getTime();
-							if (firstDepartureTime == null)
-								firstDepartureTime = departureTime;
 
 							final List<Stop> intermediateStops = new LinkedList<Stop>();
 							for (final String[] tStop : track.subList(1, track.size() - 1))
@@ -833,7 +825,6 @@ public final class BvgProvider extends AbstractHafasProvider
 								time.add(Calendar.DAY_OF_YEAR, 1);
 							lastTime = time.getTime();
 							final Date arrivalTime = time.getTime();
-							lastArrivalTime = arrivalTime;
 
 							final String arrivalPosition = !mDetails.group(4).equals("&nbsp;") ? ParserUtils.resolveEntities(mDetails.group(4))
 									: null;
@@ -857,7 +848,7 @@ public final class BvgProvider extends AbstractHafasProvider
 						}
 					}
 
-					connections.add(new Connection(id, firstUri, firstDepartureTime, lastArrivalTime, from, to, parts, null, null));
+					connections.add(new Connection(id, firstUri, from, to, parts, null, null));
 				}
 				else
 				{
