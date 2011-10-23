@@ -994,8 +994,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 					if (min == 0 || line != null)
 					{
-						parts.add(new Connection.Trip(line, destination, departureTime, departurePos, sectionDeparture, arrivalTime, arrivalPos,
-								sectionArrival, intermediateStops, null));
+						parts.add(new Connection.Trip(line, destination, departureTime, null, departurePos, sectionDeparture, arrivalTime, null,
+								arrivalPos, sectionArrival, intermediateStops, null));
 					}
 					else
 					{

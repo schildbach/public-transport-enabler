@@ -1923,8 +1923,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 						final Line line = new Line(lineId, lineLabel, lineColors(lineLabel), lineAttrs);
 
-						parts.add(new Connection.Trip(line, destination, departureTime, departurePosition, departure, arrivalTime, arrivalPosition,
-								arrival, intermediateStops, path));
+						parts.add(new Connection.Trip(line, destination, departureTargetTime != null ? departureTargetTime : departureTime,
+								departureTargetTime, departurePosition, departure, arrivalTargetTime != null ? arrivalTargetTime : arrivalTime,
+								arrivalTargetTime, arrivalPosition, arrival, intermediateStops, path));
 					}
 
 					XmlPullUtil.exit(pp, "itdPartialRoute");

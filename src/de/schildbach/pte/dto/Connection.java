@@ -97,25 +97,59 @@ public final class Connection implements Serializable
 	{
 		public final Line line;
 		public final Location destination;
-		public final Date departureTime;
+		public final Date departureTime; // TODO rename to plannedDepartureTime
+		public final Date predictedDepartureTime;
 		public final String departurePosition;
-		public final Date arrivalTime;
+		public final Date arrivalTime; // TODO rename to plannedArrivalTime
+		public final Date predictedArrivalTime;
 		public final String arrivalPosition;
 		public final List<Stop> intermediateStops;
 
-		public Trip(final Line line, final Location destination, final Date departureTime, final String departurePosition, final Location departure,
-				final Date arrivalTime, final String arrivalPosition, final Location arrival, final List<Stop> intermediateStops,
-				final List<Point> path)
+		public Trip(final Line line, final Location destination, final Date plannedDepartureTime, final Date predictedDepartureTime,
+				final String departurePosition, final Location departure, final Date plannedArrivalTime, final Date predictedArrivalTime,
+				final String arrivalPosition, final Location arrival, final List<Stop> intermediateStops, final List<Point> path)
 		{
 			super(departure, arrival, path);
 
 			this.line = line;
 			this.destination = destination;
-			this.departureTime = departureTime;
+			this.departureTime = plannedDepartureTime;
+			this.predictedDepartureTime = predictedDepartureTime;
 			this.departurePosition = departurePosition;
-			this.arrivalTime = arrivalTime;
+			this.arrivalTime = plannedArrivalTime;
+			this.predictedArrivalTime = predictedArrivalTime;
 			this.arrivalPosition = arrivalPosition;
 			this.intermediateStops = intermediateStops;
+		}
+
+		public Date getDepartureTime()
+		{
+			if (predictedDepartureTime != null)
+				return predictedDepartureTime;
+			else if (departureTime != null)
+				return departureTime;
+			else
+				throw new IllegalStateException();
+		}
+
+		public boolean isDepartureTimePredicted()
+		{
+			return predictedDepartureTime != null;
+		}
+
+		public Date getArrivalTime()
+		{
+			if (predictedArrivalTime != null)
+				return predictedArrivalTime;
+			else if (arrivalTime != null)
+				return arrivalTime;
+			else
+				throw new IllegalStateException();
+		}
+
+		public boolean isArrivalTimePredicted()
+		{
+			return predictedArrivalTime != null;
 		}
 
 		@Override

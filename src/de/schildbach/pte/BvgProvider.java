@@ -852,7 +852,7 @@ public final class BvgProvider extends AbstractHafasProvider
 								destination = null;
 							}
 
-							parts.add(new Connection.Trip(line, destination, departureTime, departurePosition, departure, arrivalTime,
+							parts.add(new Connection.Trip(line, destination, departureTime, null, departurePosition, departure, arrivalTime, null,
 									arrivalPosition, arrival, intermediateStops, null));
 						}
 					}

@@ -471,8 +471,8 @@ public final class BahnProvider extends AbstractHafasProvider
 
 							final String arrivalPosition = ParserUtils.resolveEntities(mDetFine.group(8));
 
-							parts.add(new Connection.Trip(line, null, departureTime.getTime(), departurePosition, departure, arrivalTime.getTime(),
-									arrivalPosition, arrival, null, null));
+							parts.add(new Connection.Trip(line, null, departureTime.getTime(), null, departurePosition, departure, arrivalTime
+									.getTime(), null, arrivalPosition, arrival, null, null));
 
 							if (firstDepartureTime == null)
 								firstDepartureTime = departureTime.getTime();
