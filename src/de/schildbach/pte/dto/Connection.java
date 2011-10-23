@@ -95,6 +95,8 @@ public final class Connection implements Serializable
 
 	public final static class Trip extends Part
 	{
+		private static final long serialVersionUID = 1312066446239817422L;
+
 		public final Line line;
 		public final Location destination;
 		public final Date departureTime; // TODO rename to plannedDepartureTime
