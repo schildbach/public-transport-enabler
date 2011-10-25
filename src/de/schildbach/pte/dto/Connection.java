@@ -78,7 +78,16 @@ public final class Connection implements Serializable
 	public String toString()
 	{
 		final SimpleDateFormat FORMAT = new SimpleDateFormat("E HH:mm");
-		return id + " " + FORMAT.format(getFirstTripDepartureTime()) + "-" + FORMAT.format(getFirstTripArrivalTime());
+
+		final StringBuilder str = new StringBuilder(id);
+		str.append(' ');
+		final Date firstTripDepartureTime = getFirstTripDepartureTime();
+		str.append(firstTripDepartureTime != null ? FORMAT.format(firstTripDepartureTime) : "null");
+		str.append('-');
+		final Date firstTripArrivalTime = getFirstTripArrivalTime();
+		str.append(firstTripArrivalTime != null ? FORMAT.format(firstTripArrivalTime) : "null");
+
+		return str.toString();
 	}
 
 	@Override
