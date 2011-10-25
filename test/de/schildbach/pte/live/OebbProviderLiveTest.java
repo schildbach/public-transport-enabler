@@ -17,6 +17,9 @@
 
 package de.schildbach.pte.live;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Date;
 import java.util.List;
 
@@ -53,6 +56,8 @@ public class OebbProviderLiveTest
 		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 48200239, 16370773), 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
+		assertEquals(NearbyStationsResult.Status.OK, result.status);
+		assertTrue(result.stations.size() > 0);
 	}
 
 	@Test
@@ -61,6 +66,8 @@ public class OebbProviderLiveTest
 		final QueryDeparturesResult result = provider.queryDepartures(902006, 0, false);
 
 		System.out.println(result.stationDepartures);
+		assertEquals(QueryDeparturesResult.Status.OK, result.status);
+		assertTrue(result.stationDepartures.size() > 0);
 	}
 
 	@Test
@@ -69,6 +76,7 @@ public class OebbProviderLiveTest
 		final List<Location> autocompletes = provider.autocompleteStations("Wien");
 
 		list(autocompletes);
+		assertTrue(autocompletes.size() > 0);
 	}
 
 	private void list(final List<Location> autocompletes)
@@ -85,6 +93,8 @@ public class OebbProviderLiveTest
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 1140101, null, "Linz"), null,
 				new Location(LocationType.STATION, 1190100, null, "Wien"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
+		assertEquals(QueryConnectionsResult.Status.OK, result.status);
+		assertTrue(result.connections.size() > 0);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);
 	}
@@ -95,6 +105,8 @@ public class OebbProviderLiveTest
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, null, "Ramsen, Zoll"), null, new Location(
 				LocationType.ANY, 0, null, "Azuga"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
+		assertEquals(QueryConnectionsResult.Status.OK, result.status);
+		assertTrue(result.connections.size() > 0);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);
 	}
@@ -106,6 +118,8 @@ public class OebbProviderLiveTest
 				new Location(LocationType.ADDRESS, 0, null, "Innsbruck, Gumppstraße 69"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
+		assertEquals(QueryConnectionsResult.Status.OK, result.status);
+		assertTrue(result.connections.size() > 0);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);
 	}
@@ -117,6 +131,8 @@ public class OebbProviderLiveTest
 				null, new Location(LocationType.ADDRESS, 0, null, "Wien, Meidlinger Hauptstraße 1"), new Date(), true, ALL_PRODUCTS,
 				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
+		assertEquals(QueryConnectionsResult.Status.OK, result.status);
+		assertTrue(result.connections.size() > 0);
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);
 	}
