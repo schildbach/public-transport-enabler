@@ -102,8 +102,8 @@ public class OebbProviderLiveTest
 	@Test
 	public void slowConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, null, "Ramsen, Zoll"), null, new Location(
-				LocationType.ANY, 0, null, "Azuga"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, null, "Ramsen Zoll!"), null, new Location(
+				LocationType.ANY, 0, null, "Azuga!"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryConnectionsResult.Status.OK, result.status);
 		assertTrue(result.connections.size() > 0);
@@ -114,8 +114,8 @@ public class OebbProviderLiveTest
 	@Test
 	public void connectionWithFootway() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, null, "Graz, Haselweg"), null,
-				new Location(LocationType.ADDRESS, 0, null, "Innsbruck, Gumppstraße 69"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, null, "Graz, Haselweg!"), null,
+				new Location(LocationType.ANY, 0, null, "Innsbruck, Gumppstraße 69!"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryConnectionsResult.Status.OK, result.status);
@@ -128,7 +128,7 @@ public class OebbProviderLiveTest
 	public void connectionWithFootway2() throws Exception
 	{
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, null, "Wien, Krottenbachstraße 110!"),
-				null, new Location(LocationType.ADDRESS, 0, null, "Wien, Meidlinger Hauptstraße 1"), new Date(), true, ALL_PRODUCTS,
+				null, new Location(LocationType.ADDRESS, 0, null, "Wien, Meidlinger Hauptstraße 1!"), new Date(), true, ALL_PRODUCTS,
 				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryConnectionsResult.Status.OK, result.status);
