@@ -1288,7 +1288,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	private final static Pattern P_NEARBY_COARSE = Pattern.compile("<tr class=\"(zebra[^\"]*)\">(.*?)</tr>", Pattern.DOTALL);
 	private final static Pattern P_NEARBY_FINE_COORDS = Pattern
 			.compile("REQMapRoute0\\.Location0\\.X=(-?\\d+)&(?:amp;)?REQMapRoute0\\.Location0\\.Y=(-?\\d+)&");
-	private final static Pattern P_NEARBY_FINE_LOCATION = Pattern.compile("[\\?&]input=(\\d+)&[^\"]*\">([^<]*)<");
+	private final static Pattern P_NEARBY_FINE_LOCATION = Pattern.compile("[\\?&;]input=(\\d+)&[^\"]*\">([^<]*)<");
 
 	protected final NearbyStationsResult htmlNearbyStations(final String uri) throws IOException
 	{
