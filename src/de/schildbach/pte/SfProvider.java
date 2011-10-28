@@ -18,11 +18,14 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
+import de.schildbach.pte.util.Color;
 
 /**
  * @author Andreas Schildbach
@@ -95,5 +98,36 @@ public class SfProvider extends AbstractEfaProvider
 			return "?" + name;
 		else
 			return super.parseLine(mot, name, longName, noTrainName);
+	}
+
+	private static final Map<String, int[]> LINES = new HashMap<String, int[]>();
+
+	static
+	{
+		// BART
+		LINES.put("RDaly City / Dublin Pleasanton", new int[] { Color.parseColor("#00AEEF"), Color.WHITE });
+		LINES.put("RDulin Pleasanton / Daly City", new int[] { Color.parseColor("#00AEEF"), Color.WHITE });
+
+		LINES.put("RSFO / Pittsburg Bay Point", new int[] { Color.parseColor("#FFE800"), Color.BLACK });
+		LINES.put("RPittsburg Bay Point / SFO", new int[] { Color.parseColor("#FFE800"), Color.BLACK });
+
+		LINES.put("RDaly City / Fremont", new int[] { Color.parseColor("#4EBF49"), Color.WHITE });
+		LINES.put("RFremont / Daly City", new int[] { Color.parseColor("#4EBF49"), Color.WHITE });
+
+		LINES.put("RFremont / Richmond", new int[] { Color.parseColor("#FAA61A"), Color.WHITE });
+		LINES.put("RRichmond / Fremont", new int[] { Color.parseColor("#FAA61A"), Color.WHITE });
+
+		LINES.put("RMillbrae / Richmond", new int[] { Color.parseColor("#F81A23"), Color.WHITE });
+		LINES.put("RRichmond / Millbrae", new int[] { Color.parseColor("#F81A23"), Color.WHITE });
+	}
+
+	@Override
+	public int[] lineColors(final String line)
+	{
+		final int[] lineColors = LINES.get(line);
+		if (lineColors != null)
+			return lineColors;
+		else
+			return super.lineColors(line);
 	}
 }
