@@ -538,7 +538,7 @@ public final class BahnProvider extends AbstractHafasProvider
 	}
 
 	private static final Pattern P_LINE_RUSSIA = Pattern
-			.compile("\\d{3}(?:AJ|BJ|DJ|FJ|GJ|IJ|KJ|LJ|NJ|MJ|OJ|RJ|SJ|TJ|VJ|ZJ|CH|KH|ZH|EI|JA|JI|MZ|SH|PC|Y)");
+			.compile("\\d{3}(?:AJ|BJ|DJ|FJ|GJ|IJ|KJ|LJ|NJ|MJ|OJ|RJ|SJ|TJ|UJ|VJ|ZJ|CH|KH|ZH|EI|JA|JI|MZ|SH|PC|Y)");
 	private static final Pattern P_LINE_NUMBER = Pattern.compile("\\d{2,5}");
 
 	@Override
