@@ -29,7 +29,7 @@ import de.schildbach.pte.dto.LocationType;
 public class BayernProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.BAYERN;
-	private final static String API_BASE = "http://bayern-fahrplan.defas-fgi.de:50200/standard/";
+	private final static String API_BASE = "http://vm-bayern-fahrplan03.defas-fgi.de:81/standard/";
 
 	public BayernProvider()
 	{
