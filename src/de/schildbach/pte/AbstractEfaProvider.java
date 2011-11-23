@@ -1059,6 +1059,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return 'R' + type;
 			if ("KTB".equals(type)) // Kandertalbahn
 				return 'R' + type;
+			if ("Regionalzug".equals(type))
+				return 'R' + type;
 
 			if ("BSB".equals(type)) // Breisgau-S-Bahn
 				return 'S' + str;
