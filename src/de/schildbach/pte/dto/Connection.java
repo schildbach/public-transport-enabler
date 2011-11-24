@@ -49,12 +49,47 @@ public final class Connection implements Serializable
 		this.capacity = capacity;
 	}
 
+	public Date getFirstDepartureTime()
+	{
+		if (parts != null)
+		{
+			int mins = 0;
+			for (final Part part : parts)
+			{
+				if (part instanceof Footway)
+					mins += ((Footway) part).min;
+				else if (part instanceof Trip)
+					return new Date(((Trip) part).getDepartureTime().getTime() - 1000 * 60 * mins);
+			}
+		}
+
+		return null;
+	}
+
 	public Date getFirstTripDepartureTime()
 	{
 		if (parts != null)
 			for (final Part part : parts)
 				if (part instanceof Trip)
 					return ((Trip) part).getDepartureTime();
+
+		return null;
+	}
+
+	public Date getLastArrivalTime()
+	{
+		if (parts != null)
+		{
+			int mins = 0;
+			for (int i = parts.size() - 1; i >= 0; i--)
+			{
+				final Part part = parts.get(i);
+				if (part instanceof Footway)
+					mins += ((Footway) part).min;
+				else if (part instanceof Trip)
+					return new Date(((Trip) part).getArrivalTime().getTime() + 1000 * 60 * mins);
+			}
+		}
 
 		return null;
 	}
