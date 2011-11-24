@@ -59,7 +59,7 @@ public final class Connection implements Serializable
 		return null;
 	}
 
-	public Date getFirstTripArrivalTime()
+	public Date getLastTripArrivalTime()
 	{
 		if (parts != null)
 		{
@@ -84,8 +84,8 @@ public final class Connection implements Serializable
 		final Date firstTripDepartureTime = getFirstTripDepartureTime();
 		str.append(firstTripDepartureTime != null ? FORMAT.format(firstTripDepartureTime) : "null");
 		str.append('-');
-		final Date firstTripArrivalTime = getFirstTripArrivalTime();
-		str.append(firstTripArrivalTime != null ? FORMAT.format(firstTripArrivalTime) : "null");
+		final Date lastTripArrivalTime = getLastTripArrivalTime();
+		str.append(lastTripArrivalTime != null ? FORMAT.format(lastTripArrivalTime) : "null");
 
 		return str.toString();
 	}
