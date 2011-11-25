@@ -347,6 +347,79 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 	}
 
+	protected final List<Location> xmlLocationList(final String uri) throws IOException
+	{
+		InputStream is = null;
+
+		try
+		{
+			is = ParserUtils.scrapeInputStream(uri);
+
+			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
+			final XmlPullParser pp = factory.newPullParser();
+			pp.setInput(is, "UTF-8");
+
+			final List<Location> results = new ArrayList<Location>();
+
+			pp.require(XmlPullParser.START_DOCUMENT, null, null);
+			pp.next();
+
+			XmlPullUtil.enter(pp, "LocationList");
+
+			if (pp.isWhitespace())
+				pp.next();
+
+			while (XmlPullUtil.test(pp, "StopLocation") || XmlPullUtil.test(pp, "CoordLocation"))
+			{
+				final String name = XmlPullUtil.attr(pp, "name");
+				final int lon = XmlPullUtil.intAttr(pp, "x");
+				final int lat = XmlPullUtil.intAttr(pp, "y");
+
+				if (XmlPullUtil.test(pp, "StopLocation"))
+				{
+					final int id = XmlPullUtil.intAttr(pp, "id");
+					final String[] placeAndName = splitPlaceAndName(name);
+					results.add(new Location(LocationType.STATION, id, lat, lon, placeAndName[0], placeAndName[1]));
+				}
+				else
+				{
+					final String type = XmlPullUtil.attr(pp, "type");
+					if ("POI".equals(type))
+						results.add(new Location(LocationType.POI, 0, lat, lon, null, name));
+					else if ("ADR".equals(type))
+						results.add(new Location(LocationType.ADDRESS, 0, lat, lon, null, name));
+					else
+						throw new IllegalStateException("unknown type " + type + " on " + uri);
+				}
+
+				if (pp.isEmptyElementTag())
+				{
+					XmlPullUtil.next(pp);
+				}
+				else
+				{
+					XmlPullUtil.enter(pp);
+					XmlPullUtil.exit(pp);
+				}
+
+				if (pp.isWhitespace())
+					pp.next();
+			}
+			XmlPullUtil.exit(pp, "LocationList");
+
+			return results;
+		}
+		catch (final XmlPullParserException x)
+		{
+			throw new RuntimeException(x);
+		}
+		finally
+		{
+			if (is != null)
+				is.close();
+		}
+	}
+
 	private static final Pattern P_XML_MLC_REQ_ID = Pattern.compile(".*?@L=(\\d+)@.*?");
 	private static final Pattern P_XML_MLC_REQ_LONLAT = Pattern.compile(".*?@X=(-?\\d+)@Y=(-?\\d+)@.*?");
 
