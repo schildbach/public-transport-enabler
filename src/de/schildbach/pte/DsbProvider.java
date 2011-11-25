@@ -104,24 +104,26 @@ public class DsbProvider extends AbstractHafasProvider
 		}
 	}
 
+	private static final String NEARBY_STATIONS_BY_COORDINATE_URI = "http://xmlopen.rejseplanen.dk/bin/rest.exe/stopsNearby?coordX=%d&coordY=%d";
+
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
-		final StringBuilder uri = new StringBuilder(API_BASE);
-
 		if (location.hasLocation())
 		{
-			uri.append("query.exe/mny");
-			uri.append("?performLocating=2&tpl=stop2json");
-			uri.append("&look_maxno=").append(maxStations != 0 ? maxStations : 200);
-			uri.append("&look_maxdist=").append(maxDistance != 0 ? maxDistance : 5000);
-			uri.append("&look_stopclass=").append(allProductsInt());
-			uri.append("&look_x=").append(location.lon);
-			uri.append("&look_y=").append(location.lat);
+			final StringBuilder uri = new StringBuilder(String.format(NEARBY_STATIONS_BY_COORDINATE_URI, location.lon, location.lat));
+			if (maxStations != 0)
+				uri.append("maxNumber=").append(maxStations);
+			if (maxDistance != 0)
+				uri.append("maxRadius=").append(maxDistance);
 
-			return jsonNearbyStations(uri.toString());
+			final List<Location> locations = xmlLocationList(uri.toString());
+
+			return new NearbyStationsResult(null, locations);
 		}
 		else if (location.type == LocationType.STATION && location.hasId())
 		{
+			final StringBuilder uri = new StringBuilder(API_BASE);
+
 			uri.append("stboard.exe/mn");
 			uri.append("?productsFilter=").append(allProductsString());
 			uri.append("&boardType=dep");

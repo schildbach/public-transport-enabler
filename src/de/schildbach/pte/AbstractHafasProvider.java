@@ -371,7 +371,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 			while (XmlPullUtil.test(pp, "StopLocation") || XmlPullUtil.test(pp, "CoordLocation"))
 			{
-				final String name = XmlPullUtil.attr(pp, "name");
+				final String name = ParserUtils.resolveEntities(XmlPullUtil.attr(pp, "name"));
 				final int lon = XmlPullUtil.intAttr(pp, "x");
 				final int lat = XmlPullUtil.intAttr(pp, "y");
 
