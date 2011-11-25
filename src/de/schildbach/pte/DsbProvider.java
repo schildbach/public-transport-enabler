@@ -112,9 +112,9 @@ public class DsbProvider extends AbstractHafasProvider
 		{
 			final StringBuilder uri = new StringBuilder(String.format(NEARBY_STATIONS_BY_COORDINATE_URI, location.lon, location.lat));
 			if (maxStations != 0)
-				uri.append("maxNumber=").append(maxStations);
+				uri.append("&maxNumber=").append(maxStations);
 			if (maxDistance != 0)
-				uri.append("maxRadius=").append(maxDistance);
+				uri.append("&maxRadius=").append(maxDistance);
 
 			final List<Location> locations = xmlLocationList(uri.toString());
 
