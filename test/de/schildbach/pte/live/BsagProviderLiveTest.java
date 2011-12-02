@@ -29,6 +29,7 @@ import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
+import de.schildbach.pte.dto.QueryDeparturesResult;
 
 /**
  * @author Andreas Schildbach
@@ -52,6 +53,14 @@ public class BsagProviderLiveTest
 		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 53076146, 8806858), 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
+	}
+
+	@Test
+	public void queryDepartures() throws Exception
+	{
+		final QueryDeparturesResult result = provider.queryDepartures(28003375, 0, false);
+
+		System.out.println(result.stationDepartures);
 	}
 
 	@Test
