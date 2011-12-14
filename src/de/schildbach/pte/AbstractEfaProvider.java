@@ -71,6 +71,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	protected final static String SERVER_PRODUCT = "efa";
 
 	private final String apiBase;
+	private final String departureMonitorEndpoint;
+	private final String tripEndpoint;
 	private final String additionalQueryParameter;
 	private final boolean canAcceptPoiID;
 	private final boolean needsSpEncId;
@@ -88,10 +90,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	public AbstractEfaProvider(final String apiBase, final String additionalQueryParameter, final boolean canAcceptPoiID)
 	{
-		this(apiBase, additionalQueryParameter, false, false);
+		this(apiBase, null, null, additionalQueryParameter, false, false);
 	}
 
-	public AbstractEfaProvider(final String apiBase, final String additionalQueryParameter, final boolean canAcceptPoiID, final boolean needsSpEncId)
+	public AbstractEfaProvider(final String apiBase, final String departureMonitorEndpoint, final String tripEndpoint,
+			final String additionalQueryParameter, final boolean canAcceptPoiID, final boolean needsSpEncId)
 	{
 		try
 		{
@@ -103,6 +106,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 
 		this.apiBase = apiBase;
+		this.departureMonitorEndpoint = departureMonitorEndpoint != null ? departureMonitorEndpoint : "XSLT_DM_REQUEST";
+		this.tripEndpoint = tripEndpoint != null ? tripEndpoint : "XSLT_TRIP_REQUEST2";
 		this.additionalQueryParameter = additionalQueryParameter;
 		this.canAcceptPoiID = canAcceptPoiID;
 		this.needsSpEncId = needsSpEncId;
@@ -270,7 +275,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(apiBase);
-		uri.append("XSLT_TRIP_REQUEST2");
+		uri.append(tripEndpoint);
 		appendCommonRequestParams(uri);
 		uri.append("&type_origin=any");
 		uri.append("&name_origin=").append(ParserUtils.urlEncode(constraint.toString(), "ISO-8859-1"));
@@ -1175,7 +1180,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(apiBase);
-		uri.append("XSLT_DM_REQUEST");
+		uri.append(departureMonitorEndpoint);
 		appendCommonRequestParams(uri);
 		uri.append("&type_dm=stop&useRealtime=1&mode=direct");
 		uri.append("&name_dm=").append(stationId);
@@ -1469,7 +1474,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		final DateFormat TIME_FORMAT = new SimpleDateFormat("HHmm");
 
 		final StringBuilder uri = new StringBuilder(apiBase);
-		uri.append("XSLT_TRIP_REQUEST2");
+		uri.append(tripEndpoint);
 		appendCommonRequestParams(uri);
 
 		uri.append("&sessionID=0");
@@ -1548,7 +1553,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private String commandLink(final String sessionId, final String requestId, final String command)
 	{
 		final StringBuilder uri = new StringBuilder(apiBase);
-		uri.append("XSLT_TRIP_REQUEST2");
+		uri.append(tripEndpoint);
 
 		uri.append("?sessionID=").append(sessionId);
 		uri.append("&requestID=").append(requestId);

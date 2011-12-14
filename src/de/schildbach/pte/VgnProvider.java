@@ -26,14 +26,17 @@ import de.schildbach.pte.dto.LocationType;
 /**
  * @author Andreas Schildbach
  */
-public class VvmProvider extends AbstractEfaProvider
+public class VgnProvider extends AbstractEfaProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.VVM;
-	private final static String API_BASE = "http://efa.mobilitaetsverbund.de/web/";
+	public static final NetworkId NETWORK_ID = NetworkId.VGN;
+	private String apiBase;
+	private static final String DEPARTURE_MONITOR_ENDPOINT = "XML_DM_REQUEST";
+	private static final String TRIP_ENDPOINT = "XML_TRIP_REQUEST2";
 
-	public VvmProvider()
+	public VgnProvider(final String apiBase)
 	{
-		super(API_BASE, null, null, null, false, true);
+		super(apiBase, DEPARTURE_MONITOR_ENDPOINT, TRIP_ENDPOINT, null, false, false);
+		this.apiBase = apiBase;
 	}
 
 	public NetworkId id()
@@ -50,14 +53,13 @@ public class VvmProvider extends AbstractEfaProvider
 		return false;
 	}
 
-	private static final String NEARBY_STATION_URI = API_BASE
-			+ "XSLT_DM_REQUEST"
+	private static final String NEARBY_STATION_URI = DEPARTURE_MONITOR_ENDPOINT
 			+ "?outputFormat=XML&coordOutputFormat=WGS84&type_dm=stop&name_dm=%s&itOptionsActive=1&ptOptionsActive=1&useProxFootSearch=1&mergeDep=1&useAllStops=1&mode=direct";
 
 	@Override
 	protected String nearbyStationUri(final int stationId)
 	{
-		return String.format(NEARBY_STATION_URI, stationId);
+		return String.format(apiBase + NEARBY_STATION_URI, stationId);
 	}
 
 	@Override

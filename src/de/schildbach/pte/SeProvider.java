@@ -35,6 +35,7 @@ public class SeProvider extends AbstractHafasProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.SE;
 	private static final String API_BASE = "http://reseplanerare.resrobot.se/bin/";
+	// http://api.vasttrafik.se/bin/query.exe/sn
 
 	public SeProvider()
 	{
