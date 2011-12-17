@@ -1659,6 +1659,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			return 'R';
 		if ("KTB".equals(ucType)) // Kandertalbahn
 			return 'R';
+		if ("ERX".equals(ucType)) // erixx
+			return 'R';
 		if ("ATZ".equals(ucType)) // Autotunnelzug
 			return 'R';
 		if ("ATB".equals(ucType)) // Autoschleuse Tauernbahn
