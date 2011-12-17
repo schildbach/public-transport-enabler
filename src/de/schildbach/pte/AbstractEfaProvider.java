@@ -868,6 +868,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return 'R' + str;
 			if (type.equals("Abellio-Zug")) // Abellio
 				return 'R' + str;
+			if ("erx".equals(type)) // erixx
+				return 'R' + str;
 			if ("SWEG-Zug".equals(type)) // Südwestdeutschen Verkehrs-Aktiengesellschaft, evtl. S-Bahn?
 				return 'R' + str;
 			if (type.equals("KBS")) // Kursbuchstrecke
