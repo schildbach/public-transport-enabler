@@ -1713,11 +1713,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		if (!pp.isEmptyElementTag())
 		{
 			XmlPullUtil.enter(pp, "itdDate");
-			if (!XmlPullUtil.test(pp, "itdMessage"))
-				throw new IllegalStateException("cannot find <itdMessage />");
-			final String message = pp.nextText();
-			if (message.equals("invalid date"))
-				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.INVALID_DATE);
+			if (XmlPullUtil.test(pp, "itdMessage"))
+			{
+				final String message = pp.nextText();
+				if (message.equals("invalid date"))
+					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.INVALID_DATE);
+			}
 			XmlPullUtil.exit(pp, "itdDate");
 		}
 		XmlPullUtil.exit(pp, "itdDateTime");
