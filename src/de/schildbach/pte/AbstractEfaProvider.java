@@ -1263,7 +1263,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						final int assignedStopId = assignedStopIdStr != null ? Integer.parseInt(assignedStopIdStr) : 0;
 						final String destination = normalizeLocationName(pp.getAttributeValue(null, "direction"));
 						final String destinationIdStr = pp.getAttributeValue(null, "destID");
-						final int destinationId = destinationIdStr.length() > 0 ? Integer.parseInt(destinationIdStr) : 0;
+						final int destinationId = (destinationIdStr != null && destinationIdStr.length() > 0) ? Integer.parseInt(destinationIdStr)
+								: 0;
 
 						final LineDestination line = new LineDestination(processItdServingLine(pp), destinationId, destination);
 
@@ -1327,7 +1328,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						XmlPullUtil.require(pp, "itdServingLine");
 						final boolean isRealtime = pp.getAttributeValue(null, "realtime").equals("1");
 						final String destination = normalizeLocationName(pp.getAttributeValue(null, "direction"));
-						final int destinationId = Integer.parseInt(pp.getAttributeValue(null, "destID"));
+						final String destinationIdStr = pp.getAttributeValue(null, "destID");
+						final int destinationId = destinationIdStr != null ? Integer.parseInt(destinationIdStr) : 0;
 
 						final Line line = processItdServingLine(pp);
 
