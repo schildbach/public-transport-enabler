@@ -1679,6 +1679,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			return 'R';
 		if ("ZR".equals(ucType)) // ZSR (Slovakian Republic Railways)
 			return 'R';
+		if ("WB".equals(ucType)) // WESTbahn
+			return 'R';
 
 		// if ("E".equals(normalizedType)) // Eilzug, stimmt wahrscheinlich nicht
 		// return "R" + normalizedName;
