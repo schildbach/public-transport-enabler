@@ -18,6 +18,7 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 import de.schildbach.pte.dto.Location;
@@ -66,5 +67,12 @@ public class VgnProvider extends AbstractEfaProvider
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
 		return xmlStopfinderRequest(new Location(LocationType.ANY, 0, null, constraint.toString()));
+	}
+
+	@Override
+	protected String xsltTripRequest2Uri(final Location from, final Location via, final Location to, final Date date, final boolean dep,
+			final String products, final WalkSpeed walkSpeed, final Accessibility accessibility)
+	{
+		return super.xsltTripRequest2Uri(from, via, to, date, dep, products, walkSpeed, accessibility) + "&itdLPxx_showTariffLevel=1";
 	}
 }

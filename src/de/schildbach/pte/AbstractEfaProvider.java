@@ -1471,7 +1471,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		return (double) value / 1000000;
 	}
 
-	private String xsltTripRequest2Uri(final Location from, final Location via, final Location to, final Date date, final boolean dep,
+	protected String xsltTripRequest2Uri(final Location from, final Location via, final Location to, final Date date, final boolean dep,
 			final String products, final WalkSpeed walkSpeed, final Accessibility accessibility)
 	{
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
@@ -1625,6 +1625,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		pp.setInput(is, null);
 		final ResultHeader header = enterItdRequest(pp);
 		final String context = header.context;
+
+		if (XmlPullUtil.test(pp, "itdLayoutParams"))
+			XmlPullUtil.next(pp);
 
 		XmlPullUtil.require(pp, "itdTripRequest");
 		final String requestId = XmlPullUtil.attr(pp, "requestID");
@@ -1955,10 +1958,16 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						final String unitName = XmlPullUtil.attr(pp, "unitName");
 						final String unitsAdult = XmlPullUtil.attr(pp, "unitsAdult");
 						final String unitsChild = XmlPullUtil.attr(pp, "unitsChild");
+						final String levelAdult = pp.getAttributeValue(null, "levelAdult");
+						final boolean hasLevelAdult = levelAdult != null && levelAdult.length() > 0;
+						final String levelChild = pp.getAttributeValue(null, "levelChild");
+						final boolean hasLevelChild = levelChild != null && levelChild.length() > 0;
 						if (fareAdult != null && fareAdult.length() > 0)
-							fares.add(new Fare(net, Type.ADULT, currency, Float.parseFloat(fareAdult), unitName, unitsAdult));
+							fares.add(new Fare(net, Type.ADULT, currency, Float.parseFloat(fareAdult), hasLevelAdult ? null : unitName,
+									hasLevelAdult ? levelAdult : unitsAdult));
 						if (fareChild != null && fareChild.length() > 0)
-							fares.add(new Fare(net, Type.CHILD, currency, Float.parseFloat(fareChild), unitName, unitsChild));
+							fares.add(new Fare(net, Type.CHILD, currency, Float.parseFloat(fareChild), hasLevelChild ? null : unitName,
+									hasLevelChild ? levelChild : unitsChild));
 
 						if (!pp.isEmptyElementTag())
 						{
