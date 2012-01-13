@@ -30,7 +30,7 @@ public class KvvProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.KVV;
 	public static final String OLD_NETWORK_ID = "213.144.24.66";
-	private final static String API_BASE = "http://213.144.24.66/kvv/";
+	private final static String API_BASE = "http://213.144.24.66/kvv/"; // http://213.144.24.66/kvv2/
 
 	public KvvProvider()
 	{
