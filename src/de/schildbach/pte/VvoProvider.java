@@ -37,6 +37,11 @@ public class VvoProvider extends AbstractEfaProvider
 		super(API_BASE, null);
 	}
 
+	public VvoProvider(final String apiBase)
+	{
+		super(apiBase, null);
+	}
+
 	public NetworkId id()
 	{
 		return NETWORK_ID;
