@@ -37,6 +37,11 @@ public class KvvProvider extends AbstractEfaProvider
 		super(API_BASE, null);
 	}
 
+	public KvvProvider(final String apiBase)
+	{
+		super(apiBase, null);
+	}
+
 	public NetworkId id()
 	{
 		return NETWORK_ID;
