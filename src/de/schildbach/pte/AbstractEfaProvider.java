@@ -183,8 +183,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					results.add(new Location(LocationType.STATION, stop.getInt("stateless"), lat, lon, place, name));
 				else if ("poi".equals(type))
 					results.add(new Location(LocationType.POI, 0, lat, lon, place, name));
-				else if ("street".equals(type))
-					results.add(new Location(LocationType.ADDRESS, 0, lat, lon, place, name));
+				else if ("street".equals(type) || "address".equals(type) || "singlehouse".equals(type))
+					results.add(new Location(LocationType.ADDRESS, 0, lat, lon, place, stop.getString("name")));
 				else
 					throw new IllegalArgumentException("unknown type: " + type);
 			}
@@ -1752,8 +1752,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		final Calendar time = new GregorianCalendar(timeZone());
 		final List<Connection> connections = new ArrayList<Connection>();
 
-		System.out.println("====================== bis hier");
-
 		if (XmlPullUtil.jumpToStartTag(pp, null, "itdRouteList"))
 		{
 			XmlPullUtil.enter(pp, "itdRouteList");
@@ -2016,8 +2014,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			}
 
 			XmlPullUtil.exit(pp, "itdRouteList");
-
-			System.out.println("=== ready");
 
 			return new QueryConnectionsResult(header, uri, from, via, to, commandLink(context, requestId, "tripNext"), connections);
 		}
