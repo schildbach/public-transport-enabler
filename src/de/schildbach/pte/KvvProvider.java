@@ -25,6 +25,7 @@ import java.util.Map;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.Style;
+import de.schildbach.pte.dto.Style.Shape;
 
 /**
  * @author Andreas Schildbach
@@ -97,15 +98,15 @@ public class KvvProvider extends AbstractEfaProvider
 		LINES.put("SS9", new Style(Style.parseColor("#fab49b"), Style.BLACK));
 
 		// Tram
-		LINES.put("T1", new Style(Style.parseColor("#ed1c24"), Style.WHITE));
-		LINES.put("T2", new Style(Style.parseColor("#0071bc"), Style.WHITE));
-		LINES.put("T2E", new Style(Style.parseColor("#0071bc"), Style.WHITE));
-		LINES.put("T3", new Style(Style.parseColor("#947139"), Style.WHITE));
-		LINES.put("T4", new Style(Style.parseColor("#ffcb04"), Style.BLACK));
-		LINES.put("T5", new Style(Style.parseColor("#00c0f3"), Style.WHITE));
-		LINES.put("T6", new Style(Style.parseColor("#80c342"), Style.WHITE));
-		LINES.put("T7", new Style(Style.parseColor("#58595b"), Style.WHITE));
-		LINES.put("T8", new Style(Style.parseColor("#f7931d"), Style.BLACK));
+		LINES.put("T1", new Style(Shape.RECT, Style.parseColor("#ed1c24"), Style.WHITE));
+		LINES.put("T2", new Style(Shape.RECT, Style.parseColor("#0071bc"), Style.WHITE));
+		LINES.put("T2E", new Style(Shape.RECT, Style.parseColor("#0071bc"), Style.WHITE));
+		LINES.put("T3", new Style(Shape.RECT, Style.parseColor("#947139"), Style.WHITE));
+		LINES.put("T4", new Style(Shape.RECT, Style.parseColor("#ffcb04"), Style.BLACK));
+		LINES.put("T5", new Style(Shape.RECT, Style.parseColor("#00c0f3"), Style.WHITE));
+		LINES.put("T6", new Style(Shape.RECT, Style.parseColor("#80c342"), Style.WHITE));
+		LINES.put("T7", new Style(Shape.RECT, Style.parseColor("#58595b"), Style.WHITE));
+		LINES.put("T8", new Style(Shape.RECT, Style.parseColor("#f7931d"), Style.BLACK));
 
 		// Nightliner
 		LINES.put("BNL3", new Style(Style.parseColor("#947139"), Style.WHITE));
@@ -114,12 +115,12 @@ public class KvvProvider extends AbstractEfaProvider
 		LINES.put("BNL6", new Style(Style.parseColor("#80c342"), Style.WHITE));
 
 		// Anruf-Linien-Taxi
-		LINES.put("BALT6", new Style(Style.BLACK, Style.YELLOW));
-		LINES.put("BALT11", new Style(Style.BLACK, Style.YELLOW));
-		LINES.put("BALT12", new Style(Style.BLACK, Style.YELLOW));
-		LINES.put("BALT13", new Style(Style.BLACK, Style.YELLOW));
-		LINES.put("BALT14", new Style(Style.BLACK, Style.YELLOW));
-		LINES.put("BALT16", new Style(Style.BLACK, Style.YELLOW));
+		LINES.put("BALT6", new Style(Shape.RECT, Style.BLACK, Style.YELLOW));
+		LINES.put("BALT11", new Style(Shape.RECT, Style.BLACK, Style.YELLOW));
+		LINES.put("BALT12", new Style(Shape.RECT, Style.BLACK, Style.YELLOW));
+		LINES.put("BALT13", new Style(Shape.RECT, Style.BLACK, Style.YELLOW));
+		LINES.put("BALT14", new Style(Shape.RECT, Style.BLACK, Style.YELLOW));
+		LINES.put("BALT16", new Style(Shape.RECT, Style.BLACK, Style.YELLOW));
 
 		// TODO Bus, but needs shape for disambiguation
 	}
