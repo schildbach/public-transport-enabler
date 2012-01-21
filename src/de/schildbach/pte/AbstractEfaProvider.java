@@ -159,7 +159,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				String type = stop.getString("type");
 				if ("any".equals(type))
 					type = stop.getString("anyType");
-				final String name = stop.getString("object");
+				final String name = normalizeLocationName(stop.getString("object"));
 				final JSONObject ref = stop.getJSONObject("ref");
 				String place = ref.getString("place");
 				if (place != null && place.length() == 0)
@@ -183,8 +183,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					results.add(new Location(LocationType.STATION, stop.getInt("stateless"), lat, lon, place, name));
 				else if ("poi".equals(type))
 					results.add(new Location(LocationType.POI, 0, lat, lon, place, name));
+				else if ("crossing".equals(type))
+					results.add(new Location(LocationType.ADDRESS, 0, lat, lon, place, name));
 				else if ("street".equals(type) || "address".equals(type) || "singlehouse".equals(type))
-					results.add(new Location(LocationType.ADDRESS, 0, lat, lon, place, stop.getString("name")));
+					results.add(new Location(LocationType.ADDRESS, 0, lat, lon, place, normalizeLocationName(stop.getString("name"))));
 				else
 					throw new IllegalArgumentException("unknown type: " + type + " on " + uri);
 			}
