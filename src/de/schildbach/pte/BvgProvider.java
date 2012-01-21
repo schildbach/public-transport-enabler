@@ -1039,14 +1039,22 @@ public final class BvgProvider extends AbstractHafasProvider
 		LINES.put("RRB93", new Style(Shape.RECT, Style.parseColor("#A7653F"), Style.WHITE));
 	}
 
+	private static final Style STYLE_BUS_NIGHT = new Style(Shape.RECT, Style.BLACK, Style.WHITE);
+	private static final Style STYLE_BUS_DAY = new Style(Shape.RECT, Style.parseColor("#993399"), Style.WHITE);
+
 	@Override
 	public Style lineStyle(final String line)
 	{
 		final Style style = LINES.get(line);
 		if (style != null)
 			return style;
-		else
-			return super.lineStyle(line);
+
+		if (line.startsWith("BN"))
+			return STYLE_BUS_NIGHT;
+		if (line.startsWith("B"))
+			return STYLE_BUS_DAY;
+
+		return super.lineStyle(line);
 	}
 
 	@Override
