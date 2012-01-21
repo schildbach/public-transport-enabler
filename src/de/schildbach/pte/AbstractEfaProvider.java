@@ -37,6 +37,9 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -118,19 +121,83 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		return TimeZone.getTimeZone("Europe/Berlin");
 	}
 
-	private final void appendCommonRequestParams(final StringBuilder uri)
+	private final void appendCommonRequestParams(final StringBuilder uri, final String outputFormat)
 	{
-		uri.append("?outputFormat=XML");
+		uri.append("?outputFormat=").append(outputFormat);
 		uri.append("&coordOutputFormat=WGS84");
 		if (additionalQueryParameter != null)
 			uri.append('&').append(additionalQueryParameter);
+	}
+
+	protected List<Location> jsonStopfinderRequest(final Location constraint) throws IOException
+	{
+		final StringBuilder uri = new StringBuilder(apiBase);
+		uri.append("XML_STOPFINDER_REQUEST");
+		appendCommonRequestParams(uri, "JSON");
+		uri.append("&locationServerActive=1");
+		appendLocation(uri, constraint, "sf");
+
+		// System.out.println(uri.toString());
+
+		final CharSequence page = ParserUtils.scrape(uri.toString(), false, null, "UTF-8", null);
+
+		try
+		{
+			final JSONObject head = new JSONObject(page.toString());
+			final JSONArray stops = head.getJSONArray("stopFinder");
+
+			final int nStops = stops.length();
+			final List<Location> results = new ArrayList<Location>();
+
+			for (int i = 0; i < nStops; i++)
+			{
+				final JSONObject stop = stops.optJSONObject(i);
+				String type = stop.getString("type");
+				if ("any".equals(type))
+					type = stop.getString("anyType");
+				final String name = stop.getString("object");
+				final JSONObject ref = stop.getJSONObject("ref");
+				final String place = ref.getString("place");
+				final String coords = ref.optString("coords", null);
+				final int lat;
+				final int lon;
+				if (coords != null)
+				{
+					final String[] coordParts = coords.split(",");
+					lat = Math.round(Float.parseFloat(coordParts[1]));
+					lon = Math.round(Float.parseFloat(coordParts[0]));
+				}
+				else
+				{
+					lat = 0;
+					lon = 0;
+				}
+
+				if ("stop".equals(type))
+					results.add(new Location(LocationType.STATION, stop.getInt("stateless"), lat, lon, place, name));
+				else if ("poi".equals(type))
+					results.add(new Location(LocationType.POI, 0, lat, lon, place, name));
+				else if ("street".equals(type))
+					results.add(new Location(LocationType.ADDRESS, 0, lat, lon, place, name));
+				else
+					throw new IllegalArgumentException("unknown type: " + type);
+			}
+
+			return results;
+		}
+		catch (final JSONException x)
+		{
+			x.printStackTrace();
+			throw new RuntimeException("cannot parse: '" + page + "' on " + uri, x);
+		}
+
 	}
 
 	protected List<Location> xmlStopfinderRequest(final Location constraint) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(apiBase);
 		uri.append("XML_STOPFINDER_REQUEST");
-		appendCommonRequestParams(uri);
+		appendCommonRequestParams(uri, "XML");
 		uri.append("&locationServerActive=1");
 		appendLocation(uri, constraint, "sf");
 		if (constraint.type == LocationType.ANY)
@@ -142,6 +209,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			uri.append("&reducedAnyPostcodeObjFilter_sf=64&reducedAnyTooManyObjFilter_sf=2");
 			uri.append("&useHouseNumberList=true&regionID_sf=1");
 		}
+
+		// System.out.println(uri.toString());
 
 		InputStream is = null;
 		try
@@ -208,7 +277,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	{
 		final StringBuilder uri = new StringBuilder(apiBase);
 		uri.append("XML_COORD_REQUEST");
-		appendCommonRequestParams(uri);
+		appendCommonRequestParams(uri, "XML");
 		uri.append("&coord=").append(String.format(Locale.ENGLISH, "%2.6f:%2.6f:WGS84", latLonToDouble(lon), latLonToDouble(lat)));
 		uri.append("&coordListOutputFormat=STRING");
 		uri.append("&max=").append(maxStations != 0 ? maxStations : 50);
@@ -272,67 +341,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 	}
 
-	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
-	{
-		final StringBuilder uri = new StringBuilder(apiBase);
-		uri.append(tripEndpoint);
-		appendCommonRequestParams(uri);
-		uri.append("&type_origin=any");
-		uri.append("&name_origin=").append(ParserUtils.urlEncode(constraint.toString(), "ISO-8859-1"));
-
-		InputStream is = null;
-		try
-		{
-			is = ParserUtils.scrapeInputStream(uri.toString());
-
-			final XmlPullParser pp = parserFactory.newPullParser();
-			pp.setInput(is, null);
-			enterItdRequest(pp);
-
-			final List<Location> results = new ArrayList<Location>();
-
-			// parse odv name elements
-			if (!XmlPullUtil.jumpToStartTag(pp, null, "itdOdv") || !"origin".equals(pp.getAttributeValue(null, "usage")))
-				throw new IllegalStateException("cannot find <itdOdv usage=\"origin\" />");
-			XmlPullUtil.enter(pp, "itdOdv");
-
-			final String place = processItdOdvPlace(pp);
-
-			if (!XmlPullUtil.test(pp, "itdOdvName"))
-				throw new IllegalStateException("cannot find <itdOdvName />");
-			final String nameState = XmlPullUtil.attr(pp, "state");
-			XmlPullUtil.enter(pp, "itdOdvName");
-			if (XmlPullUtil.test(pp, "itdMessage"))
-				XmlPullUtil.next(pp);
-
-			if ("identified".equals(nameState) || "list".equals(nameState))
-				while (XmlPullUtil.test(pp, "odvNameElem"))
-					results.add(processOdvNameElem(pp, place));
-
-			// parse assigned stops
-			if (XmlPullUtil.jumpToStartTag(pp, null, "itdOdvAssignedStops"))
-			{
-				XmlPullUtil.enter(pp, "itdOdvAssignedStops");
-				while (XmlPullUtil.test(pp, "itdOdvAssignedStop"))
-				{
-					final Location location = processItdOdvAssignedStop(pp);
-					if (!results.contains(location))
-						results.add(location);
-				}
-			}
-
-			return results;
-		}
-		catch (final XmlPullParserException x)
-		{
-			throw new ParserException(x);
-		}
-		finally
-		{
-			if (is != null)
-				is.close();
-		}
-	}
+	public abstract List<Location> autocompleteStations(final CharSequence constraint) throws IOException;
 
 	private String processItdOdvPlace(final XmlPullParser pp) throws XmlPullParserException, IOException
 	{
@@ -1183,7 +1192,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	{
 		final StringBuilder uri = new StringBuilder(apiBase);
 		uri.append(departureMonitorEndpoint);
-		appendCommonRequestParams(uri);
+		appendCommonRequestParams(uri, "XML");
 		uri.append("&type_dm=stop&useRealtime=1&mode=direct");
 		uri.append("&name_dm=").append(stationId);
 		uri.append("&deleteAssignedStops_dm=").append(equivs ? '0' : '1');
@@ -1479,7 +1488,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		final StringBuilder uri = new StringBuilder(apiBase);
 		uri.append(tripEndpoint);
-		appendCommonRequestParams(uri);
+		appendCommonRequestParams(uri, "XML");
 
 		uri.append("&sessionID=0");
 		uri.append("&requestID=0");
@@ -1730,6 +1739,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		final Calendar time = new GregorianCalendar(timeZone());
 		final List<Connection> connections = new ArrayList<Connection>();
+
+		System.out.println("====================== bis hier");
 
 		if (XmlPullUtil.jumpToStartTag(pp, null, "itdRouteList"))
 		{
@@ -1993,6 +2004,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			}
 
 			XmlPullUtil.exit(pp, "itdRouteList");
+
+			System.out.println("=== ready");
 
 			return new QueryConnectionsResult(header, uri, from, via, to, commandLink(context, requestId, "tripNext"), connections);
 		}

@@ -64,6 +64,6 @@ public class LinzProvider extends AbstractEfaProvider
 	@Override
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
-		return xmlStopfinderRequest(new Location(LocationType.STATION, 0, null, constraint.toString()));
+		return jsonStopfinderRequest(new Location(LocationType.ANY, 0, null, constraint.toString()));
 	}
 }
