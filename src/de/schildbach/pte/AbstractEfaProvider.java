@@ -1433,6 +1433,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		if (year == 0)
 			return false;
+		if (year < 1900 || year > 2100)
+			throw new IllegalArgumentException("invalid year: " + year);
+		if (month < 0 || month > 11)
+			throw new IllegalArgumentException("invalid month: " + month);
+		if (day < 1 || day > 31)
+			throw new IllegalArgumentException("invalid day: " + day);
 
 		calendar.set(Calendar.YEAR, year);
 		calendar.set(Calendar.MONTH, month);
