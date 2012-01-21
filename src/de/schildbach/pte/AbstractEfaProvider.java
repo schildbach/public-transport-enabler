@@ -186,7 +186,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				else if ("street".equals(type) || "address".equals(type) || "singlehouse".equals(type))
 					results.add(new Location(LocationType.ADDRESS, 0, lat, lon, place, stop.getString("name")));
 				else
-					throw new IllegalArgumentException("unknown type: " + type);
+					throw new IllegalArgumentException("unknown type: " + type + " on " + uri);
 			}
 
 			return results;
