@@ -176,8 +176,6 @@ public class PlProvider extends AbstractHafasProvider
 			return 'R';
 		if ("AR".equals(ucType)) // Arriva Polaczen
 			return 'R';
-		if ("RNV".equals(ucType)) // Rhein-Neckar-Verkehr GmbH
-			return 'R';
 		if ("N".equals(ucType)) // St. Pierre des Corps - Tours
 			return 'R';
 

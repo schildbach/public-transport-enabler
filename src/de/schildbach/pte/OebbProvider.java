@@ -237,8 +237,6 @@ public class OebbProvider extends AbstractHafasProvider
 			return 'R';
 		// if (ucType.equals("SBE")) // Zittau-Seifhennersdorf, via JSON API
 		// return 'R';
-		// if (ucType.equals("RNV")) // Rhein-Neckar-Verkehr GmbH, via JSON API
-		// return 'R';
 		if ("UAU".equals(ucType)) // Rußland
 			return 'R';
 
