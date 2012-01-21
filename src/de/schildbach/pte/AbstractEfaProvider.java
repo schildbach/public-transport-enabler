@@ -1517,7 +1517,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		uri.append("&itdTime=").append(ParserUtils.urlEncode(TIME_FORMAT.format(date)));
 		uri.append("&itdTripDateTimeDepArr=").append(dep ? "dep" : "arr");
 
-		uri.append("&ptOptionsActive=1");
+		uri.append("&ptOptionsActive=1"); // enable public transport options
+		uri.append("&itOptionsActive=1"); // enable individual transport options
 		uri.append("&changeSpeed=").append(WALKSPEED_MAP.get(walkSpeed));
 
 		if (accessibility == Accessibility.BARRIER_FREE)
