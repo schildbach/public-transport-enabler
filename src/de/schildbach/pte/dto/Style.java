@@ -24,19 +24,43 @@ import java.io.Serializable;
  */
 public class Style implements Serializable
 {
+	public final Shape shape;
 	public final int backgroundColor;
 	public final int foregroundColor;
 	public final int borderColor;
 
+	public enum Shape
+	{
+		RECT, ROUNDED
+	}
+
 	public Style(final int backgroundColor, final int foregroundColor)
 	{
+		this.shape = Shape.ROUNDED;
 		this.backgroundColor = backgroundColor;
 		this.foregroundColor = foregroundColor;
 		this.borderColor = 0;
 	}
 
+	public Style(final Shape shape, final int backgroundColor, final int foregroundColor)
+	{
+		this.shape = shape;
+		this.backgroundColor = backgroundColor;
+		this.foregroundColor = foregroundColor;
+		this.borderColor = 0;
+	}
+
+	public Style(final Shape shape, final int backgroundColor, final int foregroundColor, final int borderColor)
+	{
+		this.shape = shape;
+		this.backgroundColor = backgroundColor;
+		this.foregroundColor = foregroundColor;
+		this.borderColor = borderColor;
+	}
+
 	public Style(final int backgroundColor, final int foregroundColor, final int borderColor)
 	{
+		this.shape = Shape.ROUNDED;
 		this.backgroundColor = backgroundColor;
 		this.foregroundColor = foregroundColor;
 		this.borderColor = borderColor;
