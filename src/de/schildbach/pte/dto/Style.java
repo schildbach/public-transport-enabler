@@ -24,6 +24,8 @@ import java.io.Serializable;
  */
 public class Style implements Serializable
 {
+	private static final long serialVersionUID = 7145603493425043304L;
+
 	public final Shape shape;
 	public final int backgroundColor;
 	public final int foregroundColor;
