@@ -60,7 +60,7 @@ public class SydneyProvider extends AbstractEfaProvider
 	@Override
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
-		return xmlStopfinderRequest(new Location(LocationType.ANY, 0, null, constraint.toString()));
+		return jsonStopfinderRequest(new Location(LocationType.ANY, 0, null, constraint.toString()));
 	}
 
 	private static final String NEARBY_STATION_URI = API_BASE
