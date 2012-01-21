@@ -135,6 +135,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		uri.append("XML_STOPFINDER_REQUEST");
 		appendCommonRequestParams(uri, "JSON");
 		uri.append("&locationServerActive=1");
+		uri.append("&regionID_sf=1"); // prefer own region
 		appendLocation(uri, constraint, "sf");
 		if (constraint.type == LocationType.ANY)
 			// 1=place 2=stop 4=street 8=address 16=crossing 32=poi 64=postcode
