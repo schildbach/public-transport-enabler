@@ -1490,7 +1490,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		XmlPullUtil.exit(pp, "itdServingLine");
 
 		final String label = parseLine(motType, number, number, noTrainName);
-		return new Line(id, label, lineColors(label));
+		return new Line(id, label, lineStyle(label));
 	}
 
 	private static final Pattern P_STATION_NAME_WHITESPACE = Pattern.compile("\\s+");
@@ -1971,7 +1971,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							XmlPullUtil.exit(pp, "genAttrList");
 						}
 
-						final Line line = new Line(lineId, lineLabel, lineColors(lineLabel), lineAttrs);
+						final Line line = new Line(lineId, lineLabel, lineStyle(lineLabel), lineAttrs);
 
 						parts.add(new Connection.Trip(line, destination, departureTargetTime != null ? departureTargetTime : departureTime,
 								departureTargetTime, departurePosition, departure, arrivalTargetTime != null ? arrivalTargetTime : arrivalTime,

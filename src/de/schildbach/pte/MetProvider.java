@@ -25,7 +25,7 @@ import java.util.TimeZone;
 
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.util.Color;
+import de.schildbach.pte.dto.Style;
 
 /**
  * @author Andreas Schildbach
@@ -66,25 +66,25 @@ public class MetProvider extends AbstractEfaProvider
 		return jsonStopfinderRequest(new Location(LocationType.ANY, 0, null, constraint.toString()));
 	}
 
-	private static final Map<Character, int[]> LINES = new HashMap<Character, int[]>();
+	private static final Map<Character, Style> LINES = new HashMap<Character, Style>();
 
 	static
 	{
-		LINES.put('R', new int[] { Color.parseColor("#a24ba3"), Color.WHITE });
-		LINES.put('S', new int[] { Color.parseColor("#3a75c4"), Color.WHITE });
-		LINES.put('T', new int[] { Color.parseColor("#5bbf21"), Color.WHITE });
-		LINES.put('B', new int[] { Color.parseColor("#f77f00"), Color.WHITE });
+		LINES.put('R', new Style(Style.parseColor("#a24ba3"), Style.WHITE));
+		LINES.put('S', new Style(Style.parseColor("#3a75c4"), Style.WHITE));
+		LINES.put('T', new Style(Style.parseColor("#5bbf21"), Style.WHITE));
+		LINES.put('B', new Style(Style.parseColor("#f77f00"), Style.WHITE));
 	}
 
 	@Override
-	public int[] lineColors(final String line)
+	public Style lineStyle(final String line)
 	{
 		// TODO NightRider buses (buses with numbers > 940): #f26522
 
-		final int[] lineColors = LINES.get(line.charAt(0));
-		if (lineColors != null)
-			return lineColors;
+		final Style style = LINES.get(line.charAt(0));
+		if (style != null)
+			return style;
 		else
-			return super.lineColors(line);
+			return super.lineStyle(line);
 	}
 }

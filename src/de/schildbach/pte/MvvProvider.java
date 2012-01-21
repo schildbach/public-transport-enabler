@@ -25,7 +25,7 @@ import java.util.Map;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.Point;
-import de.schildbach.pte.util.Color;
+import de.schildbach.pte.dto.Style;
 
 /**
  * @author Andreas Schildbach
@@ -61,54 +61,54 @@ public class MvvProvider extends AbstractEfaProvider
 		return jsonStopfinderRequest(new Location(LocationType.ANY, 0, null, constraint.toString()));
 	}
 
-	private static final Map<String, int[]> LINES = new HashMap<String, int[]>();
+	private static final Map<String, Style> LINES = new HashMap<String, Style>();
 
 	static
 	{
-		LINES.put("SS1", new int[] { Color.parseColor("#00ccff"), Color.WHITE });
-		LINES.put("SS2", new int[] { Color.parseColor("#66cc00"), Color.WHITE });
-		LINES.put("SS3", new int[] { Color.parseColor("#880099"), Color.WHITE });
-		LINES.put("SS4", new int[] { Color.parseColor("#ff0033"), Color.WHITE });
-		LINES.put("SS6", new int[] { Color.parseColor("#00aa66"), Color.WHITE });
-		LINES.put("SS7", new int[] { Color.parseColor("#993333"), Color.WHITE });
-		LINES.put("SS8", new int[] { Color.BLACK, Color.parseColor("#ffcc00") });
-		LINES.put("SS20", new int[] { Color.BLACK, Color.parseColor("#ffaaaa") });
-		LINES.put("SS27", new int[] { Color.parseColor("#ffaaaa"), Color.WHITE });
-		LINES.put("SA", new int[] { Color.parseColor("#231f20"), Color.WHITE });
+		LINES.put("SS1", new Style(Style.parseColor("#00ccff"), Style.WHITE));
+		LINES.put("SS2", new Style(Style.parseColor("#66cc00"), Style.WHITE));
+		LINES.put("SS3", new Style(Style.parseColor("#880099"), Style.WHITE));
+		LINES.put("SS4", new Style(Style.parseColor("#ff0033"), Style.WHITE));
+		LINES.put("SS6", new Style(Style.parseColor("#00aa66"), Style.WHITE));
+		LINES.put("SS7", new Style(Style.parseColor("#993333"), Style.WHITE));
+		LINES.put("SS8", new Style(Style.BLACK, Style.parseColor("#ffcc00")));
+		LINES.put("SS20", new Style(Style.BLACK, Style.parseColor("#ffaaaa")));
+		LINES.put("SS27", new Style(Style.parseColor("#ffaaaa"), Style.WHITE));
+		LINES.put("SA", new Style(Style.parseColor("#231f20"), Style.WHITE));
 
-		LINES.put("T12", new int[] { Color.parseColor("#883388"), Color.WHITE });
-		LINES.put("T15", new int[] { Color.parseColor("#3366CC"), Color.WHITE });
-		LINES.put("T16", new int[] { Color.parseColor("#CC8833"), Color.WHITE });
-		LINES.put("T17", new int[] { Color.parseColor("#993333"), Color.WHITE });
-		LINES.put("T18", new int[] { Color.parseColor("#66bb33"), Color.WHITE });
-		LINES.put("T19", new int[] { Color.parseColor("#cc0000"), Color.WHITE });
-		LINES.put("T20", new int[] { Color.parseColor("#00bbee"), Color.WHITE });
-		LINES.put("T21", new int[] { Color.parseColor("#33aa99"), Color.WHITE });
-		LINES.put("T23", new int[] { Color.parseColor("#fff000"), Color.WHITE });
-		LINES.put("T25", new int[] { Color.parseColor("#ff9999"), Color.WHITE });
-		LINES.put("T27", new int[] { Color.parseColor("#ff6600"), Color.WHITE });
-		LINES.put("TN17", new int[] { Color.parseColor("#999999"), Color.parseColor("#ffff00") });
-		LINES.put("TN19", new int[] { Color.parseColor("#999999"), Color.parseColor("#ffff00") });
-		LINES.put("TN20", new int[] { Color.parseColor("#999999"), Color.parseColor("#ffff00") });
-		LINES.put("TN27", new int[] { Color.parseColor("#999999"), Color.parseColor("#ffff00") });
+		LINES.put("T12", new Style(Style.parseColor("#883388"), Style.WHITE));
+		LINES.put("T15", new Style(Style.parseColor("#3366CC"), Style.WHITE));
+		LINES.put("T16", new Style(Style.parseColor("#CC8833"), Style.WHITE));
+		LINES.put("T17", new Style(Style.parseColor("#993333"), Style.WHITE));
+		LINES.put("T18", new Style(Style.parseColor("#66bb33"), Style.WHITE));
+		LINES.put("T19", new Style(Style.parseColor("#cc0000"), Style.WHITE));
+		LINES.put("T20", new Style(Style.parseColor("#00bbee"), Style.WHITE));
+		LINES.put("T21", new Style(Style.parseColor("#33aa99"), Style.WHITE));
+		LINES.put("T23", new Style(Style.parseColor("#fff000"), Style.WHITE));
+		LINES.put("T25", new Style(Style.parseColor("#ff9999"), Style.WHITE));
+		LINES.put("T27", new Style(Style.parseColor("#ff6600"), Style.WHITE));
+		LINES.put("TN17", new Style(Style.parseColor("#999999"), Style.parseColor("#ffff00")));
+		LINES.put("TN19", new Style(Style.parseColor("#999999"), Style.parseColor("#ffff00")));
+		LINES.put("TN20", new Style(Style.parseColor("#999999"), Style.parseColor("#ffff00")));
+		LINES.put("TN27", new Style(Style.parseColor("#999999"), Style.parseColor("#ffff00")));
 
-		LINES.put("UU1", new int[] { Color.parseColor("#227700"), Color.WHITE });
-		LINES.put("UU2", new int[] { Color.parseColor("#bb0000"), Color.WHITE });
-		LINES.put("UU2E", new int[] { Color.parseColor("#bb0000"), Color.WHITE });
-		LINES.put("UU3", new int[] { Color.parseColor("#ee8800"), Color.WHITE });
-		LINES.put("UU4", new int[] { Color.parseColor("#00ccaa"), Color.WHITE });
-		LINES.put("UU5", new int[] { Color.parseColor("#bb7700"), Color.WHITE });
-		LINES.put("UU6", new int[] { Color.parseColor("#0000cc"), Color.WHITE });
+		LINES.put("UU1", new Style(Style.parseColor("#227700"), Style.WHITE));
+		LINES.put("UU2", new Style(Style.parseColor("#bb0000"), Style.WHITE));
+		LINES.put("UU2E", new Style(Style.parseColor("#bb0000"), Style.WHITE));
+		LINES.put("UU3", new Style(Style.parseColor("#ee8800"), Style.WHITE));
+		LINES.put("UU4", new Style(Style.parseColor("#00ccaa"), Style.WHITE));
+		LINES.put("UU5", new Style(Style.parseColor("#bb7700"), Style.WHITE));
+		LINES.put("UU6", new Style(Style.parseColor("#0000cc"), Style.WHITE));
 	}
 
 	@Override
-	public int[] lineColors(final String line)
+	public Style lineStyle(final String line)
 	{
-		final int[] lineColors = LINES.get(line);
-		if (lineColors != null)
-			return lineColors;
+		final Style style = LINES.get(line);
+		if (style != null)
+			return style;
 		else
-			return super.lineColors(line);
+			return super.lineStyle(line);
 	}
 
 	@Override

@@ -25,7 +25,7 @@ import java.util.TimeZone;
 
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.util.Color;
+import de.schildbach.pte.dto.Style;
 
 /**
  * @author Andreas Schildbach
@@ -90,34 +90,34 @@ public class SfProvider extends AbstractEfaProvider
 			return super.parseLine(mot, name, longName, noTrainName);
 	}
 
-	private static final Map<String, int[]> LINES = new HashMap<String, int[]>();
+	private static final Map<String, Style> LINES = new HashMap<String, Style>();
 
 	static
 	{
 		// BART
-		LINES.put("RDaly City / Dublin Pleasanton", new int[] { Color.parseColor("#00AEEF"), Color.WHITE });
-		LINES.put("RDulin Pleasanton / Daly City", new int[] { Color.parseColor("#00AEEF"), Color.WHITE });
+		LINES.put("RDaly City / Dublin Pleasanton", new Style(Style.parseColor("#00AEEF"), Style.WHITE));
+		LINES.put("RDulin Pleasanton / Daly City", new Style(Style.parseColor("#00AEEF"), Style.WHITE));
 
-		LINES.put("RSFO / Pittsburg Bay Point", new int[] { Color.parseColor("#FFE800"), Color.BLACK });
-		LINES.put("RPittsburg Bay Point / SFO", new int[] { Color.parseColor("#FFE800"), Color.BLACK });
+		LINES.put("RSFO / Pittsburg Bay Point", new Style(Style.parseColor("#FFE800"), Style.BLACK));
+		LINES.put("RPittsburg Bay Point / SFO", new Style(Style.parseColor("#FFE800"), Style.BLACK));
 
-		LINES.put("RDaly City / Fremont", new int[] { Color.parseColor("#4EBF49"), Color.WHITE });
-		LINES.put("RFremont / Daly City", new int[] { Color.parseColor("#4EBF49"), Color.WHITE });
+		LINES.put("RDaly City / Fremont", new Style(Style.parseColor("#4EBF49"), Style.WHITE));
+		LINES.put("RFremont / Daly City", new Style(Style.parseColor("#4EBF49"), Style.WHITE));
 
-		LINES.put("RFremont / Richmond", new int[] { Color.parseColor("#FAA61A"), Color.WHITE });
-		LINES.put("RRichmond / Fremont", new int[] { Color.parseColor("#FAA61A"), Color.WHITE });
+		LINES.put("RFremont / Richmond", new Style(Style.parseColor("#FAA61A"), Style.WHITE));
+		LINES.put("RRichmond / Fremont", new Style(Style.parseColor("#FAA61A"), Style.WHITE));
 
-		LINES.put("RMillbrae / Richmond", new int[] { Color.parseColor("#F81A23"), Color.WHITE });
-		LINES.put("RRichmond / Millbrae", new int[] { Color.parseColor("#F81A23"), Color.WHITE });
+		LINES.put("RMillbrae / Richmond", new Style(Style.parseColor("#F81A23"), Style.WHITE));
+		LINES.put("RRichmond / Millbrae", new Style(Style.parseColor("#F81A23"), Style.WHITE));
 	}
 
 	@Override
-	public int[] lineColors(final String line)
+	public Style lineStyle(final String line)
 	{
-		final int[] lineColors = LINES.get(line);
-		if (lineColors != null)
-			return lineColors;
+		final Style style = LINES.get(line);
+		if (style != null)
+			return style;
 		else
-			return super.lineColors(line);
+			return super.lineStyle(line);
 	}
 }

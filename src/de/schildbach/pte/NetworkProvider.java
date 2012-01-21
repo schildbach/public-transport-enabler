@@ -27,6 +27,7 @@ import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
+import de.schildbach.pte.dto.Style;
 
 /**
  * Interface to be implemented by providers of transportation networks
@@ -138,13 +139,13 @@ public interface NetworkProvider
 	GetConnectionDetailsResult getConnectionDetails(String connectionUri) throws IOException;
 
 	/**
-	 * Get colors of line
+	 * Get style of line
 	 * 
 	 * @param line
-	 *            line to get color of
-	 * @return array containing background, foreground and border (optional) colors
+	 *            line to get style of
+	 * @return object containing background, foreground and border (optional) colors
 	 */
-	int[] lineColors(String line);
+	Style lineStyle(String line);
 
 	/**
 	 * Gets the primary covered area of the network

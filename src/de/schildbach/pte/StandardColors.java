@@ -20,23 +20,23 @@ package de.schildbach.pte;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.schildbach.pte.util.Color;
+import de.schildbach.pte.dto.Style;
 
 /**
  * @author Andreas Schildbach
  */
 public class StandardColors
 {
-	public static final Map<Character, int[]> LINES = new HashMap<Character, int[]>();
+	public static final Map<Character, Style> LINES = new HashMap<Character, Style>();
 
 	static
 	{
-		LINES.put('I', new int[] { Color.WHITE, Color.RED, Color.RED });
-		LINES.put('R', new int[] { Color.GRAY, Color.WHITE });
-		LINES.put('S', new int[] { Color.parseColor("#006e34"), Color.WHITE });
-		LINES.put('U', new int[] { Color.parseColor("#003090"), Color.WHITE });
-		LINES.put('T', new int[] { Color.parseColor("#cc0000"), Color.WHITE });
-		LINES.put('B', new int[] { Color.parseColor("#993399"), Color.WHITE });
-		LINES.put('F', new int[] { Color.BLUE, Color.WHITE });
+		LINES.put('I', new Style(Style.WHITE, Style.RED, Style.RED));
+		LINES.put('R', new Style(Style.GRAY, Style.WHITE));
+		LINES.put('S', new Style(Style.parseColor("#006e34"), Style.WHITE));
+		LINES.put('U', new Style(Style.parseColor("#003090"), Style.WHITE));
+		LINES.put('T', new Style(Style.parseColor("#cc0000"), Style.WHITE));
+		LINES.put('B', new Style(Style.parseColor("#993399"), Style.WHITE));
+		LINES.put('F', new Style(Style.BLUE, Style.WHITE));
 	}
 }

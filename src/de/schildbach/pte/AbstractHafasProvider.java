@@ -636,7 +636,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 							lineStr = classChar + m.group(1) + m.group(2);
 						else
 							lineStr = classChar + prod;
-						line = new Line(null, lineStr, lineStr != null ? lineColors(lineStr) : null);
+						line = new Line(null, lineStr, lineStr != null ? lineStyle(lineStr) : null);
 					}
 					else
 					{
@@ -1863,14 +1863,14 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	{
 		if (attrs.length == 0)
 		{
-			return new Line(null, lineStr, lineColors(lineStr));
+			return new Line(null, lineStr, lineStyle(lineStr));
 		}
 		else
 		{
 			final Set<Line.Attr> attrSet = new HashSet<Line.Attr>();
 			for (final Line.Attr attr : attrs)
 				attrSet.add(attr);
-			return new Line(null, lineStr, lineColors(lineStr), attrSet);
+			return new Line(null, lineStr, lineStyle(lineStr), attrSet);
 		}
 	}
 

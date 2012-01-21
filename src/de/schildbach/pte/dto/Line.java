@@ -35,21 +35,21 @@ public final class Line implements Serializable, Comparable<Line>
 	final public String id;
 	final private transient char product; // TODO make true field
 	final public String label;
-	final public int[] colors;
+	final public Style style;
 	final private Set<Attr> attrs;
 
 	private static final String PRODUCT_ORDER = "IRSUTBPFC?";
 
-	public Line(final String id, final String label, final int[] colors)
+	public Line(final String id, final String label, final Style style)
 	{
-		this(id, label, colors, null);
+		this(id, label, style, null);
 	}
 
-	public Line(final String id, final String label, final int[] colors, final Set<Attr> attrs)
+	public Line(final String id, final String label, final Style style, final Set<Attr> attrs)
 	{
 		this.id = id;
 		this.label = label;
-		this.colors = colors;
+		this.style = style;
 		this.attrs = attrs;
 
 		product = label != null ? label.charAt(0) : '?';

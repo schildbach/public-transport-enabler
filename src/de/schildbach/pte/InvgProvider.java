@@ -37,7 +37,7 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryDeparturesResult.Status;
 import de.schildbach.pte.dto.ResultHeader;
 import de.schildbach.pte.dto.StationDepartures;
-import de.schildbach.pte.util.Color;
+import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.util.ParserUtils;
 
 /**
@@ -290,28 +290,28 @@ public class InvgProvider extends AbstractHafasProvider
 			if (mBus.matches())
 			{
 				final String lineStr = "B" + mBus.group(1);
-				return new Line(null, lineStr, lineColors(lineStr));
+				return new Line(null, lineStr, lineStyle(lineStr));
 			}
 
 			final Matcher mNachtbus = P_NORMALIZE_LINE_NACHTBUS.matcher(line);
 			if (mNachtbus.matches())
 			{
 				final String lineStr = "BN" + mNachtbus.group(1);
-				return new Line(null, lineStr, lineColors(lineStr));
+				return new Line(null, lineStr, lineStyle(lineStr));
 			}
 
 			final Matcher mBusS = P_NORMALIZE_LINE_BUS_S.matcher(line);
 			if (mBusS.matches())
 			{
 				final String lineStr = "BS" + mBusS.group(1);
-				return new Line(null, lineStr, lineColors(lineStr));
+				return new Line(null, lineStr, lineStyle(lineStr));
 			}
 
 			final Matcher mBusX = P_NORMALIZE_LINE_BUS_X.matcher(line);
 			if (mBusX.matches())
 			{
 				final String lineStr = "BX" + mBusX.group(1);
-				return new Line(null, lineStr, lineColors(lineStr));
+				return new Line(null, lineStr, lineStyle(lineStr));
 			}
 		}
 
@@ -327,78 +327,78 @@ public class InvgProvider extends AbstractHafasProvider
 		return 0;
 	}
 
-	private static final Map<String, int[]> LINES = new HashMap<String, int[]>();
+	private static final Map<String, Style> LINES = new HashMap<String, Style>();
 
 	static
 	{
-		LINES.put("B10", new int[] { Color.parseColor("#DA2510"), Color.WHITE });
-		LINES.put("B11", new int[] { Color.parseColor("#EE9B78"), Color.BLACK });
-		LINES.put("B15", new int[] { Color.parseColor("#84C326"), Color.BLACK });
-		LINES.put("B16", new int[] { Color.parseColor("#5D452E"), Color.WHITE });
-		LINES.put("B17", new int[] { Color.parseColor("#AAAAAA"), Color.BLACK });
-		LINES.put("B20", new int[] { Color.parseColor("#EA891C"), Color.BLACK });
-		LINES.put("B21", new int[] { Color.parseColor("#31B2EA"), Color.BLACK });
-		LINES.put("B25", new int[] { Color.parseColor("#7F65A0"), Color.WHITE });
-		LINES.put("B26", new int[] { Color.parseColor("#00BF73"), Color.WHITE });
-		LINES.put("B30", new int[] { Color.parseColor("#901E78"), Color.WHITE });
-		LINES.put("B31", new int[] { Color.parseColor("#DCE722"), Color.BLACK });
-		LINES.put("B40", new int[] { Color.parseColor("#009240"), Color.WHITE });
-		LINES.put("B41", new int[] { Color.parseColor("#7BC5B1"), Color.BLACK });
-		LINES.put("B44", new int[] { Color.parseColor("#EA77A6"), Color.WHITE });
-		LINES.put("B50", new int[] { Color.parseColor("#FACF00"), Color.BLACK });
-		LINES.put("B53", new int[] { Color.parseColor("#BEB405"), Color.BLACK });
-		LINES.put("B55", new int[] { Color.parseColor("#FFF500"), Color.BLACK });
-		LINES.put("B60", new int[] { Color.parseColor("#0072B7"), Color.WHITE });
-		LINES.put("B61", new int[] { Color.rgb(204, 184, 122), Color.BLACK });
-		LINES.put("B62", new int[] { Color.rgb(204, 184, 122), Color.BLACK });
-		LINES.put("B65", new int[] { Color.parseColor("#B7DDD2"), Color.BLACK });
-		LINES.put("B70", new int[] { Color.parseColor("#D49016"), Color.BLACK });
-		LINES.put("B71", new int[] { Color.parseColor("#996600"), Color.BLACK });
-		LINES.put("B85", new int[] { Color.parseColor("#F6BAD3"), Color.BLACK });
-		LINES.put("B9221", new int[] { Color.rgb(217, 217, 255), Color.BLACK });
-		LINES.put("B9226", new int[] { Color.rgb(191, 255, 255), Color.BLACK });
+		LINES.put("B10", new Style(Style.parseColor("#DA2510"), Style.WHITE));
+		LINES.put("B11", new Style(Style.parseColor("#EE9B78"), Style.BLACK));
+		LINES.put("B15", new Style(Style.parseColor("#84C326"), Style.BLACK));
+		LINES.put("B16", new Style(Style.parseColor("#5D452E"), Style.WHITE));
+		LINES.put("B17", new Style(Style.parseColor("#AAAAAA"), Style.BLACK));
+		LINES.put("B20", new Style(Style.parseColor("#EA891C"), Style.BLACK));
+		LINES.put("B21", new Style(Style.parseColor("#31B2EA"), Style.BLACK));
+		LINES.put("B25", new Style(Style.parseColor("#7F65A0"), Style.WHITE));
+		LINES.put("B26", new Style(Style.parseColor("#00BF73"), Style.WHITE));
+		LINES.put("B30", new Style(Style.parseColor("#901E78"), Style.WHITE));
+		LINES.put("B31", new Style(Style.parseColor("#DCE722"), Style.BLACK));
+		LINES.put("B40", new Style(Style.parseColor("#009240"), Style.WHITE));
+		LINES.put("B41", new Style(Style.parseColor("#7BC5B1"), Style.BLACK));
+		LINES.put("B44", new Style(Style.parseColor("#EA77A6"), Style.WHITE));
+		LINES.put("B50", new Style(Style.parseColor("#FACF00"), Style.BLACK));
+		LINES.put("B53", new Style(Style.parseColor("#BEB405"), Style.BLACK));
+		LINES.put("B55", new Style(Style.parseColor("#FFF500"), Style.BLACK));
+		LINES.put("B60", new Style(Style.parseColor("#0072B7"), Style.WHITE));
+		LINES.put("B61", new Style(Style.rgb(204, 184, 122), Style.BLACK));
+		LINES.put("B62", new Style(Style.rgb(204, 184, 122), Style.BLACK));
+		LINES.put("B65", new Style(Style.parseColor("#B7DDD2"), Style.BLACK));
+		LINES.put("B70", new Style(Style.parseColor("#D49016"), Style.BLACK));
+		LINES.put("B71", new Style(Style.parseColor("#996600"), Style.BLACK));
+		LINES.put("B85", new Style(Style.parseColor("#F6BAD3"), Style.BLACK));
+		LINES.put("B9221", new Style(Style.rgb(217, 217, 255), Style.BLACK));
+		LINES.put("B9226", new Style(Style.rgb(191, 255, 255), Style.BLACK));
 
-		LINES.put("BN1", new int[] { Color.parseColor("#00116C"), Color.WHITE });
-		LINES.put("BN2", new int[] { Color.parseColor("#00116C"), Color.WHITE });
-		LINES.put("BN3", new int[] { Color.parseColor("#00116C"), Color.WHITE });
-		LINES.put("BN4", new int[] { Color.parseColor("#00116C"), Color.WHITE });
-		LINES.put("BN5", new int[] { Color.parseColor("#00116C"), Color.WHITE });
-		LINES.put("BN6", new int[] { Color.parseColor("#00116C"), Color.WHITE });
-		LINES.put("BN7", new int[] { Color.parseColor("#00116C"), Color.WHITE });
-		LINES.put("BN8", new int[] { Color.parseColor("#00116C"), Color.WHITE });
-		LINES.put("BN9", new int[] { Color.parseColor("#00116C"), Color.WHITE });
-		LINES.put("BN10", new int[] { Color.parseColor("#00116C"), Color.WHITE });
-		LINES.put("BN11", new int[] { Color.parseColor("#00116C"), Color.WHITE });
-		LINES.put("BN12", new int[] { Color.parseColor("#00116C"), Color.WHITE });
-		LINES.put("BN13", new int[] { Color.parseColor("#00116C"), Color.WHITE });
-		LINES.put("BN14", new int[] { Color.parseColor("#00116C"), Color.WHITE });
-		LINES.put("BN15", new int[] { Color.parseColor("#00116C"), Color.WHITE });
-		LINES.put("BN16", new int[] { Color.parseColor("#00116C"), Color.WHITE });
-		LINES.put("BN17", new int[] { Color.parseColor("#00116C"), Color.WHITE });
-		LINES.put("BN18", new int[] { Color.parseColor("#00116C"), Color.WHITE });
-		LINES.put("BN19", new int[] { Color.parseColor("#00116C"), Color.WHITE });
+		LINES.put("BN1", new Style(Style.parseColor("#00116C"), Style.WHITE));
+		LINES.put("BN2", new Style(Style.parseColor("#00116C"), Style.WHITE));
+		LINES.put("BN3", new Style(Style.parseColor("#00116C"), Style.WHITE));
+		LINES.put("BN4", new Style(Style.parseColor("#00116C"), Style.WHITE));
+		LINES.put("BN5", new Style(Style.parseColor("#00116C"), Style.WHITE));
+		LINES.put("BN6", new Style(Style.parseColor("#00116C"), Style.WHITE));
+		LINES.put("BN7", new Style(Style.parseColor("#00116C"), Style.WHITE));
+		LINES.put("BN8", new Style(Style.parseColor("#00116C"), Style.WHITE));
+		LINES.put("BN9", new Style(Style.parseColor("#00116C"), Style.WHITE));
+		LINES.put("BN10", new Style(Style.parseColor("#00116C"), Style.WHITE));
+		LINES.put("BN11", new Style(Style.parseColor("#00116C"), Style.WHITE));
+		LINES.put("BN12", new Style(Style.parseColor("#00116C"), Style.WHITE));
+		LINES.put("BN13", new Style(Style.parseColor("#00116C"), Style.WHITE));
+		LINES.put("BN14", new Style(Style.parseColor("#00116C"), Style.WHITE));
+		LINES.put("BN15", new Style(Style.parseColor("#00116C"), Style.WHITE));
+		LINES.put("BN16", new Style(Style.parseColor("#00116C"), Style.WHITE));
+		LINES.put("BN17", new Style(Style.parseColor("#00116C"), Style.WHITE));
+		LINES.put("BN18", new Style(Style.parseColor("#00116C"), Style.WHITE));
+		LINES.put("BN19", new Style(Style.parseColor("#00116C"), Style.WHITE));
 
-		LINES.put("BS1", new int[] { Color.rgb(178, 25, 0), Color.WHITE });
-		LINES.put("BS2", new int[] { Color.rgb(178, 25, 0), Color.WHITE });
-		LINES.put("BS3", new int[] { Color.rgb(178, 25, 0), Color.WHITE });
-		LINES.put("BS4", new int[] { Color.rgb(178, 25, 0), Color.WHITE });
-		LINES.put("BS5", new int[] { Color.rgb(178, 25, 0), Color.WHITE });
-		LINES.put("BS6", new int[] { Color.rgb(178, 25, 0), Color.WHITE });
-		LINES.put("BS7", new int[] { Color.rgb(178, 25, 0), Color.WHITE });
-		LINES.put("BS8", new int[] { Color.rgb(178, 25, 0), Color.WHITE });
+		LINES.put("BS1", new Style(Style.rgb(178, 25, 0), Style.WHITE));
+		LINES.put("BS2", new Style(Style.rgb(178, 25, 0), Style.WHITE));
+		LINES.put("BS3", new Style(Style.rgb(178, 25, 0), Style.WHITE));
+		LINES.put("BS4", new Style(Style.rgb(178, 25, 0), Style.WHITE));
+		LINES.put("BS5", new Style(Style.rgb(178, 25, 0), Style.WHITE));
+		LINES.put("BS6", new Style(Style.rgb(178, 25, 0), Style.WHITE));
+		LINES.put("BS7", new Style(Style.rgb(178, 25, 0), Style.WHITE));
+		LINES.put("BS8", new Style(Style.rgb(178, 25, 0), Style.WHITE));
 
 		// BX109?
-		LINES.put("BX11", new int[] { Color.parseColor("#EE9B78"), Color.BLACK });
-		LINES.put("BX80", new int[] { Color.parseColor("#FFFF40"), Color.BLACK });
+		LINES.put("BX11", new Style(Style.parseColor("#EE9B78"), Style.BLACK));
+		LINES.put("BX80", new Style(Style.parseColor("#FFFF40"), Style.BLACK));
 	}
 
 	@Override
-	public int[] lineColors(final String line)
+	public Style lineStyle(final String line)
 	{
-		final int[] lineColors = LINES.get(line);
-		if (lineColors != null)
-			return lineColors;
+		final Style style = LINES.get(line);
+		if (style != null)
+			return style;
 		else
-			return super.lineColors(line);
+			return super.lineStyle(line);
 	}
 }
