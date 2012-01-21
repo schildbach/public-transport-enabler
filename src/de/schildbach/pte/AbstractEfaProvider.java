@@ -160,7 +160,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					type = stop.getString("anyType");
 				final String name = stop.getString("object");
 				final JSONObject ref = stop.getJSONObject("ref");
-				final String place = ref.getString("place");
+				String place = ref.getString("place");
+				if (place != null && place.length() == 0)
+					place = null;
 				final String coords = ref.optString("coords", null);
 				final int lat;
 				final int lon;
