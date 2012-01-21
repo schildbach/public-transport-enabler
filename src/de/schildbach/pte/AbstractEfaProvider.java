@@ -193,10 +193,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 		catch (final JSONException x)
 		{
-			x.printStackTrace();
 			throw new RuntimeException("cannot parse: '" + page + "' on " + uri, x);
 		}
-
 	}
 
 	protected List<Location> xmlStopfinderRequest(final Location constraint) throws IOException
