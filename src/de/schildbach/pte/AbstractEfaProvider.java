@@ -136,6 +136,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		appendCommonRequestParams(uri, "JSON");
 		uri.append("&locationServerActive=1");
 		appendLocation(uri, constraint, "sf");
+		if (constraint.type == LocationType.ANY)
+			// 1=place 2=stop 4=street 8=address 16=crossing 32=poi 64=postcode
+			uri.append("&anyObjFilter_sf=").append(2 + 4 + 8 + 16 + 32 + 64);
 
 		// System.out.println(uri.toString());
 
