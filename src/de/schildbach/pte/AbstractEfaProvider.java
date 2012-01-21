@@ -290,6 +290,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		uri.append("&inclFilter=1&radius_1=").append(maxDistance != 0 ? maxDistance : 1320);
 		uri.append("&type_1=STOP"); // ENTRANCE, BUS_POINT, POI_POINT
 
+		// System.out.println(uri);
+
 		InputStream is = null;
 		try
 		{
@@ -464,8 +466,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		return new Location(LocationType.STATION, id, lat, lon, place, name);
 	}
 
-	protected abstract String nearbyStationUri(int stationId);
-
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
 		if (location.hasLocation())
@@ -477,12 +477,28 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		if (!location.hasId())
 			throw new IllegalArgumentException("at least one of stationId or lat/lon must be given");
 
-		final String uri = nearbyStationUri(location.id);
+		return nearbyStationsRequest(location.id, maxStations);
+	}
+
+	private NearbyStationsResult nearbyStationsRequest(final int stationId, final int maxStations) throws IOException
+	{
+		final StringBuilder uri = new StringBuilder(apiBase);
+		uri.append(departureMonitorEndpoint);
+		appendCommonRequestParams(uri, "XML");
+		uri.append("&type_dm=stop&name_dm=").append(stationId);
+		uri.append("&itOptionsActive=1");
+		uri.append("&ptOptionsActive=1");
+		uri.append("&useProxFootSearch=1");
+		uri.append("&mergeDep=1");
+		uri.append("&useAllStops=1");
+		uri.append("&mode=direct");
+
+		// System.out.println(uri);
 
 		InputStream is = null;
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri);
+			is = ParserUtils.scrapeInputStream(uri.toString());
 
 			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);

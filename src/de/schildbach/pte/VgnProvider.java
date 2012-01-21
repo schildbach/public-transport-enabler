@@ -54,15 +54,6 @@ public class VgnProvider extends AbstractEfaProvider
 		return false;
 	}
 
-	private static final String NEARBY_STATION_URI = DEPARTURE_MONITOR_ENDPOINT
-			+ "?outputFormat=XML&coordOutputFormat=WGS84&type_dm=stop&name_dm=%s&itOptionsActive=1&ptOptionsActive=1&useProxFootSearch=1&mergeDep=1&useAllStops=1&mode=direct";
-
-	@Override
-	protected String nearbyStationUri(final int stationId)
-	{
-		return String.format(apiBase + NEARBY_STATION_URI, stationId);
-	}
-
 	@Override
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{

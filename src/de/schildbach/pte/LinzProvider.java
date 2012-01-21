@@ -51,16 +51,6 @@ public class LinzProvider extends AbstractEfaProvider
 		return false;
 	}
 
-	private static final String NEARBY_STATION_URI = API_BASE
-			+ "XSLT_DM_REQUEST"
-			+ "?outputFormat=XML&mode=direct&coordOutputFormat=WGS84&mergeDep=1&useAllStops=1&type_dm=stop&name_dm=%s&itOptionsActive=1&ptOptionsActive=1&useProxFootSearch=1&excludedMeans=checkbox";
-
-	@Override
-	protected String nearbyStationUri(final int stationId)
-	{
-		return String.format(NEARBY_STATION_URI, stationId);
-	}
-
 	@Override
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
