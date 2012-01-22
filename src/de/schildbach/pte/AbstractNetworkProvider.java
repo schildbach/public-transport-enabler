@@ -17,9 +17,6 @@
 
 package de.schildbach.pte;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.Style;
 
@@ -28,25 +25,11 @@ import de.schildbach.pte.dto.Style;
  */
 public abstract class AbstractNetworkProvider implements NetworkProvider
 {
-	private static final Map<Character, Style> LINES = new HashMap<Character, Style>();
-
-	static
-	{
-		LINES.put('I', new Style(Style.WHITE, Style.RED, Style.RED));
-		LINES.put('R', new Style(Style.GRAY, Style.WHITE));
-		LINES.put('S', new Style(Style.parseColor("#006e34"), Style.WHITE));
-		LINES.put('U', new Style(Style.parseColor("#003090"), Style.WHITE));
-		LINES.put('T', new Style(Style.parseColor("#cc0000"), Style.WHITE));
-		LINES.put('B', new Style(Style.parseColor("#993399"), Style.WHITE));
-		LINES.put('F', new Style(Style.BLUE, Style.WHITE));
-		LINES.put('?', new Style(Style.DKGRAY, Style.WHITE));
-	}
-
 	public Style lineStyle(final String line)
 	{
 		if (line.length() == 0)
 			return null;
-		return LINES.get(line.charAt(0));
+		return StandardColors.LINES.get(line.charAt(0));
 	}
 
 	public Point[] getArea()
