@@ -898,10 +898,17 @@ public final class BvgProvider extends AbstractHafasProvider
 		if ("S42".equals(line))
 			return newLine("SS42", Attr.CIRCLE_ANTICLOCKWISE);
 
-		if ("BS41".equals(line))
+		if ("Bus S41".equals(line))
 			return newLine("BS41", Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_CLOCKWISE);
-		if ("BS42".equals(line))
+		if ("Bus S42".equals(line))
 			return newLine("BS42", Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_ANTICLOCKWISE);
+
+		if ("Bus TXL".equals(line))
+			return newLine("BTXL", Attr.LINE_AIRPORT);
+		if ("S9".equals(line))
+			return newLine("SS9", Attr.LINE_AIRPORT);
+		if ("S45".equals(line))
+			return newLine("SS45", Attr.LINE_AIRPORT);
 
 		final Matcher mRegional = P_LINE_REGIONAL.matcher(line);
 		if (mRegional.matches())
