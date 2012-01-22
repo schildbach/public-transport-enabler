@@ -33,7 +33,7 @@ public class Style implements Serializable
 
 	public enum Shape
 	{
-		RECT, ROUNDED
+		RECT, ROUNDED, CIRCLE
 	}
 
 	public Style(final int backgroundColor, final int foregroundColor)
