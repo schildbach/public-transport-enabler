@@ -35,6 +35,7 @@ import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
 import de.schildbach.pte.dto.Line;
+import de.schildbach.pte.dto.Line.Attr;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -892,6 +893,11 @@ public final class BvgProvider extends AbstractHafasProvider
 	@Override
 	protected Line normalizeLine(final String line)
 	{
+		if ("S41".equals(line))
+			return newLine("SS41", Attr.CIRCLE_CLOCKWISE);
+		if ("S42".equals(line))
+			return newLine("SS42", Attr.CIRCLE_ANTICLOCKWISE);
+
 		final Matcher mRegional = P_LINE_REGIONAL.matcher(line);
 		if (mRegional.matches())
 			return newLine('R' + mRegional.group(1));

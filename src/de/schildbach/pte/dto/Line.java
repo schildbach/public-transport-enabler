@@ -27,7 +27,7 @@ public final class Line implements Serializable, Comparable<Line>
 {
 	public enum Attr
 	{
-		WHEEL_CHAIR_ACCESS
+		CIRCLE_CLOCKWISE, CIRCLE_ANTICLOCKWISE, WHEEL_CHAIR_ACCESS
 	}
 
 	private static final long serialVersionUID = -5642533805998375070L;
