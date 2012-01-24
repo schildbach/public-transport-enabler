@@ -37,7 +37,7 @@ public class ZvvProvider extends AbstractHafasProvider
 
 	public ZvvProvider()
 	{
-		super(API_BASE + "query.exe/dn", 10, null, null, "UTF-8");
+		super(API_BASE + "query.exe/dn", 10, null, "UTF-8", "UTF-8");
 	}
 
 	public NetworkId id()
@@ -52,6 +52,33 @@ public class ZvvProvider extends AbstractHafasProvider
 				return true;
 
 		return false;
+	}
+
+	@Override
+	protected char intToProduct(final int value)
+	{
+		if (value == 1)
+			return 'I';
+		if (value == 2)
+			return 'I';
+		if (value == 4)
+			return 'R';
+		if (value == 8)
+			return 'R';
+		if (value == 16)
+			return 'F';
+		if (value == 32)
+			return 'S';
+		if (value == 64)
+			return 'B';
+		if (value == 128)
+			return 'C';
+		if (value == 256)
+			return 'U';
+		if (value == 512)
+			return 'T';
+
+		throw new IllegalArgumentException("cannot handle: " + value);
 	}
 
 	@Override
