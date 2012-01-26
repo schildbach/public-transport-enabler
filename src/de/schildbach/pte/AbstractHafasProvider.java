@@ -1838,7 +1838,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 	protected Line normalizeLine(final String line)
 	{
-		if (line == null || line.length() == 0)
+		if (line == null || line.length() == 0 || line.equals("#"))
 			return null;
 
 		final Matcher mBusSpecial = P_LINE_BUS_SPECIAL.matcher(line);
