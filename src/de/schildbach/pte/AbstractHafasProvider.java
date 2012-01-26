@@ -1877,6 +1877,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 	protected static final Pattern P_NORMALIZE_LINE_AND_TYPE = Pattern.compile("([^#]*)#(.*)");
 	private static final Pattern P_NORMALIZE_LINE_NUMBER = Pattern.compile("\\d{2,5}");
+	private static final Pattern P_NORMALIZE_LINE_BUS = Pattern.compile("Bus\\s*(.*)");
+	private static final Pattern P_NORMALIZE_LINE_TRAM = Pattern.compile("(?:Tram|STR)\\s*(.*)");
 
 	protected static final Pattern P_LINE_RUSSIA = Pattern
 			.compile("\\d{3}(?:AJ|BJ|DJ|FJ|GJ|IJ|KJ|LJ|NJ|MJ|OJ|RJ|SJ|TJ|UJ|VJ|ZJ|CH|KH|ZH|EI|JA|JI|MZ|SH|PC|Y)");
@@ -1886,7 +1888,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		final Matcher m = P_NORMALIZE_LINE_AND_TYPE.matcher(lineAndType);
 		if (m.matches())
 		{
-			final String number = m.group(1).replaceAll("\\s+", " ");
+			final String number = m.group(1);
 			final String type = m.group(2);
 
 			if (type.length() == 0)
@@ -1902,7 +1904,23 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			{
 				final char normalizedType = normalizeType(type);
 				if (normalizedType != 0)
-					return newLine(normalizedType + number);
+				{
+					if (normalizedType == 'B')
+					{
+						final Matcher mBusSpecial = P_NORMALIZE_LINE_BUS.matcher(number);
+						if (mBusSpecial.matches())
+							return newLine('B' + mBusSpecial.group(1));
+					}
+
+					if (normalizedType == 'T')
+					{
+						final Matcher mBusSpecial = P_NORMALIZE_LINE_TRAM.matcher(number);
+						if (mBusSpecial.matches())
+							return newLine('T' + mBusSpecial.group(1));
+					}
+
+					return newLine(normalizedType + number.replaceAll("\\s+", ""));
+				}
 			}
 
 			throw new IllegalStateException("cannot normalize type " + type + " number " + number + " line#type " + lineAndType);
