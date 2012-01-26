@@ -241,7 +241,7 @@ public class RmvProvider extends AbstractHafasProvider
 					final Matcher mDepFine = P_DEPARTURES_FINE.matcher(mDepCoarse.group(1));
 					if (mDepFine.matches())
 					{
-						final Line line = normalizeLine(ParserUtils.resolveEntities(mDepFine.group(1)));
+						final Line line = parseLineWithoutType(ParserUtils.resolveEntities(mDepFine.group(1)));
 
 						final String destination = ParserUtils.resolveEntities(mDepFine.group(2));
 
@@ -308,7 +308,7 @@ public class RmvProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected Line normalizeLine(final String line)
+	protected Line parseLineWithoutType(final String line)
 	{
 		if (line == null || line.length() == 0)
 			return null;

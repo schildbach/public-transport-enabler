@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -172,11 +171,5 @@ public class VbbProvider extends AbstractHafasProvider
 		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING));
 
 		return jsonGetStops(uri);
-	}
-
-	@Override
-	protected Line normalizeLine(final String line)
-	{
-		return parseLineAndType(line);
 	}
 }

@@ -20,7 +20,6 @@ package de.schildbach.pte;
 import java.io.IOException;
 import java.util.List;
 
-import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -162,12 +161,6 @@ public class DsbProvider extends AbstractHafasProvider
 		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING));
 
 		return xmlLocationList(uri);
-	}
-
-	@Override
-	protected Line normalizeLine(final String line)
-	{
-		return parseLineAndType(line);
 	}
 
 	@Override

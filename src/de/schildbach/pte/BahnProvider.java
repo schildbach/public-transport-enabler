@@ -432,7 +432,7 @@ public final class BahnProvider extends AbstractHafasProvider
 
 						if (mDetFine.group(2) != null)
 						{
-							final Line line = normalizeLine(ParserUtils.resolveEntities(mDetFine.group(2)));
+							final Line line = parseLineWithoutType(ParserUtils.resolveEntities(mDetFine.group(2)));
 
 							final Calendar departureTime = new GregorianCalendar(timeZone());
 							departureTime.clear();
@@ -538,7 +538,7 @@ public final class BahnProvider extends AbstractHafasProvider
 	private static final Pattern P_LINE_NUMBER = Pattern.compile("\\d{2,5}");
 
 	@Override
-	protected final Line normalizeLine(final String line)
+	protected final Line parseLineWithoutType(final String line)
 	{
 		if ("Schw-B".equals(line)) // Schwebebahn, gilt als "Straßenbahn besonderer Bauart"
 			return newLine('T' + line);
@@ -552,6 +552,6 @@ public final class BahnProvider extends AbstractHafasProvider
 		if ("---".equals(line))
 			return newLine('?' + line);
 
-		return super.normalizeLine(line);
+		return super.parseLineWithoutType(line);
 	}
 }

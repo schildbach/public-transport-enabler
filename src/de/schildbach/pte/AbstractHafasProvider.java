@@ -1835,9 +1835,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 	private static final Pattern P_LINE_BUS_SPECIAL = Pattern.compile("Bus([A-Z]/[\\dA-Z]+)");
 
-	protected Line normalizeLine(final String line)
+	protected Line parseLineWithoutType(final String line)
 	{
-		if (line == null || line.length() == 0 || line.equals("#"))
+		if (line == null || line.length() == 0)
 			return null;
 
 		final Matcher mBusSpecial = P_LINE_BUS_SPECIAL.matcher(line);

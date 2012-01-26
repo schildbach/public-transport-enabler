@@ -160,7 +160,7 @@ public class NsProvider extends AbstractHafasProvider
 					final Matcher mDepFine = P_DEPARTURES_FINE.matcher(mDepCoarse.group(1));
 					if (mDepFine.matches())
 					{
-						final Line line = normalizeLine(ParserUtils.resolveEntities(mDepFine.group(1)));
+						final Line line = parseLineWithoutType(ParserUtils.resolveEntities(mDepFine.group(1)));
 
 						final String destination = ParserUtils.resolveEntities(mDepFine.group(2));
 

@@ -294,7 +294,7 @@ public final class BvgProvider extends AbstractHafasProvider
 					final Matcher mMsgsFine = P_DEPARTURES_LIVE_MSGS_FINE.matcher(mMsgsCoarse.group(1));
 					if (mMsgsFine.matches())
 					{
-						final Line line = normalizeLine(ParserUtils.resolveEntities(mMsgsFine.group(1)));
+						final Line line = parseLineWithoutType(ParserUtils.resolveEntities(mMsgsFine.group(1)));
 						final String message = ParserUtils.resolveEntities(mMsgsFine.group(3)).replace('\n', ' ');
 						messages.put(line.label, message);
 					}
@@ -328,7 +328,7 @@ public final class BvgProvider extends AbstractHafasProvider
 						else
 							plannedTime = parsedTime.getTime();
 
-						final Line line = normalizeLine(ParserUtils.resolveEntities(mDepFine.group(3)));
+						final Line line = parseLineWithoutType(ParserUtils.resolveEntities(mDepFine.group(3)));
 
 						final String position = null;
 
@@ -398,7 +398,7 @@ public final class BvgProvider extends AbstractHafasProvider
 
 						final Date plannedTime = parsedTime.getTime();
 
-						final Line line = normalizeLine(ParserUtils.resolveEntities(mDepFine.group(2)));
+						final Line line = parseLineWithoutType(ParserUtils.resolveEntities(mDepFine.group(2)));
 
 						final String position = ParserUtils.resolveEntities(mDepFine.group(3));
 
@@ -831,7 +831,7 @@ public final class BvgProvider extends AbstractHafasProvider
 							final String arrivalPosition = !mDetails.group(4).equals("&nbsp;") ? ParserUtils.resolveEntities(mDetails.group(4))
 									: null;
 
-							final Line line = normalizeLine(ParserUtils.resolveEntities(tDep[3]));
+							final Line line = parseLineWithoutType(ParserUtils.resolveEntities(tDep[3]));
 
 							final Location destination;
 							if (mDetails.group(3) != null)
@@ -891,7 +891,7 @@ public final class BvgProvider extends AbstractHafasProvider
 	private static final Pattern P_LINE_NUMBER = Pattern.compile("\\d{4,}");
 
 	@Override
-	protected Line normalizeLine(final String line)
+	protected Line parseLineWithoutType(final String line)
 	{
 		if ("S41".equals(line))
 			return newLine("SS41", Attr.CIRCLE_CLOCKWISE);
@@ -928,7 +928,7 @@ public final class BvgProvider extends AbstractHafasProvider
 		if (P_LINE_NUMBER.matcher(line).matches())
 			return newLine('R' + line);
 
-		return super.normalizeLine(line);
+		return super.parseLineWithoutType(line);
 	}
 
 	@Override

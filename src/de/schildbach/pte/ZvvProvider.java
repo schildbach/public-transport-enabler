@@ -191,12 +191,6 @@ public class ZvvProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected Line normalizeLine(final String line)
-	{
-		return parseLineAndType(line);
-	}
-
-	@Override
 	protected Line parseLineAndType(final String lineAndType)
 	{
 		final Matcher m = P_NORMALIZE_LINE_AND_TYPE.matcher(lineAndType);

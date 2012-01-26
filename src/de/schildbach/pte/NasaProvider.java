@@ -147,12 +147,12 @@ public class NasaProvider extends AbstractHafasProvider
 	private static final Pattern P_LINE_NUMBER = Pattern.compile("\\d{4,}");
 
 	@Override
-	protected Line normalizeLine(final String line)
+	protected Line parseLineWithoutType(final String line)
 	{
 		if (P_LINE_NUMBER.matcher(line).matches())
 			return newLine('?' + line);
 
-		return super.normalizeLine(line);
+		return super.parseLineWithoutType(line);
 	}
 
 	@Override

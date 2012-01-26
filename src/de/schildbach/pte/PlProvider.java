@@ -151,7 +151,7 @@ public class PlProvider extends AbstractHafasProvider
 	private static final Pattern P_NORMALIZE_LINE_NUMBER = Pattern.compile("\\d{2,5}");
 
 	@Override
-	protected Line normalizeLine(String line)
+	protected Line parseLineWithoutType(String line)
 	{
 		// replace badly encoded character (stations 8530643 and 8530644)
 		if (line.equals("F\u0084hre"))
@@ -164,7 +164,7 @@ public class PlProvider extends AbstractHafasProvider
 		if (P_NORMALIZE_LINE_NUMBER.matcher(line).matches())
 			return newLine('R' + line);
 
-		return super.normalizeLine(line);
+		return super.parseLineWithoutType(line);
 	}
 
 	@Override
