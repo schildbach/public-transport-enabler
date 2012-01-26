@@ -626,21 +626,20 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					else
 						destinationId = 0;
 
+					final Line prodLine = parseLineAndType(prod);
 					final Line line;
 					if (classStr != null)
 					{
 						final char classChar = intToProduct(Integer.parseInt(classStr));
-						final Matcher m = P_NORMALIZE_LINE.matcher(prod);
-						final String lineStr;
-						if (m.matches())
-							lineStr = classChar + m.group(1) + m.group(2);
-						else
-							lineStr = classChar + prod;
-						line = new Line(null, lineStr, lineStr != null ? lineStyle(lineStr) : null);
+						if (classChar == 0)
+							throw new IllegalArgumentException();
+						// could check for type consistency here
+						final String lineStr = classChar + prodLine.label.substring(1);
+						line = new Line(null, lineStr, lineStyle(lineStr));
 					}
 					else
 					{
-						line = normalizeLine(prod);
+						line = prodLine;
 					}
 
 					final int[] capacity;
