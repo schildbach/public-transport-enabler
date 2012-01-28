@@ -881,9 +881,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return 'R' + str;
 			if (type.equals("EGP")) // EGP - die Städtebahn GmbH
 				return 'R' + str;
-			if (type.equals("SBS")) // EGP - die Städtebahn GmbH
+			if (type.equals("SBS")) // Städtebahn Sachsen, EGP - die Städtebahn GmbH
 				return 'R' + str;
-			if (type.equals("SES")) // EGP - die Städtebahn GmbH
+			if (type.equals("SES")) // Städtebahn Sachsen Express, EGP - die Städtebahn GmbH
 				return 'R' + str;
 			if (type.equals("SB")) // Städtebahn Sachsen
 				return 'R' + str;

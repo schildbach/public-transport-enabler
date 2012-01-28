@@ -1602,6 +1602,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			return 'R';
 		if ("SBS".equals(ucType)) // Städtebahn Sachsen
 			return 'R';
+		if ("SES".equals(ucType)) // Städtebahn Sachsen Express
+			return 'R';
 		if ("EVB".equals(ucType)) // Eisenbahnen und Verkehrsbetriebe Elbe-Weser
 			return 'R';
 		if ("STB".equals(ucType)) // Süd-Thüringen-Bahn
@@ -1816,6 +1818,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				final String strippedLine = m.matches() ? m.group(1) + m.group(2) : line;
 
 				lineStr = normalizedType + strippedLine;
+
+				// FIXME xxxxxxx
 			}
 			else
 			{
