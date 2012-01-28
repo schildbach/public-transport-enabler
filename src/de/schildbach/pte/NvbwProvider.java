@@ -29,7 +29,7 @@ import de.schildbach.pte.dto.LocationType;
 public class NvbwProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.NVBW;
-	private final static String API_BASE = "http://www.efa-bw.de/nvbw/";
+	private final static String API_BASE = "http://www.efa-bw.de/nvbw/"; // http://www.efa-bw.de/android/
 
 	public NvbwProvider()
 	{
