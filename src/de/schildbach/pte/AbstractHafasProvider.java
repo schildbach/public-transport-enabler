@@ -1895,11 +1895,11 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 	protected Line parseLineAndType(final String lineAndType)
 	{
-		final Matcher m = P_NORMALIZE_LINE_AND_TYPE.matcher(lineAndType);
-		if (m.matches())
+		final Matcher mLineAndType = P_NORMALIZE_LINE_AND_TYPE.matcher(lineAndType);
+		if (mLineAndType.matches())
 		{
-			final String number = m.group(1);
-			final String type = m.group(2);
+			final String number = mLineAndType.group(1);
+			final String type = mLineAndType.group(2);
 
 			if (type.length() == 0)
 			{
@@ -1917,16 +1917,16 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				{
 					if (normalizedType == 'B')
 					{
-						final Matcher mBusSpecial = P_NORMALIZE_LINE_BUS.matcher(number);
-						if (mBusSpecial.matches())
-							return newLine('B' + mBusSpecial.group(1));
+						final Matcher mBus = P_NORMALIZE_LINE_BUS.matcher(number);
+						if (mBus.matches())
+							return newLine('B' + mBus.group(1));
 					}
 
 					if (normalizedType == 'T')
 					{
-						final Matcher mBusSpecial = P_NORMALIZE_LINE_TRAM.matcher(number);
-						if (mBusSpecial.matches())
-							return newLine('T' + mBusSpecial.group(1));
+						final Matcher mTram = P_NORMALIZE_LINE_TRAM.matcher(number);
+						if (mTram.matches())
+							return newLine('T' + mTram.group(1));
 					}
 
 					return newLine(normalizedType + number.replaceAll("\\s+", ""));
