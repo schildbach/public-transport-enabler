@@ -1929,10 +1929,10 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				}
 			}
 
-			throw new IllegalStateException("cannot normalize type " + type + " number " + number + " line#type " + lineAndType);
+			throw new IllegalStateException("cannot normalize type '" + type + "' number '" + number + "' line#type '" + lineAndType + "'");
 		}
 
-		throw new IllegalStateException("cannot normalize line#type " + lineAndType);
+		throw new IllegalStateException("cannot normalize line#type '" + lineAndType + "'");
 	}
 
 	private static final Pattern P_CONNECTION_ID = Pattern.compile("co=(C\\d+-\\d+)&");
