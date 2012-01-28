@@ -121,4 +121,15 @@ public class RtProviderLiveTest extends AbstractProviderLiveTest
 		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
 		System.out.println(moreResult);
 	}
+
+	@Test
+	public void viaConnection() throws Exception
+	{
+		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 8400056, null, "Amsterdam RAI"),
+				new Location(LocationType.STATION, 8400058, null, "Amsterdam Centraal"), new Location(LocationType.STATION, 8000085, null,
+						"Düsseldorf Hbf"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		System.out.println(result);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
+		System.out.println(moreResult);
+	}
 }
