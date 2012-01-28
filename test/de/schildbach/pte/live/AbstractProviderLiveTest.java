@@ -41,8 +41,8 @@ public abstract class AbstractProviderLiveTest
 		System.out.println(result.status + (result.status == QueryDeparturesResult.Status.OK ? " " + result.stationDepartures : ""));
 
 		// for (final StationDepartures stationDepartures : result.stationDepartures)
-		// for (final Departure departures : stationDepartures.departures)
-		// System.out.println(departures.line);
+		// for (final Departure departure : stationDepartures.departures)
+		// System.out.println(departure);
 	}
 
 	protected final void print(final List<Location> autocompletes)
