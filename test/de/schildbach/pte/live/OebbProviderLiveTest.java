@@ -75,16 +75,8 @@ public class OebbProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final List<Location> autocompletes = provider.autocompleteStations("Wien");
 
-		list(autocompletes);
+		print(autocompletes);
 		assertTrue(autocompletes.size() > 0);
-	}
-
-	private void list(final List<Location> autocompletes)
-	{
-		System.out.print(autocompletes.size() + " ");
-		for (final Location autocomplete : autocompletes)
-			System.out.print(autocomplete.toDebugString() + " ");
-		System.out.println();
 	}
 
 	@Test

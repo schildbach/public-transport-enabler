@@ -17,6 +17,9 @@
 
 package de.schildbach.pte.live;
 
+import java.util.List;
+
+import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryDeparturesResult.Status;
 
@@ -32,5 +35,13 @@ public abstract class AbstractProviderLiveTest
 		// for (final StationDepartures stationDepartures : result.stationDepartures)
 		// for (final Departure departures : stationDepartures.departures)
 		// System.out.println(departures.line);
+	}
+	
+	protected final void print(final List<Location> autocompletes)
+	{
+		System.out.print(autocompletes.size() + " ");
+		for (final Location autocomplete : autocompletes)
+			System.out.print(autocomplete.toDebugString() + " ");
+		System.out.println();
 	}
 }

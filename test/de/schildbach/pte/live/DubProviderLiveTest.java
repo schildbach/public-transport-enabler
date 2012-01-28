@@ -59,15 +59,7 @@ public class DubProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final List<Location> autocompletes = provider.autocompleteStations("Airport");
 
-		list(autocompletes);
-	}
-
-	private void list(final List<Location> autocompletes)
-	{
-		System.out.print(autocompletes.size() + " ");
-		for (final Location autocomplete : autocompletes)
-			System.out.print(autocomplete.toDebugString() + " ");
-		System.out.println();
+		print(autocompletes);
 	}
 
 	@Test

@@ -68,7 +68,7 @@ public class VrnProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final List<Location> autocompletes = provider.autocompleteStations("grün");
 
-		list(autocompletes);
+		print(autocompletes);
 	}
 
 	@Test
@@ -76,7 +76,7 @@ public class VrnProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final List<Location> autocompletes = provider.autocompleteStations("Kur");
 
-		list(autocompletes);
+		print(autocompletes);
 	}
 
 	@Test
@@ -84,7 +84,7 @@ public class VrnProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final List<Location> autocompletes = provider.autocompleteStations("Bremen, KUR");
 
-		list(autocompletes);
+		print(autocompletes);
 	}
 
 	@Test
@@ -92,7 +92,7 @@ public class VrnProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final List<Location> autocompletes = provider.autocompleteStations("Bremen");
 
-		list(autocompletes);
+		print(autocompletes);
 	}
 
 	@Test
@@ -100,15 +100,7 @@ public class VrnProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final List<Location> autocompletes = provider.autocompleteStations("Mannheim");
 
-		list(autocompletes);
-	}
-
-	private void list(final List<Location> autocompletes)
-	{
-		System.out.print(autocompletes.size() + " ");
-		for (final Location autocomplete : autocompletes)
-			System.out.print(autocomplete.toDebugString() + " ");
-		System.out.println();
+		print(autocompletes);
 	}
 
 	@Test

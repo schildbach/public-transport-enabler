@@ -67,7 +67,7 @@ public class LinzProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final List<Location> autocompletes = provider.autocompleteStations("Friedhof");
 
-		list(autocompletes);
+		print(autocompletes);
 	}
 
 	@Test
@@ -75,7 +75,7 @@ public class LinzProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final List<Location> autocompletes = provider.autocompleteStations("grün");
 
-		list(autocompletes);
+		print(autocompletes);
 	}
 
 	@Test
@@ -83,7 +83,7 @@ public class LinzProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final List<Location> autocompletes = provider.autocompleteStations("Leonding, Haag");
 
-		list(autocompletes);
+		print(autocompletes);
 	}
 
 	@Test
@@ -91,15 +91,7 @@ public class LinzProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final List<Location> autocompletes = provider.autocompleteStations("Leonding");
 
-		list(autocompletes);
-	}
-
-	private void list(final List<Location> autocompletes)
-	{
-		System.out.print(autocompletes.size() + " ");
-		for (final Location autocomplete : autocompletes)
-			System.out.print(autocomplete.toDebugString() + " ");
-		System.out.println();
+		print(autocompletes);
 	}
 
 	@Test
