@@ -156,6 +156,12 @@ public class NasaProvider extends AbstractHafasProvider
 	}
 
 	@Override
+	protected Line parseLineAndType(final String line)
+	{
+		return parseLineWithoutType(line);
+	}
+
+	@Override
 	protected char normalizeType(String type)
 	{
 		final String ucType = type.toUpperCase();
