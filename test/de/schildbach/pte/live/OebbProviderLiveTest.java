@@ -37,7 +37,7 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 /**
  * @author Andreas Schildbach
  */
-public class OebbProviderLiveTest
+public class OebbProviderLiveTest extends AbstractProviderLiveTest
 {
 	private OebbProvider provider = new OebbProvider();
 	private static final String ALL_PRODUCTS = "IRSUTBFC";
@@ -65,7 +65,7 @@ public class OebbProviderLiveTest
 	{
 		final QueryDeparturesResult result = provider.queryDepartures(902006, 0, false);
 
-		System.out.println(result.stationDepartures);
+		print(result);
 		assertEquals(QueryDeparturesResult.Status.OK, result.status);
 		assertTrue(result.stationDepartures.size() > 0);
 	}

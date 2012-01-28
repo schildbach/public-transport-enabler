@@ -34,7 +34,7 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 /**
  * @author Andreas Schildbach
  */
-public class AtcProviderLiveTest
+public class AtcProviderLiveTest extends AbstractProviderLiveTest
 {
 	private final AtcProvider provider = new AtcProvider();
 	private static final String ALL_PRODUCTS = "IRSUTBFC";
@@ -61,7 +61,7 @@ public class AtcProviderLiveTest
 	{
 		final QueryDeparturesResult result = provider.queryDepartures(740, 0, false);
 
-		System.out.println(result.stationDepartures);
+		print(result);
 	}
 
 	@Test

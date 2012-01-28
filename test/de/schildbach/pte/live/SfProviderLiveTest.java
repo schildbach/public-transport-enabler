@@ -34,7 +34,7 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 /**
  * @author Andreas Schildbach
  */
-public class SfProviderLiveTest
+public class SfProviderLiveTest extends AbstractProviderLiveTest
 {
 	private final SfProvider provider = new SfProvider();
 	private static final String ALL_PRODUCTS = "IRSUTBFC";
@@ -60,7 +60,7 @@ public class SfProviderLiveTest
 	{
 		final QueryDeparturesResult result = provider.queryDepartures(10001017, 0, false);
 
-		System.out.println(result.stationDepartures);
+		print(result);
 	}
 
 	@Test

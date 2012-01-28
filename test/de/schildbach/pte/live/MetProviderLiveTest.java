@@ -34,7 +34,7 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 /**
  * @author Andreas Schildbach
  */
-public class MetProviderLiveTest
+public class MetProviderLiveTest extends AbstractProviderLiveTest
 {
 	private final MetProvider provider = new MetProvider();
 	private static final String ALL_PRODUCTS = "IRSUTBFC";
@@ -60,7 +60,7 @@ public class MetProviderLiveTest
 	{
 		final QueryDeparturesResult result = provider.queryDepartures(10001167, 0, false);
 
-		System.out.println(result.stationDepartures);
+		print(result);
 	}
 
 	@Test

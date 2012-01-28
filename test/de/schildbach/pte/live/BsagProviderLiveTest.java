@@ -34,7 +34,7 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 /**
  * @author Andreas Schildbach
  */
-public class BsagProviderLiveTest
+public class BsagProviderLiveTest extends AbstractProviderLiveTest
 {
 	private final BsagProvider provider = new BsagProvider();
 	private static final String ALL_PRODUCTS = "IRSUTBFC";
@@ -60,7 +60,7 @@ public class BsagProviderLiveTest
 	{
 		final QueryDeparturesResult result = provider.queryDepartures(28003375, 0, false);
 
-		System.out.println(result.stationDepartures);
+		print(result);
 	}
 
 	@Test

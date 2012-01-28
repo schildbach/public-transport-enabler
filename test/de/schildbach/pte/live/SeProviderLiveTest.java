@@ -36,7 +36,7 @@ import de.schildbach.pte.dto.StationDepartures;
 /**
  * @author Andreas Schildbach
  */
-public class SeProviderLiveTest
+public class SeProviderLiveTest extends AbstractProviderLiveTest
 {
 	private final SeProvider provider = new SeProvider();
 	private static final String ALL_PRODUCTS = "IRSUTBFC";
@@ -62,7 +62,7 @@ public class SeProviderLiveTest
 	{
 		final QueryDeparturesResult result = provider.queryDepartures(7414867, 0, false);
 
-		System.out.println(result.stationDepartures);
+		print(result);
 		for (StationDepartures d : result.stationDepartures)
 			for (Departure e : d.departures)
 				System.out.println(e);

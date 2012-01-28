@@ -33,7 +33,7 @@ import de.schildbach.pte.dto.QueryConnectionsResult;
 /**
  * @author Andreas Schildbach
  */
-public class BsvagProviderLiveTest
+public class BsvagProviderLiveTest extends AbstractProviderLiveTest
 {
 	private final BsvagProvider provider = new BsvagProvider();
 	private static final String ALL_PRODUCTS = "IRSUTBFC";

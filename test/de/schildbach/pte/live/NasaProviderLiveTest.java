@@ -34,7 +34,7 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 /**
  * @author Andreas Schildbach
  */
-public class NasaProviderLiveTest
+public class NasaProviderLiveTest extends AbstractProviderLiveTest
 {
 	private final NasaProvider provider = new NasaProvider();
 	private static final String ALL_PRODUCTS = "IRSUTBFC";
@@ -52,7 +52,7 @@ public class NasaProviderLiveTest
 	{
 		final QueryDeparturesResult result = provider.queryDepartures(13000, 0, false);
 
-		System.out.println(result.stationDepartures);
+		print(result);
 	}
 
 	@Test

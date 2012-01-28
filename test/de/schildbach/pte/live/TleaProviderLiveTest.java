@@ -34,7 +34,7 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 /**
  * @author Andreas Schildbach
  */
-public class TleaProviderLiveTest
+public class TleaProviderLiveTest extends AbstractProviderLiveTest
 {
 	private final TleaProvider provider = new TleaProvider();
 	private static final String ALL_PRODUCTS = "IRSUTBFC";
@@ -60,7 +60,7 @@ public class TleaProviderLiveTest
 	{
 		final QueryDeparturesResult result = provider.queryDepartures(1001003, 0, false);
 
-		System.out.println(result.stationDepartures);
+		print(result);
 	}
 
 	@Test

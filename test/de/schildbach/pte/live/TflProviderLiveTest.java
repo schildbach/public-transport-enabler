@@ -34,7 +34,7 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 /**
  * @author Andreas Schildbach
  */
-public class TflProviderLiveTest
+public class TflProviderLiveTest extends AbstractProviderLiveTest
 {
 	private final TflProvider provider = new TflProvider();
 	private static final String ALL_PRODUCTS = "IRSUTBFC";
@@ -60,7 +60,7 @@ public class TflProviderLiveTest
 	{
 		final QueryDeparturesResult result = provider.queryDepartures(1000086, 0, false);
 
-		System.out.println(result.stationDepartures);
+		print(result);
 	}
 
 	@Test

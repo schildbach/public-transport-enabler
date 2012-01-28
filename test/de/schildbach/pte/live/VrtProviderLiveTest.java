@@ -34,7 +34,7 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 /**
  * @author Andreas Schildbach
  */
-public class VrtProviderLiveTest
+public class VrtProviderLiveTest extends AbstractProviderLiveTest
 {
 	private final VrtProvider provider = new VrtProvider();
 	private static final String ALL_PRODUCTS = "IRSUTBFC";
@@ -60,7 +60,7 @@ public class VrtProviderLiveTest
 	{
 		final QueryDeparturesResult result = provider.queryDepartures(17001301, 0, false);
 
-		System.out.println(result.stationDepartures);
+		print(result);
 	}
 
 	@Test

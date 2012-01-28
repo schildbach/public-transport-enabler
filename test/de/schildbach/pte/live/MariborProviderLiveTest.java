@@ -34,7 +34,7 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 /**
  * @author Andreas Schildbach
  */
-public class MariborProviderLiveTest
+public class MariborProviderLiveTest extends AbstractProviderLiveTest
 {
 	private final MariborProvider provider = new MariborProvider();
 	private static final String ALL_PRODUCTS = "IRSUTBFC";
@@ -60,7 +60,7 @@ public class MariborProviderLiveTest
 	{
 		final QueryDeparturesResult result = provider.queryDepartures(63203067, 0, false);
 
-		System.out.println(result.stationDepartures);
+		print(result);
 	}
 
 	@Test

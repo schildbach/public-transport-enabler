@@ -34,7 +34,7 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 /**
  * @author Andreas Schildbach
  */
-public class BayernProviderLiveTest
+public class BayernProviderLiveTest extends AbstractProviderLiveTest
 {
 	private BayernProvider provider = new BayernProvider();
 	private static final String ALL_PRODUCTS = "IRSUTBFC";
@@ -60,7 +60,7 @@ public class BayernProviderLiveTest
 	{
 		final QueryDeparturesResult result = provider.queryDepartures(80001083, 0, false);
 
-		System.out.println(result.stationDepartures);
+		print(result);
 	}
 
 	@Test

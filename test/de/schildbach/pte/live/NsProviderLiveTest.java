@@ -34,7 +34,7 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 /**
  * @author Andreas Schildbach
  */
-public class NsProviderLiveTest
+public class NsProviderLiveTest extends AbstractProviderLiveTest
 {
 	private final NsProvider provider = new NsProvider();
 
@@ -59,7 +59,7 @@ public class NsProviderLiveTest
 	{
 		final QueryDeparturesResult result = provider.queryDepartures(100080, 0, false);
 
-		System.out.println(result.stationDepartures);
+		print(result);
 	}
 
 	@Test

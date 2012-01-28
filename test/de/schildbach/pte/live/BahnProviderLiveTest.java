@@ -35,7 +35,7 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 /**
  * @author Andreas Schildbach
  */
-public class BahnProviderLiveTest
+public class BahnProviderLiveTest extends AbstractProviderLiveTest
 {
 	private BahnProvider provider = new BahnProvider();
 	protected static final String ALL_PRODUCTS = "IRSUTBFC";
@@ -61,7 +61,7 @@ public class BahnProviderLiveTest
 	{
 		final QueryDeparturesResult result = provider.queryDepartures(692991, 0, false);
 
-		System.out.println(result.stationDepartures);
+		print(result);
 	}
 
 	@Test

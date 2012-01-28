@@ -34,7 +34,7 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 /**
  * @author Andreas Schildbach
  */
-public class SeptaProviderLiveTest
+public class SeptaProviderLiveTest extends AbstractProviderLiveTest
 {
 	private final SeptaProvider provider = new SeptaProvider();
 	private static final String ALL_PRODUCTS = "IRSUTBFC";
@@ -60,7 +60,7 @@ public class SeptaProviderLiveTest
 	{
 		final QueryDeparturesResult result = provider.queryDepartures(2090227, 0, false);
 
-		System.out.println(result.stationDepartures);
+		print(result);
 	}
 
 	@Test

@@ -33,7 +33,7 @@ import de.schildbach.pte.dto.QueryConnectionsResult;
 /**
  * @author Andreas Schildbach
  */
-public class DubProviderLiveTest
+public class DubProviderLiveTest extends AbstractProviderLiveTest
 {
 	private final DubProvider provider = new DubProvider();
 	private static final String ALL_PRODUCTS = "IRSUTBFC";

@@ -34,7 +34,7 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 /**
  * @author Andreas Schildbach
  */
-public class LinzProviderLiveTest
+public class LinzProviderLiveTest extends AbstractProviderLiveTest
 {
 	private LinzProvider provider = new LinzProvider();
 	private static final String ALL_PRODUCTS = "IRSUTBFC";

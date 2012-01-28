@@ -36,7 +36,7 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 /**
  * @author Andreas Schildbach
  */
-public class BvgProviderLiveTest
+public class BvgProviderLiveTest extends AbstractProviderLiveTest
 {
 	private BvgProvider provider = new BvgProvider(null);
 	private static final String ALL_PRODUCTS = "IRSUTBFC";
