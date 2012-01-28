@@ -1612,6 +1612,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			return 'R';
 		if ("PRE".equals(ucType)) // Pressnitztalbahn
 			return 'R';
+		if ("DBG".equals(ucType)) // Döllnitzbahn GmbH
+			return 'R';
 		if ("SHB".equals(ucType)) // Schleswig-Holstein-Bahn
 			return 'R';
 		if ("NOB".equals(ucType)) // Nord-Ostsee-Bahn

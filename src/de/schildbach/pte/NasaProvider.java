@@ -173,8 +173,6 @@ public class NasaProvider extends AbstractHafasProvider
 			return 'R';
 		if ("RR".equals(ucType)) // Polen
 			return 'R';
-		if ("DBG".equals(ucType)) // Döllnitzbahn GmbH
-			return 'R';
 		if ("ZUGBAHN".equals(ucType))
 			return 'R';
 		if ("DAMPFZUG".equals(ucType))
