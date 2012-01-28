@@ -248,6 +248,8 @@ public class ZvvProvider extends AbstractHafasProvider
 			return 'B';
 		if ("E-BUS".equals(ucType))
 			return 'B';
+		if ("TROLLEY".equals(ucType))
+			return 'B';
 
 		if ("D-SCHIFF".equals(ucType))
 			return 'F';
