@@ -1870,7 +1870,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			if (normalizedType != 0)
 				return newLine(normalizedType + type + number);
 
-			throw new IllegalStateException("cannot normalize type " + type + " number " + number + " line " + line);
+			throw new IllegalStateException("cannot normalize type '" + type + "' number '" + number + "' line '" + line + "'");
 		}
 
 		throw new IllegalStateException("cannot normalize line " + line);
