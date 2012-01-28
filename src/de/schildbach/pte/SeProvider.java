@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -34,8 +35,7 @@ import de.schildbach.pte.util.ParserUtils;
 public class SeProvider extends AbstractHafasProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.SE;
-	private static final String API_BASE = "http://reseplanerare.resrobot.se/bin/";
-	// http://api.vasttrafik.se/bin/query.exe/sn
+	private static final String API_BASE = "http://reseplanerare.resrobot.se/bin/"; // http://api.vasttrafik.se/bin/query.exe/sn
 
 	public SeProvider()
 	{
@@ -200,13 +200,15 @@ public class SeProvider extends AbstractHafasProvider
 		return jsonGetStops(uri);
 	}
 
-	@Override
-	protected char normalizeType(final String type)
-	{
-		final char t = super.normalizeType(type);
-		if (t != 0)
-			return t;
+	private static final Pattern P_NORMALIZE_LINE_BUS = Pattern.compile("Buss\\s*(.*)");
 
-		return 0;
+	@Override
+	protected Line parseLineAndType(final String line)
+	{
+		final Matcher mBus = P_NORMALIZE_LINE_BUS.matcher(line);
+		if (mBus.matches())
+			return newLine('B' + mBus.group(1));
+
+		return newLine('?' + line);
 	}
 }
