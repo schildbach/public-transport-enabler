@@ -1215,12 +1215,17 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		final StringBuilder uri = new StringBuilder(apiBase);
 		uri.append(departureMonitorEndpoint);
 		appendCommonRequestParams(uri, "XML");
-		uri.append("&type_dm=stop&useRealtime=1&mode=direct");
+		uri.append("&type_dm=stop");
 		uri.append("&name_dm=").append(stationId);
+		uri.append("&useRealtime=1");
+		uri.append("&mode=direct");
+		uri.append("&ptOptionsActive=1");
 		uri.append("&deleteAssignedStops_dm=").append(equivs ? '0' : '1');
 		uri.append("&mergeDep=1"); // merge departures
 		if (maxDepartures > 0)
 			uri.append("&limit=").append(maxDepartures);
+
+		// System.out.println(uri);
 
 		InputStream is = null;
 		try
