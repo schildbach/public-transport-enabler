@@ -44,7 +44,7 @@ public class VmsProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 36030062), 0, 0);
 
-		System.out.println(result.stations.size() + "  " + result.stations);
+		print(result);
 	}
 
 	@Test
@@ -52,7 +52,7 @@ public class VmsProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 50832754, 12918348), 0, 0);
 
-		System.out.println(result.stations.size() + "  " + result.stations);
+		print(result);
 	}
 
 	@Test

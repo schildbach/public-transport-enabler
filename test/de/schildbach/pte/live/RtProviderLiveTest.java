@@ -52,7 +52,7 @@ public class RtProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 52525589, 13369548), 0, 0);
 
-		System.out.println(result.stations.size() + "  " + result.stations);
+		print(result);
 	}
 
 	@Test

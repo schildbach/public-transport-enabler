@@ -52,7 +52,7 @@ public class VvoProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 51052467, 13733196), 0, 0);
 
-		System.out.println(result.stations.size() + "  " + result.stations);
+		print(result);
 	}
 
 	@Test

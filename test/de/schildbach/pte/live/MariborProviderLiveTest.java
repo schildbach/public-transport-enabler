@@ -44,7 +44,7 @@ public class MariborProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 63203067), 0, 0);
 
-		System.out.println(result.stations.size() + "  " + result.stations);
+		print(result);
 	}
 
 	@Test
@@ -52,7 +52,7 @@ public class MariborProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 46559958, 15646391), 0, 0);
 
-		System.out.println(result.stations.size() + "  " + result.stations);
+		print(result);
 	}
 
 	@Test

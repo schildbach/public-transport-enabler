@@ -47,7 +47,7 @@ public class OebbProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 902006), 0, 0);
 
-		System.out.println(result.stations.size() + "  " + result.stations);
+		print(result);
 	}
 
 	@Test
@@ -55,7 +55,7 @@ public class OebbProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 48200239, 16370773), 0, 0);
 
-		System.out.println(result.stations.size() + "  " + result.stations);
+		print(result);
 		assertEquals(NearbyStationsResult.Status.OK, result.status);
 		assertTrue(result.stations.size() > 0);
 	}

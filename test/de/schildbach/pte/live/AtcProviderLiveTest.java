@@ -44,7 +44,7 @@ public class AtcProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 740), 0, 0);
 
-		System.out.println(result.stations.size() + "  " + result.stations);
+		print(result);
 	}
 
 	@Test
@@ -53,7 +53,7 @@ public class AtcProviderLiveTest extends AbstractProviderLiveTest
 		// TODO bad coordinate!
 		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 8168907, 10609969), 0, 0);
 
-		System.out.println(result.stations.size() + "  " + result.stations);
+		print(result);
 	}
 
 	@Test

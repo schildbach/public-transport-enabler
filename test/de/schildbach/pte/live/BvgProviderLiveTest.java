@@ -46,7 +46,7 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 9220302), 0, 0);
 		assertEquals(NearbyStationsResult.Status.OK, result.status);
-		System.out.println(result.stations.size() + "  " + result.stations);
+		print(result);
 	}
 
 	@Test
