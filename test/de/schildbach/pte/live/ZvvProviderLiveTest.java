@@ -42,7 +42,7 @@ public class ZvvProviderLiveTest
 	@Test
 	public void nearbyStationsByStation() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 183400), 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 8503000), 0, 0);
 
 		System.out.println(result.stations.size() + "  " + result.stations);
 	}
@@ -58,7 +58,7 @@ public class ZvvProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(183400, 0, false);
+		final QueryDeparturesResult result = provider.queryDepartures(8503000, 0, false);
 
 		System.out.println(result.stationDepartures);
 	}
