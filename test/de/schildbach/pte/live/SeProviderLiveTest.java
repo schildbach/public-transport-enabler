@@ -25,13 +25,11 @@ import org.junit.Test;
 import de.schildbach.pte.NetworkProvider.Accessibility;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.SeProvider;
-import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
-import de.schildbach.pte.dto.StationDepartures;
 
 /**
  * @author Andreas Schildbach
@@ -62,9 +60,6 @@ public class SeProviderLiveTest extends AbstractProviderLiveTest
 		final QueryDeparturesResult result = provider.queryDepartures(7414867, 0, false);
 
 		print(result);
-		for (StationDepartures d : result.stationDepartures)
-			for (Departure e : d.departures)
-				System.out.println(e);
 	}
 
 	@Test
