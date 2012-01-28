@@ -754,7 +754,11 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		request.append("<Prod prod=\"").append(productsStr).append("\" bike=\"0\" couchette=\"0\" direct=\"0\" sleeper=\"0\"/>");
 		request.append("</Start>");
 		if (via != null)
-			request.append("<Via>").append(locationXml(via)).append("</Via>");
+		{
+			request.append("<Via>").append(locationXml(via));
+			request.append("<Prod prod=\"").append(productsStr).append("\" bike=\"0\" couchette=\"0\" direct=\"0\" sleeper=\"0\"/>");
+			request.append("</Via>");
+		}
 		request.append("<Dest>").append(locationXml(to)).append("</Dest>");
 		request.append("<ReqT a=\"").append(dep ? 0 : 1).append("\" date=\"")
 				.append(String.format("%04d.%02d.%02d", c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH)))
