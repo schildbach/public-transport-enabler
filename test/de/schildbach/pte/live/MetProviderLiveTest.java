@@ -37,7 +37,6 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 public class MetProviderLiveTest extends AbstractProviderLiveTest
 {
 	private final MetProvider provider = new MetProvider();
-	private static final String ALL_PRODUCTS = "IRSUTBFC";
 
 	@Test
 	public void nearbyStations() throws Exception

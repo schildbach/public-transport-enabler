@@ -37,7 +37,6 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 public class TlswProviderLiveTest extends AbstractProviderLiveTest
 {
 	private final TlswProvider provider = new TlswProvider();
-	private static final String ALL_PRODUCTS = "IRSUTBFC";
 
 	@Test
 	public void nearbyStations() throws Exception

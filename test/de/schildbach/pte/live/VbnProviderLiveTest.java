@@ -39,7 +39,6 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 public class VbnProviderLiveTest extends AbstractProviderLiveTest
 {
 	private final VbnProvider provider = new VbnProvider();
-	private static final String ALL_PRODUCTS = "IRSUTBFC";
 
 	@Test
 	public void nearbyStations() throws Exception

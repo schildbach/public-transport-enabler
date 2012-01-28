@@ -37,7 +37,6 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 public class SeptaProviderLiveTest extends AbstractProviderLiveTest
 {
 	private final SeptaProvider provider = new SeptaProvider();
-	private static final String ALL_PRODUCTS = "IRSUTBFC";
 
 	@Test
 	public void nearbyStations() throws Exception

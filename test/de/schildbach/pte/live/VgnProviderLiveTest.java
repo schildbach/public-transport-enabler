@@ -37,7 +37,6 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 public class VgnProviderLiveTest extends AbstractProviderLiveTest
 {
 	private final VgnProvider provider = new VgnProvider(Secrets.VGN_API_BASE);
-	private static final String ALL_PRODUCTS = "IRSUTBFC";
 
 	@Test
 	public void nearbyStations() throws Exception

@@ -37,7 +37,6 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 public class SncbProviderLiveTest extends AbstractProviderLiveTest
 {
 	private final SncbProvider provider = new SncbProvider();
-	private static final String ALL_PRODUCTS = "IRSUTBFC";
 
 	@Test
 	public void nearbyStations() throws Exception

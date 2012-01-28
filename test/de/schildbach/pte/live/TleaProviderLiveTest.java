@@ -37,7 +37,6 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 public class TleaProviderLiveTest extends AbstractProviderLiveTest
 {
 	private final TleaProvider provider = new TleaProvider();
-	private static final String ALL_PRODUCTS = "IRSUTBFC";
 
 	@Test
 	public void nearbyStations() throws Exception

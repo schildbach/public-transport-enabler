@@ -37,7 +37,6 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 public class NasaProviderLiveTest extends AbstractProviderLiveTest
 {
 	private final NasaProvider provider = new NasaProvider();
-	private static final String ALL_PRODUCTS = "IRSUTBFC";
 
 	@Test
 	public void nearbyStations() throws Exception

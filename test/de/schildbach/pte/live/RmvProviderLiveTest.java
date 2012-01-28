@@ -37,7 +37,6 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 public class RmvProviderLiveTest extends AbstractProviderLiveTest
 {
 	private final RmvProvider provider = new RmvProvider();
-	protected static final String ALL_PRODUCTS = "IRSUTBFC";
 
 	@Test
 	public void nearbyStations() throws Exception

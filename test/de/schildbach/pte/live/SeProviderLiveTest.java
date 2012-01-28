@@ -39,7 +39,6 @@ import de.schildbach.pte.dto.StationDepartures;
 public class SeProviderLiveTest extends AbstractProviderLiveTest
 {
 	private final SeProvider provider = new SeProvider();
-	private static final String ALL_PRODUCTS = "IRSUTBFC";
 
 	@Test
 	public void nearbyStations() throws Exception

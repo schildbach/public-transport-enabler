@@ -28,6 +28,8 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
  */
 public abstract class AbstractProviderLiveTest
 {
+	protected static final String ALL_PRODUCTS = "IRSUTBFC";
+
 	protected final void print(final NearbyStationsResult result)
 	{
 		System.out.println(result.status

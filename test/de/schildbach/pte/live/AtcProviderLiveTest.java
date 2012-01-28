@@ -37,7 +37,6 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 public class AtcProviderLiveTest extends AbstractProviderLiveTest
 {
 	private final AtcProvider provider = new AtcProvider();
-	private static final String ALL_PRODUCTS = "IRSUTBFC";
 
 	@Test
 	public void nearbyStations() throws Exception

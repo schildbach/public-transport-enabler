@@ -38,7 +38,6 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 public class BahnProviderLiveTest extends AbstractProviderLiveTest
 {
 	private BahnProvider provider = new BahnProvider();
-	protected static final String ALL_PRODUCTS = "IRSUTBFC";
 
 	@Test
 	public void nearbyStations() throws Exception
