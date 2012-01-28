@@ -1809,50 +1809,56 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	}
 
 	protected static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zßÄÅäáàâåéèêíìîÖöóòôÜüúùûØ/]+)[\\s-]*([^#]*).*");
+	private static final Pattern P_NORMALIZE_LINE_BUS = Pattern.compile("Bus\\s*(.*)");
+	private static final Pattern P_NORMALIZE_LINE_TRAM = Pattern.compile("(?:Tram|Str|STR)\\s*(.*)");
 
 	protected Line parseLine(final String type, final String line, final boolean wheelchairAccess)
 	{
+		final Matcher mBus = P_NORMALIZE_LINE_BUS.matcher(line);
+		if (mBus.matches())
+			return newLine('B' + mBus.group(1));
+
+		final Matcher mTram = P_NORMALIZE_LINE_TRAM.matcher(line);
+		if (mTram.matches())
+			return newLine('T' + mTram.group(1));
+
 		final char normalizedType = normalizeType(type);
+		if (normalizedType == 0)
+			throw new IllegalStateException("cannot normalize type '" + type + "' line '" + line + "'");
 
-		if (normalizedType != 0)
+		final String lineStr;
+		if (line != null)
 		{
-			final String lineStr;
+			final Matcher m = P_NORMALIZE_LINE.matcher(line);
+			final String strippedLine = m.matches() ? m.group(1) + m.group(2) : line;
 
-			if (line != null)
-			{
-				final Matcher m = P_NORMALIZE_LINE.matcher(line);
-				final String strippedLine = m.matches() ? m.group(1) + m.group(2) : line;
+			lineStr = normalizedType + strippedLine;
 
-				lineStr = normalizedType + strippedLine;
-
-				// FIXME xxxxxxx
-			}
-			else
-			{
-				lineStr = Character.toString(normalizedType);
-			}
-
-			if (wheelchairAccess)
-				return newLine(lineStr, Line.Attr.WHEEL_CHAIR_ACCESS);
-			else
-				return newLine(lineStr);
+			// FIXME xxxxxxx
 		}
 		else
 		{
-			throw new IllegalStateException("cannot normalize type '" + type + "' line '" + line + "'");
+			lineStr = Character.toString(normalizedType);
 		}
-	}
 
-	private static final Pattern P_LINE_BUS_SPECIAL = Pattern.compile("Bus([A-Z]/[\\dA-Z]+)");
+		if (wheelchairAccess)
+			return newLine(lineStr, Line.Attr.WHEEL_CHAIR_ACCESS);
+		else
+			return newLine(lineStr);
+	}
 
 	protected Line parseLineWithoutType(final String line)
 	{
 		if (line == null || line.length() == 0)
 			return null;
 
-		final Matcher mBusSpecial = P_LINE_BUS_SPECIAL.matcher(line);
-		if (mBusSpecial.matches())
-			return newLine('B' + mBusSpecial.group(1));
+		final Matcher mBus = P_NORMALIZE_LINE_BUS.matcher(line);
+		if (mBus.matches())
+			return newLine('B' + mBus.group(1));
+
+		final Matcher mTram = P_NORMALIZE_LINE_TRAM.matcher(line);
+		if (mTram.matches())
+			return newLine('T' + mTram.group(1));
 
 		final Matcher m = P_NORMALIZE_LINE.matcher(line);
 		if (m.matches())
@@ -1870,25 +1876,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		throw new IllegalStateException("cannot normalize line " + line);
 	}
 
-	protected final Line newLine(final String lineStr, final Line.Attr... attrs)
-	{
-		if (attrs.length == 0)
-		{
-			return new Line(null, lineStr, lineStyle(lineStr));
-		}
-		else
-		{
-			final Set<Line.Attr> attrSet = new HashSet<Line.Attr>();
-			for (final Line.Attr attr : attrs)
-				attrSet.add(attr);
-			return new Line(null, lineStr, lineStyle(lineStr), attrSet);
-		}
-	}
-
 	protected static final Pattern P_NORMALIZE_LINE_AND_TYPE = Pattern.compile("([^#]*)#(.*)");
 	private static final Pattern P_NORMALIZE_LINE_NUMBER = Pattern.compile("\\d{2,5}");
-	private static final Pattern P_NORMALIZE_LINE_BUS = Pattern.compile("Bus\\s*(.*)");
-	private static final Pattern P_NORMALIZE_LINE_TRAM = Pattern.compile("(?:Tram|STR)\\s*(.*)");
 
 	protected static final Pattern P_LINE_RUSSIA = Pattern
 			.compile("\\d{3}(?:AJ|BJ|DJ|FJ|GJ|IJ|KJ|LJ|NJ|MJ|OJ|RJ|SJ|TJ|UJ|VJ|ZJ|CH|KH|ZH|EI|JA|JI|MZ|SH|PC|Y)");
@@ -1937,6 +1926,21 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 
 		throw new IllegalStateException("cannot normalize line#type '" + lineAndType + "'");
+	}
+
+	protected final Line newLine(final String lineStr, final Line.Attr... attrs)
+	{
+		if (attrs.length == 0)
+		{
+			return new Line(null, lineStr, lineStyle(lineStr));
+		}
+		else
+		{
+			final Set<Line.Attr> attrSet = new HashSet<Line.Attr>();
+			for (final Line.Attr attr : attrs)
+				attrSet.add(attr);
+			return new Line(null, lineStr, lineStyle(lineStr), attrSet);
+		}
 	}
 
 	private static final Pattern P_CONNECTION_ID = Pattern.compile("co=(C\\d+-\\d+)&");
