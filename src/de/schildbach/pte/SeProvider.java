@@ -201,6 +201,7 @@ public class SeProvider extends AbstractHafasProvider
 	}
 
 	private static final Pattern P_NORMALIZE_LINE_BUS = Pattern.compile("Buss\\s*(.*)");
+	private static final Pattern P_NORMALIZE_LINE_SUBWAY = Pattern.compile("Tunnelbana\\s*(.*)");
 
 	@Override
 	protected Line parseLineAndType(final String line)
@@ -208,6 +209,10 @@ public class SeProvider extends AbstractHafasProvider
 		final Matcher mBus = P_NORMALIZE_LINE_BUS.matcher(line);
 		if (mBus.matches())
 			return newLine('B' + mBus.group(1));
+
+		final Matcher mSubway = P_NORMALIZE_LINE_SUBWAY.matcher(line);
+		if (mSubway.matches())
+			return newLine("UT" + mSubway.group(1));
 
 		return newLine('?' + line);
 	}
