@@ -1809,7 +1809,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	}
 
 	protected static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zßÄÅäáàâåéèêíìîÖöóòôÜüúùûØ/]+)[\\s-]*([^#]*).*");
-	private static final Pattern P_NORMALIZE_LINE_BUS = Pattern.compile("Bus\\s*(.*)");
+	private static final Pattern P_NORMALIZE_LINE_BUS = Pattern.compile("(?:Bus|BUS)\\s*(.*)");
 	private static final Pattern P_NORMALIZE_LINE_TRAM = Pattern.compile("(?:Tram|Str|STR)\\s*(.*)");
 
 	protected Line parseLine(final String type, final String line, final boolean wheelchairAccess)
