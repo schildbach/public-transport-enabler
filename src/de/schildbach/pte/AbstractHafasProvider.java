@@ -1753,6 +1753,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			return 'B';
 		if ("LT".equals(ucType)) // Linien-Taxi
 			return 'B';
+		if ("BUVB".equals(ucType)) // BuVB
+			return 'B';
 		// if ("N".equals(normalizedType)) // Nachtbus
 		// return "B" + normalizedName;
 
