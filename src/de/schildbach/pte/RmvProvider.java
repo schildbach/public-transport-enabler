@@ -310,31 +310,12 @@ public class RmvProvider extends AbstractHafasProvider
 	@Override
 	protected Line parseLineWithoutType(final String line)
 	{
-		if (line == null || line.length() == 0)
-			return null;
-
-		final Matcher m = P_NORMALIZE_LINE.matcher(line);
-		if (m.matches())
-		{
-			final String type = m.group(1);
-			final String number = m.group(2).replace(" ", "");
-
-			if (type.startsWith("Bus"))
-				return newLine("B" + type.substring(3) + number);
-
-			final char normalizedType = normalizeType(type);
-			if (normalizedType != 0)
-				return newLine(normalizedType + type + number);
-
-			throw new IllegalStateException("cannot normalize type '" + type + "' number '" + number + "' line '" + line + "'");
-		}
-
 		if ("11".equals(line))
 			return newLine("T11");
 		if ("12".equals(line))
 			return newLine("T12");
 
-		throw new IllegalStateException("cannot normalize line '" + line + "'");
+		return super.parseLineWithoutType(line);
 	}
 
 	@Override
@@ -347,7 +328,9 @@ public class RmvProvider extends AbstractHafasProvider
 
 		if ("B".equals(ucType))
 			return 'B';
-		if ("BuFB".equals(ucType))
+		if ("BUFB".equals(ucType)) // BuFB
+			return 'B';
+		if ("BUVB".equals(ucType)) // BuVB
 			return 'B';
 		if ("LTAXI".equals(ucType))
 			return 'B';
