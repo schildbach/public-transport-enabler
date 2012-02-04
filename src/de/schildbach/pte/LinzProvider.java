@@ -30,7 +30,7 @@ public class LinzProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.LINZ;
 	public static final String OLD_NETWORK_ID = "www.linzag.at";
-	public static final String API_BASE = "http://www.linzag.at/linz/";
+	public static final String API_BASE = "http://www.linzag.at/linz/"; // open data: http://www.linzag.at/static/
 
 	public LinzProvider()
 	{
