@@ -332,12 +332,12 @@ public final class BvgProvider extends AbstractHafasProvider
 
 						final String position = null;
 
-						final int destinationId = 0;
+						final String destinationName = ParserUtils.resolveEntities(mDepFine.group(4));
+						final Location destination = new Location(LocationType.ANY, 0, null, destinationName);
 
-						final String destination = ParserUtils.resolveEntities(mDepFine.group(4));
+						final String message = messages.get(line.label);
 
-						final Departure dep = new Departure(plannedTime, predictedTime, line, position, destinationId, destination, null,
-								messages.get(line.label));
+						final Departure dep = new Departure(plannedTime, predictedTime, line, position, destination, null, message);
 						if (!departures.contains(dep))
 							departures.add(dep);
 					}
@@ -403,10 +403,11 @@ public final class BvgProvider extends AbstractHafasProvider
 						final String position = ParserUtils.resolveEntities(mDepFine.group(3));
 
 						final int destinationId = Integer.parseInt(mDepFine.group(4));
+						final String destinationName = ParserUtils.resolveEntities(mDepFine.group(5));
+						final Location destination = new Location(destinationId > 0 ? LocationType.STATION : LocationType.ANY, destinationId, null,
+								destinationName);
 
-						final String destination = ParserUtils.resolveEntities(mDepFine.group(5));
-
-						final Departure dep = new Departure(plannedTime, null, line, position, destinationId, destination, null, null);
+						final Departure dep = new Departure(plannedTime, null, line, position, destination, null, null);
 						if (!departures.contains(dep))
 							departures.add(dep);
 					}

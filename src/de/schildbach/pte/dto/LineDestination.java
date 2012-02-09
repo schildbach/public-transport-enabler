@@ -23,13 +23,11 @@ package de.schildbach.pte.dto;
 public final class LineDestination
 {
 	final public Line line;
-	final public int destinationId;
-	final public String destination;
+	final public Location destination;
 
-	public LineDestination(final Line line, final int destinationId, final String destination)
+	public LineDestination(final Line line, final Location destination)
 	{
 		this.line = line;
-		this.destinationId = destinationId;
 		this.destination = destination;
 	}
 
@@ -38,8 +36,6 @@ public final class LineDestination
 	{
 		StringBuilder builder = new StringBuilder("LineDestination(");
 		builder.append(line != null ? line : "null");
-		builder.append(",");
-		builder.append(destinationId);
 		builder.append(",");
 		builder.append(destination != null ? destination : "null");
 		builder.append(")");
@@ -56,8 +52,6 @@ public final class LineDestination
 		final LineDestination other = (LineDestination) o;
 		if (!nullSafeEquals(this.line, other.line))
 			return false;
-		if (this.destinationId != other.destinationId)
-			return false;
 		if (!nullSafeEquals(this.destination, other.destination))
 			return false;
 		return true;
@@ -68,8 +62,6 @@ public final class LineDestination
 	{
 		int hashCode = 0;
 		hashCode += nullSafeHashCode(line);
-		hashCode *= 29;
-		hashCode += destinationId;
 		hashCode *= 29;
 		hashCode += nullSafeHashCode(destination);
 		return hashCode;

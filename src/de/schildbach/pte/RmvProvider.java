@@ -243,7 +243,8 @@ public class RmvProvider extends AbstractHafasProvider
 					{
 						final Line line = parseLineWithoutType(ParserUtils.resolveEntities(mDepFine.group(1)));
 
-						final String destination = ParserUtils.resolveEntities(mDepFine.group(2));
+						final String destinationName = ParserUtils.resolveEntities(mDepFine.group(2));
+						final Location destination = new Location(LocationType.ANY, 0, null, destinationName);
 
 						final Calendar plannedTime = new GregorianCalendar(timeZone());
 						plannedTime.setTimeInMillis(currentTime.getTimeInMillis());
@@ -270,7 +271,7 @@ public class RmvProvider extends AbstractHafasProvider
 						final String position = ParserUtils.resolveEntities(ParserUtils.selectNotNull(mDepFine.group(5), mDepFine.group(6)));
 
 						final Departure dep = new Departure(plannedTime.getTime(), predictedTime != null ? predictedTime.getTime() : null, line,
-								position, 0, destination, null, null);
+								position, destination, null, null);
 
 						if (!departures.contains(dep))
 							departures.add(dep);

@@ -238,13 +238,14 @@ public class InvgProvider extends AbstractHafasProvider
 						final Line line = parseLine(lineType, ParserUtils.resolveEntities(mDepFine.group(4)), false);
 
 						final int destinationId = mDepFine.group(5) != null ? Integer.parseInt(mDepFine.group(5)) : 0;
-
-						final String destination = ParserUtils.resolveEntities(mDepFine.group(6));
+						final String destinationName = ParserUtils.resolveEntities(mDepFine.group(6));
+						final Location destination = new Location(destinationId > 0 ? LocationType.STATION : LocationType.ANY, destinationId, null,
+								destinationName);
 
 						final String position = mDepFine.group(7) != null ? "Gl. " + ParserUtils.resolveEntities(mDepFine.group(7)) : null;
 
 						final Departure dep = new Departure(plannedTime.getTime(), predictedTime != null ? predictedTime.getTime() : null, line,
-								position, destinationId, destination, null, null);
+								position, destination, null, null);
 
 						if (!departures.contains(dep))
 							departures.add(dep);

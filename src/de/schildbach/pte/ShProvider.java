@@ -226,12 +226,13 @@ public class ShProvider extends AbstractHafasProvider
 					final Line line = parseLine(lineType, ParserUtils.resolveEntities(mDepFine.group(3).trim()), false);
 
 					final int destinationId = mDepFine.group(4) != null ? Integer.parseInt(mDepFine.group(4)) : 0;
-
-					final String destination = ParserUtils.resolveEntities(mDepFine.group(5));
+					final String destinationName = ParserUtils.resolveEntities(mDepFine.group(5));
+					final Location destination = new Location(destinationId > 0 ? LocationType.STATION : LocationType.ANY, destinationId, null,
+							destinationName);
 
 					final String position = mDepFine.group(6) != null ? "Gl. " + ParserUtils.resolveEntities(mDepFine.group(6)) : null;
 
-					final Departure dep = new Departure(plannedTime.getTime(), null, line, position, destinationId, destination, null, null);
+					final Departure dep = new Departure(plannedTime.getTime(), null, line, position, destination, null, null);
 
 					if (!departures.contains(dep))
 						departures.add(dep);

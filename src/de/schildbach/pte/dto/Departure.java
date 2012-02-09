@@ -28,19 +28,17 @@ public final class Departure
 	final public Date predictedTime;
 	final public Line line;
 	final public String position;
-	final public int destinationId;
-	final public String destination;
+	final public Location destination;
 	final public int[] capacity;
 	final public String message;
 
-	public Departure(final Date plannedTime, final Date predictedTime, final Line line, final String position, final int destinationId,
-			final String destination, final int[] capacity, final String message)
+	public Departure(final Date plannedTime, final Date predictedTime, final Line line, final String position, final Location destination,
+			final int[] capacity, final String message)
 	{
 		this.plannedTime = plannedTime;
 		this.predictedTime = predictedTime;
 		this.line = line;
 		this.position = position;
-		this.destinationId = destinationId;
 		this.destination = destination;
 		this.capacity = capacity;
 		this.message = message;
@@ -57,8 +55,6 @@ public final class Departure
 		builder.append(line != null ? line : "null");
 		builder.append(",");
 		builder.append(position != null ? position : "null");
-		builder.append(",");
-		builder.append(destinationId);
 		builder.append(",");
 		builder.append(destination != null ? destination : "null");
 		builder.append(")");
@@ -79,9 +75,7 @@ public final class Departure
 			return false;
 		if (!nullSafeEquals(this.line, other.line))
 			return false;
-		if (this.destinationId != other.destinationId)
-			return false;
-		if (!this.destination.equals(other.destination))
+		if (!nullSafeEquals(this.destination, other.destination))
 			return false;
 		return true;
 	}
@@ -96,9 +90,7 @@ public final class Departure
 		hashCode *= 29;
 		hashCode += nullSafeHashCode(line);
 		hashCode *= 29;
-		hashCode += destinationId;
-		hashCode *= 29;
-		hashCode += destination.hashCode();
+		hashCode += nullSafeHashCode(destination);
 		return hashCode;
 	}
 

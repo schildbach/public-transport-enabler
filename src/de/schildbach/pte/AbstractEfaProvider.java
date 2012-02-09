@@ -1297,12 +1297,14 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					{
 						final String assignedStopIdStr = pp.getAttributeValue(null, "assignedStopID");
 						final int assignedStopId = assignedStopIdStr != null ? Integer.parseInt(assignedStopIdStr) : 0;
-						final String destination = normalizeLocationName(pp.getAttributeValue(null, "direction"));
+						final String destinationName = normalizeLocationName(pp.getAttributeValue(null, "direction"));
 						final String destinationIdStr = pp.getAttributeValue(null, "destID");
 						final int destinationId = (destinationIdStr != null && destinationIdStr.length() > 0) ? Integer.parseInt(destinationIdStr)
 								: 0;
 
-						final LineDestination line = new LineDestination(processItdServingLine(pp), destinationId, destination);
+						final Location destination = new Location(destinationId > 0 ? LocationType.STATION : LocationType.ANY, destinationId, null,
+								destinationName);
+						final LineDestination line = new LineDestination(processItdServingLine(pp), destination);
 
 						StationDepartures assignedStationDepartures;
 						if (assignedStopId == 0)
@@ -1363,10 +1365,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 						XmlPullUtil.require(pp, "itdServingLine");
 						final boolean isRealtime = pp.getAttributeValue(null, "realtime").equals("1");
-						final String destination = normalizeLocationName(pp.getAttributeValue(null, "direction"));
+						final String destinationName = normalizeLocationName(pp.getAttributeValue(null, "direction"));
 						final String destinationIdStr = pp.getAttributeValue(null, "destID");
 						final int destinationId = destinationIdStr != null ? Integer.parseInt(destinationIdStr) : 0;
 
+						final Location destination = new Location(destinationId > 0 ? LocationType.STATION : LocationType.ANY, destinationId, null,
+								destinationName);
 						final Line line = processItdServingLine(pp);
 
 						if (isRealtime && !predictedDepartureTime.isSet(Calendar.HOUR_OF_DAY))
@@ -1374,7 +1378,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 						final Departure departure = new Departure(plannedDepartureTime.getTime(),
 								predictedDepartureTime.isSet(Calendar.HOUR_OF_DAY) ? predictedDepartureTime.getTime() : null, line, position,
-								destinationId, destination, null, null);
+								destination, null, null);
 						assignedStationDepartures.departures.add(departure);
 
 						XmlPullUtil.exit(pp, "itdDeparture");

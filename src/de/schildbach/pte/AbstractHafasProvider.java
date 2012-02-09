@@ -612,19 +612,22 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 					final String position = platform != null ? "Gl. " + ParserUtils.resolveEntities(platform) : null;
 
-					final String destination;
+					final String destinationName;
 					if (dir != null)
-						destination = dir.trim();
+						destinationName = dir.trim();
 					else if (targetLoc != null)
-						destination = targetLoc.trim();
+						destinationName = targetLoc.trim();
 					else
-						destination = null;
+						destinationName = null;
 
 					final int destinationId;
 					if (dirnr != null)
 						destinationId = Integer.parseInt(dirnr);
 					else
 						destinationId = 0;
+
+					final Location destination = new Location(destinationId > 0 ? LocationType.STATION : LocationType.ANY, destinationId, null,
+							destinationName);
 
 					final Line prodLine = parseLineAndType(prod);
 					final Line line;
@@ -665,7 +668,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					}
 
 					final Departure departure = new Departure(plannedTime.getTime(), predictedTime != null ? predictedTime.getTime() : null, line,
-							position, destinationId, destination, capacity, message);
+							position, destination, capacity, message);
 					departures.add(departure);
 				}
 
