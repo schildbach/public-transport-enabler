@@ -921,6 +921,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return 'R' + str;
 			if (type.equals("VIAMO"))
 				return 'R' + str;
+			if ("WB".equals(type)) // WESTbahn
+				return 'R' + str;
 			if (type.equals("SE")) // Southeastern, GB
 				return 'R' + str;
 			if (type.equals("SW")) // South West Trains, GB
