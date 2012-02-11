@@ -259,6 +259,8 @@ public class ZvvProvider extends AbstractHafasProvider
 
 		if ("UNB".equals(ucType))
 			return '?';
+		if ("???".equals(ucType))
+			return '?';
 
 		final char t = super.normalizeType(type);
 		if (t != 0)
