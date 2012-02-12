@@ -898,6 +898,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return 'R' + str;
 			if (type.equals("DBG")) // Döllnitzbahn
 				return 'R' + str;
+			if (type.equals("MSB")) // Mainschleifenbahn
+				return 'R' + str;
 			if (type.equals("BE")) // Grensland-Express, Niederlande
 				return 'R' + str;
 			if (type.equals("MEL")) // Museums-Eisenbahn Losheim
