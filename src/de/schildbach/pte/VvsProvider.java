@@ -17,11 +17,6 @@
 
 package de.schildbach.pte;
 
-import java.io.IOException;
-import java.util.List;
-
-import de.schildbach.pte.dto.Location;
-import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.Point;
 
 /**
@@ -55,12 +50,6 @@ public class VvsProvider extends AbstractEfaProvider
 				return true;
 
 		return false;
-	}
-
-	@Override
-	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
-	{
-		return jsonStopfinderRequest(new Location(LocationType.ANY, 0, null, constraint.toString()));
 	}
 
 	@Override

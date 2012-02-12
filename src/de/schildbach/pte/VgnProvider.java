@@ -17,12 +17,9 @@
 
 package de.schildbach.pte;
 
-import java.io.IOException;
 import java.util.Date;
-import java.util.List;
 
 import de.schildbach.pte.dto.Location;
-import de.schildbach.pte.dto.LocationType;
 
 /**
  * @author Andreas Schildbach
@@ -30,14 +27,12 @@ import de.schildbach.pte.dto.LocationType;
 public class VgnProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.VGN;
-	private String apiBase;
 	private static final String DEPARTURE_MONITOR_ENDPOINT = "XML_DM_REQUEST";
 	private static final String TRIP_ENDPOINT = "XML_TRIP_REQUEST2";
 
 	public VgnProvider(final String apiBase)
 	{
 		super(apiBase, DEPARTURE_MONITOR_ENDPOINT, TRIP_ENDPOINT, null, false, false);
-		this.apiBase = apiBase;
 	}
 
 	public NetworkId id()
@@ -52,12 +47,6 @@ public class VgnProvider extends AbstractEfaProvider
 				return true;
 
 		return false;
-	}
-
-	@Override
-	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
-	{
-		return jsonStopfinderRequest(new Location(LocationType.ANY, 0, null, constraint.toString()));
 	}
 
 	@Override

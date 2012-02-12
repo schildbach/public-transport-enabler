@@ -349,7 +349,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 	}
 
-	public abstract List<Location> autocompleteStations(final CharSequence constraint) throws IOException;
+	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
+	{
+		return jsonStopfinderRequest(new Location(LocationType.ANY, 0, null, constraint.toString()));
+	}
 
 	private String processItdOdvPlace(final XmlPullParser pp) throws XmlPullParserException, IOException
 	{
