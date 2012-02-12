@@ -63,17 +63,17 @@ public class VrnProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
-	public void autocompleteWithUmlaut() throws Exception
+	public void autocompleteIncomplete() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("grün");
+		final List<Location> autocompletes = provider.autocompleteStations("Kur");
 
 		print(autocompletes);
 	}
 
 	@Test
-	public void autocompleteIncomplete() throws Exception
+	public void autocompleteWithUmlaut() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("Kur");
+		final List<Location> autocompletes = provider.autocompleteStations("grün");
 
 		print(autocompletes);
 	}

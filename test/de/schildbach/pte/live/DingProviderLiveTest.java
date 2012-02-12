@@ -71,6 +71,14 @@ public class DingProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
+	public void autocompleteWithUmlaut() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("grün");
+
+		print(autocompletes);
+	}
+
+	@Test
 	public void shortConnection() throws Exception
 	{
 		final QueryConnectionsResult result = provider
