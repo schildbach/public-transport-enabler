@@ -765,8 +765,12 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		request.append("<ReqT a=\"").append(dep ? 0 : 1).append("\" date=\"")
 				.append(String.format("%04d.%02d.%02d", c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH)))
 				.append("\" time=\"").append(String.format("%02d:%02d", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE)) + "\"/>");
-		request.append("<RFlags b=\"0\" chExtension=\"").append(walkSpeed == WalkSpeed.SLOW ? 50 : 0).append("\" f=\"").append(NUM_CONNECTIONS)
-				.append("\" sMode=\"N\"/>");
+		request.append("<RFlags");
+		request.append(" b=\"").append(0).append("\""); // number of connections backwards
+		request.append(" f=\"").append(NUM_CONNECTIONS).append("\""); // number of connection forwards
+		request.append(" chExtension=\"").append(walkSpeed == WalkSpeed.SLOW ? 50 : 0).append("\""); // percentual extension of change time
+		// nrChanges: max number of changes
+		request.append(" sMode=\"N\"/>");
 		request.append("</ConReq>");
 
 		return queryConnections(request.toString(), from, via, to);
