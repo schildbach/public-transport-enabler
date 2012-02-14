@@ -1612,7 +1612,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		return uri.toString();
 	}
 
-	private String commandLink(final String sessionId, final String requestId, final String command)
+	private String commandLink(final String sessionId, final String requestId)
 	{
 		final StringBuilder uri = new StringBuilder(apiBase);
 		uri.append(tripEndpoint);
@@ -1620,7 +1620,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		uri.append("?sessionID=").append(sessionId);
 		uri.append("&requestID=").append(requestId);
 		appendCommonXsltTripRequest2Params(uri);
-		uri.append("&command=").append(command);
 
 		return uri.toString();
 	}
@@ -1653,13 +1652,16 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 	}
 
-	public QueryConnectionsResult queryMoreConnections(final String uri) throws IOException
+	public QueryConnectionsResult queryMoreConnections(final String commandUri, final boolean next) throws IOException
 	{
+		final StringBuilder uri = new StringBuilder(commandUri);
+		uri.append("&command=").append(next ? "tripNext" : "tripPrev");
+
 		InputStream is = null;
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri, null, "NSC_", 3);
-			return queryConnections(uri, is);
+			is = ParserUtils.scrapeInputStream(uri.toString(), null, "NSC_", 3);
+			return queryConnections(uri.toString(), is);
 		}
 		catch (final XmlPullParserException x)
 		{
@@ -2052,7 +2054,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 			XmlPullUtil.exit(pp, "itdRouteList");
 
-			return new QueryConnectionsResult(header, uri, from, via, to, commandLink(context, requestId, "tripNext"), connections);
+			return new QueryConnectionsResult(header, uri, from, via, to, commandLink(context, requestId), connections);
 		}
 		else
 		{

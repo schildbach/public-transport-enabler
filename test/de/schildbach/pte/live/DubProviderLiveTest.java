@@ -68,7 +68,7 @@ public class DubProviderLiveTest extends AbstractProviderLiveTest
 				"Airport Terminal 1, Arrival"), null, new Location(LocationType.STATION, 3505445, null, "Airport Terminal 3"), new Date(), true,
 				ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
 		System.out.println(moreResult);
 	}
 }

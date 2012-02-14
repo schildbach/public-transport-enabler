@@ -101,7 +101,7 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest
 				new Location(LocationType.STATION, 20009161, "Essen", "Bismarckplatz"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
 		System.out.println(moreResult);
 	}
 }

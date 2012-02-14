@@ -107,7 +107,7 @@ public class LinzProviderLiveTest extends AbstractProviderLiveTest
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 0, null, "Linz Hauptbahnhof"), null,
 				new Location(LocationType.STATION, 0, null, "Linz Auwiesen"), new Date(), true, ALL_PRODUCTS, WalkSpeed.FAST, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
 		System.out.println(moreResult);
 	}
 
@@ -117,7 +117,7 @@ public class LinzProviderLiveTest extends AbstractProviderLiveTest
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 0, null, "Linz Auwiesen"), null,
 				new Location(LocationType.STATION, 0, null, "Linz Hafen"), new Date(), true, ALL_PRODUCTS, WalkSpeed.SLOW, Accessibility.NEUTRAL);
 		System.out.println(result);
-		// final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
+		// final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
 		// System.out.println(moreResult);
 	}
 }

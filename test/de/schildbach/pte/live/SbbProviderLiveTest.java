@@ -85,7 +85,7 @@ public class SbbProviderLiveTest extends AbstractProviderLiveTest
 				new Location(LocationType.STATION, 8507785, null, "Bern, Hauptbahnhof"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
 		System.out.println(moreResult);
 	}
 
@@ -96,7 +96,7 @@ public class SbbProviderLiveTest extends AbstractProviderLiveTest
 				.queryConnections(new Location(LocationType.ANY, 0, null, "Schocherswil, Alte Post!"), null, new Location(LocationType.ANY, 0, null,
 						"Laconnex, Mollach"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
 		System.out.println(moreResult);
 	}
 
@@ -107,7 +107,7 @@ public class SbbProviderLiveTest extends AbstractProviderLiveTest
 				new Location(LocationType.ADDRESS, 0, null, "Einsiedeln, Erlenmoosweg 24"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
 		System.out.println(moreResult);
 	}
 
@@ -118,7 +118,7 @@ public class SbbProviderLiveTest extends AbstractProviderLiveTest
 				"Dorfstrasse 10, Dällikon, Schweiz"), null, new Location(LocationType.STATION, 8500010, null, "Basel"), new Date(), true,
 				ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
 		System.out.println(moreResult);
 	}
 }

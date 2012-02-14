@@ -86,7 +86,7 @@ public class OebbProviderLiveTest extends AbstractProviderLiveTest
 		System.out.println(result);
 		assertEquals(QueryConnectionsResult.Status.OK, result.status);
 		assertTrue(result.connections.size() > 0);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
 		System.out.println(moreResult);
 	}
 
@@ -98,7 +98,7 @@ public class OebbProviderLiveTest extends AbstractProviderLiveTest
 		System.out.println(result);
 		assertEquals(QueryConnectionsResult.Status.OK, result.status);
 		assertTrue(result.connections.size() > 0);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
 		System.out.println(moreResult);
 	}
 
@@ -111,7 +111,7 @@ public class OebbProviderLiveTest extends AbstractProviderLiveTest
 		System.out.println(result);
 		assertEquals(QueryConnectionsResult.Status.OK, result.status);
 		assertTrue(result.connections.size() > 0);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
 		System.out.println(moreResult);
 	}
 
@@ -124,7 +124,7 @@ public class OebbProviderLiveTest extends AbstractProviderLiveTest
 		System.out.println(result);
 		assertEquals(QueryConnectionsResult.Status.OK, result.status);
 		assertTrue(result.connections.size() > 0);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
 		System.out.println(moreResult);
 	}
 }

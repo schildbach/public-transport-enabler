@@ -123,10 +123,12 @@ public interface NetworkProvider
 	 * 
 	 * @param context
 	 *            context to query more connections from
+	 * @param next
+	 *            {@code true} for get next connections, {@code false} for get previous connections
 	 * @return result object that contains possible connections
 	 * @throws IOException
 	 */
-	QueryConnectionsResult queryMoreConnections(String context) throws IOException;
+	QueryConnectionsResult queryMoreConnections(String context, boolean next) throws IOException;
 
 	/**
 	 * Get details about a connection

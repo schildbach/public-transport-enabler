@@ -77,7 +77,7 @@ public class DsbProviderLiveTest extends AbstractProviderLiveTest
 				null, new Location(LocationType.STATION, 551922500, null, "Billund Airport"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
 		System.out.println(moreResult);
 	}
 }

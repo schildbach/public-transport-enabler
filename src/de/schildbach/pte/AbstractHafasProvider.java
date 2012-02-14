@@ -752,7 +752,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 
 		final StringBuilder request = new StringBuilder("<ConReq>");
-
 		request.append("<Start>").append(locationXml(from));
 		request.append("<Prod prod=\"").append(productsStr).append("\" bike=\"0\" couchette=\"0\" direct=\"0\" sleeper=\"0\"/>");
 		request.append("</Start>");
@@ -773,13 +772,14 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		return queryConnections(request.toString(), from, via, to);
 	}
 
-	public QueryConnectionsResult queryMoreConnections(final String context) throws IOException
+	public QueryConnectionsResult queryMoreConnections(final String context, final boolean next) throws IOException
 	{
-		final String request = "<ConScrReq scr=\"F\" nrCons=\"" + NUM_CONNECTIONS + "\">" //
-				+ "<ConResCtxt>" + context + "</ConResCtxt>" //
-				+ "</ConScrReq>";
+		final StringBuilder request = new StringBuilder("<ConScrReq scr=\"").append('F').append("\" nrCons=\"").append(NUM_CONNECTIONS).append("\">");
+		request.append("<ConResCtxt>").append(context).append("</ConResCtxt>");
+		request.append("</ConScrReq>");
+		// TODO handle next/prev
 
-		return queryConnections(request, null, null, null);
+		return queryConnections(request.toString(), null, null, null);
 	}
 
 	private QueryConnectionsResult queryConnections(final String request, final Location from, final Location via, final Location to)

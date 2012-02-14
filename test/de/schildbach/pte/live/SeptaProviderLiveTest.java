@@ -77,7 +77,7 @@ public class SeptaProviderLiveTest extends AbstractProviderLiveTest
 				new Location(LocationType.STATION, 1015755, null, "Harbison Av + Unruh Av"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
 		System.out.println(moreResult);
 	}
 
@@ -88,7 +88,7 @@ public class SeptaProviderLiveTest extends AbstractProviderLiveTest
 				"Philadelphia 19127", "3601 Main St"), null, new Location(LocationType.STATION, 2090227, null, "Main Street"), new Date(), true,
 				ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
 		System.out.println(moreResult);
 	}
 }

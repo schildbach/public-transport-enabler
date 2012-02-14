@@ -80,7 +80,7 @@ public class VbnProviderLiveTest extends AbstractProviderLiveTest
 				Accessibility.NEUTRAL);
 		assertEquals(QueryConnectionsResult.Status.OK, result.status);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context);
+		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
 		System.out.println(moreResult);
 	}
 
