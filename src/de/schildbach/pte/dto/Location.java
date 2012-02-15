@@ -131,6 +131,10 @@ public final class Location implements Serializable
 	@Override
 	public int hashCode()
 	{
-		return type.hashCode(); // FIXME not very discriminative
+		int hashCode = 0;
+		hashCode += type.hashCode();
+		hashCode *= 29;
+		hashCode += id;
+		return hashCode;
 	}
 }
