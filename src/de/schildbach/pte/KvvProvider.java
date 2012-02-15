@@ -84,7 +84,6 @@ public class KvvProvider extends AbstractEfaProvider
 		LINES.put("SS52", new Style(Style.parseColor("#f69795"), Style.BLACK));
 		LINES.put("SS6", new Style(Style.parseColor("#282268"), Style.WHITE));
 		LINES.put("SS7", new Style(Style.parseColor("#fff200"), Style.BLACK));
-		LINES.put("SS8", new Style(Style.parseColor("#6e692a"), Style.WHITE));
 		LINES.put("SS9", new Style(Style.parseColor("#fab49b"), Style.BLACK));
 
 		// Tram
