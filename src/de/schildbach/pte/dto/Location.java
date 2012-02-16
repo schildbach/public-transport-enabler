@@ -123,9 +123,9 @@ public final class Location implements Serializable
 			return false;
 		if (this.id != other.id)
 			return false;
-		if (this.id != 0)
+		if (this.id != 0) // TODO needed?
 			return true;
-		return this.name.equals(other.name);
+		return nullSafeEquals(this.name, other.name);
 	}
 
 	@Override
@@ -135,6 +135,24 @@ public final class Location implements Serializable
 		hashCode += type.hashCode();
 		hashCode *= 29;
 		hashCode += id;
+		hashCode *= 29;
+		hashCode += nullSafeHashCode(name);
 		return hashCode;
+	}
+
+	private boolean nullSafeEquals(final Object o1, final Object o2)
+	{
+		if (o1 == null && o2 == null)
+			return true;
+		if (o1 != null && o1.equals(o2))
+			return true;
+		return false;
+	}
+
+	private int nullSafeHashCode(final Object o)
+	{
+		if (o == null)
+			return 0;
+		return o.hashCode();
 	}
 }
