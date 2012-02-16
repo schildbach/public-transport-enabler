@@ -97,34 +97,34 @@ public class KvvProvider extends AbstractEfaProvider
 		LINES.put("T7", new Style(Shape.RECT, Style.parseColor("#58595b"), Style.WHITE));
 		LINES.put("T8", new Style(Shape.RECT, Style.parseColor("#f7931d"), Style.BLACK));
 
-		// Bus
-		LINES.put("B21", new Style(Shape.CIRCLE, Style.parseColor("#2e3092"), Style.WHITE));
-		LINES.put("B22", new Style(Shape.CIRCLE, Style.parseColor("#00aeef"), Style.WHITE));
-		LINES.put("B23", new Style(Shape.CIRCLE, Style.parseColor("#56c5d0"), Style.WHITE));
-		LINES.put("B24", new Style(Shape.CIRCLE, Style.parseColor("#a1d1e6"), Style.WHITE));
-		LINES.put("B26", new Style(Shape.CIRCLE, Style.parseColor("#2e3092"), Style.WHITE));
-		LINES.put("B27", new Style(Shape.CIRCLE, Style.parseColor("#00aeef"), Style.WHITE));
-		LINES.put("B30", new Style(Shape.CIRCLE, Style.parseColor("#adbc72"), Style.WHITE));
-		LINES.put("B31", new Style(Shape.CIRCLE, Style.parseColor("#62bb46"), Style.WHITE));
-		LINES.put("B32", new Style(Shape.CIRCLE, Style.parseColor("#177752"), Style.WHITE));
-		LINES.put("B42", new Style(Shape.CIRCLE, Style.parseColor("#177752"), Style.WHITE));
-		LINES.put("B44", new Style(Shape.CIRCLE, Style.parseColor("#62bb46"), Style.WHITE));
-		LINES.put("B47", new Style(Shape.CIRCLE, Style.parseColor("#adbc72"), Style.WHITE));
-		LINES.put("B50", new Style(Shape.CIRCLE, Style.parseColor("#a25641"), Style.WHITE));
-		LINES.put("B51", new Style(Shape.CIRCLE, Style.parseColor("#d2ab67"), Style.WHITE));
-		LINES.put("B52", new Style(Shape.CIRCLE, Style.parseColor("#a25641"), Style.WHITE));
-		LINES.put("B55", new Style(Shape.CIRCLE, Style.parseColor("#806a50"), Style.WHITE));
-		LINES.put("B60", new Style(Shape.CIRCLE, Style.parseColor("#806a50"), Style.WHITE));
-		LINES.put("B62", new Style(Shape.CIRCLE, Style.parseColor("#d2ab67"), Style.WHITE));
-		LINES.put("B70", new Style(Shape.CIRCLE, Style.parseColor("#574187"), Style.WHITE));
-		LINES.put("B71", new Style(Shape.CIRCLE, Style.parseColor("#874487"), Style.WHITE));
-		LINES.put("B72", new Style(Shape.CIRCLE, Style.parseColor("#9b95c9"), Style.WHITE));
-		LINES.put("B73", new Style(Shape.CIRCLE, Style.parseColor("#574187"), Style.WHITE));
-		LINES.put("B74", new Style(Shape.CIRCLE, Style.parseColor("#9b95c9"), Style.WHITE));
-		LINES.put("B75", new Style(Shape.CIRCLE, Style.parseColor("#874487"), Style.WHITE));
-		LINES.put("B107", new Style(Shape.CIRCLE, Style.parseColor("#9d9fa1"), Style.WHITE));
-		LINES.put("B118", new Style(Shape.CIRCLE, Style.parseColor("#9d9fa1"), Style.WHITE));
-		LINES.put("B123", new Style(Shape.CIRCLE, Style.parseColor("#9d9fa1"), Style.WHITE));
+		// Bus - only used on bus plan
+		// LINES.put("B21", new Style(Shape.CIRCLE, Style.parseColor("#2e3092"), Style.WHITE));
+		// LINES.put("B22", new Style(Shape.CIRCLE, Style.parseColor("#00aeef"), Style.WHITE));
+		// LINES.put("B23", new Style(Shape.CIRCLE, Style.parseColor("#56c5d0"), Style.WHITE));
+		// LINES.put("B24", new Style(Shape.CIRCLE, Style.parseColor("#a1d1e6"), Style.WHITE));
+		// LINES.put("B26", new Style(Shape.CIRCLE, Style.parseColor("#2e3092"), Style.WHITE));
+		// LINES.put("B27", new Style(Shape.CIRCLE, Style.parseColor("#00aeef"), Style.WHITE));
+		// LINES.put("B30", new Style(Shape.CIRCLE, Style.parseColor("#adbc72"), Style.WHITE));
+		// LINES.put("B31", new Style(Shape.CIRCLE, Style.parseColor("#62bb46"), Style.WHITE));
+		// LINES.put("B32", new Style(Shape.CIRCLE, Style.parseColor("#177752"), Style.WHITE));
+		// LINES.put("B42", new Style(Shape.CIRCLE, Style.parseColor("#177752"), Style.WHITE));
+		// LINES.put("B44", new Style(Shape.CIRCLE, Style.parseColor("#62bb46"), Style.WHITE));
+		// LINES.put("B47", new Style(Shape.CIRCLE, Style.parseColor("#adbc72"), Style.WHITE));
+		// LINES.put("B50", new Style(Shape.CIRCLE, Style.parseColor("#a25641"), Style.WHITE));
+		// LINES.put("B51", new Style(Shape.CIRCLE, Style.parseColor("#d2ab67"), Style.WHITE));
+		// LINES.put("B52", new Style(Shape.CIRCLE, Style.parseColor("#a25641"), Style.WHITE));
+		// LINES.put("B55", new Style(Shape.CIRCLE, Style.parseColor("#806a50"), Style.WHITE));
+		// LINES.put("B60", new Style(Shape.CIRCLE, Style.parseColor("#806a50"), Style.WHITE));
+		// LINES.put("B62", new Style(Shape.CIRCLE, Style.parseColor("#d2ab67"), Style.WHITE));
+		// LINES.put("B70", new Style(Shape.CIRCLE, Style.parseColor("#574187"), Style.WHITE));
+		// LINES.put("B71", new Style(Shape.CIRCLE, Style.parseColor("#874487"), Style.WHITE));
+		// LINES.put("B72", new Style(Shape.CIRCLE, Style.parseColor("#9b95c9"), Style.WHITE));
+		// LINES.put("B73", new Style(Shape.CIRCLE, Style.parseColor("#574187"), Style.WHITE));
+		// LINES.put("B74", new Style(Shape.CIRCLE, Style.parseColor("#9b95c9"), Style.WHITE));
+		// LINES.put("B75", new Style(Shape.CIRCLE, Style.parseColor("#874487"), Style.WHITE));
+		// LINES.put("B107", new Style(Shape.CIRCLE, Style.parseColor("#9d9fa1"), Style.WHITE));
+		// LINES.put("B118", new Style(Shape.CIRCLE, Style.parseColor("#9d9fa1"), Style.WHITE));
+		// LINES.put("B123", new Style(Shape.CIRCLE, Style.parseColor("#9d9fa1"), Style.WHITE));
 
 		// Nightliner
 		LINES.put("BNL3", new Style(Style.parseColor("#947139"), Style.WHITE));
