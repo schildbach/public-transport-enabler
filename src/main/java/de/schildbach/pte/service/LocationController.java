@@ -18,6 +18,7 @@
 package de.schildbach.pte.service;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
@@ -26,10 +27,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import de.schildbach.pte.BahnProvider;
+import de.schildbach.pte.NetworkProvider.Accessibility;
+import de.schildbach.pte.NetworkProvider.WalkSpeed;
+import de.schildbach.pte.RtProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.QueryConnectionsResult;
 
 /**
  * @author Andreas Schildbach
@@ -37,7 +41,7 @@ import de.schildbach.pte.dto.NearbyStationsResult;
 @Controller
 public class LocationController
 {
-	private final BahnProvider provider = new BahnProvider();
+	private final RtProvider provider = new RtProvider();
 
 	@RequestMapping(value = "/location/suggest", method = RequestMethod.GET)
 	@ResponseBody
@@ -52,5 +56,16 @@ public class LocationController
 	{
 		final Location location = new Location(LocationType.ANY, lat, lon);
 		return provider.queryNearbyStations(location, 5000, 100);
+	}
+
+	@RequestMapping(value = "/connection", method = RequestMethod.GET)
+	@ResponseBody
+	public QueryConnectionsResult connection(@RequestParam("from") final String from, @RequestParam("fromId") final int fromId,
+			@RequestParam("to") final String to, @RequestParam("toId") final int toId) throws IOException
+	{
+		final Location fromLocation = new Location(LocationType.ANY, fromId, null, from);
+		final Location toLocation = new Location(LocationType.ANY, toId, null, to);
+		final String products = "IRSUTBFC";
+		return provider.queryConnections(fromLocation, null, toLocation, new Date(), true, products, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 	}
 }
