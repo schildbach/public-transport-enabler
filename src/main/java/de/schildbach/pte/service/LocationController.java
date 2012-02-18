@@ -60,11 +60,15 @@ public class LocationController
 
 	@RequestMapping(value = "/connection", method = RequestMethod.GET)
 	@ResponseBody
-	public QueryConnectionsResult connection(@RequestParam("from") final String from, @RequestParam("fromId") final int fromId,
-			@RequestParam("to") final String to, @RequestParam("toId") final int toId) throws IOException
+	public QueryConnectionsResult connection(@RequestParam(value = "fromType", required = false, defaultValue = "ANY") final LocationType fromType,
+			@RequestParam(value = "from", required = false) final String from,
+			@RequestParam(value = "fromId", required = false, defaultValue = "0") final int fromId,
+			@RequestParam(value = "toType", required = false, defaultValue = "ANY") final LocationType toType,
+			@RequestParam(value = "to", required = false) final String to,
+			@RequestParam(value = "toId", required = false, defaultValue = "0") final int toId) throws IOException
 	{
-		final Location fromLocation = new Location(LocationType.ANY, fromId, null, from);
-		final Location toLocation = new Location(LocationType.ANY, toId, null, to);
+		final Location fromLocation = new Location(fromType, fromId, null, from);
+		final Location toLocation = new Location(toType, toId, null, to);
 		final String products = "IRSUTBFC";
 		return provider.queryConnections(fromLocation, null, toLocation, new Date(), true, products, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 	}
