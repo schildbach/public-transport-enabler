@@ -123,9 +123,11 @@ public final class Location implements Serializable
 			return false;
 		if (this.id != other.id)
 			return false;
-		if (this.id != 0) // TODO needed?
-			return true;
-		return nullSafeEquals(this.name, other.name);
+		if (this.lat != other.lat || this.lon != other.lon)
+			return false;
+		if (this.id == 0 && !nullSafeEquals(this.name, other.name)) // only discriminate by name if no ids are given
+			return false;
+		return true;
 	}
 
 	@Override
@@ -136,7 +138,9 @@ public final class Location implements Serializable
 		hashCode *= 29;
 		hashCode += id;
 		hashCode *= 29;
-		hashCode += nullSafeHashCode(name);
+		hashCode += lat;
+		hashCode *= 29;
+		hashCode += lon;
 		return hashCode;
 	}
 
