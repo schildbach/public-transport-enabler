@@ -66,14 +66,23 @@ public final class Connection implements Serializable
 		return null;
 	}
 
-	public Date getFirstTripDepartureTime()
+	public Trip getFirstTrip()
 	{
 		if (parts != null)
 			for (final Part part : parts)
 				if (part instanceof Trip)
-					return ((Trip) part).getDepartureTime();
+					return (Trip) part;
 
 		return null;
+	}
+
+	public Date getFirstTripDepartureTime()
+	{
+		final Trip firstTrip = getFirstTrip();
+		if (firstTrip != null)
+			return firstTrip.getDepartureTime();
+		else
+			return null;
 	}
 
 	public Date getLastArrivalTime()
@@ -94,7 +103,7 @@ public final class Connection implements Serializable
 		return null;
 	}
 
-	public Date getLastTripArrivalTime()
+	public Trip getLastTrip()
 	{
 		if (parts != null)
 		{
@@ -102,11 +111,20 @@ public final class Connection implements Serializable
 			{
 				final Part part = parts.get(i);
 				if (part instanceof Trip)
-					return ((Trip) part).getArrivalTime();
+					return (Trip) part;
 			}
 		}
 
 		return null;
+	}
+
+	public Date getLastTripArrivalTime()
+	{
+		final Trip lastTrip = getLastTrip();
+		if (lastTrip != null)
+			return lastTrip.getArrivalTime();
+		else
+			return null;
 	}
 
 	@Override
