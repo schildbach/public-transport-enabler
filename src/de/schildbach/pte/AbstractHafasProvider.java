@@ -766,10 +766,13 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				.append(String.format("%04d.%02d.%02d", c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH)))
 				.append("\" time=\"").append(String.format("%02d:%02d", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE)) + "\"/>");
 		request.append("<RFlags");
-		request.append(" b=\"").append(0).append("\""); // number of connections backwards
-		request.append(" f=\"").append(NUM_CONNECTIONS).append("\""); // number of connection forwards
-		request.append(" chExtension=\"").append(walkSpeed == WalkSpeed.SLOW ? 50 : 0).append("\""); // percentual extension of change time
-		// nrChanges: max number of changes
+		// number of connections backwards
+		request.append(" b=\"").append(0).append("\"");
+		// number of connection forwards
+		request.append(" f=\"").append(NUM_CONNECTIONS).append("\"");
+		// percentual extension of change time
+		request.append(" chExtension=\"").append(walkSpeed == WalkSpeed.SLOW ? 50 : 0).append("\"");
+		// TODO nrChanges: max number of changes
 		request.append(" sMode=\"N\"/>");
 		request.append("</ConReq>");
 
@@ -1733,6 +1736,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		if ("TRA".equals(ucType))
 			return 'T';
 		if ("STRWLB".equals(ucType)) // Wiener Lokalbahnen
+			return 'T';
+		if ("SCHW-B".equals(ucType)) // Schwebebahn, gilt als "Straßenbahn besonderer Bauart"
 			return 'T';
 
 		// Bus
