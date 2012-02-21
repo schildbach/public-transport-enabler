@@ -121,11 +121,11 @@ public final class Location implements Serializable
 		final Location other = (Location) o;
 		if (this.type != other.type)
 			return false;
-		if (this.id != other.id)
-			return false;
-		if (this.lat != other.lat || this.lon != other.lon)
-			return false;
-		if (this.id == 0 && !nullSafeEquals(this.name, other.name)) // only discriminate by name if no ids are given
+		if (this.id != 0 && this.id == other.id)
+			return true;
+		if (this.lat != 0 && this.lon != 0 && this.lat == other.lat && this.lon == other.lon)
+			return true;
+		if (!nullSafeEquals(this.name, other.name)) // only discriminate by name if no ids are given
 			return false;
 		return true;
 	}
@@ -136,11 +136,16 @@ public final class Location implements Serializable
 		int hashCode = 0;
 		hashCode += type.hashCode();
 		hashCode *= 29;
-		hashCode += id;
-		hashCode *= 29;
-		hashCode += lat;
-		hashCode *= 29;
-		hashCode += lon;
+		if (id != 0)
+		{
+			hashCode += id;
+		}
+		else if (lat != 0 || lon != 0)
+		{
+			hashCode += lat;
+			hashCode *= 29;
+			hashCode += lon;
+		}
 		return hashCode;
 	}
 
