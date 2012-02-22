@@ -27,7 +27,7 @@ public final class QueryConnectionsResult implements Serializable
 {
 	public enum Status
 	{
-		OK, AMBIGUOUS, TOO_CLOSE, UNRESOLVABLE_ADDRESS, NO_CONNECTIONS, INVALID_DATE, SERVICE_DOWN;
+		OK, AMBIGUOUS, TOO_CLOSE, UNKNOWN_FROM, UNKNOWN_TO, UNRESOLVABLE_ADDRESS, NO_CONNECTIONS, INVALID_DATE, SERVICE_DOWN;
 	}
 
 	public final ResultHeader header;

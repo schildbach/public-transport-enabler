@@ -825,14 +825,16 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			if (XmlPullUtil.test(pp, "Err"))
 			{
 				final String code = XmlPullUtil.attr(pp, "code");
+				if (code.equals("K9260")) // Departure station does not exist
+					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.UNKNOWN_FROM);
+				if (code.equals("K9300")) // Arrival station does not exist
+					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.UNKNOWN_TO);
 				if (code.equals("K9380") || code.equals("K895")) // Departure/Arrival are too near
 					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.TOO_CLOSE);
 				if (code.equals("K9220")) // Nearby to the given address stations could not be found
 					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.UNRESOLVABLE_ADDRESS);
 				if (code.equals("K9240")) // Internal error
 					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.SERVICE_DOWN);
-				if (code.equals("K9260")) // Departure station does not exist
-					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.NO_CONNECTIONS);
 				if (code.equals("K890")) // No connections found
 					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.NO_CONNECTIONS);
 				if (code.equals("K891")) // No route found (try entering an intermediate station)
