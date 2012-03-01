@@ -18,58 +18,31 @@
 package de.schildbach.pte;
 
 /**
+ * Verkehrsverbund Vogtland
+ * 
  * @author Andreas Schildbach
  */
-public enum NetworkId
+public class VvvProvider extends AbstractEfaProvider
 {
-	// Europe
-	RT,
+	public static final NetworkId NETWORK_ID = NetworkId.VVV;
+	private final static String API_BASE = "http://195.30.98.162:8081/vvv2/";
 
-	// Germany
-	DB, BVG, VBB, RMV, NVV, BAYERN, MVV, INVG, AVV, VGN, VVM, VMV, HVV, SH, GVH, BSVAG, BSAG, VBN, NASA, VVO, VMS, VGS, VRR, VRS, MVG, NPH, VRN, VRT, VVS, NALDO, DING, KVV, VAGFR, NVBW, VVV,
+	public VvvProvider()
+	{
+		super(API_BASE, null);
+	}
 
-	// Austria
-	OEBB, VOR, LINZ, SVV, VVT, VMOBIL, IVB, STV,
+	public NetworkId id()
+	{
+		return NETWORK_ID;
+	}
 
-	// Switzerland
-	SBB, BVB, VBL, ZVV,
+	public boolean hasCapabilities(Capability... capabilities)
+	{
+		for (final Capability capability : capabilities)
+			if (capability == Capability.AUTOCOMPLETE_ONE_LINE || capability == Capability.DEPARTURES || capability == Capability.CONNECTIONS)
+				return true;
 
-	// Belgium
-	SNCB,
-
-	// Netherlands
-	NS,
-
-	// Denmark
-	DSB,
-
-	// Sweden
-	SE, STOCKHOLM,
-
-	// Norway
-	NRI,
-
-	// Luxembourg
-	LU,
-
-	// United Kingdom
-	TFL, TLEM, TLEA, TLSE, TLSW,
-
-	// Slovenia
-	MARIBOR,
-
-	// Poland
-	PL,
-
-	// Italy
-	ATC,
-
-	// United Arab Emirates
-	DUB,
-
-	// United States
-	SF, SEPTA,
-
-	// Australia
-	SYDNEY, MET
+		return false;
+	}
 }
