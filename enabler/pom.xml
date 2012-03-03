@@ -9,7 +9,35 @@
 	<name>enabler</name>
 	<version>1.0-SNAPSHOT</version>
 
+	<repositories>
+		<repository>
+			<id>googlecode-ksoap2-android</id>
+			<name>googlecode-ksoap2-android</name>
+			<url>http://ksoap2-android.googlecode.com/svn/m2-repo</url>
+		</repository>
+	</repositories>
+
 	<dependencies>
+
+		<dependency>
+			<groupId>com.google.code.ksoap2-android</groupId>
+			<artifactId>ksoap2-android</artifactId>
+			<version>2.6.0</version>
+			<!-- Make whole dependency optional -->
+			<optional>true</optional>
+			<exclusions>
+				<!-- Exclude net.sourceforge.kobjects:kobjects-j2me:jar:0.0-SNAPSHOT-20040926-2:compile -->
+				<exclusion>
+					<groupId>net.sourceforge.kobjects</groupId>
+					<artifactId>kobjects-j2me</artifactId>
+				</exclusion>
+				<!-- Exclude net.sourceforge.kxml:kxml:jar:2.2.4:compile -->
+				<exclusion>
+					<groupId>net.sourceforge.kxml</groupId>
+					<artifactId>kxml</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 
 		<dependency>
 			<groupId>org.json</groupId>
