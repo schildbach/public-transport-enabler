@@ -781,10 +781,10 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 	public QueryConnectionsResult queryMoreConnections(final String context, final boolean next) throws IOException
 	{
-		final StringBuilder request = new StringBuilder("<ConScrReq scr=\"").append('F').append("\" nrCons=\"").append(NUM_CONNECTIONS).append("\">");
+		final StringBuilder request = new StringBuilder("<ConScrReq scrDir=\"").append(next ? 'F' : 'B').append("\" nrCons=\"")
+				.append(NUM_CONNECTIONS).append("\">");
 		request.append("<ConResCtxt>").append(context).append("</ConResCtxt>");
 		request.append("</ConScrReq>");
-		// TODO handle next/prev
 
 		return queryConnections(request.toString(), null, null, null);
 	}
