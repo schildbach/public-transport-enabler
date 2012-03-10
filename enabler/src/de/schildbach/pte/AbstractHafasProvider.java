@@ -50,6 +50,7 @@ import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.ResultHeader;
@@ -751,7 +752,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			productsStr.append(allProductsString());
 		}
 
-		final StringBuilder request = new StringBuilder("<ConReq>");
+		final StringBuilder request = new StringBuilder("<ConReq deliverPolyline=\"1\">");
 		request.append("<Start>").append(locationXml(from));
 		request.append("<Prod prod=\"").append(productsStr).append("\" bike=\"0\" couchette=\"0\" direct=\"0\" sleeper=\"0\"/>");
 		request.append("</Start>");
@@ -1053,6 +1054,26 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						throw new IllegalStateException("cannot handle: " + pp.getName());
 					}
 
+					// polyline
+					final List<Point> path;
+					if (XmlPullUtil.test(pp, "Polyline"))
+					{
+						path = new LinkedList<Point>();
+						XmlPullUtil.enter(pp, "Polyline");
+						while (XmlPullUtil.test(pp, "Point"))
+						{
+							final int x = Integer.parseInt(pp.getAttributeValue(null, "x"));
+							final int y = Integer.parseInt(pp.getAttributeValue(null, "y"));
+							path.add(new Point(y, x));
+							XmlPullUtil.next(pp);
+						}
+						XmlPullUtil.exit(pp, "Polyline");
+					}
+					else
+					{
+						path = null;
+					}
+
 					// arrival
 					XmlPullUtil.enter(pp, "Arrival");
 					XmlPullUtil.enter(pp, "BasicStop");
@@ -1081,7 +1102,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					if (min == 0 || line != null)
 					{
 						parts.add(new Connection.Trip(line, destination, departureTime, null, departurePos, sectionDeparture, arrivalTime, null,
-								arrivalPos, sectionArrival, intermediateStops, null));
+								arrivalPos, sectionArrival, intermediateStops, path));
 					}
 					else
 					{
