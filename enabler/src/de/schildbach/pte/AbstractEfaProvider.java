@@ -1108,6 +1108,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return 'R' + type;
 			if ("KTB".equals(type)) // Kandertalbahn
 				return 'R' + type;
+			if ("UEF".equals(type)) // Ulmer Eisenbahnfreunde
+				return 'R' + type;
 			if ("Regionalzug".equals(type))
 				return 'R' + type;
 
