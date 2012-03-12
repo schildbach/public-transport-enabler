@@ -29,7 +29,6 @@ import de.schildbach.pte.dto.LocationType;
 public class VmsProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.VMS;
-	public static final String OLD_NETWORK_ID = "www.vms-aktuell.de";
 	private static final String API_BASE = "http://www.vms-aktuell.de/vms/";
 
 	public VmsProvider()

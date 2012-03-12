@@ -30,7 +30,6 @@ import de.schildbach.pte.dto.LocationType;
 public class TleaProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.TLEA;
-	public static final String OLD_NETWORK_ID = "www.travelineeastanglia.org.uk";
 	private final static String API_BASE = "http://www.travelineeastanglia.org.uk/ea/";
 
 	public TleaProvider()

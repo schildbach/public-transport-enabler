@@ -29,7 +29,6 @@ import de.schildbach.pte.dto.LocationType;
 public class VvoProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.VVO;
-	public static final String OLD_NETWORK_ID = "efa.vvo-online.de";
 	private final static String API_BASE = "http://efa.vvo-online.de:8080/dvb/";
 
 	public VvoProvider()

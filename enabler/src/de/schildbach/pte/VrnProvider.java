@@ -23,7 +23,6 @@ package de.schildbach.pte;
 public class VrnProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.VRN;
-	public static final String OLD_NETWORK_ID = "fahrplanauskunft.vrn.de";
 	private static final String API_BASE = "http://fahrplanauskunft.vrn.de/vrn_mobile/";
 
 	public VrnProvider()

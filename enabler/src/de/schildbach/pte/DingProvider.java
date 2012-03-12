@@ -23,7 +23,6 @@ package de.schildbach.pte;
 public class DingProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.DING;
-	public static final String OLD_NETWORK_ID = "www.ding-ulm.de";
 	private final static String API_BASE = "http://www.ding-ulm.de/ding2/"; // http://www.ding.eu/swu
 
 	public DingProvider()

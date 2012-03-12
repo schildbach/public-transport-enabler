@@ -23,7 +23,6 @@ package de.schildbach.pte;
 public class VorProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.VOR;
-	public static final String OLD_NETWORK_ID = "efa.vor.at";
 	private final static String API_BASE = "http://efa.vor.at/wvb/";
 
 	public VorProvider()

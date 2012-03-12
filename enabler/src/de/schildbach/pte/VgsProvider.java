@@ -42,7 +42,6 @@ import de.schildbach.pte.util.ParserUtils;
  */
 public class VgsProvider extends AbstractHafasProvider
 {
-	public static final String OLD_NETWORK_ID = "www.vgs-online.de";
 	private static final String API_BASE = "http://www.vgs-online.de/cgi-bin/"; // "http://www.saarfahrplan.de/cgi-bin/";
 
 	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;

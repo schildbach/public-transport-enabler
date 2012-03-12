@@ -32,7 +32,6 @@ import de.schildbach.pte.dto.Style;
 public class VrrProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.VRR;
-	public static final String OLD_NETWORK_ID = "efa3.vrr.de";
 	private static final String API_BASE = "http://app.vrr.de/standard/";
 
 	public VrrProvider()

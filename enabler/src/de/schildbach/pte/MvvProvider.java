@@ -29,7 +29,6 @@ import de.schildbach.pte.dto.Style;
 public class MvvProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.MVV;
-	public static final String OLD_NETWORK_ID = "efa.mvv-muenchen.de";
 	private static final String API_BASE = "http://efa.mvv-muenchen.de/mobile/";
 
 	public MvvProvider()

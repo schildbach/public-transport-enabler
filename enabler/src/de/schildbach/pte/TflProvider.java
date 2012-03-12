@@ -29,7 +29,6 @@ import de.schildbach.pte.dto.Style;
 public class TflProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.TFL;
-	public static final String OLD_NETWORK_ID = "journeyplanner.tfl.gov.uk";
 	private static final String API_BASE = "http://journeyplanner.tfl.gov.uk/user/";
 
 	public TflProvider()

@@ -42,7 +42,6 @@ import de.schildbach.pte.util.ParserUtils;
 public class NsProvider extends AbstractHafasProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.NS;
-	public static final String OLD_NETWORK_ID = "hafas.bene-system.com";
 	private static final String API_URI = "http://hafas.bene-system.com/bin/extxml.exe"; // http://plannerint.b-rail.be/bin/extxml.exe
 	private static final String API_BASE = "http://hari.b-rail.be/HAFAS/bin/"; // FIXME!
 

@@ -23,7 +23,6 @@ package de.schildbach.pte;
 public class IvbProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.IVB;
-	public static final String OLD_NETWORK_ID = "efa.ivb.at";
 	private final static String API_BASE = "http://efa.ivb.at/ivb/";
 
 	public IvbProvider()

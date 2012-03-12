@@ -30,7 +30,6 @@ import de.schildbach.pte.dto.LocationType;
 public class TlseProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.TLSE;
-	public static final String OLD_NETWORK_ID = "www.travelinesoutheast.org.uk";
 	private final static String API_BASE = "http://www.travelinesoutheast.org.uk/se/";
 
 	public TlseProvider()

@@ -29,7 +29,6 @@ import de.schildbach.pte.dto.LocationType;
 public class VmvProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.VMV;
-	public static final String OLD_NETWORK_ID = "80.146.180.107";
 	private static final String API_BASE = "http://80.146.180.107/delfi/"; // http://80.146.180.107/vmv/
 
 	public VmvProvider()

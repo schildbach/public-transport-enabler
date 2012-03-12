@@ -29,7 +29,6 @@ import de.schildbach.pte.dto.LocationType;
 public class SvvProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.SVV;
-	public static final String OLD_NETWORK_ID = "efa.svv-info.at";
 	private final static String API_BASE = "http://efa.svv-info.at/svv/";
 
 	public SvvProvider()

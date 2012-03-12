@@ -29,7 +29,6 @@ import de.schildbach.pte.dto.LocationType;
 public class BvbProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.BVB;
-	public static final String OLD_NETWORK_ID = "www.efa-bvb.ch";
 	private final static String API_BASE = "http://www.efa-bvb.ch/bvb/";
 
 	public BvbProvider()

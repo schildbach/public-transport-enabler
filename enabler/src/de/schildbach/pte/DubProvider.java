@@ -30,7 +30,6 @@ import de.schildbach.pte.dto.LocationType;
 public class DubProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.DUB;
-	public static final String OLD_NETWORK_ID = "wojhati.rta.ae";
 	private final static String API_BASE = "http://wojhati.rta.ae/dub/";
 
 	public DubProvider()

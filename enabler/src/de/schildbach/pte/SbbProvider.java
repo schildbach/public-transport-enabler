@@ -32,7 +32,6 @@ import de.schildbach.pte.util.ParserUtils;
 public class SbbProvider extends AbstractHafasProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.SBB;
-	public static final String OLD_NETWORK_ID = "fahrplan.sbb.ch";
 	private static final String API_BASE = "http://fahrplan.sbb.ch/bin/";
 	private static final String API_URI = "http://fahrplan.sbb.ch/bin/extxml.exe"; // xmlfahrplan.sbb.ch
 

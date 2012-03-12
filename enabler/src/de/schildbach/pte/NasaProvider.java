@@ -33,7 +33,6 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 public class NasaProvider extends AbstractHafasProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.NASA;
-	public static final String OLD_NETWORK_ID = "www.nasa.de";
 	private static final String API_BASE = "http://reiseauskunft.insa.de/bin/";
 
 	public NasaProvider()

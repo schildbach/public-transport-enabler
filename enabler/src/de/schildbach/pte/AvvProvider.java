@@ -23,7 +23,6 @@ package de.schildbach.pte;
 public class AvvProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.AVV;
-	public static final String OLD_NETWORK_ID = "efa.avv-augsburg.de";
 	private final static String API_BASE = "http://efa.avv-augsburg.de/avv/";
 
 	public AvvProvider()

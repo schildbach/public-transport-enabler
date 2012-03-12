@@ -29,7 +29,6 @@ import de.schildbach.pte.dto.LocationType;
 public class BsvagProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.BSVAG;
-	public static final String OLD_NETWORK_ID = "212.68.73.240";
 	private final static String API_BASE = "http://212.68.73.240/bsvag/";
 
 	public BsvagProvider()

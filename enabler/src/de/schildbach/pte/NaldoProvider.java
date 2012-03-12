@@ -29,7 +29,6 @@ import de.schildbach.pte.dto.LocationType;
 public class NaldoProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.NALDO;
-	public static final String OLD_NETWORK_ID = "efa.naldo.de";
 	private final static String API_BASE = "http://efa.naldo.de/naldo/";
 
 	public NaldoProvider()

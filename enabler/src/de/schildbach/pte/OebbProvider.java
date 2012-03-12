@@ -34,7 +34,6 @@ import de.schildbach.pte.util.ParserUtils;
 public class OebbProvider extends AbstractHafasProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.OEBB;
-	public static final String OLD_NETWORK_ID = "fahrplan.oebb.at";
 	private static final String API_BASE = "http://fahrplan.oebb.at/bin/";
 	private static final String URL_ENCODING = "ISO-8859-1";
 

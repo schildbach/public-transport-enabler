@@ -29,7 +29,6 @@ import de.schildbach.pte.dto.LocationType;
 public class MariborProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.MARIBOR;
-	public static final String OLD_NETWORK_ID = "164.8.32.183";
 	private final static String API_BASE = "http://164.8.32.183/slo/";
 
 	public MariborProvider()

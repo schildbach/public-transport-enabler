@@ -29,7 +29,6 @@ import de.schildbach.pte.dto.LocationType;
 public class StvProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.STV;
-	public static final String OLD_NETWORK_ID = "fahrplan.verbundlinie.at";
 	private final static String API_BASE = "http://fahrplan.verbundlinie.at/stv/";
 
 	public StvProvider()
