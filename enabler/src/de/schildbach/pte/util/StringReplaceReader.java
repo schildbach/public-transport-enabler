@@ -33,7 +33,7 @@ import java.io.StringReader;
  * occurances of <b>pattern</b> with <b>replacementPattern</b> in the inputstream. You can give multiple
  * pattern-replacementPattern pairs. Multiple pairs are done in order they are given. If first pair is "cat"-"dog" and
  * second pair is "dog"-"house", then the result will be all occurences of "cat" or "dog" will be replaced with "house".
- * 
+ *
  * @version 0.6 21 August 1997
  * @since version 0.5, Fixed error that occured when input was shorter than the pattern
  * @author Roger Whitney (<a href=mailto:whitney@cs.sdsu.edu>whitney@cs.sdsu.edu</a>)

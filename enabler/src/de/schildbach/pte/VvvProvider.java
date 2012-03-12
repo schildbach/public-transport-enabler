@@ -1,6 +1,6 @@
 /*
- * Copyright 2010, 2011 the original author or authors.
- * 
+ * Copyright 2010-2012 the original author or authors.
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,7 +19,7 @@ package de.schildbach.pte;
 
 /**
  * Verkehrsverbund Vogtland
- * 
+ *
  * @author Andreas Schildbach
  */
 public class VvvProvider extends AbstractEfaProvider

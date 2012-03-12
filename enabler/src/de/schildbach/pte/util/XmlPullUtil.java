@@ -13,7 +13,7 @@ import org.xmlpull.v1.XmlSerializer;
 
 /**
  * Handy functions that combines XmlPull API into higher level functionality.
- * 
+ *
  * @author <a href="http://www.extreme.indiana.edu/~aslom/">Aleksander Slominski</a>
  * @author Naresh Bhatia
  */

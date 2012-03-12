@@ -24,7 +24,7 @@ package de.schildbach.pte.util;
  * This class implements a characater queue. Yes the JKD does contain a general queue. However that queue operates on
  * objects. This queue just handles char elements. Use in IO operations where converting chars to objects will be too
  * expensive.
- * 
+ *
  * @version 1.0 21 August 1997
  * @author Roger Whitney (<a href=mailto:whitney@cs.sdsu.edu>whitney@cs.sdsu.edu</a>)
  */
