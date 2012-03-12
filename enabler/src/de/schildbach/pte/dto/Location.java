@@ -96,8 +96,12 @@ public final class Location implements Serializable
 	{
 		if ("Hauptbahnhof".equals(name) || "Hbf".equals(name) || "Bahnhof".equals(name) || "Dorf".equals(name) || "Kirche".equals(name))
 			return place + ", " + name;
-		else
+		else if (name != null)
 			return name;
+		else if (hasId())
+			return Integer.toString(id);
+		else
+			return null;
 	}
 
 	@Override
