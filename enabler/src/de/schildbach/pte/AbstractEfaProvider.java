@@ -79,6 +79,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private final String additionalQueryParameter;
 	private final boolean canAcceptPoiID;
 	private final boolean needsSpEncId;
+	private boolean suppressPositions = false;
 	private final XmlPullParserFactory parserFactory;
 
 	public AbstractEfaProvider()
@@ -114,6 +115,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		this.additionalQueryParameter = additionalQueryParameter;
 		this.canAcceptPoiID = canAcceptPoiID;
 		this.needsSpEncId = needsSpEncId;
+	}
+
+	protected void setSuppressPositions(final boolean suppressPositions)
+	{
+		this.suppressPositions = suppressPositions;
 	}
 
 	protected TimeZone timeZone()
@@ -1361,7 +1367,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 									new LinkedList<Departure>(), new LinkedList<LineDestination>());
 						}
 
-						final String position = normalizePlatform(pp.getAttributeValue(null, "platform"), pp.getAttributeValue(null, "platformName"));
+						final String position;
+						if (!suppressPositions)
+							position = normalizePlatform(pp.getAttributeValue(null, "platform"), pp.getAttributeValue(null, "platformName"));
+						else
+							position = null;
 
 						XmlPullUtil.enter(pp, "itdDeparture");
 
@@ -1822,8 +1832,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					final Location departure = processItdPointAttributes(pp);
 					if (firstDeparture == null)
 						firstDeparture = departure;
-					final String departurePosition = normalizePlatform(pp.getAttributeValue(null, "platform"),
-							pp.getAttributeValue(null, "platformName"));
+					final String departurePosition;
+					if (!suppressPositions)
+						departurePosition = normalizePlatform(pp.getAttributeValue(null, "platform"), pp.getAttributeValue(null, "platformName"));
+					else
+						departurePosition = null;
 					XmlPullUtil.enter(pp, "itdPoint");
 					if (XmlPullUtil.test(pp, "itdMapItemList"))
 						XmlPullUtil.next(pp);
@@ -1847,8 +1860,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						throw new IllegalStateException();
 					final Location arrival = processItdPointAttributes(pp);
 					lastArrival = arrival;
-					final String arrivalPosition = normalizePlatform(pp.getAttributeValue(null, "platform"),
-							pp.getAttributeValue(null, "platformName"));
+					final String arrivalPosition;
+					if (!suppressPositions)
+						arrivalPosition = normalizePlatform(pp.getAttributeValue(null, "platform"), pp.getAttributeValue(null, "platformName"));
+					else
+						arrivalPosition = null;
 					XmlPullUtil.enter(pp, "itdPoint");
 					if (XmlPullUtil.test(pp, "itdMapItemList"))
 						XmlPullUtil.next(pp);
@@ -1941,8 +1957,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							while (XmlPullUtil.test(pp, "itdPoint"))
 							{
 								final Location stopLocation = processItdPointAttributes(pp);
-								final String stopPosition = normalizePlatform(pp.getAttributeValue(null, "platform"),
-										pp.getAttributeValue(null, "platformName"));
+								final String stopPosition;
+								if (!suppressPositions)
+									stopPosition = normalizePlatform(pp.getAttributeValue(null, "platform"),
+											pp.getAttributeValue(null, "platformName"));
+								else
+									stopPosition = null;
 								XmlPullUtil.enter(pp, "itdPoint");
 								XmlPullUtil.require(pp, "itdDateTime");
 								final boolean success1 = processItdDateTime(pp, time);
