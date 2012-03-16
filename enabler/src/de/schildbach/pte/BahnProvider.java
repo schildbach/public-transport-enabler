@@ -272,9 +272,9 @@ public final class BahnProvider extends AbstractHafasProvider
 			final List<Location> addresses = new ArrayList<Location>();
 			while (mAddresses.find())
 			{
-				final String address = ParserUtils.resolveEntities(mAddresses.group(1)).trim();
+				final Location address = new Location(LocationType.ANY, 0, null, ParserUtils.resolveEntities(mAddresses.group(1)).trim() + "!");
 				if (!addresses.contains(address))
-					addresses.add(new Location(LocationType.ANY, 0, null, address + "!"));
+					addresses.add(address);
 			}
 
 			if (type.equals("REQ0JourneyStopsS0K"))
