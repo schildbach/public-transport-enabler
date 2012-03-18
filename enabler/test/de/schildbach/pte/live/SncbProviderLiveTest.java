@@ -87,8 +87,8 @@ public class SncbProviderLiveTest extends AbstractProviderLiveTest
 
 		if (result.context != null)
 		{
-			final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
-			System.out.println(moreResult.status + " " + moreResult.connections);
+			final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+			System.out.println(laterResult.status + " " + laterResult.connections);
 		}
 	}
 
@@ -101,8 +101,8 @@ public class SncbProviderLiveTest extends AbstractProviderLiveTest
 
 		if (result.context != null)
 		{
-			final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
-			System.out.println(moreResult.status + " " + moreResult.connections);
+			final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+			System.out.println(laterResult.status + " " + laterResult.connections);
 		}
 	}
 
@@ -116,8 +116,8 @@ public class SncbProviderLiveTest extends AbstractProviderLiveTest
 
 		if (result.context != null)
 		{
-			final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
-			System.out.println(moreResult.status + " " + moreResult.connections);
+			final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+			System.out.println(laterResult.status + " " + laterResult.connections);
 		}
 	}
 }

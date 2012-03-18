@@ -117,8 +117,8 @@ public class GvhProviderLiveTest extends AbstractProviderLiveTest
 				null, new Location(LocationType.STATION, 25001141, null, "Hannover Bismarckstraße"), new Date(), true, ALL_PRODUCTS, WalkSpeed.FAST,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
-		System.out.println(moreResult);
+		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		System.out.println(laterResult);
 	}
 
 	@Test
@@ -128,8 +128,8 @@ public class GvhProviderLiveTest extends AbstractProviderLiveTest
 				"bremen, neustadtswall 12"), null, new Location(LocationType.ADDRESS, 0, 53104124, 8788575, null, "Bremen Glücksburger Straße 37"),
 				new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
-		System.out.println(moreResult);
+		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		System.out.println(laterResult);
 	}
 
 	@Test
@@ -139,7 +139,7 @@ public class GvhProviderLiveTest extends AbstractProviderLiveTest
 				"Zamenhofweg 14, 22159 Hamburg, Deutschland"), null, new Location(LocationType.ADDRESS, 0, 53734260, 9674990, null,
 				"Lehmkuhlen 5, 25337 Elmshorn, Deutschland"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
-		System.out.println(moreResult);
+		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		System.out.println(laterResult);
 	}
 }

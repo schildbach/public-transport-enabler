@@ -85,7 +85,7 @@ public class MvgProviderLiveTest extends AbstractProviderLiveTest
 				new Location(LocationType.STATION, 24064226, null, "Schützenhalle"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
-		System.out.println(moreResult);
+		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		System.out.println(laterResult);
 	}
 }

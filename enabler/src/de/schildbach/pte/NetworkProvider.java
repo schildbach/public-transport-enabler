@@ -128,7 +128,7 @@ public interface NetworkProvider
 	 * @return result object that contains possible connections
 	 * @throws IOException
 	 */
-	QueryConnectionsResult queryMoreConnections(String context, boolean next) throws IOException;
+	QueryConnectionsResult queryMoreConnections(String context, boolean later) throws IOException;
 
 	/**
 	 * Get details about a connection

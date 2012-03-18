@@ -69,8 +69,8 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest
 				null, new Location(LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
-		System.out.println(moreResult);
+		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		System.out.println(laterResult);
 	}
 
 	@Test
@@ -80,7 +80,7 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest
 				"04319 Leipzig-Engelsdorf", "August-Bebel-Platz"), null, new Location(LocationType.STATION, 8010205, null, "Leipzig Hbf"),
 				new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
-		System.out.println(moreResult);
+		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		System.out.println(laterResult);
 	}
 }

@@ -77,10 +77,10 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 				null, new Location(LocationType.STATION, 9013103, "Berlin", "Prinzenstraße"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult nextResult = provider.queryMoreConnections(result.context, true);
-		System.out.println(nextResult);
-		final QueryConnectionsResult previousResult = provider.queryMoreConnections(result.context, false);
-		System.out.println(previousResult);
+		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		System.out.println(laterResult);
+		final QueryConnectionsResult earlierResult = provider.queryMoreConnections(result.context, false);
+		System.out.println(earlierResult);
 	}
 
 	@Test
@@ -90,8 +90,8 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 				new Location(LocationType.STATION, 9044202, "Berlin", "Bundesplatz"), new Location(LocationType.STATION, 9013103, "Berlin",
 						"Prinzenstraße"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
-		System.out.println(moreResult);
+		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		System.out.println(laterResult);
 	}
 
 	@Test
@@ -101,8 +101,8 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 				new Location(LocationType.ADDRESS, 0, 52513639, 13568648, null, null), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
-		System.out.println(moreResult);
+		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		System.out.println(laterResult);
 	}
 
 	@Test
@@ -112,8 +112,8 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 				new Location(LocationType.ADDRESS, 0, 52479868, 13324247, null, null), new Location(LocationType.ADDRESS, 0, 52513639, 13568648,
 						null, null), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
-		System.out.println(moreResult);
+		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		System.out.println(laterResult);
 	}
 
 	@Test
@@ -123,8 +123,8 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 				"10715 Bln Charlb.-Wilm., Weimarische Str. 7"), null, new Location(LocationType.ADDRESS, 0, null, "10178 Bln Mitte, Sophienstr. 24"),
 				new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
-		System.out.println(moreResult);
+		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		System.out.println(laterResult);
 	}
 
 	@Test
@@ -135,7 +135,7 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 				new Location(LocationType.ADDRESS, 0, null, "10178 Bln Mitte, Sophienstr. 24"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
-		System.out.println(moreResult);
+		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		System.out.println(laterResult);
 	}
 }

@@ -604,7 +604,7 @@ public final class BvgProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	public QueryConnectionsResult queryMoreConnections(final String uri, final boolean next) throws IOException
+	public QueryConnectionsResult queryMoreConnections(final String uri, final boolean later) throws IOException
 	{
 		final CharSequence page = ParserUtils.scrape(uri);
 		// TODO handle next/prev

@@ -84,10 +84,10 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, null, "Marienplatz"), null, new Location(
 				LocationType.ANY, 0, null, "Pasing"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult nextResult = provider.queryMoreConnections(result.context, true);
-		System.out.println(nextResult);
-		final QueryConnectionsResult prevResult = provider.queryMoreConnections(nextResult.context, false);
-		System.out.println(prevResult);
+		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		System.out.println(laterResult);
+		final QueryConnectionsResult earlierResult = provider.queryMoreConnections(laterResult.context, false);
+		System.out.println(earlierResult);
 	}
 
 	@Test
@@ -106,8 +106,8 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, 48165238, 11577473), null,
 				new Location(LocationType.ADDRESS, 0, 47987199, 11326532), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
-		System.out.println(moreResult);
+		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		System.out.println(laterResult);
 	}
 
 	@Test
@@ -116,8 +116,8 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, 48238341, 11478230), null,
 				new Location(LocationType.ANY, 0, null, "Ostbahnhof"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
-		System.out.println(moreResult);
+		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		System.out.println(laterResult);
 	}
 
 	@Test
@@ -127,8 +127,8 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 				null, new Location(LocationType.ADDRESS, 0, null, "Starnberg, Jahnstraße 50"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
-		System.out.println(moreResult);
+		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		System.out.println(laterResult);
 	}
 
 	@Test
@@ -138,7 +138,7 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 				new Location(LocationType.ADDRESS, 0, 48188018, 11574239, null, "München Frankfurter Ring 35"), new Date(), true, ALL_PRODUCTS,
 				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
-		System.out.println(moreResult);
+		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		System.out.println(laterResult);
 	}
 }

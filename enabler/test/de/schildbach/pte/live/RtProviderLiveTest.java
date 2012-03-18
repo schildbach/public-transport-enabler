@@ -85,8 +85,8 @@ public class RtProviderLiveTest extends AbstractProviderLiveTest
 				new Location(LocationType.STATION, 8507785, null, "Bern, Hauptbahnhof"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
-		System.out.println(moreResult);
+		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		System.out.println(laterResult);
 	}
 
 	@Test
@@ -96,8 +96,8 @@ public class RtProviderLiveTest extends AbstractProviderLiveTest
 				.queryConnections(new Location(LocationType.ANY, 0, null, "Schocherswil, Alte Post!"), null, new Location(LocationType.ANY, 0, null,
 						"Laconnex, Mollach"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
-		System.out.println(moreResult);
+		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		System.out.println(laterResult);
 	}
 
 	@Test
@@ -107,8 +107,8 @@ public class RtProviderLiveTest extends AbstractProviderLiveTest
 				new Location(LocationType.ADDRESS, 0, null, "Einsiedeln, Erlenmoosweg 24"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
-		System.out.println(moreResult);
+		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		System.out.println(laterResult);
 	}
 
 	@Test
@@ -118,8 +118,8 @@ public class RtProviderLiveTest extends AbstractProviderLiveTest
 				"26 Coopers Close, Poplar, Greater London E1 4, Vereinigtes Königreich"), null, new Location(LocationType.STATION, 8096022, 50941312,
 				6967206, null, "COLOGNE"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
-		System.out.println(moreResult);
+		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		System.out.println(laterResult);
 	}
 
 	@Test
@@ -129,7 +129,7 @@ public class RtProviderLiveTest extends AbstractProviderLiveTest
 				new Location(LocationType.STATION, 8400058, null, "Amsterdam Centraal"), new Location(LocationType.STATION, 8000085, null,
 						"Düsseldorf Hbf"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
-		System.out.println(moreResult);
+		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		System.out.println(laterResult);
 	}
 }

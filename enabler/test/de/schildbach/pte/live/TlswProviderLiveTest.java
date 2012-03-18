@@ -76,7 +76,7 @@ public class TlswProviderLiveTest extends AbstractProviderLiveTest
 		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 0, null, "70003023"), null, new Location(
 				LocationType.STATION, 0, null, "70003025"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
-		System.out.println(moreResult);
+		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		System.out.println(laterResult);
 	}
 }

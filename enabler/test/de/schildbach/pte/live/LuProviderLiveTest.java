@@ -77,8 +77,8 @@ public class LuProviderLiveTest extends AbstractProviderLiveTest
 				null, new Location(LocationType.STATION, 9440001, null, "Echternach, Gare"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
-		System.out.println(moreResult);
+		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		System.out.println(laterResult);
 	}
 
 	@Test
@@ -88,7 +88,7 @@ public class LuProviderLiveTest extends AbstractProviderLiveTest
 				"Luxembourg, Rue Génistre 2"), null, new Location(LocationType.STATION, 9217081, null, "Luxembourg, Gare Centrale"), new Date(),
 				true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
-		System.out.println(moreResult);
+		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		System.out.println(laterResult);
 	}
 }

@@ -1666,10 +1666,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 	}
 
-	public QueryConnectionsResult queryMoreConnections(final String commandUri, final boolean next) throws IOException
+	public QueryConnectionsResult queryMoreConnections(final String commandUri, final boolean later) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(commandUri);
-		uri.append("&command=").append(next ? "tripNext" : "tripPrev");
+		uri.append("&command=").append(later ? "tripNext" : "tripPrev");
 
 		InputStream is = null;
 		try

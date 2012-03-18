@@ -77,7 +77,7 @@ public class StockholmProviderLiveTest extends AbstractProviderLiveTest
 				null, new Location(LocationType.STATION, 200101221, "Stockholm", "Abrahamsberg"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
-		System.out.println(moreResult);
+		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		System.out.println(laterResult);
 	}
 }

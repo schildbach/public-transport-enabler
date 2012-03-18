@@ -86,10 +86,10 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 				new Location(LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
+		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
 		for (final Connection connection : result.connections)
 			provider.getConnectionDetails(connection.link);
-		System.out.println(moreResult);
+		System.out.println(laterResult);
 	}
 
 	@Test
@@ -99,10 +99,10 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 				new Location(LocationType.ANY, 0, null, "Tutzinger-Hof-Platz, Starnberg"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
+		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
 		for (final Connection connection : result.connections)
 			provider.getConnectionDetails(connection.link);
-		System.out.println(moreResult);
+		System.out.println(laterResult);
 	}
 
 	@Test
@@ -113,9 +113,9 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 				new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 
-		final QueryConnectionsResult moreResult = provider.queryMoreConnections(result.context, true);
+		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
 		for (final Connection connection : result.connections)
 			provider.getConnectionDetails(connection.link);
-		System.out.println(moreResult);
+		System.out.println(laterResult);
 	}
 }
