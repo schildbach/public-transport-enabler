@@ -55,9 +55,11 @@ import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Point;
+import de.schildbach.pte.dto.QueryConnectionsContext;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.ResultHeader;
+import de.schildbach.pte.dto.SimpleStringContext;
 import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.dto.Stop;
 import de.schildbach.pte.exception.ParserException;
@@ -1666,8 +1668,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 	}
 
-	public QueryConnectionsResult queryMoreConnections(final String commandUri, final boolean later) throws IOException
+	public QueryConnectionsResult queryMoreConnections(final QueryConnectionsContext contextObj, final boolean later) throws IOException
 	{
+		final SimpleStringContext context = (SimpleStringContext) contextObj;
+		final String commandUri = context.context;
 		final StringBuilder uri = new StringBuilder(commandUri);
 		uri.append("&command=").append(later ? "tripNext" : "tripPrev");
 
@@ -1698,7 +1702,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		final XmlPullParser pp = parserFactory.newPullParser();
 		pp.setInput(is, null);
 		final ResultHeader header = enterItdRequest(pp);
-		final String context = header.context;
+		final Object context = header.context;
 
 		if (XmlPullUtil.test(pp, "itdLayoutParams"))
 			XmlPullUtil.next(pp);
@@ -2078,7 +2082,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 			XmlPullUtil.exit(pp, "itdRouteList");
 
-			return new QueryConnectionsResult(header, uri, from, via, to, commandLink(context, requestId), connections);
+			return new QueryConnectionsResult(header, uri, from, via, to, new SimpleStringContext(commandLink((String) context, requestId)),
+					connections);
 		}
 		else
 		{

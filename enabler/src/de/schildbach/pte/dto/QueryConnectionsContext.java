@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 the original author or authors.
+ * Copyright 2012 the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,26 +22,9 @@ import java.io.Serializable;
 /**
  * @author Andreas Schildbach
  */
-public final class ResultHeader implements Serializable
+public interface QueryConnectionsContext extends Serializable
 {
-	public final String serverProduct;
-	public final String serverVersion;
-	public final long serverTime;
-	public final Object context;
+	boolean canQueryLater();
 
-	public ResultHeader(final String serverProduct)
-	{
-		this.serverProduct = serverProduct;
-		this.serverVersion = null;
-		this.serverTime = 0;
-		this.context = null;
-	}
-
-	public ResultHeader(final String serverProduct, final String serverVersion, final long serverTime, final Object context)
-	{
-		this.serverProduct = serverProduct;
-		this.serverVersion = serverVersion;
-		this.serverTime = serverTime;
-		this.context = context;
-	}
+	boolean canQueryEarlier();
 }

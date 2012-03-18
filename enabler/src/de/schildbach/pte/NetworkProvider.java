@@ -25,6 +25,7 @@ import de.schildbach.pte.dto.GetConnectionDetailsResult;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Point;
+import de.schildbach.pte.dto.QueryConnectionsContext;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.Style;
@@ -128,7 +129,7 @@ public interface NetworkProvider
 	 * @return result object that contains possible connections
 	 * @throws IOException
 	 */
-	QueryConnectionsResult queryMoreConnections(String context, boolean later) throws IOException;
+	QueryConnectionsResult queryMoreConnections(QueryConnectionsContext context, boolean later) throws IOException;
 
 	/**
 	 * Get details about a connection

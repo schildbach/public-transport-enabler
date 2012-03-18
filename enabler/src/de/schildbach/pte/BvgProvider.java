@@ -40,9 +40,11 @@ import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Point;
+import de.schildbach.pte.dto.QueryConnectionsContext;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.ResultHeader;
+import de.schildbach.pte.dto.SimpleStringContext;
 import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.dto.Stop;
 import de.schildbach.pte.dto.Style;
@@ -604,8 +606,10 @@ public final class BvgProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	public QueryConnectionsResult queryMoreConnections(final String uri, final boolean later) throws IOException
+	public QueryConnectionsResult queryMoreConnections(final QueryConnectionsContext contextObj, final boolean later) throws IOException
 	{
+		final SimpleStringContext context = (SimpleStringContext) contextObj;
+		final String uri = context.context;
 		final CharSequence page = ParserUtils.scrape(uri);
 		// TODO handle next/prev
 		return queryConnections(uri, page);
@@ -858,7 +862,8 @@ public final class BvgProvider extends AbstractHafasProvider
 				}
 			}
 
-			return new QueryConnectionsResult(new ResultHeader(SERVER_PRODUCT), firstUri, from, via, to, linkLater, connections);
+			return new QueryConnectionsResult(new ResultHeader(SERVER_PRODUCT), firstUri, from, via, to, new SimpleStringContext(linkLater),
+					connections);
 		}
 		else
 		{

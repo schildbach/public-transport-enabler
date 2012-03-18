@@ -41,11 +41,11 @@ public final class QueryConnectionsResult implements Serializable
 	public final Location from;
 	public final Location via;
 	public final Location to;
-	public final String context;
+	public final QueryConnectionsContext context;
 	public final List<Connection> connections;
 
 	public QueryConnectionsResult(final ResultHeader header, final String queryUri, final Location from, final Location via, final Location to,
-			final String context, final List<Connection> connections)
+			final QueryConnectionsContext context, final List<Connection> connections)
 	{
 		this.header = header;
 		this.status = Status.OK;

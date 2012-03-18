@@ -51,9 +51,11 @@ import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Point;
+import de.schildbach.pte.dto.QueryConnectionsContext;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.ResultHeader;
+import de.schildbach.pte.dto.SimpleStringContext;
 import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.dto.Stop;
 import de.schildbach.pte.util.ParserUtils;
@@ -780,11 +782,13 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		return queryConnections(request.toString(), from, via, to);
 	}
 
-	public QueryConnectionsResult queryMoreConnections(final String context, final boolean later) throws IOException
+	public QueryConnectionsResult queryMoreConnections(final QueryConnectionsContext contextObj, final boolean later) throws IOException
 	{
+		final SimpleStringContext context = (SimpleStringContext) contextObj;
+
 		final StringBuilder request = new StringBuilder("<ConScrReq scrDir=\"").append(later ? 'F' : 'B').append("\" nrCons=\"")
 				.append(NUM_CONNECTIONS).append("\">");
-		request.append("<ConResCtxt>").append(context).append("</ConResCtxt>");
+		request.append("<ConResCtxt>").append(context.context).append("</ConResCtxt>");
 		request.append("</ConScrReq>");
 
 		return queryConnections(request.toString(), null, null, null);
@@ -1127,7 +1131,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 			XmlPullUtil.exit(pp);
 
-			return new QueryConnectionsResult(header, null, from, via, to, context, connections);
+			return new QueryConnectionsResult(header, null, from, via, to, new SimpleStringContext(context), connections);
 		}
 		catch (final XmlPullParserException x)
 		{
