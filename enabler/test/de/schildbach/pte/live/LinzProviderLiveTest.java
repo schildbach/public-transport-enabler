@@ -109,6 +109,8 @@ public class LinzProviderLiveTest extends AbstractProviderLiveTest
 		System.out.println(result);
 		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
+		final QueryConnectionsResult earlierResult = provider.queryMoreConnections(laterResult.context, false);
+		System.out.println(earlierResult);
 	}
 
 	@Test

@@ -59,7 +59,6 @@ import de.schildbach.pte.dto.QueryConnectionsContext;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.ResultHeader;
-import de.schildbach.pte.dto.SimpleStringContext;
 import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.dto.Stop;
 import de.schildbach.pte.exception.ParserException;
@@ -83,6 +82,26 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private final boolean needsSpEncId;
 	private boolean suppressPositions = false;
 	private final XmlPullParserFactory parserFactory;
+
+	private static class Context implements QueryConnectionsContext
+	{
+		private final String context;
+
+		private Context(final String context)
+		{
+			this.context = context;
+		}
+
+		public boolean canQueryLater()
+		{
+			return context != null;
+		}
+
+		public boolean canQueryEarlier()
+		{
+			return false; // TODO enable earlier querying
+		}
+	}
 
 	public AbstractEfaProvider()
 	{
@@ -1670,7 +1689,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	public QueryConnectionsResult queryMoreConnections(final QueryConnectionsContext contextObj, final boolean later) throws IOException
 	{
-		final SimpleStringContext context = (SimpleStringContext) contextObj;
+		final Context context = (Context) contextObj;
 		final String commandUri = context.context;
 		final StringBuilder uri = new StringBuilder(commandUri);
 		uri.append("&command=").append(later ? "tripNext" : "tripPrev");
@@ -2082,8 +2101,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 			XmlPullUtil.exit(pp, "itdRouteList");
 
-			return new QueryConnectionsResult(header, uri, from, via, to, new SimpleStringContext(commandLink((String) context, requestId)),
-					connections);
+			return new QueryConnectionsResult(header, uri, from, via, to, new Context(commandLink((String) context, requestId)), connections);
 		}
 		else
 		{
