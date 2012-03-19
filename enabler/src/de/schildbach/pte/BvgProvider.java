@@ -669,7 +669,7 @@ public final class BvgProvider extends AbstractHafasProvider
 			+ "(?:<a href=\"([^\"]*)\" title=\"sp&auml;tere Verbindungen\"[^>]*?>.*?)?" // linkLater
 	, Pattern.DOTALL);
 	private static final Pattern P_CONNECTIONS_COARSE = Pattern
-			.compile("<form [^>]*name=\"ivuTrackListForm(\\d)\"[^>]*>(.+?)</form>", Pattern.DOTALL);
+			.compile("<form [^>]*name=\"ivuTrackListForm(\\d+)\"[^>]*>(.+?)</form>", Pattern.DOTALL);
 	private static final Pattern P_CONNECTIONS_FINE = Pattern.compile(".*?" //
 			+ "Verbindungen - Detailansicht - Abfahrt: am (\\d{2}\\.\\d{2}\\.\\d{2}) um \\d{1,2}:\\d{2}.*?" // date
 			+ "guiVCtrl_connection_detailsOut_setStatus_([^_]+)_allHalts=yes.*?" // id
