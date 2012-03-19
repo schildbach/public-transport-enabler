@@ -55,7 +55,6 @@ import de.schildbach.pte.dto.QueryConnectionsContext;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.ResultHeader;
-import de.schildbach.pte.dto.SimpleStringContext;
 import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.dto.Stop;
 import de.schildbach.pte.util.ParserUtils;
@@ -78,6 +77,30 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	private final String accessId;
 	private final String jsonEncoding;
 	private final String xmlMlcResEncoding;
+
+	private static class Context implements QueryConnectionsContext
+	{
+		public final String laterContext;
+		public final String earlierContext;
+		public final int sequence;
+
+		public Context(final String laterContext, final String earlierContext, final int sequence)
+		{
+			this.laterContext = laterContext;
+			this.earlierContext = earlierContext;
+			this.sequence = sequence;
+		}
+
+		public boolean canQueryLater()
+		{
+			return laterContext != null;
+		}
+
+		public boolean canQueryEarlier()
+		{
+			return earlierContext != null;
+		}
+	}
 
 	public AbstractHafasProvider(final String apiUri, final int numProductBits, final String accessId, final String jsonEncoding,
 			final String xmlMlcResEncoding)
@@ -779,23 +802,23 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		request.append(" sMode=\"N\"/>");
 		request.append("</ConReq>");
 
-		return queryConnections(request.toString(), from, via, to);
+		return queryConnections(null, true, request.toString(), from, via, to);
 	}
 
 	public QueryConnectionsResult queryMoreConnections(final QueryConnectionsContext contextObj, final boolean later) throws IOException
 	{
-		final SimpleStringContext context = (SimpleStringContext) contextObj;
+		final Context context = (Context) contextObj;
 
 		final StringBuilder request = new StringBuilder("<ConScrReq scrDir=\"").append(later ? 'F' : 'B').append("\" nrCons=\"")
 				.append(NUM_CONNECTIONS).append("\">");
-		request.append("<ConResCtxt>").append(context.context).append("</ConResCtxt>");
+		request.append("<ConResCtxt>").append(later ? context.laterContext : context.earlierContext).append("</ConResCtxt>");
 		request.append("</ConScrReq>");
 
-		return queryConnections(request.toString(), null, null, null);
+		return queryConnections(context, later, request.toString(), null, null, null);
 	}
 
-	private QueryConnectionsResult queryConnections(final String request, final Location from, final Location via, final Location to)
-			throws IOException
+	private QueryConnectionsResult queryConnections(final Context previousContext, final boolean later, final String request, final Location from,
+			final Location via, final Location to) throws IOException
 	{
 		// System.out.println(request);
 		// ParserUtils.printXml(ParserUtils.scrape(apiUri, true, wrap(request), null, null));
@@ -854,11 +877,21 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			if (pp.getEventType() == XmlPullParser.TEXT)
 				pp.nextTag();
 
-			final String context;
+			final Context context;
 			if (XmlPullUtil.test(pp, "ConResCtxt"))
-				context = XmlPullUtil.text(pp);
+			{
+				final String c = XmlPullUtil.text(pp);
+				if (previousContext == null)
+					context = new Context(c, c, 0);
+				else if (later)
+					context = new Context(c, previousContext.earlierContext, previousContext.sequence + 1);
+				else
+					context = new Context(previousContext.laterContext, c, previousContext.sequence + 1);
+			}
 			else
+			{
 				context = null;
+			}
 
 			XmlPullUtil.enter(pp, "ConnectionList");
 
@@ -866,7 +899,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 			while (XmlPullUtil.test(pp, "Connection"))
 			{
-				final String id = XmlPullUtil.attr(pp, "id");
+				final String id = context.sequence + "/" + XmlPullUtil.attr(pp, "id");
 
 				XmlPullUtil.enter(pp, "Connection");
 				while (pp.getName().equals("RtStateList"))
@@ -1131,7 +1164,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 			XmlPullUtil.exit(pp);
 
-			return new QueryConnectionsResult(header, null, from, via, to, new SimpleStringContext(context), connections);
+			return new QueryConnectionsResult(header, null, from, via, to, context, connections);
 		}
 		catch (final XmlPullParserException x)
 		{
