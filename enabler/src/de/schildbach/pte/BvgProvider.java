@@ -44,7 +44,6 @@ import de.schildbach.pte.dto.QueryConnectionsContext;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.ResultHeader;
-import de.schildbach.pte.dto.SimpleStringContext;
 import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.dto.Stop;
 import de.schildbach.pte.dto.Style;
@@ -66,6 +65,28 @@ public final class BvgProvider extends AbstractHafasProvider
 	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
 
 	private final String additionalQueryParameter;
+
+	private static class Context implements QueryConnectionsContext
+	{
+		private final String linkLater;
+		private final String linkEarlier;
+
+		private Context(final String linkLater, final String linkEarlier)
+		{
+			this.linkLater = linkLater;
+			this.linkEarlier = linkEarlier;
+		}
+
+		public boolean canQueryLater()
+		{
+			return linkLater != null;
+		}
+
+		public boolean canQueryEarlier()
+		{
+			return linkEarlier != null;
+		}
+	}
 
 	public BvgProvider(final String additionalQueryParameter)
 	{
@@ -608,10 +629,14 @@ public final class BvgProvider extends AbstractHafasProvider
 	@Override
 	public QueryConnectionsResult queryMoreConnections(final QueryConnectionsContext contextObj, final boolean later) throws IOException
 	{
-		final SimpleStringContext context = (SimpleStringContext) contextObj;
-		final String uri = context.context;
+		final Context context = (Context) contextObj;
+
+		final String uri = later ? context.linkLater : context.linkEarlier;
+		if (uri == null)
+			throw new IllegalStateException("cannot query " + (later ? "later" : "earlier"));
+
 		final CharSequence page = ParserUtils.scrape(uri);
-		// TODO handle next/prev
+
 		return queryConnections(uri, page);
 	}
 
@@ -672,8 +697,8 @@ public final class BvgProvider extends AbstractHafasProvider
 			+ "(?:<a href=\"([^\"]*)\" title=\"fr&uuml;here Verbindungen\"[^>]*?>.*?)?" // linkEarlier
 			+ "(?:<a href=\"([^\"]*)\" title=\"sp&auml;tere Verbindungen\"[^>]*?>.*?)?" // linkLater
 	, Pattern.DOTALL);
-	private static final Pattern P_CONNECTIONS_COARSE = Pattern
-			.compile("<form [^>]*name=\"ivuTrackListForm(\\d+)\"[^>]*>(.+?)</form>", Pattern.DOTALL);
+	private static final Pattern P_CONNECTIONS_COARSE = Pattern.compile("<form [^>]*name=\"ivuTrackListForm(\\d+)\"[^>]*>(.+?)</form>",
+			Pattern.DOTALL);
 	private static final Pattern P_CONNECTIONS_FINE = Pattern.compile(".*?" //
 			+ "Verbindungen - Detailansicht - Abfahrt: am (\\d{2}\\.\\d{2}\\.\\d{2}) um \\d{1,2}:\\d{2}.*?" // date
 			+ "guiVCtrl_connection_detailsOut_setStatus_([^_]+)_allHalts=yes.*?" // id
@@ -727,8 +752,7 @@ public final class BvgProvider extends AbstractHafasProvider
 			final Calendar currentDate = new GregorianCalendar(timeZone());
 			currentDate.clear();
 			ParserUtils.parseGermanDate(currentDate, mHead.group(12));
-			// final String linkEarlier = mHead.group(13) != null ? BVG_BASE_URL +
-			// ParserUtils.resolveEntities(mHead.group(13)) : null;
+			final String linkEarlier = mHead.group(13) != null ? BASE_URL + ParserUtils.resolveEntities(mHead.group(13)) : null;
 			final String linkLater = mHead.group(14) != null ? BASE_URL + ParserUtils.resolveEntities(mHead.group(14)) : null;
 			final List<Connection> connections = new ArrayList<Connection>();
 
@@ -862,7 +886,7 @@ public final class BvgProvider extends AbstractHafasProvider
 				}
 			}
 
-			return new QueryConnectionsResult(new ResultHeader(SERVER_PRODUCT), firstUri, from, via, to, new SimpleStringContext(linkLater),
+			return new QueryConnectionsResult(new ResultHeader(SERVER_PRODUCT), firstUri, from, via, to, new Context(linkLater, linkEarlier),
 					connections);
 		}
 		else
