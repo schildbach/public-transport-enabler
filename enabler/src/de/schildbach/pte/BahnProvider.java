@@ -37,7 +37,6 @@ import de.schildbach.pte.dto.QueryConnectionsContext;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.ResultHeader;
-import de.schildbach.pte.dto.SimpleStringContext;
 import de.schildbach.pte.exception.SessionExpiredException;
 import de.schildbach.pte.util.ParserUtils;
 
@@ -48,6 +47,28 @@ public final class BahnProvider extends AbstractHafasProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.DB;
 	private static final String API_BASE = "http://mobile.bahn.de/bin/mobil/";
+
+	private static class Context implements QueryConnectionsContext
+	{
+		private final String linkLater;
+		private final String linkEarlier;
+
+		private Context(final String linkLater, final String linkEarlier)
+		{
+			this.linkLater = linkLater;
+			this.linkEarlier = linkEarlier;
+		}
+
+		public boolean canQueryLater()
+		{
+			return linkLater != null;
+		}
+
+		public boolean canQueryEarlier()
+		{
+			return linkEarlier != null;
+		}
+	}
 
 	public BahnProvider()
 	{
@@ -298,10 +319,14 @@ public final class BahnProvider extends AbstractHafasProvider
 	@Override
 	public QueryConnectionsResult queryMoreConnections(final QueryConnectionsContext contextObj, final boolean later) throws IOException
 	{
-		final SimpleStringContext context = (SimpleStringContext) contextObj;
-		final String uri = context.context;
+		final Context context = (Context) contextObj;
+
+		final String uri = later ? context.linkLater : context.linkEarlier;
+		if (uri == null)
+			throw new IllegalStateException("cannot query " + (later ? "later" : "earlier"));
+
 		final CharSequence page = ParserUtils.scrape(uri);
-		// TODO handle next/prev
+
 		return queryConnections(uri, page);
 	}
 
@@ -309,8 +334,8 @@ public final class BahnProvider extends AbstractHafasProvider
 			+ "von: <span class=\"bold\">([^<]*)</span>.*?" // from
 			+ "nach: <span class=\"bold\">([^<]*)</span>.*?" // to
 			+ "Datum: <span class=\"bold\">.., (\\d{2}\\.\\d{2}\\.\\d{2})</span>.*?" // currentDate
-			+ "(?:<a href=\"([^\"]*)\"><img [^>]*>\\s*Fr&#252;her.*?)?" // linkEarlier
-			+ "(?:<a class=\"noBG\" href=\"([^\"]*)\"><img [^>]*>\\s*Sp&#228;ter.*?)?" // linkLater
+			+ "(?:<a [^>]*href=\"([^\"]*)\"[^>]*><img [^>]*>\\s*Fr&#252;her.*?)?" // linkEarlier
+			+ "(?:<a [^>]*href=\"([^\"]*)\"[^>]*><img [^>]*>\\s*Sp&#228;ter.*?)?" // linkLater
 	, Pattern.DOTALL);
 	private static final Pattern P_CONNECTIONS_COARSE = Pattern.compile("<tr><td class=\"overview timelink\">(.+?)</td></tr>", Pattern.DOTALL);
 	private static final Pattern P_CONNECTIONS_FINE = Pattern.compile(".*?" //
@@ -344,8 +369,9 @@ public final class BahnProvider extends AbstractHafasProvider
 			final Calendar currentDate = new GregorianCalendar(timeZone());
 			currentDate.clear();
 			ParserUtils.parseGermanDate(currentDate, mHead.group(3));
-			// final String linkEarlier = mHead.group(4) != null ? ParserUtils.resolveEntities(mHead.group(4)) : null;
+			final String linkEarlier = mHead.group(4) != null ? ParserUtils.resolveEntities(mHead.group(4)) : null;
 			final String linkLater = mHead.group(5) != null ? ParserUtils.resolveEntities(mHead.group(5)) : null;
+
 			final List<Connection> connections = new ArrayList<Connection>();
 
 			final Matcher mConCoarse = P_CONNECTIONS_COARSE.matcher(page);
@@ -364,7 +390,7 @@ public final class BahnProvider extends AbstractHafasProvider
 				}
 			}
 
-			return new QueryConnectionsResult(new ResultHeader(SERVER_PRODUCT), uri, from, null, to, new SimpleStringContext(linkLater), connections);
+			return new QueryConnectionsResult(new ResultHeader(SERVER_PRODUCT), uri, from, null, to, new Context(linkLater, linkEarlier), connections);
 		}
 		else
 		{

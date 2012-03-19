@@ -90,6 +90,12 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 		for (final Connection connection : result.connections)
 			provider.getConnectionDetails(connection.link);
 		System.out.println(laterResult);
+		final QueryConnectionsResult later2Result = provider.queryMoreConnections(laterResult.context, true);
+		System.out.println(later2Result);
+		final QueryConnectionsResult earlierResult = provider.queryMoreConnections(later2Result.context, false);
+		System.out.println(earlierResult);
+		final QueryConnectionsResult later3Result = provider.queryMoreConnections(earlierResult.context, true);
+		System.out.println(later3Result);
 	}
 
 	@Test
