@@ -81,55 +81,54 @@ public class RtProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 8503000, null, "Zürich HB"), null,
+		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 8503000, null, "Zürich HB"), null,
 				new Location(LocationType.STATION, 8507785, null, "Bern, Hauptbahnhof"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
 	public void slowConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider
-				.queryConnections(new Location(LocationType.ANY, 0, null, "Schocherswil, Alte Post!"), null, new Location(LocationType.ANY, 0, null,
-						"Laconnex, Mollach"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.ANY, 0, null, "Schocherswil, Alte Post!"), null,
+				new Location(LocationType.ANY, 0, null, "Laconnex, Mollach"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
 	public void connectionWithFootway() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, null, "Spiez, Seestraße 62"), null,
+		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.ADDRESS, 0, null, "Spiez, Seestraße 62"), null,
 				new Location(LocationType.ADDRESS, 0, null, "Einsiedeln, Erlenmoosweg 24"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
 	public void connectionFromAddress() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, 51521886, -51447, null,
+		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.ADDRESS, 0, 51521886, -51447, null,
 				"26 Coopers Close, Poplar, Greater London E1 4, Vereinigtes Königreich"), null, new Location(LocationType.STATION, 8096022, 50941312,
 				6967206, null, "COLOGNE"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
 	public void viaConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 8400056, null, "Amsterdam RAI"),
+		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 8400056, null, "Amsterdam RAI"),
 				new Location(LocationType.STATION, 8400058, null, "Amsterdam Centraal"), new Location(LocationType.STATION, 8000085, null,
 						"Düsseldorf Hbf"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
 		System.out.println(laterResult);
 	}
 }

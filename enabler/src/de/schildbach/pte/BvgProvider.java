@@ -572,7 +572,7 @@ public final class BvgProvider extends AbstractHafasProvider
 
 	@Override
 	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final String products, final WalkSpeed walkSpeed, final Accessibility accessibility) throws IOException
+			final int numConnections, final String products, final WalkSpeed walkSpeed, final Accessibility accessibility) throws IOException
 	{
 		final String uri = connectionsQueryUri(from, via, to, date, dep, products);
 		final CharSequence page = ParserUtils.scrape(uri);
@@ -627,7 +627,8 @@ public final class BvgProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	public QueryConnectionsResult queryMoreConnections(final QueryConnectionsContext contextObj, final boolean later) throws IOException
+	public QueryConnectionsResult queryMoreConnections(final QueryConnectionsContext contextObj, final boolean later, final int numConnections)
+			throws IOException
 	{
 		final Context context = (Context) contextObj;
 

@@ -17,10 +17,17 @@
 
 package de.schildbach.pte.live;
 
+import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
+import de.schildbach.pte.NetworkProvider;
+import de.schildbach.pte.NetworkProvider.Accessibility;
+import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.QueryConnectionsContext;
+import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 
 /**
@@ -51,5 +58,18 @@ public abstract class AbstractProviderLiveTest
 		for (final Location autocomplete : autocompletes)
 			System.out.print(autocomplete.toDebugString() + " ");
 		System.out.println();
+	}
+
+	protected final QueryConnectionsResult queryConnections(final NetworkProvider provider, final Location from, final Location via,
+			final Location to, final Date date, final boolean dep, final String products, final WalkSpeed walkSpeed, final Accessibility accessibility)
+			throws IOException
+	{
+		return provider.queryConnections(from, via, to, date, dep, 4, products, walkSpeed, accessibility);
+	}
+
+	protected final QueryConnectionsResult queryMoreConnections(final NetworkProvider provider, final QueryConnectionsContext context,
+			final boolean later) throws IOException
+	{
+		return provider.queryMoreConnections(context, later, 4);
 	}
 }

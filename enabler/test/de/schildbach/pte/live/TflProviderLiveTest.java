@@ -73,18 +73,18 @@ public class TflProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 1008730, null, "King & Queen Wharf"),
+		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 1008730, null, "King & Queen Wharf"),
 				null, new Location(LocationType.STATION, 1006433, null, "Edinburgh Court"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
 	public void postcodeConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, null, "sw19 8ta"), null, new Location(
+		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.ANY, 0, null, "sw19 8ta"), null, new Location(
 				LocationType.STATION, 1016019, 51655903, -397249, null, "Watford (Herts), Watford Town Centre"), new Date(), true, ALL_PRODUCTS,
 				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);

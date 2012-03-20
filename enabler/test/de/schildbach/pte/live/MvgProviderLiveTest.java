@@ -81,11 +81,11 @@ public class MvgProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 24510104, null, "Schützenplatz"), null,
+		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 24510104, null, "Schützenplatz"), null,
 				new Location(LocationType.STATION, 24064226, null, "Schützenhalle"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
 		System.out.println(laterResult);
 	}
 }

@@ -73,11 +73,11 @@ public class SeProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 7414867, null, "Luleå Airport"), null,
+		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 7414867, null, "Luleå Airport"), null,
 				new Location(LocationType.STATION, 7498000, null, "STOCKHOLM"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
 		System.out.println(laterResult);
 	}
 }

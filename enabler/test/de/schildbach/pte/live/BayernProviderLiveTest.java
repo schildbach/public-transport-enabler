@@ -81,18 +81,18 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 80000793, "München", "Ostbahnhof"), null,
+		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 80000793, "München", "Ostbahnhof"), null,
 				new Location(LocationType.STATION, 80000799, "München", "Pasing"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
 	public void longConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 1005530, "Starnberg", "Arbeitsamt"), null,
+		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 1005530, "Starnberg", "Arbeitsamt"), null,
 				new Location(LocationType.STATION, 3001459, "Nürnberg", "Fallrohrstraße"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
@@ -102,42 +102,42 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void connectionBetweenCoordinates() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, 48165238, 11577473), null,
+		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.ADDRESS, 0, 48165238, 11577473), null,
 				new Location(LocationType.ADDRESS, 0, 47987199, 11326532), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
 	public void connectionBetweenCoordinateAndStation() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, 48238341, 11478230), null,
+		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.ADDRESS, 0, 48238341, 11478230), null,
 				new Location(LocationType.ANY, 0, null, "Ostbahnhof"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
 	public void connectionBetweenAddresses() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, null, "München, Maximilianstr. 1"),
+		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.ADDRESS, 0, null, "München, Maximilianstr. 1"),
 				null, new Location(LocationType.ADDRESS, 0, null, "Starnberg, Jahnstraße 50"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
 	public void connectionBetweenStationAndAddress() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 1220, null, "Josephsburg"), null,
+		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 1220, null, "Josephsburg"), null,
 				new Location(LocationType.ADDRESS, 0, 48188018, 11574239, null, "München Frankfurter Ring 35"), new Date(), true, ALL_PRODUCTS,
 				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
 		System.out.println(laterResult);
 	}
 }

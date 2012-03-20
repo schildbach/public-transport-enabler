@@ -73,22 +73,22 @@ public class LuProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 9409001, null, "Echternach, Bel Air"),
+		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 9409001, null, "Echternach, Bel Air"),
 				null, new Location(LocationType.STATION, 9440001, null, "Echternach, Gare"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
 	public void addressConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, 49611610, 6130265, null,
+		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.ADDRESS, 0, 49611610, 6130265, null,
 				"Luxembourg, Rue Génistre 2"), null, new Location(LocationType.STATION, 9217081, null, "Luxembourg, Gare Centrale"), new Date(),
 				true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
 		System.out.println(laterResult);
 	}
 }

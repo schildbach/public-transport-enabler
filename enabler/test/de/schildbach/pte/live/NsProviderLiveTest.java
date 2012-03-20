@@ -73,7 +73,7 @@ public class NsProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 100024), null, new Location(
+		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 100024), null, new Location(
 				LocationType.STATION, 100066), new Date(), true, null, WalkSpeed.FAST, Accessibility.NEUTRAL);
 
 		System.out.println(result.status + "  " + result.connections);
@@ -82,7 +82,7 @@ public class NsProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void longConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 100024), null, new Location(
+		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 100024), null, new Location(
 				LocationType.STATION, 103624), new Date(), true, null, WalkSpeed.FAST, Accessibility.NEUTRAL);
 
 		System.out.println(result.status + "  " + result.connections);

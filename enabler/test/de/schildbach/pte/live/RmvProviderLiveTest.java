@@ -73,18 +73,18 @@ public class RmvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 3000001, null, "Hauptwache"), null,
+		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 3000001, null, "Hauptwache"), null,
 				new Location(LocationType.STATION, 3000912, null, "Südbahnhof"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
 	public void shortConnectionByName() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, null, "Frankfurt Bockenheimer Warte!"),
+		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.ANY, 0, null, "Frankfurt Bockenheimer Warte!"),
 				null, new Location(LocationType.ANY, 0, null, "Frankfurt Hauptbahnhof!"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);

@@ -81,13 +81,13 @@ public class SncbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 8821006, "Antwerpen", "Centraal"), null,
+		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 8821006, "Antwerpen", "Centraal"), null,
 				new Location(LocationType.STATION, 8813003, "Brussel", "Centraal"), new Date(), true, null, WalkSpeed.FAST, Accessibility.NEUTRAL);
 		System.out.println(result.status + "  " + result.connections);
 
 		if (result.context != null)
 		{
-			final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+			final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
 			System.out.println(laterResult.status + " " + laterResult.connections);
 		}
 	}
@@ -95,13 +95,13 @@ public class SncbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void longConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 207280, "Brussel", "Wannecouter"), null,
+		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 207280, "Brussel", "Wannecouter"), null,
 				new Location(LocationType.STATION, 207272, "Brussel", "Stadion"), new Date(), true, null, WalkSpeed.FAST, Accessibility.NEUTRAL);
 		System.out.println(result.status + "  " + result.connections);
 
 		if (result.context != null)
 		{
-			final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+			final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
 			System.out.println(laterResult.status + " " + laterResult.connections);
 		}
 	}
@@ -109,14 +109,14 @@ public class SncbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void connectionFromAddress() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, null,
+		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.ADDRESS, 0, null,
 				"Bruxelles - Haren, Rue Paul Janson 9"), null, new Location(LocationType.STATION, 8500010, null, "Basel"), new Date(), true,
 				ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result.status + "  " + result.connections);
 
 		if (result.context != null)
 		{
-			final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+			final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
 			System.out.println(laterResult.status + " " + laterResult.connections);
 		}
 	}

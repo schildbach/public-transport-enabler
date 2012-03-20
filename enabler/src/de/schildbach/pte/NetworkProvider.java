@@ -31,8 +31,8 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.Style;
 
 /**
- * Interface to be implemented by providers of transportation networks
- *
+ * Interface to be implemented by providers of transportation networks.
+ * 
  * @author Andreas Schildbach
  */
 public interface NetworkProvider
@@ -107,6 +107,8 @@ public interface NetworkProvider
 	 *            desired date for departing, mandatory
 	 * @param dep
 	 *            date is departure date? {@code true} for departure, {@code false} for arrival
+	 * @param numConnections
+	 *            number of connections to query
 	 * @param products
 	 *            products to take into account
 	 * @param walkSpeed
@@ -116,8 +118,8 @@ public interface NetworkProvider
 	 * @return result object that can contain alternatives to clear up ambiguousnesses, or contains possible connections
 	 * @throws IOException
 	 */
-	QueryConnectionsResult queryConnections(Location from, Location via, Location to, Date date, boolean dep, String products, WalkSpeed walkSpeed,
-			Accessibility accessibility) throws IOException;
+	QueryConnectionsResult queryConnections(Location from, Location via, Location to, Date date, boolean dep, int numConnections, String products,
+			WalkSpeed walkSpeed, Accessibility accessibility) throws IOException;
 
 	/**
 	 * Query more connections (e.g. earlier or later)
@@ -126,10 +128,12 @@ public interface NetworkProvider
 	 *            context to query more connections from
 	 * @param next
 	 *            {@code true} for get next connections, {@code false} for get previous connections
+	 * @param numConnections
+	 *            number of connections to query
 	 * @return result object that contains possible connections
 	 * @throws IOException
 	 */
-	QueryConnectionsResult queryMoreConnections(QueryConnectionsContext context, boolean later) throws IOException;
+	QueryConnectionsResult queryMoreConnections(QueryConnectionsContext context, boolean later, int numConnections) throws IOException;
 
 	/**
 	 * Get details about a connection

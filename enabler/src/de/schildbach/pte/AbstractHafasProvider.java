@@ -70,7 +70,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 	private static final String DEFAULT_ENCODING = "ISO-8859-1";
 	private static final String PROD = "hafas";
-	private static final int NUM_CONNECTIONS = 6;
 
 	private final String apiUri;
 	private final int numProductBits;
@@ -727,7 +726,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	}
 
 	public QueryConnectionsResult queryConnections(Location from, Location via, Location to, final Date date, final boolean dep,
-			final String products, final WalkSpeed walkSpeed, final Accessibility accessibility) throws IOException
+			final int numConnections, final String products, final WalkSpeed walkSpeed, final Accessibility accessibility) throws IOException
 	{
 		final ResultHeader header = new ResultHeader(SERVER_PRODUCT);
 
@@ -795,7 +794,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		// number of connections backwards
 		request.append(" b=\"").append(0).append("\"");
 		// number of connection forwards
-		request.append(" f=\"").append(NUM_CONNECTIONS).append("\"");
+		request.append(" f=\"").append(numConnections).append("\"");
 		// percentual extension of change time
 		request.append(" chExtension=\"").append(walkSpeed == WalkSpeed.SLOW ? 50 : 0).append("\"");
 		// TODO nrChanges: max number of changes
@@ -805,12 +804,13 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		return queryConnections(null, true, request.toString(), from, via, to);
 	}
 
-	public QueryConnectionsResult queryMoreConnections(final QueryConnectionsContext contextObj, final boolean later) throws IOException
+	public QueryConnectionsResult queryMoreConnections(final QueryConnectionsContext contextObj, final boolean later, final int numConnections)
+			throws IOException
 	{
 		final Context context = (Context) contextObj;
 
 		final StringBuilder request = new StringBuilder("<ConScrReq scrDir=\"").append(later ? 'F' : 'B').append("\" nrCons=\"")
-				.append(NUM_CONNECTIONS).append("\">");
+				.append(numConnections).append("\">");
 		request.append("<ConResCtxt>").append(later ? context.laterContext : context.earlierContext).append("</ConResCtxt>");
 		request.append("</ConScrReq>");
 

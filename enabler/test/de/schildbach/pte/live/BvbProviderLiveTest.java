@@ -81,10 +81,10 @@ public class BvbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 10000, null, "Bahnhof"), null,
+		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 10000, null, "Bahnhof"), null,
 				new Location(LocationType.STATION, 86, null, "Markthalle"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
 		System.out.println(laterResult);
 	}
 }

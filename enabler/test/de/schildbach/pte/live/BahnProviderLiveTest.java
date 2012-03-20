@@ -82,30 +82,30 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 8011160, null, "Berlin Hbf"), null,
+		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 8011160, null, "Berlin Hbf"), null,
 				new Location(LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
 		for (final Connection connection : result.connections)
 			provider.getConnectionDetails(connection.link);
 		System.out.println(laterResult);
-		final QueryConnectionsResult later2Result = provider.queryMoreConnections(laterResult.context, true);
+		final QueryConnectionsResult later2Result = queryMoreConnections(provider, laterResult.context, true);
 		System.out.println(later2Result);
-		final QueryConnectionsResult earlierResult = provider.queryMoreConnections(later2Result.context, false);
+		final QueryConnectionsResult earlierResult = queryMoreConnections(provider, later2Result.context, false);
 		System.out.println(earlierResult);
-		final QueryConnectionsResult later3Result = provider.queryMoreConnections(earlierResult.context, true);
+		final QueryConnectionsResult later3Result = queryMoreConnections(provider, earlierResult.context, true);
 		System.out.println(later3Result);
 	}
 
 	@Test
 	public void slowConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, null, "Marienburger Str., Berlin"), null,
+		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.ANY, 0, null, "Marienburger Str., Berlin"), null,
 				new Location(LocationType.ANY, 0, null, "Tutzinger-Hof-Platz, Starnberg"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
 		for (final Connection connection : result.connections)
 			provider.getConnectionDetails(connection.link);
 		System.out.println(laterResult);
@@ -114,12 +114,12 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void connectionWithFootway() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ADDRESS, 0, null,
+		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.ADDRESS, 0, null,
 				"Berlin - Mitte, Unter den Linden 24"), null, new Location(LocationType.ADDRESS, 0, null, "Starnberg, Possenhofener Straße 13"),
 				new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 
-		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
 		for (final Connection connection : result.connections)
 			provider.getConnectionDetails(connection.link);
 		System.out.println(laterResult);

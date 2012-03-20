@@ -96,7 +96,7 @@ public class LinzProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void incompleteConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.ANY, 0, null, "linz"), null, new Location(
+		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.ANY, 0, null, "linz"), null, new Location(
 				LocationType.ANY, 0, null, "gel"), new Date(), true, ALL_PRODUCTS, WalkSpeed.FAST, Accessibility.NEUTRAL);
 		System.out.println(result);
 	}
@@ -104,22 +104,22 @@ public class LinzProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 0, null, "Linz Hauptbahnhof"), null,
+		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 0, null, "Linz Hauptbahnhof"), null,
 				new Location(LocationType.STATION, 0, null, "Linz Auwiesen"), new Date(), true, ALL_PRODUCTS, WalkSpeed.FAST, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
 		System.out.println(laterResult);
-		final QueryConnectionsResult earlierResult = provider.queryMoreConnections(laterResult.context, false);
+		final QueryConnectionsResult earlierResult = queryMoreConnections(provider, laterResult.context, false);
 		System.out.println(earlierResult);
 	}
 
 	@Test
 	public void longConnection() throws Exception
 	{
-		final QueryConnectionsResult result = provider.queryConnections(new Location(LocationType.STATION, 0, null, "Linz Auwiesen"), null,
+		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 0, null, "Linz Auwiesen"), null,
 				new Location(LocationType.STATION, 0, null, "Linz Hafen"), new Date(), true, ALL_PRODUCTS, WalkSpeed.SLOW, Accessibility.NEUTRAL);
 		System.out.println(result);
-		// final QueryConnectionsResult laterResult = provider.queryMoreConnections(result.context, true);
+		// final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
 		// System.out.println(laterResult);
 	}
 }
