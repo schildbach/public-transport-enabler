@@ -36,7 +36,10 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
  */
 public class KvvProviderLiveTest extends AbstractProviderLiveTest
 {
-	private final KvvProvider provider = new KvvProvider();
+	public KvvProviderLiveTest()
+	{
+		super(new KvvProvider());
+	}
 
 	@Test
 	public void nearbyStations() throws Exception
@@ -81,11 +84,11 @@ public class KvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void connectionBetweenAddresses() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.ADDRESS, 0, 48985089, 8402709, null,
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, 48985089, 8402709, null,
 				"Konstanzer Straße 17, 76199 Karlsruhe, Deutschland"), null, new Location(LocationType.ADDRESS, 0, 49007706, 8356358, null,
 				"Durmersheimer Straße 6, 76185 Karlsruhe, Deutschland"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
 	}
 }

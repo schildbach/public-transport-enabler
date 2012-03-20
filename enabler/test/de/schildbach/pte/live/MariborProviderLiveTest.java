@@ -36,7 +36,10 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
  */
 public class MariborProviderLiveTest extends AbstractProviderLiveTest
 {
-	private final MariborProvider provider = new MariborProvider();
+	public MariborProviderLiveTest()
+	{
+		super(new MariborProvider());
+	}
 
 	@Test
 	public void nearbyStations() throws Exception
@@ -73,11 +76,11 @@ public class MariborProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 63202999, null, "Graz Marburger Straße"),
-				null, new Location(LocationType.STATION, 63201746, null, "Flughafen Graz Bahnhof"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 63202999, null, "Graz Marburger Straße"), null,
+				new Location(LocationType.STATION, 63201746, null, "Flughafen Graz Bahnhof"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
 	}
 }

@@ -36,7 +36,10 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
  */
 public class RmvProviderLiveTest extends AbstractProviderLiveTest
 {
-	private final RmvProvider provider = new RmvProvider();
+	public RmvProviderLiveTest()
+	{
+		super(new RmvProvider());
+	}
 
 	@Test
 	public void nearbyStations() throws Exception
@@ -73,19 +76,18 @@ public class RmvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 3000001, null, "Hauptwache"), null,
-				new Location(LocationType.STATION, 3000912, null, "Südbahnhof"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
-				Accessibility.NEUTRAL);
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 3000001, null, "Hauptwache"), null, new Location(
+				LocationType.STATION, 3000912, null, "Südbahnhof"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
 	public void shortConnectionByName() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.ANY, 0, null, "Frankfurt Bockenheimer Warte!"),
-				null, new Location(LocationType.ANY, 0, null, "Frankfurt Hauptbahnhof!"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ANY, 0, null, "Frankfurt Bockenheimer Warte!"), null,
+				new Location(LocationType.ANY, 0, null, "Frankfurt Hauptbahnhof!"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
 	}

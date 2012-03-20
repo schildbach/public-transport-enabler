@@ -36,7 +36,10 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
  */
 public class DingProviderLiveTest extends AbstractProviderLiveTest
 {
-	private final DingProvider provider = new DingProvider();
+	public DingProviderLiveTest()
+	{
+		super(new DingProvider());
+	}
 
 	@Test
 	public void nearbyStations() throws Exception
@@ -81,10 +84,10 @@ public class DingProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 9001011, null, "Justizgebäude"), null,
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 9001011, null, "Justizgebäude"), null,
 				new Location(LocationType.STATION, 2504524, null, "Theater"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
 	}
 }

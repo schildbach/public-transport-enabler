@@ -35,7 +35,10 @@ import de.schildbach.pte.dto.QueryConnectionsResult;
  */
 public class BsvagProviderLiveTest extends AbstractProviderLiveTest
 {
-	private final BsvagProvider provider = new BsvagProvider();
+	public BsvagProviderLiveTest()
+	{
+		super(new BsvagProvider());
+	}
 
 	@Test
 	public void nearbyStations() throws Exception
@@ -72,11 +75,11 @@ public class BsvagProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 26000178, null, "Hauptbahnhof"), null,
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 26000178, null, "Hauptbahnhof"), null,
 				new Location(LocationType.STATION, 26000322, null, "Packhof"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
 	}
 }

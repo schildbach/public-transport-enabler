@@ -36,7 +36,10 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
  */
 public class LinzProviderLiveTest extends AbstractProviderLiveTest
 {
-	private LinzProvider provider = new LinzProvider();
+	public LinzProviderLiveTest()
+	{
+		super(new LinzProvider());
+	}
 
 	@Test
 	public void nearbyStations() throws Exception
@@ -96,28 +99,28 @@ public class LinzProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void incompleteConnection() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.ANY, 0, null, "linz"), null, new Location(
-				LocationType.ANY, 0, null, "gel"), new Date(), true, ALL_PRODUCTS, WalkSpeed.FAST, Accessibility.NEUTRAL);
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ANY, 0, null, "linz"), null, new Location(LocationType.ANY,
+				0, null, "gel"), new Date(), true, ALL_PRODUCTS, WalkSpeed.FAST, Accessibility.NEUTRAL);
 		System.out.println(result);
 	}
 
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 0, null, "Linz Hauptbahnhof"), null,
-				new Location(LocationType.STATION, 0, null, "Linz Auwiesen"), new Date(), true, ALL_PRODUCTS, WalkSpeed.FAST, Accessibility.NEUTRAL);
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 0, null, "Linz Hauptbahnhof"), null, new Location(
+				LocationType.STATION, 0, null, "Linz Auwiesen"), new Date(), true, ALL_PRODUCTS, WalkSpeed.FAST, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
-		final QueryConnectionsResult earlierResult = queryMoreConnections(provider, laterResult.context, false);
+		final QueryConnectionsResult earlierResult = queryMoreConnections(laterResult.context, false);
 		System.out.println(earlierResult);
 	}
 
 	@Test
 	public void longConnection() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 0, null, "Linz Auwiesen"), null,
-				new Location(LocationType.STATION, 0, null, "Linz Hafen"), new Date(), true, ALL_PRODUCTS, WalkSpeed.SLOW, Accessibility.NEUTRAL);
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 0, null, "Linz Auwiesen"), null, new Location(
+				LocationType.STATION, 0, null, "Linz Hafen"), new Date(), true, ALL_PRODUCTS, WalkSpeed.SLOW, Accessibility.NEUTRAL);
 		System.out.println(result);
 		// final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
 		// System.out.println(laterResult);

@@ -36,7 +36,10 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
  */
 public class TleaProviderLiveTest extends AbstractProviderLiveTest
 {
-	private final TleaProvider provider = new TleaProvider();
+	public TleaProviderLiveTest()
+	{
+		super(new TleaProvider());
+	}
 
 	@Test
 	public void nearbyStations() throws Exception
@@ -73,11 +76,11 @@ public class TleaProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 1008730, null, "King & Queen Wharf"),
-				null, new Location(LocationType.STATION, 1006433, null, "Edinburgh Court"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 1008730, null, "King & Queen Wharf"), null,
+				new Location(LocationType.STATION, 1006433, null, "Edinburgh Court"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
 	}
 }

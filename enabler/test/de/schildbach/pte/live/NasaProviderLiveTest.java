@@ -36,7 +36,10 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
  */
 public class NasaProviderLiveTest extends AbstractProviderLiveTest
 {
-	private final NasaProvider provider = new NasaProvider();
+	public NasaProviderLiveTest()
+	{
+		super(new NasaProvider());
+	}
 
 	@Test
 	public void nearbyStations() throws Exception
@@ -65,22 +68,22 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 13002, null, "Leipzig, Augustusplatz"),
-				null, new Location(LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 13002, null, "Leipzig, Augustusplatz"), null,
+				new Location(LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
 	public void addressConnection() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.ADDRESS, 0, 51334078, 12478331,
-				"04319 Leipzig-Engelsdorf", "August-Bebel-Platz"), null, new Location(LocationType.STATION, 8010205, null, "Leipzig Hbf"),
-				new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, 51334078, 12478331, "04319 Leipzig-Engelsdorf",
+				"August-Bebel-Platz"), null, new Location(LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(), true, ALL_PRODUCTS,
+				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
 	}
 }

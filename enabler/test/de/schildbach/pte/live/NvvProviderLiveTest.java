@@ -36,7 +36,10 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
  */
 public class NvvProviderLiveTest extends AbstractProviderLiveTest
 {
-	private final NvvProvider provider = new NvvProvider();
+	public NvvProviderLiveTest()
+	{
+		super(new NvvProvider());
+	}
 
 	@Test
 	public void nearbyStations() throws Exception
@@ -73,11 +76,11 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 2200007, null, "Kassel Wilhelmshöhe"),
-				null, new Location(LocationType.STATION, 2200278, null, "Kassel Wilhelmshöher Weg"), new Date(), true, ALL_PRODUCTS,
-				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 2200007, null, "Kassel Wilhelmshöhe"), null,
+				new Location(LocationType.STATION, 2200278, null, "Kassel Wilhelmshöher Weg"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
+				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
 	}
 }

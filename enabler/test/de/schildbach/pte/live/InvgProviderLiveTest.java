@@ -36,7 +36,10 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
  */
 public class InvgProviderLiveTest extends AbstractProviderLiveTest
 {
-	private final InvgProvider provider = new InvgProvider();
+	public InvgProviderLiveTest()
+	{
+		super(new InvgProvider());
+	}
 
 	@Test
 	public void nearbyStations() throws Exception
@@ -73,11 +76,11 @@ public class InvgProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 80302, null,
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 80302, null,
 				"Ingolstadt, Hauptbahnhof Stadteinwärts"), null, new Location(LocationType.STATION, 181102, null, "Elisabethstraße"), new Date(),
 				true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
 	}
 }

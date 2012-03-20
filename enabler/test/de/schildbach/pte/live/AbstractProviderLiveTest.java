@@ -37,6 +37,13 @@ public abstract class AbstractProviderLiveTest
 {
 	protected static final String ALL_PRODUCTS = "IRSUTBFC";
 
+	protected final NetworkProvider provider;
+
+	public AbstractProviderLiveTest(final NetworkProvider provider)
+	{
+		this.provider = provider;
+	}
+
 	protected final void print(final NearbyStationsResult result)
 	{
 		System.out.println(result.status
@@ -60,15 +67,13 @@ public abstract class AbstractProviderLiveTest
 		System.out.println();
 	}
 
-	protected final QueryConnectionsResult queryConnections(final NetworkProvider provider, final Location from, final Location via,
-			final Location to, final Date date, final boolean dep, final String products, final WalkSpeed walkSpeed, final Accessibility accessibility)
-			throws IOException
+	protected final QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date,
+			final boolean dep, final String products, final WalkSpeed walkSpeed, final Accessibility accessibility) throws IOException
 	{
 		return provider.queryConnections(from, via, to, date, dep, 4, products, walkSpeed, accessibility);
 	}
 
-	protected final QueryConnectionsResult queryMoreConnections(final NetworkProvider provider, final QueryConnectionsContext context,
-			final boolean later) throws IOException
+	protected final QueryConnectionsResult queryMoreConnections(final QueryConnectionsContext context, final boolean later) throws IOException
 	{
 		return provider.queryMoreConnections(context, later, 4);
 	}

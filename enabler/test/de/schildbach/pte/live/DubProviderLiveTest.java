@@ -35,7 +35,10 @@ import de.schildbach.pte.dto.QueryConnectionsResult;
  */
 public class DubProviderLiveTest extends AbstractProviderLiveTest
 {
-	private final DubProvider provider = new DubProvider();
+	public DubProviderLiveTest()
+	{
+		super(new DubProvider());
+	}
 
 	@Test
 	public void nearbyStations() throws Exception
@@ -64,11 +67,11 @@ public class DubProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 3505565, null,
-				"Airport Terminal 1, Arrival"), null, new Location(LocationType.STATION, 3505445, null, "Airport Terminal 3"), new Date(), true,
-				ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 3505565, null, "Airport Terminal 1, Arrival"),
+				null, new Location(LocationType.STATION, 3505445, null, "Airport Terminal 3"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
+				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
 	}
 }

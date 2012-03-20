@@ -36,7 +36,10 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
  */
 public class AtcProviderLiveTest extends AbstractProviderLiveTest
 {
-	private final AtcProvider provider = new AtcProvider();
+	public AtcProviderLiveTest()
+	{
+		super(new AtcProvider());
+	}
 
 	@Test
 	public void nearbyStations() throws Exception
@@ -82,10 +85,10 @@ public class AtcProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 0, null, "Hauptwache"), null,
-				new Location(LocationType.STATION, 0, null, "Südbahnhof"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 0, null, "Hauptwache"), null, new Location(
+				LocationType.STATION, 0, null, "Südbahnhof"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
 	}
 }

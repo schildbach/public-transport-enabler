@@ -36,7 +36,10 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
  */
 public class ZvvProviderLiveTest extends AbstractProviderLiveTest
 {
-	private final ZvvProvider provider = new ZvvProvider();
+	public ZvvProviderLiveTest()
+	{
+		super(new ZvvProvider());
+	}
 
 	@Test
 	public void nearbyStationsByStation() throws Exception
@@ -73,11 +76,10 @@ public class ZvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 8503000, null, "Zürich HB"), null,
-				new Location(LocationType.STATION, 8507785, null, "Bern, Hauptbahnhof"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
-				Accessibility.NEUTRAL);
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 8503000, null, "Zürich HB"), null, new Location(
+				LocationType.STATION, 8507785, null, "Bern, Hauptbahnhof"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
 	}
 }

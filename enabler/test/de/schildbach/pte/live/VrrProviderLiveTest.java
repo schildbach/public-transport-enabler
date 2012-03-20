@@ -36,7 +36,10 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
  */
 public class VrrProviderLiveTest extends AbstractProviderLiveTest
 {
-	private final VrrProvider provider = new VrrProvider();
+	public VrrProviderLiveTest()
+	{
+		super(new VrrProvider());
+	}
 
 	@Test
 	public void nearbyStations() throws Exception
@@ -97,11 +100,11 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 20009289, "Essen", "Hauptbahnhof"), null,
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 20009289, "Essen", "Hauptbahnhof"), null,
 				new Location(LocationType.STATION, 20009161, "Essen", "Bismarckplatz"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
 	}
 }

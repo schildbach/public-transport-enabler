@@ -36,7 +36,10 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
  */
 public class VmobilProviderLiveTest extends AbstractProviderLiveTest
 {
-	private final VmobilProvider provider = new VmobilProvider();
+	public VmobilProviderLiveTest()
+	{
+		super(new VmobilProvider());
+	}
 
 	@Test
 	public void nearbyStations() throws Exception
@@ -81,10 +84,10 @@ public class VmobilProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 0, null, "Hauptwache"), null,
-				new Location(LocationType.STATION, 0, null, "Südbahnhof"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 0, null, "Hauptwache"), null, new Location(
+				LocationType.STATION, 0, null, "Südbahnhof"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
 	}
 }

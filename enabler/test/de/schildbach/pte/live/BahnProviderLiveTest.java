@@ -37,7 +37,10 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
  */
 public class BahnProviderLiveTest extends AbstractProviderLiveTest
 {
-	private BahnProvider provider = new BahnProvider();
+	public BahnProviderLiveTest()
+	{
+		super(new BahnProvider());
+	}
 
 	@Test
 	public void nearbyStations() throws Exception
@@ -82,30 +85,29 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 8011160, null, "Berlin Hbf"), null,
-				new Location(LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
-				Accessibility.NEUTRAL);
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 8011160, null, "Berlin Hbf"), null, new Location(
+				LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		for (final Connection connection : result.connections)
 			provider.getConnectionDetails(connection.link);
 		System.out.println(laterResult);
-		final QueryConnectionsResult later2Result = queryMoreConnections(provider, laterResult.context, true);
+		final QueryConnectionsResult later2Result = queryMoreConnections(laterResult.context, true);
 		System.out.println(later2Result);
-		final QueryConnectionsResult earlierResult = queryMoreConnections(provider, later2Result.context, false);
+		final QueryConnectionsResult earlierResult = queryMoreConnections(later2Result.context, false);
 		System.out.println(earlierResult);
-		final QueryConnectionsResult later3Result = queryMoreConnections(provider, earlierResult.context, true);
+		final QueryConnectionsResult later3Result = queryMoreConnections(earlierResult.context, true);
 		System.out.println(later3Result);
 	}
 
 	@Test
 	public void slowConnection() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.ANY, 0, null, "Marienburger Str., Berlin"), null,
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ANY, 0, null, "Marienburger Str., Berlin"), null,
 				new Location(LocationType.ANY, 0, null, "Tutzinger-Hof-Platz, Starnberg"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		for (final Connection connection : result.connections)
 			provider.getConnectionDetails(connection.link);
 		System.out.println(laterResult);
@@ -114,12 +116,12 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void connectionWithFootway() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.ADDRESS, 0, null,
-				"Berlin - Mitte, Unter den Linden 24"), null, new Location(LocationType.ADDRESS, 0, null, "Starnberg, Possenhofener Straße 13"),
-				new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, null, "Berlin - Mitte, Unter den Linden 24"),
+				null, new Location(LocationType.ADDRESS, 0, null, "Starnberg, Possenhofener Straße 13"), new Date(), true, ALL_PRODUCTS,
+				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 
-		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		for (final Connection connection : result.connections)
 			provider.getConnectionDetails(connection.link);
 		System.out.println(laterResult);

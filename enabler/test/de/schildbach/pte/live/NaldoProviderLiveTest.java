@@ -36,7 +36,10 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
  */
 public class NaldoProviderLiveTest extends AbstractProviderLiveTest
 {
-	private final NaldoProvider provider = new NaldoProvider();
+	public NaldoProviderLiveTest()
+	{
+		super(new NaldoProvider());
+	}
 
 	@Test
 	public void nearbyStations() throws Exception
@@ -81,11 +84,11 @@ public class NaldoProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 3019697, null, "Amberg Kurfürstenbad"),
-				null, new Location(LocationType.STATION, 3019500, null, "Amberg Bahnhof"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 3019697, null, "Amberg Kurfürstenbad"), null,
+				new Location(LocationType.STATION, 3019500, null, "Amberg Bahnhof"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
 	}
 }

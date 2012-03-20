@@ -36,7 +36,10 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
  */
 public class MvgProviderLiveTest extends AbstractProviderLiveTest
 {
-	private final MvgProvider provider = new MvgProvider();
+	public MvgProviderLiveTest()
+	{
+		super(new MvgProvider());
+	}
 
 	@Test
 	public void nearbyStations() throws Exception
@@ -81,11 +84,11 @@ public class MvgProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 24510104, null, "Schützenplatz"), null,
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 24510104, null, "Schützenplatz"), null,
 				new Location(LocationType.STATION, 24064226, null, "Schützenhalle"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
 	}
 }

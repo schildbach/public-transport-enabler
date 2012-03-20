@@ -36,7 +36,10 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
  */
 public class IvbProviderLiveTest extends AbstractProviderLiveTest
 {
-	private final IvbProvider provider = new IvbProvider();
+	public IvbProviderLiveTest()
+	{
+		super(new IvbProvider());
+	}
 
 	@Test
 	public void nearbyStations() throws Exception
@@ -81,11 +84,10 @@ public class IvbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 60466402, null, "Kochstraße"), null,
-				new Location(LocationType.STATION, 60461679, null, "Messe/Zeughaus"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
-				Accessibility.NEUTRAL);
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 60466402, null, "Kochstraße"), null, new Location(
+				LocationType.STATION, 60461679, null, "Messe/Zeughaus"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
 	}
 }

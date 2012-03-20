@@ -38,7 +38,10 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
  */
 public class VbnProviderLiveTest extends AbstractProviderLiveTest
 {
-	private final VbnProvider provider = new VbnProvider();
+	public VbnProviderLiveTest()
+	{
+		super(new VbnProvider());
+	}
 
 	@Test
 	public void nearbyStations() throws Exception
@@ -75,20 +78,19 @@ public class VbnProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 8096109, null, "Oldenburg"), null,
-				new Location(LocationType.STATION, 625398, null, "Bremerhaven"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
-				Accessibility.NEUTRAL);
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 8096109, null, "Oldenburg"), null, new Location(
+				LocationType.STATION, 625398, null, "Bremerhaven"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		assertEquals(QueryConnectionsResult.Status.OK, result.status);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
 	public void connectionDateOutsideTimetablePeriod() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 8096109, null, "Oldenburg"), null,
-				new Location(LocationType.STATION, 625398, null, "Bremerhaven"), new Date(1155822689759l), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 8096109, null, "Oldenburg"), null, new Location(
+				LocationType.STATION, 625398, null, "Bremerhaven"), new Date(1155822689759l), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		assertEquals(QueryConnectionsResult.Status.INVALID_DATE, result.status);
 	}

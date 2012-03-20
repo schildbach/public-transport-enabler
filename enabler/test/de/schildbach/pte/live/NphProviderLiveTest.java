@@ -36,7 +36,10 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
  */
 public class NphProviderLiveTest extends AbstractProviderLiveTest
 {
-	private final NphProvider provider = new NphProvider();
+	public NphProviderLiveTest()
+	{
+		super(new NphProvider());
+	}
 
 	@Test
 	public void nearbyStations() throws Exception
@@ -81,11 +84,11 @@ public class NphProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 23007000, "Paderborn", "Paderborn Hbf"),
-				null, new Location(LocationType.STATION, 23007700, "Höxter", "Bahnhof / Rathaus"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 23007000, "Paderborn", "Paderborn Hbf"), null,
+				new Location(LocationType.STATION, 23007700, "Höxter", "Bahnhof / Rathaus"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
 	}
 }

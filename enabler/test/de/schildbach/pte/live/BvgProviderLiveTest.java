@@ -38,7 +38,10 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
  */
 public class BvgProviderLiveTest extends AbstractProviderLiveTest
 {
-	private BvgProvider provider = new BvgProvider(null);
+	public BvgProviderLiveTest()
+	{
+		super(new BvgProvider(null));
+	}
 
 	@Test
 	public void nearbyStations() throws Exception
@@ -88,84 +91,84 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 9056102, "Berlin", "Nollendorfplatz"),
-				null, new Location(LocationType.STATION, 9013103, "Berlin", "Prinzenstraße"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 9056102, "Berlin", "Nollendorfplatz"), null,
+				new Location(LocationType.STATION, 9013103, "Berlin", "Prinzenstraße"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
-		final QueryConnectionsResult later2Result = queryMoreConnections(provider, laterResult.context, true);
+		final QueryConnectionsResult later2Result = queryMoreConnections(laterResult.context, true);
 		System.out.println(later2Result);
-		final QueryConnectionsResult earlierResult = queryMoreConnections(provider, later2Result.context, false);
+		final QueryConnectionsResult earlierResult = queryMoreConnections(later2Result.context, false);
 		System.out.println(earlierResult);
-		final QueryConnectionsResult later3Result = queryMoreConnections(provider, earlierResult.context, true);
+		final QueryConnectionsResult later3Result = queryMoreConnections(earlierResult.context, true);
 		System.out.println(later3Result);
 	}
 
 	@Test
 	public void shortViaConnection() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 9056102, "Berlin", "Nollendorfplatz"),
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 9056102, "Berlin", "Nollendorfplatz"),
 				new Location(LocationType.STATION, 9044202, "Berlin", "Bundesplatz"), new Location(LocationType.STATION, 9013103, "Berlin",
 						"Prinzenstraße"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
 	public void connectionBetweenCoordinates() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.ADDRESS, 0, 52501507, 13357026, null, null), null,
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, 52501507, 13357026, null, null), null,
 				new Location(LocationType.ADDRESS, 0, 52513639, 13568648, null, null), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
 	public void connectionBetweenCoordinatesAndAddresses() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.ADDRESS, 0, 52536099, 13426309, null,
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, 52536099, 13426309, null,
 				"Christburger Straße 1, 10405 Berlin, Deutschland"), null, new Location(LocationType.ADDRESS, 0, 52486400, 13350744, null,
 				"Eisenacher Straße 70, 10823 Berlin, Deutschland"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
 	public void viaConnectionBetweenCoordinates() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.ADDRESS, 0, 52501507, 13357026, null, null),
-				new Location(LocationType.ADDRESS, 0, 52479868, 13324247, null, null), new Location(LocationType.ADDRESS, 0, 52513639, 13568648,
-						null, null), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, 52501507, 13357026, null, null), new Location(
+				LocationType.ADDRESS, 0, 52479868, 13324247, null, null), new Location(LocationType.ADDRESS, 0, 52513639, 13568648, null, null),
+				new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
 	public void connectionBetweenAddresses() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.ADDRESS, 0, null,
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, null,
 				"10715 Bln Charlb.-Wilm., Weimarische Str. 7"), null, new Location(LocationType.ADDRESS, 0, null, "10178 Bln Mitte, Sophienstr. 24"),
 				new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
 	public void viaConnectionBetweenAddresses() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.ADDRESS, 0, null,
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, null,
 				"10715 Bln Charlb.-Wilm., Weimarische Str. 7"), new Location(LocationType.ADDRESS, 0, null, "10115 Bln Mitte, Hannoversche Str. 20"),
 				new Location(LocationType.ADDRESS, 0, null, "10178 Bln Mitte, Sophienstr. 24"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
 	}
 }

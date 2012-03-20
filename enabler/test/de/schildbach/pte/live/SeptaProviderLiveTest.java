@@ -36,7 +36,10 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
  */
 public class SeptaProviderLiveTest extends AbstractProviderLiveTest
 {
-	private final SeptaProvider provider = new SeptaProvider();
+	public SeptaProviderLiveTest()
+	{
+		super(new SeptaProvider());
+	}
 
 	@Test
 	public void nearbyStations() throws Exception
@@ -73,22 +76,22 @@ public class SeptaProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 2090227, null, "Main Street"), null,
-				new Location(LocationType.STATION, 1015755, null, "Harbison Av + Unruh Av"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 2090227, null, "Main Street"), null, new Location(
+				LocationType.STATION, 1015755, null, "Harbison Av + Unruh Av"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
 	public void addressConnection() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.ADDRESS, 0, 40015670, -75209400,
-				"Philadelphia 19127", "3601 Main St"), null, new Location(LocationType.STATION, 2090227, null, "Main Street"), new Date(), true,
-				ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, 40015670, -75209400, "Philadelphia 19127",
+				"3601 Main St"), null, new Location(LocationType.STATION, 2090227, null, "Main Street"), new Date(), true, ALL_PRODUCTS,
+				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
 	}
 }

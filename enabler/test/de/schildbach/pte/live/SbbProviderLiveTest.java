@@ -36,7 +36,10 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
  */
 public class SbbProviderLiveTest extends AbstractProviderLiveTest
 {
-	private SbbProvider provider = new SbbProvider(Secrets.SBB_ACCESS_ID);
+	public SbbProviderLiveTest()
+	{
+		super(new SbbProvider(Secrets.SBB_ACCESS_ID));
+	}
 
 	@Test
 	public void nearbyStations() throws Exception
@@ -81,43 +84,42 @@ public class SbbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 8503000, null, "Zürich HB"), null,
-				new Location(LocationType.STATION, 8507785, null, "Bern, Hauptbahnhof"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
-				Accessibility.NEUTRAL);
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 8503000, null, "Zürich HB"), null, new Location(
+				LocationType.STATION, 8507785, null, "Bern, Hauptbahnhof"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
 	public void slowConnection() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.ANY, 0, null, "Schocherswil, Alte Post!"), null,
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ANY, 0, null, "Schocherswil, Alte Post!"), null,
 				new Location(LocationType.ANY, 0, null, "Laconnex, Mollach"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
 	public void connectionWithFootway() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.ADDRESS, 0, null, "Spiez, Seestraße 62"), null,
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, null, "Spiez, Seestraße 62"), null,
 				new Location(LocationType.ADDRESS, 0, null, "Einsiedeln, Erlenmoosweg 24"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
 	public void connectionFromAddress() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.ADDRESS, 0, null,
-				"Dorfstrasse 10, Dällikon, Schweiz"), null, new Location(LocationType.STATION, 8500010, null, "Basel"), new Date(), true,
-				ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, null, "Dorfstrasse 10, Dällikon, Schweiz"),
+				null, new Location(LocationType.STATION, 8500010, null, "Basel"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
+				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
 	}
 }

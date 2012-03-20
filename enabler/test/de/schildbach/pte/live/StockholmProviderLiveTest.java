@@ -36,7 +36,10 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
  */
 public class StockholmProviderLiveTest extends AbstractProviderLiveTest
 {
-	private final StockholmProvider provider = new StockholmProvider();
+	public StockholmProviderLiveTest()
+	{
+		super(new StockholmProvider());
+	}
 
 	@Test
 	public void nearbyStations() throws Exception
@@ -73,11 +76,11 @@ public class StockholmProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(provider, new Location(LocationType.STATION, 200101051, "Stockholm", "T-Centralen"),
-				null, new Location(LocationType.STATION, 200101221, "Stockholm", "Abrahamsberg"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 200101051, "Stockholm", "T-Centralen"), null,
+				new Location(LocationType.STATION, 200101221, "Stockholm", "Abrahamsberg"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
 	}
 }
