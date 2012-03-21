@@ -258,6 +258,8 @@ public class OebbProvider extends AbstractHafasProvider
 
 		if (ucType.equals("LIF"))
 			return 'C';
+		if (ucType.equals("LIFT")) // Graz Uhrturm
+			return 'C';
 		if (ucType.equals("SSB")) // Graz Schlossbergbahn
 			return 'C';
 		// if (ucType.equals("HBB")) // Innsbruck Hungerburgbahn, via JSON API
