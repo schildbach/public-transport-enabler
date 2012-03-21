@@ -877,21 +877,14 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			if (pp.getEventType() == XmlPullParser.TEXT)
 				pp.nextTag();
 
+			final String c = XmlPullUtil.test(pp, "ConResCtxt") ? XmlPullUtil.text(pp) : null;
 			final Context context;
-			if (XmlPullUtil.test(pp, "ConResCtxt"))
-			{
-				final String c = XmlPullUtil.text(pp);
-				if (previousContext == null)
-					context = new Context(c, c, 0);
-				else if (later)
-					context = new Context(c, previousContext.earlierContext, previousContext.sequence + 1);
-				else
-					context = new Context(previousContext.laterContext, c, previousContext.sequence + 1);
-			}
+			if (previousContext == null)
+				context = new Context(c, c, 0);
+			else if (later)
+				context = new Context(c, previousContext.earlierContext, previousContext.sequence + 1);
 			else
-			{
-				context = null;
-			}
+				context = new Context(previousContext.laterContext, c, previousContext.sequence + 1);
 
 			XmlPullUtil.enter(pp, "ConnectionList");
 
