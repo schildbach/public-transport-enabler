@@ -183,6 +183,8 @@ public class NriProvider extends AbstractHafasProvider
 			return 'R';
 		if ("TRAIN".equals(ucType))
 			return 'R';
+		if ("HEL".equals(ucType)) // Heli
+			return 'R';
 
 		if ("U".equals(ucType))
 			return 'U';
