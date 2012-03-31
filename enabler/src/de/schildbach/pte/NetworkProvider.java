@@ -39,7 +39,14 @@ public interface NetworkProvider
 {
 	public enum Capability
 	{
-		AUTOCOMPLETE_ONE_LINE, NEARBY_STATIONS, DEPARTURES, CONNECTIONS
+		/* can autocomplete locations */
+		AUTOCOMPLETE_ONE_LINE,
+		/* can determine nearby stations */
+		NEARBY_STATIONS,
+		/* can query for departures */
+		DEPARTURES,
+		/* can query connections */
+		CONNECTIONS
 	}
 
 	public enum WalkSpeed
