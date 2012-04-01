@@ -24,12 +24,14 @@ import java.util.TimeZone;
 import de.schildbach.pte.dto.Style;
 
 /**
+ * Has been renamed to PTV (Public Transport Vicoria).
+ * 
  * @author Andreas Schildbach
  */
 public class MetProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.MET;
-	private final static String API_BASE = "http://jp.metlinkmelbourne.com.au/metlink/";
+	private final static String API_BASE = "http://jp.ptv.vic.gov.au/ptv/";
 
 	public MetProvider()
 	{
