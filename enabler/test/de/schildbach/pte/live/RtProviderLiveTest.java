@@ -17,6 +17,8 @@
 
 package de.schildbach.pte.live;
 
+import static junit.framework.Assert.assertEquals;
+
 import java.util.Date;
 import java.util.List;
 
@@ -78,6 +80,14 @@ public class RtProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final List<Location> autocompletes = provider.autocompleteStations("Dorfstrasse 10, Dällikon, Schweiz");
 
+		print(autocompletes);
+	}
+
+	@Test
+	public void autoCompleteEncoding() throws Exception
+	{
+		List<Location> autocompletes = provider.autocompleteStations("Dorfstrasse 1, Schäftland");
+		assertEquals("Schöftland, Dorfstrasse", autocompletes.get(0).name);
 		print(autocompletes);
 	}
 

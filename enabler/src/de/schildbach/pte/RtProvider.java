@@ -36,7 +36,7 @@ public class RtProvider extends AbstractHafasProvider
 
 	public RtProvider()
 	{
-		super(API_BASE + "query.exe/dn", 10, null);
+		super(API_BASE + "query.exe/dn", 10, null, "UTF-8", null);
 	}
 
 	public NetworkId id()
