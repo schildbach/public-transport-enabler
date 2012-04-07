@@ -1947,7 +1947,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	private static final Pattern P_NORMALIZE_LINE_NUMBER = Pattern.compile("\\d{2,5}");
 
 	protected static final Pattern P_LINE_RUSSIA = Pattern
-			.compile("\\d{3}(?:AJ|BJ|DJ|EJ|FJ|GJ|IJ|KJ|LJ|NJ|MJ|OJ|RJ|SJ|TJ|UJ|VJ|ZJ|CH|KH|ZH|EI|JA|JI|MZ|SH|PC|Y)");
+			.compile("\\d{3}(?:AJ|BJ|CJ|DJ|EJ|FJ|GJ|IJ|KJ|LJ|NJ|MJ|OJ|RJ|SJ|TJ|UJ|VJ|ZJ|CH|KH|ZH|EI|JA|JI|MZ|SH|SZ|PC|Y)");
 
 	protected Line parseLineAndType(final String lineAndType)
 	{
