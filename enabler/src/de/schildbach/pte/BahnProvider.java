@@ -271,8 +271,6 @@ public final class BahnProvider extends AbstractHafasProvider
 	private static final Pattern P_PRE_ADDRESS = Pattern.compile(
 			"<select name=\"(REQ0JourneyStopsS0K|REQ0JourneyStopsZ0K|REQ0JourneyStops1\\.0K)\"[^>]*>(.*?)</select>", Pattern.DOTALL);
 	private static final Pattern P_ADDRESSES = Pattern.compile("<option[^>]*>\\s*(.*?)\\s*</option>", Pattern.DOTALL);
-	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern
-			.compile("(zu dicht beieinander|mehrfach vorhanden oder identisch)|(keine geeigneten Haltestellen)|(keine Verbindung gefunden)|(derzeit nur Ausk&#252;nfte vom)|(zwischenzeitlich nicht mehr gespeichert)");
 
 	@Override
 	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
@@ -344,6 +342,8 @@ public final class BahnProvider extends AbstractHafasProvider
 			+ "(\\d{1,2}:\\d{2})<br />(\\d{1,2}:\\d{2})</a></td>.+?" // departureTime, arrivalTime
 			+ "<td class=\"overview iphonepfeil\">(.*?)<br />.*?" // line
 	, Pattern.DOTALL);
+	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern
+			.compile("(zu dicht beieinander|mehrfach vorhanden oder identisch)|(keine geeigneten Haltestellen)|(keine Verbindung gefunden)|(derzeit nur Ausk&#252;nfte vom)|(konnte leider nicht verarbeitet werden)|(zwischenzeitlich nicht mehr gespeichert)");
 
 	private QueryConnectionsResult queryConnections(final String uri, final CharSequence page) throws IOException
 	{
@@ -359,6 +359,8 @@ public final class BahnProvider extends AbstractHafasProvider
 			if (mError.group(4) != null)
 				return new QueryConnectionsResult(null, QueryConnectionsResult.Status.INVALID_DATE);
 			if (mError.group(5) != null)
+				return new QueryConnectionsResult(null, QueryConnectionsResult.Status.SERVICE_DOWN);
+			if (mError.group(6) != null)
 				throw new SessionExpiredException();
 		}
 
