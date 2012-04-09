@@ -143,4 +143,14 @@ public class RtProviderLiveTest extends AbstractProviderLiveTest
 		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
 	}
+
+	@Test
+	public void crossStateConnection() throws Exception
+	{
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 8000207, null, "Köln Hbf"), null, new Location(
+				LocationType.STATION, 6096001, null, "DUBLIN"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		System.out.println(result);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
+		System.out.println(laterResult);
+	}
 }

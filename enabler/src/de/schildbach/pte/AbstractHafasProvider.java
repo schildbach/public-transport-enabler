@@ -1881,13 +1881,16 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 	protected Line parseLine(final String type, final String line, final boolean wheelchairAccess)
 	{
-		final Matcher mBus = P_NORMALIZE_LINE_BUS.matcher(line);
-		if (mBus.matches())
-			return newLine('B' + mBus.group(1));
+		if (line != null)
+		{
+			final Matcher mBus = P_NORMALIZE_LINE_BUS.matcher(line);
+			if (mBus.matches())
+				return newLine('B' + mBus.group(1));
 
-		final Matcher mTram = P_NORMALIZE_LINE_TRAM.matcher(line);
-		if (mTram.matches())
-			return newLine('T' + mTram.group(1));
+			final Matcher mTram = P_NORMALIZE_LINE_TRAM.matcher(line);
+			if (mTram.matches())
+				return newLine('T' + mTram.group(1));
+		}
 
 		final char normalizedType = normalizeType(type);
 		if (normalizedType == 0)
