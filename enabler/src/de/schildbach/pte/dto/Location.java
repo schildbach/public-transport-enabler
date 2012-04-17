@@ -18,6 +18,7 @@
 package de.schildbach.pte.dto;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  * @author Andreas Schildbach
@@ -92,9 +93,15 @@ public final class Location implements Serializable
 		return lat != 0 || lon != 0;
 	}
 
+	private static final String[] NON_UNIQUE_NAMES = { "Hauptbahnhof", "Hbf", "Bahnhof", "Dorf", "Kirche", "Nord", "Ost", "Süd", "West" };
+	static
+	{
+		Arrays.sort(NON_UNIQUE_NAMES);
+	}
+
 	public final String uniqueShortName()
 	{
-		if ("Hauptbahnhof".equals(name) || "Hbf".equals(name) || "Bahnhof".equals(name) || "Dorf".equals(name) || "Kirche".equals(name))
+		if (name != null && Arrays.binarySearch(NON_UNIQUE_NAMES, name) >= 0)
 			return place + ", " + name;
 		else if (name != null)
 			return name;
