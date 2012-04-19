@@ -732,6 +732,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return 'I' + name;
 			if ("IXB".equals(type)) // ICE International
 				return 'I' + name;
+			if ("SC".equals(type)) // SuperCity, Tschechien
+				return 'I' + name;
 
 			if (type.equals("IR")) // Interregio
 				return 'R' + str;
@@ -1140,6 +1142,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			if ("UEF".equals(type)) // Ulmer Eisenbahnfreunde
 				return 'R' + type;
 			if ("Regionalzug".equals(type))
+				return 'R' + type;
+			if ("RR".equals(type)) // RR 371 Horehronec / RR 404 Vltava / RR 922 Josef Skupa
 				return 'R' + type;
 
 			if ("BSB".equals(type)) // Breisgau-S-Bahn
