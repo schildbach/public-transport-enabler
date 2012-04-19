@@ -77,6 +77,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private final String apiBase;
 	private final String departureMonitorEndpoint;
 	private final String tripEndpoint;
+	private final String stopFinderEndpoint;
 	private final String additionalQueryParameter;
 	private final boolean canAcceptPoiID;
 	private final boolean needsSpEncId;
@@ -115,11 +116,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	public AbstractEfaProvider(final String apiBase, final String additionalQueryParameter, final boolean canAcceptPoiID)
 	{
-		this(apiBase, null, null, additionalQueryParameter, false, false);
+		this(apiBase, null, null, null, additionalQueryParameter, false, false);
 	}
 
 	public AbstractEfaProvider(final String apiBase, final String departureMonitorEndpoint, final String tripEndpoint,
-			final String additionalQueryParameter, final boolean canAcceptPoiID, final boolean needsSpEncId)
+			final String stopFinderEndpoint, final String additionalQueryParameter, final boolean canAcceptPoiID, final boolean needsSpEncId)
 	{
 		try
 		{
@@ -133,6 +134,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		this.apiBase = apiBase;
 		this.departureMonitorEndpoint = departureMonitorEndpoint != null ? departureMonitorEndpoint : "XSLT_DM_REQUEST";
 		this.tripEndpoint = tripEndpoint != null ? tripEndpoint : "XSLT_TRIP_REQUEST2";
+		this.stopFinderEndpoint = stopFinderEndpoint != null ? stopFinderEndpoint : "XML_STOPFINDER_REQUEST";
 		this.additionalQueryParameter = additionalQueryParameter;
 		this.canAcceptPoiID = canAcceptPoiID;
 		this.needsSpEncId = needsSpEncId;
@@ -159,7 +161,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	protected List<Location> jsonStopfinderRequest(final Location constraint) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(apiBase);
-		uri.append("XML_STOPFINDER_REQUEST");
+		uri.append(stopFinderEndpoint);
 		appendCommonRequestParams(uri, "JSON");
 		uri.append("&locationServerActive=1");
 		uri.append("&regionID_sf=1"); // prefer own region
@@ -229,7 +231,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	protected List<Location> xmlStopfinderRequest(final Location constraint) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(apiBase);
-		uri.append("XML_STOPFINDER_REQUEST");
+		uri.append(stopFinderEndpoint);
 		appendCommonRequestParams(uri, "XML");
 		uri.append("&locationServerActive=1");
 		appendLocation(uri, constraint, "sf");
