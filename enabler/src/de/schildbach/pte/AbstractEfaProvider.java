@@ -647,6 +647,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private static final Pattern P_LINE_S = Pattern.compile("^(?:%)?(S\\d+)");
 	private static final Pattern P_LINE_NUMBER = Pattern.compile("\\d+");
 	private static final Pattern P_LINE_Y = Pattern.compile("\\d+Y");
+	private static final Pattern P_LINE_SEV = Pattern.compile("SEV.*");
 
 	protected String parseLine(final String mot, final String name, final String longName, final String noTrainName)
 	{
@@ -1206,7 +1207,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 			if (type.equals("BUS"))
 				return 'B' + str;
-			if ("SEV-Bus".equals(type))
+			if (P_LINE_SEV.matcher(type).matches())
 				return 'B' + str;
 			if ("Bex".equals(type)) // Bayern Express
 				return 'B' + str;
