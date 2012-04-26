@@ -534,6 +534,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
+			pp.setFeature(XmlPullParser.FEATURE_PROCESS_DOCDECL, false);
 			final ResultHeader header = enterItdRequest(pp);
 
 			if (!XmlPullUtil.jumpToStartTag(pp, null, "itdOdv") || !"dm".equals(pp.getAttributeValue(null, "usage")))
@@ -2313,6 +2314,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private ResultHeader enterItdRequest(final XmlPullParser pp) throws XmlPullParserException, IOException
 	{
 		if (pp.getEventType() == XmlPullParser.START_DOCUMENT)
+			pp.next();
+
+		if (pp.getEventType() == XmlPullParser.DOCDECL)
 			pp.next();
 
 		if (XmlPullUtil.test(pp, "html"))
