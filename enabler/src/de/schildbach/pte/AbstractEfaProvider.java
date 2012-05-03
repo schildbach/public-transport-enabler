@@ -543,7 +543,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
-			pp.setFeature(XmlPullParser.FEATURE_PROCESS_DOCDECL, false);
+			// pp.setFeature(XmlPullParser.FEATURE_PROCESS_DOCDECL, false);
 			final ResultHeader header = enterItdRequest(pp);
 
 			if (!XmlPullUtil.jumpToStartTag(pp, null, "itdOdv") || !"dm".equals(pp.getAttributeValue(null, "usage")))
