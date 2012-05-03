@@ -17,8 +17,11 @@
 
 package de.schildbach.pte;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -101,6 +104,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		public boolean canQueryEarlier()
 		{
 			return false; // TODO enable earlier querying
+		}
+
+		@Override
+		public String toString()
+		{
+			return getClass().getName() + "[" + context + "]";
 		}
 	}
 
@@ -1697,6 +1706,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 	}
 
+	private static final Pattern P_SESSION_EXPIRED = Pattern.compile("Your session has expired");
+
 	public QueryConnectionsResult queryMoreConnections(final QueryConnectionsContext contextObj, final boolean later, final int numConnections)
 			throws IOException
 	{
@@ -1708,15 +1719,26 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		InputStream is = null;
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri.toString(), null, "NSC_", 3);
+			is = new BufferedInputStream(ParserUtils.scrapeInputStream(uri.toString(), null, "NSC_", 3));
+			is.mark(512);
+
 			return queryConnections(uri.toString(), is);
 		}
 		catch (final XmlPullParserException x)
 		{
-			if (x.getMessage().startsWith("expected: START_TAG {null}itdRequest"))
-				throw new SessionExpiredException();
-			else
-				throw new ParserException(x);
+			throw new ParserException(x);
+		}
+		catch (final ProtocolException x) // must be html content
+		{
+			is.reset();
+			final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+
+			String line;
+			while ((line = reader.readLine()) != null)
+				if (P_SESSION_EXPIRED.matcher(line).find())
+					throw new SessionExpiredException();
+
+			throw x;
 		}
 		finally
 		{
