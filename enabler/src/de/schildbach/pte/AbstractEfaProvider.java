@@ -543,7 +543,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
-			// pp.setFeature(XmlPullParser.FEATURE_PROCESS_DOCDECL, false);
 			final ResultHeader header = enterItdRequest(pp);
 
 			if (!XmlPullUtil.jumpToStartTag(pp, null, "itdOdv") || !"dm".equals(pp.getAttributeValue(null, "usage")))
@@ -2335,8 +2334,18 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	private ResultHeader enterItdRequest(final XmlPullParser pp) throws XmlPullParserException, IOException
 	{
-		if (pp.getEventType() == XmlPullParser.START_DOCUMENT)
+		if (pp.getEventType() != XmlPullParser.START_DOCUMENT)
+			throw new IllegalStateException("start of document expected");
+
+		try
+		{
 			pp.next();
+		}
+		catch (final XmlPullParserException x)
+		{
+			if (x.getMessage().startsWith("Expected a quoted string"))
+				throw new ProtocolException("html");
+		}
 
 		if (pp.getEventType() == XmlPullParser.DOCDECL)
 			pp.next();
