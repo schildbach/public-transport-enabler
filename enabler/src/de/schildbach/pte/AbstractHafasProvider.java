@@ -1808,6 +1808,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			return 'B';
 		if ("FB".equals(ucType)) // Fernbus? Luxemburg-Saarbrücken
 			return 'B';
+		if ("EXB".equals(ucType)) // Expressbus München-Prag?
+			return 'B';
 		if ("TRO".equals(ucType)) // Trolleybus
 			return 'B';
 		if ("RFB".equals(ucType)) // Rufbus
