@@ -1753,6 +1753,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			return 'R';
 		if ("RNV".equals(ucType)) // Rhein-Neckar-Verkehr GmbH
 			return 'R';
+		if ("DWE".equals(ucType)) // Dessau-Wörlitzer Eisenbahn
+			return 'R';
 
 		// if ("E".equals(normalizedType)) // Eilzug, stimmt wahrscheinlich nicht
 		// return "R" + normalizedName;
