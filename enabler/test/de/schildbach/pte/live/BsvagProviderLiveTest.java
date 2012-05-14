@@ -29,6 +29,7 @@ import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult;
+import de.schildbach.pte.dto.QueryDeparturesResult;
 
 /**
  * @author Andreas Schildbach
@@ -52,6 +53,14 @@ public class BsvagProviderLiveTest extends AbstractProviderLiveTest
 	public void nearbyStationsByCoordinate() throws Exception
 	{
 		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 52272065, 10524788), 0, 0);
+
+		print(result);
+	}
+
+	@Test
+	public void queryDepartures() throws Exception
+	{
+		final QueryDeparturesResult result = provider.queryDepartures(26000256, 0, false);
 
 		print(result);
 	}

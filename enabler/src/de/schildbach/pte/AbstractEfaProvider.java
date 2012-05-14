@@ -1359,9 +1359,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						final String destinationIdStr = pp.getAttributeValue(null, "destID");
 						final int destinationId = (destinationIdStr != null && destinationIdStr.length() > 0) ? Integer.parseInt(destinationIdStr)
 								: 0;
-
-						final Location destination = new Location(destinationId > 0 ? LocationType.STATION : LocationType.ANY, destinationId, null,
-								destinationName);
+						final Location destination = new Location(destinationId > 0 ? LocationType.STATION : LocationType.ANY,
+								destinationId > 0 ? destinationId : 0, null, destinationName);
 						final LineDestination line = new LineDestination(processItdServingLine(pp), destination);
 
 						StationDepartures assignedStationDepartures;
@@ -1430,9 +1429,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						final String destinationName = normalizeLocationName(pp.getAttributeValue(null, "direction"));
 						final String destinationIdStr = pp.getAttributeValue(null, "destID");
 						final int destinationId = destinationIdStr != null ? Integer.parseInt(destinationIdStr) : 0;
-
-						final Location destination = new Location(destinationId > 0 ? LocationType.STATION : LocationType.ANY, destinationId, null,
-								destinationName);
+						final Location destination = new Location(destinationId > 0 ? LocationType.STATION : LocationType.ANY,
+								destinationId > 0 ? destinationId : 0, null, destinationName);
 						final Line line = processItdServingLine(pp);
 
 						if (isRealtime && !predictedDepartureTime.isSet(Calendar.HOUR_OF_DAY))
@@ -1980,10 +1978,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					}
 					else
 					{
-						final String destinationIdStr = pp.getAttributeValue(null, "destID");
 						final String destinationName = normalizeLocationName(pp.getAttributeValue(null, "destination"));
-						final Location destination = destinationIdStr.length() > 0 ? new Location(LocationType.STATION,
-								Integer.parseInt(destinationIdStr), null, destinationName) : new Location(LocationType.ANY, 0, null, destinationName);
+						final String destinationIdStr = pp.getAttributeValue(null, "destID");
+						final int destinationId = (destinationIdStr != null && destinationIdStr.length() > 0) ? Integer.parseInt(destinationIdStr)
+								: 0;
+						final Location destination = new Location(destinationId > 0 ? LocationType.STATION : LocationType.ANY,
+								destinationId > 0 ? destinationId : 0, null, destinationName);
 						final String lineLabel;
 						if ("AST".equals(pp.getAttributeValue(null, "symbol")))
 							lineLabel = "BAST";
