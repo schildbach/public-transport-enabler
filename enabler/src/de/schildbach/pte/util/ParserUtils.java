@@ -111,36 +111,48 @@ public final class ParserUtils
 					writer.close();
 				}
 
-				final Reader pageReader = new InputStreamReader(connection.getInputStream(), encoding);
-				if (!url.equals(connection.getURL()))
-					throw new UnexpectedRedirectException(url, connection.getURL());
-				copy(pageReader, buffer);
-				pageReader.close();
-
-				if (buffer.length() > SCRAPE_PAGE_EMPTY_THRESHOLD)
+				final int responseCode = connection.getResponseCode();
+				if (responseCode == HttpURLConnection.HTTP_OK)
 				{
-					if (sessionCookieName != null)
+					final Reader pageReader = new InputStreamReader(connection.getInputStream(), encoding);
+					if (!url.equals(connection.getURL()))
+						throw new UnexpectedRedirectException(url, connection.getURL());
+					copy(pageReader, buffer);
+					pageReader.close();
+
+					if (buffer.length() > SCRAPE_PAGE_EMPTY_THRESHOLD)
 					{
-						for (final Map.Entry<String, List<String>> entry : connection.getHeaderFields().entrySet())
+						if (sessionCookieName != null)
 						{
-							if ("set-cookie".equalsIgnoreCase(entry.getKey()))
+							for (final Map.Entry<String, List<String>> entry : connection.getHeaderFields().entrySet())
 							{
-								for (final String value : entry.getValue())
+								if ("set-cookie".equalsIgnoreCase(entry.getKey()))
 								{
-									if (value.startsWith(sessionCookieName))
+									for (final String value : entry.getValue())
 									{
-										stateCookie = value.split(";", 2)[0];
+										if (value.startsWith(sessionCookieName))
+										{
+											stateCookie = value.split(";", 2)[0];
+										}
 									}
 								}
 							}
 						}
-					}
 
-					return buffer;
+						return buffer;
+					}
+					else
+					{
+						final String message = "got empty page (length: " + buffer.length() + ")";
+						if (tries-- > 0)
+							System.out.println(message + ", retrying...");
+						else
+							throw new IOException(message + ": " + url);
+					}
 				}
 				else
 				{
-					final String message = "got empty page (length: " + buffer.length() + ")";
+					final String message = "got response: " + responseCode + " " + connection.getResponseMessage();
 					if (tries-- > 0)
 						System.out.println(message + ", retrying...");
 					else
