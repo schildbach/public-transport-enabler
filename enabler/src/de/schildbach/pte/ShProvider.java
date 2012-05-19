@@ -50,7 +50,7 @@ public class ShProvider extends AbstractHafasProvider
 
 	public ShProvider()
 	{
-		super(API_BASE + "query.exe/dn", 10, null, null, "UTF-8");
+		super(API_BASE + "query.exe/dn", 10, null, null, UTF_8);
 	}
 
 	public NetworkId id()

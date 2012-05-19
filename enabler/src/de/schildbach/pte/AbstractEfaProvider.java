@@ -181,7 +181,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		// System.out.println(uri.toString());
 
-		final CharSequence page = ParserUtils.scrape(uri.toString(), false, null, "UTF-8", null);
+		final CharSequence page = ParserUtils.scrape(uri.toString(), false, null, UTF_8, null);
 
 		try
 		{
@@ -2297,7 +2297,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		else
 		{
 			uri.append("&type_").append(paramSuffix).append("=").append(locationTypeValue(location));
-			uri.append("&name_").append(paramSuffix).append("=").append(ParserUtils.urlEncode(locationValue(location), "ISO-8859-1"));
+			uri.append("&name_").append(paramSuffix).append("=").append(ParserUtils.urlEncode(locationValue(location), ISO_8859_1));
 		}
 	}
 

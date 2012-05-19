@@ -156,11 +156,10 @@ public class NriProvider extends AbstractHafasProvider
 
 	private static final String AUTOCOMPLETE_URI = API_BASE
 			+ "ajax-getstop.exe/ony?start=1&tpl=suggest2json&REQ0JourneyStopsS0A=255&REQ0JourneyStopsS0B=5&REQ0JourneyStopsB=12&getstop=1&noSession=yes&REQ0JourneyStopsS0G=%s?&js=true&";
-	private static final String ENCODING = "ISO-8859-1";
 
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
-		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING));
+		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ISO_8859_1));
 
 		return jsonGetStops(uri);
 	}

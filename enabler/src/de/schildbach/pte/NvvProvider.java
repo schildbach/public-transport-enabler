@@ -35,7 +35,7 @@ public class NvvProvider extends AbstractHafasProvider
 
 	public NvvProvider()
 	{
-		super(API_BASE + "query.exe/dn", 17, null, "UTF-8", "UTF-8");
+		super(API_BASE + "query.exe/dn", 17, null, UTF_8, UTF_8);
 	}
 
 	public NetworkId id()

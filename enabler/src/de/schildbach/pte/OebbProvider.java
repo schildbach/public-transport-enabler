@@ -35,7 +35,6 @@ public class OebbProvider extends AbstractHafasProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.OEBB;
 	private static final String API_BASE = "http://fahrplan.oebb.at/bin/";
-	private static final String URL_ENCODING = "ISO-8859-1";
 
 	public OebbProvider()
 	{
@@ -186,7 +185,7 @@ public class OebbProvider extends AbstractHafasProvider
 
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
-		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), URL_ENCODING));
+		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ISO_8859_1));
 
 		return jsonGetStops(uri);
 	}

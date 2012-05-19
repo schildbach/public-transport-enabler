@@ -48,7 +48,7 @@ public class RmvProvider extends AbstractHafasProvider
 
 	public RmvProvider()
 	{
-		super(API_BASE + "query.exe/dn", 16, null, "UTF-8", null);
+		super(API_BASE + "query.exe/dn", 16, null, UTF_8, null);
 	}
 
 	public NetworkId id()
@@ -298,11 +298,10 @@ public class RmvProvider extends AbstractHafasProvider
 	}
 
 	private static final String AUTOCOMPLETE_URI = API_BASE + "ajax-getstop.exe/dn?getstop=1&REQ0JourneyStopsS0A=255&S=%s?&js=true&";
-	private static final String ENCODING = "ISO-8859-1";
 
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
-		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING));
+		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ISO_8859_1));
 
 		return jsonGetStops(uri);
 	}

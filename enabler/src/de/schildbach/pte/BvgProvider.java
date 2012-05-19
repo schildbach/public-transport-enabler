@@ -169,7 +169,7 @@ public final class BvgProvider extends AbstractHafasProvider
 				final int parsedId = Integer.parseInt(mOwn.group(1));
 				final int parsedLon = (int) (Float.parseFloat(mOwn.group(2)) * 1E6);
 				final int parsedLat = (int) (Float.parseFloat(mOwn.group(3)) * 1E6);
-				final String[] parsedPlaceAndName = splitPlaceAndName(ParserUtils.urlDecode(mOwn.group(4), "ISO-8859-1"));
+				final String[] parsedPlaceAndName = splitPlaceAndName(ParserUtils.urlDecode(mOwn.group(4), ISO_8859_1));
 				stations.add(new Location(LocationType.STATION, parsedId, parsedLat, parsedLon, parsedPlaceAndName[0], parsedPlaceAndName[1]));
 			}
 
@@ -454,8 +454,6 @@ public final class BvgProvider extends AbstractHafasProvider
 		return xmlMLcReq(constraint);
 	}
 
-	private static final String URL_ENCODING = "ISO-8859-1";
-
 	private String connectionsQueryUri(final Location from, final Location via, final Location to, final Date date, final boolean dep,
 			final String products)
 	{
@@ -468,8 +466,8 @@ public final class BvgProvider extends AbstractHafasProvider
 
 		uri.append("?start=Suchen");
 
-		uri.append("&REQ0JourneyStopsS0ID=").append(ParserUtils.urlEncode(locationId(from), URL_ENCODING));
-		uri.append("&REQ0JourneyStopsZ0ID=").append(ParserUtils.urlEncode(locationId(to), URL_ENCODING));
+		uri.append("&REQ0JourneyStopsS0ID=").append(ParserUtils.urlEncode(locationId(from), ISO_8859_1));
+		uri.append("&REQ0JourneyStopsZ0ID=").append(ParserUtils.urlEncode(locationId(to), ISO_8859_1));
 
 		if (via != null)
 		{
@@ -487,11 +485,11 @@ public final class BvgProvider extends AbstractHafasProvider
 				uri.append("&REQ0JourneyStops1.0Y=").append(via.lat);
 				if (via.name == null)
 					uri.append("&REQ0JourneyStops1.0O=").append(
-							ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%.6f, %.6f", via.lat / 1E6, via.lon / 1E6), URL_ENCODING));
+							ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%.6f, %.6f", via.lat / 1E6, via.lon / 1E6), ISO_8859_1));
 			}
 			else if (via.name != null)
 			{
-				uri.append("&REQ0JourneyStops1.0G=").append(ParserUtils.urlEncode(via.name, URL_ENCODING));
+				uri.append("&REQ0JourneyStops1.0G=").append(ParserUtils.urlEncode(via.name, ISO_8859_1));
 				if (via.type != LocationType.ANY)
 					uri.append('!');
 			}

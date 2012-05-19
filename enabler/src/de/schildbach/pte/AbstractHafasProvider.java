@@ -18,8 +18,9 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -68,14 +69,13 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 {
 	protected final static String SERVER_PRODUCT = "hafas";
 
-	private static final String DEFAULT_ENCODING = "ISO-8859-1";
 	private static final String PROD = "hafas";
 
 	private final String apiUri;
 	private final int numProductBits;
 	private final String accessId;
-	private final String jsonEncoding;
-	private final String xmlMlcResEncoding;
+	private final Charset jsonEncoding;
+	private final Charset xmlMlcResEncoding;
 
 	private static class Context implements QueryConnectionsContext
 	{
@@ -101,8 +101,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 	}
 
-	public AbstractHafasProvider(final String apiUri, final int numProductBits, final String accessId, final String jsonEncoding,
-			final String xmlMlcResEncoding)
+	public AbstractHafasProvider(final String apiUri, final int numProductBits, final String accessId, final Charset jsonEncoding,
+			final Charset xmlMlcResEncoding)
 	{
 		this.apiUri = apiUri;
 		this.numProductBits = numProductBits;
@@ -116,8 +116,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		this.apiUri = apiUri;
 		this.numProductBits = numProductBits;
 		this.accessId = accessId;
-		this.jsonEncoding = DEFAULT_ENCODING;
-		this.xmlMlcResEncoding = DEFAULT_ENCODING;
+		this.jsonEncoding = ISO_8859_1;
+		this.xmlMlcResEncoding = ISO_8859_1;
 	}
 
 	protected TimeZone timeZone()
@@ -243,16 +243,17 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 		// System.out.println(ParserUtils.scrape(apiUri, true, wrap(request), null, false));
 
-		InputStream is = null;
+		Reader reader = null;
+
 		try
 		{
-			is = ParserUtils.scrapeInputStream(apiUri, wrap(request), null, 3);
+			reader = new InputStreamReader(ParserUtils.scrapeInputStream(apiUri, wrap(request), null, 3), ISO_8859_1);
 
 			final List<Location> results = new ArrayList<Location>();
 
 			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
 			final XmlPullParser pp = factory.newPullParser();
-			pp.setInput(is, DEFAULT_ENCODING);
+			pp.setInput(reader);
 
 			assertResC(pp);
 			XmlPullUtil.enter(pp);
@@ -288,8 +289,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 		finally
 		{
-			if (is != null)
-				is.close();
+			if (reader != null)
+				reader.close();
 		}
 	}
 
@@ -374,15 +375,15 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 	protected final List<Location> xmlLocationList(final String uri) throws IOException
 	{
-		InputStream is = null;
+		Reader reader = null;
 
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri);
+			reader = new InputStreamReader(ParserUtils.scrapeInputStream(uri), UTF_8);
 
 			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
 			final XmlPullParser pp = factory.newPullParser();
-			pp.setInput(is, "UTF-8");
+			pp.setInput(reader);
 
 			final List<Location> results = new ArrayList<Location>();
 
@@ -440,8 +441,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 		finally
 		{
-			if (is != null)
-				is.close();
+			if (reader != null)
+				reader.close();
 		}
 	}
 
@@ -454,15 +455,15 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 		// ParserUtils.printXml(ParserUtils.scrape(apiUri, true, wrap(request), mlcResEncoding, false));
 
-		InputStream is = null;
+		Reader reader = null;
 
 		try
 		{
-			is = ParserUtils.scrapeInputStream(apiUri, wrap(request), null, 3);
+			reader = new InputStreamReader(ParserUtils.scrapeInputStream(apiUri, wrap(request), null, 3), xmlMlcResEncoding);
 
 			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
 			final XmlPullParser pp = factory.newPullParser();
-			pp.setInput(is, xmlMlcResEncoding);
+			pp.setInput(reader);
 
 			final List<Location> results = new ArrayList<Location>();
 
@@ -523,8 +524,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 		finally
 		{
-			if (is != null)
-				is.close();
+			if (reader != null)
+				reader.close();
 		}
 	}
 
@@ -536,8 +537,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 		try
 		{
-			reader = new StringReplaceReader(new InputStreamReader(ParserUtils.scrapeInputStream(uri), DEFAULT_ENCODING), "Ringbahn ->",
-					"Ringbahn -&gt;");
+			reader = new StringReplaceReader(new InputStreamReader(ParserUtils.scrapeInputStream(uri), ISO_8859_1), "Ringbahn ->", "Ringbahn -&gt;");
 			reader.replace("Ringbahn <-", "Ringbahn &lt;-");
 
 			// System.out.println(uri);
@@ -823,15 +823,15 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		// System.out.println(request);
 		// ParserUtils.printXml(ParserUtils.scrape(apiUri, true, wrap(request), null, null));
 
-		InputStream is = null;
+		Reader reader = null;
 
 		try
 		{
-			is = ParserUtils.scrapeInputStream(apiUri, wrap(request), null, 3);
+			reader = new InputStreamReader(ParserUtils.scrapeInputStream(apiUri, wrap(request), null, 3), ISO_8859_1);
 
 			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
 			final XmlPullParser pp = factory.newPullParser();
-			pp.setInput(is, DEFAULT_ENCODING);
+			pp.setInput(reader);
 
 			assertResC(pp);
 			final String product = XmlPullUtil.attr(pp, "prod").split(" ")[0];
@@ -1165,8 +1165,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 		finally
 		{
-			if (is != null)
-				is.close();
+			if (reader != null)
+				reader.close();
 		}
 	}
 

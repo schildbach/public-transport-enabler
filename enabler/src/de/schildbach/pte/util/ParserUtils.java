@@ -29,6 +29,7 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -50,7 +51,7 @@ public final class ParserUtils
 	private static final int SCRAPE_INITIAL_CAPACITY = 4096;
 	private static final int SCRAPE_CONNECT_TIMEOUT = 5000;
 	private static final int SCRAPE_READ_TIMEOUT = 15000;
-	private static final String SCRAPE_DEFAULT_ENCODING = "ISO-8859-1";
+	private static final Charset SCRAPE_DEFAULT_ENCODING = Charset.forName("ISO-8859-1");
 	private static final int SCRAPE_PAGE_EMPTY_THRESHOLD = 2;
 
 	private static String stateCookie;
@@ -65,13 +66,13 @@ public final class ParserUtils
 		return scrape(url, false, null, null, null);
 	}
 
-	public static final CharSequence scrape(final String url, final boolean isPost, final String request, String encoding,
+	public static final CharSequence scrape(final String url, final boolean isPost, final String request, Charset encoding,
 			final String sessionCookieName) throws IOException
 	{
 		return scrape(url, isPost, request, encoding, sessionCookieName, 3);
 	}
 
-	public static final CharSequence scrape(final String urlStr, final boolean isPost, final String request, String encoding,
+	public static final CharSequence scrape(final String urlStr, final boolean isPost, final String request, Charset encoding,
 			final String sessionCookieName, int tries) throws IOException
 	{
 		if (encoding == null)
@@ -432,11 +433,11 @@ public final class ParserUtils
 		}
 	}
 
-	public static String urlEncode(final String str, final String enc)
+	public static String urlEncode(final String str, final Charset encoding)
 	{
 		try
 		{
-			return URLEncoder.encode(str, enc);
+			return URLEncoder.encode(str, encoding.name());
 		}
 		catch (final UnsupportedEncodingException x)
 		{
@@ -444,11 +445,11 @@ public final class ParserUtils
 		}
 	}
 
-	public static String urlDecode(final String str, final String enc)
+	public static String urlDecode(final String str, final Charset encoding)
 	{
 		try
 		{
-			return URLDecoder.decode(str, enc);
+			return URLDecoder.decode(str, encoding.name());
 		}
 		catch (final UnsupportedEncodingException x)
 		{

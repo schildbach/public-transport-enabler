@@ -17,6 +17,8 @@
 
 package de.schildbach.pte;
 
+import java.nio.charset.Charset;
+
 import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.Style;
 
@@ -25,6 +27,9 @@ import de.schildbach.pte.dto.Style;
  */
 public abstract class AbstractNetworkProvider implements NetworkProvider
 {
+	protected static final Charset UTF_8 = Charset.forName("UTF-8");
+	protected static final Charset ISO_8859_1 = Charset.forName("ISO-8859-1");
+
 	public Style lineStyle(final String line)
 	{
 		if (line.length() == 0)

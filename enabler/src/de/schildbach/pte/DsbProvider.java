@@ -154,11 +154,10 @@ public class DsbProvider extends AbstractHafasProvider
 	}
 
 	private static final String AUTOCOMPLETE_URI = "http://xmlopen.rejseplanen.dk/bin/rest.exe/location.name?input=%s";
-	private static final String ENCODING = "ISO-8859-1";
 
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
-		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ENCODING));
+		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ISO_8859_1));
 
 		return xmlLocationList(uri);
 	}
