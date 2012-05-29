@@ -53,6 +53,8 @@ public final class ParserUtils
 	private static final int SCRAPE_READ_TIMEOUT = 15000;
 	private static final Charset SCRAPE_DEFAULT_ENCODING = Charset.forName("ISO-8859-1");
 	private static final int SCRAPE_PAGE_EMPTY_THRESHOLD = 2;
+	private static final Pattern P_REFRESH = Pattern.compile("<META http-equiv=\"refresh\" content=\"\\d+;\\s*URL=([^\"]+)\">",
+			Pattern.CASE_INSENSITIVE);
 
 	private static String stateCookie;
 
@@ -123,24 +125,32 @@ public final class ParserUtils
 
 					if (buffer.length() > SCRAPE_PAGE_EMPTY_THRESHOLD)
 					{
-						if (sessionCookieName != null)
+						final Matcher mRefresh = P_REFRESH.matcher(buffer);
+						if (!mRefresh.find())
 						{
-							for (final Map.Entry<String, List<String>> entry : connection.getHeaderFields().entrySet())
+							if (sessionCookieName != null)
 							{
-								if ("set-cookie".equalsIgnoreCase(entry.getKey()))
+								for (final Map.Entry<String, List<String>> entry : connection.getHeaderFields().entrySet())
 								{
-									for (final String value : entry.getValue())
+									if ("set-cookie".equalsIgnoreCase(entry.getKey()))
 									{
-										if (value.startsWith(sessionCookieName))
+										for (final String value : entry.getValue())
 										{
-											stateCookie = value.split(";", 2)[0];
+											if (value.startsWith(sessionCookieName))
+											{
+												stateCookie = value.split(";", 2)[0];
+											}
 										}
 									}
 								}
 							}
-						}
 
-						return buffer;
+							return buffer;
+						}
+						else
+						{
+							throw new UnexpectedRedirectException(url, new URL(mRefresh.group(1)));
+						}
 					}
 					else
 					{
