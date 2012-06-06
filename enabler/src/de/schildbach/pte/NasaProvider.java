@@ -71,14 +71,6 @@ public class NasaProvider extends AbstractHafasProvider
 			return 'B';
 		if (value == 128) // Rufbus
 			return 'P';
-		// if (value == 256)
-		// return 0;
-		// if (value == 512)
-		// return 0;
-		// if (value == 1024) // Autoreisezug
-		// return 0;
-		// if (value == 2048)
-		// return 0;
 
 		throw new IllegalArgumentException("cannot handle: " + value);
 	}
