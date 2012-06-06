@@ -19,9 +19,7 @@ package de.schildbach.pte;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.regex.Pattern;
 
-import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -52,6 +50,37 @@ public class NasaProvider extends AbstractHafasProvider
 				return true;
 
 		return false;
+	}
+
+	@Override
+	protected char intToProduct(final int value)
+	{
+		if (value == 1)
+			return 'I';
+		if (value == 2)
+			return 'I';
+		if (value == 4)
+			return 'R';
+		if (value == 8)
+			return 'R';
+		if (value == 16)
+			return 'S';
+		if (value == 32)
+			return 'T';
+		if (value == 64)
+			return 'B';
+		if (value == 128) // Rufbus
+			return 'P';
+		// if (value == 256)
+		// return 0;
+		// if (value == 512)
+		// return 0;
+		// if (value == 1024) // Autoreisezug
+		// return 0;
+		// if (value == 2048)
+		// return 0;
+
+		throw new IllegalArgumentException("cannot handle: " + value);
 	}
 
 	@Override
@@ -141,23 +170,6 @@ public class NasaProvider extends AbstractHafasProvider
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
 		return xmlMLcReq(constraint);
-	}
-
-	private static final Pattern P_LINE_NUMBER = Pattern.compile("\\d{4,}");
-
-	@Override
-	protected Line parseLineWithoutType(final String line)
-	{
-		if (P_LINE_NUMBER.matcher(line).matches())
-			return newLine('?' + line);
-
-		return super.parseLineWithoutType(line);
-	}
-
-	@Override
-	protected Line parseLineAndType(final String line)
-	{
-		return parseLineWithoutType(line);
 	}
 
 	@Override
