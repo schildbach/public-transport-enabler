@@ -29,7 +29,7 @@ import de.schildbach.pte.dto.Style.Shape;
 public class KvvProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.KVV;
-	private final static String API_BASE = "http://213.144.24.66/kvv/"; // http://213.144.24.66/kvv2/
+	private final static String API_BASE = "http://213.144.24.66/kvv2/";
 
 	public KvvProvider()
 	{
