@@ -19,6 +19,8 @@ package de.schildbach.pte;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.dto.Style.Shape;
@@ -57,13 +59,17 @@ public class KvvProvider extends AbstractEfaProvider
 		return false;
 	}
 
+	private static final Pattern P_LINE = Pattern.compile("(.*?)\\s+\\([\\w/]+\\)", Pattern.CASE_INSENSITIVE);
+
 	@Override
 	protected String parseLine(final String mot, final String name, final String longName, final String noTrainName)
 	{
-		if (name.endsWith(" (VBK)")) // Verkehrsbetriebe Karlsruhe
-			return super.parseLine(mot, name.substring(0, name.length() - 6), longName, noTrainName);
+		final Matcher m = P_LINE.matcher(name);
+		if (m.matches())
+			return super.parseLine(mot, m.group(1), longName, noTrainName);
 		else
 			return super.parseLine(mot, name, longName, noTrainName);
+		// TODO check for " (Ersatzverkehr)"
 	}
 
 	private static final Map<String, Style> LINES = new HashMap<String, Style>();
