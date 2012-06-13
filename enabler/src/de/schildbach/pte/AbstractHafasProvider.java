@@ -46,7 +46,6 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.Departure;
-import de.schildbach.pte.dto.GetConnectionDetailsResult;
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
@@ -1304,11 +1303,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	protected boolean isValidStationId(int id)
 	{
 		return true;
-	}
-
-	public GetConnectionDetailsResult getConnectionDetails(String connectionUri) throws IOException
-	{
-		throw new UnsupportedOperationException();
 	}
 
 	private static final Pattern P_XML_NEARBY_STATIONS_COARSE = Pattern.compile("\\G<\\s*St\\s*(.*?)/?>(?:\n|\\z)", Pattern.DOTALL);

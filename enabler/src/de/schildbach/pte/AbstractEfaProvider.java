@@ -51,7 +51,6 @@ import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.Fare;
 import de.schildbach.pte.dto.Fare.Type;
-import de.schildbach.pte.dto.GetConnectionDetailsResult;
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.LineDestination;
 import de.schildbach.pte.dto.Location;
@@ -2274,11 +2273,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 
 		return null;
-	}
-
-	public GetConnectionDetailsResult getConnectionDetails(final String connectionUri) throws IOException
-	{
-		throw new UnsupportedOperationException();
 	}
 
 	private void appendLocation(final StringBuilder uri, final Location location, final String paramSuffix)

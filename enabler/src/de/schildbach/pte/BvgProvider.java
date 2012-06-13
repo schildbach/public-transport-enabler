@@ -33,7 +33,6 @@ import java.util.regex.Pattern;
 
 import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.Departure;
-import de.schildbach.pte.dto.GetConnectionDetailsResult;
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Line.Attr;
 import de.schildbach.pte.dto.Location;
@@ -892,12 +891,6 @@ public final class BvgProvider extends AbstractHafasProvider
 		{
 			throw new IOException(page.toString());
 		}
-	}
-
-	@Override
-	public GetConnectionDetailsResult getConnectionDetails(final String uri) throws IOException
-	{
-		throw new UnsupportedOperationException();
 	}
 
 	private static final Pattern P_DATE_TIME = Pattern.compile("([^,]*), (.*?)");

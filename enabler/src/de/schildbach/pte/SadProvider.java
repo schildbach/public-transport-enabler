@@ -27,7 +27,6 @@ import de.schildbach.pte.dto.Connection.Part;
 import de.schildbach.pte.dto.Connection.Trip;
 import de.schildbach.pte.dto.Fare;
 import de.schildbach.pte.dto.Fare.Type;
-import de.schildbach.pte.dto.GetConnectionDetailsResult;
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
@@ -222,11 +221,6 @@ public class SadProvider extends AbstractNetworkProvider {
 		// NOTE: via, products, walkSpeed, accessibility are set to null
 		return queryConnections(new Location(LocationType.STATION, fromId), null, new Location(LocationType.STATION, toId), date, dep,
 				0, null, null, null);
-	}
-
-	public GetConnectionDetailsResult getConnectionDetails(String connectionUri) throws IOException {
-		// Not supported by SOAP API
-		throw new UnsupportedOperationException();
 	}
 
 	protected TimeZone timeZone() {
