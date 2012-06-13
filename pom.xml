@@ -15,4 +15,28 @@
 		<module>service</module>
 	</modules>
 
+	<developers>
+		<developer>
+			<name>Andreas Schildbach</name>
+			<email>andreas@schildbach.de</email>
+			<url>http://schildbach.de</url>
+		</developer>
+	</developers>
+
+	<scm>
+		<url>http://code.google.com/p/public-transport-enabler/source/checkout</url>
+		<connection>scm:git:https://code.google.com/p/public-transport-enabler/</connection>
+	</scm>
+
+	<issueManagement>
+		<url>http://code.google.com/p/public-transport-enabler/issues/list</url>
+	</issueManagement>
+
+	<mailingLists>
+		<mailingList>
+			<name>public-transport-enabler-discuss Google Group</name>
+			<post>https://groups.google.com/forum/#!forum/public-transport-enabler-discuss</post>
+		</mailingList>
+	</mailingLists>
+
 </project>
