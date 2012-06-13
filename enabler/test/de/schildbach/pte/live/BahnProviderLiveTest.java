@@ -90,7 +90,7 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 		System.out.println(result);
 		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		for (final Connection connection : result.connections)
-			provider.getConnectionDetails(connection.link);
+			provider.getConnectionDetails(connection);
 		System.out.println(laterResult);
 		final QueryConnectionsResult later2Result = queryMoreConnections(laterResult.context, true);
 		System.out.println(later2Result);
@@ -109,7 +109,7 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 		System.out.println(result);
 		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		for (final Connection connection : result.connections)
-			provider.getConnectionDetails(connection.link);
+			provider.getConnectionDetails(connection);
 		System.out.println(laterResult);
 	}
 
@@ -123,7 +123,7 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 
 		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		for (final Connection connection : result.connections)
-			provider.getConnectionDetails(connection.link);
+			provider.getConnectionDetails(connection);
 		System.out.println(laterResult);
 	}
 }

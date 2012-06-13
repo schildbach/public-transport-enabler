@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -145,12 +146,12 @@ public interface NetworkProvider
 	/**
 	 * Get details about a connection
 	 * 
-	 * @param connectionUri
-	 *            uri returned via {@link NetworkProvider#queryConnections}
+	 * @param connection
+	 *            (non-detailed) connection returned via {@link NetworkProvider#queryConnections}
 	 * @return result object containing the details of the connection
 	 * @throws IOException
 	 */
-	GetConnectionDetailsResult getConnectionDetails(String connectionUri) throws IOException;
+	GetConnectionDetailsResult getConnectionDetails(Connection connection) throws IOException;
 
 	/**
 	 * Get style of line

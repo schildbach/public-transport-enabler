@@ -426,8 +426,10 @@ public final class BahnProvider extends AbstractHafasProvider
 			.compile("<div class=\"him\">|Dauer: \\d+:\\d+|Anschlusszug nicht mehr rechtzeitig|Anschlusszug jedoch erreicht werden|nur teilweise dargestellt|L&#228;ngerer Aufenthalt|&#228;quivalentem Bahnhof|Bahnhof wird mehrfach durchfahren|Aktuelle Informationen zu der Verbindung");
 
 	@Override
-	public GetConnectionDetailsResult getConnectionDetails(final String uri) throws IOException
+	public GetConnectionDetailsResult getConnectionDetails(final Connection connection) throws IOException
 	{
+		final String uri = connection.link;
+
 		final CharSequence page = ParserUtils.scrape(uri);
 
 		final Matcher mError = P_CONNECTION_DETAILS_ERROR.matcher(page);
