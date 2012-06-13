@@ -947,6 +947,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				XmlPullUtil.exit(pp, "BasicStop");
 				XmlPullUtil.exit(pp, "Arrival");
 
+				XmlPullUtil.require(pp, "Transfers");
+				final int numTransfers = Integer.parseInt(XmlPullUtil.text(pp));
+
 				XmlPullUtil.exit(pp, "Overview");
 
 				final List<Connection.Part> parts = new ArrayList<Connection.Part>(4);
@@ -1151,7 +1154,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 				XmlPullUtil.exit(pp, "Connection");
 
-				connections.add(new Connection(id, null, departure, arrival, parts, null, capacity));
+				connections.add(new Connection(id, null, departure, arrival, parts, null, capacity, numTransfers));
 			}
 
 			XmlPullUtil.exit(pp);

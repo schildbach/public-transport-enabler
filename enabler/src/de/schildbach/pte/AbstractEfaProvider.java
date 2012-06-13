@@ -1864,6 +1864,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			while (XmlPullUtil.test(pp, "itdRoute"))
 			{
 				final String id = pp.getAttributeValue(null, "routeIndex") + "-" + pp.getAttributeValue(null, "routeTripIndex");
+				final int numChanges = XmlPullUtil.intAttr(pp, "changes");
 				XmlPullUtil.enter(pp, "itdRoute");
 
 				while (XmlPullUtil.test(pp, "itdDateTime"))
@@ -2126,7 +2127,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					}
 					XmlPullUtil.exit(pp, "itdFare");
 				}
-				connections.add(new Connection(id, uri, firstDeparture, lastArrival, parts, fares.isEmpty() ? null : fares, null));
+				connections.add(new Connection(id, uri, firstDeparture, lastArrival, parts, fares.isEmpty() ? null : fares, null, numChanges));
 				XmlPullUtil.exit(pp, "itdRoute");
 			}
 

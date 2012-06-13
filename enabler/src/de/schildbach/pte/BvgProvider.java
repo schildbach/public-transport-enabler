@@ -787,6 +787,7 @@ public final class BvgProvider extends AbstractHafasProvider
 
 					final Matcher mDetails = P_CONNECTION_DETAILS.matcher(connectionSection);
 
+					int numTrips = 0;
 					final List<Connection.Part> parts = new ArrayList<Connection.Part>(tracks.size());
 					for (int iTrack = 0; iTrack < tracks.size(); iTrack++)
 					{
@@ -873,10 +874,11 @@ public final class BvgProvider extends AbstractHafasProvider
 
 							parts.add(new Connection.Trip(line, destination, departureTime, null, departurePosition, departure, arrivalTime, null,
 									arrivalPosition, arrival, intermediateStops, null));
+							numTrips++;
 						}
 					}
 
-					connections.add(new Connection(id, firstUri, from, to, parts, null, null));
+					connections.add(new Connection(id, firstUri, from, to, parts, null, null, numTrips - 1));
 				}
 				else
 				{

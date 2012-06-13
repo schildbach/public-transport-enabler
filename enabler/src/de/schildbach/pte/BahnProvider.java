@@ -338,7 +338,8 @@ public final class BahnProvider extends AbstractHafasProvider
 	private static final Pattern P_CONNECTIONS_COARSE = Pattern.compile("<tr><td class=\"overview timelink\">(.+?)</td></tr>", Pattern.DOTALL);
 	private static final Pattern P_CONNECTIONS_FINE = Pattern.compile(".*?" //
 			+ "<a href=\"(http://mobile.bahn.de/bin/mobil/query2?.exe/dox[^\"]*?)\">" // link
-			+ "(\\d{1,2}:\\d{2})<br />(\\d{1,2}:\\d{2})</a></td>.+?" // departureTime, arrivalTime
+			+ "(\\d{1,2}:\\d{2})<br />(\\d{1,2}:\\d{2})</a></td>.*?" // departureTime, arrivalTime
+			+ "<td class=\"overview\">\\s*(\\d+)\\s*<.*?" // numChanges
 			+ "<td class=\"overview iphonepfeil\">(.*?)<br />.*?" // line
 	, Pattern.DOTALL);
 	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern
@@ -383,7 +384,9 @@ public final class BahnProvider extends AbstractHafasProvider
 				if (mConFine.matches())
 				{
 					final String link = ParserUtils.resolveEntities(mConFine.group(1));
-					final Connection connection = new Connection(AbstractHafasProvider.extractConnectionId(link), link, from, to, null, null, null);
+					final int numChanges = Integer.parseInt(mConFine.group(4));
+					final Connection connection = new Connection(AbstractHafasProvider.extractConnectionId(link), link, from, to, null, null, null,
+							numChanges);
 					connections.add(connection);
 				}
 				else
@@ -521,8 +524,8 @@ public final class BahnProvider extends AbstractHafasProvider
 				}
 			}
 
-			return new GetConnectionDetailsResult(new GregorianCalendar(timeZone()).getTime(), new Connection(
-					AbstractHafasProvider.extractConnectionId(uri), uri, firstDeparture, lastArrival, parts, null, null));
+			return new GetConnectionDetailsResult(new GregorianCalendar(timeZone()).getTime(), new Connection(connection.id, uri, firstDeparture,
+					lastArrival, parts, null, null, connection.numChanges));
 		}
 		else
 		{

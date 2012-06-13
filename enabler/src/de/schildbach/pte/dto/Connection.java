@@ -36,9 +36,10 @@ public final class Connection implements Serializable
 	public final List<Part> parts;
 	public final List<Fare> fares;
 	public final int[] capacity;
+	public final Integer numChanges;
 
 	public Connection(final String id, final String link, final Location from, final Location to, final List<Part> parts, final List<Fare> fares,
-			final int[] capacity)
+			final int[] capacity, final Integer numChanges)
 	{
 		this.id = id;
 		this.link = link;
@@ -47,6 +48,7 @@ public final class Connection implements Serializable
 		this.parts = parts;
 		this.fares = fares;
 		this.capacity = capacity;
+		this.numChanges = numChanges;
 	}
 
 	public Date getFirstDepartureTime()
@@ -139,6 +141,7 @@ public final class Connection implements Serializable
 		str.append('-');
 		final Date lastTripArrivalTime = getLastTripArrivalTime();
 		str.append(lastTripArrivalTime != null ? FORMAT.format(lastTripArrivalTime) : "null");
+		str.append(' ').append(numChanges).append("ch");
 
 		return str.toString();
 	}
