@@ -1695,6 +1695,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		{
 			throw new ParserException(x);
 		}
+		catch (final RuntimeException x)
+		{
+			throw new RuntimeException("uncategorized problem while processing " + uri, x);
+		}
 		finally
 		{
 			if (is != null)
@@ -1735,6 +1739,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					throw new SessionExpiredException();
 
 			throw x;
+		}
+		catch (final RuntimeException x)
+		{
+			throw new RuntimeException("uncategorized problem while processing " + uri, x);
 		}
 		finally
 		{
