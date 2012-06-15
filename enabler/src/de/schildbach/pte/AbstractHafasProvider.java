@@ -1660,6 +1660,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			return 'R';
 		if ("EB".equals(ucType)) // Erfurter Bahn
 			return 'R';
+		if ("EBX".equals(ucType)) // Erfurter Bahn
+			return 'R';
 		if ("VEN".equals(ucType)) // Rhenus Veniro
 			return 'R';
 		if ("BOB".equals(ucType)) // Bayerische Oberlandbahn
