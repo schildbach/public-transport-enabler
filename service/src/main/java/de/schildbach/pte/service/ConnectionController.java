@@ -53,6 +53,6 @@ public class ConnectionController
 		final Location fromLocation = new Location(fromType, fromId, null, from);
 		final Location toLocation = new Location(toType, toId, null, to);
 		final String products = "IRSUTBFC";
-		return provider.queryConnections(fromLocation, null, toLocation, new Date(), true, products, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		return provider.queryConnections(fromLocation, null, toLocation, new Date(), true, 4, products, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 	}
 }
