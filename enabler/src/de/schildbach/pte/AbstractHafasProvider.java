@@ -1754,6 +1754,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			return 'R';
 		if ("DWE".equals(ucType)) // Dessau-Wörlitzer Eisenbahn
 			return 'R';
+		if ("BKB".equals(ucType)) // Buckower Kleinbahn
+			return 'R';
 
 		// if ("E".equals(normalizedType)) // Eilzug, stimmt wahrscheinlich nicht
 		// return "R" + normalizedName;
