@@ -44,7 +44,7 @@ public class SncbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 100080), 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 8813003), 0, 0);
 
 		print(result);
 	}
@@ -60,7 +60,7 @@ public class SncbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(100080, 0, false);
+		final QueryDeparturesResult result = provider.queryDepartures(8813003, 0, false);
 
 		print(result);
 	}
@@ -91,7 +91,7 @@ public class SncbProviderLiveTest extends AbstractProviderLiveTest
 		if (result.context != null)
 		{
 			final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
-			System.out.println(laterResult.status + " " + laterResult.connections);
+			System.out.println(laterResult.status + "  " + laterResult.connections);
 		}
 	}
 
@@ -105,7 +105,7 @@ public class SncbProviderLiveTest extends AbstractProviderLiveTest
 		if (result.context != null)
 		{
 			final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
-			System.out.println(laterResult.status + " " + laterResult.connections);
+			System.out.println(laterResult.status + "  " + laterResult.connections);
 		}
 	}
 

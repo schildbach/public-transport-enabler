@@ -32,12 +32,11 @@ import de.schildbach.pte.util.ParserUtils;
 public class SncbProvider extends AbstractHafasProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.SNCB;
-	private static final String API_BASE = "http://hari.b-rail.be/Hafas/bin/";
-	private static final String API_URI = "http://hari.b-rail.be/Hafas/bin/extxml.exe";
+	private static final String API_BASE = "http://hari.b-rail.be/hafas/bin/";
 
 	public SncbProvider()
 	{
-		super(API_URI, 16, null);
+		super(API_BASE + "query.exe/nn", 16, null);
 	}
 
 	public NetworkId id()
@@ -149,23 +148,16 @@ public class SncbProvider extends AbstractHafasProvider
 
 		if (ucType.startsWith("IC "))
 			return 'I';
-		if ("THALYS".equals(ucType)) // Thalys
+		if ("THALYS".equals(ucType))
 			return 'I';
 
 		if (ucType.startsWith("IR "))
 			return 'R';
-
 		if ("L".equals(ucType))
 			return 'R';
 		if ("CR".equals(ucType))
 			return 'R';
-		if ("ICT".equals(ucType)) // Brügge
-			return 'R';
-		if ("TRN".equals(ucType)) // Mons
-			return 'R';
 
-		if ("MÉT".equals(ucType))
-			return 'U';
 		if ("MÉTRO".equals(ucType))
 			return 'U';
 
