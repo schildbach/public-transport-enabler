@@ -55,6 +55,9 @@ public enum NetworkId
 	// United Kingdom
 	TFL, TLEM, TLEA, TLSE, TLSW,
 
+	// Ireland
+	EIREANN,
+
 	// Slovenia
 	MARIBOR,
 

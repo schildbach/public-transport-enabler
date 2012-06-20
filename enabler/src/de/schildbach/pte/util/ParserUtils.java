@@ -316,16 +316,30 @@ public final class ParserUtils
 	}
 
 	private static final Pattern P_ISO_DATE = Pattern.compile("(\\d{4})-(\\d{2})-(\\d{2})");
+	private static final Pattern P_ISO_DATE_REVERSE = Pattern.compile("(\\d{2})-(\\d{2})-(\\d{4})");
 
 	public static final void parseIsoDate(final Calendar calendar, final CharSequence str)
 	{
-		final Matcher m = P_ISO_DATE.matcher(str);
-		if (!m.matches())
-			throw new RuntimeException("cannot parse: '" + str + "'");
+		final Matcher mIso = P_ISO_DATE.matcher(str);
+		if (mIso.matches())
+		{
+			calendar.set(Calendar.YEAR, Integer.parseInt(mIso.group(1)));
+			calendar.set(Calendar.MONTH, Integer.parseInt(mIso.group(2)) - 1);
+			calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(mIso.group(3)));
+			return;
+		}
 
-		calendar.set(Calendar.YEAR, Integer.parseInt(m.group(1)));
-		calendar.set(Calendar.MONTH, Integer.parseInt(m.group(2)) - 1);
-		calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(m.group(3)));
+		final Matcher mIsoReverse = P_ISO_DATE_REVERSE.matcher(str);
+		if (mIsoReverse.matches())
+		{
+			calendar.set(Calendar.YEAR, Integer.parseInt(mIsoReverse.group(3)));
+			calendar.set(Calendar.MONTH, Integer.parseInt(mIsoReverse.group(2)) - 1);
+			calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(mIsoReverse.group(1)));
+			return;
+		}
+
+		throw new RuntimeException("cannot parse: '" + str + "'");
+
 	}
 
 	private static final Pattern P_GERMAN_DATE = Pattern.compile("(\\d{2})[\\./-](\\d{2})[\\./-](\\d{2,4})");
