@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -38,7 +39,7 @@ public class StockholmProvider extends AbstractHafasProvider
 
 	public StockholmProvider()
 	{
-		super(API_BASE + "query.exe/sn", 7, null);
+		super(API_BASE + "query.exe/sn", 7, null, UTF_8, null);
 	}
 
 	public NetworkId id()
@@ -53,6 +54,25 @@ public class StockholmProvider extends AbstractHafasProvider
 				return true;
 
 		return false;
+	}
+
+	@Override
+	protected char intToProduct(final int value)
+	{
+		if (value == 1) // Pendeltåg
+			return 'S';
+		if (value == 2) // Tunnelbana
+			return 'U';
+		if (value == 4) // Lokaltåg
+			return 'R';
+		if (value == 8) // Buss
+			return 'B';
+		if (value == 16) // Flygbussar
+			return 'B';
+		if (value == 64) // Båt
+			return 'F';
+
+		throw new IllegalArgumentException("cannot handle: " + value);
 	}
 
 	@Override
@@ -86,7 +106,7 @@ public class StockholmProvider extends AbstractHafasProvider
 		}
 		else if (product == 'F')
 		{
-			productBits.setCharAt(6, '1'); // Waxholmsbåtar
+			productBits.setCharAt(6, '1'); // Båt
 		}
 		else if (product == 'C')
 		{
@@ -164,6 +184,28 @@ public class StockholmProvider extends AbstractHafasProvider
 		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ISO_8859_1));
 
 		return jsonGetStops(uri);
+	}
+
+	@Override
+	protected Line parseLineAndType(final String lineAndType)
+	{
+		final Matcher m = P_NORMALIZE_LINE.matcher(lineAndType);
+		if (m.matches())
+		{
+			final String type = m.group(1);
+			final String number = m.group(2).replaceAll("\\s+", " ");
+
+			if (type.length() > 0)
+			{
+				final char normalizedType = normalizeType(type);
+				if (normalizedType != 0)
+					return newLine(normalizedType + number);
+			}
+
+			throw new IllegalStateException("cannot normalize type " + type + " number " + number + " line#type " + lineAndType);
+		}
+
+		throw new IllegalStateException("cannot normalize line#type " + lineAndType);
 	}
 
 	@Override
