@@ -19,6 +19,7 @@ package de.schildbach.pte;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
@@ -35,7 +36,7 @@ public class LuProvider extends AbstractHafasProvider
 
 	public LuProvider()
 	{
-		super(API_BASE + "query.exe/dn", 10, null);
+		super(API_BASE + "query.exe/fn", 10, null, UTF_8, UTF_8);
 	}
 
 	public NetworkId id()
@@ -98,12 +99,41 @@ public class LuProvider extends AbstractHafasProvider
 		}
 	}
 
+	private static final String[] PLACES = { "Luxembourg", "Luxembourg/Centre" };
+
+	@Override
+	protected String[] splitPlaceAndName(final String name)
+	{
+		for (final String place : PLACES)
+		{
+			if (name.startsWith(place + " ") || name.startsWith(place + "-"))
+				return new String[] { place, name.substring(place.length() + 1) };
+			else if (name.startsWith(place + ", "))
+				return new String[] { place, name.substring(place.length() + 2) };
+		}
+
+		return super.splitPlaceAndName(name);
+	}
+
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
-		if (location.type == LocationType.STATION && location.hasId())
+		final StringBuilder uri = new StringBuilder(API_BASE);
+
+		if (location.hasLocation())
 		{
-			final StringBuilder uri = new StringBuilder(API_BASE);
-			uri.append("stboard.exe/dn");
+			uri.append("query.exe/fny");
+			uri.append("?performLocating=2&tpl=stop2json");
+			uri.append("&look_maxno=").append(maxStations != 0 ? maxStations : 200);
+			uri.append("&look_maxdist=").append(maxDistance != 0 ? maxDistance : 5000);
+			uri.append("&look_stopclass=").append(allProductsInt());
+			uri.append("&look_x=").append(location.lon);
+			uri.append("&look_y=").append(location.lat);
+
+			return jsonNearbyStations(uri.toString());
+		}
+		else if (location.type == LocationType.STATION && location.hasId())
+		{
+			uri.append("stboard.exe/fn");
 			uri.append("?productsFilter=").append(allProductsString());
 			uri.append("&boardType=dep");
 			uri.append("&input=").append(location.id);
@@ -120,7 +150,7 @@ public class LuProvider extends AbstractHafasProvider
 	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder();
-		uri.append(API_BASE).append("stboard.exe/dn");
+		uri.append(API_BASE).append("stboard.exe/fn");
 		uri.append("?productsFilter=").append(allProductsString());
 		uri.append("&boardType=dep");
 		uri.append("&disableEquivs=yes"); // don't use nearby stations

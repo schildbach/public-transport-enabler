@@ -44,7 +44,7 @@ public class LuProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 9865836), 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 120405001), 0, 0);
 
 		print(result);
 	}
@@ -60,7 +60,7 @@ public class LuProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(9865836, 0, false);
+		final QueryDeparturesResult result = provider.queryDepartures(120405001, 0, false);
 
 		print(result);
 	}
@@ -68,7 +68,7 @@ public class LuProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void autocomplete() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("Flughafen");
+		final List<Location> autocompletes = provider.autocompleteStations("Aéroport");
 
 		print(autocompletes);
 	}
@@ -76,8 +76,8 @@ public class LuProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 9409001, null, "Echternach, Bel Air"), null,
-				new Location(LocationType.STATION, 9440001, null, "Echternach, Gare"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 200416001, null, "Cité Aéroport"), null,
+				new Location(LocationType.STATION, 200405035, "Luxembourg", "Gare Centrale"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
@@ -88,8 +88,8 @@ public class LuProviderLiveTest extends AbstractProviderLiveTest
 	public void addressConnection() throws Exception
 	{
 		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, 49611610, 6130265, null,
-				"Luxembourg, Rue Génistre 2"), null, new Location(LocationType.STATION, 9217081, null, "Luxembourg, Gare Centrale"), new Date(),
-				true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+				"Luxembourg, Rue Génistre 2"), null, new Location(LocationType.STATION, 200405035, "Luxembourg", "Gare Centrale"), new Date(), true,
+				ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
