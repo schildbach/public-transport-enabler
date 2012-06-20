@@ -70,6 +70,9 @@ public enum NetworkId
 	// United Arab Emirates
 	DUB,
 
+	// Israel
+	JET,
+
 	// United States
 	SF, SEPTA,
 
