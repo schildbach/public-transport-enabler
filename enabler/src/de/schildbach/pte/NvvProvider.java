@@ -153,8 +153,7 @@ public class NvvProvider extends AbstractHafasProvider
 		uri.append("&L=vs_java3");
 		uri.append("&input=").append(stationId);
 
-		throw new UnsupportedOperationException();
-		// return xmlQueryDepartures(uri.toString(), stationId);
+		return xmlQueryDepartures(uri.toString(), stationId);
 	}
 
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
@@ -165,6 +164,14 @@ public class NvvProvider extends AbstractHafasProvider
 	@Override
 	protected char normalizeType(final String type)
 	{
+		final String ucType = type.toUpperCase();
+
+		if ("U-BAHN".equals(ucType))
+			return 'U';
+
+		if ("LTAXI".equals(ucType))
+			return 'B';
+
 		final char t = super.normalizeType(type);
 		if (t != 0)
 			return t;
