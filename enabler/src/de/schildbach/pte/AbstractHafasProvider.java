@@ -1790,6 +1790,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			return 'U';
 		if ("MET".equals(ucType))
 			return 'U';
+		if ("METRO".equals(ucType))
+			return 'U';
 
 		// Tram
 		if (P_LINE_TRAM.matcher(ucType).matches()) // Generic Tram
