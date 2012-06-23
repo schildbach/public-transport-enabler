@@ -537,9 +537,10 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		try
 		{
 			// work around unparsable XML
-			reader = new StringReplaceReader(new InputStreamReader(ParserUtils.scrapeInputStream(uri), ISO_8859_1), "Ringbahn ->", "Ringbahn -&gt;");
-			reader.replace("Ringbahn <-", "Ringbahn &lt;-");
-			reader.replace(" & ", " &amp; ");
+			reader = new StringReplaceReader(new InputStreamReader(ParserUtils.scrapeInputStream(uri), ISO_8859_1), " & ", " &amp; ");
+			reader.replace("Ringbahn ->", "Ringbahn -&gt;"); // Berlin
+			reader.replace("Ringbahn <-", "Ringbahn &lt;-"); // Berlin
+			addCustomReplaces(reader);
 
 			// System.out.println(uri);
 			// ParserUtils.printFromReader(reader);
@@ -724,6 +725,10 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			if (reader != null)
 				reader.close();
 		}
+	}
+
+	protected void addCustomReplaces(final StringReplaceReader reader)
+	{
 	}
 
 	public QueryConnectionsResult queryConnections(Location from, Location via, Location to, final Date date, final boolean dep,

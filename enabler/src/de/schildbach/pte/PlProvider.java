@@ -27,6 +27,7 @@ import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
+import de.schildbach.pte.util.StringReplaceReader;
 
 /**
  * @author Andreas Schildbach
@@ -34,11 +35,14 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 public class PlProvider extends AbstractHafasProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.PL;
-	private static final String API_BASE = "http://rozklad.sitkol.pl/bin/";
+	private static final String API_BASE = "http://rozklad-pkp.pl/bin/";
+
+	// http://rozklad.sitkol.pl/bin/
+	// http://h2g.sitkol.pl/bin/query.exe/en
 
 	public PlProvider()
 	{
-		super(API_BASE + "query.exe/pn", 7, null, null, UTF_8);
+		super(API_BASE + "query.exe/pn", 7, null, UTF_8, UTF_8);
 	}
 
 	public NetworkId id()
@@ -56,29 +60,53 @@ public class PlProvider extends AbstractHafasProvider
 	}
 
 	@Override
+	protected char intToProduct(final int value)
+	{
+		if (value == 1)
+			return 'I';
+		if (value == 2)
+			return 'I';
+		if (value == 4)
+			return 'R';
+		if (value == 8)
+			return 'S';
+		if (value == 16) // Bus
+			return 'B';
+		if (value == 32) // AST, SEV
+			return 'B';
+		if (value == 64)
+			return 'F';
+
+		throw new IllegalArgumentException("cannot handle: " + value);
+	}
+
+	@Override
 	protected void setProductBits(final StringBuilder productBits, final char product)
 	{
 		if (product == 'I')
 		{
-			productBits.setCharAt(0, '1'); // Hochgeschwindigkeitszug
+			productBits.setCharAt(0, '1'); // Kolej dużych prędkości
 			productBits.setCharAt(1, '1'); // EC/IC/EIC/Ex
 		}
 		else if (product == 'R')
 		{
-			productBits.setCharAt(2, '1'); // TLK/IR/D
-			productBits.setCharAt(3, '1'); // Regionalverkehrszug
+			productBits.setCharAt(2, '1'); // TLK/IR/RE/D/Posp.
 		}
-		else if (product == 'S' || product == 'T')
+		else if (product == 'S')
 		{
-			productBits.setCharAt(5, '1'); // Stadtbahn
+			productBits.setCharAt(3, '1'); // Regio/Osobowe
 		}
 		else if (product == 'U')
 		{
-			productBits.setCharAt(6, '1'); // U-Bahn
+			productBits.setCharAt(6, '1'); // Metro
+		}
+		else if (product == 'T')
+		{
+			productBits.setCharAt(5, '1'); // Tramwaj
 		}
 		else if (product == 'B' || product == 'P')
 		{
-			productBits.setCharAt(4, '1'); // Bus
+			productBits.setCharAt(4, '1'); // Autobus
 		}
 		else if (product == 'F' || product == 'C')
 		{
@@ -107,17 +135,28 @@ public class PlProvider extends AbstractHafasProvider
 
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
-		if (location.type == LocationType.STATION && location.hasId())
+		final StringBuilder uri = new StringBuilder(API_BASE);
+
+		if (location.hasLocation())
 		{
-			final StringBuilder uri = new StringBuilder(API_BASE);
+			uri.append("query.exe/pny");
+			uri.append("?performLocating=2&tpl=stop2json");
+			uri.append("&look_maxno=").append(maxStations != 0 ? maxStations : 200);
+			uri.append("&look_maxdist=").append(maxDistance != 0 ? maxDistance : 5000);
+			uri.append("&look_stopclass=").append(allProductsInt());
+			uri.append("&look_x=").append(location.lon);
+			uri.append("&look_y=").append(location.lat);
+
+			return jsonNearbyStations(uri.toString());
+		}
+		else if (location.type == LocationType.STATION && location.hasId())
+		{
 			uri.append("stboard.exe/pn");
 			uri.append("?productsFilter=").append(allProductsString());
 			uri.append("&boardType=dep");
 			uri.append("&input=").append(location.id);
 			uri.append("&sTI=1&start=yes&hcount=0");
 			uri.append("&L=vs_java3");
-
-			// &inputTripelId=A%3d1%40O%3dCopenhagen%20Airport%40X%3d12646941%40Y%3d55629753%40U%3d86%40L%3d900000011%40B%3d1
 
 			return xmlNearbyStations(uri.toString());
 		}
@@ -142,6 +181,17 @@ public class PlProvider extends AbstractHafasProvider
 		return xmlQueryDepartures(uri.toString(), stationId);
 	}
 
+	@Override
+	protected void addCustomReplaces(final StringReplaceReader reader)
+	{
+		reader.replace("dir=\"Sp ", " "); // Poland
+		reader.replace("dir=\"B ", " "); // Poland
+		reader.replace("dir=\"K ", " "); // Poland
+		reader.replace("dir=\"Eutingen i. G ", "dir=\"Eutingen\" "); // Poland
+		reader.replace("StargetLoc", "Süd\" targetLoc"); // Poland
+		reader.replace("platform=\"K ", " "); // Poland
+	}
+
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
 		return xmlMLcReq(constraint);
@@ -151,12 +201,8 @@ public class PlProvider extends AbstractHafasProvider
 	private static final Pattern P_NORMALIZE_LINE_NUMBER = Pattern.compile("\\d{2,5}");
 
 	@Override
-	protected Line parseLineWithoutType(String line)
+	protected Line parseLineWithoutType(final String line)
 	{
-		// replace badly encoded character (stations 8530643 and 8530644)
-		if (line.equals("F\u0084hre"))
-			line = "Fähre";
-
 		final Matcher mRussia = P_NORMALIZE_LINE_RUSSIA.matcher(line);
 		if (mRussia.matches())
 			return newLine('R' + mRussia.group(1));
@@ -172,22 +218,25 @@ public class PlProvider extends AbstractHafasProvider
 	{
 		final String ucType = type.toUpperCase();
 
-		if ("REG".equals(ucType))
-			return 'R';
 		if ("AR".equals(ucType)) // Arriva Polaczen
 			return 'R';
-		if ("N".equals(ucType)) // St. Pierre des Corps - Tours
+		if ("N".equals(ucType))
+			return 'R';
+		if ("KW".equals(ucType)) // Koleje Wielkopolskie
+			return 'R';
+		if ("KS".equals(ucType)) // Koleje Śląskie
+			return 'R';
+		if ("E".equals(ucType))
+			return 'R';
+		if ("DB".equals(ucType))
 			return 'R';
 
-		if ("METRO".equals(ucType))
-			return 'U';
+		if ("FRE".equals(ucType))
+			return 'F';
 
 		final char t = super.normalizeType(type);
 		if (t != 0)
 			return t;
-
-		if ("E".equals(ucType))
-			return '?';
 
 		return 0;
 	}
