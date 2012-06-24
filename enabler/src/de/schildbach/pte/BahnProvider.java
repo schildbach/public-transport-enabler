@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -158,7 +159,7 @@ public final class BahnProvider extends AbstractHafasProvider
 	}
 
 	private String connectionsQueryUri(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final String products)
+			final String products, final Set<Option> options)
 	{
 		final Calendar c = new GregorianCalendar(timeZone());
 		c.setTime(date);
@@ -264,6 +265,9 @@ public final class BahnProvider extends AbstractHafasProvider
 			}
 		}
 
+		if (options != null && options.contains(Option.BIKE))
+			uri.append("&REQ0JourneyProduct_opt3=1");
+
 		return uri.toString();
 	}
 
@@ -273,9 +277,10 @@ public final class BahnProvider extends AbstractHafasProvider
 
 	@Override
 	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final int numConnections, final String products, final WalkSpeed walkSpeed, final Accessibility accessibility) throws IOException
+			final int numConnections, final String products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
+			throws IOException
 	{
-		final String uri = connectionsQueryUri(from, via, to, date, dep, products);
+		final String uri = connectionsQueryUri(from, via, to, date, dep, products, options);
 		final CharSequence page = ParserUtils.scrape(uri);
 
 		List<Location> fromAddresses = null;
@@ -285,10 +290,10 @@ public final class BahnProvider extends AbstractHafasProvider
 		final Matcher mPreAddress = P_PRE_ADDRESS.matcher(page);
 		while (mPreAddress.find())
 		{
-			final String type = mPreAddress.group(1);
-			final String options = mPreAddress.group(2);
+			final String suggestionType = mPreAddress.group(1);
+			final String suggestion = mPreAddress.group(2);
 
-			final Matcher mAddresses = P_ADDRESSES.matcher(options);
+			final Matcher mAddresses = P_ADDRESSES.matcher(suggestion);
 			final List<Location> addresses = new ArrayList<Location>();
 			while (mAddresses.find())
 			{
@@ -297,14 +302,14 @@ public final class BahnProvider extends AbstractHafasProvider
 					addresses.add(address);
 			}
 
-			if (type.equals("REQ0JourneyStopsS0K"))
+			if (suggestionType.equals("REQ0JourneyStopsS0K"))
 				fromAddresses = addresses;
-			else if (type.equals("REQ0JourneyStopsZ0K"))
+			else if (suggestionType.equals("REQ0JourneyStopsZ0K"))
 				toAddresses = addresses;
-			else if (type.equals("REQ0JourneyStops1.0K"))
+			else if (suggestionType.equals("REQ0JourneyStops1.0K"))
 				viaAddresses = addresses;
 			else
-				throw new IllegalStateException(type);
+				throw new IllegalStateException(suggestionType);
 		}
 
 		if (fromAddresses != null || viaAddresses != null || toAddresses != null)

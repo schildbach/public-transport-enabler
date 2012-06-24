@@ -47,6 +47,7 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import de.schildbach.pte.NetworkProvider.Option;
 import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.Fare;
@@ -1577,7 +1578,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	}
 
 	protected String xsltTripRequest2Uri(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final int numConnections, final String products, final WalkSpeed walkSpeed, final Accessibility accessibility)
+			final int numConnections, final String products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
 	{
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
 		final DateFormat TIME_FORMAT = new SimpleDateFormat("HHmm");
@@ -1655,6 +1656,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				uri.append("&lineRestriction=403"); // means: all but ice
 		}
 
+		if (options != null && options.contains(Option.BIKE))
+			uri.append("&bikeTakeAlong=1");
+
 		uri.append("&locationServerActive=1");
 		uri.append("&useRealtime=1");
 		uri.append("&useProxFootSearch=1"); // walk if it makes journeys quicker
@@ -1681,9 +1685,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	}
 
 	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final int numConnections, final String products, final WalkSpeed walkSpeed, final Accessibility accessibility) throws IOException
+			final int numConnections, final String products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
+			throws IOException
 	{
-		final String uri = xsltTripRequest2Uri(from, via, to, date, dep, numConnections, products, walkSpeed, accessibility);
+		final String uri = xsltTripRequest2Uri(from, via, to, date, dep, numConnections, products, walkSpeed, accessibility, options);
 
 		InputStream is = null;
 		try

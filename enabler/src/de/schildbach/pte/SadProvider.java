@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 
 import org.ksoap2.SoapEnvelope;
@@ -121,7 +122,7 @@ public class SadProvider extends AbstractNetworkProvider {
 	}
 	
 	public QueryConnectionsResult queryConnections(Location from, Location via, Location to, Date date, boolean dep, final int numConnections, String products,
-			WalkSpeed walkSpeed, Accessibility accessibility) throws IOException {
+			WalkSpeed walkSpeed, Accessibility accessibility, Set<Option> options) throws IOException {
 
 		// Select correct SOAP method depending on the dep flag
 		final String soapMethod = dep ? "searchCollPartenza" : "searchCollArrivo";
@@ -220,7 +221,7 @@ public class SadProvider extends AbstractNetworkProvider {
 		// Query for connections with new date/time value
 		// NOTE: via, products, walkSpeed, accessibility are set to null
 		return queryConnections(new Location(LocationType.STATION, fromId), null, new Location(LocationType.STATION, toId), date, dep,
-				0, null, null, null);
+				0, null, null, null, null);
 	}
 
 	protected TimeZone timeZone() {

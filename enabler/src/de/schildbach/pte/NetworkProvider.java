@@ -20,6 +20,7 @@ package de.schildbach.pte;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.GetConnectionDetailsResult;
@@ -58,6 +59,11 @@ public interface NetworkProvider
 	public enum Accessibility
 	{
 		NEUTRAL, LIMITED, BARRIER_FREE
+	}
+
+	public enum Option
+	{
+		BIKE
 	}
 
 	NetworkId id();
@@ -123,11 +129,13 @@ public interface NetworkProvider
 	 *            how fast can you walk?
 	 * @param accessibility
 	 *            how accessible do you need the route to be?
+	 * @param options
+	 *            additional options
 	 * @return result object that can contain alternatives to clear up ambiguousnesses, or contains possible connections
 	 * @throws IOException
 	 */
 	QueryConnectionsResult queryConnections(Location from, Location via, Location to, Date date, boolean dep, int numConnections, String products,
-			WalkSpeed walkSpeed, Accessibility accessibility) throws IOException;
+			WalkSpeed walkSpeed, Accessibility accessibility, Set<Option> options) throws IOException;
 
 	/**
 	 * Query more connections (e.g. earlier or later)

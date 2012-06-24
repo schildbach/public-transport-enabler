@@ -732,7 +732,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	}
 
 	public QueryConnectionsResult queryConnections(Location from, Location via, Location to, final Date date, final boolean dep,
-			final int numConnections, final String products, final WalkSpeed walkSpeed, final Accessibility accessibility) throws IOException
+			final int numConnections, final String products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
+			throws IOException
 	{
 		final ResultHeader header = new ResultHeader(SERVER_PRODUCT);
 
@@ -782,14 +783,18 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			productsStr.append(allProductsString());
 		}
 
+		final char bikeChar = (options != null && options.contains(Option.BIKE)) ? '1' : '0';
+
 		final StringBuilder request = new StringBuilder("<ConReq deliverPolyline=\"1\">");
 		request.append("<Start>").append(locationXml(from));
-		request.append("<Prod prod=\"").append(productsStr).append("\" bike=\"0\" couchette=\"0\" direct=\"0\" sleeper=\"0\"/>");
+		request.append("<Prod prod=\"").append(productsStr).append("\" bike=\"").append(bikeChar)
+				.append("\" couchette=\"0\" direct=\"0\" sleeper=\"0\"/>");
 		request.append("</Start>");
 		if (via != null)
 		{
 			request.append("<Via>").append(locationXml(via));
-			request.append("<Prod prod=\"").append(productsStr).append("\" bike=\"0\" couchette=\"0\" direct=\"0\" sleeper=\"0\"/>");
+			request.append("<Prod prod=\"").append(productsStr).append("\" bike=\"").append(bikeChar)
+					.append("\" couchette=\"0\" direct=\"0\" sleeper=\"0\"/>");
 			request.append("</Via>");
 		}
 		request.append("<Dest>").append(locationXml(to)).append("</Dest>");

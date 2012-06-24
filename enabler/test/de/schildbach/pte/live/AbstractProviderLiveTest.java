@@ -70,7 +70,7 @@ public abstract class AbstractProviderLiveTest
 	protected final QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date,
 			final boolean dep, final String products, final WalkSpeed walkSpeed, final Accessibility accessibility) throws IOException
 	{
-		return provider.queryConnections(from, via, to, date, dep, 4, products, walkSpeed, accessibility);
+		return provider.queryConnections(from, via, to, date, dep, 4, products, walkSpeed, accessibility, null);
 	}
 
 	protected final QueryConnectionsResult queryMoreConnections(final QueryConnectionsContext context, final boolean later) throws IOException
