@@ -799,6 +799,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return 'R' + str;
 			if (type.equals("EB")) // Erfurter Bahn
 				return 'R' + str;
+			if (type.equals("EBx")) // Erfurter Bahn Express
+				return 'R' + str;
 			if (type.equals("MRB")) // Mittelrheinbahn
 				return 'R' + str;
 			if (type.equals("ABR")) // ABELLIO Rail NRW
