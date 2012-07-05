@@ -10,6 +10,12 @@
 	<version>1.0-SNAPSHOT</version>
 	<packaging>war</packaging>
 
+	<parent>
+		<groupId>de.schildbach.pte</groupId>
+		<artifactId>base</artifactId>
+		<version>1</version>
+	</parent>
+
 	<developers>
 		<developer>
 			<name>Andreas Schildbach</name>
