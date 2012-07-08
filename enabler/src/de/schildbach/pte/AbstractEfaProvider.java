@@ -1695,7 +1695,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		InputStream is = null;
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri, null, "NSC_", 3);
+			is = ParserUtils.scrapeInputStream(uri, null, null, "NSC_", 3);
 			return queryConnections(uri, is);
 		}
 		catch (final XmlPullParserException x)
@@ -1726,7 +1726,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		InputStream is = null;
 		try
 		{
-			is = new BufferedInputStream(ParserUtils.scrapeInputStream(uri.toString(), null, "NSC_", 3));
+			is = new BufferedInputStream(ParserUtils.scrapeInputStream(uri.toString(), null, null, "NSC_", 3));
 			is.mark(512);
 
 			return queryConnections(uri.toString(), is);

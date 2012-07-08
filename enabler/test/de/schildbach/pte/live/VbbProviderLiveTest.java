@@ -66,6 +66,14 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
+	public void autocompleteUmlaut() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("Hedwigshöhe");
+
+		print(autocompletes);
+	}
+
+	@Test
 	public void autocompleteIncomplete() throws Exception
 	{
 		final List<Location> autocompletes = provider.autocompleteStations("nol");

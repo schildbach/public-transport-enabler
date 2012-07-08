@@ -73,12 +73,20 @@ public class OebbProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
-	public void autoComplete() throws Exception
+	public void autocomplete() throws Exception
 	{
 		final List<Location> autocompletes = provider.autocompleteStations("Wien");
 
 		print(autocompletes);
 		assertTrue(autocompletes.size() > 0);
+	}
+
+	@Test
+	public void autocompleteUmlaut() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("Obirhöhle");
+
+		print(autocompletes);
 	}
 
 	@Test

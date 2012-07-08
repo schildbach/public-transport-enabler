@@ -66,7 +66,7 @@ public class EireannProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
-	public void autoComplete() throws Exception
+	public void autocomplete() throws Exception
 	{
 		final List<Location> autocompletes = provider.autocompleteStations("Dublin");
 
@@ -74,7 +74,15 @@ public class EireannProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
-	public void autoCompleteAddress() throws Exception
+	public void autocompleteUmlaut() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("Busáras");
+
+		print(autocompletes);
+	}
+
+	@Test
+	public void autocompleteAddress() throws Exception
 	{
 		final List<Location> autocompletes = provider.autocompleteStations("Dorfstrasse 10, Dällikon, Schweiz");
 

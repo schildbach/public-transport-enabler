@@ -155,9 +155,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			return new String[] { null, name };
 	}
 
-	private final String wrap(final String request)
+	private final String wrap(final String request, final Charset encoding)
 	{
-		return "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>" //
+		return "<?xml version=\"1.0\" encoding=\"" + (encoding != null ? encoding.name() : "iso-8859-1") + "\"?>" //
 				+ "<ReqC ver=\"1.1\" prod=\"" + PROD + "\" lang=\"DE\"" + (accessId != null ? " accessId=\"" + accessId + "\"" : "") + ">" //
 				+ request //
 				+ "</ReqC>";
@@ -246,7 +246,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 		try
 		{
-			reader = new InputStreamReader(ParserUtils.scrapeInputStream(apiUri, wrap(request), null, 3), ISO_8859_1);
+			reader = new InputStreamReader(ParserUtils.scrapeInputStream(apiUri, wrap(request, null), null, null, 3), ISO_8859_1);
 
 			final List<Location> results = new ArrayList<Location>();
 
@@ -451,14 +451,15 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	protected final List<Location> xmlMLcReq(final CharSequence constraint) throws IOException
 	{
 		final String request = "<MLcReq><MLc n=\"" + constraint + "?\" t=\"ALLTYPE\" /></MLcReq>";
+		final String wrappedRequest = wrap(request, xmlMlcResEncoding);
 
-		// ParserUtils.printXml(ParserUtils.scrape(apiUri, true, wrap(request), mlcResEncoding, false));
+		// ParserUtils.printXml(ParserUtils.scrape(apiUri, true, wrappedRequest, xmlMlcResEncoding, null));
 
 		Reader reader = null;
 
 		try
 		{
-			reader = new InputStreamReader(ParserUtils.scrapeInputStream(apiUri, wrap(request), null, 3), xmlMlcResEncoding);
+			reader = new InputStreamReader(ParserUtils.scrapeInputStream(apiUri, wrappedRequest, xmlMlcResEncoding, null, 3), xmlMlcResEncoding);
 
 			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
 			final XmlPullParser pp = factory.newPullParser();
@@ -838,7 +839,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 		try
 		{
-			reader = new InputStreamReader(ParserUtils.scrapeInputStream(apiUri, wrap(request), null, 3), ISO_8859_1);
+			reader = new InputStreamReader(ParserUtils.scrapeInputStream(apiUri, wrap(request, null), null, null, 3), ISO_8859_1);
 
 			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
 			final XmlPullParser pp = factory.newPullParser();

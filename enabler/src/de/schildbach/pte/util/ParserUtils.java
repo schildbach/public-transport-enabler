@@ -195,12 +195,15 @@ public final class ParserUtils
 
 	public static final InputStream scrapeInputStream(final String url) throws IOException
 	{
-		return scrapeInputStream(url, null, null, 3);
+		return scrapeInputStream(url, null, null, null, 3);
 	}
 
-	public static final InputStream scrapeInputStream(final String urlStr, final String postRequest, final String sessionCookieName, int tries)
-			throws IOException
+	public static final InputStream scrapeInputStream(final String urlStr, final String postRequest, Charset requestEncoding,
+			final String sessionCookieName, int tries) throws IOException
 	{
+		if (requestEncoding == null)
+			requestEncoding = SCRAPE_DEFAULT_ENCODING;
+
 		while (true)
 		{
 			final URL url = new URL(urlStr);
@@ -224,7 +227,7 @@ public final class ParserUtils
 				connection.addRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 				connection.addRequestProperty("Content-Length", Integer.toString(postRequest.length()));
 
-				final Writer writer = new OutputStreamWriter(connection.getOutputStream(), SCRAPE_DEFAULT_ENCODING);
+				final Writer writer = new OutputStreamWriter(connection.getOutputStream(), requestEncoding);
 				writer.write(postRequest);
 				writer.close();
 			}
