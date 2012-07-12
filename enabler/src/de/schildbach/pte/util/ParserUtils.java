@@ -94,6 +94,7 @@ public final class ParserUtils
 				connection.setReadTimeout(SCRAPE_READ_TIMEOUT);
 				connection.addRequestProperty("User-Agent", SCRAPE_USER_AGENT);
 				connection.addRequestProperty("Accept", SCRAPE_ACCEPT);
+				connection.addRequestProperty("Accept-Encoding", "gzip");
 				// workaround to disable Vodafone compression
 				connection.addRequestProperty("Cache-Control", "no-cache");
 
@@ -117,9 +118,19 @@ public final class ParserUtils
 				final int responseCode = connection.getResponseCode();
 				if (responseCode == HttpURLConnection.HTTP_OK)
 				{
-					final Reader pageReader = new InputStreamReader(connection.getInputStream(), encoding);
+					final String contentType = connection.getContentType();
+					final String contentEncoding = connection.getContentEncoding();
 					if (!url.equals(connection.getURL()))
 						throw new UnexpectedRedirectException(url, connection.getURL());
+
+					// TODO could check for gzip header here
+					final InputStream is;
+					if ("gzip".equalsIgnoreCase(contentEncoding) || "application/octet-stream".equalsIgnoreCase(contentType))
+						is = new GZIPInputStream(connection.getInputStream());
+					else
+						is = connection.getInputStream();
+
+					final Reader pageReader = new InputStreamReader(is, encoding);
 					copy(pageReader, buffer);
 					pageReader.close();
 
@@ -235,6 +246,7 @@ public final class ParserUtils
 			final int responseCode = connection.getResponseCode();
 			if (responseCode == HttpURLConnection.HTTP_OK)
 			{
+				final String contentType = connection.getContentType();
 				final String contentEncoding = connection.getContentEncoding();
 				final InputStream is = connection.getInputStream();
 				if (!url.equals(connection.getURL()))
@@ -257,7 +269,8 @@ public final class ParserUtils
 					}
 				}
 
-				if ("gzip".equalsIgnoreCase(contentEncoding))
+				// TODO could check for gzip header here
+				if ("gzip".equalsIgnoreCase(contentEncoding) || "application/octet-stream".equalsIgnoreCase(contentType))
 					return new GZIPInputStream(is);
 
 				return is;
