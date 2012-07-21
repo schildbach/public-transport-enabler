@@ -26,7 +26,6 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -112,7 +111,45 @@ public final class BvgProvider extends AbstractHafasProvider
 	@Override
 	protected void setProductBits(final StringBuilder productBits, final char product)
 	{
-		throw new UnsupportedOperationException();
+		if (product == 'I')
+		{
+			productBits.setCharAt(5, '1');
+		}
+		else if (product == 'R')
+		{
+			productBits.setCharAt(6, '1');
+		}
+		else if (product == 'S')
+		{
+			productBits.setCharAt(0, '1');
+		}
+		else if (product == 'U')
+		{
+			productBits.setCharAt(1, '1');
+		}
+		else if (product == 'T')
+		{
+			productBits.setCharAt(2, '1');
+		}
+		else if (product == 'B')
+		{
+			productBits.setCharAt(3, '1');
+		}
+		else if (product == 'P')
+		{
+			productBits.setCharAt(7, '1');
+		}
+		else if (product == 'F')
+		{
+			productBits.setCharAt(4, '1');
+		}
+		else if (product == 'C')
+		{
+		}
+		else
+		{
+			throw new IllegalArgumentException("cannot handle: " + product);
+		}
 	}
 
 	private static final Pattern P_SPLIT_NAME_PAREN = Pattern.compile("(.*?) \\((.{4,}?)\\)(?: \\((U|S|S\\+U)\\))?");
@@ -457,100 +494,10 @@ public final class BvgProvider extends AbstractHafasProvider
 	private String connectionsQueryUri(final Location from, final Location via, final Location to, final Date date, final boolean dep,
 			final String products)
 	{
-		final Calendar c = new GregorianCalendar(timeZone());
-		c.setTime(date);
+		final StringBuilder uri = new StringBuilder(API_BASE);
+		uri.append("query.bin/dn");
 
-		final StringBuilder uri = new StringBuilder();
-
-		uri.append(API_BASE).append("query.bin/dn");
-
-		uri.append("?start=Suchen");
-
-		uri.append("&REQ0JourneyStopsS0ID=").append(ParserUtils.urlEncode(locationId(from), ISO_8859_1));
-		uri.append("&REQ0JourneyStopsZ0ID=").append(ParserUtils.urlEncode(locationId(to), ISO_8859_1));
-
-		if (via != null)
-		{
-			// workaround, for there does not seem to be a REQ0JourneyStops1.0ID parameter
-
-			uri.append("&REQ0JourneyStops1.0A=").append(locationType(via));
-
-			if (via.type == LocationType.STATION && via.hasId() && isValidStationId(via.id))
-			{
-				uri.append("&REQ0JourneyStops1.0L=").append(via.id);
-			}
-			else if (via.hasLocation())
-			{
-				uri.append("&REQ0JourneyStops1.0X=").append(via.lon);
-				uri.append("&REQ0JourneyStops1.0Y=").append(via.lat);
-				if (via.name == null)
-					uri.append("&REQ0JourneyStops1.0O=").append(
-							ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%.6f, %.6f", via.lat / 1E6, via.lon / 1E6), ISO_8859_1));
-			}
-			else if (via.name != null)
-			{
-				uri.append("&REQ0JourneyStops1.0G=").append(ParserUtils.urlEncode(via.name, ISO_8859_1));
-				if (via.type != LocationType.ANY)
-					uri.append('!');
-			}
-		}
-
-		uri.append("&REQ0HafasSearchForw=").append(dep ? "1" : "0");
-		uri.append("&REQ0JourneyDate=").append(
-				String.format("%02d.%02d.%02d", c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.MONTH) + 1, c.get(Calendar.YEAR) - 2000));
-		uri.append("&REQ0JourneyTime=").append(String.format("%02d:%02d", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE)));
-
-		for (final char p : products.toCharArray())
-		{
-			if (p == 'I')
-			{
-				uri.append("&REQ0JourneyProduct_prod_section_0_5=1");
-				if (via != null)
-					uri.append("&REQ0JourneyProduct_prod_section_1_5=1");
-			}
-			if (p == 'R')
-			{
-				uri.append("&REQ0JourneyProduct_prod_section_0_6=1");
-				if (via != null)
-					uri.append("&REQ0JourneyProduct_prod_section_1_6=1");
-			}
-			if (p == 'S')
-			{
-				uri.append("&REQ0JourneyProduct_prod_section_0_0=1");
-				if (via != null)
-					uri.append("&REQ0JourneyProduct_prod_section_1_0=1");
-			}
-			if (p == 'U')
-			{
-				uri.append("&REQ0JourneyProduct_prod_section_0_1=1");
-				if (via != null)
-					uri.append("&REQ0JourneyProduct_prod_section_1_1=1");
-			}
-			if (p == 'T')
-			{
-				uri.append("&REQ0JourneyProduct_prod_section_0_2=1");
-				if (via != null)
-					uri.append("&REQ0JourneyProduct_prod_section_1_2=1");
-			}
-			if (p == 'B')
-			{
-				uri.append("&REQ0JourneyProduct_prod_section_0_3=1");
-				if (via != null)
-					uri.append("&REQ0JourneyProduct_prod_section_1_3=1");
-			}
-			if (p == 'P')
-			{
-				uri.append("&REQ0JourneyProduct_prod_section_0_7=1");
-				if (via != null)
-					uri.append("&REQ0JourneyProduct_prod_section_1_7=1");
-			}
-			if (p == 'F')
-			{
-				uri.append("&REQ0JourneyProduct_prod_section_0_4=1");
-				if (via != null)
-					uri.append("&REQ0JourneyProduct_prod_section_1_4=1");
-			}
-		}
+		appendConnectionsQueryUri(uri, from, via, to, date, dep, products);
 
 		if (additionalQueryParameter != null)
 			uri.append('&').append(additionalQueryParameter);
