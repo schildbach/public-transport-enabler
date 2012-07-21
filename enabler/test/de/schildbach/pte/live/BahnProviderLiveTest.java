@@ -25,7 +25,6 @@ import org.junit.Test;
 import de.schildbach.pte.BahnProvider;
 import de.schildbach.pte.NetworkProvider.Accessibility;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
-import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -89,8 +88,6 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 				LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
-		for (final Connection connection : result.connections)
-			provider.getConnectionDetails(connection);
 		System.out.println(laterResult);
 		final QueryConnectionsResult later2Result = queryMoreConnections(laterResult.context, true);
 		System.out.println(later2Result);
@@ -108,8 +105,6 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 				Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
-		for (final Connection connection : result.connections)
-			provider.getConnectionDetails(connection);
 		System.out.println(laterResult);
 	}
 
@@ -122,8 +117,6 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 		System.out.println(result);
 
 		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
-		for (final Connection connection : result.connections)
-			provider.getConnectionDetails(connection);
 		System.out.println(laterResult);
 	}
 }

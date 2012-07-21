@@ -19,16 +19,12 @@ package de.schildbach.pte;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.schildbach.pte.dto.Connection;
-import de.schildbach.pte.dto.GetConnectionDetailsResult;
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
@@ -36,8 +32,6 @@ import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryConnectionsContext;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
-import de.schildbach.pte.dto.ResultHeader;
-import de.schildbach.pte.exception.SessionExpiredException;
 import de.schildbach.pte.util.ParserUtils;
 
 /**
@@ -46,33 +40,11 @@ import de.schildbach.pte.util.ParserUtils;
 public final class BahnProvider extends AbstractHafasProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.DB;
-	private static final String API_BASE = "http://mobile.bahn.de/bin/mobil/";
-
-	private static class Context implements QueryConnectionsContext
-	{
-		private final String linkLater;
-		private final String linkEarlier;
-
-		private Context(final String linkLater, final String linkEarlier)
-		{
-			this.linkLater = linkLater;
-			this.linkEarlier = linkEarlier;
-		}
-
-		public boolean canQueryLater()
-		{
-			return linkLater != null;
-		}
-
-		public boolean canQueryEarlier()
-		{
-			return linkEarlier != null;
-		}
-	}
+	private static final String API_BASE = "http://reiseauskunft.bahn.de/bin/";
 
 	public BahnProvider()
 	{
-		super("http://reiseauskunft.bahn.de/bin/extxml.exe", 14, null);
+		super(API_BASE + "query.exe/dn", 14, null);
 	}
 
 	public NetworkId id()
@@ -188,300 +160,6 @@ public final class BahnProvider extends AbstractHafasProvider
 		}
 	}
 
-	private static final String AUTOCOMPLETE_URI = API_BASE + "ajax-getstop.exe/dn?getstop=1&REQ0JourneyStopsS0A=255&S=%s?&js=true&";
-
-	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
-	{
-		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ISO_8859_1));
-
-		return jsonGetStops(uri);
-	}
-
-	private String connectionsQueryUri(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final String products, final Set<Option> options)
-	{
-		final StringBuilder uri = new StringBuilder(API_BASE);
-		uri.append("query.exe/dox");
-
-		appendConnectionsQueryUri(uri, from, via, to, date, dep, products, options);
-
-		uri.append("&REQ0HafasOptimize1=0:1");
-		uri.append("&REQ0Tariff_Class=2");
-		uri.append("&REQ0Tariff_TravellerAge.1=35");
-		uri.append("&REQ0Tariff_TravellerReductionClass.1=0");
-		uri.append("&existOptimizePrice=1");
-		uri.append("&existProductNahverkehr=yes");
-
-		return uri.toString();
-	}
-
-	private static final Pattern P_PRE_ADDRESS = Pattern.compile(
-			"<select name=\"(REQ0JourneyStopsS0K|REQ0JourneyStopsZ0K|REQ0JourneyStops1\\.0K)\"[^>]*>(.*?)</select>", Pattern.DOTALL);
-	private static final Pattern P_ADDRESSES = Pattern.compile("<option[^>]*>\\s*(.*?)\\s*</option>", Pattern.DOTALL);
-
-	@Override
-	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final int numConnections, final String products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
-			throws IOException
-	{
-		final String uri = connectionsQueryUri(from, via, to, date, dep, products, options);
-		final CharSequence page = ParserUtils.scrape(uri);
-
-		List<Location> fromAddresses = null;
-		List<Location> viaAddresses = null;
-		List<Location> toAddresses = null;
-
-		final Matcher mPreAddress = P_PRE_ADDRESS.matcher(page);
-		while (mPreAddress.find())
-		{
-			final String suggestionType = mPreAddress.group(1);
-			final String suggestion = mPreAddress.group(2);
-
-			final Matcher mAddresses = P_ADDRESSES.matcher(suggestion);
-			final List<Location> addresses = new ArrayList<Location>();
-			while (mAddresses.find())
-			{
-				final Location address = new Location(LocationType.ANY, 0, null, ParserUtils.resolveEntities(mAddresses.group(1)).trim() + "!");
-				if (!addresses.contains(address))
-					addresses.add(address);
-			}
-
-			if (suggestionType.equals("REQ0JourneyStopsS0K"))
-				fromAddresses = addresses;
-			else if (suggestionType.equals("REQ0JourneyStopsZ0K"))
-				toAddresses = addresses;
-			else if (suggestionType.equals("REQ0JourneyStops1.0K"))
-				viaAddresses = addresses;
-			else
-				throw new IllegalStateException(suggestionType);
-		}
-
-		if (fromAddresses != null || viaAddresses != null || toAddresses != null)
-			return new QueryConnectionsResult(new ResultHeader(SERVER_PRODUCT), fromAddresses, viaAddresses, toAddresses);
-		else
-			return queryConnections(uri, page);
-	}
-
-	@Override
-	public QueryConnectionsResult queryMoreConnections(final QueryConnectionsContext contextObj, final boolean later, final int numConnections)
-			throws IOException
-	{
-		final Context context = (Context) contextObj;
-
-		final String uri = later ? context.linkLater : context.linkEarlier;
-		if (uri == null)
-			throw new IllegalStateException("cannot query " + (later ? "later" : "earlier"));
-
-		final CharSequence page = ParserUtils.scrape(uri);
-
-		return queryConnections(uri, page);
-	}
-
-	private static final Pattern P_CONNECTIONS_HEAD = Pattern.compile(".*?" //
-			+ "von: <span class=\"bold\">([^<]*)</span>.*?" // from
-			+ "nach: <span class=\"bold\">([^<]*)</span>.*?" // to
-			+ "Datum: <span class=\"bold\">.., (\\d{2}\\.\\d{2}\\.\\d{2})</span>.*?" // currentDate
-			+ "(?:<a [^>]*href=\"([^\"]*)\"[^>]*><img [^>]*>\\s*Fr&#252;her.*?)?" // linkEarlier
-			+ "(?:<a [^>]*href=\"([^\"]*)\"[^>]*><img [^>]*>\\s*Sp&#228;ter.*?)?" // linkLater
-	, Pattern.DOTALL);
-	private static final Pattern P_CONNECTIONS_COARSE = Pattern.compile("<tr><td class=\"overview timelink\">(.+?)</td></tr>", Pattern.DOTALL);
-	private static final Pattern P_CONNECTIONS_FINE = Pattern.compile(".*?" //
-			+ "<a href=\"(http://mobile.bahn.de/bin/mobil/query2?.exe/dox[^\"]*?)\">" // link
-			+ "(\\d{1,2}:\\d{2})<br />(\\d{1,2}:\\d{2})</a></td>.*?" // departureTime, arrivalTime
-			+ "<td class=\"overview\">\\s*(\\d+)\\s*<.*?" // numChanges
-			+ "<td class=\"overview iphonepfeil\">(.*?)<br />.*?" // line
-	, Pattern.DOTALL);
-	private static final Pattern P_CHECK_CONNECTIONS_ERROR = Pattern
-			.compile("(zu dicht beieinander|mehrfach vorhanden oder identisch)|(keine geeigneten Haltestellen)|(keine Verbindung gefunden)|(derzeit nur Ausk&#252;nfte vom)|(konnte leider nicht verarbeitet werden)|(zwischenzeitlich nicht mehr gespeichert)");
-
-	private QueryConnectionsResult queryConnections(final String uri, final CharSequence page) throws IOException
-	{
-		final Matcher mError = P_CHECK_CONNECTIONS_ERROR.matcher(page);
-		if (mError.find())
-		{
-			if (mError.group(1) != null)
-				return new QueryConnectionsResult(null, QueryConnectionsResult.Status.TOO_CLOSE);
-			if (mError.group(2) != null)
-				return new QueryConnectionsResult(null, QueryConnectionsResult.Status.UNRESOLVABLE_ADDRESS);
-			if (mError.group(3) != null)
-				return new QueryConnectionsResult(null, QueryConnectionsResult.Status.NO_CONNECTIONS);
-			if (mError.group(4) != null)
-				return new QueryConnectionsResult(null, QueryConnectionsResult.Status.INVALID_DATE);
-			if (mError.group(5) != null)
-				return new QueryConnectionsResult(null, QueryConnectionsResult.Status.SERVICE_DOWN);
-			if (mError.group(6) != null)
-				throw new SessionExpiredException();
-		}
-
-		final Matcher mHead = P_CONNECTIONS_HEAD.matcher(page);
-		if (mHead.matches())
-		{
-			final Location from = new Location(LocationType.ANY, 0, null, ParserUtils.resolveEntities(mHead.group(1)));
-			final Location to = new Location(LocationType.ANY, 0, null, ParserUtils.resolveEntities(mHead.group(2)));
-			final Calendar currentDate = new GregorianCalendar(timeZone());
-			currentDate.clear();
-			ParserUtils.parseGermanDate(currentDate, mHead.group(3));
-			final String linkEarlier = mHead.group(4) != null ? ParserUtils.resolveEntities(mHead.group(4)) : null;
-			final String linkLater = mHead.group(5) != null ? ParserUtils.resolveEntities(mHead.group(5)) : null;
-
-			final List<Connection> connections = new ArrayList<Connection>();
-
-			final Matcher mConCoarse = P_CONNECTIONS_COARSE.matcher(page);
-			while (mConCoarse.find())
-			{
-				final Matcher mConFine = P_CONNECTIONS_FINE.matcher(mConCoarse.group(1));
-				if (mConFine.matches())
-				{
-					final String link = ParserUtils.resolveEntities(mConFine.group(1));
-					final int numChanges = Integer.parseInt(mConFine.group(4));
-					final Connection connection = new Connection(AbstractHafasProvider.extractConnectionId(link), link, from, to, null, null, null,
-							numChanges);
-					connections.add(connection);
-				}
-				else
-				{
-					throw new IllegalArgumentException("cannot parse '" + mConCoarse.group(1) + "' on " + uri);
-				}
-			}
-
-			return new QueryConnectionsResult(new ResultHeader(SERVER_PRODUCT), uri, from, null, to, new Context(linkLater, linkEarlier), connections);
-		}
-		else
-		{
-			throw new IOException(page.toString());
-		}
-	}
-
-	private static final Pattern P_CONNECTION_DETAILS_HEAD = Pattern.compile(".*?" //
-			+ "<span class=\"bold\">Verbindungsdetails</span>(.*?)<div class=\"rline\"></div>.*?", Pattern.DOTALL);
-	private static final Pattern P_CONNECTION_DETAILS_COARSE = Pattern.compile("<div class=\"rline haupt(?: rline)?\"[^>]*>\n(.+?>\n)</div>",
-			Pattern.DOTALL);
-	static final Pattern P_CONNECTION_DETAILS_FINE = Pattern.compile("<span class=\"bold\">\\s*(.+?)\\s*</span>.*?" // departure
-			+ "(?:" //
-			+ "<span class=\"bold\">\\s*(.+?)\\s*</span>.*?" // line
-			+ "ab\\s+(?:<span[^>]*>.*?</span>)?\\s*(\\d{1,2}:\\d{2})\\s*(?:<span[^>]*>.*?</span>)?" // departureTime
-			+ "\\s*(?:Gl\\. (.+?))?\\s*\n" // departurePosition
-			+ "am\\s+(\\d{2}\\.\\d{2}\\.\\d{2}).*?" // departureDate
-			+ "<span class=\"bold\">\\s*(.+?)\\s*</span><br />.*?" // arrival
-			+ "an\\s+(?:<span[^>]*>.*?</span>)?\\s*(\\d{1,2}:\\d{2})\\s*(?:<span[^>]*>.*?</span>)?" // arrivalTime
-			+ "\\s*(?:Gl\\. (.+?))?\\s*\n" // arrivalPosition
-			+ "am\\s+(\\d{2}\\.\\d{2}\\.\\d{2}).*?" // arrivalDate
-			+ "|" //
-			+ "(\\d+) Min\\..*?" // footway
-			+ "<span class=\"bold\">\\s*(.+?)\\s*</span><br />\n" // arrival
-			+ "|" //
-			+ "&#220;bergang.*?" //
-			+ "<span class=\"bold\">\\s*(.+?)\\s*</span><br />\n" // arrival
-			+ ")", Pattern.DOTALL);
-	private static final Pattern P_CONNECTION_DETAILS_ERROR = Pattern.compile("(zwischenzeitlich nicht mehr gespeichert)");
-	private static final Pattern P_CONNECTION_DETAILS_MESSAGES = Pattern
-			.compile("<div class=\"him\">|Dauer: \\d+:\\d+|Anschlusszug nicht mehr rechtzeitig|Anschlusszug jedoch erreicht werden|nur teilweise dargestellt|L&#228;ngerer Aufenthalt|&#228;quivalentem Bahnhof|Bahnhof wird mehrfach durchfahren|Aktuelle Informationen zu der Verbindung");
-
-	@Override
-	public GetConnectionDetailsResult getConnectionDetails(final Connection connection) throws IOException
-	{
-		final String uri = connection.link;
-
-		final CharSequence page = ParserUtils.scrape(uri);
-
-		final Matcher mError = P_CONNECTION_DETAILS_ERROR.matcher(page);
-		if (mError.find())
-		{
-			if (mError.group(1) != null)
-				throw new SessionExpiredException();
-		}
-
-		final Matcher mHead = P_CONNECTION_DETAILS_HEAD.matcher(page);
-		if (mHead.matches())
-		{
-			final List<Connection.Part> parts = new ArrayList<Connection.Part>(4);
-
-			Location firstDeparture = null;
-			Location lastArrival = null;
-
-			final Matcher mDetCoarse = P_CONNECTION_DETAILS_COARSE.matcher(mHead.group(1));
-			while (mDetCoarse.find())
-			{
-				final String section = mDetCoarse.group(1);
-				if (P_CONNECTION_DETAILS_MESSAGES.matcher(section).find())
-				{
-					// ignore message for now
-				}
-				else
-				{
-					final Matcher mDetFine = P_CONNECTION_DETAILS_FINE.matcher(section);
-					if (mDetFine.matches())
-					{
-						final Location departure = new Location(LocationType.ANY, 0, null, ParserUtils.resolveEntities(mDetFine.group(1)));
-						if (departure != null && firstDeparture == null)
-							firstDeparture = departure;
-
-						if (mDetFine.group(2) != null)
-						{
-							final Line line = parseLineWithoutType(ParserUtils.resolveEntities(mDetFine.group(2)));
-
-							final Calendar departureTime = new GregorianCalendar(timeZone());
-							departureTime.clear();
-							ParserUtils.parseEuropeanTime(departureTime, mDetFine.group(3));
-							ParserUtils.parseGermanDate(departureTime, mDetFine.group(5));
-
-							final String departurePosition = ParserUtils.resolveEntities(mDetFine.group(4));
-
-							final Location arrival = new Location(LocationType.ANY, 0, null, ParserUtils.resolveEntities(mDetFine.group(6)));
-
-							final Calendar arrivalTime = new GregorianCalendar(timeZone());
-							arrivalTime.clear();
-							ParserUtils.parseEuropeanTime(arrivalTime, mDetFine.group(7));
-							ParserUtils.parseGermanDate(arrivalTime, mDetFine.group(9));
-
-							final String arrivalPosition = ParserUtils.resolveEntities(mDetFine.group(8));
-
-							parts.add(new Connection.Trip(line, null, departureTime.getTime(), null, departurePosition, departure, arrivalTime
-									.getTime(), null, arrivalPosition, arrival, null, null));
-
-							lastArrival = arrival;
-						}
-						else if (mDetFine.group(10) != null)
-						{
-							final String min = mDetFine.group(10);
-
-							final Location arrival = new Location(LocationType.ANY, 0, null, ParserUtils.resolveEntities(mDetFine.group(11)));
-
-							if (parts.size() > 0 && parts.get(parts.size() - 1) instanceof Connection.Footway)
-							{
-								final Connection.Footway lastFootway = (Connection.Footway) parts.remove(parts.size() - 1);
-								parts.add(new Connection.Footway(lastFootway.min + Integer.parseInt(min), lastFootway.departure, arrival, null));
-							}
-							else
-							{
-								parts.add(new Connection.Footway(Integer.parseInt(min), departure, arrival, null));
-							}
-
-							lastArrival = arrival;
-						}
-						else
-						{
-							final Location arrival = new Location(LocationType.ANY, 0, null, ParserUtils.resolveEntities(mDetFine.group(12)));
-
-							parts.add(new Connection.Footway(0, departure, arrival, null));
-						}
-					}
-					else
-					{
-						throw new IllegalArgumentException("cannot parse '" + section + "' on " + uri);
-					}
-				}
-			}
-
-			return new GetConnectionDetailsResult(new GregorianCalendar(timeZone()).getTime(), new Connection(connection.id, uri, firstDeparture,
-					lastArrival, parts, null, null, connection.numChanges));
-		}
-		else
-		{
-			throw new IOException(page.toString());
-		}
-	}
-
 	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder();
@@ -495,6 +173,36 @@ public final class BahnProvider extends AbstractHafasProvider
 		uri.append("&input=").append(stationId);
 
 		return xmlQueryDepartures(uri.toString(), stationId);
+	}
+
+	private static final String AUTOCOMPLETE_URI = API_BASE + "ajax-getstop.exe/dn?getstop=1&REQ0JourneyStopsS0A=255&S=%s?&js=true&";
+
+	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
+	{
+		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ISO_8859_1));
+
+		return jsonGetStops(uri);
+	}
+
+	@Override
+	protected void appendCustomConnectionsQueryBinaryUri(final StringBuilder uri)
+	{
+		uri.append("&h2g-direct=11");
+	}
+
+	@Override
+	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
+			final int maxNumConnections, final String products, final WalkSpeed walkSpeed, final Accessibility accessibility,
+			final Set<Option> options) throws IOException
+	{
+		return queryConnectionsBinary(from, via, to, date, dep, maxNumConnections, products, walkSpeed, accessibility, options);
+	}
+
+	@Override
+	public QueryConnectionsResult queryMoreConnections(final QueryConnectionsContext contextObj, final boolean later, final int numConnections)
+			throws IOException
+	{
+		return queryMoreConnectionsBinary(contextObj, later, numConnections);
 	}
 
 	@Override

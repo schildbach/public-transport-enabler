@@ -17,11 +17,8 @@
 
 package de.schildbach.pte;
 
-import java.io.IOException;
 import java.nio.charset.Charset;
 
-import de.schildbach.pte.dto.Connection;
-import de.schildbach.pte.dto.GetConnectionDetailsResult;
 import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.Style;
 
@@ -43,10 +40,5 @@ public abstract class AbstractNetworkProvider implements NetworkProvider
 	public Point[] getArea()
 	{
 		return null;
-	}
-
-	public GetConnectionDetailsResult getConnectionDetails(final Connection connection) throws IOException
-	{
-		throw new UnsupportedOperationException();
 	}
 }

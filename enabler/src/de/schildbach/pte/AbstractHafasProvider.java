@@ -1270,7 +1270,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 				XmlPullUtil.exit(pp, "Connection");
 
-				connections.add(new Connection(id, null, departure, arrival, parts, null, capacity, numTransfers));
+				connections.add(new Connection(id, departure, arrival, parts, null, capacity, numTransfers));
 			}
 
 			XmlPullUtil.exit(pp);
@@ -1817,7 +1817,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					parts.add(part);
 				}
 
-				final Connection connection = new Connection(connectionId, null, resDeparture, resArrival, parts, null, null, (int) numChanges);
+				final Connection connection = new Connection(connectionId, resDeparture, resArrival, parts, null, null, (int) numChanges);
 
 				if (realtimeStatus != 2) // Verbindung fällt aus
 					connections.add(connection);

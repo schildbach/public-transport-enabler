@@ -30,7 +30,6 @@ public final class Connection implements Serializable
 	private static final long serialVersionUID = 2508466068307110312L;
 
 	public final String id;
-	public final String link;
 	public final Location from;
 	public final Location to;
 	public final List<Part> parts;
@@ -38,11 +37,10 @@ public final class Connection implements Serializable
 	public final int[] capacity;
 	public final Integer numChanges;
 
-	public Connection(final String id, final String link, final Location from, final Location to, final List<Part> parts, final List<Fare> fares,
+	public Connection(final String id, final Location from, final Location to, final List<Part> parts, final List<Fare> fares,
 			final int[] capacity, final Integer numChanges)
 	{
 		this.id = id;
-		this.link = link;
 		this.from = from;
 		this.to = to;
 		this.parts = parts;

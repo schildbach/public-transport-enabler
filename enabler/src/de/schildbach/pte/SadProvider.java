@@ -463,7 +463,7 @@ public class SadProvider extends AbstractNetworkProvider {
 				// Only add to connections list if exactly one to and and one from location were found
 				if (fromToLocs.size() == 2) {
 					// NOTE: link, capacity set to null
-					connections.add(new Connection(fromToLocs.get(0).toString() + fromToLocs.get(1).toString(), null, fromToLocs.get(0),
+					connections.add(new Connection(fromToLocs.get(0).toString() + fromToLocs.get(1).toString(), fromToLocs.get(0),
 							fromToLocs.get(1), parts, fares, null, null));
 				}
 			}
