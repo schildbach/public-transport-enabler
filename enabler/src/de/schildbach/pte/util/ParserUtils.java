@@ -20,10 +20,9 @@ package de.schildbach.pte.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
-import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
@@ -65,17 +64,17 @@ public final class ParserUtils
 
 	public static final CharSequence scrape(final String url) throws IOException
 	{
-		return scrape(url, false, null, null, null);
+		return scrape(url, null, null, null);
 	}
 
-	public static final CharSequence scrape(final String url, final boolean isPost, final String request, Charset encoding,
-			final String sessionCookieName) throws IOException
+	public static final CharSequence scrape(final String url, final String postRequest, Charset encoding, final String sessionCookieName)
+			throws IOException
 	{
-		return scrape(url, isPost, request, encoding, sessionCookieName, 3);
+		return scrape(url, postRequest, encoding, sessionCookieName, 3);
 	}
 
-	public static final CharSequence scrape(final String urlStr, final boolean isPost, final String request, Charset encoding,
-			final String sessionCookieName, int tries) throws IOException
+	public static final CharSequence scrape(final String urlStr, final String postRequest, Charset encoding, final String sessionCookieName, int tries)
+			throws IOException
 	{
 		if (encoding == null)
 			encoding = SCRAPE_DEFAULT_ENCODING;
@@ -89,7 +88,7 @@ public final class ParserUtils
 				final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
 				connection.setDoInput(true);
-				connection.setDoOutput(request != null);
+				connection.setDoOutput(postRequest != null);
 				connection.setConnectTimeout(SCRAPE_CONNECT_TIMEOUT);
 				connection.setReadTimeout(SCRAPE_READ_TIMEOUT);
 				connection.addRequestProperty("User-Agent", SCRAPE_USER_AGENT);
@@ -101,18 +100,17 @@ public final class ParserUtils
 				if (sessionCookieName != null && stateCookie != null)
 					connection.addRequestProperty("Cookie", stateCookie);
 
-				if (request != null)
+				if (postRequest != null)
 				{
-					if (isPost)
-					{
-						connection.setRequestMethod("POST");
-						connection.addRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-						connection.addRequestProperty("Content-Length", Integer.toString(request.length()));
-					}
+					final byte[] postRequestBytes = postRequest.getBytes(encoding);
 
-					final Writer writer = new OutputStreamWriter(connection.getOutputStream(), encoding);
-					writer.write(request);
-					writer.close();
+					connection.setRequestMethod("POST");
+					connection.addRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+					connection.addRequestProperty("Content-Length", Integer.toString(postRequestBytes.length));
+
+					final OutputStream os = connection.getOutputStream();
+					os.write(postRequestBytes);
+					os.close();
 				}
 
 				final int responseCode = connection.getResponseCode();
@@ -234,13 +232,15 @@ public final class ParserUtils
 
 			if (postRequest != null)
 			{
+				final byte[] postRequestBytes = postRequest.getBytes(requestEncoding);
+
 				connection.setRequestMethod("POST");
 				connection.addRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-				connection.addRequestProperty("Content-Length", Integer.toString(postRequest.length()));
+				connection.addRequestProperty("Content-Length", Integer.toString(postRequestBytes.length));
 
-				final Writer writer = new OutputStreamWriter(connection.getOutputStream(), requestEncoding);
-				writer.write(postRequest);
-				writer.close();
+				final OutputStream os = connection.getOutputStream();
+				os.write(postRequestBytes);
+				os.close();
 			}
 
 			final int responseCode = connection.getResponseCode();

@@ -181,7 +181,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		// System.out.println(uri.toString());
 
-		final CharSequence page = ParserUtils.scrape(uri.toString(), false, null, UTF_8, null);
+		final CharSequence page = ParserUtils.scrape(uri.toString(), null, UTF_8, null);
 
 		try
 		{
