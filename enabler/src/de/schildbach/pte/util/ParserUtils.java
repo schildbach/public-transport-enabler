@@ -102,7 +102,7 @@ public final class ParserUtils
 
 				if (postRequest != null)
 				{
-					final byte[] postRequestBytes = postRequest.getBytes(encoding);
+					final byte[] postRequestBytes = postRequest.getBytes(encoding.name());
 
 					connection.setRequestMethod("POST");
 					connection.addRequestProperty("Content-Type", "application/x-www-form-urlencoded");
@@ -232,7 +232,7 @@ public final class ParserUtils
 
 			if (postRequest != null)
 			{
-				final byte[] postRequestBytes = postRequest.getBytes(requestEncoding);
+				final byte[] postRequestBytes = postRequest.getBytes(requestEncoding.name());
 
 				connection.setRequestMethod("POST");
 				connection.addRequestProperty("Content-Type", "application/x-www-form-urlencoded");
