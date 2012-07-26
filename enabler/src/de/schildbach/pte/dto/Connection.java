@@ -134,7 +134,7 @@ public final class Connection implements Serializable
 	{
 		final SimpleDateFormat FORMAT = new SimpleDateFormat("E HH:mm");
 
-		final StringBuilder str = new StringBuilder(id);
+		final StringBuilder str = new StringBuilder(id != null ? id : "null");
 		str.append(' ');
 		final Date firstTripDepartureTime = getFirstTripDepartureTime();
 		str.append(firstTripDepartureTime != null ? FORMAT.format(firstTripDepartureTime) : "null");
