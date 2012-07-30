@@ -76,10 +76,67 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 13002, null, "Leipzig, Augustusplatz"), null,
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 11063, null, "Leipzig, Johannisplatz"), null,
 				new Location(LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
+
+		if (!result.context.canQueryLater())
+			return;
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
+		System.out.println(laterResult);
+	}
+
+	@Test
+	public void anotherShortConnection() throws Exception
+	{
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 8010205, 51346546, 12383333, null, "Leipzig Hbf"),
+				null, new Location(LocationType.STATION, 8012183, 51423340, 12223423, null, "Leipzig/Halle Flughafen"), new Date(), true,
+				ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		System.out.println(result);
+
+		if (!result.context.canQueryLater())
+			return;
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
+		System.out.println(laterResult);
+	}
+
+	@Test
+	public void outdatedConnection() throws Exception
+	{
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 13002, null, "Leipzig, Augustusplatz"), null,
+				new Location(LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(2011, 1, 1), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
+				Accessibility.NEUTRAL);
+		System.out.println(result);
+
+		if (!result.context.canQueryLater())
+			return;
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
+		System.out.println(laterResult);
+	}
+
+	@Test
+	public void ambiguousConnection() throws Exception
+	{
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ANY, 0, null, "Platz"), null, new Location(
+				LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		System.out.println(result);
+
+		if (!result.context.canQueryLater())
+			return;
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
+		System.out.println(laterResult);
+	}
+
+	@Test
+	public void sameStationConnection() throws Exception
+	{
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 8010205, null, "Leipzig Hbf"), null, new Location(
+				LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		System.out.println(result);
+
+		if (!result.context.canQueryLater())
+			return;
 		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
 	}
@@ -91,6 +148,9 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest
 				"August-Bebel-Platz"), null, new Location(LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(), true, ALL_PRODUCTS,
 				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
+
+		if (!result.context.canQueryLater())
+			return;
 		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
 	}
