@@ -47,7 +47,6 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import de.schildbach.pte.NetworkProvider.Option;
 import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.Fare;
@@ -1154,6 +1153,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			if ("KTB".equals(type)) // Kandertalbahn
 				return 'R' + type;
 			if ("UEF".equals(type)) // Ulmer Eisenbahnfreunde
+				return 'R' + type;
+			if ("CBC".equals(type)) // City-Bahn Chemnitz
 				return 'R' + type;
 			if ("Regionalzug".equals(type))
 				return 'R' + type;
