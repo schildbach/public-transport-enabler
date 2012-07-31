@@ -17,6 +17,7 @@
 
 package de.schildbach.pte.util;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -121,12 +122,32 @@ public final class ParserUtils
 					if (!url.equals(connection.getURL()))
 						throw new UnexpectedRedirectException(url, connection.getURL());
 
-					// TODO could check for gzip header here
 					final InputStream is;
 					if ("gzip".equalsIgnoreCase(contentEncoding) || "application/octet-stream".equalsIgnoreCase(contentType))
-						is = new GZIPInputStream(connection.getInputStream());
+					{
+						final BufferedInputStream bis = new BufferedInputStream(connection.getInputStream());
+						bis.mark(2);
+						final int byte0 = bis.read();
+						final int byte1 = bis.read();
+						bis.reset();
+
+						// check for gzip header
+						if (byte0 == 0x1f && byte1 == 0x8b)
+						{
+							// gzipped
+							is = new GZIPInputStream(bis);
+						}
+						else
+						{
+							// uncompressed
+							is = bis;
+						}
+					}
 					else
+					{
+						// uncompressed
 						is = connection.getInputStream();
+					}
 
 					final Reader pageReader = new InputStreamReader(is, encoding);
 					copy(pageReader, buffer);
@@ -269,11 +290,48 @@ public final class ParserUtils
 					}
 				}
 
-				// TODO could check for gzip header here
 				if ("gzip".equalsIgnoreCase(contentEncoding) || "application/octet-stream".equalsIgnoreCase(contentType))
-					return new GZIPInputStream(is);
+				{
+					final BufferedInputStream bis = new BufferedInputStream(is);
+					bis.mark(2);
+					final int byte0 = bis.read();
+					final int byte1 = bis.read();
+					bis.reset();
 
-				return is;
+					// check for gzip header
+					if (byte0 == 0x1f && byte1 == 0x8b)
+					{
+						final InputStream gis = new GZIPInputStream(bis);
+
+						final BufferedInputStream bis2 = new BufferedInputStream(gis);
+						bis2.mark(2);
+						final int byte0_2 = bis2.read();
+						final int byte1_2 = bis2.read();
+						bis2.reset();
+
+						// check for gzip header again
+						if (byte0_2 == 0x1f && byte1_2 == 0x8b)
+						{
+							// double gzipped
+							return new GZIPInputStream(bis2);
+						}
+						else
+						{
+							// gzipped
+							return bis2;
+						}
+					}
+					else
+					{
+						// uncompressed
+						return bis;
+					}
+				}
+				else
+				{
+					// uncompressed
+					return is;
+				}
 			}
 			else
 			{

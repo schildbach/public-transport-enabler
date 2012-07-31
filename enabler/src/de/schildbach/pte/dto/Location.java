@@ -101,6 +101,20 @@ public final class Location implements Serializable
 		return lat != 0 || lon != 0;
 	}
 
+	public final boolean isIdentified()
+	{
+		if (type == LocationType.STATION)
+			return hasId();
+
+		if (type == LocationType.POI)
+			return true;
+
+		if (type == LocationType.ADDRESS)
+			return hasLocation();
+
+		return false;
+	}
+
 	private static final String[] NON_UNIQUE_NAMES = { "Hauptbahnhof", "Hbf", "Bahnhof", "Dorf", "Kirche", "Nord", "Ost", "Süd", "West" };
 	static
 	{

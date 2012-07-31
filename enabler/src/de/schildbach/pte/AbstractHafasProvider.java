@@ -17,11 +17,15 @@
 
 package de.schildbach.pte;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -57,6 +61,8 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.ResultHeader;
 import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.dto.Stop;
+import de.schildbach.pte.exception.SessionExpiredException;
+import de.schildbach.pte.util.LittleEndianDataInputStream;
 import de.schildbach.pte.util.ParserUtils;
 import de.schildbach.pte.util.StringReplaceReader;
 import de.schildbach.pte.util.XmlPullUtil;
@@ -97,6 +103,30 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		public boolean canQueryEarlier()
 		{
 			return earlierContext != null;
+		}
+	}
+
+	public static class QueryConnectionsBinaryContext implements QueryConnectionsContext
+	{
+		public final String ident;
+		public final short seqNr;
+		public final String ld;
+
+		public QueryConnectionsBinaryContext(final String ident, final short seqNr, final String ld)
+		{
+			this.ident = ident;
+			this.seqNr = seqNr;
+			this.ld = ld;
+		}
+
+		public boolean canQueryLater()
+		{
+			return true;
+		}
+
+		public boolean canQueryEarlier()
+		{
+			return true;
 		}
 	}
 
@@ -811,7 +841,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	{
 		final ResultHeader header = new ResultHeader(SERVER_PRODUCT);
 
-		if (from.type == LocationType.ANY || (from.type == LocationType.ADDRESS && !from.hasLocation()))
+		if (!from.isIdentified())
 		{
 			final List<Location> autocompletes = autocompleteStations(from.name);
 			if (autocompletes.isEmpty())
@@ -821,7 +851,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			from = autocompletes.get(0);
 		}
 
-		if (via != null && (via.type == LocationType.ANY || (via.type == LocationType.ADDRESS && !via.hasLocation())))
+		if (via != null && !via.isIdentified())
 		{
 			final List<Location> autocompletes = autocompleteStations(via.name);
 			if (autocompletes.isEmpty())
@@ -831,7 +861,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			via = autocompletes.get(0);
 		}
 
-		if (to.type == LocationType.ANY || (to.type == LocationType.ADDRESS && !to.hasLocation()))
+		if (!to.isIdentified())
 		{
 			final List<Location> autocompletes = autocompleteStations(to.name);
 			if (autocompletes.isEmpty())
@@ -1392,6 +1422,601 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	protected boolean isValidStationId(int id)
 	{
 		return true;
+	}
+
+	protected void appendCustomConnectionsQueryBinaryUri(final StringBuilder uri)
+	{
+	}
+
+	protected final QueryConnectionsResult queryConnectionsBinary(Location from, Location via, Location to, final Date date, final boolean dep,
+			final int maxNumConnections, final String products, final WalkSpeed walkSpeed, final Accessibility accessibility,
+			final Set<Option> options) throws IOException
+	{
+		final ResultHeader header = new ResultHeader(SERVER_PRODUCT);
+
+		if (!from.isIdentified())
+		{
+			final List<Location> autocompletes = autocompleteStations(from.name);
+			if (autocompletes.isEmpty())
+				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.NO_CONNECTIONS); // TODO
+			if (autocompletes.size() > 1)
+				return new QueryConnectionsResult(header, autocompletes, null, null);
+			from = autocompletes.get(0);
+		}
+
+		if (via != null && !via.isIdentified())
+		{
+			final List<Location> autocompletes = autocompleteStations(via.name);
+			if (autocompletes.isEmpty())
+				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.NO_CONNECTIONS); // TODO
+			if (autocompletes.size() > 1)
+				return new QueryConnectionsResult(header, null, autocompletes, null);
+			via = autocompletes.get(0);
+		}
+
+		if (!to.isIdentified())
+		{
+			final List<Location> autocompletes = autocompleteStations(to.name);
+			if (autocompletes.isEmpty())
+				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.NO_CONNECTIONS); // TODO
+			if (autocompletes.size() > 1)
+				return new QueryConnectionsResult(header, null, null, autocompletes);
+			to = autocompletes.get(0);
+		}
+
+		final StringBuilder uri = new StringBuilder(apiUri);
+		appendConnectionsQueryUri(uri, from, via, to, date, dep, products, options);
+		appendCustomConnectionsQueryBinaryUri(uri);
+
+		return queryConnectionsBinary(uri.toString(), from, via, to);
+	}
+
+	protected QueryConnectionsResult queryMoreConnectionsBinary(final QueryConnectionsContext contextObj, final boolean later,
+			final int numConnections) throws IOException
+	{
+		final QueryConnectionsBinaryContext context = (QueryConnectionsBinaryContext) contextObj;
+
+		final StringBuilder uri = new StringBuilder(apiUri);
+		uri.append("?seqnr=").append(context.seqNr);
+		uri.append("&ident=").append(context.ident);
+		if (context.ld != null)
+			uri.append("&ld=").append(context.ld);
+		uri.append("&REQ0HafasScrollDir=").append(later ? 1 : 2);
+		appendCustomConnectionsQueryBinaryUri(uri);
+
+		return queryConnectionsBinary(uri.toString(), null, null, null);
+	}
+
+	private QueryConnectionsResult queryConnectionsBinary(final String uri, final Location from, final Location via, final Location to)
+			throws IOException
+	{
+		/*
+		 * Many thanks to Malte Starostik and Robert, who helped a lot with analyzing this API!
+		 */
+
+		// System.out.println(uri);
+
+		LittleEndianDataInputStream is = null;
+
+		try
+		{
+			is = new LittleEndianDataInputStream(new BufferedInputStream(ParserUtils.scrapeInputStream(uri)));
+			is.mark(32768);
+
+			// quick check of status
+			final short version = is.readShortReverse();
+			if (version != 6 && version != 5)
+				throw new IllegalStateException("unknown version: " + version);
+			final ResultHeader header = new ResultHeader(SERVER_PRODUCT, Short.toString(version), 0, null);
+
+			// quick seek for pointers
+			is.reset();
+			is.skipBytes(0x20);
+			final int serviceDaysTablePtr = is.readIntReverse();
+			final int stringTablePtr = is.readIntReverse();
+
+			is.reset();
+			is.skipBytes(0x36);
+			final int stationTablePtr = is.readIntReverse();
+			final int commentTablePtr = is.readIntReverse();
+
+			is.reset();
+			is.skipBytes(0x46);
+			final int extensionHeaderPtr = is.readIntReverse();
+
+			// read strings
+			final StringTable strings = new StringTable(is, stringTablePtr, serviceDaysTablePtr - stringTablePtr);
+
+			is.reset();
+			is.skipBytes(extensionHeaderPtr);
+
+			// read extension header
+			final int extensionHeaderLength = is.readIntReverse();
+			if (extensionHeaderLength < 0x2c)
+				throw new IllegalStateException("too short: " + extensionHeaderLength);
+
+			is.skipBytes(4);
+			final short seqNr = is.readShortReverse();
+			final String requestId = strings.read(is);
+
+			final int connectionDetailsPtr = is.readIntReverse();
+			if (connectionDetailsPtr == 0)
+				throw new IllegalStateException("no connection details");
+
+			final short errorCode = is.readShortReverse();
+			if (errorCode != 0)
+			{
+				if (errorCode == 1)
+					throw new SessionExpiredException();
+				else if (errorCode == 890)
+					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.NO_CONNECTIONS);
+				else if (errorCode == 9220)
+					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.UNRESOLVABLE_ADDRESS);
+				else if (errorCode == 9240)
+					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.SERVICE_DOWN);
+				else if (errorCode == 9360)
+					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.INVALID_DATE);
+				else if (errorCode == 9380) // start/end same location
+					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.TOO_CLOSE);
+				else
+					throw new IllegalStateException("error " + errorCode + " on " + uri);
+			}
+			is.skipBytes(14);
+			final Charset stringEncoding = Charset.forName(strings.read(is));
+			strings.setEncoding(stringEncoding);
+			final String ld = strings.read(is);
+			final short attrsOffset = is.readShortReverse();
+
+			final int connectionAttrsPtr;
+			if (extensionHeaderLength >= 0x30)
+			{
+				if (extensionHeaderLength < 0x32)
+					throw new IllegalArgumentException("too short: " + extensionHeaderLength);
+				is.reset();
+				is.skipBytes(extensionHeaderPtr + 0x2c);
+				connectionAttrsPtr = is.readIntReverse();
+			}
+			else
+			{
+				connectionAttrsPtr = 0;
+			}
+
+			// determine stops offset
+			is.reset();
+			is.skipBytes(connectionDetailsPtr);
+			final short connectionDetailsVersion = is.readShortReverse();
+			if (connectionDetailsVersion != 1)
+				throw new IllegalStateException("unknown connection details version: " + connectionDetailsVersion);
+			is.skipBytes(0x02);
+
+			final short connectionDetailsIndexOffset = is.readShortReverse();
+			final short connectionDetailsPartOffset = is.readShortReverse();
+			final short connectionDetailsPartSize = is.readShortReverse();
+			final short stopsSize = is.readShortReverse();
+			final short stopsOffset = is.readShortReverse();
+
+			// read stations
+			final StationTable stations = new StationTable(is, stationTablePtr, commentTablePtr - stationTablePtr, strings);
+
+			// read comments
+			final CommentTable comments = new CommentTable(is, commentTablePtr, connectionDetailsPtr - commentTablePtr, strings);
+
+			// really read header
+			is.reset();
+			is.skipBytes(0x02);
+
+			final Location resDeparture = location(is, strings);
+			final Location resArrival = location(is, strings);
+
+			final short numConnections = is.readShortReverse();
+
+			is.readInt();
+			is.readInt();
+
+			final long resDate = date(is);
+			/* final long resDate30 = */date(is);
+
+			final List<Connection> connections = new ArrayList<Connection>(numConnections);
+
+			// read connections
+			for (int iConnection = 0; iConnection < numConnections; iConnection++)
+			{
+				is.reset();
+				is.skipBytes(0x4a + iConnection * 12);
+
+				final short serviceDaysTableOffset = is.readShortReverse();
+
+				final int partsOffset = is.readIntReverse();
+
+				final short numParts = is.readShortReverse();
+
+				final short numChanges = is.readShortReverse();
+
+				/* final long duration = */time(is, 0, 0);
+
+				is.reset();
+				is.skipBytes(serviceDaysTablePtr + serviceDaysTableOffset);
+
+				/* final String serviceDaysText = */strings.read(is);
+
+				final short serviceBitBase = is.readShortReverse();
+				final short serviceBitLength = is.readShortReverse();
+
+				int connectionDayOffset = serviceBitBase * 8;
+				for (int i = 0; i < serviceBitLength; i++)
+				{
+					int serviceBits = is.read();
+					if (serviceBits == 0)
+					{
+						connectionDayOffset += 8;
+						continue;
+					}
+					while ((serviceBits & 0x80) == 0)
+					{
+						serviceBits = serviceBits << 1;
+						connectionDayOffset++;
+					}
+					break;
+				}
+
+				is.reset();
+				is.skipBytes(connectionDetailsPtr + connectionDetailsIndexOffset + iConnection * 2);
+				final short connectionDetailsOffset = is.readShortReverse();
+
+				is.reset();
+				is.skipBytes(connectionDetailsPtr + connectionDetailsOffset);
+				final short realtimeStatus = is.readShortReverse();
+
+				/* final short delay = */is.readShortReverse();
+
+				String connectionId = null;
+				if (connectionAttrsPtr != 0)
+				{
+					is.reset();
+					is.skipBytes(connectionAttrsPtr + iConnection * 2);
+					final short connectionAttrsIndex = is.readShortReverse();
+
+					is.reset();
+					is.skipBytes(attrsOffset + connectionAttrsIndex * 4);
+					while (true)
+					{
+						final String key = strings.read(is);
+						if (key == null)
+							break;
+						else if (key.equals("ConnectionId"))
+							connectionId = strings.read(is);
+						else
+							is.skipBytes(2);
+					}
+				}
+
+				final List<Connection.Part> parts = new ArrayList<Connection.Part>(numParts);
+
+				for (int iPart = 0; iPart < numParts; iPart++)
+				{
+					is.reset();
+					is.skipBytes(0x4a + partsOffset + iPart * 20);
+
+					final long plannedDepartureTime = time(is, resDate, connectionDayOffset);
+					final Location departure = stations.read(is);
+
+					final long plannedArrivalTime = time(is, resDate, connectionDayOffset);
+					final Location arrival = stations.read(is);
+
+					final short type = is.readShortReverse();
+
+					final String lineStr = strings.read(is);
+
+					final String plannedDeparturePosition = normalizePosition(strings.read(is));
+					final String plannedArrivalPosition = normalizePosition(strings.read(is));
+
+					final short partAttrIndex = is.readShortReverse();
+
+					/* final String[] comments = */comments.read(is);
+
+					is.reset();
+					is.skipBytes(attrsOffset + partAttrIndex * 4);
+					String directionStr = null;
+					int lineClass = 0;
+					while (true)
+					{
+						final String key = strings.read(is);
+						if (key == null)
+							break;
+						else if (key.equals("Direction"))
+							directionStr = strings.read(is);
+						else if (key.equals("Class"))
+							lineClass = Integer.parseInt(strings.read(is));
+						else
+							is.skipBytes(2);
+					}
+
+					is.reset();
+					is.skipBytes(connectionDetailsPtr + connectionDetailsOffset + connectionDetailsPartOffset + iPart * connectionDetailsPartSize);
+
+					if (connectionDetailsPartSize != 16)
+						throw new IllegalStateException("unhandled connection details part size: " + connectionDetailsPartSize);
+
+					/* final long predictedDepartureTime = */time(is, resDate, connectionDayOffset);
+					/* final long predictedArrivalTime = */time(is, resDate, connectionDayOffset);
+					/* final String predictedDeparturePosition = */normalizePosition(strings.read(is));
+					/* final String predictedArrivalPosition = */normalizePosition(strings.read(is));
+
+					is.readInt();
+
+					final short firstStopIndex = is.readShortReverse();
+
+					final short numStops = is.readShortReverse();
+
+					List<Stop> intermediateStops = null;
+
+					if (numStops > 0)
+					{
+						is.reset();
+						is.skipBytes(connectionDetailsPtr + stopsOffset + firstStopIndex * stopsSize);
+
+						if (stopsSize != 26)
+							throw new IllegalStateException("unhandled stops size: " + stopsSize);
+
+						intermediateStops = new ArrayList<Stop>(numStops);
+
+						for (int iStop = 0; iStop < numStops; iStop++)
+						{
+							final long plannedStopDepartureTime = time(is, resDate, connectionDayOffset);
+							/* final long plannedStopArrivalTime = */time(is, resDate, connectionDayOffset);
+							final String plannedStopDeparturePosition = normalizePosition(strings.read(is));
+							/* final String plannedStopArrivalPosition = */normalizePosition(strings.read(is));
+
+							is.readInt();
+
+							/* final long predictedStopDepartureTime = */time(is, resDate, connectionDayOffset);
+							/* final long predictedStopArrivalTime = */time(is, resDate, connectionDayOffset);
+							/* final String predictedStopDeparturePosition = */normalizePosition(strings.read(is));
+							/* final String predictedStopArrivalPosition = */normalizePosition(strings.read(is));
+
+							is.readInt();
+
+							final Location stopLocation = stations.read(is);
+
+							final Stop stop = new Stop(stopLocation, plannedStopDeparturePosition, plannedStopDepartureTime != 0 ? new Date(
+									plannedStopDepartureTime) : null);
+
+							intermediateStops.add(stop);
+						}
+					}
+
+					final Connection.Part part;
+					if (type == 1 /* Fussweg */|| type == 3 /* Uebergang */)
+					{
+						final int min = (int) ((plannedArrivalTime - plannedDepartureTime) / 1000 / 60);
+
+						if (parts.size() > 0 && parts.get(parts.size() - 1) instanceof Connection.Footway)
+						{
+							final Connection.Footway lastFootway = (Connection.Footway) parts.remove(parts.size() - 1);
+							part = new Connection.Footway(lastFootway.min + min, lastFootway.departure, arrival, null);
+						}
+						else
+						{
+							part = new Connection.Footway(min, departure, arrival, null);
+						}
+
+					}
+					else if (type == 2)
+					{
+						final Line line = parseLineWithoutType(lineStr);
+						final Location direction = directionStr != null ? new Location(LocationType.ANY, 0, null, directionStr) : null;
+
+						part = new Connection.Trip(line, direction, plannedDepartureTime != 0 ? new Date(plannedDepartureTime) : null, null,
+								plannedDeparturePosition, departure, plannedArrivalTime != 0 ? new Date(plannedArrivalTime) : null, null,
+								plannedArrivalPosition, arrival, intermediateStops, null);
+					}
+					else
+					{
+						throw new IllegalStateException("unhandled type: " + type);
+					}
+					parts.add(part);
+				}
+
+				final Connection connection = new Connection(connectionId, null, resDeparture, resArrival, parts, null, null, (int) numChanges);
+
+				if (realtimeStatus != 2) // Verbindung fällt aus
+					connections.add(connection);
+			}
+
+			final QueryConnectionsResult result = new QueryConnectionsResult(header, uri, from, via, to, new QueryConnectionsBinaryContext(requestId,
+					seqNr, ld), connections);
+
+			return result;
+		}
+		finally
+		{
+			if (is != null)
+				is.close();
+		}
+	}
+
+	private Location location(final LittleEndianDataInputStream is, final StringTable strings) throws IOException
+	{
+		final String[] placeAndName = splitPlaceAndName(strings.read(is));
+		is.readShort();
+		final short type = is.readShortReverse();
+		final LocationType locationType;
+		if (type == 1)
+			locationType = LocationType.STATION;
+		else if (type == 2)
+			locationType = LocationType.ADDRESS;
+		else if (type == 3)
+			locationType = LocationType.POI;
+		else
+			throw new IllegalStateException("unknown type: " + type + "  " + Arrays.toString(placeAndName));
+		final int lon = is.readIntReverse();
+		final int lat = is.readIntReverse();
+
+		return new Location(locationType, 0, lat, lon, placeAndName[0], placeAndName[1]);
+	}
+
+	private long date(final LittleEndianDataInputStream is) throws IOException
+	{
+		final short days = is.readShortReverse();
+
+		final Calendar date = new GregorianCalendar(timeZone());
+		date.clear();
+		date.set(Calendar.YEAR, 1980);
+		date.set(Calendar.DAY_OF_YEAR, days);
+
+		return date.getTimeInMillis();
+	}
+
+	private long time(final LittleEndianDataInputStream is, final long baseDate, final int dayOffset) throws IOException
+	{
+		final short value = is.readShortReverse();
+		if (value == -1)
+			return 0;
+
+		final int hours = value / 100;
+		final int minutes = value % 100;
+
+		final Calendar time = new GregorianCalendar(timeZone());
+		time.setTimeInMillis(baseDate);
+		time.add(Calendar.HOUR, hours);
+		time.add(Calendar.MINUTE, minutes);
+		time.add(Calendar.DAY_OF_YEAR, dayOffset);
+
+		return time.getTimeInMillis();
+	}
+
+	private static class StringTable
+	{
+		private Charset encoding = Charset.forName("ASCII");
+		private final byte[] table;
+
+		public StringTable(final DataInputStream is, final int stringTablePtr, final int length) throws IOException
+		{
+			is.reset();
+			is.skipBytes(stringTablePtr);
+			table = new byte[length];
+			is.readFully(table);
+		}
+
+		public void setEncoding(final Charset encoding)
+		{
+			this.encoding = encoding;
+		}
+
+		public String read(final LittleEndianDataInputStream is) throws IOException
+		{
+			final short pointer = is.readShortReverse();
+			if (pointer == 0)
+				return null;
+
+			final InputStreamReader reader = new InputStreamReader(new ByteArrayInputStream(table, pointer, table.length - pointer), encoding);
+
+			try
+			{
+				final StringBuilder builder = new StringBuilder();
+
+				int c;
+				while ((c = reader.read()) != 0)
+					builder.append((char) c);
+
+				return builder.toString();
+			}
+			finally
+			{
+				reader.close();
+			}
+		}
+	}
+
+	private static class CommentTable
+	{
+		private final StringTable strings;
+		private final byte[] table;
+
+		public CommentTable(final DataInputStream is, final int commentTablePtr, final int length, final StringTable strings) throws IOException
+		{
+			is.reset();
+			is.skipBytes(commentTablePtr);
+			table = new byte[length];
+			is.readFully(table);
+
+			this.strings = strings;
+		}
+
+		public String[] read(final LittleEndianDataInputStream is) throws IOException
+		{
+			final short pointer = is.readShortReverse();
+
+			final LittleEndianDataInputStream commentsInputStream = new LittleEndianDataInputStream(new ByteArrayInputStream(table, pointer,
+					table.length - pointer));
+
+			try
+			{
+				final short numComments = commentsInputStream.readShortReverse();
+				final String[] comments = new String[numComments];
+
+				for (int i = 0; i < numComments; i++)
+					comments[i] = strings.read(commentsInputStream);
+
+				return comments;
+			}
+			finally
+			{
+				commentsInputStream.close();
+			}
+		}
+	}
+
+	private class StationTable
+	{
+		private final StringTable strings;
+		private final byte[] table;
+
+		public StationTable(final DataInputStream is, final int stationTablePtr, final int length, final StringTable strings) throws IOException
+		{
+			is.reset();
+			is.skipBytes(stationTablePtr);
+			table = new byte[length];
+			is.readFully(table);
+
+			this.strings = strings;
+		}
+
+		private Location read(final LittleEndianDataInputStream is) throws IOException
+		{
+			final short index = is.readShortReverse();
+			final int ptr = index * 14;
+
+			final LittleEndianDataInputStream stationInputStream = new LittleEndianDataInputStream(new ByteArrayInputStream(table, ptr, 14));
+
+			try
+			{
+				final String[] placeAndName = splitPlaceAndName(strings.read(stationInputStream));
+				final int id = stationInputStream.readIntReverse();
+				final int lon = stationInputStream.readIntReverse();
+				final int lat = stationInputStream.readIntReverse();
+
+				return new Location(LocationType.STATION, id, lat, lon, placeAndName[0], placeAndName[1]);
+			}
+			finally
+			{
+				stationInputStream.close();
+			}
+		}
+	}
+
+	private static final Pattern P_POSITION_PLATFORM = Pattern.compile("Gleis\\s*([^\\s]*)\\s*", Pattern.CASE_INSENSITIVE);
+
+	private String normalizePosition(final String position)
+	{
+		if (position == null)
+			return null;
+
+		final Matcher m = P_POSITION_PLATFORM.matcher(position);
+		if (!m.matches())
+			return position;
+
+		return m.group(1);
 	}
 
 	private static final Pattern P_XML_NEARBY_STATIONS_COARSE = Pattern.compile("\\G<\\s*St\\s*(.*?)/?>(?:\n|\\z)", Pattern.DOTALL);
