@@ -732,8 +732,21 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	{
 	}
 
-	protected void appendConnectionsQueryUri(final StringBuilder uri, final Location from, final Location via, final Location to, final Date date,
-			final boolean dep, final String products)
+	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
+			final int numConnections, final String products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
+			throws IOException
+	{
+		return queryConnectionsXml(from, via, to, date, dep, numConnections, products, walkSpeed, accessibility, options);
+	}
+
+	public QueryConnectionsResult queryMoreConnections(final QueryConnectionsContext context, final boolean later, final int numConnections)
+			throws IOException
+	{
+		return queryMoreConnectionsXml(context, later, numConnections);
+	}
+
+	protected final void appendConnectionsQueryUri(final StringBuilder uri, final Location from, final Location via, final Location to,
+			final Date date, final boolean dep, final String products)
 	{
 		uri.append("?start=Suchen");
 
@@ -789,7 +802,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		uri.append("&REQ0JourneyProduct_prod_list_1=").append(productsStr);
 	}
 
-	public QueryConnectionsResult queryConnections(Location from, Location via, Location to, final Date date, final boolean dep,
+	protected final QueryConnectionsResult queryConnectionsXml(Location from, Location via, Location to, final Date date, final boolean dep,
 			final int numConnections, final String products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
 			throws IOException
 	{
@@ -870,11 +883,11 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		request.append(" sMode=\"N\"/>");
 		request.append("</ConReq>");
 
-		return queryConnections(null, true, request.toString(), from, via, to);
+		return queryConnectionsXml(null, true, request.toString(), from, via, to);
 	}
 
-	public QueryConnectionsResult queryMoreConnections(final QueryConnectionsContext contextObj, final boolean later, final int numConnections)
-			throws IOException
+	protected final QueryConnectionsResult queryMoreConnectionsXml(final QueryConnectionsContext contextObj, final boolean later,
+			final int numConnections) throws IOException
 	{
 		final Context context = (Context) contextObj;
 
@@ -883,10 +896,10 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		request.append("<ConResCtxt>").append(later ? context.laterContext : context.earlierContext).append("</ConResCtxt>");
 		request.append("</ConScrReq>");
 
-		return queryConnections(context, later, request.toString(), null, null, null);
+		return queryConnectionsXml(context, later, request.toString(), null, null, null);
 	}
 
-	private QueryConnectionsResult queryConnections(final Context previousContext, final boolean later, final String request, final Location from,
+	private QueryConnectionsResult queryConnectionsXml(final Context previousContext, final boolean later, final String request, final Location from,
 			final Location via, final Location to) throws IOException
 	{
 		// System.out.println(request);
