@@ -203,7 +203,7 @@ public final class BahnProvider extends AbstractHafasProvider
 		final StringBuilder uri = new StringBuilder(API_BASE);
 		uri.append("query.exe/dox");
 
-		appendConnectionsQueryUri(uri, from, via, to, date, dep, products);
+		appendConnectionsQueryUri(uri, from, via, to, date, dep, products, options);
 
 		uri.append("&REQ0HafasOptimize1=0:1");
 		uri.append("&REQ0Tariff_Class=2");
@@ -211,9 +211,6 @@ public final class BahnProvider extends AbstractHafasProvider
 		uri.append("&REQ0Tariff_TravellerReductionClass.1=0");
 		uri.append("&existOptimizePrice=1");
 		uri.append("&existProductNahverkehr=yes");
-
-		if (options != null && options.contains(Option.BIKE))
-			uri.append("&REQ0JourneyProduct_opt3=1");
 
 		return uri.toString();
 	}

@@ -746,7 +746,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	}
 
 	protected final void appendConnectionsQueryUri(final StringBuilder uri, final Location from, final Location via, final Location to,
-			final Date date, final boolean dep, final String products)
+			final Date date, final boolean dep, final String products, final Set<Option> options)
 	{
 		uri.append("?start=Suchen");
 
@@ -800,6 +800,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			productsStr.append(allProductsString());
 		}
 		uri.append("&REQ0JourneyProduct_prod_list_1=").append(productsStr);
+
+		if (options != null && options.contains(Option.BIKE))
+			uri.append("&REQ0JourneyProduct_opt3=1");
 	}
 
 	protected final QueryConnectionsResult queryConnectionsXml(Location from, Location via, Location to, final Date date, final boolean dep,

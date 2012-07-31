@@ -31,6 +31,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.schildbach.pte.NetworkProvider.Option;
 import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.Line;
@@ -492,12 +493,12 @@ public final class BvgProvider extends AbstractHafasProvider
 	}
 
 	private String connectionsQueryUri(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final String products)
+			final String products, final Set<Option> options)
 	{
 		final StringBuilder uri = new StringBuilder(API_BASE);
 		uri.append("query.bin/dn");
 
-		appendConnectionsQueryUri(uri, from, via, to, date, dep, products);
+		appendConnectionsQueryUri(uri, from, via, to, date, dep, products, options);
 
 		if (additionalQueryParameter != null)
 			uri.append('&').append(additionalQueryParameter);
@@ -520,7 +521,7 @@ public final class BvgProvider extends AbstractHafasProvider
 			final int numConnections, final String products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
 			throws IOException
 	{
-		final String uri = connectionsQueryUri(from, via, to, date, dep, products);
+		final String uri = connectionsQueryUri(from, via, to, date, dep, products, options);
 		final CharSequence page = ParserUtils.scrape(uri);
 
 		List<Location> fromAddresses = null;
