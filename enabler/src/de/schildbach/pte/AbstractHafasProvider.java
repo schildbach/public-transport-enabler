@@ -2365,7 +2365,13 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 	}
 
-	private final static Pattern P_NEARBY_COARSE = Pattern.compile("<tr class=\"(zebra[^\"]*)\">(.*?)</tr>", Pattern.DOTALL);
+	protected void setHtmlNearbyStationsPattern(final Pattern htmlNearbyStationsPattern)
+	{
+		this.htmlNearbyStationsPattern = htmlNearbyStationsPattern;
+	}
+
+	private Pattern htmlNearbyStationsPattern = Pattern.compile("<tr class=\"(zebra[^\"]*)\">(.*?)</tr>", Pattern.DOTALL);
+
 	private final static Pattern P_NEARBY_FINE_COORDS = Pattern
 			.compile("REQMapRoute0\\.Location0\\.X=(-?\\d+)&(?:amp;)?REQMapRoute0\\.Location0\\.Y=(-?\\d+)&");
 	private final static Pattern P_NEARBY_FINE_LOCATION = Pattern.compile("[\\?&;]input=(\\d+)&[^\"]*\">([^<]*)<");
@@ -2377,7 +2383,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		final CharSequence page = ParserUtils.scrape(uri);
 		String oldZebra = null;
 
-		final Matcher mCoarse = P_NEARBY_COARSE.matcher(page);
+		final Matcher mCoarse = htmlNearbyStationsPattern.matcher(page);
 
 		while (mCoarse.find())
 		{

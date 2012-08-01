@@ -19,12 +19,12 @@ package de.schildbach.pte;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.regex.Pattern;
 
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Product;
-import de.schildbach.pte.dto.QueryDeparturesResult;
 
 /**
  * @author Andreas Schildbach
@@ -34,9 +34,14 @@ public class NsProvider extends AbstractHafasProvider
 	public static final NetworkId NETWORK_ID = NetworkId.NS;
 	private static final String API_BASE = "http://hafas.bene-system.com/bin/";
 
+	private static final Pattern HTML_NEARBY_STATIONS_PATTERN = Pattern.compile("<tr bgcolor=\"#(E7EEF9|99BAE4)\">(.*?)</tr>", Pattern.DOTALL);
+
 	public NsProvider()
 	{
 		super(API_BASE + "stboard.exe/nn", API_BASE + "ajax-getstop.exe/nny", API_BASE + "query.exe/nn", 10);
+
+		setHtmlNearbyStationsPattern(HTML_NEARBY_STATIONS_PATTERN);
+		setStationBoardHasLocation(true);
 	}
 
 	public NetworkId id()
@@ -47,7 +52,7 @@ public class NsProvider extends AbstractHafasProvider
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
 		for (final Capability capability : capabilities)
-			if (capability == Capability.SUGGEST_LOCATIONS || capability == Capability.TRIPS)
+			if (capability == Capability.DEPARTURES || capability == Capability.SUGGEST_LOCATIONS || capability == Capability.TRIPS)
 				return true;
 
 		return false;
@@ -66,8 +71,16 @@ public class NsProvider extends AbstractHafasProvider
 			return 'R';
 		if (value == 16)
 			return 'S';
+		if (value == 32)
+			return 'B';
 		if (value == 64)
 			return 'F';
+		if (value == 128)
+			return 'U';
+		if (value == 256)
+			return 'T';
+		if (value == 512)
+			return 'P';
 
 		throw new IllegalArgumentException("cannot handle: " + value);
 	}
@@ -91,15 +104,19 @@ public class NsProvider extends AbstractHafasProvider
 		}
 		else if (product == Product.SUBWAY)
 		{
-			// productBits.setCharAt(8, '1');
+			productBits.setCharAt(7, '1');
 		}
 		else if (product == Product.TRAM)
 		{
-			// productBits.setCharAt(7, '1');
+			productBits.setCharAt(8, '1');
 		}
-		else if (product == Product.BUS || product == Product.ON_DEMAND)
+		else if (product == Product.BUS)
 		{
-			// productBits.setCharAt(5, '1');
+			productBits.setCharAt(5, '1');
+		}
+		else if (product == Product.ON_DEMAND)
+		{
+			productBits.setCharAt(9, '1');
 		}
 		else if (product == Product.FERRY)
 		{
@@ -123,6 +140,7 @@ public class NsProvider extends AbstractHafasProvider
 			uri.append("?near=Anzeigen");
 			uri.append("&distance=").append(maxDistance != 0 ? maxDistance / 1000 : 50);
 			uri.append("&input=").append(normalizeStationId(location.id));
+			uri.append("&L=profi");
 
 			return htmlNearbyStations(uri.toString());
 		}
@@ -130,12 +148,6 @@ public class NsProvider extends AbstractHafasProvider
 		{
 			throw new IllegalArgumentException("cannot handle: " + location);
 		}
-	}
-
-	@Override
-	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
-	{
-		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -150,6 +162,10 @@ public class NsProvider extends AbstractHafasProvider
 		final String ucType = type.toUpperCase();
 
 		if (ucType.equals("SPR"))
+			return 'R';
+		if (ucType.equals("E")) // Budapest, Ungarn
+			return 'R';
+		if (ucType.equals("N")) // Avignon
 			return 'R';
 
 		final char t = super.normalizeType(type);
