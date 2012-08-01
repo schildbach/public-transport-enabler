@@ -2042,10 +2042,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 								XmlPullUtil.require(pp, "itdDateTime");
 								final boolean success1 = processItdDateTime(pp, time);
 								final boolean success2 = XmlPullUtil.test(pp, "itdDateTime") ? processItdDateTime(pp, time) : false;
+								final Date stopTime = time.getTime(); // TODO arrival/departure, planned/predicted?
 								XmlPullUtil.exit(pp, "itdPoint");
 
 								if (success1 || success2)
-									intermediateStops.add(new Stop(stopLocation, stopPosition, time.getTime()));
+									intermediateStops.add(new Stop(stopLocation, stopPosition, null, null, stopTime, null));
 							}
 							XmlPullUtil.exit(pp, "itdStopSeq");
 

@@ -31,7 +31,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.schildbach.pte.NetworkProvider.Option;
 import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.Line;
@@ -794,7 +793,7 @@ public final class BvgProvider extends AbstractHafasProvider
 								if (lastTime != null && time.getTime().before(lastTime))
 									time.add(Calendar.DAY_OF_YEAR, 1);
 								lastTime = time.getTime();
-								intermediateStops.add(new Stop(location(tStop), null, time.getTime()));
+								intermediateStops.add(new Stop(location(tStop), null, null, null, time.getTime(), null));
 							}
 
 							final Location arrival = location(tArr);

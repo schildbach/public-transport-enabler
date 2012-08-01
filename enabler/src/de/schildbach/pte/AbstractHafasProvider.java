@@ -1159,19 +1159,33 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 								final Location location = parseLocation(pp);
 								if (location.id != sectionDeparture.id)
 								{
+									Date stopArrivalTime = null;
+									Date stopDepartureTime = null;
+									String stopPosition = null;
+
 									if (XmlPullUtil.test(pp, "Arr"))
-										XmlPullUtil.next(pp);
+									{
+										XmlPullUtil.enter(pp, "Arr");
+										XmlPullUtil.require(pp, "Time");
+										time.setTimeInMillis(currentDate.getTimeInMillis());
+										parseTime(time, XmlPullUtil.text(pp));
+										stopArrivalTime = time.getTime();
+										stopPosition = parsePlatform(pp);
+										XmlPullUtil.exit(pp, "Arr");
+									}
+
 									if (XmlPullUtil.test(pp, "Dep"))
 									{
 										XmlPullUtil.enter(pp, "Dep");
 										XmlPullUtil.require(pp, "Time");
 										time.setTimeInMillis(currentDate.getTimeInMillis());
 										parseTime(time, XmlPullUtil.text(pp));
-										final String position = parsePlatform(pp);
+										stopDepartureTime = time.getTime();
+										stopPosition = parsePlatform(pp);
 										XmlPullUtil.exit(pp, "Dep");
-
-										intermediateStops.add(new Stop(location, position, time.getTime()));
 									}
+
+									intermediateStops.add(new Stop(location, stopPosition, stopArrivalTime, null, stopDepartureTime, null));
 								}
 								XmlPullUtil.exit(pp, "BasicStop");
 							}
@@ -1763,14 +1777,18 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						for (int iStop = 0; iStop < numStops; iStop++)
 						{
 							final long plannedStopDepartureTime = time(is, resDate, connectionDayOffset);
-							/* final long plannedStopArrivalTime = */time(is, resDate, connectionDayOffset);
+							final Date plannedStopDepartureDate = plannedStopDepartureTime != 0 ? new Date(plannedStopDepartureTime) : null;
+							final long plannedStopArrivalTime = time(is, resDate, connectionDayOffset);
+							final Date plannedStopArrivalDate = plannedStopArrivalTime != 0 ? new Date(plannedStopArrivalTime) : null;
 							final String plannedStopDeparturePosition = normalizePosition(strings.read(is));
 							/* final String plannedStopArrivalPosition = */normalizePosition(strings.read(is));
 
 							is.readInt();
 
-							/* final long predictedStopDepartureTime = */time(is, resDate, connectionDayOffset);
-							/* final long predictedStopArrivalTime = */time(is, resDate, connectionDayOffset);
+							final long predictedStopDepartureTime = time(is, resDate, connectionDayOffset);
+							final Date predictedStopDepartureDate = predictedStopDepartureTime != 0 ? new Date(predictedStopDepartureTime) : null;
+							final long predictedStopArrivalTime = time(is, resDate, connectionDayOffset);
+							final Date predictedStopArrivalDate = predictedStopArrivalTime != 0 ? new Date(predictedStopArrivalTime) : null;
 							/* final String predictedStopDeparturePosition = */normalizePosition(strings.read(is));
 							/* final String predictedStopArrivalPosition = */normalizePosition(strings.read(is));
 
@@ -1778,8 +1796,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 							final Location stopLocation = stations.read(is);
 
-							final Stop stop = new Stop(stopLocation, plannedStopDeparturePosition, plannedStopDepartureTime != 0 ? new Date(
-									plannedStopDepartureTime) : null);
+							final Stop stop = new Stop(stopLocation, plannedStopDeparturePosition, plannedStopArrivalDate, predictedStopArrivalDate,
+									plannedStopDepartureDate, predictedStopDepartureDate);
 
 							intermediateStops.add(stop);
 						}

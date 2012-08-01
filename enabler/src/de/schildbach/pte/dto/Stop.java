@@ -27,13 +27,50 @@ public final class Stop implements Serializable
 {
 	public final Location location;
 	public final String position;
-	public final Date time;
+	public final Date plannedArrivalTime;
+	public final Date predictedArrivalTime;
+	public final Date time; // TODO rename to plannedDepartureTime
+	public final Date predictedDepartureTime;
 
-	public Stop(final Location location, final String position, final Date time)
+	public Stop(final Location location, final String position, final Date plannedArrivalTime, final Date predictedArrivalTime,
+			final Date plannedDepartureTime, final Date predictedDepartureTime)
 	{
 		this.location = location;
 		this.position = position;
-		this.time = time;
+		this.plannedArrivalTime = plannedArrivalTime;
+		this.predictedArrivalTime = predictedArrivalTime;
+		this.time = plannedDepartureTime;
+		this.predictedDepartureTime = predictedDepartureTime;
+	}
+
+	public Date getArrivalTime()
+	{
+		if (predictedArrivalTime != null)
+			return predictedArrivalTime;
+		else if (plannedArrivalTime != null)
+			return plannedArrivalTime;
+		else
+			return null;
+	}
+
+	public boolean isArrivalTimePredicted()
+	{
+		return predictedArrivalTime != null;
+	}
+
+	public Date getDepartureTime()
+	{
+		if (predictedDepartureTime != null)
+			return predictedDepartureTime;
+		else if (time != null)
+			return time;
+		else
+			return null;
+	}
+
+	public boolean isDepartureTimePredicted()
+	{
+		return predictedDepartureTime != null;
 	}
 
 	@Override
@@ -44,7 +81,13 @@ public final class Stop implements Serializable
 		builder.append(",");
 		builder.append(position != null ? position : "null");
 		builder.append(",");
+		builder.append(plannedArrivalTime != null ? plannedArrivalTime : "null");
+		builder.append(",");
+		builder.append(predictedArrivalTime != null ? predictedArrivalTime : "null");
+		builder.append(",");
 		builder.append(time != null ? time : "null");
+		builder.append(",");
+		builder.append(predictedDepartureTime != null ? predictedDepartureTime : "null");
 		builder.append(")");
 		return builder.toString();
 	}
