@@ -18,22 +18,16 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.util.Date;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Set;
 
-import de.schildbach.pte.dto.Departure;
-import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.QueryConnectionsContext;
+import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
-import de.schildbach.pte.dto.QueryDeparturesResult.Status;
-import de.schildbach.pte.dto.ResultHeader;
-import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.util.ParserUtils;
 
 /**
@@ -42,14 +36,11 @@ import de.schildbach.pte.util.ParserUtils;
 public class NsProvider extends AbstractHafasProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.NS;
-	private static final String API_URI = "http://hafas.bene-system.com/bin/extxml.exe"; // http://plannerint.b-rail.be/bin/extxml.exe
-	private static final String API_BASE = "http://hari.b-rail.be/HAFAS/bin/"; // FIXME!
-
-	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
+	private static final String API_BASE = "http://hafas.bene-system.com/bin/";
 
 	public NsProvider()
 	{
-		super(API_URI, 6, null);
+		super(API_BASE + "query.exe/nn", 10, null);
 	}
 
 	public NetworkId id()
@@ -60,7 +51,7 @@ public class NsProvider extends AbstractHafasProvider
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
 		for (final Capability capability : capabilities)
-			if (capability == Capability.DEPARTURES)
+			if (capability == Capability.AUTOCOMPLETE_ONE_LINE || capability == Capability.CONNECTIONS)
 				return true;
 
 		return false;
@@ -69,7 +60,43 @@ public class NsProvider extends AbstractHafasProvider
 	@Override
 	protected void setProductBits(final StringBuilder productBits, final char product)
 	{
-		throw new UnsupportedOperationException();
+		if (product == 'I')
+		{
+			productBits.setCharAt(0, '1'); // HST
+			productBits.setCharAt(1, '1'); // IC/EC
+		}
+		else if (product == 'R')
+		{
+			productBits.setCharAt(2, '1'); // IR/D
+			productBits.setCharAt(3, '1');
+		}
+		else if (product == 'S')
+		{
+			productBits.setCharAt(4, '1');
+		}
+		else if (product == 'U')
+		{
+			// productBits.setCharAt(8, '1');
+		}
+		else if (product == 'T')
+		{
+			// productBits.setCharAt(7, '1');
+		}
+		else if (product == 'B' || product == 'P')
+		{
+			// productBits.setCharAt(5, '1');
+		}
+		else if (product == 'F')
+		{
+			productBits.setCharAt(6, '1'); // boat
+		}
+		else if (product == 'C')
+		{
+		}
+		else
+		{
+			throw new IllegalArgumentException("cannot handle: " + product);
+		}
 	}
 
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
@@ -77,7 +104,7 @@ public class NsProvider extends AbstractHafasProvider
 		if (location.type == LocationType.STATION && location.hasId())
 		{
 			final StringBuilder uri = new StringBuilder(API_BASE);
-			uri.append("stboard.exe/en");
+			uri.append("stboard.exe/nn");
 			uri.append("&distance=").append(maxDistance != 0 ? maxDistance / 1000 : 50);
 			uri.append("&input=").append(location.id);
 
@@ -89,118 +116,40 @@ public class NsProvider extends AbstractHafasProvider
 		}
 	}
 
-	private String departuresQueryUri(final int stationId, final int maxDepartures)
-	{
-		final StringBuilder uri = new StringBuilder();
-		uri.append("http://hari.b-rail.be/hari3/webserver1/bin/stboard.exe/dox");
-		uri.append("?input=").append(stationId);
-		uri.append("&boardType=dep");
-		uri.append("&maxJourneys=").append(maxDepartures != 0 ? maxDepartures : 50); // maximum taken from SNCB site
-		uri.append("&productsFilter=").append(allProductsString());
-		uri.append("&disableEquivs=yes"); // don't use nearby stations
-		uri.append("&start=yes");
-		return uri.toString();
-	}
-
-	private static final Pattern P_DEPARTURES_HEAD_COARSE = Pattern.compile(".*?" //
-			+ "(?:" //
-			+ "<div id=\"hfs_content\">\r\n" //
-			+ "<p class=\"qs\">\r\n(.*?)\r\n</p>\r\n" // head
-			+ "(.*?)\r\n</div>" // departures
-			+ "|(Eingabe kann nicht interpretiert)|(Verbindung zum Server konnte leider nicht hergestellt werden))" //
-			+ ".*?", Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_HEAD_FINE = Pattern.compile("" //
-			+ "<strong>(.*?)</strong><br />\r\n" // location
-			+ "Abfahrt (\\d{1,2}:\\d{2}),\r\n" // time
-			+ "(\\d{2}/\\d{2}/\\d{2})" // date
-	, Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<p class=\"journey\">\r\n(.*?)</p>", Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_FINE = Pattern.compile(".*?" //
-			+ "<strong>(.*?)</strong>.*?" // line
-			+ "&gt;&gt;\r\n" //
-			+ "(.*?)\r\n" // destination
-			+ "<br />\r\n" //
-			+ "<strong>(\\d{1,2}:\\d{2})</strong>\r\n" // time
-			+ "(?:<span class=\"delay\">([+-]?\\d+|Ausfall)</span>\r\n)?" // delay
-	, Pattern.DOTALL);
-
 	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
-		final ResultHeader header = new ResultHeader(SERVER_PRODUCT);
-		final QueryDeparturesResult result = new QueryDeparturesResult(header);
-
-		// scrape page
-		final String uri = departuresQueryUri(stationId, maxDepartures);
-		final CharSequence page = ParserUtils.scrape(uri);
-
-		// parse page
-		final Matcher mHeadCoarse = P_DEPARTURES_HEAD_COARSE.matcher(page);
-		if (mHeadCoarse.matches())
-		{
-			// messages
-			if (mHeadCoarse.group(3) != null)
-				return new QueryDeparturesResult(header, Status.INVALID_STATION);
-			else if (mHeadCoarse.group(4) != null)
-				return new QueryDeparturesResult(header, Status.SERVICE_DOWN);
-
-			final Matcher mHeadFine = P_DEPARTURES_HEAD_FINE.matcher(mHeadCoarse.group(1));
-			if (mHeadFine.matches())
-			{
-				final String location = ParserUtils.resolveEntities(mHeadFine.group(1));
-				final Calendar currentTime = new GregorianCalendar(timeZone());
-				currentTime.clear();
-				ParserUtils.parseEuropeanTime(currentTime, mHeadFine.group(2));
-				ParserUtils.parseGermanDate(currentTime, mHeadFine.group(3));
-				final List<Departure> departures = new ArrayList<Departure>(8);
-
-				final Matcher mDepCoarse = P_DEPARTURES_COARSE.matcher(mHeadCoarse.group(2));
-				while (mDepCoarse.find())
-				{
-					final Matcher mDepFine = P_DEPARTURES_FINE.matcher(mDepCoarse.group(1));
-					if (mDepFine.matches())
-					{
-						final Line line = parseLineWithoutType(ParserUtils.resolveEntities(mDepFine.group(1)));
-
-						final String destinationName = ParserUtils.resolveEntities(mDepFine.group(2));
-						final Location destination = new Location(LocationType.ANY, 0, null, destinationName);
-
-						final Calendar parsedTime = new GregorianCalendar(timeZone());
-						parsedTime.setTimeInMillis(currentTime.getTimeInMillis());
-						ParserUtils.parseEuropeanTime(parsedTime, mDepFine.group(3));
-
-						if (parsedTime.getTimeInMillis() - currentTime.getTimeInMillis() < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
-							parsedTime.add(Calendar.DAY_OF_MONTH, 1);
-
-						mDepFine.group(4); // TODO delay
-
-						final Departure dep = new Departure(parsedTime.getTime(), null, line, null, destination, null, null);
-
-						if (!departures.contains(dep))
-							departures.add(dep);
-					}
-					else
-					{
-						throw new IllegalArgumentException("cannot parse '" + mDepCoarse.group(1) + "' on " + stationId);
-					}
-				}
-
-				result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, stationId, null, location), departures, null));
-				return result;
-			}
-			else
-			{
-				throw new IllegalArgumentException("cannot parse '" + mHeadCoarse.group(1) + "' on " + stationId);
-			}
-		}
-		else
-		{
-			throw new IllegalArgumentException("cannot parse '" + page + "' on " + stationId);
-		}
+		throw new UnsupportedOperationException();
 	}
+
+	private static final String AUTOCOMPLETE_URI = API_BASE
+			+ "ajax-getstop.exe/nny?start=1&tpl=suggest2json&REQ0JourneyStopsS0A=255&REQ0JourneyStopsB=12&S=%s?&js=true&";
 
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
-		throw new UnsupportedOperationException();
+		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ISO_8859_1));
+
+		return jsonGetStops(uri);
+	}
+
+	@Override
+	protected void appendCustomConnectionsQueryBinaryUri(final StringBuilder uri)
+	{
+		uri.append("&h2g-direct=11");
+	}
+
+	@Override
+	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
+			final int maxNumConnections, final String products, final WalkSpeed walkSpeed, final Accessibility accessibility,
+			final Set<Option> options) throws IOException
+	{
+		return queryConnectionsBinary(from, via, to, date, dep, maxNumConnections, products, walkSpeed, accessibility, options);
+	}
+
+	@Override
+	public QueryConnectionsResult queryMoreConnections(final QueryConnectionsContext contextObj, final boolean later, final int numConnections)
+			throws IOException
+	{
+		return queryMoreConnectionsBinary(contextObj, later, numConnections);
 	}
 
 	@Override
@@ -208,17 +157,8 @@ public class NsProvider extends AbstractHafasProvider
 	{
 		final String ucType = type.toUpperCase();
 
-		if (ucType.equals("L"))
+		if (ucType.equals("SPR"))
 			return 'R';
-		if (ucType.equals("CR"))
-			return 'R';
-		if (ucType.equals("ICT")) // Brügge
-			return 'R';
-		if (ucType.equals("TRN")) // Mons
-			return 'R';
-
-		if (ucType.equals("MÉT"))
-			return 'U';
 
 		final char t = super.normalizeType(type);
 		if (t != 0)

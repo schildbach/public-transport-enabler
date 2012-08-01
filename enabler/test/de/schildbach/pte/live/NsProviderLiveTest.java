@@ -44,7 +44,7 @@ public class NsProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 100080), 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 8400058), 0, 0);
 
 		print(result);
 	}
@@ -60,7 +60,7 @@ public class NsProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(100080, 0, false);
+		final QueryDeparturesResult result = provider.queryDepartures(8400058, 0, false);
 
 		print(result);
 	}
@@ -76,8 +76,8 @@ public class NsProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 100024), null, new Location(LocationType.STATION,
-				100066), new Date(), true, null, WalkSpeed.FAST, Accessibility.NEUTRAL);
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 8400058, null, "Amsterdam Centraal"), null,
+				new Location(LocationType.STATION, 8400061, null, "Amsterdam Zuid"), new Date(), true, null, WalkSpeed.FAST, Accessibility.NEUTRAL);
 
 		System.out.println(result.status + "  " + result.connections);
 	}
