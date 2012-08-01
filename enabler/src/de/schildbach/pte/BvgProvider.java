@@ -793,7 +793,7 @@ public final class BvgProvider extends AbstractHafasProvider
 								if (lastTime != null && time.getTime().before(lastTime))
 									time.add(Calendar.DAY_OF_YEAR, 1);
 								lastTime = time.getTime();
-								intermediateStops.add(new Stop(location(tStop), null, null, null, time.getTime(), null));
+								intermediateStops.add(new Stop(location(tStop), null, null, time.getTime(), null));
 							}
 
 							final Location arrival = location(tArr);
@@ -821,8 +821,8 @@ public final class BvgProvider extends AbstractHafasProvider
 								destination = null;
 							}
 
-							parts.add(new Connection.Trip(line, destination, departureTime, null, departurePosition, departure, arrivalTime, null,
-									arrivalPosition, arrival, intermediateStops, null));
+							parts.add(new Connection.Trip(line, destination, departureTime, null, departurePosition, null, departure, arrivalTime,
+									null, arrivalPosition, null, arrival, intermediateStops, null));
 							numTrips++;
 						}
 					}

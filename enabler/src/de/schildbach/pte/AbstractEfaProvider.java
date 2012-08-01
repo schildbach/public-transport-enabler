@@ -2046,7 +2046,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 								XmlPullUtil.exit(pp, "itdPoint");
 
 								if (success1 || success2)
-									intermediateStops.add(new Stop(stopLocation, stopPosition, null, null, stopTime, null));
+									intermediateStops.add(new Stop(stopLocation, null, null, stopTime, stopPosition));
 							}
 							XmlPullUtil.exit(pp, "itdStopSeq");
 
@@ -2094,8 +2094,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						final Line line = new Line(lineId, lineLabel, lineStyle(lineLabel), lineAttrs);
 
 						parts.add(new Connection.Trip(line, destination, departureTargetTime != null ? departureTargetTime : departureTime,
-								departureTargetTime, departurePosition, departure, arrivalTargetTime != null ? arrivalTargetTime : arrivalTime,
-								arrivalTargetTime, arrivalPosition, arrival, intermediateStops, path));
+								departureTargetTime, departurePosition, null, departure, arrivalTargetTime != null ? arrivalTargetTime : arrivalTime,
+								arrivalTargetTime, arrivalPosition, null, arrival, intermediateStops, path));
 					}
 
 					XmlPullUtil.exit(pp, "itdPartialRoute");

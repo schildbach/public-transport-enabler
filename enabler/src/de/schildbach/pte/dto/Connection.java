@@ -185,15 +185,18 @@ public final class Connection implements Serializable
 		public final Location destination;
 		public final Date departureTime; // TODO rename to plannedDepartureTime
 		public final Date predictedDepartureTime;
-		public final String departurePosition;
+		public final String departurePosition; // TODO rename to plannedDeparturePosition
+		public final String predictedDeparturePosition;
 		public final Date arrivalTime; // TODO rename to plannedArrivalTime
 		public final Date predictedArrivalTime;
-		public final String arrivalPosition;
+		public final String arrivalPosition; // TODO rename to plannedArrivalPosition
+		public final String predictedArrivalPosition;
 		public final List<Stop> intermediateStops;
 
 		public Trip(final Line line, final Location destination, final Date plannedDepartureTime, final Date predictedDepartureTime,
-				final String departurePosition, final Location departure, final Date plannedArrivalTime, final Date predictedArrivalTime,
-				final String arrivalPosition, final Location arrival, final List<Stop> intermediateStops, final List<Point> path)
+				final String departurePosition, final String predictedDeparturePosition, final Location departure, final Date plannedArrivalTime,
+				final Date predictedArrivalTime, final String arrivalPosition, final String predictedArrivalPosition, final Location arrival,
+				final List<Stop> intermediateStops, final List<Point> path)
 		{
 			super(departure, arrival, path);
 
@@ -202,9 +205,11 @@ public final class Connection implements Serializable
 			this.departureTime = plannedDepartureTime;
 			this.predictedDepartureTime = predictedDepartureTime;
 			this.departurePosition = departurePosition;
+			this.predictedDeparturePosition = predictedDeparturePosition;
 			this.arrivalTime = plannedArrivalTime;
 			this.predictedArrivalTime = predictedArrivalTime;
 			this.arrivalPosition = arrivalPosition;
+			this.predictedArrivalPosition = predictedArrivalPosition;
 			this.intermediateStops = intermediateStops;
 		}
 
@@ -223,6 +228,21 @@ public final class Connection implements Serializable
 			return predictedDepartureTime != null;
 		}
 
+		public String getDeparturePosition()
+		{
+			if (predictedDeparturePosition != null)
+				return predictedDeparturePosition;
+			else if (departurePosition != null)
+				return departurePosition;
+			else
+				return null;
+		}
+
+		public boolean isDeparturePositionPredicted()
+		{
+			return predictedDeparturePosition != null;
+		}
+
 		public Date getArrivalTime()
 		{
 			if (predictedArrivalTime != null)
@@ -236,6 +256,21 @@ public final class Connection implements Serializable
 		public boolean isArrivalTimePredicted()
 		{
 			return predictedArrivalTime != null;
+		}
+
+		public String getArrivalPosition()
+		{
+			if (predictedArrivalPosition != null)
+				return predictedArrivalPosition;
+			else if (arrivalPosition != null)
+				return arrivalPosition;
+			else
+				return null;
+		}
+
+		public boolean isArrivalPositionPredicted()
+		{
+			return predictedArrivalPosition != null;
 		}
 
 		@Override

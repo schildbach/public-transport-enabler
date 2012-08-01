@@ -433,8 +433,8 @@ public class SadProvider extends AbstractNetworkProvider {
 								// predictedDepartureTime, departurePosition,
 								// predictedArrivalTime, arrivalPosition,
 								// intermediateStops, path
-								parts.add(new Trip(new Line(lineId, lineId, DEFAULT_STYLE), null, responseDate.get(0), null, null,
-										soapToLocation((SoapObject) tratto.getProperty("nodo_partenza")), responseDate.get(1), null, null,
+								parts.add(new Trip(new Line(lineId, lineId, DEFAULT_STYLE), null, responseDate.get(0), null, null, null,
+										soapToLocation((SoapObject) tratto.getProperty("nodo_partenza")), responseDate.get(1), null, null, null,
 										soapToLocation((SoapObject) tratto.getProperty("nodo_arrivo")), null, null));
 							} catch (ParseException e) {
 								e.printStackTrace();

@@ -1161,7 +1161,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 								{
 									Date stopArrivalTime = null;
 									Date stopDepartureTime = null;
-									String stopPosition = null;
+									String stopArrivalPosition = null;
+									String stopDeparturePosition = null;
 
 									if (XmlPullUtil.test(pp, "Arr"))
 									{
@@ -1170,7 +1171,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 										time.setTimeInMillis(currentDate.getTimeInMillis());
 										parseTime(time, XmlPullUtil.text(pp));
 										stopArrivalTime = time.getTime();
-										stopPosition = parsePlatform(pp);
+										stopArrivalPosition = parsePlatform(pp);
 										XmlPullUtil.exit(pp, "Arr");
 									}
 
@@ -1181,11 +1182,12 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 										time.setTimeInMillis(currentDate.getTimeInMillis());
 										parseTime(time, XmlPullUtil.text(pp));
 										stopDepartureTime = time.getTime();
-										stopPosition = parsePlatform(pp);
+										stopDeparturePosition = parsePlatform(pp);
 										XmlPullUtil.exit(pp, "Dep");
 									}
 
-									intermediateStops.add(new Stop(location, stopPosition, stopArrivalTime, null, stopDepartureTime, null));
+									intermediateStops.add(new Stop(location, stopArrivalTime, stopArrivalPosition, stopDepartureTime,
+											stopDeparturePosition));
 								}
 								XmlPullUtil.exit(pp, "BasicStop");
 							}
@@ -1263,8 +1265,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 					if (min == 0 || line != null)
 					{
-						parts.add(new Connection.Trip(line, destination, departureTime, null, departurePos, sectionDeparture, arrivalTime, null,
-								arrivalPos, sectionArrival, intermediateStops, path));
+						parts.add(new Connection.Trip(line, destination, departureTime, null, departurePos, null, sectionDeparture, arrivalTime,
+								null, arrivalPos, null, sectionArrival, intermediateStops, path));
 					}
 					else
 					{
@@ -1753,8 +1755,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 					/* final long predictedDepartureTime = */time(is, resDate, connectionDayOffset);
 					/* final long predictedArrivalTime = */time(is, resDate, connectionDayOffset);
-					/* final String predictedDeparturePosition = */normalizePosition(strings.read(is));
-					/* final String predictedArrivalPosition = */normalizePosition(strings.read(is));
+					final String predictedDeparturePosition = normalizePosition(strings.read(is));
+					final String predictedArrivalPosition = normalizePosition(strings.read(is));
 
 					is.readInt();
 
@@ -1781,7 +1783,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 							final long plannedStopArrivalTime = time(is, resDate, connectionDayOffset);
 							final Date plannedStopArrivalDate = plannedStopArrivalTime != 0 ? new Date(plannedStopArrivalTime) : null;
 							final String plannedStopDeparturePosition = normalizePosition(strings.read(is));
-							/* final String plannedStopArrivalPosition = */normalizePosition(strings.read(is));
+							final String plannedStopArrivalPosition = normalizePosition(strings.read(is));
 
 							is.readInt();
 
@@ -1789,15 +1791,16 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 							final Date predictedStopDepartureDate = predictedStopDepartureTime != 0 ? new Date(predictedStopDepartureTime) : null;
 							final long predictedStopArrivalTime = time(is, resDate, connectionDayOffset);
 							final Date predictedStopArrivalDate = predictedStopArrivalTime != 0 ? new Date(predictedStopArrivalTime) : null;
-							/* final String predictedStopDeparturePosition = */normalizePosition(strings.read(is));
-							/* final String predictedStopArrivalPosition = */normalizePosition(strings.read(is));
+							final String predictedStopDeparturePosition = normalizePosition(strings.read(is));
+							final String predictedStopArrivalPosition = normalizePosition(strings.read(is));
 
 							is.readInt();
 
 							final Location stopLocation = stations.read(is);
 
-							final Stop stop = new Stop(stopLocation, plannedStopDeparturePosition, plannedStopArrivalDate, predictedStopArrivalDate,
-									plannedStopDepartureDate, predictedStopDepartureDate);
+							final Stop stop = new Stop(stopLocation, plannedStopArrivalDate, predictedStopArrivalDate, plannedStopArrivalPosition,
+									predictedStopArrivalPosition, plannedStopDepartureDate, predictedStopDepartureDate, plannedStopDeparturePosition,
+									predictedStopDeparturePosition);
 
 							intermediateStops.add(stop);
 						}
@@ -1825,8 +1828,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						final Location direction = directionStr != null ? new Location(LocationType.ANY, 0, null, directionStr) : null;
 
 						part = new Connection.Trip(line, direction, plannedDepartureTime != 0 ? new Date(plannedDepartureTime) : null, null,
-								plannedDeparturePosition, departure, plannedArrivalTime != 0 ? new Date(plannedArrivalTime) : null, null,
-								plannedArrivalPosition, arrival, intermediateStops, null);
+								plannedDeparturePosition, predictedDeparturePosition, departure, plannedArrivalTime != 0 ? new Date(
+										plannedArrivalTime) : null, null, plannedArrivalPosition, predictedArrivalPosition, arrival,
+								intermediateStops, null);
 					}
 					else
 					{
