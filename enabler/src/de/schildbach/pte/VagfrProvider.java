@@ -18,10 +18,14 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
+import de.schildbach.pte.dto.Style;
+import de.schildbach.pte.dto.Style.Shape;
 
 /**
  * @author Andreas Schildbach
@@ -54,5 +58,29 @@ public class VagfrProvider extends AbstractEfaProvider
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
 		return xmlStopfinderRequest(new Location(LocationType.STATION, 0, null, constraint.toString()));
+	}
+
+	private static final Map<String, Style> LINES = new HashMap<String, Style>();
+
+	static
+	{
+		// Tram
+		LINES.put("T1", new Style(Shape.RECT, Style.parseColor("#ed1c24"), Style.WHITE));
+		LINES.put("T2", new Style(Shape.RECT, Style.parseColor("#33b540"), Style.WHITE));
+		LINES.put("T3", new Style(Shape.RECT, Style.parseColor("#f79210"), Style.WHITE));
+		LINES.put("T5", new Style(Shape.RECT, Style.parseColor("#0994ce"), Style.WHITE));
+
+		// Nachtbus
+		LINES.put("BN42 Jupiter", new Style(Style.parseColor("#33b540"), Style.WHITE));
+	}
+
+	@Override
+	public Style lineStyle(final String line)
+	{
+		final Style style = LINES.get(line);
+		if (style != null)
+			return style;
+		else
+			return super.lineStyle(line);
 	}
 }
