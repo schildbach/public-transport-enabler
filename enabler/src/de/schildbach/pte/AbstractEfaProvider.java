@@ -1032,6 +1032,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return 'R' + str;
 			if (type.equals("DB-Zug")) // VRR
 				return 'R' + name;
+			if (type.equals("DB"))
+				return 'R' + name;
 			if (type.equals("Regionalexpress")) // VRR
 				return 'R' + name;
 			if ("CAPITOL".equals(name)) // San Francisco
