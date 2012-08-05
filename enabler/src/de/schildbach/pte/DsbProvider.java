@@ -190,6 +190,8 @@ public class DsbProvider extends AbstractHafasProvider
 			return 'B';
 		if ("T-BUS".equals(ucType)) // Togbus
 			return 'B';
+		if ("TOGBUS".equals(ucType))
+			return 'B';
 
 		if ("TELEBUS".equals(ucType))
 			return 'P';
