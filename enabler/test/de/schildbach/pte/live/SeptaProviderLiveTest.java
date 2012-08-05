@@ -76,8 +76,8 @@ public class SeptaProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 2090227, null, "Main Street"), null, new Location(
-				LocationType.STATION, 1015755, null, "Harbison Av + Unruh Av"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 1021532, null, "30th St Station"), null,
+				new Location(LocationType.STATION, 1001392, null, "15th St Station"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
