@@ -29,7 +29,7 @@ public final class Connection implements Serializable
 {
 	private static final long serialVersionUID = 2508466068307110312L;
 
-	public final String id;
+	private String id;
 	public final Location from;
 	public final Location to;
 	public final List<Part> parts;
@@ -37,8 +37,8 @@ public final class Connection implements Serializable
 	public final int[] capacity;
 	public final Integer numChanges;
 
-	public Connection(final String id, final Location from, final Location to, final List<Part> parts, final List<Fare> fares,
-			final int[] capacity, final Integer numChanges)
+	public Connection(final String id, final Location from, final Location to, final List<Part> parts, final List<Fare> fares, final int[] capacity,
+			final Integer numChanges)
 	{
 		this.id = id;
 		this.from = from;
@@ -127,12 +127,52 @@ public final class Connection implements Serializable
 			return null;
 	}
 
+	public String getId()
+	{
+		if (id == null)
+			id = buildSubstituteId();
+
+		return id;
+	}
+
+	private String buildSubstituteId()
+	{
+		final StringBuilder builder = new StringBuilder();
+
+		if (parts != null && parts.size() > 0)
+		{
+			for (final Part part : parts)
+			{
+				builder.append(part.departure.hasId() ? part.departure.id : part.departure.lat + '/' + part.departure.lon).append('-');
+				builder.append(part.arrival.hasId() ? part.arrival.id : part.arrival.lat + '/' + part.arrival.lon).append('-');
+
+				if (part instanceof Footway)
+				{
+					builder.append(((Footway) part).min);
+				}
+				else if (part instanceof Trip)
+				{
+					final Trip trip = (Trip) part;
+					builder.append(trip.departureTime.getTime()).append('-');
+					builder.append(trip.arrivalTime.getTime()).append('-');
+					builder.append(trip.line.label);
+				}
+
+				builder.append('|');
+			}
+
+			builder.setLength(builder.length() - 1);
+		}
+
+		return builder.toString();
+	}
+
 	@Override
 	public String toString()
 	{
 		final SimpleDateFormat FORMAT = new SimpleDateFormat("E HH:mm");
 
-		final StringBuilder str = new StringBuilder(id != null ? id : "null");
+		final StringBuilder str = new StringBuilder(getId());
 		str.append(' ');
 		final Date firstTripDepartureTime = getFirstTripDepartureTime();
 		str.append(firstTripDepartureTime != null ? FORMAT.format(firstTripDepartureTime) : "null");
@@ -152,13 +192,13 @@ public final class Connection implements Serializable
 		if (!(o instanceof Connection))
 			return false;
 		final Connection other = (Connection) o;
-		return id.equals(other.id);
+		return getId().equals(other.getId());
 	}
 
 	@Override
 	public int hashCode()
 	{
-		return id.hashCode();
+		return getId().hashCode();
 	}
 
 	public static class Part implements Serializable
