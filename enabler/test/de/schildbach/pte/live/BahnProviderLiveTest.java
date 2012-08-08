@@ -109,6 +109,15 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
+	public void noConnections() throws Exception
+	{
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 513729, null, "Schillerplatz, Kaiserslautern"),
+				null, new Location(LocationType.STATION, 403631, null, "Trippstadt Grundschule"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
+				Accessibility.NEUTRAL);
+		System.out.println(result);
+	}
+
+	@Test
 	public void connectionWithFootway() throws Exception
 	{
 		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, null, "Berlin - Mitte, Unter den Linden 24"),

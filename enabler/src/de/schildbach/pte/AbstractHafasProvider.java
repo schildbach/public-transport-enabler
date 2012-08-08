@@ -1556,8 +1556,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			final String requestId = strings.read(is);
 
 			final int connectionDetailsPtr = is.readIntReverse();
-			if (connectionDetailsPtr == 0)
-				throw new IllegalStateException("no connection details");
 
 			final short errorCode = is.readShortReverse();
 			if (errorCode != 0)
@@ -1577,6 +1575,10 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				else
 					throw new IllegalStateException("error " + errorCode + " on " + uri);
 			}
+
+			if (connectionDetailsPtr == 0)
+				throw new IllegalStateException("no connection details");
+
 			is.skipBytes(14);
 			final Charset stringEncoding = Charset.forName(strings.read(is));
 			strings.setEncoding(stringEncoding);
