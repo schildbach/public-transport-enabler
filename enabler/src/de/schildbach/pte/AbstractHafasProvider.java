@@ -1570,7 +1570,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.SERVICE_DOWN);
 				else if (errorCode == 9360)
 					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.INVALID_DATE);
-				else if (errorCode == 9380) // start/end same location
+				else if (errorCode == 9380 || errorCode == 895)
 					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.TOO_CLOSE);
 				else
 					throw new IllegalStateException("error " + errorCode + " on " + uri);
