@@ -33,12 +33,14 @@ public class VvoProvider extends AbstractEfaProvider
 
 	public VvoProvider()
 	{
-		super(API_BASE, null);
+		this(API_BASE);
 	}
 
 	public VvoProvider(final String apiBase)
 	{
 		super(apiBase, null);
+
+		setRequestUrlEncoding(UTF_8);
 	}
 
 	public NetworkId id()

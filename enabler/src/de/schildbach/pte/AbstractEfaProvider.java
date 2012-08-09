@@ -22,6 +22,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -83,6 +84,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private final String additionalQueryParameter;
 	private final boolean canAcceptPoiID;
 	private final boolean needsSpEncId;
+	private Charset requestUrlEncoding = ISO_8859_1;
 	private boolean suppressPositions = false;
 	private final XmlPullParserFactory parserFactory;
 
@@ -146,6 +148,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		this.additionalQueryParameter = additionalQueryParameter;
 		this.canAcceptPoiID = canAcceptPoiID;
 		this.needsSpEncId = needsSpEncId;
+	}
+
+	protected void setRequestUrlEncoding(final Charset requestUrlEncoding)
+	{
+		this.requestUrlEncoding = requestUrlEncoding;
 	}
 
 	protected void setSuppressPositions(final boolean suppressPositions)
@@ -2311,7 +2318,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		else
 		{
 			uri.append("&type_").append(paramSuffix).append("=").append(locationTypeValue(location));
-			uri.append("&name_").append(paramSuffix).append("=").append(ParserUtils.urlEncode(locationValue(location), ISO_8859_1));
+			uri.append("&name_").append(paramSuffix).append("=").append(ParserUtils.urlEncode(locationValue(location), requestUrlEncoding));
 		}
 	}
 
