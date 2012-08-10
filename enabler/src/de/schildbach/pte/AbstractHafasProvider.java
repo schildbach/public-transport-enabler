@@ -2251,6 +2251,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			return 'I';
 		if ("RJ".equals(ucType)) // RailJet, Österreichische Bundesbahnen
 			return 'I';
+		if ("WB".equals(ucType)) // westbahn
+			return 'I';
 		if ("THA".equals(ucType)) // Thalys
 			return 'I';
 		if ("TGV".equals(ucType)) // Train à Grande Vitesse
@@ -2492,8 +2494,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		if ("PCC".equals(ucType)) // PCC Rail, Polen
 			return 'R';
 		if ("ZR".equals(ucType)) // ZSR (Slovakian Republic Railways)
-			return 'R';
-		if ("WB".equals(ucType)) // WESTbahn
 			return 'R';
 		if ("RNV".equals(ucType)) // Rhein-Neckar-Verkehr GmbH
 			return 'R';

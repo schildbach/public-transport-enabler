@@ -733,6 +733,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return 'I' + str;
 			if (type.equals("RJ")) // railjet
 				return 'I' + str;
+			if ("WB".equals(type)) // westbahn
+				return 'R' + str;
 			if (type.equals("OEC")) // ÖBB-EuroCity
 				return 'I' + str;
 			if (type.equals("OIC")) // ÖBB-InterCity
@@ -979,8 +981,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			if (type.equals("KD")) // Koleje Dolnośląskie (Niederschlesische Eisenbahn)
 				return 'R' + str;
 			if (type.equals("VIAMO"))
-				return 'R' + str;
-			if ("WB".equals(type)) // WESTbahn
 				return 'R' + str;
 			if (type.equals("SE")) // Southeastern, GB
 				return 'R' + str;

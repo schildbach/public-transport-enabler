@@ -40,7 +40,7 @@ public class OebbProvider extends AbstractHafasProvider
 
 	public OebbProvider()
 	{
-		super(API_BASE + "query.exe/dn", 12, null);
+		super(API_BASE + "query.exe/dn", 13, null);
 	}
 
 	public NetworkId id()
@@ -85,6 +85,8 @@ public class OebbProvider extends AbstractHafasProvider
 			return 'I';
 		if (value == 2048)
 			return 'P';
+		if (value == 4096)
+			return 'I';
 
 		throw new IllegalArgumentException("cannot handle: " + value);
 	}
@@ -98,6 +100,7 @@ public class OebbProvider extends AbstractHafasProvider
 			productBits.setCharAt(1, '1'); // ÖBB EC/ÖBB IC
 			productBits.setCharAt(2, '1'); // EC/IC
 			productBits.setCharAt(10, '1'); // Autoreisezug
+			productBits.setCharAt(12, '1'); // westbahn
 		}
 		else if (product == 'R')
 		{
