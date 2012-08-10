@@ -416,7 +416,7 @@ public class SadProvider extends AbstractNetworkProvider {
 						// Add footway to parts list
 						if (isFootway) {
 							// NOTE: path is set to null
-							parts.add(new Footway(Integer.parseInt(tratto.getPropertyAsString("durata").split(":")[1]),
+							parts.add(new Footway(Integer.parseInt(tratto.getPropertyAsString("durata").split(":")[1]), false,
 									soapToLocation((SoapObject) tratto.getProperty("nodo_partenza")), soapToLocation((SoapObject) tratto
 											.getProperty("nodo_arrivo")), null));
 						}

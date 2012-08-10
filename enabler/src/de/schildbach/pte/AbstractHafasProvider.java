@@ -1273,11 +1273,11 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						if (parts.size() > 0 && parts.get(parts.size() - 1) instanceof Connection.Footway)
 						{
 							final Connection.Footway lastFootway = (Connection.Footway) parts.remove(parts.size() - 1);
-							parts.add(new Connection.Footway(lastFootway.min + min, lastFootway.departure, sectionArrival, null));
+							parts.add(new Connection.Footway(lastFootway.min + min, false, lastFootway.departure, sectionArrival, null));
 						}
 						else
 						{
-							parts.add(new Connection.Footway(min, sectionDeparture, sectionArrival, null));
+							parts.add(new Connection.Footway(min, false, sectionDeparture, sectionArrival, null));
 						}
 					}
 				}
@@ -1812,15 +1812,17 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					if (type == 1 /* Fussweg */|| type == 3 /* Uebergang */|| type == 4 /* Uebergang */)
 					{
 						final int min = (int) ((plannedArrivalTime - plannedDepartureTime) / 1000 / 60);
+						final boolean transfer = type != 1;
 
 						if (parts.size() > 0 && parts.get(parts.size() - 1) instanceof Connection.Footway)
 						{
 							final Connection.Footway lastFootway = (Connection.Footway) parts.remove(parts.size() - 1);
-							part = new Connection.Footway(lastFootway.min + min, lastFootway.departure, arrival, null);
+							part = new Connection.Footway(lastFootway.min + min, lastFootway.transfer || transfer, lastFootway.departure, arrival,
+									null);
 						}
 						else
 						{
-							part = new Connection.Footway(min, departure, arrival, null);
+							part = new Connection.Footway(min, transfer, departure, arrival, null);
 						}
 
 					}

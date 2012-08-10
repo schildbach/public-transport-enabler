@@ -1969,6 +1969,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					if ("Fussweg".equals(productName) || "Taxi".equals(productName))
 					{
 						final int min = (int) (arrivalTime.getTime() - departureTime.getTime()) / 1000 / 60;
+						final boolean transfer = "Taxi".equals(productName);
 
 						XmlPullUtil.enter(pp, "itdMeansOfTransport");
 						XmlPullUtil.exit(pp, "itdMeansOfTransport");
@@ -1988,11 +1989,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							final Connection.Footway lastFootway = (Connection.Footway) parts.remove(parts.size() - 1);
 							if (path != null && lastFootway.path != null)
 								path.addAll(0, lastFootway.path);
-							parts.add(new Connection.Footway(lastFootway.min + min, lastFootway.departure, arrival, path));
+							parts.add(new Connection.Footway(lastFootway.min + min, lastFootway.transfer || transfer, lastFootway.departure, arrival,
+									path));
 						}
 						else
 						{
-							parts.add(new Connection.Footway(min, departure, arrival, path));
+							parts.add(new Connection.Footway(min, transfer, departure, arrival, path));
 						}
 					}
 					else if ("gesicherter Anschluss".equals(productName) || "nicht umsteigen".equals(productName)) // type97

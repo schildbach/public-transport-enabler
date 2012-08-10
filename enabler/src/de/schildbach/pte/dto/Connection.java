@@ -350,13 +350,17 @@ public final class Connection implements Serializable
 
 	public final static class Footway extends Part
 	{
-		public final int min;
+		private static final long serialVersionUID = -6651381862837233925L;
 
-		public Footway(final int min, final Location departure, final Location arrival, final List<Point> path)
+		public final int min;
+		public final boolean transfer;
+
+		public Footway(final int min, final boolean transfer, final Location departure, final Location arrival, final List<Point> path)
 		{
 			super(departure, arrival, path);
 
 			this.min = min;
+			this.transfer = transfer;
 		}
 
 		@Override
@@ -364,6 +368,8 @@ public final class Connection implements Serializable
 		{
 			final StringBuilder builder = new StringBuilder(getClass().getName() + "[");
 			builder.append("min=").append(min);
+			builder.append(",");
+			builder.append("transfer=").append(transfer);
 			builder.append(",");
 			builder.append("departure=").append(departure.toDebugString());
 			builder.append(",");
