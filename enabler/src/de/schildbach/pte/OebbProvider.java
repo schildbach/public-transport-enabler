@@ -18,13 +18,15 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.QueryConnectionsContext;
+import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.util.ParserUtils;
 
@@ -190,12 +192,25 @@ public class OebbProvider extends AbstractHafasProvider
 		return jsonGetStops(uri);
 	}
 
-	private static final Map<WalkSpeed, String> WALKSPEED_MAP = new HashMap<WalkSpeed, String>();
-	static
+	@Override
+	protected void appendCustomConnectionsQueryBinaryUri(final StringBuilder uri)
 	{
-		WALKSPEED_MAP.put(WalkSpeed.SLOW, "115");
-		WALKSPEED_MAP.put(WalkSpeed.NORMAL, "100");
-		WALKSPEED_MAP.put(WalkSpeed.FAST, "85");
+		uri.append("&h2g-direct=11");
+	}
+
+	@Override
+	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
+			final int maxNumConnections, final String products, final WalkSpeed walkSpeed, final Accessibility accessibility,
+			final Set<Option> options) throws IOException
+	{
+		return queryConnectionsBinary(from, via, to, date, dep, maxNumConnections, products, walkSpeed, accessibility, options);
+	}
+
+	@Override
+	public QueryConnectionsResult queryMoreConnections(final QueryConnectionsContext contextObj, final boolean later, final int numConnections)
+			throws IOException
+	{
+		return queryMoreConnectionsBinary(contextObj, later, numConnections);
 	}
 
 	@Override
