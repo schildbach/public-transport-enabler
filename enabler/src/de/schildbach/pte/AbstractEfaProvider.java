@@ -184,6 +184,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		if (constraint.type == LocationType.ANY)
 			// 1=place 2=stop 4=street 8=address 16=crossing 32=poi 64=postcode
 			uri.append("&anyObjFilter_sf=").append(2 + 4 + 8 + 16 + 32 + 64);
+		uri.append("&anyMaxSizeHitList=500");
 
 		// System.out.println(uri.toString());
 
