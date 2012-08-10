@@ -1753,8 +1753,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					if (connectionDetailsPartSize != 16)
 						throw new IllegalStateException("unhandled connection details part size: " + connectionDetailsPartSize);
 
-					/* final long predictedDepartureTime = */time(is, resDate, connectionDayOffset);
-					/* final long predictedArrivalTime = */time(is, resDate, connectionDayOffset);
+					final long predictedDepartureTime = time(is, resDate, connectionDayOffset);
+					final long predictedArrivalTime = time(is, resDate, connectionDayOffset);
 					final String predictedDeparturePosition = normalizePosition(strings.read(is));
 					final String predictedArrivalPosition = normalizePosition(strings.read(is));
 
@@ -1827,10 +1827,11 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						final Line line = parseLineWithoutType(lineStr);
 						final Location direction = directionStr != null ? new Location(LocationType.ANY, 0, null, directionStr) : null;
 
-						part = new Connection.Trip(line, direction, plannedDepartureTime != 0 ? new Date(plannedDepartureTime) : null, null,
-								plannedDeparturePosition, predictedDeparturePosition, departure, plannedArrivalTime != 0 ? new Date(
-										plannedArrivalTime) : null, null, plannedArrivalPosition, predictedArrivalPosition, arrival,
-								intermediateStops, null);
+						part = new Connection.Trip(line, direction, plannedDepartureTime != 0 ? new Date(plannedDepartureTime) : null,
+								predictedDepartureTime != 0 ? new Date(predictedDepartureTime) : null, plannedDeparturePosition,
+								predictedDeparturePosition, departure, plannedArrivalTime != 0 ? new Date(plannedArrivalTime) : null,
+								predictedArrivalTime != 0 ? new Date(predictedArrivalTime) : null, plannedArrivalPosition, predictedArrivalPosition,
+								arrival, intermediateStops, null);
 					}
 					else
 					{
