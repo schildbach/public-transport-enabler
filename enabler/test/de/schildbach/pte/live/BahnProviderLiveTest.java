@@ -120,10 +120,13 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void connectionWithFootway() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, null, "Berlin - Mitte, Unter den Linden 24"),
-				null, new Location(LocationType.ADDRESS, 0, null, "Starnberg, Possenhofener Straße 13"), new Date(), true, ALL_PRODUCTS,
-				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, 52517139, 13388749, null,
+				"Berlin - Mitte, Unter den Linden 24"), null, new Location(LocationType.ADDRESS, 0, 47994243, 11338543, null,
+				"Starnberg, Possenhofener Straße 13"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
+
+		if (!result.context.canQueryLater())
+			return;
 
 		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
