@@ -1809,7 +1809,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					}
 
 					final Connection.Part part;
-					if (type == 1 /* Fussweg */|| type == 3 /* Uebergang */)
+					if (type == 1 /* Fussweg */|| type == 3 /* Uebergang */|| type == 4 /* Uebergang */)
 					{
 						final int min = (int) ((plannedArrivalTime - plannedDepartureTime) / 1000 / 60);
 
