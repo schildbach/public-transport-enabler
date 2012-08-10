@@ -268,6 +268,14 @@ public final class Connection implements Serializable
 			return predictedDepartureTime != null;
 		}
 
+		public Long getDepartureDelay()
+		{
+			if (departureTime != null && predictedDepartureTime != null)
+				return predictedDepartureTime.getTime() - departureTime.getTime();
+			else
+				return null;
+		}
+
 		public String getDeparturePosition()
 		{
 			if (predictedDeparturePosition != null)
@@ -296,6 +304,14 @@ public final class Connection implements Serializable
 		public boolean isArrivalTimePredicted()
 		{
 			return predictedArrivalTime != null;
+		}
+
+		public Long getArrivalDelay()
+		{
+			if (arrivalTime != null && predictedArrivalTime != null)
+				return predictedArrivalTime.getTime() - arrivalTime.getTime();
+			else
+				return null;
 		}
 
 		public String getArrivalPosition()

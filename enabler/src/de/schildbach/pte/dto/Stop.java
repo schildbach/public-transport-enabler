@@ -79,6 +79,14 @@ public final class Stop implements Serializable
 		return predictedArrivalTime != null;
 	}
 
+	public Long getArrivalDelay()
+	{
+		if (plannedArrivalTime != null && predictedArrivalTime != null)
+			return predictedArrivalTime.getTime() - plannedArrivalTime.getTime();
+		else
+			return null;
+	}
+
 	public String getArrivalPosition()
 	{
 		if (predictedArrivalPosition != null)
@@ -107,6 +115,14 @@ public final class Stop implements Serializable
 	public boolean isDepartureTimePredicted()
 	{
 		return predictedDepartureTime != null;
+	}
+
+	public Long getDepartureDelay()
+	{
+		if (time != null && predictedDepartureTime != null)
+			return predictedDepartureTime.getTime() - time.getTime();
+		else
+			return null;
 	}
 
 	public String getDeparturePosition()
