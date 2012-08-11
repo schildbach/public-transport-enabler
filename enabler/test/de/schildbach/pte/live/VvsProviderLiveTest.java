@@ -84,8 +84,9 @@ public class VvsProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 0, null, "Hauptwache"), null, new Location(
-				LocationType.STATION, 0, null, "Südbahnhof"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 5006118, 48782984, 9179846, "Stuttgart",
+				"Stuttgart, Hauptbahnhof"), null, new Location(LocationType.STATION, 5006024, 48782584, 9187098, "Stuttgart", "Staatsgalerie"),
+				new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);

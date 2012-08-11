@@ -1675,6 +1675,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		uri.append("&locationServerActive=1");
 		uri.append("&useRealtime=1");
 		uri.append("&useProxFootSearch=1"); // walk if it makes journeys quicker
+		uri.append("&nextDepsPerLeg=1"); // next departure in case previous was missed
 
 		return uri.toString();
 	}
@@ -2111,6 +2112,17 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 									lineAttrs.add(Line.Attr.WHEEL_CHAIR_ACCESS);
 							}
 							XmlPullUtil.exit(pp, "genAttrList");
+						}
+
+						if (XmlPullUtil.test(pp, "nextDeps"))
+						{
+							XmlPullUtil.enter(pp, "nextDeps");
+							while (XmlPullUtil.test(pp, "itdDateTime"))
+							{
+								processItdDateTime(pp, time);
+								final Date nextDepartureTime = time.getTime();
+							}
+							XmlPullUtil.exit(pp, "nextDeps");
 						}
 
 						final Line line = new Line(lineId, lineLabel, lineStyle(lineLabel), lineAttrs);
