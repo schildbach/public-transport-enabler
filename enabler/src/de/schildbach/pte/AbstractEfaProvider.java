@@ -2042,21 +2042,33 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							while (XmlPullUtil.test(pp, "itdPoint"))
 							{
 								final Location stopLocation = processItdPointAttributes(pp);
+
 								final String stopPosition;
 								if (!suppressPositions)
 									stopPosition = normalizePlatform(pp.getAttributeValue(null, "platform"),
 											pp.getAttributeValue(null, "platformName"));
 								else
 									stopPosition = null;
+
 								XmlPullUtil.enter(pp, "itdPoint");
 								XmlPullUtil.require(pp, "itdDateTime");
-								final boolean success1 = processItdDateTime(pp, time);
-								final boolean success2 = XmlPullUtil.test(pp, "itdDateTime") ? processItdDateTime(pp, time) : false;
-								final Date stopTime = time.getTime(); // TODO arrival/departure, planned/predicted?
-								XmlPullUtil.exit(pp, "itdPoint");
 
-								if (success1 || success2)
-									intermediateStops.add(new Stop(stopLocation, null, null, stopTime, stopPosition));
+								final Date stopArrivalTime;
+								if (processItdDateTime(pp, time))
+									stopArrivalTime = time.getTime();
+								else
+									stopArrivalTime = null;
+
+								final Date stopDepartureTime;
+								if (XmlPullUtil.test(pp, "itdDateTime") && processItdDateTime(pp, time))
+									stopDepartureTime = time.getTime();
+								else
+									stopDepartureTime = null;
+
+								intermediateStops.add(new Stop(stopLocation, stopArrivalTime, stopPosition, stopDepartureTime, stopPosition));
+								// TODO planned/predicted?
+
+								XmlPullUtil.exit(pp, "itdPoint");
 							}
 							XmlPullUtil.exit(pp, "itdStopSeq");
 
