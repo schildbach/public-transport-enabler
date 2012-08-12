@@ -107,6 +107,26 @@ public class BsvagProvider extends AbstractEfaProvider
 		LINES.put("B485", new Style(Style.parseColor("#ea8d52"), Style.WHITE));
 		LINES.put("B493", new Style(Style.parseColor("#f24825"), Style.WHITE));
 		LINES.put("B560", new Style(Style.parseColor("#9f6fb0"), Style.WHITE));
+
+		// Wolfsburg
+		LINES.put("B201", new Style(Style.parseColor("#f1471c"), Style.WHITE));
+		LINES.put("B202", new Style(Style.parseColor("#127bca"), Style.WHITE));
+		LINES.put("B203", new Style(Style.parseColor("#f35c95"), Style.WHITE));
+		LINES.put("B204", new Style(Style.parseColor("#00a650"), Style.WHITE));
+		LINES.put("B205", new Style(Style.parseColor("#f67c13"), Style.WHITE));
+		LINES.put("B206", new Style(Style.WHITE, Style.parseColor("#00adef"), Style.parseColor("#00adef")));
+		LINES.put("B207", new Style(Style.parseColor("#94d221"), Style.WHITE));
+		LINES.put("B208", new Style(Style.parseColor("#00adef"), Style.WHITE));
+		LINES.put("B209", new Style(Style.parseColor("#bf7f50"), Style.WHITE));
+		LINES.put("B211", new Style(Style.parseColor("#be65ba"), Style.WHITE));
+		LINES.put("B212", new Style(Style.parseColor("#be65ba"), Style.WHITE));
+		LINES.put("B213", new Style(Style.parseColor("#918f90"), Style.WHITE));
+		LINES.put("B218", new Style(Style.parseColor("#a950ae"), Style.WHITE));
+		LINES.put("B219", new Style(Style.parseColor("#bf7f50"), Style.WHITE));
+		LINES.put("B230", new Style(Style.parseColor("#ca93d0"), Style.WHITE));
+		LINES.put("B231", new Style(Style.WHITE, Style.parseColor("#fab20a"), Style.parseColor("#fab20a")));
+		LINES.put("B244", new Style(Style.parseColor("#66cef6"), Style.WHITE));
+		LINES.put("B267", new Style(Style.parseColor("#918f90"), Style.WHITE));
 	}
 
 	@Override
@@ -118,5 +138,4 @@ public class BsvagProvider extends AbstractEfaProvider
 		else
 			return super.lineStyle(line);
 	}
-
 }
