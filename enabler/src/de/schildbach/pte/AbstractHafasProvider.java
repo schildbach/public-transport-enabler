@@ -2544,6 +2544,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			return 'T';
 		if ("TRA".equals(ucType))
 			return 'T';
+		if ("WLB".equals(ucType)) // Wiener Lokalbahnen
+			return 'T';
 		if ("STRWLB".equals(ucType)) // Wiener Lokalbahnen
 			return 'T';
 		if ("SCHW-B".equals(ucType)) // Schwebebahn, gilt als "Straßenbahn besonderer Bauart"

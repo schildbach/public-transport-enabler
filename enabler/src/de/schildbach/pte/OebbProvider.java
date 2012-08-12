@@ -256,8 +256,6 @@ public class OebbProvider extends AbstractHafasProvider
 
 		if (ucType.equals("LKB")) // Connections only?
 			return 'T';
-		// if (ucType.equals("WLB")) // via JSON API
-		// return 'T';
 
 		if (ucType.equals("OBU")) // Connections only?
 			return 'B';
