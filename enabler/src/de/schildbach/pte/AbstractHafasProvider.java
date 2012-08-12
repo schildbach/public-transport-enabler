@@ -615,7 +615,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				final String fpTime = XmlPullUtil.attr(pp, "fpTime");
 				final String fpDate = XmlPullUtil.attr(pp, "fpDate");
 				final String delay = XmlPullUtil.attr(pp, "delay");
-				// TODO e_delay
+				final String eDelay = pp.getAttributeValue(null, "e_delay");
 				final String platform = pp.getAttributeValue(null, "platform");
 				// TODO newpl
 				final String targetLoc = pp.getAttributeValue(null, "targetLoc");
@@ -643,7 +643,13 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						throw new IllegalStateException("cannot parse: '" + fpDate + "'");
 
 					final Calendar predictedTime;
-					if (delay != null)
+					if (eDelay != null)
+					{
+						predictedTime = new GregorianCalendar(timeZone());
+						predictedTime.setTimeInMillis(plannedTime.getTimeInMillis());
+						predictedTime.add(Calendar.MINUTE, Integer.parseInt(eDelay));
+					}
+					else if (delay != null)
 					{
 						final Matcher m = P_XML_QUERY_DEPARTURES_DELAY.matcher(delay);
 						if (m.matches())
