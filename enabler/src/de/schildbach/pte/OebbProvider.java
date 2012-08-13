@@ -265,6 +265,8 @@ public class OebbProvider extends AbstractHafasProvider
 			return 'B';
 		if (ucType.equals("O-BUS")) // Stadtbus
 			return 'B';
+		if (ucType.equals("O")) // Stadtbus
+			return 'B';
 
 		if (ucType.equals("SCH")) // Connections only?
 			return 'F';
