@@ -2756,17 +2756,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 	}
 
-	private static final Pattern P_CONNECTION_ID = Pattern.compile("co=(C\\d+-\\d+)&");
-
-	protected static String extractConnectionId(final String link)
-	{
-		final Matcher m = P_CONNECTION_ID.matcher(link);
-		if (m.find())
-			return m.group(1);
-		else
-			throw new IllegalArgumentException("cannot extract id from " + link);
-	}
-
 	private void assertResC(final XmlPullParser pp) throws XmlPullParserException, IOException
 	{
 		if (!XmlPullUtil.jumpToStartTag(pp, null, "ResC"))
