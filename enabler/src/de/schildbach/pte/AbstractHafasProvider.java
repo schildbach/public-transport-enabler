@@ -702,8 +702,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						if (classChar == 0)
 							throw new IllegalArgumentException();
 						// could check for type consistency here
-						final String lineStr = classChar + prodLine.label.substring(1);
-						line = new Line(null, lineStr, lineStyle(lineStr));
+						line = newLine(classChar, prodLine.label.substring(1));
 					}
 					else
 					{
@@ -1730,7 +1729,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 					final int type = is.readShortReverse();
 
-					final String lineStr = strings.read(is);
+					final String lineName = strings.read(is);
 
 					final String plannedDeparturePosition = normalizePosition(strings.read(is));
 					final String plannedArrivalPosition = normalizePosition(strings.read(is));
@@ -1743,6 +1742,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					is.skipBytes(attrsOffset + partAttrIndex * 4);
 					String directionStr = null;
 					int lineClass = 0;
+					String lineCategory = null;
+					String lineOperator = null;
 					while (true)
 					{
 						final String key = strings.read(is);
@@ -1752,9 +1753,16 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 							directionStr = strings.read(is);
 						else if (key.equals("Class"))
 							lineClass = Integer.parseInt(strings.read(is));
+						else if (key.equals("Category"))
+							lineCategory = strings.read(is);
+						else if (key.equals("Operator"))
+							lineOperator = strings.read(is);
 						else
 							is.skipBytes(2);
 					}
+
+					if (lineCategory == null && lineName != null)
+						lineCategory = categoryFromName(lineName);
 
 					is.reset();
 					is.skipBytes(connectionDetailsPtr + connectionDetailsOffset + connectionDetailsPartOffset + iPart * connectionDetailsPartSize);
@@ -1831,11 +1839,15 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						{
 							part = new Connection.Footway(min, transfer, departure, arrival, null);
 						}
-
 					}
 					else if (type == 2)
 					{
-						final Line line = parseLineWithoutType(lineStr);
+						final char lineProduct;
+						if (lineClass != 0)
+							lineProduct = intToProduct(lineClass);
+						else
+							lineProduct = normalizeType(lineCategory);
+						final Line line = newLine(lineProduct, normalizeLineName(lineName));
 						final Location direction = directionStr != null ? new Location(LocationType.ANY, 0, null, directionStr) : null;
 
 						part = new Connection.Trip(line, direction, plannedDepartureTime != 0 ? new Date(plannedDepartureTime) : null,
@@ -1955,7 +1967,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				while ((c = reader.read()) != 0)
 					builder.append((char) c);
 
-				return builder.toString();
+				return builder.toString().trim();
 			}
 			finally
 			{
@@ -2635,7 +2647,33 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		return 0;
 	}
 
+	private static final Pattern P_NORMALIZE_LINE_NAME_BUS = Pattern.compile("bus\\s+(.*)", Pattern.CASE_INSENSITIVE);
 	protected static final Pattern P_NORMALIZE_LINE = Pattern.compile("([A-Za-zßÄÅäáàâåéèêíìîÖöóòôÜüúùûØ/]+)[\\s-]*([^#]*).*");
+
+	protected String normalizeLineName(final String lineName)
+	{
+		final Matcher mBus = P_NORMALIZE_LINE_NAME_BUS.matcher(lineName);
+		if (mBus.matches())
+			return mBus.group(1);
+
+		final Matcher m = P_NORMALIZE_LINE.matcher(lineName);
+		if (m.matches())
+			return m.group(1) + m.group(2);
+
+		return lineName;
+	}
+
+	private static final Pattern P_CATEGORY_FROM_NAME = Pattern.compile("([A-Za-zßÄÅäáàâåéèêíìîÖöóòôÜüúùûØ]+).*");
+
+	protected final String categoryFromName(final String lineName)
+	{
+		final Matcher m = P_CATEGORY_FROM_NAME.matcher(lineName);
+		if (m.matches())
+			return m.group(1);
+		else
+			return lineName;
+	}
+
 	private static final Pattern P_NORMALIZE_LINE_BUS = Pattern.compile("(?:Bus|BUS)\\s*(.*)");
 	private static final Pattern P_NORMALIZE_LINE_TRAM = Pattern.compile("(?:Tram|Str|STR)\\s*(.*)");
 
@@ -2673,35 +2711,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		{
 			return newLine(normalizedType, null, attrs);
 		}
-	}
-
-	protected Line parseLineWithoutType(final String line)
-	{
-		if (line == null || line.length() == 0)
-			return null;
-
-		final Matcher mBus = P_NORMALIZE_LINE_BUS.matcher(line);
-		if (mBus.matches())
-			return newLine('B', mBus.group(1));
-
-		final Matcher mTram = P_NORMALIZE_LINE_TRAM.matcher(line);
-		if (mTram.matches())
-			return newLine('T', mTram.group(1));
-
-		final Matcher m = P_NORMALIZE_LINE.matcher(line);
-		if (m.matches())
-		{
-			final String type = m.group(1);
-			final String number = m.group(2);
-
-			final char normalizedType = normalizeType(type);
-			if (normalizedType != 0)
-				return newLine(normalizedType, type + number);
-
-			throw new IllegalStateException("cannot normalize type '" + type + "' number '" + number + "' line '" + line + "'");
-		}
-
-		throw new IllegalStateException("cannot normalize line " + line);
 	}
 
 	protected static final Pattern P_NORMALIZE_LINE_AND_TYPE = Pattern.compile("([^#]*)#(.*)");
@@ -2756,9 +2765,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		throw new IllegalStateException("cannot normalize line#type '" + lineAndType + "'");
 	}
 
-	protected final Line newLine(final char product, final String name, final Line.Attr... attrs)
+	protected Line newLine(final char product, final String normalizedName, final Line.Attr... attrs)
 	{
-		final String lineStr = product + (name != null ? name : "?");
+		final String lineStr = product + (normalizedName != null ? normalizedName : "?");
 
 		if (attrs.length == 0)
 		{

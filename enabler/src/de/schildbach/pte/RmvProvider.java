@@ -104,6 +104,35 @@ public class RmvProvider extends AbstractHafasProvider
 		}
 	}
 
+	@Override
+	protected char intToProduct(final int value)
+	{
+		if (value == 1)
+			return 'I';
+		if (value == 2)
+			return 'I';
+		if (value == 4)
+			return 'R';
+		if (value == 8)
+			return 'S';
+		if (value == 16)
+			return 'U';
+		if (value == 32)
+			return 'T';
+		if (value == 64)
+			return 'B';
+		if (value == 128)
+			return 'B';
+		if (value == 256)
+			return 'F';
+		if (value == 512)
+			return 'P';
+		if (value == 1024)
+			return 'R';
+
+		throw new IllegalArgumentException("cannot handle: " + value);
+	}
+
 	private static final String[] PLACES = { "Frankfurt (Main)", "Offenbach (Main)", "Mainz", "Wiesbaden", "Marburg", "Kassel", "Hanau", "Göttingen",
 			"Darmstadt", "Aschaffenburg", "Berlin", "Fulda" };
 

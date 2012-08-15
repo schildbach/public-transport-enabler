@@ -58,6 +58,15 @@ public class NsProvider extends AbstractHafasProvider
 	}
 
 	@Override
+	protected char intToProduct(final int value)
+	{
+		if (value == 0)
+			return '?';
+
+		throw new IllegalArgumentException("cannot handle: " + value);
+	}
+
+	@Override
 	protected void setProductBits(final StringBuilder productBits, final char product)
 	{
 		if (product == 'I')

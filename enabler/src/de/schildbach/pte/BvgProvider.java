@@ -82,6 +82,29 @@ public final class BvgProvider extends AbstractHafasProvider
 	}
 
 	@Override
+	protected char intToProduct(final int value)
+	{
+		if (value == 1)
+			return 'S';
+		if (value == 2)
+			return 'U';
+		if (value == 4)
+			return 'T';
+		if (value == 8)
+			return 'B';
+		if (value == 16)
+			return 'F';
+		if (value == 32)
+			return 'I';
+		if (value == 64)
+			return 'R';
+		if (value == 128)
+			return 'P';
+
+		throw new IllegalArgumentException("cannot handle: " + value);
+	}
+
+	@Override
 	protected void setProductBits(final StringBuilder productBits, final char product)
 	{
 		if (product == 'I')
@@ -325,7 +348,10 @@ public final class BvgProvider extends AbstractHafasProvider
 					final Matcher mMsgsFine = P_DEPARTURES_LIVE_MSGS_FINE.matcher(mMsgsCoarse.group(1));
 					if (mMsgsFine.matches())
 					{
-						final Line line = parseLineWithoutType(ParserUtils.resolveEntities(mMsgsFine.group(1)));
+						final String lineName = ParserUtils.resolveEntities(mMsgsFine.group(1));
+						final char linePproduct = normalizeType(categoryFromName(lineName));
+						final Line line = newLine(linePproduct, normalizeLineName(lineName));
+
 						final String message = ParserUtils.resolveEntities(mMsgsFine.group(3)).replace('\n', ' ');
 						messages.put(line.label, message);
 					}
@@ -359,7 +385,9 @@ public final class BvgProvider extends AbstractHafasProvider
 						else
 							plannedTime = parsedTime.getTime();
 
-						final Line line = parseLineWithoutType(ParserUtils.resolveEntities(mDepFine.group(3)));
+						final String lineName = ParserUtils.resolveEntities(mDepFine.group(3));
+						final char lineProduct = normalizeType(categoryFromName(lineName));
+						final Line line = newLine(lineProduct, normalizeLineName(lineName));
 
 						final String position = null;
 
@@ -429,7 +457,9 @@ public final class BvgProvider extends AbstractHafasProvider
 
 						final Date plannedTime = parsedTime.getTime();
 
-						final Line line = parseLineWithoutType(ParserUtils.resolveEntities(mDepFine.group(2)));
+						final String lineName = ParserUtils.resolveEntities(mDepFine.group(2));
+						final char lineProduct = normalizeType(categoryFromName(lineName));
+						final Line line = newLine(lineProduct, normalizeLineName(lineName));
 
 						final String position = ParserUtils.resolveEntities(mDepFine.group(3));
 
@@ -509,51 +539,53 @@ public final class BvgProvider extends AbstractHafasProvider
 		return queryMoreConnectionsBinary(contextObj, later, numConnections);
 	}
 
-	private static final Pattern P_LINE_REGIONAL = Pattern.compile("Zug\\s+(\\d+)");
-	private static final Pattern P_LINE_TRAM = Pattern.compile("Tram?\\s+([\\dA-Z/-]+)");
-	private static final Pattern P_LINE_BUS = Pattern.compile("Bus\\s+([\\dA-Z/-]+)");
-	private static final Pattern P_LINE_FERRY = Pattern.compile("F\\d+|WT");
-	private static final Pattern P_LINE_NUMBER = Pattern.compile("\\d{4,}");
+	private static final Pattern P_NORMALIZE_LINE_NAME_TRAM = Pattern.compile("(?:tra|tram)\\s+(.*)", Pattern.CASE_INSENSITIVE);
 
 	@Override
-	protected Line parseLineWithoutType(final String line)
+	protected String normalizeLineName(final String lineName)
 	{
-		if ("S41".equals(line))
-			return newLine('S', "S41", Attr.CIRCLE_CLOCKWISE);
-		if ("S42".equals(line))
-			return newLine('S', "S42", Attr.CIRCLE_ANTICLOCKWISE);
-
-		if ("Bus S41".equals(line))
-			return newLine('B', "S41", Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_CLOCKWISE);
-		if ("Bus S42".equals(line))
-			return newLine('B', "S42", Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_ANTICLOCKWISE);
-
-		if ("Bus TXL".equals(line))
-			return newLine('B', "TXL", Attr.LINE_AIRPORT);
-		if ("S9".equals(line))
-			return newLine('S', "S9", Attr.LINE_AIRPORT);
-		if ("S45".equals(line))
-			return newLine('S', "S45", Attr.LINE_AIRPORT);
-
-		final Matcher mRegional = P_LINE_REGIONAL.matcher(line);
-		if (mRegional.matches())
-			return newLine('R', mRegional.group(1));
-
-		final Matcher mTram = P_LINE_TRAM.matcher(line);
+		final Matcher mTram = P_NORMALIZE_LINE_NAME_TRAM.matcher(lineName);
 		if (mTram.matches())
-			return newLine('T', mTram.group(1));
+			return mTram.group(1);
 
-		final Matcher mBus = P_LINE_BUS.matcher(line);
-		if (mBus.matches())
-			return newLine('B', mBus.group(1));
+		return super.normalizeLineName(lineName);
+	}
 
-		if (P_LINE_FERRY.matcher(line).matches())
-			return newLine('F', line);
+	@Override
+	protected Line newLine(final char product, final String normalizedName, final Attr... attrs)
+	{
+		if (product == 'S' && "S41".equals(normalizedName))
+			return super.newLine(product, normalizedName, concatAttrs(attrs, Attr.CIRCLE_CLOCKWISE));
+		if (product == 'S' && "S42".equals(normalizedName))
+			return super.newLine(product, normalizedName, concatAttrs(attrs, Attr.CIRCLE_ANTICLOCKWISE));
 
-		if (P_LINE_NUMBER.matcher(line).matches())
-			return newLine('R', line);
+		if (product == 'B' && "S41".equals(normalizedName))
+			return super.newLine(product, normalizedName, concatAttrs(attrs, Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_CLOCKWISE));
+		if (product == 'B' && "S42".equals(normalizedName))
+			return super.newLine(product, normalizedName, concatAttrs(attrs, Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_ANTICLOCKWISE));
 
-		return super.parseLineWithoutType(line);
+		if (product == 'B' && "TXL".equals(normalizedName))
+			return super.newLine(product, normalizedName, concatAttrs(attrs, Attr.LINE_AIRPORT));
+		if (product == 'S' && "S9".equals(normalizedName))
+			return super.newLine(product, normalizedName, concatAttrs(attrs, Attr.LINE_AIRPORT));
+		if (product == 'S' && "S45".equals(normalizedName))
+			return super.newLine(product, normalizedName, concatAttrs(attrs, Attr.LINE_AIRPORT));
+
+		return super.newLine(product, normalizedName, attrs);
+	}
+
+	private Attr[] concatAttrs(final Attr[] attrs1, final Attr... attrs2)
+	{
+		final int attrs1length = attrs1.length;
+		final int attrs2length = attrs2.length;
+
+		final Attr[] newAttrs = new Attr[attrs1length + attrs2length];
+		for (int i = 0; i < attrs1length; i++)
+			newAttrs[i] = attrs1[i];
+		for (int i = 0; i < attrs2length; i++)
+			newAttrs[attrs1length + i] = attrs2[i];
+
+		return newAttrs;
 	}
 
 	@Override
@@ -563,6 +595,11 @@ public final class BvgProvider extends AbstractHafasProvider
 
 		if ("AUSFL".equals(ucType)) // Umgebung Berlin
 			return 'R';
+
+		if ("F".equals(ucType))
+			return 'F';
+		if ("WT".equals(ucType)) // Wassertaxi
+			return 'F';
 
 		final char t = super.normalizeType(type);
 		if (t != 0)

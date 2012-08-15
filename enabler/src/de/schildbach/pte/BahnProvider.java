@@ -62,6 +62,33 @@ public final class BahnProvider extends AbstractHafasProvider
 	}
 
 	@Override
+	protected char intToProduct(final int value)
+	{
+		if (value == 1)
+			return 'I';
+		if (value == 2)
+			return 'I';
+		if (value == 4)
+			return 'R';
+		if (value == 8)
+			return 'R';
+		if (value == 16)
+			return 'S';
+		if (value == 32)
+			return 'B';
+		if (value == 64)
+			return 'F';
+		if (value == 128)
+			return 'U';
+		if (value == 256)
+			return 'T';
+		if (value == 512)
+			return 'P';
+
+		throw new IllegalArgumentException("cannot handle: " + value);
+	}
+
+	@Override
 	protected void setProductBits(final StringBuilder productBits, final char product)
 	{
 		if (product == 'I')
@@ -202,6 +229,18 @@ public final class BahnProvider extends AbstractHafasProvider
 			throws IOException
 	{
 		return queryMoreConnectionsBinary(contextObj, later, numConnections);
+	}
+
+	private static final Pattern P_NORMALIZE_LINE_NAME_TRAM = Pattern.compile("str\\s+(.*)", Pattern.CASE_INSENSITIVE);
+
+	@Override
+	protected String normalizeLineName(final String lineName)
+	{
+		final Matcher mTram = P_NORMALIZE_LINE_NAME_TRAM.matcher(lineName);
+		if (mTram.matches())
+			return mTram.group(1);
+
+		return super.normalizeLineName(lineName);
 	}
 
 	@Override
