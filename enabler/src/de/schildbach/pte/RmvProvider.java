@@ -310,9 +310,9 @@ public class RmvProvider extends AbstractHafasProvider
 	protected Line parseLineWithoutType(final String line)
 	{
 		if ("11".equals(line))
-			return newLine("T11");
+			return newLine('T', "11");
 		if ("12".equals(line))
-			return newLine("T12");
+			return newLine('T', "12");
 
 		return super.parseLineWithoutType(line);
 	}

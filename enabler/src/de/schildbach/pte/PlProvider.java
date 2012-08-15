@@ -205,10 +205,10 @@ public class PlProvider extends AbstractHafasProvider
 	{
 		final Matcher mRussia = P_NORMALIZE_LINE_RUSSIA.matcher(line);
 		if (mRussia.matches())
-			return newLine('R' + mRussia.group(1));
+			return newLine('R', mRussia.group(1));
 
 		if (P_NORMALIZE_LINE_NUMBER.matcher(line).matches())
-			return newLine('R' + line);
+			return newLine('R', line);
 
 		return super.parseLineWithoutType(line);
 	}

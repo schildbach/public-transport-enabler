@@ -207,12 +207,12 @@ public class SeProvider extends AbstractHafasProvider
 	{
 		final Matcher mBus = P_NORMALIZE_LINE_BUS.matcher(line);
 		if (mBus.matches())
-			return newLine('B' + mBus.group(1));
+			return newLine('B', mBus.group(1));
 
 		final Matcher mSubway = P_NORMALIZE_LINE_SUBWAY.matcher(line);
 		if (mSubway.matches())
-			return newLine("UT" + mSubway.group(1));
+			return newLine('U', "T" + mSubway.group(1));
 
-		return newLine('?' + line);
+		return newLine('?', line);
 	}
 }

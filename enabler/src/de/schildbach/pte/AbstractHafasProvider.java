@@ -51,6 +51,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.Line;
+import de.schildbach.pte.dto.Line.Attr;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -2636,36 +2637,34 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		{
 			final Matcher mBus = P_NORMALIZE_LINE_BUS.matcher(line);
 			if (mBus.matches())
-				return newLine('B' + mBus.group(1));
+				return newLine('B', mBus.group(1));
 
 			final Matcher mTram = P_NORMALIZE_LINE_TRAM.matcher(line);
 			if (mTram.matches())
-				return newLine('T' + mTram.group(1));
+				return newLine('T', mTram.group(1));
 		}
 
 		final char normalizedType = normalizeType(type);
 		if (normalizedType == 0)
 			throw new IllegalStateException("cannot normalize type '" + type + "' line '" + line + "'");
 
-		final String lineStr;
+		final Attr[] attrs;
+		if (wheelchairAccess)
+			attrs = new Attr[] { Line.Attr.WHEEL_CHAIR_ACCESS };
+		else
+			attrs = new Attr[0];
+
 		if (line != null)
 		{
 			final Matcher m = P_NORMALIZE_LINE.matcher(line);
 			final String strippedLine = m.matches() ? m.group(1) + m.group(2) : line;
 
-			lineStr = normalizedType + strippedLine;
-
-			// FIXME xxxxxxx
+			return newLine(normalizedType, strippedLine, attrs);
 		}
 		else
 		{
-			lineStr = Character.toString(normalizedType);
+			return newLine(normalizedType, null, attrs);
 		}
-
-		if (wheelchairAccess)
-			return newLine(lineStr, Line.Attr.WHEEL_CHAIR_ACCESS);
-		else
-			return newLine(lineStr);
 	}
 
 	protected Line parseLineWithoutType(final String line)
@@ -2675,11 +2674,11 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 		final Matcher mBus = P_NORMALIZE_LINE_BUS.matcher(line);
 		if (mBus.matches())
-			return newLine('B' + mBus.group(1));
+			return newLine('B', mBus.group(1));
 
 		final Matcher mTram = P_NORMALIZE_LINE_TRAM.matcher(line);
 		if (mTram.matches())
-			return newLine('T' + mTram.group(1));
+			return newLine('T', mTram.group(1));
 
 		final Matcher m = P_NORMALIZE_LINE.matcher(line);
 		if (m.matches())
@@ -2689,7 +2688,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 			final char normalizedType = normalizeType(type);
 			if (normalizedType != 0)
-				return newLine(normalizedType + type + number);
+				return newLine(normalizedType, type + number);
 
 			throw new IllegalStateException("cannot normalize type '" + type + "' number '" + number + "' line '" + line + "'");
 		}
@@ -2714,11 +2713,11 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			if (type.length() == 0)
 			{
 				if (number.length() == 0)
-					return newLine("?");
+					return newLine('?', null);
 				if (P_NORMALIZE_LINE_NUMBER.matcher(number).matches())
-					return newLine("?" + number);
+					return newLine('?', number);
 				if (P_LINE_RUSSIA.matcher(number).matches())
-					return newLine('R' + number);
+					return newLine('R', number);
 			}
 			else
 			{
@@ -2729,17 +2728,17 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					{
 						final Matcher mBus = P_NORMALIZE_LINE_BUS.matcher(number);
 						if (mBus.matches())
-							return newLine('B' + mBus.group(1));
+							return newLine('B', mBus.group(1));
 					}
 
 					if (normalizedType == 'T')
 					{
 						final Matcher mTram = P_NORMALIZE_LINE_TRAM.matcher(number);
 						if (mTram.matches())
-							return newLine('T' + mTram.group(1));
+							return newLine('T', mTram.group(1));
 					}
 
-					return newLine(normalizedType + number.replaceAll("\\s+", ""));
+					return newLine(normalizedType, number.replaceAll("\\s+", ""));
 				}
 			}
 
@@ -2749,8 +2748,10 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		throw new IllegalStateException("cannot normalize line#type '" + lineAndType + "'");
 	}
 
-	protected final Line newLine(final String lineStr, final Line.Attr... attrs)
+	protected final Line newLine(final char product, final String name, final Line.Attr... attrs)
 	{
+		final String lineStr = product + (name != null ? name : "?");
+
 		if (attrs.length == 0)
 		{
 			return new Line(null, lineStr, lineStyle(lineStr));

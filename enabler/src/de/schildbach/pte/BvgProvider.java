@@ -519,39 +519,39 @@ public final class BvgProvider extends AbstractHafasProvider
 	protected Line parseLineWithoutType(final String line)
 	{
 		if ("S41".equals(line))
-			return newLine("SS41", Attr.CIRCLE_CLOCKWISE);
+			return newLine('S', "S41", Attr.CIRCLE_CLOCKWISE);
 		if ("S42".equals(line))
-			return newLine("SS42", Attr.CIRCLE_ANTICLOCKWISE);
+			return newLine('S', "S42", Attr.CIRCLE_ANTICLOCKWISE);
 
 		if ("Bus S41".equals(line))
-			return newLine("BS41", Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_CLOCKWISE);
+			return newLine('B', "S41", Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_CLOCKWISE);
 		if ("Bus S42".equals(line))
-			return newLine("BS42", Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_ANTICLOCKWISE);
+			return newLine('B', "S42", Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_ANTICLOCKWISE);
 
 		if ("Bus TXL".equals(line))
-			return newLine("BTXL", Attr.LINE_AIRPORT);
+			return newLine('B', "TXL", Attr.LINE_AIRPORT);
 		if ("S9".equals(line))
-			return newLine("SS9", Attr.LINE_AIRPORT);
+			return newLine('S', "S9", Attr.LINE_AIRPORT);
 		if ("S45".equals(line))
-			return newLine("SS45", Attr.LINE_AIRPORT);
+			return newLine('S', "S45", Attr.LINE_AIRPORT);
 
 		final Matcher mRegional = P_LINE_REGIONAL.matcher(line);
 		if (mRegional.matches())
-			return newLine('R' + mRegional.group(1));
+			return newLine('R', mRegional.group(1));
 
 		final Matcher mTram = P_LINE_TRAM.matcher(line);
 		if (mTram.matches())
-			return newLine('T' + mTram.group(1));
+			return newLine('T', mTram.group(1));
 
 		final Matcher mBus = P_LINE_BUS.matcher(line);
 		if (mBus.matches())
-			return newLine('B' + mBus.group(1));
+			return newLine('B', mBus.group(1));
 
 		if (P_LINE_FERRY.matcher(line).matches())
-			return newLine('F' + line);
+			return newLine('F', line);
 
 		if (P_LINE_NUMBER.matcher(line).matches())
-			return newLine('R' + line);
+			return newLine('R', line);
 
 		return super.parseLineWithoutType(line);
 	}

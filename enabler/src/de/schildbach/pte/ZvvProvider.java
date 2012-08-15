@@ -200,17 +200,17 @@ public class ZvvProvider extends AbstractHafasProvider
 			final String type = m.group(2);
 
 			if ("Bus-NF".equals(type))
-				return newLine('B' + number, Line.Attr.WHEEL_CHAIR_ACCESS);
+				return newLine('B', number, Line.Attr.WHEEL_CHAIR_ACCESS);
 			if ("Tro-NF".equals(type))
-				return newLine('B' + number, Line.Attr.WHEEL_CHAIR_ACCESS);
+				return newLine('B', number, Line.Attr.WHEEL_CHAIR_ACCESS);
 			if ("Trm-NF".equals(type))
-				return newLine('T' + number, Line.Attr.WHEEL_CHAIR_ACCESS);
+				return newLine('T', number, Line.Attr.WHEEL_CHAIR_ACCESS);
 
 			if (type.length() > 0)
 			{
 				final char normalizedType = normalizeType(type);
 				if (normalizedType != 0)
-					return newLine(normalizedType + number);
+					return newLine(normalizedType, number);
 			}
 
 			throw new IllegalStateException("cannot normalize type " + type + " number " + number + " line#type " + lineAndType);

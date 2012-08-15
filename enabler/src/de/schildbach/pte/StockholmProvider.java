@@ -199,7 +199,7 @@ public class StockholmProvider extends AbstractHafasProvider
 			{
 				final char normalizedType = normalizeType(type);
 				if (normalizedType != 0)
-					return newLine(normalizedType + number);
+					return newLine(normalizedType, number);
 			}
 
 			throw new IllegalStateException("cannot normalize type " + type + " number " + number + " line#type " + lineAndType);

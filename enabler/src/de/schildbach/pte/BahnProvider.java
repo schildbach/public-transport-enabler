@@ -235,16 +235,16 @@ public final class BahnProvider extends AbstractHafasProvider
 	protected final Line parseLineWithoutType(final String line)
 	{
 		if ("Schw-B".equals(line)) // Schwebebahn, gilt als "Straßenbahn besonderer Bauart"
-			return newLine('T' + line);
+			return newLine('T', line);
 
 		if (P_LINE_RUSSIA.matcher(line).matches())
-			return newLine('R' + line);
+			return newLine('R', line);
 
 		if (P_LINE_NUMBER.matcher(line).matches())
-			return newLine('?' + line);
+			return newLine('?', line);
 
 		if ("---".equals(line))
-			return newLine('?' + line);
+			return newLine('?', line);
 
 		return super.parseLineWithoutType(line);
 	}
