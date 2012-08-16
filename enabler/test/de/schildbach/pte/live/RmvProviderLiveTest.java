@@ -87,8 +87,66 @@ public class RmvProviderLiveTest extends AbstractProviderLiveTest
 		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 3000001, null, "Hauptwache"), null, new Location(
 				LocationType.STATION, 3000912, null, "Südbahnhof"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
+
+		if (!result.context.canQueryLater())
+			return;
+
 		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
+
+		if (!laterResult.context.canQueryLater())
+			return;
+
+		final QueryConnectionsResult later2Result = queryMoreConnections(laterResult.context, true);
+		System.out.println(later2Result);
+
+		if (!later2Result.context.canQueryLater())
+			return;
+
+		final QueryConnectionsResult later3Result = queryMoreConnections(later2Result.context, true);
+		System.out.println(later3Result);
+
+		if (!later3Result.context.canQueryLater())
+			return;
+
+		final QueryConnectionsResult later4Result = queryMoreConnections(later3Result.context, true);
+		System.out.println(later4Result);
+
+		if (!later4Result.context.canQueryLater())
+			return;
+
+		final QueryConnectionsResult later5Result = queryMoreConnections(later4Result.context, true);
+		System.out.println(later5Result);
+
+		if (!later5Result.context.canQueryLater())
+			return;
+
+		final QueryConnectionsResult later6Result = queryMoreConnections(later5Result.context, true);
+		System.out.println(later6Result);
+
+		if (!result.context.canQueryEarlier())
+			return;
+
+		final QueryConnectionsResult earlierResult = queryMoreConnections(result.context, false);
+		System.out.println(earlierResult);
+
+		if (!earlierResult.context.canQueryEarlier())
+			return;
+
+		final QueryConnectionsResult earlier2Result = queryMoreConnections(earlierResult.context, false);
+		System.out.println(earlier2Result);
+
+		if (!earlier2Result.context.canQueryEarlier())
+			return;
+
+		final QueryConnectionsResult earlier3Result = queryMoreConnections(earlier2Result.context, false);
+		System.out.println(earlier3Result);
+
+		if (!earlier3Result.context.canQueryEarlier())
+			return;
+
+		final QueryConnectionsResult earlier4Result = queryMoreConnections(earlier3Result.context, false);
+		System.out.println(earlier4Result);
 	}
 
 	@Test

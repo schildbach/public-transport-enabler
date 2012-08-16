@@ -18,11 +18,15 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.QueryConnectionsContext;
+import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.util.ParserUtils;
 
@@ -32,7 +36,7 @@ import de.schildbach.pte.util.ParserUtils;
 public class RmvProvider extends AbstractHafasProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.RMV;
-	private static final String API_BASE = "http://auskunft.nvv.de/nvv/bin/jp/";
+	private static final String API_BASE = "http://auskunft.nvv.de/auskunft/bin/jp/";
 
 	public RmvProvider()
 	{
@@ -166,6 +170,27 @@ public class RmvProvider extends AbstractHafasProvider
 		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ISO_8859_1));
 
 		return jsonGetStops(uri);
+	}
+
+	@Override
+	protected void appendCustomConnectionsQueryBinaryUri(final StringBuilder uri)
+	{
+		uri.append("&h2g-direct=11");
+	}
+
+	@Override
+	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
+			final int maxNumConnections, final String products, final WalkSpeed walkSpeed, final Accessibility accessibility,
+			final Set<Option> options) throws IOException
+	{
+		return queryConnectionsBinary(from, via, to, date, dep, maxNumConnections, products, walkSpeed, accessibility, options);
+	}
+
+	@Override
+	public QueryConnectionsResult queryMoreConnections(final QueryConnectionsContext contextObj, final boolean later, final int numConnections)
+			throws IOException
+	{
+		return queryMoreConnectionsBinary(contextObj, later, numConnections);
 	}
 
 	@Override
