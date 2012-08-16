@@ -1935,6 +1935,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			final short pointer = is.readShortReverse();
 			if (pointer == 0)
 				return null;
+			if (pointer >= table.length)
+				throw new IllegalStateException("pointer " + pointer + " cannot exceed strings table size " + table.length);
 
 			final InputStreamReader reader = new InputStreamReader(new ByteArrayInputStream(table, pointer, table.length - pointer), encoding);
 
@@ -1973,6 +1975,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		public String[] read(final LittleEndianDataInputStream is) throws IOException
 		{
 			final short pointer = is.readShortReverse();
+			if (pointer >= table.length)
+				throw new IllegalStateException("pointer " + pointer + " cannot exceed comments table size " + table.length);
 
 			final LittleEndianDataInputStream commentsInputStream = new LittleEndianDataInputStream(new ByteArrayInputStream(table, pointer,
 					table.length - pointer));
@@ -2013,6 +2017,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		{
 			final short index = is.readShortReverse();
 			final int ptr = index * 14;
+			if (ptr >= table.length)
+				throw new IllegalStateException("pointer " + ptr + " cannot exceed stations table size " + table.length);
 
 			final LittleEndianDataInputStream stationInputStream = new LittleEndianDataInputStream(new ByteArrayInputStream(table, ptr, 14));
 
