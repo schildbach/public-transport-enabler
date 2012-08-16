@@ -25,7 +25,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -227,25 +226,5 @@ public final class BahnProvider extends AbstractHafasProvider
 			return '?';
 
 		return 0;
-	}
-
-	private static final Pattern P_LINE_NUMBER = Pattern.compile("\\d{2,5}");
-
-	@Override
-	protected final Line parseLineWithoutType(final String line)
-	{
-		if ("Schw-B".equals(line)) // Schwebebahn, gilt als "Straßenbahn besonderer Bauart"
-			return newLine('T', line);
-
-		if (P_LINE_RUSSIA.matcher(line).matches())
-			return newLine('R', line);
-
-		if (P_LINE_NUMBER.matcher(line).matches())
-			return newLine('?', line);
-
-		if ("---".equals(line))
-			return newLine('?', line);
-
-		return super.parseLineWithoutType(line);
 	}
 }

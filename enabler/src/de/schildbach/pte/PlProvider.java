@@ -19,10 +19,7 @@ package de.schildbach.pte;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -195,22 +192,6 @@ public class PlProvider extends AbstractHafasProvider
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
 		return xmlMLcReq(constraint);
-	}
-
-	private static final Pattern P_NORMALIZE_LINE_RUSSIA = Pattern.compile("(?:D\\s*)?(\\d{1,3}(?:[A-Z]{2}|Y))");
-	private static final Pattern P_NORMALIZE_LINE_NUMBER = Pattern.compile("\\d{2,5}");
-
-	@Override
-	protected Line parseLineWithoutType(final String line)
-	{
-		final Matcher mRussia = P_NORMALIZE_LINE_RUSSIA.matcher(line);
-		if (mRussia.matches())
-			return newLine('R', mRussia.group(1));
-
-		if (P_NORMALIZE_LINE_NUMBER.matcher(line).matches())
-			return newLine('R', line);
-
-		return super.parseLineWithoutType(line);
 	}
 
 	@Override
