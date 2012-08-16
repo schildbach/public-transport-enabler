@@ -1583,7 +1583,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			final Charset stringEncoding = Charset.forName(strings.read(is));
 			strings.setEncoding(stringEncoding);
 			final String ld = strings.read(is);
-			final int attrsOffset = is.readShortReverse();
+			final int attrsOffset = is.readIntReverse();
 
 			final int connectionAttrsPtr;
 			if (extensionHeaderLength >= 0x30)
