@@ -31,13 +31,13 @@ public class LittleEndianDataInputStream extends DataInputStream
 		super(is);
 	}
 
-	public short readShortReverse() throws IOException
+	public int readShortReverse() throws IOException
 	{
-		return Short.reverseBytes(readShort());
+		return read() + read() * 0x100;
 	}
 
 	public int readIntReverse() throws IOException
 	{
-		return Integer.reverseBytes(readInt());
+		return read() + read() * 0x100 + read() * 0x10000 + read() * 0x1000000;
 	}
 }

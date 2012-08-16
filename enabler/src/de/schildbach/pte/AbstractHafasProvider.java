@@ -109,10 +109,10 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	public static class QueryConnectionsBinaryContext implements QueryConnectionsContext
 	{
 		public final String ident;
-		public final short seqNr;
+		public final int seqNr;
 		public final String ld;
 
-		public QueryConnectionsBinaryContext(final String ident, final short seqNr, final String ld)
+		public QueryConnectionsBinaryContext(final String ident, final int seqNr, final String ld)
 		{
 			this.ident = ident;
 			this.seqNr = seqNr;
@@ -1520,10 +1520,10 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			is.mark(32768);
 
 			// quick check of status
-			final short version = is.readShortReverse();
+			final int version = is.readShortReverse();
 			if (version != 6 && version != 5)
 				throw new IllegalStateException("unknown version: " + version);
-			final ResultHeader header = new ResultHeader(SERVER_PRODUCT, Short.toString(version), 0, null);
+			final ResultHeader header = new ResultHeader(SERVER_PRODUCT, Integer.toString(version), 0, null);
 
 			// quick seek for pointers
 			is.reset();
@@ -1552,12 +1552,12 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				throw new IllegalStateException("too short: " + extensionHeaderLength);
 
 			is.skipBytes(4);
-			final short seqNr = is.readShortReverse();
+			final int seqNr = is.readShortReverse();
 			final String requestId = strings.read(is);
 
 			final int connectionDetailsPtr = is.readIntReverse();
 
-			final short errorCode = is.readShortReverse();
+			final int errorCode = is.readShortReverse();
 			if (errorCode != 0)
 			{
 				if (errorCode == 1)
@@ -1583,7 +1583,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			final Charset stringEncoding = Charset.forName(strings.read(is));
 			strings.setEncoding(stringEncoding);
 			final String ld = strings.read(is);
-			final short attrsOffset = is.readShortReverse();
+			final int attrsOffset = is.readShortReverse();
 
 			final int connectionAttrsPtr;
 			if (extensionHeaderLength >= 0x30)
@@ -1602,16 +1602,16 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			// determine stops offset
 			is.reset();
 			is.skipBytes(connectionDetailsPtr);
-			final short connectionDetailsVersion = is.readShortReverse();
+			final int connectionDetailsVersion = is.readShortReverse();
 			if (connectionDetailsVersion != 1)
 				throw new IllegalStateException("unknown connection details version: " + connectionDetailsVersion);
 			is.skipBytes(0x02);
 
-			final short connectionDetailsIndexOffset = is.readShortReverse();
-			final short connectionDetailsPartOffset = is.readShortReverse();
-			final short connectionDetailsPartSize = is.readShortReverse();
-			final short stopsSize = is.readShortReverse();
-			final short stopsOffset = is.readShortReverse();
+			final int connectionDetailsIndexOffset = is.readShortReverse();
+			final int connectionDetailsPartOffset = is.readShortReverse();
+			final int connectionDetailsPartSize = is.readShortReverse();
+			final int stopsSize = is.readShortReverse();
+			final int stopsOffset = is.readShortReverse();
 
 			// read stations
 			final StationTable stations = new StationTable(is, stationTablePtr, commentTablePtr - stationTablePtr, strings);
@@ -1626,7 +1626,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			final Location resDeparture = location(is, strings);
 			final Location resArrival = location(is, strings);
 
-			final short numConnections = is.readShortReverse();
+			final int numConnections = is.readShortReverse();
 
 			is.readInt();
 			is.readInt();
@@ -1642,13 +1642,13 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				is.reset();
 				is.skipBytes(0x4a + iConnection * 12);
 
-				final short serviceDaysTableOffset = is.readShortReverse();
+				final int serviceDaysTableOffset = is.readShortReverse();
 
 				final int partsOffset = is.readIntReverse();
 
-				final short numParts = is.readShortReverse();
+				final int numParts = is.readShortReverse();
 
-				final short numChanges = is.readShortReverse();
+				final int numChanges = is.readShortReverse();
 
 				/* final long duration = */time(is, 0, 0);
 
@@ -1657,8 +1657,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 				/* final String serviceDaysText = */strings.read(is);
 
-				final short serviceBitBase = is.readShortReverse();
-				final short serviceBitLength = is.readShortReverse();
+				final int serviceBitBase = is.readShortReverse();
+				final int serviceBitLength = is.readShortReverse();
 
 				int connectionDayOffset = serviceBitBase * 8;
 				for (int i = 0; i < serviceBitLength; i++)
@@ -1679,11 +1679,11 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 				is.reset();
 				is.skipBytes(connectionDetailsPtr + connectionDetailsIndexOffset + iConnection * 2);
-				final short connectionDetailsOffset = is.readShortReverse();
+				final int connectionDetailsOffset = is.readShortReverse();
 
 				is.reset();
 				is.skipBytes(connectionDetailsPtr + connectionDetailsOffset);
-				final short realtimeStatus = is.readShortReverse();
+				final int realtimeStatus = is.readShortReverse();
 
 				/* final short delay = */is.readShortReverse();
 
@@ -1692,7 +1692,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				{
 					is.reset();
 					is.skipBytes(connectionAttrsPtr + iConnection * 2);
-					final short connectionAttrsIndex = is.readShortReverse();
+					final int connectionAttrsIndex = is.readShortReverse();
 
 					is.reset();
 					is.skipBytes(attrsOffset + connectionAttrsIndex * 4);
@@ -1721,14 +1721,14 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					final long plannedArrivalTime = time(is, resDate, connectionDayOffset);
 					final Location arrival = stations.read(is);
 
-					final short type = is.readShortReverse();
+					final int type = is.readShortReverse();
 
 					final String lineStr = strings.read(is);
 
 					final String plannedDeparturePosition = normalizePosition(strings.read(is));
 					final String plannedArrivalPosition = normalizePosition(strings.read(is));
 
-					final short partAttrIndex = is.readShortReverse();
+					final int partAttrIndex = is.readShortReverse();
 
 					/* final String[] comments = */comments.read(is);
 
@@ -1762,9 +1762,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 					is.readInt();
 
-					final short firstStopIndex = is.readShortReverse();
+					final int firstStopIndex = is.readShortReverse();
 
-					final short numStops = is.readShortReverse();
+					final int numStops = is.readShortReverse();
 
 					List<Stop> intermediateStops = null;
 
@@ -1866,7 +1866,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	{
 		final String[] placeAndName = splitPlaceAndName(strings.read(is));
 		is.readShort();
-		final short type = is.readShortReverse();
+		final int type = is.readShortReverse();
 		final LocationType locationType;
 		if (type == 1)
 			locationType = LocationType.STATION;
@@ -1884,7 +1884,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 	private long date(final LittleEndianDataInputStream is) throws IOException
 	{
-		final short days = is.readShortReverse();
+		final int days = is.readShortReverse();
 
 		final Calendar date = new GregorianCalendar(timeZone());
 		date.clear();
@@ -1896,8 +1896,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 	private long time(final LittleEndianDataInputStream is, final long baseDate, final int dayOffset) throws IOException
 	{
-		final short value = is.readShortReverse();
-		if (value == -1)
+		final int value = is.readShortReverse();
+		if (value == 0xffff)
 			return 0;
 
 		final int hours = value / 100;
@@ -1932,7 +1932,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 		public String read(final LittleEndianDataInputStream is) throws IOException
 		{
-			final short pointer = is.readShortReverse();
+			final int pointer = is.readShortReverse();
 			if (pointer == 0)
 				return null;
 			if (pointer >= table.length)
@@ -1974,7 +1974,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 		public String[] read(final LittleEndianDataInputStream is) throws IOException
 		{
-			final short pointer = is.readShortReverse();
+			final int pointer = is.readShortReverse();
 			if (pointer >= table.length)
 				throw new IllegalStateException("pointer " + pointer + " cannot exceed comments table size " + table.length);
 
@@ -1983,7 +1983,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 			try
 			{
-				final short numComments = commentsInputStream.readShortReverse();
+				final int numComments = commentsInputStream.readShortReverse();
 				final String[] comments = new String[numComments];
 
 				for (int i = 0; i < numComments; i++)
@@ -2015,7 +2015,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 		private Location read(final LittleEndianDataInputStream is) throws IOException
 		{
-			final short index = is.readShortReverse();
+			final int index = is.readShortReverse();
 			final int ptr = index * 14;
 			if (ptr >= table.length)
 				throw new IllegalStateException("pointer " + ptr + " cannot exceed stations table size " + table.length);
