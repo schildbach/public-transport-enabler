@@ -18,22 +18,12 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import de.schildbach.pte.dto.Departure;
-import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
-import de.schildbach.pte.dto.QueryDeparturesResult.Status;
-import de.schildbach.pte.dto.ResultHeader;
-import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.util.ParserUtils;
 
 /**
@@ -42,9 +32,7 @@ import de.schildbach.pte.util.ParserUtils;
 public class RmvProvider extends AbstractHafasProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.RMV;
-	private static final String API_BASE = "http://www.rmv.de/auskunft/bin/jp/";
-
-	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
+	private static final String API_BASE = "http://auskunft.nvv.de/nvv/bin/jp/";
 
 	public RmvProvider()
 	{
@@ -156,145 +144,19 @@ public class RmvProvider extends AbstractHafasProvider
 		}
 	}
 
-	private String departuresQueryUri(final int stationId, final int maxDepartures)
-	{
-		final Calendar c = new GregorianCalendar(timeZone());
-
-		final StringBuilder uri = new StringBuilder();
-
-		uri.append(API_BASE).append("stboard.exe/dox");
-		uri.append("?input=").append(stationId);
-		uri.append("&boardType=dep"); // show departures
-		uri.append("&maxJourneys=").append(maxDepartures != 0 ? maxDepartures : 50); // maximum taken from RMV site
-		uri.append("&date=").append(
-				String.format("%02d.%02d.%02d", c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.MONTH) + 1, c.get(Calendar.YEAR) - 2000));
-		uri.append("&time=").append(String.format("%02d:%02d", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE)));
-		uri.append("&disableEquivs=yes"); // don't use nearby stations
-		uri.append("&start=yes");
-
-		return uri.toString();
-	}
-
-	private static final Pattern P_DEPARTURES_HEAD_COARSE = Pattern.compile(".*?" //
-			+ "(?:" //
-			+ "<p class=\"qs\">\n(.*?)</p>\n" // head
-			+ "(.*?)<p class=\"links\">.*?" // departures
-			+ "input=(\\d+).*?" // locationId
-			+ "|(Eingabe kann nicht interpretiert|Eingabe ist nicht eindeutig)" // messages
-			+ "|(Internal Error)" // messages
-			+ ").*?", Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_HEAD_FINE = Pattern.compile("" //
-			+ "<b>(.*?)</b><br />.*?" //
-			+ "Abfahrt (\\d+:\\d+).*?" //
-			+ "Uhr, (\\d+\\.\\d+\\.\\d+).*?" //
-	, Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<p class=\"sq\">\n(.+?)</p>", Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_FINE = Pattern.compile("" //
-			+ "<b>([^<]*)</b>\n" // line
-			+ "&gt;&gt;\n" //
-			+ "([^\n]*)\n" // destination
-			+ "<br />\n" //
-			+ "<b>(\\d{1,2}:\\d{2})</b>\n" // plannedTime
-			+ "(?:keine Prognose verf&#252;gbar\n)?" //
-			+ "(?:<span class=\"red\">ca\\. (\\d{1,2}:\\d{2})</span>\n)?" // predictedTime
-			+ "(?:<span class=\"red\">heute (Gl\\. " + ParserUtils.P_PLATFORM + ")</span><br />\n)?" // predictedPosition
-			+ "(?:(Gl\\. " + ParserUtils.P_PLATFORM + ")<br />\n)?" // position
-			+ "(?:<span class=\"red\">([^>]*)</span>\n)?" // message
-			+ "(?:<img src=\".+?\" alt=\"\" />\n<b>[^<]*</b>\n<br />\n)*" // (messages)
-			+ ".*?", Pattern.DOTALL);
-
 	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
-		final ResultHeader header = new ResultHeader(SERVER_PRODUCT);
-		final QueryDeparturesResult result = new QueryDeparturesResult(header);
+		final StringBuilder uri = new StringBuilder();
+		uri.append(API_BASE).append("stboard.exe/dn");
+		uri.append("?productsFilter=").append(allProductsString());
+		uri.append("&boardType=dep");
+		uri.append("&disableEquivs=yes"); // don't use nearby stations
+		uri.append("&maxJourneys=50"); // ignore maxDepartures because result contains other stations
+		uri.append("&start=yes");
+		uri.append("&L=vs_java3");
+		uri.append("&input=").append(stationId);
 
-		// scrape page
-		final String uri = departuresQueryUri(stationId, maxDepartures);
-		final CharSequence page = ParserUtils.scrape(uri);
-
-		// parse page
-		final Matcher mHeadCoarse = P_DEPARTURES_HEAD_COARSE.matcher(page);
-		if (mHeadCoarse.matches())
-		{
-			// messages
-			if (mHeadCoarse.group(4) != null)
-				return new QueryDeparturesResult(header, Status.INVALID_STATION);
-			else if (mHeadCoarse.group(5) != null)
-				return new QueryDeparturesResult(header, Status.SERVICE_DOWN);
-
-			final int locationId = Integer.parseInt(mHeadCoarse.group(3));
-
-			final Matcher mHeadFine = P_DEPARTURES_HEAD_FINE.matcher(mHeadCoarse.group(1));
-			if (mHeadFine.matches())
-			{
-				final String location = ParserUtils.resolveEntities(mHeadFine.group(1));
-				final Calendar currentTime = new GregorianCalendar(timeZone());
-				currentTime.clear();
-				ParserUtils.parseEuropeanTime(currentTime, mHeadFine.group(2));
-				ParserUtils.parseGermanDate(currentTime, mHeadFine.group(3));
-				final List<Departure> departures = new ArrayList<Departure>(8);
-
-				final Matcher mDepCoarse = P_DEPARTURES_COARSE.matcher(mHeadCoarse.group(2));
-				while (mDepCoarse.find())
-				{
-					final Matcher mDepFine = P_DEPARTURES_FINE.matcher(mDepCoarse.group(1));
-					if (mDepFine.matches())
-					{
-						final Line line = parseLineWithoutType(ParserUtils.resolveEntities(mDepFine.group(1)));
-
-						final String destinationName = ParserUtils.resolveEntities(mDepFine.group(2));
-						final Location destination = new Location(LocationType.ANY, 0, null, destinationName);
-
-						final Calendar plannedTime = new GregorianCalendar(timeZone());
-						plannedTime.setTimeInMillis(currentTime.getTimeInMillis());
-						ParserUtils.parseEuropeanTime(plannedTime, mDepFine.group(3));
-
-						if (plannedTime.getTimeInMillis() - currentTime.getTimeInMillis() < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
-							plannedTime.add(Calendar.DAY_OF_MONTH, 1);
-
-						final Calendar predictedTime;
-						if (mDepFine.group(4) != null)
-						{
-							predictedTime = new GregorianCalendar(timeZone());
-							predictedTime.setTimeInMillis(currentTime.getTimeInMillis());
-							ParserUtils.parseEuropeanTime(predictedTime, mDepFine.group(4));
-
-							if (predictedTime.getTimeInMillis() - currentTime.getTimeInMillis() < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
-								predictedTime.add(Calendar.DAY_OF_MONTH, 1);
-						}
-						else
-						{
-							predictedTime = null;
-						}
-
-						final String position = ParserUtils.resolveEntities(ParserUtils.selectNotNull(mDepFine.group(5), mDepFine.group(6)));
-
-						final Departure dep = new Departure(plannedTime.getTime(), predictedTime != null ? predictedTime.getTime() : null, line,
-								position, destination, null, null);
-
-						if (!departures.contains(dep))
-							departures.add(dep);
-					}
-					else
-					{
-						throw new IllegalArgumentException("cannot parse '" + mDepCoarse.group(1) + "' on " + stationId);
-					}
-				}
-
-				final String[] placeAndName = splitPlaceAndName(location);
-				result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, locationId, placeAndName[0], placeAndName[1]),
-						departures, null));
-				return result;
-			}
-			else
-			{
-				throw new IllegalArgumentException("cannot parse '" + mHeadCoarse.group(1) + "' on " + stationId);
-			}
-		}
-		else
-		{
-			throw new IllegalArgumentException("cannot parse '" + page + "' on " + stationId);
-		}
+		return xmlQueryDepartures(uri.toString(), stationId);
 	}
 
 	private static final String AUTOCOMPLETE_URI = API_BASE + "ajax-getstop.exe/dn?getstop=1&REQ0JourneyStopsS0A=255&S=%s?&js=true&";
@@ -304,17 +166,6 @@ public class RmvProvider extends AbstractHafasProvider
 		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ISO_8859_1));
 
 		return jsonGetStops(uri);
-	}
-
-	@Override
-	protected Line parseLineWithoutType(final String line)
-	{
-		if ("11".equals(line))
-			return newLine('T', "11");
-		if ("12".equals(line))
-			return newLine('T', "12");
-
-		return super.parseLineWithoutType(line);
 	}
 
 	@Override
