@@ -1517,7 +1517,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		try
 		{
 			is = new LittleEndianDataInputStream(new BufferedInputStream(ParserUtils.scrapeInputStream(uri)));
-			is.mark(32768);
+			is.mark(256 * 1024);
 
 			// quick check of status
 			final int version = is.readShortReverse();
