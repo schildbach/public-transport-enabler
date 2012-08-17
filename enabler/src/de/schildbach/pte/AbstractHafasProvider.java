@@ -1749,6 +1749,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						{
 							if (comment.startsWith("bf "))
 								lineAttrs.add(Line.Attr.WHEEL_CHAIR_ACCESS);
+							else if (comment.startsWith("FA ") || comment.startsWith("FB ") || comment.startsWith("FR "))
+								lineAttrs.add(Line.Attr.BICYCLE_CARRIAGE);
 						}
 
 						is.reset();
