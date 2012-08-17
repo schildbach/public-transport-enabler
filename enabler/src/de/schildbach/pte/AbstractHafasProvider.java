@@ -51,7 +51,6 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.Line;
-import de.schildbach.pte.dto.Line.Attr;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -782,7 +781,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	}
 
 	protected final void appendConnectionsQueryUri(final StringBuilder uri, final Location from, final Location via, final Location to,
-			final Date date, final boolean dep, final String products, final Set<Option> options)
+			final Date date, final boolean dep, final String products, final Accessibility accessibility, final Set<Option> options)
 	{
 		uri.append("?start=Suchen");
 
@@ -836,6 +835,14 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			productsStr.append(allProductsString());
 		}
 		uri.append("&REQ0JourneyProduct_prod_list_1=").append(productsStr);
+
+		if (accessibility != null && accessibility != Accessibility.NEUTRAL)
+		{
+			if (accessibility == Accessibility.LIMITED)
+				uri.append("&REQ0AddParamBaimprofile=1");
+			else if (accessibility == Accessibility.BARRIER_FREE)
+				uri.append("&REQ0AddParamBaimprofile=0");
+		}
 
 		if (options != null && options.contains(Option.BIKE))
 			uri.append("&REQ0JourneyProduct_opt3=1");
@@ -1487,7 +1494,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 
 		final StringBuilder uri = new StringBuilder(apiUri);
-		appendConnectionsQueryUri(uri, from, via, to, date, dep, products, options);
+		appendConnectionsQueryUri(uri, from, via, to, date, dep, products, accessibility, options);
 		appendCustomConnectionsQueryBinaryUri(uri);
 
 		return queryConnectionsBinary(uri.toString(), from, via, to);
@@ -1736,7 +1743,12 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 					final int partAttrIndex = is.readShortReverse();
 
-					/* final String[] comments = */comments.read(is);
+					final List<Line.Attr> lineAttrs = new ArrayList<Line.Attr>();
+					for (final String comment : comments.read(is))
+					{
+						if (comment.startsWith("bf "))
+							lineAttrs.add(Line.Attr.WHEEL_CHAIR_ACCESS);
+					}
 
 					is.reset();
 					is.skipBytes(attrsOffset + partAttrIndex * 4);
@@ -1847,7 +1859,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 							lineProduct = intToProduct(lineClass);
 						else
 							lineProduct = normalizeType(lineCategory);
-						final Line line = newLine(lineProduct, normalizeLineName(lineName));
+
+						final Line line = newLine(lineProduct, normalizeLineName(lineName), lineAttrs.toArray(new Line.Attr[0]));
 						final Location direction = directionStr != null ? new Location(LocationType.ANY, 0, null, directionStr) : null;
 
 						part = new Connection.Trip(line, direction, plannedDepartureTime != 0 ? new Date(plannedDepartureTime) : null,
@@ -2694,11 +2707,11 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		if (normalizedType == 0)
 			throw new IllegalStateException("cannot normalize type '" + type + "' line '" + line + "'");
 
-		final Attr[] attrs;
+		final Line.Attr[] attrs;
 		if (wheelchairAccess)
-			attrs = new Attr[] { Line.Attr.WHEEL_CHAIR_ACCESS };
+			attrs = new Line.Attr[] { Line.Attr.WHEEL_CHAIR_ACCESS };
 		else
-			attrs = new Attr[0];
+			attrs = new Line.Attr[0];
 
 		if (line != null)
 		{
