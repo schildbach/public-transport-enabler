@@ -1569,7 +1569,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			{
 				if (errorCode == 1)
 					throw new SessionExpiredException();
-				else if (errorCode == 890)
+				else if (errorCode == 890 || errorCode == 891)
 					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.NO_CONNECTIONS);
 				else if (errorCode == 9220)
 					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.UNRESOLVABLE_ADDRESS);
