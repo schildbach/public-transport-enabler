@@ -1564,328 +1564,345 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			if (extensionHeaderLength < 0x2c)
 				throw new IllegalStateException("too short: " + extensionHeaderLength);
 
-			is.skipBytes(4);
-			final int seqNr = is.readShortReverse();
-			final String requestId = strings.read(is);
-
-			final int connectionDetailsPtr = is.readIntReverse();
-
+			is.skipBytes(12);
 			final int errorCode = is.readShortReverse();
-			if (errorCode != 0)
+
+			if (errorCode == 0)
 			{
-				if (errorCode == 1)
-					throw new SessionExpiredException();
-				else if (errorCode == 890 || errorCode == 891)
-					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.NO_CONNECTIONS);
-				else if (errorCode == 9220)
-					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.UNRESOLVABLE_ADDRESS);
-				else if (errorCode == 9240)
-					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.SERVICE_DOWN);
-				else if (errorCode == 9360)
-					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.INVALID_DATE);
-				else if (errorCode == 9380 || errorCode == 895)
-					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.TOO_CLOSE);
+				is.reset();
+				is.skipBytes(extensionHeaderPtr + 0x8);
+
+				final int seqNr = is.readShortReverse();
+				final String requestId = strings.read(is);
+
+				final int connectionDetailsPtr = is.readIntReverse();
+				if (connectionDetailsPtr == 0)
+					throw new IllegalStateException("no connection details");
+
+				is.skipBytes(16);
+				final Charset stringEncoding = Charset.forName(strings.read(is));
+				strings.setEncoding(stringEncoding);
+				final String ld = strings.read(is);
+				final int attrsOffset = is.readIntReverse();
+
+				final int connectionAttrsPtr;
+				if (extensionHeaderLength >= 0x30)
+				{
+					if (extensionHeaderLength < 0x32)
+						throw new IllegalArgumentException("too short: " + extensionHeaderLength);
+					is.reset();
+					is.skipBytes(extensionHeaderPtr + 0x2c);
+					connectionAttrsPtr = is.readIntReverse();
+				}
 				else
-					throw new IllegalStateException("error " + errorCode + " on " + uri);
-			}
-
-			if (connectionDetailsPtr == 0)
-				throw new IllegalStateException("no connection details");
-
-			is.skipBytes(14);
-			final Charset stringEncoding = Charset.forName(strings.read(is));
-			strings.setEncoding(stringEncoding);
-			final String ld = strings.read(is);
-			final int attrsOffset = is.readIntReverse();
-
-			final int connectionAttrsPtr;
-			if (extensionHeaderLength >= 0x30)
-			{
-				if (extensionHeaderLength < 0x32)
-					throw new IllegalArgumentException("too short: " + extensionHeaderLength);
-				is.reset();
-				is.skipBytes(extensionHeaderPtr + 0x2c);
-				connectionAttrsPtr = is.readIntReverse();
-			}
-			else
-			{
-				connectionAttrsPtr = 0;
-			}
-
-			// determine stops offset
-			is.reset();
-			is.skipBytes(connectionDetailsPtr);
-			final int connectionDetailsVersion = is.readShortReverse();
-			if (connectionDetailsVersion != 1)
-				throw new IllegalStateException("unknown connection details version: " + connectionDetailsVersion);
-			is.skipBytes(0x02);
-
-			final int connectionDetailsIndexOffset = is.readShortReverse();
-			final int connectionDetailsPartOffset = is.readShortReverse();
-			final int connectionDetailsPartSize = is.readShortReverse();
-			final int stopsSize = is.readShortReverse();
-			final int stopsOffset = is.readShortReverse();
-
-			// read stations
-			final StationTable stations = new StationTable(is, stationTablePtr, commentTablePtr - stationTablePtr, strings);
-
-			// read comments
-			final CommentTable comments = new CommentTable(is, commentTablePtr, connectionDetailsPtr - commentTablePtr, strings);
-
-			// really read header
-			is.reset();
-			is.skipBytes(0x02);
-
-			final Location resDeparture = location(is, strings);
-			final Location resArrival = location(is, strings);
-
-			final int numConnections = is.readShortReverse();
-
-			is.readInt();
-			is.readInt();
-
-			final long resDate = date(is);
-			/* final long resDate30 = */date(is);
-
-			final List<Connection> connections = new ArrayList<Connection>(numConnections);
-
-			// read connections
-			for (int iConnection = 0; iConnection < numConnections; iConnection++)
-			{
-				is.reset();
-				is.skipBytes(0x4a + iConnection * 12);
-
-				final int serviceDaysTableOffset = is.readShortReverse();
-
-				final int partsOffset = is.readIntReverse();
-
-				final int numParts = is.readShortReverse();
-
-				final int numChanges = is.readShortReverse();
-
-				/* final long duration = */time(is, 0, 0);
-
-				is.reset();
-				is.skipBytes(serviceDaysTablePtr + serviceDaysTableOffset);
-
-				/* final String serviceDaysText = */strings.read(is);
-
-				final int serviceBitBase = is.readShortReverse();
-				final int serviceBitLength = is.readShortReverse();
-
-				int connectionDayOffset = serviceBitBase * 8;
-				for (int i = 0; i < serviceBitLength; i++)
 				{
-					int serviceBits = is.read();
-					if (serviceBits == 0)
-					{
-						connectionDayOffset += 8;
-						continue;
-					}
-					while ((serviceBits & 0x80) == 0)
-					{
-						serviceBits = serviceBits << 1;
-						connectionDayOffset++;
-					}
-					break;
+					connectionAttrsPtr = 0;
 				}
 
+				// determine stops offset
 				is.reset();
-				is.skipBytes(connectionDetailsPtr + connectionDetailsIndexOffset + iConnection * 2);
-				final int connectionDetailsOffset = is.readShortReverse();
+				is.skipBytes(connectionDetailsPtr);
+				final int connectionDetailsVersion = is.readShortReverse();
+				if (connectionDetailsVersion != 1)
+					throw new IllegalStateException("unknown connection details version: " + connectionDetailsVersion);
+				is.skipBytes(0x02);
 
+				final int connectionDetailsIndexOffset = is.readShortReverse();
+				final int connectionDetailsPartOffset = is.readShortReverse();
+				final int connectionDetailsPartSize = is.readShortReverse();
+				final int stopsSize = is.readShortReverse();
+				final int stopsOffset = is.readShortReverse();
+
+				// read stations
+				final StationTable stations = new StationTable(is, stationTablePtr, commentTablePtr - stationTablePtr, strings);
+
+				// read comments
+				final CommentTable comments = new CommentTable(is, commentTablePtr, connectionDetailsPtr - commentTablePtr, strings);
+
+				// really read header
 				is.reset();
-				is.skipBytes(connectionDetailsPtr + connectionDetailsOffset);
-				final int realtimeStatus = is.readShortReverse();
+				is.skipBytes(0x02);
 
-				/* final short delay = */is.readShortReverse();
+				final Location resDeparture = location(is, strings);
+				final Location resArrival = location(is, strings);
 
-				String connectionId = null;
-				if (connectionAttrsPtr != 0)
+				final int numConnections = is.readShortReverse();
+
+				is.readInt();
+				is.readInt();
+
+				final long resDate = date(is);
+				/* final long resDate30 = */date(is);
+
+				final List<Connection> connections = new ArrayList<Connection>(numConnections);
+
+				// read connections
+				for (int iConnection = 0; iConnection < numConnections; iConnection++)
 				{
 					is.reset();
-					is.skipBytes(connectionAttrsPtr + iConnection * 2);
-					final int connectionAttrsIndex = is.readShortReverse();
+					is.skipBytes(0x4a + iConnection * 12);
+
+					final int serviceDaysTableOffset = is.readShortReverse();
+
+					final int partsOffset = is.readIntReverse();
+
+					final int numParts = is.readShortReverse();
+
+					final int numChanges = is.readShortReverse();
+
+					/* final long duration = */time(is, 0, 0);
 
 					is.reset();
-					is.skipBytes(attrsOffset + connectionAttrsIndex * 4);
-					while (true)
+					is.skipBytes(serviceDaysTablePtr + serviceDaysTableOffset);
+
+					/* final String serviceDaysText = */strings.read(is);
+
+					final int serviceBitBase = is.readShortReverse();
+					final int serviceBitLength = is.readShortReverse();
+
+					int connectionDayOffset = serviceBitBase * 8;
+					for (int i = 0; i < serviceBitLength; i++)
 					{
-						final String key = strings.read(is);
-						if (key == null)
-							break;
-						else if (key.equals("ConnectionId"))
-							connectionId = strings.read(is);
-						else
-							is.skipBytes(2);
-					}
-				}
-
-				final List<Connection.Part> parts = new ArrayList<Connection.Part>(numParts);
-
-				for (int iPart = 0; iPart < numParts; iPart++)
-				{
-					is.reset();
-					is.skipBytes(0x4a + partsOffset + iPart * 20);
-
-					final long plannedDepartureTime = time(is, resDate, connectionDayOffset);
-					final Location departure = stations.read(is);
-
-					final long plannedArrivalTime = time(is, resDate, connectionDayOffset);
-					final Location arrival = stations.read(is);
-
-					final int type = is.readShortReverse();
-
-					final String lineName = strings.read(is);
-
-					final String plannedDeparturePosition = normalizePosition(strings.read(is));
-					final String plannedArrivalPosition = normalizePosition(strings.read(is));
-
-					final int partAttrIndex = is.readShortReverse();
-
-					final List<Line.Attr> lineAttrs = new ArrayList<Line.Attr>();
-					for (final String comment : comments.read(is))
-					{
-						if (comment.startsWith("bf "))
-							lineAttrs.add(Line.Attr.WHEEL_CHAIR_ACCESS);
+						int serviceBits = is.read();
+						if (serviceBits == 0)
+						{
+							connectionDayOffset += 8;
+							continue;
+						}
+						while ((serviceBits & 0x80) == 0)
+						{
+							serviceBits = serviceBits << 1;
+							connectionDayOffset++;
+						}
+						break;
 					}
 
 					is.reset();
-					is.skipBytes(attrsOffset + partAttrIndex * 4);
-					String directionStr = null;
-					int lineClass = 0;
-					String lineCategory = null;
-					String lineOperator = null;
-					while (true)
-					{
-						final String key = strings.read(is);
-						if (key == null)
-							break;
-						else if (key.equals("Direction"))
-							directionStr = strings.read(is);
-						else if (key.equals("Class"))
-							lineClass = Integer.parseInt(strings.read(is));
-						else if (key.equals("Category"))
-							lineCategory = strings.read(is);
-						else if (key.equals("Operator"))
-							lineOperator = strings.read(is);
-						else
-							is.skipBytes(2);
-					}
-
-					if (lineCategory == null && lineName != null)
-						lineCategory = categoryFromName(lineName);
+					is.skipBytes(connectionDetailsPtr + connectionDetailsIndexOffset + iConnection * 2);
+					final int connectionDetailsOffset = is.readShortReverse();
 
 					is.reset();
-					is.skipBytes(connectionDetailsPtr + connectionDetailsOffset + connectionDetailsPartOffset + iPart * connectionDetailsPartSize);
+					is.skipBytes(connectionDetailsPtr + connectionDetailsOffset);
+					final int realtimeStatus = is.readShortReverse();
 
-					if (connectionDetailsPartSize != 16)
-						throw new IllegalStateException("unhandled connection details part size: " + connectionDetailsPartSize);
+					/* final short delay = */is.readShortReverse();
 
-					final long predictedDepartureTime = time(is, resDate, connectionDayOffset);
-					final long predictedArrivalTime = time(is, resDate, connectionDayOffset);
-					final String predictedDeparturePosition = normalizePosition(strings.read(is));
-					final String predictedArrivalPosition = normalizePosition(strings.read(is));
-
-					is.readInt();
-
-					final int firstStopIndex = is.readShortReverse();
-
-					final int numStops = is.readShortReverse();
-
-					List<Stop> intermediateStops = null;
-
-					if (numStops > 0)
+					String connectionId = null;
+					if (connectionAttrsPtr != 0)
 					{
 						is.reset();
-						is.skipBytes(connectionDetailsPtr + stopsOffset + firstStopIndex * stopsSize);
+						is.skipBytes(connectionAttrsPtr + iConnection * 2);
+						final int connectionAttrsIndex = is.readShortReverse();
 
-						if (stopsSize != 26)
-							throw new IllegalStateException("unhandled stops size: " + stopsSize);
-
-						intermediateStops = new ArrayList<Stop>(numStops);
-
-						for (int iStop = 0; iStop < numStops; iStop++)
+						is.reset();
+						is.skipBytes(attrsOffset + connectionAttrsIndex * 4);
+						while (true)
 						{
-							final long plannedStopDepartureTime = time(is, resDate, connectionDayOffset);
-							final Date plannedStopDepartureDate = plannedStopDepartureTime != 0 ? new Date(plannedStopDepartureTime) : null;
-							final long plannedStopArrivalTime = time(is, resDate, connectionDayOffset);
-							final Date plannedStopArrivalDate = plannedStopArrivalTime != 0 ? new Date(plannedStopArrivalTime) : null;
-							final String plannedStopDeparturePosition = normalizePosition(strings.read(is));
-							final String plannedStopArrivalPosition = normalizePosition(strings.read(is));
-
-							is.readInt();
-
-							final long predictedStopDepartureTime = time(is, resDate, connectionDayOffset);
-							final Date predictedStopDepartureDate = predictedStopDepartureTime != 0 ? new Date(predictedStopDepartureTime) : null;
-							final long predictedStopArrivalTime = time(is, resDate, connectionDayOffset);
-							final Date predictedStopArrivalDate = predictedStopArrivalTime != 0 ? new Date(predictedStopArrivalTime) : null;
-							final String predictedStopDeparturePosition = normalizePosition(strings.read(is));
-							final String predictedStopArrivalPosition = normalizePosition(strings.read(is));
-
-							is.readInt();
-
-							final Location stopLocation = stations.read(is);
-
-							final Stop stop = new Stop(stopLocation, plannedStopArrivalDate, predictedStopArrivalDate, plannedStopArrivalPosition,
-									predictedStopArrivalPosition, plannedStopDepartureDate, predictedStopDepartureDate, plannedStopDeparturePosition,
-									predictedStopDeparturePosition);
-
-							intermediateStops.add(stop);
+							final String key = strings.read(is);
+							if (key == null)
+								break;
+							else if (key.equals("ConnectionId"))
+								connectionId = strings.read(is);
+							else
+								is.skipBytes(2);
 						}
 					}
 
-					final Connection.Part part;
-					if (type == 1 /* Fussweg */|| type == 3 /* Uebergang */|| type == 4 /* Uebergang */)
-					{
-						final int min = (int) ((plannedArrivalTime - plannedDepartureTime) / 1000 / 60);
-						final boolean transfer = type != 1;
+					final List<Connection.Part> parts = new ArrayList<Connection.Part>(numParts);
 
-						if (parts.size() > 0 && parts.get(parts.size() - 1) instanceof Connection.Footway)
+					for (int iPart = 0; iPart < numParts; iPart++)
+					{
+						is.reset();
+						is.skipBytes(0x4a + partsOffset + iPart * 20);
+
+						final long plannedDepartureTime = time(is, resDate, connectionDayOffset);
+						final Location departure = stations.read(is);
+
+						final long plannedArrivalTime = time(is, resDate, connectionDayOffset);
+						final Location arrival = stations.read(is);
+
+						final int type = is.readShortReverse();
+
+						final String lineName = strings.read(is);
+
+						final String plannedDeparturePosition = normalizePosition(strings.read(is));
+						final String plannedArrivalPosition = normalizePosition(strings.read(is));
+
+						final int partAttrIndex = is.readShortReverse();
+
+						final List<Line.Attr> lineAttrs = new ArrayList<Line.Attr>();
+						for (final String comment : comments.read(is))
 						{
-							final Connection.Footway lastFootway = (Connection.Footway) parts.remove(parts.size() - 1);
-							part = new Connection.Footway(lastFootway.min + min, lastFootway.transfer || transfer, lastFootway.departure, arrival,
-									null);
+							if (comment.startsWith("bf "))
+								lineAttrs.add(Line.Attr.WHEEL_CHAIR_ACCESS);
+						}
+
+						is.reset();
+						is.skipBytes(attrsOffset + partAttrIndex * 4);
+						String directionStr = null;
+						int lineClass = 0;
+						String lineCategory = null;
+						String lineOperator = null;
+						while (true)
+						{
+							final String key = strings.read(is);
+							if (key == null)
+								break;
+							else if (key.equals("Direction"))
+								directionStr = strings.read(is);
+							else if (key.equals("Class"))
+								lineClass = Integer.parseInt(strings.read(is));
+							else if (key.equals("Category"))
+								lineCategory = strings.read(is);
+							else if (key.equals("Operator"))
+								lineOperator = strings.read(is);
+							else
+								is.skipBytes(2);
+						}
+
+						if (lineCategory == null && lineName != null)
+							lineCategory = categoryFromName(lineName);
+
+						is.reset();
+						is.skipBytes(connectionDetailsPtr + connectionDetailsOffset + connectionDetailsPartOffset + iPart * connectionDetailsPartSize);
+
+						if (connectionDetailsPartSize != 16)
+							throw new IllegalStateException("unhandled connection details part size: " + connectionDetailsPartSize);
+
+						final long predictedDepartureTime = time(is, resDate, connectionDayOffset);
+						final long predictedArrivalTime = time(is, resDate, connectionDayOffset);
+						final String predictedDeparturePosition = normalizePosition(strings.read(is));
+						final String predictedArrivalPosition = normalizePosition(strings.read(is));
+
+						is.readInt();
+
+						final int firstStopIndex = is.readShortReverse();
+
+						final int numStops = is.readShortReverse();
+
+						List<Stop> intermediateStops = null;
+
+						if (numStops > 0)
+						{
+							is.reset();
+							is.skipBytes(connectionDetailsPtr + stopsOffset + firstStopIndex * stopsSize);
+
+							if (stopsSize != 26)
+								throw new IllegalStateException("unhandled stops size: " + stopsSize);
+
+							intermediateStops = new ArrayList<Stop>(numStops);
+
+							for (int iStop = 0; iStop < numStops; iStop++)
+							{
+								final long plannedStopDepartureTime = time(is, resDate, connectionDayOffset);
+								final Date plannedStopDepartureDate = plannedStopDepartureTime != 0 ? new Date(plannedStopDepartureTime) : null;
+								final long plannedStopArrivalTime = time(is, resDate, connectionDayOffset);
+								final Date plannedStopArrivalDate = plannedStopArrivalTime != 0 ? new Date(plannedStopArrivalTime) : null;
+								final String plannedStopDeparturePosition = normalizePosition(strings.read(is));
+								final String plannedStopArrivalPosition = normalizePosition(strings.read(is));
+
+								is.readInt();
+
+								final long predictedStopDepartureTime = time(is, resDate, connectionDayOffset);
+								final Date predictedStopDepartureDate = predictedStopDepartureTime != 0 ? new Date(predictedStopDepartureTime) : null;
+								final long predictedStopArrivalTime = time(is, resDate, connectionDayOffset);
+								final Date predictedStopArrivalDate = predictedStopArrivalTime != 0 ? new Date(predictedStopArrivalTime) : null;
+								final String predictedStopDeparturePosition = normalizePosition(strings.read(is));
+								final String predictedStopArrivalPosition = normalizePosition(strings.read(is));
+
+								is.readInt();
+
+								final Location stopLocation = stations.read(is);
+
+								final Stop stop = new Stop(stopLocation, plannedStopArrivalDate, predictedStopArrivalDate,
+										plannedStopArrivalPosition, predictedStopArrivalPosition, plannedStopDepartureDate,
+										predictedStopDepartureDate, plannedStopDeparturePosition, predictedStopDeparturePosition);
+
+								intermediateStops.add(stop);
+							}
+						}
+
+						final Connection.Part part;
+						if (type == 1 /* Fussweg */|| type == 3 /* Uebergang */|| type == 4 /* Uebergang */)
+						{
+							final int min = (int) ((plannedArrivalTime - plannedDepartureTime) / 1000 / 60);
+							final boolean transfer = type != 1;
+
+							if (parts.size() > 0 && parts.get(parts.size() - 1) instanceof Connection.Footway)
+							{
+								final Connection.Footway lastFootway = (Connection.Footway) parts.remove(parts.size() - 1);
+								part = new Connection.Footway(lastFootway.min + min, lastFootway.transfer || transfer, lastFootway.departure,
+										arrival, null);
+							}
+							else
+							{
+								part = new Connection.Footway(min, transfer, departure, arrival, null);
+							}
+						}
+						else if (type == 2)
+						{
+							final char lineProduct;
+							if (lineClass != 0)
+								lineProduct = intToProduct(lineClass);
+							else
+								lineProduct = normalizeType(lineCategory);
+
+							final Line line = newLine(lineProduct, normalizeLineName(lineName), lineAttrs.toArray(new Line.Attr[0]));
+							final Location direction = directionStr != null ? new Location(LocationType.ANY, 0, null, directionStr) : null;
+
+							part = new Connection.Trip(line, direction, plannedDepartureTime != 0 ? new Date(plannedDepartureTime) : null,
+									predictedDepartureTime != 0 ? new Date(predictedDepartureTime) : null, plannedDeparturePosition,
+									predictedDeparturePosition, departure, plannedArrivalTime != 0 ? new Date(plannedArrivalTime) : null,
+									predictedArrivalTime != 0 ? new Date(predictedArrivalTime) : null, plannedArrivalPosition,
+									predictedArrivalPosition, arrival, intermediateStops, null);
 						}
 						else
 						{
-							part = new Connection.Footway(min, transfer, departure, arrival, null);
+							throw new IllegalStateException("unhandled type: " + type);
 						}
+						parts.add(part);
 					}
-					else if (type == 2)
-					{
-						final char lineProduct;
-						if (lineClass != 0)
-							lineProduct = intToProduct(lineClass);
-						else
-							lineProduct = normalizeType(lineCategory);
 
-						final Line line = newLine(lineProduct, normalizeLineName(lineName), lineAttrs.toArray(new Line.Attr[0]));
-						final Location direction = directionStr != null ? new Location(LocationType.ANY, 0, null, directionStr) : null;
+					final Connection connection = new Connection(connectionId, resDeparture, resArrival, parts, null, null, (int) numChanges);
 
-						part = new Connection.Trip(line, direction, plannedDepartureTime != 0 ? new Date(plannedDepartureTime) : null,
-								predictedDepartureTime != 0 ? new Date(predictedDepartureTime) : null, plannedDeparturePosition,
-								predictedDeparturePosition, departure, plannedArrivalTime != 0 ? new Date(plannedArrivalTime) : null,
-								predictedArrivalTime != 0 ? new Date(predictedArrivalTime) : null, plannedArrivalPosition, predictedArrivalPosition,
-								arrival, intermediateStops, null);
-					}
-					else
-					{
-						throw new IllegalStateException("unhandled type: " + type);
-					}
-					parts.add(part);
+					if (realtimeStatus != 2) // Verbindung fällt aus
+						connections.add(connection);
 				}
 
-				final Connection connection = new Connection(connectionId, resDeparture, resArrival, parts, null, null, (int) numChanges);
+				final QueryConnectionsResult result = new QueryConnectionsResult(header, uri, from, via, to, new QueryConnectionsBinaryContext(
+						requestId, seqNr, ld), connections);
 
-				if (realtimeStatus != 2) // Verbindung fällt aus
-					connections.add(connection);
+				return result;
 			}
-
-			final QueryConnectionsResult result = new QueryConnectionsResult(header, uri, from, via, to, new QueryConnectionsBinaryContext(requestId,
-					seqNr, ld), connections);
-
-			return result;
+			else if (errorCode == 1)
+				throw new SessionExpiredException();
+			else if (errorCode == 8)
+				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.AMBIGUOUS);
+			else if (errorCode == 887)
+				// H887: Your inquiry was too complex. Please try entering less intermediate stations.
+				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.NO_CONNECTIONS);
+			else if (errorCode == 890)
+				// H890: No connections have been found that correspond to your request. It is possible that the
+				// requested service does not operate from or to the places you stated on the requested date of travel.
+				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.NO_CONNECTIONS);
+			else if (errorCode == 891)
+				// H891: Unfortunately there was no route found. Missing timetable data could be the reason.
+				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.NO_CONNECTIONS);
+			else if (errorCode == 9220)
+				// H9220: Nearby to the given address stations could not be found.
+				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.UNRESOLVABLE_ADDRESS);
+			else if (errorCode == 9240)
+				// H9240: Unfortunately there was no route found. Perhaps your start or destination is not served at all
+				// or with the selected means of transport on the required date/time.
+				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.NO_CONNECTIONS);
+			else if (errorCode == 9360)
+				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.INVALID_DATE);
+			else if (errorCode == 9380)
+				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.TOO_CLOSE); // H9380
+			else if (errorCode == 895)
+				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.TOO_CLOSE);
+			else
+				throw new IllegalStateException("error " + errorCode + " on " + uri);
 		}
 		finally
 		{

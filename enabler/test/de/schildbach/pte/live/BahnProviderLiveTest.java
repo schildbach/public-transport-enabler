@@ -20,6 +20,8 @@ package de.schildbach.pte.live;
 import java.util.Date;
 import java.util.List;
 
+import junit.framework.Assert;
+
 import org.junit.Test;
 
 import de.schildbach.pte.BahnProvider;
@@ -100,10 +102,14 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void slowConnection() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ANY, 0, null, "Marienburger Str., Berlin"), null,
-				new Location(LocationType.ANY, 0, null, "Tutzinger-Hof-Platz, Starnberg"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
-				Accessibility.NEUTRAL);
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 732655, 52535576, 13422171, null,
+				"Marienburger Str., Berlin"), null, new Location(LocationType.STATION, 623234, 48000221, 11342490, null,
+				"Tutzinger-Hof-Platz, Starnberg"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
+
+		if (!result.context.canQueryLater())
+			return;
+
 		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
 	}
@@ -130,5 +136,25 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 
 		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
+	}
+
+	@Test
+	public void connectionsTooClose() throws Exception
+	{
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 8010205, null, "Leipzig Hbf"), null, new Location(
+				LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		System.out.println(result);
+
+		Assert.assertEquals(QueryConnectionsResult.Status.TOO_CLOSE, result.status);
+	}
+
+	@Test
+	public void connectionsInvalidDate() throws Exception
+	{
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 8011160, null, "Berlin Hbf"), null, new Location(
+				LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(0), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		System.out.println(result);
+
+		Assert.assertEquals(QueryConnectionsResult.Status.INVALID_DATE, result.status);
 	}
 }
