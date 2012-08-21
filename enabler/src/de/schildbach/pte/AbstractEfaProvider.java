@@ -2028,8 +2028,22 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 						if (XmlPullUtil.test(pp, "itdRBLControlled"))
 							XmlPullUtil.next(pp);
-						if (XmlPullUtil.test(pp, "itdInfoTextList"))
-							XmlPullUtil.next(pp);
+
+						boolean lowFloorVehicle = false;
+						if (XmlPullUtil.test(pp, "itdInfoTextList") && !pp.isEmptyElementTag())
+						{
+							XmlPullUtil.enter(pp, "itdInfoTextList");
+							while (XmlPullUtil.test(pp, "infoTextListElem"))
+							{
+								XmlPullUtil.enter(pp, "infoTextListElem");
+								final String text = pp.getText();
+								if ("Niederflurwagen soweit verfügbar".equals(text)) // KVV
+									lowFloorVehicle = true;
+								XmlPullUtil.exit(pp, "infoTextListElem");
+							}
+							XmlPullUtil.exit(pp, "itdInfoTextList");
+						}
+
 						if (XmlPullUtil.test(pp, "itdFootPathInfo"))
 							XmlPullUtil.next(pp);
 						if (XmlPullUtil.test(pp, "infoLink"))
@@ -2091,7 +2105,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						if (XmlPullUtil.test(pp, "itdPathCoordinates"))
 							path = processItdPathCoordinates(pp);
 
-						final Set<Line.Attr> lineAttrs = new HashSet<Line.Attr>();
+						boolean wheelChairAccess = false;
 						if (XmlPullUtil.test(pp, "genAttrList"))
 						{
 							XmlPullUtil.enter(pp, "genAttrList");
@@ -2109,7 +2123,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 								// System.out.println("genAttrElem: name='" + name + "' value='" + value + "'");
 
 								if ("PlanWheelChairAccess".equals(name) && "1".equals(value))
-									lineAttrs.add(Line.Attr.WHEEL_CHAIR_ACCESS);
+									wheelChairAccess = true;
 							}
 							XmlPullUtil.exit(pp, "genAttrList");
 						}
@@ -2125,6 +2139,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							XmlPullUtil.exit(pp, "nextDeps");
 						}
 
+						final Set<Line.Attr> lineAttrs = new HashSet<Line.Attr>();
+						if (wheelChairAccess || lowFloorVehicle)
+							lineAttrs.add(Line.Attr.WHEEL_CHAIR_ACCESS);
 						final Line line = new Line(lineId, lineLabel, lineStyle(lineLabel), lineAttrs);
 
 						parts.add(new Connection.Trip(line, destination, departureTargetTime != null ? departureTargetTime : departureTime,
