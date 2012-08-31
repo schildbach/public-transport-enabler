@@ -81,6 +81,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	private final String accessId;
 	private final Charset jsonEncoding;
 	private final Charset xmlMlcResEncoding;
+	private boolean dominantPlanStopTime = false;
 
 	private static class Context implements QueryConnectionsContext
 	{
@@ -147,6 +148,11 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		this.accessId = accessId;
 		this.jsonEncoding = ISO_8859_1;
 		this.xmlMlcResEncoding = ISO_8859_1;
+	}
+
+	protected void setDominantPlanStopTime(final boolean dominantPlanStopTime)
+	{
+		this.dominantPlanStopTime = dominantPlanStopTime;
 	}
 
 	protected TimeZone timeZone()
@@ -1814,9 +1820,13 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 								final Location stopLocation = stations.read(is);
 
-								final Stop stop = new Stop(stopLocation, plannedStopArrivalDate, predictedStopArrivalDate,
-										plannedStopArrivalPosition, predictedStopArrivalPosition, plannedStopDepartureDate,
-										predictedStopDepartureDate, plannedStopDeparturePosition, predictedStopDeparturePosition);
+								final boolean validPredictedDate = !dominantPlanStopTime
+										|| (plannedStopArrivalDate != null && plannedStopDepartureDate != null);
+
+								final Stop stop = new Stop(stopLocation, plannedStopArrivalDate,
+										validPredictedDate ? predictedStopArrivalDate : null, plannedStopArrivalPosition,
+										predictedStopArrivalPosition, plannedStopDepartureDate, validPredictedDate ? predictedStopDepartureDate
+												: null, plannedStopDeparturePosition, predictedStopDeparturePosition);
 
 								intermediateStops.add(stop);
 							}

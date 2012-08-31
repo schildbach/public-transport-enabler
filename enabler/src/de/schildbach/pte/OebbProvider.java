@@ -41,6 +41,8 @@ public class OebbProvider extends AbstractHafasProvider
 	public OebbProvider()
 	{
 		super(API_BASE + "query.exe/dn", 13, null);
+
+		setDominantPlanStopTime(true);
 	}
 
 	public NetworkId id()
