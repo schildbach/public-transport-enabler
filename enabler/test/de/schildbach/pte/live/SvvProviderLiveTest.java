@@ -17,6 +17,9 @@
 
 package de.schildbach.pte.live;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Date;
 import java.util.List;
 
@@ -76,10 +79,29 @@ public class SvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 0, null, "Hauptwache"), null, new Location(
-				LocationType.STATION, 0, null, "Südbahnhof"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 60650021, 47797036, 13053608, "Salzburg",
+				"Justizgebäude"), null, new Location(LocationType.STATION, 60650022, 47793760, 13059338, "Salzburg", "Akademiestraße"), new Date(),
+				true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
+		assertEquals(QueryConnectionsResult.Status.OK, result.status);
+		assertTrue(result.connections.size() > 0);
+
+		if (!result.context.canQueryLater())
+			return;
+
 		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
+
+		if (!laterResult.context.canQueryLater())
+			return;
+
+		final QueryConnectionsResult later2Result = queryMoreConnections(laterResult.context, true);
+		System.out.println(later2Result);
+
+		if (!later2Result.context.canQueryEarlier())
+			return;
+
+		final QueryConnectionsResult earlierResult = queryMoreConnections(later2Result.context, false);
+		System.out.println(earlierResult);
 	}
 }
