@@ -1459,6 +1459,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 					XmlPullUtil.exit(pp, "itdDepartureList");
 				}
+				else
+				{
+					XmlPullUtil.next(pp);
+				}
 
 				return result;
 			}
@@ -1864,8 +1868,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		XmlPullUtil.enter(pp, "itdTripDateTime");
 		XmlPullUtil.enter(pp, "itdDateTime");
-		if (!XmlPullUtil.test(pp, "itdDate"))
-			throw new IllegalStateException("cannot find <itdDate />");
+		XmlPullUtil.require(pp, "itdDate");
 		if (!pp.isEmptyElementTag())
 		{
 			XmlPullUtil.enter(pp, "itdDate");
@@ -1878,6 +1881,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					throw new IllegalStateException("unknown message: " + message);
 			}
 			XmlPullUtil.exit(pp, "itdDate");
+		}
+		else
+		{
+			XmlPullUtil.next(pp);
 		}
 		XmlPullUtil.exit(pp, "itdDateTime");
 
@@ -2030,18 +2037,25 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							XmlPullUtil.next(pp);
 
 						boolean lowFloorVehicle = false;
-						if (XmlPullUtil.test(pp, "itdInfoTextList") && !pp.isEmptyElementTag())
+						if (XmlPullUtil.test(pp, "itdInfoTextList"))
 						{
-							XmlPullUtil.enter(pp, "itdInfoTextList");
-							while (XmlPullUtil.test(pp, "infoTextListElem"))
+							if (!pp.isEmptyElementTag())
 							{
-								XmlPullUtil.enter(pp, "infoTextListElem");
-								final String text = pp.getText();
-								if ("Niederflurwagen soweit verfügbar".equals(text)) // KVV
-									lowFloorVehicle = true;
-								XmlPullUtil.exit(pp, "infoTextListElem");
+								XmlPullUtil.enter(pp, "itdInfoTextList");
+								while (XmlPullUtil.test(pp, "infoTextListElem"))
+								{
+									XmlPullUtil.enter(pp, "infoTextListElem");
+									final String text = pp.getText();
+									if ("Niederflurwagen soweit verfügbar".equals(text)) // KVV
+										lowFloorVehicle = true;
+									XmlPullUtil.exit(pp, "infoTextListElem");
+								}
+								XmlPullUtil.exit(pp, "itdInfoTextList");
 							}
-							XmlPullUtil.exit(pp, "itdInfoTextList");
+							else
+							{
+								XmlPullUtil.next(pp);
+							}
 						}
 
 						if (XmlPullUtil.test(pp, "itdFootPathInfo"))
@@ -2155,47 +2169,58 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				XmlPullUtil.exit(pp, "itdPartialRouteList");
 
 				final List<Fare> fares = new ArrayList<Fare>(2);
-				if (XmlPullUtil.test(pp, "itdFare") && !pp.isEmptyElementTag())
+				if (XmlPullUtil.test(pp, "itdFare"))
 				{
-					XmlPullUtil.enter(pp, "itdFare");
-					if (XmlPullUtil.test(pp, "itdSingleTicket"))
+					if (!pp.isEmptyElementTag())
 					{
-						final String net = XmlPullUtil.attr(pp, "net");
-						final Currency currency = parseCurrency(XmlPullUtil.attr(pp, "currency"));
-						final String fareAdult = XmlPullUtil.attr(pp, "fareAdult");
-						final String fareChild = XmlPullUtil.attr(pp, "fareChild");
-						final String unitName = XmlPullUtil.attr(pp, "unitName");
-						final String unitsAdult = XmlPullUtil.attr(pp, "unitsAdult");
-						final String unitsChild = XmlPullUtil.attr(pp, "unitsChild");
-						final String levelAdult = pp.getAttributeValue(null, "levelAdult");
-						final boolean hasLevelAdult = levelAdult != null && levelAdult.length() > 0;
-						final String levelChild = pp.getAttributeValue(null, "levelChild");
-						final boolean hasLevelChild = levelChild != null && levelChild.length() > 0;
-						if (fareAdult != null && fareAdult.length() > 0)
-							fares.add(new Fare(net, Type.ADULT, currency, Float.parseFloat(fareAdult), hasLevelAdult ? null : unitName,
-									hasLevelAdult ? levelAdult : unitsAdult));
-						if (fareChild != null && fareChild.length() > 0)
-							fares.add(new Fare(net, Type.CHILD, currency, Float.parseFloat(fareChild), hasLevelChild ? null : unitName,
-									hasLevelChild ? levelChild : unitsChild));
-
-						if (!pp.isEmptyElementTag())
+						XmlPullUtil.enter(pp, "itdFare");
+						if (XmlPullUtil.test(pp, "itdSingleTicket"))
 						{
-							XmlPullUtil.enter(pp, "itdSingleTicket");
-							if (XmlPullUtil.test(pp, "itdGenericTicketList"))
+							final String net = XmlPullUtil.attr(pp, "net");
+							final Currency currency = parseCurrency(XmlPullUtil.attr(pp, "currency"));
+							final String fareAdult = XmlPullUtil.attr(pp, "fareAdult");
+							final String fareChild = XmlPullUtil.attr(pp, "fareChild");
+							final String unitName = XmlPullUtil.attr(pp, "unitName");
+							final String unitsAdult = XmlPullUtil.attr(pp, "unitsAdult");
+							final String unitsChild = XmlPullUtil.attr(pp, "unitsChild");
+							final String levelAdult = pp.getAttributeValue(null, "levelAdult");
+							final boolean hasLevelAdult = levelAdult != null && levelAdult.length() > 0;
+							final String levelChild = pp.getAttributeValue(null, "levelChild");
+							final boolean hasLevelChild = levelChild != null && levelChild.length() > 0;
+							if (fareAdult != null && fareAdult.length() > 0)
+								fares.add(new Fare(net, Type.ADULT, currency, Float.parseFloat(fareAdult), hasLevelAdult ? null : unitName,
+										hasLevelAdult ? levelAdult : unitsAdult));
+							if (fareChild != null && fareChild.length() > 0)
+								fares.add(new Fare(net, Type.CHILD, currency, Float.parseFloat(fareChild), hasLevelChild ? null : unitName,
+										hasLevelChild ? levelChild : unitsChild));
+
+							if (!pp.isEmptyElementTag())
 							{
-								XmlPullUtil.enter(pp, "itdGenericTicketList");
-								while (XmlPullUtil.test(pp, "itdGenericTicketGroup"))
+								XmlPullUtil.enter(pp, "itdSingleTicket");
+								if (XmlPullUtil.test(pp, "itdGenericTicketList"))
 								{
-									final Fare fare = processItdGenericTicketGroup(pp, net, currency);
-									if (fare != null)
-										fares.add(fare);
+									XmlPullUtil.enter(pp, "itdGenericTicketList");
+									while (XmlPullUtil.test(pp, "itdGenericTicketGroup"))
+									{
+										final Fare fare = processItdGenericTicketGroup(pp, net, currency);
+										if (fare != null)
+											fares.add(fare);
+									}
+									XmlPullUtil.exit(pp, "itdGenericTicketList");
 								}
-								XmlPullUtil.exit(pp, "itdGenericTicketList");
+								XmlPullUtil.exit(pp, "itdSingleTicket");
 							}
-							XmlPullUtil.exit(pp, "itdSingleTicket");
+							else
+							{
+								XmlPullUtil.next(pp);
+							}
 						}
+						XmlPullUtil.exit(pp, "itdFare");
 					}
-					XmlPullUtil.exit(pp, "itdFare");
+					else
+					{
+						XmlPullUtil.next(pp);
+					}
 				}
 				connections.add(new Connection(id, firstDeparture, lastArrival, parts, fares.isEmpty() ? null : fares, null, numChanges));
 				XmlPullUtil.exit(pp, "itdRoute");
@@ -2269,6 +2294,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				if (value != null)
 					value = value.trim();
 				XmlPullUtil.exit(pp, "value");
+			}
+			else
+			{
+				XmlPullUtil.next(pp);
 			}
 
 			if (key.equals("FOR_RIDER"))
