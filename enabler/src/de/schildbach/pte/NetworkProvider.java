@@ -66,7 +66,7 @@ public interface NetworkProvider
 
 	NetworkId id();
 
-	boolean hasCapabilities(Capability... capabilities);
+	boolean hasCapabilities(final Capability... capabilities);
 
 	/**
 	 * Determine stations near to given location. At least one of stationId or lat/lon pair must be present.

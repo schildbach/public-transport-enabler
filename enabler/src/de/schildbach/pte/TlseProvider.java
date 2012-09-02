@@ -48,7 +48,7 @@ public class TlseProvider extends AbstractEfaProvider
 		return TimeZone.getTimeZone("Europe/London");
 	}
 
-	public boolean hasCapabilities(Capability... capabilities)
+	public boolean hasCapabilities(final Capability... capabilities)
 	{
 		for (final Capability capability : capabilities)
 			if (capability == Capability.AUTOCOMPLETE_ONE_LINE || capability == Capability.DEPARTURES || capability == Capability.CONNECTIONS)
