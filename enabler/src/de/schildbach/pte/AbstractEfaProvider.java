@@ -766,6 +766,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return 'R' + str;
 			if (type.equals("R-Bahn")) // Regional-Express, VRR
 				return 'R' + str;
+			if ("RB-Bahn".equals(type)) // Vogtland
+				return 'R' + str;
 			if (type.equals("REX")) // RegionalExpress, Österreich
 				return 'R' + str;
 			if ("EZ".equals(type)) // ÖBB ErlebnisBahn
@@ -1232,6 +1234,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			if (P_LINE_SEV.matcher(type).matches())
 				return 'B' + str;
 			if ("Bex".equals(type)) // Bayern Express
+				return 'B' + str;
+			if ("Ersatzverkehr".equals(type)) // Rhein-Ruhr
 				return 'B' + str;
 
 			if (type.length() == 0)
