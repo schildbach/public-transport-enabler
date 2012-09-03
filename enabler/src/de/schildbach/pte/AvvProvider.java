@@ -28,6 +28,8 @@ public class AvvProvider extends AbstractEfaProvider
 	public AvvProvider()
 	{
 		super(API_BASE, null);
+
+		setUseRouteIndexAsConnectionId(false);
 	}
 
 	public NetworkId id()

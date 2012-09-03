@@ -30,6 +30,8 @@ public class SydneyProvider extends AbstractEfaProvider
 	public SydneyProvider()
 	{
 		super(API_BASE, null);
+
+		setUseRouteIndexAsConnectionId(false);
 	}
 
 	public NetworkId id()

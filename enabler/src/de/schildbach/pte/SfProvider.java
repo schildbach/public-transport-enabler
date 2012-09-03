@@ -34,6 +34,8 @@ public class SfProvider extends AbstractEfaProvider
 	public SfProvider()
 	{
 		super(API_BASE, null);
+
+		setUseRouteIndexAsConnectionId(false);
 	}
 
 	public NetworkId id()

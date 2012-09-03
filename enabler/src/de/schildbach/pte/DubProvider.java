@@ -35,6 +35,8 @@ public class DubProvider extends AbstractEfaProvider
 	public DubProvider()
 	{
 		super(API_BASE, null);
+
+		setUseRouteIndexAsConnectionId(false);
 	}
 
 	public NetworkId id()

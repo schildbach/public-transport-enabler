@@ -28,6 +28,8 @@ public class VvtProvider extends AbstractEfaProvider
 	public VvtProvider()
 	{
 		super(API_BASE, null);
+
+		setUseRouteIndexAsConnectionId(false);
 	}
 
 	public NetworkId id()

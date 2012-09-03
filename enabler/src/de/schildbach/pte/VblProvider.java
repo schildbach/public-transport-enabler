@@ -28,6 +28,8 @@ public class VblProvider extends AbstractEfaProvider
 	public VblProvider()
 	{
 		super(API_BASE, null);
+
+		setUseRouteIndexAsConnectionId(false);
 	}
 
 	public NetworkId id()

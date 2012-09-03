@@ -17,6 +17,9 @@
 
 package de.schildbach.pte.live;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Date;
 import java.util.List;
 
@@ -71,7 +74,25 @@ public class DubProviderLiveTest extends AbstractProviderLiveTest
 				null, new Location(LocationType.STATION, 3505445, null, "Airport Terminal 3"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
+		assertEquals(QueryConnectionsResult.Status.OK, result.status);
+		assertTrue(result.connections.size() > 0);
+
+		if (!result.context.canQueryLater())
+			return;
+
 		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
+
+		if (!laterResult.context.canQueryLater())
+			return;
+
+		final QueryConnectionsResult later2Result = queryMoreConnections(laterResult.context, true);
+		System.out.println(later2Result);
+
+		if (!later2Result.context.canQueryEarlier())
+			return;
+
+		final QueryConnectionsResult earlierResult = queryMoreConnections(later2Result.context, false);
+		System.out.println(earlierResult);
 	}
 }

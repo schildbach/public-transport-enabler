@@ -86,6 +86,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private final boolean needsSpEncId;
 	private Charset requestUrlEncoding = ISO_8859_1;
 	private boolean suppressPositions = false;
+	private boolean useRouteIndexAsConnectionId = true;
 	private final XmlPullParserFactory parserFactory;
 
 	private static class Context implements QueryConnectionsContext
@@ -158,6 +159,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	protected void setSuppressPositions(final boolean suppressPositions)
 	{
 		this.suppressPositions = suppressPositions;
+	}
+
+	public void setUseRouteIndexAsConnectionId(final boolean useRouteIndexAsConnectionId)
+	{
+		this.useRouteIndexAsConnectionId = useRouteIndexAsConnectionId;
 	}
 
 	protected TimeZone timeZone()
@@ -1901,7 +1907,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 			while (XmlPullUtil.test(pp, "itdRoute"))
 			{
-				final String id = pp.getAttributeValue(null, "routeIndex") + "-" + pp.getAttributeValue(null, "routeTripIndex");
+				final String id = useRouteIndexAsConnectionId ? pp.getAttributeValue(null, "routeIndex") + "-"
+						+ pp.getAttributeValue(null, "routeTripIndex") : null;
 				final int numChanges = XmlPullUtil.intAttr(pp, "changes");
 				XmlPullUtil.enter(pp, "itdRoute");
 
