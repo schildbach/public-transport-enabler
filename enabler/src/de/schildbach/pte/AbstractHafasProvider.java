@@ -1579,6 +1579,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				is.skipBytes(extensionHeaderPtr + 0x8);
 
 				final int seqNr = is.readShortReverse();
+				if (seqNr <= 0)
+					throw new IllegalStateException("illegal sequence number: " + seqNr);
+
 				final String requestId = strings.read(is);
 
 				final int connectionDetailsPtr = is.readIntReverse();

@@ -17,6 +17,9 @@
 
 package de.schildbach.pte.live;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Date;
 import java.util.List;
 
@@ -87,6 +90,8 @@ public class RmvProviderLiveTest extends AbstractProviderLiveTest
 		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 3000001, null, "Hauptwache"), null, new Location(
 				LocationType.STATION, 3000912, null, "Südbahnhof"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
+		assertEquals(QueryConnectionsResult.Status.OK, result.status);
+		assertTrue(result.connections.size() > 0);
 
 		if (!result.context.canQueryLater())
 			return;
@@ -147,6 +152,24 @@ public class RmvProviderLiveTest extends AbstractProviderLiveTest
 
 		final QueryConnectionsResult earlier4Result = queryMoreConnections(earlier3Result.context, false);
 		System.out.println(earlier4Result);
+	}
+
+	@Test
+	public void slowConnection() throws Exception
+	{
+		final QueryConnectionsResult result = queryConnections(
+				new Location(LocationType.STATION, 3029079, 50017679, 8229480, "Mainz", "An den Dünen"), null, new Location(LocationType.STATION,
+						3013508, 50142890, 8895203, "Hanau", "Beethovenplatz"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
+				Accessibility.BARRIER_FREE);
+		System.out.println(result);
+		assertEquals(QueryConnectionsResult.Status.OK, result.status);
+		assertTrue(result.connections.size() > 0);
+
+		if (!result.context.canQueryLater())
+			return;
+
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
+		System.out.println(laterResult);
 	}
 
 	@Test
