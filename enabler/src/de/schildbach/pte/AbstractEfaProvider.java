@@ -64,6 +64,7 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.ResultHeader;
 import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.dto.Stop;
+import de.schildbach.pte.exception.InvalidDataException;
 import de.schildbach.pte.exception.ParserException;
 import de.schildbach.pte.exception.ProtocolException;
 import de.schildbach.pte.exception.SessionExpiredException;
@@ -1552,11 +1553,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		if (year == 0)
 			return false;
 		if (year < 1900 || year > 2100)
-			throw new IllegalArgumentException("invalid year: " + year);
+			throw new InvalidDataException("invalid year: " + year);
 		if (month < 0 || month > 11)
-			throw new IllegalArgumentException("invalid month: " + month);
+			throw new InvalidDataException("invalid month: " + month);
 		if (day < 1 || day > 31)
-			throw new IllegalArgumentException("invalid day: " + day);
+			throw new InvalidDataException("invalid day: " + day);
 
 		calendar.set(Calendar.YEAR, year);
 		calendar.set(Calendar.MONTH, month);
