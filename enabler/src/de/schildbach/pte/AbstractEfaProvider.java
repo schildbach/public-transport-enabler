@@ -728,6 +728,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return 'I' + str;
 			if (type.equals("IC")) // Intercity
 				return 'I' + str;
+			if ("InterCity".equals(type))
+				return 'I' + str;
 			if (type.equals("ICE")) // Intercity Express
 				return 'I' + str;
 			if (type.equals("X")) // InterConnex
@@ -764,6 +766,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return 'I' + name;
 
 			if (type.equals("IR")) // Interregio
+				return 'R' + str;
+			if ("InterRegio".equals(type))
 				return 'R' + str;
 			if (type.equals("IRE")) // Interregio-Express
 				return 'R' + str;
