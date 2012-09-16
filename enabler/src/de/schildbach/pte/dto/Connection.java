@@ -353,13 +353,16 @@ public final class Connection implements Serializable
 		private static final long serialVersionUID = -6651381862837233925L;
 
 		public final int min;
+		public final int distance;
 		public final boolean transfer;
 
-		public Footway(final int min, final boolean transfer, final Location departure, final Location arrival, final List<Point> path)
+		public Footway(final int min, final int distance, final boolean transfer, final Location departure, final Location arrival,
+				final List<Point> path)
 		{
 			super(departure, arrival, path);
 
 			this.min = min;
+			this.distance = distance;
 			this.transfer = transfer;
 		}
 
@@ -368,6 +371,8 @@ public final class Connection implements Serializable
 		{
 			final StringBuilder builder = new StringBuilder(getClass().getName() + "[");
 			builder.append("min=").append(min);
+			builder.append(",");
+			builder.append("distance=").append(distance);
 			builder.append(",");
 			builder.append("transfer=").append(transfer);
 			builder.append(",");

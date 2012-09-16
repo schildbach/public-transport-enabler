@@ -1292,11 +1292,11 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						if (parts.size() > 0 && parts.get(parts.size() - 1) instanceof Connection.Footway)
 						{
 							final Connection.Footway lastFootway = (Connection.Footway) parts.remove(parts.size() - 1);
-							parts.add(new Connection.Footway(lastFootway.min + min, false, lastFootway.departure, sectionArrival, null));
+							parts.add(new Connection.Footway(lastFootway.min + min, 0, false, lastFootway.departure, sectionArrival, null));
 						}
 						else
 						{
-							parts.add(new Connection.Footway(min, false, sectionDeparture, sectionArrival, null));
+							parts.add(new Connection.Footway(min, 0, false, sectionDeparture, sectionArrival, null));
 						}
 					}
 				}
@@ -1844,12 +1844,12 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 							if (parts.size() > 0 && parts.get(parts.size() - 1) instanceof Connection.Footway)
 							{
 								final Connection.Footway lastFootway = (Connection.Footway) parts.remove(parts.size() - 1);
-								part = new Connection.Footway(lastFootway.min + min, lastFootway.transfer || transfer, lastFootway.departure,
+								part = new Connection.Footway(lastFootway.min + min, 0, lastFootway.transfer || transfer, lastFootway.departure,
 										arrival, null);
 							}
 							else
 							{
-								part = new Connection.Footway(min, transfer, departure, arrival, null);
+								part = new Connection.Footway(min, 0, transfer, departure, arrival, null);
 							}
 						}
 						else if (type == 2)

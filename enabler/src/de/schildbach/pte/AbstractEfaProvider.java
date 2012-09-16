@@ -1929,6 +1929,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 				while (XmlPullUtil.test(pp, "itdPartialRoute"))
 				{
+					final int distance = XmlPullUtil.optIntAttr(pp, "distance", 0);
 					XmlPullUtil.enter(pp, "itdPartialRoute");
 
 					XmlPullUtil.test(pp, "itdPoint");
@@ -2013,12 +2014,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							final Connection.Footway lastFootway = (Connection.Footway) parts.remove(parts.size() - 1);
 							if (path != null && lastFootway.path != null)
 								path.addAll(0, lastFootway.path);
-							parts.add(new Connection.Footway(lastFootway.min + min, lastFootway.transfer || transfer, lastFootway.departure, arrival,
-									path));
+							parts.add(new Connection.Footway(lastFootway.min + min, distance, lastFootway.transfer || transfer,
+									lastFootway.departure, arrival, path));
 						}
 						else
 						{
-							parts.add(new Connection.Footway(min, transfer, departure, arrival, path));
+							parts.add(new Connection.Footway(min, distance, transfer, departure, arrival, path));
 						}
 					}
 					else if ("gesicherter Anschluss".equals(productName) || "nicht umsteigen".equals(productName)) // type97
