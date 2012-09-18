@@ -119,7 +119,7 @@ public final class ParserUtils
 				{
 					final String contentType = connection.getContentType();
 					final String contentEncoding = connection.getContentEncoding();
-					if (!url.equals(connection.getURL()))
+					if (!url.getHost().equals(connection.getURL().getHost()))
 						throw new UnexpectedRedirectException(url, connection.getURL());
 
 					final InputStream is;
@@ -270,7 +270,7 @@ public final class ParserUtils
 				final String contentType = connection.getContentType();
 				final String contentEncoding = connection.getContentEncoding();
 				final InputStream is = connection.getInputStream();
-				if (!url.equals(connection.getURL()))
+				if (!url.getHost().equals(connection.getURL().getHost()))
 					throw new UnexpectedRedirectException(url, connection.getURL());
 
 				if (sessionCookieName != null)
