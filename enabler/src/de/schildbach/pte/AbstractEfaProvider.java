@@ -1889,7 +1889,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			XmlPullUtil.enter(pp, "itdDate");
 			if (XmlPullUtil.test(pp, "itdMessage"))
 			{
-				final String message = pp.nextText();
+				final String message = XmlPullUtil.nextText(pp, null, "itdMessage");
+
 				if ("invalid date".equals(message))
 					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.INVALID_DATE);
 				else

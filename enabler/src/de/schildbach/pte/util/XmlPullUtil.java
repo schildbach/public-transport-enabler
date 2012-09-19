@@ -301,7 +301,15 @@ public final class XmlPullUtil
 			throw new XmlPullParserException("name for element can not be null");
 
 		pp.require(XmlPullParser.START_TAG, namespace, name);
-		return pp.nextText();
+		final String text = pp.nextText();
+
+		// work around http://code.google.com/p/android/issues/detail?id=21425
+		if (pp.getEventType() != XmlPullParser.END_TAG)
+			pp.nextTag();
+
+		pp.require(XmlPullParser.END_TAG, namespace, name);
+
+		return text;
 	}
 
 	/**
