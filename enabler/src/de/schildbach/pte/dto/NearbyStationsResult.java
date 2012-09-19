@@ -17,12 +17,13 @@
 
 package de.schildbach.pte.dto;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * @author Andreas Schildbach
  */
-public final class NearbyStationsResult
+public final class NearbyStationsResult implements Serializable
 {
 	public enum Status
 	{

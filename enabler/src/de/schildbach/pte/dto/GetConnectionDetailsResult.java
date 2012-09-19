@@ -17,13 +17,14 @@
 
 package de.schildbach.pte.dto;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
  * @author Andreas Schildbach
  */
-public final class GetConnectionDetailsResult
+public final class GetConnectionDetailsResult implements Serializable
 {
 	public final Date currentDate;
 	public final Connection connection;

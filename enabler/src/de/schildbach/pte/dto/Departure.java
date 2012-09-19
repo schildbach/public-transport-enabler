@@ -17,12 +17,13 @@
 
 package de.schildbach.pte.dto;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * @author Andreas Schildbach
  */
-public final class Departure
+public final class Departure implements Serializable
 {
 	final public Date plannedTime;
 	final public Date predictedTime;

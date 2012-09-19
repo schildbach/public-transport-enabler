@@ -17,12 +17,13 @@
 
 package de.schildbach.pte.dto;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * @author Andreas Schildbach
  */
-public final class StationDepartures
+public final class StationDepartures implements Serializable
 {
 	public final Location location;
 	public final List<Departure> departures;

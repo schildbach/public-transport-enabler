@@ -17,10 +17,12 @@
 
 package de.schildbach.pte.dto;
 
+import java.io.Serializable;
+
 /**
  * @author Andreas Schildbach
  */
-public final class LineDestination
+public final class LineDestination implements Serializable
 {
 	final public Line line;
 	final public Location destination;

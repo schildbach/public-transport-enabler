@@ -17,13 +17,14 @@
 
 package de.schildbach.pte.dto;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
  * @author Andreas Schildbach
  */
-public final class QueryDeparturesResult
+public final class QueryDeparturesResult implements Serializable
 {
 	public enum Status
 	{
