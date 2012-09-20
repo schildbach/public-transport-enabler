@@ -86,6 +86,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private final boolean canAcceptPoiID;
 	private final boolean needsSpEncId;
 	private Charset requestUrlEncoding = ISO_8859_1;
+	private String referer;
 	private boolean suppressPositions = false;
 	private boolean useRouteIndexAsConnectionId = true;
 	private final XmlPullParserFactory parserFactory;
@@ -155,6 +156,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	protected void setRequestUrlEncoding(final Charset requestUrlEncoding)
 	{
 		this.requestUrlEncoding = requestUrlEncoding;
+	}
+
+	protected void setReferer(final String referer)
+	{
+		this.referer = referer;
 	}
 
 	protected void setSuppressPositions(final boolean suppressPositions)
@@ -1316,7 +1322,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		InputStream is = null;
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri.toString());
+			is = ParserUtils.scrapeInputStream(uri.toString(), null, null, referer, null, 3);
 
 			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
@@ -1723,10 +1729,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	{
 		final String uri = xsltTripRequest2Uri(from, via, to, date, dep, numConnections, products, walkSpeed, accessibility, options);
 
+		System.out.println(uri);
+
 		InputStream is = null;
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri, null, null, "NSC_", 3);
+			is = ParserUtils.scrapeInputStream(uri, null, null, referer, "NSC_", 3);
 			return queryConnections(uri, is);
 		}
 		catch (final XmlPullParserException x)
@@ -1757,7 +1765,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		InputStream is = null;
 		try
 		{
-			is = new BufferedInputStream(ParserUtils.scrapeInputStream(uri.toString(), null, null, "NSC_", 3));
+			is = new BufferedInputStream(ParserUtils.scrapeInputStream(uri.toString(), null, null, referer, "NSC_", 3));
 			is.mark(512);
 
 			return queryConnections(uri.toString(), is);

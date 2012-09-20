@@ -225,10 +225,10 @@ public final class ParserUtils
 
 	public static final InputStream scrapeInputStream(final String url) throws IOException
 	{
-		return scrapeInputStream(url, null, null, null, 3);
+		return scrapeInputStream(url, null, null, null, null, 3);
 	}
 
-	public static final InputStream scrapeInputStream(final String urlStr, final String postRequest, Charset requestEncoding,
+	public static final InputStream scrapeInputStream(final String urlStr, final String postRequest, Charset requestEncoding, final String referer,
 			final String sessionCookieName, int tries) throws IOException
 	{
 		if (requestEncoding == null)
@@ -247,6 +247,9 @@ public final class ParserUtils
 			connection.addRequestProperty("Accept-Encoding", "gzip");
 			// workaround to disable Vodafone compression
 			connection.addRequestProperty("Cache-Control", "no-cache");
+
+			if (referer != null)
+				connection.addRequestProperty("Referer", referer);
 
 			if (sessionCookieName != null && stateCookie != null)
 				connection.addRequestProperty("Cookie", stateCookie);
