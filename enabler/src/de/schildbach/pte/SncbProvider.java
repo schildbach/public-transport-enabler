@@ -32,7 +32,7 @@ import de.schildbach.pte.util.ParserUtils;
 public class SncbProvider extends AbstractHafasProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.SNCB;
-	private static final String API_BASE = "http://hari.b-rail.be/hafas/bin/";
+	private static final String API_BASE = "http://www.belgianrail.be/jp/sncb-nmbs-routeplanner/"; // http://hari.b-rail.be/hafas/bin/
 
 	public SncbProvider()
 	{
