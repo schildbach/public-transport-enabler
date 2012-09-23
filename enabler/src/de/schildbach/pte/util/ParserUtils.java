@@ -378,7 +378,7 @@ public final class ParserUtils
 				else if (namedEntity.equals("apos"))
 					c = '\'';
 				else if (namedEntity.equals("szlig"))
-					c = 'ß';
+					c = '\u00df';
 				else if (namedEntity.equals("nbsp"))
 					c = ' ';
 				else
