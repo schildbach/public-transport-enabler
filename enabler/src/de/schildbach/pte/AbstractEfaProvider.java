@@ -1729,8 +1729,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	{
 		final String uri = xsltTripRequest2Uri(from, via, to, date, dep, numConnections, products, walkSpeed, accessibility, options);
 
-		System.out.println(uri);
-
 		InputStream is = null;
 		try
 		{
