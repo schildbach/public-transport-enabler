@@ -770,6 +770,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return 'I' + name;
 			if ("SC".equals(type)) // SuperCity, Tschechien
 				return 'I' + name;
+			if ("ECB".equals(type)) // EC, Verona-München
+				return 'I' + name;
+			if ("ES".equals(type)) // Eurostar Italia
+				return 'I' + name;
 
 			if (type.equals("IR")) // Interregio
 				return 'R' + str;
