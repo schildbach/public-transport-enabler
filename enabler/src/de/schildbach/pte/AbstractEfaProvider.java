@@ -1259,6 +1259,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			if ("Ersatzverkehr".equals(type)) // Rhein-Ruhr
 				return 'B' + str;
 
+			if ("AST".equals(type)) // Anruf-Sammel-Taxi
+				return 'P' + str;
+
 			if (type.length() == 0)
 				return "?";
 			if (P_LINE_NUMBER.matcher(type).matches())
