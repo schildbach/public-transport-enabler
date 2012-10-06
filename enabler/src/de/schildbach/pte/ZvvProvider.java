@@ -123,7 +123,7 @@ public class ZvvProvider extends AbstractHafasProvider
 		}
 	}
 
-	private static final String[] PLACES = { "Zürich" };
+	private static final String[] PLACES = { "Zürich", "Winterthur" };
 
 	@Override
 	protected String[] splitPlaceAndName(final String name)
@@ -132,6 +132,8 @@ public class ZvvProvider extends AbstractHafasProvider
 		{
 			if (name.startsWith(place + ", "))
 				return new String[] { place, name.substring(place.length() + 2) };
+			if (name.startsWith(place + " ") || name.startsWith(place + ","))
+				return new String[] { place, name.substring(place.length() + 1) };
 		}
 
 		return super.splitPlaceAndName(name);
