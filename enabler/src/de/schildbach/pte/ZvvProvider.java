@@ -18,7 +18,9 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 
 import de.schildbach.pte.dto.Line;
@@ -26,6 +28,8 @@ import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
+import de.schildbach.pte.dto.Style;
+import de.schildbach.pte.dto.Style.Shape;
 
 /**
  * @author Andreas Schildbach
@@ -304,5 +308,72 @@ public class ZvvProvider extends AbstractHafasProvider
 			return t;
 
 		return 0;
+	}
+
+	private static final Map<String, Style> LINES = new HashMap<String, Style>();
+
+	static
+	{
+		// S-Bahn
+		LINES.put("SS2", new Style(Shape.RECT, Style.parseColor("#70c82c"), Style.WHITE));
+		LINES.put("SS3", new Style(Shape.RECT, Style.parseColor("#587AC2"), Style.WHITE));
+		LINES.put("SS4", new Style(Shape.RECT, Style.parseColor("#EE7267"), Style.WHITE));
+		LINES.put("SS5", new Style(Shape.RECT, Style.parseColor("#6aadc3"), Style.WHITE));
+		LINES.put("SS6", new Style(Shape.RECT, Style.parseColor("#6f41a4"), Style.WHITE));
+		LINES.put("SS7", new Style(Shape.RECT, Style.parseColor("#fbb809"), Style.BLACK));
+		LINES.put("SS8", new Style(Shape.RECT, Style.parseColor("#562691"), Style.WHITE));
+		LINES.put("SS9", new Style(Shape.RECT, Style.parseColor("#069A5D"), Style.WHITE));
+		LINES.put("SS10", new Style(Shape.RECT, Style.parseColor("#fbc434"), Style.BLACK));
+		LINES.put("SS11", new Style(Shape.RECT, Style.parseColor("#ae90cf"), Style.WHITE));
+		LINES.put("SS12", new Style(Shape.RECT, Style.parseColor("#ed1c24"), Style.WHITE));
+		LINES.put("SS13", new Style(Shape.RECT, Style.parseColor("#905723"), Style.WHITE));
+		LINES.put("SS14", new Style(Shape.RECT, Style.parseColor("#753c0c"), Style.WHITE));
+		LINES.put("SS15", new Style(Shape.RECT, Style.parseColor("#c79f73"), Style.WHITE));
+		LINES.put("SS16", new Style(Shape.RECT, Style.parseColor("#68c971"), Style.WHITE));
+		LINES.put("SS17", new Style(Shape.RECT, Style.parseColor("#3b99b5"), Style.WHITE));
+		LINES.put("SS18", new Style(Shape.RECT, Style.parseColor("#f14337"), Style.WHITE));
+		LINES.put("SS21", new Style(Shape.RECT, Style.parseColor("#9acaee"), Style.WHITE));
+		LINES.put("SS22", new Style(Shape.RECT, Style.parseColor("#8dd24e"), Style.WHITE));
+		LINES.put("SS24", new Style(Shape.RECT, Style.parseColor("#ab7745"), Style.WHITE));
+		LINES.put("SS26", new Style(Shape.RECT, Style.parseColor("#0e87aa"), Style.WHITE));
+		LINES.put("SS29", new Style(Shape.RECT, Style.parseColor("#3dba56"), Style.WHITE));
+		LINES.put("SS30", new Style(Shape.RECT, Style.parseColor("#0b8ed8"), Style.WHITE));
+		LINES.put("SS33", new Style(Shape.RECT, Style.parseColor("#51aae3"), Style.WHITE));
+		LINES.put("SS35", new Style(Shape.RECT, Style.parseColor("#81c0eb"), Style.WHITE));
+		LINES.put("SS40", new Style(Shape.RECT, Style.parseColor("#ae90cf"), Style.WHITE));
+		LINES.put("SS41", new Style(Shape.RECT, Style.parseColor("#f89a83"), Style.WHITE));
+		LINES.put("SS55", new Style(Shape.RECT, Style.parseColor("#905723"), Style.WHITE));
+
+		// Tram
+		LINES.put("T2", new Style(Shape.RECT, Style.parseColor("#ed1c24"), Style.WHITE));
+		LINES.put("T3", new Style(Shape.RECT, Style.parseColor("#19ae48"), Style.WHITE));
+		LINES.put("T4", new Style(Shape.RECT, Style.parseColor("#453fa0"), Style.WHITE));
+		LINES.put("T5", new Style(Shape.RECT, Style.parseColor("#8c5a2c"), Style.WHITE));
+		LINES.put("T6", new Style(Shape.RECT, Style.parseColor("#d6973c"), Style.WHITE));
+		LINES.put("T7", new Style(Shape.RECT, Style.parseColor("#231f20"), Style.WHITE));
+		LINES.put("T8", new Style(Shape.RECT, Style.parseColor("#99d420"), Style.BLACK));
+		LINES.put("T9", new Style(Shape.RECT, Style.parseColor("#453fa0"), Style.WHITE));
+		LINES.put("T10", new Style(Shape.RECT, Style.parseColor("#ee1998"), Style.WHITE));
+		LINES.put("T11", new Style(Shape.RECT, Style.parseColor("#19ae48"), Style.WHITE));
+		LINES.put("T12", new Style(Shape.RECT, Style.parseColor("#85d7e3"), Style.BLACK));
+		LINES.put("T13", new Style(Shape.RECT, Style.parseColor("#fdd205"), Style.BLACK));
+		LINES.put("T14", new Style(Shape.RECT, Style.parseColor("#2cbbf2"), Style.WHITE));
+		LINES.put("T15", new Style(Shape.RECT, Style.parseColor("#ed1c24"), Style.WHITE));
+		LINES.put("T17", new Style(Shape.RECT, Style.parseColor("#9e1a6e"), Style.WHITE));
+
+		// Bus/Trolley
+		LINES.put("B31", new Style(Shape.RECT, Style.parseColor("#999bd3"), Style.WHITE));
+		LINES.put("B32", new Style(Shape.RECT, Style.parseColor("#d8a1d6"), Style.BLACK));
+		LINES.put("B33", new Style(Shape.RECT, Style.parseColor("#e4e793"), Style.BLACK));
+	}
+
+	@Override
+	public Style lineStyle(final String line)
+	{
+		final Style style = LINES.get(line);
+		if (style != null)
+			return style;
+		else
+			return super.lineStyle(line);
 	}
 }
