@@ -123,11 +123,27 @@ public class ZvvProvider extends AbstractHafasProvider
 		}
 	}
 
+	private static final String[] OPERATORS = { "SBB", "SZU" };
 	private static final String[] PLACES = { "Zürich", "Winterthur" };
 
 	@Override
-	protected String[] splitPlaceAndName(final String name)
+	protected String[] splitPlaceAndName(String name)
 	{
+		for (final String operator : OPERATORS)
+		{
+			if (name.endsWith(" " + operator))
+			{
+				name = name.substring(0, name.length() - operator.length() - 1);
+				break;
+			}
+
+			if (name.endsWith(" (" + operator + ")"))
+			{
+				name = name.substring(0, name.length() - operator.length() - 3);
+				break;
+			}
+		}
+
 		for (final String place : PLACES)
 		{
 			if (name.startsWith(place + ", "))
