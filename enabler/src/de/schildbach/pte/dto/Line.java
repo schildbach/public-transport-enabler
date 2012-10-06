@@ -36,7 +36,7 @@ public final class Line implements Serializable, Comparable<Line>
 	final private transient char product; // TODO make true field
 	final public String label;
 	final public Style style;
-	final private Set<Attr> attrs;
+	final public Set<Attr> attrs;
 
 	private static final String PRODUCT_ORDER = "IRSUTBPFC?";
 

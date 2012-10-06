@@ -707,7 +707,12 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						if (classChar == 0)
 							throw new IllegalArgumentException();
 						// could check for type consistency here
-						line = newLine(classChar, prodLine.label.substring(1));
+						final String lineName = prodLine.label.substring(1);
+						if (prodLine.attrs != null)
+							line = newLine(classChar, lineName, prodLine.attrs.toArray(new Line.Attr[0]));
+						else
+							line = newLine(classChar, lineName);
+
 					}
 					else
 					{
