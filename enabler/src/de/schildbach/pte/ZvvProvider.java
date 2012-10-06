@@ -217,12 +217,18 @@ public class ZvvProvider extends AbstractHafasProvider
 			final String number = m.group(1).replaceAll("\\s+", " ");
 			final String type = m.group(2);
 
+			if ("Bus".equals(type))
+				return newLine('B', stripPrefix(number, "Bus"));
 			if ("Bus-NF".equals(type))
-				return newLine('B', number, Line.Attr.WHEEL_CHAIR_ACCESS);
+				return newLine('B', stripPrefix(number, "Bus", "Bus-NF"), Line.Attr.WHEEL_CHAIR_ACCESS);
+			if ("Tro".equals(type) || "Trolley".equals(type))
+				return newLine('B', stripPrefix(number, "Tro"));
 			if ("Tro-NF".equals(type))
-				return newLine('B', number, Line.Attr.WHEEL_CHAIR_ACCESS);
+				return newLine('B', stripPrefix(number, "Tro", "Tro-NF"), Line.Attr.WHEEL_CHAIR_ACCESS);
+			if ("Trm".equals(type))
+				return newLine('T', stripPrefix(number, "Trm"));
 			if ("Trm-NF".equals(type))
-				return newLine('T', number, Line.Attr.WHEEL_CHAIR_ACCESS);
+				return newLine('T', stripPrefix(number, "Trm", "Trm-NF"), Line.Attr.WHEEL_CHAIR_ACCESS);
 
 			if (type.length() > 0)
 			{
@@ -235,6 +241,19 @@ public class ZvvProvider extends AbstractHafasProvider
 		}
 
 		throw new IllegalStateException("cannot normalize line#type " + lineAndType);
+	}
+
+	private String stripPrefix(final String str, final String... prefixes)
+	{
+		for (final String prefix : prefixes)
+		{
+			if (str.equals(prefix))
+				return "";
+			if (str.startsWith(prefix + ' '))
+				return str.substring(prefix.length() + 1);
+		}
+
+		return str;
 	}
 
 	@Override
