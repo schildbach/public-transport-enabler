@@ -1887,6 +1887,18 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				else
 					throw new IllegalStateException("unknown usage: " + usage);
 			}
+			else if ("notidentified".equals(nameState))
+			{
+				if ("origin".equals(usage))
+					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.UNKNOWN_FROM);
+				else if ("via".equals(usage))
+					// return new QueryConnectionsResult(header, QueryConnectionsResult.Status.UNKNOWN_VIA);
+					throw new UnsupportedOperationException();
+				else if ("destination".equals(usage))
+					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.UNKNOWN_TO);
+				else
+					throw new IllegalStateException("unknown usage: " + usage);
+			}
 			XmlPullUtil.exit(pp, "itdOdvName");
 			XmlPullUtil.exit(pp, "itdOdv");
 		}

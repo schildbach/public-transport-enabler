@@ -20,6 +20,8 @@ package de.schildbach.pte.live;
 import java.util.Date;
 import java.util.List;
 
+import junit.framework.Assert;
+
 import org.junit.Test;
 
 import de.schildbach.pte.MvvProvider;
@@ -62,7 +64,16 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryDeparturesResult result = provider.queryDepartures(2, 0, false);
 
+		Assert.assertEquals(QueryDeparturesResult.Status.OK, result.status);
 		print(result);
+	}
+
+	@Test
+	public void queryDeparturesInvalidStation() throws Exception
+	{
+		final QueryDeparturesResult result = provider.queryDepartures(999999, 0, false);
+
+		Assert.assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
 	}
 
 	@Test
@@ -84,8 +95,8 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ANY, 0, null, "Marienplatz"), null, new Location(
-				LocationType.ANY, 0, null, "Pasing"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 2, "München", "Marienplatz"), null, new Location(
+				LocationType.STATION, 10, "München", "Pasing"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
@@ -142,5 +153,19 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 		System.out.println(result);
 		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
+	}
+
+	@Test
+	public void queryConnectionInvalidStation() throws Exception
+	{
+		final QueryConnectionsResult result1 = queryConnections(new Location(LocationType.STATION, 2, "München", "Marienplatz"), null, new Location(
+				LocationType.STATION, 99999, 0, 0, null, null), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+
+		Assert.assertEquals(QueryConnectionsResult.Status.UNKNOWN_TO, result1.status);
+
+		final QueryConnectionsResult result2 = queryConnections(new Location(LocationType.STATION, 99999, 0, 0, null, null), null, new Location(
+				LocationType.STATION, 2, "München", "Marienplatz"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+
+		Assert.assertEquals(QueryConnectionsResult.Status.UNKNOWN_FROM, result2.status);
 	}
 }
