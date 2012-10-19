@@ -1181,6 +1181,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return 'R' + type;
 			if ("Schneeberg".equals(type)) // VOR
 				return 'R' + type;
+			if ("FLZ".equals(type)) // Stainzer Flascherlzug
+				return 'R' + type;
+			if ("FTB".equals(type)) // Feistritztalbahn
+				return 'R' + type;
 			if ("DWE".equals(type)) // Dessau-Wörlitzer Eisenbahn
 				return 'R' + type;
 			if ("KTB".equals(type)) // Kandertalbahn
@@ -1267,6 +1271,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			if (P_LINE_NUMBER.matcher(type).matches())
 				return "?";
 			if (P_LINE_Y.matcher(name).matches())
+				return "?" + name;
+			if ("Sonderverkehr Red Bull".equals(name))
 				return "?" + name;
 
 			throw new IllegalStateException("cannot normalize mot '" + mot + "' name '" + name + "' long '" + longName + "' noTrainName '"
