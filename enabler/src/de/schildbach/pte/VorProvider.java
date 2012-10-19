@@ -35,6 +35,7 @@ public class VorProvider extends AbstractEfaProvider
 		super(API_BASE, null);
 
 		setReferer("http://www.wienerlinien.at/eportal/");
+		setIncludeRegionId(false);
 	}
 
 	public NetworkId id()

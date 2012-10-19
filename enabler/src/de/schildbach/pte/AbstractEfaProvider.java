@@ -85,6 +85,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private final String additionalQueryParameter;
 	private final boolean canAcceptPoiID;
 	private final boolean needsSpEncId;
+	private boolean includeRegionId = true;
 	private Charset requestUrlEncoding = ISO_8859_1;
 	private String referer;
 	private boolean suppressPositions = false;
@@ -163,6 +164,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		this.referer = referer;
 	}
 
+	protected void setIncludeRegionId(final boolean includeRegionId)
+	{
+		this.includeRegionId = includeRegionId;
+	}
+
 	protected void setSuppressPositions(final boolean suppressPositions)
 	{
 		this.suppressPositions = suppressPositions;
@@ -192,7 +198,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		uri.append(stopFinderEndpoint);
 		appendCommonRequestParams(uri, "JSON");
 		uri.append("&locationServerActive=1");
-		uri.append("&regionID_sf=1"); // prefer own region
+		if (includeRegionId)
+			uri.append("&regionID_sf=1"); // prefer own region
 		appendLocation(uri, constraint, "sf");
 		if (constraint.type == LocationType.ANY)
 			// 1=place 2=stop 4=street 8=address 16=crossing 32=poi 64=postcode
@@ -263,6 +270,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		uri.append(stopFinderEndpoint);
 		appendCommonRequestParams(uri, "XML");
 		uri.append("&locationServerActive=1");
+		if (includeRegionId)
+			uri.append("&regionID_sf=1"); // prefer own region
 		appendLocation(uri, constraint, "sf");
 		if (constraint.type == LocationType.ANY)
 		{
@@ -271,7 +280,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			// 1=place 2=stop 4=street 8=address 16=crossing 32=poi 64=postcode
 			uri.append("&anyObjFilter_sf=").append(2 + 4 + 8 + 16 + 32 + 64);
 			uri.append("&reducedAnyPostcodeObjFilter_sf=64&reducedAnyTooManyObjFilter_sf=2");
-			uri.append("&useHouseNumberList=true&regionID_sf=1");
+			uri.append("&useHouseNumberList=true");
 		}
 
 		// System.out.println(uri.toString());
