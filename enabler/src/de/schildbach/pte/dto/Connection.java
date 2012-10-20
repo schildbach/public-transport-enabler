@@ -232,11 +232,12 @@ public final class Connection implements Serializable
 		public final String arrivalPosition; // TODO rename to plannedArrivalPosition
 		public final String predictedArrivalPosition;
 		public final List<Stop> intermediateStops;
+		public final String message;
 
 		public Trip(final Line line, final Location destination, final Date plannedDepartureTime, final Date predictedDepartureTime,
 				final String departurePosition, final String predictedDeparturePosition, final Location departure, final Date plannedArrivalTime,
 				final Date predictedArrivalTime, final String arrivalPosition, final String predictedArrivalPosition, final Location arrival,
-				final List<Stop> intermediateStops, final List<Point> path)
+				final List<Stop> intermediateStops, final List<Point> path, final String message)
 		{
 			super(departure, arrival, path);
 
@@ -251,6 +252,7 @@ public final class Connection implements Serializable
 			this.arrivalPosition = arrivalPosition;
 			this.predictedArrivalPosition = predictedArrivalPosition;
 			this.intermediateStops = intermediateStops;
+			this.message = message;
 		}
 
 		public Date getDepartureTime()

@@ -1492,12 +1492,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						if (isRealtime && !predictedDepartureTime.isSet(Calendar.HOUR_OF_DAY))
 							predictedDepartureTime.setTimeInMillis(plannedDepartureTime.getTimeInMillis());
 
+						XmlPullUtil.exit(pp, "itdDeparture");
+
 						final Departure departure = new Departure(plannedDepartureTime.getTime(),
 								predictedDepartureTime.isSet(Calendar.HOUR_OF_DAY) ? predictedDepartureTime.getTime() : null, line, position,
 								destination, null, null);
 						assignedStationDepartures.departures.add(departure);
-
-						XmlPullUtil.exit(pp, "itdDeparture");
 					}
 
 					XmlPullUtil.exit(pp, "itdDepartureList");
@@ -1614,12 +1614,23 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		XmlPullUtil.enter(pp, "itdServingLine");
 		String noTrainName = null;
+		String message = null;
 		if (XmlPullUtil.test(pp, "itdNoTrain"))
+		{
 			noTrainName = pp.getAttributeValue(null, "name");
+			if (!pp.isEmptyElementTag())
+			{
+				XmlPullUtil.enter(pp, "itdNoTrain");
+				final String text = pp.getText();
+				if (noTrainName.toLowerCase().contains("ruf") && text.toLowerCase().contains("ruf"))
+					message = text;
+				XmlPullUtil.exit(pp, "itdNoTrain");
+			}
+		}
 		XmlPullUtil.exit(pp, "itdServingLine");
 
 		final String label = parseLine(motType, number, number, noTrainName);
-		return new Line(id, label, lineStyle(label));
+		return new Line(id, label, lineStyle(label), message);
 	}
 
 	private static final Pattern P_STATION_NAME_WHITESPACE = Pattern.compile("\\s+");
@@ -2095,6 +2106,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							XmlPullUtil.next(pp);
 
 						boolean lowFloorVehicle = false;
+						String message = null;
 						if (XmlPullUtil.test(pp, "itdInfoTextList"))
 						{
 							if (!pp.isEmptyElementTag())
@@ -2106,6 +2118,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 									final String text = pp.getText();
 									if ("Niederflurwagen soweit verfügbar".equals(text)) // KVV
 										lowFloorVehicle = true;
+									else if (text.toLowerCase().contains("ruf")) // RufBus, RufTaxi
+										message = text;
 									XmlPullUtil.exit(pp, "infoTextListElem");
 								}
 								XmlPullUtil.exit(pp, "itdInfoTextList");
@@ -2218,7 +2232,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 						parts.add(new Connection.Trip(line, destination, departureTargetTime != null ? departureTargetTime : departureTime,
 								departureTargetTime, departurePosition, null, departure, arrivalTargetTime != null ? arrivalTargetTime : arrivalTime,
-								arrivalTargetTime, arrivalPosition, null, arrival, intermediateStops, path));
+								arrivalTargetTime, arrivalPosition, null, arrival, intermediateStops, path, message));
 					}
 
 					XmlPullUtil.exit(pp, "itdPartialRoute");

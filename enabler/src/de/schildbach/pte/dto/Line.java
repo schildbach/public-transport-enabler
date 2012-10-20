@@ -32,25 +32,37 @@ public final class Line implements Serializable, Comparable<Line>
 
 	private static final long serialVersionUID = -5642533805998375070L;
 
-	final public String id;
-	final private transient char product; // TODO make true field
-	final public String label;
-	final public Style style;
-	final public Set<Attr> attrs;
+	public final String id;
+	private final transient char product; // TODO make true field
+	public final String label;
+	public final Style style;
+	public final Set<Attr> attrs;
+	public final String message;
 
 	private static final String PRODUCT_ORDER = "IRSUTBPFC?";
 
 	public Line(final String id, final String label, final Style style)
 	{
-		this(id, label, style, null);
+		this(id, label, style, null, null);
+	}
+
+	public Line(final String id, final String label, final Style style, final String message)
+	{
+		this(id, label, style, null, message);
 	}
 
 	public Line(final String id, final String label, final Style style, final Set<Attr> attrs)
+	{
+		this(id, label, style, attrs, null);
+	}
+
+	private Line(final String id, final String label, final Style style, final Set<Attr> attrs, final String message)
 	{
 		this.id = id;
 		this.label = label;
 		this.style = style;
 		this.attrs = attrs;
+		this.message = message;
 
 		product = label != null ? label.charAt(0) : '?';
 	}

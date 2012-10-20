@@ -1290,7 +1290,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					if (min == 0 || line != null)
 					{
 						parts.add(new Connection.Trip(line, destination, departureTime, null, departurePos, null, sectionDeparture, arrivalTime,
-								null, arrivalPos, null, sectionArrival, intermediateStops, path));
+								null, arrivalPos, null, sectionArrival, intermediateStops, path, null));
 					}
 					else
 					{
@@ -1872,7 +1872,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 									predictedDepartureTime != 0 ? new Date(predictedDepartureTime) : null, plannedDeparturePosition,
 									predictedDeparturePosition, departure, plannedArrivalTime != 0 ? new Date(plannedArrivalTime) : null,
 									predictedArrivalTime != 0 ? new Date(predictedArrivalTime) : null, plannedArrivalPosition,
-									predictedArrivalPosition, arrival, intermediateStops, null);
+									predictedArrivalPosition, arrival, intermediateStops, null, null);
 						}
 						else
 						{
