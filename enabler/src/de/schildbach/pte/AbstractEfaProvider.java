@@ -1707,9 +1707,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 				if (p == 'C')
 					uri.append("&inclMOT_8=on");
-
-				uri.append("&inclMOT_11=on"); // TODO always show 'others', for now
 			}
+
+			uri.append("&inclMOT_11=on"); // TODO always show 'others', for now
 
 			// workaround for highspeed trains: fails when you want highspeed, but not regional
 			if (!hasI)
