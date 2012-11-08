@@ -28,11 +28,13 @@ import de.schildbach.pte.dto.Style;
 public class VorProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.VOR;
-	private final static String API_BASE = "http://depmon.vor.at:8380/vorrbl/"; // http://efa.vor.at/wvb/
+	private final static String EFA_API_BASE = "http://efa.vor.at/wvb/";
+	private final static String RBL_API_BASE = "http://depmon.vor.at:8380/vorrbl/";
 
 	public VorProvider()
 	{
-		super(API_BASE, null);
+		super(RBL_API_BASE + DEFAULT_DEPARTURE_MONITOR_ENDPOINT, EFA_API_BASE + DEFAULT_TRIP_ENDPOINT, EFA_API_BASE + DEFAULT_STOPFINDER_ENDPOINT,
+				RBL_API_BASE + DEFAULT_COORD_ENDPOINT, null, false, false);
 
 		setIncludeRegionId(false);
 	}

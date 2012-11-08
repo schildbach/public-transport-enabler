@@ -112,4 +112,14 @@ public class VorProviderLiveTest extends AbstractProviderLiveTest
 		final QueryConnectionsResult earlierResult = queryMoreConnections(later2Result.context, false);
 		System.out.println(earlierResult);
 	}
+
+	@Test
+	public void connectionBetweenCoordinates() throws Exception
+	{
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, 48180281, 16333551), null, new Location(
+				LocationType.ADDRESS, 0, 48240452, 16444788), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		System.out.println(result);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
+		System.out.println(laterResult);
+	}
 }

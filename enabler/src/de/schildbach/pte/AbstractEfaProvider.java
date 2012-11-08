@@ -76,12 +76,18 @@ import de.schildbach.pte.util.XmlPullUtil;
  */
 public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 {
-	protected final static String SERVER_PRODUCT = "efa";
+	protected static final String DEFAULT_DEPARTURE_MONITOR_ENDPOINT = "XSLT_DM_REQUEST";
+	protected static final String DEFAULT_TRIP_ENDPOINT = "XSLT_TRIP_REQUEST2";
+	protected static final String DEFAULT_STOPFINDER_ENDPOINT = "XML_STOPFINDER_REQUEST";
+	protected static final String DEFAULT_COORD_ENDPOINT = "XML_COORD_REQUEST";
 
-	private final String apiBase;
+	protected static final String SERVER_PRODUCT = "efa";
+
 	private final String departureMonitorEndpoint;
 	private final String tripEndpoint;
 	private final String stopFinderEndpoint;
+	private final String coordEndpoint;
+
 	private final String additionalQueryParameter;
 	private final boolean canAcceptPoiID;
 	private final boolean needsSpEncId;
@@ -130,11 +136,22 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	public AbstractEfaProvider(final String apiBase, final String additionalQueryParameter, final boolean canAcceptPoiID)
 	{
-		this(apiBase, null, null, null, additionalQueryParameter, false, false);
+		this(apiBase, null, null, null, null, additionalQueryParameter, false, false);
 	}
 
 	public AbstractEfaProvider(final String apiBase, final String departureMonitorEndpoint, final String tripEndpoint,
-			final String stopFinderEndpoint, final String additionalQueryParameter, final boolean canAcceptPoiID, final boolean needsSpEncId)
+			final String stopFinderEndpoint, final String coordEndpoint, final String additionalQueryParameter, final boolean canAcceptPoiID,
+			final boolean needsSpEncId)
+	{
+		this(apiBase + (departureMonitorEndpoint != null ? departureMonitorEndpoint : DEFAULT_DEPARTURE_MONITOR_ENDPOINT), //
+				apiBase + (tripEndpoint != null ? tripEndpoint : DEFAULT_TRIP_ENDPOINT), //
+				apiBase + (stopFinderEndpoint != null ? stopFinderEndpoint : DEFAULT_STOPFINDER_ENDPOINT), //
+				apiBase + (coordEndpoint != null ? coordEndpoint : DEFAULT_COORD_ENDPOINT), //
+				additionalQueryParameter, canAcceptPoiID, needsSpEncId);
+	}
+
+	public AbstractEfaProvider(final String departureMonitorEndpoint, final String tripEndpoint, final String stopFinderEndpoint,
+			final String coordEndpoint, final String additionalQueryParameter, final boolean canAcceptPoiID, final boolean needsSpEncId)
 	{
 		try
 		{
@@ -145,10 +162,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			throw new RuntimeException(x);
 		}
 
-		this.apiBase = apiBase;
-		this.departureMonitorEndpoint = departureMonitorEndpoint != null ? departureMonitorEndpoint : "XSLT_DM_REQUEST";
-		this.tripEndpoint = tripEndpoint != null ? tripEndpoint : "XSLT_TRIP_REQUEST2";
-		this.stopFinderEndpoint = stopFinderEndpoint != null ? stopFinderEndpoint : "XML_STOPFINDER_REQUEST";
+		this.departureMonitorEndpoint = departureMonitorEndpoint;
+		this.tripEndpoint = tripEndpoint;
+		this.stopFinderEndpoint = stopFinderEndpoint;
+		this.coordEndpoint = coordEndpoint;
+
 		this.additionalQueryParameter = additionalQueryParameter;
 		this.canAcceptPoiID = canAcceptPoiID;
 		this.needsSpEncId = needsSpEncId;
@@ -194,8 +212,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	protected List<Location> jsonStopfinderRequest(final Location constraint) throws IOException
 	{
-		final StringBuilder uri = new StringBuilder(apiBase);
-		uri.append(stopFinderEndpoint);
+		final StringBuilder uri = new StringBuilder(stopFinderEndpoint);
 		appendCommonRequestParams(uri, "JSON");
 		uri.append("&locationServerActive=1");
 		if (includeRegionId)
@@ -266,8 +283,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	protected List<Location> xmlStopfinderRequest(final Location constraint) throws IOException
 	{
-		final StringBuilder uri = new StringBuilder(apiBase);
-		uri.append(stopFinderEndpoint);
+		final StringBuilder uri = new StringBuilder(stopFinderEndpoint);
 		appendCommonRequestParams(uri, "XML");
 		uri.append("&locationServerActive=1");
 		if (includeRegionId)
@@ -348,8 +364,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	protected NearbyStationsResult xmlCoordRequest(final int lat, final int lon, final int maxDistance, final int maxStations) throws IOException
 	{
-		final StringBuilder uri = new StringBuilder(apiBase);
-		uri.append("XML_COORD_REQUEST");
+		final StringBuilder uri = new StringBuilder(coordEndpoint);
 		appendCommonRequestParams(uri, "XML");
 		uri.append("&coord=").append(String.format(Locale.ENGLISH, "%2.6f:%2.6f:WGS84", latLonToDouble(lon), latLonToDouble(lat)));
 		uri.append("&coordListOutputFormat=STRING");
@@ -552,8 +567,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	private NearbyStationsResult nearbyStationsRequest(final int stationId, final int maxStations) throws IOException
 	{
-		final StringBuilder uri = new StringBuilder(apiBase);
-		uri.append(departureMonitorEndpoint);
+		final StringBuilder uri = new StringBuilder(departureMonitorEndpoint);
 		appendCommonRequestParams(uri, "XML");
 		uri.append("&type_dm=stop&name_dm=").append(stationId);
 		uri.append("&itOptionsActive=1");
@@ -1326,8 +1340,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
-		final StringBuilder uri = new StringBuilder(apiBase);
-		uri.append(departureMonitorEndpoint);
+		final StringBuilder uri = new StringBuilder(departureMonitorEndpoint);
 		appendCommonRequestParams(uri, "XML");
 		uri.append("&type_dm=stop");
 		uri.append("&name_dm=").append(stationId);
@@ -1654,8 +1667,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
 		final DateFormat TIME_FORMAT = new SimpleDateFormat("HHmm");
 
-		final StringBuilder uri = new StringBuilder(apiBase);
-		uri.append(tripEndpoint);
+		final StringBuilder uri = new StringBuilder(tripEndpoint);
 		appendCommonRequestParams(uri, "XML");
 
 		uri.append("&sessionID=0");
@@ -1740,8 +1752,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	private String commandLink(final String sessionId, final String requestId)
 	{
-		final StringBuilder uri = new StringBuilder(apiBase);
-		uri.append(tripEndpoint);
+		final StringBuilder uri = new StringBuilder(tripEndpoint);
 
 		uri.append("?sessionID=").append(sessionId);
 		uri.append("&requestID=").append(requestId);
