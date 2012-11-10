@@ -1277,7 +1277,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			if ("Cable Car".equals(noTrainName)) // San Francisco
 				return 'T' + name;
 
-			if (type.equals("BUS"))
+			if ("BUS".equals(type) || "Bus".equals(type))
 				return 'B' + str;
 			if (P_LINE_SEV.matcher(type).matches())
 				return 'B' + str;

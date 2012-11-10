@@ -53,7 +53,7 @@ public enum NetworkId
 	LU,
 
 	// United Kingdom
-	TFL, TLEM, TLEA, TLSE, TLSW,
+	TFL, TLEM, TLWM, TLEA, TLSE, TLSW,
 
 	// Ireland
 	EIREANN,
