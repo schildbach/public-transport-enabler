@@ -34,11 +34,11 @@ import de.schildbach.pte.util.ParserUtils;
 public class VbbProvider extends AbstractHafasProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.VBB;
-	private static final String API_BASE = "http://www.vbb-fahrinfo.de/hafas/";
+	private static final String API_BASE = "http://fahrinfo.vbb.de/bin/";
 
 	public VbbProvider()
 	{
-		super(API_BASE + "query.exe/dn", 7, null);
+		super(API_BASE + "query.exe/dn", 7, null, UTF_8, UTF_8);
 	}
 
 	public NetworkId id()
@@ -53,6 +53,27 @@ public class VbbProvider extends AbstractHafasProvider
 				return true;
 
 		return false;
+	}
+
+	@Override
+	protected char intToProduct(final int value)
+	{
+		if (value == 1)
+			return 'S';
+		if (value == 2)
+			return 'U';
+		if (value == 4)
+			return 'T';
+		if (value == 8)
+			return 'B';
+		if (value == 16)
+			return 'F';
+		if (value == 32)
+			return 'I';
+		if (value == 64)
+			return 'R';
+
+		throw new IllegalArgumentException("cannot handle: " + value);
 	}
 
 	@Override
