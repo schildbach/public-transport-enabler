@@ -37,7 +37,7 @@ import de.schildbach.pte.dto.Style.Shape;
 public class ZvvProvider extends AbstractHafasProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.ZVV;
-	private static final String API_BASE = "http://onlinev2.fahrplan.zvv.ch/bin/"; // http://online.fahrplan.zvv.ch/bin/
+	private static final String API_BASE = "http://online.fahrplan.zvv.ch/bin/";
 
 	public ZvvProvider()
 	{
