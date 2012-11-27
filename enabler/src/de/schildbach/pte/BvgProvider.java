@@ -306,8 +306,8 @@ public final class BvgProvider extends AbstractHafasProvider
 			+ "<td class=\"ivu_table_c_dep\">\\s*(\\d{2}\\.\\d{2}\\.\\d{4})\\s*</td>\\s*" // date
 			+ "<td>([^<]*)</td>" // message
 	, Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_LIVE_ERRORS = Pattern.compile("(Haltestelle:)|(Wartungsgr&uuml;nden)|(http-equiv=\"refresh\")",
-			Pattern.CASE_INSENSITIVE);
+	private static final Pattern P_DEPARTURES_LIVE_ERRORS = Pattern.compile(
+			"(Haltestelle:)|(Wartungsgr&uuml;nden|nur eingeschränkt)|(http-equiv=\"refresh\")", Pattern.CASE_INSENSITIVE);
 
 	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
