@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * @author Andreas Schildbach
@@ -170,7 +171,7 @@ public final class Connection implements Serializable
 	@Override
 	public String toString()
 	{
-		final SimpleDateFormat FORMAT = new SimpleDateFormat("E HH:mm");
+		final SimpleDateFormat FORMAT = new SimpleDateFormat("E HH:mm", Locale.US);
 
 		final StringBuilder str = new StringBuilder(getId());
 		str.append(' ');

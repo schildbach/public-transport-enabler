@@ -21,15 +21,16 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * @author Andreas Schildbach
  */
 public class Iso8601Format extends SimpleDateFormat
 {
-	private Iso8601Format(String formatString)
+	private Iso8601Format(final String formatString)
 	{
-		super(formatString);
+		super(formatString, Locale.US);
 	}
 
 	public static DateFormat newTimeFormat()

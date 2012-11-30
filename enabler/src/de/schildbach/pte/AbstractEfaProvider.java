@@ -1664,8 +1664,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	protected String xsltTripRequest2Uri(final Location from, final Location via, final Location to, final Date date, final boolean dep,
 			final int numConnections, final String products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
 	{
-		final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
-		final DateFormat TIME_FORMAT = new SimpleDateFormat("HHmm");
+		final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd", Locale.US);
+		final DateFormat TIME_FORMAT = new SimpleDateFormat("HHmm", Locale.US);
 
 		final StringBuilder uri = new StringBuilder(tripEndpoint);
 		appendCommonRequestParams(uri, "XML");

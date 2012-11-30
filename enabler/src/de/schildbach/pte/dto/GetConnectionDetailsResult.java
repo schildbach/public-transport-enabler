@@ -20,6 +20,7 @@ package de.schildbach.pte.dto;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * @author Andreas Schildbach
@@ -38,7 +39,7 @@ public final class GetConnectionDetailsResult implements Serializable
 	@Override
 	public String toString()
 	{
-		final SimpleDateFormat FORMAT = new SimpleDateFormat("EE dd.MM.yy");
+		final SimpleDateFormat FORMAT = new SimpleDateFormat("EE dd.MM.yy", Locale.US);
 		return FORMAT.format(currentDate) + "|" + connection.toString();
 	}
 }
