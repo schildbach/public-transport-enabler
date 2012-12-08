@@ -2385,6 +2385,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			return 'I';
 		if ("SC".equals(ucType)) // SuperCity, Tschechien
 			return 'I';
+		if ("LE".equals(ucType)) // LEO Express, Prag
+			return 'I';
 		if ("FLUG".equals(ucType))
 			return 'I';
 		if ("TLK".equals(ucType)) // Tanie Linie Kolejowe, Polen
