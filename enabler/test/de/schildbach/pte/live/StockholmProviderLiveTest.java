@@ -74,6 +74,14 @@ public class StockholmProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
+	public void autocompleteUmlaut() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("östra");
+
+		print(autocompletes);
+	}
+
+	@Test
 	public void shortConnection() throws Exception
 	{
 		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 200101051, "Stockholm", "T-Centralen"), null,

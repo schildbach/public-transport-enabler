@@ -39,7 +39,7 @@ public class StockholmProvider extends AbstractHafasProvider
 
 	public StockholmProvider()
 	{
-		super(API_BASE + "query.exe/sn", 7, null, UTF_8, null);
+		super(API_BASE + "query.exe/sn", 7, null, null, null);
 	}
 
 	public NetworkId id()
