@@ -82,6 +82,14 @@ public class ShProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
+	public void autocompleteWithoutCoordinatesInResult() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("aachen");
+
+		print(autocompletes);
+	}
+
+	@Test
 	public void shortConnection() throws Exception
 	{
 		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 8002547, null, "Flughafen Hamburg"), null,

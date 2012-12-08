@@ -489,7 +489,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		final String request = "<MLcReq><MLc n=\"" + constraint + "?\" t=\"ALLTYPE\" /></MLcReq>";
 		final String wrappedRequest = wrap(request, xmlMlcResEncoding);
 
-		// ParserUtils.printXml(ParserUtils.scrape(apiUri, true, wrappedRequest, xmlMlcResEncoding, null));
+		// ParserUtils.printXml(ParserUtils.scrape(apiUri, wrappedRequest, xmlMlcResEncoding, null));
 
 		Reader reader = null;
 
@@ -535,16 +535,26 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				}
 
 				final String name = XmlPullUtil.attr(pp, "n");
+				final String[] placeAndName = splitPlaceAndName(name);
 
 				final String r = pp.getAttributeValue(null, "r");
 				final Matcher iMatcherLonLat = P_XML_MLC_REQ_LONLAT.matcher(i != null ? i : r);
-				if (!iMatcherLonLat.matches())
-					throw new IllegalStateException("cannot parse lon/lat: '" + i + "' or '" + r + "'");
-				final int lon = Integer.parseInt(iMatcherLonLat.group(1));
-				final int lat = Integer.parseInt(iMatcherLonLat.group(2));
+				final int lat;
+				final int lon;
+				if (iMatcherLonLat.matches())
+				{
+					lon = Integer.parseInt(iMatcherLonLat.group(1));
+					lat = Integer.parseInt(iMatcherLonLat.group(2));
+				}
+				else
+				{
+					lat = 0;
+					lon = 0;
+				}
 
-				final String[] placeAndName = splitPlaceAndName(name);
-				results.add(new Location(type, id, lat, lon, placeAndName[0], placeAndName[1]));
+				final Location location = new Location(type, id, lat, lon, placeAndName[0], placeAndName[1]);
+				if (location.hasLocation())
+					results.add(location);
 
 				XmlPullUtil.next(pp);
 			}
