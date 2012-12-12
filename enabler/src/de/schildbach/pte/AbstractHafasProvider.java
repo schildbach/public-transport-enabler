@@ -1918,6 +1918,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			else if (errorCode == 891)
 				// H891: Unfortunately there was no route found. Missing timetable data could be the reason.
 				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.NO_CONNECTIONS);
+			else if (errorCode == 899)
+				// H899: there was an unsuccessful or incomplete search due to a timetable change.
+				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.NO_CONNECTIONS);
 			else if (errorCode == 9220)
 				// H9220: Nearby to the given address stations could not be found.
 				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.UNRESOLVABLE_ADDRESS);
