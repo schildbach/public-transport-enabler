@@ -229,48 +229,36 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		try
 		{
+			final List<Location> results = new ArrayList<Location>();
+
 			final JSONObject head = new JSONObject(page.toString());
-			final JSONArray stops = head.getJSONArray("stopFinder");
+			final JSONObject stopFinder = head.optJSONObject("stopFinder");
+			final JSONArray stops;
+			if (stopFinder == null)
+			{
+				stops = head.getJSONArray("stopFinder");
+			}
+			else
+			{
+				final JSONObject points = stopFinder.optJSONObject("points");
+				if (points != null)
+				{
+					final JSONObject stop = points.getJSONObject("point");
+					final Location location = parseJsonStop(stop);
+					results.add(location);
+					return results;
+				}
+
+				stops = stopFinder.getJSONArray("points");
+			}
 
 			final int nStops = stops.length();
-			final List<Location> results = new ArrayList<Location>();
 
 			for (int i = 0; i < nStops; i++)
 			{
 				final JSONObject stop = stops.optJSONObject(i);
-				String type = stop.getString("type");
-				if ("any".equals(type))
-					type = stop.getString("anyType");
-				final String name = normalizeLocationName(stop.getString("object"));
-				final JSONObject ref = stop.getJSONObject("ref");
-				String place = ref.getString("place");
-				if (place != null && place.length() == 0)
-					place = null;
-				final String coords = ref.optString("coords", null);
-				final int lat;
-				final int lon;
-				if (coords != null)
-				{
-					final String[] coordParts = coords.split(",");
-					lat = Math.round(Float.parseFloat(coordParts[1]));
-					lon = Math.round(Float.parseFloat(coordParts[0]));
-				}
-				else
-				{
-					lat = 0;
-					lon = 0;
-				}
-
-				if ("stop".equals(type))
-					results.add(new Location(LocationType.STATION, stop.getInt("stateless"), lat, lon, place, name));
-				else if ("poi".equals(type))
-					results.add(new Location(LocationType.POI, 0, lat, lon, place, name));
-				else if ("crossing".equals(type))
-					results.add(new Location(LocationType.ADDRESS, 0, lat, lon, place, name));
-				else if ("street".equals(type) || "address".equals(type) || "singlehouse".equals(type))
-					results.add(new Location(LocationType.ADDRESS, 0, lat, lon, place, normalizeLocationName(stop.getString("name"))));
-				else
-					throw new IllegalArgumentException("unknown type: " + type + " on " + uri);
+				final Location location = parseJsonStop(stop);
+				results.add(location);
 			}
 
 			return results;
@@ -279,6 +267,43 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		{
 			throw new RuntimeException("cannot parse: '" + page + "' on " + uri, x);
 		}
+	}
+
+	private Location parseJsonStop(final JSONObject stop) throws JSONException
+	{
+		String type = stop.getString("type");
+		if ("any".equals(type))
+			type = stop.getString("anyType");
+		final String name = normalizeLocationName(stop.getString("object"));
+		final JSONObject ref = stop.getJSONObject("ref");
+		String place = ref.getString("place");
+		if (place != null && place.length() == 0)
+			place = null;
+		final String coords = ref.optString("coords", null);
+		final int lat;
+		final int lon;
+		if (coords != null)
+		{
+			final String[] coordParts = coords.split(",");
+			lat = Math.round(Float.parseFloat(coordParts[1]));
+			lon = Math.round(Float.parseFloat(coordParts[0]));
+		}
+		else
+		{
+			lat = 0;
+			lon = 0;
+		}
+
+		if ("stop".equals(type))
+			return new Location(LocationType.STATION, stop.getInt("stateless"), lat, lon, place, name);
+		else if ("poi".equals(type))
+			return new Location(LocationType.POI, 0, lat, lon, place, name);
+		else if ("crossing".equals(type))
+			return new Location(LocationType.ADDRESS, 0, lat, lon, place, name);
+		else if ("street".equals(type) || "address".equals(type) || "singlehouse".equals(type))
+			return new Location(LocationType.ADDRESS, 0, lat, lon, place, normalizeLocationName(stop.getString("name")));
+		else
+			throw new JSONException("unknown type: " + type);
 	}
 
 	protected List<Location> xmlStopfinderRequest(final Location constraint) throws IOException
