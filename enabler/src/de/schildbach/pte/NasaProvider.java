@@ -114,7 +114,7 @@ public class NasaProvider extends AbstractHafasProvider
 		}
 	}
 
-	private static final String[] PLACES = { "Leipzig", "Halle (Saale)", "Halle" };
+	private static final String[] PLACES = { "Leipzig", "Halle (Saale)", "Halle", "Magdeburg" };
 
 	@Override
 	protected String[] splitPlaceAndName(final String name)
