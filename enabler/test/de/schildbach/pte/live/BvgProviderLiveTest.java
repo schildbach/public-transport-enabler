@@ -92,6 +92,16 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
+	public void autocompleteAddress() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("Sophienstr. 24");
+
+		print(autocompletes);
+
+		Assert.assertEquals("Sophienstr. 24", autocompletes.get(0).name);
+	}
+
+	@Test
 	public void autocompleteIncomplete() throws Exception
 	{
 		final List<Location> autocompletes = provider.autocompleteStations("nol");
@@ -163,9 +173,9 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void connectionBetweenAddresses() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, null,
-				"10715 Bln Charlb.-Wilm., Weimarische Str. 7"), null, new Location(LocationType.ADDRESS, 0, null, "10178 Bln Mitte, Sophienstr. 24"),
-				new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, 52479663, 13324278, "10715 Berlin-Wilmersdorf",
+				"Weimarische Str. 7"), null, new Location(LocationType.ADDRESS, 0, 52541536, 13421290, "10437 Berlin-Prenzlauer Berg",
+				"Göhrener Str. 5"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
@@ -174,10 +184,10 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void viaConnectionBetweenAddresses() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, null,
-				"10715 Bln Charlb.-Wilm., Weimarische Str. 7"), new Location(LocationType.ADDRESS, 0, null, "10115 Bln Mitte, Hannoversche Str. 20"),
-				new Location(LocationType.ADDRESS, 0, null, "10178 Bln Mitte, Sophienstr. 24"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
-				Accessibility.NEUTRAL);
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, 52479663, 13324278, "10715 Berlin-Wilmersdorf",
+				"Weimarische Str. 7"), new Location(LocationType.ADDRESS, 0, 52527872, 13381657, "10115 Berlin-Mitte", "Hannoversche Str. 20"),
+				new Location(LocationType.ADDRESS, 0, 52526029, 13399878, "10178 Berlin-Mitte", "Sophienstr. 24"), new Date(), true, ALL_PRODUCTS,
+				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);

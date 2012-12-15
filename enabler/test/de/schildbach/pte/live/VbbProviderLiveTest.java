@@ -17,6 +17,8 @@
 
 package de.schildbach.pte.live;
 
+import static junit.framework.Assert.assertEquals;
+
 import java.util.Date;
 import java.util.List;
 
@@ -51,6 +53,13 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
+	public void nearbyStationsInvalidStation() throws Exception
+	{
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 2449475), 0, 0);
+		assertEquals(NearbyStationsResult.Status.INVALID_STATION, result.status);
+	}
+
+	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
 		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 52548505, 1338864), 0, 0);
@@ -67,6 +76,16 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
+	public void queryDeparturesInvalidStation() throws Exception
+	{
+		final QueryDeparturesResult resultLive = provider.queryDepartures(111111, 0, false);
+		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, resultLive.status);
+
+		final QueryDeparturesResult resultPlan = provider.queryDepartures(2449475, 0, false);
+		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, resultPlan.status);
+	}
+
+	@Test
 	public void autocompleteUmlaut() throws Exception
 	{
 		final List<Location> autocompletes = provider.autocompleteStations("Güntzelstr.");
@@ -74,6 +93,16 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 		print(autocompletes);
 
 		Assert.assertEquals("Güntzelstr. (U)", autocompletes.get(0).name);
+	}
+
+	@Test
+	public void autocompleteAddress() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("Sophienstr. 24");
+
+		print(autocompletes);
+
+		Assert.assertEquals("Sophienstr. 24", autocompletes.get(0).name);
 	}
 
 	@Test
@@ -133,9 +162,9 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void connectionBetweenAddresses() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, null,
-				"10715 Bln Charlb.-Wilm., Weimarische Str. 7"), null, new Location(LocationType.ADDRESS, 0, null, "10178 Bln Mitte, Sophienstr. 24"),
-				new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, 52479663, 13324278, "10715 Berlin-Wilmersdorf",
+				"Weimarische Str. 7"), null, new Location(LocationType.ADDRESS, 0, 52541536, 13421290, "10437 Berlin-Prenzlauer Berg",
+				"Göhrener Str. 5"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
@@ -144,10 +173,10 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void viaConnectionBetweenAddresses() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, null,
-				"10715 Bln Charlb.-Wilm., Weimarische Str. 7"), new Location(LocationType.ADDRESS, 0, null, "10115 Bln Mitte, Hannoversche Str. 20"),
-				new Location(LocationType.ADDRESS, 0, null, "10178 Bln Mitte, Sophienstr. 24"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
-				Accessibility.NEUTRAL);
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, 52479663, 13324278, "10715 Berlin-Wilmersdorf",
+				"Weimarische Str. 7"), new Location(LocationType.ADDRESS, 0, 52527872, 13381657, "10115 Berlin-Mitte", "Hannoversche Str. 20"),
+				new Location(LocationType.ADDRESS, 0, 52526029, 13399878, "10178 Berlin-Mitte", "Sophienstr. 24"), new Date(), true, ALL_PRODUCTS,
+				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
