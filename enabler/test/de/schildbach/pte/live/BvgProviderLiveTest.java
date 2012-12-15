@@ -22,6 +22,7 @@ import static junit.framework.Assert.assertEquals;
 import java.util.Date;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import de.schildbach.pte.BvgProvider;
@@ -78,6 +79,16 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest
 
 		final QueryDeparturesResult resultPlan = provider.queryDepartures(2449475, 0, false);
 		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, resultPlan.status);
+	}
+
+	@Test
+	public void autocompleteUmlaut() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("Güntzelstr.");
+
+		print(autocompletes);
+
+		Assert.assertEquals("Güntzelstr. (U)", autocompletes.get(0).name);
 	}
 
 	@Test

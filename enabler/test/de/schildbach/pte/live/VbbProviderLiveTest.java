@@ -20,6 +20,7 @@ package de.schildbach.pte.live;
 import java.util.Date;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import de.schildbach.pte.NetworkProvider.Accessibility;
@@ -68,9 +69,11 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void autocompleteUmlaut() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("Hedwigshöhe");
+		final List<Location> autocompletes = provider.autocompleteStations("Güntzelstr.");
 
 		print(autocompletes);
+
+		Assert.assertEquals("Güntzelstr. (U)", autocompletes.get(0).name);
 	}
 
 	@Test
