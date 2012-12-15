@@ -1311,6 +1311,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			if ("Ersatzverkehr".equals(type)) // Rhein-Ruhr
 				return 'B' + str;
 
+			if ("HBL".equals(type)) // Hamburg Hafenfähre
+				return 'F' + str;
+
 			if ("AST".equals(type)) // Anruf-Sammel-Taxi
 				return 'P' + str;
 
