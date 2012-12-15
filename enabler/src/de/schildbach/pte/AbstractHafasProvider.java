@@ -931,8 +931,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		if (via != null)
 		{
 			request.append("<Via>").append(locationXml(via));
-			request.append("<Prod prod=\"").append(productsStr).append("\" bike=\"").append(bikeChar)
-					.append("\" couchette=\"0\" direct=\"0\" sleeper=\"0\"/>");
+			if (via.type != LocationType.ADDRESS)
+				request.append("<Prod prod=\"").append(productsStr).append("\" bike=\"").append(bikeChar)
+						.append("\" couchette=\"0\" direct=\"0\" sleeper=\"0\"/>");
 			request.append("</Via>");
 		}
 		request.append("<Dest>").append(locationXml(to)).append("</Dest>");
@@ -970,7 +971,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			final Location via, final Location to) throws IOException
 	{
 		// System.out.println(request);
-		// ParserUtils.printXml(ParserUtils.scrape(apiUri, true, wrap(request), null, null));
+		// ParserUtils.printXml(ParserUtils.scrape(apiUri, wrap(request, null), null, null));
 
 		Reader reader = null;
 
