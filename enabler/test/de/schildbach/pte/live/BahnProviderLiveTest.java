@@ -68,11 +68,23 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
-	public void autocompleteIncomplete() throws Exception
+	public void autocompleteUmlaut() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("Be");
+		final List<Location> autocompletes = provider.autocompleteStations("Güntzelstr. (U)");
 
 		print(autocompletes);
+
+		Assert.assertEquals("Güntzelstr. (U), Berlin", autocompletes.get(0).name);
+	}
+
+	@Test
+	public void autocompleteIncomplete() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("Landungsbr");
+
+		print(autocompletes);
+
+		Assert.assertEquals("Hamburg Landungsbrücken", autocompletes.get(0).name);
 	}
 
 	@Test
