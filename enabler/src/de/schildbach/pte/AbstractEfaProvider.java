@@ -1245,6 +1245,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return 'R' + type;
 			if ("RR".equals(type)) // RR 371 Horehronec / RR 404 Vltava / RR 922 Josef Skupa
 				return 'R' + type;
+			if ("ZAB1/766".equals(type))
+				return "R" + name;
+			if ("ZAB2/768".equals(type))
+				return "R" + name;
 
 			if ("BSB".equals(type)) // Breisgau-S-Bahn
 				return 'S' + str;
