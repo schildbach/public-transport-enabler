@@ -810,8 +810,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return 'I' + str;
 			if (type.equals("DNZ")) // Nachtzug Basel-Moskau
 				return 'I' + str;
-			if ("Eurocity".equals(noTrainName)) // Liechtenstein
-				return 'I' + name;
 			if ("INT".equals(type)) // SVV
 				return 'I' + name;
 			if ("IXB".equals(type)) // ICE International
@@ -821,6 +819,14 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			if ("ECB".equals(type)) // EC, Verona-München
 				return 'I' + name;
 			if ("ES".equals(type)) // Eurostar Italia
+				return 'I' + name;
+			if ("Eurocity".equals(noTrainName)) // Liechtenstein
+				return 'I' + name;
+			if ("EuroNight".equals(noTrainName)) // Liechtenstein
+				return 'I' + name;
+			if ("railjet".equals(noTrainName)) // Liechtenstein
+				return 'I' + name;
+			if ("ÖBB InterCity".equals(noTrainName)) // Liechtenstein
 				return 'I' + name;
 
 			if (type.equals("IR")) // Interregio
