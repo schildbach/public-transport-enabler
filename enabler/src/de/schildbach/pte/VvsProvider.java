@@ -25,7 +25,7 @@ import de.schildbach.pte.dto.Point;
 public class VvsProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.VVS;
-	private static final String API_BASE = "http://mobil.vvs.de/mobile/"; // http://www2.vvs.de/vvs/
+	private static final String API_BASE = "http://www2.vvs.de/vvs/";
 
 	public VvsProvider()
 	{
