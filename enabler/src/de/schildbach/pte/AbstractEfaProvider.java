@@ -1320,6 +1320,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return 'B' + str;
 			if ("Ersatzverkehr".equals(type)) // Rhein-Ruhr
 				return 'B' + str;
+			if ("Bus replacement".equals(noTrainName)) // Transport Line
+				return 'B' + str;
 
 			if ("HBL".equals(type)) // Hamburg Hafenfähre
 				return 'F' + str;
