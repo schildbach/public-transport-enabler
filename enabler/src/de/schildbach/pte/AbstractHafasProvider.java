@@ -2390,6 +2390,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			return 'I';
 		if ("FYR".equals(ucType)) // Fyra, Amsterdam-Schiphol-Rotterdam
 			return 'I';
+		if ("FYRA".equals(ucType)) // Fyra, Amsterdam-Schiphol-Rotterdam
+			return 'I';
 		if ("SC".equals(ucType)) // SuperCity, Tschechien
 			return 'I';
 		if ("LE".equals(ucType)) // LEO Express, Prag
@@ -2587,6 +2589,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		if ("DWE".equals(ucType)) // Dessau-Wörlitzer Eisenbahn
 			return 'R';
 		if ("BKB".equals(ucType)) // Buckower Kleinbahn
+			return 'R';
+		if ("GEX".equals(ucType)) // Glacier Express
 			return 'R';
 
 		// if ("E".equals(normalizedType)) // Eilzug, stimmt wahrscheinlich nicht

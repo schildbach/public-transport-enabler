@@ -211,6 +211,8 @@ public class PlProvider extends AbstractHafasProvider
 			return 'R';
 		if ("DB".equals(ucType))
 			return 'R';
+		if ("REG".equals(ucType))
+			return 'R';
 
 		if ("FRE".equals(ucType))
 			return 'F';

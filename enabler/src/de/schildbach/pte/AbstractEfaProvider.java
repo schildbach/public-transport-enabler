@@ -1025,6 +1025,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return 'R' + str;
 			if (type.equals("as")) // agilis-Schnellzug
 				return 'R' + str;
+			if (type.equals("agilis-Schnellzug")) // agilis-Schnellzug
+				return 'R' + str;
 			if (type.equals("TLX")) // Trilex (Vogtlandbahn)
 				return 'R' + str;
 			if (type.equals("DBG")) // Döllnitzbahn
@@ -1261,6 +1263,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			if ("BSB-Zug".equals(type)) // Breisgau-S-Bahn
 				return 'S' + str;
 			if ("Breisgau-S-Bahn".equals(type)) // Bayern
+				return 'S' + type;
+			if ("RSB".equals(type)) // Schnellbahn Wien
 				return 'S' + type;
 			if ("RER".equals(type)) // Réseau Express Régional, Frankreich
 				return 'S' + str;
