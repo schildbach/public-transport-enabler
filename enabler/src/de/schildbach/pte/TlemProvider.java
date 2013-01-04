@@ -31,6 +31,8 @@ public class TlemProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.TLEM;
 	private final static String API_BASE = "http://www.travelineeastmidlands.co.uk/em/";
+	// http://www.travelinesoutheast.org.uk/se/
+	// http://www.travelineeastanglia.org.uk/ea/
 
 	public TlemProvider()
 	{
