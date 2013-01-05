@@ -39,6 +39,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
+import de.schildbach.pte.exception.BlockedException;
 import de.schildbach.pte.exception.UnexpectedRedirectException;
 
 /**
@@ -191,6 +192,10 @@ public final class ParserUtils
 							throw new IOException(message + ": " + url);
 					}
 				}
+				else if (responseCode == HttpURLConnection.HTTP_FORBIDDEN || responseCode == HttpURLConnection.HTTP_BAD_REQUEST)
+				{
+					throw new BlockedException(url);
+				}
 				else
 				{
 					final String message = "got response: " + responseCode + " " + connection.getResponseMessage();
@@ -335,6 +340,10 @@ public final class ParserUtils
 					// uncompressed
 					return is;
 				}
+			}
+			else if (responseCode == HttpURLConnection.HTTP_FORBIDDEN || responseCode == HttpURLConnection.HTTP_BAD_REQUEST)
+			{
+				throw new BlockedException(url);
 			}
 			else
 			{
