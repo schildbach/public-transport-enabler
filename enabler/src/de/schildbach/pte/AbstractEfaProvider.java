@@ -1025,6 +1025,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return 'R' + str;
 			if (type.equals("as")) // agilis-Schnellzug
 				return 'R' + str;
+			if (type.equals("agilis")) // agilis
+				return 'R' + str;
 			if (type.equals("agilis-Schnellzug")) // agilis-Schnellzug
 				return 'R' + str;
 			if (type.equals("TLX")) // Trilex (Vogtlandbahn)

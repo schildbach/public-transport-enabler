@@ -55,6 +55,27 @@ public class MvvProvider extends AbstractEfaProvider
 		return false;
 	}
 
+	@Override
+	protected String parseLine(final String mot, final String name, final String longName, final String noTrainName)
+	{
+		if ("0".equals(mot) && longName.equals("Hamburg-Köln-Express"))
+			return "I" + longName;
+
+		else if ("0".equals(mot) && longName.equals("Erfurter Bahn Express"))
+			return "R" + longName;
+		else if ("0".equals(mot) && longName.equals("VIAS GmbH"))
+			return "R" + longName;
+		else if ("0".equals(mot) && longName.equals("Vogtlandbahn"))
+			return "R" + longName;
+		else if ("0".equals(mot) && longName.equals("Süd-Thüringen-Bahn"))
+			return "R" + longName;
+		else if ("0".equals(mot) && longName.equals("erixx - Der Heidesprinter"))
+			return "R" + longName;
+
+		else
+			return super.parseLine(mot, name, longName, noTrainName);
+	}
+
 	private static final Map<String, Style> LINES = new HashMap<String, Style>();
 
 	static

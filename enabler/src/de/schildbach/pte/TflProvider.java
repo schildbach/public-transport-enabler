@@ -56,6 +56,63 @@ public class TflProvider extends AbstractEfaProvider
 		return false;
 	}
 
+	@Override
+	protected String parseLine(final String mot, final String name, final String longName, final String noTrainName)
+	{
+		if ("0".equals(mot) && "First Hull Trains".equals(noTrainName))
+			return "I" + name;
+
+		else if ("0".equals(mot) && "Southern".equals(noTrainName))
+			return "R" + name;
+		else if ("0".equals(mot) && "Southeastern".equals(noTrainName))
+			return "R" + name;
+		else if ("0".equals(mot) && "South West Trains".equals(noTrainName))
+			return "R" + name;
+		else if ("0".equals(mot) && "Greater Anglia".equals(noTrainName))
+			return "R" + name;
+		else if ("0".equals(mot) && "First Great Western".equals(noTrainName))
+			return "R" + name;
+		else if ("0".equals(mot) && "First Capital Connect".equals(noTrainName))
+			return "R" + name;
+		else if ("0".equals(mot) && "Northern Rail".equals(noTrainName))
+			return "R" + name;
+		else if ("0".equals(mot) && "Chiltern Railways".equals(noTrainName))
+			return "R" + name;
+		else if ("0".equals(mot) && "Heathrow Connect".equals(noTrainName))
+			return "R" + name;
+		else if ("0".equals(mot) && "Heathrow Express".equals(noTrainName))
+			return "R" + name;
+		else if ("0".equals(mot) && "Gatwick Express".equals(noTrainName))
+			return "R" + name;
+		else if ("0".equals(mot) && "Merseyrail".equals(noTrainName))
+			return "R" + name;
+		else if ("0".equals(mot) && "East Coast".equals(noTrainName))
+			return "R" + name;
+		else if ("0".equals(mot) && "Cross Country".equals(noTrainName))
+			return "R" + name;
+		else if ("0".equals(mot) && "East Midlands Trains".equals(noTrainName))
+			return "R" + name;
+		else if ("0".equals(mot) && "Arriva Trains Wales".equals(noTrainName))
+			return "R" + name;
+		else if ("0".equals(mot) && "First TransPennine Express".equals(noTrainName))
+			return "R" + name;
+		else if ("0".equals(mot) && "ScotRail".equals(noTrainName))
+			return "R" + name;
+		else if ("0".equals(mot) && "London Midland".equals(noTrainName))
+			return "R" + name;
+		else if ("0".equals(mot) && "c2c".equals(noTrainName))
+			return "R" + name;
+		else if ("0".equals(mot) && "Grand Central".equals(noTrainName))
+			return "R" + name;
+		else if ("0".equals(mot) && "Virgin Trains".equals(noTrainName))
+			return "R" + name;
+		else if ("0".equals(mot) && "Island Line".equals(noTrainName))
+			return "R" + name;
+
+		else
+			return super.parseLine(mot, name, longName, noTrainName);
+	}
+
 	private static final Map<String, Style> LINES = new HashMap<String, Style>();
 
 	static
