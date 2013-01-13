@@ -62,51 +62,53 @@ public class TflProvider extends AbstractEfaProvider
 		if ("0".equals(mot) && "First Hull Trains".equals(noTrainName))
 			return "I" + name;
 
-		else if ("0".equals(mot) && "Southern".equals(noTrainName))
+		else if ("0".equals(mot) && ("Southern".equals(noTrainName) || "=SN".equals(noTrainName)))
 			return "R" + name;
-		else if ("0".equals(mot) && "Southeastern".equals(noTrainName))
+		else if ("0".equals(mot) && ("Southeastern".equals(noTrainName) || "=SE".equals(noTrainName)))
 			return "R" + name;
-		else if ("0".equals(mot) && "South West Trains".equals(noTrainName))
+		else if ("0".equals(mot) && ("South West Trains".equals(noTrainName) || "=SW".equals(noTrainName)))
 			return "R" + name;
-		else if ("0".equals(mot) && "Greater Anglia".equals(noTrainName))
+		else if ("0".equals(mot) && ("Greater Anglia".equals(noTrainName) || "=LE".equals(noTrainName)))
 			return "R" + name;
-		else if ("0".equals(mot) && "First Great Western".equals(noTrainName))
+		else if ("0".equals(mot) && ("First Great Western".equals(noTrainName) || "=GW".equals(noTrainName)))
 			return "R" + name;
-		else if ("0".equals(mot) && "First Capital Connect".equals(noTrainName))
+		else if ("0".equals(mot) && ("First Capital Connect".equals(noTrainName) || "=FC".equals(noTrainName)))
 			return "R" + name;
-		else if ("0".equals(mot) && "Northern Rail".equals(noTrainName))
+		else if ("0".equals(mot) && ("Northern Rail".equals(noTrainName) || "=NT".equals(noTrainName)))
 			return "R" + name;
 		else if ("0".equals(mot) && "Chiltern Railways".equals(noTrainName))
 			return "R" + name;
 		else if ("0".equals(mot) && "Heathrow Connect".equals(noTrainName))
 			return "R" + name;
-		else if ("0".equals(mot) && "Heathrow Express".equals(noTrainName))
+		else if ("0".equals(mot) && ("Heathrow Express".equals(noTrainName) || "=HX".equals(noTrainName)))
 			return "R" + name;
 		else if ("0".equals(mot) && "Gatwick Express".equals(noTrainName))
 			return "R" + name;
-		else if ("0".equals(mot) && "Merseyrail".equals(noTrainName))
+		else if ("0".equals(mot) && ("Merseyrail".equals(noTrainName) || "=ME".equals(noTrainName)))
 			return "R" + name;
-		else if ("0".equals(mot) && "East Coast".equals(noTrainName))
+		else if ("0".equals(mot) && ("East Coast".equals(noTrainName) || "=GR".equals(noTrainName)))
 			return "R" + name;
 		else if ("0".equals(mot) && "Cross Country".equals(noTrainName))
 			return "R" + name;
-		else if ("0".equals(mot) && "East Midlands Trains".equals(noTrainName))
+		else if ("0".equals(mot) && ("East Midlands Trains".equals(noTrainName) || "=EM".equals(noTrainName)))
 			return "R" + name;
-		else if ("0".equals(mot) && "Arriva Trains Wales".equals(noTrainName))
+		else if ("0".equals(mot) && ("Arriva Trains Wales".equals(noTrainName) || "=AW".equals(noTrainName)))
 			return "R" + name;
-		else if ("0".equals(mot) && "First TransPennine Express".equals(noTrainName))
+		else if ("0".equals(mot) && ("First TransPennine Express".equals(noTrainName) || "=TP".equals(noTrainName)))
 			return "R" + name;
-		else if ("0".equals(mot) && "ScotRail".equals(noTrainName))
+		else if ("0".equals(mot) && ("ScotRail".equals(noTrainName) || "=SR".equals(noTrainName)))
 			return "R" + name;
-		else if ("0".equals(mot) && "London Midland".equals(noTrainName))
+		else if ("0".equals(mot) && ("London Midland".equals(noTrainName) || "=LM".equals(noTrainName)))
 			return "R" + name;
-		else if ("0".equals(mot) && "c2c".equals(noTrainName))
+		else if ("0".equals(mot) && ("c2c".equals(noTrainName) || "=CC".equals(noTrainName)))
 			return "R" + name;
 		else if ("0".equals(mot) && "Grand Central".equals(noTrainName))
 			return "R" + name;
-		else if ("0".equals(mot) && "Virgin Trains".equals(noTrainName))
+		else if ("0".equals(mot) && ("Virgin Trains".equals(noTrainName) || "=VT".equals(noTrainName)))
 			return "R" + name;
 		else if ("0".equals(mot) && "Island Line".equals(noTrainName))
+			return "R" + name;
+		else if ("0".equals(mot) && ("Chiltern Railways".equals(noTrainName) || "=CH".equals(noTrainName)))
 			return "R" + name;
 
 		else

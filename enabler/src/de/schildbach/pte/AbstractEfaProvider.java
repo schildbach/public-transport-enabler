@@ -1667,29 +1667,53 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private Line processItdServingLine(final XmlPullParser pp) throws XmlPullParserException, IOException
 	{
 		XmlPullUtil.require(pp, "itdServingLine");
-		final String motType = pp.getAttributeValue(null, "motType");
-		final String number = pp.getAttributeValue(null, "number");
-		final String id = pp.getAttributeValue(null, "stateless");
+		final String slMotType = pp.getAttributeValue(null, "motType");
+		final String slNumber = pp.getAttributeValue(null, "number");
+		final String slStateless = pp.getAttributeValue(null, "stateless");
+		final String slTrainType = pp.getAttributeValue(null, "trainType");
+		final String slTrainName = pp.getAttributeValue(null, "trainName");
+		/* final String slTrainNum = */pp.getAttributeValue(null, "trainNum");
 
 		XmlPullUtil.enter(pp, "itdServingLine");
-		String noTrainName = null;
-		String message = null;
+		String itdTrainName = null;
+		String itdTrainType = null;
+		String itdMessage = null;
+		if (XmlPullUtil.test(pp, "itdTrain"))
+		{
+			itdTrainName = pp.getAttributeValue(null, "name");
+			itdTrainType = pp.getAttributeValue(null, "type");
+			if (!pp.isEmptyElementTag())
+			{
+				XmlPullUtil.enter(pp, "itdTrain");
+				XmlPullUtil.exit(pp, "itdTrain");
+			}
+			else
+			{
+				XmlPullUtil.next(pp);
+			}
+		}
 		if (XmlPullUtil.test(pp, "itdNoTrain"))
 		{
-			noTrainName = pp.getAttributeValue(null, "name");
+			itdTrainName = pp.getAttributeValue(null, "name");
 			if (!pp.isEmptyElementTag())
 			{
 				XmlPullUtil.enter(pp, "itdNoTrain");
 				final String text = pp.getText();
-				if (noTrainName.toLowerCase().contains("ruf") && text.toLowerCase().contains("ruf"))
-					message = text;
+				if (itdTrainName.toLowerCase().contains("ruf") && text.toLowerCase().contains("ruf"))
+					itdMessage = text;
 				XmlPullUtil.exit(pp, "itdNoTrain");
+			}
+			else
+			{
+				XmlPullUtil.next(pp);
 			}
 		}
 		XmlPullUtil.exit(pp, "itdServingLine");
 
-		final String label = parseLine(motType, number, number, noTrainName);
-		return new Line(id, label, lineStyle(label), message);
+		final String trainName = ParserUtils.firstNotEmpty(slTrainName, itdTrainName, slTrainType, itdTrainType);
+
+		final String label = parseLine(slMotType, slNumber, slNumber, trainName);
+		return new Line(slStateless, label, lineStyle(label), itdMessage);
 	}
 
 	private static final Pattern P_STATION_NAME_WHITESPACE = Pattern.compile("\\s+");
@@ -2147,11 +2171,21 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						final Location destination = new Location(destinationId > 0 ? LocationType.STATION : LocationType.ANY,
 								destinationId > 0 ? destinationId : 0, null, destinationName);
 						final String lineLabel;
-						if ("AST".equals(pp.getAttributeValue(null, "symbol")))
+						final String motSymbol = pp.getAttributeValue(null, "symbol");
+						if ("AST".equals(motSymbol))
+						{
 							lineLabel = "BAST";
+						}
 						else
-							lineLabel = parseLine(pp.getAttributeValue(null, "motType"), pp.getAttributeValue(null, "shortname"),
-									pp.getAttributeValue(null, "name"), null);
+						{
+							final String motType = pp.getAttributeValue(null, "motType");
+							final String motShortName = pp.getAttributeValue(null, "shortname");
+							final String motName = pp.getAttributeValue(null, "name");
+							final String motTrainName = pp.getAttributeValue(null, "trainName");
+							final String motTrainType = pp.getAttributeValue(null, "trainType");
+							final String trainName = ParserUtils.firstNotEmpty(motTrainName, motTrainType);
+							lineLabel = parseLine(motType, motShortName, motName, trainName);
+						}
 						XmlPullUtil.enter(pp, "itdMeansOfTransport");
 						XmlPullUtil.require(pp, "motDivaParams");
 						final String lineId = XmlPullUtil.attr(pp, "network") + ':' + XmlPullUtil.attr(pp, "line") + ':'
@@ -2277,7 +2311,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							while (XmlPullUtil.test(pp, "itdDateTime"))
 							{
 								processItdDateTime(pp, time);
-								final Date nextDepartureTime = time.getTime();
+								/* final Date nextDepartureTime = */time.getTime();
 							}
 							XmlPullUtil.exit(pp, "nextDeps");
 						}

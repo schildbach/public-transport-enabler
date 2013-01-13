@@ -586,5 +586,14 @@ public final class ParserUtils
 		return selected;
 	}
 
+	public static String firstNotEmpty(final String... strings)
+	{
+		for (final String str : strings)
+			if (str != null && str.length() > 0)
+				return str;
+
+		return null;
+	}
+
 	public static final String P_PLATFORM = "[\\wÄÖÜäöüßáàâéèêíìîóòôúùû\\. -/&#;]+?";
 }
