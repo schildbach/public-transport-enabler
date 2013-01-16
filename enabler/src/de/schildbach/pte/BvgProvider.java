@@ -742,4 +742,20 @@ public final class BvgProvider extends AbstractHafasProvider
 	{
 		return Berlin.BOUNDARY;
 	}
+
+	public static int migrateStationIdReverse(final int stationId)
+	{
+		if (stationId < 100000000 || stationId >= 1000000000)
+			return stationId;
+
+		final int low = stationId % 100000;
+		final int middle = (stationId % 100000000) - low;
+
+		if (middle != 1000000)
+			return stationId;
+
+		final int high = stationId - (stationId % 100000000);
+
+		return high / 1000 + low;
+	}
 }

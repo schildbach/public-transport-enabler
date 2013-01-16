@@ -192,4 +192,16 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest
 		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
 	}
+
+	@Test
+	public void testStationIdReverse() throws Exception
+	{
+		Assert.assertEquals(BvgProvider.migrateStationIdReverse(101000316), 100316);
+		Assert.assertEquals(BvgProvider.migrateStationIdReverse(301000316), 300316);
+
+		// no conversions
+		Assert.assertEquals(BvgProvider.migrateStationIdReverse(102000316), 102000316);
+		Assert.assertEquals(BvgProvider.migrateStationIdReverse(1101000316), 1101000316);
+		Assert.assertEquals(BvgProvider.migrateStationIdReverse(11000316), 11000316);
+	}
 }
