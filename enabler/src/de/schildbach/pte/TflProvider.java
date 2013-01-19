@@ -111,6 +111,9 @@ public class TflProvider extends AbstractEfaProvider
 		else if ("0".equals(mot) && ("Chiltern Railways".equals(noTrainName) || "=CH".equals(noTrainName)))
 			return "R" + name;
 
+		else if ("0".equals(mot) && "London Overground".equals(noTrainName))
+			return "S" + name;
+
 		else
 			return super.parseLine(mot, name, longName, noTrainName);
 	}
