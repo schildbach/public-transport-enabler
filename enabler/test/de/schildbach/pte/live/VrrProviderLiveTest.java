@@ -58,6 +58,10 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest
 		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 51218693, 6777785), 0, 0);
 
 		print(result);
+
+		final NearbyStationsResult result2 = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 51719648, 8754330), 0, 0);
+
+		print(result2);
 	}
 
 	@Test
@@ -66,6 +70,10 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest
 		final QueryDeparturesResult result = provider.queryDepartures(1007258, 0, false);
 
 		print(result);
+
+		final QueryDeparturesResult result2 = provider.queryDepartures(20019904, 0, false);
+
+		print(result2);
 	}
 
 	@Test
@@ -74,6 +82,10 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest
 		final List<Location> autocompletes = provider.autocompleteStations("Kur");
 
 		print(autocompletes);
+
+		final List<Location> autocompletes2 = provider.autocompleteStations("Paderborn Hbf");
+
+		print(autocompletes2);
 	}
 
 	@Test
@@ -105,6 +117,35 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 20009289, "Essen", "Hauptbahnhof"), null,
 				new Location(LocationType.STATION, 20009161, "Essen", "Bismarckplatz"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
+				Accessibility.NEUTRAL);
+		System.out.println(result);
+		assertEquals(QueryConnectionsResult.Status.OK, result.status);
+		assertTrue(result.connections.size() > 0);
+
+		if (!result.context.canQueryLater())
+			return;
+
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
+		System.out.println(laterResult);
+
+		if (!laterResult.context.canQueryLater())
+			return;
+
+		final QueryConnectionsResult later2Result = queryMoreConnections(laterResult.context, true);
+		System.out.println(later2Result);
+
+		if (!later2Result.context.canQueryEarlier())
+			return;
+
+		final QueryConnectionsResult earlierResult = queryMoreConnections(later2Result.context, false);
+		System.out.println(earlierResult);
+	}
+
+	@Test
+	public void shortConnectionPaderborn() throws Exception
+	{
+		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 23007000, "Paderborn", "Paderborn Hbf"), null,
+				new Location(LocationType.STATION, 23007700, "Höxter", "Bahnhof / Rathaus"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryConnectionsResult.Status.OK, result.status);
