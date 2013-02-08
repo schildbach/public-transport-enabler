@@ -1933,6 +1933,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				// or with the selected means of transport on the required date/time.
 				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.NO_CONNECTIONS);
 			else if (errorCode == 9360)
+				// H9360: Unfortunately your connection request can currently not be processed.
 				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.INVALID_DATE);
 			else if (errorCode == 9380)
 				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.TOO_CLOSE); // H9380
