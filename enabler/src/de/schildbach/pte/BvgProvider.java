@@ -148,7 +148,7 @@ public final class BvgProvider extends AbstractHafasProvider
 		}
 	}
 
-	private static final Pattern P_SPLIT_NAME_PAREN = Pattern.compile("(.*?) \\((.{4,}?)\\)(?: \\((U|S|S\\+U)\\))?");
+	private static final Pattern P_SPLIT_NAME_PAREN = Pattern.compile("(.*?) +\\((.{4,}?)\\)(?: +\\((U|S|S\\+U)\\))?");
 	private static final Pattern P_SPLIT_NAME_COMMA = Pattern.compile("([^,]*), ([^,]*)");
 
 	@Override
