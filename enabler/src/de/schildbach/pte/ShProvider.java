@@ -43,8 +43,7 @@ import de.schildbach.pte.util.ParserUtils;
 public class ShProvider extends AbstractHafasProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.SH;
-	private static final String API_BASE = "http://scout.hafas.de/bin/";
-	// http://nah.sh.hafas.de/bin/
+	private static final String API_BASE = "http://nah.sh.hafas.de/bin/";
 
 	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
 
