@@ -163,6 +163,10 @@ public class SbbProvider extends AbstractHafasProvider
 			return 'R';
 		if ("T".equals(ucType))
 			return 'R';
+		if ("KB".equals(ucType))
+			return 'R';
+		if ("BEX".equals(ucType)) // Bernina Express
+			return 'R';
 
 		if ("M".equals(ucType)) // Metro Wien
 			return 'U';
