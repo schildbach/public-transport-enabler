@@ -154,8 +154,8 @@ public final class Connection implements Serializable
 				else if (part instanceof Trip)
 				{
 					final Trip trip = (Trip) part;
-					builder.append(trip.departureTime.getTime()).append('-');
-					builder.append(trip.arrivalTime.getTime()).append('-');
+					builder.append(trip.departureStop.plannedDepartureTime.getTime()).append('-');
+					builder.append(trip.arrivalStop.plannedArrivalTime.getTime()).append('-');
 					builder.append(trip.line.label);
 				}
 
@@ -224,112 +224,82 @@ public final class Connection implements Serializable
 
 		public final Line line;
 		public final Location destination;
-		public final Date departureTime; // TODO rename to plannedDepartureTime
-		public final Date predictedDepartureTime;
-		public final String departurePosition; // TODO rename to plannedDeparturePosition
-		public final String predictedDeparturePosition;
-		public final Date arrivalTime; // TODO rename to plannedArrivalTime
-		public final Date predictedArrivalTime;
-		public final String arrivalPosition; // TODO rename to plannedArrivalPosition
-		public final String predictedArrivalPosition;
+		public final Stop departureStop;
+		public final Stop arrivalStop;
 		public final List<Stop> intermediateStops;
 		public final String message;
 
-		public Trip(final Line line, final Location destination, final Date plannedDepartureTime, final Date predictedDepartureTime,
-				final String departurePosition, final String predictedDeparturePosition, final Location departure, final Date plannedArrivalTime,
-				final Date predictedArrivalTime, final String arrivalPosition, final String predictedArrivalPosition, final Location arrival,
+		public Trip(final Line line, final Location destination, final Stop departureStop, final Stop arrivalStop,
 				final List<Stop> intermediateStops, final List<Point> path, final String message)
 		{
-			super(departure, arrival, path);
+			super(departureStop != null ? departureStop.location : null, arrivalStop != null ? arrivalStop.location : null, path);
 
 			this.line = line;
 			this.destination = destination;
-			this.departureTime = plannedDepartureTime;
-			this.predictedDepartureTime = predictedDepartureTime;
-			this.departurePosition = departurePosition;
-			this.predictedDeparturePosition = predictedDeparturePosition;
-			this.arrivalTime = plannedArrivalTime;
-			this.predictedArrivalTime = predictedArrivalTime;
-			this.arrivalPosition = arrivalPosition;
-			this.predictedArrivalPosition = predictedArrivalPosition;
+			this.departureStop = departureStop;
+			this.arrivalStop = arrivalStop;
 			this.intermediateStops = intermediateStops;
 			this.message = message;
 		}
 
 		public Date getDepartureTime()
 		{
-			if (predictedDepartureTime != null)
-				return predictedDepartureTime;
-			else if (departureTime != null)
-				return departureTime;
-			else
+			final Date departureTime = departureStop.getDepartureTime();
+
+			if (departureTime == null)
 				throw new IllegalStateException();
+
+			return departureTime;
 		}
 
 		public boolean isDepartureTimePredicted()
 		{
-			return predictedDepartureTime != null;
+			return departureStop.isDepartureTimePredicted();
 		}
 
 		public Long getDepartureDelay()
 		{
-			if (departureTime != null && predictedDepartureTime != null)
-				return predictedDepartureTime.getTime() - departureTime.getTime();
-			else
-				return null;
+			return departureStop.getDepartureDelay();
 		}
 
 		public String getDeparturePosition()
 		{
-			if (predictedDeparturePosition != null)
-				return predictedDeparturePosition;
-			else if (departurePosition != null)
-				return departurePosition;
-			else
-				return null;
+			return departureStop.getDeparturePosition();
 		}
 
 		public boolean isDeparturePositionPredicted()
 		{
-			return predictedDeparturePosition != null;
+			return departureStop.isDeparturePositionPredicted();
 		}
 
 		public Date getArrivalTime()
 		{
-			if (predictedArrivalTime != null)
-				return predictedArrivalTime;
-			else if (arrivalTime != null)
-				return arrivalTime;
-			else
+			final Date arrivalTime = arrivalStop.getArrivalTime();
+
+			if (arrivalTime == null)
 				throw new IllegalStateException();
+
+			return arrivalTime;
 		}
 
 		public boolean isArrivalTimePredicted()
 		{
-			return predictedArrivalTime != null;
+			return arrivalStop.isArrivalTimePredicted();
 		}
 
 		public Long getArrivalDelay()
 		{
-			if (arrivalTime != null && predictedArrivalTime != null)
-				return predictedArrivalTime.getTime() - arrivalTime.getTime();
-			else
-				return null;
+			return arrivalStop.getArrivalDelay();
 		}
 
 		public String getArrivalPosition()
 		{
-			if (predictedArrivalPosition != null)
-				return predictedArrivalPosition;
-			else if (arrivalPosition != null)
-				return arrivalPosition;
-			else
-				return null;
+			return arrivalStop.getArrivalPosition();
 		}
 
 		public boolean isArrivalPositionPredicted()
 		{
-			return predictedArrivalPosition != null;
+			return arrivalStop.isArrivalPositionPredicted();
 		}
 
 		@Override
@@ -343,9 +313,9 @@ public final class Connection implements Serializable
 				builder.append("destination=").append(destination.toDebugString());
 			}
 			builder.append(",");
-			builder.append("departure=").append(departureTime).append("/").append(departurePosition).append("/").append(departure.toDebugString());
+			builder.append("departure=").append(departureStop);
 			builder.append(",");
-			builder.append("arrival=").append(arrivalTime).append("/").append(arrivalPosition).append("/").append(arrival.toDebugString());
+			builder.append("arrival=").append(arrivalStop);
 			builder.append("]");
 			return builder.toString();
 		}

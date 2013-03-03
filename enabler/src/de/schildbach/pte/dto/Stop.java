@@ -30,9 +30,9 @@ public final class Stop implements Serializable
 	public final Date predictedArrivalTime;
 	public final String plannedArrivalPosition;
 	public final String predictedArrivalPosition;
-	public final Date time; // TODO rename to plannedDepartureTime
+	public final Date plannedDepartureTime;
 	public final Date predictedDepartureTime;
-	public final String position; // TODO rename to plannedPosition
+	public final String plannedDeparturePosition;
 	public final String predictedDeparturePosition;
 
 	public Stop(final Location location, final Date plannedArrivalTime, final Date predictedArrivalTime, final String plannedArrivalPosition,
@@ -44,10 +44,24 @@ public final class Stop implements Serializable
 		this.predictedArrivalTime = predictedArrivalTime;
 		this.plannedArrivalPosition = plannedArrivalPosition;
 		this.predictedArrivalPosition = predictedArrivalPosition;
-		this.time = plannedDepartureTime;
+		this.plannedDepartureTime = plannedDepartureTime;
 		this.predictedDepartureTime = predictedDepartureTime;
-		this.position = plannedDeparturePosition;
+		this.plannedDeparturePosition = plannedDeparturePosition;
 		this.predictedDeparturePosition = predictedDeparturePosition;
+	}
+
+	public Stop(final Location location, final boolean departure, final Date plannedTime, final Date predictedTime, final String plannedPosition,
+			final String predictedPosition)
+	{
+		this.location = location;
+		this.plannedArrivalTime = !departure ? plannedTime : null;
+		this.predictedArrivalTime = !departure ? predictedTime : null;
+		this.plannedArrivalPosition = !departure ? plannedPosition : null;
+		this.predictedArrivalPosition = !departure ? predictedPosition : null;
+		this.plannedDepartureTime = departure ? plannedTime : null;
+		this.predictedDepartureTime = departure ? predictedTime : null;
+		this.plannedDeparturePosition = departure ? plannedPosition : null;
+		this.predictedDeparturePosition = departure ? predictedPosition : null;
 	}
 
 	public Stop(final Location location, final Date plannedArrivalTime, final String plannedArrivalPosition, final Date plannedDepartureTime,
@@ -58,9 +72,9 @@ public final class Stop implements Serializable
 		this.predictedArrivalTime = null;
 		this.plannedArrivalPosition = plannedArrivalPosition;
 		this.predictedArrivalPosition = null;
-		this.time = plannedDepartureTime;
+		this.plannedDepartureTime = plannedDepartureTime;
 		this.predictedDepartureTime = null;
-		this.position = plannedDeparturePosition;
+		this.plannedDeparturePosition = plannedDeparturePosition;
 		this.predictedDeparturePosition = null;
 	}
 
@@ -106,8 +120,8 @@ public final class Stop implements Serializable
 	{
 		if (predictedDepartureTime != null)
 			return predictedDepartureTime;
-		else if (time != null)
-			return time;
+		else if (plannedDepartureTime != null)
+			return plannedDepartureTime;
 		else
 			return null;
 	}
@@ -119,8 +133,8 @@ public final class Stop implements Serializable
 
 	public Long getDepartureDelay()
 	{
-		if (time != null && predictedDepartureTime != null)
-			return predictedDepartureTime.getTime() - time.getTime();
+		if (plannedDepartureTime != null && predictedDepartureTime != null)
+			return predictedDepartureTime.getTime() - plannedDepartureTime.getTime();
 		else
 			return null;
 	}
@@ -129,8 +143,8 @@ public final class Stop implements Serializable
 	{
 		if (predictedDeparturePosition != null)
 			return predictedDeparturePosition;
-		else if (position != null)
-			return position;
+		else if (plannedDeparturePosition != null)
+			return plannedDeparturePosition;
 		else
 			return null;
 	}
@@ -143,24 +157,24 @@ public final class Stop implements Serializable
 	@Override
 	public String toString()
 	{
-		StringBuilder builder = new StringBuilder("Stop(");
+		StringBuilder builder = new StringBuilder("Stop('");
 		builder.append(location);
-		builder.append(",");
-		builder.append(plannedArrivalTime != null ? plannedArrivalTime : "null");
-		builder.append(",");
-		builder.append(predictedArrivalTime != null ? predictedArrivalTime : "null");
-		builder.append(",");
-		builder.append(plannedArrivalPosition != null ? plannedArrivalPosition : "null");
-		builder.append(",");
-		builder.append(predictedArrivalPosition != null ? predictedArrivalPosition : "null");
-		builder.append(",");
-		builder.append(time != null ? time : "null");
-		builder.append(",");
-		builder.append(predictedDepartureTime != null ? predictedDepartureTime : "null");
-		builder.append(",");
-		builder.append(position != null ? position : "null");
-		builder.append(",");
-		builder.append(predictedDeparturePosition != null ? predictedDeparturePosition : "null");
+		builder.append("', arr: ");
+		builder.append(plannedArrivalTime != null ? plannedArrivalTime : "-");
+		builder.append("/");
+		builder.append(predictedArrivalTime != null ? predictedArrivalTime : "-");
+		builder.append(", ");
+		builder.append(plannedArrivalPosition != null ? plannedArrivalPosition : "-");
+		builder.append("/");
+		builder.append(predictedArrivalPosition != null ? predictedArrivalPosition : "-");
+		builder.append(", dep: ");
+		builder.append(plannedDepartureTime != null ? plannedDepartureTime : "-");
+		builder.append("/");
+		builder.append(predictedDepartureTime != null ? predictedDepartureTime : "-");
+		builder.append(", ");
+		builder.append(plannedDeparturePosition != null ? plannedDeparturePosition : "-");
+		builder.append("/");
+		builder.append(predictedDeparturePosition != null ? predictedDeparturePosition : "-");
 		builder.append(")");
 		return builder.toString();
 	}

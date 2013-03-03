@@ -37,6 +37,7 @@ import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult.Status;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.ResultHeader;
+import de.schildbach.pte.dto.Stop;
 import de.schildbach.pte.dto.Style;
 
 public class SadProvider extends AbstractNetworkProvider {
@@ -433,9 +434,13 @@ public class SadProvider extends AbstractNetworkProvider {
 								// predictedDepartureTime, departurePosition,
 								// predictedArrivalTime, arrivalPosition,
 								// intermediateStops, path
-								parts.add(new Trip(new Line(lineId, lineId, DEFAULT_STYLE), null, responseDate.get(0), null, null, null,
-										soapToLocation((SoapObject) tratto.getProperty("nodo_partenza")), responseDate.get(1), null, null, null,
-										soapToLocation((SoapObject) tratto.getProperty("nodo_arrivo")), null, null, null));
+
+								final Stop departure = new Stop(soapToLocation((SoapObject) tratto.getProperty("nodo_partenza")), true,
+										responseDate.get(0), null, null, null);
+								final Stop arrival = new Stop(soapToLocation((SoapObject) tratto.getProperty("nodo_arrivo")), false,
+										responseDate.get(1), null, null, null);
+
+								parts.add(new Trip(new Line(lineId, lineId, DEFAULT_STYLE), null, departure, arrival, null, null, null));
 							} catch (ParseException e) {
 								e.printStackTrace();
 							}

@@ -2057,8 +2057,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 				XmlPullUtil.enter(pp, "itdPartialRouteList");
 				final List<Connection.Part> parts = new LinkedList<Connection.Part>();
-				Location firstDeparture = null;
-				Location lastArrival = null;
+				Location firstDepartureLocation = null;
+				Location lastArrivalLocation = null;
 
 				while (XmlPullUtil.test(pp, "itdPartialRoute"))
 				{
@@ -2068,9 +2068,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					XmlPullUtil.test(pp, "itdPoint");
 					if (!"departure".equals(pp.getAttributeValue(null, "usage")))
 						throw new IllegalStateException();
-					final Location departure = processItdPointAttributes(pp);
-					if (firstDeparture == null)
-						firstDeparture = departure;
+					final Location departureLocation = processItdPointAttributes(pp);
+					if (firstDepartureLocation == null)
+						firstDepartureLocation = departureLocation;
 					final String departurePosition;
 					if (!suppressPositions)
 						departurePosition = normalizePlatform(pp.getAttributeValue(null, "platform"), pp.getAttributeValue(null, "platformName"));
@@ -2097,8 +2097,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					XmlPullUtil.test(pp, "itdPoint");
 					if (!"arrival".equals(pp.getAttributeValue(null, "usage")))
 						throw new IllegalStateException();
-					final Location arrival = processItdPointAttributes(pp);
-					lastArrival = arrival;
+					final Location arrivalLocation = processItdPointAttributes(pp);
+					lastArrivalLocation = arrivalLocation;
 					final String arrivalPosition;
 					if (!suppressPositions)
 						arrivalPosition = normalizePlatform(pp.getAttributeValue(null, "platform"), pp.getAttributeValue(null, "platformName"));
@@ -2148,11 +2148,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							if (path != null && lastFootway.path != null)
 								path.addAll(0, lastFootway.path);
 							parts.add(new Connection.Footway(lastFootway.min + min, distance, lastFootway.transfer || transfer,
-									lastFootway.departure, arrival, path));
+									lastFootway.departure, arrivalLocation, path));
 						}
 						else
 						{
-							parts.add(new Connection.Footway(min, distance, transfer, departure, arrival, path));
+							parts.add(new Connection.Footway(min, distance, transfer, departureLocation, arrivalLocation, path));
 						}
 					}
 					else if ("gesicherter Anschluss".equals(productName) || "nicht umsteigen".equals(productName)) // type97
@@ -2268,11 +2268,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							final int size = intermediateStops.size();
 							if (size >= 2)
 							{
-								if (intermediateStops.get(size - 1).location.id != arrival.id)
+								if (intermediateStops.get(size - 1).location.id != arrivalLocation.id)
 									throw new IllegalStateException();
 								intermediateStops.remove(size - 1);
 
-								if (intermediateStops.get(0).location.id != departure.id)
+								if (intermediateStops.get(0).location.id != departureLocation.id)
 									throw new IllegalStateException();
 								intermediateStops.remove(0);
 							}
@@ -2321,9 +2321,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							lineAttrs.add(Line.Attr.WHEEL_CHAIR_ACCESS);
 						final Line line = new Line(lineId, lineLabel, lineStyle(lineLabel), lineAttrs);
 
-						parts.add(new Connection.Trip(line, destination, departureTargetTime != null ? departureTargetTime : departureTime,
-								departureTargetTime, departurePosition, null, departure, arrivalTargetTime != null ? arrivalTargetTime : arrivalTime,
-								arrivalTargetTime, arrivalPosition, null, arrival, intermediateStops, path, message));
+						final Stop departure = new Stop(departureLocation, true, departureTargetTime != null ? departureTargetTime : departureTime,
+								departureTargetTime, departurePosition, null);
+						final Stop arrival = new Stop(arrivalLocation, false, arrivalTargetTime != null ? arrivalTargetTime : arrivalTime,
+								arrivalTargetTime, arrivalPosition, null);
+
+						parts.add(new Connection.Trip(line, destination, departure, arrival, intermediateStops, path, message));
 					}
 
 					XmlPullUtil.exit(pp, "itdPartialRoute");
@@ -2385,7 +2388,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						XmlPullUtil.next(pp);
 					}
 				}
-				connections.add(new Connection(id, firstDeparture, lastArrival, parts, fares.isEmpty() ? null : fares, null, numChanges));
+				connections.add(new Connection(id, firstDepartureLocation, lastArrivalLocation, parts, fares.isEmpty() ? null : fares, null,
+						numChanges));
 				XmlPullUtil.exit(pp, "itdRoute");
 			}
 

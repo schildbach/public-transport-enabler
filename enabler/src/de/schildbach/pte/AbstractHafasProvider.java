@@ -1057,7 +1057,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				XmlPullUtil.enter(pp, "BasicStop");
 				while (pp.getName().equals("StAttrList"))
 					XmlPullUtil.next(pp);
-				final Location departure = parseLocation(pp);
+				final Location departureLocation = parseLocation(pp);
 				XmlPullUtil.enter(pp, "Dep");
 				XmlPullUtil.exit(pp, "Dep");
 				final int[] capacity;
@@ -1094,7 +1094,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				XmlPullUtil.enter(pp, "BasicStop");
 				while (pp.getName().equals("StAttrList"))
 					XmlPullUtil.next(pp);
-				final Location arrival = parseLocation(pp);
+				final Location arrivalLocation = parseLocation(pp);
 				XmlPullUtil.exit(pp, "BasicStop");
 				XmlPullUtil.exit(pp, "Arrival");
 
@@ -1118,7 +1118,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					XmlPullUtil.enter(pp, "BasicStop");
 					while (pp.getName().equals("StAttrList"))
 						XmlPullUtil.next(pp);
-					final Location sectionDeparture = parseLocation(pp);
+					final Location sectionDepartureLocation = parseLocation(pp);
 					XmlPullUtil.enter(pp, "Dep");
 					XmlPullUtil.require(pp, "Time");
 					time.setTimeInMillis(currentDate.getTimeInMillis());
@@ -1192,7 +1192,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 								while (XmlPullUtil.test(pp, "StAttrList"))
 									XmlPullUtil.next(pp);
 								final Location location = parseLocation(pp);
-								if (location.id != sectionDeparture.id)
+								if (location.id != sectionDepartureLocation.id)
 								{
 									Date stopArrivalTime = null;
 									Date stopDepartureTime = null;
@@ -1278,7 +1278,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					XmlPullUtil.enter(pp, "BasicStop");
 					while (pp.getName().equals("StAttrList"))
 						XmlPullUtil.next(pp);
-					final Location sectionArrival = parseLocation(pp);
+					final Location sectionArrivalLocation = parseLocation(pp);
 					XmlPullUtil.enter(pp, "Arr");
 					XmlPullUtil.require(pp, "Time");
 					time.setTimeInMillis(currentDate.getTimeInMillis());
@@ -1293,26 +1293,28 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					// remove last intermediate
 					final int size = intermediateStops != null ? intermediateStops.size() : 0;
 					if (size >= 1)
-						if (intermediateStops.get(size - 1).location.id == sectionArrival.id)
+						if (intermediateStops.get(size - 1).location.id == sectionArrivalLocation.id)
 							intermediateStops.remove(size - 1);
 
 					XmlPullUtil.exit(pp, "ConSection");
 
 					if (min == 0 || line != null)
 					{
-						parts.add(new Connection.Trip(line, destination, departureTime, null, departurePos, null, sectionDeparture, arrivalTime,
-								null, arrivalPos, null, sectionArrival, intermediateStops, path, null));
+						final Stop departure = new Stop(sectionDepartureLocation, true, departureTime, null, departurePos, null);
+						final Stop arrival = new Stop(sectionArrivalLocation, false, arrivalTime, null, arrivalPos, null);
+
+						parts.add(new Connection.Trip(line, destination, departure, arrival, intermediateStops, path, null));
 					}
 					else
 					{
 						if (parts.size() > 0 && parts.get(parts.size() - 1) instanceof Connection.Footway)
 						{
 							final Connection.Footway lastFootway = (Connection.Footway) parts.remove(parts.size() - 1);
-							parts.add(new Connection.Footway(lastFootway.min + min, 0, false, lastFootway.departure, sectionArrival, null));
+							parts.add(new Connection.Footway(lastFootway.min + min, 0, false, lastFootway.departure, sectionArrivalLocation, null));
 						}
 						else
 						{
-							parts.add(new Connection.Footway(min, 0, false, sectionDeparture, sectionArrival, null));
+							parts.add(new Connection.Footway(min, 0, false, sectionDepartureLocation, sectionArrivalLocation, null));
 						}
 					}
 				}
@@ -1321,7 +1323,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 				XmlPullUtil.exit(pp, "Connection");
 
-				connections.add(new Connection(id, departure, arrival, parts, null, capacity, numTransfers));
+				connections.add(new Connection(id, departureLocation, arrivalLocation, parts, null, capacity, numTransfers));
 			}
 
 			XmlPullUtil.exit(pp);
@@ -1741,10 +1743,10 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						is.skipBytes(0x4a + partsOffset + iPart * 20);
 
 						final long plannedDepartureTime = time(is, resDate, connectionDayOffset);
-						final Location departure = stations.read(is);
+						final Location departureLocation = stations.read(is);
 
 						final long plannedArrivalTime = time(is, resDate, connectionDayOffset);
-						final Location arrival = stations.read(is);
+						final Location arrivalLocation = stations.read(is);
 
 						final int type = is.readShortReverse();
 
@@ -1863,11 +1865,11 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 							{
 								final Connection.Footway lastFootway = (Connection.Footway) parts.remove(parts.size() - 1);
 								part = new Connection.Footway(lastFootway.min + min, 0, lastFootway.transfer || transfer, lastFootway.departure,
-										arrival, null);
+										arrivalLocation, null);
 							}
 							else
 							{
-								part = new Connection.Footway(min, 0, transfer, departure, arrival, null);
+								part = new Connection.Footway(min, 0, transfer, departureLocation, arrivalLocation, null);
 							}
 						}
 						else if (type == 2)
@@ -1881,11 +1883,14 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 							final Line line = newLine(lineProduct, normalizeLineName(lineName), lineAttrs.toArray(new Line.Attr[0]));
 							final Location direction = directionStr != null ? new Location(LocationType.ANY, 0, null, directionStr) : null;
 
-							part = new Connection.Trip(line, direction, plannedDepartureTime != 0 ? new Date(plannedDepartureTime) : null,
-									predictedDepartureTime != 0 ? new Date(predictedDepartureTime) : null, plannedDeparturePosition,
-									predictedDeparturePosition, departure, plannedArrivalTime != 0 ? new Date(plannedArrivalTime) : null,
+							final Stop departure = new Stop(departureLocation, true, plannedDepartureTime != 0 ? new Date(plannedDepartureTime)
+									: null, predictedDepartureTime != 0 ? new Date(predictedDepartureTime) : null, plannedDeparturePosition,
+									predictedDeparturePosition);
+							final Stop arrival = new Stop(arrivalLocation, false, plannedArrivalTime != 0 ? new Date(plannedArrivalTime) : null,
 									predictedArrivalTime != 0 ? new Date(predictedArrivalTime) : null, plannedArrivalPosition,
-									predictedArrivalPosition, arrival, intermediateStops, null, null);
+									predictedArrivalPosition);
+
+							part = new Connection.Trip(line, direction, departure, arrival, intermediateStops, null, null);
 						}
 						else
 						{
