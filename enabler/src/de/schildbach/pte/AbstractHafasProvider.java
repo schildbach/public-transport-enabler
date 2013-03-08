@@ -839,9 +839,11 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 		final Calendar c = new GregorianCalendar(timeZone());
 		c.setTime(date);
-		uri.append("&REQ0JourneyDate=").append(
-				String.format("%02d.%02d.%02d", c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.MONTH) + 1, c.get(Calendar.YEAR) - 2000));
-		uri.append("&REQ0JourneyTime=").append(String.format("%02d:%02d", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE)));
+		uri.append("&REQ0JourneyDate=");
+		uri.append(String.format(Locale.ENGLISH, "%02d.%02d.%02d", c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.MONTH) + 1,
+				c.get(Calendar.YEAR) - 2000));
+		uri.append("&REQ0JourneyTime=");
+		uri.append(String.format(Locale.ENGLISH, "%02d:%02d", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE)));
 
 		final StringBuilder productsStr = new StringBuilder(numProductBits);
 		if (products != null)
@@ -937,9 +939,12 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			request.append("</Via>");
 		}
 		request.append("<Dest>").append(locationXml(to)).append("</Dest>");
-		request.append("<ReqT a=\"").append(dep ? 0 : 1).append("\" date=\"")
-				.append(String.format("%04d.%02d.%02d", c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH)))
-				.append("\" time=\"").append(String.format("%02d:%02d", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE)) + "\"/>");
+		request.append("<ReqT a=\"")
+				.append(dep ? 0 : 1)
+				.append("\" date=\"")
+				.append(String.format(Locale.ENGLISH, "%04d.%02d.%02d", c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH)))
+				.append("\" time=\"")
+				.append(String.format(Locale.ENGLISH, "%02d:%02d", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE)) + "\"/>");
 		request.append("<RFlags");
 		// number of connections backwards
 		request.append(" b=\"").append(0).append("\"");

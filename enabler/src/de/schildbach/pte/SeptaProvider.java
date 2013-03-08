@@ -23,6 +23,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -142,11 +143,11 @@ public class SeptaProvider extends AbstractHafasProvider
 		uri.append(API_BASE).append("stboard.exe/en");
 		uri.append("?input=").append(stationId);
 		uri.append("&boardType=dep");
-		uri.append("&time=").append(
-				ParserUtils.urlEncode(String.format("%02d:%02d %s", now.get(Calendar.HOUR), now.get(Calendar.MINUTE),
-						now.get(Calendar.AM_PM) == Calendar.AM ? "am" : "pm")));
-		uri.append("&date=").append(
-				String.format("%02d%02d%04d", now.get(Calendar.MONTH) + 1, now.get(Calendar.DAY_OF_MONTH), now.get(Calendar.YEAR)));
+		uri.append("&time=");
+		uri.append(ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%02d:%02d %s", now.get(Calendar.HOUR), now.get(Calendar.MINUTE),
+				now.get(Calendar.AM_PM) == Calendar.AM ? "am" : "pm")));
+		uri.append("&date=");
+		uri.append(String.format(Locale.ENGLISH, "%02d%02d%04d", now.get(Calendar.MONTH) + 1, now.get(Calendar.DAY_OF_MONTH), now.get(Calendar.YEAR)));
 		uri.append("&productsFilter=").append(allProductsString());
 		if (maxDepartures != 0)
 			uri.append("&maxJourneys=").append(maxDepartures);
@@ -292,7 +293,7 @@ public class SeptaProvider extends AbstractHafasProvider
 
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
-		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ISO_8859_1));
+		final String uri = String.format(Locale.ENGLISH, AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ISO_8859_1));
 
 		return jsonGetStops(uri);
 	}

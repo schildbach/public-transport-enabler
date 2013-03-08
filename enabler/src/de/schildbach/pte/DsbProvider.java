@@ -19,6 +19,7 @@ package de.schildbach.pte;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
@@ -109,7 +110,7 @@ public class DsbProvider extends AbstractHafasProvider
 	{
 		if (location.hasLocation())
 		{
-			final StringBuilder uri = new StringBuilder(String.format(NEARBY_STATIONS_BY_COORDINATE_URI, location.lon, location.lat));
+			final StringBuilder uri = new StringBuilder(String.format(Locale.ENGLISH, NEARBY_STATIONS_BY_COORDINATE_URI, location.lon, location.lat));
 			if (maxStations != 0)
 				uri.append("&maxNumber=").append(maxStations);
 			if (maxDistance != 0)
@@ -157,7 +158,7 @@ public class DsbProvider extends AbstractHafasProvider
 
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
-		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ISO_8859_1));
+		final String uri = String.format(Locale.ENGLISH, AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ISO_8859_1));
 
 		return xmlLocationList(uri);
 	}

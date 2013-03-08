@@ -20,6 +20,7 @@ package de.schildbach.pte;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import de.schildbach.pte.dto.Location;
@@ -200,7 +201,7 @@ public class RmvProvider extends AbstractHafasProvider
 
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
-		final String uri = String.format(AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), UTF_8));
+		final String uri = String.format(Locale.ENGLISH, AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), UTF_8));
 
 		return jsonGetStops(uri);
 	}
