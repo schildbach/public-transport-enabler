@@ -51,10 +51,10 @@ public class VgnProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	protected String xsltTripRequest2Uri(final Location from, final Location via, final Location to, final Date date, final boolean dep,
+	protected String xsltTripRequestParameters(final Location from, final Location via, final Location to, final Date date, final boolean dep,
 			final int numConnections, final String products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
 	{
-		return super.xsltTripRequest2Uri(from, via, to, date, dep, numConnections, products, walkSpeed, accessibility, options)
+		return super.xsltTripRequestParameters(from, via, to, date, dep, numConnections, products, walkSpeed, accessibility, options)
 				+ "&itdLPxx_showTariffLevel=1";
 	}
 }

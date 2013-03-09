@@ -93,7 +93,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private final boolean needsSpEncId;
 	private boolean includeRegionId = true;
 	private Charset requestUrlEncoding = ISO_8859_1;
-	private String referer;
+	private String httpReferer;
+	private boolean httpPost = false;
 	private boolean suppressPositions = false;
 	private boolean useRouteIndexAsConnectionId = true;
 	private final XmlPullParserFactory parserFactory;
@@ -177,9 +178,14 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		this.requestUrlEncoding = requestUrlEncoding;
 	}
 
-	protected void setReferer(final String referer)
+	protected void setHttpReferer(final String httpReferer)
 	{
-		this.referer = referer;
+		this.httpReferer = httpReferer;
+	}
+
+	protected void setHttpPost(final boolean httpPost)
+	{
+		this.httpPost = httpPost;
 	}
 
 	protected void setIncludeRegionId(final boolean includeRegionId)
@@ -212,20 +218,25 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	protected List<Location> jsonStopfinderRequest(final Location constraint) throws IOException
 	{
-		final StringBuilder uri = new StringBuilder(stopFinderEndpoint);
-		appendCommonRequestParams(uri, "JSON");
-		uri.append("&locationServerActive=1");
+		final StringBuilder parameters = new StringBuilder();
+		appendCommonRequestParams(parameters, "JSON");
+		parameters.append("&locationServerActive=1");
 		if (includeRegionId)
-			uri.append("&regionID_sf=1"); // prefer own region
-		appendLocation(uri, constraint, "sf");
+			parameters.append("&regionID_sf=1"); // prefer own region
+		appendLocation(parameters, constraint, "sf");
 		if (constraint.type == LocationType.ANY)
 			// 1=place 2=stop 4=street 8=address 16=crossing 32=poi 64=postcode
-			uri.append("&anyObjFilter_sf=").append(2 + 4 + 8 + 16 + 32 + 64);
-		uri.append("&anyMaxSizeHitList=500");
+			parameters.append("&anyObjFilter_sf=").append(2 + 4 + 8 + 16 + 32 + 64);
+		parameters.append("&anyMaxSizeHitList=500");
 
-		// System.out.println(uri.toString());
+		final StringBuilder uri = new StringBuilder(stopFinderEndpoint);
+		if (!httpPost)
+			uri.append(parameters);
 
-		final CharSequence page = ParserUtils.scrape(uri.toString(), null, UTF_8, null);
+		// System.out.println(uri);
+		// System.out.println(parameters);
+
+		final CharSequence page = ParserUtils.scrape(uri.toString(), httpPost ? parameters.substring(1) : null, UTF_8, null);
 
 		try
 		{
@@ -308,28 +319,33 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	protected List<Location> xmlStopfinderRequest(final Location constraint) throws IOException
 	{
-		final StringBuilder uri = new StringBuilder(stopFinderEndpoint);
-		appendCommonRequestParams(uri, "XML");
-		uri.append("&locationServerActive=1");
+		final StringBuilder parameters = new StringBuilder();
+		appendCommonRequestParams(parameters, "XML");
+		parameters.append("&locationServerActive=1");
 		if (includeRegionId)
-			uri.append("&regionID_sf=1"); // prefer own region
-		appendLocation(uri, constraint, "sf");
+			parameters.append("&regionID_sf=1"); // prefer own region
+		appendLocation(parameters, constraint, "sf");
 		if (constraint.type == LocationType.ANY)
 		{
 			if (needsSpEncId)
-				uri.append("&SpEncId=0");
+				parameters.append("&SpEncId=0");
 			// 1=place 2=stop 4=street 8=address 16=crossing 32=poi 64=postcode
-			uri.append("&anyObjFilter_sf=").append(2 + 4 + 8 + 16 + 32 + 64);
-			uri.append("&reducedAnyPostcodeObjFilter_sf=64&reducedAnyTooManyObjFilter_sf=2");
-			uri.append("&useHouseNumberList=true");
+			parameters.append("&anyObjFilter_sf=").append(2 + 4 + 8 + 16 + 32 + 64);
+			parameters.append("&reducedAnyPostcodeObjFilter_sf=64&reducedAnyTooManyObjFilter_sf=2");
+			parameters.append("&useHouseNumberList=true");
 		}
 
-		// System.out.println(uri.toString());
+		final StringBuilder uri = new StringBuilder(stopFinderEndpoint);
+		if (!httpPost)
+			uri.append(parameters);
+
+		// System.out.println(uri);
+		// System.out.println(parameters);
 
 		InputStream is = null;
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri.toString());
+			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null, 3);
 
 			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
@@ -389,20 +405,25 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	protected NearbyStationsResult xmlCoordRequest(final int lat, final int lon, final int maxDistance, final int maxStations) throws IOException
 	{
+		final StringBuilder parameters = new StringBuilder();
+		appendCommonRequestParams(parameters, "XML");
+		parameters.append("&coord=").append(String.format(Locale.ENGLISH, "%2.6f:%2.6f:WGS84", latLonToDouble(lon), latLonToDouble(lat)));
+		parameters.append("&coordListOutputFormat=STRING");
+		parameters.append("&max=").append(maxStations != 0 ? maxStations : 50);
+		parameters.append("&inclFilter=1&radius_1=").append(maxDistance != 0 ? maxDistance : 1320);
+		parameters.append("&type_1=STOP"); // ENTRANCE, BUS_POINT, POI_POINT
+
 		final StringBuilder uri = new StringBuilder(coordEndpoint);
-		appendCommonRequestParams(uri, "XML");
-		uri.append("&coord=").append(String.format(Locale.ENGLISH, "%2.6f:%2.6f:WGS84", latLonToDouble(lon), latLonToDouble(lat)));
-		uri.append("&coordListOutputFormat=STRING");
-		uri.append("&max=").append(maxStations != 0 ? maxStations : 50);
-		uri.append("&inclFilter=1&radius_1=").append(maxDistance != 0 ? maxDistance : 1320);
-		uri.append("&type_1=STOP"); // ENTRANCE, BUS_POINT, POI_POINT
+		if (!httpPost)
+			uri.append(parameters);
 
 		// System.out.println(uri);
+		// System.out.println(parameters);
 
 		InputStream is = null;
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri.toString());
+			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null, 3);
 
 			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
@@ -592,22 +613,27 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	private NearbyStationsResult nearbyStationsRequest(final int stationId, final int maxStations) throws IOException
 	{
+		final StringBuilder parameters = new StringBuilder();
+		appendCommonRequestParams(parameters, "XML");
+		parameters.append("&type_dm=stop&name_dm=").append(stationId);
+		parameters.append("&itOptionsActive=1");
+		parameters.append("&ptOptionsActive=1");
+		parameters.append("&useProxFootSearch=1");
+		parameters.append("&mergeDep=1");
+		parameters.append("&useAllStops=1");
+		parameters.append("&mode=direct");
+
 		final StringBuilder uri = new StringBuilder(departureMonitorEndpoint);
-		appendCommonRequestParams(uri, "XML");
-		uri.append("&type_dm=stop&name_dm=").append(stationId);
-		uri.append("&itOptionsActive=1");
-		uri.append("&ptOptionsActive=1");
-		uri.append("&useProxFootSearch=1");
-		uri.append("&mergeDep=1");
-		uri.append("&useAllStops=1");
-		uri.append("&mode=direct");
+		if (!httpPost)
+			uri.append(parameters);
 
 		// System.out.println(uri);
+		// System.out.println(parameters);
 
 		InputStream is = null;
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri.toString());
+			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, "NSC_", 3);
 
 			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
@@ -1386,24 +1412,29 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
-		final StringBuilder uri = new StringBuilder(departureMonitorEndpoint);
-		appendCommonRequestParams(uri, "XML");
-		uri.append("&type_dm=stop");
-		uri.append("&name_dm=").append(stationId);
-		uri.append("&useRealtime=1");
-		uri.append("&mode=direct");
-		uri.append("&ptOptionsActive=1");
-		uri.append("&deleteAssignedStops_dm=").append(equivs ? '0' : '1');
-		uri.append("&mergeDep=1"); // merge departures
+		final StringBuilder parameters = new StringBuilder();
+		appendCommonRequestParams(parameters, "XML");
+		parameters.append("&type_dm=stop");
+		parameters.append("&name_dm=").append(stationId);
+		parameters.append("&useRealtime=1");
+		parameters.append("&mode=direct");
+		parameters.append("&ptOptionsActive=1");
+		parameters.append("&deleteAssignedStops_dm=").append(equivs ? '0' : '1');
+		parameters.append("&mergeDep=1"); // merge departures
 		if (maxDepartures > 0)
-			uri.append("&limit=").append(maxDepartures);
+			parameters.append("&limit=").append(maxDepartures);
+
+		final StringBuilder uri = new StringBuilder(departureMonitorEndpoint);
+		if (!httpPost)
+			uri.append(parameters);
 
 		// System.out.println(uri);
+		// System.out.println(parameters);
 
 		InputStream is = null;
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri.toString(), null, null, referer, null, 3);
+			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null, 3);
 
 			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
@@ -1731,13 +1762,13 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		return (double) value / 1000000;
 	}
 
-	protected String xsltTripRequest2Uri(final Location from, final Location via, final Location to, final Date date, final boolean dep,
+	protected String xsltTripRequestParameters(final Location from, final Location via, final Location to, final Date date, final boolean dep,
 			final int numConnections, final String products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
 	{
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd", Locale.US);
 		final DateFormat TIME_FORMAT = new SimpleDateFormat("HHmm", Locale.US);
 
-		final StringBuilder uri = new StringBuilder(tripEndpoint);
+		final StringBuilder uri = new StringBuilder();
 		appendCommonRequestParams(uri, "XML");
 
 		uri.append("&sessionID=0");
@@ -1841,13 +1872,21 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			final int numConnections, final String products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
 			throws IOException
 	{
-		final String uri = xsltTripRequest2Uri(from, via, to, date, dep, numConnections, products, walkSpeed, accessibility, options);
+
+		final String parameters = xsltTripRequestParameters(from, via, to, date, dep, numConnections, products, walkSpeed, accessibility, options);
+
+		final StringBuilder uri = new StringBuilder(tripEndpoint);
+		if (!httpPost)
+			uri.append(parameters);
+
+		// System.out.println(uri);
+		// System.out.println(parameters);
 
 		InputStream is = null;
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri, null, null, referer, "NSC_", 3);
-			return queryConnections(uri, is);
+			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, "NSC_", 3);
+			return queryConnections(uri.toString(), is);
 		}
 		catch (final XmlPullParserException x)
 		{
@@ -1877,7 +1916,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		InputStream is = null;
 		try
 		{
-			is = new BufferedInputStream(ParserUtils.scrapeInputStream(uri.toString(), null, null, referer, "NSC_", 3));
+			is = new BufferedInputStream(ParserUtils.scrapeInputStream(uri.toString(), null, null, httpReferer, "NSC_", 3));
 			is.mark(512);
 
 			return queryConnections(uri.toString(), is);
