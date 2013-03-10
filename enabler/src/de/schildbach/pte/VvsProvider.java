@@ -29,12 +29,14 @@ public class VvsProvider extends AbstractEfaProvider
 
 	public VvsProvider()
 	{
-		super(API_BASE, null, true);
+		this(API_BASE);
 	}
 
 	public VvsProvider(final String apiBase)
 	{
-		super(apiBase, null, true);
+		super(apiBase, null);
+
+		setCanAcceptPoiId(true);
 	}
 
 	public NetworkId id()

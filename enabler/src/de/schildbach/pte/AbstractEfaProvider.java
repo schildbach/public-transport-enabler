@@ -89,7 +89,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private final String coordEndpoint;
 
 	private final String additionalQueryParameter;
-	private final boolean canAcceptPoiID;
+	private boolean canAcceptPoiId = false;
 	private final boolean needsSpEncId;
 	private boolean includeRegionId = true;
 	private Charset requestUrlEncoding = ISO_8859_1;
@@ -132,27 +132,21 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	public AbstractEfaProvider(final String apiBase, final String additionalQueryParameter)
 	{
-		this(apiBase, additionalQueryParameter, false);
-	}
-
-	public AbstractEfaProvider(final String apiBase, final String additionalQueryParameter, final boolean canAcceptPoiID)
-	{
-		this(apiBase, null, null, null, null, additionalQueryParameter, false, false);
+		this(apiBase, null, null, null, null, additionalQueryParameter, false);
 	}
 
 	public AbstractEfaProvider(final String apiBase, final String departureMonitorEndpoint, final String tripEndpoint,
-			final String stopFinderEndpoint, final String coordEndpoint, final String additionalQueryParameter, final boolean canAcceptPoiID,
-			final boolean needsSpEncId)
+			final String stopFinderEndpoint, final String coordEndpoint, final String additionalQueryParameter, final boolean needsSpEncId)
 	{
 		this(apiBase + (departureMonitorEndpoint != null ? departureMonitorEndpoint : DEFAULT_DEPARTURE_MONITOR_ENDPOINT), //
 				apiBase + (tripEndpoint != null ? tripEndpoint : DEFAULT_TRIP_ENDPOINT), //
 				apiBase + (stopFinderEndpoint != null ? stopFinderEndpoint : DEFAULT_STOPFINDER_ENDPOINT), //
 				apiBase + (coordEndpoint != null ? coordEndpoint : DEFAULT_COORD_ENDPOINT), //
-				additionalQueryParameter, canAcceptPoiID, needsSpEncId);
+				additionalQueryParameter, needsSpEncId);
 	}
 
 	public AbstractEfaProvider(final String departureMonitorEndpoint, final String tripEndpoint, final String stopFinderEndpoint,
-			final String coordEndpoint, final String additionalQueryParameter, final boolean canAcceptPoiID, final boolean needsSpEncId)
+			final String coordEndpoint, final String additionalQueryParameter, final boolean needsSpEncId)
 	{
 		try
 		{
@@ -169,7 +163,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		this.coordEndpoint = coordEndpoint;
 
 		this.additionalQueryParameter = additionalQueryParameter;
-		this.canAcceptPoiID = canAcceptPoiID;
 		this.needsSpEncId = needsSpEncId;
 	}
 
@@ -198,9 +191,14 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		this.suppressPositions = suppressPositions;
 	}
 
-	public void setUseRouteIndexAsConnectionId(final boolean useRouteIndexAsConnectionId)
+	protected void setUseRouteIndexAsConnectionId(final boolean useRouteIndexAsConnectionId)
 	{
 		this.useRouteIndexAsConnectionId = useRouteIndexAsConnectionId;
+	}
+
+	protected void setCanAcceptPoiId(final boolean canAcceptPoiId)
+	{
+		this.canAcceptPoiId = canAcceptPoiId;
 	}
 
 	protected TimeZone timeZone()
@@ -2583,7 +2581,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	private void appendLocation(final StringBuilder uri, final Location location, final String paramSuffix)
 	{
-		if (canAcceptPoiID && location.type == LocationType.POI && location.hasId())
+		if (canAcceptPoiId && location.type == LocationType.POI && location.hasId())
 		{
 			uri.append("&type_").append(paramSuffix).append("=poiID");
 			uri.append("&name_").append(paramSuffix).append("=").append(location.id);

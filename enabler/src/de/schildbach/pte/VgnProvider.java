@@ -33,7 +33,7 @@ public class VgnProvider extends AbstractEfaProvider
 
 	public VgnProvider(final String apiBase)
 	{
-		super(apiBase, DEPARTURE_MONITOR_ENDPOINT, TRIP_ENDPOINT, null, null, null, false, false);
+		super(apiBase, DEPARTURE_MONITOR_ENDPOINT, TRIP_ENDPOINT, null, null, null, false);
 	}
 
 	public NetworkId id()

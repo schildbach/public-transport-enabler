@@ -38,7 +38,7 @@ public class MvvProvider extends AbstractEfaProvider
 
 	public MvvProvider(final String apiBase)
 	{
-		super(apiBase, null, false);
+		super(apiBase, null);
 	}
 
 	public NetworkId id()
