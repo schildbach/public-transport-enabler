@@ -33,7 +33,9 @@ public class VvmProvider extends AbstractEfaProvider
 
 	public VvmProvider()
 	{
-		super(API_BASE, null, null, null, null, null, true);
+		super(API_BASE, null);
+
+		setNeedsSpEncId(true);
 	}
 
 	public NetworkId id()
