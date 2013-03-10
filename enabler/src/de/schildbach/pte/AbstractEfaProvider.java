@@ -126,11 +126,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 	}
 
-	public AbstractEfaProvider()
-	{
-		this(null);
-	}
-
 	public AbstractEfaProvider(final String apiBase)
 	{
 		this(apiBase, null, null, null, null);
@@ -145,7 +140,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				apiBase + (coordEndpoint != null ? coordEndpoint : DEFAULT_COORD_ENDPOINT));
 	}
 
-	public AbstractEfaProvider(final String departureMonitorEndpoint, final String tripEndpoint, final String stopFinderEndpoint,
+	private AbstractEfaProvider(final String departureMonitorEndpoint, final String tripEndpoint, final String stopFinderEndpoint,
 			final String coordEndpoint)
 	{
 		try
