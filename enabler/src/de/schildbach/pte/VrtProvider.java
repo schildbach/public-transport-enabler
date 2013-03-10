@@ -33,7 +33,7 @@ public class VrtProvider extends AbstractEfaProvider
 
 	public VrtProvider()
 	{
-		super(API_BASE, null);
+		super(API_BASE);
 	}
 
 	public NetworkId id()

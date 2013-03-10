@@ -33,7 +33,7 @@ public class StvProvider extends AbstractEfaProvider
 
 	public StvProvider()
 	{
-		super(API_BASE, null);
+		super(API_BASE);
 	}
 
 	public NetworkId id()

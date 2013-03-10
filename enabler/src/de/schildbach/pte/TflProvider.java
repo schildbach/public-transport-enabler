@@ -33,7 +33,7 @@ public class TflProvider extends AbstractEfaProvider
 
 	public TflProvider()
 	{
-		super(API_BASE, null);
+		super(API_BASE);
 	}
 
 	public NetworkId id()

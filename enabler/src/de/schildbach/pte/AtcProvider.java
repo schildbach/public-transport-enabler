@@ -33,7 +33,7 @@ public class AtcProvider extends AbstractEfaProvider
 
 	public AtcProvider()
 	{
-		super(API_BASE, null);
+		super(API_BASE);
 	}
 
 	public NetworkId id()

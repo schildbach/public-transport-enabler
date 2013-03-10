@@ -29,7 +29,7 @@ public class SydneyProvider extends AbstractEfaProvider
 
 	public SydneyProvider()
 	{
-		super(API_BASE, null);
+		super(API_BASE);
 
 		setUseRouteIndexAsConnectionId(false);
 	}

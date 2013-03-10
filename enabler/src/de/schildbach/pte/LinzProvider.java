@@ -32,7 +32,7 @@ public class LinzProvider extends AbstractEfaProvider
 
 	public LinzProvider()
 	{
-		super(API_BASE, null);
+		super(API_BASE);
 	}
 
 	public NetworkId id()

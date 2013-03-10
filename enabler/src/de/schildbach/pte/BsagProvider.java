@@ -33,7 +33,7 @@ public class BsagProvider extends AbstractEfaProvider
 
 	public BsagProvider()
 	{
-		super(API_BASE, null);
+		super(API_BASE);
 	}
 
 	public NetworkId id()

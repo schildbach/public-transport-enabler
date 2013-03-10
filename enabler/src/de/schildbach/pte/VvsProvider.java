@@ -34,7 +34,7 @@ public class VvsProvider extends AbstractEfaProvider
 
 	public VvsProvider(final String apiBase)
 	{
-		super(apiBase, null);
+		super(apiBase);
 
 		setCanAcceptPoiId(true);
 	}

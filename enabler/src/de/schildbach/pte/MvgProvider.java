@@ -33,7 +33,7 @@ public class MvgProvider extends AbstractEfaProvider
 
 	public MvgProvider()
 	{
-		super(API_BASE, null);
+		super(API_BASE);
 	}
 
 	public NetworkId id()

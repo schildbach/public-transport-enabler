@@ -33,7 +33,7 @@ public class SfProvider extends AbstractEfaProvider
 
 	public SfProvider()
 	{
-		super(API_BASE, null);
+		super(API_BASE);
 
 		setUseRouteIndexAsConnectionId(false);
 	}

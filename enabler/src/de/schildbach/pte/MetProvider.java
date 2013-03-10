@@ -35,7 +35,7 @@ public class MetProvider extends AbstractEfaProvider
 
 	public MetProvider()
 	{
-		super(API_BASE, null);
+		super(API_BASE);
 
 		setUseRouteIndexAsConnectionId(false);
 	}

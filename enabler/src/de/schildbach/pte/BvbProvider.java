@@ -33,7 +33,7 @@ public class BvbProvider extends AbstractEfaProvider
 
 	public BvbProvider()
 	{
-		super(API_BASE, null);
+		super(API_BASE);
 	}
 
 	public NetworkId id()

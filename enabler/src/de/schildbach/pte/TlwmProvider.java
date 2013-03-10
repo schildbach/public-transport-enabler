@@ -30,7 +30,7 @@ public class TlwmProvider extends AbstractEfaProvider
 
 	public TlwmProvider()
 	{
-		super(API_BASE, null);
+		super(API_BASE);
 	}
 
 	public NetworkId id()

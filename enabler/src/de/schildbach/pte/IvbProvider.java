@@ -27,7 +27,7 @@ public class IvbProvider extends AbstractEfaProvider
 
 	public IvbProvider()
 	{
-		super(API_BASE, null);
+		super(API_BASE);
 
 		setUseRouteIndexAsConnectionId(false);
 	}

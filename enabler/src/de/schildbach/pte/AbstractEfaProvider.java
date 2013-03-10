@@ -88,7 +88,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private final String stopFinderEndpoint;
 	private final String coordEndpoint;
 
-	private final String additionalQueryParameter;
+	private String additionalQueryParameter = null;
 	private boolean canAcceptPoiId = false;
 	private boolean needsSpEncId = false;
 	private boolean includeRegionId = true;
@@ -128,26 +128,25 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	public AbstractEfaProvider()
 	{
-		this(null, null);
+		this(null);
 	}
 
-	public AbstractEfaProvider(final String apiBase, final String additionalQueryParameter)
+	public AbstractEfaProvider(final String apiBase)
 	{
-		this(apiBase, null, null, null, null, additionalQueryParameter);
+		this(apiBase, null, null, null, null);
 	}
 
 	public AbstractEfaProvider(final String apiBase, final String departureMonitorEndpoint, final String tripEndpoint,
-			final String stopFinderEndpoint, final String coordEndpoint, final String additionalQueryParameter)
+			final String stopFinderEndpoint, final String coordEndpoint)
 	{
 		this(apiBase + (departureMonitorEndpoint != null ? departureMonitorEndpoint : DEFAULT_DEPARTURE_MONITOR_ENDPOINT), //
 				apiBase + (tripEndpoint != null ? tripEndpoint : DEFAULT_TRIP_ENDPOINT), //
 				apiBase + (stopFinderEndpoint != null ? stopFinderEndpoint : DEFAULT_STOPFINDER_ENDPOINT), //
-				apiBase + (coordEndpoint != null ? coordEndpoint : DEFAULT_COORD_ENDPOINT), //
-				additionalQueryParameter);
+				apiBase + (coordEndpoint != null ? coordEndpoint : DEFAULT_COORD_ENDPOINT));
 	}
 
 	public AbstractEfaProvider(final String departureMonitorEndpoint, final String tripEndpoint, final String stopFinderEndpoint,
-			final String coordEndpoint, final String additionalQueryParameter)
+			final String coordEndpoint)
 	{
 		try
 		{
@@ -162,8 +161,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		this.tripEndpoint = tripEndpoint;
 		this.stopFinderEndpoint = stopFinderEndpoint;
 		this.coordEndpoint = coordEndpoint;
-
-		this.additionalQueryParameter = additionalQueryParameter;
 	}
 
 	protected void setRequestUrlEncoding(final Charset requestUrlEncoding)
@@ -204,6 +201,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	protected void setNeedsSpEncId(final boolean needsSpEncId)
 	{
 		this.needsSpEncId = needsSpEncId;
+	}
+
+	protected void setAdditionalQueryParameter(final String additionalQueryParameter)
+	{
+		this.additionalQueryParameter = additionalQueryParameter;
 	}
 
 	protected TimeZone timeZone()

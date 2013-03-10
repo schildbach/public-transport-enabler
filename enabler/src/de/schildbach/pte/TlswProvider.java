@@ -34,7 +34,7 @@ public class TlswProvider extends AbstractEfaProvider
 
 	public TlswProvider()
 	{
-		super(API_BASE, null);
+		super(API_BASE);
 
 		setUseRouteIndexAsConnectionId(false);
 	}

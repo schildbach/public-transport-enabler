@@ -27,7 +27,7 @@ public class BayernProvider extends AbstractEfaProvider
 
 	public BayernProvider()
 	{
-		super(API_BASE, null);
+		super(API_BASE);
 	}
 
 	public NetworkId id()

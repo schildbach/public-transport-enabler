@@ -27,7 +27,7 @@ public class VrnProvider extends AbstractEfaProvider
 
 	public VrnProvider()
 	{
-		super(API_BASE, null);
+		super(API_BASE);
 	}
 
 	public NetworkId id()

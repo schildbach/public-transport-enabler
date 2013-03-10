@@ -32,7 +32,7 @@ public class VorProvider extends AbstractEfaProvider
 
 	public VorProvider()
 	{
-		super(API_BASE, null);
+		super(API_BASE);
 
 		setHttpReferer(API_BASE + DEFAULT_DEPARTURE_MONITOR_ENDPOINT);
 		setHttpPost(true);

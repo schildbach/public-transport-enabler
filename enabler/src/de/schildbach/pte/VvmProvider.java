@@ -33,7 +33,7 @@ public class VvmProvider extends AbstractEfaProvider
 
 	public VvmProvider()
 	{
-		super(API_BASE, null);
+		super(API_BASE);
 
 		setNeedsSpEncId(true);
 	}

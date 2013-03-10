@@ -37,7 +37,7 @@ public class VagfrProvider extends AbstractEfaProvider
 
 	public VagfrProvider()
 	{
-		super(API_BASE, null);
+		super(API_BASE);
 
 		setUseRouteIndexAsConnectionId(false);
 	}

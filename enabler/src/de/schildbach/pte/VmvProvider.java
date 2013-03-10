@@ -33,7 +33,7 @@ public class VmvProvider extends AbstractEfaProvider
 
 	public VmvProvider()
 	{
-		super(API_BASE, null);
+		super(API_BASE);
 	}
 
 	public NetworkId id()

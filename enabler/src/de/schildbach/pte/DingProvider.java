@@ -27,7 +27,7 @@ public class DingProvider extends AbstractEfaProvider
 
 	public DingProvider()
 	{
-		super(API_BASE, null);
+		super(API_BASE);
 	}
 
 	public NetworkId id()

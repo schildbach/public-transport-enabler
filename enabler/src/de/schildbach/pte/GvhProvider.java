@@ -32,7 +32,9 @@ public class GvhProvider extends AbstractEfaProvider
 
 	public GvhProvider(final String additionalQueryParameter)
 	{
-		super(API_BASE, additionalQueryParameter);
+		super(API_BASE);
+
+		setAdditionalQueryParameter(additionalQueryParameter);
 	}
 
 	public NetworkId id()

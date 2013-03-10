@@ -29,7 +29,7 @@ public class VvvProvider extends AbstractEfaProvider
 
 	public VvvProvider()
 	{
-		super(API_BASE, null);
+		super(API_BASE);
 	}
 
 	public NetworkId id()

@@ -33,7 +33,7 @@ public class SvvProvider extends AbstractEfaProvider
 
 	public SvvProvider()
 	{
-		super(API_BASE, null);
+		super(API_BASE);
 	}
 
 	public NetworkId id()

@@ -38,7 +38,7 @@ public class VvoProvider extends AbstractEfaProvider
 
 	public VvoProvider(final String apiBase)
 	{
-		super(apiBase, null);
+		super(apiBase);
 
 		setRequestUrlEncoding(UTF_8);
 	}

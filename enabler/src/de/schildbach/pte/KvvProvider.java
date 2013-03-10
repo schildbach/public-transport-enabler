@@ -40,7 +40,7 @@ public class KvvProvider extends AbstractEfaProvider
 
 	public KvvProvider(final String apiBase)
 	{
-		super(apiBase, null);
+		super(apiBase);
 
 		setSuppressPositions(true);
 	}

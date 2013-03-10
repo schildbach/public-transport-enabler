@@ -33,7 +33,7 @@ public class MariborProvider extends AbstractEfaProvider
 
 	public MariborProvider()
 	{
-		super(API_BASE, null);
+		super(API_BASE);
 	}
 
 	public NetworkId id()

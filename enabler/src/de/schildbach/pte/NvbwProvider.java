@@ -33,7 +33,7 @@ public class NvbwProvider extends AbstractEfaProvider
 
 	public NvbwProvider()
 	{
-		super(API_BASE, null);
+		super(API_BASE);
 
 		setUseRouteIndexAsConnectionId(false);
 	}

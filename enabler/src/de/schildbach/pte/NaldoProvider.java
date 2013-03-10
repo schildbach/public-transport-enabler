@@ -33,7 +33,7 @@ public class NaldoProvider extends AbstractEfaProvider
 
 	public NaldoProvider()
 	{
-		super(API_BASE, null);
+		super(API_BASE);
 	}
 
 	public NetworkId id()

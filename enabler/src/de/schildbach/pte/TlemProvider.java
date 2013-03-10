@@ -36,7 +36,7 @@ public class TlemProvider extends AbstractEfaProvider
 
 	public TlemProvider()
 	{
-		super(API_BASE, null);
+		super(API_BASE);
 	}
 
 	public NetworkId id()

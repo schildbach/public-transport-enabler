@@ -27,7 +27,7 @@ public class VvtProvider extends AbstractEfaProvider
 
 	public VvtProvider()
 	{
-		super(API_BASE, null);
+		super(API_BASE);
 
 		setUseRouteIndexAsConnectionId(false);
 	}
