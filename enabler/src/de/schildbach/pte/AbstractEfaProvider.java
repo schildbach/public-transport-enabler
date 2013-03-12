@@ -2099,6 +2099,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				Location firstDepartureLocation = null;
 				Location lastArrivalLocation = null;
 
+				boolean cancelled = false;
+
 				while (XmlPullUtil.test(pp, "itdPartialRoute"))
 				{
 					final int distance = XmlPullUtil.optIntAttr(pp, "distance", 0);
@@ -2238,6 +2240,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						{
 							departureDelay = XmlPullUtil.optIntAttr(pp, "delayMinutes", 0);
 							arrivalDelay = XmlPullUtil.optIntAttr(pp, "delayMinutesArr", 0);
+
+							cancelled |= (departureDelay == -9999 || arrivalDelay == -9999);
+
 							XmlPullUtil.next(pp);
 						}
 						else
@@ -2470,9 +2475,14 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						XmlPullUtil.next(pp);
 					}
 				}
-				connections.add(new Connection(id, firstDepartureLocation, lastArrivalLocation, parts, fares.isEmpty() ? null : fares, null,
-						numChanges));
+
 				XmlPullUtil.exit(pp, "itdRoute");
+
+				final Connection connection = new Connection(id, firstDepartureLocation, lastArrivalLocation, parts, fares.isEmpty() ? null : fares,
+						null, numChanges);
+
+				if (!cancelled)
+					connections.add(connection);
 			}
 
 			XmlPullUtil.exit(pp, "itdRouteList");
