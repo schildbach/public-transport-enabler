@@ -2232,8 +2232,19 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 								+ XmlPullUtil.attr(pp, "project");
 						XmlPullUtil.exit(pp, "itdMeansOfTransport");
 
+						final Integer departureDelay;
+						final Integer arrivalDelay;
 						if (XmlPullUtil.test(pp, "itdRBLControlled"))
+						{
+							departureDelay = XmlPullUtil.optIntAttr(pp, "delayMinutes", 0);
+							arrivalDelay = XmlPullUtil.optIntAttr(pp, "delayMinutesArr", 0);
 							XmlPullUtil.next(pp);
+						}
+						else
+						{
+							departureDelay = null;
+							arrivalDelay = null;
+						}
 
 						boolean lowFloorVehicle = false;
 						String message = null;
@@ -2284,20 +2295,52 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 								XmlPullUtil.enter(pp, "itdPoint");
 								XmlPullUtil.require(pp, "itdDateTime");
 
-								final Date stopArrivalTime;
+								final Date plannedStopArrivalTime;
+								final Date predictedStopArrivalTime;
 								if (processItdDateTime(pp, time))
-									stopArrivalTime = time.getTime();
+								{
+									plannedStopArrivalTime = time.getTime();
+									if (arrivalDelay != null)
+									{
+										time.add(Calendar.MINUTE, arrivalDelay);
+										predictedStopArrivalTime = time.getTime();
+									}
+									else
+									{
+										predictedStopArrivalTime = null;
+									}
+								}
 								else
-									stopArrivalTime = null;
+								{
+									plannedStopArrivalTime = null;
+									predictedStopArrivalTime = null;
+								}
 
-								final Date stopDepartureTime;
+								final Date plannedStopDepartureTime;
+								final Date predictedStopDepartureTime;
 								if (XmlPullUtil.test(pp, "itdDateTime") && processItdDateTime(pp, time))
-									stopDepartureTime = time.getTime();
+								{
+									plannedStopDepartureTime = time.getTime();
+									if (departureDelay != null)
+									{
+										time.add(Calendar.MINUTE, departureDelay);
+										predictedStopDepartureTime = time.getTime();
+									}
+									else
+									{
+										predictedStopDepartureTime = null;
+									}
+								}
 								else
-									stopDepartureTime = null;
+								{
+									plannedStopDepartureTime = null;
+									predictedStopDepartureTime = null;
+								}
 
-								intermediateStops.add(new Stop(stopLocation, stopArrivalTime, stopPosition, stopDepartureTime, stopPosition));
-								// TODO planned/predicted?
+								final Stop stop = new Stop(stopLocation, plannedStopArrivalTime, predictedStopArrivalTime, stopPosition, null,
+										plannedStopDepartureTime, predictedStopDepartureTime, stopPosition, null);
+
+								intermediateStops.add(stop);
 
 								XmlPullUtil.exit(pp, "itdPoint");
 							}
