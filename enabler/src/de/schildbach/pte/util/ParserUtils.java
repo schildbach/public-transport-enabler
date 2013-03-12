@@ -54,7 +54,7 @@ public final class ParserUtils
 	private static final int SCRAPE_READ_TIMEOUT = 15000;
 	private static final Charset SCRAPE_DEFAULT_ENCODING = Charset.forName("ISO-8859-1");
 	private static final int SCRAPE_PAGE_EMPTY_THRESHOLD = 2;
-	private static final Pattern P_REFRESH = Pattern.compile("<META\\s+http-equiv=\"refresh\"\\s+content=\"\\d+;\\s*URL=([^\"]+)\"\\s*/>",
+	private static final Pattern P_REFRESH = Pattern.compile("<META\\s+http-equiv=\"refresh\"\\s+content=\"\\d+;\\s*URL=([^\"]+)\"",
 			Pattern.CASE_INSENSITIVE);
 
 	private static String stateCookie;
