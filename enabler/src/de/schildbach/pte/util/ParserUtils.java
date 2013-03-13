@@ -192,7 +192,8 @@ public final class ParserUtils
 							throw new IOException(message + ": " + url);
 					}
 				}
-				else if (responseCode == HttpURLConnection.HTTP_FORBIDDEN || responseCode == HttpURLConnection.HTTP_BAD_REQUEST)
+				else if (responseCode == HttpURLConnection.HTTP_FORBIDDEN || responseCode == HttpURLConnection.HTTP_BAD_REQUEST
+						|| responseCode == HttpURLConnection.HTTP_NOT_ACCEPTABLE)
 				{
 					throw new BlockedException(url);
 				}
@@ -342,7 +343,8 @@ public final class ParserUtils
 					return is;
 				}
 			}
-			else if (responseCode == HttpURLConnection.HTTP_FORBIDDEN || responseCode == HttpURLConnection.HTTP_BAD_REQUEST)
+			else if (responseCode == HttpURLConnection.HTTP_FORBIDDEN || responseCode == HttpURLConnection.HTTP_BAD_REQUEST
+					|| responseCode == HttpURLConnection.HTTP_NOT_ACCEPTABLE)
 			{
 				throw new BlockedException(url);
 			}
