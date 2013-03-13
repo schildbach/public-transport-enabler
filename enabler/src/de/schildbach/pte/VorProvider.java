@@ -35,6 +35,7 @@ public class VorProvider extends AbstractEfaProvider
 		super(API_BASE);
 
 		setHttpReferer(API_BASE + DEFAULT_DEPARTURE_MONITOR_ENDPOINT);
+		setHttpRefererTrip(API_BASE + DEFAULT_TRIP_ENDPOINT);
 		setHttpPost(true);
 		setIncludeRegionId(false);
 	}

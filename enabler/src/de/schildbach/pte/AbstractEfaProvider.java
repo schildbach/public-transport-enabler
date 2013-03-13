@@ -94,6 +94,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private boolean includeRegionId = true;
 	private Charset requestUrlEncoding = ISO_8859_1;
 	private String httpReferer = null;
+	private String httpRefererTrip = null;
 	private boolean httpPost = false;
 	private boolean suppressPositions = false;
 	private boolean useRouteIndexAsConnectionId = true;
@@ -166,6 +167,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	protected void setHttpReferer(final String httpReferer)
 	{
 		this.httpReferer = httpReferer;
+		this.httpRefererTrip = httpReferer;
+	}
+
+	public void setHttpRefererTrip(final String httpRefererTrip)
+	{
+		this.httpRefererTrip = httpRefererTrip;
 	}
 
 	protected void setHttpPost(final boolean httpPost)
@@ -1885,7 +1892,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		InputStream is = null;
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, "NSC_", 3);
+			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpRefererTrip, "NSC_", 3);
 			return queryConnections(uri.toString(), is);
 		}
 		catch (final XmlPullParserException x)
@@ -1916,7 +1923,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		InputStream is = null;
 		try
 		{
-			is = new BufferedInputStream(ParserUtils.scrapeInputStream(uri.toString(), null, null, httpReferer, "NSC_", 3));
+			is = new BufferedInputStream(ParserUtils.scrapeInputStream(uri.toString(), null, null, httpRefererTrip, "NSC_", 3));
 			is.mark(512);
 
 			return queryConnections(uri.toString(), is);
