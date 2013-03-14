@@ -18,24 +18,17 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.GregorianCalendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Set;
 
-import de.schildbach.pte.dto.Departure;
-import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.QueryConnectionsContext;
+import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
-import de.schildbach.pte.dto.QueryDeparturesResult.Status;
-import de.schildbach.pte.dto.ResultHeader;
-import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.util.ParserUtils;
 
 /**
@@ -43,9 +36,7 @@ import de.schildbach.pte.util.ParserUtils;
  */
 public class VgsProvider extends AbstractHafasProvider
 {
-	private static final String API_BASE = "http://www.vgs-online.de/cgi-bin/"; // "http://www.saarfahrplan.de/cgi-bin/";
-
-	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
+	private static final String API_BASE = "http://www.saarfahrplan.de/cgi-bin/"; // http://www.vgs-online.de/cgi-bin/
 
 	public VgsProvider()
 	{
@@ -113,6 +104,22 @@ public class VgsProvider extends AbstractHafasProvider
 		}
 	}
 
+	private static final String[] PLACES = { "Saarbrücken" };
+
+	@Override
+	protected String[] splitPlaceAndName(final String name)
+	{
+		for (final String place : PLACES)
+		{
+			if (name.endsWith(", " + place))
+				return new String[] { place, name.substring(0, name.length() - place.length() - 2) };
+			else if (name.startsWith(place + " ") || name.startsWith(place + "-"))
+				return new String[] { place, name.substring(place.length() + 1) };
+		}
+
+		return super.splitPlaceAndName(name);
+	}
+
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(API_BASE);
@@ -143,164 +150,22 @@ public class VgsProvider extends AbstractHafasProvider
 		}
 	}
 
-	private String departuresQueryUri(final int stationId, final int maxDepartures)
-	{
-		final StringBuilder uri = new StringBuilder();
-
-		uri.append(API_BASE).append("stboard.exe/dn");
-		uri.append("?input=").append(stationId);
-		uri.append("&boardType=dep");
-		uri.append("&productsFilter=").append(allProductsString());
-		if (maxDepartures != 0)
-			uri.append("&maxJourneys=").append(maxDepartures);
-		uri.append("&disableEquivs=yes"); // don't use nearby stations
-		uri.append("&start=yes");
-
-		return uri.toString();
-	}
-
-	private static final Pattern P_DEPARTURES_HEAD_COARSE = Pattern
-			.compile(
-					".*?" //
-							+ "(?:" //
-							+ "<table class=\"hafasResult\"[^>]*>(.+?)</table>.*?" //
-							+ "(?:<table cellspacing=\"0\" class=\"hafasResult\"[^>]*>(.+?)</table>|(verkehren an dieser Haltestelle keine))"//
-							+ "|(Eingabe kann nicht interpretiert)|(Verbindung zum Server konnte leider nicht hergestellt werden|kann vom Server derzeit leider nicht bearbeitet werden))" //
-							+ ".*?" //
-					, Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_HEAD_FINE = Pattern.compile(".*?" //
-			+ "<td class=\"querysummary screennowrap\">\\s*(.*?)\\s*<.*?" // location
-			+ "(\\d{2}\\.\\d{2}\\.\\d{2}).*?" // date
-			+ "Abfahrt (\\d{1,2}:\\d{2}).*?" // time
-	, Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<tr class=\"(depboard-\\w*)\">(.*?)</tr>", Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_FINE = Pattern.compile(".*?" //
-			+ "<td class=\"[\\w ]*\">(\\d{1,2}:\\d{2})</td>\n" // plannedTime
-			+ "(?:<td class=\"[\\w ]*prognosis[\\w ]*\">\n" //
-			+ "(?:&nbsp;|<span class=\"rtLimit\\d\">(p&#252;nktlich|\\d{1,2}:\\d{2})</span>)\n</td>\n" // predictedTime
-			+ ")?.*?" //
-			+ "<img src=\"/hafas-res/img/(\\w+)_pic\\.gif\"[^>]*>\\s*(.*?)\\s*<.*?" // type, line
-			+ "<span class=\"bold\">\n" //
-			+ "<a href=\"http://www\\.saarfahrplan\\.de/cgi-bin/stboard\\.exe/dn\\?input=(\\d+)&[^>]*>" // destinationId
-			+ "\\s*(.*?)\\s*</a>\n" // destination
-			+ "</span>.*?" //
-			+ "(?:<td class=\"center sepline top\">\n(" + ParserUtils.P_PLATFORM + ").*?)?" // position
-	, Pattern.DOTALL);
-
 	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
-		final ResultHeader header = new ResultHeader(SERVER_PRODUCT);
-		final QueryDeparturesResult result = new QueryDeparturesResult(header);
+		final StringBuilder uri = new StringBuilder();
+		uri.append(API_BASE).append("stboard.exe/dn");
+		uri.append("?productsFilter=").append(allProductsString());
+		uri.append("&boardType=dep");
+		uri.append("&disableEquivs=yes"); // don't use nearby stations
+		uri.append("&maxJourneys=50"); // ignore maxDepartures because result contains other stations
+		uri.append("&start=yes");
+		uri.append("&L=vs_java3");
+		uri.append("&input=").append(stationId);
 
-		// scrape page
-		final String uri = departuresQueryUri(stationId, maxDepartures);
-		final CharSequence page = ParserUtils.scrape(uri);
-
-		// parse page
-		final Matcher mHeadCoarse = P_DEPARTURES_HEAD_COARSE.matcher(page);
-		if (mHeadCoarse.matches())
-		{
-			// messages
-			if (mHeadCoarse.group(3) != null)
-			{
-				result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, stationId),
-						Collections.<Departure> emptyList(), null));
-				return result;
-			}
-			else if (mHeadCoarse.group(4) != null)
-				return new QueryDeparturesResult(header, Status.INVALID_STATION);
-			else if (mHeadCoarse.group(5) != null)
-				return new QueryDeparturesResult(header, Status.SERVICE_DOWN);
-
-			final Matcher mHeadFine = P_DEPARTURES_HEAD_FINE.matcher(mHeadCoarse.group(1));
-			if (mHeadFine.matches())
-			{
-				final String location = ParserUtils.resolveEntities(mHeadFine.group(1));
-				final Calendar currentTime = new GregorianCalendar(timeZone());
-				currentTime.clear();
-				ParserUtils.parseGermanDate(currentTime, mHeadFine.group(2));
-				ParserUtils.parseEuropeanTime(currentTime, mHeadFine.group(3));
-				final List<Departure> departures = new ArrayList<Departure>(8);
-				String oldZebra = null;
-
-				final Matcher mDepCoarse = P_DEPARTURES_COARSE.matcher(mHeadCoarse.group(2));
-				while (mDepCoarse.find())
-				{
-					final String zebra = mDepCoarse.group(1);
-					if (oldZebra != null && zebra.equals(oldZebra))
-						throw new IllegalArgumentException("missed row? last:" + zebra);
-					else
-						oldZebra = zebra;
-
-					final Matcher mDepFine = P_DEPARTURES_FINE.matcher(mDepCoarse.group(2));
-					if (mDepFine.matches())
-					{
-						final Calendar plannedTime = new GregorianCalendar(timeZone());
-						plannedTime.setTimeInMillis(currentTime.getTimeInMillis());
-						ParserUtils.parseEuropeanTime(plannedTime, mDepFine.group(1));
-
-						if (plannedTime.getTimeInMillis() - currentTime.getTimeInMillis() < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
-							plannedTime.add(Calendar.DAY_OF_MONTH, 1);
-
-						final Calendar predictedTime;
-						final String prognosis = ParserUtils.resolveEntities(mDepFine.group(2));
-						if (prognosis != null)
-						{
-							predictedTime = new GregorianCalendar(timeZone());
-							if (!prognosis.equals("pünktlich"))
-							{
-								predictedTime.setTimeInMillis(plannedTime.getTimeInMillis());
-							}
-							else
-							{
-								predictedTime.setTimeInMillis(currentTime.getTimeInMillis());
-								ParserUtils.parseEuropeanTime(predictedTime, prognosis);
-							}
-						}
-						else
-						{
-							predictedTime = null;
-						}
-
-						final String lineType = mDepFine.group(3);
-
-						final Line line = parseLine(lineType, ParserUtils.resolveEntities(mDepFine.group(4)), false);
-
-						final int destinationId = mDepFine.group(5) != null ? Integer.parseInt(mDepFine.group(5)) : 0;
-						final String destinationName = ParserUtils.resolveEntities(mDepFine.group(6));
-						final Location destination = new Location(destinationId > 0 ? LocationType.STATION : LocationType.ANY, destinationId, null,
-								destinationName);
-
-						final String position = mDepFine.group(7) != null ? "Gl. " + ParserUtils.resolveEntities(mDepFine.group(7)) : null;
-
-						final Departure dep = new Departure(plannedTime.getTime(), predictedTime != null ? predictedTime.getTime() : null, line,
-								position, destination, null, null);
-
-						if (!departures.contains(dep))
-							departures.add(dep);
-					}
-					else
-					{
-						throw new IllegalArgumentException("cannot parse '" + mDepCoarse.group(2) + "' on " + stationId);
-					}
-				}
-
-				result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, stationId, null, location), departures, null));
-				return result;
-			}
-			else
-			{
-				throw new IllegalArgumentException("cannot parse '" + mHeadCoarse.group(1) + "' on " + stationId);
-			}
-		}
-		else
-		{
-			throw new IllegalArgumentException("cannot parse '" + page + "' on " + stationId);
-		}
+		return xmlQueryDepartures(uri.toString(), stationId);
 	}
 
-	private static final String AUTOCOMPLETE_URI = API_BASE
-			+ "ajax-getstop.exe/eny?start=1&tpl=suggest2json&REQ0JourneyStopsS0A=1&getstop=1&noSession=yes&REQ0JourneyStopsB=12&REQ0JourneyStopsS0G=%s?&js=true&";
+	private static final String AUTOCOMPLETE_URI = API_BASE + "ajax-getstop.exe/dn?getstop=1&REQ0JourneyStopsS0A=255&S=%s?&js=true&";
 
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
@@ -310,25 +175,23 @@ public class VgsProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected char normalizeType(final String type)
+	protected void appendCustomConnectionsQueryBinaryUri(final StringBuilder uri)
 	{
-		final String ucType = type.toUpperCase();
+		uri.append("&h2g-direct=11");
+	}
 
-		if (ucType.equals("E")) // Stadtbahn Karlsruhe: S4/S31/xxxxx
-			return 'S';
+	@Override
+	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
+			final int maxNumConnections, final String products, final WalkSpeed walkSpeed, final Accessibility accessibility,
+			final Set<Option> options) throws IOException
+	{
+		return queryConnectionsBinary(from, via, to, date, dep, maxNumConnections, products, walkSpeed, accessibility, options);
+	}
 
-		if (ucType.equals("BSS"))
-			return 'B';
-		if (ucType.equals("BOV"))
-			return 'B';
-
-		final char t = super.normalizeType(type);
-		if (t != 0)
-			return t;
-
-		if (ucType.equals("T84")) // U.K.
-			return '?';
-
-		return 0;
+	@Override
+	public QueryConnectionsResult queryMoreConnections(final QueryConnectionsContext contextObj, final boolean later, final int numConnections)
+			throws IOException
+	{
+		return queryMoreConnectionsBinary(contextObj, later, numConnections);
 	}
 }
