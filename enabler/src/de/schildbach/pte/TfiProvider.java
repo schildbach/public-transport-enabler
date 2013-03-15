@@ -17,7 +17,10 @@
 
 package de.schildbach.pte;
 
+import java.util.Collection;
 import java.util.TimeZone;
+
+import de.schildbach.pte.dto.Product;
 
 /**
  * @author Andreas Schildbach
@@ -50,5 +53,11 @@ public class TfiProvider extends AbstractEfaProvider
 				return true;
 
 		return false;
+	}
+
+	@Override
+	public Collection<Product> defaultProducts()
+	{
+		return Product.ALL;
 	}
 }

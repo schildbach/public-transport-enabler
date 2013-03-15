@@ -109,6 +109,13 @@ public interface NetworkProvider
 	List<Location> autocompleteStations(CharSequence constraint) throws IOException;
 
 	/**
+	 * Typical products for a network
+	 * 
+	 * @return products
+	 */
+	Collection<Product> defaultProducts();
+
+	/**
 	 * Query connections, asking for any ambiguousnesses
 	 * 
 	 * @param from

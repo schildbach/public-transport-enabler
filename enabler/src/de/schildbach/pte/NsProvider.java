@@ -144,6 +144,12 @@ public class NsProvider extends AbstractHafasProvider
 	}
 
 	@Override
+	public Collection<Product> defaultProducts()
+	{
+		return Product.ALL;
+	}
+
+	@Override
 	protected void appendCustomConnectionsQueryBinaryUri(final StringBuilder uri)
 	{
 		uri.append("&h2g-direct=11");

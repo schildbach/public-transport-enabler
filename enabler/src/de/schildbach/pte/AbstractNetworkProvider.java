@@ -18,8 +18,12 @@
 package de.schildbach.pte;
 
 import java.nio.charset.Charset;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import de.schildbach.pte.dto.Point;
+import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
 
 /**
@@ -29,6 +33,18 @@ public abstract class AbstractNetworkProvider implements NetworkProvider
 {
 	protected static final Charset UTF_8 = Charset.forName("UTF-8");
 	protected static final Charset ISO_8859_1 = Charset.forName("ISO-8859-1");
+	protected static final Set<Product> ALL_EXCEPT_HIGHSPEED;
+
+	static
+	{
+		ALL_EXCEPT_HIGHSPEED = new HashSet<Product>(Product.ALL);
+		ALL_EXCEPT_HIGHSPEED.remove(Product.HIGH_SPEED_TRAIN);
+	}
+
+	public Collection<Product> defaultProducts()
+	{
+		return ALL_EXCEPT_HIGHSPEED;
+	}
 
 	public Style lineStyle(final String line)
 	{
