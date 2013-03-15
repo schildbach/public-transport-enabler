@@ -51,6 +51,29 @@ public class GvhProvider extends AbstractEfaProvider
 		return false;
 	}
 
+	@Override
+	protected String parseLine(final String mot, final String symbol, final String name, final String longName, final String trainType,
+			final String trainNum, final String trainName)
+	{
+		if ("0".equals(mot))
+		{
+			if ("S1".equals(symbol))
+				return "SS1";
+			if ("S11".equals(symbol))
+				return "SS11";
+			if ("S2".equals(symbol))
+				return "SS2";
+			if ("S21".equals(symbol))
+				return "SS21";
+			if ("S3".equals(symbol))
+				return "SS3";
+			if ("S31".equals(symbol))
+				return "SS31";
+		}
+
+		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
+	}
+
 	private static final Map<String, Style> LINES = new HashMap<String, Style>();
 
 	static

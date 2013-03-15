@@ -55,4 +55,19 @@ public class StvProvider extends AbstractEfaProvider
 	{
 		return xmlStopfinderRequest(new Location(LocationType.STATION, 0, null, constraint.toString()));
 	}
+
+	@Override
+	protected String parseLine(final String mot, final String symbol, final String name, final String longName, final String trainType,
+			final String trainNum, final String trainName)
+	{
+		if ("0".equals(mot))
+		{
+			if ("RR".equals(trainType)) // Tschechien
+				return "RRR" + trainNum;
+			if ("DPF".equals(trainType))
+				return "RDPF" + trainNum;
+		}
+
+		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
+	}
 }

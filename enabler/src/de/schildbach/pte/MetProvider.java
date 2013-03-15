@@ -60,6 +60,21 @@ public class MetProvider extends AbstractEfaProvider
 		return false;
 	}
 
+	@Override
+	protected String parseLine(final String mot, final String symbol, final String name, final String longName, final String trainType,
+			final String trainNum, final String trainName)
+	{
+		if ("0".equals(mot))
+		{
+			if ("Regional Train :".equals(longName))
+				return 'R' + symbol;
+			if ("Regional Train".equals(trainName))
+				return "R";
+		}
+
+		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
+	}
+
 	private static final Map<Character, Style> LINES = new HashMap<Character, Style>();
 
 	static

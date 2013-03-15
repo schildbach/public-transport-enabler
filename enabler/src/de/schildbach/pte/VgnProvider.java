@@ -53,6 +53,23 @@ public class VgnProvider extends AbstractEfaProvider
 	}
 
 	@Override
+	protected String parseLine(final String mot, final String symbol, final String name, final String longName, final String trainType,
+			final String trainNum, final String trainName)
+	{
+		if ("0".equals(mot))
+		{
+			if ("R5(z)".equals(trainNum))
+				return "RR5(z)";
+			if ("R7(z)".equals(trainNum))
+				return "RR7(z)";
+			if ("R8(z)".equals(trainNum))
+				return "RR8(z)";
+		}
+
+		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
+	}
+
+	@Override
 	protected String xsltTripRequestParameters(final Location from, final Location via, final Location to, final Date date, final boolean dep,
 			final int numConnections, final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility,
 			final Set<Option> options)

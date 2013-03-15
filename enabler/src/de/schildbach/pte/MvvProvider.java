@@ -61,22 +61,25 @@ public class MvvProvider extends AbstractEfaProvider
 	protected String parseLine(final String mot, final String symbol, final String name, final String longName, final String trainType,
 			final String trainNum, final String trainName)
 	{
-		if ("0".equals(mot) && longName.equals("Hamburg-Köln-Express"))
-			return "I" + longName;
+		if ("0".equals(mot))
+		{
+			if ("Mittelrheinbahn (trans regio)".equals(trainName))
+				return "RMiRhBa";
+			if ("Erfurter Bahn Express".equals(longName))
+				return "REBx";
+			if ("Süd-Thüringen-Bahn".equals(longName))
+				return "RSTB";
+			if ("agilis".equals(longName))
+				return "Ragilis";
+			if ("SBB".equals(trainName))
+				return "RSBB";
+			if ("A".equals(trainNum))
+				return "SA";
+			if ("DB AG".equals(trainName))
+				return '?' + symbol;
+		}
 
-		else if ("0".equals(mot) && longName.equals("Erfurter Bahn Express"))
-			return "R" + longName;
-		else if ("0".equals(mot) && longName.equals("VIAS GmbH"))
-			return "R" + longName;
-		else if ("0".equals(mot) && longName.equals("Vogtlandbahn"))
-			return "R" + longName;
-		else if ("0".equals(mot) && longName.equals("Süd-Thüringen-Bahn"))
-			return "R" + longName;
-		else if ("0".equals(mot) && longName.equals("erixx - Der Heidesprinter"))
-			return "R" + longName;
-
-		else
-			return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
+		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
 	}
 
 	private static final Map<String, Style> LINES = new HashMap<String, Style>();

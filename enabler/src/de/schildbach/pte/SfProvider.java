@@ -71,16 +71,39 @@ public class SfProvider extends AbstractEfaProvider
 	protected String parseLine(final String mot, final String symbol, final String name, final String longName, final String trainType,
 			final String trainNum, final String trainName)
 	{
-		if ("NORTHBOUND".equals(name))
-			return "?" + name;
-		else if ("SOUTHBOUND".equals(name))
-			return "?" + name;
-		else if ("EASTBOUND".equals(name))
-			return "?" + name;
-		else if ("WESTBOUND".equals(name))
-			return "?" + name;
-		else
-			return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
+		if ("0".equals(mot))
+		{
+			if ("Train".equals(trainName))
+				return "R" + symbol;
+
+			if ("Millbrae / Richmond".equals(symbol)) // BART
+				return 'U' + symbol;
+			if ("Richmond / Millbrae".equals(symbol)) // BART
+				return 'U' + symbol;
+			if ("Fremont / Richmond".equals(symbol)) // BART
+				return 'U' + symbol;
+			if ("Richmond / Fremont".equals(symbol)) // BART
+				return 'U' + symbol;
+			if ("Pittsburg Bay Point / SFO".equals(symbol)) // BART
+				return 'U' + symbol;
+			if ("SFO / Pittsburg Bay Point".equals(symbol)) // BART
+				return 'U' + symbol;
+			if ("Dublin Pleasanton / Daly City".equals(symbol)) // BART
+				return 'U' + symbol;
+			if ("Daly City / Dublin Pleasanton".equals(symbol)) // BART
+				return 'U' + symbol;
+			if ("Fremont / Daly City".equals(symbol)) // BART
+				return 'U' + symbol;
+			if ("Fremont / Daly City".equals(trainNum)) // BART
+				return 'U' + trainNum;
+			if ("Daly City / Fremont".equals(symbol)) // BART
+				return 'U' + symbol;
+
+			if ("Muni Rail".equals(trainName)) // Muni
+				return 'T' + symbol;
+		}
+
+		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
 	}
 
 	private static final Map<String, Style> LINES = new HashMap<String, Style>();
