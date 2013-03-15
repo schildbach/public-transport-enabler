@@ -31,6 +31,7 @@ import de.schildbach.pte.TlswProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 
@@ -81,7 +82,7 @@ public class TlswProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 60011202, 51850168, -1094302, "Upper Arncott",
 				"Bullingdon Prison"), null, new Location(LocationType.STATION, 60006576, 51856352, -1113127, "Lower Arncott", "The Plough"),
-				new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+				new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryConnectionsResult.Status.OK, result.status);
 		assertTrue(result.connections.size() > 0);

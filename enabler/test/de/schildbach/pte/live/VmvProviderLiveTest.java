@@ -31,6 +31,7 @@ import de.schildbach.pte.VmvProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 
@@ -80,7 +81,7 @@ public class VmvProviderLiveTest extends AbstractProviderLiveTest
 	public void shortConnection() throws Exception
 	{
 		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 44402006, null, "Schwerin Marienplatz"), null,
-				new Location(LocationType.STATION, 44402007, 53625272, 11409350, null, "Schlossblick"), new Date(), true, ALL_PRODUCTS,
+				new Location(LocationType.STATION, 44402007, 53625272, 11409350, null, "Schlossblick"), new Date(), true, Product.ALL,
 				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryConnectionsResult.Status.OK, result.status);

@@ -27,6 +27,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -55,6 +56,7 @@ import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Point;
+import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryConnectionsContext;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
@@ -178,7 +180,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		return 0;
 	}
 
-	protected abstract void setProductBits(StringBuilder productBits, char product);
+	protected abstract void setProductBits(StringBuilder productBits, Product product);
 
 	private static final Pattern P_SPLIT_ADDRESS = Pattern.compile("(\\d{4,5}\\s+[^,]+),\\s+(.*)");
 
@@ -789,8 +791,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	}
 
 	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final int numConnections, final String products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
-			throws IOException
+			final int numConnections, final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility,
+			final Set<Option> options) throws IOException
 	{
 		return queryConnectionsXml(from, via, to, date, dep, numConnections, products, walkSpeed, accessibility, options);
 	}
@@ -802,7 +804,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	}
 
 	protected final void appendConnectionsQueryUri(final StringBuilder uri, final Location from, final Location via, final Location to,
-			final Date date, final boolean dep, final String products, final Accessibility accessibility, final Set<Option> options)
+			final Date date, final boolean dep, final Collection<Product> products, final Accessibility accessibility, final Set<Option> options)
 	{
 		uri.append("?start=Suchen");
 
@@ -850,7 +852,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		{
 			for (int i = 0; i < numProductBits; i++)
 				productsStr.append('0');
-			for (final char p : products.toCharArray())
+			for (final Product p : products)
 				setProductBits(productsStr, p);
 		}
 		else
@@ -872,8 +874,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	}
 
 	protected final QueryConnectionsResult queryConnectionsXml(Location from, Location via, Location to, final Date date, final boolean dep,
-			final int numConnections, final String products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
-			throws IOException
+			final int numConnections, final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility,
+			final Set<Option> options) throws IOException
 	{
 		final ResultHeader header = new ResultHeader(SERVER_PRODUCT);
 
@@ -915,7 +917,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		{
 			for (int i = 0; i < numProductBits; i++)
 				productsStr.append('0');
-			for (final char p : products.toCharArray())
+			for (final Product p : products)
 				setProductBits(productsStr, p);
 		}
 		else
@@ -1487,7 +1489,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	}
 
 	protected final QueryConnectionsResult queryConnectionsBinary(Location from, Location via, Location to, final Date date, final boolean dep,
-			final int maxNumConnections, final String products, final WalkSpeed walkSpeed, final Accessibility accessibility,
+			final int maxNumConnections, final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility,
 			final Set<Option> options) throws IOException
 	{
 		final ResultHeader header = new ResultHeader(SERVER_PRODUCT);

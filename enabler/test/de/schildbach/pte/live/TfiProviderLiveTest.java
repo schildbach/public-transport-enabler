@@ -31,6 +31,7 @@ import de.schildbach.pte.TfiProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 
@@ -81,7 +82,7 @@ public class TfiProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 51013670, "Dublin City South",
 				"O'Connell Bridge (on Lower O'Connell Street)"), null, new Location(LocationType.STATION, 52003679, "Dublin City South",
-				"Dublin (Baggot Street)"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+				"Dublin (Baggot Street)"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryConnectionsResult.Status.OK, result.status);
 		assertTrue(result.connections.size() > 0);

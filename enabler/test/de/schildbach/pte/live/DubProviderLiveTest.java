@@ -31,6 +31,7 @@ import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 
 /**
@@ -71,7 +72,7 @@ public class DubProviderLiveTest extends AbstractProviderLiveTest
 	public void shortConnection() throws Exception
 	{
 		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 3505565, null, "Airport Terminal 1, Arrival"),
-				null, new Location(LocationType.STATION, 3505445, null, "Airport Terminal 3"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
+				null, new Location(LocationType.STATION, 3505445, null, "Airport Terminal 3"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryConnectionsResult.Status.OK, result.status);

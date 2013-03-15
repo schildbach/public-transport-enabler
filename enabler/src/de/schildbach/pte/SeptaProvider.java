@@ -33,6 +33,7 @@ import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryDeparturesResult.Status;
 import de.schildbach.pte.dto.ResultHeader;
@@ -75,28 +76,28 @@ public class SeptaProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected void setProductBits(final StringBuilder productBits, final char product)
+	protected void setProductBits(final StringBuilder productBits, final Product product)
 	{
-		if (product == 'I')
+		if (product == Product.HIGH_SPEED_TRAIN)
 		{
 		}
-		else if (product == 'R' || product == 'S')
+		else if (product == Product.REGIONAL_TRAIN || product == Product.SUBURBAN_TRAIN)
 		{
 			productBits.setCharAt(3, '1'); // Regional Rail
 		}
-		else if (product == 'U')
+		else if (product == Product.SUBWAY)
 		{
 			productBits.setCharAt(0, '1'); // Subway
 		}
-		else if (product == 'T')
+		else if (product == Product.TRAM)
 		{
 			productBits.setCharAt(1, '1'); // Trolley
 		}
-		else if (product == 'B')
+		else if (product == Product.BUS)
 		{
 			productBits.setCharAt(2, '1'); // Bus
 		}
-		else if (product == 'P' || product == 'F' || product == 'C')
+		else if (product == Product.ON_DEMAND || product == Product.FERRY || product == Product.CABLECAR)
 		{
 		}
 		else

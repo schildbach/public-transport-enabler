@@ -31,6 +31,7 @@ import de.schildbach.pte.TflProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 
@@ -80,7 +81,7 @@ public class TflProviderLiveTest extends AbstractProviderLiveTest
 	public void shortConnection() throws Exception
 	{
 		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 1008730, null, "King & Queen Wharf"), null,
-				new Location(LocationType.STATION, 1006433, null, "Edinburgh Court"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
+				new Location(LocationType.STATION, 1006433, null, "Edinburgh Court"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryConnectionsResult.Status.OK, result.status);
@@ -109,7 +110,7 @@ public class TflProviderLiveTest extends AbstractProviderLiveTest
 	public void postcodeConnection() throws Exception
 	{
 		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ANY, 0, null, "sw19 8ta"), null, new Location(
-				LocationType.STATION, 1016019, 51655903, -397249, null, "Watford (Herts), Watford Town Centre"), new Date(), true, ALL_PRODUCTS,
+				LocationType.STATION, 1016019, 51655903, -397249, null, "Watford (Herts), Watford Town Centre"), new Date(), true, Product.ALL,
 				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 	}

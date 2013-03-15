@@ -31,6 +31,7 @@ import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 
@@ -103,7 +104,7 @@ public class LinzProviderLiveTest extends AbstractProviderLiveTest
 	public void incompleteConnection() throws Exception
 	{
 		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ANY, 0, null, "linz"), null, new Location(LocationType.ANY,
-				0, null, "gel"), new Date(), true, ALL_PRODUCTS, WalkSpeed.FAST, Accessibility.NEUTRAL);
+				0, null, "gel"), new Date(), true, Product.ALL, WalkSpeed.FAST, Accessibility.NEUTRAL);
 		System.out.println(result);
 	}
 
@@ -111,7 +112,7 @@ public class LinzProviderLiveTest extends AbstractProviderLiveTest
 	public void shortConnection() throws Exception
 	{
 		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 0, null, "Linz Hauptbahnhof"), null, new Location(
-				LocationType.STATION, 0, null, "Linz Auwiesen"), new Date(), true, ALL_PRODUCTS, WalkSpeed.FAST, Accessibility.NEUTRAL);
+				LocationType.STATION, 0, null, "Linz Auwiesen"), new Date(), true, Product.ALL, WalkSpeed.FAST, Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryConnectionsResult.Status.OK, result.status);
 		assertTrue(result.connections.size() > 0);
@@ -139,7 +140,7 @@ public class LinzProviderLiveTest extends AbstractProviderLiveTest
 	public void longConnection() throws Exception
 	{
 		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 0, null, "Linz Auwiesen"), null, new Location(
-				LocationType.STATION, 0, null, "Linz Hafen"), new Date(), true, ALL_PRODUCTS, WalkSpeed.SLOW, Accessibility.NEUTRAL);
+				LocationType.STATION, 0, null, "Linz Hafen"), new Date(), true, Product.ALL, WalkSpeed.SLOW, Accessibility.NEUTRAL);
 		System.out.println(result);
 		// final QueryConnectionsResult laterResult = queryMoreConnections(provider, result.context, true);
 		// System.out.println(laterResult);

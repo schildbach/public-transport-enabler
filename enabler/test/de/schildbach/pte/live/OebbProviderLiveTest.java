@@ -31,6 +31,7 @@ import de.schildbach.pte.OebbProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 
@@ -93,7 +94,7 @@ public class OebbProviderLiveTest extends AbstractProviderLiveTest
 	public void shortConnection() throws Exception
 	{
 		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 1140101, null, "Linz"), null, new Location(
-				LocationType.STATION, 1190100, null, "Wien"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+				LocationType.STATION, 1190100, null, "Wien"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryConnectionsResult.Status.OK, result.status);
 		assertTrue(result.connections.size() > 0);
@@ -105,7 +106,7 @@ public class OebbProviderLiveTest extends AbstractProviderLiveTest
 	public void slowConnection() throws Exception
 	{
 		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ANY, 0, null, "Ramsen Zoll!"), null, new Location(
-				LocationType.ANY, 0, null, "Azuga!"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+				LocationType.ANY, 0, null, "Azuga!"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryConnectionsResult.Status.OK, result.status);
 		assertTrue(result.connections.size() > 0);
@@ -117,7 +118,7 @@ public class OebbProviderLiveTest extends AbstractProviderLiveTest
 	public void connectionWithFootway() throws Exception
 	{
 		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ANY, 0, null, "Graz, Haselweg!"), null, new Location(
-				LocationType.ANY, 0, null, "Innsbruck, Gumppstraße 69!"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+				LocationType.ANY, 0, null, "Innsbruck, Gumppstraße 69!"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryConnectionsResult.Status.OK, result.status);
 		assertTrue(result.connections.size() > 0);
@@ -129,7 +130,7 @@ public class OebbProviderLiveTest extends AbstractProviderLiveTest
 	public void connectionWithFootway2() throws Exception
 	{
 		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ANY, 0, null, "Wien, Krottenbachstraße 110!"), null,
-				new Location(LocationType.ADDRESS, 0, null, "Wien, Meidlinger Hauptstraße 1!"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
+				new Location(LocationType.ADDRESS, 0, null, "Wien, Meidlinger Hauptstraße 1!"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryConnectionsResult.Status.OK, result.status);

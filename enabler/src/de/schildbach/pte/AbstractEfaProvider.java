@@ -27,6 +27,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Currency;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -58,6 +59,7 @@ import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Point;
+import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryConnectionsContext;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
@@ -1770,7 +1772,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	}
 
 	protected String xsltTripRequestParameters(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final int numConnections, final String products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
+			final int numConnections, final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility,
+			final Set<Option> options)
 	{
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd", Locale.US);
 		final DateFormat TIME_FORMAT = new SimpleDateFormat("HHmm", Locale.US);
@@ -1809,34 +1812,34 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			uri.append("&includedMeans=checkbox");
 
 			boolean hasI = false;
-			for (final char p : products.toCharArray())
+			for (final Product p : products)
 			{
-				if (p == 'I' || p == 'R')
+				if (p == Product.HIGH_SPEED_TRAIN || p == Product.REGIONAL_TRAIN)
 				{
 					uri.append("&inclMOT_0=on");
-					if (p == 'I')
+					if (p == Product.HIGH_SPEED_TRAIN)
 						hasI = true;
 				}
 
-				if (p == 'S')
+				if (p == Product.SUBURBAN_TRAIN)
 					uri.append("&inclMOT_1=on");
 
-				if (p == 'U')
+				if (p == Product.SUBWAY)
 					uri.append("&inclMOT_2=on");
 
-				if (p == 'T')
+				if (p == Product.TRAM)
 					uri.append("&inclMOT_3=on&inclMOT_4=on");
 
-				if (p == 'B')
+				if (p == Product.BUS)
 					uri.append("&inclMOT_5=on&inclMOT_6=on&inclMOT_7=on");
 
-				if (p == 'P')
+				if (p == Product.ON_DEMAND)
 					uri.append("&inclMOT_10=on");
 
-				if (p == 'F')
+				if (p == Product.FERRY)
 					uri.append("&inclMOT_9=on");
 
-				if (p == 'C')
+				if (p == Product.CABLECAR)
 					uri.append("&inclMOT_8=on");
 			}
 
@@ -1876,8 +1879,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	}
 
 	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final int numConnections, final String products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
-			throws IOException
+			final int numConnections, final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility,
+			final Set<Option> options) throws IOException
 	{
 
 		final String parameters = xsltTripRequestParameters(from, via, to, date, dep, numConnections, products, walkSpeed, accessibility, options);

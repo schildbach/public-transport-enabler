@@ -18,6 +18,7 @@
 package de.schildbach.pte.live;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -26,6 +27,7 @@ import de.schildbach.pte.NetworkProvider.Accessibility;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryConnectionsContext;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
@@ -35,8 +37,6 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
  */
 public abstract class AbstractProviderLiveTest
 {
-	protected static final String ALL_PRODUCTS = "IRSUTBFC";
-
 	protected final NetworkProvider provider;
 
 	public AbstractProviderLiveTest(final NetworkProvider provider)
@@ -68,7 +68,7 @@ public abstract class AbstractProviderLiveTest
 	}
 
 	protected final QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date,
-			final boolean dep, final String products, final WalkSpeed walkSpeed, final Accessibility accessibility) throws IOException
+			final boolean dep, final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility) throws IOException
 	{
 		return provider.queryConnections(from, via, to, date, dep, 4, products, walkSpeed, accessibility, null);
 	}

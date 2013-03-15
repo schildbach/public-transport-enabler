@@ -31,6 +31,7 @@ import de.schildbach.pte.RmvProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 
@@ -88,7 +89,7 @@ public class RmvProviderLiveTest extends AbstractProviderLiveTest
 	public void shortConnection() throws Exception
 	{
 		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 3000001, null, "Hauptwache"), null, new Location(
-				LocationType.STATION, 3000912, null, "Südbahnhof"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+				LocationType.STATION, 3000912, null, "Südbahnhof"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryConnectionsResult.Status.OK, result.status);
 		assertTrue(result.connections.size() > 0);
@@ -159,7 +160,7 @@ public class RmvProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryConnectionsResult result = queryConnections(
 				new Location(LocationType.STATION, 3029079, 50017679, 8229480, "Mainz", "An den Dünen"), null, new Location(LocationType.STATION,
-						3013508, 50142890, 8895203, "Hanau", "Beethovenplatz"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
+						3013508, 50142890, 8895203, "Hanau", "Beethovenplatz"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
 				Accessibility.BARRIER_FREE);
 		System.out.println(result);
 		assertEquals(QueryConnectionsResult.Status.OK, result.status);
@@ -176,7 +177,7 @@ public class RmvProviderLiveTest extends AbstractProviderLiveTest
 	public void shortConnectionByName() throws Exception
 	{
 		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ANY, 0, null, "Frankfurt Bockenheimer Warte!"), null,
-				new Location(LocationType.ANY, 0, null, "Frankfurt Hauptbahnhof!"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
+				new Location(LocationType.ANY, 0, null, "Frankfurt Hauptbahnhof!"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
 	}

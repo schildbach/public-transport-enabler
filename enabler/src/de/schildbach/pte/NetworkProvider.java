@@ -18,6 +18,7 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -25,6 +26,7 @@ import java.util.Set;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Point;
+import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryConnectionsContext;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
@@ -132,8 +134,8 @@ public interface NetworkProvider
 	 * @return result object that can contain alternatives to clear up ambiguousnesses, or contains possible connections
 	 * @throws IOException
 	 */
-	QueryConnectionsResult queryConnections(Location from, Location via, Location to, Date date, boolean dep, int numConnections, String products,
-			WalkSpeed walkSpeed, Accessibility accessibility, Set<Option> options) throws IOException;
+	QueryConnectionsResult queryConnections(Location from, Location via, Location to, Date date, boolean dep, int numConnections,
+			Collection<Product> products, WalkSpeed walkSpeed, Accessibility accessibility, Set<Option> options) throws IOException;
 
 	/**
 	 * Query more connections (e.g. earlier or later)

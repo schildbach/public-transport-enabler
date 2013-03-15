@@ -31,6 +31,7 @@ import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 
@@ -112,7 +113,7 @@ public class GvhProviderLiveTest extends AbstractProviderLiveTest
 	public void incompleteConnection() throws Exception
 	{
 		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ANY, 0, null, "hann"), null, new Location(LocationType.ANY,
-				0, null, "laat"), new Date(), true, ALL_PRODUCTS, WalkSpeed.FAST, Accessibility.NEUTRAL);
+				0, null, "laat"), new Date(), true, Product.ALL, WalkSpeed.FAST, Accessibility.NEUTRAL);
 		System.out.println(result);
 	}
 
@@ -120,7 +121,7 @@ public class GvhProviderLiveTest extends AbstractProviderLiveTest
 	public void shortConnection() throws Exception
 	{
 		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 25000031, null, "Hannover Hauptbahnhof"), null,
-				new Location(LocationType.STATION, 25001141, null, "Hannover Bismarckstraße"), new Date(), true, ALL_PRODUCTS, WalkSpeed.FAST,
+				new Location(LocationType.STATION, 25001141, null, "Hannover Bismarckstraße"), new Date(), true, Product.ALL, WalkSpeed.FAST,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryConnectionsResult.Status.OK, result.status);
@@ -150,7 +151,7 @@ public class GvhProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryConnectionsResult result = queryConnections(
 				new Location(LocationType.ANY, 0, 53069619, 8799202, null, "bremen, neustadtswall 12"), null, new Location(LocationType.ADDRESS, 0,
-						53104124, 8788575, null, "Bremen Glücksburger Straße 37"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
+						53104124, 8788575, null, "Bremen Glücksburger Straße 37"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
@@ -162,7 +163,7 @@ public class GvhProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, 53622859, 10133545, null,
 				"Zamenhofweg 14, 22159 Hamburg, Deutschland"), null, new Location(LocationType.ADDRESS, 0, 53734260, 9674990, null,
-				"Lehmkuhlen 5, 25337 Elmshorn, Deutschland"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+				"Lehmkuhlen 5, 25337 Elmshorn, Deutschland"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);

@@ -30,6 +30,7 @@ import de.schildbach.pte.VbnProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 
@@ -79,7 +80,7 @@ public class VbnProviderLiveTest extends AbstractProviderLiveTest
 	public void shortConnection() throws Exception
 	{
 		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 8096109, null, "Oldenburg"), null, new Location(
-				LocationType.STATION, 625398, null, "Bremerhaven"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+				LocationType.STATION, 625398, null, "Bremerhaven"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		assertEquals(QueryConnectionsResult.Status.OK, result.status);
 		System.out.println(result);
 		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
@@ -90,7 +91,7 @@ public class VbnProviderLiveTest extends AbstractProviderLiveTest
 	public void connectionDateOutsideTimetablePeriod() throws Exception
 	{
 		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 8096109, null, "Oldenburg"), null, new Location(
-				LocationType.STATION, 625398, null, "Bremerhaven"), new Date(1155822689759l), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
+				LocationType.STATION, 625398, null, "Bremerhaven"), new Date(1155822689759l), true, Product.ALL, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		assertEquals(QueryConnectionsResult.Status.INVALID_DATE, result.status);
 	}

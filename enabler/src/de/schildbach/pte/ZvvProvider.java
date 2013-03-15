@@ -27,6 +27,7 @@ import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.dto.Style.Shape;
@@ -86,38 +87,38 @@ public class ZvvProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected void setProductBits(final StringBuilder productBits, final char product)
+	protected void setProductBits(final StringBuilder productBits, final Product product)
 	{
-		if (product == 'I')
+		if (product == Product.HIGH_SPEED_TRAIN)
 		{
 			productBits.setCharAt(0, '1'); // ICE/EN/CNL/CIS/ES/MET/NZ/PEN/TGV/THA/X2
 			productBits.setCharAt(1, '1'); // EuroCity/InterCity/InterCityNight/SuperCity
 		}
-		else if (product == 'R')
+		else if (product == Product.REGIONAL_TRAIN)
 		{
 			productBits.setCharAt(2, '1'); // InterRegio
 			productBits.setCharAt(3, '1'); // Schnellzug/RegioExpress
 		}
-		else if (product == 'S')
+		else if (product == Product.SUBURBAN_TRAIN)
 		{
 			productBits.setCharAt(5, '1'); // S-Bahn/StadtExpress/Eilzug/Regionalzug
 		}
-		else if (product == 'U')
+		else if (product == Product.SUBWAY)
 		{
 		}
-		else if (product == 'T')
+		else if (product == Product.TRAM)
 		{
 			productBits.setCharAt(9, '1'); // Tram
 		}
-		else if (product == 'B' || product == 'P')
+		else if (product == Product.BUS || product == Product.ON_DEMAND)
 		{
 			productBits.setCharAt(6, '1'); // Postauto/Bus
 		}
-		else if (product == 'F')
+		else if (product == Product.FERRY)
 		{
 			productBits.setCharAt(4, '1'); // Schiff/Fähre/Dampfschiff
 		}
-		else if (product == 'C')
+		else if (product == Product.CABLECAR)
 		{
 			productBits.setCharAt(7, '1'); // Luftseilbahn/Standseilbahn/Bergbahn
 		}

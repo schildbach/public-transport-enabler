@@ -17,10 +17,12 @@
 
 package de.schildbach.pte;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 
 import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.dto.Product;
 
 /**
  * @author Andreas Schildbach
@@ -52,7 +54,8 @@ public class VgnProvider extends AbstractEfaProvider
 
 	@Override
 	protected String xsltTripRequestParameters(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final int numConnections, final String products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
+			final int numConnections, final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility,
+			final Set<Option> options)
 	{
 		return super.xsltTripRequestParameters(from, via, to, date, dep, numConnections, products, walkSpeed, accessibility, options)
 				+ "&itdLPxx_showTariffLevel=1";

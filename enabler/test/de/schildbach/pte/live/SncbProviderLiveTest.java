@@ -28,6 +28,7 @@ import de.schildbach.pte.SncbProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 
@@ -113,7 +114,7 @@ public class SncbProviderLiveTest extends AbstractProviderLiveTest
 	public void connectionFromAddress() throws Exception
 	{
 		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, null, "Bruxelles - Haren, Rue Paul Janson 9"),
-				null, new Location(LocationType.STATION, 8500010, null, "Basel"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
+				null, new Location(LocationType.STATION, 8500010, null, "Basel"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result.status + "  " + result.connections);
 

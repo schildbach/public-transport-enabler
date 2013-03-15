@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Currency;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -32,6 +33,7 @@ import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryConnectionsContext;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryConnectionsResult.Status;
@@ -122,8 +124,8 @@ public class SadProvider extends AbstractNetworkProvider {
 		return list;
 	}
 	
-	public QueryConnectionsResult queryConnections(Location from, Location via, Location to, Date date, boolean dep, final int numConnections, String products,
-			WalkSpeed walkSpeed, Accessibility accessibility, Set<Option> options) throws IOException {
+	public QueryConnectionsResult queryConnections(Location from, Location via, Location to, Date date, boolean dep, final int numConnections,
+			Collection<Product> products, WalkSpeed walkSpeed, Accessibility accessibility, Set<Option> options) throws IOException {
 
 		// Select correct SOAP method depending on the dep flag
 		final String soapMethod = dep ? "searchCollPartenza" : "searchCollArrivo";

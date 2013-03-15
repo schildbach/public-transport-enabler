@@ -28,6 +28,7 @@ import de.schildbach.pte.SeptaProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 
@@ -77,7 +78,7 @@ public class SeptaProviderLiveTest extends AbstractProviderLiveTest
 	public void shortConnection() throws Exception
 	{
 		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 1021532, null, "30th St Station"), null,
-				new Location(LocationType.STATION, 1001392, null, "15th St Station"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
+				new Location(LocationType.STATION, 1001392, null, "15th St Station"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
@@ -88,7 +89,7 @@ public class SeptaProviderLiveTest extends AbstractProviderLiveTest
 	public void addressConnection() throws Exception
 	{
 		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, 40015670, -75209400, "Philadelphia 19127",
-				"3601 Main St"), null, new Location(LocationType.STATION, 2090227, null, "Main Street"), new Date(), true, ALL_PRODUCTS,
+				"3601 Main St"), null, new Location(LocationType.STATION, 2090227, null, "Main Street"), new Date(), true, Product.ALL,
 				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);

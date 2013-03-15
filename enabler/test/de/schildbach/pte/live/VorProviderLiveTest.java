@@ -31,6 +31,7 @@ import de.schildbach.pte.VorProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 
@@ -89,7 +90,7 @@ public class VorProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryConnectionsResult result = queryConnections(
 				new Location(LocationType.STATION, 60200657, 48200756, 16369001, "Wien", "Karlsplatz"), null, new Location(LocationType.STATION,
-						60201094, 48198612, 16367719, "Wien", "Resselgasse"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+						60201094, 48198612, 16367719, "Wien", "Resselgasse"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryConnectionsResult.Status.OK, result.status);
 		assertTrue(result.connections.size() > 0);
@@ -117,7 +118,7 @@ public class VorProviderLiveTest extends AbstractProviderLiveTest
 	public void connectionBetweenCoordinates() throws Exception
 	{
 		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, 48180281, 16333551), null, new Location(
-				LocationType.ADDRESS, 0, 48240452, 16444788), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+				LocationType.ADDRESS, 0, 48240452, 16444788), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);

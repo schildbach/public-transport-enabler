@@ -28,6 +28,7 @@ import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 
@@ -77,7 +78,7 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest
 	public void shortConnection() throws Exception
 	{
 		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 11063, null, "Leipzig, Johannisplatz"), null,
-				new Location(LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
+				new Location(LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
 
@@ -92,7 +93,7 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 8010205, 51346546, 12383333, null, "Leipzig Hbf"),
 				null, new Location(LocationType.STATION, 8012183, 51423340, 12223423, null, "Leipzig/Halle Flughafen"), new Date(), true,
-				ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+				Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 
 		if (!result.context.canQueryLater())
@@ -105,7 +106,7 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest
 	public void outdatedConnection() throws Exception
 	{
 		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 13002, null, "Leipzig, Augustusplatz"), null,
-				new Location(LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(2011, 1, 1), true, ALL_PRODUCTS, WalkSpeed.NORMAL,
+				new Location(LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(2011, 1, 1), true, Product.ALL, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
 
@@ -119,7 +120,7 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest
 	public void ambiguousConnection() throws Exception
 	{
 		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ANY, 0, null, "Platz"), null, new Location(
-				LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+				LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 
 		if (!result.context.canQueryLater())
@@ -132,7 +133,7 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest
 	public void sameStationConnection() throws Exception
 	{
 		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 8010205, null, "Leipzig Hbf"), null, new Location(
-				LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(), true, ALL_PRODUCTS, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+				LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 
 		if (!result.context.canQueryLater())
@@ -145,7 +146,7 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest
 	public void addressConnection() throws Exception
 	{
 		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, 51334078, 12478331, "04319 Leipzig-Engelsdorf",
-				"August-Bebel-Platz"), null, new Location(LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(), true, ALL_PRODUCTS,
+				"August-Bebel-Platz"), null, new Location(LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(), true, Product.ALL,
 				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 
