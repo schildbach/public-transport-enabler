@@ -55,10 +55,4 @@ public class NaldoProvider extends AbstractEfaProvider
 	{
 		return xmlStopfinderRequest(new Location(LocationType.STATION, 0, null, constraint.toString()));
 	}
-
-	@Override
-	protected String parseLine(final String mot, final String name, final String longName, final String noTrainName)
-	{
-		return super.parseLine(mot, name, longName, noTrainName);
-	}
 }

@@ -56,7 +56,7 @@ public class MvvProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	protected String parseLine(final String mot, final String name, final String longName, final String noTrainName)
+	protected String parseLine(final String mot, final String symbol, final String name, final String longName, final String trainName)
 	{
 		if ("0".equals(mot) && longName.equals("Hamburg-Köln-Express"))
 			return "I" + longName;
@@ -73,7 +73,7 @@ public class MvvProvider extends AbstractEfaProvider
 			return "R" + longName;
 
 		else
-			return super.parseLine(mot, name, longName, noTrainName);
+			return super.parseLine(mot, symbol, name, longName, trainName);
 	}
 
 	private static final Map<String, Style> LINES = new HashMap<String, Style>();

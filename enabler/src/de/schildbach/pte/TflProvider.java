@@ -57,65 +57,65 @@ public class TflProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	protected String parseLine(final String mot, final String name, final String longName, final String noTrainName)
+	protected String parseLine(final String mot, final String symbol, final String name, final String longName, final String trainName)
 	{
-		if ("0".equals(mot) && "First Hull Trains".equals(noTrainName))
+		if ("0".equals(mot) && "First Hull Trains".equals(trainName))
 			return "I" + name;
 
-		else if ("0".equals(mot) && ("Southern".equals(noTrainName) || "=SN".equals(noTrainName)))
+		else if ("0".equals(mot) && ("Southern".equals(trainName) || "=SN".equals(trainName)))
 			return "R" + name;
-		else if ("0".equals(mot) && ("Southeastern".equals(noTrainName) || "=SE".equals(noTrainName)))
+		else if ("0".equals(mot) && ("Southeastern".equals(trainName) || "=SE".equals(trainName)))
 			return "R" + name;
-		else if ("0".equals(mot) && ("South West Trains".equals(noTrainName) || "=SW".equals(noTrainName)))
+		else if ("0".equals(mot) && ("South West Trains".equals(trainName) || "=SW".equals(trainName)))
 			return "R" + name;
-		else if ("0".equals(mot) && ("Greater Anglia".equals(noTrainName) || "=LE".equals(noTrainName)))
+		else if ("0".equals(mot) && ("Greater Anglia".equals(trainName) || "=LE".equals(trainName)))
 			return "R" + name;
-		else if ("0".equals(mot) && ("First Great Western".equals(noTrainName) || "=GW".equals(noTrainName)))
+		else if ("0".equals(mot) && ("First Great Western".equals(trainName) || "=GW".equals(trainName)))
 			return "R" + name;
-		else if ("0".equals(mot) && ("First Capital Connect".equals(noTrainName) || "=FC".equals(noTrainName)))
+		else if ("0".equals(mot) && ("First Capital Connect".equals(trainName) || "=FC".equals(trainName)))
 			return "R" + name;
-		else if ("0".equals(mot) && ("Northern Rail".equals(noTrainName) || "=NT".equals(noTrainName)))
+		else if ("0".equals(mot) && ("Northern Rail".equals(trainName) || "=NT".equals(trainName)))
 			return "R" + name;
-		else if ("0".equals(mot) && "Chiltern Railways".equals(noTrainName))
+		else if ("0".equals(mot) && "Chiltern Railways".equals(trainName))
 			return "R" + name;
-		else if ("0".equals(mot) && "Heathrow Connect".equals(noTrainName))
+		else if ("0".equals(mot) && "Heathrow Connect".equals(trainName))
 			return "R" + name;
-		else if ("0".equals(mot) && ("Heathrow Express".equals(noTrainName) || "=HX".equals(noTrainName)))
+		else if ("0".equals(mot) && ("Heathrow Express".equals(trainName) || "=HX".equals(trainName)))
 			return "R" + name;
-		else if ("0".equals(mot) && "Gatwick Express".equals(noTrainName))
+		else if ("0".equals(mot) && "Gatwick Express".equals(trainName))
 			return "R" + name;
-		else if ("0".equals(mot) && ("Merseyrail".equals(noTrainName) || "=ME".equals(noTrainName)))
+		else if ("0".equals(mot) && ("Merseyrail".equals(trainName) || "=ME".equals(trainName)))
 			return "R" + name;
-		else if ("0".equals(mot) && ("East Coast".equals(noTrainName) || "=GR".equals(noTrainName)))
+		else if ("0".equals(mot) && ("East Coast".equals(trainName) || "=GR".equals(trainName)))
 			return "R" + name;
-		else if ("0".equals(mot) && "Cross Country".equals(noTrainName))
+		else if ("0".equals(mot) && "Cross Country".equals(trainName))
 			return "R" + name;
-		else if ("0".equals(mot) && ("East Midlands Trains".equals(noTrainName) || "=EM".equals(noTrainName)))
+		else if ("0".equals(mot) && ("East Midlands Trains".equals(trainName) || "=EM".equals(trainName)))
 			return "R" + name;
-		else if ("0".equals(mot) && ("Arriva Trains Wales".equals(noTrainName) || "=AW".equals(noTrainName)))
+		else if ("0".equals(mot) && ("Arriva Trains Wales".equals(trainName) || "=AW".equals(trainName)))
 			return "R" + name;
-		else if ("0".equals(mot) && ("First TransPennine Express".equals(noTrainName) || "=TP".equals(noTrainName)))
+		else if ("0".equals(mot) && ("First TransPennine Express".equals(trainName) || "=TP".equals(trainName)))
 			return "R" + name;
-		else if ("0".equals(mot) && ("ScotRail".equals(noTrainName) || "=SR".equals(noTrainName)))
+		else if ("0".equals(mot) && ("ScotRail".equals(trainName) || "=SR".equals(trainName)))
 			return "R" + name;
-		else if ("0".equals(mot) && ("London Midland".equals(noTrainName) || "=LM".equals(noTrainName)))
+		else if ("0".equals(mot) && ("London Midland".equals(trainName) || "=LM".equals(trainName)))
 			return "R" + name;
-		else if ("0".equals(mot) && ("c2c".equals(noTrainName) || "=CC".equals(noTrainName)))
+		else if ("0".equals(mot) && ("c2c".equals(trainName) || "=CC".equals(trainName)))
 			return "R" + name;
-		else if ("0".equals(mot) && "Grand Central".equals(noTrainName))
+		else if ("0".equals(mot) && "Grand Central".equals(trainName))
 			return "R" + name;
-		else if ("0".equals(mot) && ("Virgin Trains".equals(noTrainName) || "=VT".equals(noTrainName)))
+		else if ("0".equals(mot) && ("Virgin Trains".equals(trainName) || "=VT".equals(trainName)))
 			return "R" + name;
-		else if ("0".equals(mot) && "Island Line".equals(noTrainName))
+		else if ("0".equals(mot) && "Island Line".equals(trainName))
 			return "R" + name;
-		else if ("0".equals(mot) && ("Chiltern Railways".equals(noTrainName) || "=CH".equals(noTrainName)))
+		else if ("0".equals(mot) && ("Chiltern Railways".equals(trainName) || "=CH".equals(trainName)))
 			return "R" + name;
 
-		else if ("0".equals(mot) && "London Overground".equals(noTrainName))
+		else if ("0".equals(mot) && "London Overground".equals(trainName))
 			return "S" + name;
 
 		else
-			return super.parseLine(mot, name, longName, noTrainName);
+			return super.parseLine(mot, symbol, name, longName, trainName);
 	}
 
 	private static final Map<String, Style> LINES = new HashMap<String, Style>();

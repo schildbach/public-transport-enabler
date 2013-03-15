@@ -761,45 +761,45 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private static final Pattern P_LINE_Y = Pattern.compile("\\d+Y");
 	private static final Pattern P_LINE_SEV = Pattern.compile("SEV.*");
 
-	protected String parseLine(final String mot, final String name, final String longName, final String noTrainName)
+	protected String parseLine(final String mot, String symbol, final String name, final String longName, final String trainName)
 	{
 		if (mot == null)
 		{
-			if (noTrainName != null)
+			if (trainName != null)
 			{
 				final String str = name != null ? name : "";
-				if (noTrainName.equals("S-Bahn"))
+				if (trainName.equals("S-Bahn"))
 					return 'S' + str;
-				if (noTrainName.equals("U-Bahn"))
+				if (trainName.equals("U-Bahn"))
 					return 'U' + str;
-				if (noTrainName.equals("Straßenbahn"))
+				if (trainName.equals("Straßenbahn"))
 					return 'T' + str;
-				if (noTrainName.equals("Badner Bahn"))
+				if (trainName.equals("Badner Bahn"))
 					return 'T' + str;
-				if (noTrainName.equals("Stadtbus"))
+				if (trainName.equals("Stadtbus"))
 					return 'B' + str;
-				if (noTrainName.equals("Citybus"))
+				if (trainName.equals("Citybus"))
 					return 'B' + str;
-				if (noTrainName.equals("Regionalbus"))
+				if (trainName.equals("Regionalbus"))
 					return 'B' + str;
-				if (noTrainName.equals("ÖBB-Postbus"))
+				if (trainName.equals("ÖBB-Postbus"))
 					return 'B' + str;
-				if (noTrainName.equals("Autobus"))
+				if (trainName.equals("Autobus"))
 					return 'B' + str;
-				if (noTrainName.equals("Discobus"))
+				if (trainName.equals("Discobus"))
 					return 'B' + str;
-				if (noTrainName.equals("Nachtbus"))
+				if (trainName.equals("Nachtbus"))
 					return 'B' + str;
-				if (noTrainName.equals("Anrufsammeltaxi"))
+				if (trainName.equals("Anrufsammeltaxi"))
 					return 'B' + str;
-				if (noTrainName.equals("Ersatzverkehr"))
+				if (trainName.equals("Ersatzverkehr"))
 					return 'B' + str;
-				if (noTrainName.equals("Vienna Airport Lines"))
+				if (trainName.equals("Vienna Airport Lines"))
 					return 'B' + str;
 			}
 
-			throw new IllegalStateException("cannot normalize mot '" + mot + "' name '" + name + "' long '" + longName + "' noTrainName '"
-					+ noTrainName + "'");
+			throw new IllegalStateException("cannot normalize mot='" + mot + "' symbol='" + symbol + "' name='" + name + "' long='" + longName
+					+ "' trainName='" + trainName + "'");
 		}
 
 		final int t = Integer.parseInt(mot);
@@ -855,13 +855,13 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return 'I' + name;
 			if ("ES".equals(type)) // Eurostar Italia
 				return 'I' + name;
-			if ("Eurocity".equals(noTrainName)) // Liechtenstein
+			if ("Eurocity".equals(trainName)) // Liechtenstein
 				return 'I' + name;
-			if ("EuroNight".equals(noTrainName)) // Liechtenstein
+			if ("EuroNight".equals(trainName)) // Liechtenstein
 				return 'I' + name;
-			if ("railjet".equals(noTrainName)) // Liechtenstein
+			if ("railjet".equals(trainName)) // Liechtenstein
 				return 'I' + name;
-			if ("ÖBB InterCity".equals(noTrainName)) // Liechtenstein
+			if ("ÖBB InterCity".equals(trainName)) // Liechtenstein
 				return 'I' + name;
 
 			if (type.equals("IR")) // Interregio
@@ -1162,11 +1162,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return 'R' + name;
 			if ("CAPITOL".equals(name)) // San Francisco
 				return 'R' + name;
-			if ("Train".equals(noTrainName) || "Train".equals(type)) // San Francisco
+			if ("Train".equals(trainName) || "Train".equals(type)) // San Francisco
 				return "R" + name;
 			if ("Regional Train :".equals(longName))
 				return "R";
-			if ("Regional Train".equals(noTrainName)) // Melbourne
+			if ("Regional Train".equals(trainName)) // Melbourne
 				return "R" + name;
 			if ("Regional".equals(type)) // Melbourne
 				return "R" + name;
@@ -1174,9 +1174,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return 'R' + name;
 			if ("Chiemsee-Bahn".equals(type))
 				return 'R' + name;
-			if ("Regionalzug".equals(noTrainName)) // Liechtenstein
+			if ("Regionalzug".equals(trainName)) // Liechtenstein
 				return 'R' + name;
-			if ("RegionalExpress".equals(noTrainName)) // Liechtenstein
+			if ("RegionalExpress".equals(trainName)) // Liechtenstein
 				return 'R' + name;
 			if ("Ostdeutsche".equals(type)) // Bayern
 				return 'R' + type;
@@ -1348,9 +1348,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return 'T' + name;
 			if ("Cable".equals(type)) // San Francisco
 				return 'T' + name;
-			if ("Muni Rail".equals(noTrainName)) // San Francisco
+			if ("Muni Rail".equals(trainName)) // San Francisco
 				return 'T' + name;
-			if ("Cable Car".equals(noTrainName)) // San Francisco
+			if ("Cable Car".equals(trainName)) // San Francisco
 				return 'T' + name;
 
 			if ("BUS".equals(type) || "Bus".equals(type))
@@ -1361,7 +1361,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return 'B' + str;
 			if ("Ersatzverkehr".equals(type)) // Rhein-Ruhr
 				return 'B' + str;
-			if ("Bus replacement".equals(noTrainName)) // Transport Line
+			if ("Bus replacement".equals(trainName)) // Transport Line
 				return 'B' + str;
 
 			if ("HBL".equals(type)) // Hamburg Hafenfähre
@@ -1373,14 +1373,14 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			if (type.length() == 0)
 				return "?";
 			if (P_LINE_NUMBER.matcher(type).matches())
-				return "?";
+				return "?" + ParserUtils.firstNotEmpty(symbol, name);
 			if (P_LINE_Y.matcher(name).matches())
-				return "?" + name;
+				return "?" + ParserUtils.firstNotEmpty(symbol, name);
 			if ("Sonderverkehr Red Bull".equals(name))
 				return "?" + name;
 
-			throw new IllegalStateException("cannot normalize mot '" + mot + "' name '" + name + "' long '" + longName + "' noTrainName '"
-					+ noTrainName + "' type '" + type + "' str '" + str + "'");
+			throw new IllegalStateException("cannot normalize mot='" + mot + "' symbol='" + symbol + "' name='" + name + "' long='" + longName
+					+ "' trainName='" + trainName + "' type='" + type + "' str='" + str + "'");
 		}
 
 		if (t == 1)
@@ -1413,10 +1413,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			return 'F' + name;
 
 		if (t == 11 || t == -1)
-			return '?' + name;
+			return '?' + ParserUtils.firstNotEmpty(symbol, name);
 
-		throw new IllegalStateException("cannot normalize mot '" + mot + "' name '" + name + "' long '" + longName + "' noTrainName '" + noTrainName
-				+ "'");
+		throw new IllegalStateException("cannot normalize mot='" + mot + "' symbol='" + symbol + "' name='" + name + "' long='" + longName
+				+ "' trainName='" + trainName + "'");
 	}
 
 	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
@@ -1708,6 +1708,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	{
 		XmlPullUtil.require(pp, "itdServingLine");
 		final String slMotType = pp.getAttributeValue(null, "motType");
+		final String slSymbol = pp.getAttributeValue(null, "symbol");
 		final String slNumber = pp.getAttributeValue(null, "number");
 		final String slStateless = pp.getAttributeValue(null, "stateless");
 		final String slTrainType = pp.getAttributeValue(null, "trainType");
@@ -1752,7 +1753,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		final String trainName = ParserUtils.firstNotEmpty(slTrainName, itdTrainName, slTrainType, itdTrainType);
 
-		final String label = parseLine(slMotType, slNumber, slNumber, trainName);
+		final String label = parseLine(slMotType, slSymbol, slNumber, slNumber, trainName);
+
 		return new Line(slStateless, label, lineStyle(label), itdMessage);
 	}
 
@@ -2235,7 +2237,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							final String motTrainName = pp.getAttributeValue(null, "trainName");
 							final String motTrainType = pp.getAttributeValue(null, "trainType");
 							final String trainName = ParserUtils.firstNotEmpty(motTrainName, motTrainType);
-							lineLabel = parseLine(motType, motShortName, motName, trainName);
+							lineLabel = parseLine(motType, motSymbol, motShortName, motName, trainName);
 						}
 						XmlPullUtil.enter(pp, "itdMeansOfTransport");
 						XmlPullUtil.require(pp, "motDivaParams");
