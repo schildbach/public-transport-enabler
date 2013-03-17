@@ -223,23 +223,23 @@ public class ZvvProvider extends AbstractHafasProvider
 			final String type = m.group(2);
 
 			if ("Bus".equals(type))
-				return newLine('B', stripPrefix(number, "Bus"));
+				return newLine('B', stripPrefix(number, "Bus"), null);
 			if ("Bus-NF".equals(type))
-				return newLine('B', stripPrefix(number, "Bus", "Bus-NF"), Line.Attr.WHEEL_CHAIR_ACCESS);
+				return newLine('B', stripPrefix(number, "Bus", "Bus-NF"), null, Line.Attr.WHEEL_CHAIR_ACCESS);
 			if ("Tro".equals(type) || "Trolley".equals(type))
-				return newLine('B', stripPrefix(number, "Tro"));
+				return newLine('B', stripPrefix(number, "Tro"), null);
 			if ("Tro-NF".equals(type))
-				return newLine('B', stripPrefix(number, "Tro", "Tro-NF"), Line.Attr.WHEEL_CHAIR_ACCESS);
+				return newLine('B', stripPrefix(number, "Tro", "Tro-NF"), null, Line.Attr.WHEEL_CHAIR_ACCESS);
 			if ("Trm".equals(type))
-				return newLine('T', stripPrefix(number, "Trm"));
+				return newLine('T', stripPrefix(number, "Trm"), null);
 			if ("Trm-NF".equals(type))
-				return newLine('T', stripPrefix(number, "Trm", "Trm-NF"), Line.Attr.WHEEL_CHAIR_ACCESS);
+				return newLine('T', stripPrefix(number, "Trm", "Trm-NF"), null, Line.Attr.WHEEL_CHAIR_ACCESS);
 
 			if (type.length() > 0)
 			{
 				final char normalizedType = normalizeType(type);
 				if (normalizedType != 0)
-					return newLine(normalizedType, number);
+					return newLine(normalizedType, number, null);
 			}
 
 			throw new IllegalStateException("cannot normalize type " + type + " number " + number + " line#type " + lineAndType);

@@ -721,9 +721,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						// could check for type consistency here
 						final String lineName = prodLine.label.substring(1);
 						if (prodLine.attrs != null)
-							line = newLine(classChar, lineName, prodLine.attrs.toArray(new Line.Attr[0]));
+							line = newLine(classChar, lineName, null, prodLine.attrs.toArray(new Line.Attr[0]));
 						else
-							line = newLine(classChar, lineName);
+							line = newLine(classChar, lineName, null);
 
 					}
 					else
@@ -1765,12 +1765,23 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						final int partAttrIndex = is.readShortReverse();
 
 						final List<Line.Attr> lineAttrs = new ArrayList<Line.Attr>();
+						String lineComment = null;
+						boolean lineOnDemand = false;
 						for (final String comment : comments.read(is))
 						{
 							if (comment.startsWith("bf "))
+							{
 								lineAttrs.add(Line.Attr.WHEEL_CHAIR_ACCESS);
+							}
 							else if (comment.startsWith("FA ") || comment.startsWith("FB ") || comment.startsWith("FR "))
+							{
 								lineAttrs.add(Line.Attr.BICYCLE_CARRIAGE);
+							}
+							else if (comment.startsWith("$R "))
+							{
+								lineOnDemand = true;
+								lineComment = comment.substring(5);
+							}
 						}
 
 						is.reset();
@@ -1882,12 +1893,14 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						else if (type == 2)
 						{
 							final char lineProduct;
-							if (lineClass != 0)
+							if (lineOnDemand)
+								lineProduct = Product.ON_DEMAND.code;
+							else if (lineClass != 0)
 								lineProduct = intToProduct(lineClass);
 							else
 								lineProduct = normalizeType(lineCategory);
 
-							final Line line = newLine(lineProduct, normalizeLineName(lineName), lineAttrs.toArray(new Line.Attr[0]));
+							final Line line = newLine(lineProduct, normalizeLineName(lineName), lineComment, lineAttrs.toArray(new Line.Attr[0]));
 							final Location direction = directionStr != null ? new Location(LocationType.ANY, 0, null, directionStr) : null;
 
 							final Stop departure = new Stop(departureLocation, true, plannedDepartureTime != 0 ? new Date(plannedDepartureTime)
@@ -2763,22 +2776,22 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	private static final Pattern P_NORMALIZE_LINE_BUS = Pattern.compile("(?:Bus|BUS)\\s*(.*)");
 	private static final Pattern P_NORMALIZE_LINE_TRAM = Pattern.compile("(?:Tram|Str|STR)\\s*(.*)");
 
-	protected Line parseLine(final String type, final String line, final boolean wheelchairAccess)
+	protected Line parseLine(final String type, final String normalizedName, final boolean wheelchairAccess)
 	{
-		if (line != null)
+		if (normalizedName != null)
 		{
-			final Matcher mBus = P_NORMALIZE_LINE_BUS.matcher(line);
+			final Matcher mBus = P_NORMALIZE_LINE_BUS.matcher(normalizedName);
 			if (mBus.matches())
-				return newLine('B', mBus.group(1));
+				return newLine('B', mBus.group(1), null);
 
-			final Matcher mTram = P_NORMALIZE_LINE_TRAM.matcher(line);
+			final Matcher mTram = P_NORMALIZE_LINE_TRAM.matcher(normalizedName);
 			if (mTram.matches())
-				return newLine('T', mTram.group(1));
+				return newLine('T', mTram.group(1), null);
 		}
 
 		final char normalizedType = normalizeType(type);
 		if (normalizedType == 0)
-			throw new IllegalStateException("cannot normalize type '" + type + "' line '" + line + "'");
+			throw new IllegalStateException("cannot normalize type '" + type + "' line '" + normalizedName + "'");
 
 		final Line.Attr[] attrs;
 		if (wheelchairAccess)
@@ -2786,16 +2799,16 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		else
 			attrs = new Line.Attr[0];
 
-		if (line != null)
+		if (normalizedName != null)
 		{
-			final Matcher m = P_NORMALIZE_LINE.matcher(line);
-			final String strippedLine = m.matches() ? m.group(1) + m.group(2) : line;
+			final Matcher m = P_NORMALIZE_LINE.matcher(normalizedName);
+			final String strippedLine = m.matches() ? m.group(1) + m.group(2) : normalizedName;
 
-			return newLine(normalizedType, strippedLine, attrs);
+			return newLine(normalizedType, strippedLine, null, attrs);
 		}
 		else
 		{
-			return newLine(normalizedType, null, attrs);
+			return newLine(normalizedType, null, null, attrs);
 		}
 	}
 
@@ -2816,11 +2829,11 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			if (type.length() == 0)
 			{
 				if (number.length() == 0)
-					return newLine('?', null);
+					return newLine('?', null, null);
 				if (P_NORMALIZE_LINE_NUMBER.matcher(number).matches())
-					return newLine('?', number);
+					return newLine('?', number, null);
 				if (P_LINE_RUSSIA.matcher(number).matches())
-					return newLine('R', number);
+					return newLine('R', number, null);
 			}
 			else
 			{
@@ -2831,17 +2844,17 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					{
 						final Matcher mBus = P_NORMALIZE_LINE_BUS.matcher(number);
 						if (mBus.matches())
-							return newLine('B', mBus.group(1));
+							return newLine('B', mBus.group(1), null);
 					}
 
 					if (normalizedType == 'T')
 					{
 						final Matcher mTram = P_NORMALIZE_LINE_TRAM.matcher(number);
 						if (mTram.matches())
-							return newLine('T', mTram.group(1));
+							return newLine('T', mTram.group(1), null);
 					}
 
-					return newLine(normalizedType, number.replaceAll("\\s+", ""));
+					return newLine(normalizedType, number.replaceAll("\\s+", ""), null);
 				}
 			}
 
@@ -2851,20 +2864,20 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		throw new IllegalStateException("cannot normalize line#type '" + lineAndType + "'");
 	}
 
-	protected Line newLine(final char product, final String normalizedName, final Line.Attr... attrs)
+	protected Line newLine(final char product, final String normalizedName, final String comment, final Line.Attr... attrs)
 	{
 		final String lineStr = product + (normalizedName != null ? normalizedName : "?");
 
 		if (attrs.length == 0)
 		{
-			return new Line(null, lineStr, lineStyle(lineStr));
+			return new Line(null, lineStr, lineStyle(lineStr), comment);
 		}
 		else
 		{
 			final Set<Line.Attr> attrSet = new HashSet<Line.Attr>();
 			for (final Line.Attr attr : attrs)
 				attrSet.add(attr);
-			return new Line(null, lineStr, lineStyle(lineStr), attrSet);
+			return new Line(null, lineStr, lineStyle(lineStr), attrSet, comment);
 		}
 	}
 

@@ -353,7 +353,7 @@ public final class BvgProvider extends AbstractHafasProvider
 					{
 						final String lineName = ParserUtils.resolveEntities(mMsgsFine.group(1));
 						final char linePproduct = normalizeType(categoryFromName(lineName));
-						final Line line = newLine(linePproduct, normalizeLineName(lineName));
+						final Line line = newLine(linePproduct, normalizeLineName(lineName), null);
 
 						final String message = ParserUtils.resolveEntities(mMsgsFine.group(3)).replace('\n', ' ');
 						messages.put(line.label, message);
@@ -390,7 +390,7 @@ public final class BvgProvider extends AbstractHafasProvider
 
 						final String lineName = ParserUtils.resolveEntities(mDepFine.group(3));
 						final char lineProduct = normalizeType(categoryFromName(lineName));
-						final Line line = newLine(lineProduct, normalizeLineName(lineName));
+						final Line line = newLine(lineProduct, normalizeLineName(lineName), null);
 
 						final String position = null;
 
@@ -462,7 +462,7 @@ public final class BvgProvider extends AbstractHafasProvider
 
 						final String lineName = ParserUtils.resolveEntities(mDepFine.group(2));
 						final char lineProduct = normalizeType(categoryFromName(lineName));
-						final Line line = newLine(lineProduct, normalizeLineName(lineName));
+						final Line line = newLine(lineProduct, normalizeLineName(lineName), null);
 
 						final String position = ParserUtils.resolveEntities(mDepFine.group(3));
 
@@ -555,26 +555,26 @@ public final class BvgProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected Line newLine(final char product, final String normalizedName, final Attr... attrs)
+	protected Line newLine(final char product, final String normalizedName, final String comment, final Attr... attrs)
 	{
 		if (product == 'S' && "S41".equals(normalizedName))
-			return super.newLine(product, normalizedName, concatAttrs(attrs, Attr.CIRCLE_CLOCKWISE));
+			return super.newLine(product, normalizedName, comment, concatAttrs(attrs, Attr.CIRCLE_CLOCKWISE));
 		if (product == 'S' && "S42".equals(normalizedName))
-			return super.newLine(product, normalizedName, concatAttrs(attrs, Attr.CIRCLE_ANTICLOCKWISE));
+			return super.newLine(product, normalizedName, comment, concatAttrs(attrs, Attr.CIRCLE_ANTICLOCKWISE));
 
 		if (product == 'B' && "S41".equals(normalizedName))
-			return super.newLine(product, normalizedName, concatAttrs(attrs, Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_CLOCKWISE));
+			return super.newLine(product, normalizedName, comment, concatAttrs(attrs, Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_CLOCKWISE));
 		if (product == 'B' && "S42".equals(normalizedName))
-			return super.newLine(product, normalizedName, concatAttrs(attrs, Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_ANTICLOCKWISE));
+			return super.newLine(product, normalizedName, comment, concatAttrs(attrs, Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_ANTICLOCKWISE));
 
 		if (product == 'B' && "TXL".equals(normalizedName))
-			return super.newLine(product, normalizedName, concatAttrs(attrs, Attr.LINE_AIRPORT));
+			return super.newLine(product, normalizedName, comment, concatAttrs(attrs, Attr.LINE_AIRPORT));
 		if (product == 'S' && "S9".equals(normalizedName))
-			return super.newLine(product, normalizedName, concatAttrs(attrs, Attr.LINE_AIRPORT));
+			return super.newLine(product, normalizedName, comment, concatAttrs(attrs, Attr.LINE_AIRPORT));
 		if (product == 'S' && "S45".equals(normalizedName))
-			return super.newLine(product, normalizedName, concatAttrs(attrs, Attr.LINE_AIRPORT));
+			return super.newLine(product, normalizedName, comment, concatAttrs(attrs, Attr.LINE_AIRPORT));
 
-		return super.newLine(product, normalizedName, attrs);
+		return super.newLine(product, normalizedName, comment, attrs);
 	}
 
 	private Attr[] concatAttrs(final Attr[] attrs1, final Attr... attrs2)

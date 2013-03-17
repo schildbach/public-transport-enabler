@@ -56,7 +56,7 @@ public final class Line implements Serializable, Comparable<Line>
 		this(id, label, style, attrs, null);
 	}
 
-	private Line(final String id, final String label, final Style style, final Set<Attr> attrs, final String message)
+	public Line(final String id, final String label, final Style style, final Set<Attr> attrs, final String message)
 	{
 		this.id = id;
 		this.label = label;

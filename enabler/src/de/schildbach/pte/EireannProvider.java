@@ -161,7 +161,7 @@ public class EireannProvider extends AbstractHafasProvider
 	{
 		final Matcher mLine = P_NORMALIZE_LINE.matcher(lineAndType);
 		if (mLine.matches())
-			return newLine('B', mLine.group(1));
+			return newLine('B', mLine.group(1), null);
 
 		return super.parseLineAndType(lineAndType);
 	}
