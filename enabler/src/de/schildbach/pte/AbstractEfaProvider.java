@@ -761,7 +761,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private static final Pattern P_LINE_Y = Pattern.compile("\\d+Y");
 	private static final Pattern P_LINE_SEV = Pattern.compile("SEV.*");
 
-	protected String parseLine(final String mot, String symbol, final String name, final String longName, final String trainName)
+	protected String parseLine(final String mot, String symbol, final String name, final String longName, final String trainType,
+			final String trainNum, final String trainName)
 	{
 		if (mot == null)
 		{
@@ -799,7 +800,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			}
 
 			throw new IllegalStateException("cannot normalize mot='" + mot + "' symbol='" + symbol + "' name='" + name + "' long='" + longName
-					+ "' trainName='" + trainName + "'");
+					+ "' trainType='" + trainType + "' trainNum='" + trainNum + "' trainName='" + trainName + "'");
 		}
 
 		final int t = Integer.parseInt(mot);
@@ -1380,7 +1381,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return "?" + name;
 
 			throw new IllegalStateException("cannot normalize mot='" + mot + "' symbol='" + symbol + "' name='" + name + "' long='" + longName
-					+ "' trainName='" + trainName + "' type='" + type + "' str='" + str + "'");
+					+ "' trainType='" + trainType + "' trainNum='" + trainNum + "' trainName='" + trainName + "' type='" + type + "' str='" + str
+					+ "'");
 		}
 
 		if (t == 1)
@@ -1416,7 +1418,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			return '?' + ParserUtils.firstNotEmpty(symbol, name);
 
 		throw new IllegalStateException("cannot normalize mot='" + mot + "' symbol='" + symbol + "' name='" + name + "' long='" + longName
-				+ "' trainName='" + trainName + "'");
+				+ "' trainType='" + trainType + "' trainNum='" + trainNum + "' trainName='" + trainName + "'");
 	}
 
 	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
@@ -1713,7 +1715,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		final String slStateless = pp.getAttributeValue(null, "stateless");
 		final String slTrainType = pp.getAttributeValue(null, "trainType");
 		final String slTrainName = pp.getAttributeValue(null, "trainName");
-		/* final String slTrainNum = */pp.getAttributeValue(null, "trainNum");
+		final String slTrainNum = pp.getAttributeValue(null, "trainNum");
 
 		XmlPullUtil.enter(pp, "itdServingLine");
 		String itdTrainName = null;
@@ -1736,6 +1738,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		if (XmlPullUtil.test(pp, "itdNoTrain"))
 		{
 			itdTrainName = pp.getAttributeValue(null, "name");
+			itdTrainType = pp.getAttributeValue(null, "type");
 			if (!pp.isEmptyElementTag())
 			{
 				XmlPullUtil.enter(pp, "itdNoTrain");
@@ -1751,9 +1754,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 		XmlPullUtil.exit(pp, "itdServingLine");
 
-		final String trainName = ParserUtils.firstNotEmpty(slTrainName, itdTrainName, slTrainType, itdTrainType);
+		final String trainType = ParserUtils.firstNotEmpty(slTrainType, itdTrainType);
+		final String trainName = ParserUtils.firstNotEmpty(slTrainName, itdTrainName);
 
-		final String label = parseLine(slMotType, slSymbol, slNumber, slNumber, trainName);
+		final String label = parseLine(slMotType, slSymbol, slNumber, slNumber, trainType, slTrainNum, trainName);
 
 		return new Line(slStateless, label, lineStyle(label), itdMessage);
 	}
@@ -2236,8 +2240,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							final String motName = pp.getAttributeValue(null, "name");
 							final String motTrainName = pp.getAttributeValue(null, "trainName");
 							final String motTrainType = pp.getAttributeValue(null, "trainType");
-							final String trainName = ParserUtils.firstNotEmpty(motTrainName, motTrainType);
-							lineLabel = parseLine(motType, motSymbol, motShortName, motName, trainName);
+
+							lineLabel = parseLine(motType, motSymbol, motShortName, motName, motTrainType, motShortName, motTrainName);
 						}
 						XmlPullUtil.enter(pp, "itdMeansOfTransport");
 						XmlPullUtil.require(pp, "motDivaParams");

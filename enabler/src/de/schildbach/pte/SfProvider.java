@@ -68,7 +68,8 @@ public class SfProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	protected String parseLine(final String mot, final String symbol, final String name, final String longName, final String trainName)
+	protected String parseLine(final String mot, final String symbol, final String name, final String longName, final String trainType,
+			final String trainNum, final String trainName)
 	{
 		if ("NORTHBOUND".equals(name))
 			return "?" + name;
@@ -79,7 +80,7 @@ public class SfProvider extends AbstractEfaProvider
 		else if ("WESTBOUND".equals(name))
 			return "?" + name;
 		else
-			return super.parseLine(mot, symbol, name, longName, trainName);
+			return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
 	}
 
 	private static final Map<String, Style> LINES = new HashMap<String, Style>();
