@@ -81,7 +81,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	private final String apiUri;
 	private final int numProductBits;
 	private final String accessId;
-	private final Charset jsonEncoding;
+	private Charset jsonGetStopsEncoding;
+	private Charset jsonNearbyStationsEncoding;
 	private final Charset xmlMlcResEncoding;
 	private boolean dominantPlanStopTime = false;
 
@@ -133,28 +134,35 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 	}
 
+	public AbstractHafasProvider(final String apiUri, final int numProductBits, final String accessId)
+	{
+		this(apiUri, numProductBits, accessId, ISO_8859_1, ISO_8859_1);
+	}
+
 	public AbstractHafasProvider(final String apiUri, final int numProductBits, final String accessId, final Charset jsonEncoding,
 			final Charset xmlMlcResEncoding)
 	{
 		this.apiUri = apiUri;
 		this.numProductBits = numProductBits;
 		this.accessId = accessId;
-		this.jsonEncoding = jsonEncoding;
+		this.jsonGetStopsEncoding = jsonEncoding;
+		this.jsonNearbyStationsEncoding = jsonEncoding;
 		this.xmlMlcResEncoding = xmlMlcResEncoding;
-	}
-
-	public AbstractHafasProvider(final String apiUri, final int numProductBits, final String accessId)
-	{
-		this.apiUri = apiUri;
-		this.numProductBits = numProductBits;
-		this.accessId = accessId;
-		this.jsonEncoding = ISO_8859_1;
-		this.xmlMlcResEncoding = ISO_8859_1;
 	}
 
 	protected void setDominantPlanStopTime(final boolean dominantPlanStopTime)
 	{
 		this.dominantPlanStopTime = dominantPlanStopTime;
+	}
+
+	protected void setJsonGetStopsEncoding(Charset jsonGetStopsEncoding)
+	{
+		this.jsonGetStopsEncoding = jsonGetStopsEncoding;
+	}
+
+	protected void setJsonNearbyStationsEncoding(Charset jsonNearbyStationsEncoding)
+	{
+		this.jsonNearbyStationsEncoding = jsonNearbyStationsEncoding;
 	}
 
 	protected TimeZone timeZone()
@@ -336,7 +344,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 	protected final List<Location> jsonGetStops(final String uri) throws IOException
 	{
-		final CharSequence page = ParserUtils.scrape(uri, null, jsonEncoding, null);
+		final CharSequence page = ParserUtils.scrape(uri, null, jsonGetStopsEncoding, null);
 
 		final Matcher mJson = P_AJAX_GET_STOPS_JSON.matcher(page);
 		if (mJson.matches())
@@ -2231,7 +2239,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 	protected final NearbyStationsResult jsonNearbyStations(final String uri) throws IOException
 	{
-		final CharSequence page = ParserUtils.scrape(uri, null, jsonEncoding, null);
+		final CharSequence page = ParserUtils.scrape(uri, null, jsonNearbyStationsEncoding, null);
 
 		try
 		{

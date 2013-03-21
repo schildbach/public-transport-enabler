@@ -46,6 +46,7 @@ public class OebbProvider extends AbstractHafasProvider
 		super(API_BASE + "query.exe/dn", 13, null);
 
 		setDominantPlanStopTime(true);
+		setJsonGetStopsEncoding(UTF_8);
 	}
 
 	public NetworkId id()
