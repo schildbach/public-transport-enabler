@@ -17,11 +17,6 @@
 
 package de.schildbach.pte;
 
-import java.io.IOException;
-import java.util.List;
-
-import de.schildbach.pte.dto.Location;
-import de.schildbach.pte.dto.LocationType;
 
 /**
  * @author Andreas Schildbach
@@ -35,6 +30,7 @@ public class NvbwProvider extends AbstractEfaProvider
 	{
 		super(API_BASE);
 
+		setIncludeRegionId(false);
 		setUseRouteIndexAsConnectionId(false);
 	}
 
@@ -50,11 +46,5 @@ public class NvbwProvider extends AbstractEfaProvider
 				return true;
 
 		return false;
-	}
-
-	@Override
-	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
-	{
-		return xmlStopfinderRequest(new Location(LocationType.STATION, 0, null, constraint.toString()));
 	}
 }
