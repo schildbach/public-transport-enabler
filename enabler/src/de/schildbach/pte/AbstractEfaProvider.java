@@ -100,6 +100,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private boolean httpPost = false;
 	private boolean suppressPositions = false;
 	private boolean useRouteIndexAsConnectionId = true;
+	private boolean useLineRestriction = true;
 
 	private final XmlPullParserFactory parserFactory;
 
@@ -195,6 +196,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	protected void setUseRouteIndexAsConnectionId(final boolean useRouteIndexAsConnectionId)
 	{
 		this.useRouteIndexAsConnectionId = useRouteIndexAsConnectionId;
+	}
+
+	protected void setUseLineRestriction(final boolean useLineRestriction)
+	{
+		this.useLineRestriction = useLineRestriction;
 	}
 
 	protected void setCanAcceptPoiId(final boolean canAcceptPoiId)
@@ -1852,7 +1858,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			uri.append("&inclMOT_11=on"); // TODO always show 'others', for now
 
 			// workaround for highspeed trains: fails when you want highspeed, but not regional
-			if (!hasI)
+			if (useLineRestriction && !hasI)
 				uri.append("&lineRestriction=403"); // means: all but ice
 		}
 
