@@ -2874,7 +2874,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 	protected Line newLine(final char product, final String normalizedName, final String comment, final Line.Attr... attrs)
 	{
-		final String lineStr = product + (normalizedName != null ? normalizedName : "?");
+		final String lineStr = (product != 0 ? Character.toString(product) : Product.UNKNOWN) + (normalizedName != null ? normalizedName : "?");
 
 		if (attrs.length == 0)
 		{
