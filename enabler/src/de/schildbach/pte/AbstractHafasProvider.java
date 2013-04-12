@@ -2659,6 +2659,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		// Tram
 		if (P_LINE_TRAM.matcher(ucType).matches()) // Generic Tram
 			return 'T';
+		if ("NFT".equals(ucType)) // Niederflur-Tram
+			return 'B';
 		if ("TRAM".equals(ucType))
 			return 'T';
 		if ("TRA".equals(ucType))
