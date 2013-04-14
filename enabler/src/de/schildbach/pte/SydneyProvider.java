@@ -53,4 +53,13 @@ public class SydneyProvider extends AbstractEfaProvider
 
 		return false;
 	}
+
+	@Override
+	protected String normalizeLocationName(final String name)
+	{
+		if (name == null || name.length() == 0)
+			return null;
+
+		return super.normalizeLocationName(name).replace("$XINT$", "&");
+	}
 }
