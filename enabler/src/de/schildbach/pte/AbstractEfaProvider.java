@@ -1731,8 +1731,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		final int year = Integer.parseInt(pp.getAttributeValue(null, "year"));
 		final int month = Integer.parseInt(pp.getAttributeValue(null, "month")) - 1;
 		final int day = Integer.parseInt(pp.getAttributeValue(null, "day"));
+		final int weekday = Integer.parseInt(pp.getAttributeValue(null, "weekday"));
 		XmlPullUtil.next(pp);
 
+		if (weekday < 0)
+			return false;
 		if (year == 0)
 			return false;
 		if (year < 1900 || year > 2100)
