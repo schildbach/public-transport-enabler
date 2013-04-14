@@ -2172,6 +2172,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 				while (XmlPullUtil.test(pp, "itdPartialRoute"))
 				{
+					final String partialRouteType = XmlPullUtil.attr(pp, "type");
 					final int distance = XmlPullUtil.optIntAttr(pp, "distance", 0);
 					XmlPullUtil.enter(pp, "itdPartialRoute");
 
@@ -2234,7 +2235,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 					XmlPullUtil.test(pp, "itdMeansOfTransport");
 					final String productName = pp.getAttributeValue(null, "productName");
-					if ("Fussweg".equals(productName) || "Taxi".equals(productName))
+					if ("IT".equals(partialRouteType) || "Fussweg".equals(productName) || "Taxi".equals(productName))
 					{
 						final int min = (int) (arrivalTime.getTime() - departureTime.getTime()) / 1000 / 60;
 						final boolean transfer = "Taxi".equals(productName);
@@ -2272,7 +2273,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						XmlPullUtil.enter(pp, "itdMeansOfTransport");
 						XmlPullUtil.exit(pp, "itdMeansOfTransport");
 					}
-					else
+					else if ("PT".equals(partialRouteType))
 					{
 						final String destinationName = normalizeLocationName(pp.getAttributeValue(null, "destination"));
 						final String destinationIdStr = pp.getAttributeValue(null, "destID");
@@ -2483,6 +2484,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 								arrivalTime != null ? arrivalTime : null, arrivalPosition, null);
 
 						parts.add(new Connection.Trip(line, destination, departure, arrival, intermediateStops, path, message));
+					}
+					else
+					{
+						throw new IllegalStateException("unknown type: '" + partialRouteType + "' '" + productName + "'");
 					}
 
 					XmlPullUtil.exit(pp, "itdPartialRoute");
