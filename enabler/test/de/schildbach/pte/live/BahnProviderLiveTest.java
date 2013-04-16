@@ -17,10 +17,10 @@
 
 package de.schildbach.pte.live;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Date;
 import java.util.List;
-
-import junit.framework.Assert;
 
 import org.junit.Test;
 
@@ -75,7 +75,7 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 
 		print(autocompletes);
 
-		Assert.assertEquals("Güntzelstr. (U), Berlin", autocompletes.get(0).name);
+		assertEquals("Güntzelstr. (U), Berlin", autocompletes.get(0).name);
 	}
 
 	@Test
@@ -85,7 +85,7 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 
 		print(autocompletes);
 
-		Assert.assertEquals("Hamburg Landungsbrücken", autocompletes.get(0).name);
+		assertEquals("Hamburg Landungsbrücken", autocompletes.get(0).name);
 	}
 
 	@Test
@@ -158,7 +158,7 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 				LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 
-		Assert.assertEquals(QueryConnectionsResult.Status.TOO_CLOSE, result.status);
+		assertEquals(QueryConnectionsResult.Status.TOO_CLOSE, result.status);
 	}
 
 	@Test
@@ -168,6 +168,6 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 				LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(0), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 
-		Assert.assertEquals(QueryConnectionsResult.Status.INVALID_DATE, result.status);
+		assertEquals(QueryConnectionsResult.Status.INVALID_DATE, result.status);
 	}
 }

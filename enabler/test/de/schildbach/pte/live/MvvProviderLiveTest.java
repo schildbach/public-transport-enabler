@@ -17,10 +17,10 @@
 
 package de.schildbach.pte.live;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Date;
 import java.util.List;
-
-import junit.framework.Assert;
 
 import org.junit.Test;
 
@@ -65,7 +65,7 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryDeparturesResult result = provider.queryDepartures(2, 0, false);
 
-		Assert.assertEquals(QueryDeparturesResult.Status.OK, result.status);
+		assertEquals(QueryDeparturesResult.Status.OK, result.status);
 		print(result);
 	}
 
@@ -74,7 +74,7 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryDeparturesResult result = provider.queryDepartures(999999, 0, false);
 
-		Assert.assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
+		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
 	}
 
 	@Test
@@ -162,11 +162,11 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 		final QueryConnectionsResult result1 = queryConnections(new Location(LocationType.STATION, 2, "München", "Marienplatz"), null, new Location(
 				LocationType.STATION, 99999, 0, 0, null, null), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 
-		Assert.assertEquals(QueryConnectionsResult.Status.UNKNOWN_TO, result1.status);
+		assertEquals(QueryConnectionsResult.Status.UNKNOWN_TO, result1.status);
 
 		final QueryConnectionsResult result2 = queryConnections(new Location(LocationType.STATION, 99999, 0, 0, null, null), null, new Location(
 				LocationType.STATION, 2, "München", "Marienplatz"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 
-		Assert.assertEquals(QueryConnectionsResult.Status.UNKNOWN_FROM, result2.status);
+		assertEquals(QueryConnectionsResult.Status.UNKNOWN_FROM, result2.status);
 	}
 }
