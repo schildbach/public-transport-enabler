@@ -94,6 +94,19 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
+	public void autocompleteLocal() throws Exception
+	{
+		final List<Location> autocompletesHirschgarten = provider.autocompleteStations("Hirschgarten");
+		assertEquals("München", autocompletesHirschgarten.get(0).place);
+
+		final List<Location> autocompletesOstbahnhof = provider.autocompleteStations("Ostbahnhof");
+		assertEquals("München", autocompletesOstbahnhof.get(0).place);
+
+		final List<Location> autocompletesMarienplatz = provider.autocompleteStations("Marienplatz");
+		assertEquals("München", autocompletesMarienplatz.get(0).place);
+	}
+
+	@Test
 	public void shortConnection() throws Exception
 	{
 		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 2, "München", "Marienplatz"), null, new Location(
