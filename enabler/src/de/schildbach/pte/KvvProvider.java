@@ -96,14 +96,21 @@ public class KvvProvider extends AbstractEfaProvider
 
 		// Tram
 		LINES.put("T1", new Style(Shape.RECT, Style.parseColor("#ed1c24"), Style.WHITE));
+		LINES.put("T1E", new Style(Shape.RECT, Style.parseColor("#ed1c24"), Style.WHITE));
 		LINES.put("T2", new Style(Shape.RECT, Style.parseColor("#0071bc"), Style.WHITE));
 		LINES.put("T2E", new Style(Shape.RECT, Style.parseColor("#0071bc"), Style.WHITE));
 		LINES.put("T3", new Style(Shape.RECT, Style.parseColor("#947139"), Style.WHITE));
+		LINES.put("T3E", new Style(Shape.RECT, Style.parseColor("#947139"), Style.WHITE));
 		LINES.put("T4", new Style(Shape.RECT, Style.parseColor("#ffcb04"), Style.BLACK));
+		LINES.put("T4E", new Style(Shape.RECT, Style.parseColor("#ffcb04"), Style.BLACK));
 		LINES.put("T5", new Style(Shape.RECT, Style.parseColor("#00c0f3"), Style.WHITE));
+		LINES.put("T5E", new Style(Shape.RECT, Style.parseColor("#00c0f3"), Style.WHITE));
 		LINES.put("T6", new Style(Shape.RECT, Style.parseColor("#80c342"), Style.WHITE));
+		LINES.put("T6E", new Style(Shape.RECT, Style.parseColor("#80c342"), Style.WHITE));
 		LINES.put("T7", new Style(Shape.RECT, Style.parseColor("#58595b"), Style.WHITE));
+		LINES.put("T7E", new Style(Shape.RECT, Style.parseColor("#58595b"), Style.WHITE));
 		LINES.put("T8", new Style(Shape.RECT, Style.parseColor("#f7931d"), Style.BLACK));
+		LINES.put("T8E", new Style(Shape.RECT, Style.parseColor("#f7931d"), Style.BLACK));
 
 		// Bus - only used on bus plan
 		// LINES.put("B21", new Style(Shape.CIRCLE, Style.parseColor("#2e3092"), Style.WHITE));
