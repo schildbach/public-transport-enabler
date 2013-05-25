@@ -180,6 +180,9 @@ public class SbbProvider extends AbstractHafasProvider
 		if ("M".equals(ucType)) // Metro Wien
 			return 'U';
 
+		if ("NFT".equals(ucType)) // Niederflurtram
+			return 'T';
+
 		if ("TX".equals(ucType))
 			return 'B';
 		if ("NFO".equals(ucType))
