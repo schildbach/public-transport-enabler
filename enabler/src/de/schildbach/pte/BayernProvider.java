@@ -17,17 +17,37 @@
 
 package de.schildbach.pte;
 
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
+import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.dto.LocationType;
+import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.Product;
+import de.schildbach.pte.dto.QueryDeparturesResult;
+import de.schildbach.pte.dto.QueryTripsContext;
+import de.schildbach.pte.dto.QueryTripsResult;
+
 /**
  * @author Andreas Schildbach
  */
 public class BayernProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.BAYERN;
-	private final static String API_BASE = "http://vm-bayern-fahrplan03.defas-fgi.de:81/standard/";
+	private final static String API_BASE = "http://mobile.defas-fgi.de/beg/";
+	private static final String DEPARTURE_MONITOR_ENDPOINT = "XML_DM_REQUEST";
+	private static final String TRIP_ENDPOINT = "XML_TRIP_REQUEST2";
+	private static final String STOP_FINDER_ENDPOINT = "XML_STOPFINDER_REQUEST";
 
 	public BayernProvider()
 	{
-		super(API_BASE);
+		super(API_BASE, DEPARTURE_MONITOR_ENDPOINT, TRIP_ENDPOINT, STOP_FINDER_ENDPOINT, null);
+
+		setRequestUrlEncoding(UTF_8);
+		setIncludeRegionId(false);
 	}
 
 	public NetworkId id()
@@ -42,5 +62,43 @@ public class BayernProvider extends AbstractEfaProvider
 				return true;
 
 		return false;
+	}
+
+	@Override
+	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
+	{
+		if (location.hasLocation())
+			return mobileCoordRequest(location.lat, location.lon, maxDistance, maxStations);
+
+		if (location.type != LocationType.STATION)
+			throw new IllegalArgumentException("cannot handle: " + location.type);
+
+		throw new IllegalArgumentException("station"); // TODO
+	}
+
+	@Override
+	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
+	{
+		return queryDeparturesMobile(stationId, maxDepartures, equivs);
+	}
+
+	@Override
+	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
+	{
+		return mobileStopfinderRequest(new Location(LocationType.ANY, 0, null, constraint.toString()));
+	}
+
+	@Override
+	public QueryTripsResult queryTrips(final Location from, final Location via, final Location to, final Date date, final boolean dep,
+			final int numTrips, final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility,
+			final Set<Option> options) throws IOException
+	{
+		return queryTripsMobile(from, via, to, date, dep, numTrips, products, walkSpeed, accessibility, options);
+	}
+
+	@Override
+	public QueryTripsResult queryMoreTrips(final QueryTripsContext contextObj, final boolean later, final int numTrips) throws IOException
+	{
+		return queryMoreTripsMobile(contextObj, later, numTrips);
 	}
 }

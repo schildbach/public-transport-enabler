@@ -21,15 +21,6 @@ public final class XmlPullUtil
 {
 	public static final String XSI_NS = "http://www.w3.org/2001/XMLSchema-instance";
 
-	/**
-	 * directly jumps forward to start tag, ignoring any structure
-	 */
-	public static void jump(final XmlPullParser pp, final String tagName) throws XmlPullParserException, IOException
-	{
-		if (!jumpToStartTag(pp, null, tagName))
-			throw new IllegalStateException("cannot find <" + tagName + " />");
-	}
-
 	public static void require(final XmlPullParser pp, final String tagName) throws XmlPullParserException, IOException
 	{
 		pp.require(XmlPullParser.START_TAG, null, tagName);
@@ -89,6 +80,27 @@ public final class XmlPullUtil
 	public static boolean test(final XmlPullParser pp, final String tagName) throws XmlPullParserException
 	{
 		return pp.getEventType() == XmlPullParser.START_TAG && pp.getName().equals(tagName);
+	}
+
+	public static void requireSkip(final XmlPullParser pp, final String tagName) throws XmlPullParserException, IOException
+	{
+		require(pp, tagName);
+
+		if (!pp.isEmptyElementTag())
+		{
+			enter(pp);
+			exit(pp);
+		}
+		else
+		{
+			next(pp);
+		}
+	}
+
+	public static void optSkip(final XmlPullParser pp, final String tagName) throws XmlPullParserException, IOException
+	{
+		if (test(pp, tagName))
+			requireSkip(pp, tagName);
 	}
 
 	public static void next(final XmlPullParser pp) throws XmlPullParserException, IOException

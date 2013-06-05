@@ -41,6 +41,10 @@ public final class Line implements Serializable, Comparable<Line>
 
 	private static final String PRODUCT_ORDER = "IRSUTBPFC?";
 
+	public static final Line FOOTWAY = new Line(null, null, null);
+	public static final Line SECURE_CONNECTION = new Line(null, null, null);
+	public static final Line DO_NOT_CHANGE = new Line(null, null, null);
+
 	public Line(final String id, final String label, final Style style)
 	{
 		this(id, label, style, null, null);

@@ -17,6 +17,8 @@
 
 package de.schildbach.pte.live;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Date;
 import java.util.List;
 
@@ -61,9 +63,14 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(80001083, 0, false);
+		final QueryDeparturesResult munichOstbahnhof = provider.queryDepartures(80000793, 0, false);
+		print(munichOstbahnhof);
 
-		print(result);
+		final QueryDeparturesResult munichHauptbahnhof = provider.queryDepartures(80000689, 0, false);
+		print(munichHauptbahnhof);
+
+		final QueryDeparturesResult nurembergHauptbahnhof = provider.queryDepartures(80001020, 0, false);
+		print(nurembergHauptbahnhof);
 	}
 
 	@Test
@@ -80,6 +87,27 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest
 		final List<Location> autocompletes = provider.autocompleteStations("grün");
 
 		print(autocompletes);
+	}
+
+	@Test
+	public void autocompleteAddress() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("München, Friedenstraße 2");
+
+		print(autocompletes);
+	}
+
+	@Test
+	public void autocompleteLocal() throws Exception
+	{
+		final List<Location> autocompleteRegensburg = provider.autocompleteStations("Regensburg");
+		assertEquals(80001083, autocompleteRegensburg.iterator().next().id);
+
+		final List<Location> autocompleteMunich = provider.autocompleteStations("München");
+		assertEquals(80000689, autocompleteMunich.iterator().next().id);
+
+		final List<Location> autocompleteNuremberg = provider.autocompleteStations("Nürnberg");
+		assertEquals(80001020, autocompleteNuremberg.iterator().next().id);
 	}
 
 	@Test
@@ -114,8 +142,8 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void tripBetweenCoordinateAndStation() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 0, 48238341, 11478230), null, new Location(LocationType.ANY, 0,
-				null, "Ostbahnhof"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 0, 48238341, 11478230), null, new Location(
+				LocationType.STATION, 80000793, "München", "Ostbahnhof"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
@@ -134,7 +162,7 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void tripBetweenStationAndAddress() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 1220, null, "Josephsburg"), null, new Location(
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 1001220, null, "Josephsburg"), null, new Location(
 				LocationType.ADDRESS, 0, 48188018, 11574239, null, "München Frankfurter Ring 35"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
