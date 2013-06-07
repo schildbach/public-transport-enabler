@@ -21,6 +21,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
@@ -115,12 +116,14 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		public final String ident;
 		public final int seqNr;
 		public final String ld;
+		public final int usedBufferSize;
 
-		public QueryConnectionsBinaryContext(final String ident, final int seqNr, final String ld)
+		public QueryConnectionsBinaryContext(final String ident, final int seqNr, final String ld, final int usedBufferSize)
 		{
 			this.ident = ident;
 			this.seqNr = seqNr;
 			this.ld = ld;
+			this.usedBufferSize = usedBufferSize;
 		}
 
 		public boolean canQueryLater()
@@ -1496,6 +1499,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	{
 	}
 
+	private final static int QUERY_CONNECTIONS_BINARY_BUFFER_SIZE = 128 * 1024;
+
 	protected final QueryConnectionsResult queryConnectionsBinary(Location from, Location via, Location to, final Date date, final boolean dep,
 			final int maxNumConnections, final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility,
 			final Set<Option> options) throws IOException
@@ -1536,7 +1541,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		appendConnectionsQueryUri(uri, from, via, to, date, dep, products, accessibility, options);
 		appendCustomConnectionsQueryBinaryUri(uri);
 
-		return queryConnectionsBinary(uri.toString(), from, via, to);
+		return queryConnectionsBinary(uri.toString(), from, via, to, QUERY_CONNECTIONS_BINARY_BUFFER_SIZE);
 	}
 
 	protected QueryConnectionsResult queryMoreConnectionsBinary(final QueryConnectionsContext contextObj, final boolean later,
@@ -1552,11 +1557,24 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		uri.append("&REQ0HafasScrollDir=").append(later ? 1 : 2);
 		appendCustomConnectionsQueryBinaryUri(uri);
 
-		return queryConnectionsBinary(uri.toString(), null, null, null);
+		return queryConnectionsBinary(uri.toString(), null, null, null, QUERY_CONNECTIONS_BINARY_BUFFER_SIZE + context.usedBufferSize);
 	}
 
-	private QueryConnectionsResult queryConnectionsBinary(final String uri, final Location from, final Location via, final Location to)
-			throws IOException
+	private class CustomBufferedInputStream extends BufferedInputStream
+	{
+		public CustomBufferedInputStream(final InputStream in)
+		{
+			super(in);
+		}
+
+		public int getCount()
+		{
+			return count;
+		}
+	}
+
+	private QueryConnectionsResult queryConnectionsBinary(final String uri, final Location from, final Location via, final Location to,
+			final int expectedBufferSize) throws IOException
 	{
 		/*
 		 * Many thanks to Malte Starostik and Robert, who helped a lot with analyzing this API!
@@ -1568,8 +1586,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 		try
 		{
-			is = new LittleEndianDataInputStream(new BufferedInputStream(ParserUtils.scrapeInputStream(uri)));
-			is.mark(256 * 1024);
+			final CustomBufferedInputStream bis = new CustomBufferedInputStream(ParserUtils.scrapeInputStream(uri));
+			is = new LittleEndianDataInputStream(bis);
+			is.mark(expectedBufferSize);
 
 			// quick check of status
 			final int version = is.readShortReverse();
@@ -1934,7 +1953,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				}
 
 				final QueryConnectionsResult result = new QueryConnectionsResult(header, uri, from, via, to, new QueryConnectionsBinaryContext(
-						requestId, seqNr, ld), connections);
+						requestId, seqNr, ld, bis.getCount()), connections);
 
 				return result;
 			}
