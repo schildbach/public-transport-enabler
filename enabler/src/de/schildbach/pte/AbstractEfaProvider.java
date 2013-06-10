@@ -2167,7 +2167,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						final Line line = new Line(lineId, lineLabel, lineStyle(lineLabel), lineAttrs);
 
 						final Stop departure = new Stop(departureLocation, true, departureTargetTime != null ? departureTargetTime : departureTime,
-								departureTargetTime != null ? departureTime : null, departurePosition, null);
+								departureTime != null ? departureTime : null, departurePosition, null);
 						final Stop arrival = new Stop(arrivalLocation, false, arrivalTargetTime != null ? arrivalTargetTime : arrivalTime,
 								arrivalTime != null ? arrivalTime : null, arrivalPosition, null);
 
