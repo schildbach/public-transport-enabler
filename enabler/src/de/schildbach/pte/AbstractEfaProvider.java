@@ -1065,6 +1065,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return "REXT" + trainNum;
 			if ("Heritage Railway".equals(trainName)) // GB
 				return 'R' + symbol;
+			if ("WTB".equals(trainType) || "Wutachtalbahn".equals(trainName))
+				return "RWTB" + trainNum;
+			if ("DB".equals(trainType) || "DB Regio".equals(trainName))
+				return "RDB" + trainNum;
 
 			if ("BSB-Zug".equals(trainName)) // Breisgau-S-Bahn
 				return 'S' + trainNum;
