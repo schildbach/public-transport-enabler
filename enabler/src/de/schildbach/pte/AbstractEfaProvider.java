@@ -67,6 +67,7 @@ import de.schildbach.pte.dto.ResultHeader;
 import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.dto.Stop;
 import de.schildbach.pte.exception.InvalidDataException;
+import de.schildbach.pte.exception.NotFoundException;
 import de.schildbach.pte.exception.ParserException;
 import de.schildbach.pte.exception.ProtocolException;
 import de.schildbach.pte.exception.SessionExpiredException;
@@ -1685,6 +1686,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		catch (final XmlPullParserException x)
 		{
 			throw new ParserException(x);
+		}
+		catch (final NotFoundException x)
+		{
+			throw new SessionExpiredException();
 		}
 		catch (final ProtocolException x) // must be html content
 		{
