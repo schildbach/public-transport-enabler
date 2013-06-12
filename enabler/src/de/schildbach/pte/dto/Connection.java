@@ -33,18 +33,18 @@ public final class Connection implements Serializable
 	private String id;
 	public final Location from;
 	public final Location to;
-	public final List<Part> parts;
+	public final List<Leg> legs;
 	public final List<Fare> fares;
 	public final int[] capacity;
 	public final Integer numChanges;
 
-	public Connection(final String id, final Location from, final Location to, final List<Part> parts, final List<Fare> fares, final int[] capacity,
+	public Connection(final String id, final Location from, final Location to, final List<Leg> legs, final List<Fare> fares, final int[] capacity,
 			final Integer numChanges)
 	{
 		this.id = id;
 		this.from = from;
 		this.to = to;
-		this.parts = parts;
+		this.legs = legs;
 		this.fares = fares;
 		this.capacity = capacity;
 		this.numChanges = numChanges;
@@ -52,78 +52,78 @@ public final class Connection implements Serializable
 
 	public Date getFirstDepartureTime()
 	{
-		if (parts != null)
+		if (legs != null)
 		{
 			int mins = 0;
-			for (final Part part : parts)
+			for (final Leg leg : legs)
 			{
-				if (part instanceof Footway)
-					mins += ((Footway) part).min;
-				else if (part instanceof Trip)
-					return new Date(((Trip) part).getDepartureTime().getTime() - 1000 * 60 * mins);
+				if (leg instanceof Individual)
+					mins += ((Individual) leg).min;
+				else if (leg instanceof Public)
+					return new Date(((Public) leg).getDepartureTime().getTime() - 1000 * 60 * mins);
 			}
 		}
 
 		return null;
 	}
 
-	public Trip getFirstTrip()
+	public Public getFirstPublicLeg()
 	{
-		if (parts != null)
-			for (final Part part : parts)
-				if (part instanceof Trip)
-					return (Trip) part;
+		if (legs != null)
+			for (final Leg leg : legs)
+				if (leg instanceof Public)
+					return (Public) leg;
 
 		return null;
 	}
 
-	public Date getFirstTripDepartureTime()
+	public Date getFirstPublicLegDepartureTime()
 	{
-		final Trip firstTrip = getFirstTrip();
-		if (firstTrip != null)
-			return firstTrip.getDepartureTime();
+		final Public firstPublicLeg = getFirstPublicLeg();
+		if (firstPublicLeg != null)
+			return firstPublicLeg.getDepartureTime();
 		else
 			return null;
 	}
 
 	public Date getLastArrivalTime()
 	{
-		if (parts != null)
+		if (legs != null)
 		{
 			int mins = 0;
-			for (int i = parts.size() - 1; i >= 0; i--)
+			for (int i = legs.size() - 1; i >= 0; i--)
 			{
-				final Part part = parts.get(i);
-				if (part instanceof Footway)
-					mins += ((Footway) part).min;
-				else if (part instanceof Trip)
-					return new Date(((Trip) part).getArrivalTime().getTime() + 1000 * 60 * mins);
+				final Leg leg = legs.get(i);
+				if (leg instanceof Individual)
+					mins += ((Individual) leg).min;
+				else if (leg instanceof Public)
+					return new Date(((Public) leg).getArrivalTime().getTime() + 1000 * 60 * mins);
 			}
 		}
 
 		return null;
 	}
 
-	public Trip getLastTrip()
+	public Public getLastPublicLeg()
 	{
-		if (parts != null)
+		if (legs != null)
 		{
-			for (int i = parts.size() - 1; i >= 0; i--)
+			for (int i = legs.size() - 1; i >= 0; i--)
 			{
-				final Part part = parts.get(i);
-				if (part instanceof Trip)
-					return (Trip) part;
+				final Leg leg = legs.get(i);
+				if (leg instanceof Public)
+					return (Public) leg;
 			}
 		}
 
 		return null;
 	}
 
-	public Date getLastTripArrivalTime()
+	public Date getLastPublicLegArrivalTime()
 	{
-		final Trip lastTrip = getLastTrip();
-		if (lastTrip != null)
-			return lastTrip.getArrivalTime();
+		final Public lastPublicLeg = getLastPublicLeg();
+		if (lastPublicLeg != null)
+			return lastPublicLeg.getArrivalTime();
 		else
 			return null;
 	}
@@ -140,23 +140,23 @@ public final class Connection implements Serializable
 	{
 		final StringBuilder builder = new StringBuilder();
 
-		if (parts != null && parts.size() > 0)
+		if (legs != null && legs.size() > 0)
 		{
-			for (final Part part : parts)
+			for (final Leg leg : legs)
 			{
-				builder.append(part.departure.hasId() ? part.departure.id : part.departure.lat + '/' + part.departure.lon).append('-');
-				builder.append(part.arrival.hasId() ? part.arrival.id : part.arrival.lat + '/' + part.arrival.lon).append('-');
+				builder.append(leg.departure.hasId() ? leg.departure.id : leg.departure.lat + '/' + leg.departure.lon).append('-');
+				builder.append(leg.arrival.hasId() ? leg.arrival.id : leg.arrival.lat + '/' + leg.arrival.lon).append('-');
 
-				if (part instanceof Footway)
+				if (leg instanceof Individual)
 				{
-					builder.append(((Footway) part).min);
+					builder.append(((Individual) leg).min);
 				}
-				else if (part instanceof Trip)
+				else if (leg instanceof Public)
 				{
-					final Trip trip = (Trip) part;
-					builder.append(trip.departureStop.plannedDepartureTime.getTime()).append('-');
-					builder.append(trip.arrivalStop.plannedArrivalTime.getTime()).append('-');
-					builder.append(trip.line.label);
+					final Public publicLeg = (Public) leg;
+					builder.append(publicLeg.departureStop.plannedDepartureTime.getTime()).append('-');
+					builder.append(publicLeg.arrivalStop.plannedArrivalTime.getTime()).append('-');
+					builder.append(publicLeg.line.label);
 				}
 
 				builder.append('|');
@@ -175,11 +175,11 @@ public final class Connection implements Serializable
 
 		final StringBuilder str = new StringBuilder(getId());
 		str.append(' ');
-		final Date firstTripDepartureTime = getFirstTripDepartureTime();
-		str.append(firstTripDepartureTime != null ? FORMAT.format(firstTripDepartureTime) : "null");
+		final Date firstPublicLegDepartureTime = getFirstPublicLegDepartureTime();
+		str.append(firstPublicLegDepartureTime != null ? FORMAT.format(firstPublicLegDepartureTime) : "null");
 		str.append('-');
-		final Date lastTripArrivalTime = getLastTripArrivalTime();
-		str.append(lastTripArrivalTime != null ? FORMAT.format(lastTripArrivalTime) : "null");
+		final Date lastPublicLegArrivalTime = getLastPublicLegArrivalTime();
+		str.append(lastPublicLegArrivalTime != null ? FORMAT.format(lastPublicLegArrivalTime) : "null");
 		str.append(' ').append(numChanges).append("ch");
 
 		return str.toString();
@@ -202,7 +202,7 @@ public final class Connection implements Serializable
 		return getId().hashCode();
 	}
 
-	public static class Part implements Serializable
+	public static class Leg implements Serializable
 	{
 		private static final long serialVersionUID = 8498461220084523265L;
 
@@ -210,7 +210,7 @@ public final class Connection implements Serializable
 		public final Location arrival;
 		public List<Point> path;
 
-		public Part(final Location departure, final Location arrival, final List<Point> path)
+		public Leg(final Location departure, final Location arrival, final List<Point> path)
 		{
 			this.departure = departure;
 			this.arrival = arrival;
@@ -218,7 +218,7 @@ public final class Connection implements Serializable
 		}
 	}
 
-	public final static class Trip extends Part
+	public final static class Public extends Leg
 	{
 		private static final long serialVersionUID = 1312066446239817422L;
 
@@ -229,7 +229,7 @@ public final class Connection implements Serializable
 		public final List<Stop> intermediateStops;
 		public final String message;
 
-		public Trip(final Line line, final Location destination, final Stop departureStop, final Stop arrivalStop,
+		public Public(final Line line, final Location destination, final Stop departureStop, final Stop arrivalStop,
 				final List<Stop> intermediateStops, final List<Point> path, final String message)
 		{
 			super(departureStop != null ? departureStop.location : null, arrivalStop != null ? arrivalStop.location : null, path);
@@ -321,7 +321,7 @@ public final class Connection implements Serializable
 		}
 	}
 
-	public final static class Footway extends Part
+	public final static class Individual extends Leg
 	{
 		private static final long serialVersionUID = -6651381862837233925L;
 
@@ -329,7 +329,7 @@ public final class Connection implements Serializable
 		public final int distance;
 		public final boolean transfer;
 
-		public Footway(final int min, final int distance, final boolean transfer, final Location departure, final Location arrival,
+		public Individual(final int min, final int distance, final boolean transfer, final Location departure, final Location arrival,
 				final List<Point> path)
 		{
 			super(departure, arrival, path);

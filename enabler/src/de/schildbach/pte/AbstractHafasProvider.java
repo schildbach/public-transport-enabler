@@ -1116,7 +1116,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 				XmlPullUtil.exit(pp, "Overview");
 
-				final List<Connection.Part> parts = new ArrayList<Connection.Part>(4);
+				final List<Connection.Leg> legs = new ArrayList<Connection.Leg>(4);
 
 				XmlPullUtil.enter(pp, "ConSectionList");
 
@@ -1316,18 +1316,19 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						final Stop departure = new Stop(sectionDepartureLocation, true, departureTime, null, departurePos, null);
 						final Stop arrival = new Stop(sectionArrivalLocation, false, arrivalTime, null, arrivalPos, null);
 
-						parts.add(new Connection.Trip(line, destination, departure, arrival, intermediateStops, path, null));
+						legs.add(new Connection.Public(line, destination, departure, arrival, intermediateStops, path, null));
 					}
 					else
 					{
-						if (parts.size() > 0 && parts.get(parts.size() - 1) instanceof Connection.Footway)
+						if (legs.size() > 0 && legs.get(legs.size() - 1) instanceof Connection.Individual)
 						{
-							final Connection.Footway lastFootway = (Connection.Footway) parts.remove(parts.size() - 1);
-							parts.add(new Connection.Footway(lastFootway.min + min, 0, false, lastFootway.departure, sectionArrivalLocation, null));
+							final Connection.Individual lastIndividualLeg = (Connection.Individual) legs.remove(legs.size() - 1);
+							legs.add(new Connection.Individual(lastIndividualLeg.min + min, 0, false, lastIndividualLeg.departure,
+									sectionArrivalLocation, null));
 						}
 						else
 						{
-							parts.add(new Connection.Footway(min, 0, false, sectionDepartureLocation, sectionArrivalLocation, null));
+							legs.add(new Connection.Individual(min, 0, false, sectionDepartureLocation, sectionArrivalLocation, null));
 						}
 					}
 				}
@@ -1336,7 +1337,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 				XmlPullUtil.exit(pp, "Connection");
 
-				connections.add(new Connection(id, departureLocation, arrivalLocation, parts, null, capacity, numTransfers));
+				connections.add(new Connection(id, departureLocation, arrivalLocation, legs, null, capacity, numTransfers));
 			}
 
 			XmlPullUtil.exit(pp);
@@ -1664,8 +1665,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				is.skipBytes(0x02);
 
 				final int connectionDetailsIndexOffset = is.readShortReverse();
-				final int connectionDetailsPartOffset = is.readShortReverse();
-				final int connectionDetailsPartSize = is.readShortReverse();
+				final int connectionDetailsLegOffset = is.readShortReverse();
+				final int connectionDetailsLegSize = is.readShortReverse();
 				final int stopsSize = is.readShortReverse();
 				final int stopsOffset = is.readShortReverse();
 
@@ -1700,9 +1701,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 					final int serviceDaysTableOffset = is.readShortReverse();
 
-					final int partsOffset = is.readIntReverse();
+					final int legsOffset = is.readIntReverse();
 
-					final int numParts = is.readShortReverse();
+					final int numLegs = is.readShortReverse();
 
 					final int numChanges = is.readShortReverse();
 
@@ -1764,12 +1765,12 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						}
 					}
 
-					final List<Connection.Part> parts = new ArrayList<Connection.Part>(numParts);
+					final List<Connection.Leg> legs = new ArrayList<Connection.Leg>(numLegs);
 
-					for (int iPart = 0; iPart < numParts; iPart++)
+					for (int iLegs = 0; iLegs < numLegs; iLegs++)
 					{
 						is.reset();
-						is.skipBytes(0x4a + partsOffset + iPart * 20);
+						is.skipBytes(0x4a + legsOffset + iLegs * 20);
 
 						final long plannedDepartureTime = time(is, resDate, connectionDayOffset);
 						final Location departureLocation = stations.read(is);
@@ -1784,7 +1785,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						final String plannedDeparturePosition = normalizePosition(strings.read(is));
 						final String plannedArrivalPosition = normalizePosition(strings.read(is));
 
-						final int partAttrIndex = is.readShortReverse();
+						final int legAttrIndex = is.readShortReverse();
 
 						final List<Line.Attr> lineAttrs = new ArrayList<Line.Attr>();
 						String lineComment = null;
@@ -1807,7 +1808,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						}
 
 						is.reset();
-						is.skipBytes(attrsOffset + partAttrIndex * 4);
+						is.skipBytes(attrsOffset + legAttrIndex * 4);
 						String directionStr = null;
 						int lineClass = 0;
 						String lineCategory = null;
@@ -1833,10 +1834,10 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 							lineCategory = categoryFromName(lineName);
 
 						is.reset();
-						is.skipBytes(connectionDetailsPtr + connectionDetailsOffset + connectionDetailsPartOffset + iPart * connectionDetailsPartSize);
+						is.skipBytes(connectionDetailsPtr + connectionDetailsOffset + connectionDetailsLegOffset + iLegs * connectionDetailsLegSize);
 
-						if (connectionDetailsPartSize != 16)
-							throw new IllegalStateException("unhandled connection details part size: " + connectionDetailsPartSize);
+						if (connectionDetailsLegSize != 16)
+							throw new IllegalStateException("unhandled connection details leg size: " + connectionDetailsLegSize);
 
 						final long predictedDepartureTime = time(is, resDate, connectionDayOffset);
 						final long predictedArrivalTime = time(is, resDate, connectionDayOffset);
@@ -1895,21 +1896,21 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 							}
 						}
 
-						final Connection.Part part;
+						final Connection.Leg leg;
 						if (type == 1 /* Fussweg */|| type == 3 /* Uebergang */|| type == 4 /* Uebergang */)
 						{
 							final int min = (int) ((plannedArrivalTime - plannedDepartureTime) / 1000 / 60);
 							final boolean transfer = type != 1;
 
-							if (parts.size() > 0 && parts.get(parts.size() - 1) instanceof Connection.Footway)
+							if (legs.size() > 0 && legs.get(legs.size() - 1) instanceof Connection.Individual)
 							{
-								final Connection.Footway lastFootway = (Connection.Footway) parts.remove(parts.size() - 1);
-								part = new Connection.Footway(lastFootway.min + min, 0, lastFootway.transfer || transfer, lastFootway.departure,
-										arrivalLocation, null);
+								final Connection.Individual lastIndividualLeg = (Connection.Individual) legs.remove(legs.size() - 1);
+								leg = new Connection.Individual(lastIndividualLeg.min + min, 0, lastIndividualLeg.transfer || transfer,
+										lastIndividualLeg.departure, arrivalLocation, null);
 							}
 							else
 							{
-								part = new Connection.Footway(min, 0, transfer, departureLocation, arrivalLocation, null);
+								leg = new Connection.Individual(min, 0, transfer, departureLocation, arrivalLocation, null);
 							}
 						}
 						else if (type == 2)
@@ -1932,16 +1933,16 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 									predictedArrivalTime != 0 ? new Date(predictedArrivalTime) : null, plannedArrivalPosition,
 									predictedArrivalPosition);
 
-							part = new Connection.Trip(line, direction, departure, arrival, intermediateStops, null, null);
+							leg = new Connection.Public(line, direction, departure, arrival, intermediateStops, null, null);
 						}
 						else
 						{
 							throw new IllegalStateException("unhandled type: " + type);
 						}
-						parts.add(part);
+						legs.add(leg);
 					}
 
-					final Connection connection = new Connection(connectionId, resDeparture, resArrival, parts, null, null, (int) numChanges);
+					final Connection connection = new Connection(connectionId, resDeparture, resArrival, legs, null, null, (int) numChanges);
 
 					if (realtimeStatus != 2) // Verbindung fällt aus
 						connections.add(connection);

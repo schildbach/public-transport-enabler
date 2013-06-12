@@ -24,9 +24,6 @@ import org.ksoap2.transport.HttpTransportSE;
 import org.xmlpull.v1.XmlPullParserException;
 
 import de.schildbach.pte.dto.Connection;
-import de.schildbach.pte.dto.Connection.Footway;
-import de.schildbach.pte.dto.Connection.Part;
-import de.schildbach.pte.dto.Connection.Trip;
 import de.schildbach.pte.dto.Fare;
 import de.schildbach.pte.dto.Fare.Type;
 import de.schildbach.pte.dto.Line;
@@ -393,13 +390,13 @@ public class SadProvider extends AbstractNetworkProvider {
 					}
 				}
 
-				// Get parts of the current connection
-				List<Part> parts = new ArrayList<Part>();
+				// Get legs of the current connection
+				List<Connection.Leg> legs = new ArrayList<Connection.Leg>();
 				Object temp = connection.getProperty("tratti");
 				String networkName = null;
 				if (temp instanceof SoapObject) {
 					SoapObject tratti = (SoapObject) temp;
-					// Go through all connection parts
+					// Go through all connection legs
 					for (int j = 0; j < tratti.getPropertyCount(); j++) {
 						boolean isFootway = false;
 						SoapObject tratto = (SoapObject) tratti.getProperty(j);
@@ -416,15 +413,15 @@ public class SadProvider extends AbstractNetworkProvider {
 							}
 						}
 
-						// Add footway to parts list
+						// Add footway to legs list
 						if (isFootway) {
 							// NOTE: path is set to null
-							parts.add(new Footway(Integer.parseInt(tratto.getPropertyAsString("durata").split(":")[1]), 0, false,
+							legs.add(new Connection.Individual(Integer.parseInt(tratto.getPropertyAsString("durata").split(":")[1]), 0, false,
 									soapToLocation((SoapObject) tratto.getProperty("nodo_partenza")), soapToLocation((SoapObject) tratto
 											.getProperty("nodo_arrivo")), null));
 						}
 
-						// Add trip to parts list
+						// Add trip to legs list
 						else {
 							// Get line ID
 							String lineId = tratto.getPropertyAsString("linea");
@@ -442,7 +439,7 @@ public class SadProvider extends AbstractNetworkProvider {
 								final Stop arrival = new Stop(soapToLocation((SoapObject) tratto.getProperty("nodo_arrivo")), false,
 										responseDate.get(1), null, null, null);
 
-								parts.add(new Trip(new Line(lineId, lineId, DEFAULT_STYLE), null, departure, arrival, null, null, null));
+								legs.add(new Connection.Public(new Line(lineId, lineId, DEFAULT_STYLE), null, departure, arrival, null, null, null));
 							} catch (ParseException e) {
 								e.printStackTrace();
 							}
@@ -471,7 +468,7 @@ public class SadProvider extends AbstractNetworkProvider {
 				if (fromToLocs.size() == 2) {
 					// NOTE: link, capacity set to null
 					connections.add(new Connection(fromToLocs.get(0).toString() + fromToLocs.get(1).toString(), fromToLocs.get(0),
-							fromToLocs.get(1), parts, fares, null, null));
+							fromToLocs.get(1), legs, fares, null, null));
 				}
 			}
 		}

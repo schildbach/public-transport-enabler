@@ -28,7 +28,7 @@ import java.util.List;
 import org.junit.Test;
 
 import de.schildbach.pte.SadProvider;
-import de.schildbach.pte.dto.Connection.Footway;
+import de.schildbach.pte.dto.Connection.Individual;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.QueryConnectionsResult;
@@ -92,7 +92,7 @@ public class SadProviderLiveTest extends AbstractProviderLiveTest {
 
 		assertFalse(result.connections.isEmpty());
 
-		assertTrue(result.connections.get(0).parts.get(0) instanceof Footway);
+		assertTrue(result.connections.get(0).legs.get(0) instanceof Individual);
 	}
 
 	@Test
