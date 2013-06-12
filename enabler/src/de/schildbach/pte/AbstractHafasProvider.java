@@ -1088,17 +1088,12 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						XmlPullUtil.next(pp);
 					XmlPullUtil.enter(pp, "Status");
 					XmlPullUtil.exit(pp, "Status");
-					if (XmlPullUtil.test(pp, "Capacity1st"))
-					{
-						final int capacity1st = Integer.parseInt(XmlPullUtil.text(pp));
-						XmlPullUtil.require(pp, "Capacity2nd");
-						final int capacity2nd = Integer.parseInt(XmlPullUtil.text(pp));
+					final int capacity1st = XmlPullUtil.test(pp, "Capacity1st") ? Integer.parseInt(XmlPullUtil.text(pp)) : 0;
+					final int capacity2nd = XmlPullUtil.test(pp, "Capacity2nd") ? Integer.parseInt(XmlPullUtil.text(pp)) : 0;
+					if (capacity1st > 0 || capacity2nd > 0)
 						capacity = new int[] { capacity1st, capacity2nd };
-					}
 					else
-					{
 						capacity = null;
-					}
 					XmlPullUtil.exit(pp, "StopPrognosis");
 				}
 				else
