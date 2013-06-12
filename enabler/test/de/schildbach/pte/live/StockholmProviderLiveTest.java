@@ -92,4 +92,16 @@ public class StockholmProviderLiveTest extends AbstractProviderLiveTest
 		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
 		System.out.println(laterResult);
 	}
+
+	@Test
+	public void addressToStationConnection() throws Exception
+	{
+		final QueryConnectionsResult result = queryConnections(
+				new Location(LocationType.ADDRESS, 0, 59360519, 17989266, null, "Sommarvägen 1, Solna"), null, new Location(LocationType.STATION,
+						300109205, 59340518, 18081532, "Stockholm", "Stadion"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
+				Accessibility.NEUTRAL);
+		System.out.println(result);
+		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
+		System.out.println(laterResult);
+	}
 }
