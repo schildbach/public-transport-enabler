@@ -1938,7 +1938,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					if ("IT".equals(partialRouteType) || "Fussweg".equals(productName) || "Taxi".equals(productName))
 					{
 						final int min = (int) (arrivalTime.getTime() - departureTime.getTime()) / 1000 / 60;
-						final boolean transfer = "Taxi".equals(productName);
+						final Trip.Individual.Type type = "Taxi".equals(productName) ? Trip.Individual.Type.TRANSFER : Trip.Individual.Type.WALK;
 
 						XmlPullUtil.enter(pp, "itdMeansOfTransport");
 						XmlPullUtil.exit(pp, "itdMeansOfTransport");
@@ -1953,17 +1953,17 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						if (XmlPullUtil.test(pp, "itdPathCoordinates"))
 							path = processItdPathCoordinates(pp);
 
-						if (legs.size() > 0 && legs.get(legs.size() - 1) instanceof Trip.Individual)
+						final Trip.Leg lastLeg = legs.size() > 0 ? legs.get(legs.size() - 1) : null;
+						if (lastLeg != null && lastLeg instanceof Trip.Individual && ((Trip.Individual) lastLeg).type == type)
 						{
-							final Trip.Individual lastIndividualLeg = (Trip.Individual) legs.remove(legs.size() - 1);
-							if (path != null && lastIndividualLeg.path != null)
-								path.addAll(0, lastIndividualLeg.path);
-							legs.add(new Trip.Individual(lastIndividualLeg.min + min, distance, lastIndividualLeg.transfer || transfer,
-									lastIndividualLeg.departure, arrivalLocation, path));
+							final Trip.Individual lastIndividual = (Trip.Individual) legs.remove(legs.size() - 1);
+							if (path != null && lastIndividual.path != null)
+								path.addAll(0, lastIndividual.path);
+							legs.add(new Trip.Individual(lastIndividual.min + min, distance, type, lastIndividual.departure, arrivalLocation, path));
 						}
 						else
 						{
-							legs.add(new Trip.Individual(min, distance, transfer, departureLocation, arrivalLocation, path));
+							legs.add(new Trip.Individual(min, distance, type, departureLocation, arrivalLocation, path));
 						}
 					}
 					else if ("gesicherter Anschluss".equals(productName) || "nicht umsteigen".equals(productName)) // type97

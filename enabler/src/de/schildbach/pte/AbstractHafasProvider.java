@@ -1322,12 +1322,12 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						if (legs.size() > 0 && legs.get(legs.size() - 1) instanceof Trip.Individual)
 						{
 							final Trip.Individual lastIndividualLeg = (Trip.Individual) legs.remove(legs.size() - 1);
-							legs.add(new Trip.Individual(lastIndividualLeg.min + min, 0, false, lastIndividualLeg.departure, sectionArrivalLocation,
-									null));
+							legs.add(new Trip.Individual(lastIndividualLeg.min + min, 0, Trip.Individual.Type.WALK, lastIndividualLeg.departure,
+									sectionArrivalLocation, null));
 						}
 						else
 						{
-							legs.add(new Trip.Individual(min, 0, false, sectionDepartureLocation, sectionArrivalLocation, null));
+							legs.add(new Trip.Individual(min, 0, Trip.Individual.Type.WALK, sectionDepartureLocation, sectionArrivalLocation, null));
 						}
 					}
 				}
@@ -1811,6 +1811,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						int lineClass = 0;
 						String lineCategory = null;
 						String lineOperator = null;
+						String routingType = null;
 						while (true)
 						{
 							final String key = strings.read(is);
@@ -1824,6 +1825,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 								lineCategory = strings.read(is);
 							else if (key.equals("Operator"))
 								lineOperator = strings.read(is);
+							else if (key.equals("GisRoutingType"))
+								routingType = strings.read(is);
 							else
 								is.skipBytes(2);
 						}
@@ -1898,17 +1901,28 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						if (type == 1 /* Fussweg */|| type == 3 /* Uebergang */|| type == 4 /* Uebergang */)
 						{
 							final int min = (int) ((plannedArrivalTime - plannedDepartureTime) / 1000 / 60);
-							final boolean transfer = type != 1;
+							final Trip.Individual.Type individualType;
+							if (routingType == null)
+								individualType = type == 1 ? Trip.Individual.Type.WALK : Trip.Individual.Type.TRANSFER;
+							else if ("FOOT".equals(routingType))
+								individualType = Trip.Individual.Type.WALK;
+							else if ("BIKE".equals(routingType))
+								individualType = Trip.Individual.Type.BIKE;
+							else if ("P+R".equals(routingType))
+								individualType = Trip.Individual.Type.CAR;
+							else
+								throw new IllegalStateException("unknown routingType: " + routingType);
 
-							if (legs.size() > 0 && legs.get(legs.size() - 1) instanceof Trip.Individual)
+							final Trip.Leg lastLeg = legs.size() > 0 ? legs.get(legs.size() - 1) : null;
+							if (lastLeg != null && lastLeg instanceof Trip.Individual && ((Trip.Individual) lastLeg).type == individualType)
 							{
 								final Trip.Individual lastIndividualLeg = (Trip.Individual) legs.remove(legs.size() - 1);
-								leg = new Trip.Individual(lastIndividualLeg.min + min, 0, lastIndividualLeg.transfer || transfer,
-										lastIndividualLeg.departure, arrivalLocation, null);
+								leg = new Trip.Individual(lastIndividualLeg.min + min, 0, individualType, lastIndividualLeg.departure,
+										arrivalLocation, null);
 							}
 							else
 							{
-								leg = new Trip.Individual(min, 0, transfer, departureLocation, arrivalLocation, null);
+								leg = new Trip.Individual(min, 0, individualType, departureLocation, arrivalLocation, null);
 							}
 						}
 						else if (type == 2)

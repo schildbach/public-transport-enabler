@@ -327,16 +327,20 @@ public final class Trip implements Serializable
 
 		public final int min;
 		public final int distance;
-		public final boolean transfer;
+		public final Type type;
 
-		public Individual(final int min, final int distance, final boolean transfer, final Location departure, final Location arrival,
-				final List<Point> path)
+		public enum Type
+		{
+			WALK, BIKE, CAR, TRANSFER
+		}
+
+		public Individual(final int min, final int distance, final Type type, final Location departure, final Location arrival, final List<Point> path)
 		{
 			super(departure, arrival, path);
 
 			this.min = min;
 			this.distance = distance;
-			this.transfer = transfer;
+			this.type = type;
 		}
 
 		@Override
@@ -347,7 +351,7 @@ public final class Trip implements Serializable
 			builder.append(",");
 			builder.append("distance=").append(distance);
 			builder.append(",");
-			builder.append("transfer=").append(transfer);
+			builder.append("type=").append(type);
 			builder.append(",");
 			builder.append("departure=").append(departure.toDebugString());
 			builder.append(",");
