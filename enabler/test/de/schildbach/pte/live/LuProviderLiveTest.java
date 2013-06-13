@@ -29,8 +29,8 @@ import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Product;
-import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
+import de.schildbach.pte.dto.QueryTripsResult;
 
 /**
  * @author Andreas Schildbach
@@ -75,24 +75,24 @@ public class LuProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
-	public void shortConnection() throws Exception
+	public void shortTrip() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 200416001, null, "Cité Aéroport"), null,
-				new Location(LocationType.STATION, 200405035, "Luxembourg", "Gare Centrale"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 200416001, null, "Cité Aéroport"), null, new Location(
+				LocationType.STATION, 200405035, "Luxembourg", "Gare Centrale"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
-	public void addressConnection() throws Exception
+	public void addressTrip() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, 49611610, 6130265, null,
-				"Luxembourg, Rue Génistre 2"), null, new Location(LocationType.STATION, 200405035, "Luxembourg", "Gare Centrale"), new Date(), true,
-				Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 0, 49611610, 6130265, null, "Luxembourg, Rue Génistre 2"),
+				null, new Location(LocationType.STATION, 200405035, "Luxembourg", "Gare Centrale"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
+				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
 	}
 }

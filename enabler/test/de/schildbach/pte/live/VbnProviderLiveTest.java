@@ -31,8 +31,8 @@ import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Product;
-import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
+import de.schildbach.pte.dto.QueryTripsResult;
 
 /**
  * @author Andreas Schildbach
@@ -77,22 +77,22 @@ public class VbnProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
-	public void shortConnection() throws Exception
+	public void shortTrip() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 8096109, null, "Oldenburg"), null, new Location(
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 8096109, null, "Oldenburg"), null, new Location(
 				LocationType.STATION, 625398, null, "Bremerhaven"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		assertEquals(QueryConnectionsResult.Status.OK, result.status);
+		assertEquals(QueryTripsResult.Status.OK, result.status);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
-	public void connectionDateOutsideTimetablePeriod() throws Exception
+	public void tripDateOutsideTimetablePeriod() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 8096109, null, "Oldenburg"), null, new Location(
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 8096109, null, "Oldenburg"), null, new Location(
 				LocationType.STATION, 625398, null, "Bremerhaven"), new Date(1155822689759l), true, Product.ALL, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
-		assertEquals(QueryConnectionsResult.Status.INVALID_DATE, result.status);
+		assertEquals(QueryTripsResult.Status.INVALID_DATE, result.status);
 	}
 }

@@ -23,11 +23,11 @@ import java.util.List;
 /**
  * @author Andreas Schildbach
  */
-public final class QueryConnectionsResult implements Serializable
+public final class QueryTripsResult implements Serializable
 {
 	public enum Status
 	{
-		OK, AMBIGUOUS, TOO_CLOSE, UNKNOWN_FROM, UNKNOWN_TO, UNRESOLVABLE_ADDRESS, NO_CONNECTIONS, INVALID_DATE, SERVICE_DOWN;
+		OK, AMBIGUOUS, TOO_CLOSE, UNKNOWN_FROM, UNKNOWN_TO, UNRESOLVABLE_ADDRESS, NO_TRIPS, INVALID_DATE, SERVICE_DOWN;
 	}
 
 	public final ResultHeader header;
@@ -41,11 +41,11 @@ public final class QueryConnectionsResult implements Serializable
 	public final Location from;
 	public final Location via;
 	public final Location to;
-	public final QueryConnectionsContext context;
-	public final List<Connection> connections;
+	public final QueryTripsContext context;
+	public final List<Trip> trips;
 
-	public QueryConnectionsResult(final ResultHeader header, final String queryUri, final Location from, final Location via, final Location to,
-			final QueryConnectionsContext context, final List<Connection> connections)
+	public QueryTripsResult(final ResultHeader header, final String queryUri, final Location from, final Location via, final Location to,
+			final QueryTripsContext context, final List<Trip> trips)
 	{
 		this.header = header;
 		this.status = Status.OK;
@@ -54,14 +54,14 @@ public final class QueryConnectionsResult implements Serializable
 		this.via = via;
 		this.to = to;
 		this.context = context;
-		this.connections = connections;
+		this.trips = trips;
 
 		this.ambiguousFrom = null;
 		this.ambiguousVia = null;
 		this.ambiguousTo = null;
 	}
 
-	public QueryConnectionsResult(final ResultHeader header, final List<Location> ambiguousFrom, final List<Location> ambiguousVia,
+	public QueryTripsResult(final ResultHeader header, final List<Location> ambiguousFrom, final List<Location> ambiguousVia,
 			final List<Location> ambiguousTo)
 	{
 		this.header = header;
@@ -75,10 +75,10 @@ public final class QueryConnectionsResult implements Serializable
 		this.via = null;
 		this.to = null;
 		this.context = null;
-		this.connections = null;
+		this.trips = null;
 	}
 
-	public QueryConnectionsResult(final ResultHeader header, final Status status)
+	public QueryTripsResult(final ResultHeader header, final Status status)
 	{
 		this.header = header;
 		this.status = status;
@@ -91,7 +91,7 @@ public final class QueryConnectionsResult implements Serializable
 		this.via = null;
 		this.to = null;
 		this.context = null;
-		this.connections = null;
+		this.trips = null;
 	}
 
 	@Override
@@ -99,8 +99,8 @@ public final class QueryConnectionsResult implements Serializable
 	{
 		final StringBuilder builder = new StringBuilder(getClass().getName());
 		builder.append("[").append(this.status).append(": ");
-		if (connections != null)
-			builder.append(connections.size()).append(" connections " + connections + ", ");
+		if (trips != null)
+			builder.append(trips.size()).append(" trips " + trips + ", ");
 		if (ambiguousFrom != null)
 			builder.append(ambiguousFrom.size()).append(" ambiguous from, ");
 		if (ambiguousVia != null)

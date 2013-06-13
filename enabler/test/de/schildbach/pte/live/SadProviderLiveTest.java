@@ -28,11 +28,11 @@ import java.util.List;
 import org.junit.Test;
 
 import de.schildbach.pte.SadProvider;
-import de.schildbach.pte.dto.Connection.Individual;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.QueryConnectionsResult;
-import de.schildbach.pte.dto.QueryConnectionsResult.Status;
+import de.schildbach.pte.dto.QueryTripsResult;
+import de.schildbach.pte.dto.QueryTripsResult.Status;
+import de.schildbach.pte.dto.Trip.Individual;
 import de.schildbach.pte.util.Iso8601Format;
 
 /**
@@ -57,9 +57,9 @@ public class SadProviderLiveTest extends AbstractProviderLiveTest {
 	}
 
 	@Test
-	public void tooCloseConnection() throws Exception {
+	public void tooCloseTrip() throws Exception {
 		List<Location> schuffa = provider.autocompleteStations("Welschnofen");
-		final QueryConnectionsResult result = queryConnections(schuffa.get(0), null, schuffa.get(0),
+		final QueryTripsResult result = queryTrips(schuffa.get(0), null, schuffa.get(0),
 				dateTimeFormat.parse("2012-04-01 12:30:00"), true, null, null, null);
 
 		System.out.println(result);
@@ -72,7 +72,7 @@ public class SadProviderLiveTest extends AbstractProviderLiveTest {
 		List<Location> bz = provider.autocompleteStations("Bozen Bhf.");
 		List<Location> schuffa = provider.autocompleteStations("Welschnofen");
 
-		final QueryConnectionsResult result = queryConnections(bz.get(0), null, schuffa.get(0),
+		final QueryTripsResult result = queryTrips(bz.get(0), null, schuffa.get(0),
 				dateTimeFormat.parse("2011-04-01 12:30:00"), true, null, null, null);
 
 		System.out.println(result);
@@ -81,8 +81,8 @@ public class SadProviderLiveTest extends AbstractProviderLiveTest {
 	}
 
 	@Test
-	public void connectionWithFootway() throws Exception {
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 0, null, "Bozen Bhf."), null,
+	public void tripWithFootway() throws Exception {
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 0, null, "Bozen Bhf."), null,
 				new Location(LocationType.STATION, 0, null, "Bundschen"), dateTimeFormat.parse("2012-04-01 12:30:00"), true, null, null,
 				null);
 
@@ -90,29 +90,29 @@ public class SadProviderLiveTest extends AbstractProviderLiveTest {
 
 		assertEquals(Status.OK, result.status);
 
-		assertFalse(result.connections.isEmpty());
+		assertFalse(result.trips.isEmpty());
 
-		assertTrue(result.connections.get(0).legs.get(0) instanceof Individual);
+		assertTrue(result.trips.get(0).legs.get(0) instanceof Individual);
 	}
 
 	@Test
-	public void noConnections() throws Exception {
-		QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 0, null, "Bozen Bhf."), null,
+	public void noTrips() throws Exception {
+		QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 0, null, "Bozen Bhf."), null,
 				new Location(LocationType.STATION, 0, null, "Welschnofen"), dateTimeFormat.parse("2012-04-01 22:30:00"), true, null, null,
 				null);
 
 		System.out.println(result);
 
-		// No connections between 22:30 and 23:59
-		assertEquals(Status.NO_CONNECTIONS, result.status);
+		// No trips between 22:30 and 23:59
+		assertEquals(Status.NO_TRIPS, result.status);
 
-		assertNull(result.connections);
+		assertNull(result.trips);
 	}
 
 	@Test
-	public void queryMoreConnections() throws Exception {
-		// Connections between 05:30 and 10:30
-		QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 0, null, "Bozen Bhf."), null,
+	public void queryMoreTrips() throws Exception {
+		// Trips between 05:30 and 10:30
+		QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 0, null, "Bozen Bhf."), null,
 				new Location(LocationType.STATION, 0, null, "Welschnofen"), dateTimeFormat.parse("2012-04-01 05:30:00"), true, null, null,
 				null);
 
@@ -120,25 +120,25 @@ public class SadProviderLiveTest extends AbstractProviderLiveTest {
 
 		assertEquals(Status.OK, result.status);
 
-		assertFalse(result.connections.isEmpty());
+		assertFalse(result.trips.isEmpty());
 
-		// No connections between 04:30 and 05:30
-		QueryConnectionsResult moreResult = queryMoreConnections(result.context, false);
+		// No trips between 04:30 and 05:30
+		QueryTripsResult moreResult = queryMoreTrips(result.context, false);
 
 		System.out.println(moreResult);
 
-		assertEquals(Status.NO_CONNECTIONS, moreResult.status);
+		assertEquals(Status.NO_TRIPS, moreResult.status);
 
-		assertNull(moreResult.connections);
+		assertNull(moreResult.trips);
 
-		// Connections between 09:30 and 14:30
-		moreResult = queryMoreConnections(result.context, true);
+		// Trips between 09:30 and 14:30
+		moreResult = queryMoreTrips(result.context, true);
 
 		System.out.println(moreResult);
 
 		assertEquals(Status.OK, moreResult.status);
 
-		assertFalse(moreResult.connections.isEmpty());
+		assertFalse(moreResult.trips.isEmpty());
 
 		System.out.println(moreResult);
 	}
@@ -146,7 +146,7 @@ public class SadProviderLiveTest extends AbstractProviderLiveTest {
 	@Test
 	public void queryAmbiguous() throws Exception {
 		// No ambiguities
-		QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 0, null, "Welschn"), null,
+		QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 0, null, "Welschn"), null,
 				new Location(LocationType.STATION, 0, null, "ozen Bh"), dateTimeFormat.parse("2012-04-01 12:30:00"), false, null, null,
 				null);
 
@@ -154,10 +154,10 @@ public class SadProviderLiveTest extends AbstractProviderLiveTest {
 
 		assertEquals(Status.OK, result.status);
 
-		assertFalse(result.connections.isEmpty());
+		assertFalse(result.trips.isEmpty());
 
 		// Ambiguous departure
-		result = queryConnections(new Location(LocationType.STATION, 0, null, "Welsch"), null, new Location(LocationType.STATION,
+		result = queryTrips(new Location(LocationType.STATION, 0, null, "Welsch"), null, new Location(LocationType.STATION,
 				0, null, "ozen Bh"), dateTimeFormat.parse("2012-04-01 12:30:00"), false, null, null, null);
 
 		System.out.println(result);
@@ -173,7 +173,7 @@ public class SadProviderLiveTest extends AbstractProviderLiveTest {
 		assertFalse(result.ambiguousTo.size() > 1);
 
 		// Ambiguous arrival
-		result = queryConnections(new Location(LocationType.STATION, 0, null, "Welschn"), null, new Location(LocationType.STATION,
+		result = queryTrips(new Location(LocationType.STATION, 0, null, "Welschn"), null, new Location(LocationType.STATION,
 				0, null, "oze"), dateTimeFormat.parse("2012-04-01 12:30:00"), false, null, null, null);
 
 		System.out.println(result);
@@ -189,7 +189,7 @@ public class SadProviderLiveTest extends AbstractProviderLiveTest {
 		assertTrue(result.ambiguousTo.size() > 1);
 
 		// Ambiguous departure and arrival
-		result = queryConnections(new Location(LocationType.STATION, 0, null, "Welsch"), null, new Location(LocationType.STATION,
+		result = queryTrips(new Location(LocationType.STATION, 0, null, "Welsch"), null, new Location(LocationType.STATION,
 				0, null, "oze"), dateTimeFormat.parse("2012-04-01 12:30:00"), false, null, null, null);
 
 		System.out.println(result);
@@ -208,7 +208,7 @@ public class SadProviderLiveTest extends AbstractProviderLiveTest {
 	@Test
 	public void queryUnkown() throws Exception {
 		// Unknown from
-		QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 0, null, "Welschnoffen"), null,
+		QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 0, null, "Welschnoffen"), null,
 				new Location(LocationType.STATION, 0, null, "ozen Bh"), dateTimeFormat.parse("2012-04-01 12:30:00"), false, null, null,
 				null);
 
@@ -216,26 +216,26 @@ public class SadProviderLiveTest extends AbstractProviderLiveTest {
 
 		assertEquals(Status.UNKNOWN_FROM, result.status);
 
-		assertNull(result.connections);
+		assertNull(result.trips);
 
 		// Unknown to
-		result = queryConnections(new Location(LocationType.STATION, 0, null, "Welsch"), null, new Location(LocationType.STATION,
+		result = queryTrips(new Location(LocationType.STATION, 0, null, "Welsch"), null, new Location(LocationType.STATION,
 				0, null, "ozenn Bh"), dateTimeFormat.parse("2012-04-01 12:30:00"), false, null, null, null);
 
 		System.out.println(result);
 
 		assertEquals(Status.UNKNOWN_TO, result.status);
 
-		assertNull(result.connections);
+		assertNull(result.trips);
 
 		// Unknown from and to
-		result = queryConnections(new Location(LocationType.STATION, 0, null, "Welschnoffen"), null, new Location(
+		result = queryTrips(new Location(LocationType.STATION, 0, null, "Welschnoffen"), null, new Location(
 				LocationType.STATION, 0, null, "ozenn Bh"), dateTimeFormat.parse("2012-04-01 12:30:00"), false, null, null, null);
 
 		System.out.println(result);
 
 		assertTrue(Status.UNKNOWN_FROM == result.status || Status.UNKNOWN_TO == result.status);
 
-		assertNull(result.connections);
+		assertNull(result.trips);
 	}
 }

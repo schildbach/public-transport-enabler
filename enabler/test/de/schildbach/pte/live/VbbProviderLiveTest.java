@@ -32,8 +32,8 @@ import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Product;
-import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
+import de.schildbach.pte.dto.QueryTripsResult;
 
 /**
  * @author Andreas Schildbach
@@ -115,71 +115,69 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
-	public void shortConnection() throws Exception
+	public void shortTrip() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 9056102, "Berlin", "Nollendorfplatz"), null,
-				new Location(LocationType.STATION, 9013103, "Berlin", "Prinzenstraße"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-				Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 9056102, "Berlin", "Nollendorfplatz"), null, new Location(
+				LocationType.STATION, 9013103, "Berlin", "Prinzenstraße"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
-		final QueryConnectionsResult earlierResult = queryMoreConnections(laterResult.context, false);
+		final QueryTripsResult earlierResult = queryMoreTrips(laterResult.context, false);
 		System.out.println(earlierResult);
 	}
 
 	@Test
-	public void shortViaConnection() throws Exception
+	public void shortViaTrip() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 9056102, "Berlin", "Nollendorfplatz"),
-				new Location(LocationType.STATION, 9044202, "Berlin", "Bundesplatz"), new Location(LocationType.STATION, 9013103, "Berlin",
-						"Prinzenstraße"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 9056102, "Berlin", "Nollendorfplatz"), new Location(
+				LocationType.STATION, 9044202, "Berlin", "Bundesplatz"), new Location(LocationType.STATION, 9013103, "Berlin", "Prinzenstraße"),
+				new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
-	public void connectionBetweenCoordinates() throws Exception
+	public void tripBetweenCoordinates() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, 52501507, 13357026, null, null), null,
-				new Location(LocationType.ADDRESS, 0, 52513639, 13568648, null, null), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-				Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 0, 52501507, 13357026, null, null), null, new Location(
+				LocationType.ADDRESS, 0, 52513639, 13568648, null, null), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
-	public void viaConnectionBetweenCoordinates() throws Exception
+	public void viaTripBetweenCoordinates() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, 52501507, 13357026, null, null), new Location(
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 0, 52501507, 13357026, null, null), new Location(
 				LocationType.ADDRESS, 0, 52479868, 13324247, null, null), new Location(LocationType.ADDRESS, 0, 52513639, 13568648, null, null),
 				new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
-	public void connectionBetweenAddresses() throws Exception
+	public void tripBetweenAddresses() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, 52479663, 13324278, "10715 Berlin-Wilmersdorf",
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 0, 52479663, 13324278, "10715 Berlin-Wilmersdorf",
 				"Weimarische Str. 7"), null, new Location(LocationType.ADDRESS, 0, 52541536, 13421290, "10437 Berlin-Prenzlauer Berg",
 				"Göhrener Str. 5"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
-	public void viaConnectionBetweenAddresses() throws Exception
+	public void viaTripBetweenAddresses() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, 52479663, 13324278, "10715 Berlin-Wilmersdorf",
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 0, 52479663, 13324278, "10715 Berlin-Wilmersdorf",
 				"Weimarische Str. 7"), new Location(LocationType.ADDRESS, 0, 52527872, 13381657, "10115 Berlin-Mitte", "Hannoversche Str. 20"),
 				new Location(LocationType.ADDRESS, 0, 52526029, 13399878, "10178 Berlin-Mitte", "Sophienstr. 24"), new Date(), true, Product.ALL,
 				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
 	}
 }

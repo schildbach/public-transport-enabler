@@ -31,8 +31,8 @@ import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Product;
-import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
+import de.schildbach.pte.dto.QueryTripsResult;
 
 /**
  * @author Andreas Schildbach
@@ -97,49 +97,49 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
-	public void shortConnection() throws Exception
+	public void shortTrip() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 8011160, null, "Berlin Hbf"), null, new Location(
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 8011160, null, "Berlin Hbf"), null, new Location(
 				LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
-		final QueryConnectionsResult later2Result = queryMoreConnections(laterResult.context, true);
+		final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
 		System.out.println(later2Result);
-		final QueryConnectionsResult earlierResult = queryMoreConnections(later2Result.context, false);
+		final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
 		System.out.println(earlierResult);
-		final QueryConnectionsResult later3Result = queryMoreConnections(earlierResult.context, true);
+		final QueryTripsResult later3Result = queryMoreTrips(earlierResult.context, true);
 		System.out.println(later3Result);
 	}
 
 	@Test
-	public void slowConnection() throws Exception
+	public void slowTrip() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 732655, 52535576, 13422171, null,
-				"Marienburger Str., Berlin"), null, new Location(LocationType.STATION, 623234, 48000221, 11342490, null,
-				"Tutzinger-Hof-Platz, Starnberg"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 732655, 52535576, 13422171, null, "Marienburger Str., Berlin"),
+				null, new Location(LocationType.STATION, 623234, 48000221, 11342490, null, "Tutzinger-Hof-Platz, Starnberg"), new Date(), true,
+				Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 
 		if (!result.context.canQueryLater())
 			return;
 
-		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
-	public void noConnections() throws Exception
+	public void noTrips() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 513729, null, "Schillerplatz, Kaiserslautern"),
-				null, new Location(LocationType.STATION, 403631, null, "Trippstadt Grundschule"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 513729, null, "Schillerplatz, Kaiserslautern"), null,
+				new Location(LocationType.STATION, 403631, null, "Trippstadt Grundschule"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
 	}
 
 	@Test
-	public void connectionWithFootway() throws Exception
+	public void tripWithFootway() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, 52517139, 13388749, null,
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 0, 52517139, 13388749, null,
 				"Berlin - Mitte, Unter den Linden 24"), null, new Location(LocationType.ADDRESS, 0, 47994243, 11338543, null,
 				"Starnberg, Possenhofener Straße 13"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
@@ -147,27 +147,27 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 		if (!result.context.canQueryLater())
 			return;
 
-		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
-	public void connectionsTooClose() throws Exception
+	public void tripsTooClose() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 8010205, null, "Leipzig Hbf"), null, new Location(
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 8010205, null, "Leipzig Hbf"), null, new Location(
 				LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 
-		assertEquals(QueryConnectionsResult.Status.TOO_CLOSE, result.status);
+		assertEquals(QueryTripsResult.Status.TOO_CLOSE, result.status);
 	}
 
 	@Test
-	public void connectionsInvalidDate() throws Exception
+	public void tripsInvalidDate() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 8011160, null, "Berlin Hbf"), null, new Location(
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 8011160, null, "Berlin Hbf"), null, new Location(
 				LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(0), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 
-		assertEquals(QueryConnectionsResult.Status.INVALID_DATE, result.status);
+		assertEquals(QueryTripsResult.Status.INVALID_DATE, result.status);
 	}
 }

@@ -49,7 +49,6 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.Fare;
 import de.schildbach.pte.dto.Fare.Type;
@@ -60,12 +59,13 @@ import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.Product;
-import de.schildbach.pte.dto.QueryConnectionsContext;
-import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
+import de.schildbach.pte.dto.QueryTripsContext;
+import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.ResultHeader;
 import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.dto.Stop;
+import de.schildbach.pte.dto.Trip;
 import de.schildbach.pte.exception.InvalidDataException;
 import de.schildbach.pte.exception.NotFoundException;
 import de.schildbach.pte.exception.ParserException;
@@ -100,12 +100,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private String httpRefererTrip = null;
 	private boolean httpPost = false;
 	private boolean suppressPositions = false;
-	private boolean useRouteIndexAsConnectionId = true;
+	private boolean useRouteIndexAsTripId = true;
 	private boolean useLineRestriction = true;
 
 	private final XmlPullParserFactory parserFactory;
 
-	private static class Context implements QueryConnectionsContext
+	private static class Context implements QueryTripsContext
 	{
 		private final String context;
 
@@ -194,9 +194,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		this.suppressPositions = suppressPositions;
 	}
 
-	protected void setUseRouteIndexAsConnectionId(final boolean useRouteIndexAsConnectionId)
+	protected void setUseRouteIndexAsTripId(final boolean useRouteIndexAsTripId)
 	{
-		this.useRouteIndexAsConnectionId = useRouteIndexAsConnectionId;
+		this.useRouteIndexAsTripId = useRouteIndexAsTripId;
 	}
 
 	protected void setUseLineRestriction(final boolean useLineRestriction)
@@ -1528,7 +1528,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	}
 
 	protected String xsltTripRequestParameters(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final int numConnections, final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility,
+			final int numTrips, final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility,
 			final Set<Option> options)
 	{
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd", Locale.US);
@@ -1552,7 +1552,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		uri.append("&itdTime=").append(ParserUtils.urlEncode(TIME_FORMAT.format(date)));
 		uri.append("&itdTripDateTimeDepArr=").append(dep ? "dep" : "arr");
 
-		uri.append("&calcNumberOfTrips=").append(numConnections);
+		uri.append("&calcNumberOfTrips=").append(numTrips);
 
 		uri.append("&ptOptionsActive=1"); // enable public transport options
 		uri.append("&itOptionsActive=1"); // enable individual transport options
@@ -1634,12 +1634,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		uri.append("&calcNumberOfTrips=4");
 	}
 
-	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final int numConnections, final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility,
+	public QueryTripsResult queryTrips(final Location from, final Location via, final Location to, final Date date, final boolean dep,
+			final int numTrips, final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility,
 			final Set<Option> options) throws IOException
 	{
 
-		final String parameters = xsltTripRequestParameters(from, via, to, date, dep, numConnections, products, walkSpeed, accessibility, options);
+		final String parameters = xsltTripRequestParameters(from, via, to, date, dep, numTrips, products, walkSpeed, accessibility, options);
 
 		final StringBuilder uri = new StringBuilder(tripEndpoint);
 		if (!httpPost)
@@ -1652,7 +1652,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		try
 		{
 			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpRefererTrip, "NSC_", 3);
-			return queryConnections(uri.toString(), is);
+			return queryTrips(uri.toString(), is);
 		}
 		catch (final XmlPullParserException x)
 		{
@@ -1671,8 +1671,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	private static final Pattern P_SESSION_EXPIRED = Pattern.compile("Your session has expired");
 
-	public QueryConnectionsResult queryMoreConnections(final QueryConnectionsContext contextObj, final boolean later, final int numConnections)
-			throws IOException
+	public QueryTripsResult queryMoreTrips(final QueryTripsContext contextObj, final boolean later, final int numTrips) throws IOException
 	{
 		final Context context = (Context) contextObj;
 		final String commandUri = context.context;
@@ -1685,7 +1684,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			is = new BufferedInputStream(ParserUtils.scrapeInputStream(uri.toString(), null, null, httpRefererTrip, "NSC_", 3));
 			is.mark(512);
 
-			return queryConnections(uri.toString(), is);
+			return queryTrips(uri.toString(), is);
 		}
 		catch (final XmlPullParserException x)
 		{
@@ -1718,7 +1717,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 	}
 
-	private QueryConnectionsResult queryConnections(final String uri, final InputStream is) throws XmlPullParserException, IOException
+	private QueryTripsResult queryTrips(final String uri, final InputStream is) throws XmlPullParserException, IOException
 	{
 		// System.out.println(uri);
 
@@ -1737,8 +1736,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		if (XmlPullUtil.test(pp, "itdMessage"))
 		{
 			final int code = XmlPullUtil.intAttr(pp, "code");
-			if (code == -4000) // no connection
-				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.NO_CONNECTIONS);
+			if (code == -4000) // no trips
+				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
 			XmlPullUtil.next(pp);
 		}
 		if (XmlPullUtil.test(pp, "itdPrintConfiguration"))
@@ -1806,12 +1805,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			else if ("notidentified".equals(nameState))
 			{
 				if ("origin".equals(usage))
-					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.UNKNOWN_FROM);
+					return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_FROM);
 				else if ("via".equals(usage))
-					// return new QueryConnectionsResult(header, QueryConnectionsResult.Status.UNKNOWN_VIA);
+					// return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_VIA);
 					throw new UnsupportedOperationException();
 				else if ("destination".equals(usage))
-					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.UNKNOWN_TO);
+					return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_TO);
 				else
 					throw new IllegalStateException("unknown usage: " + usage);
 			}
@@ -1820,7 +1819,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 
 		if (ambiguousFrom != null || ambiguousTo != null || ambiguousVia != null)
-			return new QueryConnectionsResult(header, ambiguousFrom, ambiguousVia, ambiguousTo);
+			return new QueryTripsResult(header, ambiguousFrom, ambiguousVia, ambiguousTo);
 
 		XmlPullUtil.enter(pp, "itdTripDateTime");
 		XmlPullUtil.enter(pp, "itdDateTime");
@@ -1833,7 +1832,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				final String message = XmlPullUtil.nextText(pp, null, "itdMessage");
 
 				if ("invalid date".equals(message))
-					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.INVALID_DATE);
+					return new QueryTripsResult(header, QueryTripsResult.Status.INVALID_DATE);
 				else
 					throw new IllegalStateException("unknown message: " + message);
 			}
@@ -1846,7 +1845,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		XmlPullUtil.exit(pp, "itdDateTime");
 
 		final Calendar time = new GregorianCalendar(timeZone());
-		final List<Connection> connections = new ArrayList<Connection>();
+		final List<Trip> trips = new ArrayList<Trip>();
 
 		if (XmlPullUtil.jumpToStartTag(pp, null, "itdRouteList"))
 		{
@@ -1854,7 +1853,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 			while (XmlPullUtil.test(pp, "itdRoute"))
 			{
-				final String id = useRouteIndexAsConnectionId ? pp.getAttributeValue(null, "routeIndex") + "-"
+				final String id = useRouteIndexAsTripId ? pp.getAttributeValue(null, "routeIndex") + "-"
 						+ pp.getAttributeValue(null, "routeTripIndex") : null;
 				final int numChanges = XmlPullUtil.intAttr(pp, "changes");
 				XmlPullUtil.enter(pp, "itdRoute");
@@ -1865,7 +1864,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					XmlPullUtil.next(pp);
 
 				XmlPullUtil.enter(pp, "itdPartialRouteList");
-				final List<Connection.Leg> legs = new LinkedList<Connection.Leg>();
+				final List<Trip.Leg> legs = new LinkedList<Trip.Leg>();
 				Location firstDepartureLocation = null;
 				Location lastArrivalLocation = null;
 
@@ -1954,17 +1953,17 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						if (XmlPullUtil.test(pp, "itdPathCoordinates"))
 							path = processItdPathCoordinates(pp);
 
-						if (legs.size() > 0 && legs.get(legs.size() - 1) instanceof Connection.Individual)
+						if (legs.size() > 0 && legs.get(legs.size() - 1) instanceof Trip.Individual)
 						{
-							final Connection.Individual lastIndividualLeg = (Connection.Individual) legs.remove(legs.size() - 1);
+							final Trip.Individual lastIndividualLeg = (Trip.Individual) legs.remove(legs.size() - 1);
 							if (path != null && lastIndividualLeg.path != null)
 								path.addAll(0, lastIndividualLeg.path);
-							legs.add(new Connection.Individual(lastIndividualLeg.min + min, distance, lastIndividualLeg.transfer || transfer,
+							legs.add(new Trip.Individual(lastIndividualLeg.min + min, distance, lastIndividualLeg.transfer || transfer,
 									lastIndividualLeg.departure, arrivalLocation, path));
 						}
 						else
 						{
-							legs.add(new Connection.Individual(min, distance, transfer, departureLocation, arrivalLocation, path));
+							legs.add(new Trip.Individual(min, distance, transfer, departureLocation, arrivalLocation, path));
 						}
 					}
 					else if ("gesicherter Anschluss".equals(productName) || "nicht umsteigen".equals(productName)) // type97
@@ -2184,7 +2183,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						final Stop arrival = new Stop(arrivalLocation, false, arrivalTargetTime != null ? arrivalTargetTime : arrivalTime,
 								arrivalTime != null ? arrivalTime : null, arrivalPosition, null);
 
-						legs.add(new Connection.Public(line, destination, departure, arrival, intermediateStops, path, message));
+						legs.add(new Trip.Public(line, destination, departure, arrival, intermediateStops, path, message));
 					}
 					else
 					{
@@ -2253,20 +2252,19 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 				XmlPullUtil.exit(pp, "itdRoute");
 
-				final Connection connection = new Connection(id, firstDepartureLocation, lastArrivalLocation, legs, fares.isEmpty() ? null : fares,
-						null, numChanges);
+				final Trip trip = new Trip(id, firstDepartureLocation, lastArrivalLocation, legs, fares.isEmpty() ? null : fares, null, numChanges);
 
 				if (!cancelled)
-					connections.add(connection);
+					trips.add(trip);
 			}
 
 			XmlPullUtil.exit(pp, "itdRouteList");
 
-			return new QueryConnectionsResult(header, uri, from, via, to, new Context(commandLink((String) context, requestId)), connections);
+			return new QueryTripsResult(header, uri, from, via, to, new Context(commandLink((String) context, requestId)), trips);
 		}
 		else
 		{
-			return new QueryConnectionsResult(header, QueryConnectionsResult.Status.NO_CONNECTIONS);
+			return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
 		}
 	}
 

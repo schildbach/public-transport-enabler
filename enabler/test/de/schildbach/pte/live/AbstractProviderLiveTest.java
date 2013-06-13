@@ -28,9 +28,9 @@ import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Product;
-import de.schildbach.pte.dto.QueryConnectionsContext;
-import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
+import de.schildbach.pte.dto.QueryTripsContext;
+import de.schildbach.pte.dto.QueryTripsResult;
 
 /**
  * @author Andreas Schildbach
@@ -67,14 +67,14 @@ public abstract class AbstractProviderLiveTest
 		System.out.println();
 	}
 
-	protected final QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date,
-			final boolean dep, final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility) throws IOException
+	protected final QueryTripsResult queryTrips(final Location from, final Location via, final Location to, final Date date, final boolean dep,
+			final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility) throws IOException
 	{
-		return provider.queryConnections(from, via, to, date, dep, 4, products, walkSpeed, accessibility, null);
+		return provider.queryTrips(from, via, to, date, dep, 4, products, walkSpeed, accessibility, null);
 	}
 
-	protected final QueryConnectionsResult queryMoreConnections(final QueryConnectionsContext context, final boolean later) throws IOException
+	protected final QueryTripsResult queryMoreTrips(final QueryTripsContext context, final boolean later) throws IOException
 	{
-		return provider.queryMoreConnections(context, later, 4);
+		return provider.queryMoreTrips(context, later, 4);
 	}
 }

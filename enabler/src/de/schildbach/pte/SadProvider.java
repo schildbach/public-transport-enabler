@@ -23,7 +23,6 @@ import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
 import org.xmlpull.v1.XmlPullParserException;
 
-import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.Fare;
 import de.schildbach.pte.dto.Fare.Type;
 import de.schildbach.pte.dto.Line;
@@ -31,13 +30,14 @@ import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Product;
-import de.schildbach.pte.dto.QueryConnectionsContext;
-import de.schildbach.pte.dto.QueryConnectionsResult;
-import de.schildbach.pte.dto.QueryConnectionsResult.Status;
 import de.schildbach.pte.dto.QueryDeparturesResult;
+import de.schildbach.pte.dto.QueryTripsContext;
+import de.schildbach.pte.dto.QueryTripsResult;
+import de.schildbach.pte.dto.QueryTripsResult.Status;
 import de.schildbach.pte.dto.ResultHeader;
 import de.schildbach.pte.dto.Stop;
 import de.schildbach.pte.dto.Style;
+import de.schildbach.pte.dto.Trip;
 
 public class SadProvider extends AbstractNetworkProvider {
 
@@ -60,7 +60,7 @@ public class SadProvider extends AbstractNetworkProvider {
 		GERMAN, ITALIAN
 	}
 
-	public static class Context implements QueryConnectionsContext
+	public static class Context implements QueryTripsContext
 	{
 		public final String context;
 
@@ -86,7 +86,7 @@ public class SadProvider extends AbstractNetworkProvider {
 
 	public boolean hasCapabilities(final Capability... capabilities) {
 		for (final Capability capability : capabilities)
-			if (capability == Capability.AUTOCOMPLETE_ONE_LINE || capability == Capability.CONNECTIONS)
+			if (capability == Capability.AUTOCOMPLETE_ONE_LINE || capability == Capability.TRIPS)
 				return true;
 
 		return false;
@@ -121,7 +121,7 @@ public class SadProvider extends AbstractNetworkProvider {
 		return list;
 	}
 	
-	public QueryConnectionsResult queryConnections(Location from, Location via, Location to, Date date, boolean dep, final int numConnections,
+	public QueryTripsResult queryTrips(Location from, Location via, Location to, Date date, boolean dep, final int numTrips,
 			Collection<Product> products, WalkSpeed walkSpeed, Accessibility accessibility, Set<Option> options) throws IOException {
 
 		// Select correct SOAP method depending on the dep flag
@@ -141,9 +141,9 @@ public class SadProvider extends AbstractNetworkProvider {
 		// Check if the date is valid by querying the SOAP service
 		Status validityStatus = checkDateValidity(date);
 		if (validityStatus == Status.SERVICE_DOWN) {
-			return new QueryConnectionsResult(RESULT_HEADER, Status.SERVICE_DOWN);
+			return new QueryTripsResult(RESULT_HEADER, Status.SERVICE_DOWN);
 		} else if (validityStatus == Status.INVALID_DATE) {
-			return new QueryConnectionsResult(RESULT_HEADER, Status.INVALID_DATE);
+			return new QueryTripsResult(RESULT_HEADER, Status.INVALID_DATE);
 		}
 
 		// From and/or to locations have no ID -> use autocomplete metho
@@ -155,7 +155,7 @@ public class SadProvider extends AbstractNetworkProvider {
 			if (!from.hasId()) {
 				froms = autocompleteStations(from.name);
 				if (froms.isEmpty()) {
-					return new QueryConnectionsResult(RESULT_HEADER, Status.UNKNOWN_FROM);
+					return new QueryTripsResult(RESULT_HEADER, Status.UNKNOWN_FROM);
 				}
 				// Exactly one match
 				else if (froms.size() == 1) {
@@ -166,7 +166,7 @@ public class SadProvider extends AbstractNetworkProvider {
 			if (!to.hasId()) {
 				tos = autocompleteStations(to.name);
 				if (tos.isEmpty()) {
-					return new QueryConnectionsResult(RESULT_HEADER, Status.UNKNOWN_TO);
+					return new QueryTripsResult(RESULT_HEADER, Status.UNKNOWN_TO);
 				}
 				// Exactly one match
 				else if (tos.size() == 1) {
@@ -176,16 +176,16 @@ public class SadProvider extends AbstractNetworkProvider {
 
 			// Check for ambiguities in which case an ambiguous result is returned 
 			if ((froms != null && froms.size() > 1) || (tos != null && tos.size() > 1)) {
-				return new QueryConnectionsResult(RESULT_HEADER, froms, null, tos);
+				return new QueryTripsResult(RESULT_HEADER, froms, null, tos);
 			}
 		}
 
 		// Check if from and to locations are equal
 		if (from.id == to.id) {
-			return new QueryConnectionsResult(RESULT_HEADER, Status.TOO_CLOSE);
+			return new QueryTripsResult(RESULT_HEADER, Status.TOO_CLOSE);
 		}
 
-		// Execute SOAP request to get list of possible connections
+		// Execute SOAP request to get list of possible trips
 		SoapObject response = executeSoap(soapMethod, new Object[] { "partenza", from.id + "", "arrivo", to.id + "", "giorno", writtenDate,
 				"orario_min", timeMin, "orario_max", timeMax });
 
@@ -193,7 +193,7 @@ public class SadProvider extends AbstractNetworkProvider {
 		return calculateResponse(from, to, response, dep, date);
 	}
 
-	public QueryConnectionsResult queryMoreConnections(final QueryConnectionsContext contextObj, final boolean later, final int numConnections) throws IOException
+	public QueryTripsResult queryMoreTrips(final QueryTripsContext contextObj, final boolean later, final int numTrips) throws IOException
 	{
 		// Split and parse context
 		final Context context = (Context) contextObj;
@@ -218,9 +218,9 @@ public class SadProvider extends AbstractNetworkProvider {
 		cal.add(Calendar.HOUR_OF_DAY, later ? HOURS_AFTER_START : -HOURS_AFTER_START);
 		date = cal.getTime();
 
-		// Query for connections with new date/time value
+		// Query for trips with new date/time value
 		// NOTE: via, products, walkSpeed, accessibility are set to null
-		return queryConnections(new Location(LocationType.STATION, fromId), null, new Location(LocationType.STATION, toId), date, dep,
+		return queryTrips(new Location(LocationType.STATION, fromId), null, new Location(LocationType.STATION, toId), date, dep,
 				0, null, null, null, null);
 	}
 
@@ -356,7 +356,7 @@ public class SadProvider extends AbstractNetworkProvider {
 	}
 
 	/**
-	 * Utility function to create a QueryConnectionsResult result object from the supplied parameters.
+	 * Utility function to create a QueryTripsResult result object from the supplied parameters.
 	 * @param from the request's from location 
 	 * @param to the request's to location
 	 * @param response the SoapObject which was received from the service as response
@@ -364,39 +364,39 @@ public class SadProvider extends AbstractNetworkProvider {
 	 * @param date the request's date
 	 * @return
 	 */
-	private QueryConnectionsResult calculateResponse(Location from, Location to, SoapObject response, boolean dep, Date date) {
+	private QueryTripsResult calculateResponse(Location from, Location to, SoapObject response, boolean dep, Date date) {
 		
 		// If no result was found return immediately
 		if (response.getPropertyCount() == 0) {
-			return new QueryConnectionsResult(RESULT_HEADER, Status.NO_CONNECTIONS);
+			return new QueryTripsResult(RESULT_HEADER, Status.NO_TRIPS);
 		}
 
-		// Lists to store the connections and from and to locations
-		List<Connection> connections = new ArrayList<Connection>();
+		// Lists to store the trips and from and to locations
+		List<Trip> trips = new ArrayList<Trip>();
 		List<Location> fromToLocs = new ArrayList<Location>();
 
 		// Go through all properties of the response's SoapObject
 		for (int i = 0; i < response.getPropertyCount(); i++) {
 			Object property = response.getProperty(i);
 			if (property instanceof SoapObject) {
-				SoapObject connection = (SoapObject) property;
+				SoapObject trip = (SoapObject) property;
 
-				// Get departure and arrival locations for current connection
+				// Get departure and arrival locations for current trip
 				fromToLocs.clear();
 				for (String prop : new String[] { "nodo_partenza", "nodo_arrivo" }) {
-					Object temp = connection.getProperty(prop);
+					Object temp = trip.getProperty(prop);
 					if (temp instanceof SoapObject) {
 						fromToLocs.add(soapToLocation((SoapObject) temp));
 					}
 				}
 
-				// Get legs of the current connection
-				List<Connection.Leg> legs = new ArrayList<Connection.Leg>();
-				Object temp = connection.getProperty("tratti");
+				// Get legs of the current trip
+				List<Trip.Leg> legs = new ArrayList<Trip.Leg>();
+				Object temp = trip.getProperty("tratti");
 				String networkName = null;
 				if (temp instanceof SoapObject) {
 					SoapObject tratti = (SoapObject) temp;
-					// Go through all connection legs
+					// Go through all trip legs
 					for (int j = 0; j < tratti.getPropertyCount(); j++) {
 						boolean isFootway = false;
 						SoapObject tratto = (SoapObject) tratti.getProperty(j);
@@ -416,7 +416,7 @@ public class SadProvider extends AbstractNetworkProvider {
 						// Add footway to legs list
 						if (isFootway) {
 							// NOTE: path is set to null
-							legs.add(new Connection.Individual(Integer.parseInt(tratto.getPropertyAsString("durata").split(":")[1]), 0, false,
+							legs.add(new Trip.Individual(Integer.parseInt(tratto.getPropertyAsString("durata").split(":")[1]), 0, false,
 									soapToLocation((SoapObject) tratto.getProperty("nodo_partenza")), soapToLocation((SoapObject) tratto
 											.getProperty("nodo_arrivo")), null));
 						}
@@ -439,7 +439,7 @@ public class SadProvider extends AbstractNetworkProvider {
 								final Stop arrival = new Stop(soapToLocation((SoapObject) tratto.getProperty("nodo_arrivo")), false,
 										responseDate.get(1), null, null, null);
 
-								legs.add(new Connection.Public(new Line(lineId, lineId, DEFAULT_STYLE), null, departure, arrival, null, null, null));
+								legs.add(new Trip.Public(new Line(lineId, lineId, DEFAULT_STYLE), null, departure, arrival, null, null, null));
 							} catch (ParseException e) {
 								e.printStackTrace();
 							}
@@ -447,9 +447,9 @@ public class SadProvider extends AbstractNetworkProvider {
 					}
 				}
 
-				// Get fares for the current connection
+				// Get fares for the current trip
 				ArrayList<Fare> fares = new ArrayList<Fare>();
-				temp = connection.getProperty("tariffazione_trasporto_integrato");
+				temp = trip.getProperty("tariffazione_trasporto_integrato");
 				if (temp instanceof SoapObject) {
 					SoapObject tariffTraspIntegr = (SoapObject) temp;
 					// Check if tariff information is supplied in the response
@@ -464,19 +464,19 @@ public class SadProvider extends AbstractNetworkProvider {
 					}
 				}
 
-				// Only add to connections list if exactly one to and and one from location were found
+				// Only add to trips list if exactly one to and and one from location were found
 				if (fromToLocs.size() == 2) {
 					// NOTE: link, capacity set to null
-					connections.add(new Connection(fromToLocs.get(0).toString() + fromToLocs.get(1).toString(), fromToLocs.get(0),
+					trips.add(new Trip(fromToLocs.get(0).toString() + fromToLocs.get(1).toString(), fromToLocs.get(0),
 							fromToLocs.get(1), legs, fares, null, null));
 				}
 			}
 		}
 
-		// Construct query URI to be used as context for queryMoreConnections()
+		// Construct query URI to be used as context for queryMoreTrips()
 		final String queryUri = from.id + "," + to.id + "," + dep + "," + RESPONSE_DATE_FORMAT.format(date);
 
 		// NOTE: via is set to null
-		return new QueryConnectionsResult(RESULT_HEADER, queryUri, from, null, to, new Context(queryUri), connections);
+		return new QueryTripsResult(RESULT_HEADER, queryUri, from, null, to, new Context(queryUri), trips);
 	}
 }

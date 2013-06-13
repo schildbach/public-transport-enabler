@@ -39,9 +39,9 @@ import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.Product;
-import de.schildbach.pte.dto.QueryConnectionsContext;
-import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
+import de.schildbach.pte.dto.QueryTripsContext;
+import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.ResultHeader;
 import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.dto.Style;
@@ -520,7 +520,7 @@ public final class BvgProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected void appendCustomConnectionsQueryBinaryUri(final StringBuilder uri)
+	protected void appendCustomTripsQueryBinaryUri(final StringBuilder uri)
 	{
 		uri.append("&h2g-direct=11");
 		if (additionalQueryParameter != null)
@@ -528,18 +528,17 @@ public final class BvgProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final int maxNumConnections, final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility,
+	public QueryTripsResult queryTrips(final Location from, final Location via, final Location to, final Date date, final boolean dep,
+			final int numTrips, final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility,
 			final Set<Option> options) throws IOException
 	{
-		return queryConnectionsBinary(from, via, to, date, dep, maxNumConnections, products, walkSpeed, accessibility, options);
+		return queryTripsBinary(from, via, to, date, dep, numTrips, products, walkSpeed, accessibility, options);
 	}
 
 	@Override
-	public QueryConnectionsResult queryMoreConnections(final QueryConnectionsContext contextObj, final boolean later, final int numConnections)
-			throws IOException
+	public QueryTripsResult queryMoreTrips(final QueryTripsContext contextObj, final boolean later, final int numTrips) throws IOException
 	{
-		return queryMoreConnectionsBinary(contextObj, later, numConnections);
+		return queryMoreTripsBinary(contextObj, later, numTrips);
 	}
 
 	private static final Pattern P_NORMALIZE_LINE_NAME_TRAM = Pattern.compile("(?:tra|tram)\\s+(.*)", Pattern.CASE_INSENSITIVE);

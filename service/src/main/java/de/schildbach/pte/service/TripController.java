@@ -32,19 +32,19 @@ import de.schildbach.pte.RtProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.Product;
-import de.schildbach.pte.dto.QueryConnectionsResult;
+import de.schildbach.pte.dto.QueryTripsResult;
 
 /**
  * @author Andreas Schildbach
  */
 @Controller
-public class ConnectionController
+public class TripController
 {
 	private final RtProvider provider = new RtProvider();
 
-	@RequestMapping(value = "/connection", method = RequestMethod.GET)
+	@RequestMapping(value = "/trip", method = RequestMethod.GET)
 	@ResponseBody
-	public QueryConnectionsResult connection(@RequestParam(value = "fromType", required = false, defaultValue = "ANY") final LocationType fromType,
+	public QueryTripsResult trip(@RequestParam(value = "fromType", required = false, defaultValue = "ANY") final LocationType fromType,
 			@RequestParam(value = "from", required = false) final String from,
 			@RequestParam(value = "fromId", required = false, defaultValue = "0") final int fromId,
 			@RequestParam(value = "toType", required = false, defaultValue = "ANY") final LocationType toType,
@@ -53,7 +53,6 @@ public class ConnectionController
 	{
 		final Location fromLocation = new Location(fromType, fromId, null, from);
 		final Location toLocation = new Location(toType, toId, null, to);
-		return provider.queryConnections(fromLocation, null, toLocation, new Date(), true, 4, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL,
-				null);
+		return provider.queryTrips(fromLocation, null, toLocation, new Date(), true, 4, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL, null);
 	}
 }

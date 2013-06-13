@@ -31,8 +31,8 @@ import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Product;
-import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
+import de.schildbach.pte.dto.QueryTripsResult;
 
 /**
  * @author Andreas Schildbach
@@ -107,79 +107,78 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
-	public void shortConnection() throws Exception
+	public void shortTrip() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 2, "München", "Marienplatz"), null, new Location(
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 2, "München", "Marienplatz"), null, new Location(
 				LocationType.STATION, 10, "München", "Pasing"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
-		final QueryConnectionsResult earlierResult = queryMoreConnections(laterResult.context, false);
+		final QueryTripsResult earlierResult = queryMoreTrips(laterResult.context, false);
 		System.out.println(earlierResult);
 	}
 
 	@Test
-	public void longConnection() throws Exception
+	public void longTrip() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ANY, 0, null, "Starnberg, Arbeitsamt"), null, new Location(
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, 0, null, "Starnberg, Arbeitsamt"), null, new Location(
 				LocationType.STATION, 0, null, "Ackermannstraße"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		// seems like there are no more connections all the time
+		// seems like there are no more trips all the time
 	}
 
 	@Test
-	public void connectionBetweenCoordinates() throws Exception
+	public void tripBetweenCoordinates() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, 48165238, 11577473), null, new Location(
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 0, 48165238, 11577473), null, new Location(
 				LocationType.ADDRESS, 0, 47987199, 11326532), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
-	public void connectionBetweenCoordinateAndStation() throws Exception
+	public void tripBetweenCoordinateAndStation() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, 48238341, 11478230), null, new Location(
-				LocationType.ANY, 0, null, "Ostbahnhof"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 0, 48238341, 11478230), null, new Location(LocationType.ANY, 0,
+				null, "Ostbahnhof"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
-	public void connectionBetweenAddresses() throws Exception
+	public void tripBetweenAddresses() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, null, "München, Maximilianstr. 1"), null,
-				new Location(LocationType.ADDRESS, 0, null, "Starnberg, Jahnstraße 50"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-				Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 0, null, "München, Maximilianstr. 1"), null, new Location(
+				LocationType.ADDRESS, 0, null, "Starnberg, Jahnstraße 50"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
-	public void connectionBetweenStationAndAddress() throws Exception
+	public void tripBetweenStationAndAddress() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 1220, null, "Josephsburg"), null, new Location(
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 1220, null, "Josephsburg"), null, new Location(
 				LocationType.ADDRESS, 0, 48188018, 11574239, null, "München Frankfurter Ring 35"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
-	public void queryConnectionInvalidStation() throws Exception
+	public void queryTripInvalidStation() throws Exception
 	{
-		final QueryConnectionsResult result1 = queryConnections(new Location(LocationType.STATION, 2, "München", "Marienplatz"), null, new Location(
+		final QueryTripsResult result1 = queryTrips(new Location(LocationType.STATION, 2, "München", "Marienplatz"), null, new Location(
 				LocationType.STATION, 99999, 0, 0, null, null), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 
-		assertEquals(QueryConnectionsResult.Status.UNKNOWN_TO, result1.status);
+		assertEquals(QueryTripsResult.Status.UNKNOWN_TO, result1.status);
 
-		final QueryConnectionsResult result2 = queryConnections(new Location(LocationType.STATION, 99999, 0, 0, null, null), null, new Location(
+		final QueryTripsResult result2 = queryTrips(new Location(LocationType.STATION, 99999, 0, 0, null, null), null, new Location(
 				LocationType.STATION, 2, "München", "Marienplatz"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 
-		assertEquals(QueryConnectionsResult.Status.UNKNOWN_FROM, result2.status);
+		assertEquals(QueryTripsResult.Status.UNKNOWN_FROM, result2.status);
 	}
 }

@@ -28,8 +28,8 @@ import de.schildbach.pte.NsProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
-import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
+import de.schildbach.pte.dto.QueryTripsResult;
 
 /**
  * @author Andreas Schildbach
@@ -74,20 +74,20 @@ public class NsProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
-	public void shortConnection() throws Exception
+	public void shortTrip() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 8400058, null, "Amsterdam Centraal"), null,
-				new Location(LocationType.STATION, 8400061, null, "Amsterdam Zuid"), new Date(), true, null, WalkSpeed.FAST, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 8400058, null, "Amsterdam Centraal"), null, new Location(
+				LocationType.STATION, 8400061, null, "Amsterdam Zuid"), new Date(), true, null, WalkSpeed.FAST, Accessibility.NEUTRAL);
 
-		System.out.println(result.status + "  " + result.connections);
+		System.out.println(result.status + "  " + result.trips);
 	}
 
 	@Test
-	public void longConnection() throws Exception
+	public void longTrip() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 100024), null, new Location(LocationType.STATION,
-				103624), new Date(), true, null, WalkSpeed.FAST, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 100024), null, new Location(LocationType.STATION, 103624),
+				new Date(), true, null, WalkSpeed.FAST, Accessibility.NEUTRAL);
 
-		System.out.println(result.status + "  " + result.connections);
+		System.out.println(result.status + "  " + result.trips);
 	}
 }

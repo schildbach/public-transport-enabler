@@ -46,7 +46,7 @@ public class VgnProvider extends AbstractEfaProvider
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
 		for (final Capability capability : capabilities)
-			if (capability == Capability.AUTOCOMPLETE_ONE_LINE || capability == Capability.DEPARTURES || capability == Capability.CONNECTIONS)
+			if (capability == Capability.AUTOCOMPLETE_ONE_LINE || capability == Capability.DEPARTURES || capability == Capability.TRIPS)
 				return true;
 
 		return false;
@@ -71,10 +71,10 @@ public class VgnProvider extends AbstractEfaProvider
 
 	@Override
 	protected String xsltTripRequestParameters(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final int numConnections, final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility,
+			final int numTrips, final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility,
 			final Set<Option> options)
 	{
-		return super.xsltTripRequestParameters(from, via, to, date, dep, numConnections, products, walkSpeed, accessibility, options)
+		return super.xsltTripRequestParameters(from, via, to, date, dep, numTrips, products, walkSpeed, accessibility, options)
 				+ "&itdLPxx_showTariffLevel=1";
 	}
 }

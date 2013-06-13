@@ -26,7 +26,7 @@ import java.util.Locale;
 /**
  * @author Andreas Schildbach
  */
-public final class Connection implements Serializable
+public final class Trip implements Serializable
 {
 	private static final long serialVersionUID = 2508466068307110312L;
 
@@ -38,7 +38,7 @@ public final class Connection implements Serializable
 	public final int[] capacity;
 	public final Integer numChanges;
 
-	public Connection(final String id, final Location from, final Location to, final List<Leg> legs, final List<Fare> fares, final int[] capacity,
+	public Trip(final String id, final Location from, final Location to, final List<Leg> legs, final List<Fare> fares, final int[] capacity,
 			final Integer numChanges)
 	{
 		this.id = id;
@@ -190,9 +190,9 @@ public final class Connection implements Serializable
 	{
 		if (o == this)
 			return true;
-		if (!(o instanceof Connection))
+		if (!(o instanceof Trip))
 			return false;
-		final Connection other = (Connection) o;
+		final Trip other = (Trip) o;
 		return getId().equals(other.getId());
 	}
 

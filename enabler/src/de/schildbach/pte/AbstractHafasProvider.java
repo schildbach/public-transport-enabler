@@ -50,7 +50,6 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import de.schildbach.pte.dto.Connection;
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
@@ -58,12 +57,13 @@ import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.Product;
-import de.schildbach.pte.dto.QueryConnectionsContext;
-import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
+import de.schildbach.pte.dto.QueryTripsContext;
+import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.ResultHeader;
 import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.dto.Stop;
+import de.schildbach.pte.dto.Trip;
 import de.schildbach.pte.exception.SessionExpiredException;
 import de.schildbach.pte.util.LittleEndianDataInputStream;
 import de.schildbach.pte.util.ParserUtils;
@@ -87,7 +87,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	private final Charset xmlMlcResEncoding;
 	private boolean dominantPlanStopTime = false;
 
-	private static class Context implements QueryConnectionsContext
+	private static class Context implements QueryTripsContext
 	{
 		public final String laterContext;
 		public final String earlierContext;
@@ -111,14 +111,14 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 	}
 
-	public static class QueryConnectionsBinaryContext implements QueryConnectionsContext
+	public static class QueryTripsBinaryContext implements QueryTripsContext
 	{
 		public final String ident;
 		public final int seqNr;
 		public final String ld;
 		public final int usedBufferSize;
 
-		public QueryConnectionsBinaryContext(final String ident, final int seqNr, final String ld, final int usedBufferSize)
+		public QueryTripsBinaryContext(final String ident, final int seqNr, final String ld, final int usedBufferSize)
 		{
 			this.ident = ident;
 			this.seqNr = seqNr;
@@ -801,21 +801,20 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	{
 	}
 
-	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final int numConnections, final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility,
+	public QueryTripsResult queryTrips(final Location from, final Location via, final Location to, final Date date, final boolean dep,
+			final int numTrips, final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility,
 			final Set<Option> options) throws IOException
 	{
-		return queryConnectionsXml(from, via, to, date, dep, numConnections, products, walkSpeed, accessibility, options);
+		return queryTripsXml(from, via, to, date, dep, numTrips, products, walkSpeed, accessibility, options);
 	}
 
-	public QueryConnectionsResult queryMoreConnections(final QueryConnectionsContext context, final boolean later, final int numConnections)
-			throws IOException
+	public QueryTripsResult queryMoreTrips(final QueryTripsContext context, final boolean later, final int numTrips) throws IOException
 	{
-		return queryMoreConnectionsXml(context, later, numConnections);
+		return queryMoreTripsXml(context, later, numTrips);
 	}
 
-	protected final void appendConnectionsQueryUri(final StringBuilder uri, final Location from, final Location via, final Location to,
-			final Date date, final boolean dep, final Collection<Product> products, final Accessibility accessibility, final Set<Option> options)
+	protected final void appendTripsQueryUri(final StringBuilder uri, final Location from, final Location via, final Location to, final Date date,
+			final boolean dep, final Collection<Product> products, final Accessibility accessibility, final Set<Option> options)
 	{
 		uri.append("?start=Suchen");
 
@@ -884,9 +883,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			uri.append("&REQ0JourneyProduct_opt3=1");
 	}
 
-	protected final QueryConnectionsResult queryConnectionsXml(Location from, Location via, Location to, final Date date, final boolean dep,
-			final int numConnections, final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility,
-			final Set<Option> options) throws IOException
+	protected final QueryTripsResult queryTripsXml(Location from, Location via, Location to, final Date date, final boolean dep, final int numTrips,
+			final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
+			throws IOException
 	{
 		final ResultHeader header = new ResultHeader(SERVER_PRODUCT);
 
@@ -894,9 +893,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		{
 			final List<Location> autocompletes = autocompleteStations(from.name);
 			if (autocompletes.isEmpty())
-				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.NO_CONNECTIONS); // TODO
+				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS); // TODO
 			if (autocompletes.size() > 1)
-				return new QueryConnectionsResult(header, autocompletes, null, null);
+				return new QueryTripsResult(header, autocompletes, null, null);
 			from = autocompletes.get(0);
 		}
 
@@ -904,9 +903,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		{
 			final List<Location> autocompletes = autocompleteStations(via.name);
 			if (autocompletes.isEmpty())
-				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.NO_CONNECTIONS); // TODO
+				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS); // TODO
 			if (autocompletes.size() > 1)
-				return new QueryConnectionsResult(header, null, autocompletes, null);
+				return new QueryTripsResult(header, null, autocompletes, null);
 			via = autocompletes.get(0);
 		}
 
@@ -914,9 +913,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		{
 			final List<Location> autocompletes = autocompleteStations(to.name);
 			if (autocompletes.isEmpty())
-				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.NO_CONNECTIONS); // TODO
+				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS); // TODO
 			if (autocompletes.size() > 1)
-				return new QueryConnectionsResult(header, null, null, autocompletes);
+				return new QueryTripsResult(header, null, null, autocompletes);
 			to = autocompletes.get(0);
 		}
 
@@ -959,33 +958,33 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				.append("\" time=\"")
 				.append(String.format(Locale.ENGLISH, "%02d:%02d", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE)) + "\"/>");
 		request.append("<RFlags");
-		// number of connections backwards
+		// number of trips backwards
 		request.append(" b=\"").append(0).append("\"");
-		// number of connection forwards
-		request.append(" f=\"").append(numConnections).append("\"");
+		// number of trips forwards
+		request.append(" f=\"").append(numTrips).append("\"");
 		// percentual extension of change time
 		request.append(" chExtension=\"").append(walkSpeed == WalkSpeed.SLOW ? 50 : 0).append("\"");
 		// TODO nrChanges: max number of changes
 		request.append(" sMode=\"N\"/>");
 		request.append("</ConReq>");
 
-		return queryConnectionsXml(null, true, request.toString(), from, via, to);
+		return queryTripsXml(null, true, request.toString(), from, via, to);
 	}
 
-	protected final QueryConnectionsResult queryMoreConnectionsXml(final QueryConnectionsContext contextObj, final boolean later,
-			final int numConnections) throws IOException
+	protected final QueryTripsResult queryMoreTripsXml(final QueryTripsContext contextObj, final boolean later, final int numTrips)
+			throws IOException
 	{
 		final Context context = (Context) contextObj;
 
-		final StringBuilder request = new StringBuilder("<ConScrReq scrDir=\"").append(later ? 'F' : 'B').append("\" nrCons=\"")
-				.append(numConnections).append("\">");
+		final StringBuilder request = new StringBuilder("<ConScrReq scrDir=\"").append(later ? 'F' : 'B').append("\" nrCons=\"").append(numTrips)
+				.append("\">");
 		request.append("<ConResCtxt>").append(later ? context.laterContext : context.earlierContext).append("</ConResCtxt>");
 		request.append("</ConScrReq>");
 
-		return queryConnectionsXml(context, later, request.toString(), null, null, null);
+		return queryTripsXml(context, later, request.toString(), null, null, null);
 	}
 
-	private QueryConnectionsResult queryConnectionsXml(final Context previousContext, final boolean later, final String request, final Location from,
+	private QueryTripsResult queryTripsXml(final Context previousContext, final boolean later, final String request, final Location from,
 			final Location via, final Location to) throws IOException
 	{
 		// System.out.println(request);
@@ -1010,9 +1009,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			{
 				final String code = XmlPullUtil.attr(pp, "code");
 				if (code.equals("I3")) // Input: date outside of the timetable period
-					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.INVALID_DATE);
+					return new QueryTripsResult(header, QueryTripsResult.Status.INVALID_DATE);
 				if (code.equals("F1")) // Spool: Error reading the spoolfile
-					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.SERVICE_DOWN);
+					return new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN);
 				throw new IllegalStateException("error " + code + " " + XmlPullUtil.attr(pp, "text"));
 			}
 
@@ -1022,21 +1021,21 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			{
 				final String code = XmlPullUtil.attr(pp, "code");
 				if (code.equals("K9260")) // Departure station does not exist
-					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.UNKNOWN_FROM);
+					return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_FROM);
 				if (code.equals("K9300")) // Arrival station does not exist
-					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.UNKNOWN_TO);
+					return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_TO);
 				if (code.equals("K9380") || code.equals("K895")) // Departure/Arrival are too near
-					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.TOO_CLOSE);
+					return new QueryTripsResult(header, QueryTripsResult.Status.TOO_CLOSE);
 				if (code.equals("K9220")) // Nearby to the given address stations could not be found
-					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.UNRESOLVABLE_ADDRESS);
+					return new QueryTripsResult(header, QueryTripsResult.Status.UNRESOLVABLE_ADDRESS);
 				if (code.equals("K9240")) // Internal error
-					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.SERVICE_DOWN);
+					return new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN);
 				if (code.equals("K890")) // No connections found
-					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.NO_CONNECTIONS);
+					return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
 				if (code.equals("K891")) // No route found (try entering an intermediate station)
-					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.NO_CONNECTIONS);
+					return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
 				if (code.equals("K899")) // An error occurred
-					return new QueryConnectionsResult(header, QueryConnectionsResult.Status.SERVICE_DOWN);
+					return new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN);
 				// if (code.equals("K1:890")) // Unsuccessful or incomplete search (direction: forward)
 				throw new IllegalStateException("error " + code + " " + XmlPullUtil.attr(pp, "text"));
 			}
@@ -1056,7 +1055,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 			XmlPullUtil.enter(pp, "ConnectionList");
 
-			final List<Connection> connections = new ArrayList<Connection>();
+			final List<Trip> trips = new ArrayList<Trip>();
 
 			while (XmlPullUtil.test(pp, "Connection"))
 			{
@@ -1116,7 +1115,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 				XmlPullUtil.exit(pp, "Overview");
 
-				final List<Connection.Leg> legs = new ArrayList<Connection.Leg>(4);
+				final List<Trip.Leg> legs = new ArrayList<Trip.Leg>(4);
 
 				XmlPullUtil.enter(pp, "ConSectionList");
 
@@ -1316,19 +1315,19 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						final Stop departure = new Stop(sectionDepartureLocation, true, departureTime, null, departurePos, null);
 						final Stop arrival = new Stop(sectionArrivalLocation, false, arrivalTime, null, arrivalPos, null);
 
-						legs.add(new Connection.Public(line, destination, departure, arrival, intermediateStops, path, null));
+						legs.add(new Trip.Public(line, destination, departure, arrival, intermediateStops, path, null));
 					}
 					else
 					{
-						if (legs.size() > 0 && legs.get(legs.size() - 1) instanceof Connection.Individual)
+						if (legs.size() > 0 && legs.get(legs.size() - 1) instanceof Trip.Individual)
 						{
-							final Connection.Individual lastIndividualLeg = (Connection.Individual) legs.remove(legs.size() - 1);
-							legs.add(new Connection.Individual(lastIndividualLeg.min + min, 0, false, lastIndividualLeg.departure,
-									sectionArrivalLocation, null));
+							final Trip.Individual lastIndividualLeg = (Trip.Individual) legs.remove(legs.size() - 1);
+							legs.add(new Trip.Individual(lastIndividualLeg.min + min, 0, false, lastIndividualLeg.departure, sectionArrivalLocation,
+									null));
 						}
 						else
 						{
-							legs.add(new Connection.Individual(min, 0, false, sectionDepartureLocation, sectionArrivalLocation, null));
+							legs.add(new Trip.Individual(min, 0, false, sectionDepartureLocation, sectionArrivalLocation, null));
 						}
 					}
 				}
@@ -1337,12 +1336,12 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 				XmlPullUtil.exit(pp, "Connection");
 
-				connections.add(new Connection(id, departureLocation, arrivalLocation, legs, null, capacity, numTransfers));
+				trips.add(new Trip(id, departureLocation, arrivalLocation, legs, null, capacity, numTransfers));
 			}
 
 			XmlPullUtil.exit(pp);
 
-			return new QueryConnectionsResult(header, null, from, via, to, context, connections);
+			return new QueryTripsResult(header, null, from, via, to, context, trips);
 		}
 		catch (final XmlPullParserException x)
 		{
@@ -1491,14 +1490,14 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		return true;
 	}
 
-	protected void appendCustomConnectionsQueryBinaryUri(final StringBuilder uri)
+	protected void appendCustomTripsQueryBinaryUri(final StringBuilder uri)
 	{
 	}
 
-	private final static int QUERY_CONNECTIONS_BINARY_BUFFER_SIZE = 128 * 1024;
+	private final static int QUERY_TRIPS_BINARY_BUFFER_SIZE = 128 * 1024;
 
-	protected final QueryConnectionsResult queryConnectionsBinary(Location from, Location via, Location to, final Date date, final boolean dep,
-			final int maxNumConnections, final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility,
+	protected final QueryTripsResult queryTripsBinary(Location from, Location via, Location to, final Date date, final boolean dep,
+			final int numTrips, final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility,
 			final Set<Option> options) throws IOException
 	{
 		final ResultHeader header = new ResultHeader(SERVER_PRODUCT);
@@ -1507,9 +1506,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		{
 			final List<Location> autocompletes = autocompleteStations(from.name);
 			if (autocompletes.isEmpty())
-				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.NO_CONNECTIONS); // TODO
+				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS); // TODO
 			if (autocompletes.size() > 1)
-				return new QueryConnectionsResult(header, autocompletes, null, null);
+				return new QueryTripsResult(header, autocompletes, null, null);
 			from = autocompletes.get(0);
 		}
 
@@ -1517,9 +1516,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		{
 			final List<Location> autocompletes = autocompleteStations(via.name);
 			if (autocompletes.isEmpty())
-				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.NO_CONNECTIONS); // TODO
+				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS); // TODO
 			if (autocompletes.size() > 1)
-				return new QueryConnectionsResult(header, null, autocompletes, null);
+				return new QueryTripsResult(header, null, autocompletes, null);
 			via = autocompletes.get(0);
 		}
 
@@ -1527,23 +1526,22 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		{
 			final List<Location> autocompletes = autocompleteStations(to.name);
 			if (autocompletes.isEmpty())
-				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.NO_CONNECTIONS); // TODO
+				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS); // TODO
 			if (autocompletes.size() > 1)
-				return new QueryConnectionsResult(header, null, null, autocompletes);
+				return new QueryTripsResult(header, null, null, autocompletes);
 			to = autocompletes.get(0);
 		}
 
 		final StringBuilder uri = new StringBuilder(apiUri);
-		appendConnectionsQueryUri(uri, from, via, to, date, dep, products, accessibility, options);
-		appendCustomConnectionsQueryBinaryUri(uri);
+		appendTripsQueryUri(uri, from, via, to, date, dep, products, accessibility, options);
+		appendCustomTripsQueryBinaryUri(uri);
 
-		return queryConnectionsBinary(uri.toString(), from, via, to, QUERY_CONNECTIONS_BINARY_BUFFER_SIZE);
+		return queryTripsBinary(uri.toString(), from, via, to, QUERY_TRIPS_BINARY_BUFFER_SIZE);
 	}
 
-	protected QueryConnectionsResult queryMoreConnectionsBinary(final QueryConnectionsContext contextObj, final boolean later,
-			final int numConnections) throws IOException
+	protected QueryTripsResult queryMoreTripsBinary(final QueryTripsContext contextObj, final boolean later, final int numTrips) throws IOException
 	{
-		final QueryConnectionsBinaryContext context = (QueryConnectionsBinaryContext) contextObj;
+		final QueryTripsBinaryContext context = (QueryTripsBinaryContext) contextObj;
 
 		final StringBuilder uri = new StringBuilder(apiUri);
 		uri.append("?seqnr=").append(context.seqNr);
@@ -1551,9 +1549,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		if (context.ld != null)
 			uri.append("&ld=").append(context.ld);
 		uri.append("&REQ0HafasScrollDir=").append(later ? 1 : 2);
-		appendCustomConnectionsQueryBinaryUri(uri);
+		appendCustomTripsQueryBinaryUri(uri);
 
-		return queryConnectionsBinary(uri.toString(), null, null, null, QUERY_CONNECTIONS_BINARY_BUFFER_SIZE + context.usedBufferSize);
+		return queryTripsBinary(uri.toString(), null, null, null, QUERY_TRIPS_BINARY_BUFFER_SIZE + context.usedBufferSize);
 	}
 
 	private class CustomBufferedInputStream extends BufferedInputStream
@@ -1569,7 +1567,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 	}
 
-	private QueryConnectionsResult queryConnectionsBinary(final String uri, final Location from, final Location via, final Location to,
+	private QueryTripsResult queryTripsBinary(final String uri, final Location from, final Location via, final Location to,
 			final int expectedBufferSize) throws IOException
 	{
 		/*
@@ -1632,8 +1630,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 				final String requestId = strings.read(is);
 
-				final int connectionDetailsPtr = is.readIntReverse();
-				if (connectionDetailsPtr == 0)
+				final int tripDetailsPtr = is.readIntReverse();
+				if (tripDetailsPtr == 0)
 					throw new IllegalStateException("no connection details");
 
 				is.skipBytes(16);
@@ -1642,31 +1640,31 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				final String ld = strings.read(is);
 				final int attrsOffset = is.readIntReverse();
 
-				final int connectionAttrsPtr;
+				final int tripAttrsPtr;
 				if (extensionHeaderLength >= 0x30)
 				{
 					if (extensionHeaderLength < 0x32)
 						throw new IllegalArgumentException("too short: " + extensionHeaderLength);
 					is.reset();
 					is.skipBytes(extensionHeaderPtr + 0x2c);
-					connectionAttrsPtr = is.readIntReverse();
+					tripAttrsPtr = is.readIntReverse();
 				}
 				else
 				{
-					connectionAttrsPtr = 0;
+					tripAttrsPtr = 0;
 				}
 
 				// determine stops offset
 				is.reset();
-				is.skipBytes(connectionDetailsPtr);
-				final int connectionDetailsVersion = is.readShortReverse();
-				if (connectionDetailsVersion != 1)
-					throw new IllegalStateException("unknown connection details version: " + connectionDetailsVersion);
+				is.skipBytes(tripDetailsPtr);
+				final int tripDetailsVersion = is.readShortReverse();
+				if (tripDetailsVersion != 1)
+					throw new IllegalStateException("unknown trip details version: " + tripDetailsVersion);
 				is.skipBytes(0x02);
 
-				final int connectionDetailsIndexOffset = is.readShortReverse();
-				final int connectionDetailsLegOffset = is.readShortReverse();
-				final int connectionDetailsLegSize = is.readShortReverse();
+				final int tripDetailsIndexOffset = is.readShortReverse();
+				final int tripDetailsLegOffset = is.readShortReverse();
+				final int tripDetailsLegSize = is.readShortReverse();
 				final int stopsSize = is.readShortReverse();
 				final int stopsOffset = is.readShortReverse();
 
@@ -1674,7 +1672,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				final StationTable stations = new StationTable(is, stationTablePtr, commentTablePtr - stationTablePtr, strings);
 
 				// read comments
-				final CommentTable comments = new CommentTable(is, commentTablePtr, connectionDetailsPtr - commentTablePtr, strings);
+				final CommentTable comments = new CommentTable(is, commentTablePtr, tripDetailsPtr - commentTablePtr, strings);
 
 				// really read header
 				is.reset();
@@ -1683,7 +1681,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				final Location resDeparture = location(is, strings);
 				final Location resArrival = location(is, strings);
 
-				final int numConnections = is.readShortReverse();
+				final int numTrips = is.readShortReverse();
 
 				is.readInt();
 				is.readInt();
@@ -1691,13 +1689,13 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				final long resDate = date(is);
 				/* final long resDate30 = */date(is);
 
-				final List<Connection> connections = new ArrayList<Connection>(numConnections);
+				final List<Trip> trips = new ArrayList<Trip>(numTrips);
 
-				// read connections
-				for (int iConnection = 0; iConnection < numConnections; iConnection++)
+				// read trips
+				for (int iTrip = 0; iTrip < numTrips; iTrip++)
 				{
 					is.reset();
-					is.skipBytes(0x4a + iConnection * 12);
+					is.skipBytes(0x4a + iTrip * 12);
 
 					final int serviceDaysTableOffset = is.readShortReverse();
 
@@ -1717,42 +1715,42 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					final int serviceBitBase = is.readShortReverse();
 					final int serviceBitLength = is.readShortReverse();
 
-					int connectionDayOffset = serviceBitBase * 8;
+					int tripDayOffset = serviceBitBase * 8;
 					for (int i = 0; i < serviceBitLength; i++)
 					{
 						int serviceBits = is.read();
 						if (serviceBits == 0)
 						{
-							connectionDayOffset += 8;
+							tripDayOffset += 8;
 							continue;
 						}
 						while ((serviceBits & 0x80) == 0)
 						{
 							serviceBits = serviceBits << 1;
-							connectionDayOffset++;
+							tripDayOffset++;
 						}
 						break;
 					}
 
 					is.reset();
-					is.skipBytes(connectionDetailsPtr + connectionDetailsIndexOffset + iConnection * 2);
-					final int connectionDetailsOffset = is.readShortReverse();
+					is.skipBytes(tripDetailsPtr + tripDetailsIndexOffset + iTrip * 2);
+					final int tripDetailsOffset = is.readShortReverse();
 
 					is.reset();
-					is.skipBytes(connectionDetailsPtr + connectionDetailsOffset);
+					is.skipBytes(tripDetailsPtr + tripDetailsOffset);
 					final int realtimeStatus = is.readShortReverse();
 
 					/* final short delay = */is.readShortReverse();
 
 					String connectionId = null;
-					if (connectionAttrsPtr != 0)
+					if (tripAttrsPtr != 0)
 					{
 						is.reset();
-						is.skipBytes(connectionAttrsPtr + iConnection * 2);
-						final int connectionAttrsIndex = is.readShortReverse();
+						is.skipBytes(tripAttrsPtr + iTrip * 2);
+						final int tripAttrsIndex = is.readShortReverse();
 
 						is.reset();
-						is.skipBytes(attrsOffset + connectionAttrsIndex * 4);
+						is.skipBytes(attrsOffset + tripAttrsIndex * 4);
 						while (true)
 						{
 							final String key = strings.read(is);
@@ -1765,17 +1763,17 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						}
 					}
 
-					final List<Connection.Leg> legs = new ArrayList<Connection.Leg>(numLegs);
+					final List<Trip.Leg> legs = new ArrayList<Trip.Leg>(numLegs);
 
 					for (int iLegs = 0; iLegs < numLegs; iLegs++)
 					{
 						is.reset();
 						is.skipBytes(0x4a + legsOffset + iLegs * 20);
 
-						final long plannedDepartureTime = time(is, resDate, connectionDayOffset);
+						final long plannedDepartureTime = time(is, resDate, tripDayOffset);
 						final Location departureLocation = stations.read(is);
 
-						final long plannedArrivalTime = time(is, resDate, connectionDayOffset);
+						final long plannedArrivalTime = time(is, resDate, tripDayOffset);
 						final Location arrivalLocation = stations.read(is);
 
 						final int type = is.readShortReverse();
@@ -1834,13 +1832,13 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 							lineCategory = categoryFromName(lineName);
 
 						is.reset();
-						is.skipBytes(connectionDetailsPtr + connectionDetailsOffset + connectionDetailsLegOffset + iLegs * connectionDetailsLegSize);
+						is.skipBytes(tripDetailsPtr + tripDetailsOffset + tripDetailsLegOffset + iLegs * tripDetailsLegSize);
 
-						if (connectionDetailsLegSize != 16)
-							throw new IllegalStateException("unhandled connection details leg size: " + connectionDetailsLegSize);
+						if (tripDetailsLegSize != 16)
+							throw new IllegalStateException("unhandled trip details leg size: " + tripDetailsLegSize);
 
-						final long predictedDepartureTime = time(is, resDate, connectionDayOffset);
-						final long predictedArrivalTime = time(is, resDate, connectionDayOffset);
+						final long predictedDepartureTime = time(is, resDate, tripDayOffset);
+						final long predictedArrivalTime = time(is, resDate, tripDayOffset);
 						final String predictedDeparturePosition = normalizePosition(strings.read(is));
 						final String predictedArrivalPosition = normalizePosition(strings.read(is));
 
@@ -1855,7 +1853,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						if (numStops > 0)
 						{
 							is.reset();
-							is.skipBytes(connectionDetailsPtr + stopsOffset + firstStopIndex * stopsSize);
+							is.skipBytes(tripDetailsPtr + stopsOffset + firstStopIndex * stopsSize);
 
 							if (stopsSize != 26)
 								throw new IllegalStateException("unhandled stops size: " + stopsSize);
@@ -1864,18 +1862,18 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 							for (int iStop = 0; iStop < numStops; iStop++)
 							{
-								final long plannedStopDepartureTime = time(is, resDate, connectionDayOffset);
+								final long plannedStopDepartureTime = time(is, resDate, tripDayOffset);
 								final Date plannedStopDepartureDate = plannedStopDepartureTime != 0 ? new Date(plannedStopDepartureTime) : null;
-								final long plannedStopArrivalTime = time(is, resDate, connectionDayOffset);
+								final long plannedStopArrivalTime = time(is, resDate, tripDayOffset);
 								final Date plannedStopArrivalDate = plannedStopArrivalTime != 0 ? new Date(plannedStopArrivalTime) : null;
 								final String plannedStopDeparturePosition = normalizePosition(strings.read(is));
 								final String plannedStopArrivalPosition = normalizePosition(strings.read(is));
 
 								is.readInt();
 
-								final long predictedStopDepartureTime = time(is, resDate, connectionDayOffset);
+								final long predictedStopDepartureTime = time(is, resDate, tripDayOffset);
 								final Date predictedStopDepartureDate = predictedStopDepartureTime != 0 ? new Date(predictedStopDepartureTime) : null;
-								final long predictedStopArrivalTime = time(is, resDate, connectionDayOffset);
+								final long predictedStopArrivalTime = time(is, resDate, tripDayOffset);
 								final Date predictedStopArrivalDate = predictedStopArrivalTime != 0 ? new Date(predictedStopArrivalTime) : null;
 								final String predictedStopDeparturePosition = normalizePosition(strings.read(is));
 								final String predictedStopArrivalPosition = normalizePosition(strings.read(is));
@@ -1896,21 +1894,21 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 							}
 						}
 
-						final Connection.Leg leg;
+						final Trip.Leg leg;
 						if (type == 1 /* Fussweg */|| type == 3 /* Uebergang */|| type == 4 /* Uebergang */)
 						{
 							final int min = (int) ((plannedArrivalTime - plannedDepartureTime) / 1000 / 60);
 							final boolean transfer = type != 1;
 
-							if (legs.size() > 0 && legs.get(legs.size() - 1) instanceof Connection.Individual)
+							if (legs.size() > 0 && legs.get(legs.size() - 1) instanceof Trip.Individual)
 							{
-								final Connection.Individual lastIndividualLeg = (Connection.Individual) legs.remove(legs.size() - 1);
-								leg = new Connection.Individual(lastIndividualLeg.min + min, 0, lastIndividualLeg.transfer || transfer,
+								final Trip.Individual lastIndividualLeg = (Trip.Individual) legs.remove(legs.size() - 1);
+								leg = new Trip.Individual(lastIndividualLeg.min + min, 0, lastIndividualLeg.transfer || transfer,
 										lastIndividualLeg.departure, arrivalLocation, null);
 							}
 							else
 							{
-								leg = new Connection.Individual(min, 0, transfer, departureLocation, arrivalLocation, null);
+								leg = new Trip.Individual(min, 0, transfer, departureLocation, arrivalLocation, null);
 							}
 						}
 						else if (type == 2)
@@ -1933,7 +1931,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 									predictedArrivalTime != 0 ? new Date(predictedArrivalTime) : null, plannedArrivalPosition,
 									predictedArrivalPosition);
 
-							leg = new Connection.Public(line, direction, departure, arrival, intermediateStops, null, null);
+							leg = new Trip.Public(line, direction, departure, arrival, intermediateStops, null, null);
 						}
 						else
 						{
@@ -1942,51 +1940,51 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						legs.add(leg);
 					}
 
-					final Connection connection = new Connection(connectionId, resDeparture, resArrival, legs, null, null, (int) numChanges);
+					final Trip trip = new Trip(connectionId, resDeparture, resArrival, legs, null, null, (int) numChanges);
 
 					if (realtimeStatus != 2) // Verbindung fällt aus
-						connections.add(connection);
+						trips.add(trip);
 				}
 
-				final QueryConnectionsResult result = new QueryConnectionsResult(header, uri, from, via, to, new QueryConnectionsBinaryContext(
-						requestId, seqNr, ld, bis.getCount()), connections);
+				final QueryTripsResult result = new QueryTripsResult(header, uri, from, via, to, new QueryTripsBinaryContext(requestId, seqNr, ld,
+						bis.getCount()), trips);
 
 				return result;
 			}
 			else if (errorCode == 1)
 				throw new SessionExpiredException();
 			else if (errorCode == 8)
-				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.AMBIGUOUS);
+				return new QueryTripsResult(header, QueryTripsResult.Status.AMBIGUOUS);
 			else if (errorCode == 887)
 				// H887: Your inquiry was too complex. Please try entering less intermediate stations.
-				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.NO_CONNECTIONS);
+				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
 			else if (errorCode == 890)
 				// H890: No connections have been found that correspond to your request. It is possible that the
 				// requested service does not operate from or to the places you stated on the requested date of travel.
-				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.NO_CONNECTIONS);
+				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
 			else if (errorCode == 891)
 				// H891: Unfortunately there was no route found. Missing timetable data could be the reason.
-				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.NO_CONNECTIONS);
+				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
 			else if (errorCode == 892)
 				// H892: Your inquiry was too complex. Please try entering less intermediate stations.
-				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.NO_CONNECTIONS);
+				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
 			else if (errorCode == 899)
 				// H899: there was an unsuccessful or incomplete search due to a timetable change.
-				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.NO_CONNECTIONS);
+				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
 			else if (errorCode == 9220)
 				// H9220: Nearby to the given address stations could not be found.
-				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.UNRESOLVABLE_ADDRESS);
+				return new QueryTripsResult(header, QueryTripsResult.Status.UNRESOLVABLE_ADDRESS);
 			else if (errorCode == 9240)
 				// H9240: Unfortunately there was no route found. Perhaps your start or destination is not served at all
 				// or with the selected means of transport on the required date/time.
-				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.NO_CONNECTIONS);
+				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
 			else if (errorCode == 9360)
 				// H9360: Unfortunately your connection request can currently not be processed.
-				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.INVALID_DATE);
+				return new QueryTripsResult(header, QueryTripsResult.Status.INVALID_DATE);
 			else if (errorCode == 9380)
-				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.TOO_CLOSE); // H9380
+				return new QueryTripsResult(header, QueryTripsResult.Status.TOO_CLOSE); // H9380
 			else if (errorCode == 895)
-				return new QueryConnectionsResult(header, QueryConnectionsResult.Status.TOO_CLOSE);
+				return new QueryTripsResult(header, QueryTripsResult.Status.TOO_CLOSE);
 			else
 				throw new IllegalStateException("error " + errorCode + " on " + uri);
 		}

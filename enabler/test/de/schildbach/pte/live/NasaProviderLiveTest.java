@@ -29,8 +29,8 @@ import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Product;
-import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
+import de.schildbach.pte.dto.QueryTripsResult;
 
 /**
  * @author Andreas Schildbach
@@ -75,84 +75,82 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
-	public void shortConnection() throws Exception
+	public void shortTrip() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 11063, null, "Leipzig, Johannisplatz"), null,
-				new Location(LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-				Accessibility.NEUTRAL);
-		System.out.println(result);
-
-		if (!result.context.canQueryLater())
-			return;
-		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
-		System.out.println(laterResult);
-	}
-
-	@Test
-	public void anotherShortConnection() throws Exception
-	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 8010205, 51346546, 12383333, null, "Leipzig Hbf"),
-				null, new Location(LocationType.STATION, 8012183, 51423340, 12223423, null, "Leipzig/Halle Flughafen"), new Date(), true,
-				Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		System.out.println(result);
-
-		if (!result.context.canQueryLater())
-			return;
-		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
-		System.out.println(laterResult);
-	}
-
-	@Test
-	public void outdatedConnection() throws Exception
-	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 13002, null, "Leipzig, Augustusplatz"), null,
-				new Location(LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(2011, 1, 1), true, Product.ALL, WalkSpeed.NORMAL,
-				Accessibility.NEUTRAL);
-		System.out.println(result);
-
-		if (!result.context.canQueryLater())
-			return;
-		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
-		System.out.println(laterResult);
-	}
-
-	@Test
-	public void ambiguousConnection() throws Exception
-	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ANY, 0, null, "Platz"), null, new Location(
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 11063, null, "Leipzig, Johannisplatz"), null, new Location(
 				LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 
 		if (!result.context.canQueryLater())
 			return;
-		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
-	public void sameStationConnection() throws Exception
+	public void anotherShortTrip() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 8010205, null, "Leipzig Hbf"), null, new Location(
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 8010205, 51346546, 12383333, null, "Leipzig Hbf"), null,
+				new Location(LocationType.STATION, 8012183, 51423340, 12223423, null, "Leipzig/Halle Flughafen"), new Date(), true, Product.ALL,
+				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		System.out.println(result);
+
+		if (!result.context.canQueryLater())
+			return;
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+		System.out.println(laterResult);
+	}
+
+	@Test
+	public void outdatedTrip() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 13002, null, "Leipzig, Augustusplatz"), null, new Location(
+				LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(2011, 1, 1), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		System.out.println(result);
+
+		if (!result.context.canQueryLater())
+			return;
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+		System.out.println(laterResult);
+	}
+
+	@Test
+	public void ambiguousTrip() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, 0, null, "Platz"), null, new Location(LocationType.STATION,
+				8010205, null, "Leipzig Hbf"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		System.out.println(result);
+
+		if (!result.context.canQueryLater())
+			return;
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+		System.out.println(laterResult);
+	}
+
+	@Test
+	public void sameStationTrip() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 8010205, null, "Leipzig Hbf"), null, new Location(
 				LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 
 		if (!result.context.canQueryLater())
 			return;
-		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
-	public void addressConnection() throws Exception
+	public void addressTrip() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, 51334078, 12478331, "04319 Leipzig-Engelsdorf",
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 0, 51334078, 12478331, "04319 Leipzig-Engelsdorf",
 				"August-Bebel-Platz"), null, new Location(LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(), true, Product.ALL,
 				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 
 		if (!result.context.canQueryLater())
 			return;
-		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
 	}
 }

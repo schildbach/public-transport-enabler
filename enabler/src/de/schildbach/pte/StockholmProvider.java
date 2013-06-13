@@ -33,9 +33,9 @@ import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Product;
-import de.schildbach.pte.dto.QueryConnectionsContext;
-import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
+import de.schildbach.pte.dto.QueryTripsContext;
+import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.dto.Style.Shape;
 import de.schildbach.pte.util.ParserUtils;
@@ -61,7 +61,7 @@ public class StockholmProvider extends AbstractHafasProvider
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
 		for (final Capability capability : capabilities)
-			if (capability == Capability.AUTOCOMPLETE_ONE_LINE || capability == Capability.DEPARTURES || capability == Capability.CONNECTIONS)
+			if (capability == Capability.AUTOCOMPLETE_ONE_LINE || capability == Capability.DEPARTURES || capability == Capability.TRIPS)
 				return true;
 
 		return false;
@@ -198,7 +198,7 @@ public class StockholmProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected void appendCustomConnectionsQueryBinaryUri(final StringBuilder uri)
+	protected void appendCustomTripsQueryBinaryUri(final StringBuilder uri)
 	{
 		uri.append("&h2g-direct=11"
 				+ "&REQ0HafasSearchIndividual=1&REQ0HafasSearchPublic=1"
@@ -208,18 +208,17 @@ public class StockholmProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	public QueryConnectionsResult queryConnections(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final int maxNumConnections, final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility,
+	public QueryTripsResult queryTrips(final Location from, final Location via, final Location to, final Date date, final boolean dep,
+			final int numTrips, final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility,
 			final Set<Option> options) throws IOException
 	{
-		return queryConnectionsBinary(from, via, to, date, dep, maxNumConnections, products, walkSpeed, accessibility, options);
+		return queryTripsBinary(from, via, to, date, dep, numTrips, products, walkSpeed, accessibility, options);
 	}
 
 	@Override
-	public QueryConnectionsResult queryMoreConnections(final QueryConnectionsContext contextObj, final boolean later, final int numConnections)
-			throws IOException
+	public QueryTripsResult queryMoreTrips(final QueryTripsContext contextObj, final boolean later, final int numTrips) throws IOException
 	{
-		return queryMoreConnectionsBinary(contextObj, later, numConnections);
+		return queryMoreTripsBinary(contextObj, later, numTrips);
 	}
 
 	@Override

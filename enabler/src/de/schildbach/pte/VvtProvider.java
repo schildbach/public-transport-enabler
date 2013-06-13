@@ -29,7 +29,7 @@ public class VvtProvider extends AbstractEfaProvider
 	{
 		super(API_BASE);
 
-		setUseRouteIndexAsConnectionId(false);
+		setUseRouteIndexAsTripId(false);
 	}
 
 	public NetworkId id()
@@ -40,7 +40,7 @@ public class VvtProvider extends AbstractEfaProvider
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
 		for (final Capability capability : capabilities)
-			if (capability == Capability.AUTOCOMPLETE_ONE_LINE || capability == Capability.DEPARTURES || capability == Capability.CONNECTIONS)
+			if (capability == Capability.AUTOCOMPLETE_ONE_LINE || capability == Capability.DEPARTURES || capability == Capability.TRIPS)
 				return true;
 
 		return false;

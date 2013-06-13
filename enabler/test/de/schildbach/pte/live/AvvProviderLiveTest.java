@@ -32,8 +32,8 @@ import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Product;
-import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
+import de.schildbach.pte.dto.QueryTripsResult;
 
 /**
  * @author Andreas Schildbach
@@ -86,30 +86,30 @@ public class AvvProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
-	public void shortConnection() throws Exception
+	public void shortTrip() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 101, null, "Königsplatz"), null, new Location(
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 101, null, "Königsplatz"), null, new Location(
 				LocationType.STATION, 100, null, "Hauptbahnhof"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		assertEquals(QueryConnectionsResult.Status.OK, result.status);
-		assertTrue(result.connections.size() > 0);
+		assertEquals(QueryTripsResult.Status.OK, result.status);
+		assertTrue(result.trips.size() > 0);
 
 		if (!result.context.canQueryLater())
 			return;
 
-		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
 
 		if (!laterResult.context.canQueryLater())
 			return;
 
-		final QueryConnectionsResult later2Result = queryMoreConnections(laterResult.context, true);
+		final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
 		System.out.println(later2Result);
 
 		if (!later2Result.context.canQueryEarlier())
 			return;
 
-		final QueryConnectionsResult earlierResult = queryMoreConnections(later2Result.context, false);
+		final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
 		System.out.println(earlierResult);
 	}
 }

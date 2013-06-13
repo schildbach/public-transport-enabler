@@ -27,9 +27,9 @@ import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.Product;
-import de.schildbach.pte.dto.QueryConnectionsContext;
-import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
+import de.schildbach.pte.dto.QueryTripsContext;
+import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.Style;
 
 /**
@@ -47,8 +47,8 @@ public interface NetworkProvider
 		NEARBY_STATIONS,
 		/* can query for departures */
 		DEPARTURES,
-		/* can query connections */
-		CONNECTIONS
+		/* can query trips */
+		TRIPS
 	}
 
 	public enum WalkSpeed
@@ -116,7 +116,7 @@ public interface NetworkProvider
 	Collection<Product> defaultProducts();
 
 	/**
-	 * Query connections, asking for any ambiguousnesses
+	 * Query trips, asking for any ambiguousnesses
 	 * 
 	 * @param from
 	 *            location to route from, mandatory
@@ -128,8 +128,8 @@ public interface NetworkProvider
 	 *            desired date for departing, mandatory
 	 * @param dep
 	 *            date is departure date? {@code true} for departure, {@code false} for arrival
-	 * @param numConnections
-	 *            number of connections to query
+	 * @param numTrips
+	 *            number of trips to query
 	 * @param products
 	 *            products to take into account
 	 * @param walkSpeed
@@ -138,25 +138,25 @@ public interface NetworkProvider
 	 *            how accessible do you need the route to be?
 	 * @param options
 	 *            additional options
-	 * @return result object that can contain alternatives to clear up ambiguousnesses, or contains possible connections
+	 * @return result object that can contain alternatives to clear up ambiguousnesses, or contains possible trips
 	 * @throws IOException
 	 */
-	QueryConnectionsResult queryConnections(Location from, Location via, Location to, Date date, boolean dep, int numConnections,
-			Collection<Product> products, WalkSpeed walkSpeed, Accessibility accessibility, Set<Option> options) throws IOException;
+	QueryTripsResult queryTrips(Location from, Location via, Location to, Date date, boolean dep, int numTrips, Collection<Product> products,
+			WalkSpeed walkSpeed, Accessibility accessibility, Set<Option> options) throws IOException;
 
 	/**
-	 * Query more connections (e.g. earlier or later)
+	 * Query more trips (e.g. earlier or later)
 	 * 
 	 * @param context
-	 *            context to query more connections from
+	 *            context to query more trips from
 	 * @param next
-	 *            {@code true} for get next connections, {@code false} for get previous connections
-	 * @param numConnections
-	 *            number of connections to query
-	 * @return result object that contains possible connections
+	 *            {@code true} for get next trips, {@code false} for get previous trips
+	 * @param numTrips
+	 *            number of trips to query
+	 * @return result object that contains possible trips
 	 * @throws IOException
 	 */
-	QueryConnectionsResult queryMoreConnections(QueryConnectionsContext context, boolean later, int numConnections) throws IOException;
+	QueryTripsResult queryMoreTrips(QueryTripsContext context, boolean later, int numTrips) throws IOException;
 
 	/**
 	 * Get style of line

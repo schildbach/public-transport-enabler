@@ -29,8 +29,8 @@ import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Product;
-import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
+import de.schildbach.pte.dto.QueryTripsResult;
 
 /**
  * @author Andreas Schildbach
@@ -91,44 +91,42 @@ public class SbbProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
-	public void shortConnection() throws Exception
+	public void shortTrip() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.STATION, 8503000, null, "Zürich HB"), null, new Location(
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 8503000, null, "Zürich HB"), null, new Location(
 				LocationType.STATION, 8507785, null, "Bern, Hauptbahnhof"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
-	public void slowConnection() throws Exception
+	public void slowTrip() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ANY, 0, null, "Schocherswil, Alte Post!"), null,
-				new Location(LocationType.ANY, 0, null, "Laconnex, Mollach"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, 0, null, "Schocherswil, Alte Post!"), null, new Location(
+				LocationType.ANY, 0, null, "Laconnex, Mollach"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
-	public void connectionWithFootway() throws Exception
+	public void tripWithFootway() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, null, "Spiez, Seestraße 62"), null,
-				new Location(LocationType.ADDRESS, 0, null, "Einsiedeln, Erlenmoosweg 24"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-				Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 0, null, "Spiez, Seestraße 62"), null, new Location(
+				LocationType.ADDRESS, 0, null, "Einsiedeln, Erlenmoosweg 24"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
 	}
 
 	@Test
-	public void connectionFromAddress() throws Exception
+	public void tripFromAddress() throws Exception
 	{
-		final QueryConnectionsResult result = queryConnections(new Location(LocationType.ADDRESS, 0, null, "Dorfstrasse 10, Dällikon, Schweiz"),
-				null, new Location(LocationType.STATION, 8500010, null, "Basel"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-				Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 0, null, "Dorfstrasse 10, Dällikon, Schweiz"), null,
+				new Location(LocationType.STATION, 8500010, null, "Basel"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
-		final QueryConnectionsResult laterResult = queryMoreConnections(result.context, true);
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
 	}
 }
