@@ -52,19 +52,10 @@ public final class Trip implements Serializable
 
 	public Date getFirstDepartureTime()
 	{
-		if (legs != null)
-		{
-			int mins = 0;
-			for (final Leg leg : legs)
-			{
-				if (leg instanceof Individual)
-					mins += ((Individual) leg).min;
-				else if (leg instanceof Public)
-					return new Date(((Public) leg).getDepartureTime().getTime() - 1000 * 60 * mins);
-			}
-		}
-
-		return null;
+		if (legs != null && !legs.isEmpty())
+			return legs.get(0).departureTime;
+		else
+			return null;
 	}
 
 	public Public getFirstPublicLeg()
@@ -88,20 +79,10 @@ public final class Trip implements Serializable
 
 	public Date getLastArrivalTime()
 	{
-		if (legs != null)
-		{
-			int mins = 0;
-			for (int i = legs.size() - 1; i >= 0; i--)
-			{
-				final Leg leg = legs.get(i);
-				if (leg instanceof Individual)
-					mins += ((Individual) leg).min;
-				else if (leg instanceof Public)
-					return new Date(((Public) leg).getArrivalTime().getTime() + 1000 * 60 * mins);
-			}
-		}
-
-		return null;
+		if (legs != null && !legs.isEmpty())
+			return legs.get(legs.size() - 1).arrivalTime;
+		else
+			return null;
 	}
 
 	public Public getLastPublicLeg()
@@ -207,14 +188,24 @@ public final class Trip implements Serializable
 		private static final long serialVersionUID = 8498461220084523265L;
 
 		public final Location departure;
+		public final Date departureTime;
 		public final Location arrival;
+		public final Date arrivalTime;
 		public List<Point> path;
+		public final int min;
 
-		public Leg(final Location departure, final Location arrival, final List<Point> path)
+		public Leg(final Location departure, final Date departureTime, final Location arrival, final Date arrivalTime, final List<Point> path)
 		{
 			this.departure = departure;
+			this.departureTime = departureTime;
 			this.arrival = arrival;
+			this.arrivalTime = arrivalTime;
 			this.path = path;
+
+			if (arrivalTime != null && departureTime != null)
+				this.min = (int) ((arrivalTime.getTime() - departureTime.getTime()) / 1000 / 60);
+			else
+				this.min = 0;
 		}
 	}
 
@@ -232,7 +223,7 @@ public final class Trip implements Serializable
 		public Public(final Line line, final Location destination, final Stop departureStop, final Stop arrivalStop,
 				final List<Stop> intermediateStops, final List<Point> path, final String message)
 		{
-			super(departureStop != null ? departureStop.location : null, arrivalStop != null ? arrivalStop.location : null, path);
+			super(departureStop.location, departureStop.getDepartureTime(), arrivalStop.location, arrivalStop.getArrivalTime(), path);
 
 			this.line = line;
 			this.destination = destination;
@@ -323,39 +314,38 @@ public final class Trip implements Serializable
 
 	public final static class Individual extends Leg
 	{
-		private static final long serialVersionUID = -6651381862837233925L;
-
-		public final int min;
-		public final int distance;
-		public final Type type;
-
 		public enum Type
 		{
 			WALK, BIKE, CAR, TRANSFER
 		}
 
-		public Individual(final int min, final int distance, final Type type, final Location departure, final Location arrival, final List<Point> path)
-		{
-			super(departure, arrival, path);
+		private static final long serialVersionUID = -6651381862837233925L;
 
-			this.min = min;
-			this.distance = distance;
+		public final Type type;
+		public final int distance;
+
+		public Individual(final Type type, final Location departure, final Date departureTime, final Location arrival, final Date arrivalTime,
+				final List<Point> path, final int distance)
+		{
+			super(departure, departureTime, arrival, arrivalTime, path);
+
 			this.type = type;
+			this.distance = distance;
 		}
 
 		@Override
 		public String toString()
 		{
 			final StringBuilder builder = new StringBuilder(getClass().getName() + "[");
-			builder.append("min=").append(min);
-			builder.append(",");
-			builder.append("distance=").append(distance);
-			builder.append(",");
 			builder.append("type=").append(type);
 			builder.append(",");
 			builder.append("departure=").append(departure.toDebugString());
 			builder.append(",");
 			builder.append("arrival=").append(arrival.toDebugString());
+			builder.append(",");
+			builder.append("distance=").append(distance);
+			builder.append(",");
+			builder.append("min=").append(min);
 			builder.append("]");
 			return builder.toString();
 		}

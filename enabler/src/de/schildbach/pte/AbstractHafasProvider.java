@@ -1145,7 +1145,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					// journey
 					final Line line;
 					Location destination = null;
-					int min = 0;
 
 					List<Stop> intermediateStops = null;
 
@@ -1253,9 +1252,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					{
 						XmlPullUtil.enter(pp);
 						XmlPullUtil.enter(pp, "Duration");
-						XmlPullUtil.require(pp, "Time");
-						min = parseDuration(XmlPullUtil.text(pp).substring(3, 8));
-						XmlPullUtil.exit(pp);
+						XmlPullUtil.exit(pp, "Duration");
 						XmlPullUtil.exit(pp);
 
 						line = null;
@@ -1310,7 +1307,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 					XmlPullUtil.exit(pp, "ConSection");
 
-					if (min == 0 || line != null)
+					if (line != null)
 					{
 						final Stop departure = new Stop(sectionDepartureLocation, true, departureTime, null, departurePos, null);
 						final Stop arrival = new Stop(sectionArrivalLocation, false, arrivalTime, null, arrivalPos, null);
@@ -1322,12 +1319,13 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						if (legs.size() > 0 && legs.get(legs.size() - 1) instanceof Trip.Individual)
 						{
 							final Trip.Individual lastIndividualLeg = (Trip.Individual) legs.remove(legs.size() - 1);
-							legs.add(new Trip.Individual(lastIndividualLeg.min + min, 0, Trip.Individual.Type.WALK, lastIndividualLeg.departure,
-									sectionArrivalLocation, null));
+							legs.add(new Trip.Individual(Trip.Individual.Type.WALK, lastIndividualLeg.departure, lastIndividualLeg.departureTime,
+									sectionArrivalLocation, arrivalTime, null, 0));
 						}
 						else
 						{
-							legs.add(new Trip.Individual(min, 0, Trip.Individual.Type.WALK, sectionDepartureLocation, sectionArrivalLocation, null));
+							legs.add(new Trip.Individual(Trip.Individual.Type.WALK, sectionDepartureLocation, departureTime, sectionArrivalLocation,
+									arrivalTime, null, 0));
 						}
 					}
 				}
@@ -1900,7 +1898,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						final Trip.Leg leg;
 						if (type == 1 /* Fussweg */|| type == 3 /* Uebergang */|| type == 4 /* Uebergang */)
 						{
-							final int min = (int) ((plannedArrivalTime - plannedDepartureTime) / 1000 / 60);
 							final Trip.Individual.Type individualType;
 							if (routingType == null)
 								individualType = type == 1 ? Trip.Individual.Type.WALK : Trip.Individual.Type.TRANSFER;
@@ -1917,12 +1914,13 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 							if (lastLeg != null && lastLeg instanceof Trip.Individual && ((Trip.Individual) lastLeg).type == individualType)
 							{
 								final Trip.Individual lastIndividualLeg = (Trip.Individual) legs.remove(legs.size() - 1);
-								leg = new Trip.Individual(lastIndividualLeg.min + min, 0, individualType, lastIndividualLeg.departure,
-										arrivalLocation, null);
+								leg = new Trip.Individual(individualType, lastIndividualLeg.departure, lastIndividualLeg.departureTime,
+										arrivalLocation, new Date(plannedArrivalTime), null, 0);
 							}
 							else
 							{
-								leg = new Trip.Individual(min, 0, individualType, departureLocation, arrivalLocation, null);
+								leg = new Trip.Individual(individualType, departureLocation, new Date(plannedDepartureTime), arrivalLocation,
+										new Date(plannedArrivalTime), null, 0);
 							}
 						}
 						else if (type == 2)

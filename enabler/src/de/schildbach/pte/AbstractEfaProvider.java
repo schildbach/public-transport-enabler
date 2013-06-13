@@ -1937,7 +1937,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					final String productName = pp.getAttributeValue(null, "productName");
 					if ("IT".equals(partialRouteType) || "Fussweg".equals(productName) || "Taxi".equals(productName))
 					{
-						final int min = (int) (arrivalTime.getTime() - departureTime.getTime()) / 1000 / 60;
 						final Trip.Individual.Type type = "Taxi".equals(productName) ? Trip.Individual.Type.TRANSFER : Trip.Individual.Type.WALK;
 
 						XmlPullUtil.enter(pp, "itdMeansOfTransport");
@@ -1959,11 +1958,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							final Trip.Individual lastIndividual = (Trip.Individual) legs.remove(legs.size() - 1);
 							if (path != null && lastIndividual.path != null)
 								path.addAll(0, lastIndividual.path);
-							legs.add(new Trip.Individual(lastIndividual.min + min, distance, type, lastIndividual.departure, arrivalLocation, path));
+							legs.add(new Trip.Individual(type, lastIndividual.departure, lastIndividual.departureTime, arrivalLocation, arrivalTime,
+									path, distance));
 						}
 						else
 						{
-							legs.add(new Trip.Individual(min, distance, type, departureLocation, arrivalLocation, path));
+							legs.add(new Trip.Individual(type, departureLocation, departureTime, arrivalLocation, arrivalTime, path, distance));
 						}
 					}
 					else if ("gesicherter Anschluss".equals(productName) || "nicht umsteigen".equals(productName)) // type97
