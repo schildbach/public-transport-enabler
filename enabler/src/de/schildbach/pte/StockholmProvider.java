@@ -20,8 +20,10 @@ package de.schildbach.pte;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,6 +36,8 @@ import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryConnectionsContext;
 import de.schildbach.pte.dto.QueryConnectionsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
+import de.schildbach.pte.dto.Style;
+import de.schildbach.pte.dto.Style.Shape;
 import de.schildbach.pte.util.ParserUtils;
 
 /**
@@ -278,5 +282,30 @@ public class StockholmProvider extends AbstractHafasProvider
 			return 'F';
 
 		return 0;
+	}
+
+	private static final Map<String, Style> LINES = new HashMap<String, Style>();
+
+	static
+	{
+		LINES.put("UMETRO10", new Style(Shape.ROUNDED, Style.parseColor("#25368b"), Style.WHITE));
+		LINES.put("UMETRO11", new Style(Shape.ROUNDED, Style.parseColor("#25368b"), Style.WHITE));
+
+		LINES.put("UMETRO13", new Style(Shape.ROUNDED, Style.parseColor("#f1491c"), Style.WHITE));
+		LINES.put("UMETRO14", new Style(Shape.ROUNDED, Style.parseColor("#f1491c"), Style.WHITE));
+
+		LINES.put("UMETRO17", new Style(Shape.ROUNDED, Style.parseColor("#6ec72d"), Style.WHITE));
+		LINES.put("UMETRO18", new Style(Shape.ROUNDED, Style.parseColor("#6ec72d"), Style.WHITE));
+		LINES.put("UMETRO19", new Style(Shape.ROUNDED, Style.parseColor("#6ec72d"), Style.WHITE));
+	}
+
+	@Override
+	public Style lineStyle(final String line)
+	{
+		final Style style = LINES.get(line);
+		if (style != null)
+			return style;
+
+		return super.lineStyle(line);
 	}
 }
