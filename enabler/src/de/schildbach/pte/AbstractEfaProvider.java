@@ -534,22 +534,25 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		final String place = !"loc".equals(anyType) ? normalizeLocationName(pp.getAttributeValue(null, "locality")) : null;
 		final String name = normalizeLocationName(pp.getAttributeValue(null, "objectName"));
 
-		final String mapName = pp.getAttributeValue(null, "mapName");
+		final String mapName = XmlPullUtil.optAttr(pp, "mapName", null);
+		final float x = XmlPullUtil.optFloatAttr(pp, "x", 0);
+		final float y = XmlPullUtil.optFloatAttr(pp, "y", 0);
+
 		final int lat;
 		final int lon;
-		if (mapName == null || mapName.length() == 0)
+		if (mapName == null || (x == 0 && y == 0))
 		{
 			lat = 0;
 			lon = 0;
 		}
 		else if ("WGS84".equals(mapName))
 		{
-			lat = Math.round(XmlPullUtil.floatAttr(pp, "y"));
-			lon = Math.round(XmlPullUtil.floatAttr(pp, "x"));
+			lat = Math.round(y);
+			lon = Math.round(x);
 		}
 		else
 		{
-			throw new IllegalStateException("unknown mapName: " + mapName);
+			throw new IllegalStateException("unknown mapName=" + mapName + " x=" + x + " y=" + y);
 		}
 
 		LocationType type;
@@ -611,22 +614,25 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	{
 		final int id = Integer.parseInt(pp.getAttributeValue(null, "stopID"));
 
-		final String mapName = pp.getAttributeValue(null, "mapName");
+		final String mapName = XmlPullUtil.optAttr(pp, "mapName", null);
+		final float x = XmlPullUtil.optFloatAttr(pp, "x", 0);
+		final float y = XmlPullUtil.optFloatAttr(pp, "y", 0);
+
 		final int lat;
 		final int lon;
-		if (mapName == null || mapName.length() == 0)
+		if (mapName == null || (x == 0 && y == 0))
 		{
 			lat = 0;
 			lon = 0;
 		}
 		else if ("WGS84".equals(mapName))
 		{
-			lat = Math.round(XmlPullUtil.floatAttr(pp, "y"));
-			lon = Math.round(XmlPullUtil.floatAttr(pp, "x"));
+			lat = Math.round(y);
+			lon = Math.round(x);
 		}
 		else
 		{
-			throw new IllegalStateException("unknown mapName: " + mapName);
+			throw new IllegalStateException("unknown mapName=" + mapName + " x=" + x + " y=" + y);
 		}
 
 		final String place = normalizeLocationName(XmlPullUtil.attr(pp, "place"));
@@ -701,21 +707,24 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					XmlPullUtil.enter(pp, "itdOdvAssignedStops");
 					while (XmlPullUtil.test(pp, "itdOdvAssignedStop"))
 					{
-						final String parsedMapName = pp.getAttributeValue(null, "mapName");
-						if (parsedMapName != null && parsedMapName.length() != 0)
+						final String mapName = pp.getAttributeValue(null, "mapName");
+						final float x = XmlPullUtil.optFloatAttr(pp, "x", 0);
+						final float y = XmlPullUtil.optFloatAttr(pp, "y", 0);
+
+						if (!(mapName == null || mapName.length() == 0 || (x == 0 && y == 0)))
 						{
 							final int parsedLocationId = XmlPullUtil.intAttr(pp, "stopID");
 							// final String parsedLongName = normalizeLocationName(XmlPullUtil.attr(pp,
 							// "nameWithPlace"));
 							final String parsedPlace = normalizeLocationName(XmlPullUtil.attr(pp, "place"));
-							final int parsedLon = Math.round(XmlPullUtil.floatAttr(pp, "x"));
-							final int parsedLat = Math.round(XmlPullUtil.floatAttr(pp, "y"));
+							final int parsedLat = Math.round(y);
+							final int parsedLon = Math.round(x);
 							XmlPullUtil.enter(pp, "itdOdvAssignedStop");
 							final String parsedName = normalizeLocationName(pp.getText());
 							XmlPullUtil.exit(pp, "itdOdvAssignedStop");
 
-							if (!"WGS84".equals(parsedMapName))
-								throw new IllegalStateException("unknown mapName: " + parsedMapName);
+							if (!"WGS84".equals(mapName))
+								throw new IllegalStateException("unknown mapName=" + mapName + " x=" + x + " y=" + y);
 
 							final Location newStation = new Location(LocationType.STATION, parsedLocationId, parsedLat, parsedLon, parsedPlace,
 									parsedName);
@@ -1279,24 +1288,27 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						StationDepartures assignedStationDepartures = findStationDepartures(result.stationDepartures, assignedStopId);
 						if (assignedStationDepartures == null)
 						{
-							final String mapName = pp.getAttributeValue(null, "mapName");
+							final String mapName = XmlPullUtil.optAttr(pp, "mapName", null);
+							final float x = XmlPullUtil.optFloatAttr(pp, "x", 0);
+							final float y = XmlPullUtil.optFloatAttr(pp, "y", 0);
+
 							final int lat;
 							final int lon;
-
-							if (mapName == null || mapName.length() == 0)
+							if (mapName == null || (x == 0 && y == 0))
 							{
 								lat = 0;
 								lon = 0;
 							}
 							else if ("WGS84".equals(mapName))
 							{
-								lat = Math.round(XmlPullUtil.floatAttr(pp, "y"));
-								lon = Math.round(XmlPullUtil.floatAttr(pp, "x"));
+								lat = Math.round(y);
+								lon = Math.round(x);
 							}
 							else
 							{
-								throw new IllegalStateException("unknown mapName: " + mapName);
+								throw new IllegalStateException("unknown mapName=" + mapName + " x=" + x + " y=" + y);
 							}
+
 							// final String name = normalizeLocationName(XmlPullUtil.attr(pp, "nameWO"));
 
 							assignedStationDepartures = new StationDepartures(new Location(LocationType.STATION, assignedStopId, lat, lon),
@@ -1389,22 +1401,25 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		if (name == null)
 			name = normalizeLocationName(pp.getAttributeValue(null, "name"));
 
-		final String mapName = pp.getAttributeValue(null, "mapName");
+		final String mapName = XmlPullUtil.optAttr(pp, "mapName", null);
+		final float x = XmlPullUtil.optFloatAttr(pp, "x", 0);
+		final float y = XmlPullUtil.optFloatAttr(pp, "y", 0);
+
 		final int lat;
 		final int lon;
-		if (mapName == null || mapName.length() == 0)
+		if (mapName == null || (x == 0 && y == 0))
 		{
 			lat = 0;
 			lon = 0;
 		}
 		else if ("WGS84".equals(mapName))
 		{
-			lat = Math.round(XmlPullUtil.floatAttr(pp, "y"));
-			lon = Math.round(XmlPullUtil.floatAttr(pp, "x"));
+			lat = Math.round(y);
+			lon = Math.round(x);
 		}
 		else
 		{
-			throw new IllegalStateException("unknown mapName: " + mapName);
+			throw new IllegalStateException("unknown mapName=" + mapName + " x=" + x + " y=" + y);
 		}
 
 		return new Location(LocationType.STATION, id, lat, lon, place, name);
