@@ -337,26 +337,31 @@ public class InvgProvider extends AbstractHafasProvider
 		LINES.put("B11", new Style(Style.parseColor("#EE9B78"), Style.BLACK));
 		LINES.put("B15", new Style(Style.parseColor("#84C326"), Style.BLACK));
 		LINES.put("B16", new Style(Style.parseColor("#5D452E"), Style.WHITE));
-		LINES.put("B17", new Style(Style.parseColor("#AAAAAA"), Style.BLACK));
+		LINES.put("B17", new Style(Style.parseColor("#E81100"), Style.BLACK));
+		LINES.put("B18", new Style(Style.parseColor("#79316C"), Style.WHITE));
 		LINES.put("B20", new Style(Style.parseColor("#EA891C"), Style.BLACK));
 		LINES.put("B21", new Style(Style.parseColor("#31B2EA"), Style.BLACK));
 		LINES.put("B25", new Style(Style.parseColor("#7F65A0"), Style.WHITE));
-		LINES.put("B26", new Style(Style.parseColor("#00BF73"), Style.WHITE));
+		LINES.put("B26", new Style(Style.parseColor("#00BF73"), Style.WHITE)); // not present in Fahrplan 2012/2013
 		LINES.put("B30", new Style(Style.parseColor("#901E78"), Style.WHITE));
 		LINES.put("B31", new Style(Style.parseColor("#DCE722"), Style.BLACK));
 		LINES.put("B40", new Style(Style.parseColor("#009240"), Style.WHITE));
 		LINES.put("B41", new Style(Style.parseColor("#7BC5B1"), Style.BLACK));
 		LINES.put("B44", new Style(Style.parseColor("#EA77A6"), Style.WHITE));
 		LINES.put("B50", new Style(Style.parseColor("#FACF00"), Style.BLACK));
+		LINES.put("B51", new Style(Style.parseColor("#C13C00"), Style.WHITE));
+		LINES.put("B52", new Style(Style.parseColor("#94F0D4"), Style.BLACK));
 		LINES.put("B53", new Style(Style.parseColor("#BEB405"), Style.BLACK));
 		LINES.put("B55", new Style(Style.parseColor("#FFF500"), Style.BLACK));
 		LINES.put("B60", new Style(Style.parseColor("#0072B7"), Style.WHITE));
-		LINES.put("B61", new Style(Style.rgb(204, 184, 122), Style.BLACK));
-		LINES.put("B62", new Style(Style.rgb(204, 184, 122), Style.BLACK));
+		LINES.put("B61", new Style(Style.rgb(204, 184, 122), Style.BLACK)); // not present in Fahrplan 2012/2013
+		LINES.put("B62", new Style(Style.rgb(204, 184, 122), Style.BLACK)); // not present in Fahrplan 2012/2013
 		LINES.put("B65", new Style(Style.parseColor("#B7DDD2"), Style.BLACK));
 		LINES.put("B70", new Style(Style.parseColor("#D49016"), Style.BLACK));
-		LINES.put("B71", new Style(Style.parseColor("#996600"), Style.BLACK));
+		LINES.put("B71", new Style(Style.parseColor("#996600"), Style.BLACK)); // not present in Fahrplan 2012/2013
 		LINES.put("B85", new Style(Style.parseColor("#F6BAD3"), Style.BLACK));
+		LINES.put("B111", new Style(Style.parseColor("#EE9B78"), Style.BLACK));
+
 		LINES.put("B9221", new Style(Style.rgb(217, 217, 255), Style.BLACK));
 		LINES.put("B9226", new Style(Style.rgb(191, 255, 255), Style.BLACK));
 
@@ -388,10 +393,12 @@ public class InvgProvider extends AbstractHafasProvider
 		LINES.put("BS6", new Style(Style.rgb(178, 25, 0), Style.WHITE));
 		LINES.put("BS7", new Style(Style.rgb(178, 25, 0), Style.WHITE));
 		LINES.put("BS8", new Style(Style.rgb(178, 25, 0), Style.WHITE));
+		LINES.put("BS9", new Style(Style.rgb(178, 25, 0), Style.WHITE));
 
-		// BX109?
 		LINES.put("BX11", new Style(Style.parseColor("#EE9B78"), Style.BLACK));
+		LINES.put("BX12", new Style(Style.parseColor("#B11839"), Style.BLACK));
 		LINES.put("BX80", new Style(Style.parseColor("#FFFF40"), Style.BLACK));
+		LINES.put("BX109", new Style(Style.WHITE, Style.BLACK, Style.BLACK));
 	}
 
 	@Override
