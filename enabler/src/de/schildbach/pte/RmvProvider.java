@@ -252,6 +252,9 @@ public class RmvProvider extends AbstractHafasProvider
 		if ("AT".equals(ucType)) // Anschluß Sammel Taxi, Anmeldung nicht erforderlich
 			return 'B';
 
+		if ("MOFA".equals(ucType)) // Mobilfalt-Fahrt
+			return 'P';
+
 		final char t = super.normalizeType(type);
 		if (t != 0)
 			return t;

@@ -969,7 +969,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return "RALX" + trainNum;
 			if ("EX".equals(trainType) || "Fatra".equals(trainName))
 				return "REX" + trainNum;
-			if ("MEr".equals(trainType) || "metronom".equals(trainName))
+			if ("ME".equals(trainType) || "metronom".equals(trainName))
+				return "RME" + trainNum;
+			if ("MEr".equals(trainType))
 				return "RMEr" + trainNum;
 			if ("AKN".equals(trainType) || "AKN Eisenbahn AG".equals(trainName))
 				return "RAKN" + trainNum;
@@ -1014,6 +1016,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return "RSBS" + trainNum;
 			if ("SB-".equals(trainType)) // Städtebahn Sachsen
 				return "RSB" + trainNum;
+			if ("ag".equals(trainType)) // agilis
+				return "Rag" + trainNum;
 			if ("agi".equals(trainType) || "agilis".equals(trainName))
 				return "Ragi" + trainNum;
 			if ("as".equals(trainType) || "agilis-Schnellzug".equals(trainName))
