@@ -98,15 +98,27 @@ public final class QueryTripsResult implements Serializable
 	public String toString()
 	{
 		final StringBuilder builder = new StringBuilder(getClass().getName());
-		builder.append("[").append(this.status).append(": ");
-		if (trips != null)
-			builder.append(trips.size()).append(" trips " + trips + ", ");
-		if (ambiguousFrom != null)
-			builder.append(ambiguousFrom.size()).append(" ambiguous from, ");
-		if (ambiguousVia != null)
-			builder.append(ambiguousVia.size()).append(" ambiguous via, ");
-		if (ambiguousTo != null)
-			builder.append(ambiguousTo.size()).append(" ambiguous to, ");
+		builder.append("[");
+
+		if (status == Status.OK)
+		{
+			if (trips != null)
+				builder.append(trips.size()).append(" trips " + trips + ", ");
+		}
+		else if (status == Status.AMBIGUOUS)
+		{
+			if (ambiguousFrom != null)
+				builder.append(ambiguousFrom.size()).append(" ambiguous from, ");
+			if (ambiguousVia != null)
+				builder.append(ambiguousVia.size()).append(" ambiguous via, ");
+			if (ambiguousTo != null)
+				builder.append(ambiguousTo.size()).append(" ambiguous to, ");
+		}
+		else
+		{
+			builder.append(this.status);
+		}
+
 		if (builder.substring(builder.length() - 2).equals(", "))
 			builder.setLength(builder.length() - 2);
 		builder.append("]");
