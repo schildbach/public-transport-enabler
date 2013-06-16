@@ -707,43 +707,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					XmlPullUtil.enter(pp, "itdOdvAssignedStops");
 					while (XmlPullUtil.test(pp, "itdOdvAssignedStop"))
 					{
-						final String mapName = pp.getAttributeValue(null, "mapName");
-						final float x = XmlPullUtil.optFloatAttr(pp, "x", 0);
-						final float y = XmlPullUtil.optFloatAttr(pp, "y", 0);
+						final Location newStation = processItdOdvAssignedStop(pp);
 
-						if (!(mapName == null || mapName.length() == 0 || (x == 0 && y == 0)))
-						{
-							final int parsedLocationId = XmlPullUtil.intAttr(pp, "stopID");
-							// final String parsedLongName = normalizeLocationName(XmlPullUtil.attr(pp,
-							// "nameWithPlace"));
-							final String parsedPlace = normalizeLocationName(XmlPullUtil.attr(pp, "place"));
-							final int parsedLat = Math.round(y);
-							final int parsedLon = Math.round(x);
-							XmlPullUtil.enter(pp, "itdOdvAssignedStop");
-							final String parsedName = normalizeLocationName(pp.getText());
-							XmlPullUtil.exit(pp, "itdOdvAssignedStop");
-
-							if (!"WGS84".equals(mapName))
-								throw new IllegalStateException("unknown mapName=" + mapName + " x=" + x + " y=" + y);
-
-							final Location newStation = new Location(LocationType.STATION, parsedLocationId, parsedLat, parsedLon, parsedPlace,
-									parsedName);
-							if (!stations.contains(newStation))
-								stations.add(newStation);
-						}
-						else
-						{
-							if (!pp.isEmptyElementTag())
-							{
-								XmlPullUtil.enter(pp, "itdOdvAssignedStop");
-								XmlPullUtil.exit(pp, "itdOdvAssignedStop");
-							}
-							else
-							{
-								XmlPullUtil.next(pp);
-							}
-						}
+						if (!stations.contains(newStation))
+							stations.add(newStation);
 					}
+					XmlPullUtil.exit(pp, "itdOdvAssignedStops");
 				}
 
 				if (ownStation != null && !stations.contains(ownStation))
