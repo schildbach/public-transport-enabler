@@ -111,7 +111,12 @@ public final class XmlPullUtil
 
 	public static String attr(final XmlPullParser pp, final String attrName)
 	{
-		return pp.getAttributeValue(null, attrName).trim();
+		final String attr = optAttr(pp, attrName, null);
+
+		if (attr != null)
+			return attr;
+		else
+			throw new IllegalStateException("expecting attribute: " + attrName);
 	}
 
 	public static String optAttr(final XmlPullParser pp, final String attrName, final String defaultValue)
@@ -131,7 +136,7 @@ public final class XmlPullUtil
 
 	public static int intAttr(final XmlPullParser pp, final String attrName)
 	{
-		return Integer.parseInt(pp.getAttributeValue(null, attrName).trim());
+		return Integer.parseInt(attr(pp, attrName));
 	}
 
 	public static int optIntAttr(final XmlPullParser pp, final String attrName, final int defaultValue)
@@ -145,7 +150,7 @@ public final class XmlPullUtil
 
 	public static float floatAttr(final XmlPullParser pp, final String attrName)
 	{
-		return Float.parseFloat(pp.getAttributeValue(null, attrName).trim());
+		return Float.parseFloat(attr(pp, attrName));
 	}
 
 	public static float optFloatAttr(final XmlPullParser pp, final String attrName, final float defaultValue)
