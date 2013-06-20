@@ -139,7 +139,7 @@ public class InvgProvider extends AbstractHafasProvider
 					, Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_HEAD_FINE = Pattern.compile(".*?" //
 			+ "<span class=\"output\">(.*?)<.*?" // location
-			+ "<span class=\"output\">\n(\\d{2}\\.\\d{2}\\.\\d{2}),\n" // date
+			+ "<span class=\"output\">\n(\\d{2}\\.\\d{2}\\.\\d{2}).*?" // date
 			+ "Abfahrt (\\d{1,2}:\\d{2}).*?" // time
 	, Pattern.DOTALL);
 	private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<tr class=\"(depboard-\\w*)\">(.*?)</tr>", Pattern.DOTALL);
