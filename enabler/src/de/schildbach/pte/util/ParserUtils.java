@@ -414,7 +414,7 @@ public final class ParserUtils
 	}
 
 	private static final Pattern P_ISO_DATE = Pattern.compile("(\\d{4})-?(\\d{2})-?(\\d{2})");
-	private static final Pattern P_ISO_DATE_REVERSE = Pattern.compile("(\\d{2})-(\\d{2})-(\\d{4})");
+	private static final Pattern P_ISO_DATE_REVERSE = Pattern.compile("(\\d{2})[-\\.](\\d{2})[-\\.](\\d{4})");
 
 	public static final void parseIsoDate(final Calendar calendar, final CharSequence str)
 	{
