@@ -2690,21 +2690,19 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						{
 							final String net = XmlPullUtil.attr(pp, "net");
 							final Currency currency = parseCurrency(XmlPullUtil.attr(pp, "currency"));
-							final String fareAdult = XmlPullUtil.attr(pp, "fareAdult");
-							final String fareChild = XmlPullUtil.attr(pp, "fareChild");
-							final String unitName = XmlPullUtil.attr(pp, "unitName");
-							final String unitsAdult = XmlPullUtil.attr(pp, "unitsAdult");
-							final String unitsChild = XmlPullUtil.attr(pp, "unitsChild");
-							final String levelAdult = pp.getAttributeValue(null, "levelAdult");
-							final boolean hasLevelAdult = levelAdult != null && levelAdult.length() > 0;
-							final String levelChild = pp.getAttributeValue(null, "levelChild");
-							final boolean hasLevelChild = levelChild != null && levelChild.length() > 0;
-							if (fareAdult != null && fareAdult.length() > 0)
-								fares.add(new Fare(net, Type.ADULT, currency, Float.parseFloat(fareAdult), hasLevelAdult ? null : unitName,
-										hasLevelAdult ? levelAdult : unitsAdult));
-							if (fareChild != null && fareChild.length() > 0)
-								fares.add(new Fare(net, Type.CHILD, currency, Float.parseFloat(fareChild), hasLevelChild ? null : unitName,
-										hasLevelChild ? levelChild : unitsChild));
+							final String fareAdult = XmlPullUtil.optAttr(pp, "fareAdult", null);
+							final String fareChild = XmlPullUtil.optAttr(pp, "fareChild", null);
+							final String unitName = XmlPullUtil.optAttr(pp, "unitName", null);
+							final String unitsAdult = XmlPullUtil.optAttr(pp, "unitsAdult", null);
+							final String unitsChild = XmlPullUtil.optAttr(pp, "unitsChild", null);
+							final String levelAdult = XmlPullUtil.optAttr(pp, "levelAdult", null);
+							final String levelChild = XmlPullUtil.optAttr(pp, "levelChild", null);
+							if (fareAdult != null)
+								fares.add(new Fare(net, Type.ADULT, currency, Float.parseFloat(fareAdult), levelAdult != null ? null : unitName,
+										levelAdult != null ? levelAdult : unitsAdult));
+							if (fareChild != null)
+								fares.add(new Fare(net, Type.CHILD, currency, Float.parseFloat(fareChild), levelChild != null ? null : unitName,
+										levelChild != null ? levelChild : unitsChild));
 
 							if (!pp.isEmptyElementTag())
 							{
