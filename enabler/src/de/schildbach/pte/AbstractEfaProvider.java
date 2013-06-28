@@ -2481,9 +2481,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						}
 						XmlPullUtil.enter(pp, "itdMeansOfTransport");
 						XmlPullUtil.require(pp, "motDivaParams");
-						final String lineId = XmlPullUtil.attr(pp, "network") + ':' + XmlPullUtil.attr(pp, "line") + ':'
-								+ XmlPullUtil.attr(pp, "supplement") + ':' + XmlPullUtil.attr(pp, "direction") + ':'
-								+ XmlPullUtil.attr(pp, "project");
+						final String divaNetwork = XmlPullUtil.attr(pp, "network");
+						final String divaLine = XmlPullUtil.attr(pp, "line");
+						final String divaSupplement = XmlPullUtil.optAttr(pp, "supplement", "");
+						final String divaDirection = XmlPullUtil.attr(pp, "direction");
+						final String divaProject = XmlPullUtil.attr(pp, "project");
+						final String lineId = divaNetwork + ':' + divaLine + ':' + divaSupplement + ':' + divaDirection + ':' + divaProject;
 						XmlPullUtil.exit(pp, "itdMeansOfTransport");
 
 						final Integer departureDelay;
