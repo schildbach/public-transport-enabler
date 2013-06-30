@@ -301,6 +301,8 @@ public class ZvvProvider extends AbstractHafasProvider
 
 		if ("UNB".equals(ucType))
 			return '?';
+		if ("UUU".equals(ucType))
+			return '?';
 		if ("???".equals(ucType))
 			return '?';
 

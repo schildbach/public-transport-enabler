@@ -2658,6 +2658,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		// Suburban Trains
 		if (P_LINE_SBAHN.matcher(ucType).matches()) // Generic (Night) S-Bahn
 			return 'S';
+		if ("S-BAHN".equals(ucType))
+			return 'S';
 		if ("BSB".equals(ucType)) // Breisgau S-Bahn
 			return 'S';
 		if ("SWE".equals(ucType)) // Südwestdeutsche Verkehrs-AG, Ortenau-S-Bahn

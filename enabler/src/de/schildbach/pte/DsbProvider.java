@@ -193,7 +193,7 @@ public class DsbProvider extends AbstractHafasProvider
 
 		if ("BYBUS".equals(ucType))
 			return 'B';
-		if ("X-BUS".equals(ucType))
+		if ("X-BUS".equals(ucType) || "X BUS".equals(ucType))
 			return 'B';
 		if ("HV-BUS".equals(ucType)) // Havnebus
 			return 'B';

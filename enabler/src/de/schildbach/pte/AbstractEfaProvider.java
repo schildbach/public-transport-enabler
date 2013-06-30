@@ -1099,6 +1099,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return "R" + symbol;
 			if ("Westfalenbahn".equals(trainName))
 				return 'R' + symbol;
+			if ("Chiemseebahn".equals(trainName))
+				return 'R' + symbol;
 			if ("R".equals(trainType) || "Regionalzug".equals(trainName))
 				return "RR" + trainNum;
 			if (trainType == null && trainNum != null && P_LINE_R.matcher(trainNum).matches())
@@ -1293,6 +1295,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			if ("RT".equals(trainType) || "RegioTram".equals(trainName))
 				return "TRT" + trainNum;
 
+			if ("Bus".equals(trainType))
+				return "B" + trainNum;
 			if ("SEV".equals(trainType) || "SEV".equals(trainNum) || "SEV".equals(symbol) || "Ersatzverkehr".equals(trainName))
 				return "BSEV";
 			if ("Bus replacement".equals(trainName)) // GB
