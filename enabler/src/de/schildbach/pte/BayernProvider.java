@@ -65,6 +65,25 @@ public class BayernProvider extends AbstractEfaProvider
 	}
 
 	@Override
+	protected String parseLine(final String mot, final String symbol, final String name, final String longName, final String trainType,
+			final String trainNum, final String trainName)
+	{
+		if ("16".equals(mot))
+		{
+			if ("EC".equals(trainType))
+				return "IEC" + trainNum;
+			if ("IC".equals(trainType))
+				return "IIC" + trainNum;
+			if ("ICE".equals(trainType))
+				return "IICE" + trainNum;
+			if ("RJ".equals(trainType)) // railjet
+				return "IRJ" + trainNum;
+		}
+
+		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
+	}
+
+	@Override
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
 		if (location.hasLocation())
