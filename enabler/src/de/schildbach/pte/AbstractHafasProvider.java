@@ -705,13 +705,13 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 					final String position = platform != null ? "Gl. " + ParserUtils.resolveEntities(platform) : null;
 
-					final String destinationName;
+					final String[] destinationPlaceAndName;
 					if (dir != null)
-						destinationName = dir.trim();
+						destinationPlaceAndName = splitPlaceAndName(dir.trim());
 					else if (targetLoc != null)
-						destinationName = targetLoc.trim();
+						destinationPlaceAndName = splitPlaceAndName(targetLoc.trim());
 					else
-						destinationName = null;
+						destinationPlaceAndName = null;
 
 					final int destinationId;
 					if (dirnr != null)
@@ -719,8 +719,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					else
 						destinationId = 0;
 
-					final Location destination = new Location(destinationId > 0 ? LocationType.STATION : LocationType.ANY, destinationId, null,
-							destinationName);
+					final Location destination = new Location(destinationId > 0 ? LocationType.STATION : LocationType.ANY, destinationId,
+							destinationPlaceAndName != null ? destinationPlaceAndName[0] : null,
+							destinationPlaceAndName != null ? destinationPlaceAndName[1] : null);
 
 					final Line prodLine = parseLineAndType(prod);
 					final Line line;
@@ -1187,7 +1188,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 							}
 							else if ("DIRECTION".equals(attrName))
 							{
-								destination = new Location(LocationType.ANY, 0, null, attributeVariants.get("NORMAL"));
+								final String[] destinationPlaceAndName = splitPlaceAndName(attributeVariants.get("NORMAL"));
+								destination = new Location(LocationType.ANY, 0, destinationPlaceAndName[0], destinationPlaceAndName[1]);
 							}
 						}
 						XmlPullUtil.exit(pp, "JourneyAttributeList");
@@ -1934,7 +1936,17 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 								lineProduct = normalizeType(lineCategory);
 
 							final Line line = newLine(lineProduct, normalizeLineName(lineName), lineComment, lineAttrs.toArray(new Line.Attr[0]));
-							final Location direction = directionStr != null ? new Location(LocationType.ANY, 0, null, directionStr) : null;
+
+							final Location direction;
+							if (directionStr != null)
+							{
+								final String[] directionPlaceAndName = splitPlaceAndName(directionStr);
+								direction = new Location(LocationType.ANY, 0, directionPlaceAndName[0], directionPlaceAndName[1]);
+							}
+							else
+							{
+								direction = null;
+							}
 
 							final Stop departure = new Stop(departureLocation, true, plannedDepartureTime != 0 ? new Date(plannedDepartureTime)
 									: null, predictedDepartureTime != 0 ? new Date(predictedDepartureTime) : null, plannedDeparturePosition,
