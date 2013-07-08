@@ -69,7 +69,7 @@ public class RtProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
-	public void autoComplete() throws Exception
+	public void autocomplete() throws Exception
 	{
 		final List<Location> autocompletes = provider.autocompleteStations("haupt");
 
@@ -77,7 +77,7 @@ public class RtProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
-	public void autoCompleteAddress() throws Exception
+	public void autocompleteAddress() throws Exception
 	{
 		final List<Location> autocompletes = provider.autocompleteStations("Dorfstrasse 10, Dällikon, Schweiz");
 
@@ -85,7 +85,7 @@ public class RtProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
-	public void autoCompleteEncoding() throws Exception
+	public void autocompleteEncoding() throws Exception
 	{
 		List<Location> autocompletes = provider.autocompleteStations("Dorfstrasse 1, Schäftland");
 		assertEquals("Schöftland, Dorfstrasse", autocompletes.get(0).name);

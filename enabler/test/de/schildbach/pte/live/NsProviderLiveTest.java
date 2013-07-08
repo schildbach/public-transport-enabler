@@ -74,6 +74,14 @@ public class NsProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
+	public void autocompleteUmlaut() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("Brüssel");
+
+		print(autocompletes);
+	}
+
+	@Test
 	public void shortTrip() throws Exception
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 8400058, null, "Amsterdam Centraal"), null, new Location(

@@ -347,6 +347,18 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 	}
 
+	protected StringBuilder jsonGetStopsParameters(final CharSequence constraint)
+	{
+		final StringBuilder parameters = new StringBuilder();
+		parameters.append("?getstop=1");
+		parameters.append("&REQ0JourneyStopsS0A=255");
+		parameters.append("&REQ0JourneyStopsS0G=").append(ParserUtils.urlEncode(constraint.toString(), jsonGetStopsEncoding)).append("?");
+		// parameters.append("&REQ0JourneyStopsB=12");
+		parameters.append("&js=true");
+
+		return parameters;
+	}
+
 	private static final Pattern P_AJAX_GET_STOPS_JSON = Pattern.compile("SLs\\.sls\\s*=\\s*(.*?);\\s*SLs\\.showSuggestion\\(\\);", Pattern.DOTALL);
 	private static final Pattern P_AJAX_GET_STOPS_ID = Pattern.compile(".*?@L=(\\d+)@.*?");
 

@@ -75,7 +75,15 @@ public class SncbProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
-	public void autoCompleteAddress() throws Exception
+	public void autocompleteUmlaut() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("Brüssel");
+
+		print(autocompletes);
+	}
+
+	@Test
+	public void autocompleteAddress() throws Exception
 	{
 		final List<Location> autocompletes = provider.autocompleteStations("Rue Paul Janson 9, 1030 Bruxelles");
 

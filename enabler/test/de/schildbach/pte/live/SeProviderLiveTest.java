@@ -69,7 +69,15 @@ public class SeProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void autocomplete() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("Luleå Airport");
+		final List<Location> autocompletes = provider.autocompleteStations("Airport");
+
+		print(autocompletes);
+	}
+
+	@Test
+	public void autocompleteUmlaut() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("Luleå");
 
 		print(autocompletes);
 	}
