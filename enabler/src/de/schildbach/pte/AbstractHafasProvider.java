@@ -588,6 +588,20 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 	}
 
+	protected StringBuilder xmlQueryDeparturesParameters(final int stationId)
+	{
+		final StringBuilder parameters = new StringBuilder();
+		parameters.append("?productsFilter=").append(allProductsString());
+		parameters.append("&boardType=dep");
+		parameters.append("&disableEquivs=yes"); // don't use nearby stations
+		parameters.append("&maxJourneys=50"); // ignore maxDepartures because result contains other stations
+		parameters.append("&start=yes");
+		parameters.append("&L=vs_java3");
+		parameters.append("&input=").append(stationId);
+
+		return parameters;
+	}
+
 	private static final Pattern P_XML_QUERY_DEPARTURES_DELAY = Pattern.compile("(?:-|k\\.A\\.?|cancel|\\+?\\s*(\\d+))");
 
 	protected QueryDeparturesResult xmlQueryDepartures(final String uri, final int stationId) throws IOException
