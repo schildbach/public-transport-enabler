@@ -117,6 +117,7 @@ public class NsProvider extends AbstractHafasProvider
 		{
 			final StringBuilder uri = new StringBuilder(API_BASE);
 			uri.append("stboard.exe/nn");
+			uri.append("?near=Anzeigen");
 			uri.append("&distance=").append(maxDistance != 0 ? maxDistance / 1000 : 50);
 			uri.append("&input=").append(location.id);
 
