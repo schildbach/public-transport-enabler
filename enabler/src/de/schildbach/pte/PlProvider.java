@@ -37,11 +37,11 @@ public class PlProvider extends AbstractHafasProvider
 	private static final String API_BASE = "http://rozklad-pkp.pl/bin/";
 
 	// http://rozklad.sitkol.pl/bin/
-	// http://h2g.sitkol.pl/bin/query.exe/en
+	// http://h2g.sitkol.pl/bin/
 
 	public PlProvider()
 	{
-		super(API_BASE + "query.exe/pn", 7, null, UTF_8, UTF_8);
+		super(API_BASE + "stboard.exe/pn", null, API_BASE + "query.exe/pn", 7, null, UTF_8, UTF_8);
 	}
 
 	public NetworkId id()
@@ -134,11 +134,10 @@ public class PlProvider extends AbstractHafasProvider
 
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
-		final StringBuilder uri = new StringBuilder(API_BASE);
-
 		if (location.hasLocation())
 		{
-			uri.append("query.exe/pny");
+			final StringBuilder uri = new StringBuilder(queryEndpoint);
+			uri.append('y');
 			uri.append("?performLocating=2&tpl=stop2json");
 			uri.append("&look_maxno=").append(maxStations != 0 ? maxStations : 200);
 			uri.append("&look_maxdist=").append(maxDistance != 0 ? maxDistance : 5000);
@@ -150,7 +149,7 @@ public class PlProvider extends AbstractHafasProvider
 		}
 		else if (location.type == LocationType.STATION && location.hasId())
 		{
-			uri.append("stboard.exe/pn");
+			final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
 			uri.append("?productsFilter=").append(allProductsString());
 			uri.append("&boardType=dep");
 			uri.append("&input=").append(location.id);
@@ -167,8 +166,7 @@ public class PlProvider extends AbstractHafasProvider
 
 	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
-		final StringBuilder uri = new StringBuilder();
-		uri.append(API_BASE).append("stboard.exe/pn");
+		final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
 		uri.append(xmlQueryDeparturesParameters(stationId));
 
 		return xmlQueryDepartures(uri.toString(), stationId);

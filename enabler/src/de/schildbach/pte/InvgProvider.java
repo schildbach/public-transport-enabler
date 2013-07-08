@@ -48,13 +48,12 @@ public class InvgProvider extends AbstractHafasProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.INVG;
 	private static final String API_BASE = "http://fpa.invg.de/bin/";
-	private static final String API_URI = "http://fpa.invg.de/bin/extxml.exe";
 
 	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
 
 	public InvgProvider()
 	{
-		super(API_URI, 10, null);
+		super(API_BASE + "stboard.exe/dn", null, API_BASE + "extxml.exe", 10, null);
 	}
 
 	public NetworkId id()
@@ -95,11 +94,10 @@ public class InvgProvider extends AbstractHafasProvider
 
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
-		final StringBuilder uri = new StringBuilder(API_BASE);
-
 		if (location.type == LocationType.STATION && location.hasId())
 		{
-			uri.append("stboard.exe/dn?near=Anzeigen");
+			final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
+			uri.append("?near=Anzeigen");
 			uri.append("&distance=").append(maxDistance != 0 ? maxDistance / 1000 : 50);
 			uri.append("&input=").append(location.id);
 
@@ -113,9 +111,7 @@ public class InvgProvider extends AbstractHafasProvider
 
 	private String departuresQueryUri(final int stationId, final int maxDepartures)
 	{
-		final StringBuilder uri = new StringBuilder();
-
-		uri.append(API_BASE).append("stboard.exe/dn");
+		final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
 		uri.append("?input=").append(stationId);
 		uri.append("&boardType=dep");
 		uri.append("&productsFilter=").append(allProductsString());

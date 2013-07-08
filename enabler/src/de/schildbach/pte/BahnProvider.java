@@ -46,7 +46,7 @@ public final class BahnProvider extends AbstractHafasProvider
 
 	public BahnProvider()
 	{
-		super(API_BASE + "query.exe/dn", 14, null);
+		super(API_BASE + "bhftafel.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 14, null);
 	}
 
 	public NetworkId id()
@@ -142,11 +142,10 @@ public final class BahnProvider extends AbstractHafasProvider
 
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
-		final StringBuilder uri = new StringBuilder(API_BASE);
-
 		if (location.hasLocation())
 		{
-			uri.append("query.exe/dny");
+			final StringBuilder uri = new StringBuilder(queryEndpoint);
+			uri.append('y');
 			uri.append("?performLocating=2&tpl=stop2json");
 			uri.append("&look_maxno=").append(maxStations != 0 ? maxStations : 200);
 			uri.append("&look_maxdist=").append(maxDistance != 0 ? maxDistance : 5000);
@@ -159,7 +158,7 @@ public final class BahnProvider extends AbstractHafasProvider
 		}
 		else if (location.type == LocationType.STATION && location.hasId())
 		{
-			uri.append("bhftafel.exe/dn");
+			final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
 			uri.append("?near=Anzeigen");
 			uri.append("&distance=").append(maxDistance != 0 ? maxDistance / 1000 : 50);
 			uri.append("&input=").append(location.id);
@@ -191,8 +190,7 @@ public final class BahnProvider extends AbstractHafasProvider
 
 	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
-		final StringBuilder uri = new StringBuilder();
-		uri.append(API_BASE).append("stboard.exe/dn");
+		final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
 		uri.append(xmlQueryDeparturesParameters(stationId));
 
 		return xmlQueryDepartures(uri.toString(), stationId);

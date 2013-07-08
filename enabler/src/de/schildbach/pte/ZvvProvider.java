@@ -42,7 +42,7 @@ public class ZvvProvider extends AbstractHafasProvider
 
 	public ZvvProvider()
 	{
-		super(API_BASE + "query.exe/dn", 10, null, UTF_8, UTF_8);
+		super(API_BASE + "stboard.exe/dn", null, API_BASE + "query.exe/dn", 10, null, UTF_8, UTF_8);
 	}
 
 	public NetworkId id()
@@ -162,11 +162,10 @@ public class ZvvProvider extends AbstractHafasProvider
 
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
-		final StringBuilder uri = new StringBuilder(API_BASE);
-
 		if (location.hasLocation())
 		{
-			uri.append("query.exe/dny");
+			final StringBuilder uri = new StringBuilder(queryEndpoint);
+			uri.append('y');
 			uri.append("?performLocating=2&tpl=stop2json");
 			uri.append("&look_maxno=").append(maxStations != 0 ? maxStations : 150);
 			uri.append("&look_maxdist=").append(maxDistance != 0 ? maxDistance : 5000);
@@ -178,7 +177,7 @@ public class ZvvProvider extends AbstractHafasProvider
 		}
 		else if (location.type == LocationType.STATION && location.hasId())
 		{
-			uri.append("stboard.exe/dn");
+			final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
 			uri.append("?productsFilter=").append(allProductsString());
 			uri.append("&boardType=dep");
 			uri.append("&input=").append(location.id);
@@ -195,8 +194,7 @@ public class ZvvProvider extends AbstractHafasProvider
 
 	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
-		final StringBuilder uri = new StringBuilder();
-		uri.append(API_BASE).append("stboard.exe/dn");
+		final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
 		uri.append(xmlQueryDeparturesParameters(stationId));
 
 		return xmlQueryDepartures(uri.toString(), stationId);

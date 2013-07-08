@@ -42,7 +42,7 @@ public class DsbProvider extends AbstractHafasProvider
 
 	public DsbProvider()
 	{
-		super(API_BASE + "query.exe/dn", 11, null);
+		super(API_BASE + "stboard.exe/mn", null, API_BASE + "query.exe/dn", 11, null);
 	}
 
 	public NetworkId id()
@@ -124,9 +124,7 @@ public class DsbProvider extends AbstractHafasProvider
 		}
 		else if (location.type == LocationType.STATION && location.hasId())
 		{
-			final StringBuilder uri = new StringBuilder(API_BASE);
-
-			uri.append("stboard.exe/mn");
+			final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
 			uri.append("?productsFilter=").append(allProductsString());
 			uri.append("&boardType=dep");
 			uri.append("&input=").append(location.id);
@@ -143,8 +141,7 @@ public class DsbProvider extends AbstractHafasProvider
 
 	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
-		final StringBuilder uri = new StringBuilder();
-		uri.append(API_BASE).append("stboard.exe/mn");
+		final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
 		uri.append(xmlQueryDeparturesParameters(stationId));
 
 		return xmlQueryDepartures(uri.toString(), stationId);

@@ -79,7 +79,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 	private static final String PROD = "hafas";
 
-	private final String apiUri;
+	protected final String stationBoardEndpoint;
+	protected final String getStopEndpoint;
+	protected final String queryEndpoint;
 	private final int numProductBits;
 	private final String accessId;
 	private Charset jsonGetStopsEncoding;
@@ -137,15 +139,18 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 	}
 
-	public AbstractHafasProvider(final String apiUri, final int numProductBits, final String accessId)
+	public AbstractHafasProvider(final String stationBoardEndpoint, final String getStopEndpoint, final String queryEndpoint,
+			final int numProductBits, final String accessId)
 	{
-		this(apiUri, numProductBits, accessId, ISO_8859_1, ISO_8859_1);
+		this(stationBoardEndpoint, getStopEndpoint, queryEndpoint, numProductBits, accessId, ISO_8859_1, ISO_8859_1);
 	}
 
-	public AbstractHafasProvider(final String apiUri, final int numProductBits, final String accessId, final Charset jsonEncoding,
-			final Charset xmlMlcResEncoding)
+	public AbstractHafasProvider(final String stationBoardEndpoint, final String getStopEndpoint, final String queryEndpoint,
+			final int numProductBits, final String accessId, final Charset jsonEncoding, final Charset xmlMlcResEncoding)
 	{
-		this.apiUri = apiUri;
+		this.stationBoardEndpoint = stationBoardEndpoint;
+		this.getStopEndpoint = getStopEndpoint;
+		this.queryEndpoint = queryEndpoint;
 		this.numProductBits = numProductBits;
 		this.accessId = accessId;
 		this.jsonGetStopsEncoding = jsonEncoding;
@@ -295,7 +300,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 		try
 		{
-			reader = new InputStreamReader(ParserUtils.scrapeInputStream(apiUri, wrap(request, null), null, null, null, 3), ISO_8859_1);
+			reader = new InputStreamReader(ParserUtils.scrapeInputStream(queryEndpoint, wrap(request, null), null, null, null, 3), ISO_8859_1);
 
 			final List<Location> results = new ArrayList<Location>();
 
@@ -508,7 +513,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 		try
 		{
-			reader = new InputStreamReader(ParserUtils.scrapeInputStream(apiUri, wrappedRequest, xmlMlcResEncoding, null, null, 3), xmlMlcResEncoding);
+			reader = new InputStreamReader(ParserUtils.scrapeInputStream(queryEndpoint, wrappedRequest, xmlMlcResEncoding, null, null, 3),
+					xmlMlcResEncoding);
 
 			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
 			final XmlPullParser pp = factory.newPullParser();
@@ -1009,7 +1015,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 		try
 		{
-			reader = new InputStreamReader(ParserUtils.scrapeInputStream(apiUri, wrap(request, null), null, null, null, 3), ISO_8859_1);
+			reader = new InputStreamReader(ParserUtils.scrapeInputStream(queryEndpoint, wrap(request, null), null, null, null, 3), ISO_8859_1);
 
 			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
 			final XmlPullParser pp = factory.newPullParser();
@@ -1546,7 +1552,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			to = autocompletes.get(0);
 		}
 
-		final StringBuilder uri = new StringBuilder(apiUri);
+		final StringBuilder uri = new StringBuilder(queryEndpoint);
 		appendTripsQueryUri(uri, from, via, to, date, dep, products, accessibility, options);
 		appendCustomTripsQueryBinaryUri(uri);
 
@@ -1557,7 +1563,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	{
 		final QueryTripsBinaryContext context = (QueryTripsBinaryContext) contextObj;
 
-		final StringBuilder uri = new StringBuilder(apiUri);
+		final StringBuilder uri = new StringBuilder(queryEndpoint);
 		uri.append("?seqnr=").append(context.seqNr);
 		uri.append("&ident=").append(context.ident);
 		if (context.ld != null)

@@ -41,7 +41,7 @@ public class NasaProvider extends AbstractHafasProvider
 
 	public NasaProvider()
 	{
-		super(API_BASE + "query.exe/dn", 8, null);
+		super(API_BASE + "stboard.exe/dn", null, API_BASE + "query.exe/dn", 8, null);
 	}
 
 	public NetworkId id()
@@ -134,11 +134,10 @@ public class NasaProvider extends AbstractHafasProvider
 
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
-		final StringBuilder uri = new StringBuilder(API_BASE);
-
 		if (location.type == LocationType.STATION && location.hasId())
 		{
-			uri.append("stboard.exe/dn?near=Anzeigen");
+			final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
+			uri.append("?near=Anzeigen");
 			uri.append("&distance=").append(maxDistance != 0 ? maxDistance / 1000 : 50);
 			uri.append("&input=").append(location.id);
 
@@ -152,8 +151,7 @@ public class NasaProvider extends AbstractHafasProvider
 
 	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
-		final StringBuilder uri = new StringBuilder();
-		uri.append(API_BASE).append("stboard.exe/dn");
+		final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
 		uri.append(xmlQueryDeparturesParameters(stationId));
 
 		return xmlQueryDepartures(uri.toString(), stationId);

@@ -52,7 +52,7 @@ public class SeptaProvider extends AbstractHafasProvider
 
 	public SeptaProvider()
 	{
-		super(API_BASE + "query.exe/en", 4, null);
+		super(API_BASE + "stboard.exe/en", API_BASE + "ajax-getstop.exe/dny", API_BASE + "query.exe/en", 4, null);
 	}
 
 	public NetworkId id()
@@ -120,11 +120,10 @@ public class SeptaProvider extends AbstractHafasProvider
 
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
-		final StringBuilder uri = new StringBuilder(API_BASE);
-
 		if (location.type == LocationType.STATION && location.hasId())
 		{
-			uri.append("stboard.exe/en?near=Anzeigen");
+			final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
+			uri.append("?near=Anzeigen");
 			uri.append("&distance=").append(maxDistance != 0 ? maxDistance / 1000 : 50);
 			uri.append("&input=").append(location.id);
 
@@ -140,8 +139,7 @@ public class SeptaProvider extends AbstractHafasProvider
 	{
 		final Calendar now = new GregorianCalendar(timeZone());
 
-		final StringBuilder uri = new StringBuilder();
-		uri.append(API_BASE).append("stboard.exe/en");
+		final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
 		uri.append("?input=").append(stationId);
 		uri.append("&boardType=dep");
 		uri.append("&time=");

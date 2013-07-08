@@ -65,7 +65,7 @@ public final class BvgProvider extends AbstractHafasProvider
 
 	public BvgProvider(final String additionalQueryParameter)
 	{
-		super(API_BASE + "query.bin/dn", 8, null);
+		super(API_BASE + "stboard.bin/dn", API_BASE + "ajax-getstop.bin/dny", API_BASE + "query.bin/dn", 8, null);
 
 		this.additionalQueryParameter = additionalQueryParameter;
 	}
@@ -180,11 +180,10 @@ public final class BvgProvider extends AbstractHafasProvider
 
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
-		final StringBuilder uri = new StringBuilder(API_BASE);
-
 		if (location.type == LocationType.STATION && location.hasId())
 		{
-			uri.append("stboard.bin/dn?near=Anzeigen");
+			final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
+			uri.append("?near=Anzeigen");
 			uri.append("&distance=").append(maxDistance != 0 ? maxDistance / 1000 : 50);
 			uri.append("&input=").append(location.id);
 

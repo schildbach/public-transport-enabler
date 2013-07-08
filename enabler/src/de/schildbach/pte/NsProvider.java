@@ -43,7 +43,7 @@ public class NsProvider extends AbstractHafasProvider
 
 	public NsProvider()
 	{
-		super(API_BASE + "query.exe/nn", 10, null);
+		super(API_BASE + "stboard.exe/nn", API_BASE + "ajax-getstop.exe/nny", API_BASE + "query.exe/nn", 10, null);
 	}
 
 	public NetworkId id()
@@ -115,8 +115,7 @@ public class NsProvider extends AbstractHafasProvider
 	{
 		if (location.type == LocationType.STATION && location.hasId())
 		{
-			final StringBuilder uri = new StringBuilder(API_BASE);
-			uri.append("stboard.exe/nn");
+			final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
 			uri.append("?near=Anzeigen");
 			uri.append("&distance=").append(maxDistance != 0 ? maxDistance / 1000 : 50);
 			uri.append("&input=").append(location.id);
