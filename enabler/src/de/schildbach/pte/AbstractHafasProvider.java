@@ -84,10 +84,12 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	protected final String queryEndpoint;
 	private final int numProductBits;
 	private final String accessId;
+	private String clientType;
 	private Charset jsonGetStopsEncoding;
 	private Charset jsonNearbyStationsEncoding;
 	private final Charset xmlMlcResEncoding;
 	private boolean dominantPlanStopTime = false;
+	private boolean canDoEquivs = true;
 
 	private static class Context implements QueryTripsContext
 	{
@@ -158,19 +160,29 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		this.xmlMlcResEncoding = xmlMlcResEncoding;
 	}
 
+	protected void setClientType(final String clientType)
+	{
+		this.clientType = clientType;
+	}
+
 	protected void setDominantPlanStopTime(final boolean dominantPlanStopTime)
 	{
 		this.dominantPlanStopTime = dominantPlanStopTime;
 	}
 
-	protected void setJsonGetStopsEncoding(Charset jsonGetStopsEncoding)
+	protected void setJsonGetStopsEncoding(final Charset jsonGetStopsEncoding)
 	{
 		this.jsonGetStopsEncoding = jsonGetStopsEncoding;
 	}
 
-	protected void setJsonNearbyStationsEncoding(Charset jsonNearbyStationsEncoding)
+	protected void setJsonNearbyStationsEncoding(final Charset jsonNearbyStationsEncoding)
 	{
 		this.jsonNearbyStationsEncoding = jsonNearbyStationsEncoding;
+	}
+
+	protected void setCanDoEquivs(final boolean canDoEquivs)
+	{
+		this.canDoEquivs = canDoEquivs;
 	}
 
 	protected TimeZone timeZone()
@@ -611,11 +623,14 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		final StringBuilder parameters = new StringBuilder();
 		parameters.append("?productsFilter=").append(allProductsString());
 		parameters.append("&boardType=dep");
-		parameters.append("&disableEquivs=yes"); // don't use nearby stations
+		if (canDoEquivs)
+			parameters.append("&disableEquivs=yes"); // don't use nearby stations
 		parameters.append("&maxJourneys=50"); // ignore maxDepartures because result contains other stations
 		parameters.append("&start=yes");
 		parameters.append("&L=vs_java3");
 		parameters.append("&input=").append(stationId);
+		if (clientType != null)
+			parameters.append("&clientType=").append(ParserUtils.urlEncode(clientType));
 
 		return parameters;
 	}

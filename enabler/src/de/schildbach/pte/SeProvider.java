@@ -36,11 +36,17 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 public class SeProvider extends AbstractHafasProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.SE;
-	private static final String API_BASE = "http://reseplanerare.resrobot.se/bin/"; // http://api.vasttrafik.se/bin/query.exe/sn
+	private static final String API_BASE = "http://samtrafiken.hafas.de/bin/";
+
+	// http://reseplanerare.resrobot.se/bin/
+	// http://api.vasttrafik.se/bin/
 
 	public SeProvider()
 	{
 		super(API_BASE + "stboard.exe/sn", API_BASE + "ajax-getstop.exe/sny", API_BASE + "query.exe/sn", 14, null, UTF_8, null);
+
+		setClientType("ANDROID");
+		setCanDoEquivs(false);
 	}
 
 	public NetworkId id()
