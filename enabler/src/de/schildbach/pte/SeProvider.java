@@ -167,10 +167,7 @@ public class SeProvider extends AbstractHafasProvider
 		else if (location.type == LocationType.STATION && location.hasId())
 		{
 			final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
-			uri.append("?productsFilter=").append(allProductsString());
-			uri.append("&boardType=dep");
-			uri.append("&input=").append(location.id);
-			uri.append("&sTI=1&start=yes&hcount=0&L=vs_java3");
+			uri.append(xmlNearbyStationsParameters(location.id));
 
 			return xmlNearbyStations(uri.toString());
 		}

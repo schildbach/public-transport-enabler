@@ -2256,6 +2256,19 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		return m.group(1);
 	}
 
+	protected final StringBuilder xmlNearbyStationsParameters(final int stationId)
+	{
+		final StringBuilder parameters = new StringBuilder();
+		parameters.append("?productsFilter=").append(allProductsString());
+		parameters.append("&boardType=dep");
+		parameters.append("&input=").append(stationId);
+		parameters.append("&sTI=1&start=yes&hcount=0&L=vs_java3");
+		if (clientType != null)
+			parameters.append("&clientType=").append(ParserUtils.urlEncode(clientType));
+
+		return parameters;
+	}
+
 	private static final Pattern P_XML_NEARBY_STATIONS_COARSE = Pattern.compile("\\G<\\s*St\\s*(.*?)/?>(?:\n|\\z)", Pattern.DOTALL);
 	private static final Pattern P_XML_NEARBY_STATIONS_FINE = Pattern.compile("" //
 			+ "evaId=\"(\\d+)\"\\s*" // id
