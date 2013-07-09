@@ -90,6 +90,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	private final Charset xmlMlcResEncoding;
 	private boolean dominantPlanStopTime = false;
 	private boolean canDoEquivs = true;
+	private boolean useIso8601 = false;
 
 	private static class Context implements QueryTripsContext
 	{
@@ -183,6 +184,11 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	protected void setCanDoEquivs(final boolean canDoEquivs)
 	{
 		this.canDoEquivs = canDoEquivs;
+	}
+
+	protected void setUseIso8601(final boolean useIso8601)
+	{
+		this.useIso8601 = useIso8601;
 	}
 
 	protected TimeZone timeZone()
@@ -899,11 +905,12 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 		final Calendar c = new GregorianCalendar(timeZone());
 		c.setTime(date);
-		uri.append("&REQ0JourneyDate=");
-		uri.append(String.format(Locale.ENGLISH, "%02d.%02d.%02d", c.get(Calendar.DAY_OF_MONTH), c.get(Calendar.MONTH) + 1,
-				c.get(Calendar.YEAR) - 2000));
-		uri.append("&REQ0JourneyTime=");
-		uri.append(String.format(Locale.ENGLISH, "%02d:%02d", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE)));
+		final String dateStr = useIso8601 ? String.format(Locale.ENGLISH, "%04d-%02d-%02d", c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1,
+				c.get(Calendar.DAY_OF_MONTH)) : String.format(Locale.ENGLISH, "%02d.%02d.%02d", c.get(Calendar.DAY_OF_MONTH),
+				c.get(Calendar.MONTH) + 1, c.get(Calendar.YEAR) - 2000);
+		uri.append("&REQ0JourneyDate=").append(ParserUtils.urlEncode(dateStr));
+		final String timeStr = String.format(Locale.ENGLISH, "%02d:%02d", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
+		uri.append("&REQ0JourneyTime=").append(ParserUtils.urlEncode(timeStr));
 
 		final StringBuilder productsStr = new StringBuilder(numProductBits);
 		if (products != null)
