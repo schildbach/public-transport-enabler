@@ -142,14 +142,14 @@ public class SeProvider extends AbstractHafasProvider
 		}
 	}
 
-	private static final Pattern P_SPLIT_NAME_KN = Pattern.compile("(.*?) \\((.*?) kn\\)");
+	private static final Pattern P_SPLIT_NAME_PAREN = Pattern.compile("(.*) \\((.{3,}?) kn\\)");
 
 	@Override
 	protected String[] splitPlaceAndName(final String name)
 	{
-		final Matcher m = P_SPLIT_NAME_KN.matcher(name);
-		if (m.matches())
-			return new String[] { m.group(2), m.group(1) };
+		final Matcher mParen = P_SPLIT_NAME_PAREN.matcher(name);
+		if (mParen.matches())
+			return new String[] { mParen.group(2), mParen.group(1) };
 
 		return super.splitPlaceAndName(name);
 	}
