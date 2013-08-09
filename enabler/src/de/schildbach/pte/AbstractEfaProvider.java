@@ -104,6 +104,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private boolean suppressPositions = false;
 	private boolean useRouteIndexAsTripId = true;
 	private boolean useLineRestriction = true;
+	private float fareCorrectionFactor = 1f;
 
 	private final XmlPullParserFactory parserFactory;
 
@@ -165,6 +166,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		this.coordEndpoint = coordEndpoint;
 	}
 
+	protected void setAdditionalQueryParameter(final String additionalQueryParameter)
+	{
+		this.additionalQueryParameter = additionalQueryParameter;
+	}
+
 	protected void setRequestUrlEncoding(final Charset requestUrlEncoding)
 	{
 		this.requestUrlEncoding = requestUrlEncoding;
@@ -216,9 +222,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		this.needsSpEncId = needsSpEncId;
 	}
 
-	protected void setAdditionalQueryParameter(final String additionalQueryParameter)
+	protected void setFareCorrectionFactor(final float fareCorrectionFactor)
 	{
-		this.additionalQueryParameter = additionalQueryParameter;
+		this.fareCorrectionFactor = fareCorrectionFactor;
 	}
 
 	protected TimeZone timeZone()
@@ -2702,11 +2708,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							final String levelAdult = XmlPullUtil.optAttr(pp, "levelAdult", null);
 							final String levelChild = XmlPullUtil.optAttr(pp, "levelChild", null);
 							if (fareAdult != null)
-								fares.add(new Fare(net, Type.ADULT, currency, Float.parseFloat(fareAdult), levelAdult != null ? null : unitName,
-										levelAdult != null ? levelAdult : unitsAdult));
+								fares.add(new Fare(net, Type.ADULT, currency, Float.parseFloat(fareAdult) * fareCorrectionFactor,
+										levelAdult != null ? null : unitName, levelAdult != null ? levelAdult : unitsAdult));
 							if (fareChild != null)
-								fares.add(new Fare(net, Type.CHILD, currency, Float.parseFloat(fareChild), levelChild != null ? null : unitName,
-										levelChild != null ? levelChild : unitsChild));
+								fares.add(new Fare(net, Type.CHILD, currency, Float.parseFloat(fareChild) * fareCorrectionFactor,
+										levelChild != null ? null : unitName, levelChild != null ? levelChild : unitsChild));
 
 							if (!pp.isEmptyElementTag())
 							{
@@ -3090,7 +3096,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			}
 			else if (key.equals("PRICE"))
 			{
-				fare = Float.parseFloat(value) * (currency.getCurrencyCode().equals("USD") ? 0.01f : 1);
+				fare = Float.parseFloat(value) * fareCorrectionFactor;
 			}
 
 			XmlPullUtil.exit(pp, "itdGenericTicket");

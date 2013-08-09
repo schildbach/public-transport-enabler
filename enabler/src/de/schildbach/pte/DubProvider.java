@@ -37,6 +37,7 @@ public class DubProvider extends AbstractEfaProvider
 		super(API_BASE);
 
 		setUseRouteIndexAsTripId(false);
+		setFareCorrectionFactor(0.01f);
 	}
 
 	public NetworkId id()
