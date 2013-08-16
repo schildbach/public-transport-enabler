@@ -171,7 +171,6 @@ public class StringReplaceReader extends FilterReader implements Cloneable
 		{
 			// remaining input is less than length of pattern
 			transferRemainingInputToOutputBuffer();
-			System.out.println(">> End << " + outputBuffer);
 			charsRead = outputBuffer.dequeue(buffer, offset, charsToRead);
 			return charsRead;
 		}
