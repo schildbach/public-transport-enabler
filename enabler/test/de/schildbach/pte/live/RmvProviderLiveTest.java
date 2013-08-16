@@ -65,8 +65,16 @@ public class RmvProviderLiveTest extends AbstractProviderLiveTest
 	public void queryDepartures() throws Exception
 	{
 		final QueryDeparturesResult result = provider.queryDepartures(3000408, 0, false);
-
 		print(result);
+
+		final QueryDeparturesResult result2 = provider.queryDepartures(3000010, 0, false);
+		print(result2);
+
+		final QueryDeparturesResult result3 = provider.queryDepartures(3015989, 0, false);
+		print(result3);
+
+		final QueryDeparturesResult result4 = provider.queryDepartures(3000139, 0, false);
+		print(result4);
 	}
 
 	@Test

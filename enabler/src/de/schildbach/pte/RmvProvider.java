@@ -30,6 +30,7 @@ import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsContext;
 import de.schildbach.pte.dto.QueryTripsResult;
+import de.schildbach.pte.util.StringReplaceReader;
 
 /**
  * @author Andreas Schildbach
@@ -188,6 +189,18 @@ public class RmvProvider extends AbstractHafasProvider
 		uri.append(xmlQueryDeparturesParameters(stationId));
 
 		return xmlQueryDepartures(uri.toString(), stationId);
+	}
+
+	@Override
+	protected void addCustomReplaces(final StringReplaceReader reader)
+	{
+		reader.replace("<br />", " ");
+		reader.replace("<ul>", " ");
+		reader.replace("</ul>", " ");
+		reader.replace("<li>", " ");
+		reader.replace("</li>", " ");
+		reader.replace("<b>", " ");
+		reader.replace("</b>", " ");
 	}
 
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
