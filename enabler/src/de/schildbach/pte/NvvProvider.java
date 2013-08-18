@@ -42,7 +42,7 @@ public class NvvProvider extends AbstractHafasProvider
 
 	public NvvProvider()
 	{
-		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 16, null, UTF_8, null);
+		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 12, null, UTF_8, null);
 	}
 
 	public NetworkId id()
@@ -65,12 +65,13 @@ public class NvvProvider extends AbstractHafasProvider
 		if (product == Product.HIGH_SPEED_TRAIN)
 		{
 			productBits.setCharAt(0, '1'); // ICE
-			productBits.setCharAt(1, '1'); // Zug, scheinbar IC?
+			productBits.setCharAt(1, '1'); // IC/EC
 		}
 		else if (product == Product.REGIONAL_TRAIN)
 		{
-			productBits.setCharAt(2, '1'); // Zug
+			productBits.setCharAt(2, '1'); // Regionalzug
 			productBits.setCharAt(10, '1'); // Zug
+			productBits.setCharAt(11, '1'); // RegioTram
 		}
 		else if (product == Product.SUBURBAN_TRAIN)
 		{
@@ -130,6 +131,8 @@ public class NvvProvider extends AbstractHafasProvider
 		if (value == 512)
 			return 'P';
 		if (value == 1024)
+			return 'R';
+		if (value == 2048)
 			return 'R';
 
 		throw new IllegalArgumentException("cannot handle: " + value);
