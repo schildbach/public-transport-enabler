@@ -210,6 +210,9 @@ public class PlProvider extends AbstractHafasProvider
 		if ("REG".equals(ucType))
 			return 'R';
 
+		if ("IRB".equals(ucType)) // interREGIO Bus
+			return 'B';
+
 		if ("FRE".equals(ucType))
 			return 'F';
 
