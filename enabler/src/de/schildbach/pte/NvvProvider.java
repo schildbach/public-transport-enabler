@@ -202,8 +202,6 @@ public class NvvProvider extends AbstractHafasProvider
 		reader.replace("</ul>", " ");
 		reader.replace("<li>", " ");
 		reader.replace("</li>", " ");
-		reader.replace("<b>", " ");
-		reader.replace("</b>", " ");
 	}
 
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException

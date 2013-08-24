@@ -651,6 +651,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		{
 			// work around unparsable XML
 			reader = new StringReplaceReader(new InputStreamReader(ParserUtils.scrapeInputStream(uri), ISO_8859_1), " & ", " &amp; ");
+			reader.replace("<b>", " ");
+			reader.replace("</b>", " ");
 			reader.replace(" ->", " &#x2192;"); // right arrow
 			reader.replace(" <-", " &#x2190;"); // left arrow
 			addCustomReplaces(reader);
