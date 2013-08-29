@@ -789,8 +789,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			throw new IllegalStateException("unknown mapName=" + mapName + " x=" + x + " y=" + y);
 		}
 
-		LocationType type;
-		int id;
+		final LocationType type;
+		final int id;
 		if ("stop".equals(anyType))
 		{
 			type = LocationType.STATION;
@@ -812,29 +812,36 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			type = LocationType.ADDRESS;
 			id = 0;
 		}
-		else if (stopIdStr != null)
+		else if (anyType == null || "unknown".equals(anyType))
 		{
-			type = LocationType.STATION;
-			id = Integer.parseInt(stopIdStr);
-		}
-		else if (poiIdStr != null)
-		{
-			type = LocationType.POI;
-			id = Integer.parseInt(poiIdStr);
-		}
-		else if (stopIdStr == null && idStr == null && (lat != 0 || lon != 0))
-		{
-			type = LocationType.ADDRESS;
-			id = 0;
-		}
-		else if (streetIdStr != null)
-		{
-			type = LocationType.ADDRESS;
-			id = Integer.parseInt(streetIdStr);
+			if (stopIdStr != null)
+			{
+				type = LocationType.STATION;
+				id = Integer.parseInt(stopIdStr);
+			}
+			else if (poiIdStr != null)
+			{
+				type = LocationType.POI;
+				id = Integer.parseInt(poiIdStr);
+			}
+			else if (streetIdStr != null)
+			{
+				type = LocationType.ADDRESS;
+				id = Integer.parseInt(streetIdStr);
+			}
+			else if (lat != 0 || lon != 0)
+			{
+				type = LocationType.ADDRESS;
+				id = 0;
+			}
+			else
+			{
+				throw new IllegalArgumentException("cannot substitute type");
+			}
 		}
 		else
 		{
-			throw new IllegalArgumentException("unknown type: " + anyType + " " + idStr + " " + stopIdStr);
+			throw new IllegalArgumentException("unknown type: " + anyType);
 		}
 
 		XmlPullUtil.enter(pp, "odvNameElem");
