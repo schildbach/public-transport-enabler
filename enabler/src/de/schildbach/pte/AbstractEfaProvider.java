@@ -765,15 +765,20 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		final String stopIdStr = pp.getAttributeValue(null, "stopID");
 		final String poiIdStr = pp.getAttributeValue(null, "poiID");
 		final String streetIdStr = pp.getAttributeValue(null, "streetID");
-		final String place = !"loc".equals(anyType) ? normalizeLocationName(pp.getAttributeValue(null, "locality")) : null;
-		final String name = normalizeLocationName(pp.getAttributeValue(null, "objectName"));
+		final String locality = normalizeLocationName(pp.getAttributeValue(null, "locality"));
+		final String objectName = normalizeLocationName(pp.getAttributeValue(null, "objectName"));
 
 		final String mapName = XmlPullUtil.optAttr(pp, "mapName", null);
 		final float x = XmlPullUtil.optFloatAttr(pp, "x", 0);
 		final float y = XmlPullUtil.optFloatAttr(pp, "y", 0);
 
+		XmlPullUtil.enter(pp, "odvNameElem");
+		final String elemName = normalizeLocationName(pp.getText());
+		XmlPullUtil.exit(pp, "odvNameElem");
+
 		final int lat;
 		final int lon;
+
 		if (mapName == null || (x == 0 && y == 0))
 		{
 			lat = 0;
@@ -791,26 +796,44 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		final LocationType type;
 		final int id;
+		final String place;
+		final String name;
+
 		if ("stop".equals(anyType))
 		{
 			type = LocationType.STATION;
 			id = Integer.parseInt(idStr);
+			place = locality;
+			name = objectName;
 		}
 		else if ("poi".equals(anyType) || "poiHierarchy".equals(anyType))
 		{
 			type = LocationType.POI;
 			id = Integer.parseInt(idStr);
+			place = locality;
+			name = objectName;
 		}
 		else if ("loc".equals(anyType))
 		{
 			type = LocationType.ANY;
 			id = 0;
+			place = locality;
+			name = locality;
 		}
-		else if ("postcode".equals(anyType) || "street".equals(anyType) || "crossing".equals(anyType) || "address".equals(anyType)
-				|| "singlehouse".equals(anyType) || "buildingname".equals(anyType))
+		else if ("address".equals(anyType))
 		{
 			type = LocationType.ADDRESS;
 			id = 0;
+			place = locality;
+			name = objectName;
+		}
+		else if ("postcode".equals(anyType) || "street".equals(anyType) || "crossing".equals(anyType) || "singlehouse".equals(anyType)
+				|| "buildingname".equals(anyType))
+		{
+			type = LocationType.ADDRESS;
+			id = 0;
+			place = locality;
+			name = objectName;
 		}
 		else if (anyType == null || "unknown".equals(anyType))
 		{
@@ -838,17 +861,16 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			{
 				throw new IllegalArgumentException("cannot substitute type");
 			}
+
+			place = locality;
+			name = objectName;
 		}
 		else
 		{
 			throw new IllegalArgumentException("unknown type: " + anyType);
 		}
 
-		XmlPullUtil.enter(pp, "odvNameElem");
-		final String longName = normalizeLocationName(pp.getText());
-		XmlPullUtil.exit(pp, "odvNameElem");
-
-		return new Location(type, id, lat, lon, place != null ? place : defaultPlace, name != null ? name : longName);
+		return new Location(type, id, lat, lon, place != null ? place : defaultPlace, name != null ? name : elemName);
 	}
 
 	private Location processItdOdvAssignedStop(final XmlPullParser pp) throws XmlPullParserException, IOException
