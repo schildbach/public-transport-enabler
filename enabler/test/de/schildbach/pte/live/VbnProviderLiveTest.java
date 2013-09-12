@@ -77,6 +77,16 @@ public class VbnProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
+	public void autocompleteUmlaut() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("Göttingen Hauptbahnhof");
+
+		print(autocompletes);
+
+		assertEquals("Göttingen", autocompletes.get(0).place);
+	}
+
+	@Test
 	public void shortTrip() throws Exception
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 8096109, null, "Oldenburg"), null, new Location(
