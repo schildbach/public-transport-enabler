@@ -57,6 +57,27 @@ public class SncbProvider extends AbstractHafasProvider
 	}
 
 	@Override
+	protected char intToProduct(final int value)
+	{
+		if (value == 1)
+			return 'I';
+		if (value == 4)
+			return 'I';
+		if (value == 32)
+			return 'B';
+		if (value == 64)
+			return 'R';
+		if (value == 256)
+			return 'U';
+		if (value == 512)
+			return 'B';
+		if (value == 1024)
+			return 'T';
+
+		throw new IllegalArgumentException("cannot handle: " + value);
+	}
+
+	@Override
 	protected void setProductBits(final StringBuilder productBits, final Product product)
 	{
 		if (product == Product.HIGH_SPEED_TRAIN)
@@ -78,6 +99,7 @@ public class SncbProvider extends AbstractHafasProvider
 		}
 		else if (product == Product.BUS || product == Product.ON_DEMAND)
 		{
+			productBits.setCharAt(5, '1'); // Bus
 			productBits.setCharAt(9, '1'); // Bus
 		}
 		else if (product == Product.FERRY || product == Product.CABLECAR)
