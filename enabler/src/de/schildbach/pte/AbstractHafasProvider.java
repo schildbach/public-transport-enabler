@@ -1556,7 +1556,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	{
 	}
 
-	private final static int QUERY_TRIPS_BINARY_BUFFER_SIZE = 128 * 1024;
+	private final static int QUERY_TRIPS_BINARY_BUFFER_SIZE = 192 * 1024;
 
 	protected final QueryTripsResult queryTripsBinary(Location from, Location via, Location to, final Date date, final boolean dep,
 			final int numTrips, final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility,

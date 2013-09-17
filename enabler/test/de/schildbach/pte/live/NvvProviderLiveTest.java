@@ -20,6 +20,7 @@ package de.schildbach.pte.live;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -213,5 +214,20 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, 0, null, "Frankfurt Bockenheimer Warte!"), null, new Location(
 				LocationType.ANY, 0, null, "Frankfurt Hauptbahnhof!"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
+	}
+
+	@Test
+	public void tripUsingMuchBuffer() throws IOException
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 0, 50119563, 8697044, null,
+				"Hegelstrasse, 60316 Frankfurt am Main"), null, new Location(LocationType.ADDRESS, 0, 50100364, 8615193, null,
+				"Mainzer Landstrasse, Frankfurt"), new Date(1378368840000l), true, Product.ALL, null, null);
+		System.out.println(result);
+
+		if (!result.context.canQueryLater())
+			return;
+
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+		System.out.println(laterResult);
 	}
 }
