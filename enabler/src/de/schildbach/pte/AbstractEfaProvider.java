@@ -1269,6 +1269,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return "Rerx" + trainNum;
 			if ("SWEG-Zug".equals(trainName)) // Südwestdeutschen Verkehrs-Aktiengesellschaft
 				return "RSWEG" + trainNum;
+			if ("SWEG-Zug".equals(longName))
+				return "RSWEG";
 			if ("ÖBB".equals(trainType) || "ÖBB".equals(trainName))
 				return "RÖBB" + trainNum;
 			if ("CAT".equals(trainType)) // City Airport Train Wien
@@ -1311,6 +1313,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return "RWTB" + trainNum;
 			if ("DB".equals(trainType) || "DB Regio".equals(trainName))
 				return "RDB" + trainNum;
+			if ("EZ".equals(trainType)) // ÖBB Erlebniszug
+				return "REZ" + trainNum;
 
 			if ("BSB-Zug".equals(trainName)) // Breisgau-S-Bahn
 				return 'S' + trainNum;

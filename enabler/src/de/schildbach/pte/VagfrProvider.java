@@ -70,8 +70,6 @@ public class VagfrProvider extends AbstractEfaProvider
 		{
 			if ("BSB-Zug".equals(longName))
 				return "SBSB";
-			if ("SWEG-Zug".equals(longName))
-				return "RSWEG";
 		}
 
 		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);

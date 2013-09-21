@@ -53,8 +53,6 @@ public class NvbwProvider extends AbstractEfaProvider
 	{
 		if ("0".equals(mot))
 		{
-			if ("SWEG-Zug".equals(longName))
-				return "RSWEG";
 			if ("RR".equals(trainType))
 				return "RRR" + trainNum;
 		}

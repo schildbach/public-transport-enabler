@@ -165,6 +165,8 @@ public class DsbProvider extends AbstractHafasProvider
 
 		if ("ICL".equals(ucType))
 			return 'I';
+		if ("IB".equals(ucType))
+			return 'I';
 
 		if ("ØR".equals(ucType))
 			return 'R';
