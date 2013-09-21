@@ -1045,7 +1045,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			final Location via, final Location to) throws IOException
 	{
 		// System.out.println(request);
-		// ParserUtils.printXml(ParserUtils.scrape(apiUri, wrap(request, null), null, null));
+		// ParserUtils.printXml(ParserUtils.scrape(queryEndpoint, wrap(request, null), null, null));
 
 		Reader reader = null;
 
@@ -1188,6 +1188,12 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					while (pp.getName().equals("StAttrList"))
 						XmlPullUtil.next(pp);
 					final Location sectionDepartureLocation = parseLocation(pp);
+
+					if (XmlPullUtil.test(pp, "Arr"))
+					{
+						XmlPullUtil.enter(pp, "Arr");
+						XmlPullUtil.exit(pp, "Arr");
+					}
 					XmlPullUtil.enter(pp, "Dep");
 					XmlPullUtil.require(pp, "Time");
 					time.setTimeInMillis(currentDate.getTimeInMillis());
