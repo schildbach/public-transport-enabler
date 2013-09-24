@@ -101,7 +101,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private String httpReferer = null;
 	private String httpRefererTrip = null;
 	private boolean httpPost = false;
-	private boolean suppressPositions = false;
 	private boolean useRouteIndexAsTripId = true;
 	private boolean useLineRestriction = true;
 	private float fareCorrectionFactor = 1f;
@@ -195,11 +194,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	protected void setIncludeRegionId(final boolean includeRegionId)
 	{
 		this.includeRegionId = includeRegionId;
-	}
-
-	protected void setSuppressPositions(final boolean suppressPositions)
-	{
-		this.suppressPositions = suppressPositions;
 	}
 
 	protected void setUseRouteIndexAsTripId(final boolean useRouteIndexAsTripId)
@@ -1558,11 +1552,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 									new LinkedList<Departure>(), new LinkedList<LineDestination>());
 						}
 
-						final String position;
-						if (!suppressPositions)
-							position = normalizePlatform(pp.getAttributeValue(null, "platform"), pp.getAttributeValue(null, "platformName"));
-						else
-							position = null;
+						final String position = normalizePlatformName(XmlPullUtil.optAttr(pp, "platformName", null));
 
 						XmlPullUtil.enter(pp, "itdDeparture");
 
@@ -2403,11 +2393,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					final Location departureLocation = processItdPointAttributes(pp);
 					if (firstDepartureLocation == null)
 						firstDepartureLocation = departureLocation;
-					final String departurePosition;
-					if (!suppressPositions)
-						departurePosition = normalizePlatform(pp.getAttributeValue(null, "platform"), pp.getAttributeValue(null, "platformName"));
-					else
-						departurePosition = null;
+					final String departurePosition = normalizePlatformName(XmlPullUtil.optAttr(pp, "platformName", null));
 					XmlPullUtil.enter(pp, "itdPoint");
 					if (XmlPullUtil.test(pp, "itdMapItemList"))
 						XmlPullUtil.next(pp);
@@ -2431,11 +2417,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						throw new IllegalStateException();
 					final Location arrivalLocation = processItdPointAttributes(pp);
 					lastArrivalLocation = arrivalLocation;
-					final String arrivalPosition;
-					if (!suppressPositions)
-						arrivalPosition = normalizePlatform(pp.getAttributeValue(null, "platform"), pp.getAttributeValue(null, "platformName"));
-					else
-						arrivalPosition = null;
+					final String arrivalPosition = normalizePlatformName(XmlPullUtil.optAttr(pp, "platformName", null));
 					XmlPullUtil.enter(pp, "itdPoint");
 					if (XmlPullUtil.test(pp, "itdMapItemList"))
 						XmlPullUtil.next(pp);
@@ -2584,12 +2566,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							{
 								final Location stopLocation = processItdPointAttributes(pp);
 
-								final String stopPosition;
-								if (!suppressPositions)
-									stopPosition = normalizePlatform(pp.getAttributeValue(null, "platform"),
-											pp.getAttributeValue(null, "platformName"));
-								else
-									stopPosition = null;
+								final String stopPosition = normalizePlatformName(XmlPullUtil.optAttr(pp, "platformName", null));
 
 								XmlPullUtil.enter(pp, "itdPoint");
 								XmlPullUtil.require(pp, "itdDateTime");
@@ -3148,27 +3125,13 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		return Currency.getInstance(currencyStr);
 	}
 
-	private static final Pattern P_PLATFORM = Pattern.compile("#?(\\d+)", Pattern.CASE_INSENSITIVE);
 	private static final Pattern P_PLATFORM_NAME = Pattern.compile("(?:Gleis|Gl\\.|Bstg\\.)?\\s*" + //
 			"(\\d+)\\s*" + //
 			"(?:([A-Z])\\s*(?:-\\s*([A-Z]))?)?", Pattern.CASE_INSENSITIVE);
 
-	private static final String normalizePlatform(final String platform, final String platformName)
+	private static final String normalizePlatformName(final String platformName)
 	{
-		if (platform != null && platform.length() > 0)
-		{
-			final Matcher m = P_PLATFORM.matcher(platform);
-			if (m.matches())
-			{
-				return Integer.toString(Integer.parseInt(m.group(1)));
-			}
-			else
-			{
-				return platform;
-			}
-		}
-
-		if (platformName != null && platformName.length() > 0)
+		if (platformName != null)
 		{
 			final Matcher m = P_PLATFORM_NAME.matcher(platformName);
 			if (m.matches())

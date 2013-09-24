@@ -41,8 +41,6 @@ public class KvvProvider extends AbstractEfaProvider
 	public KvvProvider(final String apiBase)
 	{
 		super(apiBase);
-
-		setSuppressPositions(true);
 	}
 
 	public NetworkId id()
