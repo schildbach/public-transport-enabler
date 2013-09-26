@@ -653,8 +653,11 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			reader = new StringReplaceReader(new InputStreamReader(ParserUtils.scrapeInputStream(uri), ISO_8859_1), " & ", " &amp; ");
 			reader.replace("<b>", " ");
 			reader.replace("</b>", " ");
+			reader.replace("<u>", " ");
+			reader.replace("</u>", " ");
 			reader.replace(" ->", " &#x2192;"); // right arrow
 			reader.replace(" <-", " &#x2190;"); // left arrow
+			reader.replace(" <> ", " &#x2194; "); // left-right arrow
 			addCustomReplaces(reader);
 
 			// System.out.println(uri);
