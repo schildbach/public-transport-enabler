@@ -1080,11 +1080,15 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			if (XmlPullUtil.test(pp, "Err"))
 			{
 				final String code = XmlPullUtil.attr(pp, "code");
-				if (code.equals("K9260")) // Departure station does not exist
+				if (code.equals("K9260")) // Unknown departure station
 					return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_FROM);
-				if (code.equals("K9300")) // Arrival station does not exist
+				if (code.equals("K9280")) // Unknown intermediate station
+					return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_VIA);
+				if (code.equals("K9300")) // Unknown arrival station
 					return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_TO);
-				if (code.equals("K9380") || code.equals("K895")) // Departure/Arrival are too near
+				if (code.equals("K9380")) // Dep./Arr./Intermed. or equivalent station defined more that once
+					return new QueryTripsResult(header, QueryTripsResult.Status.TOO_CLOSE);
+				if (code.equals("K895")) // Departure/Arrival are too near
 					return new QueryTripsResult(header, QueryTripsResult.Status.TOO_CLOSE);
 				if (code.equals("K9220")) // Nearby to the given address stations could not be found
 					return new QueryTripsResult(header, QueryTripsResult.Status.UNRESOLVABLE_ADDRESS);
@@ -2073,8 +2077,10 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				// H9360: Unfortunately your connection request can currently not be processed.
 				return new QueryTripsResult(header, QueryTripsResult.Status.INVALID_DATE);
 			else if (errorCode == 9380)
-				return new QueryTripsResult(header, QueryTripsResult.Status.TOO_CLOSE); // H9380
+				// H9380: Dep./Arr./Intermed. or equivalent station defined more than once
+				return new QueryTripsResult(header, QueryTripsResult.Status.TOO_CLOSE);
 			else if (errorCode == 895)
+				// H895: Departure/Arrival are too near
 				return new QueryTripsResult(header, QueryTripsResult.Status.TOO_CLOSE);
 			else
 				throw new IllegalStateException("error " + errorCode + " on " + uri);

@@ -2318,8 +2318,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				if ("origin".equals(usage))
 					return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_FROM);
 				else if ("via".equals(usage))
-					// return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_VIA);
-					throw new UnsupportedOperationException();
+					return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_VIA);
 				else if ("destination".equals(usage))
 					return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_TO);
 				else
