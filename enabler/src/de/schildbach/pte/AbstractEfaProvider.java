@@ -1926,7 +1926,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			{
 				XmlPullUtil.enter(pp, "itdNoTrain");
 				final String text = pp.getText();
-				if (itdTrainName.toLowerCase().contains("ruf") && text.toLowerCase().contains("ruf"))
+				if (itdTrainName != null && itdTrainName.toLowerCase().contains("ruf"))
+					itdMessage = text;
+				else if (text != null && text.toLowerCase().contains("ruf"))
 					itdMessage = text;
 				XmlPullUtil.exit(pp, "itdNoTrain");
 			}
