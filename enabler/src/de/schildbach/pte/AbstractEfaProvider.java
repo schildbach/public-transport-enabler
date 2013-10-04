@@ -148,7 +148,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				apiBase + (coordEndpoint != null ? coordEndpoint : DEFAULT_COORD_ENDPOINT));
 	}
 
-	private AbstractEfaProvider(final String departureMonitorEndpoint, final String tripEndpoint, final String stopFinderEndpoint,
+	public AbstractEfaProvider(final String departureMonitorEndpoint, final String tripEndpoint, final String stopFinderEndpoint,
 			final String coordEndpoint)
 	{
 		try
