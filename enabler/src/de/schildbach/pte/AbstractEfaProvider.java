@@ -60,6 +60,7 @@ import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Point;
+import de.schildbach.pte.dto.Position;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsContext;
@@ -1556,7 +1557,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 									new LinkedList<Departure>(), new LinkedList<LineDestination>());
 						}
 
-						final String position = normalizePlatformName(XmlPullUtil.optAttr(pp, "platformName", null));
+						final Position position = normalizePlatformName(XmlPullUtil.optAttr(pp, "platformName", null));
 
 						XmlPullUtil.enter(pp, "itdDeparture");
 
@@ -1667,7 +1668,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					XmlPullUtil.enter(pp, "r");
 					final int assignedId = Integer.parseInt(requireValueTag(pp, "id"));
 					requireValueTag(pp, "a");
-					final String position = optValueTag(pp, "pl");
+					final Position position = new Position(optValueTag(pp, "pl"));
 					XmlPullUtil.exit(pp, "r");
 
 					/* final Point positionCoordinate = */coordStrToPoint(optValueTag(pp, "c"));
@@ -2403,7 +2404,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					final Location departureLocation = processItdPointAttributes(pp);
 					if (firstDepartureLocation == null)
 						firstDepartureLocation = departureLocation;
-					final String departurePosition = normalizePlatformName(XmlPullUtil.optAttr(pp, "platformName", null));
+					final Position departurePosition = normalizePlatformName(XmlPullUtil.optAttr(pp, "platformName", null));
 					XmlPullUtil.enter(pp, "itdPoint");
 					if (XmlPullUtil.test(pp, "itdMapItemList"))
 						XmlPullUtil.next(pp);
@@ -2427,7 +2428,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						throw new IllegalStateException();
 					final Location arrivalLocation = processItdPointAttributes(pp);
 					lastArrivalLocation = arrivalLocation;
-					final String arrivalPosition = normalizePlatformName(XmlPullUtil.optAttr(pp, "platformName", null));
+					final Position arrivalPosition = normalizePlatformName(XmlPullUtil.optAttr(pp, "platformName", null));
 					XmlPullUtil.enter(pp, "itdPoint");
 					if (XmlPullUtil.test(pp, "itdMapItemList"))
 						XmlPullUtil.next(pp);
@@ -2576,7 +2577,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							{
 								final Location stopLocation = processItdPointAttributes(pp);
 
-								final String stopPosition = normalizePlatformName(XmlPullUtil.optAttr(pp, "platformName", null));
+								final Position stopPosition = normalizePlatformName(XmlPullUtil.optAttr(pp, "platformName", null));
 
 								XmlPullUtil.enter(pp, "itdPoint");
 								XmlPullUtil.require(pp, "itdDateTime");
@@ -2837,7 +2838,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						XmlPullUtil.enter(pp, "r");
 						final int id = Integer.parseInt(requireValueTag(pp, "id"));
 						optValueTag(pp, "a");
-						final String position = optValueTag(pp, "pl");
+						final Position position = new Position(optValueTag(pp, "pl"));
 						final String place = normalizeLocationName(optValueTag(pp, "pc"));
 						final Point coord = coordStrToPoint(requireValueTag(pp, "c"));
 						XmlPullUtil.exit(pp, "r");
@@ -3139,7 +3140,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			"(\\d+)\\s*" + //
 			"(?:([A-Z])\\s*(?:-\\s*([A-Z]))?)?", Pattern.CASE_INSENSITIVE);
 
-	private static final String normalizePlatformName(final String platformName)
+	private static final Position normalizePlatformName(final String platformName)
 	{
 		if (platformName != null)
 		{
@@ -3148,15 +3149,15 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			{
 				final String simple = Integer.toString(Integer.parseInt(m.group(1)));
 				if (m.group(2) != null && m.group(3) != null)
-					return simple + m.group(2) + "-" + m.group(3);
+					return new Position(simple + m.group(2) + "-" + m.group(3));
 				else if (m.group(2) != null)
-					return simple + m.group(2);
+					return new Position(simple + m.group(2));
 				else
-					return simple;
+					return new Position(simple);
 			}
 			else
 			{
-				return platformName;
+				return new Position(platformName);
 			}
 		}
 

@@ -56,6 +56,7 @@ import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Point;
+import de.schildbach.pte.dto.Position;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsContext;
@@ -295,17 +296,17 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		throw new IllegalStateException("cannot handle: " + type);
 	}
 
-	private static final String parsePlatform(final XmlPullParser pp) throws XmlPullParserException, IOException
+	private static final Position parsePlatform(final XmlPullParser pp) throws XmlPullParserException, IOException
 	{
 		XmlPullUtil.enter(pp, "Platform");
 		XmlPullUtil.require(pp, "Text");
-		final String position = XmlPullUtil.text(pp).trim();
+		final String platformText = XmlPullUtil.text(pp).trim();
 		XmlPullUtil.exit(pp, "Platform");
 
-		if (position.length() == 0)
+		if (platformText.length() == 0)
 			return null;
 		else
-			return position;
+			return new Position(platformText);
 	}
 
 	public List<Location> xmlLocValReq(final CharSequence constraint) throws IOException
@@ -761,7 +762,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						predictedTime = null;
 					}
 
-					final String position = platform != null ? "Gl. " + ParserUtils.resolveEntities(platform) : null;
+					final Position position = platform != null ? new Position("Gl. " + ParserUtils.resolveEntities(platform)) : null;
 
 					final String[] destinationPlaceAndName;
 					if (dir != null)
@@ -1206,7 +1207,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					time.setTimeInMillis(currentDate.getTimeInMillis());
 					parseTime(time, XmlPullUtil.text(pp));
 					final Date departureTime = time.getTime();
-					final String departurePos = parsePlatform(pp);
+					final Position departurePos = parsePlatform(pp);
 					XmlPullUtil.exit(pp, "Dep");
 
 					XmlPullUtil.exit(pp, "BasicStop");
@@ -1278,8 +1279,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 								{
 									Date stopArrivalTime = null;
 									Date stopDepartureTime = null;
-									String stopArrivalPosition = null;
-									String stopDeparturePosition = null;
+									Position stopArrivalPosition = null;
+									Position stopDeparturePosition = null;
 
 									if (XmlPullUtil.test(pp, "Arr"))
 									{
@@ -1364,7 +1365,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					time.setTimeInMillis(currentDate.getTimeInMillis());
 					parseTime(time, XmlPullUtil.text(pp));
 					final Date arrivalTime = time.getTime();
-					final String arrivalPos = parsePlatform(pp);
+					final Position arrivalPos = parsePlatform(pp);
 					XmlPullUtil.exit(pp, "Arr");
 
 					XmlPullUtil.exit(pp, "BasicStop");
@@ -1851,8 +1852,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 						final String lineName = strings.read(is);
 
-						final String plannedDeparturePosition = normalizePosition(strings.read(is));
-						final String plannedArrivalPosition = normalizePosition(strings.read(is));
+						final Position plannedDeparturePosition = normalizePosition(strings.read(is));
+						final Position plannedArrivalPosition = normalizePosition(strings.read(is));
 
 						final int legAttrIndex = is.readShortReverse();
 
@@ -1913,8 +1914,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 						final long predictedDepartureTime = time(is, resDate, tripDayOffset);
 						final long predictedArrivalTime = time(is, resDate, tripDayOffset);
-						final String predictedDeparturePosition = normalizePosition(strings.read(is));
-						final String predictedArrivalPosition = normalizePosition(strings.read(is));
+						final Position predictedDeparturePosition = normalizePosition(strings.read(is));
+						final Position predictedArrivalPosition = normalizePosition(strings.read(is));
 
 						is.readInt();
 
@@ -1940,8 +1941,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 								final Date plannedStopDepartureDate = plannedStopDepartureTime != 0 ? new Date(plannedStopDepartureTime) : null;
 								final long plannedStopArrivalTime = time(is, resDate, tripDayOffset);
 								final Date plannedStopArrivalDate = plannedStopArrivalTime != 0 ? new Date(plannedStopArrivalTime) : null;
-								final String plannedStopDeparturePosition = normalizePosition(strings.read(is));
-								final String plannedStopArrivalPosition = normalizePosition(strings.read(is));
+								final Position plannedStopDeparturePosition = normalizePosition(strings.read(is));
+								final Position plannedStopArrivalPosition = normalizePosition(strings.read(is));
 
 								is.readInt();
 
@@ -1949,8 +1950,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 								final Date predictedStopDepartureDate = predictedStopDepartureTime != 0 ? new Date(predictedStopDepartureTime) : null;
 								final long predictedStopArrivalTime = time(is, resDate, tripDayOffset);
 								final Date predictedStopArrivalDate = predictedStopArrivalTime != 0 ? new Date(predictedStopArrivalTime) : null;
-								final String predictedStopDeparturePosition = normalizePosition(strings.read(is));
-								final String predictedStopArrivalPosition = normalizePosition(strings.read(is));
+								final Position predictedStopDeparturePosition = normalizePosition(strings.read(is));
+								final Position predictedStopArrivalPosition = normalizePosition(strings.read(is));
 
 								is.readInt();
 
@@ -2270,16 +2271,16 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 	private static final Pattern P_POSITION_PLATFORM = Pattern.compile("Gleis\\s*([^\\s]*)\\s*", Pattern.CASE_INSENSITIVE);
 
-	private String normalizePosition(final String position)
+	private Position normalizePosition(final String position)
 	{
 		if (position == null)
 			return null;
 
 		final Matcher m = P_POSITION_PLATFORM.matcher(position);
 		if (!m.matches())
-			return position;
+			return new Position(position);
 
-		return m.group(1);
+		return new Position(m.group(1));
 	}
 
 	protected final StringBuilder xmlNearbyStationsParameters(final int stationId)

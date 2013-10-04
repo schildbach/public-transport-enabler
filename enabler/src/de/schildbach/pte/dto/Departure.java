@@ -28,12 +28,12 @@ public final class Departure implements Serializable
 	final public Date plannedTime;
 	final public Date predictedTime;
 	final public Line line;
-	final public String position;
+	final public Position position;
 	final public Location destination;
 	final public int[] capacity;
 	final public String message;
 
-	public Departure(final Date plannedTime, final Date predictedTime, final Line line, final String position, final Location destination,
+	public Departure(final Date plannedTime, final Date predictedTime, final Line line, final Position position, final Location destination,
 			final int[] capacity, final String message)
 	{
 		this.plannedTime = plannedTime;
@@ -48,7 +48,7 @@ public final class Departure implements Serializable
 	@Override
 	public String toString()
 	{
-		StringBuilder builder = new StringBuilder("Departure(");
+		final StringBuilder builder = new StringBuilder("Departure(");
 		builder.append(plannedTime != null ? plannedTime : "null");
 		builder.append(",");
 		builder.append(predictedTime != null ? predictedTime : "null");

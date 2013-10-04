@@ -28,16 +28,16 @@ public final class Stop implements Serializable
 	public final Location location;
 	public final Date plannedArrivalTime;
 	public final Date predictedArrivalTime;
-	public final String plannedArrivalPosition;
-	public final String predictedArrivalPosition;
+	public final Position plannedArrivalPosition;
+	public final Position predictedArrivalPosition;
 	public final Date plannedDepartureTime;
 	public final Date predictedDepartureTime;
-	public final String plannedDeparturePosition;
-	public final String predictedDeparturePosition;
+	public final Position plannedDeparturePosition;
+	public final Position predictedDeparturePosition;
 
-	public Stop(final Location location, final Date plannedArrivalTime, final Date predictedArrivalTime, final String plannedArrivalPosition,
-			final String predictedArrivalPosition, final Date plannedDepartureTime, final Date predictedDepartureTime,
-			final String plannedDeparturePosition, final String predictedDeparturePosition)
+	public Stop(final Location location, final Date plannedArrivalTime, final Date predictedArrivalTime, final Position plannedArrivalPosition,
+			final Position predictedArrivalPosition, final Date plannedDepartureTime, final Date predictedDepartureTime,
+			final Position plannedDeparturePosition, final Position predictedDeparturePosition)
 	{
 		this.location = location;
 		this.plannedArrivalTime = plannedArrivalTime;
@@ -50,8 +50,8 @@ public final class Stop implements Serializable
 		this.predictedDeparturePosition = predictedDeparturePosition;
 	}
 
-	public Stop(final Location location, final boolean departure, final Date plannedTime, final Date predictedTime, final String plannedPosition,
-			final String predictedPosition)
+	public Stop(final Location location, final boolean departure, final Date plannedTime, final Date predictedTime, final Position plannedPosition,
+			final Position predictedPosition)
 	{
 		this.location = location;
 		this.plannedArrivalTime = !departure ? plannedTime : null;
@@ -64,8 +64,8 @@ public final class Stop implements Serializable
 		this.predictedDeparturePosition = departure ? predictedPosition : null;
 	}
 
-	public Stop(final Location location, final Date plannedArrivalTime, final String plannedArrivalPosition, final Date plannedDepartureTime,
-			final String plannedDeparturePosition)
+	public Stop(final Location location, final Date plannedArrivalTime, final Position plannedArrivalPosition, final Date plannedDepartureTime,
+			final Position plannedDeparturePosition)
 	{
 		this.location = location;
 		this.plannedArrivalTime = plannedArrivalTime;
@@ -101,7 +101,7 @@ public final class Stop implements Serializable
 			return null;
 	}
 
-	public String getArrivalPosition()
+	public Position getArrivalPosition()
 	{
 		if (predictedArrivalPosition != null)
 			return predictedArrivalPosition;
@@ -139,7 +139,7 @@ public final class Stop implements Serializable
 			return null;
 	}
 
-	public String getDeparturePosition()
+	public Position getDeparturePosition()
 	{
 		if (predictedDeparturePosition != null)
 			return predictedDeparturePosition;
@@ -157,7 +157,7 @@ public final class Stop implements Serializable
 	@Override
 	public String toString()
 	{
-		StringBuilder builder = new StringBuilder("Stop('");
+		final StringBuilder builder = new StringBuilder("Stop('");
 		builder.append(location);
 		builder.append("', arr: ");
 		builder.append(plannedArrivalTime != null ? plannedArrivalTime : "-");

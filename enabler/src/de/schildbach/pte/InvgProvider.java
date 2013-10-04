@@ -33,6 +33,7 @@ import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.Position;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryDeparturesResult.Status;
@@ -241,7 +242,8 @@ public class InvgProvider extends AbstractHafasProvider
 						final Location destination = new Location(destinationId > 0 ? LocationType.STATION : LocationType.ANY, destinationId, null,
 								destinationName);
 
-						final String position = mDepFine.group(7) != null ? "Gl. " + ParserUtils.resolveEntities(mDepFine.group(7)) : null;
+						final Position position = mDepFine.group(7) != null ? new Position("Gl. " + ParserUtils.resolveEntities(mDepFine.group(7)))
+								: null;
 
 						final Departure dep = new Departure(plannedTime.getTime(), predictedTime != null ? predictedTime.getTime() : null, line,
 								position, destination, null, null);

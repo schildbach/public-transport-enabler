@@ -253,7 +253,7 @@ public final class Trip implements Serializable
 			return departureStop.getDepartureDelay();
 		}
 
-		public String getDeparturePosition()
+		public Position getDeparturePosition()
 		{
 			return departureStop.getDeparturePosition();
 		}
@@ -283,7 +283,7 @@ public final class Trip implements Serializable
 			return arrivalStop.getArrivalDelay();
 		}
 
-		public String getArrivalPosition()
+		public Position getArrivalPosition()
 		{
 			return arrivalStop.getArrivalPosition();
 		}

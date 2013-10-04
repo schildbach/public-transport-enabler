@@ -37,6 +37,7 @@ import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Point;
+import de.schildbach.pte.dto.Position;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsContext;
@@ -392,7 +393,7 @@ public final class BvgProvider extends AbstractHafasProvider
 						final char lineProduct = normalizeType(categoryFromName(lineName));
 						final Line line = newLine(lineProduct, normalizeLineName(lineName), null);
 
-						final String position = null;
+						final Position position = null;
 
 						final String[] destinationPlaceAndName = splitPlaceAndName(ParserUtils.resolveEntities(mDepFine.group(4)));
 						final Location destination = new Location(LocationType.ANY, 0, destinationPlaceAndName[0], destinationPlaceAndName[1]);
@@ -464,7 +465,7 @@ public final class BvgProvider extends AbstractHafasProvider
 						final char lineProduct = normalizeType(categoryFromName(lineName));
 						final Line line = newLine(lineProduct, normalizeLineName(lineName), null);
 
-						final String position = ParserUtils.resolveEntities(mDepFine.group(3));
+						final Position position = new Position(ParserUtils.resolveEntities(mDepFine.group(3)));
 
 						final int destinationId = Integer.parseInt(mDepFine.group(4));
 						final String[] destinationPlaceAndName = splitPlaceAndName(ParserUtils.resolveEntities(mDepFine.group(5)));
