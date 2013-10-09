@@ -230,4 +230,19 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
 	}
+
+	@Test
+	public void tripUsingEvenMoreBuffer() throws IOException
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 3000909, 50094052, 8690923, null, "F Brauerei"), null,
+				new Location(LocationType.STATION, 3001201, 50119950, 8653924, null, "F Bockenheimer Warte"), new Date(1378368840000l), true,
+				Product.ALL, null, null);
+		System.out.println(result);
+
+		if (!result.context.canQueryLater())
+			return;
+
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+		System.out.println(laterResult);
+	}
 }
