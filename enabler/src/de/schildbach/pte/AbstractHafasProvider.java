@@ -3005,14 +3005,14 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 		if (attrs.length == 0)
 		{
-			return new Line(null, lineStr, lineStyle(lineStr), comment);
+			return new Line(null, lineStr, lineStyle(null, lineStr), comment);
 		}
 		else
 		{
 			final Set<Line.Attr> attrSet = new HashSet<Line.Attr>();
 			for (final Line.Attr attr : attrs)
 				attrSet.add(attr);
-			return new Line(null, lineStr, lineStyle(lineStr), attrSet, comment);
+			return new Line(null, lineStr, lineStyle(null, lineStr), attrSet, comment);
 		}
 	}
 

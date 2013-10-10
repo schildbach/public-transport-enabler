@@ -54,13 +54,36 @@ public abstract class AbstractNetworkProvider implements NetworkProvider
 		this.styles = styles;
 	}
 
-	public Style lineStyle(final String line)
+	private static final char STYLES_SEP = '|';
+
+	public Style lineStyle(final String network, final String line)
 	{
 		if (line == null || line.length() == 0)
 			return null;
 
 		if (styles != null)
 		{
+			if (network != null)
+			{
+				// check for line match
+				final Style lineStyle = styles.get(network + STYLES_SEP + line);
+				if (lineStyle != null)
+					return lineStyle;
+
+				// check for product match
+				final Style productStyle = styles.get(network + STYLES_SEP + line.charAt(0));
+				if (productStyle != null)
+					return productStyle;
+
+				// check for night bus, as that's a common special case
+				if (line.startsWith("BN"))
+				{
+					final Style nightStyle = styles.get(network + STYLES_SEP + "BN");
+					if (nightStyle != null)
+						return nightStyle;
+				}
+			}
+
 			// check for line match
 			final Style lineStyle = styles.get(line);
 			if (lineStyle != null)

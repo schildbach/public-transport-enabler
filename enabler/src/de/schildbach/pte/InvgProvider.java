@@ -290,28 +290,28 @@ public class InvgProvider extends AbstractHafasProvider
 			if (mBus.matches())
 			{
 				final String lineStr = "B" + mBus.group(1);
-				return new Line(null, lineStr, lineStyle(lineStr));
+				return new Line(null, lineStr, lineStyle(null, lineStr));
 			}
 
 			final Matcher mNachtbus = P_NORMALIZE_LINE_NACHTBUS.matcher(line);
 			if (mNachtbus.matches())
 			{
 				final String lineStr = "BN" + mNachtbus.group(1);
-				return new Line(null, lineStr, lineStyle(lineStr));
+				return new Line(null, lineStr, lineStyle(null, lineStr));
 			}
 
 			final Matcher mBusS = P_NORMALIZE_LINE_BUS_S.matcher(line);
 			if (mBusS.matches())
 			{
 				final String lineStr = "BS" + mBusS.group(1);
-				return new Line(null, lineStr, lineStyle(lineStr));
+				return new Line(null, lineStr, lineStyle(null, lineStr));
 			}
 
 			final Matcher mBusX = P_NORMALIZE_LINE_BUS_X.matcher(line);
 			if (mBusX.matches())
 			{
 				final String lineStr = "BX" + mBusX.group(1);
-				return new Line(null, lineStr, lineStyle(lineStr));
+				return new Line(null, lineStr, lineStyle(null, lineStr));
 			}
 		}
 

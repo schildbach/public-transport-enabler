@@ -161,11 +161,13 @@ public interface NetworkProvider
 	/**
 	 * Get style of line
 	 * 
+	 * @param network
+	 *            network to disambiguate line
 	 * @param line
 	 *            line to get style of
-	 * @return object containing background, foreground and border (optional) colors
+	 * @return object containing background, foreground and optional border colors
 	 */
-	Style lineStyle(String line);
+	Style lineStyle(String network, String line);
 
 	/**
 	 * Gets the primary covered area of the network

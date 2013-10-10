@@ -1763,8 +1763,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				trainNum = null;
 			}
 
+			final String network = lineId.substring(0, lineId.indexOf(':'));
 			final String lineLabel = parseLine(productType, symbol, symbol, null, trainType, trainNum, productName);
-			line = new Line(lineId, lineLabel, lineStyle(lineLabel));
+			line = new Line(lineId, lineLabel, lineStyle(network, lineLabel));
 		}
 
 		XmlPullUtil.exit(pp, "m");
@@ -1941,6 +1942,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				XmlPullUtil.next(pp);
 			}
 		}
+
+		XmlPullUtil.require(pp, "motDivaParams");
+		final String divaNetwork = XmlPullUtil.attr(pp, "network");
+
 		XmlPullUtil.exit(pp, "itdServingLine");
 
 		final String trainType = ParserUtils.firstNotEmpty(slTrainType, itdTrainType);
@@ -1948,7 +1953,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		final String label = parseLine(slMotType, slSymbol, slNumber, slNumber, trainType, slTrainNum, trainName);
 
-		return new Line(slStateless, label, lineStyle(label), itdMessage);
+		return new Line(slStateless, label, lineStyle(divaNetwork, label), itdMessage);
 	}
 
 	private static final Pattern P_STATION_NAME_WHITESPACE = Pattern.compile("\\s+");
@@ -2682,7 +2687,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						final Set<Line.Attr> lineAttrs = new HashSet<Line.Attr>();
 						if (wheelChairAccess || lowFloorVehicle)
 							lineAttrs.add(Line.Attr.WHEEL_CHAIR_ACCESS);
-						final Line line = new Line(lineId, lineLabel, lineStyle(lineLabel), lineAttrs);
+						final Line line = new Line(lineId, lineLabel, lineStyle(divaNetwork, lineLabel), lineAttrs);
 
 						final Stop departure = new Stop(departureLocation, true, departureTargetTime != null ? departureTargetTime : departureTime,
 								departureTime != null ? departureTime : null, departurePosition, null);

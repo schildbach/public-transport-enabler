@@ -75,6 +75,10 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest
 		final QueryDeparturesResult result2 = provider.queryDepartures(20019904, 0, false);
 
 		print(result2);
+
+		// Bonn
+		provider.queryDepartures(22000687, 0, false); // Hauptbahnhof
+		provider.queryDepartures(22001374, 0, false); // Suedwache
 	}
 
 	@Test

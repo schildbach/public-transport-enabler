@@ -154,11 +154,11 @@ public class TflProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	public Style lineStyle(final String line)
+	public Style lineStyle(final String network, final String line)
 	{
 		if (line.startsWith("SLO"))
-			return super.lineStyle("SLO");
+			return super.lineStyle(network, "SLO");
 
-		return super.lineStyle(line);
+		return super.lineStyle(network, line);
 	}
 }
