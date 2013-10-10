@@ -38,6 +38,7 @@ public class MetProvider extends AbstractEfaProvider
 		super(API_BASE);
 
 		setUseRouteIndexAsTripId(false);
+		setStyles(STYLES);
 	}
 
 	public NetworkId id()
@@ -75,25 +76,15 @@ public class MetProvider extends AbstractEfaProvider
 		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
 	}
 
-	private static final Map<Character, Style> LINES = new HashMap<Character, Style>();
+	private static final Map<String, Style> STYLES = new HashMap<String, Style>();
 
 	static
 	{
-		LINES.put('R', new Style(Style.parseColor("#a24ba3"), Style.WHITE));
-		LINES.put('S', new Style(Style.parseColor("#3a75c4"), Style.WHITE));
-		LINES.put('T', new Style(Style.parseColor("#5bbf21"), Style.WHITE));
-		LINES.put('B', new Style(Style.parseColor("#f77f00"), Style.WHITE));
-	}
+		STYLES.put("R", new Style(Style.parseColor("#a24ba3"), Style.WHITE));
+		STYLES.put("S", new Style(Style.parseColor("#3a75c4"), Style.WHITE));
+		STYLES.put("T", new Style(Style.parseColor("#5bbf21"), Style.WHITE));
+		STYLES.put("B", new Style(Style.parseColor("#f77f00"), Style.WHITE));
 
-	@Override
-	public Style lineStyle(final String line)
-	{
 		// TODO NightRider buses (buses with numbers > 940): #f26522
-
-		final Style style = LINES.get(line.charAt(0));
-		if (style != null)
-			return style;
-		else
-			return super.lineStyle(line);
 	}
 }

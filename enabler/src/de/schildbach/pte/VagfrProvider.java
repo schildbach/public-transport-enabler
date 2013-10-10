@@ -40,6 +40,7 @@ public class VagfrProvider extends AbstractEfaProvider
 		super(API_BASE);
 
 		setUseRouteIndexAsTripId(false);
+		setStyles(STYLES);
 	}
 
 	public NetworkId id()
@@ -75,27 +76,17 @@ public class VagfrProvider extends AbstractEfaProvider
 		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
 	}
 
-	private static final Map<String, Style> LINES = new HashMap<String, Style>();
+	private static final Map<String, Style> STYLES = new HashMap<String, Style>();
 
 	static
 	{
 		// Tram
-		LINES.put("T1", new Style(Shape.RECT, Style.parseColor("#ed1c24"), Style.WHITE));
-		LINES.put("T2", new Style(Shape.RECT, Style.parseColor("#33b540"), Style.WHITE));
-		LINES.put("T3", new Style(Shape.RECT, Style.parseColor("#f79210"), Style.WHITE));
-		LINES.put("T5", new Style(Shape.RECT, Style.parseColor("#0994ce"), Style.WHITE));
+		STYLES.put("T1", new Style(Shape.RECT, Style.parseColor("#ed1c24"), Style.WHITE));
+		STYLES.put("T2", new Style(Shape.RECT, Style.parseColor("#33b540"), Style.WHITE));
+		STYLES.put("T3", new Style(Shape.RECT, Style.parseColor("#f79210"), Style.WHITE));
+		STYLES.put("T5", new Style(Shape.RECT, Style.parseColor("#0994ce"), Style.WHITE));
 
 		// Nachtbus
-		LINES.put("BN42 Jupiter", new Style(Style.parseColor("#33b540"), Style.WHITE));
-	}
-
-	@Override
-	public Style lineStyle(final String line)
-	{
-		final Style style = LINES.get(line);
-		if (style != null)
-			return style;
-		else
-			return super.lineStyle(line);
+		STYLES.put("BN42 Jupiter", new Style(Style.parseColor("#33b540"), Style.WHITE));
 	}
 }

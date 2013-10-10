@@ -36,6 +36,7 @@ public class TflProvider extends AbstractEfaProvider
 		super(API_BASE);
 
 		setUseLineRestriction(false);
+		setStyles(STYLES);
 	}
 
 	public NetworkId id()
@@ -126,40 +127,38 @@ public class TflProvider extends AbstractEfaProvider
 		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
 	}
 
-	private static final Map<String, Style> LINES = new HashMap<String, Style>();
+	private static final Map<String, Style> STYLES = new HashMap<String, Style>();
 
 	static
 	{
 		// London
-		LINES.put("UBakerloo", new Style(Style.parseColor("#9D5324"), Style.WHITE));
-		LINES.put("UCentral", new Style(Style.parseColor("#D52B1E"), Style.WHITE));
-		LINES.put("UCircle", new Style(Style.parseColor("#FECB00"), Style.BLACK));
-		LINES.put("UDistrict", new Style(Style.parseColor("#007934"), Style.WHITE));
-		LINES.put("UEast London", new Style(Style.parseColor("#FFA100"), Style.WHITE));
-		LINES.put("UHammersmith & City", new Style(Style.parseColor("#C5858F"), Style.BLACK));
-		LINES.put("UJubilee", new Style(Style.parseColor("#818A8F"), Style.WHITE));
-		LINES.put("UMetropolitan", new Style(Style.parseColor("#850057"), Style.WHITE));
-		LINES.put("UNorthern", new Style(Style.BLACK, Style.WHITE));
-		LINES.put("UPicadilly", new Style(Style.parseColor("#0018A8"), Style.WHITE));
-		LINES.put("UVictoria", new Style(Style.parseColor("#00A1DE"), Style.WHITE));
-		LINES.put("UWaterloo & City", new Style(Style.parseColor("#76D2B6"), Style.BLACK));
+		STYLES.put("UBakerloo", new Style(Style.parseColor("#9D5324"), Style.WHITE));
+		STYLES.put("UCentral", new Style(Style.parseColor("#D52B1E"), Style.WHITE));
+		STYLES.put("UCircle", new Style(Style.parseColor("#FECB00"), Style.BLACK));
+		STYLES.put("UDistrict", new Style(Style.parseColor("#007934"), Style.WHITE));
+		STYLES.put("UEast London", new Style(Style.parseColor("#FFA100"), Style.WHITE));
+		STYLES.put("UHammersmith & City", new Style(Style.parseColor("#C5858F"), Style.BLACK));
+		STYLES.put("UJubilee", new Style(Style.parseColor("#818A8F"), Style.WHITE));
+		STYLES.put("UMetropolitan", new Style(Style.parseColor("#850057"), Style.WHITE));
+		STYLES.put("UNorthern", new Style(Style.BLACK, Style.WHITE));
+		STYLES.put("UPicadilly", new Style(Style.parseColor("#0018A8"), Style.WHITE));
+		STYLES.put("UVictoria", new Style(Style.parseColor("#00A1DE"), Style.WHITE));
+		STYLES.put("UWaterloo & City", new Style(Style.parseColor("#76D2B6"), Style.BLACK));
 
-		LINES.put("SDLR", new Style(Style.parseColor("#00B2A9"), Style.WHITE));
-		LINES.put("SLO", new Style(Style.parseColor("#f46f1a"), Style.WHITE));
+		STYLES.put("SDLR", new Style(Style.parseColor("#00B2A9"), Style.WHITE));
+		STYLES.put("SLO", new Style(Style.parseColor("#f46f1a"), Style.WHITE));
 
-		LINES.put("TTramlink 1", new Style(Style.rgb(193, 215, 46), Style.WHITE));
-		LINES.put("TTramlink 2", new Style(Style.rgb(193, 215, 46), Style.WHITE));
-		LINES.put("TTramlink 3", new Style(Style.rgb(124, 194, 66), Style.BLACK));
+		STYLES.put("TTramlink 1", new Style(Style.rgb(193, 215, 46), Style.WHITE));
+		STYLES.put("TTramlink 2", new Style(Style.rgb(193, 215, 46), Style.WHITE));
+		STYLES.put("TTramlink 3", new Style(Style.rgb(124, 194, 66), Style.BLACK));
 	}
 
 	@Override
 	public Style lineStyle(final String line)
 	{
-		final Style style = LINES.get(line);
-		if (style != null)
-			return style;
 		if (line.startsWith("SLO"))
-			return LINES.get("SLO");
+			return super.lineStyle("SLO");
+
 		return super.lineStyle(line);
 	}
 }

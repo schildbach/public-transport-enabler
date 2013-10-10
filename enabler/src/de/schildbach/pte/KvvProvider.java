@@ -41,6 +41,8 @@ public class KvvProvider extends AbstractEfaProvider
 	public KvvProvider(final String apiBase)
 	{
 		super(apiBase);
+
+		setStyles(STYLES);
 	}
 
 	public NetworkId id()
@@ -71,44 +73,44 @@ public class KvvProvider extends AbstractEfaProvider
 		// TODO check for " (Ersatzverkehr)"
 	}
 
-	private static final Map<String, Style> LINES = new HashMap<String, Style>();
+	private static final Map<String, Style> STYLES = new HashMap<String, Style>();
 
 	static
 	{
 		// S-Bahn
-		LINES.put("SS1", new Style(Style.parseColor("#00a76d"), Style.WHITE));
-		LINES.put("SS11", new Style(Style.parseColor("#00a76d"), Style.WHITE));
-		LINES.put("SS2", new Style(Style.parseColor("#a066aa"), Style.WHITE));
-		LINES.put("SS3", new Style(Style.parseColor("#00a99d"), Style.WHITE));
-		LINES.put("SS31", new Style(Style.parseColor("#00a99d"), Style.WHITE));
-		LINES.put("SS32", new Style(Style.parseColor("#00a99d"), Style.WHITE));
-		LINES.put("SS33", new Style(Style.parseColor("#00a99d"), Style.WHITE));
-		LINES.put("SS4", new Style(Style.parseColor("#9f184c"), Style.WHITE));
-		LINES.put("SS41", new Style(Style.parseColor("#9f184c"), Style.WHITE));
-		LINES.put("SS5", new Style(Style.parseColor("#f69795"), Style.BLACK));
-		LINES.put("SS51", new Style(Style.parseColor("#f69795"), Style.BLACK));
-		LINES.put("SS52", new Style(Style.parseColor("#f69795"), Style.BLACK));
-		LINES.put("SS6", new Style(Style.parseColor("#282268"), Style.WHITE));
-		LINES.put("SS7", new Style(Style.parseColor("#fff200"), Style.BLACK));
-		LINES.put("SS9", new Style(Style.parseColor("#fab49b"), Style.BLACK));
+		STYLES.put("SS1", new Style(Style.parseColor("#00a76d"), Style.WHITE));
+		STYLES.put("SS11", new Style(Style.parseColor("#00a76d"), Style.WHITE));
+		STYLES.put("SS2", new Style(Style.parseColor("#a066aa"), Style.WHITE));
+		STYLES.put("SS3", new Style(Style.parseColor("#00a99d"), Style.WHITE));
+		STYLES.put("SS31", new Style(Style.parseColor("#00a99d"), Style.WHITE));
+		STYLES.put("SS32", new Style(Style.parseColor("#00a99d"), Style.WHITE));
+		STYLES.put("SS33", new Style(Style.parseColor("#00a99d"), Style.WHITE));
+		STYLES.put("SS4", new Style(Style.parseColor("#9f184c"), Style.WHITE));
+		STYLES.put("SS41", new Style(Style.parseColor("#9f184c"), Style.WHITE));
+		STYLES.put("SS5", new Style(Style.parseColor("#f69795"), Style.BLACK));
+		STYLES.put("SS51", new Style(Style.parseColor("#f69795"), Style.BLACK));
+		STYLES.put("SS52", new Style(Style.parseColor("#f69795"), Style.BLACK));
+		STYLES.put("SS6", new Style(Style.parseColor("#282268"), Style.WHITE));
+		STYLES.put("SS7", new Style(Style.parseColor("#fff200"), Style.BLACK));
+		STYLES.put("SS9", new Style(Style.parseColor("#fab49b"), Style.BLACK));
 
 		// Tram
-		LINES.put("T1", new Style(Shape.RECT, Style.parseColor("#ed1c24"), Style.WHITE));
-		LINES.put("T1E", new Style(Shape.RECT, Style.parseColor("#ed1c24"), Style.WHITE));
-		LINES.put("T2", new Style(Shape.RECT, Style.parseColor("#0071bc"), Style.WHITE));
-		LINES.put("T2E", new Style(Shape.RECT, Style.parseColor("#0071bc"), Style.WHITE));
-		LINES.put("T3", new Style(Shape.RECT, Style.parseColor("#947139"), Style.WHITE));
-		LINES.put("T3E", new Style(Shape.RECT, Style.parseColor("#947139"), Style.WHITE));
-		LINES.put("T4", new Style(Shape.RECT, Style.parseColor("#ffcb04"), Style.BLACK));
-		LINES.put("T4E", new Style(Shape.RECT, Style.parseColor("#ffcb04"), Style.BLACK));
-		LINES.put("T5", new Style(Shape.RECT, Style.parseColor("#00c0f3"), Style.WHITE));
-		LINES.put("T5E", new Style(Shape.RECT, Style.parseColor("#00c0f3"), Style.WHITE));
-		LINES.put("T6", new Style(Shape.RECT, Style.parseColor("#80c342"), Style.WHITE));
-		LINES.put("T6E", new Style(Shape.RECT, Style.parseColor("#80c342"), Style.WHITE));
-		LINES.put("T7", new Style(Shape.RECT, Style.parseColor("#58595b"), Style.WHITE));
-		LINES.put("T7E", new Style(Shape.RECT, Style.parseColor("#58595b"), Style.WHITE));
-		LINES.put("T8", new Style(Shape.RECT, Style.parseColor("#f7931d"), Style.BLACK));
-		LINES.put("T8E", new Style(Shape.RECT, Style.parseColor("#f7931d"), Style.BLACK));
+		STYLES.put("T1", new Style(Shape.RECT, Style.parseColor("#ed1c24"), Style.WHITE));
+		STYLES.put("T1E", new Style(Shape.RECT, Style.parseColor("#ed1c24"), Style.WHITE));
+		STYLES.put("T2", new Style(Shape.RECT, Style.parseColor("#0071bc"), Style.WHITE));
+		STYLES.put("T2E", new Style(Shape.RECT, Style.parseColor("#0071bc"), Style.WHITE));
+		STYLES.put("T3", new Style(Shape.RECT, Style.parseColor("#947139"), Style.WHITE));
+		STYLES.put("T3E", new Style(Shape.RECT, Style.parseColor("#947139"), Style.WHITE));
+		STYLES.put("T4", new Style(Shape.RECT, Style.parseColor("#ffcb04"), Style.BLACK));
+		STYLES.put("T4E", new Style(Shape.RECT, Style.parseColor("#ffcb04"), Style.BLACK));
+		STYLES.put("T5", new Style(Shape.RECT, Style.parseColor("#00c0f3"), Style.WHITE));
+		STYLES.put("T5E", new Style(Shape.RECT, Style.parseColor("#00c0f3"), Style.WHITE));
+		STYLES.put("T6", new Style(Shape.RECT, Style.parseColor("#80c342"), Style.WHITE));
+		STYLES.put("T6E", new Style(Shape.RECT, Style.parseColor("#80c342"), Style.WHITE));
+		STYLES.put("T7", new Style(Shape.RECT, Style.parseColor("#58595b"), Style.WHITE));
+		STYLES.put("T7E", new Style(Shape.RECT, Style.parseColor("#58595b"), Style.WHITE));
+		STYLES.put("T8", new Style(Shape.RECT, Style.parseColor("#f7931d"), Style.BLACK));
+		STYLES.put("T8E", new Style(Shape.RECT, Style.parseColor("#f7931d"), Style.BLACK));
 
 		// Bus - only used on bus plan
 		// LINES.put("B21", new Style(Shape.CIRCLE, Style.parseColor("#2e3092"), Style.WHITE));
@@ -140,27 +142,17 @@ public class KvvProvider extends AbstractEfaProvider
 		// LINES.put("B123", new Style(Shape.CIRCLE, Style.parseColor("#9d9fa1"), Style.WHITE));
 
 		// Nightliner
-		LINES.put("BNL3", new Style(Style.parseColor("#947139"), Style.WHITE));
-		LINES.put("BNL4", new Style(Style.parseColor("#ffcb04"), Style.BLACK));
-		LINES.put("BNL5", new Style(Style.parseColor("#00c0f3"), Style.WHITE));
-		LINES.put("BNL6", new Style(Style.parseColor("#80c342"), Style.WHITE));
+		STYLES.put("BNL3", new Style(Style.parseColor("#947139"), Style.WHITE));
+		STYLES.put("BNL4", new Style(Style.parseColor("#ffcb04"), Style.BLACK));
+		STYLES.put("BNL5", new Style(Style.parseColor("#00c0f3"), Style.WHITE));
+		STYLES.put("BNL6", new Style(Style.parseColor("#80c342"), Style.WHITE));
 
 		// Anruf-Linien-Taxi
-		LINES.put("BALT6", new Style(Shape.RECT, Style.BLACK, Style.YELLOW));
-		LINES.put("BALT11", new Style(Shape.RECT, Style.BLACK, Style.YELLOW));
-		LINES.put("BALT12", new Style(Shape.RECT, Style.BLACK, Style.YELLOW));
-		LINES.put("BALT13", new Style(Shape.RECT, Style.BLACK, Style.YELLOW));
-		LINES.put("BALT14", new Style(Shape.RECT, Style.BLACK, Style.YELLOW));
-		LINES.put("BALT16", new Style(Shape.RECT, Style.BLACK, Style.YELLOW));
-	}
-
-	@Override
-	public Style lineStyle(final String line)
-	{
-		final Style style = LINES.get(line);
-		if (style != null)
-			return style;
-		else
-			return super.lineStyle(line);
+		STYLES.put("BALT6", new Style(Shape.RECT, Style.BLACK, Style.YELLOW));
+		STYLES.put("BALT11", new Style(Shape.RECT, Style.BLACK, Style.YELLOW));
+		STYLES.put("BALT12", new Style(Shape.RECT, Style.BLACK, Style.YELLOW));
+		STYLES.put("BALT13", new Style(Shape.RECT, Style.BLACK, Style.YELLOW));
+		STYLES.put("BALT14", new Style(Shape.RECT, Style.BLACK, Style.YELLOW));
+		STYLES.put("BALT16", new Style(Shape.RECT, Style.BLACK, Style.YELLOW));
 	}
 }

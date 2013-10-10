@@ -41,6 +41,7 @@ public class MvvProvider extends AbstractEfaProvider
 		super(apiBase);
 
 		setIncludeRegionId(false);
+		setStyles(STYLES);
 	}
 
 	public NetworkId id()
@@ -82,54 +83,44 @@ public class MvvProvider extends AbstractEfaProvider
 		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
 	}
 
-	private static final Map<String, Style> LINES = new HashMap<String, Style>();
+	private static final Map<String, Style> STYLES = new HashMap<String, Style>();
 
 	static
 	{
-		LINES.put("SS1", new Style(Style.parseColor("#00ccff"), Style.WHITE));
-		LINES.put("SS2", new Style(Style.parseColor("#66cc00"), Style.WHITE));
-		LINES.put("SS3", new Style(Style.parseColor("#880099"), Style.WHITE));
-		LINES.put("SS4", new Style(Style.parseColor("#ff0033"), Style.WHITE));
-		LINES.put("SS6", new Style(Style.parseColor("#00aa66"), Style.WHITE));
-		LINES.put("SS7", new Style(Style.parseColor("#993333"), Style.WHITE));
-		LINES.put("SS8", new Style(Style.BLACK, Style.parseColor("#ffcc00")));
-		LINES.put("SS20", new Style(Style.BLACK, Style.parseColor("#ffaaaa")));
-		LINES.put("SS27", new Style(Style.parseColor("#ffaaaa"), Style.WHITE));
-		LINES.put("SA", new Style(Style.parseColor("#231f20"), Style.WHITE));
+		STYLES.put("SS1", new Style(Style.parseColor("#00ccff"), Style.WHITE));
+		STYLES.put("SS2", new Style(Style.parseColor("#66cc00"), Style.WHITE));
+		STYLES.put("SS3", new Style(Style.parseColor("#880099"), Style.WHITE));
+		STYLES.put("SS4", new Style(Style.parseColor("#ff0033"), Style.WHITE));
+		STYLES.put("SS6", new Style(Style.parseColor("#00aa66"), Style.WHITE));
+		STYLES.put("SS7", new Style(Style.parseColor("#993333"), Style.WHITE));
+		STYLES.put("SS8", new Style(Style.BLACK, Style.parseColor("#ffcc00")));
+		STYLES.put("SS20", new Style(Style.BLACK, Style.parseColor("#ffaaaa")));
+		STYLES.put("SS27", new Style(Style.parseColor("#ffaaaa"), Style.WHITE));
+		STYLES.put("SA", new Style(Style.parseColor("#231f20"), Style.WHITE));
 
-		LINES.put("T12", new Style(Style.parseColor("#883388"), Style.WHITE));
-		LINES.put("T15", new Style(Style.parseColor("#3366CC"), Style.WHITE));
-		LINES.put("T16", new Style(Style.parseColor("#CC8833"), Style.WHITE));
-		LINES.put("T17", new Style(Style.parseColor("#993333"), Style.WHITE));
-		LINES.put("T18", new Style(Style.parseColor("#66bb33"), Style.WHITE));
-		LINES.put("T19", new Style(Style.parseColor("#cc0000"), Style.WHITE));
-		LINES.put("T20", new Style(Style.parseColor("#00bbee"), Style.WHITE));
-		LINES.put("T21", new Style(Style.parseColor("#33aa99"), Style.WHITE));
-		LINES.put("T23", new Style(Style.parseColor("#fff000"), Style.WHITE));
-		LINES.put("T25", new Style(Style.parseColor("#ff9999"), Style.WHITE));
-		LINES.put("T27", new Style(Style.parseColor("#ff6600"), Style.WHITE));
-		LINES.put("TN17", new Style(Style.parseColor("#999999"), Style.parseColor("#ffff00")));
-		LINES.put("TN19", new Style(Style.parseColor("#999999"), Style.parseColor("#ffff00")));
-		LINES.put("TN20", new Style(Style.parseColor("#999999"), Style.parseColor("#ffff00")));
-		LINES.put("TN27", new Style(Style.parseColor("#999999"), Style.parseColor("#ffff00")));
+		STYLES.put("T12", new Style(Style.parseColor("#883388"), Style.WHITE));
+		STYLES.put("T15", new Style(Style.parseColor("#3366CC"), Style.WHITE));
+		STYLES.put("T16", new Style(Style.parseColor("#CC8833"), Style.WHITE));
+		STYLES.put("T17", new Style(Style.parseColor("#993333"), Style.WHITE));
+		STYLES.put("T18", new Style(Style.parseColor("#66bb33"), Style.WHITE));
+		STYLES.put("T19", new Style(Style.parseColor("#cc0000"), Style.WHITE));
+		STYLES.put("T20", new Style(Style.parseColor("#00bbee"), Style.WHITE));
+		STYLES.put("T21", new Style(Style.parseColor("#33aa99"), Style.WHITE));
+		STYLES.put("T23", new Style(Style.parseColor("#fff000"), Style.WHITE));
+		STYLES.put("T25", new Style(Style.parseColor("#ff9999"), Style.WHITE));
+		STYLES.put("T27", new Style(Style.parseColor("#ff6600"), Style.WHITE));
+		STYLES.put("TN17", new Style(Style.parseColor("#999999"), Style.parseColor("#ffff00")));
+		STYLES.put("TN19", new Style(Style.parseColor("#999999"), Style.parseColor("#ffff00")));
+		STYLES.put("TN20", new Style(Style.parseColor("#999999"), Style.parseColor("#ffff00")));
+		STYLES.put("TN27", new Style(Style.parseColor("#999999"), Style.parseColor("#ffff00")));
 
-		LINES.put("UU1", new Style(Style.parseColor("#227700"), Style.WHITE));
-		LINES.put("UU2", new Style(Style.parseColor("#bb0000"), Style.WHITE));
-		LINES.put("UU2E", new Style(Style.parseColor("#bb0000"), Style.WHITE));
-		LINES.put("UU3", new Style(Style.parseColor("#ee8800"), Style.WHITE));
-		LINES.put("UU4", new Style(Style.parseColor("#00ccaa"), Style.WHITE));
-		LINES.put("UU5", new Style(Style.parseColor("#bb7700"), Style.WHITE));
-		LINES.put("UU6", new Style(Style.parseColor("#0000cc"), Style.WHITE));
-	}
-
-	@Override
-	public Style lineStyle(final String line)
-	{
-		final Style style = LINES.get(line);
-		if (style != null)
-			return style;
-		else
-			return super.lineStyle(line);
+		STYLES.put("UU1", new Style(Style.parseColor("#227700"), Style.WHITE));
+		STYLES.put("UU2", new Style(Style.parseColor("#bb0000"), Style.WHITE));
+		STYLES.put("UU2E", new Style(Style.parseColor("#bb0000"), Style.WHITE));
+		STYLES.put("UU3", new Style(Style.parseColor("#ee8800"), Style.WHITE));
+		STYLES.put("UU4", new Style(Style.parseColor("#00ccaa"), Style.WHITE));
+		STYLES.put("UU5", new Style(Style.parseColor("#bb7700"), Style.WHITE));
+		STYLES.put("UU6", new Style(Style.parseColor("#0000cc"), Style.WHITE));
 	}
 
 	@Override

@@ -35,6 +35,7 @@ public class GvhProvider extends AbstractEfaProvider
 		super(API_BASE);
 
 		setAdditionalQueryParameter(additionalQueryParameter);
+		setStyles(STYLES);
 	}
 
 	public NetworkId id()
@@ -74,31 +75,21 @@ public class GvhProvider extends AbstractEfaProvider
 		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
 	}
 
-	private static final Map<String, Style> LINES = new HashMap<String, Style>();
+	private static final Map<String, Style> STYLES = new HashMap<String, Style>();
 
 	static
 	{
 		// Hamburg
-		LINES.put("SS1", new Style(Style.parseColor("#00933B"), Style.WHITE));
-		LINES.put("SS11", new Style(Style.WHITE, Style.parseColor("#00933B"), Style.parseColor("#00933B")));
-		LINES.put("SS2", new Style(Style.WHITE, Style.parseColor("#9D271A"), Style.parseColor("#9D271A")));
-		LINES.put("SS21", new Style(Style.parseColor("#9D271A"), Style.WHITE));
-		LINES.put("SS3", new Style(Style.parseColor("#411273"), Style.WHITE));
-		LINES.put("SS31", new Style(Style.parseColor("#411273"), Style.WHITE));
+		STYLES.put("SS1", new Style(Style.parseColor("#00933B"), Style.WHITE));
+		STYLES.put("SS11", new Style(Style.WHITE, Style.parseColor("#00933B"), Style.parseColor("#00933B")));
+		STYLES.put("SS2", new Style(Style.WHITE, Style.parseColor("#9D271A"), Style.parseColor("#9D271A")));
+		STYLES.put("SS21", new Style(Style.parseColor("#9D271A"), Style.WHITE));
+		STYLES.put("SS3", new Style(Style.parseColor("#411273"), Style.WHITE));
+		STYLES.put("SS31", new Style(Style.parseColor("#411273"), Style.WHITE));
 
-		LINES.put("UU1", new Style(Style.parseColor("#044895"), Style.WHITE));
-		LINES.put("UU2", new Style(Style.parseColor("#DC2B19"), Style.WHITE));
-		LINES.put("UU3", new Style(Style.parseColor("#EE9D16"), Style.WHITE));
-		LINES.put("UU4", new Style(Style.parseColor("#13A59D"), Style.WHITE));
-	}
-
-	@Override
-	public Style lineStyle(final String line)
-	{
-		final Style style = LINES.get(line);
-		if (style != null)
-			return style;
-		else
-			return super.lineStyle(line);
+		STYLES.put("UU1", new Style(Style.parseColor("#044895"), Style.WHITE));
+		STYLES.put("UU2", new Style(Style.parseColor("#DC2B19"), Style.WHITE));
+		STYLES.put("UU3", new Style(Style.parseColor("#EE9D16"), Style.WHITE));
+		STYLES.put("UU4", new Style(Style.parseColor("#13A59D"), Style.WHITE));
 	}
 }

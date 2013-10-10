@@ -66,6 +66,8 @@ public final class BvgProvider extends AbstractHafasProvider
 	{
 		super(API_BASE + "stboard.bin/dn", API_BASE + "ajax-getstop.bin/dny", API_BASE + "query.bin/dn", 8, null);
 
+		setStyles(STYLES);
+
 		this.additionalQueryParameter = additionalQueryParameter;
 	}
 
@@ -607,133 +609,118 @@ public final class BvgProvider extends AbstractHafasProvider
 		return 0;
 	}
 
-	private static final Map<String, Style> LINES = new HashMap<String, Style>();
+	private static final Map<String, Style> STYLES = new HashMap<String, Style>();
 
 	static
 	{
-		LINES.put("SS1", new Style(Style.rgb(221, 77, 174), Style.WHITE));
-		LINES.put("SS2", new Style(Style.rgb(16, 132, 73), Style.WHITE));
-		LINES.put("SS25", new Style(Style.rgb(16, 132, 73), Style.WHITE));
-		LINES.put("SS3", new Style(Style.rgb(22, 106, 184), Style.WHITE));
-		LINES.put("SS41", new Style(Style.rgb(162, 63, 48), Style.WHITE));
-		LINES.put("SS42", new Style(Style.rgb(191, 90, 42), Style.WHITE));
-		LINES.put("SS45", new Style(Style.WHITE, Style.rgb(191, 128, 55)));
-		LINES.put("SS46", new Style(Style.rgb(191, 128, 55), Style.WHITE));
-		LINES.put("SS47", new Style(Style.rgb(191, 128, 55), Style.WHITE));
-		LINES.put("SS5", new Style(Style.rgb(243, 103, 23), Style.WHITE));
-		LINES.put("SS7", new Style(Style.rgb(119, 96, 176), Style.WHITE));
-		LINES.put("SS75", new Style(Style.rgb(119, 96, 176), Style.WHITE));
-		LINES.put("SS8", new Style(Style.rgb(85, 184, 49), Style.WHITE));
-		LINES.put("SS85", new Style(Style.WHITE, Style.rgb(85, 184, 49)));
-		LINES.put("SS9", new Style(Style.rgb(148, 36, 64), Style.WHITE));
+		STYLES.put("SS1", new Style(Style.rgb(221, 77, 174), Style.WHITE));
+		STYLES.put("SS2", new Style(Style.rgb(16, 132, 73), Style.WHITE));
+		STYLES.put("SS25", new Style(Style.rgb(16, 132, 73), Style.WHITE));
+		STYLES.put("SS3", new Style(Style.rgb(22, 106, 184), Style.WHITE));
+		STYLES.put("SS41", new Style(Style.rgb(162, 63, 48), Style.WHITE));
+		STYLES.put("SS42", new Style(Style.rgb(191, 90, 42), Style.WHITE));
+		STYLES.put("SS45", new Style(Style.WHITE, Style.rgb(191, 128, 55)));
+		STYLES.put("SS46", new Style(Style.rgb(191, 128, 55), Style.WHITE));
+		STYLES.put("SS47", new Style(Style.rgb(191, 128, 55), Style.WHITE));
+		STYLES.put("SS5", new Style(Style.rgb(243, 103, 23), Style.WHITE));
+		STYLES.put("SS7", new Style(Style.rgb(119, 96, 176), Style.WHITE));
+		STYLES.put("SS75", new Style(Style.rgb(119, 96, 176), Style.WHITE));
+		STYLES.put("SS8", new Style(Style.rgb(85, 184, 49), Style.WHITE));
+		STYLES.put("SS85", new Style(Style.WHITE, Style.rgb(85, 184, 49)));
+		STYLES.put("SS9", new Style(Style.rgb(148, 36, 64), Style.WHITE));
 
-		LINES.put("UU1", new Style(Shape.RECT, Style.rgb(84, 131, 47), Style.WHITE));
-		LINES.put("UU2", new Style(Shape.RECT, Style.rgb(215, 25, 16), Style.WHITE));
-		LINES.put("UU3", new Style(Shape.RECT, Style.rgb(47, 152, 154), Style.WHITE));
-		LINES.put("UU4", new Style(Shape.RECT, Style.rgb(255, 233, 42), Style.BLACK));
-		LINES.put("UU5", new Style(Shape.RECT, Style.rgb(91, 31, 16), Style.WHITE));
-		LINES.put("UU55", new Style(Shape.RECT, Style.rgb(91, 31, 16), Style.WHITE));
-		LINES.put("UU6", new Style(Shape.RECT, Style.rgb(127, 57, 115), Style.WHITE));
-		LINES.put("UU7", new Style(Shape.RECT, Style.rgb(0, 153, 204), Style.WHITE));
-		LINES.put("UU8", new Style(Shape.RECT, Style.rgb(24, 25, 83), Style.WHITE));
-		LINES.put("UU9", new Style(Shape.RECT, Style.rgb(255, 90, 34), Style.WHITE));
+		STYLES.put("UU1", new Style(Shape.RECT, Style.rgb(84, 131, 47), Style.WHITE));
+		STYLES.put("UU2", new Style(Shape.RECT, Style.rgb(215, 25, 16), Style.WHITE));
+		STYLES.put("UU3", new Style(Shape.RECT, Style.rgb(47, 152, 154), Style.WHITE));
+		STYLES.put("UU4", new Style(Shape.RECT, Style.rgb(255, 233, 42), Style.BLACK));
+		STYLES.put("UU5", new Style(Shape.RECT, Style.rgb(91, 31, 16), Style.WHITE));
+		STYLES.put("UU55", new Style(Shape.RECT, Style.rgb(91, 31, 16), Style.WHITE));
+		STYLES.put("UU6", new Style(Shape.RECT, Style.rgb(127, 57, 115), Style.WHITE));
+		STYLES.put("UU7", new Style(Shape.RECT, Style.rgb(0, 153, 204), Style.WHITE));
+		STYLES.put("UU8", new Style(Shape.RECT, Style.rgb(24, 25, 83), Style.WHITE));
+		STYLES.put("UU9", new Style(Shape.RECT, Style.rgb(255, 90, 34), Style.WHITE));
 
-		LINES.put("TM1", new Style(Shape.RECT, Style.parseColor("#eb8614"), Style.WHITE));
-		LINES.put("TM2", new Style(Shape.RECT, Style.parseColor("#68c52f"), Style.WHITE));
-		LINES.put("TM4", new Style(Shape.RECT, Style.parseColor("#cf1b22"), Style.WHITE));
-		LINES.put("TM5", new Style(Shape.RECT, Style.parseColor("#bf8037"), Style.WHITE));
-		LINES.put("TM6", new Style(Shape.RECT, Style.parseColor("#1e5ca2"), Style.WHITE));
-		LINES.put("TM8", new Style(Shape.RECT, Style.parseColor("#f46717"), Style.WHITE));
-		LINES.put("TM10", new Style(Shape.RECT, Style.parseColor("#108449"), Style.WHITE));
-		LINES.put("TM13", new Style(Shape.RECT, Style.parseColor("#36ab94"), Style.WHITE));
-		LINES.put("TM17", new Style(Shape.RECT, Style.parseColor("#a23f30"), Style.WHITE));
+		STYLES.put("TM1", new Style(Shape.RECT, Style.parseColor("#eb8614"), Style.WHITE));
+		STYLES.put("TM2", new Style(Shape.RECT, Style.parseColor("#68c52f"), Style.WHITE));
+		STYLES.put("TM4", new Style(Shape.RECT, Style.parseColor("#cf1b22"), Style.WHITE));
+		STYLES.put("TM5", new Style(Shape.RECT, Style.parseColor("#bf8037"), Style.WHITE));
+		STYLES.put("TM6", new Style(Shape.RECT, Style.parseColor("#1e5ca2"), Style.WHITE));
+		STYLES.put("TM8", new Style(Shape.RECT, Style.parseColor("#f46717"), Style.WHITE));
+		STYLES.put("TM10", new Style(Shape.RECT, Style.parseColor("#108449"), Style.WHITE));
+		STYLES.put("TM13", new Style(Shape.RECT, Style.parseColor("#36ab94"), Style.WHITE));
+		STYLES.put("TM17", new Style(Shape.RECT, Style.parseColor("#a23f30"), Style.WHITE));
 
-		LINES.put("T12", new Style(Shape.RECT, Style.parseColor("#7d64b2"), Style.WHITE));
-		LINES.put("T16", new Style(Shape.RECT, Style.parseColor("#1e5ca2"), Style.WHITE));
-		LINES.put("T18", new Style(Shape.RECT, Style.parseColor("#f46717"), Style.WHITE));
-		LINES.put("T21", new Style(Shape.RECT, Style.parseColor("#7d64b2"), Style.WHITE));
-		LINES.put("T27", new Style(Shape.RECT, Style.parseColor("#a23f30"), Style.WHITE));
-		LINES.put("T37", new Style(Shape.RECT, Style.parseColor("#a23f30"), Style.WHITE));
-		LINES.put("T50", new Style(Shape.RECT, Style.parseColor("#36ab94"), Style.WHITE));
-		LINES.put("T60", new Style(Shape.RECT, Style.parseColor("#108449"), Style.WHITE));
-		LINES.put("T61", new Style(Shape.RECT, Style.parseColor("#108449"), Style.WHITE));
-		LINES.put("T62", new Style(Shape.RECT, Style.parseColor("#125030"), Style.WHITE));
-		LINES.put("T63", new Style(Shape.RECT, Style.parseColor("#36ab94"), Style.WHITE));
-		LINES.put("T67", new Style(Shape.RECT, Style.parseColor("#108449"), Style.WHITE));
-		LINES.put("T68", new Style(Shape.RECT, Style.parseColor("#108449"), Style.WHITE));
+		STYLES.put("T12", new Style(Shape.RECT, Style.parseColor("#7d64b2"), Style.WHITE));
+		STYLES.put("T16", new Style(Shape.RECT, Style.parseColor("#1e5ca2"), Style.WHITE));
+		STYLES.put("T18", new Style(Shape.RECT, Style.parseColor("#f46717"), Style.WHITE));
+		STYLES.put("T21", new Style(Shape.RECT, Style.parseColor("#7d64b2"), Style.WHITE));
+		STYLES.put("T27", new Style(Shape.RECT, Style.parseColor("#a23f30"), Style.WHITE));
+		STYLES.put("T37", new Style(Shape.RECT, Style.parseColor("#a23f30"), Style.WHITE));
+		STYLES.put("T50", new Style(Shape.RECT, Style.parseColor("#36ab94"), Style.WHITE));
+		STYLES.put("T60", new Style(Shape.RECT, Style.parseColor("#108449"), Style.WHITE));
+		STYLES.put("T61", new Style(Shape.RECT, Style.parseColor("#108449"), Style.WHITE));
+		STYLES.put("T62", new Style(Shape.RECT, Style.parseColor("#125030"), Style.WHITE));
+		STYLES.put("T63", new Style(Shape.RECT, Style.parseColor("#36ab94"), Style.WHITE));
+		STYLES.put("T67", new Style(Shape.RECT, Style.parseColor("#108449"), Style.WHITE));
+		STYLES.put("T68", new Style(Shape.RECT, Style.parseColor("#108449"), Style.WHITE));
 
-		LINES.put("FF1", new Style(Style.BLUE, Style.WHITE)); // Potsdam
-		LINES.put("FF10", new Style(Style.BLUE, Style.WHITE));
-		LINES.put("FF11", new Style(Style.BLUE, Style.WHITE));
-		LINES.put("FF12", new Style(Style.BLUE, Style.WHITE));
-		LINES.put("FF21", new Style(Style.BLUE, Style.WHITE));
-		LINES.put("FF23", new Style(Style.BLUE, Style.WHITE));
-		LINES.put("FF24", new Style(Style.BLUE, Style.WHITE));
+		STYLES.put("B", new Style(Shape.RECT, Style.BLACK, Style.WHITE));
+		STYLES.put("BN", new Style(Shape.RECT, Style.parseColor("#993399"), Style.WHITE));
+
+		STYLES.put("FF1", new Style(Style.BLUE, Style.WHITE)); // Potsdam
+		STYLES.put("FF10", new Style(Style.BLUE, Style.WHITE));
+		STYLES.put("FF11", new Style(Style.BLUE, Style.WHITE));
+		STYLES.put("FF12", new Style(Style.BLUE, Style.WHITE));
+		STYLES.put("FF21", new Style(Style.BLUE, Style.WHITE));
+		STYLES.put("FF23", new Style(Style.BLUE, Style.WHITE));
+		STYLES.put("FF24", new Style(Style.BLUE, Style.WHITE));
 
 		// Regional lines Brandenburg:
-		LINES.put("RRE1", new Style(Shape.RECT, Style.parseColor("#EE1C23"), Style.WHITE));
-		LINES.put("RRE2", new Style(Shape.RECT, Style.parseColor("#FFD403"), Style.BLACK));
-		LINES.put("RRE3", new Style(Shape.RECT, Style.parseColor("#F57921"), Style.WHITE));
-		LINES.put("RRE4", new Style(Shape.RECT, Style.parseColor("#952D4F"), Style.WHITE));
-		LINES.put("RRE5", new Style(Shape.RECT, Style.parseColor("#0072BC"), Style.WHITE));
-		LINES.put("RRE6", new Style(Shape.RECT, Style.parseColor("#DB6EAB"), Style.WHITE));
-		LINES.put("RRE7", new Style(Shape.RECT, Style.parseColor("#00854A"), Style.WHITE));
-		LINES.put("RRE10", new Style(Shape.RECT, Style.parseColor("#A7653F"), Style.WHITE));
-		LINES.put("RRE11", new Style(Shape.RECT, Style.parseColor("#059EDB"), Style.WHITE));
-		LINES.put("RRE11", new Style(Shape.RECT, Style.parseColor("#EE1C23"), Style.WHITE));
-		LINES.put("RRE15", new Style(Shape.RECT, Style.parseColor("#FFD403"), Style.BLACK));
-		LINES.put("RRE18", new Style(Shape.RECT, Style.parseColor("#00A65E"), Style.WHITE));
-		LINES.put("RRB10", new Style(Shape.RECT, Style.parseColor("#60BB46"), Style.WHITE));
-		LINES.put("RRB12", new Style(Shape.RECT, Style.parseColor("#A3238E"), Style.WHITE));
-		LINES.put("RRB13", new Style(Shape.RECT, Style.parseColor("#F68B1F"), Style.WHITE));
-		LINES.put("RRB13", new Style(Shape.RECT, Style.parseColor("#00A65E"), Style.WHITE));
-		LINES.put("RRB14", new Style(Shape.RECT, Style.parseColor("#A3238E"), Style.WHITE));
-		LINES.put("RRB20", new Style(Shape.RECT, Style.parseColor("#00854A"), Style.WHITE));
-		LINES.put("RRB21", new Style(Shape.RECT, Style.parseColor("#5E6DB3"), Style.WHITE));
-		LINES.put("RRB22", new Style(Shape.RECT, Style.parseColor("#0087CB"), Style.WHITE));
-		LINES.put("ROE25", new Style(Shape.RECT, Style.parseColor("#0087CB"), Style.WHITE));
-		LINES.put("RNE26", new Style(Shape.RECT, Style.parseColor("#00A896"), Style.WHITE));
-		LINES.put("RNE27", new Style(Shape.RECT, Style.parseColor("#EE1C23"), Style.WHITE));
-		LINES.put("RRB30", new Style(Shape.RECT, Style.parseColor("#00A65E"), Style.WHITE));
-		LINES.put("RRB31", new Style(Shape.RECT, Style.parseColor("#60BB46"), Style.WHITE));
-		LINES.put("RMR33", new Style(Shape.RECT, Style.parseColor("#EE1C23"), Style.WHITE));
-		LINES.put("ROE35", new Style(Shape.RECT, Style.parseColor("#5E6DB3"), Style.WHITE));
-		LINES.put("ROE36", new Style(Shape.RECT, Style.parseColor("#A7653F"), Style.WHITE));
-		LINES.put("RRB43", new Style(Shape.RECT, Style.parseColor("#5E6DB3"), Style.WHITE));
-		LINES.put("RRB45", new Style(Shape.RECT, Style.parseColor("#FFD403"), Style.BLACK));
-		LINES.put("ROE46", new Style(Shape.RECT, Style.parseColor("#DB6EAB"), Style.WHITE));
-		LINES.put("RMR51", new Style(Shape.RECT, Style.parseColor("#DB6EAB"), Style.WHITE));
-		LINES.put("RRB51", new Style(Shape.RECT, Style.parseColor("#DB6EAB"), Style.WHITE));
-		LINES.put("RRB54", new Style(Shape.RECT, Style.parseColor("#FFD403"), Style.BLACK));
-		LINES.put("RRB55", new Style(Shape.RECT, Style.parseColor("#F57921"), Style.WHITE));
-		LINES.put("ROE60", new Style(Shape.RECT, Style.parseColor("#60BB46"), Style.WHITE));
-		LINES.put("ROE63", new Style(Shape.RECT, Style.parseColor("#FFD403"), Style.BLACK));
-		LINES.put("ROE65", new Style(Shape.RECT, Style.parseColor("#0072BC"), Style.WHITE));
-		LINES.put("RRB66", new Style(Shape.RECT, Style.parseColor("#60BB46"), Style.WHITE));
-		LINES.put("RPE70", new Style(Shape.RECT, Style.parseColor("#FFD403"), Style.BLACK));
-		LINES.put("RPE73", new Style(Shape.RECT, Style.parseColor("#00A896"), Style.WHITE));
-		LINES.put("RPE74", new Style(Shape.RECT, Style.parseColor("#0072BC"), Style.WHITE));
-		LINES.put("T89", new Style(Shape.RECT, Style.parseColor("#EE1C23"), Style.WHITE));
-		LINES.put("RRB91", new Style(Shape.RECT, Style.parseColor("#A7653F"), Style.WHITE));
-		LINES.put("RRB93", new Style(Shape.RECT, Style.parseColor("#A7653F"), Style.WHITE));
-	}
-
-	private static final Style STYLE_BUS_NIGHT = new Style(Shape.RECT, Style.BLACK, Style.WHITE);
-	private static final Style STYLE_BUS_DAY = new Style(Shape.RECT, Style.parseColor("#993399"), Style.WHITE);
-
-	@Override
-	public Style lineStyle(final String line)
-	{
-		final Style style = LINES.get(line);
-		if (style != null)
-			return style;
-
-		if (line.startsWith("BN"))
-			return STYLE_BUS_NIGHT;
-		if (line.startsWith("B"))
-			return STYLE_BUS_DAY;
-
-		return super.lineStyle(line);
+		STYLES.put("RRE1", new Style(Shape.RECT, Style.parseColor("#EE1C23"), Style.WHITE));
+		STYLES.put("RRE2", new Style(Shape.RECT, Style.parseColor("#FFD403"), Style.BLACK));
+		STYLES.put("RRE3", new Style(Shape.RECT, Style.parseColor("#F57921"), Style.WHITE));
+		STYLES.put("RRE4", new Style(Shape.RECT, Style.parseColor("#952D4F"), Style.WHITE));
+		STYLES.put("RRE5", new Style(Shape.RECT, Style.parseColor("#0072BC"), Style.WHITE));
+		STYLES.put("RRE6", new Style(Shape.RECT, Style.parseColor("#DB6EAB"), Style.WHITE));
+		STYLES.put("RRE7", new Style(Shape.RECT, Style.parseColor("#00854A"), Style.WHITE));
+		STYLES.put("RRE10", new Style(Shape.RECT, Style.parseColor("#A7653F"), Style.WHITE));
+		STYLES.put("RRE11", new Style(Shape.RECT, Style.parseColor("#059EDB"), Style.WHITE));
+		STYLES.put("RRE11", new Style(Shape.RECT, Style.parseColor("#EE1C23"), Style.WHITE));
+		STYLES.put("RRE15", new Style(Shape.RECT, Style.parseColor("#FFD403"), Style.BLACK));
+		STYLES.put("RRE18", new Style(Shape.RECT, Style.parseColor("#00A65E"), Style.WHITE));
+		STYLES.put("RRB10", new Style(Shape.RECT, Style.parseColor("#60BB46"), Style.WHITE));
+		STYLES.put("RRB12", new Style(Shape.RECT, Style.parseColor("#A3238E"), Style.WHITE));
+		STYLES.put("RRB13", new Style(Shape.RECT, Style.parseColor("#F68B1F"), Style.WHITE));
+		STYLES.put("RRB13", new Style(Shape.RECT, Style.parseColor("#00A65E"), Style.WHITE));
+		STYLES.put("RRB14", new Style(Shape.RECT, Style.parseColor("#A3238E"), Style.WHITE));
+		STYLES.put("RRB20", new Style(Shape.RECT, Style.parseColor("#00854A"), Style.WHITE));
+		STYLES.put("RRB21", new Style(Shape.RECT, Style.parseColor("#5E6DB3"), Style.WHITE));
+		STYLES.put("RRB22", new Style(Shape.RECT, Style.parseColor("#0087CB"), Style.WHITE));
+		STYLES.put("ROE25", new Style(Shape.RECT, Style.parseColor("#0087CB"), Style.WHITE));
+		STYLES.put("RNE26", new Style(Shape.RECT, Style.parseColor("#00A896"), Style.WHITE));
+		STYLES.put("RNE27", new Style(Shape.RECT, Style.parseColor("#EE1C23"), Style.WHITE));
+		STYLES.put("RRB30", new Style(Shape.RECT, Style.parseColor("#00A65E"), Style.WHITE));
+		STYLES.put("RRB31", new Style(Shape.RECT, Style.parseColor("#60BB46"), Style.WHITE));
+		STYLES.put("RMR33", new Style(Shape.RECT, Style.parseColor("#EE1C23"), Style.WHITE));
+		STYLES.put("ROE35", new Style(Shape.RECT, Style.parseColor("#5E6DB3"), Style.WHITE));
+		STYLES.put("ROE36", new Style(Shape.RECT, Style.parseColor("#A7653F"), Style.WHITE));
+		STYLES.put("RRB43", new Style(Shape.RECT, Style.parseColor("#5E6DB3"), Style.WHITE));
+		STYLES.put("RRB45", new Style(Shape.RECT, Style.parseColor("#FFD403"), Style.BLACK));
+		STYLES.put("ROE46", new Style(Shape.RECT, Style.parseColor("#DB6EAB"), Style.WHITE));
+		STYLES.put("RMR51", new Style(Shape.RECT, Style.parseColor("#DB6EAB"), Style.WHITE));
+		STYLES.put("RRB51", new Style(Shape.RECT, Style.parseColor("#DB6EAB"), Style.WHITE));
+		STYLES.put("RRB54", new Style(Shape.RECT, Style.parseColor("#FFD403"), Style.BLACK));
+		STYLES.put("RRB55", new Style(Shape.RECT, Style.parseColor("#F57921"), Style.WHITE));
+		STYLES.put("ROE60", new Style(Shape.RECT, Style.parseColor("#60BB46"), Style.WHITE));
+		STYLES.put("ROE63", new Style(Shape.RECT, Style.parseColor("#FFD403"), Style.BLACK));
+		STYLES.put("ROE65", new Style(Shape.RECT, Style.parseColor("#0072BC"), Style.WHITE));
+		STYLES.put("RRB66", new Style(Shape.RECT, Style.parseColor("#60BB46"), Style.WHITE));
+		STYLES.put("RPE70", new Style(Shape.RECT, Style.parseColor("#FFD403"), Style.BLACK));
+		STYLES.put("RPE73", new Style(Shape.RECT, Style.parseColor("#00A896"), Style.WHITE));
+		STYLES.put("RPE74", new Style(Shape.RECT, Style.parseColor("#0072BC"), Style.WHITE));
+		STYLES.put("T89", new Style(Shape.RECT, Style.parseColor("#EE1C23"), Style.WHITE));
+		STYLES.put("RRB91", new Style(Shape.RECT, Style.parseColor("#A7653F"), Style.WHITE));
+		STYLES.put("RRB93", new Style(Shape.RECT, Style.parseColor("#A7653F"), Style.WHITE));
 	}
 
 	@Override

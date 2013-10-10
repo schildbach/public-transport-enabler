@@ -37,6 +37,7 @@ public class SfProvider extends AbstractEfaProvider
 
 		setUseRouteIndexAsTripId(false);
 		setFareCorrectionFactor(0.01f);
+		setStyles(STYLES);
 	}
 
 	public NetworkId id()
@@ -107,34 +108,24 @@ public class SfProvider extends AbstractEfaProvider
 		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
 	}
 
-	private static final Map<String, Style> LINES = new HashMap<String, Style>();
+	private static final Map<String, Style> STYLES = new HashMap<String, Style>();
 
 	static
 	{
 		// BART
-		LINES.put("RDaly City / Dublin Pleasanton", new Style(Style.parseColor("#00AEEF"), Style.WHITE));
-		LINES.put("RDulin Pleasanton / Daly City", new Style(Style.parseColor("#00AEEF"), Style.WHITE));
+		STYLES.put("RDaly City / Dublin Pleasanton", new Style(Style.parseColor("#00AEEF"), Style.WHITE));
+		STYLES.put("RDulin Pleasanton / Daly City", new Style(Style.parseColor("#00AEEF"), Style.WHITE));
 
-		LINES.put("RSFO / Pittsburg Bay Point", new Style(Style.parseColor("#FFE800"), Style.BLACK));
-		LINES.put("RPittsburg Bay Point / SFO", new Style(Style.parseColor("#FFE800"), Style.BLACK));
+		STYLES.put("RSFO / Pittsburg Bay Point", new Style(Style.parseColor("#FFE800"), Style.BLACK));
+		STYLES.put("RPittsburg Bay Point / SFO", new Style(Style.parseColor("#FFE800"), Style.BLACK));
 
-		LINES.put("RDaly City / Fremont", new Style(Style.parseColor("#4EBF49"), Style.WHITE));
-		LINES.put("RFremont / Daly City", new Style(Style.parseColor("#4EBF49"), Style.WHITE));
+		STYLES.put("RDaly City / Fremont", new Style(Style.parseColor("#4EBF49"), Style.WHITE));
+		STYLES.put("RFremont / Daly City", new Style(Style.parseColor("#4EBF49"), Style.WHITE));
 
-		LINES.put("RFremont / Richmond", new Style(Style.parseColor("#FAA61A"), Style.WHITE));
-		LINES.put("RRichmond / Fremont", new Style(Style.parseColor("#FAA61A"), Style.WHITE));
+		STYLES.put("RFremont / Richmond", new Style(Style.parseColor("#FAA61A"), Style.WHITE));
+		STYLES.put("RRichmond / Fremont", new Style(Style.parseColor("#FAA61A"), Style.WHITE));
 
-		LINES.put("RMillbrae / Richmond", new Style(Style.parseColor("#F81A23"), Style.WHITE));
-		LINES.put("RRichmond / Millbrae", new Style(Style.parseColor("#F81A23"), Style.WHITE));
-	}
-
-	@Override
-	public Style lineStyle(final String line)
-	{
-		final Style style = LINES.get(line);
-		if (style != null)
-			return style;
-		else
-			return super.lineStyle(line);
+		STYLES.put("RMillbrae / Richmond", new Style(Style.parseColor("#F81A23"), Style.WHITE));
+		STYLES.put("RRichmond / Millbrae", new Style(Style.parseColor("#F81A23"), Style.WHITE));
 	}
 }

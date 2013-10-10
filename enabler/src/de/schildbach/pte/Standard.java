@@ -26,19 +26,19 @@ import de.schildbach.pte.dto.Style.Shape;
 /**
  * @author Andreas Schildbach
  */
-public class StandardColors
+public class Standard
 {
-	public static final Map<Character, Style> LINES = new HashMap<Character, Style>();
+	public static final Map<Character, Style> STYLES = new HashMap<Character, Style>();
 
 	static
 	{
-		LINES.put('I', new Style(Shape.RECT, Style.WHITE, Style.RED, Style.RED));
-		LINES.put('R', new Style(Shape.RECT, Style.GRAY, Style.WHITE));
-		LINES.put('S', new Style(Shape.CIRCLE, Style.parseColor("#006e34"), Style.WHITE));
-		LINES.put('U', new Style(Shape.RECT, Style.parseColor("#003090"), Style.WHITE));
-		LINES.put('T', new Style(Shape.RECT, Style.parseColor("#cc0000"), Style.WHITE));
-		LINES.put('B', new Style(Style.parseColor("#993399"), Style.WHITE));
-		LINES.put('F', new Style(Shape.CIRCLE, Style.BLUE, Style.WHITE));
-		LINES.put('?', new Style(Style.DKGRAY, Style.WHITE));
+		STYLES.put('I', new Style(Shape.RECT, Style.WHITE, Style.RED, Style.RED));
+		STYLES.put('R', new Style(Shape.RECT, Style.GRAY, Style.WHITE));
+		STYLES.put('S', new Style(Shape.CIRCLE, Style.parseColor("#006e34"), Style.WHITE));
+		STYLES.put('U', new Style(Shape.RECT, Style.parseColor("#003090"), Style.WHITE));
+		STYLES.put('T', new Style(Shape.RECT, Style.parseColor("#cc0000"), Style.WHITE));
+		STYLES.put('B', new Style(Style.parseColor("#993399"), Style.WHITE));
+		STYLES.put('F', new Style(Shape.CIRCLE, Style.BLUE, Style.WHITE));
+		STYLES.put('?', new Style(Style.DKGRAY, Style.WHITE));
 	}
 }

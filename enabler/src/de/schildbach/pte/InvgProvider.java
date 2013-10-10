@@ -54,6 +54,8 @@ public class InvgProvider extends AbstractHafasProvider
 	public InvgProvider()
 	{
 		super(API_BASE + "stboard.exe/dn", null, API_BASE + "extxml.exe", 10, null);
+
+		setStyles(STYLES);
 	}
 
 	public NetworkId id()
@@ -325,85 +327,75 @@ public class InvgProvider extends AbstractHafasProvider
 		return 0;
 	}
 
-	private static final Map<String, Style> LINES = new HashMap<String, Style>();
+	private static final Map<String, Style> STYLES = new HashMap<String, Style>();
 
 	static
 	{
-		LINES.put("B10", new Style(Style.parseColor("#DA2510"), Style.WHITE));
-		LINES.put("B11", new Style(Style.parseColor("#EE9B78"), Style.BLACK));
-		LINES.put("B15", new Style(Style.parseColor("#84C326"), Style.BLACK));
-		LINES.put("B16", new Style(Style.parseColor("#5D452E"), Style.WHITE));
-		LINES.put("B17", new Style(Style.parseColor("#E81100"), Style.BLACK));
-		LINES.put("B18", new Style(Style.parseColor("#79316C"), Style.WHITE));
-		LINES.put("B20", new Style(Style.parseColor("#EA891C"), Style.BLACK));
-		LINES.put("B21", new Style(Style.parseColor("#31B2EA"), Style.BLACK));
-		LINES.put("B25", new Style(Style.parseColor("#7F65A0"), Style.WHITE));
-		LINES.put("B26", new Style(Style.parseColor("#00BF73"), Style.WHITE)); // not present in Fahrplan 2012/2013
-		LINES.put("B30", new Style(Style.parseColor("#901E78"), Style.WHITE));
-		LINES.put("B31", new Style(Style.parseColor("#DCE722"), Style.BLACK));
-		LINES.put("B40", new Style(Style.parseColor("#009240"), Style.WHITE));
-		LINES.put("B41", new Style(Style.parseColor("#7BC5B1"), Style.BLACK));
-		LINES.put("B44", new Style(Style.parseColor("#EA77A6"), Style.WHITE));
-		LINES.put("B50", new Style(Style.parseColor("#FACF00"), Style.BLACK));
-		LINES.put("B51", new Style(Style.parseColor("#C13C00"), Style.WHITE));
-		LINES.put("B52", new Style(Style.parseColor("#94F0D4"), Style.BLACK));
-		LINES.put("B53", new Style(Style.parseColor("#BEB405"), Style.BLACK));
-		LINES.put("B55", new Style(Style.parseColor("#FFF500"), Style.BLACK));
-		LINES.put("B60", new Style(Style.parseColor("#0072B7"), Style.WHITE));
-		LINES.put("B61", new Style(Style.rgb(204, 184, 122), Style.BLACK)); // not present in Fahrplan 2012/2013
-		LINES.put("B62", new Style(Style.rgb(204, 184, 122), Style.BLACK)); // not present in Fahrplan 2012/2013
-		LINES.put("B65", new Style(Style.parseColor("#B7DDD2"), Style.BLACK));
-		LINES.put("B70", new Style(Style.parseColor("#D49016"), Style.BLACK));
-		LINES.put("B71", new Style(Style.parseColor("#996600"), Style.BLACK)); // not present in Fahrplan 2012/2013
-		LINES.put("B85", new Style(Style.parseColor("#F6BAD3"), Style.BLACK));
-		LINES.put("B111", new Style(Style.parseColor("#EE9B78"), Style.BLACK));
+		STYLES.put("B10", new Style(Style.parseColor("#DA2510"), Style.WHITE));
+		STYLES.put("B11", new Style(Style.parseColor("#EE9B78"), Style.BLACK));
+		STYLES.put("B15", new Style(Style.parseColor("#84C326"), Style.BLACK));
+		STYLES.put("B16", new Style(Style.parseColor("#5D452E"), Style.WHITE));
+		STYLES.put("B17", new Style(Style.parseColor("#E81100"), Style.BLACK));
+		STYLES.put("B18", new Style(Style.parseColor("#79316C"), Style.WHITE));
+		STYLES.put("B20", new Style(Style.parseColor("#EA891C"), Style.BLACK));
+		STYLES.put("B21", new Style(Style.parseColor("#31B2EA"), Style.BLACK));
+		STYLES.put("B25", new Style(Style.parseColor("#7F65A0"), Style.WHITE));
+		STYLES.put("B26", new Style(Style.parseColor("#00BF73"), Style.WHITE)); // not present in Fahrplan 2012/2013
+		STYLES.put("B30", new Style(Style.parseColor("#901E78"), Style.WHITE));
+		STYLES.put("B31", new Style(Style.parseColor("#DCE722"), Style.BLACK));
+		STYLES.put("B40", new Style(Style.parseColor("#009240"), Style.WHITE));
+		STYLES.put("B41", new Style(Style.parseColor("#7BC5B1"), Style.BLACK));
+		STYLES.put("B44", new Style(Style.parseColor("#EA77A6"), Style.WHITE));
+		STYLES.put("B50", new Style(Style.parseColor("#FACF00"), Style.BLACK));
+		STYLES.put("B51", new Style(Style.parseColor("#C13C00"), Style.WHITE));
+		STYLES.put("B52", new Style(Style.parseColor("#94F0D4"), Style.BLACK));
+		STYLES.put("B53", new Style(Style.parseColor("#BEB405"), Style.BLACK));
+		STYLES.put("B55", new Style(Style.parseColor("#FFF500"), Style.BLACK));
+		STYLES.put("B60", new Style(Style.parseColor("#0072B7"), Style.WHITE));
+		STYLES.put("B61", new Style(Style.rgb(204, 184, 122), Style.BLACK)); // not present in Fahrplan 2012/2013
+		STYLES.put("B62", new Style(Style.rgb(204, 184, 122), Style.BLACK)); // not present in Fahrplan 2012/2013
+		STYLES.put("B65", new Style(Style.parseColor("#B7DDD2"), Style.BLACK));
+		STYLES.put("B70", new Style(Style.parseColor("#D49016"), Style.BLACK));
+		STYLES.put("B71", new Style(Style.parseColor("#996600"), Style.BLACK)); // not present in Fahrplan 2012/2013
+		STYLES.put("B85", new Style(Style.parseColor("#F6BAD3"), Style.BLACK));
+		STYLES.put("B111", new Style(Style.parseColor("#EE9B78"), Style.BLACK));
 
-		LINES.put("B9221", new Style(Style.rgb(217, 217, 255), Style.BLACK));
-		LINES.put("B9226", new Style(Style.rgb(191, 255, 255), Style.BLACK));
+		STYLES.put("B9221", new Style(Style.rgb(217, 217, 255), Style.BLACK));
+		STYLES.put("B9226", new Style(Style.rgb(191, 255, 255), Style.BLACK));
 
-		LINES.put("BN1", new Style(Style.parseColor("#00116C"), Style.WHITE));
-		LINES.put("BN2", new Style(Style.parseColor("#00116C"), Style.WHITE));
-		LINES.put("BN3", new Style(Style.parseColor("#00116C"), Style.WHITE));
-		LINES.put("BN4", new Style(Style.parseColor("#00116C"), Style.WHITE));
-		LINES.put("BN5", new Style(Style.parseColor("#00116C"), Style.WHITE));
-		LINES.put("BN6", new Style(Style.parseColor("#00116C"), Style.WHITE));
-		LINES.put("BN7", new Style(Style.parseColor("#00116C"), Style.WHITE));
-		LINES.put("BN8", new Style(Style.parseColor("#00116C"), Style.WHITE));
-		LINES.put("BN9", new Style(Style.parseColor("#00116C"), Style.WHITE));
-		LINES.put("BN10", new Style(Style.parseColor("#00116C"), Style.WHITE));
-		LINES.put("BN11", new Style(Style.parseColor("#00116C"), Style.WHITE));
-		LINES.put("BN12", new Style(Style.parseColor("#00116C"), Style.WHITE));
-		LINES.put("BN13", new Style(Style.parseColor("#00116C"), Style.WHITE));
-		LINES.put("BN14", new Style(Style.parseColor("#00116C"), Style.WHITE));
-		LINES.put("BN15", new Style(Style.parseColor("#00116C"), Style.WHITE));
-		LINES.put("BN16", new Style(Style.parseColor("#00116C"), Style.WHITE));
-		LINES.put("BN17", new Style(Style.parseColor("#00116C"), Style.WHITE));
-		LINES.put("BN18", new Style(Style.parseColor("#00116C"), Style.WHITE));
-		LINES.put("BN19", new Style(Style.parseColor("#00116C"), Style.WHITE));
+		STYLES.put("BN1", new Style(Style.parseColor("#00116C"), Style.WHITE));
+		STYLES.put("BN2", new Style(Style.parseColor("#00116C"), Style.WHITE));
+		STYLES.put("BN3", new Style(Style.parseColor("#00116C"), Style.WHITE));
+		STYLES.put("BN4", new Style(Style.parseColor("#00116C"), Style.WHITE));
+		STYLES.put("BN5", new Style(Style.parseColor("#00116C"), Style.WHITE));
+		STYLES.put("BN6", new Style(Style.parseColor("#00116C"), Style.WHITE));
+		STYLES.put("BN7", new Style(Style.parseColor("#00116C"), Style.WHITE));
+		STYLES.put("BN8", new Style(Style.parseColor("#00116C"), Style.WHITE));
+		STYLES.put("BN9", new Style(Style.parseColor("#00116C"), Style.WHITE));
+		STYLES.put("BN10", new Style(Style.parseColor("#00116C"), Style.WHITE));
+		STYLES.put("BN11", new Style(Style.parseColor("#00116C"), Style.WHITE));
+		STYLES.put("BN12", new Style(Style.parseColor("#00116C"), Style.WHITE));
+		STYLES.put("BN13", new Style(Style.parseColor("#00116C"), Style.WHITE));
+		STYLES.put("BN14", new Style(Style.parseColor("#00116C"), Style.WHITE));
+		STYLES.put("BN15", new Style(Style.parseColor("#00116C"), Style.WHITE));
+		STYLES.put("BN16", new Style(Style.parseColor("#00116C"), Style.WHITE));
+		STYLES.put("BN17", new Style(Style.parseColor("#00116C"), Style.WHITE));
+		STYLES.put("BN18", new Style(Style.parseColor("#00116C"), Style.WHITE));
+		STYLES.put("BN19", new Style(Style.parseColor("#00116C"), Style.WHITE));
 
-		LINES.put("BS1", new Style(Style.rgb(178, 25, 0), Style.WHITE));
-		LINES.put("BS2", new Style(Style.rgb(178, 25, 0), Style.WHITE));
-		LINES.put("BS3", new Style(Style.rgb(178, 25, 0), Style.WHITE));
-		LINES.put("BS4", new Style(Style.rgb(178, 25, 0), Style.WHITE));
-		LINES.put("BS5", new Style(Style.rgb(178, 25, 0), Style.WHITE));
-		LINES.put("BS6", new Style(Style.rgb(178, 25, 0), Style.WHITE));
-		LINES.put("BS7", new Style(Style.rgb(178, 25, 0), Style.WHITE));
-		LINES.put("BS8", new Style(Style.rgb(178, 25, 0), Style.WHITE));
-		LINES.put("BS9", new Style(Style.rgb(178, 25, 0), Style.WHITE));
+		STYLES.put("BS1", new Style(Style.rgb(178, 25, 0), Style.WHITE));
+		STYLES.put("BS2", new Style(Style.rgb(178, 25, 0), Style.WHITE));
+		STYLES.put("BS3", new Style(Style.rgb(178, 25, 0), Style.WHITE));
+		STYLES.put("BS4", new Style(Style.rgb(178, 25, 0), Style.WHITE));
+		STYLES.put("BS5", new Style(Style.rgb(178, 25, 0), Style.WHITE));
+		STYLES.put("BS6", new Style(Style.rgb(178, 25, 0), Style.WHITE));
+		STYLES.put("BS7", new Style(Style.rgb(178, 25, 0), Style.WHITE));
+		STYLES.put("BS8", new Style(Style.rgb(178, 25, 0), Style.WHITE));
+		STYLES.put("BS9", new Style(Style.rgb(178, 25, 0), Style.WHITE));
 
-		LINES.put("BX11", new Style(Style.parseColor("#EE9B78"), Style.BLACK));
-		LINES.put("BX12", new Style(Style.parseColor("#B11839"), Style.BLACK));
-		LINES.put("BX80", new Style(Style.parseColor("#FFFF40"), Style.BLACK));
-		LINES.put("BX109", new Style(Style.WHITE, Style.BLACK, Style.BLACK));
-	}
-
-	@Override
-	public Style lineStyle(final String line)
-	{
-		final Style style = LINES.get(line);
-		if (style != null)
-			return style;
-		else
-			return super.lineStyle(line);
+		STYLES.put("BX11", new Style(Style.parseColor("#EE9B78"), Style.BLACK));
+		STYLES.put("BX12", new Style(Style.parseColor("#B11839"), Style.BLACK));
+		STYLES.put("BX80", new Style(Style.parseColor("#FFFF40"), Style.BLACK));
+		STYLES.put("BX109", new Style(Style.WHITE, Style.BLACK, Style.BLACK));
 	}
 }

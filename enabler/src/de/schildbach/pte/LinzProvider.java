@@ -33,6 +33,8 @@ public class LinzProvider extends AbstractEfaProvider
 	public LinzProvider()
 	{
 		super(API_BASE);
+
+		setStyles(STYLES);
 	}
 
 	public NetworkId id()
@@ -49,49 +51,39 @@ public class LinzProvider extends AbstractEfaProvider
 		return false;
 	}
 
-	private static final Map<String, Style> LINES = new HashMap<String, Style>();
+	private static final Map<String, Style> STYLES = new HashMap<String, Style>();
 
 	static
 	{
-		LINES.put("B11", new Style(Style.Shape.RECT, Style.parseColor("#f27b02"), Style.WHITE));
-		LINES.put("B12", new Style(Style.Shape.RECT, Style.parseColor("#00863a"), Style.WHITE));
-		LINES.put("B17", new Style(Style.Shape.RECT, Style.parseColor("#f47a00"), Style.WHITE));
-		LINES.put("B18", new Style(Style.Shape.RECT, Style.parseColor("#0066b5"), Style.WHITE));
-		LINES.put("B19", new Style(Style.Shape.RECT, Style.parseColor("#f36aa8"), Style.WHITE));
-		LINES.put("B25", new Style(Style.Shape.RECT, Style.parseColor("#d29f08"), Style.WHITE));
-		LINES.put("B26", new Style(Style.Shape.RECT, Style.parseColor("#0070b6"), Style.WHITE));
-		LINES.put("B27", new Style(Style.Shape.RECT, Style.parseColor("#96c41c"), Style.WHITE));
-		LINES.put("B33", new Style(Style.Shape.RECT, Style.parseColor("#6d1f82"), Style.WHITE));
-		LINES.put("B38", new Style(Style.Shape.RECT, Style.parseColor("#ef7b02"), Style.WHITE));
-		LINES.put("B43", new Style(Style.Shape.RECT, Style.parseColor("#00ace3"), Style.WHITE));
-		LINES.put("B45", new Style(Style.Shape.RECT, Style.parseColor("#db0c10"), Style.WHITE));
-		LINES.put("B46", new Style(Style.Shape.RECT, Style.parseColor("#00acea"), Style.WHITE));
-		LINES.put("B101", new Style(Style.Shape.RECT, Style.parseColor("#fdba00"), Style.WHITE));
-		LINES.put("B102", new Style(Style.Shape.RECT, Style.parseColor("#9d701f"), Style.WHITE));
-		LINES.put("B103", new Style(Style.Shape.RECT, Style.parseColor("#019793"), Style.WHITE));
-		LINES.put("B104", new Style(Style.Shape.RECT, Style.parseColor("#699c23"), Style.WHITE));
-		LINES.put("B105", new Style(Style.Shape.RECT, Style.parseColor("#004b9e"), Style.WHITE));
-		LINES.put("B191", new Style(Style.Shape.RECT, Style.parseColor("#1293a8"), Style.WHITE));
-		LINES.put("B192", new Style(Style.Shape.RECT, Style.parseColor("#947ab7"), Style.WHITE));
-		LINES.put("BN2", new Style(Style.Shape.RECT, Style.parseColor("#005aac"), Style.WHITE)); // night
-		LINES.put("BN3", new Style(Style.Shape.RECT, Style.parseColor("#b80178"), Style.WHITE)); // night
-		LINES.put("BN4", new Style(Style.Shape.RECT, Style.parseColor("#93be01"), Style.WHITE)); // night
+		STYLES.put("B11", new Style(Style.Shape.RECT, Style.parseColor("#f27b02"), Style.WHITE));
+		STYLES.put("B12", new Style(Style.Shape.RECT, Style.parseColor("#00863a"), Style.WHITE));
+		STYLES.put("B17", new Style(Style.Shape.RECT, Style.parseColor("#f47a00"), Style.WHITE));
+		STYLES.put("B18", new Style(Style.Shape.RECT, Style.parseColor("#0066b5"), Style.WHITE));
+		STYLES.put("B19", new Style(Style.Shape.RECT, Style.parseColor("#f36aa8"), Style.WHITE));
+		STYLES.put("B25", new Style(Style.Shape.RECT, Style.parseColor("#d29f08"), Style.WHITE));
+		STYLES.put("B26", new Style(Style.Shape.RECT, Style.parseColor("#0070b6"), Style.WHITE));
+		STYLES.put("B27", new Style(Style.Shape.RECT, Style.parseColor("#96c41c"), Style.WHITE));
+		STYLES.put("B33", new Style(Style.Shape.RECT, Style.parseColor("#6d1f82"), Style.WHITE));
+		STYLES.put("B38", new Style(Style.Shape.RECT, Style.parseColor("#ef7b02"), Style.WHITE));
+		STYLES.put("B43", new Style(Style.Shape.RECT, Style.parseColor("#00ace3"), Style.WHITE));
+		STYLES.put("B45", new Style(Style.Shape.RECT, Style.parseColor("#db0c10"), Style.WHITE));
+		STYLES.put("B46", new Style(Style.Shape.RECT, Style.parseColor("#00acea"), Style.WHITE));
+		STYLES.put("B101", new Style(Style.Shape.RECT, Style.parseColor("#fdba00"), Style.WHITE));
+		STYLES.put("B102", new Style(Style.Shape.RECT, Style.parseColor("#9d701f"), Style.WHITE));
+		STYLES.put("B103", new Style(Style.Shape.RECT, Style.parseColor("#019793"), Style.WHITE));
+		STYLES.put("B104", new Style(Style.Shape.RECT, Style.parseColor("#699c23"), Style.WHITE));
+		STYLES.put("B105", new Style(Style.Shape.RECT, Style.parseColor("#004b9e"), Style.WHITE));
+		STYLES.put("B191", new Style(Style.Shape.RECT, Style.parseColor("#1293a8"), Style.WHITE));
+		STYLES.put("B192", new Style(Style.Shape.RECT, Style.parseColor("#947ab7"), Style.WHITE));
+		STYLES.put("BN2", new Style(Style.Shape.RECT, Style.parseColor("#005aac"), Style.WHITE)); // night
+		STYLES.put("BN3", new Style(Style.Shape.RECT, Style.parseColor("#b80178"), Style.WHITE)); // night
+		STYLES.put("BN4", new Style(Style.Shape.RECT, Style.parseColor("#93be01"), Style.WHITE)); // night
 
-		LINES.put("T1", new Style(Style.Shape.RECT, Style.parseColor("#dd0b12"), Style.WHITE));
-		LINES.put("TN1", new Style(Style.Shape.RECT, Style.parseColor("#db0e16"), Style.WHITE)); // night
-		LINES.put("T2", new Style(Style.Shape.RECT, Style.parseColor("#dd0b12"), Style.WHITE));
-		LINES.put("T3", new Style(Style.Shape.RECT, Style.parseColor("#dd0b12"), Style.WHITE));
+		STYLES.put("T1", new Style(Style.Shape.RECT, Style.parseColor("#dd0b12"), Style.WHITE));
+		STYLES.put("TN1", new Style(Style.Shape.RECT, Style.parseColor("#db0e16"), Style.WHITE)); // night
+		STYLES.put("T2", new Style(Style.Shape.RECT, Style.parseColor("#dd0b12"), Style.WHITE));
+		STYLES.put("T3", new Style(Style.Shape.RECT, Style.parseColor("#dd0b12"), Style.WHITE));
 
-		LINES.put("C50", new Style(Style.Shape.RECT, Style.parseColor("#4eae2c"), Style.WHITE)); // Pöstlingbergbahn
-	}
-
-	@Override
-	public Style lineStyle(final String line)
-	{
-		final Style style = LINES.get(line);
-		if (style != null)
-			return style;
-		else
-			return super.lineStyle(line);
+		STYLES.put("C50", new Style(Style.Shape.RECT, Style.parseColor("#4eae2c"), Style.WHITE)); // Pöstlingbergbahn
 	}
 }
