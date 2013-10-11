@@ -141,7 +141,7 @@ public class TflProvider extends AbstractEfaProvider
 		STYLES.put("UJubilee", new Style(Style.parseColor("#818A8F"), Style.WHITE));
 		STYLES.put("UMetropolitan", new Style(Style.parseColor("#850057"), Style.WHITE));
 		STYLES.put("UNorthern", new Style(Style.BLACK, Style.WHITE));
-		STYLES.put("UPicadilly", new Style(Style.parseColor("#0018A8"), Style.WHITE));
+		STYLES.put("UPiccadilly", new Style(Style.parseColor("#0018A8"), Style.WHITE));
 		STYLES.put("UVictoria", new Style(Style.parseColor("#00A1DE"), Style.WHITE));
 		STYLES.put("UWaterloo & City", new Style(Style.parseColor("#76D2B6"), Style.BLACK));
 
