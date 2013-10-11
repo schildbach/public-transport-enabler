@@ -62,10 +62,73 @@ public class VrrProvider extends AbstractEfaProvider
 		return xmlStopfinderRequest(new Location(LocationType.ANY, 0, null, constraint.toString()));
 	}
 
+	@Override
+	protected String parseLine(final String mot, final String symbol, final String name, final String longName, final String trainType,
+			final String trainNum, final String trainName)
+	{
+		if ("11".equals(mot))
+		{
+			// Wuppertaler Schwebebahn & SkyTrain D'dorf
+			if ("Schwebebahn".equals(trainName) || (longName != null && longName.startsWith("Schwebebahn")))
+				return 'C' + name;
+
+			// H-Bahn TU Dortmund
+			if ("H-Bahn".equals(trainName) || (longName != null && longName.startsWith("H-Bahn")))
+				return 'C' + name;
+		}
+
+		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
+	}
+
 	private static final Map<String, Style> STYLES = new HashMap<String, Style>();
 
 	static
 	{
+		// Schnellbusse VRR
+		STYLES.put("vrr|BSB", new Style(Style.parseColor("#00919d"), Style.WHITE));
+
+		// Stadtbahn Dortmund
+		STYLES.put("vrr|UU41", new Style(Style.parseColor("#ffe700"), Style.GRAY));
+		STYLES.put("vrr|UU42", new Style(Style.parseColor("#fcb913"), Style.WHITE));
+		STYLES.put("vrr|UU43", new Style(Style.parseColor("#409387"), Style.WHITE));
+		STYLES.put("vrr|UU44", new Style(Style.parseColor("#66a3b1"), Style.WHITE));
+		STYLES.put("vrr|UU45", new Style(Style.parseColor("#ee1c23"), Style.WHITE));
+		STYLES.put("vrr|UU46", new Style(Style.parseColor("#756fb3"), Style.WHITE));
+		STYLES.put("vrr|UU47", new Style(Style.parseColor("#8dc63e"), Style.WHITE));
+		STYLES.put("vrr|UU49", new Style(Style.parseColor("#f7acbc"), Style.WHITE));
+
+		// H-Bahn Dortmund
+		STYLES.put("vrr|CHB1", new Style(Style.parseColor("#e5007c"), Style.WHITE));
+		STYLES.put("vrr|CHB2", new Style(Style.parseColor("#e5007c"), Style.WHITE));
+
+		// Schwebebahn Wuppertal
+		STYLES.put("vrr|C60", new Style(Style.parseColor("#003090"), Style.WHITE));
+
+		// Stadtbahn Köln-Bonn
+		STYLES.put("vrs|T1", new Style(Style.parseColor("#ed1c24"), Style.WHITE));
+		STYLES.put("vrs|T3", new Style(Style.parseColor("#f680c5"), Style.WHITE));
+		STYLES.put("vrs|T4", new Style(Style.parseColor("#f24dae"), Style.WHITE));
+		STYLES.put("vrs|T5", new Style(Style.parseColor("#9c8dce"), Style.WHITE));
+		STYLES.put("vrs|T7", new Style(Style.parseColor("#f57947"), Style.WHITE));
+		STYLES.put("vrs|T9", new Style(Style.parseColor("#f5777b"), Style.WHITE));
+		STYLES.put("vrs|T12", new Style(Style.parseColor("#80cc28"), Style.WHITE));
+		STYLES.put("vrs|T13", new Style(Style.parseColor("#9e7b65"), Style.WHITE));
+		STYLES.put("vrs|T15", new Style(Style.parseColor("#4dbd38"), Style.WHITE));
+		STYLES.put("vrs|T16", new Style(Style.parseColor("#33baab"), Style.WHITE));
+		STYLES.put("vrs|T18", new Style(Style.parseColor("#05a1e6"), Style.WHITE));
+		STYLES.put("vrs|T61", new Style(Style.parseColor("#80cc28"), Style.WHITE));
+		STYLES.put("vrs|T62", new Style(Style.parseColor("#4dbd38"), Style.WHITE));
+		STYLES.put("vrs|T63", new Style(Style.parseColor("#73d2f6"), Style.WHITE));
+		STYLES.put("vrs|T65", new Style(Style.parseColor("#b3db18"), Style.WHITE));
+		STYLES.put("vrs|T66", new Style(Style.parseColor("#ec008c"), Style.WHITE));
+		STYLES.put("vrs|T67", new Style(Style.parseColor("#f680c5"), Style.WHITE));
+		STYLES.put("vrs|T68", new Style(Style.parseColor("#ca93d0"), Style.WHITE));
+
+		// Stadtbahn Bielefeld
+		STYLES.put("owl|T1", new Style(Style.parseColor("#00aeef"), Style.WHITE));
+		STYLES.put("owl|T2", new Style(Style.parseColor("#00a650"), Style.WHITE));
+		STYLES.put("owl|T3", new Style(Style.parseColor("#fff200"), Style.BLACK));
+
 		// Busse Bonn
 		STYLES.put("vrs|B63", new Style(Style.parseColor("#0065ae"), Style.WHITE));
 		STYLES.put("vrs|B16", new Style(Style.parseColor("#0065ae"), Style.WHITE));
@@ -120,5 +183,14 @@ public class VrrProvider extends AbstractEfaProvider
 		STYLES.put("vrs|B855", new Style(Style.parseColor("#4e6578"), Style.WHITE));
 		STYLES.put("vrs|B856", new Style(Style.parseColor("#4e6578"), Style.WHITE));
 		STYLES.put("vrs|B857", new Style(Style.parseColor("#4e6578"), Style.WHITE));
+	}
+
+	@Override
+	public Style lineStyle(final String network, final String line)
+	{
+		if (line != null && line.startsWith("BSB"))
+			return super.lineStyle(network, "BSB");
+
+		return super.lineStyle(network, line);
 	}
 }
