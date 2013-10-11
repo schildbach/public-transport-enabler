@@ -68,7 +68,7 @@ public final class Line implements Serializable, Comparable<Line>
 		this.attrs = attrs;
 		this.message = message;
 
-		product = label != null ? label.charAt(0) : '?';
+		product = (label != null && label.length() >= 1) ? label.charAt(0) : '?';
 	}
 
 	public boolean hasAttr(final Attr attr)
