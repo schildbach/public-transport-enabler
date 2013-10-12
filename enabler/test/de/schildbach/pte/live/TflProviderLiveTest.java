@@ -113,4 +113,33 @@ public class TflProviderLiveTest extends AbstractProviderLiveTest
 				Accessibility.NEUTRAL);
 		System.out.println(result);
 	}
+
+	@Test
+	public void tripItdMessageList() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(
+				new Location(LocationType.ADDRESS, 0, 51446072, -239417, "Wandsworth", "Timsbury Walk, Wandsworth"), null, new Location(
+						LocationType.STATION, 90046985, 53225140, -1472433, "Chesterfield (Derbys)",
+						"Walton (Chesterfield), Netherfield Road (on Somersall Lane)"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
+				Accessibility.NEUTRAL);
+		System.out.println(result);
+
+		if (!result.context.canQueryLater())
+			return;
+
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+		System.out.println(laterResult);
+
+		if (!laterResult.context.canQueryLater())
+			return;
+
+		final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
+		System.out.println(later2Result);
+
+		if (!later2Result.context.canQueryEarlier())
+			return;
+
+		final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
+		System.out.println(earlierResult);
+	}
 }

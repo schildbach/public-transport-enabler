@@ -3253,6 +3253,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		if (XmlPullUtil.test(pp, "clientHeaderLines"))
 			XmlPullUtil.next(pp);
 
+		if (XmlPullUtil.test(pp, "itdMessageList"))
+			XmlPullUtil.next(pp);
+
 		if (XmlPullUtil.test(pp, "itdVersionInfo"))
 			XmlPullUtil.next(pp);
 
