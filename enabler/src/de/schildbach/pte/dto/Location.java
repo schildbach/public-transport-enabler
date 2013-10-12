@@ -123,7 +123,7 @@ public final class Location implements Serializable
 
 	public final String uniqueShortName()
 	{
-		if (name != null && Arrays.binarySearch(NON_UNIQUE_NAMES, name) >= 0)
+		if (place != null && name != null && Arrays.binarySearch(NON_UNIQUE_NAMES, name) >= 0)
 			return place + ", " + name;
 		else if (name != null)
 			return name;
