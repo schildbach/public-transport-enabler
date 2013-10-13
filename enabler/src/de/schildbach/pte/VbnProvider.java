@@ -124,13 +124,7 @@ public class VbnProvider extends AbstractHafasProvider
 		if (location.hasLocation())
 		{
 			final StringBuilder uri = new StringBuilder(queryEndpoint);
-			uri.append('y');
-			uri.append("?performLocating=2&tpl=stop2json");
-			uri.append("&look_maxno=").append(maxStations != 0 ? maxStations : 200);
-			uri.append("&look_maxdist=").append(maxDistance != 0 ? maxDistance : 5000);
-			uri.append("&look_stopclass=").append(allProductsInt());
-			uri.append("&look_x=").append(location.lon);
-			uri.append("&look_y=").append(location.lat);
+			uri.append(jsonNearbyStationsParameters(location, maxDistance, maxStations));
 
 			return jsonNearbyStations(uri.toString());
 		}

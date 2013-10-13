@@ -2361,6 +2361,22 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		return new NearbyStationsResult(null, stations);
 	}
 
+	protected final StringBuilder jsonNearbyStationsParameters(final Location location, final int maxDistance, final int maxStations)
+	{
+		final StringBuilder parameters = new StringBuilder();
+
+		parameters.append('y');
+		parameters.append("?performLocating=2&tpl=stop2json");
+		parameters.append("&look_maxno=").append(maxStations != 0 ? maxStations : 200);
+		parameters.append("&look_maxdist=").append(maxDistance != 0 ? maxDistance : 5000);
+		parameters.append("&look_stopclass=").append(allProductsInt());
+		parameters.append("&look_nv=get_stopweight|yes");
+		parameters.append("&look_x=").append(location.lon);
+		parameters.append("&look_y=").append(location.lat);
+
+		return parameters;
+	}
+
 	protected final NearbyStationsResult jsonNearbyStations(final String uri) throws IOException
 	{
 		final CharSequence page = ParserUtils.scrape(uri, null, jsonNearbyStationsEncoding, null);
