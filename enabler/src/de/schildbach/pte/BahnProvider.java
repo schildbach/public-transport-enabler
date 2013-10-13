@@ -18,7 +18,6 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -33,7 +32,6 @@ import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsContext;
 import de.schildbach.pte.dto.QueryTripsResult;
-import de.schildbach.pte.util.ParserUtils;
 
 /**
  * @author Andreas Schildbach
@@ -136,9 +134,6 @@ public final class BahnProvider extends AbstractHafasProvider
 		}
 	}
 
-	private final static Pattern P_NEARBY_STATIONS_BY_STATION = Pattern
-			.compile("<a href=\"http://mobile\\.bahn\\.de/bin/mobil/bhftafel.exe/dn[^\"]*?evaId=(\\d*)&[^\"]*?\">([^<]*)</a>");
-
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
 		if (location.hasLocation())
@@ -151,28 +146,9 @@ public final class BahnProvider extends AbstractHafasProvider
 		else if (location.type == LocationType.STATION && location.hasId())
 		{
 			final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
-			uri.append("?near=Anzeigen");
-			uri.append("&distance=").append(maxDistance != 0 ? maxDistance / 1000 : 50);
-			uri.append("&input=").append(location.id);
+			uri.append(xmlNearbyStationsParameters(location.id));
 
-			final CharSequence page = ParserUtils.scrape(uri.toString());
-
-			final Matcher m = P_NEARBY_STATIONS_BY_STATION.matcher(page);
-
-			final List<Location> stations = new ArrayList<Location>();
-			while (m.find())
-			{
-				final int sId = Integer.parseInt(m.group(1));
-				final String sName = ParserUtils.resolveEntities(m.group(2).trim());
-
-				final Location station = new Location(LocationType.STATION, sId, null, sName);
-				stations.add(station);
-			}
-
-			if (maxStations == 0 || maxStations >= stations.size())
-				return new NearbyStationsResult(null, stations);
-			else
-				return new NearbyStationsResult(null, stations.subList(0, maxStations));
+			return xmlNearbyStations(uri.toString());
 		}
 		else
 		{
