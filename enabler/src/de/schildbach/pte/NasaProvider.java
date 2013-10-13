@@ -42,6 +42,8 @@ public class NasaProvider extends AbstractHafasProvider
 	public NasaProvider()
 	{
 		super(API_BASE + "stboard.exe/dn", null, API_BASE + "query.exe/dn", 8, null);
+
+		setJsonNearbyStationsEncoding(UTF_8);
 	}
 
 	public NetworkId id()
@@ -134,7 +136,21 @@ public class NasaProvider extends AbstractHafasProvider
 
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
-		if (location.type == LocationType.STATION && location.hasId())
+		if (location.hasLocation())
+		{
+			final StringBuilder uri = new StringBuilder(queryEndpoint);
+			uri.append('y');
+			uri.append("?performLocating=2&tpl=stop2json");
+			uri.append("&look_maxno=").append(maxStations != 0 ? maxStations : 200);
+			uri.append("&look_maxdist=").append(maxDistance != 0 ? maxDistance : 5000);
+			uri.append("&look_stopclass=").append(allProductsInt());
+			uri.append("&look_nv=get_stopweight|yes");
+			uri.append("&look_x=").append(location.lon);
+			uri.append("&look_y=").append(location.lat);
+
+			return jsonNearbyStations(uri.toString());
+		}
+		else if (location.type == LocationType.STATION && location.hasId())
 		{
 			final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
 			uri.append("?near=Anzeigen");

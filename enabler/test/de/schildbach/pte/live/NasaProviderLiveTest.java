@@ -17,6 +17,9 @@
 
 package de.schildbach.pte.live;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Date;
 import java.util.List;
 
@@ -48,6 +51,16 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest
 		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 13000), 0, 0);
 
 		print(result);
+	}
+
+	@Test
+	public void nearbyStationsByCoordinate() throws Exception
+	{
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 51346546, 12383333), 0, 0);
+
+		print(result);
+		assertEquals(NearbyStationsResult.Status.OK, result.status);
+		assertTrue(result.stations.size() > 0);
 	}
 
 	@Test
