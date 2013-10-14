@@ -1087,6 +1087,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_VIA);
 				if (code.equals("K9300")) // Unknown arrival station
 					return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_TO);
+				if (code.equals("K9360")) // Date outside of the timetable period
+					return new QueryTripsResult(header, QueryTripsResult.Status.INVALID_DATE);
 				if (code.equals("K9380")) // Dep./Arr./Intermed. or equivalent station defined more that once
 					return new QueryTripsResult(header, QueryTripsResult.Status.TOO_CLOSE);
 				if (code.equals("K895")) // Departure/Arrival are too near
@@ -1101,7 +1103,10 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
 				if (code.equals("K899")) // An error occurred
 					return new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN);
-				// if (code.equals("K1:890")) // Unsuccessful or incomplete search (direction: forward)
+				if (code.equals("K1:890")) // Unsuccessful or incomplete search (direction: forward)
+					return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
+				if (code.equals("K2:890")) // Unsuccessful or incomplete search (direction: backward)
+					return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
 				throw new IllegalStateException("error " + code + " " + XmlPullUtil.attr(pp, "text"));
 			}
 
@@ -2067,6 +2072,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			else if (errorCode == 899)
 				// H899: there was an unsuccessful or incomplete search due to a timetable change.
 				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
+			else if (errorCode == 900)
+				// Unsuccessful or incomplete search (timetable change)
+				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
 			else if (errorCode == 9220)
 				// H9220: Nearby to the given address stations could not be found.
 				return new QueryTripsResult(header, QueryTripsResult.Status.UNRESOLVABLE_ADDRESS);
@@ -2074,6 +2082,12 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				// H9240: Unfortunately there was no route found. Perhaps your start or destination is not served at all
 				// or with the selected means of transport on the required date/time.
 				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
+			else if (errorCode == 9260)
+				// Unknown departure station
+				return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_FROM);
+			else if (errorCode == 9320)
+				// The input is incorrect or incomplete
+				return new QueryTripsResult(header, QueryTripsResult.Status.INVALID_DATE);
 			else if (errorCode == 9360)
 				// H9360: Unfortunately your connection request can currently not be processed.
 				return new QueryTripsResult(header, QueryTripsResult.Status.INVALID_DATE);
