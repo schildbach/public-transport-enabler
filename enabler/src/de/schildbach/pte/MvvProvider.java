@@ -64,6 +64,8 @@ public class MvvProvider extends AbstractEfaProvider
 	{
 		if ("0".equals(mot))
 		{
+			if ("M".equals(trainType) && "Meridian".equals(trainName))
+				return "RM" + trainNum;
 			if ("Mittelrheinbahn (trans regio)".equals(trainName))
 				return "RMiRhBa";
 			if ("Erfurter Bahn Express".equals(longName))

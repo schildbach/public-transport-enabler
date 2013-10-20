@@ -1066,6 +1066,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 		else if ("0".equals(mot))
 		{
+			final String trainNumStr = trainNum != null ? trainNum : "";
+
 			if ("EC".equals(trainType) || "EuroCity".equals(trainName) || "Eurocity".equals(trainName))
 				return "IEC" + trainNum;
 			if ("EN".equals(trainType) || "EuroNight".equals(trainName))
@@ -1080,12 +1082,16 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return "ICNL" + trainNum;
 			if ("THA".equals(trainType) || "Thalys".equals(trainName))
 				return "ITHA" + trainNum;
+			if ("RHI".equals(trainType))
+				return "IRHI" + trainNum;
 			if ("TGV".equals(trainType) || "TGV".equals(trainName))
 				return "ITGV" + trainNum;
 			if ("RJ".equals(trainType) || "railjet".equals(trainName)) // railjet
 				return "IRJ" + trainNum;
 			if ("OIC".equals(trainType) || "ÖBB InterCity".equals(trainName))
 				return 'I' + symbol;
+			if ("WB".equals(trainType) || "WESTbahn".equals(trainName))
+				return "IWB" + trainNum;
 			if ("HKX".equals(trainType) || "Hamburg-Köln-Express".equals(trainName))
 				return "IHKX" + trainNum;
 			if ("INT".equals(trainType)) // SVV, VAGFR
@@ -1107,6 +1113,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return "RIR" + trainNum;
 			if ("IRE".equals(trainType) || "Interregio-Express".equals(trainName))
 				return "RIRE" + trainNum;
+			if ("InterRegioExpress".equals(trainName))
+				return "RIRE" + trainNumStr;
 			if ("RE".equals(trainType) || "Regional-Express".equals(trainName))
 				return "RRE" + trainNum;
 			if (trainType == null && trainNum != null && P_LINE_RE.matcher(trainNum).matches())
@@ -1143,8 +1151,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return "RWFB" + trainNum;
 			if ("NWB".equals(trainType) || "NordWestBahn".equals(trainName))
 				return "RNWB" + trainNum;
-			if ("WB".equals(trainType) || "WESTbahn".equals(trainName))
-				return "RWB" + trainNum;
 			if ("WES".equals(trainType) || "Westbahn".equals(trainName))
 				return "RWES" + trainNum;
 			if ("ERB".equals(trainType) || "eurobahn".equals(trainName))
@@ -1272,6 +1278,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return "RSWEG" + trainNum;
 			if ("SWEG-Zug".equals(longName))
 				return "RSWEG";
+			if ("EGP Eisenbahngesellschaft Potsdam".equals(trainName))
+				return "REGP" + trainNumStr;
 			if ("ÖBB".equals(trainType) || "ÖBB".equals(trainName))
 				return "RÖBB" + trainNum;
 			if ("CAT".equals(trainType)) // City Airport Train Wien
@@ -1316,6 +1324,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return "RDB" + trainNum;
 			if ("EZ".equals(trainType)) // ÖBB Erlebniszug
 				return "REZ" + trainNum;
+			if ("DPF".equals(trainType))
+				return "RDPF" + trainNum;
 
 			if ("BSB-Zug".equals(trainName)) // Breisgau-S-Bahn
 				return 'S' + trainNum;
@@ -1325,6 +1335,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return 'S' + symbol;
 			if ("S".equals(trainType))
 				return "SS" + trainNum;
+			if ("S-Bahn".equals(trainName))
+				return "SS" + trainNumStr;
 
 			if ("RT".equals(trainType) || "RegioTram".equals(trainName))
 				return "TRT" + trainNum;
@@ -1340,6 +1352,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 			if ("GB".equals(trainType)) // Gondelbahn
 				return "CGB" + trainNum;
+			if ("SB".equals(trainType)) // Seilbahn
+				return "CSB" + trainNum;
 
 			if (trainType == null && trainName == null && P_LINE_NUMBER.matcher(symbol).matches())
 				return '?' + symbol;

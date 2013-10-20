@@ -64,8 +64,6 @@ public class StvProvider extends AbstractEfaProvider
 		{
 			if ("RR".equals(trainType)) // Tschechien
 				return "RRR" + trainNum;
-			if ("DPF".equals(trainType))
-				return "RDPF" + trainNum;
 		}
 
 		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);

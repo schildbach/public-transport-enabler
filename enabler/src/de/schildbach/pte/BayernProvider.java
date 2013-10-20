@@ -76,8 +76,23 @@ public class BayernProvider extends AbstractEfaProvider
 				return "IIC" + trainNum;
 			if ("ICE".equals(trainType))
 				return "IICE" + trainNum;
+			if ("CNL".equals(trainType))
+				return "ICNL" + trainNum;
+			if ("THA".equals(trainType)) // Thalys
+				return "ITHA" + trainNum;
+			if ("TGV".equals(trainType)) // Train a grande Vitesse
+				return "ITGV" + trainNum;
 			if ("RJ".equals(trainType)) // railjet
 				return "IRJ" + trainNum;
+			if ("WB".equals(trainType)) // WESTbahn
+				return "IWB" + trainNum;
+			if ("HKX".equals(trainType)) // Hamburg-Köln-Express
+				return "IHKX" + trainNum;
+			if ("D".equals(trainType)) // Schnellzug
+				return "ID" + trainNum;
+
+			if ("IR".equals(trainType)) // InterRegio
+				return "RIR" + trainNum;
 		}
 
 		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
