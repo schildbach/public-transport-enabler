@@ -202,6 +202,10 @@ public final class ParserUtils
 				{
 					throw new NotFoundException(url);
 				}
+				else if (responseCode == HttpURLConnection.HTTP_MOVED_PERM || responseCode == HttpURLConnection.HTTP_MOVED_TEMP)
+				{
+					throw new UnexpectedRedirectException(url, connection.getURL());
+				}
 				else
 				{
 					final String message = "got response: " + responseCode + " " + connection.getResponseMessage();
@@ -356,6 +360,10 @@ public final class ParserUtils
 			else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND)
 			{
 				throw new NotFoundException(url);
+			}
+			else if (responseCode == HttpURLConnection.HTTP_MOVED_PERM || responseCode == HttpURLConnection.HTTP_MOVED_TEMP)
+			{
+				throw new UnexpectedRedirectException(url, connection.getURL());
 			}
 			else
 			{
