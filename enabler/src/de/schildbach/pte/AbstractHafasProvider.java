@@ -1782,7 +1782,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 					final int numChanges = is.readShortReverse();
 
-					/* final long duration = */time(is, 0, 0);
+					/* final long duration = time(is, 0, 0); */is.readShortReverse();
 
 					is.reset();
 					is.skipBytes(serviceDaysTablePtr + serviceDaysTableOffset);
@@ -2148,11 +2148,19 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		final int hours = value / 100;
 		final int minutes = value % 100;
 
+		if (minutes < 0 || minutes > 60)
+			throw new IllegalStateException("minutes out of range: " + minutes);
+
 		final Calendar time = new GregorianCalendar(timeZone());
+
 		time.setTimeInMillis(baseDate);
-		time.add(Calendar.HOUR, hours);
-		time.add(Calendar.MINUTE, minutes);
+		if (time.get(Calendar.HOUR) != 0 || time.get(Calendar.MINUTE) != 0)
+			throw new IllegalStateException("baseDate not on date boundary: " + baseDate);
+
 		time.add(Calendar.DAY_OF_YEAR, dayOffset);
+
+		time.set(Calendar.HOUR, hours);
+		time.set(Calendar.MINUTE, minutes);
 
 		return time.getTimeInMillis();
 	}
