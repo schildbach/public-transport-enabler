@@ -38,6 +38,8 @@ public class NriProvider extends AbstractHafasProvider
 	public NriProvider()
 	{
 		super(API_BASE + "stboard.exe/on", API_BASE + "ajax-getstop.exe/ony", API_BASE + "query.exe/on", 8, null);
+
+		setJsonGetStopsEncoding(UTF_8);
 	}
 
 	public NetworkId id()

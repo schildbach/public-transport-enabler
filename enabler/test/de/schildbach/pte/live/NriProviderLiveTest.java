@@ -75,6 +75,14 @@ public class NriProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
+	public void autocompleteUmlaut() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("Skøyen");
+
+		print(autocompletes);
+	}
+
+	@Test
 	public void shortTrip() throws Exception
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 8059, null, "Oslo"), null, new Location(LocationType.STATION,
