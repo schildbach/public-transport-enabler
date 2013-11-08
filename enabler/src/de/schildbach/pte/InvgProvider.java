@@ -54,9 +54,10 @@ public class InvgProvider extends AbstractHafasProvider
 
 	public InvgProvider()
 	{
-		super(API_BASE + "stboard.exe/dn", null, API_BASE + "extxml.exe", 10);
+		super(API_BASE + "stboard.exe/dn", null, API_BASE + "query.exe/dn", 10);
 
 		setStyles(STYLES);
+		setExtXmlEndpoint(API_BASE + "extxml.exe");
 	}
 
 	public NetworkId id()

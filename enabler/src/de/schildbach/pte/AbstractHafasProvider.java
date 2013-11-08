@@ -92,6 +92,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	private boolean dominantPlanStopTime = false;
 	private boolean canDoEquivs = true;
 	private boolean useIso8601 = false;
+	private String extXmlEndpoint = null;
 
 	private static class Context implements QueryTripsContext
 	{
@@ -193,6 +194,11 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	protected void setUseIso8601(final boolean useIso8601)
 	{
 		this.useIso8601 = useIso8601;
+	}
+
+	protected void setExtXmlEndpoint(final String extXmlEndpoint)
+	{
+		this.extXmlEndpoint = extXmlEndpoint;
 	}
 
 	protected TimeZone timeZone()
@@ -1058,7 +1064,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 		try
 		{
-			reader = new InputStreamReader(ParserUtils.scrapeInputStream(queryEndpoint, wrap(request, null), null, null, null, 3), ISO_8859_1);
+			final String endpoint = extXmlEndpoint != null ? extXmlEndpoint : queryEndpoint;
+			reader = new InputStreamReader(ParserUtils.scrapeInputStream(endpoint, wrap(request, null), null, null, null, 3), ISO_8859_1);
 
 			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
 			final XmlPullParser pp = factory.newPullParser();
