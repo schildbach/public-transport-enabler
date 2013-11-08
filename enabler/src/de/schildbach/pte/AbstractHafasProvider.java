@@ -78,7 +78,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 {
 	protected final static String SERVER_PRODUCT = "hafas";
 
-	private static final String PROD = "hafas";
+	private static final String REQC_PROD = "hafas";
 
 	protected final String stationBoardEndpoint;
 	protected final String getStopEndpoint;
@@ -237,10 +237,10 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			return new String[] { null, name };
 	}
 
-	private final String wrap(final String request, final Charset encoding)
+	private final String wrapReqC(final CharSequence request, final Charset encoding)
 	{
 		return "<?xml version=\"1.0\" encoding=\"" + (encoding != null ? encoding.name() : "iso-8859-1") + "\"?>" //
-				+ "<ReqC ver=\"1.1\" prod=\"" + PROD + "\" lang=\"DE\"" + (accessId != null ? " accessId=\"" + accessId + "\"" : "") + ">" //
+				+ "<ReqC ver=\"1.1\" prod=\"" + REQC_PROD + "\" lang=\"DE\"" + (accessId != null ? " accessId=\"" + accessId + "\"" : "") + ">" //
 				+ request //
 				+ "</ReqC>";
 	}
@@ -320,15 +320,16 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 	public List<Location> xmlLocValReq(final CharSequence constraint) throws IOException
 	{
-		final String request = "<LocValReq id=\"req\" maxNr=\"20\"><ReqLoc match=\"" + constraint + "\" type=\"ALLTYPE\"/></LocValReq>";
+		final String locValReq = "<LocValReq id=\"req\" maxNr=\"20\"><ReqLoc match=\"" + constraint + "\" type=\"ALLTYPE\"/></LocValReq>";
+		final String request = wrapReqC(locValReq, null);
 
-		// System.out.println(ParserUtils.scrape(apiUri, true, wrap(request), null, false));
+		// System.out.println(ParserUtils.scrape(apiUri, true, request, null, false));
 
 		Reader reader = null;
 
 		try
 		{
-			reader = new InputStreamReader(ParserUtils.scrapeInputStream(queryEndpoint, wrap(request, null), null, null, null, 3), ISO_8859_1);
+			reader = new InputStreamReader(ParserUtils.scrapeInputStream(queryEndpoint, request, null, null, null, 3), ISO_8859_1);
 
 			final List<Location> results = new ArrayList<Location>();
 
@@ -544,17 +545,16 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 	protected final List<Location> xmlMLcReq(final CharSequence constraint) throws IOException
 	{
-		final String request = "<MLcReq><MLc n=\"" + constraint + "?\" t=\"ALLTYPE\" /></MLcReq>";
-		final String wrappedRequest = wrap(request, xmlMlcResEncoding);
+		final String mlcReq = "<MLcReq><MLc n=\"" + constraint + "?\" t=\"ALLTYPE\" /></MLcReq>";
+		final String request = wrapReqC(mlcReq, xmlMlcResEncoding);
 
-		// ParserUtils.printXml(ParserUtils.scrape(apiUri, wrappedRequest, xmlMlcResEncoding, null));
+		// ParserUtils.printXml(ParserUtils.scrape(apiUri, request, xmlMlcResEncoding, null));
 
 		Reader reader = null;
 
 		try
 		{
-			reader = new InputStreamReader(ParserUtils.scrapeInputStream(queryEndpoint, wrappedRequest, xmlMlcResEncoding, null, null, 3),
-					xmlMlcResEncoding);
+			reader = new InputStreamReader(ParserUtils.scrapeInputStream(queryEndpoint, request, xmlMlcResEncoding, null, null, 3), xmlMlcResEncoding);
 
 			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
 			final XmlPullParser pp = factory.newPullParser();
@@ -1007,38 +1007,38 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 		final char bikeChar = (options != null && options.contains(Option.BIKE)) ? '1' : '0';
 
-		final StringBuilder request = new StringBuilder("<ConReq deliverPolyline=\"1\">");
-		request.append("<Start>").append(locationXml(from));
-		request.append("<Prod prod=\"").append(productsStr).append("\" bike=\"").append(bikeChar)
+		final StringBuilder conReq = new StringBuilder("<ConReq deliverPolyline=\"1\">");
+		conReq.append("<Start>").append(locationXml(from));
+		conReq.append("<Prod prod=\"").append(productsStr).append("\" bike=\"").append(bikeChar)
 				.append("\" couchette=\"0\" direct=\"0\" sleeper=\"0\"/>");
-		request.append("</Start>");
+		conReq.append("</Start>");
 		if (via != null)
 		{
-			request.append("<Via>").append(locationXml(via));
+			conReq.append("<Via>").append(locationXml(via));
 			if (via.type != LocationType.ADDRESS)
-				request.append("<Prod prod=\"").append(productsStr).append("\" bike=\"").append(bikeChar)
+				conReq.append("<Prod prod=\"").append(productsStr).append("\" bike=\"").append(bikeChar)
 						.append("\" couchette=\"0\" direct=\"0\" sleeper=\"0\"/>");
-			request.append("</Via>");
+			conReq.append("</Via>");
 		}
-		request.append("<Dest>").append(locationXml(to)).append("</Dest>");
-		request.append("<ReqT a=\"")
+		conReq.append("<Dest>").append(locationXml(to)).append("</Dest>");
+		conReq.append("<ReqT a=\"")
 				.append(dep ? 0 : 1)
 				.append("\" date=\"")
 				.append(String.format(Locale.ENGLISH, "%04d.%02d.%02d", c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH)))
 				.append("\" time=\"")
 				.append(String.format(Locale.ENGLISH, "%02d:%02d", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE)) + "\"/>");
-		request.append("<RFlags");
+		conReq.append("<RFlags");
 		// number of trips backwards
-		request.append(" b=\"").append(0).append("\"");
+		conReq.append(" b=\"").append(0).append("\"");
 		// number of trips forwards
-		request.append(" f=\"").append(numTrips).append("\"");
+		conReq.append(" f=\"").append(numTrips).append("\"");
 		// percentual extension of change time
-		request.append(" chExtension=\"").append(walkSpeed == WalkSpeed.SLOW ? 50 : 0).append("\"");
+		conReq.append(" chExtension=\"").append(walkSpeed == WalkSpeed.SLOW ? 50 : 0).append("\"");
 		// TODO nrChanges: max number of changes
-		request.append(" sMode=\"N\"/>");
-		request.append("</ConReq>");
+		conReq.append(" sMode=\"N\"/>");
+		conReq.append("</ConReq>");
 
-		return queryTripsXml(null, true, request.toString(), from, via, to);
+		return queryTripsXml(null, true, conReq, from, via, to);
 	}
 
 	protected final QueryTripsResult queryMoreTripsXml(final QueryTripsContext contextObj, final boolean later, final int numTrips)
@@ -1046,26 +1046,28 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	{
 		final Context context = (Context) contextObj;
 
-		final StringBuilder request = new StringBuilder("<ConScrReq scrDir=\"").append(later ? 'F' : 'B').append("\" nrCons=\"").append(numTrips)
+		final StringBuilder conScrReq = new StringBuilder("<ConScrReq scrDir=\"").append(later ? 'F' : 'B').append("\" nrCons=\"").append(numTrips)
 				.append("\">");
-		request.append("<ConResCtxt>").append(later ? context.laterContext : context.earlierContext).append("</ConResCtxt>");
-		request.append("</ConScrReq>");
+		conScrReq.append("<ConResCtxt>").append(later ? context.laterContext : context.earlierContext).append("</ConResCtxt>");
+		conScrReq.append("</ConScrReq>");
 
-		return queryTripsXml(context, later, request.toString(), null, null, null);
+		return queryTripsXml(context, later, conScrReq, null, null, null);
 	}
 
-	private QueryTripsResult queryTripsXml(final Context previousContext, final boolean later, final String request, final Location from,
+	private QueryTripsResult queryTripsXml(final Context previousContext, final boolean later, final CharSequence conReq, final Location from,
 			final Location via, final Location to) throws IOException
 	{
+		final String request = wrapReqC(conReq, null);
+
 		// System.out.println(request);
-		// ParserUtils.printXml(ParserUtils.scrape(queryEndpoint, wrap(request, null), null, null));
+		// ParserUtils.printXml(ParserUtils.scrape(queryEndpoint, request, null, null));
 
 		Reader reader = null;
 
 		try
 		{
 			final String endpoint = extXmlEndpoint != null ? extXmlEndpoint : queryEndpoint;
-			reader = new InputStreamReader(ParserUtils.scrapeInputStream(endpoint, wrap(request, null), null, null, null, 3), ISO_8859_1);
+			reader = new InputStreamReader(ParserUtils.scrapeInputStream(endpoint, request, null, null, null, 3), ISO_8859_1);
 
 			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
 			final XmlPullParser pp = factory.newPullParser();
