@@ -20,11 +20,6 @@ public final class XmlPullUtil
 		pp.require(XmlPullParser.START_TAG, null, tagName);
 	}
 
-	/**
-	 * enters current tag
-	 * 
-	 * @throws IOException
-	 */
 	public static void enter(final XmlPullParser pp) throws XmlPullParserException, IOException
 	{
 		if (pp.getEventType() != XmlPullParser.START_TAG)
@@ -82,8 +77,8 @@ public final class XmlPullUtil
 
 		if (!pp.isEmptyElementTag())
 		{
-			enter(pp);
-			exit(pp);
+			enter(pp, tagName);
+			exit(pp, tagName);
 		}
 		else
 		{

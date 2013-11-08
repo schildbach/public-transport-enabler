@@ -338,11 +338,11 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			pp.setInput(reader);
 
 			assertResC(pp);
-			XmlPullUtil.enter(pp);
+			XmlPullUtil.enter(pp, "ResC");
 
 			XmlPullUtil.require(pp, "LocValRes");
 			XmlPullUtil.requireAttr(pp, "id", "req");
-			XmlPullUtil.enter(pp);
+			XmlPullUtil.enter(pp, "LocalValRes");
 
 			while (pp.getEventType() == XmlPullParser.START_TAG)
 			{
@@ -361,7 +361,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				XmlPullUtil.next(pp);
 			}
 
-			XmlPullUtil.exit(pp);
+			XmlPullUtil.exit(pp, "LocalValRes");
 
 			return results;
 		}
@@ -1426,7 +1426,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				trips.add(new Trip(id, departureLocation, arrivalLocation, legs, null, capacity, numTransfers));
 			}
 
-			XmlPullUtil.exit(pp);
+			XmlPullUtil.exit(pp, "ConnectionList");
 
 			return new QueryTripsResult(header, null, from, via, to, context, trips);
 		}
@@ -1463,13 +1463,13 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		while (XmlPullUtil.test(pp, "AttributeVariant"))
 		{
 			final String type = XmlPullUtil.attr(pp, "type");
-			XmlPullUtil.enter(pp);
+			XmlPullUtil.enter(pp, "AttributeVariant");
 			final String value;
 			if (XmlPullUtil.test(pp, "Text"))
 				value = XmlPullUtil.text(pp).trim();
 			else
 				value = null;
-			XmlPullUtil.exit(pp);
+			XmlPullUtil.exit(pp, "AttributeVariant");
 
 			attributeVariants.put(type, value);
 		}
