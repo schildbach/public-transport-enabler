@@ -15,13 +15,28 @@ import org.xmlpull.v1.XmlPullParserException;
  */
 public final class XmlPullUtil
 {
+
+	public static boolean test(final XmlPullParser pp, final String tagName) throws XmlPullParserException, IOException
+	{
+		if (pp.getEventType() == XmlPullParser.TEXT && pp.isWhitespace())
+			pp.next();
+
+		return pp.getEventType() == XmlPullParser.START_TAG && pp.getName().equals(tagName);
+	}
+
 	public static void require(final XmlPullParser pp, final String tagName) throws XmlPullParserException, IOException
 	{
+		if (pp.getEventType() == XmlPullParser.TEXT && pp.isWhitespace())
+			pp.next();
+
 		pp.require(XmlPullParser.START_TAG, null, tagName);
 	}
 
 	public static void enter(final XmlPullParser pp) throws XmlPullParserException, IOException
 	{
+		if (pp.getEventType() == XmlPullParser.TEXT && pp.isWhitespace())
+			pp.next();
+
 		if (pp.getEventType() != XmlPullParser.START_TAG)
 			throw new IllegalStateException("expecting start tag to enter");
 		if (pp.isEmptyElementTag())
@@ -32,6 +47,9 @@ public final class XmlPullUtil
 
 	public static void enter(final XmlPullParser pp, final String tagName) throws XmlPullParserException, IOException
 	{
+		if (pp.getEventType() == XmlPullParser.TEXT && pp.isWhitespace())
+			pp.next();
+
 		pp.require(XmlPullParser.START_TAG, null, tagName);
 		enter(pp);
 	}
@@ -49,6 +67,7 @@ public final class XmlPullUtil
 	public static void exit(final XmlPullParser pp, final String tagName) throws XmlPullParserException, IOException
 	{
 		exitSkipToEnd(pp);
+
 		pp.require(XmlPullParser.END_TAG, null, tagName);
 		pp.next();
 	}
@@ -64,11 +83,6 @@ public final class XmlPullUtil
 			else
 				throw new IllegalStateException();
 		}
-	}
-
-	public static boolean test(final XmlPullParser pp, final String tagName) throws XmlPullParserException
-	{
-		return pp.getEventType() == XmlPullParser.START_TAG && pp.getName().equals(tagName);
 	}
 
 	public static void requireSkip(final XmlPullParser pp, final String tagName) throws XmlPullParserException, IOException

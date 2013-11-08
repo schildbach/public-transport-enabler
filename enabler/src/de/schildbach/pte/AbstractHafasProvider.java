@@ -486,9 +486,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 			XmlPullUtil.enter(pp, "LocationList");
 
-			if (pp.isWhitespace())
-				pp.next();
-
 			while (XmlPullUtil.test(pp, "StopLocation") || XmlPullUtil.test(pp, "CoordLocation"))
 			{
 				final String name = ParserUtils.resolveEntities(XmlPullUtil.attr(pp, "name"));
@@ -521,9 +518,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					XmlPullUtil.enter(pp);
 					XmlPullUtil.exit(pp);
 				}
-
-				if (pp.isWhitespace())
-					pp.next();
 			}
 			XmlPullUtil.exit(pp, "LocationList");
 
@@ -1122,10 +1116,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
 				throw new IllegalStateException("error " + code + " " + XmlPullUtil.attr(pp, "text"));
 			}
-
-			// workaround for broken firstConDiffersFromReqDate="true" as text node
-			if (pp.getEventType() == XmlPullParser.TEXT)
-				pp.nextTag();
 
 			final String c = XmlPullUtil.test(pp, "ConResCtxt") ? XmlPullUtil.text(pp) : null;
 			final Context context;
