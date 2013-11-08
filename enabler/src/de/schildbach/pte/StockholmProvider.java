@@ -48,7 +48,7 @@ public class StockholmProvider extends AbstractHafasProvider
 
 	public StockholmProvider()
 	{
-		super(API_BASE + "stboard.exe/sn", API_BASE + "ajax-getstop.exe/sny", API_BASE + "query.exe/sn", 7, null);
+		super(API_BASE + "stboard.exe/sn", API_BASE + "ajax-getstop.exe/sny", API_BASE + "query.exe/sn", 7);
 
 		setStyles(STYLES);
 	}

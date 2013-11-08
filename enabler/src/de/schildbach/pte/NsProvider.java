@@ -41,7 +41,7 @@ public class NsProvider extends AbstractHafasProvider
 
 	public NsProvider()
 	{
-		super(API_BASE + "stboard.exe/nn", API_BASE + "ajax-getstop.exe/nny", API_BASE + "query.exe/nn", 10, null);
+		super(API_BASE + "stboard.exe/nn", API_BASE + "ajax-getstop.exe/nny", API_BASE + "query.exe/nn", 10);
 
 		setJsonGetStopsEncoding(UTF_8);
 	}

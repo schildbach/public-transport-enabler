@@ -41,7 +41,7 @@ public class VbnProvider extends AbstractHafasProvider
 
 	public VbnProvider()
 	{
-		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dny", API_BASE + "query.exe/dn", 10, null);
+		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dny", API_BASE + "query.exe/dn", 10);
 	}
 
 	public NetworkId id()

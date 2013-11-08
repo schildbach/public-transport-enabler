@@ -37,7 +37,7 @@ public class SncbProvider extends AbstractHafasProvider
 
 	public SncbProvider()
 	{
-		super(API_BASE + "stboard.exe/nn", API_BASE + "ajax-getstop.exe/nny", API_BASE + "query.exe/nn", 16, null);
+		super(API_BASE + "stboard.exe/nn", API_BASE + "ajax-getstop.exe/nny", API_BASE + "query.exe/nn", 16);
 
 		setJsonGetStopsEncoding(UTF_8);
 		setJsonNearbyStationsEncoding(UTF_8);

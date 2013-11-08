@@ -84,7 +84,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	protected final String getStopEndpoint;
 	protected final String queryEndpoint;
 	private final int numProductBits;
-	private final String accessId;
+	private String accessId;
 	private String clientType;
 	private Charset jsonGetStopsEncoding;
 	private Charset jsonNearbyStationsEncoding;
@@ -143,20 +143,18 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 	}
 
-	public AbstractHafasProvider(final String stationBoardEndpoint, final String getStopEndpoint, final String queryEndpoint,
-			final int numProductBits, final String accessId)
+	public AbstractHafasProvider(final String stationBoardEndpoint, final String getStopEndpoint, final String queryEndpoint, final int numProductBits)
 	{
-		this(stationBoardEndpoint, getStopEndpoint, queryEndpoint, numProductBits, accessId, ISO_8859_1, ISO_8859_1);
+		this(stationBoardEndpoint, getStopEndpoint, queryEndpoint, numProductBits, ISO_8859_1, ISO_8859_1);
 	}
 
 	public AbstractHafasProvider(final String stationBoardEndpoint, final String getStopEndpoint, final String queryEndpoint,
-			final int numProductBits, final String accessId, final Charset jsonEncoding, final Charset xmlMlcResEncoding)
+			final int numProductBits, final Charset jsonEncoding, final Charset xmlMlcResEncoding)
 	{
 		this.stationBoardEndpoint = stationBoardEndpoint;
 		this.getStopEndpoint = getStopEndpoint;
 		this.queryEndpoint = queryEndpoint;
 		this.numProductBits = numProductBits;
-		this.accessId = accessId;
 		this.jsonGetStopsEncoding = jsonEncoding;
 		this.jsonNearbyStationsEncoding = jsonEncoding;
 		this.xmlMlcResEncoding = xmlMlcResEncoding;
@@ -165,6 +163,11 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	protected void setClientType(final String clientType)
 	{
 		this.clientType = clientType;
+	}
+
+	protected void setAccessId(final String accessId)
+	{
+		this.accessId = accessId;
 	}
 
 	protected void setDominantPlanStopTime(final boolean dominantPlanStopTime)

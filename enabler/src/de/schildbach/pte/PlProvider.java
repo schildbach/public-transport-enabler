@@ -41,7 +41,7 @@ public class PlProvider extends AbstractHafasProvider
 
 	public PlProvider()
 	{
-		super(API_BASE + "stboard.exe/pn", null, API_BASE + "query.exe/pn", 7, null, UTF_8, UTF_8);
+		super(API_BASE + "stboard.exe/pn", null, API_BASE + "query.exe/pn", 7, UTF_8, UTF_8);
 	}
 
 	public NetworkId id()

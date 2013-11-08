@@ -54,7 +54,7 @@ public class InvgProvider extends AbstractHafasProvider
 
 	public InvgProvider()
 	{
-		super(API_BASE + "stboard.exe/dn", null, API_BASE + "extxml.exe", 10, null);
+		super(API_BASE + "stboard.exe/dn", null, API_BASE + "extxml.exe", 10);
 
 		setStyles(STYLES);
 	}

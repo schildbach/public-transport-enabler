@@ -41,7 +41,7 @@ public class NasaProvider extends AbstractHafasProvider
 
 	public NasaProvider()
 	{
-		super(API_BASE + "stboard.exe/dn", null, API_BASE + "query.exe/dn", 8, null);
+		super(API_BASE + "stboard.exe/dn", null, API_BASE + "query.exe/dn", 8);
 
 		setJsonNearbyStationsEncoding(UTF_8);
 	}

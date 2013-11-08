@@ -41,7 +41,7 @@ public class OebbProvider extends AbstractHafasProvider
 
 	public OebbProvider()
 	{
-		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dny", API_BASE + "query.exe/dn", 13, null);
+		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dny", API_BASE + "query.exe/dn", 13);
 
 		setDominantPlanStopTime(true);
 		setJsonGetStopsEncoding(UTF_8);

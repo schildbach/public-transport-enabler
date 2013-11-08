@@ -42,7 +42,7 @@ public class NvvProvider extends AbstractHafasProvider
 
 	public NvvProvider()
 	{
-		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 12, null, UTF_8, null);
+		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 12, UTF_8, null);
 	}
 
 	public NetworkId id()

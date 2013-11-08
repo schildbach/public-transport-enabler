@@ -37,7 +37,9 @@ public class SbbProvider extends AbstractHafasProvider
 
 	public SbbProvider(final String accessId)
 	{
-		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "extxml.exe", 10, accessId);
+		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "extxml.exe", 10);
+
+		setAccessId(accessId);
 	}
 
 	public NetworkId id()

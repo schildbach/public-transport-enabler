@@ -36,7 +36,7 @@ public class LuProvider extends AbstractHafasProvider
 
 	public LuProvider()
 	{
-		super(API_BASE + "stboard.exe/fn", null, API_BASE + "query.exe/fn", 10, null, UTF_8, UTF_8);
+		super(API_BASE + "stboard.exe/fn", null, API_BASE + "query.exe/fn", 10, UTF_8, UTF_8);
 	}
 
 	public NetworkId id()

@@ -42,7 +42,7 @@ public class DsbProvider extends AbstractHafasProvider
 
 	public DsbProvider()
 	{
-		super(API_BASE + "stboard.exe/mn", null, API_BASE + "query.exe/dn", 11, null);
+		super(API_BASE + "stboard.exe/mn", null, API_BASE + "query.exe/dn", 11);
 	}
 
 	public NetworkId id()

@@ -53,7 +53,7 @@ public class SeptaProvider extends AbstractHafasProvider
 
 	public SeptaProvider()
 	{
-		super(API_BASE + "stboard.exe/en", API_BASE + "ajax-getstop.exe/dny", API_BASE + "query.exe/en", 4, null);
+		super(API_BASE + "stboard.exe/en", API_BASE + "ajax-getstop.exe/dny", API_BASE + "query.exe/en", 4);
 	}
 
 	public NetworkId id()

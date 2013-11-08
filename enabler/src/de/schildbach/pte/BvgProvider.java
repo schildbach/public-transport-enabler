@@ -65,7 +65,7 @@ public final class BvgProvider extends AbstractHafasProvider
 
 	public BvgProvider(final String additionalQueryParameter)
 	{
-		super(API_BASE + "stboard.bin/dn", API_BASE + "ajax-getstop.bin/dny", API_BASE + "query.bin/dn", 8, null);
+		super(API_BASE + "stboard.bin/dn", API_BASE + "ajax-getstop.bin/dny", API_BASE + "query.bin/dn", 8);
 
 		setStyles(STYLES);
 

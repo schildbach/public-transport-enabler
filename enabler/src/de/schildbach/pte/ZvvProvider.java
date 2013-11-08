@@ -42,7 +42,7 @@ public class ZvvProvider extends AbstractHafasProvider
 
 	public ZvvProvider()
 	{
-		super(API_BASE + "stboard.exe/dn", null, API_BASE + "query.exe/dn", 10, null, UTF_8, UTF_8);
+		super(API_BASE + "stboard.exe/dn", null, API_BASE + "query.exe/dn", 10, UTF_8, UTF_8);
 
 		setStyles(STYLES);
 	}
