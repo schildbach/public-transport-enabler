@@ -95,6 +95,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private final String coordEndpoint;
 
 	private String additionalQueryParameter = null;
+	private boolean useRealtime = true;
 	private boolean canAcceptPoiId = false;
 	private boolean needsSpEncId = false;
 	private boolean includeRegionId = true;
@@ -190,6 +191,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	protected void setHttpPost(final boolean httpPost)
 	{
 		this.httpPost = httpPost;
+	}
+
+	protected void setUseRealtime(final boolean useRealtime)
+	{
+		this.useRealtime = useRealtime;
 	}
 
 	protected void setIncludeRegionId(final boolean includeRegionId)
@@ -1413,7 +1419,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		appendCommonRequestParams(parameters, "XML");
 		parameters.append("&type_dm=stop");
 		parameters.append("&name_dm=").append(stationId);
-		parameters.append("&useRealtime=1");
+		if (useRealtime)
+			parameters.append("&useRealtime=1");
 		parameters.append("&mode=direct");
 		parameters.append("&ptOptionsActive=1");
 		parameters.append("&deleteAssignedStops_dm=").append(equivs ? '0' : '1');
@@ -2069,7 +2076,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			uri.append("&bikeTakeAlong=1");
 
 		uri.append("&locationServerActive=1");
-		uri.append("&useRealtime=1");
+		if (useRealtime)
+			uri.append("&useRealtime=1");
 		uri.append("&useProxFootSearch=1"); // walk if it makes journeys quicker
 		uri.append("&nextDepsPerLeg=1"); // next departure in case previous was missed
 

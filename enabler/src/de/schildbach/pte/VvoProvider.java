@@ -40,6 +40,7 @@ public class VvoProvider extends AbstractEfaProvider
 	{
 		super(apiBase);
 
+		setUseRealtime(false);
 		setRequestUrlEncoding(UTF_8);
 	}
 
