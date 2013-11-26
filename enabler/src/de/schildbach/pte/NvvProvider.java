@@ -190,7 +190,6 @@ public class NvvProvider extends AbstractHafasProvider
 	@Override
 	protected void addCustomReplaces(final StringReplaceReader reader)
 	{
-		reader.replace("<br />", " ");
 		reader.replace("<ul>", " ");
 		reader.replace("</ul>", " ");
 		reader.replace("<li>", " ");
