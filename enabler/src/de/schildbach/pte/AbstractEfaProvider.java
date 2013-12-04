@@ -536,6 +536,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				XmlPullUtil.enter(pp, "r");
 
 				final int id = Integer.parseInt(requireValueTag(pp, "id"));
+				requireValueTag(pp, "stateless");
 				requireValueTag(pp, "omc");
 				final String place = normalizeLocationName(optValueTag(pp, "pc"));
 				requireValueTag(pp, "pid");
