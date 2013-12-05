@@ -48,7 +48,7 @@ public class SydneyProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 10101452), 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 10101101), 0, 0);
 
 		print(result);
 	}
@@ -64,9 +64,17 @@ public class SydneyProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(10101452, 0, false);
+		final QueryDeparturesResult result = provider.queryDepartures(10101101, 0, false);
 
 		print(result);
+	}
+
+	@Test
+	public void autocomplete() throws Exception
+	{
+		final List<Location> autocompletes = provider.autocompleteStations("Town Hall Station");
+
+		print(autocompletes);
 	}
 
 	@Test

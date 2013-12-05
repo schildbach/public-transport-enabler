@@ -25,7 +25,7 @@ import java.util.TimeZone;
 public class SydneyProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.SYDNEY;
-	private final static String API_BASE = "http://mobile.131500.com.au/TripPlanner/mobile/";
+	private final static String API_BASE = "http://tp.transportnsw.info/nsw/";
 
 	public SydneyProvider()
 	{
