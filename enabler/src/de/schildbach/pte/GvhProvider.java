@@ -70,6 +70,13 @@ public class GvhProvider extends AbstractEfaProvider
 				return "SS3";
 			if ("S31".equals(symbol))
 				return "SS31";
+
+			if ("U1".equals(symbol))
+				return "UU1";
+			if ("U2".equals(symbol))
+				return "UU2";
+			if ("U3".equals(symbol))
+				return "UU3";
 		}
 
 		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);

@@ -1118,6 +1118,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return "IES" + trainNum;
 			if ("EST".equals(trainType) || "EUROSTAR".equals(trainName))
 				return "IEST" + trainNum;
+			if ("EIC".equals(trainType)) // Ekspres InterCity, Polen
+				return "IEIC" + trainNum;
 
 			if ("Zug".equals(trainName))
 				return 'R' + symbol;
@@ -1272,6 +1274,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return "RP" + trainNum;
 			if ("SBS".equals(trainType) || "Städtebahn Sachsen".equals(trainName))
 				return "RSBS" + trainNum;
+			if ("SES".equals(trainType) || "Städteexpress Sachsen".equals(trainName))
+				return "RSES" + trainNum;
 			if ("SB-".equals(trainType)) // Städtebahn Sachsen
 				return "RSB" + trainNum;
 			if ("ag".equals(trainType)) // agilis
@@ -1318,6 +1322,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return "RATB" + trainNum;
 			if ("ATZ".equals(trainType)) // Autozug
 				return "RATZ" + trainNum;
+			if ("AZ".equals(trainType) || "Auto-Zug".equals(trainName))
+				return "RAZ" + trainNum;
 			if ("DWE".equals(trainType) || "Dessau-Wörlitzer Eisenbahn".equals(trainName))
 				return "RDWE" + trainNum;
 			if ("KTB".equals(trainType) || "Kandertalbahn".equals(trainName))
@@ -1336,10 +1342,16 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return "RWTB" + trainNum;
 			if ("DB".equals(trainType) || "DB Regio".equals(trainName))
 				return "RDB" + trainNum;
+			if ("M".equals(trainType) && "Meridian".equals(trainName))
+				return "RM" + trainNum;
+			if ("M".equals(trainType) && "Messezug".equals(trainName))
+				return "RM" + trainNum;
 			if ("EZ".equals(trainType)) // ÖBB Erlebniszug
 				return "REZ" + trainNum;
 			if ("DPF".equals(trainType))
 				return "RDPF" + trainNum;
+			if ("WBA".equals(trainType) || "Waldbahn".equals(trainName))
+				return "RWBA" + trainNum;
 
 			if ("BSB-Zug".equals(trainName)) // Breisgau-S-Bahn
 				return 'S' + trainNum;
@@ -1357,7 +1369,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 			if ("Bus".equals(trainType))
 				return "B" + trainNum;
-			if ("SEV".equals(trainType) || "SEV".equals(trainNum) || "SEV".equals(symbol) || "Ersatzverkehr".equals(trainName))
+			if ("SEV".equals(trainType) || "SEV".equals(trainNum) || "SEV".equals(trainName) || "SEV".equals(symbol)
+					|| "Ersatzverkehr".equals(trainName))
 				return "BSEV";
 			if ("Bus replacement".equals(trainName)) // GB
 				return "BBR";

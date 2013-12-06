@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -197,5 +198,14 @@ public class VbbProvider extends AbstractHafasProvider
 	public QueryTripsResult queryMoreTrips(final QueryTripsContext contextObj, final boolean later, final int numTrips) throws IOException
 	{
 		return queryMoreTripsBinary(contextObj, later, numTrips);
+	}
+
+	@Override
+	protected Line parseLineAndType(final String lineAndType)
+	{
+		if ("X#".equals(lineAndType))
+			return newLine('?', "X", null);
+		else
+			return super.parseLineAndType(lineAndType);
 	}
 }

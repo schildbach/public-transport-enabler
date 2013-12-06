@@ -2791,6 +2791,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			return 'R';
 		if ("GEX".equals(ucType)) // Glacier Express
 			return 'R';
+		if ("M".equals(ucType)) // Meridian
+			return 'R';
 
 		// if ("E".equals(normalizedType)) // Eilzug, stimmt wahrscheinlich nicht
 		// return "R" + normalizedName;
