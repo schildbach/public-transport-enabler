@@ -105,6 +105,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private boolean httpPost = false;
 	private boolean useRouteIndexAsTripId = true;
 	private boolean useLineRestriction = true;
+	private boolean useStringCoordListOutputFormat = true;
 	private float fareCorrectionFactor = 1f;
 
 	private final XmlPullParserFactory parserFactory;
@@ -211,6 +212,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	protected void setUseLineRestriction(final boolean useLineRestriction)
 	{
 		this.useLineRestriction = useLineRestriction;
+	}
+
+	protected void setUseStringCoordListOutputFormat(final boolean useStringCoordListOutputFormat)
+	{
+		this.useStringCoordListOutputFormat = useStringCoordListOutputFormat;
 	}
 
 	protected void setCanAcceptPoiId(final boolean canAcceptPoiId)
@@ -581,7 +587,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		final StringBuilder parameters = new StringBuilder();
 		appendCommonRequestParams(parameters, "XML");
 		parameters.append("&coord=").append(String.format(Locale.ENGLISH, "%2.6f:%2.6f:WGS84", latLonToDouble(lon), latLonToDouble(lat)));
-		parameters.append("&coordListOutputFormat=STRING");
+		if (useStringCoordListOutputFormat)
+			parameters.append("&coordListOutputFormat=STRING");
 		parameters.append("&max=").append(maxStations != 0 ? maxStations : 50);
 		parameters.append("&inclFilter=1&radius_1=").append(maxDistance != 0 ? maxDistance : 1320);
 		parameters.append("&type_1=STOP"); // ENTRANCE, BUS_POINT, POI_POINT
@@ -2096,9 +2103,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		return uri.toString();
 	}
 
-	private static final void appendCommonXsltTripRequest2Params(final StringBuilder uri)
+	private final void appendCommonXsltTripRequest2Params(final StringBuilder uri)
 	{
-		uri.append("&coordListOutputFormat=STRING");
+		if (useStringCoordListOutputFormat)
+			uri.append("&coordListOutputFormat=STRING");
 		uri.append("&calcNumberOfTrips=4");
 	}
 
@@ -3068,7 +3076,19 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		if (!"GEO_DECIMAL".equals(type))
 			throw new IllegalStateException("unknown type: " + type);
 
-		final List<Point> path = processCoordinateStrings(pp, "itdCoordinateString");
+		final List<Point> path;
+		if (XmlPullUtil.test(pp, "itdCoordinateString"))
+		{
+			path = processCoordinateStrings(pp, "itdCoordinateString");
+		}
+		else if (XmlPullUtil.test(pp, "itdCoordinateBaseElemList"))
+		{
+			path = processCoordinateBaseElems(pp);
+		}
+		else
+		{
+			throw new IllegalStateException(pp.getPositionDescription());
+		}
 
 		XmlPullUtil.exit(pp, "itdPathCoordinates");
 
@@ -3082,6 +3102,28 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		final String value = requireValueTag(pp, tag);
 		for (final String coordStr : value.split(" +"))
 			path.add(coordStrToPoint(coordStr));
+
+		return path;
+	}
+
+	private List<Point> processCoordinateBaseElems(final XmlPullParser pp) throws XmlPullParserException, IOException
+	{
+		final List<Point> path = new LinkedList<Point>();
+
+		XmlPullUtil.enter(pp, "itdCoordinateBaseElemList");
+
+		while (XmlPullUtil.test(pp, "itdCoordinateBaseElem"))
+		{
+			XmlPullUtil.enter(pp, "itdCoordinateBaseElem");
+
+			final int lon = Math.round(Float.parseFloat(requireValueTag(pp, "x")));
+			final int lat = Math.round(Float.parseFloat(requireValueTag(pp, "y")));
+			path.add(new Point(lat, lon));
+
+			XmlPullUtil.exit(pp, "itdCoordinateBaseElem");
+		}
+
+		XmlPullUtil.exit(pp, "itdCoordinateBaseElemList");
 
 		return path;
 	}
