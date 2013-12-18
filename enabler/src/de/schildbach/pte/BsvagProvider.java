@@ -38,6 +38,7 @@ public class BsvagProvider extends AbstractEfaProvider
 	{
 		super(API_BASE);
 
+		setUseRouteIndexAsTripId(false);
 		setStyles(STYLES);
 	}
 
