@@ -958,7 +958,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			pp.setInput(is, null);
 			final ResultHeader header = enterItdRequest(pp);
 
-			if (!XmlPullUtil.jumpToStartTag(pp, null, "itdOdv") || !"dm".equals(pp.getAttributeValue(null, "usage")))
+			XmlPullUtil.enter(pp, "itdDepartureMonitorRequest");
+
+			if (!XmlPullUtil.test(pp, "itdOdv") || !"dm".equals(pp.getAttributeValue(null, "usage")))
 				throw new IllegalStateException("cannot find <itdOdv usage=\"dm\" />");
 			XmlPullUtil.enter(pp, "itdOdv");
 
@@ -972,9 +974,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				final Location ownLocation = processOdvNameElem(pp, place);
 				final Location ownStation = ownLocation.type == LocationType.STATION ? ownLocation : null;
 
+				XmlPullUtil.exit(pp, "itdOdvName");
+
 				final List<Location> stations = new ArrayList<Location>();
 
-				if (XmlPullUtil.jumpToStartTag(pp, null, "itdOdvAssignedStops"))
+				if (XmlPullUtil.test(pp, "itdOdvAssignedStops"))
 				{
 					XmlPullUtil.enter(pp, "itdOdvAssignedStops");
 					while (XmlPullUtil.test(pp, "itdOdvAssignedStop"))
@@ -986,6 +990,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					}
 					XmlPullUtil.exit(pp, "itdOdvAssignedStops");
 				}
+
+				XmlPullUtil.exit(pp, "itdOdv");
 
 				if (ownStation != null && !stations.contains(ownStation))
 					stations.add(ownStation);
@@ -2409,417 +2415,416 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			XmlPullUtil.next(pp);
 		}
 		XmlPullUtil.exit(pp, "itdDateTime");
+		XmlPullUtil.exit(pp, "itdTripDateTime");
+
+		XmlPullUtil.enter(pp, "itdTripOptions");
+		XmlPullUtil.exit(pp, "itdTripOptions");
+
+		XmlPullUtil.enter(pp, "itdItinerary");
 
 		final Calendar time = new GregorianCalendar(timeZone());
 		final List<Trip> trips = new ArrayList<Trip>();
 
-		if (XmlPullUtil.jumpToStartTag(pp, null, "itdRouteList"))
+		XmlPullUtil.enter(pp, "itdRouteList");
+
+		while (XmlPullUtil.test(pp, "itdRoute"))
 		{
-			XmlPullUtil.enter(pp, "itdRouteList");
+			final String id = useRouteIndexAsTripId ? pp.getAttributeValue(null, "routeIndex") + "-" + pp.getAttributeValue(null, "routeTripIndex")
+					: null;
+			final int numChanges = XmlPullUtil.intAttr(pp, "changes");
+			XmlPullUtil.enter(pp, "itdRoute");
 
-			while (XmlPullUtil.test(pp, "itdRoute"))
+			while (XmlPullUtil.test(pp, "itdDateTime"))
+				XmlPullUtil.next(pp);
+			if (XmlPullUtil.test(pp, "itdMapItemList"))
+				XmlPullUtil.next(pp);
+
+			XmlPullUtil.enter(pp, "itdPartialRouteList");
+			final List<Trip.Leg> legs = new LinkedList<Trip.Leg>();
+			Location firstDepartureLocation = null;
+			Location lastArrivalLocation = null;
+
+			boolean cancelled = false;
+
+			while (XmlPullUtil.test(pp, "itdPartialRoute"))
 			{
-				final String id = useRouteIndexAsTripId ? pp.getAttributeValue(null, "routeIndex") + "-"
-						+ pp.getAttributeValue(null, "routeTripIndex") : null;
-				final int numChanges = XmlPullUtil.intAttr(pp, "changes");
-				XmlPullUtil.enter(pp, "itdRoute");
+				final String partialRouteType = XmlPullUtil.attr(pp, "type");
+				final int distance = XmlPullUtil.optIntAttr(pp, "distance", 0);
+				XmlPullUtil.enter(pp, "itdPartialRoute");
 
-				while (XmlPullUtil.test(pp, "itdDateTime"))
-					XmlPullUtil.next(pp);
+				XmlPullUtil.test(pp, "itdPoint");
+				if (!"departure".equals(pp.getAttributeValue(null, "usage")))
+					throw new IllegalStateException();
+				final Location departureLocation = processItdPointAttributes(pp);
+				if (firstDepartureLocation == null)
+					firstDepartureLocation = departureLocation;
+				final Position departurePosition = normalizePlatformName(XmlPullUtil.optAttr(pp, "platformName", null));
+				XmlPullUtil.enter(pp, "itdPoint");
 				if (XmlPullUtil.test(pp, "itdMapItemList"))
 					XmlPullUtil.next(pp);
-
-				XmlPullUtil.enter(pp, "itdPartialRouteList");
-				final List<Trip.Leg> legs = new LinkedList<Trip.Leg>();
-				Location firstDepartureLocation = null;
-				Location lastArrivalLocation = null;
-
-				boolean cancelled = false;
-
-				while (XmlPullUtil.test(pp, "itdPartialRoute"))
+				XmlPullUtil.require(pp, "itdDateTime");
+				processItdDateTime(pp, time);
+				final Date departureTime = time.getTime();
+				final Date departureTargetTime;
+				if (XmlPullUtil.test(pp, "itdDateTimeTarget"))
 				{
-					final String partialRouteType = XmlPullUtil.attr(pp, "type");
-					final int distance = XmlPullUtil.optIntAttr(pp, "distance", 0);
-					XmlPullUtil.enter(pp, "itdPartialRoute");
-
-					XmlPullUtil.test(pp, "itdPoint");
-					if (!"departure".equals(pp.getAttributeValue(null, "usage")))
-						throw new IllegalStateException();
-					final Location departureLocation = processItdPointAttributes(pp);
-					if (firstDepartureLocation == null)
-						firstDepartureLocation = departureLocation;
-					final Position departurePosition = normalizePlatformName(XmlPullUtil.optAttr(pp, "platformName", null));
-					XmlPullUtil.enter(pp, "itdPoint");
-					if (XmlPullUtil.test(pp, "itdMapItemList"))
-						XmlPullUtil.next(pp);
-					XmlPullUtil.require(pp, "itdDateTime");
 					processItdDateTime(pp, time);
-					final Date departureTime = time.getTime();
-					final Date departureTargetTime;
-					if (XmlPullUtil.test(pp, "itdDateTimeTarget"))
+					departureTargetTime = time.getTime();
+				}
+				else
+				{
+					departureTargetTime = null;
+				}
+				XmlPullUtil.exit(pp, "itdPoint");
+
+				XmlPullUtil.test(pp, "itdPoint");
+				if (!"arrival".equals(pp.getAttributeValue(null, "usage")))
+					throw new IllegalStateException();
+				final Location arrivalLocation = processItdPointAttributes(pp);
+				lastArrivalLocation = arrivalLocation;
+				final Position arrivalPosition = normalizePlatformName(XmlPullUtil.optAttr(pp, "platformName", null));
+				XmlPullUtil.enter(pp, "itdPoint");
+				if (XmlPullUtil.test(pp, "itdMapItemList"))
+					XmlPullUtil.next(pp);
+				XmlPullUtil.require(pp, "itdDateTime");
+				processItdDateTime(pp, time);
+				final Date arrivalTime = time.getTime();
+				final Date arrivalTargetTime;
+				if (XmlPullUtil.test(pp, "itdDateTimeTarget"))
+				{
+					processItdDateTime(pp, time);
+					arrivalTargetTime = time.getTime();
+				}
+				else
+				{
+					arrivalTargetTime = null;
+				}
+				XmlPullUtil.exit(pp, "itdPoint");
+
+				XmlPullUtil.test(pp, "itdMeansOfTransport");
+				final String productName = pp.getAttributeValue(null, "productName");
+				if ("IT".equals(partialRouteType) || "Fussweg".equals(productName) || "Taxi".equals(productName))
+				{
+					final Trip.Individual.Type type = "Taxi".equals(productName) ? Trip.Individual.Type.TRANSFER : Trip.Individual.Type.WALK;
+
+					XmlPullUtil.enter(pp, "itdMeansOfTransport");
+					XmlPullUtil.exit(pp, "itdMeansOfTransport");
+
+					if (XmlPullUtil.test(pp, "itdStopSeq"))
+						XmlPullUtil.next(pp);
+
+					if (XmlPullUtil.test(pp, "itdFootPathInfo"))
+						XmlPullUtil.next(pp);
+
+					List<Point> path = null;
+					if (XmlPullUtil.test(pp, "itdPathCoordinates"))
+						path = processItdPathCoordinates(pp);
+
+					final Trip.Leg lastLeg = legs.size() > 0 ? legs.get(legs.size() - 1) : null;
+					if (lastLeg != null && lastLeg instanceof Trip.Individual && ((Trip.Individual) lastLeg).type == type)
 					{
-						processItdDateTime(pp, time);
-						departureTargetTime = time.getTime();
+						final Trip.Individual lastIndividual = (Trip.Individual) legs.remove(legs.size() - 1);
+						if (path != null && lastIndividual.path != null)
+							path.addAll(0, lastIndividual.path);
+						legs.add(new Trip.Individual(type, lastIndividual.departure, lastIndividual.departureTime, arrivalLocation, arrivalTime,
+								path, distance));
 					}
 					else
 					{
-						departureTargetTime = null;
+						legs.add(new Trip.Individual(type, departureLocation, departureTime, arrivalLocation, arrivalTime, path, distance));
 					}
-					XmlPullUtil.exit(pp, "itdPoint");
+				}
+				else if ("gesicherter Anschluss".equals(productName) || "nicht umsteigen".equals(productName)) // type97
+				{
+					// ignore
 
-					XmlPullUtil.test(pp, "itdPoint");
-					if (!"arrival".equals(pp.getAttributeValue(null, "usage")))
-						throw new IllegalStateException();
-					final Location arrivalLocation = processItdPointAttributes(pp);
-					lastArrivalLocation = arrivalLocation;
-					final Position arrivalPosition = normalizePlatformName(XmlPullUtil.optAttr(pp, "platformName", null));
-					XmlPullUtil.enter(pp, "itdPoint");
-					if (XmlPullUtil.test(pp, "itdMapItemList"))
-						XmlPullUtil.next(pp);
-					XmlPullUtil.require(pp, "itdDateTime");
-					processItdDateTime(pp, time);
-					final Date arrivalTime = time.getTime();
-					final Date arrivalTargetTime;
-					if (XmlPullUtil.test(pp, "itdDateTimeTarget"))
+					XmlPullUtil.enter(pp, "itdMeansOfTransport");
+					XmlPullUtil.exit(pp, "itdMeansOfTransport");
+				}
+				else if ("PT".equals(partialRouteType))
+				{
+					final String destinationName = normalizeLocationName(pp.getAttributeValue(null, "destination"));
+					final String destinationIdStr = pp.getAttributeValue(null, "destID");
+					final int destinationId = (destinationIdStr != null && destinationIdStr.length() > 0) ? Integer.parseInt(destinationIdStr) : 0;
+					final Location destination = new Location(destinationId > 0 ? LocationType.STATION : LocationType.ANY,
+							destinationId > 0 ? destinationId : 0, null, destinationName);
+					final String lineLabel;
+					final String motSymbol = pp.getAttributeValue(null, "symbol");
+					if ("AST".equals(motSymbol))
 					{
-						processItdDateTime(pp, time);
-						arrivalTargetTime = time.getTime();
+						lineLabel = "BAST";
 					}
 					else
 					{
-						arrivalTargetTime = null;
+						final String motType = pp.getAttributeValue(null, "motType");
+						final String motShortName = pp.getAttributeValue(null, "shortname");
+						final String motName = pp.getAttributeValue(null, "name");
+						final String motTrainName = pp.getAttributeValue(null, "trainName");
+						final String motTrainType = pp.getAttributeValue(null, "trainType");
+
+						lineLabel = parseLine(motType, motSymbol, motShortName, motName, motTrainType, motShortName, motTrainName);
 					}
-					XmlPullUtil.exit(pp, "itdPoint");
+					XmlPullUtil.enter(pp, "itdMeansOfTransport");
+					XmlPullUtil.require(pp, "motDivaParams");
+					final String divaNetwork = XmlPullUtil.attr(pp, "network");
+					final String divaLine = XmlPullUtil.attr(pp, "line");
+					final String divaSupplement = XmlPullUtil.optAttr(pp, "supplement", "");
+					final String divaDirection = XmlPullUtil.attr(pp, "direction");
+					final String divaProject = XmlPullUtil.attr(pp, "project");
+					final String lineId = divaNetwork + ':' + divaLine + ':' + divaSupplement + ':' + divaDirection + ':' + divaProject;
+					XmlPullUtil.exit(pp, "itdMeansOfTransport");
 
-					XmlPullUtil.test(pp, "itdMeansOfTransport");
-					final String productName = pp.getAttributeValue(null, "productName");
-					if ("IT".equals(partialRouteType) || "Fussweg".equals(productName) || "Taxi".equals(productName))
+					final Integer departureDelay;
+					final Integer arrivalDelay;
+					if (XmlPullUtil.test(pp, "itdRBLControlled"))
 					{
-						final Trip.Individual.Type type = "Taxi".equals(productName) ? Trip.Individual.Type.TRANSFER : Trip.Individual.Type.WALK;
+						departureDelay = XmlPullUtil.optIntAttr(pp, "delayMinutes", 0);
+						arrivalDelay = XmlPullUtil.optIntAttr(pp, "delayMinutesArr", 0);
 
-						XmlPullUtil.enter(pp, "itdMeansOfTransport");
-						XmlPullUtil.exit(pp, "itdMeansOfTransport");
+						cancelled |= (departureDelay == -9999 || arrivalDelay == -9999);
 
-						if (XmlPullUtil.test(pp, "itdStopSeq"))
-							XmlPullUtil.next(pp);
-
-						if (XmlPullUtil.test(pp, "itdFootPathInfo"))
-							XmlPullUtil.next(pp);
-
-						List<Point> path = null;
-						if (XmlPullUtil.test(pp, "itdPathCoordinates"))
-							path = processItdPathCoordinates(pp);
-
-						final Trip.Leg lastLeg = legs.size() > 0 ? legs.get(legs.size() - 1) : null;
-						if (lastLeg != null && lastLeg instanceof Trip.Individual && ((Trip.Individual) lastLeg).type == type)
-						{
-							final Trip.Individual lastIndividual = (Trip.Individual) legs.remove(legs.size() - 1);
-							if (path != null && lastIndividual.path != null)
-								path.addAll(0, lastIndividual.path);
-							legs.add(new Trip.Individual(type, lastIndividual.departure, lastIndividual.departureTime, arrivalLocation, arrivalTime,
-									path, distance));
-						}
-						else
-						{
-							legs.add(new Trip.Individual(type, departureLocation, departureTime, arrivalLocation, arrivalTime, path, distance));
-						}
+						XmlPullUtil.next(pp);
 					}
-					else if ("gesicherter Anschluss".equals(productName) || "nicht umsteigen".equals(productName)) // type97
+					else
 					{
-						// ignore
-
-						XmlPullUtil.enter(pp, "itdMeansOfTransport");
-						XmlPullUtil.exit(pp, "itdMeansOfTransport");
+						departureDelay = null;
+						arrivalDelay = null;
 					}
-					else if ("PT".equals(partialRouteType))
+
+					boolean lowFloorVehicle = false;
+					String message = null;
+					if (XmlPullUtil.test(pp, "itdInfoTextList"))
 					{
-						final String destinationName = normalizeLocationName(pp.getAttributeValue(null, "destination"));
-						final String destinationIdStr = pp.getAttributeValue(null, "destID");
-						final int destinationId = (destinationIdStr != null && destinationIdStr.length() > 0) ? Integer.parseInt(destinationIdStr)
-								: 0;
-						final Location destination = new Location(destinationId > 0 ? LocationType.STATION : LocationType.ANY,
-								destinationId > 0 ? destinationId : 0, null, destinationName);
-						final String lineLabel;
-						final String motSymbol = pp.getAttributeValue(null, "symbol");
-						if ("AST".equals(motSymbol))
+						if (!pp.isEmptyElementTag())
 						{
-							lineLabel = "BAST";
-						}
-						else
-						{
-							final String motType = pp.getAttributeValue(null, "motType");
-							final String motShortName = pp.getAttributeValue(null, "shortname");
-							final String motName = pp.getAttributeValue(null, "name");
-							final String motTrainName = pp.getAttributeValue(null, "trainName");
-							final String motTrainType = pp.getAttributeValue(null, "trainType");
-
-							lineLabel = parseLine(motType, motSymbol, motShortName, motName, motTrainType, motShortName, motTrainName);
-						}
-						XmlPullUtil.enter(pp, "itdMeansOfTransport");
-						XmlPullUtil.require(pp, "motDivaParams");
-						final String divaNetwork = XmlPullUtil.attr(pp, "network");
-						final String divaLine = XmlPullUtil.attr(pp, "line");
-						final String divaSupplement = XmlPullUtil.optAttr(pp, "supplement", "");
-						final String divaDirection = XmlPullUtil.attr(pp, "direction");
-						final String divaProject = XmlPullUtil.attr(pp, "project");
-						final String lineId = divaNetwork + ':' + divaLine + ':' + divaSupplement + ':' + divaDirection + ':' + divaProject;
-						XmlPullUtil.exit(pp, "itdMeansOfTransport");
-
-						final Integer departureDelay;
-						final Integer arrivalDelay;
-						if (XmlPullUtil.test(pp, "itdRBLControlled"))
-						{
-							departureDelay = XmlPullUtil.optIntAttr(pp, "delayMinutes", 0);
-							arrivalDelay = XmlPullUtil.optIntAttr(pp, "delayMinutesArr", 0);
-
-							cancelled |= (departureDelay == -9999 || arrivalDelay == -9999);
-
-							XmlPullUtil.next(pp);
-						}
-						else
-						{
-							departureDelay = null;
-							arrivalDelay = null;
-						}
-
-						boolean lowFloorVehicle = false;
-						String message = null;
-						if (XmlPullUtil.test(pp, "itdInfoTextList"))
-						{
-							if (!pp.isEmptyElementTag())
+							XmlPullUtil.enter(pp, "itdInfoTextList");
+							while (XmlPullUtil.test(pp, "infoTextListElem"))
 							{
-								XmlPullUtil.enter(pp, "itdInfoTextList");
-								while (XmlPullUtil.test(pp, "infoTextListElem"))
-								{
-									XmlPullUtil.enter(pp, "infoTextListElem");
-									final String text = pp.getText();
-									if ("Niederflurwagen soweit verfügbar".equals(text)) // KVV
-										lowFloorVehicle = true;
-									else if (text != null && text.toLowerCase().contains("ruf")) // RufBus, RufTaxi
-										message = text;
-									XmlPullUtil.exit(pp, "infoTextListElem");
-								}
-								XmlPullUtil.exit(pp, "itdInfoTextList");
+								XmlPullUtil.enter(pp, "infoTextListElem");
+								final String text = pp.getText();
+								if ("Niederflurwagen soweit verfügbar".equals(text)) // KVV
+									lowFloorVehicle = true;
+								else if (text != null && text.toLowerCase().contains("ruf")) // RufBus, RufTaxi
+									message = text;
+								XmlPullUtil.exit(pp, "infoTextListElem");
 							}
-							else
-							{
-								XmlPullUtil.next(pp);
-							}
+							XmlPullUtil.exit(pp, "itdInfoTextList");
 						}
-
-						if (XmlPullUtil.test(pp, "itdFootPathInfo"))
-							XmlPullUtil.next(pp);
-						if (XmlPullUtil.test(pp, "infoLink"))
-							XmlPullUtil.next(pp);
-
-						List<Stop> intermediateStops = null;
-						if (XmlPullUtil.test(pp, "itdStopSeq"))
+						else
 						{
-							XmlPullUtil.enter(pp, "itdStopSeq");
-							intermediateStops = new LinkedList<Stop>();
-							while (XmlPullUtil.test(pp, "itdPoint"))
+							XmlPullUtil.next(pp);
+						}
+					}
+
+					if (XmlPullUtil.test(pp, "itdFootPathInfo"))
+						XmlPullUtil.next(pp);
+					if (XmlPullUtil.test(pp, "infoLink"))
+						XmlPullUtil.next(pp);
+
+					List<Stop> intermediateStops = null;
+					if (XmlPullUtil.test(pp, "itdStopSeq"))
+					{
+						XmlPullUtil.enter(pp, "itdStopSeq");
+						intermediateStops = new LinkedList<Stop>();
+						while (XmlPullUtil.test(pp, "itdPoint"))
+						{
+							final Location stopLocation = processItdPointAttributes(pp);
+
+							final Position stopPosition = normalizePlatformName(XmlPullUtil.optAttr(pp, "platformName", null));
+
+							XmlPullUtil.enter(pp, "itdPoint");
+							XmlPullUtil.require(pp, "itdDateTime");
+
+							final Date plannedStopArrivalTime;
+							final Date predictedStopArrivalTime;
+							if (processItdDateTime(pp, time))
 							{
-								final Location stopLocation = processItdPointAttributes(pp);
-
-								final Position stopPosition = normalizePlatformName(XmlPullUtil.optAttr(pp, "platformName", null));
-
-								XmlPullUtil.enter(pp, "itdPoint");
-								XmlPullUtil.require(pp, "itdDateTime");
-
-								final Date plannedStopArrivalTime;
-								final Date predictedStopArrivalTime;
-								if (processItdDateTime(pp, time))
+								plannedStopArrivalTime = time.getTime();
+								if (arrivalDelay != null)
 								{
-									plannedStopArrivalTime = time.getTime();
-									if (arrivalDelay != null)
-									{
-										time.add(Calendar.MINUTE, arrivalDelay);
-										predictedStopArrivalTime = time.getTime();
-									}
-									else
-									{
-										predictedStopArrivalTime = null;
-									}
+									time.add(Calendar.MINUTE, arrivalDelay);
+									predictedStopArrivalTime = time.getTime();
 								}
 								else
 								{
-									plannedStopArrivalTime = null;
 									predictedStopArrivalTime = null;
 								}
-
-								final Date plannedStopDepartureTime;
-								final Date predictedStopDepartureTime;
-								if (XmlPullUtil.test(pp, "itdDateTime") && processItdDateTime(pp, time))
-								{
-									plannedStopDepartureTime = time.getTime();
-									if (departureDelay != null)
-									{
-										time.add(Calendar.MINUTE, departureDelay);
-										predictedStopDepartureTime = time.getTime();
-									}
-									else
-									{
-										predictedStopDepartureTime = null;
-									}
-								}
-								else
-								{
-									plannedStopDepartureTime = null;
-									predictedStopDepartureTime = null;
-								}
-
-								final Stop stop = new Stop(stopLocation, plannedStopArrivalTime, predictedStopArrivalTime, stopPosition, null,
-										plannedStopDepartureTime, predictedStopDepartureTime, stopPosition, null);
-
-								intermediateStops.add(stop);
-
-								XmlPullUtil.exit(pp, "itdPoint");
-							}
-							XmlPullUtil.exit(pp, "itdStopSeq");
-
-							// remove first and last, because they are not intermediate
-							final int size = intermediateStops.size();
-							if (size >= 2)
-							{
-								if (intermediateStops.get(size - 1).location.id != arrivalLocation.id)
-									throw new IllegalStateException();
-								intermediateStops.remove(size - 1);
-
-								if (intermediateStops.get(0).location.id != departureLocation.id)
-									throw new IllegalStateException();
-								intermediateStops.remove(0);
-							}
-						}
-
-						List<Point> path = null;
-						if (XmlPullUtil.test(pp, "itdPathCoordinates"))
-							path = processItdPathCoordinates(pp);
-
-						boolean wheelChairAccess = false;
-						if (XmlPullUtil.test(pp, "genAttrList"))
-						{
-							XmlPullUtil.enter(pp, "genAttrList");
-							while (XmlPullUtil.test(pp, "genAttrElem"))
-							{
-								XmlPullUtil.enter(pp, "genAttrElem");
-								XmlPullUtil.enter(pp, "name");
-								final String name = pp.getText();
-								XmlPullUtil.exit(pp, "name");
-								XmlPullUtil.enter(pp, "value");
-								final String value = pp.getText();
-								XmlPullUtil.exit(pp, "value");
-								XmlPullUtil.exit(pp, "genAttrElem");
-
-								// System.out.println("genAttrElem: name='" + name + "' value='" + value + "'");
-
-								if ("PlanWheelChairAccess".equals(name) && "1".equals(value))
-									wheelChairAccess = true;
-							}
-							XmlPullUtil.exit(pp, "genAttrList");
-						}
-
-						if (XmlPullUtil.test(pp, "nextDeps"))
-						{
-							XmlPullUtil.enter(pp, "nextDeps");
-							while (XmlPullUtil.test(pp, "itdDateTime"))
-							{
-								processItdDateTime(pp, time);
-								/* final Date nextDepartureTime = */time.getTime();
-							}
-							XmlPullUtil.exit(pp, "nextDeps");
-						}
-
-						final Set<Line.Attr> lineAttrs = new HashSet<Line.Attr>();
-						if (wheelChairAccess || lowFloorVehicle)
-							lineAttrs.add(Line.Attr.WHEEL_CHAIR_ACCESS);
-						final Line line = new Line(lineId, lineLabel, lineStyle(divaNetwork, lineLabel), lineAttrs);
-
-						final Stop departure = new Stop(departureLocation, true, departureTargetTime != null ? departureTargetTime : departureTime,
-								departureTime != null ? departureTime : null, departurePosition, null);
-						final Stop arrival = new Stop(arrivalLocation, false, arrivalTargetTime != null ? arrivalTargetTime : arrivalTime,
-								arrivalTime != null ? arrivalTime : null, arrivalPosition, null);
-
-						legs.add(new Trip.Public(line, destination, departure, arrival, intermediateStops, path, message));
-					}
-					else
-					{
-						throw new IllegalStateException("unknown type: '" + partialRouteType + "' '" + productName + "'");
-					}
-
-					XmlPullUtil.exit(pp, "itdPartialRoute");
-				}
-
-				XmlPullUtil.exit(pp, "itdPartialRouteList");
-
-				final List<Fare> fares = new ArrayList<Fare>(2);
-				if (XmlPullUtil.test(pp, "itdFare"))
-				{
-					if (!pp.isEmptyElementTag())
-					{
-						XmlPullUtil.enter(pp, "itdFare");
-						if (XmlPullUtil.test(pp, "itdSingleTicket"))
-						{
-							final String net = XmlPullUtil.attr(pp, "net");
-							final Currency currency = parseCurrency(XmlPullUtil.attr(pp, "currency"));
-							final String fareAdult = XmlPullUtil.optAttr(pp, "fareAdult", null);
-							final String fareChild = XmlPullUtil.optAttr(pp, "fareChild", null);
-							final String unitName = XmlPullUtil.optAttr(pp, "unitName", null);
-							final String unitsAdult = XmlPullUtil.optAttr(pp, "unitsAdult", null);
-							final String unitsChild = XmlPullUtil.optAttr(pp, "unitsChild", null);
-							final String levelAdult = XmlPullUtil.optAttr(pp, "levelAdult", null);
-							final String levelChild = XmlPullUtil.optAttr(pp, "levelChild", null);
-							if (fareAdult != null)
-								fares.add(new Fare(net, Type.ADULT, currency, Float.parseFloat(fareAdult) * fareCorrectionFactor,
-										levelAdult != null ? null : unitName, levelAdult != null ? levelAdult : unitsAdult));
-							if (fareChild != null)
-								fares.add(new Fare(net, Type.CHILD, currency, Float.parseFloat(fareChild) * fareCorrectionFactor,
-										levelChild != null ? null : unitName, levelChild != null ? levelChild : unitsChild));
-
-							if (!pp.isEmptyElementTag())
-							{
-								XmlPullUtil.enter(pp, "itdSingleTicket");
-								if (XmlPullUtil.test(pp, "itdGenericTicketList"))
-								{
-									XmlPullUtil.enter(pp, "itdGenericTicketList");
-									while (XmlPullUtil.test(pp, "itdGenericTicketGroup"))
-									{
-										final Fare fare = processItdGenericTicketGroup(pp, net, currency);
-										if (fare != null)
-											fares.add(fare);
-									}
-									XmlPullUtil.exit(pp, "itdGenericTicketList");
-								}
-								XmlPullUtil.exit(pp, "itdSingleTicket");
 							}
 							else
 							{
-								XmlPullUtil.next(pp);
+								plannedStopArrivalTime = null;
+								predictedStopArrivalTime = null;
 							}
+
+							final Date plannedStopDepartureTime;
+							final Date predictedStopDepartureTime;
+							if (XmlPullUtil.test(pp, "itdDateTime") && processItdDateTime(pp, time))
+							{
+								plannedStopDepartureTime = time.getTime();
+								if (departureDelay != null)
+								{
+									time.add(Calendar.MINUTE, departureDelay);
+									predictedStopDepartureTime = time.getTime();
+								}
+								else
+								{
+									predictedStopDepartureTime = null;
+								}
+							}
+							else
+							{
+								plannedStopDepartureTime = null;
+								predictedStopDepartureTime = null;
+							}
+
+							final Stop stop = new Stop(stopLocation, plannedStopArrivalTime, predictedStopArrivalTime, stopPosition, null,
+									plannedStopDepartureTime, predictedStopDepartureTime, stopPosition, null);
+
+							intermediateStops.add(stop);
+
+							XmlPullUtil.exit(pp, "itdPoint");
 						}
-						XmlPullUtil.exit(pp, "itdFare");
+						XmlPullUtil.exit(pp, "itdStopSeq");
+
+						// remove first and last, because they are not intermediate
+						final int size = intermediateStops.size();
+						if (size >= 2)
+						{
+							if (intermediateStops.get(size - 1).location.id != arrivalLocation.id)
+								throw new IllegalStateException();
+							intermediateStops.remove(size - 1);
+
+							if (intermediateStops.get(0).location.id != departureLocation.id)
+								throw new IllegalStateException();
+							intermediateStops.remove(0);
+						}
 					}
-					else
+
+					List<Point> path = null;
+					if (XmlPullUtil.test(pp, "itdPathCoordinates"))
+						path = processItdPathCoordinates(pp);
+
+					boolean wheelChairAccess = false;
+					if (XmlPullUtil.test(pp, "genAttrList"))
 					{
-						XmlPullUtil.next(pp);
+						XmlPullUtil.enter(pp, "genAttrList");
+						while (XmlPullUtil.test(pp, "genAttrElem"))
+						{
+							XmlPullUtil.enter(pp, "genAttrElem");
+							XmlPullUtil.enter(pp, "name");
+							final String name = pp.getText();
+							XmlPullUtil.exit(pp, "name");
+							XmlPullUtil.enter(pp, "value");
+							final String value = pp.getText();
+							XmlPullUtil.exit(pp, "value");
+							XmlPullUtil.exit(pp, "genAttrElem");
+
+							// System.out.println("genAttrElem: name='" + name + "' value='" + value + "'");
+
+							if ("PlanWheelChairAccess".equals(name) && "1".equals(value))
+								wheelChairAccess = true;
+						}
+						XmlPullUtil.exit(pp, "genAttrList");
 					}
+
+					if (XmlPullUtil.test(pp, "nextDeps"))
+					{
+						XmlPullUtil.enter(pp, "nextDeps");
+						while (XmlPullUtil.test(pp, "itdDateTime"))
+						{
+							processItdDateTime(pp, time);
+							/* final Date nextDepartureTime = */time.getTime();
+						}
+						XmlPullUtil.exit(pp, "nextDeps");
+					}
+
+					final Set<Line.Attr> lineAttrs = new HashSet<Line.Attr>();
+					if (wheelChairAccess || lowFloorVehicle)
+						lineAttrs.add(Line.Attr.WHEEL_CHAIR_ACCESS);
+					final Line line = new Line(lineId, lineLabel, lineStyle(divaNetwork, lineLabel), lineAttrs);
+
+					final Stop departure = new Stop(departureLocation, true, departureTargetTime != null ? departureTargetTime : departureTime,
+							departureTime != null ? departureTime : null, departurePosition, null);
+					final Stop arrival = new Stop(arrivalLocation, false, arrivalTargetTime != null ? arrivalTargetTime : arrivalTime,
+							arrivalTime != null ? arrivalTime : null, arrivalPosition, null);
+
+					legs.add(new Trip.Public(line, destination, departure, arrival, intermediateStops, path, message));
+				}
+				else
+				{
+					throw new IllegalStateException("unknown type: '" + partialRouteType + "' '" + productName + "'");
 				}
 
-				XmlPullUtil.exit(pp, "itdRoute");
-
-				final Trip trip = new Trip(id, firstDepartureLocation, lastArrivalLocation, legs, fares.isEmpty() ? null : fares, null, numChanges);
-
-				if (!cancelled)
-					trips.add(trip);
+				XmlPullUtil.exit(pp, "itdPartialRoute");
 			}
 
-			XmlPullUtil.exit(pp, "itdRouteList");
+			XmlPullUtil.exit(pp, "itdPartialRouteList");
 
-			return new QueryTripsResult(header, uri, from, via, to, new Context(commandLink((String) context, requestId)), trips);
+			final List<Fare> fares = new ArrayList<Fare>(2);
+			if (XmlPullUtil.test(pp, "itdFare"))
+			{
+				if (!pp.isEmptyElementTag())
+				{
+					XmlPullUtil.enter(pp, "itdFare");
+					if (XmlPullUtil.test(pp, "itdSingleTicket"))
+					{
+						final String net = XmlPullUtil.attr(pp, "net");
+						final Currency currency = parseCurrency(XmlPullUtil.attr(pp, "currency"));
+						final String fareAdult = XmlPullUtil.optAttr(pp, "fareAdult", null);
+						final String fareChild = XmlPullUtil.optAttr(pp, "fareChild", null);
+						final String unitName = XmlPullUtil.optAttr(pp, "unitName", null);
+						final String unitsAdult = XmlPullUtil.optAttr(pp, "unitsAdult", null);
+						final String unitsChild = XmlPullUtil.optAttr(pp, "unitsChild", null);
+						final String levelAdult = XmlPullUtil.optAttr(pp, "levelAdult", null);
+						final String levelChild = XmlPullUtil.optAttr(pp, "levelChild", null);
+						if (fareAdult != null)
+							fares.add(new Fare(net, Type.ADULT, currency, Float.parseFloat(fareAdult) * fareCorrectionFactor,
+									levelAdult != null ? null : unitName, levelAdult != null ? levelAdult : unitsAdult));
+						if (fareChild != null)
+							fares.add(new Fare(net, Type.CHILD, currency, Float.parseFloat(fareChild) * fareCorrectionFactor,
+									levelChild != null ? null : unitName, levelChild != null ? levelChild : unitsChild));
+
+						if (!pp.isEmptyElementTag())
+						{
+							XmlPullUtil.enter(pp, "itdSingleTicket");
+							if (XmlPullUtil.test(pp, "itdGenericTicketList"))
+							{
+								XmlPullUtil.enter(pp, "itdGenericTicketList");
+								while (XmlPullUtil.test(pp, "itdGenericTicketGroup"))
+								{
+									final Fare fare = processItdGenericTicketGroup(pp, net, currency);
+									if (fare != null)
+										fares.add(fare);
+								}
+								XmlPullUtil.exit(pp, "itdGenericTicketList");
+							}
+							XmlPullUtil.exit(pp, "itdSingleTicket");
+						}
+						else
+						{
+							XmlPullUtil.next(pp);
+						}
+					}
+					XmlPullUtil.exit(pp, "itdFare");
+				}
+				else
+				{
+					XmlPullUtil.next(pp);
+				}
+			}
+
+			XmlPullUtil.exit(pp, "itdRoute");
+
+			final Trip trip = new Trip(id, firstDepartureLocation, lastArrivalLocation, legs, fares.isEmpty() ? null : fares, null, numChanges);
+
+			if (!cancelled)
+				trips.add(trip);
 		}
-		else
-		{
-			return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
-		}
+
+		XmlPullUtil.exit(pp, "itdRouteList");
+		XmlPullUtil.exit(pp, "itdItinerary");
+
+		return new QueryTripsResult(header, uri, from, via, to, new Context(commandLink((String) context, requestId)), trips);
 	}
 
 	private QueryTripsResult queryTripsMobile(final String uri, final Location from, final Location via, final Location to, final InputStream is)

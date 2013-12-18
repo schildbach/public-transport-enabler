@@ -15,27 +15,23 @@ import org.xmlpull.v1.XmlPullParserException;
  */
 public final class XmlPullUtil
 {
-
 	public static boolean test(final XmlPullParser pp, final String tagName) throws XmlPullParserException, IOException
 	{
-		if (pp.getEventType() == XmlPullParser.TEXT && pp.isWhitespace())
-			pp.next();
+		skipWhitespace(pp);
 
 		return pp.getEventType() == XmlPullParser.START_TAG && pp.getName().equals(tagName);
 	}
 
 	public static void require(final XmlPullParser pp, final String tagName) throws XmlPullParserException, IOException
 	{
-		if (pp.getEventType() == XmlPullParser.TEXT && pp.isWhitespace())
-			pp.next();
+		skipWhitespace(pp);
 
 		pp.require(XmlPullParser.START_TAG, null, tagName);
 	}
 
 	public static void enter(final XmlPullParser pp) throws XmlPullParserException, IOException
 	{
-		if (pp.getEventType() == XmlPullParser.TEXT && pp.isWhitespace())
-			pp.next();
+		skipWhitespace(pp);
 
 		if (pp.getEventType() != XmlPullParser.START_TAG)
 			throw new IllegalStateException("expecting start tag to enter");
@@ -47,8 +43,7 @@ public final class XmlPullUtil
 
 	public static void enter(final XmlPullParser pp, final String tagName) throws XmlPullParserException, IOException
 	{
-		if (pp.getEventType() == XmlPullParser.TEXT && pp.isWhitespace())
-			pp.next();
+		skipWhitespace(pp);
 
 		pp.require(XmlPullParser.START_TAG, null, tagName);
 		enter(pp);
@@ -83,6 +78,14 @@ public final class XmlPullUtil
 			else
 				throw new IllegalStateException();
 		}
+	}
+
+	private static void skipWhitespace(final XmlPullParser pp) throws XmlPullParserException, IOException
+	{
+		if (pp.getEventType() == XmlPullParser.START_DOCUMENT)
+			pp.next();
+		if (pp.getEventType() == XmlPullParser.TEXT && pp.isWhitespace())
+			pp.next();
 	}
 
 	public static void requireSkip(final XmlPullParser pp, final String tagName) throws XmlPullParserException, IOException
@@ -226,37 +229,5 @@ public final class XmlPullUtil
 		pp.require(XmlPullParser.END_TAG, namespace, name);
 
 		return text;
-	}
-
-	/**
-	 * This method bypasses all events until it finds a start tag that has passed in namespace (if not null) and
-	 * namespace (if not null).
-	 * 
-	 * @return true if such START_TAG was found or false otherwise (and parser is on END_DOCUMENT).
-	 */
-	public static boolean jumpToStartTag(final XmlPullParser pp, final String tagNamespace, final String tagName) throws XmlPullParserException,
-			IOException
-	{
-		if (tagNamespace == null && tagName == null)
-			throw new IllegalArgumentException("namespace and name argument can not be both null:" + pp.getPositionDescription());
-
-		while (true)
-		{
-			final int eventType = pp.next();
-
-			if (eventType == XmlPullParser.START_TAG)
-			{
-				final String name = pp.getName();
-				final String namespace = pp.getNamespace();
-
-				boolean matches = (tagNamespace != null && tagNamespace.equals(namespace)) || (tagName != null && tagName.equals(name));
-				if (matches)
-					return true;
-			}
-			else if (eventType == XmlPullParser.END_DOCUMENT)
-			{
-				return false;
-			}
-		}
 	}
 }

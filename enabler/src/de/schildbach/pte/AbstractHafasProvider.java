@@ -318,64 +318,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			return new Position(platformText);
 	}
 
-	public List<Location> xmlLocValReq(final CharSequence constraint) throws IOException
-	{
-		final String locValReq = "<LocValReq id=\"req\" maxNr=\"20\"><ReqLoc match=\"" + constraint + "\" type=\"ALLTYPE\"/></LocValReq>";
-		final String request = wrapReqC(locValReq, null);
-
-		// System.out.println(ParserUtils.scrape(apiUri, true, request, null, false));
-
-		Reader reader = null;
-
-		try
-		{
-			reader = new InputStreamReader(ParserUtils.scrapeInputStream(queryEndpoint, request, null, null, null, 3), ISO_8859_1);
-
-			final List<Location> results = new ArrayList<Location>();
-
-			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
-			final XmlPullParser pp = factory.newPullParser();
-			pp.setInput(reader);
-
-			assertResC(pp);
-			XmlPullUtil.enter(pp, "ResC");
-
-			XmlPullUtil.require(pp, "LocValRes");
-			XmlPullUtil.requireAttr(pp, "id", "req");
-			XmlPullUtil.enter(pp, "LocalValRes");
-
-			while (pp.getEventType() == XmlPullParser.START_TAG)
-			{
-				final String tag = pp.getName();
-				if ("Station".equals(tag))
-					results.add(parseStation(pp));
-				else if ("Poi".equals(tag))
-					results.add(parsePoi(pp));
-				else if ("Address".equals(tag))
-					results.add(parseAddress(pp));
-				else if ("ReqLoc".equals(tag))
-					/* results.add(parseReqLoc(pp)) */;
-				else
-					System.out.println("cannot handle tag: " + tag);
-
-				XmlPullUtil.next(pp);
-			}
-
-			XmlPullUtil.exit(pp, "LocalValRes");
-
-			return results;
-		}
-		catch (final XmlPullParserException x)
-		{
-			throw new RuntimeException(x);
-		}
-		finally
-		{
-			if (reader != null)
-				reader.close();
-		}
-	}
-
 	protected StringBuilder jsonGetStopsParameters(final CharSequence constraint)
 	{
 		final StringBuilder parameters = new StringBuilder();
@@ -542,7 +484,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		final String mlcReq = "<MLcReq><MLc n=\"" + constraint + "?\" t=\"ALLTYPE\" /></MLcReq>";
 		final String request = wrapReqC(mlcReq, xmlMlcResEncoding);
 
-		// ParserUtils.printXml(ParserUtils.scrape(apiUri, request, xmlMlcResEncoding, null));
+		// ParserUtils.printXml(ParserUtils.scrape(queryEndpoint, request, xmlMlcResEncoding, null));
 
 		Reader reader = null;
 
@@ -556,7 +498,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 			final List<Location> results = new ArrayList<Location>();
 
-			assertResC(pp);
 			XmlPullUtil.enter(pp, "ResC");
 			XmlPullUtil.enter(pp, "MLcRes");
 
@@ -1068,7 +1009,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			final XmlPullParser pp = factory.newPullParser();
 			pp.setInput(reader);
 
-			assertResC(pp);
+			XmlPullUtil.require(pp, "ResC");
 			final String product = XmlPullUtil.attr(pp, "prod").split(" ")[0];
 			final ResultHeader header = new ResultHeader(SERVER_PRODUCT, product, 0, null);
 			XmlPullUtil.enter(pp, "ResC");
@@ -3058,11 +2999,5 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				attrSet.add(attr);
 			return new Line(null, lineStr, lineStyle(null, lineStr), attrSet, comment);
 		}
-	}
-
-	private void assertResC(final XmlPullParser pp) throws XmlPullParserException, IOException
-	{
-		if (!XmlPullUtil.jumpToStartTag(pp, null, "ResC"))
-			throw new IOException("cannot find <ResC />");
 	}
 }
