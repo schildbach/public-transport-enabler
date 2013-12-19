@@ -34,6 +34,8 @@ public class VmvProvider extends AbstractEfaProvider
 	public VmvProvider()
 	{
 		super(API_BASE);
+
+		setUseRouteIndexAsTripId(false);
 	}
 
 	public NetworkId id()
