@@ -36,6 +36,7 @@ public class WienProvider extends AbstractEfaProvider
 
 		setIncludeRegionId(false);
 		setStyles(STYLES);
+		setRequestUrlEncoding(UTF_8);
 	}
 
 	public NetworkId id()
