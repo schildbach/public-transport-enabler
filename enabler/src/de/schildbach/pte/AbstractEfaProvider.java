@@ -2853,226 +2853,234 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		if (XmlPullUtil.test(pp, "ts"))
 		{
-			XmlPullUtil.enter(pp, "ts");
-
-			while (XmlPullUtil.test(pp, "tp"))
+			if (!pp.isEmptyElementTag())
 			{
-				XmlPullUtil.enter(pp, "tp");
+				XmlPullUtil.enter(pp, "ts");
 
-				XmlPullUtil.optSkip(pp, "attrs");
-
-				requireValueTag(pp, "d"); // duration
-				final int numChanges = Integer.parseInt(requireValueTag(pp, "ic"));
-				final String tripId = requireValueTag(pp, "de");
-
-				XmlPullUtil.enter(pp, "ls");
-
-				final List<Trip.Leg> legs = new LinkedList<Trip.Leg>();
-				Location firstDepartureLocation = null;
-				Location lastArrivalLocation = null;
-
-				while (XmlPullUtil.test(pp, "l"))
+				while (XmlPullUtil.test(pp, "tp"))
 				{
-					XmlPullUtil.enter(pp, "l");
+					XmlPullUtil.enter(pp, "tp");
 
-					XmlPullUtil.enter(pp, "ps");
+					XmlPullUtil.optSkip(pp, "attrs");
 
-					Stop departure = null;
-					Stop arrival = null;
+					requireValueTag(pp, "d"); // duration
+					final int numChanges = Integer.parseInt(requireValueTag(pp, "ic"));
+					final String tripId = requireValueTag(pp, "de");
 
-					while (XmlPullUtil.test(pp, "p"))
+					XmlPullUtil.enter(pp, "ls");
+
+					final List<Trip.Leg> legs = new LinkedList<Trip.Leg>();
+					Location firstDepartureLocation = null;
+					Location lastArrivalLocation = null;
+
+					while (XmlPullUtil.test(pp, "l"))
 					{
-						XmlPullUtil.enter(pp, "p");
+						XmlPullUtil.enter(pp, "l");
 
-						final String name = requireValueTag(pp, "n");
-						final String usage = requireValueTag(pp, "u");
-						optValueTag(pp, "de");
+						XmlPullUtil.enter(pp, "ps");
 
-						XmlPullUtil.requireSkip(pp, "dt");
+						Stop departure = null;
+						Stop arrival = null;
 
-						parseMobileSt(pp, plannedTime, predictedTime);
-
-						XmlPullUtil.requireSkip(pp, "lis");
-
-						XmlPullUtil.enter(pp, "r");
-						final int id = Integer.parseInt(requireValueTag(pp, "id"));
-						optValueTag(pp, "a");
-						final Position position = new Position(optValueTag(pp, "pl"));
-						final String place = normalizeLocationName(optValueTag(pp, "pc"));
-						final Point coord = coordStrToPoint(requireValueTag(pp, "c"));
-						XmlPullUtil.exit(pp, "r");
-
-						final Location location;
-						if (id == 99999997 || id == 99999998)
-							location = new Location(LocationType.ADDRESS, 0, coord.lat, coord.lon, place, name);
-						else
-							location = new Location(LocationType.STATION, id, coord.lat, coord.lon, place, name);
-
-						XmlPullUtil.exit(pp, "p");
-
-						if ("departure".equals(usage))
+						while (XmlPullUtil.test(pp, "p"))
 						{
-							departure = new Stop(location, true, plannedTime.isSet(Calendar.HOUR_OF_DAY) ? plannedTime.getTime()
-									: predictedTime.getTime(), predictedTime.isSet(Calendar.HOUR_OF_DAY) ? predictedTime.getTime() : null, position,
-									null);
-							if (firstDepartureLocation == null)
-								firstDepartureLocation = location;
-						}
-						else if ("arrival".equals(usage))
-						{
-							arrival = new Stop(location, false, plannedTime.isSet(Calendar.HOUR_OF_DAY) ? plannedTime.getTime()
-									: predictedTime.getTime(), predictedTime.isSet(Calendar.HOUR_OF_DAY) ? predictedTime.getTime() : null, position,
-									null);
-							lastArrivalLocation = location;
-						}
-						else
-						{
-							throw new IllegalStateException("unknown usage: " + usage);
-						}
-					}
+							XmlPullUtil.enter(pp, "p");
 
-					XmlPullUtil.exit(pp, "ps");
+							final String name = requireValueTag(pp, "n");
+							final String usage = requireValueTag(pp, "u");
+							optValueTag(pp, "de");
 
-					final boolean isRealtime = requireValueTag(pp, "realtime").equals("1");
+							XmlPullUtil.requireSkip(pp, "dt");
 
-					final LineDestination lineDestination = parseMobileM(pp, false);
+							parseMobileSt(pp, plannedTime, predictedTime);
 
-					final List<Point> path;
-					if (XmlPullUtil.test(pp, "pt"))
-						path = processCoordinateStrings(pp, "pt");
-					else
-						path = null;
+							XmlPullUtil.requireSkip(pp, "lis");
 
-					XmlPullUtil.require(pp, "pss");
+							XmlPullUtil.enter(pp, "r");
+							final int id = Integer.parseInt(requireValueTag(pp, "id"));
+							optValueTag(pp, "a");
+							final Position position = new Position(optValueTag(pp, "pl"));
+							final String place = normalizeLocationName(optValueTag(pp, "pc"));
+							final Point coord = coordStrToPoint(requireValueTag(pp, "c"));
+							XmlPullUtil.exit(pp, "r");
 
-					final List<Stop> intermediateStops;
+							final Location location;
+							if (id == 99999997 || id == 99999998)
+								location = new Location(LocationType.ADDRESS, 0, coord.lat, coord.lon, place, name);
+							else
+								location = new Location(LocationType.STATION, id, coord.lat, coord.lon, place, name);
 
-					if (!pp.isEmptyElementTag())
-					{
-						XmlPullUtil.enter(pp, "pss");
+							XmlPullUtil.exit(pp, "p");
 
-						intermediateStops = new LinkedList<Stop>();
-
-						while (XmlPullUtil.test(pp, "s"))
-						{
-							plannedTime.clear();
-							predictedTime.clear();
-
-							final String s = requireValueTag(pp, "s");
-							final String[] intermediateParts = s.split(";");
-							final int id = Integer.parseInt(intermediateParts[0]);
-							if (id != departure.location.id && id != arrival.location.id)
+							if ("departure".equals(usage))
 							{
-								final String name = normalizeLocationName(intermediateParts[1]);
-
-								if (!("0000-1".equals(intermediateParts[2]) && "000-1".equals(intermediateParts[3])))
-								{
-									ParserUtils.parseIsoDate(plannedTime, intermediateParts[2]);
-									ParserUtils.parseIsoTime(plannedTime, intermediateParts[3]);
-
-									if (isRealtime)
-									{
-										ParserUtils.parseIsoDate(predictedTime, intermediateParts[2]);
-										ParserUtils.parseIsoTime(predictedTime, intermediateParts[3]);
-
-										if (intermediateParts.length > 5)
-										{
-											final int delay = Integer.parseInt(intermediateParts[5]);
-											predictedTime.add(Calendar.MINUTE, delay);
-										}
-									}
-								}
-								final String coord = intermediateParts[4];
-
-								final Location location;
-								if (!"::".equals(coord))
-								{
-									final String[] coordParts = coord.split(":");
-									if (!"WGS84".equals(coordParts[2]))
-										throw new IllegalStateException("unknown map name: " + coordParts[2]);
-									final int lat = Math.round(Float.parseFloat(coordParts[1]));
-									final int lon = Math.round(Float.parseFloat(coordParts[0]));
-									location = new Location(LocationType.STATION, id, lat, lon, null, name);
-								}
-								else
-								{
-									location = new Location(LocationType.STATION, id, null, name);
-								}
-
-								final Stop stop = new Stop(location, false, plannedTime.isSet(Calendar.HOUR_OF_DAY) ? plannedTime.getTime()
-										: predictedTime.getTime(), predictedTime.isSet(Calendar.HOUR_OF_DAY) ? predictedTime.getTime() : null, null,
-										null);
-
-								intermediateStops.add(stop);
+								departure = new Stop(location, true, plannedTime.isSet(Calendar.HOUR_OF_DAY) ? plannedTime.getTime()
+										: predictedTime.getTime(), predictedTime.isSet(Calendar.HOUR_OF_DAY) ? predictedTime.getTime() : null,
+										position, null);
+								if (firstDepartureLocation == null)
+									firstDepartureLocation = location;
+							}
+							else if ("arrival".equals(usage))
+							{
+								arrival = new Stop(location, false, plannedTime.isSet(Calendar.HOUR_OF_DAY) ? plannedTime.getTime()
+										: predictedTime.getTime(), predictedTime.isSet(Calendar.HOUR_OF_DAY) ? predictedTime.getTime() : null,
+										position, null);
+								lastArrivalLocation = location;
+							}
+							else
+							{
+								throw new IllegalStateException("unknown usage: " + usage);
 							}
 						}
 
-						XmlPullUtil.exit(pp, "pss");
+						XmlPullUtil.exit(pp, "ps");
+
+						final boolean isRealtime = requireValueTag(pp, "realtime").equals("1");
+
+						final LineDestination lineDestination = parseMobileM(pp, false);
+
+						final List<Point> path;
+						if (XmlPullUtil.test(pp, "pt"))
+							path = processCoordinateStrings(pp, "pt");
+						else
+							path = null;
+
+						XmlPullUtil.require(pp, "pss");
+
+						final List<Stop> intermediateStops;
+
+						if (!pp.isEmptyElementTag())
+						{
+							XmlPullUtil.enter(pp, "pss");
+
+							intermediateStops = new LinkedList<Stop>();
+
+							while (XmlPullUtil.test(pp, "s"))
+							{
+								plannedTime.clear();
+								predictedTime.clear();
+
+								final String s = requireValueTag(pp, "s");
+								final String[] intermediateParts = s.split(";");
+								final int id = Integer.parseInt(intermediateParts[0]);
+								if (id != departure.location.id && id != arrival.location.id)
+								{
+									final String name = normalizeLocationName(intermediateParts[1]);
+
+									if (!("0000-1".equals(intermediateParts[2]) && "000-1".equals(intermediateParts[3])))
+									{
+										ParserUtils.parseIsoDate(plannedTime, intermediateParts[2]);
+										ParserUtils.parseIsoTime(plannedTime, intermediateParts[3]);
+
+										if (isRealtime)
+										{
+											ParserUtils.parseIsoDate(predictedTime, intermediateParts[2]);
+											ParserUtils.parseIsoTime(predictedTime, intermediateParts[3]);
+
+											if (intermediateParts.length > 5)
+											{
+												final int delay = Integer.parseInt(intermediateParts[5]);
+												predictedTime.add(Calendar.MINUTE, delay);
+											}
+										}
+									}
+									final String coord = intermediateParts[4];
+
+									final Location location;
+									if (!"::".equals(coord))
+									{
+										final String[] coordParts = coord.split(":");
+										if (!"WGS84".equals(coordParts[2]))
+											throw new IllegalStateException("unknown map name: " + coordParts[2]);
+										final int lat = Math.round(Float.parseFloat(coordParts[1]));
+										final int lon = Math.round(Float.parseFloat(coordParts[0]));
+										location = new Location(LocationType.STATION, id, lat, lon, null, name);
+									}
+									else
+									{
+										location = new Location(LocationType.STATION, id, null, name);
+									}
+
+									final Stop stop = new Stop(location, false, plannedTime.isSet(Calendar.HOUR_OF_DAY) ? plannedTime.getTime()
+											: predictedTime.getTime(), predictedTime.isSet(Calendar.HOUR_OF_DAY) ? predictedTime.getTime() : null,
+											null, null);
+
+									intermediateStops.add(stop);
+								}
+							}
+
+							XmlPullUtil.exit(pp, "pss");
+						}
+						else
+						{
+							intermediateStops = null;
+
+							XmlPullUtil.next(pp);
+						}
+
+						XmlPullUtil.optSkip(pp, "interchange");
+
+						XmlPullUtil.requireSkip(pp, "ns");
+						// TODO messages
+
+						XmlPullUtil.exit(pp, "l");
+
+						if (lineDestination.line == Line.FOOTWAY)
+						{
+							legs.add(new Trip.Individual(Trip.Individual.Type.WALK, departure.location, departure.getDepartureTime(),
+									arrival.location, arrival.getArrivalTime(), path, 0));
+						}
+						else if (lineDestination.line == Line.SECURE_CONNECTION || lineDestination.line == Line.DO_NOT_CHANGE)
+						{
+							// ignore
+						}
+						else
+						{
+							legs.add(new Trip.Public(lineDestination.line, lineDestination.destination, departure, arrival, intermediateStops, path,
+									null));
+						}
+					}
+
+					XmlPullUtil.exit(pp, "ls");
+
+					XmlPullUtil.require(pp, "tcs");
+
+					final List<Fare> fares;
+
+					if (!pp.isEmptyElementTag())
+					{
+						XmlPullUtil.enter(pp, "tcs");
+
+						fares = new ArrayList<Fare>(2);
+
+						while (XmlPullUtil.test(pp, "tc"))
+						{
+							XmlPullUtil.enter(pp, "tc");
+							// TODO fares
+							XmlPullUtil.exit(pp, "tc");
+						}
+
+						XmlPullUtil.exit(pp, "tcs");
 					}
 					else
 					{
-						intermediateStops = null;
+						fares = null;
 
 						XmlPullUtil.next(pp);
 					}
 
-					XmlPullUtil.optSkip(pp, "interchange");
+					final Trip trip = new Trip(tripId, firstDepartureLocation, lastArrivalLocation, legs, fares, null, numChanges);
+					trips.add(trip);
 
-					XmlPullUtil.requireSkip(pp, "ns");
-					// TODO messages
-
-					XmlPullUtil.exit(pp, "l");
-
-					if (lineDestination.line == Line.FOOTWAY)
-					{
-						legs.add(new Trip.Individual(Trip.Individual.Type.WALK, departure.location, departure.getDepartureTime(), arrival.location,
-								arrival.getArrivalTime(), path, 0));
-					}
-					else if (lineDestination.line == Line.SECURE_CONNECTION || lineDestination.line == Line.DO_NOT_CHANGE)
-					{
-						// ignore
-					}
-					else
-					{
-						legs.add(new Trip.Public(lineDestination.line, lineDestination.destination, departure, arrival, intermediateStops, path, null));
-					}
+					XmlPullUtil.exit(pp, "tp");
 				}
 
-				XmlPullUtil.exit(pp, "ls");
-
-				XmlPullUtil.require(pp, "tcs");
-
-				final List<Fare> fares;
-
-				if (!pp.isEmptyElementTag())
-				{
-					XmlPullUtil.enter(pp, "tcs");
-
-					fares = new ArrayList<Fare>(2);
-
-					while (XmlPullUtil.test(pp, "tc"))
-					{
-						XmlPullUtil.enter(pp, "tc");
-						// TODO fares
-						XmlPullUtil.exit(pp, "tc");
-					}
-
-					XmlPullUtil.exit(pp, "tcs");
-				}
-				else
-				{
-					fares = null;
-
-					XmlPullUtil.next(pp);
-				}
-
-				final Trip trip = new Trip(tripId, firstDepartureLocation, lastArrivalLocation, legs, fares, null, numChanges);
-				trips.add(trip);
-
-				XmlPullUtil.exit(pp, "tp");
+				XmlPullUtil.exit(pp, "ts");
 			}
-
-			XmlPullUtil.exit(pp, "ts");
+			else
+			{
+				XmlPullUtil.next(pp);
+			}
 		}
 
 		if (trips.size() > 0)
