@@ -53,6 +53,6 @@ public class TripController
 	{
 		final Location fromLocation = new Location(fromType, fromId, null, from);
 		final Location toLocation = new Location(toType, toId, null, to);
-		return provider.queryTrips(fromLocation, null, toLocation, new Date(), true, 4, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL, null);
+		return provider.queryTrips(fromLocation, null, toLocation, new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL, null);
 	}
 }

@@ -70,11 +70,11 @@ public abstract class AbstractProviderLiveTest
 	protected final QueryTripsResult queryTrips(final Location from, final Location via, final Location to, final Date date, final boolean dep,
 			final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility) throws IOException
 	{
-		return provider.queryTrips(from, via, to, date, dep, 4, products, walkSpeed, accessibility, null);
+		return provider.queryTrips(from, via, to, date, dep, products, walkSpeed, accessibility, null);
 	}
 
 	protected final QueryTripsResult queryMoreTrips(final QueryTripsContext context, final boolean later) throws IOException
 	{
-		return provider.queryMoreTrips(context, later, 4);
+		return provider.queryMoreTrips(context, later);
 	}
 }

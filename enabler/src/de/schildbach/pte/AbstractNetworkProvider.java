@@ -36,6 +36,8 @@ public abstract class AbstractNetworkProvider implements NetworkProvider
 	protected static final Charset ISO_8859_1 = Charset.forName("ISO-8859-1");
 	protected static final Set<Product> ALL_EXCEPT_HIGHSPEED;
 
+	protected int numTripsRequested = 6;
+
 	private Map<String, Style> styles = null;
 
 	static
@@ -47,6 +49,11 @@ public abstract class AbstractNetworkProvider implements NetworkProvider
 	public Collection<Product> defaultProducts()
 	{
 		return ALL_EXCEPT_HIGHSPEED;
+	}
+
+	protected void setNumTripsRequested(final int numTripsRequested)
+	{
+		this.numTripsRequested = numTripsRequested;
 	}
 
 	protected void setStyles(final Map<String, Style> styles)

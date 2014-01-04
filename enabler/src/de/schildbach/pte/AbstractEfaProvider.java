@@ -2021,8 +2021,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	}
 
 	protected String xsltTripRequestParameters(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final int numTrips, final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility,
-			final Set<Option> options)
+			final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
 	{
 		final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd", Locale.US);
 		final DateFormat TIME_FORMAT = new SimpleDateFormat("HHmm", Locale.US);
@@ -2045,7 +2044,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		uri.append("&itdTime=").append(ParserUtils.urlEncode(TIME_FORMAT.format(date)));
 		uri.append("&itdTripDateTimeDepArr=").append(dep ? "dep" : "arr");
 
-		uri.append("&calcNumberOfTrips=").append(numTrips);
+		uri.append("&calcNumberOfTrips=").append(numTripsRequested);
 
 		uri.append("&ptOptionsActive=1"); // enable public transport options
 		uri.append("&itOptionsActive=1"); // enable individual transport options
@@ -2117,6 +2116,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		uri.append("?sessionID=").append(sessionId);
 		uri.append("&requestID=").append(requestId);
+		uri.append("&calcNumberOfTrips=").append(numTripsRequested);
 		appendCommonXsltTripRequest2Params(uri);
 
 		return uri.toString();
@@ -2126,15 +2126,14 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	{
 		if (useStringCoordListOutputFormat)
 			uri.append("&coordListOutputFormat=STRING");
-		uri.append("&calcNumberOfTrips=4");
 	}
 
 	public QueryTripsResult queryTrips(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final int numTrips, final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility,
-			final Set<Option> options) throws IOException
+			final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
+			throws IOException
 	{
 
-		final String parameters = xsltTripRequestParameters(from, via, to, date, dep, numTrips, products, walkSpeed, accessibility, options);
+		final String parameters = xsltTripRequestParameters(from, via, to, date, dep, products, walkSpeed, accessibility, options);
 
 		final StringBuilder uri = new StringBuilder(tripEndpoint);
 		if (!httpPost)
@@ -2165,11 +2164,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	}
 
 	protected QueryTripsResult queryTripsMobile(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final int numTrips, final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility,
-			final Set<Option> options) throws IOException
+			final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
+			throws IOException
 	{
 
-		final String parameters = xsltTripRequestParameters(from, via, to, date, dep, numTrips, products, walkSpeed, accessibility, options);
+		final String parameters = xsltTripRequestParameters(from, via, to, date, dep, products, walkSpeed, accessibility, options);
 
 		final StringBuilder uri = new StringBuilder(tripEndpoint);
 		if (!httpPost)
@@ -2201,7 +2200,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	private static final Pattern P_SESSION_EXPIRED = Pattern.compile("Your session has expired");
 
-	public QueryTripsResult queryMoreTrips(final QueryTripsContext contextObj, final boolean later, final int numTrips) throws IOException
+	public QueryTripsResult queryMoreTrips(final QueryTripsContext contextObj, final boolean later) throws IOException
 	{
 		final Context context = (Context) contextObj;
 		final String commandUri = context.context;
@@ -2247,8 +2246,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 	}
 
-	protected QueryTripsResult queryMoreTripsMobile(final QueryTripsContext contextObj, final boolean later, final int numConnections)
-			throws IOException
+	protected QueryTripsResult queryMoreTripsMobile(final QueryTripsContext contextObj, final boolean later) throws IOException
 	{
 		final Context context = (Context) contextObj;
 		final String commandUri = context.context;

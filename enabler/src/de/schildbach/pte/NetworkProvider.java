@@ -128,8 +128,6 @@ public interface NetworkProvider
 	 *            desired date for departing, mandatory
 	 * @param dep
 	 *            date is departure date? {@code true} for departure, {@code false} for arrival
-	 * @param numTrips
-	 *            number of trips to query
 	 * @param products
 	 *            products to take into account
 	 * @param walkSpeed
@@ -141,8 +139,8 @@ public interface NetworkProvider
 	 * @return result object that can contain alternatives to clear up ambiguousnesses, or contains possible trips
 	 * @throws IOException
 	 */
-	QueryTripsResult queryTrips(Location from, Location via, Location to, Date date, boolean dep, int numTrips, Collection<Product> products,
-			WalkSpeed walkSpeed, Accessibility accessibility, Set<Option> options) throws IOException;
+	QueryTripsResult queryTrips(Location from, Location via, Location to, Date date, boolean dep, Collection<Product> products, WalkSpeed walkSpeed,
+			Accessibility accessibility, Set<Option> options) throws IOException;
 
 	/**
 	 * Query more trips (e.g. earlier or later)
@@ -151,12 +149,10 @@ public interface NetworkProvider
 	 *            context to query more trips from
 	 * @param next
 	 *            {@code true} for get next trips, {@code false} for get previous trips
-	 * @param numTrips
-	 *            number of trips to query
 	 * @return result object that contains possible trips
 	 * @throws IOException
 	 */
-	QueryTripsResult queryMoreTrips(QueryTripsContext context, boolean later, int numTrips) throws IOException;
+	QueryTripsResult queryMoreTrips(QueryTripsContext context, boolean later) throws IOException;
 
 	/**
 	 * Get style of line

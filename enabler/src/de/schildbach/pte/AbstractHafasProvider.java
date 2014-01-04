@@ -807,15 +807,15 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	}
 
 	public QueryTripsResult queryTrips(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final int numTrips, final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility,
-			final Set<Option> options) throws IOException
+			final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
+			throws IOException
 	{
-		return queryTripsXml(from, via, to, date, dep, numTrips, products, walkSpeed, accessibility, options);
+		return queryTripsXml(from, via, to, date, dep, products, walkSpeed, accessibility, options);
 	}
 
-	public QueryTripsResult queryMoreTrips(final QueryTripsContext context, final boolean later, final int numTrips) throws IOException
+	public QueryTripsResult queryMoreTrips(final QueryTripsContext context, final boolean later) throws IOException
 	{
-		return queryMoreTripsXml(context, later, numTrips);
+		return queryMoreTripsXml(context, later);
 	}
 
 	protected final void appendTripsQueryUri(final StringBuilder uri, final Location from, final Location via, final Location to, final Date date,
@@ -889,7 +889,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			uri.append("&REQ0JourneyProduct_opt3=1");
 	}
 
-	protected final QueryTripsResult queryTripsXml(Location from, Location via, Location to, final Date date, final boolean dep, final int numTrips,
+	protected final QueryTripsResult queryTripsXml(Location from, Location via, Location to, final Date date, final boolean dep,
 			final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
 			throws IOException
 	{
@@ -967,7 +967,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		// number of trips backwards
 		conReq.append(" b=\"").append(0).append("\"");
 		// number of trips forwards
-		conReq.append(" f=\"").append(numTrips).append("\"");
+		conReq.append(" f=\"").append(numTripsRequested).append("\"");
 		// percentual extension of change time
 		conReq.append(" chExtension=\"").append(walkSpeed == WalkSpeed.SLOW ? 50 : 0).append("\"");
 		// TODO nrChanges: max number of changes
@@ -977,13 +977,12 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		return queryTripsXml(null, true, conReq, from, via, to);
 	}
 
-	protected final QueryTripsResult queryMoreTripsXml(final QueryTripsContext contextObj, final boolean later, final int numTrips)
-			throws IOException
+	protected final QueryTripsResult queryMoreTripsXml(final QueryTripsContext contextObj, final boolean later) throws IOException
 	{
 		final Context context = (Context) contextObj;
 
-		final StringBuilder conScrReq = new StringBuilder("<ConScrReq scrDir=\"").append(later ? 'F' : 'B').append("\" nrCons=\"").append(numTrips)
-				.append("\">");
+		final StringBuilder conScrReq = new StringBuilder("<ConScrReq scrDir=\"").append(later ? 'F' : 'B').append("\" nrCons=\"")
+				.append(numTripsRequested).append("\">");
 		conScrReq.append("<ConResCtxt>").append(later ? context.laterContext : context.earlierContext).append("</ConResCtxt>");
 		conScrReq.append("</ConScrReq>");
 
@@ -1516,8 +1515,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	private final static int QUERY_TRIPS_BINARY_BUFFER_SIZE = 384 * 1024;
 
 	protected final QueryTripsResult queryTripsBinary(Location from, Location via, Location to, final Date date, final boolean dep,
-			final int numTrips, final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility,
-			final Set<Option> options) throws IOException
+			final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
+			throws IOException
 	{
 		final ResultHeader header = new ResultHeader(SERVER_PRODUCT);
 
@@ -1558,7 +1557,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		return queryTripsBinary(uri.toString(), from, via, to, QUERY_TRIPS_BINARY_BUFFER_SIZE);
 	}
 
-	protected QueryTripsResult queryMoreTripsBinary(final QueryTripsContext contextObj, final boolean later, final int numTrips) throws IOException
+	protected QueryTripsResult queryMoreTripsBinary(final QueryTripsContext contextObj, final boolean later) throws IOException
 	{
 		final QueryTripsBinaryContext context = (QueryTripsBinaryContext) contextObj;
 

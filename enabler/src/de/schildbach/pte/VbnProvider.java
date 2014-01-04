@@ -165,16 +165,16 @@ public class VbnProvider extends AbstractHafasProvider
 
 	@Override
 	public QueryTripsResult queryTrips(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final int numTrips, final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility,
-			final Set<Option> options) throws IOException
+			final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
+			throws IOException
 	{
-		return queryTripsBinary(from, via, to, date, dep, numTrips, products, walkSpeed, accessibility, options);
+		return queryTripsBinary(from, via, to, date, dep, products, walkSpeed, accessibility, options);
 	}
 
 	@Override
-	public QueryTripsResult queryMoreTrips(final QueryTripsContext contextObj, final boolean later, final int numTrips) throws IOException
+	public QueryTripsResult queryMoreTrips(final QueryTripsContext contextObj, final boolean later) throws IOException
 	{
-		return queryMoreTripsBinary(contextObj, later, numTrips);
+		return queryMoreTripsBinary(contextObj, later);
 	}
 
 	@Override

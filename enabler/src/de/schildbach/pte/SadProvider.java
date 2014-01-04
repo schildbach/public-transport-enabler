@@ -121,7 +121,7 @@ public class SadProvider extends AbstractNetworkProvider {
 		return list;
 	}
 	
-	public QueryTripsResult queryTrips(Location from, Location via, Location to, Date date, boolean dep, final int numTrips,
+	public QueryTripsResult queryTrips(Location from, Location via, Location to, Date date, boolean dep,
 			Collection<Product> products, WalkSpeed walkSpeed, Accessibility accessibility, Set<Option> options) throws IOException {
 
 		// Select correct SOAP method depending on the dep flag
@@ -193,7 +193,7 @@ public class SadProvider extends AbstractNetworkProvider {
 		return calculateResponse(from, to, response, dep, date);
 	}
 
-	public QueryTripsResult queryMoreTrips(final QueryTripsContext contextObj, final boolean later, final int numTrips) throws IOException
+	public QueryTripsResult queryMoreTrips(final QueryTripsContext contextObj, final boolean later) throws IOException
 	{
 		// Split and parse context
 		final Context context = (Context) contextObj;
@@ -221,7 +221,7 @@ public class SadProvider extends AbstractNetworkProvider {
 		// Query for trips with new date/time value
 		// NOTE: via, products, walkSpeed, accessibility are set to null
 		return queryTrips(new Location(LocationType.STATION, fromId), null, new Location(LocationType.STATION, toId), date, dep,
-				0, null, null, null, null);
+				null, null, null, null);
 	}
 
 	protected TimeZone timeZone() {
