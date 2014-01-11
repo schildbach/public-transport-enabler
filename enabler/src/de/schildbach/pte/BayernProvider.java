@@ -48,6 +48,7 @@ public class BayernProvider extends AbstractEfaProvider
 
 		setRequestUrlEncoding(UTF_8);
 		setIncludeRegionId(false);
+		setNumTripsRequested(12);
 	}
 
 	public NetworkId id()
