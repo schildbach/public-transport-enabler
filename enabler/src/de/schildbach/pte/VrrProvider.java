@@ -67,7 +67,12 @@ public class VrrProvider extends AbstractEfaProvider
 	protected String parseLine(final String mot, final String symbol, final String name, final String longName, final String trainType,
 			final String trainNum, final String trainName)
 	{
-		if ("11".equals(mot))
+		if ("0".equals(mot))
+		{
+			if (trainType == null && "RB67/71".equals(trainNum))
+				return 'R' + trainNum;
+		}
+		else if ("11".equals(mot))
 		{
 			// Wuppertaler Schwebebahn & SkyTrain D'dorf
 			if ("Schwebebahn".equals(trainName) || (longName != null && longName.startsWith("Schwebebahn")))

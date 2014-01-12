@@ -51,6 +51,19 @@ public class NaldoProvider extends AbstractEfaProvider
 	}
 
 	@Override
+	protected String parseLine(final String mot, final String symbol, final String name, final String longName, final String trainType,
+			final String trainNum, final String trainName)
+	{
+		if ("0".equals(mot))
+		{
+			if ("RR".equals(trainType))
+				return "RRR" + trainNum;
+		}
+
+		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
+	}
+
+	@Override
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
 		return xmlStopfinderRequest(new Location(LocationType.STATION, 0, null, constraint.toString()));

@@ -2733,9 +2733,12 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			return 'R';
 		if ("M".equals(ucType)) // Meridian
 			return 'R';
-
-		// if ("E".equals(normalizedType)) // Eilzug, stimmt wahrscheinlich nicht
-		// return "R" + normalizedName;
+		if ("WBA".equals(ucType)) // Waldbahn
+			return 'R';
+		if ("BEX".equals(ucType)) // Bernina Express
+			return 'R';
+		if ("VAE".equals(ucType)) // Voralpen-Express
+			return 'R';
 
 		// Suburban Trains
 		if (P_LINE_SBAHN.matcher(ucType).matches()) // Generic (Night) S-Bahn

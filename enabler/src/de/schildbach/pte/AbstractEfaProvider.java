@@ -1106,6 +1106,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return "IRHI" + trainNum;
 			if ("TGV".equals(trainType) || "TGV".equals(trainName))
 				return "ITGV" + trainNum;
+			if ("INZ".equals(trainType))
+				return "IINZ" + trainNum;
 			if ("RJ".equals(trainType) || "railjet".equals(trainName)) // railjet
 				return "IRJ" + trainNum;
 			if ("OIC".equals(trainType) || "ÖBB InterCity".equals(trainName))
@@ -1375,9 +1377,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 			if ("Bus".equals(trainType))
 				return "B" + trainNum;
-			if ("SEV".equals(trainType) || "SEV".equals(trainNum) || "SEV".equals(trainName) || "SEV".equals(symbol)
-					|| "Ersatzverkehr".equals(trainName))
-				return "BSEV";
+			if ("SEV".equals(trainType) || "SEV".equals(trainNum) || "SEV".equals(trainName) || "SEV".equals(symbol) || "BSV".equals(trainType)
+					|| "Ersatzverkehr".equals(trainName) || "Schienenersatzverkehr".equals(trainName))
+				return "BSEV" + (trainNum != null ? trainNum : "");
 			if ("Bus replacement".equals(trainName)) // GB
 				return "BBR";
 			if ("BR".equals(trainType) && trainName.startsWith("Bus")) // GB

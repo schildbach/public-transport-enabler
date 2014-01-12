@@ -276,11 +276,19 @@ public class ZvvProvider extends AbstractHafasProvider
 			return 'B';
 		if ("TROLLEY".equals(ucType))
 			return 'B';
+		if ("KB".equals(ucType)) // Kleinbus?
+			return 'B';
+		if ("EE".equals(ucType))
+			return 'B';
 
 		if ("D-SCHIFF".equals(ucType))
 			return 'F';
 
 		if ("BERGBAHN".equals(ucType))
+			return 'C';
+		if ("LSB".equals(ucType)) // Luftseilbahn
+			return 'C';
+		if ("SLB".equals(ucType)) // Sesselliftbahn
 			return 'C';
 
 		if ("UNB".equals(ucType))

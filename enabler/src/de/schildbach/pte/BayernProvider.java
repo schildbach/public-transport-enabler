@@ -69,7 +69,12 @@ public class BayernProvider extends AbstractEfaProvider
 	protected String parseLine(final String mot, final String symbol, final String name, final String longName, final String trainType,
 			final String trainNum, final String trainName)
 	{
-		if ("16".equals(mot))
+		if ("0".equals(mot))
+		{
+			if ("ZUG".equals(trainType) && trainNum != null)
+				return "R" + trainNum;
+		}
+		else if ("16".equals(mot))
 		{
 			if ("EC".equals(trainType))
 				return "IEC" + trainNum;

@@ -255,8 +255,6 @@ public class OebbProvider extends AbstractHafasProvider
 			return 'B';
 		if (ucType.equals("ICB")) // ÖBB ICBus
 			return 'B';
-		if (ucType.equals("BSV")) // Deutschland, Connections only?
-			return 'B';
 		if (ucType.equals("O-BUS")) // Stadtbus
 			return 'B';
 		if (ucType.equals("O")) // Stadtbus

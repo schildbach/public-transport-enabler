@@ -158,6 +158,13 @@ public class LuProvider extends AbstractHafasProvider
 		if ("CRE".equals(ucType))
 			return 'R';
 
+		if ("CITYBUS".equals(ucType))
+			return 'B';
+		if ("NIGHTBUS".equals(ucType))
+			return 'B';
+		if ("DIFFBUS".equals(ucType))
+			return 'B';
+
 		final char t = super.normalizeType(type);
 		if (t != 0)
 			return t;

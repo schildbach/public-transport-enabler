@@ -60,4 +60,17 @@ public class TfiProvider extends AbstractEfaProvider
 	{
 		return Product.ALL;
 	}
+
+	@Override
+	protected String parseLine(final String mot, final String symbol, final String name, final String longName, final String trainType,
+			final String trainNum, final String trainName)
+	{
+		if ("0".equals(mot))
+		{
+			if ("Rail".equals(trainName) && trainNum == null)
+				return "RRail";
+		}
+
+		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
+	}
 }

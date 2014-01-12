@@ -75,34 +75,24 @@ public class SfProvider extends AbstractEfaProvider
 	{
 		if ("0".equals(mot))
 		{
-			if ("Train".equals(trainName))
-				return "R" + symbol;
-
-			if ("Millbrae / Richmond".equals(symbol)) // BART
-				return 'U' + symbol;
-			if ("Richmond / Millbrae".equals(symbol)) // BART
-				return 'U' + symbol;
-			if ("Fremont / Richmond".equals(symbol)) // BART
-				return 'U' + symbol;
-			if ("Richmond / Fremont".equals(symbol)) // BART
-				return 'U' + symbol;
-			if ("Pittsburg Bay Point / SFO".equals(symbol)) // BART
-				return 'U' + symbol;
-			if ("SFO / Pittsburg Bay Point".equals(symbol)) // BART
-				return 'U' + symbol;
-			if ("Dublin Pleasanton / Daly City".equals(symbol)) // BART
-				return 'U' + symbol;
-			if ("Daly City / Dublin Pleasanton".equals(symbol)) // BART
-				return 'U' + symbol;
-			if ("Fremont / Daly City".equals(symbol)) // BART
-				return 'U' + symbol;
-			if ("Fremont / Daly City".equals(trainNum)) // BART
-				return 'U' + trainNum;
-			if ("Daly City / Fremont".equals(symbol)) // BART
-				return 'U' + symbol;
-
-			if ("Muni Rail".equals(trainName)) // Muni
+			if ("Muni Rail".equals(trainName) && symbol != null) // Muni
 				return 'T' + symbol;
+			if (trainType == null && "F".equals(trainNum)) // Muni Historic Streetcar
+				return "TF";
+			if (trainType == null && "J".equals(trainNum)) // Muni Metro
+				return "TJ";
+			if (trainType == null && "K".equals(trainNum)) // Muni Metro
+				return "TK";
+			if (trainType == null && "KT".equals(trainNum)) // Muni Metro
+				return "TKT";
+			if (trainType == null && "L".equals(trainNum)) // Muni Metro
+				return "TL";
+			if (trainType == null && "M".equals(trainNum)) // Muni Metro
+				return "TM";
+			if (trainType == null && "N".equals(trainNum)) // Muni Metro
+				return "TN";
+			if (trainType == null && "T".equals(trainNum)) // Muni Metro
+				return "TT";
 		}
 
 		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
