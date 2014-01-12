@@ -635,7 +635,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						throw new RuntimeException("unknown type");
 
 					final int id = XmlPullUtil.intAttr(pp, "id");
-					final String name = normalizeLocationName(XmlPullUtil.attr(pp, "name"));
+					final String name = normalizeLocationName(XmlPullUtil.optAttr(pp, "name", null));
 					final String place = normalizeLocationName(XmlPullUtil.attr(pp, "locality"));
 
 					XmlPullUtil.enter(pp, "coordInfoItem");
