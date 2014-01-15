@@ -34,6 +34,7 @@ public class LinzProvider extends AbstractEfaProvider
 	{
 		super(API_BASE);
 
+		setUseRouteIndexAsTripId(false);
 		setStyles(STYLES);
 	}
 
