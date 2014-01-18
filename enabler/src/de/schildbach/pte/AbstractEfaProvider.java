@@ -2417,8 +2417,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		XmlPullUtil.exit(pp, "itdDateTime");
 		XmlPullUtil.exit(pp, "itdTripDateTime");
 
-		XmlPullUtil.enter(pp, "itdTripOptions");
-		XmlPullUtil.exit(pp, "itdTripOptions");
+		XmlPullUtil.requireSkip(pp, "itdTripOptions");
 
 		final List<Trip> trips = new ArrayList<Trip>();
 
@@ -2621,10 +2620,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							}
 						}
 
-						if (XmlPullUtil.test(pp, "itdFootPathInfo"))
-							XmlPullUtil.next(pp);
-						if (XmlPullUtil.test(pp, "infoLink"))
-							XmlPullUtil.next(pp);
+						XmlPullUtil.optSkip(pp, "itdFootPathInfo");
+
+						XmlPullUtil.optSkip(pp, "infoLink");
 
 						List<Stop> intermediateStops = null;
 						if (XmlPullUtil.test(pp, "itdStopSeq"))
