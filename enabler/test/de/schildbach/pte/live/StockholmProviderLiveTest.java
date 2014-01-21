@@ -45,7 +45,7 @@ public class StockholmProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 311109529), 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 301109600), 0, 0);
 
 		print(result);
 	}
@@ -61,7 +61,7 @@ public class StockholmProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(311109529, 0, false);
+		final QueryDeparturesResult result = provider.queryDepartures(301109600, 0, false);
 
 		print(result);
 	}

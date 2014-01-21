@@ -662,7 +662,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				// TODO is_reachable
 				// TODO disableTrainInfo
 
-				if (depStation == null && !"cancel".equals(eDelay))
+				final boolean isEquivStation = canDoEquivs && depStation != null;
+
+				if (!isEquivStation && !"cancel".equals(eDelay))
 				{
 					final Calendar plannedTime = new GregorianCalendar(timeZone());
 					plannedTime.clear();
