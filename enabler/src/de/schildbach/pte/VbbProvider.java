@@ -20,6 +20,7 @@ package de.schildbach.pte;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -41,6 +42,14 @@ public class VbbProvider extends AbstractHafasProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.VBB;
 	private static final String API_BASE = "http://fahrinfo.vbb.de/bin/";
+	private static final Set<Product> ALL_EXCEPT_HIGHSPEED_AND_ONDEMAND;
+
+	static
+	{
+		ALL_EXCEPT_HIGHSPEED_AND_ONDEMAND = new HashSet<Product>(Product.ALL);
+		ALL_EXCEPT_HIGHSPEED_AND_ONDEMAND.remove(Product.HIGH_SPEED_TRAIN);
+		ALL_EXCEPT_HIGHSPEED_AND_ONDEMAND.remove(Product.ON_DEMAND);
+	}
 
 	public VbbProvider()
 	{
@@ -170,6 +179,12 @@ public class VbbProvider extends AbstractHafasProvider
 		uri.append(xmlQueryDeparturesParameters(stationId));
 
 		return xmlQueryDepartures(uri.toString(), stationId);
+	}
+
+	@Override
+	public Collection<Product> defaultProducts()
+	{
+		return ALL_EXCEPT_HIGHSPEED_AND_ONDEMAND;
 	}
 
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
