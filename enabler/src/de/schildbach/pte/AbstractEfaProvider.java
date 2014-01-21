@@ -342,7 +342,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			return new Location(LocationType.POI, 0, lat, lon, place, name);
 		else if ("crossing".equals(type))
 			return new Location(LocationType.ADDRESS, 0, lat, lon, place, name);
-		else if ("street".equals(type) || "address".equals(type) || "singlehouse".equals(type))
+		else if ("street".equals(type) || "address".equals(type) || "singlehouse".equals(type) || "buildingname".equals(type))
 			return new Location(LocationType.ADDRESS, 0, lat, lon, place, normalizeLocationName(stop.getString("name")));
 		else
 			throw new JSONException("unknown type: " + type);
