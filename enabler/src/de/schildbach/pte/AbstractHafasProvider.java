@@ -638,8 +638,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			if (XmlPullUtil.test(pp, "StationTable"))
 			{
 				XmlPullUtil.enter(pp, "StationTable");
-				if (pp.getEventType() == XmlPullParser.TEXT)
-					pp.nextTag();
 			}
 
 			while (XmlPullUtil.test(pp, "Journey"))
@@ -776,18 +774,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					departures.add(departure);
 				}
 
-				if (pp.isEmptyElementTag())
-				{
-					XmlPullUtil.next(pp);
-				}
-				else
-				{
-					XmlPullUtil.enter(pp, "Journey");
-					XmlPullUtil.exit(pp, "Journey");
-				}
-
-				if (pp.getEventType() == XmlPullParser.TEXT)
-					pp.nextTag();
+				XmlPullUtil.requireSkip(pp, "Journey");
 			}
 
 			result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, stationId), departures, null));
