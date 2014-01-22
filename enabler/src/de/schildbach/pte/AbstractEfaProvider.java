@@ -514,54 +514,62 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 			final List<LocationAndQuality> locations = new ArrayList<LocationAndQuality>();
 
-			XmlPullUtil.enter(pp, "sf");
-
-			while (XmlPullUtil.test(pp, "p"))
+			XmlPullUtil.require(pp, "sf");
+			if (!pp.isEmptyElementTag())
 			{
-				XmlPullUtil.enter(pp, "p");
+				XmlPullUtil.enter(pp, "sf");
 
-				final String name = normalizeLocationName(requireValueTag(pp, "n"));
-				final String u = requireValueTag(pp, "u");
-				if (!"sf".equals(u))
-					throw new RuntimeException("unknown usage: " + u);
-				final String ty = requireValueTag(pp, "ty");
-				final LocationType type;
-				if ("stop".equals(ty))
-					type = LocationType.STATION;
-				else if ("poi".equals(ty))
-					type = LocationType.POI;
-				else if ("loc".equals(ty))
-					type = LocationType.ADDRESS;
-				else if ("street".equals(ty))
-					type = LocationType.ADDRESS;
-				else if ("singlehouse".equals(ty))
-					type = LocationType.ADDRESS;
-				else
-					throw new RuntimeException("unknown type: " + ty);
+				while (XmlPullUtil.test(pp, "p"))
+				{
+					XmlPullUtil.enter(pp, "p");
 
-				XmlPullUtil.enter(pp, "r");
+					final String name = normalizeLocationName(requireValueTag(pp, "n"));
+					final String u = requireValueTag(pp, "u");
+					if (!"sf".equals(u))
+						throw new RuntimeException("unknown usage: " + u);
+					final String ty = requireValueTag(pp, "ty");
+					final LocationType type;
+					if ("stop".equals(ty))
+						type = LocationType.STATION;
+					else if ("poi".equals(ty))
+						type = LocationType.POI;
+					else if ("loc".equals(ty))
+						type = LocationType.ADDRESS;
+					else if ("street".equals(ty))
+						type = LocationType.ADDRESS;
+					else if ("singlehouse".equals(ty))
+						type = LocationType.ADDRESS;
+					else
+						throw new RuntimeException("unknown type: " + ty);
 
-				final int id = Integer.parseInt(requireValueTag(pp, "id"));
-				requireValueTag(pp, "stateless");
-				requireValueTag(pp, "omc");
-				final String place = normalizeLocationName(optValueTag(pp, "pc"));
-				requireValueTag(pp, "pid");
-				final Point coord = coordStrToPoint(optValueTag(pp, "c"));
+					XmlPullUtil.enter(pp, "r");
 
-				XmlPullUtil.exit(pp, "r");
+					final int id = Integer.parseInt(requireValueTag(pp, "id"));
+					requireValueTag(pp, "stateless");
+					requireValueTag(pp, "omc");
+					final String place = normalizeLocationName(optValueTag(pp, "pc"));
+					requireValueTag(pp, "pid");
+					final Point coord = coordStrToPoint(optValueTag(pp, "c"));
 
-				final String qal = optValueTag(pp, "qal");
-				final int quality = qal != null ? Integer.parseInt(qal) : 0;
+					XmlPullUtil.exit(pp, "r");
 
-				XmlPullUtil.exit(pp, "p");
+					final String qal = optValueTag(pp, "qal");
+					final int quality = qal != null ? Integer.parseInt(qal) : 0;
 
-				final Location location = new Location(type, type == LocationType.STATION ? id : 0, coord != null ? coord.lat : 0,
-						coord != null ? coord.lon : 0, place, name);
-				final LocationAndQuality locationAndQuality = new LocationAndQuality(location, quality);
-				locations.add(locationAndQuality);
+					XmlPullUtil.exit(pp, "p");
+
+					final Location location = new Location(type, type == LocationType.STATION ? id : 0, coord != null ? coord.lat : 0,
+							coord != null ? coord.lon : 0, place, name);
+					final LocationAndQuality locationAndQuality = new LocationAndQuality(location, quality);
+					locations.add(locationAndQuality);
+				}
+
+				XmlPullUtil.exit(pp, "sf");
 			}
-
-			XmlPullUtil.exit(pp, "sf");
+			else
+			{
+				XmlPullUtil.next(pp);
+			}
 
 			Collections.sort(locations);
 
