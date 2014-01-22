@@ -81,6 +81,8 @@ public class StockholmProvider extends AbstractHafasProvider
 			return 'B';
 		if (value == 16) // Flygbussar
 			return 'B';
+		if (value == 32)
+			return 'F';
 		if (value == 64) // Waxholmsbåtar
 			return 'F';
 
