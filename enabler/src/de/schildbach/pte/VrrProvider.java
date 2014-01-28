@@ -17,13 +17,9 @@
 
 package de.schildbach.pte;
 
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import de.schildbach.pte.dto.Location;
-import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.Style;
 
 /**
@@ -39,6 +35,7 @@ public class VrrProvider extends AbstractEfaProvider
 		super(API_BASE);
 
 		setUseRouteIndexAsTripId(false);
+		setIncludeRegionId(false);
 		setNeedsSpEncId(true);
 		setStyles(STYLES);
 	}
@@ -55,12 +52,6 @@ public class VrrProvider extends AbstractEfaProvider
 				return true;
 
 		return false;
-	}
-
-	@Override
-	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
-	{
-		return xmlStopfinderRequest(new Location(LocationType.ANY, 0, null, constraint.toString()));
 	}
 
 	@Override

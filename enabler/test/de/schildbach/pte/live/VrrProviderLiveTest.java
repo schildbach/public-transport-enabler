@@ -17,7 +17,9 @@
 
 package de.schildbach.pte.live;
 
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
@@ -107,6 +109,30 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest
 		final List<Location> autocompletes = provider.autocompleteStations("Düsseldorf, Am Frohnhof");
 
 		print(autocompletes);
+	}
+
+	@Test
+	public void autocompleteCoverage() throws Exception
+	{
+		final List<Location> cologneAutocompletes = provider.autocompleteStations("Köln Ebertplatz");
+		print(cologneAutocompletes);
+		assertThat(cologneAutocompletes, hasItem(new Location(LocationType.STATION, 22000035)));
+
+		final List<Location> dortmundAutocompletes = provider.autocompleteStations("Dortmund Zugstraße");
+		print(dortmundAutocompletes);
+		assertThat(dortmundAutocompletes, hasItem(new Location(LocationType.STATION, 20000524)));
+
+		final List<Location> duesseldorfAutocompletes = provider.autocompleteStations("Düsseldorf Sternstraße");
+		print(duesseldorfAutocompletes);
+		assertThat(duesseldorfAutocompletes, hasItem(new Location(LocationType.STATION, 20018017)));
+
+		final List<Location> muensterAutocompletes = provider.autocompleteStations("Münster Vennheideweg");
+		print(muensterAutocompletes);
+		assertThat(muensterAutocompletes, hasItem(new Location(LocationType.STATION, 24047291)));
+
+		final List<Location> aachenAutocompletes = provider.autocompleteStations("Aachen Elisenbrunnen");
+		print(aachenAutocompletes);
+		assertThat(aachenAutocompletes, hasItem(new Location(LocationType.STATION, 21001029)));
 	}
 
 	@Test
