@@ -249,16 +249,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	protected List<Location> jsonStopfinderRequest(final Location constraint) throws IOException
 	{
-		final StringBuilder parameters = new StringBuilder();
-		appendCommonRequestParams(parameters, "JSON");
-		parameters.append("&locationServerActive=1");
-		if (includeRegionId)
-			parameters.append("&regionID_sf=1"); // prefer own region
-		appendLocation(parameters, constraint, "sf");
-		if (constraint.type == LocationType.ANY)
-			// 1=place 2=stop 4=street 8=address 16=crossing 32=poi 64=postcode
-			parameters.append("&anyObjFilter_sf=").append(2 + 4 + 8 + 16 + 32 + 64);
-		parameters.append("&anyMaxSizeHitList=500");
+		final StringBuilder parameters = stopfinderRequestParameters(constraint, "JSON");
 
 		final StringBuilder uri = new StringBuilder(stopFinderEndpoint);
 		if (!httpPost)
@@ -348,10 +339,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			throw new JSONException("unknown type: " + type);
 	}
 
-	private StringBuilder stopfinderRequestParameters(final Location constraint)
+	private StringBuilder stopfinderRequestParameters(final Location constraint, final String outputFormat)
 	{
 		final StringBuilder parameters = new StringBuilder();
-		appendCommonRequestParams(parameters, "XML");
+		appendCommonRequestParams(parameters, outputFormat);
 		parameters.append("&locationServerActive=1");
 		if (includeRegionId)
 			parameters.append("&regionID_sf=1"); // prefer own region
@@ -364,6 +355,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			parameters.append("&anyObjFilter_sf=").append(2 + 4 + 8 + 16 + 32 + 64);
 			parameters.append("&reducedAnyPostcodeObjFilter_sf=64&reducedAnyTooManyObjFilter_sf=2");
 			parameters.append("&useHouseNumberList=true");
+			parameters.append("&anyMaxSizeHitList=500");
 		}
 
 		return parameters;
@@ -371,7 +363,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	protected List<Location> xmlStopfinderRequest(final Location constraint) throws IOException
 	{
-		final StringBuilder parameters = stopfinderRequestParameters(constraint);
+		final StringBuilder parameters = stopfinderRequestParameters(constraint, "XML");
 
 		final StringBuilder uri = new StringBuilder(stopFinderEndpoint);
 		if (!httpPost)
@@ -494,7 +486,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	protected List<Location> mobileStopfinderRequest(final Location constraint) throws IOException
 	{
-		final StringBuilder parameters = stopfinderRequestParameters(constraint);
+		final StringBuilder parameters = stopfinderRequestParameters(constraint, "XML");
 
 		final StringBuilder uri = new StringBuilder(stopFinderEndpoint);
 		if (!httpPost)
