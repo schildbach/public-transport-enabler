@@ -40,6 +40,7 @@ public class VorProvider extends AbstractEfaProvider
 		setHttpPost(true);
 		setIncludeRegionId(false);
 		setStyles(STYLES);
+		setRequestUrlEncoding(UTF_8);
 	}
 
 	public NetworkId id()
