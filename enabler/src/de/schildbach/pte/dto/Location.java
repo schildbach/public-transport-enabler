@@ -145,7 +145,7 @@ public final class Location implements Serializable
 	}
 
 	@Override
-	public boolean equals(Object o)
+	public boolean equals(final Object o)
 	{
 		if (o == this)
 			return true;
@@ -154,10 +154,10 @@ public final class Location implements Serializable
 		final Location other = (Location) o;
 		if (this.type != other.type)
 			return false;
-		if (this.id != 0 && this.id == other.id)
-			return true;
-		if (this.lat != 0 && this.lon != 0 && this.lat == other.lat && this.lon == other.lon)
-			return true;
+		if (this.id != 0)
+			return this.id == other.id;
+		if (this.lat != 0 && this.lon != 0)
+			return this.lat == other.lat && this.lon == other.lon;
 		if (!nullSafeEquals(this.name, other.name)) // only discriminate by name if no ids are given
 			return false;
 		return true;

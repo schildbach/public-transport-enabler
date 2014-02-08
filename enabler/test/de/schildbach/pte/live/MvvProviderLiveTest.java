@@ -17,7 +17,9 @@
 
 package de.schildbach.pte.live;
 
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import java.util.Date;
 import java.util.List;
@@ -96,6 +98,9 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void autocompleteLocal() throws Exception
 	{
+		final List<Location> autocompletesFraunhoferStr = provider.autocompleteStations("fraunhofer");
+		assertThat(autocompletesFraunhoferStr, hasItem(new Location(LocationType.STATION, 1000150)));
+
 		final List<Location> autocompletesHirschgarten = provider.autocompleteStations("Hirschgarten");
 		assertEquals("München", autocompletesHirschgarten.get(0).place);
 
