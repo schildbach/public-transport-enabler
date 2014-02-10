@@ -58,9 +58,6 @@ public enum NetworkId
 	// Ireland
 	TFI, EIREANN,
 
-	// Slovenia
-	MARIBOR,
-
 	// Poland
 	PL,
 
