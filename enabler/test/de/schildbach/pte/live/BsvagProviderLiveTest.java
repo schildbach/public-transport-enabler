@@ -17,7 +17,9 @@
 
 package de.schildbach.pte.live;
 
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
@@ -83,6 +85,14 @@ public class BsvagProviderLiveTest extends AbstractProviderLiveTest
 		final List<Location> autocompletes = provider.autocompleteStations("grün");
 
 		print(autocompletes);
+	}
+
+	@Test
+	public void autocompleteCoverage() throws Exception
+	{
+		final List<Location> braunschweigAutocompletes = provider.autocompleteStations("Braunschweig Rhönweg");
+		print(braunschweigAutocompletes);
+		assertThat(braunschweigAutocompletes, hasItem(new Location(LocationType.STATION, 26000351)));
 	}
 
 	@Test
