@@ -34,6 +34,9 @@ public enum NetworkId
 	// Switzerland
 	SBB, BVB, VBL, ZVV,
 
+	// France
+	PACA,
+
 	// Belgium
 	SNCB,
 
