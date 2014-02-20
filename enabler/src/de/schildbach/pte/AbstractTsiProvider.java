@@ -223,7 +223,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 		return uri;
 	}
 
-	protected String createLineLabel(String mode, String number, String name)
+	protected String createLineLabel(String mode, String number, String name, String operatorCode, String codeActivity)
 	{
 		final char modePrefix;
 		if (transportModeShorts.containsKey(mode))
@@ -233,9 +233,13 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 
 		final StringBuilder result = new StringBuilder(Character.toString(modePrefix));
 
-		// XXX was machen mit Zuegen ohne Nummer (Name sowas wie: Starthaltestelle-Zielhaltestelle)
 		if (number != null && !number.isEmpty())
 			result.append(number);
+		else if (operatorCode != null) {
+		    result.append(operatorCode);
+		    if (codeActivity != null)
+			result.append(codeActivity);
+		}
 		else
 			result.append(name);
 
@@ -442,16 +446,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 
 	protected Trip.Public parseJsonJourneyplannerPublicLeg(JSONObject ptrInfo) throws JSONException
 	{
-		final JSONObject networkInfo = ptrInfo.optJSONObject("PTNetwork");
-		final String network;
-		if (networkInfo != null)
-			network = jsonOptString(networkInfo, "Name");
-		else
-			network = null;
-
-		final JSONObject lineInfo = ptrInfo.getJSONObject("Line");
-		final String transportMode = ptrInfo.getString("TransportMode");
-		final Line line = parseJsonLine(transportMode, network, lineInfo);
+		final Line line = parseJsonLine(ptrInfo);
 
 		final JSONObject destObj = ptrInfo.optJSONObject("Direction");
 		String destinationName = jsonOptString(ptrInfo, "Destination");
@@ -522,12 +517,31 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 		return new Trip(null, from, to, legs, null, null, null);
 	}
 
-	protected Line parseJsonLine(String transportMode, String network, JSONObject lineInfo) throws JSONException
+	protected Line parseJsonLine(JSONObject ptrInfo) throws JSONException
 	{
+		final JSONObject networkInfo = ptrInfo.optJSONObject("PTNetwork");
+		final String network;
+		if (networkInfo != null)
+			network = jsonOptString(networkInfo, "Name");
+		else
+			network = null;
+
+		final JSONObject lineInfo = ptrInfo.getJSONObject("Line");
+		final String transportMode = ptrInfo.getString("TransportMode");
+
 		final String lineNumber = lineInfo.optString("Number");
 		final String lineName = lineInfo.getString("Name");
 
-		final String lineLabel = createLineLabel(transportMode, lineNumber, lineName);
+		final JSONObject operatorInfo = ptrInfo.optJSONObject("Operator");
+		final String operatorCode;
+		if (operatorInfo != null)
+			operatorCode = jsonOptString(operatorInfo, "Code");
+		else
+			operatorCode = null;
+
+		final String codeActivity = jsonOptString(ptrInfo, "CodeActivity");
+
+		final String lineLabel = createLineLabel(transportMode, lineNumber, lineName, operatorCode, codeActivity);
 
 		return new Line(lineInfo.getString("id"), lineLabel, lineStyle(network, lineLabel), null, null);
 	}
