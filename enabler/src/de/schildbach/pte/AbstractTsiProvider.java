@@ -628,6 +628,13 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 		else
 			possibleVias = Collections.singletonList(null);
 
+		if (possibleFroms.isEmpty())
+			return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_FROM);
+		if (possibleTos.isEmpty())
+			return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_TO);
+		if (possibleVias.isEmpty())
+			return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_VIA);
+
 		if (possibleFroms.size() > 1 || possibleVias.size() > 1 || possibleTos.size() > 1)
 			return new QueryTripsResult(header, possibleFroms.size() > 1 ? possibleFroms : null, possibleVias.size() > 1 ? possibleVias : null,
 					possibleTos.size() > 1 ? possibleTos : null);
