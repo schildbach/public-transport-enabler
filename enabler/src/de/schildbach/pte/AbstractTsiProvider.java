@@ -61,15 +61,16 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 	{
 		private static final long serialVersionUID = -6847355540229473013L;
 
-		private final Accessibility accessibility;
+		public final Accessibility accessibility;
+		public final Location from;
+		public final Set<Option> options;
+		public final Collection<Product> products;
+		public final Location to;
+		public final Location via;
+		public final WalkSpeed walkSpeed;
+
 		public Date earliestArrival;
-		private final Location from;
 		public Date latestDeparture;
-		private final Set<Option> options;
-		private final Collection<Product> products;
-		private final Location to;
-		private final Location via;
-		private final WalkSpeed walkSpeed;
 
 		public Context(Location from, Location via, Location to, Collection<Product> products, WalkSpeed walkSpeed, Accessibility accessibility,
 				Set<Option> options)
@@ -102,7 +103,21 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 			c.setTime(date);
 			c.add(Calendar.MINUTE, later ? 1 : -1);
 
-			return provider.queryTripsIdentified(from, via, to, c.getTime(), later, products, walkSpeed, accessibility, options);
+			return provider.queryTripsFromContext(this, c.getTime(), later);
+		}
+
+		public void updateEarliestArrival(Date newTime) {
+			if (newTime == null)
+				return;
+			if (earliestArrival == null || newTime.before(earliestArrival))
+				earliestArrival = newTime;
+		}
+
+		public void updateLatestDeparture(Date newTime) {
+			if (newTime == null)
+				return;
+			if (latestDeparture == null || newTime.after(latestDeparture))
+				latestDeparture = newTime;
 		}
 
 	}
@@ -639,18 +654,18 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 			return new QueryTripsResult(header, possibleFroms.size() > 1 ? possibleFroms : null, possibleVias.size() > 1 ? possibleVias : null,
 					possibleTos.size() > 1 ? possibleTos : null);
 
-		return queryTripsIdentified(possibleFroms.get(0), possibleVias.get(0), possibleTos.get(0), date, dep, products, walkSpeed, accessibility,
-				options);
+		final Context ctx = new Context(possibleFroms.get(0), possibleVias.get(0), possibleTos.get(0), products, walkSpeed, accessibility, options);
+
+		return queryTripsFromContext(ctx, date, dep);
 	}
 
-	protected QueryTripsResult queryTripsIdentified(Location from, Location via, Location to, Date date, boolean dep, Collection<Product> products,
-			WalkSpeed walkSpeed, Accessibility accessibility, Set<Option> options) throws IOException
+	protected QueryTripsResult queryTripsFromContext(Context ctx, Date date, boolean dep) throws IOException
 	{
 		final String mode;
-		if (products != null)
+		if (ctx.products != null)
 		{
 			final StringBuilder modeBuilder = new StringBuilder();
-			for (Product p : products)
+			for (Product p : ctx.products)
 			{
 				final String productName = translateToLocalProduct(p);
 				if (productName != null)
@@ -661,61 +676,61 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 		else
 			mode = null;
 
-		final String walkSpeedStr = translateWalkSpeed(walkSpeed);
+		final String walkSpeedStr = translateWalkSpeed(ctx.walkSpeed);
 
 		final StringBuilder parameters = buildCommonRequestParams("PlanTrip", "json");
 		parameters.append("&Disruptions=").append(0); // XXX what does this even mean?
 		parameters.append("&Algorithm=FASTEST");
 		parameters.append("&MaxWalkDist=1000"); // XXX good value? (in meters)
 
-		if (from.type == LocationType.STATION)
+		if (ctx.from.type == LocationType.STATION)
 		{
-			parameters.append("&DepType=STOP_PLACE&DepId=").append(from.id);
+			parameters.append("&DepType=STOP_PLACE&DepId=").append(ctx.from.id);
 			parameters.append("%240"); // "$0"
 		}
-		else if (from.type == LocationType.POI)
+		else if (ctx.from.type == LocationType.POI)
 		{
-			parameters.append("&DepType=POI&DepId=").append(from.id);
-			parameters.append("%240"); // "$0"
-		}
-		else
-		{
-			parameters.append("&DepLat=").append(latLonToDouble(from.lat));
-			parameters.append("&DepLon=").append(latLonToDouble(from.lon));
-		}
-
-		if (to.type == LocationType.STATION)
-		{
-			parameters.append("&ArrType=STOP_PLACE&ArrId=").append(to.id);
-			parameters.append("%240"); // "$0"
-		}
-		else if (to.type == LocationType.POI)
-		{
-			parameters.append("&ArrType=POI&ArrId=").append(to.id);
+			parameters.append("&DepType=POI&DepId=").append(ctx.from.id);
 			parameters.append("%240"); // "$0"
 		}
 		else
 		{
-			parameters.append("&ArrLat=").append(latLonToDouble(to.lat));
-			parameters.append("&ArrLon=").append(latLonToDouble(to.lon));
+			parameters.append("&DepLat=").append(latLonToDouble(ctx.from.lat));
+			parameters.append("&DepLon=").append(latLonToDouble(ctx.from.lon));
 		}
 
-		if (via != null)
+		if (ctx.to.type == LocationType.STATION)
 		{
-			if (via.type == LocationType.STATION)
+			parameters.append("&ArrType=STOP_PLACE&ArrId=").append(ctx.to.id);
+			parameters.append("%240"); // "$0"
+		}
+		else if (ctx.to.type == LocationType.POI)
+		{
+			parameters.append("&ArrType=POI&ArrId=").append(ctx.to.id);
+			parameters.append("%240"); // "$0"
+		}
+		else
+		{
+			parameters.append("&ArrLat=").append(latLonToDouble(ctx.to.lat));
+			parameters.append("&ArrLon=").append(latLonToDouble(ctx.to.lon));
+		}
+
+		if (ctx.via != null)
+		{
+			if (ctx.via.type == LocationType.STATION)
 			{
-				parameters.append("&ViaType=STOP_PLACE&ViaId=").append(via.id);
+				parameters.append("&ViaType=STOP_PLACE&ViaId=").append(ctx.via.id);
 				parameters.append("%240"); // "$0"
 			}
-			else if (via.type == LocationType.POI)
+			else if (ctx.via.type == LocationType.POI)
 			{
-				parameters.append("&ViaType=POI&ViaId=").append(via.id);
+				parameters.append("&ViaType=POI&ViaId=").append(ctx.via.id);
 				parameters.append("%240"); // "$0"
 			}
 			else
 			{
-				parameters.append("&ViaLat=").append(latLonToDouble(via.lat));
-				parameters.append("&ViaLon=").append(latLonToDouble(via.lon));
+				parameters.append("&ViaLat=").append(latLonToDouble(ctx.via.lat));
+				parameters.append("&ViaLon=").append(latLonToDouble(ctx.via.lon));
 			}
 		}
 
@@ -731,7 +746,6 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 
 		final StringBuilder uri = new StringBuilder(tripEndpoint);
 		uri.append(parameters);
-		final Context ctx = new Context(from, via, to, products, walkSpeed, accessibility, options);
 		final CharSequence page = ParserUtils.scrape(uri.toString(), null, jsonEncoding, null, 3);
 		try
 		{
@@ -767,11 +781,11 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 
 			if (trips.size() > 0)
 			{
-				ctx.earliestArrival = trips.get(0).getLastArrivalTime();
-				ctx.latestDeparture = trips.get(trips.size() - 1).getFirstDepartureTime();
+				ctx.updateEarliestArrival(trips.get(0).getLastArrivalTime());
+				ctx.updateLatestDeparture(trips.get(trips.size() - 1).getFirstDepartureTime());
 			}
 
-			return new QueryTripsResult(header, uri.toString(), from, via, to, ctx, trips);
+			return new QueryTripsResult(header, uri.toString(), ctx.from, ctx.via, ctx.to, ctx, trips);
 		}
 		catch (final JSONException x)
 		{
