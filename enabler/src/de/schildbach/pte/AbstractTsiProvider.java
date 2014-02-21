@@ -251,9 +251,9 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 		if (number != null && !number.isEmpty())
 			result.append(number);
 		else if (operatorCode != null) {
-		    result.append(operatorCode);
-		    if (codeActivity != null)
-			result.append(codeActivity);
+			result.append(operatorCode);
+			if (codeActivity != null)
+				result.append(codeActivity);
 		}
 		else
 			result.append(name);
@@ -563,43 +563,35 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 
 	protected Location parseJsonTransportLocation(JSONObject data) throws JSONException
 	{
-		try
+		final int id = data.getInt("Id");
+		final LocationType locType;
+
+		switch (data.getInt("PointType"))
 		{
-			final int id = data.getInt("Id");
-			final LocationType locType;
-
-			switch (data.getInt("PointType"))
-			{
-				case 1:
-					locType = LocationType.POI;
-					break;
-				case 4:
-					locType = LocationType.STATION;
-					break;
-				case 3:
-				default:
-					locType = LocationType.ADDRESS;
-			}
-
-			final double lat = data.optDouble("Latitude", 0);
-			final double lon = data.optDouble("Longitude", 0);
-			final int latInt = (int) Math.round(lat * 1E6);
-			final int lonInt = (int) Math.round(lon * 1E6);
-
-			final String name = data.getString("Name");
-			String place = null;
-			final JSONObject localityObj = data.optJSONObject("Locality");
-			if (localityObj != null)
-			{
-				place = localityObj.getString("Name");
-			}
-			return new Location(locType, id, latInt, lonInt, place, name);
+			case 1:
+				locType = LocationType.POI;
+				break;
+			case 4:
+				locType = LocationType.STATION;
+				break;
+			case 3:
+			default:
+				locType = LocationType.ADDRESS;
 		}
-		catch (JSONException e)
+
+		final double lat = data.optDouble("Latitude", 0);
+		final double lon = data.optDouble("Longitude", 0);
+		final int latInt = (int) Math.round(lat * 1E6);
+		final int lonInt = (int) Math.round(lon * 1E6);
+
+		final String name = data.getString("Name");
+		String place = null;
+		final JSONObject localityObj = data.optJSONObject("Locality");
+		if (localityObj != null)
 		{
-			System.err.println(data.toString(1));
-			throw e;
+			place = localityObj.getString("Name");
 		}
+		return new Location(locType, id, latInt, lonInt, place, name);
 	}
 
 	public QueryDeparturesResult queryDepartures(int stationId, int maxDepartures, boolean equivs) throws IOException
