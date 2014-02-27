@@ -215,6 +215,9 @@ public final class BahnProvider extends AbstractHafasProvider
 	{
 		final String ucType = type.toUpperCase();
 
+		if ("MT".equals(ucType)) // Schnee-Express
+			return 'I';
+
 		if ("DZ".equals(ucType)) // Dampfzug
 			return 'R';
 

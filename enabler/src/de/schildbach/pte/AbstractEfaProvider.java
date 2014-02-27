@@ -1128,6 +1128,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return "IEST" + trainNum;
 			if ("EIC".equals(trainType)) // Ekspres InterCity, Polen
 				return "IEIC" + trainNum;
+			if ("MT".equals(trainType) && "Schnee-Express".equals(trainName))
+				return "IMT" + trainNum;
 
 			if ("Zug".equals(trainName))
 				return 'R' + symbol;

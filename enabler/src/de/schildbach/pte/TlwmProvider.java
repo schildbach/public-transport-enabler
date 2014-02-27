@@ -58,6 +58,19 @@ public class TlwmProvider extends AbstractEfaProvider
 	}
 
 	@Override
+	protected String parseLine(final String mot, final String symbol, final String name, final String longName, final String trainType,
+			final String trainNum, final String trainName)
+	{
+		if ("0".equals(mot))
+		{
+			if ("Metro".equals(trainName) && trainType == null && name != null)
+				return "U" + name;
+		}
+
+		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
+	}
+
+	@Override
 	public Collection<Product> defaultProducts()
 	{
 		return Product.ALL;

@@ -71,6 +71,8 @@ public class BayernProvider extends AbstractEfaProvider
 	{
 		if ("0".equals(mot))
 		{
+			if ("M".equals(trainType) && trainNum != null && trainName != null && trainName.endsWith("Meridian"))
+				return "RM" + trainNum;
 			if ("ZUG".equals(trainType) && trainNum != null)
 				return "R" + trainNum;
 		}

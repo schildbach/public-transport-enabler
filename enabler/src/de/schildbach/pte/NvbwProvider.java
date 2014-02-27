@@ -57,6 +57,8 @@ public class NvbwProvider extends AbstractEfaProvider
 				return "RRR" + trainNum;
 			if ("Meridian".equals(trainName) && symbol != null)
 				return "R" + symbol;
+			if ("BSB-Zug".equals(longName))
+				return "SBSB";
 			if ("Bay. Seenschifffahrt".equals(trainName) && symbol != null)
 				return "F" + symbol;
 		}

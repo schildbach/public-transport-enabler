@@ -52,4 +52,19 @@ public class VvoProvider extends AbstractEfaProvider
 
 		return false;
 	}
+
+	@Override
+	protected String parseLine(final String mot, final String symbol, final String name, final String longName, final String trainType,
+			final String trainNum, final String trainName)
+	{
+		if ("0".equals(mot))
+		{
+			if ("Erfurter Bahn".equals(longName))
+				return "REB";
+			if ("Ostdeutsche Eisenbahn GmbH".equals(longName))
+				return "ROE";
+		}
+
+		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
+	}
 }

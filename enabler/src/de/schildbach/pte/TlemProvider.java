@@ -63,6 +63,19 @@ public class TlemProvider extends AbstractEfaProvider
 	}
 
 	@Override
+	protected String parseLine(final String mot, final String symbol, final String name, final String longName, final String trainType,
+			final String trainNum, final String trainName)
+	{
+		if ("0".equals(mot))
+		{
+			if ("Underground".equals(trainName) && trainType == null && name != null)
+				return "U" + name;
+		}
+
+		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
+	}
+
+	@Override
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
 		return xmlStopfinderRequest(new Location(LocationType.ANY, null, null, constraint.toString()));
