@@ -1870,7 +1870,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	{
 		final int id = Integer.parseInt(pp.getAttributeValue(null, "stopID"));
 
-		final String place = normalizeLocationName(pp.getAttributeValue(null, "locality"));
+		String place = normalizeLocationName(pp.getAttributeValue(null, "locality"));
+		if (place == null)
+			place = normalizeLocationName(pp.getAttributeValue(null, "place"));
+
 		String name = normalizeLocationName(pp.getAttributeValue(null, "nameWO"));
 		if (name == null)
 			name = normalizeLocationName(pp.getAttributeValue(null, "name"));
