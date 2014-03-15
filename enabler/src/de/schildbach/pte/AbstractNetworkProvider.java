@@ -17,6 +17,7 @@
 
 package de.schildbach.pte;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.HashSet;
@@ -132,7 +133,7 @@ public abstract class AbstractNetworkProvider implements NetworkProvider
 		return Standard.STYLES.get(line.charAt(0));
 	}
 
-	public Point[] getArea()
+	public Point[] getArea() throws IOException
 	{
 		return null;
 	}

@@ -68,23 +68,40 @@ public final class ParserUtils
 
 	public static final CharSequence scrape(final String url) throws IOException
 	{
-		return scrape(url, null, null, null);
+		return scrape(url, null, null, null, null);
+	}
+
+	public static final CharSequence scrape(final String url, final String authorization) throws IOException
+	{
+		return scrape(url, null, null, null, authorization);
 	}
 
 	public static final CharSequence scrape(final String url, final String postRequest, Charset encoding, final String sessionCookieName)
 			throws IOException
 	{
-		return scrape(url, postRequest, encoding, sessionCookieName, 3);
+		return scrape(url, postRequest, encoding, sessionCookieName, null, 3);
+	}
+
+	public static final CharSequence scrape(final String url, final String postRequest, Charset encoding, final String sessionCookieName, final String authorization)
+			throws IOException
+	{
+		return scrape(url, postRequest, encoding, sessionCookieName, authorization, 3);
 	}
 
 	public static final CharSequence scrape(final String urlStr, final String postRequest, Charset requestEncoding, final String sessionCookieName,
 			int tries) throws IOException
 	{
+		return scrape(urlStr, postRequest, requestEncoding, sessionCookieName, null, tries);
+	}
+
+	public static final CharSequence scrape(final String urlStr, final String postRequest, Charset requestEncoding, final String sessionCookieName,
+											final String authorization, int tries) throws IOException
+	{
 		if (requestEncoding == null)
 			requestEncoding = SCRAPE_DEFAULT_ENCODING;
 
 		final StringBuilder buffer = new StringBuilder(SCRAPE_INITIAL_CAPACITY);
-		final InputStream is = scrapeInputStream(urlStr, postRequest, requestEncoding, null, sessionCookieName, tries);
+		final InputStream is = scrapeInputStream(urlStr, postRequest, requestEncoding, null, sessionCookieName, authorization, tries);
 		final Reader pageReader = new InputStreamReader(is, requestEncoding);
 		copy(pageReader, buffer);
 		pageReader.close();
@@ -106,11 +123,17 @@ public final class ParserUtils
 
 	public static final InputStream scrapeInputStream(final String url) throws IOException
 	{
-		return scrapeInputStream(url, null, null, null, null, 3);
+		return scrapeInputStream(url, null, null, null, null, null, 3);
 	}
 
 	public static final InputStream scrapeInputStream(final String urlStr, final String postRequest, Charset requestEncoding, final String referer,
-			final String sessionCookieName, int tries) throws IOException
+													  final String sessionCookieName, int tries) throws IOException
+	{
+		return scrapeInputStream(urlStr, postRequest, requestEncoding, referer, sessionCookieName, null, tries);
+	}
+
+	public static final InputStream scrapeInputStream(final String urlStr, final String postRequest, Charset requestEncoding, final String referer,
+													  final String sessionCookieName, final String authorization, int tries) throws IOException
 	{
 		if (requestEncoding == null)
 			requestEncoding = SCRAPE_DEFAULT_ENCODING;
@@ -135,6 +158,10 @@ public final class ParserUtils
 
 			if (sessionCookieName != null && stateCookie != null)
 				connection.addRequestProperty("Cookie", stateCookie);
+
+			// Set authorization.
+			if (authorization != null)
+				connection.addRequestProperty("Authorization", authorization);
 
 			if (postRequest != null)
 			{
