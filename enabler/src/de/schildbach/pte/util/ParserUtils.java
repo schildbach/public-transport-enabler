@@ -40,6 +40,7 @@ import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
 import de.schildbach.pte.exception.BlockedException;
+import de.schildbach.pte.exception.InternalErrorException;
 import de.schildbach.pte.exception.NotFoundException;
 import de.schildbach.pte.exception.UnexpectedRedirectException;
 
@@ -206,6 +207,10 @@ public final class ParserUtils
 				{
 					throw new UnexpectedRedirectException(url, connection.getURL());
 				}
+				else if (responseCode == HttpURLConnection.HTTP_INTERNAL_ERROR)
+				{
+					throw new InternalErrorException(url);
+				}
 				else
 				{
 					final String message = "got response: " + responseCode + " " + connection.getResponseMessage();
@@ -364,6 +369,10 @@ public final class ParserUtils
 			else if (responseCode == HttpURLConnection.HTTP_MOVED_PERM || responseCode == HttpURLConnection.HTTP_MOVED_TEMP)
 			{
 				throw new UnexpectedRedirectException(url, connection.getURL());
+			}
+			else if (responseCode == HttpURLConnection.HTTP_INTERNAL_ERROR)
+			{
+				throw new InternalErrorException(url);
 			}
 			else
 			{
