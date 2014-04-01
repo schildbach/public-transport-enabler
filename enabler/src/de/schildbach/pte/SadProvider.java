@@ -97,7 +97,7 @@ public class SadProvider extends AbstractNetworkProvider {
 		throw new UnsupportedOperationException();
 	}
 
-	public QueryDeparturesResult queryDepartures(int stationId, int maxDepartures, boolean equivs) throws IOException {
+	public QueryDeparturesResult queryDepartures(String stationId, int maxDepartures, boolean equivs) throws IOException {
 		// Not supported by SOAP API
 		throw new UnsupportedOperationException();
 	}

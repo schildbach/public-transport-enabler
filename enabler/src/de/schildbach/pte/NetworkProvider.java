@@ -96,7 +96,21 @@ public interface NetworkProvider
 	 * @return result object containing the departures
 	 * @throws IOException
 	 */
-	QueryDeparturesResult queryDepartures(int stationId, int maxDepartures, boolean equivs) throws IOException;
+	QueryDeparturesResult queryDepartures(String stationId, int maxDepartures, boolean equivs) throws IOException;
+
+	/**
+	 * Get departures at a given station, probably live
+	 * 
+	 * @param stationId
+	 *            id of the station
+	 * @param maxDepartures
+	 *            maximum number of departures to get or {@code 0}
+	 * @param equivs
+	 *            also query equivalent stations?
+	 * @return result object containing the departures
+	 * @throws IOException
+	 */
+	 QueryDeparturesResult queryDepartures(int stationId, int maxDepartures, boolean equivs) throws IOException;
 
 	/**
 	 * Meant for auto-completion of station names, like in an {@link android.widget.AutoCompleteTextView}

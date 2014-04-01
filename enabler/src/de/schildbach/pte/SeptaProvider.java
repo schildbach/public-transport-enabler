@@ -136,7 +136,7 @@ public class SeptaProvider extends AbstractHafasProvider
 		}
 	}
 
-	private String departuresQueryUri(final int stationId, final int maxDepartures)
+	private String departuresQueryUri(final String stationId, final int maxDepartures)
 	{
 		final Calendar now = new GregorianCalendar(timeZone());
 
@@ -183,7 +183,7 @@ public class SeptaProvider extends AbstractHafasProvider
 			+ "(?:<td class=\"center sepline top\">\n(" + ParserUtils.P_PLATFORM + ").*?)?" // position
 	, Pattern.DOTALL);
 
-	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
+	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
 		final ResultHeader header = new ResultHeader(SERVER_PRODUCT);
 		final QueryDeparturesResult result = new QueryDeparturesResult(header);

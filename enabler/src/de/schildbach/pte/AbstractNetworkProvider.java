@@ -18,6 +18,7 @@
 package de.schildbach.pte;
 
 import java.nio.charset.Charset;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
@@ -25,6 +26,7 @@ import java.util.Set;
 
 import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.Product;
+import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.Style;
 
 /**
@@ -44,6 +46,14 @@ public abstract class AbstractNetworkProvider implements NetworkProvider
 	{
 		ALL_EXCEPT_HIGHSPEED = new HashSet<Product>(Product.ALL);
 		ALL_EXCEPT_HIGHSPEED.remove(Product.HIGH_SPEED_TRAIN);
+	}
+
+	public QueryDeparturesResult queryDepartures(int stationId, int maxDepartures, boolean equivs) throws IOException
+	{
+		if (stationId == 0)
+			return queryDepartures(null, maxDepartures, equivs);
+		else
+			return queryDepartures(Integer.toString(stationId), maxDepartures, equivs);
 	}
 
 	public Collection<Product> defaultProducts()
