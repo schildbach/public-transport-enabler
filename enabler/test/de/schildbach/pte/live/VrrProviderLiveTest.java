@@ -50,7 +50,7 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 20019904), 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "20019904"), 0, 0);
 
 		print(result);
 	}
@@ -70,17 +70,17 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(1007258, 0, false);
+		final QueryDeparturesResult result = provider.queryDepartures("1007258", 0, false);
 
 		print(result);
 
-		final QueryDeparturesResult result2 = provider.queryDepartures(20019904, 0, false);
+		final QueryDeparturesResult result2 = provider.queryDepartures("20019904", 0, false);
 
 		print(result2);
 
 		// Bonn
-		provider.queryDepartures(22000687, 0, false); // Hauptbahnhof
-		provider.queryDepartures(22001374, 0, false); // Suedwache
+		provider.queryDepartures("22000687", 0, false); // Hauptbahnhof
+		provider.queryDepartures("22001374", 0, false); // Suedwache
 	}
 
 	@Test
@@ -116,23 +116,23 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final List<Location> cologneAutocompletes = provider.autocompleteStations("Köln Ebertplatz");
 		print(cologneAutocompletes);
-		assertThat(cologneAutocompletes, hasItem(new Location(LocationType.STATION, 22000035)));
+		assertThat(cologneAutocompletes, hasItem(new Location(LocationType.STATION, "22000035")));
 
 		final List<Location> dortmundAutocompletes = provider.autocompleteStations("Dortmund Zugstraße");
 		print(dortmundAutocompletes);
-		assertThat(dortmundAutocompletes, hasItem(new Location(LocationType.STATION, 20000524)));
+		assertThat(dortmundAutocompletes, hasItem(new Location(LocationType.STATION, "20000524")));
 
 		final List<Location> duesseldorfAutocompletes = provider.autocompleteStations("Düsseldorf Sternstraße");
 		print(duesseldorfAutocompletes);
-		assertThat(duesseldorfAutocompletes, hasItem(new Location(LocationType.STATION, 20018017)));
+		assertThat(duesseldorfAutocompletes, hasItem(new Location(LocationType.STATION, "20018017")));
 
 		final List<Location> muensterAutocompletes = provider.autocompleteStations("Münster Vennheideweg");
 		print(muensterAutocompletes);
-		assertThat(muensterAutocompletes, hasItem(new Location(LocationType.STATION, 24047291)));
+		assertThat(muensterAutocompletes, hasItem(new Location(LocationType.STATION, "24047291")));
 
 		final List<Location> aachenAutocompletes = provider.autocompleteStations("Aachen Elisenbrunnen");
 		print(aachenAutocompletes);
-		assertThat(aachenAutocompletes, hasItem(new Location(LocationType.STATION, 21001029)));
+		assertThat(aachenAutocompletes, hasItem(new Location(LocationType.STATION, "21001029")));
 	}
 
 	@Test
@@ -146,8 +146,8 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 20009289, "Essen", "Hauptbahnhof"), null, new Location(
-				LocationType.STATION, 20009161, "Essen", "Bismarckplatz"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "20009289", "Essen", "Hauptbahnhof"), null, new Location(
+				LocationType.STATION, "20009161", "Essen", "Bismarckplatz"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);
@@ -174,8 +174,8 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortTripPaderborn() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 23007000, "Paderborn", "Paderborn Hbf"), null, new Location(
-				LocationType.STATION, 23007700, "Höxter", "Bahnhof / Rathaus"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "23007000", "Paderborn", "Paderborn Hbf"), null, new Location(
+				LocationType.STATION, "23007700", "Höxter", "Bahnhof / Rathaus"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);

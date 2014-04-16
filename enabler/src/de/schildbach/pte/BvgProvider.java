@@ -210,7 +210,7 @@ public final class BvgProvider extends AbstractHafasProvider
 			final Matcher mOwn = P_NEARBY_OWN.matcher(page);
 			if (mOwn.find())
 			{
-				final int parsedId = Integer.parseInt(mOwn.group(1));
+				final String parsedId = mOwn.group(1);
 				final int parsedLon = (int) (Float.parseFloat(mOwn.group(2)) * 1E6);
 				final int parsedLat = (int) (Float.parseFloat(mOwn.group(3)) * 1E6);
 				final String[] parsedPlaceAndName = splitPlaceAndName(ParserUtils.urlDecode(mOwn.group(4), ISO_8859_1));
@@ -228,7 +228,7 @@ public final class BvgProvider extends AbstractHafasProvider
 
 					if (mFineLocation.find())
 					{
-						final int parsedId = Integer.parseInt(mFineLocation.group(1));
+						final String parsedId = mFineLocation.group(1);
 						final String[] parsedPlaceAndName = splitPlaceAndName(ParserUtils.resolveEntities(mFineLocation.group(2)));
 						final Location station = new Location(LocationType.STATION, parsedId, parsedPlaceAndName[0], parsedPlaceAndName[1]);
 						if (!stations.contains(station))
@@ -258,7 +258,7 @@ public final class BvgProvider extends AbstractHafasProvider
 
 	private static final String DEPARTURE_URL_LIVE = DEPARTURE_URL + "/IstAbfahrtzeiten/index/mobil?";
 
-	private String departuresQueryLiveUri(final int stationId)
+	private String departuresQueryLiveUri(final String stationId)
 	{
 		final StringBuilder uri = new StringBuilder();
 		uri.append(DEPARTURE_URL_LIVE);
@@ -270,7 +270,7 @@ public final class BvgProvider extends AbstractHafasProvider
 
 	private static final String DEPARTURE_URL_PLAN = DEPARTURE_URL + "/Fahrinfo/bin/stboard.bin/dox?boardType=dep&disableEquivs=yes&start=yes";
 
-	private String departuresQueryPlanUri(final int stationId, final int maxDepartures)
+	private String departuresQueryPlanUri(final String stationId, final int maxDepartures)
 	{
 		final StringBuilder uri = new StringBuilder();
 		uri.append(DEPARTURE_URL_PLAN);
@@ -320,12 +320,12 @@ public final class BvgProvider extends AbstractHafasProvider
 	private static final Pattern P_DEPARTURES_LIVE_ERRORS = Pattern.compile(
 			"(Haltestelle:)|(Wartungsgr&uuml;nden|nur eingeschränkt)|(http-equiv=\"refresh\")", Pattern.CASE_INSENSITIVE);
 
-	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
+	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
 		final ResultHeader header = new ResultHeader(SERVER_PRODUCT);
 		final QueryDeparturesResult result = new QueryDeparturesResult(header);
 
-		if (stationId < 1000000) // live
+		if (Integer.parseInt(stationId) < 1000000) // live
 		{
 			// scrape page
 			final String uri = departuresQueryLiveUri(stationId);
@@ -403,7 +403,7 @@ public final class BvgProvider extends AbstractHafasProvider
 						final Position position = null;
 
 						final String[] destinationPlaceAndName = splitPlaceAndName(ParserUtils.resolveEntities(mDepFine.group(4)));
-						final Location destination = new Location(LocationType.ANY, 0, destinationPlaceAndName[0], destinationPlaceAndName[1]);
+						final Location destination = new Location(LocationType.ANY, null, destinationPlaceAndName[0], destinationPlaceAndName[1]);
 
 						final String message = messages.get(line.label);
 
@@ -474,9 +474,9 @@ public final class BvgProvider extends AbstractHafasProvider
 
 						final Position position = new Position(ParserUtils.resolveEntities(mDepFine.group(3)));
 
-						final int destinationId = Integer.parseInt(mDepFine.group(4));
+						final String destinationId = mDepFine.group(4);
 						final String[] destinationPlaceAndName = splitPlaceAndName(ParserUtils.resolveEntities(mDepFine.group(5)));
-						final Location destination = new Location(destinationId > 0 ? LocationType.STATION : LocationType.ANY, destinationId,
+						final Location destination = new Location(destinationId != null ? LocationType.STATION : LocationType.ANY, destinationId,
 								destinationPlaceAndName[0], destinationPlaceAndName[1]);
 
 						final Departure dep = new Departure(plannedTime, null, line, position, destination, null, null);
@@ -521,9 +521,9 @@ public final class BvgProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected boolean isValidStationId(int id)
+	protected boolean isValidStationId(final String id)
 	{
-		return id >= 1000000;
+		return Integer.parseInt(id) >= 1000000;
 	}
 
 	@Override
@@ -737,19 +737,21 @@ public final class BvgProvider extends AbstractHafasProvider
 		return Berlin.BOUNDARY;
 	}
 
-	public static int migrateStationIdReverse(final int stationId)
+	public static String migrateStationIdReverse(final String stationIdStr)
 	{
+		final int stationId = Integer.parseInt(stationIdStr);
+
 		if (stationId < 100000000 || stationId >= 1000000000)
-			return stationId;
+			return stationIdStr;
 
 		final int low = stationId % 100000;
 		final int middle = (stationId % 100000000) - low;
 
 		if (middle != 1000000)
-			return stationId;
+			return stationIdStr;
 
 		final int high = stationId - (stationId % 100000000);
 
-		return high / 1000 + low;
+		return Integer.toString(high / 1000 + low);
 	}
 }

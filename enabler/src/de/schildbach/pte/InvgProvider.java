@@ -113,7 +113,7 @@ public class InvgProvider extends AbstractHafasProvider
 		}
 	}
 
-	private String departuresQueryUri(final int stationId, final int maxDepartures)
+	private String departuresQueryUri(final String stationId, final int maxDepartures)
 	{
 		final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
 		uri.append("?input=").append(stationId);
@@ -157,7 +157,7 @@ public class InvgProvider extends AbstractHafasProvider
 			+ "(?:<td class=\"center sepline top\">\n(" + ParserUtils.P_PLATFORM + ").*?)?" // position
 	, Pattern.DOTALL);
 
-	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
+	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
 		final ResultHeader header = new ResultHeader(SERVER_PRODUCT);
 		final QueryDeparturesResult result = new QueryDeparturesResult(header);
@@ -182,7 +182,7 @@ public class InvgProvider extends AbstractHafasProvider
 			else if (mHeadCoarse.group(6) != null)
 				return new QueryDeparturesResult(header, Status.SERVICE_DOWN);
 
-			final int locationId = Integer.parseInt(mHeadCoarse.group(2));
+			final String locationId = mHeadCoarse.group(2);
 
 			final Matcher mHeadFine = P_DEPARTURES_HEAD_FINE.matcher(mHeadCoarse.group(1));
 			if (mHeadFine.matches())
@@ -238,10 +238,10 @@ public class InvgProvider extends AbstractHafasProvider
 
 						final Line line = parseLine(lineType, ParserUtils.resolveEntities(mDepFine.group(4)), false);
 
-						final int destinationId = mDepFine.group(5) != null ? Integer.parseInt(mDepFine.group(5)) : 0;
+						final String destinationId = mDepFine.group(5);
 						final String destinationName = ParserUtils.resolveEntities(mDepFine.group(6));
-						final Location destination = new Location(destinationId > 0 ? LocationType.STATION : LocationType.ANY, destinationId, null,
-								destinationName);
+						final Location destination = new Location(destinationId != null ? LocationType.STATION : LocationType.ANY, destinationId,
+								null, destinationName);
 
 						final Position position = mDepFine.group(7) != null ? new Position("Gl. " + ParserUtils.resolveEntities(mDepFine.group(7)))
 								: null;

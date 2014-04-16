@@ -48,7 +48,7 @@ public class KvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 7000090), 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "7000090"), 0, 0);
 
 		print(result);
 	}
@@ -64,7 +64,7 @@ public class KvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(7000090, 0, false);
+		final QueryDeparturesResult result = provider.queryDepartures("7000090", 0, false);
 
 		print(result);
 	}
@@ -88,8 +88,8 @@ public class KvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 7000070, 49009208, 8404126, "Karlsruhe",
-				"Marktplatz (Pyramide)"), null, new Location(LocationType.STATION, 7000002, 49009392, 8409086, "Karlsruhe",
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "7000070", 49009208, 8404126, "Karlsruhe",
+				"Marktplatz (Pyramide)"), null, new Location(LocationType.STATION, "7000002", 49009392, 8409086, "Karlsruhe",
 				"Kronenplatz (Kaiserstr.)"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
@@ -117,8 +117,8 @@ public class KvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void tripBetweenAddresses() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 0, 48985089, 8402709, null,
-				"Konstanzer Straße 17, 76199 Karlsruhe, Deutschland"), null, new Location(LocationType.ADDRESS, 0, 49007706, 8356358, null,
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 48985089, 8402709, null,
+				"Konstanzer Straße 17, 76199 Karlsruhe, Deutschland"), null, new Location(LocationType.ADDRESS, null, 49007706, 8356358, null,
 				"Durmersheimer Straße 6, 76185 Karlsruhe, Deutschland"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);

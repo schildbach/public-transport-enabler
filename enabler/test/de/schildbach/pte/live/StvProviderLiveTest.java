@@ -50,7 +50,7 @@ public class StvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 63203040), 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "63203040"), 0, 0);
 
 		print(result);
 	}
@@ -66,7 +66,7 @@ public class StvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(63203040, 0, false);
+		final QueryDeparturesResult result = provider.queryDepartures("63203040", 0, false);
 
 		print(result);
 	}
@@ -92,30 +92,30 @@ public class StvProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final List<Location> grazAutocompletes = provider.autocompleteStations("Graz Brauhaus");
 		print(grazAutocompletes);
-		assertThat(grazAutocompletes, hasItem(new Location(LocationType.STATION, 63203044)));
+		assertThat(grazAutocompletes, hasItem(new Location(LocationType.STATION, "63203044")));
 
 		final List<Location> leobenAutocompletes = provider.autocompleteStations("Leoben Blockhäuser");
 		print(leobenAutocompletes);
-		assertThat(leobenAutocompletes, hasItem(new Location(LocationType.STATION, 63206224)));
+		assertThat(leobenAutocompletes, hasItem(new Location(LocationType.STATION, "63206224")));
 
 		final List<Location> bruckAutocompletes = provider.autocompleteStations("Bruck Hauptplatz");
 		print(bruckAutocompletes);
-		assertThat(bruckAutocompletes, hasItem(new Location(LocationType.STATION, 63202063)));
+		assertThat(bruckAutocompletes, hasItem(new Location(LocationType.STATION, "63202063")));
 
 		final List<Location> kindbergAutocompletes = provider.autocompleteStations("Kindberg Friedhof");
 		print(kindbergAutocompletes);
-		assertThat(kindbergAutocompletes, hasItem(new Location(LocationType.STATION, 63208877)));
+		assertThat(kindbergAutocompletes, hasItem(new Location(LocationType.STATION, "63208877")));
 
 		final List<Location> mariborAutocompletes = provider.autocompleteStations("Maribor Dravograjska Sokolska");
 		print(mariborAutocompletes);
-		assertThat(mariborAutocompletes, hasItem(new Location(LocationType.STATION, 63300136)));
+		assertThat(mariborAutocompletes, hasItem(new Location(LocationType.STATION, "63300136")));
 	}
 
 	@Test
 	public void shortTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 63203040, null, "Graz Hauptbahnhof"), null, new Location(
-				LocationType.STATION, 63203149, null, "Graz Babenbergerstraße"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "63203040", null, "Graz Hauptbahnhof"), null, new Location(
+				LocationType.STATION, "63203149", null, "Graz Babenbergerstraße"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);

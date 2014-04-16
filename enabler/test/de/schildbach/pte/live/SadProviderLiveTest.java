@@ -82,8 +82,8 @@ public class SadProviderLiveTest extends AbstractProviderLiveTest {
 
 	@Test
 	public void tripWithFootway() throws Exception {
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 0, null, "Bozen Bhf."), null,
-				new Location(LocationType.STATION, 0, null, "Bundschen"), dateTimeFormat.parse("2012-04-01 12:30:00"), true, null, null,
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, null, null, "Bozen Bhf."), null,
+				new Location(LocationType.STATION, null, null, "Bundschen"), dateTimeFormat.parse("2012-04-01 12:30:00"), true, null, null,
 				null);
 
 		System.out.println(result);
@@ -97,8 +97,8 @@ public class SadProviderLiveTest extends AbstractProviderLiveTest {
 
 	@Test
 	public void noTrips() throws Exception {
-		QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 0, null, "Bozen Bhf."), null,
-				new Location(LocationType.STATION, 0, null, "Welschnofen"), dateTimeFormat.parse("2012-04-01 22:30:00"), true, null, null,
+		QueryTripsResult result = queryTrips(new Location(LocationType.STATION, null, null, "Bozen Bhf."), null,
+				new Location(LocationType.STATION, null, null, "Welschnofen"), dateTimeFormat.parse("2012-04-01 22:30:00"), true, null, null,
 				null);
 
 		System.out.println(result);
@@ -112,8 +112,8 @@ public class SadProviderLiveTest extends AbstractProviderLiveTest {
 	@Test
 	public void queryMoreTrips() throws Exception {
 		// Trips between 05:30 and 10:30
-		QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 0, null, "Bozen Bhf."), null,
-				new Location(LocationType.STATION, 0, null, "Welschnofen"), dateTimeFormat.parse("2012-04-01 05:30:00"), true, null, null,
+		QueryTripsResult result = queryTrips(new Location(LocationType.STATION, null, null, "Bozen Bhf."), null,
+				new Location(LocationType.STATION, null, null, "Welschnofen"), dateTimeFormat.parse("2012-04-01 05:30:00"), true, null, null,
 				null);
 
 		System.out.println(result);
@@ -146,8 +146,8 @@ public class SadProviderLiveTest extends AbstractProviderLiveTest {
 	@Test
 	public void queryAmbiguous() throws Exception {
 		// No ambiguities
-		QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 0, null, "Welschn"), null,
-				new Location(LocationType.STATION, 0, null, "ozen Bh"), dateTimeFormat.parse("2012-04-01 12:30:00"), false, null, null,
+		QueryTripsResult result = queryTrips(new Location(LocationType.STATION, null, null, "Welschn"), null,
+				new Location(LocationType.STATION, null, null, "ozen Bh"), dateTimeFormat.parse("2012-04-01 12:30:00"), false, null, null,
 				null);
 
 		System.out.println(result);
@@ -157,8 +157,8 @@ public class SadProviderLiveTest extends AbstractProviderLiveTest {
 		assertFalse(result.trips.isEmpty());
 
 		// Ambiguous departure
-		result = queryTrips(new Location(LocationType.STATION, 0, null, "Welsch"), null, new Location(LocationType.STATION,
-				0, null, "ozen Bh"), dateTimeFormat.parse("2012-04-01 12:30:00"), false, null, null, null);
+		result = queryTrips(new Location(LocationType.STATION, null, null, "Welsch"), null, new Location(LocationType.STATION,
+				null, null, "ozen Bh"), dateTimeFormat.parse("2012-04-01 12:30:00"), false, null, null, null);
 
 		System.out.println(result);
 
@@ -173,8 +173,8 @@ public class SadProviderLiveTest extends AbstractProviderLiveTest {
 		assertFalse(result.ambiguousTo.size() > 1);
 
 		// Ambiguous arrival
-		result = queryTrips(new Location(LocationType.STATION, 0, null, "Welschn"), null, new Location(LocationType.STATION,
-				0, null, "oze"), dateTimeFormat.parse("2012-04-01 12:30:00"), false, null, null, null);
+		result = queryTrips(new Location(LocationType.STATION, null, null, "Welschn"), null, new Location(LocationType.STATION,
+				null, null, "oze"), dateTimeFormat.parse("2012-04-01 12:30:00"), false, null, null, null);
 
 		System.out.println(result);
 
@@ -189,8 +189,8 @@ public class SadProviderLiveTest extends AbstractProviderLiveTest {
 		assertTrue(result.ambiguousTo.size() > 1);
 
 		// Ambiguous departure and arrival
-		result = queryTrips(new Location(LocationType.STATION, 0, null, "Welsch"), null, new Location(LocationType.STATION,
-				0, null, "oze"), dateTimeFormat.parse("2012-04-01 12:30:00"), false, null, null, null);
+		result = queryTrips(new Location(LocationType.STATION, null, null, "Welsch"), null, new Location(LocationType.STATION,
+				null, null, "oze"), dateTimeFormat.parse("2012-04-01 12:30:00"), false, null, null, null);
 
 		System.out.println(result);
 
@@ -208,8 +208,8 @@ public class SadProviderLiveTest extends AbstractProviderLiveTest {
 	@Test
 	public void queryUnkown() throws Exception {
 		// Unknown from
-		QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 0, null, "Welschnoffen"), null,
-				new Location(LocationType.STATION, 0, null, "ozen Bh"), dateTimeFormat.parse("2012-04-01 12:30:00"), false, null, null,
+		QueryTripsResult result = queryTrips(new Location(LocationType.STATION, null, null, "Welschnoffen"), null,
+				new Location(LocationType.STATION, null, null, "ozen Bh"), dateTimeFormat.parse("2012-04-01 12:30:00"), false, null, null,
 				null);
 
 		System.out.println(result);
@@ -219,8 +219,8 @@ public class SadProviderLiveTest extends AbstractProviderLiveTest {
 		assertNull(result.trips);
 
 		// Unknown to
-		result = queryTrips(new Location(LocationType.STATION, 0, null, "Welsch"), null, new Location(LocationType.STATION,
-				0, null, "ozenn Bh"), dateTimeFormat.parse("2012-04-01 12:30:00"), false, null, null, null);
+		result = queryTrips(new Location(LocationType.STATION, null, null, "Welsch"), null, new Location(LocationType.STATION,
+				null, null, "ozenn Bh"), dateTimeFormat.parse("2012-04-01 12:30:00"), false, null, null, null);
 
 		System.out.println(result);
 
@@ -229,8 +229,8 @@ public class SadProviderLiveTest extends AbstractProviderLiveTest {
 		assertNull(result.trips);
 
 		// Unknown from and to
-		result = queryTrips(new Location(LocationType.STATION, 0, null, "Welschnoffen"), null, new Location(
-				LocationType.STATION, 0, null, "ozenn Bh"), dateTimeFormat.parse("2012-04-01 12:30:00"), false, null, null, null);
+		result = queryTrips(new Location(LocationType.STATION, null, null, "Welschnoffen"), null, new Location(
+				LocationType.STATION, null, null, "ozenn Bh"), dateTimeFormat.parse("2012-04-01 12:30:00"), false, null, null, null);
 
 		System.out.println(result);
 

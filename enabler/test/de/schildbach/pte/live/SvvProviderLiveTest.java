@@ -50,7 +50,7 @@ public class SvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 60650002), 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "60650002"), 0, 0);
 
 		print(result);
 	}
@@ -66,7 +66,7 @@ public class SvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(60650002, 0, false);
+		final QueryDeparturesResult result = provider.queryDepartures("60650002", 0, false);
 
 		print(result);
 	}
@@ -84,27 +84,27 @@ public class SvvProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final List<Location> salzburgAutocompletes = provider.autocompleteStations("Salzburg Süd");
 		print(salzburgAutocompletes);
-		assertThat(salzburgAutocompletes, hasItem(new Location(LocationType.STATION, 60650458)));
+		assertThat(salzburgAutocompletes, hasItem(new Location(LocationType.STATION, "60650458")));
 
 		final List<Location> strasswalchenAutocompletes = provider.autocompleteStations("Straßwalchen West");
 		print(strasswalchenAutocompletes);
-		assertThat(strasswalchenAutocompletes, hasItem(new Location(LocationType.STATION, 60656483)));
+		assertThat(strasswalchenAutocompletes, hasItem(new Location(LocationType.STATION, "60656483")));
 
 		final List<Location> schwarzachAutocompletes = provider.autocompleteStations("Schwarzach Abtsdorf");
 		print(schwarzachAutocompletes);
-		assertThat(schwarzachAutocompletes, hasItem(new Location(LocationType.STATION, 60656614)));
+		assertThat(schwarzachAutocompletes, hasItem(new Location(LocationType.STATION, "60656614")));
 
 		final List<Location> trimmelkamAutocompletes = provider.autocompleteStations("Trimmelkam");
 		print(trimmelkamAutocompletes);
-		assertThat(trimmelkamAutocompletes, hasItem(new Location(LocationType.STATION, 60640776)));
+		assertThat(trimmelkamAutocompletes, hasItem(new Location(LocationType.STATION, "60640776")));
 	}
 
 	@Test
 	public void shortTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 60650021, 47797036, 13053608, "Salzburg", "Justizgebäude"),
-				null, new Location(LocationType.STATION, 60650022, 47793760, 13059338, "Salzburg", "Akademiestraße"), new Date(), true, Product.ALL,
-				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "60650021", 47797036, 13053608, "Salzburg", "Justizgebäude"),
+				null, new Location(LocationType.STATION, "60650022", 47793760, 13059338, "Salzburg", "Akademiestraße"), new Date(), true,
+				Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);

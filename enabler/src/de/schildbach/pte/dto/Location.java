@@ -25,15 +25,13 @@ import java.util.Arrays;
  */
 public final class Location implements Serializable
 {
-	private static final long serialVersionUID = 2168486169241327168L;
-
 	public final LocationType type;
-	public final int id;
+	public final String id;
 	public final int lat, lon;
 	public final String place;
 	public final String name;
 
-	public Location(final LocationType type, final int id, final int lat, final int lon, final String place, final String name)
+	public Location(final LocationType type, final String id, final int lat, final int lon, final String place, final String name)
 	{
 		assertId(id);
 
@@ -45,7 +43,7 @@ public final class Location implements Serializable
 		this.name = name;
 	}
 
-	public Location(final LocationType type, final int id, final String place, final String name)
+	public Location(final LocationType type, final String id, final String place, final String name)
 	{
 		assertId(id);
 
@@ -57,7 +55,7 @@ public final class Location implements Serializable
 		this.name = name;
 	}
 
-	public Location(final LocationType type, final int id, final int lat, final int lon)
+	public Location(final LocationType type, final String id, final int lat, final int lon)
 	{
 		assertId(id);
 
@@ -69,7 +67,7 @@ public final class Location implements Serializable
 		this.name = null;
 	}
 
-	public Location(final LocationType type, final int id)
+	public Location(final LocationType type, final String id)
 	{
 		assertId(id);
 
@@ -84,7 +82,7 @@ public final class Location implements Serializable
 	public Location(final LocationType type, final int lat, final int lon)
 	{
 		this.type = type;
-		this.id = 0;
+		this.id = null;
 		this.lat = lat;
 		this.lon = lon;
 		this.place = null;
@@ -93,7 +91,7 @@ public final class Location implements Serializable
 
 	public final boolean hasId()
 	{
-		return id != 0;
+		return id != null;
 	}
 
 	public final boolean hasLocation()
@@ -128,7 +126,7 @@ public final class Location implements Serializable
 		else if (name != null)
 			return name;
 		else if (hasId())
-			return Integer.toString(id);
+			return id;
 		else
 			return null;
 	}
@@ -154,8 +152,8 @@ public final class Location implements Serializable
 		final Location other = (Location) o;
 		if (this.type != other.type)
 			return false;
-		if (this.id != 0)
-			return this.id == other.id;
+		if (this.id != null)
+			return this.id.equals(other.id);
 		if (this.lat != 0 && this.lon != 0)
 			return this.lat == other.lat && this.lon == other.lon;
 		if (!nullSafeEquals(this.name, other.name)) // only discriminate by name if no ids are given
@@ -169,9 +167,9 @@ public final class Location implements Serializable
 		int hashCode = 0;
 		hashCode += type.hashCode();
 		hashCode *= 29;
-		if (id != 0)
+		if (id != null)
 		{
-			hashCode += id;
+			hashCode += id.hashCode();
 		}
 		else if (lat != 0 || lon != 0)
 		{
@@ -198,9 +196,9 @@ public final class Location implements Serializable
 		return o.hashCode();
 	}
 
-	private static void assertId(final int id)
+	private static void assertId(final String id)
 	{
-		if (id < 0)
+		if (id != null && Integer.parseInt(id) <= 0)
 			throw new IllegalStateException("assert failed: id=" + id);
 	}
 }

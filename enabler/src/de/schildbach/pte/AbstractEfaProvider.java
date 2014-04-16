@@ -328,13 +328,13 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 
 		if ("stop".equals(type))
-			return new Location(LocationType.STATION, stop.getInt("stateless"), lat, lon, place, name);
+			return new Location(LocationType.STATION, stop.getString("stateless"), lat, lon, place, name);
 		else if ("poi".equals(type))
-			return new Location(LocationType.POI, 0, lat, lon, place, name);
+			return new Location(LocationType.POI, null, lat, lon, place, name);
 		else if ("crossing".equals(type))
-			return new Location(LocationType.ADDRESS, 0, lat, lon, place, name);
+			return new Location(LocationType.ADDRESS, null, lat, lon, place, name);
 		else if ("street".equals(type) || "address".equals(type) || "singlehouse".equals(type) || "buildingname".equals(type))
-			return new Location(LocationType.ADDRESS, 0, lat, lon, place, normalizeLocationName(stop.getString("name")));
+			return new Location(LocationType.ADDRESS, null, lat, lon, place, normalizeLocationName(stop.getString("name")));
 		else
 			throw new JSONException("unknown type: " + type);
 	}
@@ -536,7 +536,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 					XmlPullUtil.enter(pp, "r");
 
-					final int id = Integer.parseInt(requireValueTag(pp, "id"));
+					final String id = requireValueTag(pp, "id");
 					requireValueTag(pp, "stateless");
 					requireValueTag(pp, "omc");
 					final String place = normalizeLocationName(optValueTag(pp, "pc"));
@@ -550,7 +550,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 					XmlPullUtil.exit(pp, "p");
 
-					final Location location = new Location(type, type == LocationType.STATION ? id : 0, coord != null ? coord.lat : 0,
+					final Location location = new Location(type, type == LocationType.STATION ? id : null, coord != null ? coord.lat : 0,
 							coord != null ? coord.lon : 0, place, name);
 					final LocationAndQuality locationAndQuality = new LocationAndQuality(location, quality);
 					locations.add(locationAndQuality);
@@ -634,7 +634,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					if (!"STOP".equals(pp.getAttributeValue(null, "type")))
 						throw new RuntimeException("unknown type");
 
-					final int id = XmlPullUtil.intAttr(pp, "id");
+					final String id = XmlPullUtil.attr(pp, "id");
 					final String name = normalizeLocationName(XmlPullUtil.optAttr(pp, "name", null));
 					final String place = normalizeLocationName(XmlPullUtil.attr(pp, "locality"));
 
@@ -704,7 +704,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					if (!"STOP".equals(type))
 						throw new RuntimeException("unknown type");
 
-					final int id = Integer.parseInt(requireValueTag(pp, "id"));
+					final String id = requireValueTag(pp, "id");
 					requireValueTag(pp, "omc");
 					requireValueTag(pp, "pid");
 					final String place = normalizeLocationName(requireValueTag(pp, "locality"));
@@ -738,7 +738,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
-		return jsonStopfinderRequest(new Location(LocationType.ANY, 0, null, constraint.toString()));
+		return jsonStopfinderRequest(new Location(LocationType.ANY, null, null, constraint.toString()));
 	}
 
 	private String processItdOdvPlace(final XmlPullParser pp) throws XmlPullParserException, IOException
@@ -804,35 +804,35 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 
 		final LocationType type;
-		final int id;
+		final String id;
 		final String place;
 		final String name;
 
 		if ("stop".equals(anyType))
 		{
 			type = LocationType.STATION;
-			id = Integer.parseInt(idStr);
+			id = idStr;
 			place = locality;
 			name = objectName;
 		}
 		else if ("poi".equals(anyType) || "poiHierarchy".equals(anyType))
 		{
 			type = LocationType.POI;
-			id = Integer.parseInt(idStr);
+			id = idStr;
 			place = locality;
 			name = objectName;
 		}
 		else if ("loc".equals(anyType))
 		{
 			type = LocationType.ANY;
-			id = 0;
+			id = null;
 			place = locality;
 			name = locality;
 		}
 		else if ("address".equals(anyType))
 		{
 			type = LocationType.ADDRESS;
-			id = 0;
+			id = null;
 			place = locality;
 			name = objectName;
 		}
@@ -840,7 +840,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				|| "buildingname".equals(anyType))
 		{
 			type = LocationType.ADDRESS;
-			id = 0;
+			id = null;
 			place = locality;
 			name = objectName;
 		}
@@ -849,22 +849,22 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			if (stopIdStr != null)
 			{
 				type = LocationType.STATION;
-				id = Integer.parseInt(stopIdStr);
+				id = stopIdStr;
 			}
 			else if (poiIdStr != null)
 			{
 				type = LocationType.POI;
-				id = Integer.parseInt(poiIdStr);
+				id = poiIdStr;
 			}
 			else if (streetIdStr != null)
 			{
 				type = LocationType.ADDRESS;
-				id = Integer.parseInt(streetIdStr);
+				id = streetIdStr;
 			}
 			else if (lat != 0 || lon != 0)
 			{
 				type = LocationType.ADDRESS;
-				id = 0;
+				id = null;
 			}
 			else
 			{
@@ -884,7 +884,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	private Location processItdOdvAssignedStop(final XmlPullParser pp) throws XmlPullParserException, IOException
 	{
-		final int id = Integer.parseInt(pp.getAttributeValue(null, "stopID"));
+		final String id = pp.getAttributeValue(null, "stopID");
 
 		final String mapName = XmlPullUtil.optAttr(pp, "mapName", null);
 		final float x = XmlPullUtil.optFloatAttr(pp, "x", 0);
@@ -930,7 +930,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		return nearbyStationsRequest(location.id, maxStations);
 	}
 
-	private NearbyStationsResult nearbyStationsRequest(final int stationId, final int maxStations) throws IOException
+	private NearbyStationsResult nearbyStationsRequest(final String stationId, final int maxStations) throws IOException
 	{
 		final StringBuilder parameters = new StringBuilder();
 		appendCommonRequestParams(parameters, "XML");
@@ -1442,7 +1442,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				+ "' trainType='" + trainType + "' trainNum='" + trainNum + "' trainName='" + trainName + "'");
 	}
 
-	protected StringBuilder queryDeparturesParameters(final int stationId, final int maxDepartures, final boolean equivs)
+	protected StringBuilder queryDeparturesParameters(final String stationId, final int maxDepartures, final boolean equivs)
 	{
 		final StringBuilder parameters = new StringBuilder();
 		appendCommonRequestParams(parameters, "XML");
@@ -1460,7 +1460,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		return parameters;
 	}
 
-	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
+	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
 		final StringBuilder parameters = queryDeparturesParameters(stationId, maxDepartures, equivs);
 
@@ -1539,18 +1539,15 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					XmlPullUtil.enter(pp, "itdServingLines");
 					while (XmlPullUtil.test(pp, "itdServingLine"))
 					{
-						final String assignedStopIdStr = pp.getAttributeValue(null, "assignedStopID");
-						final int assignedStopId = assignedStopIdStr != null ? Integer.parseInt(assignedStopIdStr) : 0;
+						final String assignedStopId = pp.getAttributeValue(null, "assignedStopID");
 						final String destinationName = normalizeLocationName(pp.getAttributeValue(null, "direction"));
-						final String destinationIdStr = pp.getAttributeValue(null, "destID");
-						final int destinationId = (destinationIdStr != null && destinationIdStr.length() > 0) ? Integer.parseInt(destinationIdStr)
-								: 0;
-						final Location destination = new Location(destinationId > 0 ? LocationType.STATION : LocationType.ANY,
-								destinationId > 0 ? destinationId : 0, null, destinationName);
+						final String destinationId = XmlPullUtil.optAttr(pp, "destID", null);
+						final Location destination = new Location(destinationId != null ? LocationType.STATION : LocationType.ANY, destinationId,
+								null, destinationName);
 						final LineDestination line = new LineDestination(processItdServingLine(pp), destination);
 
 						StationDepartures assignedStationDepartures;
-						if (assignedStopId == 0)
+						if (assignedStopId == null)
 							assignedStationDepartures = result.stationDepartures.get(0);
 						else
 							assignedStationDepartures = findStationDepartures(result.stationDepartures, assignedStopId);
@@ -1575,7 +1572,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					XmlPullUtil.enter(pp, "itdDepartureList");
 					while (XmlPullUtil.test(pp, "itdDeparture"))
 					{
-						final int assignedStopId = XmlPullUtil.intAttr(pp, "stopID");
+						final String assignedStopId = XmlPullUtil.attr(pp, "stopID");
 
 						StationDepartures assignedStationDepartures = findStationDepartures(result.stationDepartures, assignedStopId);
 						if (assignedStationDepartures == null)
@@ -1625,10 +1622,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						XmlPullUtil.require(pp, "itdServingLine");
 						final boolean isRealtime = pp.getAttributeValue(null, "realtime").equals("1");
 						final String destinationName = normalizeLocationName(pp.getAttributeValue(null, "direction"));
-						final String destinationIdStr = pp.getAttributeValue(null, "destID");
-						final int destinationId = destinationIdStr != null ? Integer.parseInt(destinationIdStr) : 0;
-						final Location destination = new Location(destinationId > 0 ? LocationType.STATION : LocationType.ANY,
-								destinationId > 0 ? destinationId : 0, null, destinationName);
+						final String destinationIdStr = XmlPullUtil.optAttr(pp, "destID", null);
+						final String destinationId = !"-1".equals(destinationIdStr) ? destinationIdStr : null;
+						final Location destination = new Location(destinationId != null ? LocationType.STATION : LocationType.ANY, destinationId,
+								null, destinationName);
 						final Line line = processItdServingLine(pp);
 
 						if (isRealtime && !predictedDepartureTime.isSet(Calendar.HOUR_OF_DAY))
@@ -1671,7 +1668,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 	}
 
-	protected QueryDeparturesResult queryDeparturesMobile(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
+	protected QueryDeparturesResult queryDeparturesMobile(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
 		final StringBuilder parameters = queryDeparturesParameters(stationId, maxDepartures, equivs);
 
@@ -1716,7 +1713,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					final LineDestination lineDestination = parseMobileM(pp, true);
 
 					XmlPullUtil.enter(pp, "r");
-					final int assignedId = Integer.parseInt(requireValueTag(pp, "id"));
+					final String assignedId = requireValueTag(pp, "id");
 					requireValueTag(pp, "a");
 					final Position position = new Position(optValueTag(pp, "pl"));
 					XmlPullUtil.exit(pp, "r");
@@ -1792,7 +1789,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			final String co = requireValueTag(pp, "co");
 			final String productType = tyOrCo ? ty : co;
 			final String destinationName = normalizeLocationName(requireValueTag(pp, "des"));
-			destination = new Location(LocationType.ANY, 0, null, destinationName);
+			destination = new Location(LocationType.ANY, null, null, destinationName);
 			optValueTag(pp, "dy");
 			final String de = optValueTag(pp, "de");
 			final String productName = n != null ? n : de;
@@ -1857,10 +1854,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		XmlPullUtil.exit(pp, "st");
 	}
 
-	private StationDepartures findStationDepartures(final List<StationDepartures> stationDepartures, final int id)
+	private StationDepartures findStationDepartures(final List<StationDepartures> stationDepartures, final String id)
 	{
 		for (final StationDepartures stationDeparture : stationDepartures)
-			if (stationDeparture.location.id == id)
+			if (stationDeparture.location.id.equals(id))
 				return stationDeparture;
 
 		return null;
@@ -1868,7 +1865,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	private Location processItdPointAttributes(final XmlPullParser pp)
 	{
-		final int id = Integer.parseInt(pp.getAttributeValue(null, "stopID"));
+		final String id = pp.getAttributeValue(null, "stopID");
 
 		String place = normalizeLocationName(pp.getAttributeValue(null, "locality"));
 		if (place == null)
@@ -2550,11 +2547,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					else if ("PT".equals(partialRouteType))
 					{
 						final String destinationName = normalizeLocationName(pp.getAttributeValue(null, "destination"));
-						final String destinationIdStr = pp.getAttributeValue(null, "destID");
-						final int destinationId = (destinationIdStr != null && destinationIdStr.length() > 0) ? Integer.parseInt(destinationIdStr)
-								: 0;
-						final Location destination = new Location(destinationId > 0 ? LocationType.STATION : LocationType.ANY,
-								destinationId > 0 ? destinationId : 0, null, destinationName);
+						final String destinationId = XmlPullUtil.optAttr(pp, "destID", null);
+						final Location destination = new Location(destinationId != null ? LocationType.STATION : LocationType.ANY, destinationId,
+								null, destinationName);
 						final String lineLabel;
 						final String motSymbol = pp.getAttributeValue(null, "symbol");
 						if ("AST".equals(motSymbol))
@@ -2696,11 +2691,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							final int size = intermediateStops.size();
 							if (size >= 2)
 							{
-								if (intermediateStops.get(size - 1).location.id != arrivalLocation.id)
+								if (!intermediateStops.get(size - 1).location.id.equals(arrivalLocation.id))
 									throw new IllegalStateException();
 								intermediateStops.remove(size - 1);
 
-								if (intermediateStops.get(0).location.id != departureLocation.id)
+								if (!intermediateStops.get(0).location.id.equals(departureLocation.id))
 									throw new IllegalStateException();
 								intermediateStops.remove(0);
 							}
@@ -2898,7 +2893,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							XmlPullUtil.requireSkip(pp, "lis");
 
 							XmlPullUtil.enter(pp, "r");
-							final int id = Integer.parseInt(requireValueTag(pp, "id"));
+							final String id = requireValueTag(pp, "id");
 							optValueTag(pp, "a");
 							final Position position = new Position(optValueTag(pp, "pl"));
 							final String place = normalizeLocationName(optValueTag(pp, "pc"));
@@ -2906,8 +2901,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							XmlPullUtil.exit(pp, "r");
 
 							final Location location;
-							if (id == 99999997 || id == 99999998)
-								location = new Location(LocationType.ADDRESS, 0, coord.lat, coord.lon, place, name);
+							if (id.equals("99999997") || id.equals("99999998"))
+								location = new Location(LocationType.ADDRESS, null, coord.lat, coord.lon, place, name);
 							else
 								location = new Location(LocationType.STATION, id, coord.lat, coord.lon, place, name);
 
@@ -2963,8 +2958,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 								final String s = requireValueTag(pp, "s");
 								final String[] intermediateParts = s.split(";");
-								final int id = Integer.parseInt(intermediateParts[0]);
-								if (id != departure.location.id && id != arrival.location.id)
+								final String id = intermediateParts[0];
+								if (!id.equals(departure.location.id) && !id.equals(arrival.location.id))
 								{
 									final String name = normalizeLocationName(intermediateParts[1]);
 
@@ -3303,7 +3298,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	protected static final String locationValue(final Location location)
 	{
 		if ((location.type == LocationType.STATION || location.type == LocationType.POI) && location.hasId())
-			return Integer.toString(location.id);
+			return location.id;
 		else
 			return location.name;
 	}

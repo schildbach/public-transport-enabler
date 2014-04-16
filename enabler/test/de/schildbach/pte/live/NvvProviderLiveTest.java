@@ -49,7 +49,7 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 3000001), 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "3000001"), 0, 0);
 
 		print(result);
 	}
@@ -73,16 +73,16 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(3000408, 0, false);
+		final QueryDeparturesResult result = provider.queryDepartures("3000408", 0, false);
 		print(result);
 
-		final QueryDeparturesResult result2 = provider.queryDepartures(3000010, 0, false);
+		final QueryDeparturesResult result2 = provider.queryDepartures("3000010", 0, false);
 		print(result2);
 
-		final QueryDeparturesResult result3 = provider.queryDepartures(3015989, 0, false);
+		final QueryDeparturesResult result3 = provider.queryDepartures("3015989", 0, false);
 		print(result3);
 
-		final QueryDeparturesResult result4 = provider.queryDepartures(3000139, 0, false);
+		final QueryDeparturesResult result4 = provider.queryDepartures("3000139", 0, false);
 		print(result4);
 	}
 
@@ -113,8 +113,8 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 3000001, null, "Hauptwache"), null, new Location(
-				LocationType.STATION, 3000912, null, "Südbahnhof"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "3000001", null, "Hauptwache"), null, new Location(
+				LocationType.STATION, "3000912", null, "Südbahnhof"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);
@@ -183,8 +183,8 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortTripKassel() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 2200007, null, "Kassel Wilhelmshöhe"), null, new Location(
-				LocationType.STATION, 2200278, null, "Kassel Wilhelmshöher Weg"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "2200007", null, "Kassel Wilhelmshöhe"), null, new Location(
+				LocationType.STATION, "2200278", null, "Kassel Wilhelmshöher Weg"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
@@ -194,8 +194,8 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void slowTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 3029079, 50017679, 8229480, "Mainz", "An den Dünen"), null,
-				new Location(LocationType.STATION, 3013508, 50142890, 8895203, "Hanau", "Beethovenplatz"), new Date(), true, Product.ALL,
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "3029079", 50017679, 8229480, "Mainz", "An den Dünen"), null,
+				new Location(LocationType.STATION, "3013508", 50142890, 8895203, "Hanau", "Beethovenplatz"), new Date(), true, Product.ALL,
 				WalkSpeed.NORMAL, Accessibility.BARRIER_FREE);
 		System.out.println(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
@@ -211,16 +211,16 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortTripByName() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, 0, null, "Frankfurt Bockenheimer Warte!"), null, new Location(
-				LocationType.ANY, 0, null, "Frankfurt Hauptbahnhof!"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "Frankfurt Bockenheimer Warte!"), null, new Location(
+				LocationType.ANY, null, null, "Frankfurt Hauptbahnhof!"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 	}
 
 	@Test
 	public void tripUsingMuchBuffer() throws IOException
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 0, 50119563, 8697044, null,
-				"Hegelstrasse, 60316 Frankfurt am Main"), null, new Location(LocationType.ADDRESS, 0, 50100364, 8615193, null,
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 50119563, 8697044, null,
+				"Hegelstrasse, 60316 Frankfurt am Main"), null, new Location(LocationType.ADDRESS, null, 50100364, 8615193, null,
 				"Mainzer Landstrasse, Frankfurt"), new Date(1378368840000l), true, Product.ALL, null, null);
 		System.out.println(result);
 
@@ -234,8 +234,8 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void tripUsingEvenMoreBuffer() throws IOException
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 3000909, 50094052, 8690923, null, "F Brauerei"), null,
-				new Location(LocationType.STATION, 3001201, 50119950, 8653924, null, "F Bockenheimer Warte"), new Date(1378368840000l), true,
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "3000909", 50094052, 8690923, null, "F Brauerei"), null,
+				new Location(LocationType.STATION, "3001201", 50119950, 8653924, null, "F Bockenheimer Warte"), new Date(1378368840000l), true,
 				Product.ALL, null, null);
 		System.out.println(result);
 

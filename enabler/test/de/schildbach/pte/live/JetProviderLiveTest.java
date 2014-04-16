@@ -45,7 +45,7 @@ public class JetProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 1055), 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "1055"), 0, 0);
 
 		System.out.println(result.status + "  " + result.stations.size() + "  " + result.stations);
 	}
@@ -61,13 +61,13 @@ public class JetProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result1 = provider.queryDepartures(568, 0, false);
+		final QueryDeparturesResult result1 = provider.queryDepartures("568", 0, false);
 		print(result1);
 
-		final QueryDeparturesResult result2 = provider.queryDepartures(1055, 0, false);
+		final QueryDeparturesResult result2 = provider.queryDepartures("1055", 0, false);
 		print(result2);
 
-		final QueryDeparturesResult result3 = provider.queryDepartures(90010, 0, false);
+		final QueryDeparturesResult result3 = provider.queryDepartures("90010", 0, false);
 		print(result3);
 	}
 
@@ -82,8 +82,8 @@ public class JetProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortConnection() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 1055, null, null), null, new Location(
-				LocationType.STATION, 90010, null, null), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "1055", null, null), null, new Location(LocationType.STATION,
+				"90010", null, null), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);

@@ -47,7 +47,7 @@ public class VbnProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 8000110), 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "8000110"), 0, 0);
 
 		print(result);
 	}
@@ -63,7 +63,7 @@ public class VbnProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(8000110, 0, false);
+		final QueryDeparturesResult result = provider.queryDepartures("8000110", 0, false);
 
 		print(result);
 	}
@@ -89,8 +89,8 @@ public class VbnProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 8096109, null, "Oldenburg"), null, new Location(
-				LocationType.STATION, 625398, null, "Bremerhaven"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8096109", null, "Oldenburg"), null, new Location(
+				LocationType.STATION, "625398", null, "Bremerhaven"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		System.out.println(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
@@ -100,8 +100,8 @@ public class VbnProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void tripDateOutsideTimetablePeriod() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 8096109, null, "Oldenburg"), null, new Location(
-				LocationType.STATION, 625398, null, "Bremerhaven"), new Date(1155822689759l), true, Product.ALL, WalkSpeed.NORMAL,
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8096109", null, "Oldenburg"), null, new Location(
+				LocationType.STATION, "625398", null, "Bremerhaven"), new Date(1155822689759l), true, Product.ALL, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		assertEquals(QueryTripsResult.Status.INVALID_DATE, result.status);
 	}

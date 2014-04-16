@@ -46,10 +46,10 @@ public class TripController
 	@ResponseBody
 	public QueryTripsResult trip(@RequestParam(value = "fromType", required = false, defaultValue = "ANY") final LocationType fromType,
 			@RequestParam(value = "from", required = false) final String from,
-			@RequestParam(value = "fromId", required = false, defaultValue = "0") final int fromId,
+			@RequestParam(value = "fromId", required = false) final String fromId,
 			@RequestParam(value = "toType", required = false, defaultValue = "ANY") final LocationType toType,
 			@RequestParam(value = "to", required = false) final String to,
-			@RequestParam(value = "toId", required = false, defaultValue = "0") final int toId) throws IOException
+			@RequestParam(value = "toId", required = false) final String toId) throws IOException
 	{
 		final Location fromLocation = new Location(fromType, fromId, null, from);
 		final Location toLocation = new Location(toType, toId, null, to);

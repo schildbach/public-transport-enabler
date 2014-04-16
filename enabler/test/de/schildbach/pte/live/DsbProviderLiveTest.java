@@ -45,7 +45,7 @@ public class DsbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 8600858), 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "8600858"), 0, 0);
 
 		print(result);
 	}
@@ -61,7 +61,7 @@ public class DsbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(8600858, 0, false);
+		final QueryDeparturesResult result = provider.queryDepartures("8600858", 0, false);
 
 		print(result);
 	}
@@ -77,8 +77,8 @@ public class DsbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 900000011, null, "Copenhagen Airport"), null, new Location(
-				LocationType.STATION, 551922500, null, "Billund Airport"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "900000011", null, "Copenhagen Airport"), null, new Location(
+				LocationType.STATION, "551922500", null, "Billund Airport"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);

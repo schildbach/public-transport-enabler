@@ -48,7 +48,7 @@ public class VvtProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 60101187), 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "60101187"), 0, 0);
 
 		print(result);
 	}
@@ -64,7 +64,7 @@ public class VvtProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(60101187, 0, false);
+		final QueryDeparturesResult result = provider.queryDepartures("60101187", 0, false);
 
 		print(result);
 	}
@@ -88,8 +88,8 @@ public class VvtProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 60161512, 47268336, 11355532, "Innsbruck", "Allerheiligen"),
-				null, new Location(LocationType.STATION, 60161510, 47267272, 11350938, "Innsbruck", "Tschiggfreystraße"), new Date(), true,
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "60161512", 47268336, 11355532, "Innsbruck", "Allerheiligen"),
+				null, new Location(LocationType.STATION, "60161510", 47267272, 11350938, "Innsbruck", "Tschiggfreystraße"), new Date(), true,
 				Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);

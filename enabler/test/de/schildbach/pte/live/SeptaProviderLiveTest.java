@@ -45,7 +45,7 @@ public class SeptaProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 2090227), 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "2090227"), 0, 0);
 
 		print(result);
 	}
@@ -61,7 +61,7 @@ public class SeptaProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(2090227, 0, false);
+		final QueryDeparturesResult result = provider.queryDepartures("2090227", 0, false);
 
 		print(result);
 	}
@@ -77,8 +77,8 @@ public class SeptaProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 1021532, null, "30th St Station"), null, new Location(
-				LocationType.STATION, 1001392, null, "15th St Station"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "1021532", null, "30th St Station"), null, new Location(
+				LocationType.STATION, "1001392", null, "15th St Station"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
@@ -87,9 +87,9 @@ public class SeptaProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void addressTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 0, 40015670, -75209400, "Philadelphia 19127", "3601 Main St"),
-				null, new Location(LocationType.STATION, 2090227, null, "Main Street"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-				Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(
+				new Location(LocationType.ADDRESS, null, 40015670, -75209400, "Philadelphia 19127", "3601 Main St"), null, new Location(
+						LocationType.STATION, "2090227", null, "Main Street"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);

@@ -48,7 +48,7 @@ public class MetProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 10001167), 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "10001167"), 0, 0);
 
 		print(result);
 	}
@@ -64,7 +64,7 @@ public class MetProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(10001167, 0, false);
+		final QueryDeparturesResult result = provider.queryDepartures("10001167", 0, false);
 
 		print(result);
 	}
@@ -80,8 +80,8 @@ public class MetProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 10002717, "Melbourne City", "6-Franklin St/Elizabeth St"),
-				null, new Location(LocationType.STATION, 10002722, "Melbourne City", "1-Flinders Street Railway Station/Elizabeth St"), new Date(),
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "10002717", "Melbourne City", "6-Franklin St/Elizabeth St"),
+				null, new Location(LocationType.STATION, "10002722", "Melbourne City", "1-Flinders Street Railway Station/Elizabeth St"), new Date(),
 				true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);

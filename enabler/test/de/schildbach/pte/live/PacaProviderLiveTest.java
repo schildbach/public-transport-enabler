@@ -70,8 +70,8 @@ public class PacaProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 61088, null, "Eganaude"), null, new Location(
-				LocationType.STATION, 58617, null, "Place de Gaulle"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "61088", null, "Eganaude"), null, new Location(
+				LocationType.STATION, "58617", null, "Place de Gaulle"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);
@@ -140,8 +140,8 @@ public class PacaProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void slowTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 68629, 43441167, 5223055, "MARSEILLE", "Aeroport Hall 3 4"),
-				null, new Location(LocationType.STATION, 61088, 43623140, 7057545, "BIOT", "Eganaude"), new Date(), true, Product.ALL,
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "68629", 43441167, 5223055, "MARSEILLE", "Aeroport Hall 3 4"),
+				null, new Location(LocationType.STATION, "61088", 43623140, 7057545, "BIOT", "Eganaude"), new Date(), true, Product.ALL,
 				WalkSpeed.NORMAL, Accessibility.BARRIER_FREE);
 		System.out.println(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
@@ -157,16 +157,16 @@ public class PacaProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortTripByName() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, 0, null, "Biot, Templiers!"), null, new Location(LocationType.ANY,
-				0, null, "Eganaude!"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "Biot, Templiers!"), null, new Location(
+				LocationType.ANY, null, null, "Eganaude!"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 	}
 
 	@Test
 	public void slowTripPoi() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.POI, 30455, 0, 0, "CANNES", "Cannes"), null, new Location(
-				LocationType.POI, 30514, 0, 0, "NICE", "Nice"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.POI, "30455", 0, 0, "CANNES", "Cannes"), null, new Location(
+				LocationType.POI, "30514", 0, 0, "NICE", "Nice"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);

@@ -48,7 +48,7 @@ public class TflProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 1000086), 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "1000086"), 0, 0);
 
 		print(result);
 	}
@@ -64,7 +64,7 @@ public class TflProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(1000086, 0, false);
+		final QueryDeparturesResult result = provider.queryDepartures("1000086", 0, false);
 
 		print(result);
 	}
@@ -80,8 +80,8 @@ public class TflProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 1008730, null, "King & Queen Wharf"), null, new Location(
-				LocationType.STATION, 1006433, null, "Edinburgh Court"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "1008730", null, "King & Queen Wharf"), null, new Location(
+				LocationType.STATION, "1006433", null, "Edinburgh Court"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);
@@ -108,8 +108,8 @@ public class TflProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void postcodeTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, 0, null, "sw19 8ta"), null, new Location(LocationType.STATION,
-				1016019, 51655903, -397249, null, "Watford (Herts), Watford Town Centre"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "sw19 8ta"), null, new Location(LocationType.STATION,
+				"1016019", 51655903, -397249, null, "Watford (Herts), Watford Town Centre"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
 	}
@@ -117,10 +117,9 @@ public class TflProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void tripItdMessageList() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(
-				new Location(LocationType.ADDRESS, 0, 51446072, -239417, "Wandsworth", "Timsbury Walk, Wandsworth"), null, new Location(
-						LocationType.STATION, 90046985, 53225140, -1472433, "Chesterfield (Derbys)",
-						"Walton (Chesterfield), Netherfield Road (on Somersall Lane)"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 51446072, -239417, "Wandsworth",
+				"Timsbury Walk, Wandsworth"), null, new Location(LocationType.STATION, "90046985", 53225140, -1472433, "Chesterfield (Derbys)",
+				"Walton (Chesterfield), Netherfield Road (on Somersall Lane)"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
 

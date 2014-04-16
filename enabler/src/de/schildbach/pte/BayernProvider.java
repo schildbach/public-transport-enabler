@@ -117,7 +117,7 @@ public class BayernProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
+	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
 		return queryDeparturesMobile(stationId, maxDepartures, equivs);
 	}
@@ -125,7 +125,7 @@ public class BayernProvider extends AbstractEfaProvider
 	@Override
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
-		return mobileStopfinderRequest(new Location(LocationType.ANY, 0, null, constraint.toString()));
+		return mobileStopfinderRequest(new Location(LocationType.ANY, null, null, constraint.toString()));
 	}
 
 	@Override

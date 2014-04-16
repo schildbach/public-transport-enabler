@@ -48,7 +48,7 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 9220302), 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "9220302"), 0, 0);
 		assertEquals(NearbyStationsResult.Status.OK, result.status);
 		print(result);
 	}
@@ -64,18 +64,18 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsInvalidStation() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 2449475), 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "2449475"), 0, 0);
 		assertEquals(NearbyStationsResult.Status.INVALID_STATION, result.status);
 	}
 
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult resultLive = provider.queryDepartures(309557, 0, false);
+		final QueryDeparturesResult resultLive = provider.queryDepartures("309557", 0, false);
 		assertEquals(QueryDeparturesResult.Status.OK, resultLive.status);
 		System.out.println(resultLive.stationDepartures);
 
-		final QueryDeparturesResult resultPlan = provider.queryDepartures(9100003, 0, false);
+		final QueryDeparturesResult resultPlan = provider.queryDepartures("9100003", 0, false);
 		assertEquals(QueryDeparturesResult.Status.OK, resultPlan.status);
 		System.out.println(resultPlan.stationDepartures);
 	}
@@ -83,10 +83,10 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDeparturesInvalidStation() throws Exception
 	{
-		final QueryDeparturesResult resultLive = provider.queryDepartures(111111, 0, false);
+		final QueryDeparturesResult resultLive = provider.queryDepartures("111111", 0, false);
 		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, resultLive.status);
 
-		final QueryDeparturesResult resultPlan = provider.queryDepartures(2449475, 0, false);
+		final QueryDeparturesResult resultPlan = provider.queryDepartures("2449475", 0, false);
 		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, resultPlan.status);
 	}
 
@@ -121,8 +121,8 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 9056102, "Berlin", "Nollendorfplatz"), null, new Location(
-				LocationType.STATION, 9013103, "Berlin", "Prinzenstraße"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "9056102", "Berlin", "Nollendorfplatz"), null, new Location(
+				LocationType.STATION, "9013103", "Berlin", "Prinzenstraße"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
@@ -137,8 +137,8 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortViaTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 9056102, "Berlin", "Nollendorfplatz"), new Location(
-				LocationType.STATION, 9044202, "Berlin", "Bundesplatz"), new Location(LocationType.STATION, 9013103, "Berlin", "Prinzenstraße"),
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "9056102", "Berlin", "Nollendorfplatz"), new Location(
+				LocationType.STATION, "9044202", "Berlin", "Bundesplatz"), new Location(LocationType.STATION, "9013103", "Berlin", "Prinzenstraße"),
 				new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
@@ -148,8 +148,8 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void tripBetweenCoordinates() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 0, 52501507, 13357026, null, null), null, new Location(
-				LocationType.ADDRESS, 0, 52513639, 13568648, null, null), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 52501507, 13357026, null, null), null, new Location(
+				LocationType.ADDRESS, null, 52513639, 13568648, null, null), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
@@ -158,8 +158,8 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void tripBetweenCoordinatesAndAddresses() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 0, 52536099, 13426309, null,
-				"Christburger Straße 1, 10405 Berlin, Deutschland"), null, new Location(LocationType.ADDRESS, 0, 52486400, 13350744, null,
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 52536099, 13426309, null,
+				"Christburger Straße 1, 10405 Berlin, Deutschland"), null, new Location(LocationType.ADDRESS, null, 52486400, 13350744, null,
 				"Eisenacher Straße 70, 10823 Berlin, Deutschland"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
@@ -169,9 +169,10 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void viaTripBetweenCoordinates() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 0, 52501507, 13357026, null, null), new Location(
-				LocationType.ADDRESS, 0, 52479868, 13324247, null, null), new Location(LocationType.ADDRESS, 0, 52513639, 13568648, null, null),
-				new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 52501507, 13357026, null, null), new Location(
+				LocationType.ADDRESS, null, 52479868, 13324247, null, null),
+				new Location(LocationType.ADDRESS, null, 52513639, 13568648, null, null), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
+				Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
@@ -180,8 +181,8 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void tripBetweenAddresses() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 0, 52479663, 13324278, "10715 Berlin-Wilmersdorf",
-				"Weimarische Str. 7"), null, new Location(LocationType.ADDRESS, 0, 52541536, 13421290, "10437 Berlin-Prenzlauer Berg",
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 52479663, 13324278, "10715 Berlin-Wilmersdorf",
+				"Weimarische Str. 7"), null, new Location(LocationType.ADDRESS, null, 52541536, 13421290, "10437 Berlin-Prenzlauer Berg",
 				"Göhrener Str. 5"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
@@ -191,9 +192,9 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void viaTripBetweenAddresses() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 0, 52479663, 13324278, "10715 Berlin-Wilmersdorf",
-				"Weimarische Str. 7"), new Location(LocationType.ADDRESS, 0, 52527872, 13381657, "10115 Berlin-Mitte", "Hannoversche Str. 20"),
-				new Location(LocationType.ADDRESS, 0, 52526029, 13399878, "10178 Berlin-Mitte", "Sophienstr. 24"), new Date(), true, Product.ALL,
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 52479663, 13324278, "10715 Berlin-Wilmersdorf",
+				"Weimarische Str. 7"), new Location(LocationType.ADDRESS, null, 52527872, 13381657, "10115 Berlin-Mitte", "Hannoversche Str. 20"),
+				new Location(LocationType.ADDRESS, null, 52526029, 13399878, "10178 Berlin-Mitte", "Sophienstr. 24"), new Date(), true, Product.ALL,
 				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
@@ -203,12 +204,12 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void testStationIdReverse() throws Exception
 	{
-		Assert.assertEquals(BvgProvider.migrateStationIdReverse(101000316), 100316);
-		Assert.assertEquals(BvgProvider.migrateStationIdReverse(301000316), 300316);
+		Assert.assertEquals(BvgProvider.migrateStationIdReverse("101000316"), "100316");
+		Assert.assertEquals(BvgProvider.migrateStationIdReverse("301000316"), "300316");
 
 		// no conversions
-		Assert.assertEquals(BvgProvider.migrateStationIdReverse(102000316), 102000316);
-		Assert.assertEquals(BvgProvider.migrateStationIdReverse(1101000316), 1101000316);
-		Assert.assertEquals(BvgProvider.migrateStationIdReverse(11000316), 11000316);
+		Assert.assertEquals(BvgProvider.migrateStationIdReverse("102000316"), "102000316");
+		Assert.assertEquals(BvgProvider.migrateStationIdReverse("1101000316"), "1101000316");
+		Assert.assertEquals(BvgProvider.migrateStationIdReverse("11000316"), "11000316");
 	}
 }

@@ -53,6 +53,6 @@ public class AtcProvider extends AbstractEfaProvider
 	@Override
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
-		return xmlStopfinderRequest(new Location(LocationType.STATION, 0, null, constraint.toString()));
+		return xmlStopfinderRequest(new Location(LocationType.STATION, null, null, constraint.toString()));
 	}
 }

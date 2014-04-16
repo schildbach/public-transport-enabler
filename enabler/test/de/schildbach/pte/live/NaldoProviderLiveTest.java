@@ -48,7 +48,7 @@ public class NaldoProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 53019174), 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "53019174"), 0, 0);
 
 		print(result);
 	}
@@ -64,7 +64,7 @@ public class NaldoProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(53019174, 0, false);
+		final QueryDeparturesResult result = provider.queryDepartures("53019174", 0, false);
 
 		print(result);
 	}
@@ -88,8 +88,8 @@ public class NaldoProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 3019697, null, "Amberg Kurfürstenbad"), null, new Location(
-				LocationType.STATION, 3019500, null, "Amberg Bahnhof"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "3019697", null, "Amberg Kurfürstenbad"), null, new Location(
+				LocationType.STATION, "3019500", null, "Amberg Bahnhof"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);

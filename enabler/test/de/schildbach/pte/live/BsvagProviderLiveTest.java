@@ -50,7 +50,7 @@ public class BsvagProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 26000178), 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "26000178"), 0, 0);
 
 		print(result);
 	}
@@ -66,7 +66,7 @@ public class BsvagProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(26000256, 0, false);
+		final QueryDeparturesResult result = provider.queryDepartures("26000256", 0, false);
 
 		print(result);
 	}
@@ -92,14 +92,14 @@ public class BsvagProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final List<Location> braunschweigAutocompletes = provider.autocompleteStations("Braunschweig Rhönweg");
 		print(braunschweigAutocompletes);
-		assertThat(braunschweigAutocompletes, hasItem(new Location(LocationType.STATION, 26000351)));
+		assertThat(braunschweigAutocompletes, hasItem(new Location(LocationType.STATION, "26000351")));
 	}
 
 	@Test
 	public void shortTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 26000178, null, "Hauptbahnhof"), null, new Location(
-				LocationType.STATION, 26000322, null, "Packhof"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "26000178", null, "Hauptbahnhof"), null, new Location(
+				LocationType.STATION, "26000322", null, "Packhof"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);

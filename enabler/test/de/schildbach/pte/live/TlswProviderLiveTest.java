@@ -48,7 +48,7 @@ public class TlswProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 247616), 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "247616"), 0, 0);
 
 		print(result);
 	}
@@ -64,7 +64,7 @@ public class TlswProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(247616, 0, false);
+		final QueryDeparturesResult result = provider.queryDepartures("247616", 0, false);
 
 		print(result);
 	}
@@ -80,8 +80,8 @@ public class TlswProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 60011202, 51850168, -1094302, "Upper Arncott",
-				"Bullingdon Prison"), null, new Location(LocationType.STATION, 60006576, 51856352, -1113127, "Lower Arncott", "The Plough"),
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "60011202", 51850168, -1094302, "Upper Arncott",
+				"Bullingdon Prison"), null, new Location(LocationType.STATION, "60006576", 51856352, -1113127, "Lower Arncott", "The Plough"),
 				new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);

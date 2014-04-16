@@ -50,7 +50,7 @@ public class NvbwProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 6900001), 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "6900001"), 0, 0);
 
 		print(result);
 	}
@@ -66,7 +66,7 @@ public class NvbwProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(6900001, 0, false);
+		final QueryDeparturesResult result = provider.queryDepartures("6900001", 0, false);
 
 		print(result);
 	}
@@ -92,22 +92,22 @@ public class NvbwProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final List<Location> freiburgAutocompletes = provider.autocompleteStations("Freiburg Hauptbahnhof");
 		print(freiburgAutocompletes);
-		assertThat(freiburgAutocompletes, hasItem(new Location(LocationType.STATION, 6906508)));
+		assertThat(freiburgAutocompletes, hasItem(new Location(LocationType.STATION, "6906508")));
 
 		final List<Location> baselAutocompletes = provider.autocompleteStations("Basel");
 		print(baselAutocompletes);
-		assertThat(baselAutocompletes, hasItem(new Location(LocationType.STATION, 51000007)));
+		assertThat(baselAutocompletes, hasItem(new Location(LocationType.STATION, "51000007")));
 
 		final List<Location> constanceAutocompletes = provider.autocompleteStations("Konstanz");
 		print(constanceAutocompletes);
-		assertThat(constanceAutocompletes, hasItem(new Location(LocationType.STATION, 8706554)));
+		assertThat(constanceAutocompletes, hasItem(new Location(LocationType.STATION, "8706554")));
 	}
 
 	@Test
 	public void shortTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 17002402, null, "Bahnhof"), null, new Location(
-				LocationType.STATION, 17009001, null, "Bahnhof"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "17002402", null, "Bahnhof"), null, new Location(
+				LocationType.STATION, "17009001", null, "Bahnhof"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);

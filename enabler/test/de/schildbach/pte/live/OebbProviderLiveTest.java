@@ -48,7 +48,7 @@ public class OebbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 902006), 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "902006"), 0, 0);
 
 		print(result);
 	}
@@ -66,7 +66,7 @@ public class OebbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(902006, 0, false);
+		final QueryDeparturesResult result = provider.queryDepartures("902006", 0, false);
 
 		print(result);
 		assertEquals(QueryDeparturesResult.Status.OK, result.status);
@@ -93,8 +93,8 @@ public class OebbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 1140101, null, "Linz"), null, new Location(
-				LocationType.STATION, 1190100, null, "Wien"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "1140101", null, "Linz"), null, new Location(
+				LocationType.STATION, "1190100", null, "Wien"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);
@@ -105,8 +105,8 @@ public class OebbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void slowTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, 0, null, "Ramsen Zoll!"), null, new Location(LocationType.ANY, 0,
-				null, "Azuga!"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "Ramsen Zoll!"), null, new Location(LocationType.ANY,
+				null, null, "Azuga!"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);
@@ -117,8 +117,8 @@ public class OebbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void tripWithFootway() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, 0, null, "Graz, Haselweg!"), null, new Location(LocationType.ANY,
-				0, null, "Innsbruck, Gumppstraße 69!"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "Graz, Haselweg!"), null, new Location(
+				LocationType.ANY, null, null, "Innsbruck, Gumppstraße 69!"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);
@@ -129,8 +129,8 @@ public class OebbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void tripWithFootway2() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, 0, null, "Wien, Krottenbachstraße 110!"), null, new Location(
-				LocationType.ADDRESS, 0, null, "Wien, Meidlinger Hauptstraße 1!"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "Wien, Krottenbachstraße 110!"), null, new Location(
+				LocationType.ADDRESS, null, null, "Wien, Meidlinger Hauptstraße 1!"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);

@@ -251,7 +251,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		if ("Station".equals(type))
 		{
 			final String name = pp.getAttributeValue(null, "name").trim();
-			final int id = Integer.parseInt(pp.getAttributeValue(null, "externalStationNr"));
+			final String id = pp.getAttributeValue(null, "externalStationNr");
 			final int x = Integer.parseInt(pp.getAttributeValue(null, "x"));
 			final int y = Integer.parseInt(pp.getAttributeValue(null, "y"));
 
@@ -271,7 +271,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				name = null;
 			final int x = Integer.parseInt(pp.getAttributeValue(null, "x"));
 			final int y = Integer.parseInt(pp.getAttributeValue(null, "y"));
-			return new Location(LocationType.POI, 0, y, x, null, name);
+			return new Location(LocationType.POI, null, y, x, null, name);
 		}
 		throw new IllegalStateException("cannot handle: " + type);
 	}
@@ -288,7 +288,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			final int y = Integer.parseInt(pp.getAttributeValue(null, "y"));
 
 			final String[] placeAndName = splitPlaceAndName(name);
-			return new Location(LocationType.ADDRESS, 0, y, x, placeAndName[0], placeAndName[1]);
+			return new Location(LocationType.ADDRESS, null, y, x, placeAndName[0], placeAndName[1]);
 		}
 		throw new IllegalStateException("cannot handle: " + type);
 	}
@@ -300,7 +300,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		{
 			XmlPullUtil.requireAttr(pp, "type", "ADR");
 			final String name = pp.getAttributeValue(null, "output").trim();
-			return new Location(LocationType.ADDRESS, 0, null, name);
+			return new Location(LocationType.ADDRESS, null, null, name);
 		}
 		throw new IllegalStateException("cannot handle: " + type);
 	}
@@ -357,10 +357,10 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						final String value = suggestion.getString("value");
 						final int lat = suggestion.optInt("ycoord");
 						final int lon = suggestion.optInt("xcoord");
-						int localId = 0;
+						String localId = null;
 						final Matcher m = P_AJAX_GET_STOPS_ID.matcher(suggestion.getString("id"));
 						if (m.matches())
-							localId = Integer.parseInt(m.group(1));
+							localId = m.group(1);
 
 						if (type == 1) // station
 						{
@@ -370,7 +370,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						else if (type == 2) // address
 						{
 							final String[] placeAndName = splitPlaceAndName(value);
-							results.add(new Location(LocationType.ADDRESS, 0, lat, lon, placeAndName[0], placeAndName[1]));
+							results.add(new Location(LocationType.ADDRESS, null, lat, lon, placeAndName[0], placeAndName[1]));
 						}
 						else if (type == 4) // poi
 						{
@@ -436,7 +436,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 				if (XmlPullUtil.test(pp, "StopLocation"))
 				{
-					final int id = XmlPullUtil.intAttr(pp, "id");
+					final String id = XmlPullUtil.attr(pp, "id");
 					final String[] placeAndName = splitPlaceAndName(name);
 					results.add(new Location(LocationType.STATION, id, lat, lon, placeAndName[0], placeAndName[1]));
 				}
@@ -444,9 +444,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				{
 					final String type = XmlPullUtil.attr(pp, "type");
 					if ("POI".equals(type))
-						results.add(new Location(LocationType.POI, 0, lat, lon, null, name));
+						results.add(new Location(LocationType.POI, null, lat, lon, null, name));
 					else if ("ADR".equals(type))
-						results.add(new Location(LocationType.ADDRESS, 0, lat, lon, null, name));
+						results.add(new Location(LocationType.ADDRESS, null, lat, lon, null, name));
 					else
 						throw new IllegalStateException("unknown type " + type + " on " + uri);
 				}
@@ -514,18 +514,18 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				else
 					throw new IllegalStateException("cannot handle: '" + t + "'");
 
-				final int id;
+				final String id;
 				final String i = pp.getAttributeValue(null, "i");
 				if (i != null)
 				{
 					final Matcher iMatcherId = P_XML_MLC_REQ_ID.matcher(i);
 					if (!iMatcherId.matches())
 						throw new IllegalStateException("cannot parse id: '" + i + "'");
-					id = Integer.parseInt(iMatcherId.group(1));
+					id = iMatcherId.group(1);
 				}
 				else
 				{
-					id = 0;
+					id = null;
 				}
 
 				final String name = XmlPullUtil.attr(pp, "n");
@@ -569,7 +569,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 	}
 
-	protected StringBuilder xmlQueryDeparturesParameters(final int stationId)
+	protected StringBuilder xmlQueryDeparturesParameters(final String stationId)
 	{
 		final StringBuilder parameters = new StringBuilder();
 		parameters.append("?productsFilter=").append(allProductsString());
@@ -588,7 +588,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 	private static final Pattern P_XML_QUERY_DEPARTURES_DELAY = Pattern.compile("(?:-|k\\.A\\.?|cancel|\\+?\\s*(\\d+))");
 
-	protected QueryDeparturesResult xmlQueryDepartures(final String uri, final int stationId) throws IOException
+	protected QueryDeparturesResult xmlQueryDepartures(final String uri, final String stationId) throws IOException
 	{
 		StringReplaceReader reader = null;
 
@@ -717,13 +717,13 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					else
 						destinationPlaceAndName = null;
 
-					final int destinationId;
+					final String destinationId;
 					if (dirnr != null)
-						destinationId = Integer.parseInt(dirnr);
+						destinationId = dirnr;
 					else
-						destinationId = 0;
+						destinationId = null;
 
-					final Location destination = new Location(destinationId > 0 ? LocationType.STATION : LocationType.ANY, destinationId,
+					final Location destination = new Location(destinationId != null ? LocationType.STATION : LocationType.ANY, destinationId,
 							destinationPlaceAndName != null ? destinationPlaceAndName[0] : null,
 							destinationPlaceAndName != null ? destinationPlaceAndName[1] : null);
 
@@ -1196,7 +1196,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 							else if ("DIRECTION".equals(attrName))
 							{
 								final String[] destinationPlaceAndName = splitPlaceAndName(attributeVariants.get("NORMAL"));
-								destination = new Location(LocationType.ANY, 0, destinationPlaceAndName[0], destinationPlaceAndName[1]);
+								destination = new Location(LocationType.ANY, null, destinationPlaceAndName[0], destinationPlaceAndName[1]);
 							}
 						}
 						XmlPullUtil.exit(pp, "JourneyAttributeList");
@@ -1311,7 +1311,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					// remove last intermediate
 					final int size = intermediateStops != null ? intermediateStops.size() : 0;
 					if (size >= 1)
-						if (intermediateStops.get(size - 1).location.id == sectionArrivalLocation.id)
+						if (!intermediateStops.get(size - 1).location.id.equals(sectionArrivalLocation.id))
 							intermediateStops.remove(size - 1);
 
 					XmlPullUtil.exit(pp, "ConSection");
@@ -1492,7 +1492,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		throw new IllegalArgumentException(location.type.toString());
 	}
 
-	protected boolean isValidStationId(int id)
+	protected boolean isValidStationId(final String id)
 	{
 		return true;
 	}
@@ -1950,7 +1950,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 							if (directionStr != null)
 							{
 								final String[] directionPlaceAndName = splitPlaceAndName(directionStr);
-								direction = new Location(LocationType.ANY, 0, directionPlaceAndName[0], directionPlaceAndName[1]);
+								direction = new Location(LocationType.ANY, null, directionPlaceAndName[0], directionPlaceAndName[1]);
 							}
 							else
 							{
@@ -2056,7 +2056,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		final int lon = is.readIntReverse();
 		final int lat = is.readIntReverse();
 
-		return new Location(locationType, 0, lat, lon, placeAndName[0], placeAndName[1]);
+		return new Location(locationType, null, lat, lon, placeAndName[0], placeAndName[1]);
 	}
 
 	private long date(final LittleEndianDataInputStream is) throws IOException
@@ -2214,7 +2214,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				final int lon = stationInputStream.readIntReverse();
 				final int lat = stationInputStream.readIntReverse();
 
-				return new Location(LocationType.STATION, id, lat, lon, placeAndName[0], placeAndName[1]);
+				return new Location(LocationType.STATION, id != 0 ? Integer.toString(id) : null, lat, lon, placeAndName[0], placeAndName[1]);
 			}
 			finally
 			{
@@ -2237,7 +2237,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		return new Position(m.group(1));
 	}
 
-	protected final StringBuilder xmlNearbyStationsParameters(final int stationId)
+	protected final StringBuilder xmlNearbyStationsParameters(final String stationId)
 	{
 		final StringBuilder parameters = new StringBuilder();
 		parameters.append("?productsFilter=").append(allProductsString());
@@ -2286,7 +2286,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			final Matcher mFine = P_XML_NEARBY_STATIONS_FINE.matcher(mCoarse.group(1));
 			if (mFine.matches())
 			{
-				final int parsedId = Integer.parseInt(mFine.group(1));
+				final String parsedId = mFine.group(1);
 
 				final String parsedName = ParserUtils.resolveEntities(mFine.group(2)).trim();
 
@@ -2348,7 +2348,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				for (int i = 0; i < nStops; i++)
 				{
 					final JSONObject stop = aStops.optJSONObject(i);
-					final int id = stop.getInt("extId");
+					final String id = stop.getString("extId");
 					final String name = ParserUtils.resolveEntities(stop.getString("name"));
 					final int lat = stop.getInt("y");
 					final int lon = stop.getInt("x");
@@ -2407,7 +2407,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			{
 				int parsedLon = 0;
 				int parsedLat = 0;
-				final int parsedId = Integer.parseInt(mFineLocation.group(1));
+				final String parsedId = mFineLocation.group(1);
 				final String parsedName = ParserUtils.resolveEntities(mFineLocation.group(2));
 
 				final Matcher mFineCoords = P_NEARBY_FINE_COORDS.matcher(mCoarse.group(2));

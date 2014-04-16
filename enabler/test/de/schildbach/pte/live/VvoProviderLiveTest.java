@@ -50,7 +50,7 @@ public class VvoProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 33000013), 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "33000013"), 0, 0);
 
 		System.out.println(result.status + "  " + result.stations.size() + "  " + result.stations);
 	}
@@ -66,7 +66,7 @@ public class VvoProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(100, 0, false);
+		final QueryDeparturesResult result = provider.queryDepartures("100", 0, false);
 
 		print(result);
 	}
@@ -92,14 +92,15 @@ public class VvoProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final List<Location> dresdenAutocompletes = provider.autocompleteStations("Dresden Postplatz");
 		print(dresdenAutocompletes);
-		assertThat(dresdenAutocompletes, hasItem(new Location(LocationType.STATION, 33000037)));
+		assertThat(dresdenAutocompletes, hasItem(new Location(LocationType.STATION, "33000037")));
 	}
 
 	@Test
 	public void shortTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 33000013, null, "Dresden Albertplatz"), null, new Location(
-				LocationType.STATION, 33000262, null, "Dresden Bischofsweg"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "33000013", null, "Dresden Albertplatz"), null, new Location(
+				LocationType.STATION, "33000262", null, "Dresden Bischofsweg"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
+				Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);

@@ -49,7 +49,7 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 350), 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "350"), 0, 0);
 
 		print(result);
 	}
@@ -65,7 +65,7 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(2, 0, false);
+		final QueryDeparturesResult result = provider.queryDepartures("2", 0, false);
 
 		assertEquals(QueryDeparturesResult.Status.OK, result.status);
 		print(result);
@@ -74,7 +74,7 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDeparturesInvalidStation() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(999999, 0, false);
+		final QueryDeparturesResult result = provider.queryDepartures("999999", 0, false);
 
 		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
 	}
@@ -99,7 +99,7 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 	public void autocompleteLocal() throws Exception
 	{
 		final List<Location> autocompletesFraunhoferStr = provider.autocompleteStations("fraunhofer");
-		assertThat(autocompletesFraunhoferStr, hasItem(new Location(LocationType.STATION, 1000150)));
+		assertThat(autocompletesFraunhoferStr, hasItem(new Location(LocationType.STATION, "1000150")));
 
 		final List<Location> autocompletesHirschgarten = provider.autocompleteStations("Hirschgarten");
 		assertEquals("München", autocompletesHirschgarten.get(0).place);
@@ -114,8 +114,8 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 2, "München", "Marienplatz"), null, new Location(
-				LocationType.STATION, 10, "München", "Pasing"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "2", "München", "Marienplatz"), null, new Location(
+				LocationType.STATION, "10", "München", "Pasing"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
@@ -126,8 +126,8 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void longTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, 0, null, "Starnberg, Arbeitsamt"), null, new Location(
-				LocationType.STATION, 0, null, "Ackermannstraße"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "Starnberg, Arbeitsamt"), null, new Location(
+				LocationType.STATION, null, null, "Ackermannstraße"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		// seems like there are no more trips all the time
 	}
@@ -135,8 +135,8 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void tripBetweenCoordinates() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 0, 48165238, 11577473), null, new Location(
-				LocationType.ADDRESS, 0, 47987199, 11326532), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 48165238, 11577473), null, new Location(
+				LocationType.ADDRESS, null, 47987199, 11326532), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
@@ -145,8 +145,8 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void tripBetweenCoordinateAndStation() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 0, 48238341, 11478230), null, new Location(LocationType.ANY, 0,
-				null, "Ostbahnhof"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 48238341, 11478230), null, new Location(LocationType.ANY,
+				null, null, "Ostbahnhof"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
@@ -155,8 +155,8 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void tripBetweenAddresses() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 0, null, "München, Maximilianstr. 1"), null, new Location(
-				LocationType.ADDRESS, 0, null, "Starnberg, Jahnstraße 50"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, null, "München, Maximilianstr. 1"), null, new Location(
+				LocationType.ADDRESS, null, null, "Starnberg, Jahnstraße 50"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
@@ -165,9 +165,9 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void tripBetweenStationAndAddress() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 1220, null, "Josephsburg"), null, new Location(
-				LocationType.ADDRESS, 0, 48188018, 11574239, null, "München Frankfurter Ring 35"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-				Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "1220", null, "Josephsburg"), null, new Location(
+				LocationType.ADDRESS, null, 48188018, 11574239, null, "München Frankfurter Ring 35"), new Date(), true, Product.ALL,
+				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
@@ -176,13 +176,13 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryTripInvalidStation() throws Exception
 	{
-		final QueryTripsResult result1 = queryTrips(new Location(LocationType.STATION, 2, "München", "Marienplatz"), null, new Location(
-				LocationType.STATION, 99999, 0, 0, null, null), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result1 = queryTrips(new Location(LocationType.STATION, "2", "München", "Marienplatz"), null, new Location(
+				LocationType.STATION, "99999", 0, 0, null, null), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 
 		assertEquals(QueryTripsResult.Status.UNKNOWN_TO, result1.status);
 
-		final QueryTripsResult result2 = queryTrips(new Location(LocationType.STATION, 99999, 0, 0, null, null), null, new Location(
-				LocationType.STATION, 2, "München", "Marienplatz"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result2 = queryTrips(new Location(LocationType.STATION, "99999", 0, 0, null, null), null, new Location(
+				LocationType.STATION, "2", "München", "Marienplatz"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 
 		assertEquals(QueryTripsResult.Status.UNKNOWN_FROM, result2.status);
 	}

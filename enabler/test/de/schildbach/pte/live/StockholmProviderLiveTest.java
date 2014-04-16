@@ -45,7 +45,7 @@ public class StockholmProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 301109600), 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "301109600"), 0, 0);
 
 		print(result);
 	}
@@ -61,7 +61,7 @@ public class StockholmProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(301109600, 0, false);
+		final QueryDeparturesResult result = provider.queryDepartures("301109600", 0, false);
 
 		print(result);
 	}
@@ -85,8 +85,9 @@ public class StockholmProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 200101051, "Stockholm", "T-Centralen"), null, new Location(
-				LocationType.STATION, 200101221, "Stockholm", "Abrahamsberg"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "200101051", "Stockholm", "T-Centralen"), null, new Location(
+				LocationType.STATION, "200101221", "Stockholm", "Abrahamsberg"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
+				Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
@@ -95,8 +96,8 @@ public class StockholmProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void addressToStationTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 0, 59360519, 17989266, null, "Sommarvägen 1, Solna"), null,
-				new Location(LocationType.STATION, 300109205, 59340518, 18081532, "Stockholm", "Stadion"), new Date(), true, Product.ALL,
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 59360519, 17989266, null, "Sommarvägen 1, Solna"), null,
+				new Location(LocationType.STATION, "300109205", 59340518, 18081532, "Stockholm", "Stadion"), new Date(), true, Product.ALL,
 				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);

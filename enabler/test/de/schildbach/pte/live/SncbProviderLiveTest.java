@@ -45,7 +45,7 @@ public class SncbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 8813003), 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "8813003"), 0, 0);
 
 		print(result);
 	}
@@ -61,7 +61,7 @@ public class SncbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(8813003, 0, false);
+		final QueryDeparturesResult result = provider.queryDepartures("8813003", 0, false);
 
 		print(result);
 	}
@@ -93,8 +93,8 @@ public class SncbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 8821006, "Antwerpen", "Centraal"), null, new Location(
-				LocationType.STATION, 8813003, "Brussel", "Centraal"), new Date(), true, null, WalkSpeed.FAST, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8821006", "Antwerpen", "Centraal"), null, new Location(
+				LocationType.STATION, "8813003", "Brussel", "Centraal"), new Date(), true, null, WalkSpeed.FAST, Accessibility.NEUTRAL);
 		System.out.println(result.status + "  " + result.trips);
 
 		if (result.context != null)
@@ -107,8 +107,8 @@ public class SncbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void longTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 207280, "Brussel", "Wannecouter"), null, new Location(
-				LocationType.STATION, 207272, "Brussel", "Stadion"), new Date(), true, null, WalkSpeed.FAST, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "207280", "Brussel", "Wannecouter"), null, new Location(
+				LocationType.STATION, "207272", "Brussel", "Stadion"), new Date(), true, null, WalkSpeed.FAST, Accessibility.NEUTRAL);
 		System.out.println(result.status + "  " + result.trips);
 
 		if (result.context != null)
@@ -121,8 +121,8 @@ public class SncbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void tripFromAddress() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 0, null, "Bruxelles - Haren, Rue Paul Janson 9"), null,
-				new Location(LocationType.STATION, 8500010, null, "Basel"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, null, "Bruxelles - Haren, Rue Paul Janson 9"), null,
+				new Location(LocationType.STATION, "8500010", null, "Basel"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result.status + "  " + result.trips);
 
 		if (result.context != null)

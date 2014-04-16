@@ -97,7 +97,7 @@ public class SadProvider extends AbstractNetworkProvider {
 		throw new UnsupportedOperationException();
 	}
 
-	public QueryDeparturesResult queryDepartures(int stationId, int maxDepartures, boolean equivs) throws IOException {
+	public QueryDeparturesResult queryDepartures(String stationId, int maxDepartures, boolean equivs) throws IOException {
 		// Not supported by SOAP API
 		throw new UnsupportedOperationException();
 	}
@@ -181,7 +181,7 @@ public class SadProvider extends AbstractNetworkProvider {
 		}
 
 		// Check if from and to locations are equal
-		if (from.id == to.id) {
+		if (from.id.equals(to.id)) {
 			return new QueryTripsResult(RESULT_HEADER, Status.TOO_CLOSE);
 		}
 
@@ -202,8 +202,8 @@ public class SadProvider extends AbstractNetworkProvider {
 		if (split.length != 4) {
 			return null;
 		}
-		final int fromId = Integer.parseInt(split[0]);
-		final int toId = Integer.parseInt(split[1]);
+		final String fromId = split[0];
+		final String toId = split[1];
 		final boolean dep = Boolean.parseBoolean(split[2]);
 		Date date = null;
 		try {
@@ -237,7 +237,7 @@ public class SadProvider extends AbstractNetworkProvider {
 	private Location soapToLocation(SoapObject nodo) {
 		
 		// Parse SoapObject's properties and create a Location object
-		int id = Integer.parseInt(nodo.getPropertyAsString("id"));
+		String id = nodo.getPropertyAsString("id");
 		String name;
 		if (LANGUAGE == Language.GERMAN) {
 			name = (String) nodo.getPropertyAsString("nome_de");

@@ -50,7 +50,7 @@ public class VorProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 60203090), 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "60203090"), 0, 0);
 
 		print(result);
 	}
@@ -66,7 +66,7 @@ public class VorProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(60203090, 0, false);
+		final QueryDeparturesResult result = provider.queryDepartures("60203090", 0, false);
 
 		print(result);
 	}
@@ -92,18 +92,18 @@ public class VorProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final List<Location> huetteldorfAutocompletes = provider.autocompleteStations("Hütteldorf");
 		print(huetteldorfAutocompletes);
-		assertThat(huetteldorfAutocompletes, hasItem(new Location(LocationType.STATION, 60200560)));
+		assertThat(huetteldorfAutocompletes, hasItem(new Location(LocationType.STATION, "60200560")));
 
 		final List<Location> wienerNeustadtAutocompletes = provider.autocompleteStations("Wiener Neustadt Nord");
 		print(wienerNeustadtAutocompletes);
-		assertThat(wienerNeustadtAutocompletes, hasItem(new Location(LocationType.STATION, 60205223)));
+		assertThat(wienerNeustadtAutocompletes, hasItem(new Location(LocationType.STATION, "60205223")));
 	}
 
 	@Test
 	public void shortTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 60200657, 48200756, 16369001, "Wien", "Karlsplatz"), null,
-				new Location(LocationType.STATION, 60201094, 48198612, 16367719, "Wien", "Resselgasse"), new Date(), true, Product.ALL,
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "60200657", 48200756, 16369001, "Wien", "Karlsplatz"), null,
+				new Location(LocationType.STATION, "60201094", 48198612, 16367719, "Wien", "Resselgasse"), new Date(), true, Product.ALL,
 				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
@@ -131,8 +131,8 @@ public class VorProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void tripBetweenCoordinates() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 0, 48180281, 16333551), null, new Location(
-				LocationType.ADDRESS, 0, 48240452, 16444788), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 48180281, 16333551), null, new Location(
+				LocationType.ADDRESS, null, 48240452, 16444788), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);

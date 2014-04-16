@@ -48,7 +48,7 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 13000), 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "13000"), 0, 0);
 
 		print(result);
 	}
@@ -66,7 +66,7 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(13000, 0, false);
+		final QueryDeparturesResult result = provider.queryDepartures("13000", 0, false);
 
 		print(result);
 	}
@@ -90,8 +90,8 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 11063, null, "Leipzig, Johannisplatz"), null, new Location(
-				LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "11063", null, "Leipzig, Johannisplatz"), null, new Location(
+				LocationType.STATION, "8010205", null, "Leipzig Hbf"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 
 		if (!result.context.canQueryLater())
@@ -103,8 +103,8 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void anotherShortTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 8010205, 51346546, 12383333, null, "Leipzig Hbf"), null,
-				new Location(LocationType.STATION, 8012183, 51423340, 12223423, null, "Leipzig/Halle Flughafen"), new Date(), true, Product.ALL,
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8010205", 51346546, 12383333, null, "Leipzig Hbf"), null,
+				new Location(LocationType.STATION, "8012183", 51423340, 12223423, null, "Leipzig/Halle Flughafen"), new Date(), true, Product.ALL,
 				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 
@@ -117,8 +117,9 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void outdatedTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 13002, null, "Leipzig, Augustusplatz"), null, new Location(
-				LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(2011, 1, 1), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "13002", null, "Leipzig, Augustusplatz"), null, new Location(
+				LocationType.STATION, "8010205", null, "Leipzig Hbf"), new Date(2011, 1, 1), true, Product.ALL, WalkSpeed.NORMAL,
+				Accessibility.NEUTRAL);
 		System.out.println(result);
 
 		if (!result.context.canQueryLater())
@@ -130,8 +131,8 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void ambiguousTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, 0, null, "Platz"), null, new Location(LocationType.STATION,
-				8010205, null, "Leipzig Hbf"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "Platz"), null, new Location(LocationType.STATION,
+				"8010205", null, "Leipzig Hbf"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 
 		if (!result.context.canQueryLater())
@@ -143,8 +144,8 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void sameStationTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 8010205, null, "Leipzig Hbf"), null, new Location(
-				LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf"), null, new Location(
+				LocationType.STATION, "8010205", null, "Leipzig Hbf"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 
 		if (!result.context.canQueryLater())
@@ -156,8 +157,8 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void addressTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 0, 51334078, 12478331, "04319 Leipzig-Engelsdorf",
-				"August-Bebel-Platz"), null, new Location(LocationType.STATION, 8010205, null, "Leipzig Hbf"), new Date(), true, Product.ALL,
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 51334078, 12478331, "04319 Leipzig-Engelsdorf",
+				"August-Bebel-Platz"), null, new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf"), new Date(), true, Product.ALL,
 				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 

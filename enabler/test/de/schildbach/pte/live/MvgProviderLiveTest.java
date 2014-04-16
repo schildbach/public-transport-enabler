@@ -50,7 +50,7 @@ public class MvgProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 24200006), 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "24200006"), 0, 0);
 
 		print(result);
 	}
@@ -66,7 +66,7 @@ public class MvgProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(3, 0, false);
+		final QueryDeparturesResult result = provider.queryDepartures("3", 0, false);
 
 		print(result);
 	}
@@ -92,26 +92,27 @@ public class MvgProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final List<Location> luedenscheidAutocompletes = provider.autocompleteStations("Lüdenscheid Freibad");
 		print(luedenscheidAutocompletes);
-		assertThat(luedenscheidAutocompletes, hasItem(new Location(LocationType.STATION, 24200153)));
+		assertThat(luedenscheidAutocompletes, hasItem(new Location(LocationType.STATION, "24200153")));
 
 		final List<Location> iserlohnAutocompletes = provider.autocompleteStations("Iserlohn Rathaus");
 		print(iserlohnAutocompletes);
-		assertThat(iserlohnAutocompletes, hasItem(new Location(LocationType.STATION, 24200764)));
+		assertThat(iserlohnAutocompletes, hasItem(new Location(LocationType.STATION, "24200764")));
 
 		final List<Location> plettenbergAutocompletes = provider.autocompleteStations("Plettenberg Friedhof");
 		print(plettenbergAutocompletes);
-		assertThat(plettenbergAutocompletes, hasItem(new Location(LocationType.STATION, 24202864)));
+		assertThat(plettenbergAutocompletes, hasItem(new Location(LocationType.STATION, "24202864")));
 
 		final List<Location> mendenAutocompletes = provider.autocompleteStations("Menden Am Gillfeld");
 		print(mendenAutocompletes);
-		assertThat(mendenAutocompletes, hasItem(new Location(LocationType.STATION, 24202193)));
+		assertThat(mendenAutocompletes, hasItem(new Location(LocationType.STATION, "24202193")));
 	}
 
 	@Test
 	public void shortTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 24200200, null, "Lüd., Christuskirche"), null, new Location(
-				LocationType.STATION, 24200032, null, "Lüd., Friedrichstr."), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "24200200", null, "Lüd., Christuskirche"), null, new Location(
+				LocationType.STATION, "24200032", null, "Lüd., Friedrichstr."), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
+				Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);

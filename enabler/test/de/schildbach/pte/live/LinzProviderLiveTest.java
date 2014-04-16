@@ -48,7 +48,7 @@ public class LinzProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, 60500090), 0, 0);
+		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "60500090"), 0, 0);
 
 		print(result);
 	}
@@ -64,7 +64,7 @@ public class LinzProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(60501720, 0, false);
+		final QueryDeparturesResult result = provider.queryDepartures("60501720", 0, false);
 		System.out.println(result);
 	}
 
@@ -103,16 +103,16 @@ public class LinzProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void incompleteTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, 0, null, "linz"), null, new Location(LocationType.ANY, 0, null,
-				"gel"), new Date(), true, Product.ALL, WalkSpeed.FAST, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "linz"), null, new Location(LocationType.ANY, null,
+				null, "gel"), new Date(), true, Product.ALL, WalkSpeed.FAST, Accessibility.NEUTRAL);
 		System.out.println(result);
 	}
 
 	@Test
 	public void shortTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 0, null, "Linz Hauptbahnhof"), null, new Location(
-				LocationType.STATION, 0, null, "Linz Auwiesen"), new Date(), true, Product.ALL, WalkSpeed.FAST, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, null, null, "Linz Hauptbahnhof"), null, new Location(
+				LocationType.STATION, null, null, "Linz Auwiesen"), new Date(), true, Product.ALL, WalkSpeed.FAST, Accessibility.NEUTRAL);
 		System.out.println(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);
@@ -139,8 +139,8 @@ public class LinzProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void longTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, 0, null, "Linz Auwiesen"), null, new Location(
-				LocationType.STATION, 0, null, "Linz Hafen"), new Date(), true, Product.ALL, WalkSpeed.SLOW, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, null, null, "Linz Auwiesen"), null, new Location(
+				LocationType.STATION, null, null, "Linz Hafen"), new Date(), true, Product.ALL, WalkSpeed.SLOW, Accessibility.NEUTRAL);
 		System.out.println(result);
 		// final QueryTripsResult laterResult = queryMoreTrips(provider, result.context, true);
 		// System.out.println(laterResult);

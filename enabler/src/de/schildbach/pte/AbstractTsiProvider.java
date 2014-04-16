@@ -317,7 +317,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 		return json.isNull(key) ? null : json.getString(key);
 	}
 
-	private Location jsonStationRequestCoord(final int id) throws IOException
+	private Location jsonStationRequestCoord(final String id) throws IOException
 	{
 		final StringBuilder parameters = buildCommonRequestParams("GetTripPoint", "json");
 		parameters.append("&TripPointId=").append(id);
@@ -417,24 +417,24 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 	{
 		final String locTypeStr = data.getString("Type");
 		final LocationType locType;
-		final int id;
+		final String id;
 
 		if ("POI".equals(locTypeStr))
 		{
 			locType = LocationType.POI;
-			id = data.getInt("id");
+			id = data.getString("id");
 		}
 		else if ("BOARDING_POSITION".equals(locTypeStr))
 		{
 			locType = LocationType.STATION;
 			if (!data.isNull("LogicalId"))
-				id = data.getInt("LogicalId");
+				id = data.getString("LogicalId");
 			else
-				id = data.getInt("id");
+				id = data.getString("id");
 		}
 		else
 		{
-			id = data.optInt("id", 0);
+			id = data.optString("id");
 			locType = LocationType.ADDRESS;
 		}
 
@@ -465,7 +465,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 		String destinationName = jsonOptString(ptrInfo, "Destination");
 		if (destinationName == null && destObj != null)
 			destinationName = destObj.optString("Name");
-		final Location lineDestination = new Location(LocationType.ANY, 0, null, destinationName);
+		final Location lineDestination = new Location(LocationType.ANY, null, null, destinationName);
 
 		final Stop departureStop, arrivalStop;
 
@@ -561,7 +561,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 
 	private Location parseJsonTransportLocation(final JSONObject data) throws JSONException
 	{
-		final int id = data.getInt("Id");
+		final String id = data.getString("Id");
 		final LocationType locType;
 
 		switch (data.getInt("PointType"))
@@ -592,7 +592,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 		return new Location(locType, id, latInt, lonInt, place, name);
 	}
 
-	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
+	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
 		throw new UnsupportedOperationException();
 	}

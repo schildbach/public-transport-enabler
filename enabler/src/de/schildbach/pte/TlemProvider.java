@@ -65,7 +65,7 @@ public class TlemProvider extends AbstractEfaProvider
 	@Override
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
-		return xmlStopfinderRequest(new Location(LocationType.ANY, 0, null, constraint.toString()));
+		return xmlStopfinderRequest(new Location(LocationType.ANY, null, null, constraint.toString()));
 	}
 
 	@Override
