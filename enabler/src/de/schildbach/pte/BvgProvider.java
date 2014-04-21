@@ -258,7 +258,7 @@ public final class BvgProvider extends AbstractHafasProvider
 
 	private static final String DEPARTURE_URL_LIVE = DEPARTURE_URL + "/IstAbfahrtzeiten/index/mobil?";
 
-	private String departuresQueryLiveUri(final int stationId)
+	private String departuresQueryLiveUri(final String stationId)
 	{
 		final StringBuilder uri = new StringBuilder();
 		uri.append(DEPARTURE_URL_LIVE);
@@ -270,7 +270,7 @@ public final class BvgProvider extends AbstractHafasProvider
 
 	private static final String DEPARTURE_URL_PLAN = DEPARTURE_URL + "/Fahrinfo/bin/stboard.bin/dox?boardType=dep&disableEquivs=yes&start=yes";
 
-	private String departuresQueryPlanUri(final int stationId, final int maxDepartures)
+	private String departuresQueryPlanUri(final String stationId, final int maxDepartures)
 	{
 		final StringBuilder uri = new StringBuilder();
 		uri.append(DEPARTURE_URL_PLAN);
@@ -320,12 +320,12 @@ public final class BvgProvider extends AbstractHafasProvider
 	private static final Pattern P_DEPARTURES_LIVE_ERRORS = Pattern.compile(
 			"(Haltestelle:)|(Wartungsgr&uuml;nden|nur eingeschränkt)|(http-equiv=\"refresh\")", Pattern.CASE_INSENSITIVE);
 
-	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
+	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
 		final ResultHeader header = new ResultHeader(SERVER_PRODUCT);
 		final QueryDeparturesResult result = new QueryDeparturesResult(header);
 
-		if (stationId < 1000000) // live
+		if (Integer.parseInt(stationId) < 1000000) // live
 		{
 			// scrape page
 			final String uri = departuresQueryLiveUri(stationId);
@@ -521,9 +521,9 @@ public final class BvgProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected boolean isValidStationId(int id)
+	protected boolean isValidStationId(String id)
 	{
-		return id >= 1000000;
+		return Integer.parseInt(id) >= 1000000;
 	}
 
 	@Override

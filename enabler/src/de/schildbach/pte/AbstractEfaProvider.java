@@ -930,7 +930,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		return nearbyStationsRequest(location.id, maxStations);
 	}
 
-	private NearbyStationsResult nearbyStationsRequest(final int stationId, final int maxStations) throws IOException
+	private NearbyStationsResult nearbyStationsRequest(final String stationId, final int maxStations) throws IOException
 	{
 		final StringBuilder parameters = new StringBuilder();
 		appendCommonRequestParams(parameters, "XML");
@@ -1442,7 +1442,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				+ "' trainType='" + trainType + "' trainNum='" + trainNum + "' trainName='" + trainName + "'");
 	}
 
-	protected StringBuilder queryDeparturesParameters(final int stationId, final int maxDepartures, final boolean equivs)
+	protected StringBuilder queryDeparturesParameters(final String stationId, final int maxDepartures, final boolean equivs)
 	{
 		final StringBuilder parameters = new StringBuilder();
 		appendCommonRequestParams(parameters, "XML");
@@ -1460,7 +1460,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		return parameters;
 	}
 
-	public QueryDeparturesResult queryDepartures(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
+	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
 		final StringBuilder parameters = queryDeparturesParameters(stationId, maxDepartures, equivs);
 
@@ -1506,7 +1506,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					while (XmlPullUtil.test(pp, "itdOdvAssignedStop"))
 					{
 						final Location assignedLocation = processItdOdvAssignedStop(pp);
-						if (findStationDepartures(result.stationDepartures, assignedLocation.id) == null)
+						if (findStationDepartures(result.stationDepartures, Integer.parseInt(assignedLocation.id)) == null)
 							result.stationDepartures.add(new StationDepartures(assignedLocation, new LinkedList<Departure>(),
 									new LinkedList<LineDestination>()));
 					}
@@ -1671,7 +1671,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 	}
 
-	protected QueryDeparturesResult queryDeparturesMobile(final int stationId, final int maxDepartures, final boolean equivs) throws IOException
+	protected QueryDeparturesResult queryDeparturesMobile(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
 		final StringBuilder parameters = queryDeparturesParameters(stationId, maxDepartures, equivs);
 
@@ -1860,7 +1860,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private StationDepartures findStationDepartures(final List<StationDepartures> stationDepartures, final int id)
 	{
 		for (final StationDepartures stationDeparture : stationDepartures)
-			if (stationDeparture.location.id == id)
+			if ((Integer.parseInt(stationDeparture.location.id)) == id)
 				return stationDeparture;
 
 		return null;
@@ -2696,11 +2696,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							final int size = intermediateStops.size();
 							if (size >= 2)
 							{
-								if (intermediateStops.get(size - 1).location.id != arrivalLocation.id)
+								if (!(intermediateStops.get(size - 1).location.id.equals(arrivalLocation.id)))
 									throw new IllegalStateException();
 								intermediateStops.remove(size - 1);
 
-								if (intermediateStops.get(0).location.id != departureLocation.id)
+								if (!(intermediateStops.get(0).location.id.equals(departureLocation.id)))
 									throw new IllegalStateException();
 								intermediateStops.remove(0);
 							}
@@ -2964,7 +2964,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 								final String s = requireValueTag(pp, "s");
 								final String[] intermediateParts = s.split(";");
 								final int id = Integer.parseInt(intermediateParts[0]);
-								if (id != departure.location.id && id != arrival.location.id)
+								if (id != Integer.parseInt(departure.location.id) && id != Integer.parseInt(arrival.location.id))
 								{
 									final String name = normalizeLocationName(intermediateParts[1]);
 
@@ -3303,7 +3303,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	protected static final String locationValue(final Location location)
 	{
 		if ((location.type == LocationType.STATION || location.type == LocationType.POI) && location.hasId())
-			return Integer.toString(location.id);
+			return location.id;
 		else
 			return location.name;
 	}

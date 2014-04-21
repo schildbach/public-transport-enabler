@@ -569,7 +569,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 	}
 
-	protected StringBuilder xmlQueryDeparturesParameters(final int stationId)
+	protected StringBuilder xmlQueryDeparturesParameters(final String stationId)
 	{
 		final StringBuilder parameters = new StringBuilder();
 		parameters.append("?productsFilter=").append(allProductsString());
@@ -588,7 +588,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 	private static final Pattern P_XML_QUERY_DEPARTURES_DELAY = Pattern.compile("(?:-|k\\.A\\.?|cancel|\\+?\\s*(\\d+))");
 
-	protected QueryDeparturesResult xmlQueryDepartures(final String uri, final int stationId) throws IOException
+	protected QueryDeparturesResult xmlQueryDepartures(final String uri, final String stationId) throws IOException
 	{
 		StringReplaceReader reader = null;
 
@@ -1492,7 +1492,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		throw new IllegalArgumentException(location.type.toString());
 	}
 
-	protected boolean isValidStationId(int id)
+	protected boolean isValidStationId(String id)
 	{
 		return true;
 	}
@@ -2237,7 +2237,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		return new Position(m.group(1));
 	}
 
-	protected final StringBuilder xmlNearbyStationsParameters(final int stationId)
+	protected final StringBuilder xmlNearbyStationsParameters(final String stationId)
 	{
 		final StringBuilder parameters = new StringBuilder();
 		parameters.append("?productsFilter=").append(allProductsString());
