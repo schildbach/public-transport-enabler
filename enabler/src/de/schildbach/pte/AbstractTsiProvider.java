@@ -239,7 +239,9 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 		if (modePrefix == null)
 			throw new IllegalStateException("cannot normalize mode '" + mode + "' number '" + number + "'");
 
-		final StringBuilder label = new StringBuilder(modePrefix);
+		final StringBuilder label = new StringBuilder();
+
+		label.append(modePrefix);
 
 		if (number != null && !number.isEmpty())
 		{
