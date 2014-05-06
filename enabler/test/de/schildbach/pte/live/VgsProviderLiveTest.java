@@ -17,6 +17,8 @@
 
 package de.schildbach.pte.live;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Date;
 import java.util.List;
 
@@ -72,6 +74,14 @@ public class VgsProviderLiveTest extends AbstractProviderLiveTest
 		final QueryDeparturesResult result = provider.queryDepartures("8000244", 0, false);
 
 		print(result);
+	}
+
+	@Test
+	public void queryDeparturesInvalidStation() throws Exception
+	{
+		final QueryDeparturesResult result = provider.queryDepartures("999999", 0, false);
+
+		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
 	}
 
 	@Test

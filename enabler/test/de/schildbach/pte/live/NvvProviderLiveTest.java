@@ -87,6 +87,14 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
+	public void queryDeparturesInvalidStation() throws Exception
+	{
+		final QueryDeparturesResult result = provider.queryDepartures("999999", 0, false);
+
+		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
+	}
+
+	@Test
 	public void autocomplete() throws Exception
 	{
 		final List<Location> autocompletes = provider.autocompleteStations("Flughafen");
