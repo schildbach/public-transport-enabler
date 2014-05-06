@@ -198,7 +198,17 @@ public final class Location implements Serializable
 
 	private static void assertId(final String id)
 	{
-		if (id != null && Integer.parseInt(id) <= 0)
-			throw new IllegalStateException("assert failed: id=" + id);
+		if (id != null)
+		{
+			try
+			{
+				if (Integer.parseInt(id) <= 0)
+					throw new IllegalStateException("assert failed: id=" + id);
+			}
+			catch(NumberFormatException nfExc)
+			{
+				return;
+			}
+		}
 	}
 }
