@@ -33,8 +33,6 @@ public final class Location implements Serializable
 
 	public Location(final LocationType type, final String id, final int lat, final int lon, final String place, final String name)
 	{
-		assertId(id);
-
 		this.type = type;
 		this.id = id;
 		this.lat = lat;
@@ -45,8 +43,6 @@ public final class Location implements Serializable
 
 	public Location(final LocationType type, final String id, final String place, final String name)
 	{
-		assertId(id);
-
 		this.type = type;
 		this.id = id;
 		this.lat = 0;
@@ -57,8 +53,6 @@ public final class Location implements Serializable
 
 	public Location(final LocationType type, final String id, final int lat, final int lon)
 	{
-		assertId(id);
-
 		this.type = type;
 		this.id = id;
 		this.lat = lat;
@@ -69,8 +63,6 @@ public final class Location implements Serializable
 
 	public Location(final LocationType type, final String id)
 	{
-		assertId(id);
-
 		this.type = type;
 		this.id = id;
 		this.lat = 0;
@@ -194,11 +186,5 @@ public final class Location implements Serializable
 		if (o == null)
 			return 0;
 		return o.hashCode();
-	}
-
-	private static void assertId(final String id)
-	{
-		if (id != null && Integer.parseInt(id) <= 0)
-			throw new IllegalStateException("assert failed: id=" + id);
 	}
 }
