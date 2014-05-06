@@ -640,6 +640,22 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				XmlPullUtil.enter(pp, "StationTable");
 			}
 
+			String[] stationPlaceAndName = null;
+			if (XmlPullUtil.test(pp, "St"))
+			{
+				final String evaId = XmlPullUtil.attr(pp, "evaId");
+				if (evaId != null)
+				{
+					if (!evaId.equals(stationId))
+						throw new IllegalStateException("stationId: " + stationId + ", evaId: " + evaId);
+
+					final String name = XmlPullUtil.attr(pp, "name");
+					if (name != null)
+						stationPlaceAndName = splitPlaceAndName(name.trim());
+				}
+				XmlPullUtil.requireSkip(pp, "St");
+			}
+
 			while (XmlPullUtil.test(pp, "Journey"))
 			{
 				final String fpTime = XmlPullUtil.attr(pp, "fpTime");
@@ -777,7 +793,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				XmlPullUtil.requireSkip(pp, "Journey");
 			}
 
-			result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, stationId), departures, null));
+			result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, stationId,
+					stationPlaceAndName != null ? stationPlaceAndName[0] : null, stationPlaceAndName != null ? stationPlaceAndName[1] : null),
+					departures, null));
 			return result;
 		}
 		catch (final XmlPullParserException x)
