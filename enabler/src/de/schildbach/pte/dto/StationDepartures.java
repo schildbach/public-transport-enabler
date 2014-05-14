@@ -42,7 +42,7 @@ public final class StationDepartures implements Serializable
 		final StringBuilder builder = new StringBuilder(getClass().getName());
 		builder.append("[");
 		if (location != null)
-			builder.append(location.toDebugString());
+			builder.append(location);
 		if (departures != null)
 			builder.append(" ").append(departures.size()).append(" departures");
 		builder.append("]");

@@ -1464,7 +1464,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			return "<Address type=\"WGS84\" x=\"" + location.lon + "\" y=\"" + location.lat + "\" name=\""
 					+ (location.place != null ? location.place + ", " : "") + location.name + "\" />";
 		else
-			throw new IllegalArgumentException("cannot handle: " + location.toDebugString());
+			throw new IllegalArgumentException("cannot handle: " + location);
 	}
 
 	protected final String locationId(final Location location)

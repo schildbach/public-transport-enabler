@@ -132,7 +132,7 @@ public class JetProvider extends AbstractHafasProvider
 		}
 		else
 		{
-			throw new IllegalArgumentException("cannot handle: " + location.toDebugString());
+			throw new IllegalArgumentException("cannot handle: " + location);
 		}
 	}
 

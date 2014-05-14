@@ -172,7 +172,7 @@ public class SeProvider extends AbstractHafasProvider
 		}
 		else
 		{
-			throw new IllegalArgumentException("cannot handle: " + location.toDebugString());
+			throw new IllegalArgumentException("cannot handle: " + location);
 		}
 	}
 

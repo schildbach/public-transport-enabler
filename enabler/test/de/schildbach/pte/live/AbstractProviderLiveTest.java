@@ -63,7 +63,7 @@ public abstract class AbstractProviderLiveTest
 	{
 		System.out.print(autocompletes.size() + " ");
 		for (final Location autocomplete : autocompletes)
-			System.out.print(autocomplete.toDebugString() + " ");
+			System.out.print(autocomplete + " ");
 		System.out.println();
 	}
 

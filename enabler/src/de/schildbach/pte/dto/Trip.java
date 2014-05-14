@@ -301,7 +301,7 @@ public final class Trip implements Serializable
 			if (destination != null)
 			{
 				builder.append(",");
-				builder.append("destination=").append(destination.toDebugString());
+				builder.append("destination=").append(destination);
 			}
 			builder.append(",");
 			builder.append("departure=").append(departureStop);
@@ -339,9 +339,9 @@ public final class Trip implements Serializable
 			final StringBuilder builder = new StringBuilder(getClass().getName() + "[");
 			builder.append("type=").append(type);
 			builder.append(",");
-			builder.append("departure=").append(departure.toDebugString());
+			builder.append("departure=").append(departure);
 			builder.append(",");
-			builder.append("arrival=").append(arrival.toDebugString());
+			builder.append("arrival=").append(arrival);
 			builder.append(",");
 			builder.append("distance=").append(distance);
 			builder.append(",");

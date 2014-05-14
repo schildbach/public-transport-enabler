@@ -126,12 +126,7 @@ public final class Location implements Serializable
 	@Override
 	public String toString()
 	{
-		return name; // invoked by AutoCompleteTextView in landscape orientation
-	}
-
-	public String toDebugString()
-	{
-		return "[" + type + " " + id + " " + lat + "/" + lon + " " + (place != null ? "'" + place + "'" : "null") + " '" + name + "']";
+		return "[" + type + " " + id + " " + lat + "/" + lon + " " + (place != null ? "\"" + place + "\"" : "null") + " \"" + name + "\"]";
 	}
 
 	@Override
