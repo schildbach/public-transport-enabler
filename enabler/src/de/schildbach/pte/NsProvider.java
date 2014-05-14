@@ -42,8 +42,6 @@ public class NsProvider extends AbstractHafasProvider
 	public NsProvider()
 	{
 		super(API_BASE + "stboard.exe/nn", API_BASE + "ajax-getstop.exe/nny", API_BASE + "query.exe/nn", 10);
-
-		setJsonGetStopsEncoding(UTF_8);
 	}
 
 	public NetworkId id()
@@ -63,8 +61,18 @@ public class NsProvider extends AbstractHafasProvider
 	@Override
 	protected char intToProduct(final int value)
 	{
-		if (value == 0)
-			return '?';
+		if (value == 1)
+			return 'I';
+		if (value == 2)
+			return 'I';
+		if (value == 4)
+			return 'R';
+		if (value == 8)
+			return 'R';
+		if (value == 16)
+			return 'S';
+		if (value == 64)
+			return 'F';
 
 		throw new IllegalArgumentException("cannot handle: " + value);
 	}
