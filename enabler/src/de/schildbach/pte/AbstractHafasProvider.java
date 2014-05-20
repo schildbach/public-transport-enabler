@@ -1825,7 +1825,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 							{
 								lineAttrs.add(Line.Attr.BICYCLE_CARRIAGE);
 							}
-							else if (comment.startsWith("$R "))
+							else if (comment.startsWith("$R ") || comment.startsWith("ga ") || comment.startsWith("Vs "))
 							{
 								lineOnDemand = true;
 								lineComment = comment.substring(5);

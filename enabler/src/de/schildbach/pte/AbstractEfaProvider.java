@@ -2604,10 +2604,14 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 								{
 									XmlPullUtil.enter(pp, "infoTextListElem");
 									final String text = pp.getText();
-									if ("Niederflurwagen soweit verfügbar".equals(text)) // KVV
-										lowFloorVehicle = true;
-									else if (text != null && text.toLowerCase().contains("ruf")) // RufBus, RufTaxi
-										message = text;
+									if (text != null)
+									{
+										final String lcText = text.toLowerCase();
+										if ("niederflurwagen soweit verfügbar".equals(lcText)) // KVV
+											lowFloorVehicle = true;
+										else if (lcText.contains("ruf") || lcText.contains("anmeld")) // Bedarfsverkehr
+											message = text;
+									}
 									XmlPullUtil.exit(pp, "infoTextListElem");
 								}
 								XmlPullUtil.exit(pp, "itdInfoTextList");
