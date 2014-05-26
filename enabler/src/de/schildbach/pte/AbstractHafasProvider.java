@@ -1609,13 +1609,16 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		try
 		{
 			final CustomBufferedInputStream bis = new CustomBufferedInputStream(ParserUtils.scrapeInputStream(uri));
+			final String firstChars = ParserUtils.peekFirstChars(bis);
+
+			// initialize input stream
 			is = new LittleEndianDataInputStream(bis);
 			is.mark(expectedBufferSize);
 
 			// quick check of status
 			final int version = is.readShortReverse();
 			if (version != 6 && version != 5)
-				throw new IllegalStateException("unknown version: " + version);
+				throw new IllegalStateException("unknown version: " + version + ", first chars: " + firstChars);
 			final ResultHeader header = new ResultHeader(SERVER_PRODUCT, Integer.toString(version), 0, null);
 
 			// quick seek for pointers

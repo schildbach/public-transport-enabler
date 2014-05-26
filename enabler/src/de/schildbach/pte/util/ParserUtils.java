@@ -362,6 +362,17 @@ public final class ParserUtils
 		}
 	}
 
+	private static final int PEEK_SIZE = 2048;
+
+	public static String peekFirstChars(final InputStream is) throws IOException
+	{
+		is.mark(PEEK_SIZE);
+		final byte[] firstBytes = new byte[PEEK_SIZE];
+		final int read = is.read(firstBytes);
+		is.reset();
+		return new String(firstBytes, 0, read).replaceAll("\\p{C}", "");
+	}
+
 	private static final Pattern P_ENTITY = Pattern.compile("&(?:#(x[\\da-f]+|\\d+)|(amp|quot|apos|szlig|nbsp));");
 
 	public static String resolveEntities(final CharSequence str)
