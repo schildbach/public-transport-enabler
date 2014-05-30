@@ -819,12 +819,12 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
 			throws IOException
 	{
-		return queryTripsXml(from, via, to, date, dep, products, walkSpeed, accessibility, options);
+		return queryTripsBinary(from, via, to, date, dep, products, walkSpeed, accessibility, options);
 	}
 
 	public QueryTripsResult queryMoreTrips(final QueryTripsContext context, final boolean later) throws IOException
 	{
-		return queryMoreTripsXml(context, later);
+		return queryMoreTripsBinary(context, later);
 	}
 
 	protected final void appendTripsQueryUri(final StringBuilder uri, final Location from, final Location via, final Location to, final Date date,
@@ -1519,6 +1519,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 	protected void appendCustomTripsQueryBinaryUri(final StringBuilder uri)
 	{
+		uri.append("&h2g-direct=11");
 	}
 
 	private final static int QUERY_TRIPS_BINARY_BUFFER_SIZE = 384 * 1024;

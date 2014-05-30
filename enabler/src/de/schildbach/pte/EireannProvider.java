@@ -18,7 +18,10 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,6 +31,8 @@ import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
+import de.schildbach.pte.dto.QueryTripsContext;
+import de.schildbach.pte.dto.QueryTripsResult;
 
 /**
  * Ireland, Dublin
@@ -131,6 +136,25 @@ public class EireannProvider extends AbstractHafasProvider
 		uri.append(jsonGetStopsParameters(constraint));
 
 		return jsonGetStops(uri.toString());
+	}
+
+	@Override
+	protected void appendCustomTripsQueryBinaryUri(final StringBuilder uri)
+	{
+	}
+
+	@Override
+	public QueryTripsResult queryTrips(final Location from, final Location via, final Location to, final Date date, final boolean dep,
+			final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
+			throws IOException
+	{
+		return queryTripsXml(from, via, to, date, dep, products, walkSpeed, accessibility, options);
+	}
+
+	@Override
+	public QueryTripsResult queryMoreTrips(final QueryTripsContext context, final boolean later) throws IOException
+	{
+		return queryMoreTripsXml(context, later);
 	}
 
 	private static final Pattern P_NORMALIZE_LINE = Pattern.compile("([^#]+)#");

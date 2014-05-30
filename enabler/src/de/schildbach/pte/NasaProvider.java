@@ -18,18 +18,13 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
-import de.schildbach.pte.dto.QueryTripsContext;
-import de.schildbach.pte.dto.QueryTripsResult;
 
 /**
  * @author Andreas Schildbach
@@ -169,26 +164,6 @@ public class NasaProvider extends AbstractHafasProvider
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
 		return xmlMLcReq(constraint);
-	}
-
-	@Override
-	protected void appendCustomTripsQueryBinaryUri(final StringBuilder uri)
-	{
-		uri.append("&h2g-direct=11");
-	}
-
-	@Override
-	public QueryTripsResult queryTrips(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
-			throws IOException
-	{
-		return queryTripsBinary(from, via, to, date, dep, products, walkSpeed, accessibility, options);
-	}
-
-	@Override
-	public QueryTripsResult queryMoreTrips(final QueryTripsContext contextObj, final boolean later) throws IOException
-	{
-		return queryMoreTripsBinary(contextObj, later);
 	}
 
 	@Override

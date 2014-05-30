@@ -18,12 +18,9 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,8 +30,6 @@ import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
-import de.schildbach.pte.dto.QueryTripsContext;
-import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.dto.Style.Shape;
 
@@ -184,25 +179,11 @@ public class StockholmProvider extends AbstractHafasProvider
 	@Override
 	protected void appendCustomTripsQueryBinaryUri(final StringBuilder uri)
 	{
-		uri.append("&h2g-direct=11"
-				+ "&REQ0HafasSearchIndividual=1&REQ0HafasSearchPublic=1"
+		super.appendCustomTripsQueryBinaryUri(uri);
+		uri.append("&REQ0HafasSearchIndividual=1&REQ0HafasSearchPublic=1"
 				+ "&existIntermodalDep_enable=yes&existIntermodalDest_enable=yes&existTotal_enable=yes"
 				+ "&REQ0JourneyDep_Foot_enable=1&REQ0JourneyDep_Foot_maxDist=5000&REQ0JourneyDep_Foot_minDist=0&REQ0JourneyDep_Foot_speed=100&REQ0JourneyDep_Bike_enable=0&REQ0JourneyDep_ParkRide_enable=0"
 				+ "&REQ0JourneyDest_Foot_enable=1&REQ0JourneyDest_Foot_maxDist=5000&REQ0JourneyDest_Foot_minDist=0&REQ0JourneyDest_Foot_speed=100&REQ0JourneyDest_Bike_enable=0&REQ0JourneyDest_ParkRide_enable=0");
-	}
-
-	@Override
-	public QueryTripsResult queryTrips(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
-			throws IOException
-	{
-		return queryTripsBinary(from, via, to, date, dep, products, walkSpeed, accessibility, options);
-	}
-
-	@Override
-	public QueryTripsResult queryMoreTrips(final QueryTripsContext contextObj, final boolean later) throws IOException
-	{
-		return queryMoreTripsBinary(contextObj, later);
 	}
 
 	@Override

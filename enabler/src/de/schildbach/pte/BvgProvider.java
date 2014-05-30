@@ -20,13 +20,11 @@ package de.schildbach.pte;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,8 +38,6 @@ import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.Position;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
-import de.schildbach.pte.dto.QueryTripsContext;
-import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.ResultHeader;
 import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.dto.Style;
@@ -529,23 +525,9 @@ public final class BvgProvider extends AbstractHafasProvider
 	@Override
 	protected void appendCustomTripsQueryBinaryUri(final StringBuilder uri)
 	{
-		uri.append("&h2g-direct=11");
+		super.appendCustomTripsQueryBinaryUri(uri);
 		if (additionalQueryParameter != null)
 			uri.append('&').append(additionalQueryParameter);
-	}
-
-	@Override
-	public QueryTripsResult queryTrips(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
-			throws IOException
-	{
-		return queryTripsBinary(from, via, to, date, dep, products, walkSpeed, accessibility, options);
-	}
-
-	@Override
-	public QueryTripsResult queryMoreTrips(final QueryTripsContext contextObj, final boolean later) throws IOException
-	{
-		return queryMoreTripsBinary(contextObj, later);
 	}
 
 	private static final Pattern P_NORMALIZE_LINE_NAME_TRAM = Pattern.compile("(?:tra|tram)\\s+(.*)", Pattern.CASE_INSENSITIVE);
