@@ -41,7 +41,7 @@ public class SbbProviderLiveTest extends AbstractProviderLiveTest
 {
 	public SbbProviderLiveTest()
 	{
-		super(new SbbProvider(Secrets.SBB_ACCESS_ID));
+		super(new SbbProvider());
 	}
 
 	@Test
