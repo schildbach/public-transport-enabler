@@ -91,4 +91,15 @@ public class VgnProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
 	}
+
+	@Test
+	public void tripToAddress() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "1756", "Nürnberg", "Saarbrückener Str."), null, new Location(
+				LocationType.ADDRESS, null, 49437392, 11094524, "Nürnberg", "Wodanstraße 25"), new Date(), false, Product.ALL, WalkSpeed.FAST,
+				Accessibility.NEUTRAL);
+		System.out.println(result);
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+		System.out.println(laterResult);
+	}
 }
