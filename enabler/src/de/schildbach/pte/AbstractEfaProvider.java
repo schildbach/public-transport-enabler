@@ -18,6 +18,7 @@
 package de.schildbach.pte;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -69,7 +70,6 @@ import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.dto.Stop;
 import de.schildbach.pte.dto.Trip;
 import de.schildbach.pte.exception.InvalidDataException;
-import de.schildbach.pte.exception.NotFoundException;
 import de.schildbach.pte.exception.ParserException;
 import de.schildbach.pte.exception.ProtocolException;
 import de.schildbach.pte.exception.SessionExpiredException;
@@ -2225,7 +2225,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		{
 			throw new ParserException(x);
 		}
-		catch (final NotFoundException x)
+		catch (final FileNotFoundException x)
 		{
 			throw new SessionExpiredException();
 		}
