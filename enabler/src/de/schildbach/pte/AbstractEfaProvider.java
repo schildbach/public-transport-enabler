@@ -1476,6 +1476,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		try
 		{
 			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null, 3);
+			final String firstChars = ParserUtils.peekFirstChars(is);
 
 			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
@@ -1487,7 +1488,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				XmlPullUtil.next(pp);
 
 			if (!XmlPullUtil.test(pp, "itdOdv") || !"dm".equals(XmlPullUtil.attr(pp, "usage")))
-				throw new IllegalStateException("cannot find <itdOdv usage=\"dm\" />");
+				throw new IllegalStateException("cannot find <itdOdv usage=\"dm\" />, first chars: " + firstChars);
 			XmlPullUtil.enter(pp, "itdOdv");
 
 			final String place = processItdOdvPlace(pp);
