@@ -17,7 +17,6 @@
 
 package de.schildbach.pte;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -2217,7 +2216,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		InputStream is = null;
 		try
 		{
-			is = new BufferedInputStream(ParserUtils.scrapeInputStream(uri.toString(), null, null, httpRefererTrip, "NSC_", 3));
+			is = ParserUtils.scrapeInputStream(uri.toString(), null, null, httpRefererTrip, "NSC_", 3);
 			is.mark(512);
 
 			return queryTrips(uri.toString(), is);
@@ -2263,7 +2262,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		InputStream is = null;
 		try
 		{
-			is = new BufferedInputStream(ParserUtils.scrapeInputStream(uri.toString(), null, null, httpRefererTrip, "NSC_", 3));
+			is = ParserUtils.scrapeInputStream(uri.toString(), null, null, httpRefererTrip, "NSC_", 3);
 			is.mark(512);
 
 			return queryTripsMobile(uri.toString(), null, null, null, is);

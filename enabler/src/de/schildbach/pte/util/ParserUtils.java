@@ -125,32 +125,10 @@ public final class ParserUtils
 					if (!url.getHost().equals(connection.getURL().getHost()))
 						throw new UnexpectedRedirectException(url, connection.getURL());
 
-					final InputStream is;
-					if ("gzip".equalsIgnoreCase(contentEncoding) || "application/octet-stream".equalsIgnoreCase(contentType))
-					{
-						final BufferedInputStream bis = new BufferedInputStream(connection.getInputStream());
-						bis.mark(2);
-						final int byte0 = bis.read();
-						final int byte1 = bis.read();
-						bis.reset();
+					InputStream is = new BufferedInputStream(connection.getInputStream());
 
-						// check for gzip header
-						if (byte0 == 0x1f && byte1 == 0x8b)
-						{
-							// gzipped
-							is = new GZIPInputStream(bis);
-						}
-						else
-						{
-							// uncompressed
-							is = bis;
-						}
-					}
-					else
-					{
-						// uncompressed
-						is = connection.getInputStream();
-					}
+					if ("gzip".equalsIgnoreCase(contentEncoding) || "application/octet-stream".equalsIgnoreCase(contentType))
+						is = wrapGzip(is);
 
 					final Reader pageReader = new InputStreamReader(is, encoding);
 					copy(pageReader, buffer);
@@ -293,7 +271,12 @@ public final class ParserUtils
 			{
 				final String contentType = connection.getContentType();
 				final String contentEncoding = connection.getContentEncoding();
-				final InputStream is = connection.getInputStream();
+
+				InputStream is = new BufferedInputStream(connection.getInputStream());
+
+				if ("gzip".equalsIgnoreCase(contentEncoding) || "application/octet-stream".equalsIgnoreCase(contentType))
+					is = wrapGzip(is);
+
 				if (!url.getHost().equals(connection.getURL().getHost()))
 					throw new UnexpectedRedirectException(url, connection.getURL());
 
@@ -314,48 +297,7 @@ public final class ParserUtils
 					}
 				}
 
-				if ("gzip".equalsIgnoreCase(contentEncoding) || "application/octet-stream".equalsIgnoreCase(contentType))
-				{
-					final BufferedInputStream bis = new BufferedInputStream(is);
-					bis.mark(2);
-					final int byte0 = bis.read();
-					final int byte1 = bis.read();
-					bis.reset();
-
-					// check for gzip header
-					if (byte0 == 0x1f && byte1 == 0x8b)
-					{
-						final InputStream gis = new GZIPInputStream(bis);
-
-						final BufferedInputStream bis2 = new BufferedInputStream(gis);
-						bis2.mark(2);
-						final int byte0_2 = bis2.read();
-						final int byte1_2 = bis2.read();
-						bis2.reset();
-
-						// check for gzip header again
-						if (byte0_2 == 0x1f && byte1_2 == 0x8b)
-						{
-							// double gzipped
-							return new GZIPInputStream(bis2);
-						}
-						else
-						{
-							// gzipped
-							return bis2;
-						}
-					}
-					else
-					{
-						// uncompressed
-						return bis;
-					}
-				}
-				else
-				{
-					// uncompressed
-					return is;
-				}
+				return is;
 			}
 			else if (responseCode == HttpURLConnection.HTTP_FORBIDDEN || responseCode == HttpURLConnection.HTTP_BAD_REQUEST
 					|| responseCode == HttpURLConnection.HTTP_NOT_ACCEPTABLE || responseCode == HttpURLConnection.HTTP_UNAVAILABLE)
@@ -382,6 +324,41 @@ public final class ParserUtils
 				else
 					throw new IOException(message + ": " + url);
 			}
+		}
+	}
+
+	private static InputStream wrapGzip(final InputStream is) throws IOException
+	{
+		is.mark(2);
+		final int byte0 = is.read();
+		final int byte1 = is.read();
+		is.reset();
+
+		// check for gzip header
+		if (byte0 == 0x1f && byte1 == 0x8b)
+		{
+			final BufferedInputStream is2 = new BufferedInputStream(new GZIPInputStream(is));
+			is2.mark(2);
+			final int byte0_2 = is2.read();
+			final int byte1_2 = is2.read();
+			is2.reset();
+
+			// check for gzip header again
+			if (byte0_2 == 0x1f && byte1_2 == 0x8b)
+			{
+				// double gzipped
+				return new BufferedInputStream(new GZIPInputStream(is2));
+			}
+			else
+			{
+				// gzipped
+				return is2;
+			}
+		}
+		else
+		{
+			// uncompressed
+			return is;
 		}
 	}
 
