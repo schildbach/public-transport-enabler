@@ -56,4 +56,15 @@ public final class QueryDeparturesResult implements Serializable
 		builder.append("]");
 		return builder.toString();
 	}
+
+	public StationDepartures findStationDepartures(final String stationId)
+	{
+		for (final StationDepartures departures : stationDepartures)
+		{
+			if (stationId.equals(departures.location.id))
+				return departures;
+		}
+
+		return null;
+	}
 }
