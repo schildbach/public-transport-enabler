@@ -1484,6 +1484,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 			XmlPullUtil.enter(pp, "itdDepartureMonitorRequest");
 
+			if (XmlPullUtil.test(pp, "itdMessage"))
+				XmlPullUtil.next(pp);
+
 			if (!XmlPullUtil.test(pp, "itdOdv") || !"dm".equals(XmlPullUtil.attr(pp, "usage")))
 				throw new IllegalStateException("cannot find <itdOdv usage=\"dm\" />");
 			XmlPullUtil.enter(pp, "itdOdv");
