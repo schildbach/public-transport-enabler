@@ -934,7 +934,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	{
 		final StringBuilder parameters = new StringBuilder();
 		appendCommonRequestParams(parameters, "XML");
-		parameters.append("&type_dm=stop&name_dm=").append(stationId);
+		parameters.append("&type_dm=stop&name_dm=").append(normalizeStationId(stationId));
 		parameters.append("&itOptionsActive=1");
 		parameters.append("&ptOptionsActive=1");
 		parameters.append("&useProxFootSearch=1");
@@ -1449,7 +1449,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		final StringBuilder parameters = new StringBuilder();
 		appendCommonRequestParams(parameters, "XML");
 		parameters.append("&type_dm=stop");
-		parameters.append("&name_dm=").append(stationId);
+		parameters.append("&name_dm=").append(normalizeStationId(stationId));
 		if (useRealtime)
 			parameters.append("&useRealtime=1");
 		parameters.append("&mode=direct");
@@ -3275,7 +3275,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		if (canAcceptPoiId && location.type == LocationType.POI && location.hasId())
 		{
 			uri.append("&type_").append(paramSuffix).append("=poiID");
-			uri.append("&name_").append(paramSuffix).append("=").append(location.id);
+			uri.append("&name_").append(paramSuffix).append("=").append(normalizeStationId(location.id));
 		}
 		else if ((location.type == LocationType.POI || location.type == LocationType.ADDRESS) && location.hasLocation())
 		{

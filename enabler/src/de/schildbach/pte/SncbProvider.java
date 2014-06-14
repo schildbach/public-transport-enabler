@@ -138,7 +138,7 @@ public class SncbProvider extends AbstractHafasProvider
 			final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
 			uri.append("?near=Zoek");
 			uri.append("&distance=").append(maxDistance != 0 ? maxDistance / 1000 : 50);
-			uri.append("&input=").append(location.id);
+			uri.append("&input=").append(normalizeStationId(location.id));
 
 			return htmlNearbyStations(uri.toString());
 		}

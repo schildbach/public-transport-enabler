@@ -103,7 +103,7 @@ public class InvgProvider extends AbstractHafasProvider
 			final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
 			uri.append("?near=Anzeigen");
 			uri.append("&distance=").append(maxDistance != 0 ? maxDistance / 1000 : 50);
-			uri.append("&input=").append(location.id);
+			uri.append("&input=").append(normalizeStationId(location.id));
 
 			return htmlNearbyStations(uri.toString());
 		}
@@ -116,7 +116,7 @@ public class InvgProvider extends AbstractHafasProvider
 	private String departuresQueryUri(final String stationId, final int maxDepartures)
 	{
 		final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
-		uri.append("?input=").append(stationId);
+		uri.append("?input=").append(normalizeStationId(stationId));
 		uri.append("&boardType=dep");
 		uri.append("&productsFilter=").append(allProductsString());
 		if (maxDepartures != 0)

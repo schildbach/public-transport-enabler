@@ -194,7 +194,7 @@ public final class BvgProvider extends AbstractHafasProvider
 			final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
 			uri.append("?near=Anzeigen");
 			uri.append("&distance=").append(maxDistance != 0 ? maxDistance / 1000 : 50);
-			uri.append("&input=").append(location.id);
+			uri.append("&input=").append(normalizeStationId(location.id));
 
 			final CharSequence page = ParserUtils.scrape(uri.toString());
 
@@ -262,7 +262,7 @@ public final class BvgProvider extends AbstractHafasProvider
 	{
 		final StringBuilder uri = new StringBuilder();
 		uri.append(DEPARTURE_URL_LIVE);
-		uri.append("input=").append(stationId);
+		uri.append("input=").append(normalizeStationId(stationId));
 		if (additionalQueryParameter != null)
 			uri.append('&').append(additionalQueryParameter);
 		return uri.toString();
@@ -274,7 +274,7 @@ public final class BvgProvider extends AbstractHafasProvider
 	{
 		final StringBuilder uri = new StringBuilder();
 		uri.append(DEPARTURE_URL_PLAN);
-		uri.append("&input=").append(stationId);
+		uri.append("&input=").append(normalizeStationId(stationId));
 		uri.append("&maxJourneys=").append(maxDepartures != 0 ? maxDepartures : 50);
 		if (additionalQueryParameter != null)
 			uri.append('&').append(additionalQueryParameter);

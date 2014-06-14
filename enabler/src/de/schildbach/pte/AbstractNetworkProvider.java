@@ -118,4 +118,19 @@ public abstract class AbstractNetworkProvider implements NetworkProvider
 	{
 		return null;
 	}
+
+	protected static String normalizeStationId(final String stationId)
+	{
+		if (stationId == null || stationId.isEmpty())
+			return null;
+
+		if (stationId.charAt(0) != '0')
+			return stationId;
+
+		final StringBuilder normalized = new StringBuilder(stationId);
+		while (normalized.length() > 0 && normalized.charAt(0) == '0')
+			normalized.deleteCharAt(0);
+
+		return normalized.toString();
+	}
 }

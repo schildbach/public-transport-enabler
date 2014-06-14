@@ -579,7 +579,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		parameters.append("&maxJourneys=50"); // ignore maxDepartures because result contains other stations
 		parameters.append("&start=yes");
 		parameters.append("&L=vs_java3");
-		parameters.append("&input=").append(stationId);
+		parameters.append("&input=").append(normalizeStationId(stationId));
 		if (clientType != null)
 			parameters.append("&clientType=").append(ParserUtils.urlEncode(clientType));
 
@@ -590,6 +590,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 	protected QueryDeparturesResult xmlQueryDepartures(final String uri, final String stationId) throws IOException
 	{
+		final String normalizedStationId = normalizeStationId(stationId);
+
 		StringReplaceReader reader = null;
 
 		try
@@ -628,7 +630,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					return new QueryDeparturesResult(header, QueryDeparturesResult.Status.INVALID_STATION);
 				if (code.equals("H890"))
 				{
-					result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, stationId), Collections
+					result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, normalizedStationId), Collections
 							.<Departure> emptyList(), null));
 					return result;
 				}
@@ -646,8 +648,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				final String evaId = XmlPullUtil.attr(pp, "evaId");
 				if (evaId != null)
 				{
-					if (!evaId.equals(stationId))
-						throw new IllegalStateException("stationId: " + stationId + ", evaId: " + evaId);
+					if (!evaId.equals(normalizedStationId))
+						throw new IllegalStateException("stationId: " + normalizedStationId + ", evaId: " + evaId);
 
 					final String name = XmlPullUtil.attr(pp, "name");
 					if (name != null)
@@ -793,7 +795,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				XmlPullUtil.requireSkip(pp, "Journey");
 			}
 
-			result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, stationId,
+			result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, normalizedStationId,
 					stationPlaceAndName != null ? stationPlaceAndName[0] : null, stationPlaceAndName != null ? stationPlaceAndName[1] : null),
 					departures, null));
 			return result;
@@ -1457,7 +1459,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	private static final String locationXml(final Location location)
 	{
 		if (location.type == LocationType.STATION && location.hasId())
-			return "<Station externalId=\"" + location.id + "\" />";
+			return "<Station externalId=\"" + normalizeStationId(location.id) + "\" />";
 		else if (location.type == LocationType.POI && location.hasLocation())
 			return "<Poi type=\"WGS84\" x=\"" + location.lon + "\" y=\"" + location.lat + "\" />";
 		else if (location.type == LocationType.ADDRESS && location.hasLocation())
@@ -1475,7 +1477,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 		if (location.type == LocationType.STATION && location.hasId() && isValidStationId(location.id))
 		{
-			id.append("@L=").append(location.id);
+			id.append("@L=").append(normalizeStationId(location.id));
 		}
 		else if (location.hasLocation())
 		{
@@ -2260,7 +2262,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		final StringBuilder parameters = new StringBuilder();
 		parameters.append("?productsFilter=").append(allProductsString());
 		parameters.append("&boardType=dep");
-		parameters.append("&input=").append(stationId);
+		parameters.append("&input=").append(normalizeStationId(stationId));
 		parameters.append("&sTI=1&start=yes&hcount=0&L=vs_java3");
 		if (clientType != null)
 			parameters.append("&clientType=").append(ParserUtils.urlEncode(clientType));

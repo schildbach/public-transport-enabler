@@ -126,7 +126,7 @@ public class SeptaProvider extends AbstractHafasProvider
 			final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
 			uri.append("?near=Anzeigen");
 			uri.append("&distance=").append(maxDistance != 0 ? maxDistance / 1000 : 50);
-			uri.append("&input=").append(location.id);
+			uri.append("&input=").append(normalizeStationId(location.id));
 
 			return htmlNearbyStations(uri.toString());
 		}
@@ -141,7 +141,7 @@ public class SeptaProvider extends AbstractHafasProvider
 		final Calendar now = new GregorianCalendar(timeZone());
 
 		final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
-		uri.append("?input=").append(stationId);
+		uri.append("?input=").append(normalizeStationId(stationId));
 		uri.append("&boardType=dep");
 		uri.append("&time=");
 		uri.append(ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%02d:%02d %s", now.get(Calendar.HOUR), now.get(Calendar.MINUTE),
