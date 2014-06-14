@@ -1097,7 +1097,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return "IEN" + trainNum;
 			if ("IC".equals(trainType) || "InterCity".equals(trainName))
 				return "IIC" + trainNum;
-			if ("ICE".equals(trainType) || "Intercity-Express".equals(trainName))
+			if ("InterCity".equals(longName))
+				return "IIC";
+			if (("ICE".equals(trainType) || "ICE".equals(trainName) || "Intercity-Express".equals(trainName)) && trainNum != null)
 				return "IICE" + trainNum;
 			if ("X".equals(trainType) || "InterConnex".equals(trainName))
 				return "IX" + trainNum;
@@ -1190,8 +1192,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return "RHEX" + trainNum;
 			if ("EB".equals(trainType) || "Erfurter Bahn".equals(trainName))
 				return "REB" + trainNum;
+			if ("Erfurter Bahn".equals(longName))
+				return "REB";
 			if ("EBx".equals(trainType) || "Erfurter Bahn Express".equals(trainName))
 				return "REBx" + trainNum;
+			if ("Erfurter Bahn Express".equals(longName))
+				return "REBx";
 			if ("MRB".equals(trainType) || "Mitteldeutsche Regiobahn".equals(trainName))
 				return "RMRB" + trainNum;
 			if ("ABR".equals(trainType) || "ABELLIO Rail NRW GmbH".equals(trainName))
@@ -1244,6 +1250,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return "REX" + trainNum;
 			if ("ME".equals(trainType) || "metronom".equals(trainName))
 				return "RME" + trainNum;
+			if ("metronom".equals(longName))
+				return "RME";
 			if ("MEr".equals(trainType))
 				return "RMEr" + trainNum;
 			if ("AKN".equals(trainType) || "AKN Eisenbahn AG".equals(trainName))

@@ -59,10 +59,10 @@ public class VvoProvider extends AbstractEfaProvider
 	{
 		if ("0".equals(mot))
 		{
-			if ("Erfurter Bahn".equals(longName))
-				return "REB";
 			if ("Ostdeutsche Eisenbahn GmbH".equals(longName))
 				return "ROE";
+			if ("Meridian".equals(longName))
+				return "RM";
 		}
 
 		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);

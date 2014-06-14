@@ -2396,6 +2396,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			return 'I';
 		if ("ICN".equals(ucType)) // Intercity-Neigezug, Schweiz
 			return 'I';
+		if ("ICD".equals(ucType)) // Intercity direkt Amsterdam-Breda
+			return 'I';
 		if ("CNL".equals(ucType)) // CityNightLine
 			return 'I';
 		if ("OEC".equals(ucType)) // ÖBB-EuroCity

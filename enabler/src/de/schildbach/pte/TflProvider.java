@@ -117,6 +117,8 @@ public class TflProvider extends AbstractEfaProvider
 
 			else if ("London Overground".equals(trainName) || "=LO".equals(trainType))
 				return "SLO" + trainNum;
+			else if ("LO".equals(trainNum) && trainType == null && trainName == null)
+				return "SLO";
 
 			else if ("Underground".equals(trainName) && trainType == null && name != null)
 				return "U" + name;

@@ -140,9 +140,6 @@ public class RtProvider extends AbstractHafasProvider
 	{
 		final String ucType = type.toUpperCase();
 
-		if ("ICD".equals(ucType)) // Intercity direkt Amsterdam-Breda
-			return 'I';
-
 		if ("E".equals(ucType)) // Romania, Croatia
 			return 'R';
 		if ("N".equals(ucType)) // Frankreich, Tours

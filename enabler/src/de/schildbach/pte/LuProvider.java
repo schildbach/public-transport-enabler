@@ -182,6 +182,8 @@ public class LuProvider extends AbstractHafasProvider
 			return 'B';
 		if ("DIFFBUS".equals(ucType))
 			return 'B';
+		if ("NAVETTE".equals(ucType))
+			return 'B';
 
 		final char t = super.normalizeType(type);
 		if (t != 0)
