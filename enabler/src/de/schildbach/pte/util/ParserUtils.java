@@ -160,7 +160,7 @@ public final class ParserUtils
 				if (!url.getHost().equals(connection.getURL().getHost()))
 					throw new UnexpectedRedirectException(url, connection.getURL());
 
-				final URL redirectUrl = testRedirect(peekFirstChars(is));
+				final URL redirectUrl = testRedirect(url, peekFirstChars(is));
 				if (redirectUrl != null)
 					throw new UnexpectedRedirectException(url, redirectUrl);
 
@@ -258,15 +258,24 @@ public final class ParserUtils
 		return new String(firstBytes, 0, read).replaceAll("\\p{C}", "");
 	}
 
-	private static final Pattern P_REDIRECT_HTTP_EQUIV = Pattern.compile("<META\\s+http-equiv=\"refresh\"\\s+content=\"\\d+;\\s*URL=([^\"]+)\"",
+	private static final Pattern P_REDIRECT_HTTP_EQUIV = Pattern.compile("<META\\s+http-equiv=\"?refresh\"?\\s+content=\"\\d+;\\s*URL=([^\"]+)\"",
 			Pattern.CASE_INSENSITIVE);
 
-	public static URL testRedirect(final String content) throws MalformedURLException
+	private static final Pattern P_REDIRECT_SCRIPT = Pattern.compile(
+			"<script\\s+(?:type=\"text/javascript\"|language=\"javascript\")>\\s*(?:window.location|location.href)\\s*=\\s*\"([^\"]+)\"",
+			Pattern.CASE_INSENSITIVE);
+
+	public static URL testRedirect(final URL context, final String content) throws MalformedURLException
 	{
 		// check for redirect by http-equiv meta tag header
 		final Matcher mHttpEquiv = P_REDIRECT_HTTP_EQUIV.matcher(content);
 		if (mHttpEquiv.find())
-			return new URL(mHttpEquiv.group(1));
+			return new URL(context, mHttpEquiv.group(1));
+
+		// check for redirect by window.location javascript
+		final Matcher mScript = P_REDIRECT_SCRIPT.matcher(content);
+		if (mScript.find())
+			return new URL(context, mScript.group(1));
 
 		return null;
 	}
