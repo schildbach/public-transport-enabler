@@ -26,7 +26,7 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.SocketTimeoutException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -55,9 +55,6 @@ public final class ParserUtils
 	private static final int SCRAPE_CONNECT_TIMEOUT = 5000;
 	private static final int SCRAPE_READ_TIMEOUT = 15000;
 	private static final Charset SCRAPE_DEFAULT_ENCODING = Charset.forName("ISO-8859-1");
-	private static final int SCRAPE_PAGE_EMPTY_THRESHOLD = 2;
-	private static final Pattern P_REFRESH = Pattern.compile("<META\\s+http-equiv=\"refresh\"\\s+content=\"\\d+;\\s*URL=([^\"]+)\"",
-			Pattern.CASE_INSENSITIVE);
 
 	private static String stateCookie;
 
@@ -77,135 +74,18 @@ public final class ParserUtils
 		return scrape(url, postRequest, encoding, sessionCookieName, 3);
 	}
 
-	public static final CharSequence scrape(final String urlStr, final String postRequest, Charset encoding, final String sessionCookieName, int tries)
-			throws IOException
+	public static final CharSequence scrape(final String urlStr, final String postRequest, Charset requestEncoding, final String sessionCookieName,
+			int tries) throws IOException
 	{
-		if (encoding == null)
-			encoding = SCRAPE_DEFAULT_ENCODING;
+		if (requestEncoding == null)
+			requestEncoding = SCRAPE_DEFAULT_ENCODING;
 
-		while (true)
-		{
-			try
-			{
-				final StringBuilder buffer = new StringBuilder(SCRAPE_INITIAL_CAPACITY);
-				final URL url = new URL(urlStr);
-				final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-				connection.setDoInput(true);
-				connection.setDoOutput(postRequest != null);
-				connection.setConnectTimeout(SCRAPE_CONNECT_TIMEOUT);
-				connection.setReadTimeout(SCRAPE_READ_TIMEOUT);
-				connection.addRequestProperty("User-Agent", SCRAPE_USER_AGENT);
-				connection.addRequestProperty("Accept", SCRAPE_ACCEPT);
-				connection.addRequestProperty("Accept-Encoding", "gzip");
-				// workaround to disable Vodafone compression
-				connection.addRequestProperty("Cache-Control", "no-cache");
-
-				if (sessionCookieName != null && stateCookie != null)
-					connection.addRequestProperty("Cookie", stateCookie);
-
-				if (postRequest != null)
-				{
-					final byte[] postRequestBytes = postRequest.getBytes(encoding.name());
-
-					connection.setRequestMethod("POST");
-					connection.addRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-					connection.addRequestProperty("Content-Length", Integer.toString(postRequestBytes.length));
-
-					final OutputStream os = connection.getOutputStream();
-					os.write(postRequestBytes);
-					os.close();
-				}
-
-				final int responseCode = connection.getResponseCode();
-				if (responseCode == HttpURLConnection.HTTP_OK)
-				{
-					final String contentType = connection.getContentType();
-					final String contentEncoding = connection.getContentEncoding();
-					if (!url.getHost().equals(connection.getURL().getHost()))
-						throw new UnexpectedRedirectException(url, connection.getURL());
-
-					InputStream is = new BufferedInputStream(connection.getInputStream());
-
-					if ("gzip".equalsIgnoreCase(contentEncoding) || "application/octet-stream".equalsIgnoreCase(contentType))
-						is = wrapGzip(is);
-
-					final Reader pageReader = new InputStreamReader(is, encoding);
-					copy(pageReader, buffer);
-					pageReader.close();
-
-					if (buffer.length() > SCRAPE_PAGE_EMPTY_THRESHOLD)
-					{
-						final Matcher mRefresh = P_REFRESH.matcher(buffer);
-						if (!mRefresh.find())
-						{
-							if (sessionCookieName != null)
-							{
-								for (final Map.Entry<String, List<String>> entry : connection.getHeaderFields().entrySet())
-								{
-									if ("set-cookie".equalsIgnoreCase(entry.getKey()))
-									{
-										for (final String value : entry.getValue())
-										{
-											if (value.startsWith(sessionCookieName))
-											{
-												stateCookie = value.split(";", 2)[0];
-											}
-										}
-									}
-								}
-							}
-
-							return buffer;
-						}
-						else
-						{
-							throw new UnexpectedRedirectException(url, new URL(mRefresh.group(1)));
-						}
-					}
-					else
-					{
-						final String message = "got empty page (length: " + buffer.length() + ")";
-						if (tries-- > 0)
-							System.out.println(message + ", retrying...");
-						else
-							throw new IOException(message + ": " + url);
-					}
-				}
-				else if (responseCode == HttpURLConnection.HTTP_FORBIDDEN || responseCode == HttpURLConnection.HTTP_BAD_REQUEST
-						|| responseCode == HttpURLConnection.HTTP_NOT_ACCEPTABLE || responseCode == HttpURLConnection.HTTP_UNAVAILABLE)
-				{
-					throw new BlockedException(url);
-				}
-				else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND)
-				{
-					throw new FileNotFoundException(url.toString());
-				}
-				else if (responseCode == HttpURLConnection.HTTP_MOVED_PERM || responseCode == HttpURLConnection.HTTP_MOVED_TEMP)
-				{
-					throw new UnexpectedRedirectException(url, connection.getURL());
-				}
-				else if (responseCode == HttpURLConnection.HTTP_INTERNAL_ERROR)
-				{
-					throw new InternalErrorException(url);
-				}
-				else
-				{
-					final String message = "got response: " + responseCode + " " + connection.getResponseMessage();
-					if (tries-- > 0)
-						System.out.println(message + ", retrying...");
-					else
-						throw new IOException(message + ": " + url);
-				}
-			}
-			catch (final SocketTimeoutException x)
-			{
-				if (tries-- > 0)
-					System.out.println("socket timed out, retrying...");
-				else
-					throw x;
-			}
-		}
+		final StringBuilder buffer = new StringBuilder(SCRAPE_INITIAL_CAPACITY);
+		final InputStream is = scrapeInputStream(urlStr, postRequest, requestEncoding, null, sessionCookieName, tries);
+		final Reader pageReader = new InputStreamReader(is, requestEncoding);
+		copy(pageReader, buffer);
+		pageReader.close();
+		return buffer;
 	}
 
 	private static final long copy(final Reader reader, final StringBuilder builder) throws IOException
@@ -279,6 +159,10 @@ public final class ParserUtils
 
 				if (!url.getHost().equals(connection.getURL().getHost()))
 					throw new UnexpectedRedirectException(url, connection.getURL());
+
+				final URL redirectUrl = testRedirect(peekFirstChars(is));
+				if (redirectUrl != null)
+					throw new UnexpectedRedirectException(url, redirectUrl);
 
 				if (sessionCookieName != null)
 				{
@@ -371,6 +255,19 @@ public final class ParserUtils
 		final int read = is.read(firstBytes);
 		is.reset();
 		return new String(firstBytes, 0, read).replaceAll("\\p{C}", "");
+	}
+
+	private static final Pattern P_REDIRECT_HTTP_EQUIV = Pattern.compile("<META\\s+http-equiv=\"refresh\"\\s+content=\"\\d+;\\s*URL=([^\"]+)\"",
+			Pattern.CASE_INSENSITIVE);
+
+	public static URL testRedirect(final String content) throws MalformedURLException
+	{
+		// check for redirect by http-equiv meta tag header
+		final Matcher mHttpEquiv = P_REDIRECT_HTTP_EQUIV.matcher(content);
+		if (mHttpEquiv.find())
+			return new URL(mHttpEquiv.group(1));
+
+		return null;
 	}
 
 	private static final Pattern P_ENTITY = Pattern.compile("&(?:#(x[\\da-f]+|\\d+)|(amp|quot|apos|szlig|nbsp));");
