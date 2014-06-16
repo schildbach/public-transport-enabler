@@ -1,0 +1,32 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+dependencies {
+    compile 'com.google.guava:guava:18.0'
+    compile 'org.slf4j:slf4j-api:1.7.12'
+    compile 'com.google.code.findbugs:jsr305:3.0.0'
+    compile 'org.json:json:20090211' // provided by Android
+    compile 'net.sf.kxml:kxml2:2.3.0' // provided by Android
+    testCompile 'junit:junit:4.11'
+    testRuntime 'org.slf4j:slf4j-jdk14:1.7.12'
+}
+
+sourceSets {
+    main {
+        java.srcDirs = ['src']
+        resources.srcDirs = ['src']
+    }
+    test {
+        java.srcDirs = ['test']
+        resources.srcDirs = ['test']
+    }
+}
+
+compileJava {
+    sourceCompatibility '1.5'
+    targetCompatibility '1.5'
+}
+
+test {
+    exclude 'de/schildbach/pte/live/**'
+}
