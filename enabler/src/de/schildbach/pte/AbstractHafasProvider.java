@@ -1878,7 +1878,11 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						final Position predictedDeparturePosition = normalizePosition(strings.read(is));
 						final Position predictedArrivalPosition = normalizePosition(strings.read(is));
 
-						is.readInt();
+						final int bits = is.readShortReverse();
+						final boolean arrivalCancelled = (bits & 0x10) != 0;
+						final boolean departureCancelled = (bits & 0x20) != 0;
+
+						is.readShort();
 
 						final int firstStopIndex = is.readShortReverse();
 
@@ -1914,7 +1918,11 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 								final Position predictedStopDeparturePosition = normalizePosition(strings.read(is));
 								final Position predictedStopArrivalPosition = normalizePosition(strings.read(is));
 
-								is.readInt();
+								final int stopBits = is.readShortReverse();
+								final boolean stopArrivalCancelled = (stopBits & 0x10) != 0;
+								final boolean stopDepartureCancelled = (stopBits & 0x20) != 0;
+
+								is.readShort();
 
 								final Location stopLocation = stations.read(is);
 
@@ -1923,8 +1931,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 								final Stop stop = new Stop(stopLocation, plannedStopArrivalDate,
 										validPredictedDate ? predictedStopArrivalDate : null, plannedStopArrivalPosition,
-										predictedStopArrivalPosition, plannedStopDepartureDate, validPredictedDate ? predictedStopDepartureDate
-												: null, plannedStopDeparturePosition, predictedStopDeparturePosition);
+										predictedStopArrivalPosition, stopArrivalCancelled, plannedStopDepartureDate,
+										validPredictedDate ? predictedStopDepartureDate : null, plannedStopDeparturePosition,
+										predictedStopDeparturePosition, stopDepartureCancelled);
 
 								intermediateStops.add(stop);
 							}
@@ -1983,10 +1992,10 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 							final Stop departure = new Stop(departureLocation, true, plannedDepartureTime != 0 ? new Date(plannedDepartureTime)
 									: null, predictedDepartureTime != 0 ? new Date(predictedDepartureTime) : null, plannedDeparturePosition,
-									predictedDeparturePosition);
+									predictedDeparturePosition, departureCancelled);
 							final Stop arrival = new Stop(arrivalLocation, false, plannedArrivalTime != 0 ? new Date(plannedArrivalTime) : null,
 									predictedArrivalTime != 0 ? new Date(predictedArrivalTime) : null, plannedArrivalPosition,
-									predictedArrivalPosition);
+									predictedArrivalPosition, arrivalCancelled);
 
 							leg = new Trip.Public(line, direction, departure, arrival, intermediateStops, null, null);
 						}
