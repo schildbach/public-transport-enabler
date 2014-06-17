@@ -1667,7 +1667,12 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				if (tripDetailsPtr == 0)
 					throw new IllegalStateException("no connection details");
 
-				is.skipBytes(16);
+				is.skipBytes(4);
+
+				final int disruptionsPtr = is.readIntReverse();
+
+				is.skipBytes(8);
+
 				final Charset stringEncoding = Charset.forName(strings.read(is));
 				strings.setEncoding(stringEncoding);
 				final String ld = strings.read(is);
@@ -1774,6 +1779,14 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					final int realtimeStatus = is.readShortReverse();
 
 					/* final short delay = */is.readShortReverse();
+
+					/* final int legIndex = */is.readShortReverse();
+
+					is.skipBytes(2); // 0xffff
+
+					/* final int legStatus = */is.readShortReverse();
+
+					is.skipBytes(2); // 0x0000
 
 					String connectionId = null;
 					if (tripAttrsPtr != 0)
@@ -1888,6 +1901,61 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 						final int numStops = is.readShortReverse();
 
+						is.reset();
+						is.skipBytes(disruptionsPtr);
+
+						String disruptionText = null;
+
+						if (is.readShortReverse() == 1)
+						{
+							is.reset();
+							is.skipBytes(disruptionsPtr + 2 + iTrip * 2);
+
+							int disruptionsOffset = is.readShortReverse();
+							while (disruptionsOffset != 0)
+							{
+								is.reset();
+								is.skipBytes(disruptionsPtr + disruptionsOffset);
+
+								strings.read(is); // "0"
+
+								final int disruptionLeg = is.readShortReverse();
+
+								is.skipBytes(2); // bitmaske
+
+								strings.read(is); // start of line
+								strings.read(is); // end of line
+
+								strings.read(is); // id
+								/* final String disruptionTitle = */strings.read(is);
+								final String disruptionShortText = ParserUtils.formatHtml(strings.read(is));
+
+								disruptionsOffset = is.readShortReverse(); // next
+
+								if (iLegs == disruptionLeg)
+								{
+									final int disruptionAttrsIndex = is.readShortReverse();
+
+									is.reset();
+									is.skipBytes(attrsOffset + disruptionAttrsIndex * 4);
+
+									while (true)
+									{
+										final String key = strings.read(is);
+										if (key == null)
+											break;
+										else if (key.equals("Text"))
+											disruptionText = ParserUtils.resolveEntities(strings.read(is));
+										else
+											is.skipBytes(2);
+									}
+
+									if (disruptionShortText != null)
+										disruptionText = disruptionShortText;
+								}
+							}
+						}
+
 						List<Stop> intermediateStops = null;
 
 						if (numStops > 0)
@@ -1997,7 +2065,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 									predictedArrivalTime != 0 ? new Date(predictedArrivalTime) : null, plannedArrivalPosition,
 									predictedArrivalPosition, arrivalCancelled);
 
-							leg = new Trip.Public(line, direction, departure, arrival, intermediateStops, null, null);
+							leg = new Trip.Public(line, direction, departure, arrival, intermediateStops, null, disruptionText);
 						}
 						else
 						{

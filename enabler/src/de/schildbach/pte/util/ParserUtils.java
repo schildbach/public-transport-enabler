@@ -280,6 +280,60 @@ public final class ParserUtils
 		return null;
 	}
 
+	private static final Pattern P_HTML_UNORDERED_LIST = Pattern.compile("<ul>(.*?)</ul>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	private static final Pattern P_HTML_LIST_ITEM = Pattern.compile("<li>(.*?)</li>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	private static final Pattern P_HTML_BREAKS = Pattern.compile("(<br\\s*/>)+", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+
+	public static String formatHtml(final CharSequence html)
+	{
+		if (html == null)
+			return null;
+
+		// list item
+		final StringBuilder builder = new StringBuilder(html.length());
+		final Matcher mListItem = P_HTML_LIST_ITEM.matcher(html);
+		int pListItem = 0;
+		while (mListItem.find())
+		{
+			builder.append(html.subSequence(pListItem, mListItem.start()));
+			builder.append("• ");
+			builder.append(mListItem.group(1));
+			builder.append('\n');
+			pListItem = mListItem.end();
+		}
+		builder.append(html.subSequence(pListItem, html.length()));
+		final String html1 = builder.toString();
+
+		// unordered list
+		builder.setLength(0);
+		final Matcher mUnorderedList = P_HTML_UNORDERED_LIST.matcher(html1);
+		int pUnorderedList = 0;
+		while (mUnorderedList.find())
+		{
+			builder.append(html1.subSequence(pUnorderedList, mUnorderedList.start()));
+			builder.append('\n');
+			builder.append(mUnorderedList.group(1));
+			pUnorderedList = mUnorderedList.end();
+		}
+		builder.append(html1.subSequence(pUnorderedList, html1.length()));
+		final String html2 = builder.toString();
+
+		// breaks
+		builder.setLength(0);
+		final Matcher mBreaks = P_HTML_BREAKS.matcher(html2);
+		int pBreaks = 0;
+		while (mBreaks.find())
+		{
+			builder.append(html2.subSequence(pBreaks, mBreaks.start()));
+			builder.append(' ');
+			pBreaks = mBreaks.end();
+		}
+		builder.append(html2.subSequence(pBreaks, html2.length()));
+		final String html3 = builder.toString();
+
+		return resolveEntities(html3);
+	}
+
 	private static final Pattern P_ENTITY = Pattern.compile("&(?:#(x[\\da-f]+|\\d+)|(amp|quot|apos|szlig|nbsp));");
 
 	public static String resolveEntities(final CharSequence str)
