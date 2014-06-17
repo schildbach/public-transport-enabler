@@ -65,6 +65,7 @@ import de.schildbach.pte.dto.ResultHeader;
 import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.dto.Stop;
 import de.schildbach.pte.dto.Trip;
+import de.schildbach.pte.exception.ParserException;
 import de.schildbach.pte.exception.SessionExpiredException;
 import de.schildbach.pte.util.LittleEndianDataInputStream;
 import de.schildbach.pte.util.ParserUtils;
@@ -1007,11 +1008,14 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		// ParserUtils.printXml(ParserUtils.scrape(queryEndpoint, request, null, null));
 
 		Reader reader = null;
+		String firstChars = null;
 
 		try
 		{
 			final String endpoint = extXmlEndpoint != null ? extXmlEndpoint : queryEndpoint;
-			reader = new InputStreamReader(ParserUtils.scrapeInputStream(endpoint, request, null, null, null, 3), ISO_8859_1);
+			final InputStream is = ParserUtils.scrapeInputStream(endpoint, request, null, null, null, 3);
+			firstChars = ParserUtils.peekFirstChars(is);
+			reader = new InputStreamReader(is, ISO_8859_1);
 
 			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
 			final XmlPullParser pp = factory.newPullParser();
@@ -1372,7 +1376,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 		catch (final XmlPullParserException x)
 		{
-			throw new RuntimeException(x);
+			throw new ParserException("cannot parse xml: " + firstChars, x);
 		}
 		finally
 		{

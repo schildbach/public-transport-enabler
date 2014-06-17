@@ -372,9 +372,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		// System.out.println(parameters);
 
 		InputStream is = null;
+		String firstChars = null;
+
 		try
 		{
 			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null, 3);
+			firstChars = ParserUtils.peekFirstChars(is);
 
 			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
@@ -423,7 +426,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 		catch (final XmlPullParserException x)
 		{
-			throw new ParserException(x);
+			throw new ParserException("cannot parse xml: " + firstChars, x);
 		}
 		finally
 		{
@@ -495,9 +498,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		// System.out.println(parameters);
 
 		InputStream is = null;
+		String firstChars = null;
+
 		try
 		{
 			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null, 3);
+			firstChars = ParserUtils.peekFirstChars(is);
 
 			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
@@ -572,7 +578,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 		catch (final XmlPullParserException x)
 		{
-			throw new ParserException(x);
+			throw new ParserException("cannot parse xml: " + firstChars, x);
 		}
 		finally
 		{
@@ -607,9 +613,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		// System.out.println(parameters);
 
 		InputStream is = null;
+		String firstChars = null;
+
 		try
 		{
 			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null, 3);
+			firstChars = ParserUtils.peekFirstChars(is);
 
 			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
@@ -654,7 +663,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 		catch (final XmlPullParserException x)
 		{
-			throw new ParserException(x);
+			throw new ParserException("cannot parse xml: " + firstChars, x);
 		}
 		finally
 		{
@@ -675,9 +684,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		// System.out.println(parameters);
 
 		InputStream is = null;
+		String firstChars = null;
+
 		try
 		{
 			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null, 3);
+			firstChars = ParserUtils.peekFirstChars(is);
 
 			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
@@ -726,7 +738,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 		catch (final XmlPullParserException x)
 		{
-			throw new ParserException(x);
+			throw new ParserException("cannot parse xml: " + firstChars, x);
 		}
 		finally
 		{
@@ -949,9 +961,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		// System.out.println(parameters);
 
 		InputStream is = null;
+		String firstChars = null;
+
 		try
 		{
 			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, "NSC_", 3);
+			firstChars = ParserUtils.peekFirstChars(is);
 
 			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
@@ -1027,7 +1042,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 		catch (final XmlPullParserException x)
 		{
-			throw new ParserException(x);
+			throw new ParserException("cannot parse xml: " + firstChars, x);
 		}
 		finally
 		{
@@ -1473,10 +1488,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		// System.out.println(parameters);
 
 		InputStream is = null;
+		String firstChars = null;
+
 		try
 		{
 			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null, 3);
-			final String firstChars = ParserUtils.peekFirstChars(is);
+			firstChars = ParserUtils.peekFirstChars(is);
 
 			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
@@ -1664,7 +1681,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 		catch (final XmlPullParserException x)
 		{
-			throw new ParserException(x);
+			throw new ParserException("cannot parse xml: " + firstChars, x);
 		}
 		finally
 		{
@@ -1685,9 +1702,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		// System.out.println(parameters);
 
 		InputStream is = null;
+		String firstChars = null;
+
 		try
 		{
 			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null, 3);
+			firstChars = ParserUtils.peekFirstChars(is);
 
 			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
@@ -1753,7 +1773,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 		catch (final XmlPullParserException x)
 		{
-			throw new ParserException(x);
+			throw new ParserException("cannot parse xml: " + firstChars, x);
 		}
 		finally
 		{
@@ -2150,14 +2170,18 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		// System.out.println(parameters);
 
 		InputStream is = null;
+		String firstChars = null;
+
 		try
 		{
 			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpRefererTrip, "NSC_", 3);
+			firstChars = ParserUtils.peekFirstChars(is);
+
 			return queryTrips(uri.toString(), is);
 		}
 		catch (final XmlPullParserException x)
 		{
-			throw new ParserException(x);
+			throw new ParserException("cannot parse xml: " + firstChars, x);
 		}
 		catch (final RuntimeException x)
 		{
@@ -2185,14 +2209,18 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		// System.out.println(parameters);
 
 		InputStream is = null;
+		String firstChars = null;
+
 		try
 		{
 			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpRefererTrip, "NSC_", 3);
+			firstChars = ParserUtils.peekFirstChars(is);
+
 			return queryTripsMobile(uri.toString(), from, via, to, is);
 		}
 		catch (final XmlPullParserException x)
 		{
-			throw new ParserException(x);
+			throw new ParserException("cannot parse xml: " + firstChars, x);
 		}
 		catch (final RuntimeException x)
 		{
@@ -2215,16 +2243,19 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		uri.append("&command=").append(later ? "tripNext" : "tripPrev");
 
 		InputStream is = null;
+		String firstChars = null;
+
 		try
 		{
 			is = ParserUtils.scrapeInputStream(uri.toString(), null, null, httpRefererTrip, "NSC_", 3);
+			firstChars = ParserUtils.peekFirstChars(is);
 			is.mark(512);
 
 			return queryTrips(uri.toString(), is);
 		}
 		catch (final XmlPullParserException x)
 		{
-			throw new ParserException(x);
+			throw new ParserException("cannot parse xml: " + firstChars, x);
 		}
 		catch (final FileNotFoundException x)
 		{
@@ -2261,16 +2292,19 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		uri.append("&command=").append(later ? "tripNext" : "tripPrev");
 
 		InputStream is = null;
+		String firstChars = null;
+
 		try
 		{
 			is = ParserUtils.scrapeInputStream(uri.toString(), null, null, httpRefererTrip, "NSC_", 3);
+			firstChars = ParserUtils.peekFirstChars(is);
 			is.mark(512);
 
 			return queryTripsMobile(uri.toString(), null, null, null, is);
 		}
 		catch (final XmlPullParserException x)
 		{
-			throw new ParserException(x);
+			throw new ParserException("cannot parse xml: " + firstChars, x);
 		}
 		catch (final ProtocolException x) // must be html content
 		{
