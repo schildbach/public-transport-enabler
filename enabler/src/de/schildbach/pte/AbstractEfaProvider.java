@@ -17,11 +17,9 @@
 
 package de.schildbach.pte;
 
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.text.DateFormat;
@@ -71,7 +69,6 @@ import de.schildbach.pte.dto.Stop;
 import de.schildbach.pte.dto.Trip;
 import de.schildbach.pte.exception.InvalidDataException;
 import de.schildbach.pte.exception.ParserException;
-import de.schildbach.pte.exception.ProtocolException;
 import de.schildbach.pte.exception.SessionExpiredException;
 import de.schildbach.pte.util.ParserUtils;
 import de.schildbach.pte.util.XmlPullUtil;
@@ -2233,8 +2230,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 	}
 
-	private static final Pattern P_SESSION_EXPIRED = Pattern.compile("Your session has expired");
-
 	public QueryTripsResult queryMoreTrips(final QueryTripsContext contextObj, final boolean later) throws IOException
 	{
 		final Context context = (Context) contextObj;
@@ -2249,7 +2244,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		{
 			is = ParserUtils.scrapeInputStream(uri.toString(), null, null, httpRefererTrip, "NSC_", 3);
 			firstChars = ParserUtils.peekFirstChars(is);
-			is.mark(512);
 
 			return queryTrips(uri.toString(), is);
 		}
@@ -2260,18 +2254,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		catch (final FileNotFoundException x)
 		{
 			throw new SessionExpiredException();
-		}
-		catch (final ProtocolException x) // must be html content
-		{
-			is.reset();
-			final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-
-			String line;
-			while ((line = reader.readLine()) != null)
-				if (P_SESSION_EXPIRED.matcher(line).find())
-					throw new SessionExpiredException();
-
-			throw x;
 		}
 		catch (final RuntimeException x)
 		{
@@ -2305,18 +2287,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		catch (final XmlPullParserException x)
 		{
 			throw new ParserException("cannot parse xml: " + firstChars, x);
-		}
-		catch (final ProtocolException x) // must be html content
-		{
-			is.reset();
-			final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-
-			String line;
-			while ((line = reader.readLine()) != null)
-				if (P_SESSION_EXPIRED.matcher(line).find())
-					throw new SessionExpiredException();
-
-			throw x;
 		}
 		catch (final RuntimeException x)
 		{
@@ -3360,21 +3330,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		if (pp.getEventType() != XmlPullParser.START_DOCUMENT)
 			throw new IllegalStateException("start of document expected");
 
-		try
-		{
-			pp.next();
-		}
-		catch (final XmlPullParserException x)
-		{
-			if (x.getMessage().startsWith("Expected a quoted string"))
-				throw new ProtocolException("html");
-		}
+		pp.next();
 
 		if (pp.getEventType() == XmlPullParser.DOCDECL)
 			pp.next();
-
-		if (XmlPullUtil.test(pp, "html"))
-			throw new ProtocolException("html");
 
 		XmlPullUtil.require(pp, "itdRequest");
 

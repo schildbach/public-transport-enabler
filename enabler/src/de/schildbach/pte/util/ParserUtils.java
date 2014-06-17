@@ -42,6 +42,7 @@ import java.util.zip.GZIPInputStream;
 
 import de.schildbach.pte.exception.BlockedException;
 import de.schildbach.pte.exception.InternalErrorException;
+import de.schildbach.pte.exception.SessionExpiredException;
 import de.schildbach.pte.exception.UnexpectedRedirectException;
 
 /**
@@ -160,9 +161,14 @@ public final class ParserUtils
 				if (!url.getHost().equals(connection.getURL().getHost()))
 					throw new UnexpectedRedirectException(url, connection.getURL());
 
-				final URL redirectUrl = testRedirect(url, peekFirstChars(is));
+				final String firstChars = peekFirstChars(is);
+
+				final URL redirectUrl = testRedirect(url, firstChars);
 				if (redirectUrl != null)
 					throw new UnexpectedRedirectException(url, redirectUrl);
+
+				if (testExpired(firstChars))
+					throw new SessionExpiredException();
 
 				if (sessionCookieName != null)
 				{
@@ -278,6 +284,19 @@ public final class ParserUtils
 			return new URL(context, mScript.group(1));
 
 		return null;
+	}
+
+	private static final Pattern P_EXPIRED = Pattern
+			.compile(">\\s*(Your session has expired\\.|Session Expired|Ihre Verbindungskennung ist nicht mehr g.ltig\\.)\\s*<");
+
+	public static boolean testExpired(final String content)
+	{
+		// check for expired session
+		final Matcher mSessionExpired = P_EXPIRED.matcher(content);
+		if (mSessionExpired.find())
+			return true;
+
+		return false;
 	}
 
 	private static final Pattern P_HTML_UNORDERED_LIST = Pattern.compile("<ul>(.*?)</ul>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);

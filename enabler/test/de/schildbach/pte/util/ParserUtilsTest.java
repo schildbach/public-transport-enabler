@@ -19,6 +19,7 @@ package de.schildbach.pte.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.net.URL;
 
@@ -77,5 +78,25 @@ public class ParserUtilsTest
 						"<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"><html xmlns=\"http://www.w3.org/1999/xhtml\"><HEAD><TITLE>HTML Redirection</TITLE><META http-equiv=Content-Type content=\"text/html; \"><META http-equiv=Refresh content=\"0;URL=/cgi-bin/index.cgi\"><META content=\"MSHTML 6.00.2900.2873\" name=GENERATOR></HEAD><BODY >  <NOSCRIPT>   If your browser can not redirect you to home page automatically.<br>   Please click <a href=/cgi-bin/welcome.cgi?lang=0>here</a>.   </NOSCRIPT></BODY></HTML>");
 		assertNotNull(url);
 		assertEquals("example.com", url.getHost());
+	}
+
+	@Test
+	public void efaExpired() throws Exception
+	{
+		assertTrue(ParserUtils
+				.testExpired("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; \"/><meta http-equiv=\"Expires\" content=\"0\"/><title>Efa9 Internal Error</title><style>.BOLD {font: bold large Arial;}.NORMAL {font: normal x-small Arial;}</style></head><body><div class=\"BOLD\">Internal Error</div><div class=\"NORMAL\">Your session has expired.</div><!--<p>&nbsp;</p><div class=\"NORMAL\">.\\EfaHttpServer.cpp</div><div class=\"NORMAL\">Line: 2043</div>--></body></html>"));
+	}
+
+	@Test
+	public void tflExpired() throws Exception
+	{
+		assertTrue(ParserUtils
+				.testExpired("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"><html><head><title>Session Expired</title><style type=\"text/css\">body{  font-family:Verdana, Arial, Helvetica, sans-serif}</style></head><body bgcolor=\"#FFFFFF\" leftmargin=\"0\" topmargin=\"0\" rightmargin=\"0\" bottommargin=\"0\" marginwidth=\"0\" marginheight=\"0\"><!--Logo--><table width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\"><tr>    <td width=\"100%\" height=\"40\" valign=\"top\" class=\"fenster\"><table width=\"389\" height=\"40\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\"><tr>    <td width=\"93\" valign=\"top\"><span>&nbsp;</span></td><td width=\"296\" valign=\"top\"><img src=\"images/logo.gif\" alt=\"\" width=\"372\" height=\"86\" border=\"0\"></td></tr></table></td></tr></table><!--/ Logo--><!--Content--><span><!--Headline--><table cellspacing=\"0\" cellpadding=\"0\" border=\"0\"><tr><td width=\"18\" valign=\"top\"><span>&nbsp;</span></td><td width=\"566\" valign=\"top\"><span class=\"headline\"><b>Session Expire"));
+	}
+
+	@Test
+	public void nvbwExpired() throws Exception
+	{
+		assertTrue(ParserUtils.testExpired("<h2>Ihre Verbindungskennung ist nicht mehr gültig.</h2>"));
 	}
 }
