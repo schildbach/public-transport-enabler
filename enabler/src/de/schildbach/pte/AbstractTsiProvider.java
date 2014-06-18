@@ -243,7 +243,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 
 		label.append(modePrefix);
 
-		if (number != null && !number.isEmpty())
+		if (number != null && number.length() > 0)
 		{
 			label.append(number);
 		}

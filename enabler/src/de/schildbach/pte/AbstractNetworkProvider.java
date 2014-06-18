@@ -121,7 +121,7 @@ public abstract class AbstractNetworkProvider implements NetworkProvider
 
 	protected static String normalizeStationId(final String stationId)
 	{
-		if (stationId == null || stationId.isEmpty())
+		if (stationId == null || stationId.length() == 0)
 			return null;
 
 		if (stationId.charAt(0) != '0')
