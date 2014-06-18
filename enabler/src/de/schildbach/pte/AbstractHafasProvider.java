@@ -331,7 +331,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	}
 
 	private static final Pattern P_AJAX_GET_STOPS_JSON = Pattern.compile("SLs\\.sls\\s*=\\s*(.*?);\\s*SLs\\.showSuggestion\\(\\);", Pattern.DOTALL);
-	private static final Pattern P_AJAX_GET_STOPS_ID = Pattern.compile(".*?@L=(\\d+)@.*?");
+	private static final Pattern P_AJAX_GET_STOPS_ID = Pattern.compile(".*?@L=0*(\\d+)@.*?");
 
 	protected final List<Location> jsonGetStops(final String uri) throws IOException
 	{
@@ -476,7 +476,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 	}
 
-	private static final Pattern P_XML_MLC_REQ_ID = Pattern.compile(".*?@L=(\\d+)@.*?");
+	private static final Pattern P_XML_MLC_REQ_ID = Pattern.compile(".*?@L=0*(\\d+)@.*?");
 	private static final Pattern P_XML_MLC_REQ_LONLAT = Pattern.compile(".*?@X=(-?\\d+)@Y=(-?\\d+)@.*?");
 
 	protected final List<Location> xmlMLcReq(final CharSequence constraint) throws IOException
