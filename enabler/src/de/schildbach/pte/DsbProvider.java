@@ -60,6 +60,35 @@ public class DsbProvider extends AbstractHafasProvider
 	}
 
 	@Override
+	protected char intToProduct(final int value)
+	{
+		if (value == 1)
+			return 'I';
+		if (value == 2)
+			return 'I';
+		if (value == 4)
+			return 'R';
+		if (value == 8)
+			return 'R';
+		if (value == 16)
+			return 'S';
+		if (value == 32)
+			return 'B';
+		if (value == 64)
+			return 'B';
+		if (value == 128)
+			return 'B';
+		if (value == 256)
+			return 'B';
+		if (value == 512)
+			return 'F';
+		if (value == 1024)
+			return 'U';
+
+		throw new IllegalArgumentException("cannot handle: " + value);
+	}
+
+	@Override
 	protected void setProductBits(final StringBuilder productBits, final Product product)
 	{
 		if (product == Product.HIGH_SPEED_TRAIN)
@@ -78,7 +107,7 @@ public class DsbProvider extends AbstractHafasProvider
 		}
 		else if (product == Product.SUBWAY)
 		{
-			productBits.setCharAt(10, '1'); // U-Bahn
+			productBits.setCharAt(10, '1'); // Metro
 		}
 		else if (product == Product.TRAM)
 		{
@@ -95,7 +124,7 @@ public class DsbProvider extends AbstractHafasProvider
 		}
 		else if (product == Product.FERRY)
 		{
-			productBits.setCharAt(9, '1'); // Schiff
+			productBits.setCharAt(9, '1'); // Fähre
 		}
 		else if (product == Product.CABLECAR)
 		{
