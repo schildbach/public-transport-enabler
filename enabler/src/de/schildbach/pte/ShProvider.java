@@ -69,6 +69,33 @@ public class ShProvider extends AbstractHafasProvider
 	}
 
 	@Override
+	protected char intToProduct(final int value)
+	{
+		if (value == 1)
+			return 'I';
+		if (value == 2)
+			return 'I';
+		if (value == 4)
+			return 'I';
+		if (value == 8)
+			return 'R';
+		if (value == 16)
+			return 'S';
+		if (value == 32)
+			return 'B';
+		if (value == 64)
+			return 'F';
+		if (value == 128)
+			return 'U';
+		if (value == 256)
+			return 'T';
+		if (value == 512)
+			return 'P';
+
+		throw new IllegalArgumentException("cannot handle: " + value);
+	}
+
+	@Override
 	protected void setProductBits(final StringBuilder productBits, final Product product)
 	{
 		if (product == Product.HIGH_SPEED_TRAIN)
