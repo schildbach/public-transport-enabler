@@ -113,8 +113,9 @@ public class SbbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void slowTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "Schocherswil, Alte Post!"), null, new Location(
-				LocationType.ANY, null, null, "Laconnex, Mollach"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8587210", null, "Schocherswil, Alte Post"), null,
+				new Location(LocationType.STATION, "8592972", null, "Laconnex, Mollach"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
+				Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
@@ -123,9 +124,9 @@ public class SbbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void tripWithFootway() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, null, "Spiez, Seestraße 62"), null, new Location(
-				LocationType.ADDRESS, null, null, "Einsiedeln, Erlenmoosweg 24"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-				Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 46689354, 7683444, null, "Spiez, Seestraße 62"), null,
+				new Location(LocationType.ADDRESS, null, 47133169, 8767425, null, "Einsiedeln, Erlenmoosweg 24"), new Date(), true, Product.ALL,
+				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
@@ -134,8 +135,9 @@ public class SbbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void tripFromAddress() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, null, "Dorfstrasse 10, Dällikon, Schweiz"), null,
-				new Location(LocationType.STATION, "8500010", null, "Basel"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 47438595, 8437369, null,
+				"Dorfstrasse 10, Dällikon, Schweiz"), null, new Location(LocationType.STATION, "8500010", null, "Basel"), new Date(), true,
+				Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		System.out.println(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
