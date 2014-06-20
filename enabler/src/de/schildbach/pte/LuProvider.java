@@ -36,7 +36,7 @@ public class LuProvider extends AbstractHafasProvider
 
 	public LuProvider()
 	{
-		super(API_BASE + "stboard.exe/fn", null, API_BASE + "query.exe/fn", 10, UTF_8, UTF_8);
+		super(API_BASE + "stboard.exe/fn", null, API_BASE + "query.exe/fn", 9, UTF_8, UTF_8);
 	}
 
 	public NetworkId id()
@@ -51,6 +51,31 @@ public class LuProvider extends AbstractHafasProvider
 				return true;
 
 		return false;
+	}
+
+	@Override
+	protected char intToProduct(final int value)
+	{
+		if (value == 1)
+			return 'I';
+		if (value == 2)
+			return 'I';
+		if (value == 4)
+			return 'I';
+		if (value == 8)
+			return 'R';
+		if (value == 16)
+			return 'S';
+		if (value == 32)
+			return 'B';
+		if (value == 64)
+			return 'B';
+		if (value == 128)
+			return 'B';
+		if (value == 256)
+			return 'B';
+
+		throw new IllegalArgumentException("cannot handle: " + value);
 	}
 
 	@Override
@@ -72,23 +97,22 @@ public class LuProvider extends AbstractHafasProvider
 		}
 		else if (product == Product.SUBWAY)
 		{
-			productBits.setCharAt(7, '1'); // U-Bahn
 		}
 		else if (product == Product.TRAM)
 		{
-			productBits.setCharAt(8, '1'); // Straßenbahn
 		}
 		else if (product == Product.BUS)
 		{
-			productBits.setCharAt(5, '1'); // Bus
+			productBits.setCharAt(5, '1');
+			productBits.setCharAt(6, '1');
+			productBits.setCharAt(7, '1');
+			productBits.setCharAt(8, '1');
 		}
 		else if (product == Product.ON_DEMAND)
 		{
-			productBits.setCharAt(9, '1'); // AST/Rufbus
 		}
 		else if (product == Product.FERRY)
 		{
-			productBits.setCharAt(6, '1'); // Schiff
 		}
 		else if (product == Product.CABLECAR)
 		{
