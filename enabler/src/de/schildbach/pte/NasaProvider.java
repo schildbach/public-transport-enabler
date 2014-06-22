@@ -25,6 +25,7 @@ import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
+import de.schildbach.pte.util.StringReplaceReader;
 
 /**
  * @author Andreas Schildbach
@@ -159,6 +160,12 @@ public class NasaProvider extends AbstractHafasProvider
 		uri.append(xmlQueryDeparturesParameters(stationId));
 
 		return xmlQueryDepartures(uri.toString(), stationId);
+	}
+
+	@Override
+	protected void addCustomReplaces(final StringReplaceReader reader)
+	{
+		reader.replace("\"Florian Geyer\"", "Florian Geyer");
 	}
 
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
