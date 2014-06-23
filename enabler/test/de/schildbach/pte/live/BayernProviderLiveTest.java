@@ -170,4 +170,15 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		System.out.println(laterResult);
 	}
+
+	@Test
+	public void tripBetweenPOIs() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.POI, null, 47710568, 12621970, null, "Ruhpolding, Seehaus"), null,
+				new Location(LocationType.POI, null, 47738372, 12630996, null, "Ruhpolding, Unternberg-Bahn"), new Date(), true, Product.ALL,
+				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		System.out.println(result);
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+		System.out.println(laterResult);
+	}
 }

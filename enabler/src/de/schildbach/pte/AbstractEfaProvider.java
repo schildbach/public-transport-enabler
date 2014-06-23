@@ -1796,6 +1796,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			destination = null;
 			line = Line.FOOTWAY;
 		}
+		else if ("105".equals(ty))
+		{
+			destination = null;
+			line = Line.TRANSFER;
+		}
 		else if ("98".equals(ty))
 		{
 			destination = null;
@@ -3043,6 +3048,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						if (lineDestination.line == Line.FOOTWAY)
 						{
 							legs.add(new Trip.Individual(Trip.Individual.Type.WALK, departure.location, departure.getDepartureTime(),
+									arrival.location, arrival.getArrivalTime(), path, 0));
+						}
+						else if (lineDestination.line == Line.TRANSFER)
+						{
+							legs.add(new Trip.Individual(Trip.Individual.Type.TRANSFER, departure.location, departure.getDepartureTime(),
 									arrival.location, arrival.getArrivalTime(), path, 0));
 						}
 						else if (lineDestination.line == Line.SECURE_CONNECTION || lineDestination.line == Line.DO_NOT_CHANGE)
