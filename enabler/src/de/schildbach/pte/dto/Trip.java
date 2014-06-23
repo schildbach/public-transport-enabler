@@ -20,6 +20,7 @@ package de.schildbach.pte.dto;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
@@ -107,6 +108,26 @@ public final class Trip implements Serializable
 			return lastPublicLeg.getArrivalTime();
 		else
 			return null;
+	}
+
+	public List<Product> products()
+	{
+		final List<Product> products = new LinkedList<Product>();
+
+		if (legs != null)
+		{
+			for (final Leg leg : legs)
+			{
+				if (leg instanceof Public)
+				{
+					final Product product = Product.fromCode(((Public) leg).line.label.charAt(0));
+					if (!products.contains(product))
+						products.add(product);
+				}
+			}
+		}
+
+		return products;
 	}
 
 	public String getId()
