@@ -183,8 +183,9 @@ public final class ParserUtils
 
 				return is;
 			}
-			else if (responseCode == HttpURLConnection.HTTP_FORBIDDEN || responseCode == HttpURLConnection.HTTP_BAD_REQUEST
-					|| responseCode == HttpURLConnection.HTTP_NOT_ACCEPTABLE || responseCode == HttpURLConnection.HTTP_UNAVAILABLE)
+			else if (responseCode == HttpURLConnection.HTTP_BAD_REQUEST || responseCode == HttpURLConnection.HTTP_UNAUTHORIZED
+					|| responseCode == HttpURLConnection.HTTP_FORBIDDEN || responseCode == HttpURLConnection.HTTP_NOT_ACCEPTABLE
+					|| responseCode == HttpURLConnection.HTTP_UNAVAILABLE)
 			{
 				throw new BlockedException(url);
 			}
