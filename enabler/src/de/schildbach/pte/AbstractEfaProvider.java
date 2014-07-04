@@ -2627,7 +2627,15 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 							XmlPullUtil.optSkip(pp, "itdFootPathInfo");
 
-							XmlPullUtil.optSkip(pp, "infoLink");
+							while (XmlPullUtil.test(pp, "infoLink"))
+							{
+								XmlPullUtil.enter(pp, "infoLink");
+								XmlPullUtil.requireSkip(pp, "paramList");
+								final String infoLinkText = XmlPullUtil.valueTag(pp, "infoLinkText");
+								if (message == null)
+									message = infoLinkText;
+								XmlPullUtil.exit(pp, "infoLink");
+							}
 
 							List<Stop> intermediateStops = null;
 							if (XmlPullUtil.test(pp, "itdStopSeq"))
