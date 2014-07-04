@@ -309,8 +309,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	private static final Position parsePlatform(final XmlPullParser pp) throws XmlPullParserException, IOException
 	{
 		XmlPullUtil.enter(pp, "Platform");
-		XmlPullUtil.require(pp, "Text");
-		final String platformText = XmlPullUtil.text(pp).trim();
+		final String platformText = XmlPullUtil.valueTag(pp, "Text");
 		XmlPullUtil.exit(pp, "Platform");
 
 		if (platformText.length() == 0)
@@ -1070,7 +1069,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				throw new IllegalStateException("error " + code + " " + XmlPullUtil.attr(pp, "text"));
 			}
 
-			final String c = XmlPullUtil.test(pp, "ConResCtxt") ? XmlPullUtil.text(pp) : null;
+			final String c = XmlPullUtil.optValueTag(pp, "ConResCtxt", null);
 			final Context context;
 			if (previousContext == null)
 				context = new Context(c, c, 0);
@@ -1092,10 +1091,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					XmlPullUtil.next(pp);
 				XmlPullUtil.enter(pp, "Overview");
 
-				XmlPullUtil.require(pp, "Date");
 				final Calendar currentDate = new GregorianCalendar(timeZone());
 				currentDate.clear();
-				parseDate(currentDate, XmlPullUtil.text(pp));
+				parseDate(currentDate, XmlPullUtil.valueTag(pp, "Date"));
 				XmlPullUtil.enter(pp, "Departure");
 				XmlPullUtil.enter(pp, "BasicStop");
 				while (pp.getName().equals("StAttrList"))
@@ -1113,8 +1111,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						XmlPullUtil.next(pp);
 					XmlPullUtil.enter(pp, "Status");
 					XmlPullUtil.exit(pp, "Status");
-					final int capacity1st = XmlPullUtil.test(pp, "Capacity1st") ? Integer.parseInt(XmlPullUtil.text(pp)) : 0;
-					final int capacity2nd = XmlPullUtil.test(pp, "Capacity2nd") ? Integer.parseInt(XmlPullUtil.text(pp)) : 0;
+					final int capacity1st = Integer.parseInt(XmlPullUtil.optValueTag(pp, "Capacity1st", "0"));
+					final int capacity2nd = Integer.parseInt(XmlPullUtil.optValueTag(pp, "Capacity2nd", "0"));
 					if (capacity1st > 0 || capacity2nd > 0)
 						capacity = new int[] { capacity1st, capacity2nd };
 					else
@@ -1136,8 +1134,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				XmlPullUtil.exit(pp, "BasicStop");
 				XmlPullUtil.exit(pp, "Arrival");
 
-				XmlPullUtil.require(pp, "Transfers");
-				final int numTransfers = Integer.parseInt(XmlPullUtil.text(pp));
+				final int numTransfers = Integer.parseInt(XmlPullUtil.valueTag(pp, "Transfers"));
 
 				XmlPullUtil.exit(pp, "Overview");
 
@@ -1164,9 +1161,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						XmlPullUtil.exit(pp, "Arr");
 					}
 					XmlPullUtil.enter(pp, "Dep");
-					XmlPullUtil.require(pp, "Time");
 					time.setTimeInMillis(currentDate.getTimeInMillis());
-					parseTime(time, XmlPullUtil.text(pp));
+					parseTime(time, XmlPullUtil.valueTag(pp, "Time"));
 					final Date departureTime = time.getTime();
 					final Position departurePos = parsePlatform(pp);
 					XmlPullUtil.exit(pp, "Dep");
@@ -1246,9 +1242,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 									if (XmlPullUtil.test(pp, "Arr"))
 									{
 										XmlPullUtil.enter(pp, "Arr");
-										XmlPullUtil.require(pp, "Time");
 										time.setTimeInMillis(currentDate.getTimeInMillis());
-										parseTime(time, XmlPullUtil.text(pp));
+										parseTime(time, XmlPullUtil.valueTag(pp, "Time"));
 										stopArrivalTime = time.getTime();
 										stopArrivalPosition = parsePlatform(pp);
 										XmlPullUtil.exit(pp, "Arr");
@@ -1257,9 +1252,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 									if (XmlPullUtil.test(pp, "Dep"))
 									{
 										XmlPullUtil.enter(pp, "Dep");
-										XmlPullUtil.require(pp, "Time");
 										time.setTimeInMillis(currentDate.getTimeInMillis());
-										parseTime(time, XmlPullUtil.text(pp));
+										parseTime(time, XmlPullUtil.valueTag(pp, "Time"));
 										stopDepartureTime = time.getTime();
 										stopDeparturePosition = parsePlatform(pp);
 										XmlPullUtil.exit(pp, "Dep");
@@ -1322,9 +1316,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						XmlPullUtil.next(pp);
 					final Location sectionArrivalLocation = parseLocation(pp);
 					XmlPullUtil.enter(pp, "Arr");
-					XmlPullUtil.require(pp, "Time");
 					time.setTimeInMillis(currentDate.getTimeInMillis());
-					parseTime(time, XmlPullUtil.text(pp));
+					parseTime(time, XmlPullUtil.valueTag(pp, "Time"));
 					final Date arrivalTime = time.getTime();
 					final Position arrivalPos = parsePlatform(pp);
 					XmlPullUtil.exit(pp, "Arr");
@@ -1408,11 +1401,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		{
 			final String type = XmlPullUtil.attr(pp, "type");
 			XmlPullUtil.enter(pp, "AttributeVariant");
-			final String value;
-			if (XmlPullUtil.test(pp, "Text"))
-				value = XmlPullUtil.text(pp).trim();
-			else
-				value = null;
+			final String value = XmlPullUtil.optValueTag(pp, "Text", null);
 			XmlPullUtil.exit(pp, "AttributeVariant");
 
 			attributeVariants.put(type, value);

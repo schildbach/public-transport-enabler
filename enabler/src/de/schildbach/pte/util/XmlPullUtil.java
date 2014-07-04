@@ -174,20 +174,34 @@ public final class XmlPullUtil
 			throw new IllegalStateException("cannot find " + attrName + "=\"" + requiredValue + "\" />");
 	}
 
-	public static String text(final XmlPullParser pp) throws XmlPullParserException, IOException
+	public static String valueTag(final XmlPullParser pp, final String tagName) throws XmlPullParserException, IOException
 	{
-		if (pp.getEventType() != XmlPullParser.START_TAG || pp.isEmptyElementTag())
-			throw new IllegalStateException("expecting start tag to get text from");
+		XmlPullUtil.enter(pp, tagName);
+		final String value = pp.getText();
+		XmlPullUtil.exit(pp, tagName);
 
-		enter(pp);
+		return value != null ? value.trim() : null;
+	}
 
-		String text = "";
-		if (pp.getEventType() == XmlPullParser.TEXT)
-			text = pp.getText();
-
-		exit(pp);
-
-		return text;
+	public static String optValueTag(final XmlPullParser pp, final String tagName, final String defaultValue) throws XmlPullParserException,
+			IOException
+	{
+		if (XmlPullUtil.test(pp, tagName))
+		{
+			if (!pp.isEmptyElementTag())
+			{
+				return valueTag(pp, tagName);
+			}
+			else
+			{
+				pp.next();
+				return defaultValue;
+			}
+		}
+		else
+		{
+			return defaultValue;
+		}
 	}
 
 	/**

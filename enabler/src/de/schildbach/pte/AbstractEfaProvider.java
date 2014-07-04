@@ -517,11 +517,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				{
 					XmlPullUtil.enter(pp, "p");
 
-					final String name = normalizeLocationName(requireValueTag(pp, "n"));
-					final String u = requireValueTag(pp, "u");
+					final String name = normalizeLocationName(XmlPullUtil.valueTag(pp, "n"));
+					final String u = XmlPullUtil.valueTag(pp, "u");
 					if (!"sf".equals(u))
 						throw new RuntimeException("unknown usage: " + u);
-					final String ty = requireValueTag(pp, "ty");
+					final String ty = XmlPullUtil.valueTag(pp, "ty");
 					final LocationType type;
 					if ("stop".equals(ty))
 						type = LocationType.STATION;
@@ -538,16 +538,16 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 					XmlPullUtil.enter(pp, "r");
 
-					final String id = requireValueTag(pp, "id");
-					requireValueTag(pp, "stateless");
-					requireValueTag(pp, "omc");
-					final String place = normalizeLocationName(optValueTag(pp, "pc"));
-					requireValueTag(pp, "pid");
-					final Point coord = coordStrToPoint(optValueTag(pp, "c"));
+					final String id = XmlPullUtil.valueTag(pp, "id");
+					XmlPullUtil.valueTag(pp, "stateless");
+					XmlPullUtil.valueTag(pp, "omc");
+					final String place = normalizeLocationName(XmlPullUtil.optValueTag(pp, "pc", null));
+					XmlPullUtil.valueTag(pp, "pid");
+					final Point coord = coordStrToPoint(XmlPullUtil.optValueTag(pp, "c", null));
 
 					XmlPullUtil.exit(pp, "r");
 
-					final String qal = optValueTag(pp, "qal");
+					final String qal = XmlPullUtil.optValueTag(pp, "qal", null);
 					final int quality = qal != null ? Integer.parseInt(qal) : 0;
 
 					XmlPullUtil.exit(pp, "p");
@@ -707,19 +707,19 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				{
 					XmlPullUtil.enter(pp, "pi");
 
-					final String name = normalizeLocationName(requireValueTag(pp, "de"));
-					final String type = requireValueTag(pp, "ty");
+					final String name = normalizeLocationName(XmlPullUtil.valueTag(pp, "de"));
+					final String type = XmlPullUtil.valueTag(pp, "ty");
 					if (!"STOP".equals(type))
 						throw new RuntimeException("unknown type");
 
-					final String id = requireValueTag(pp, "id");
-					requireValueTag(pp, "omc");
-					requireValueTag(pp, "pid");
-					final String place = normalizeLocationName(requireValueTag(pp, "locality"));
-					requireValueTag(pp, "layer");
-					requireValueTag(pp, "gisID");
-					requireValueTag(pp, "ds");
-					final Point coord = coordStrToPoint(requireValueTag(pp, "c"));
+					final String id = XmlPullUtil.valueTag(pp, "id");
+					XmlPullUtil.valueTag(pp, "omc");
+					XmlPullUtil.valueTag(pp, "pid");
+					final String place = normalizeLocationName(XmlPullUtil.valueTag(pp, "locality"));
+					XmlPullUtil.valueTag(pp, "layer");
+					XmlPullUtil.valueTag(pp, "gisID");
+					XmlPullUtil.valueTag(pp, "ds");
+					final Point coord = coordStrToPoint(XmlPullUtil.valueTag(pp, "c"));
 
 					stations.add(new Location(LocationType.STATION, id, coord.lat, coord.lon, place, name));
 
@@ -761,11 +761,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		if ("identified".equals(placeState))
 		{
 			if (XmlPullUtil.test(pp, "odvPlaceElem"))
-			{
-				XmlPullUtil.enter(pp, "odvPlaceElem");
-				place = normalizeLocationName(pp.getText());
-				XmlPullUtil.exit(pp, "odvPlaceElem");
-			}
+				place = normalizeLocationName(XmlPullUtil.valueTag(pp, "odvPlaceElem"));
 		}
 		XmlPullUtil.exit(pp, "itdOdvPlace");
 
@@ -789,9 +785,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		final float x = XmlPullUtil.optFloatAttr(pp, "x", 0);
 		final float y = XmlPullUtil.optFloatAttr(pp, "y", 0);
 
-		XmlPullUtil.enter(pp, "odvNameElem");
-		final String elemName = normalizeLocationName(pp.getText());
-		XmlPullUtil.exit(pp, "odvNameElem");
+		final String elemName = normalizeLocationName(XmlPullUtil.valueTag(pp, "odvNameElem"));
 
 		final int lat;
 		final int lon;
@@ -917,9 +911,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		final String place = normalizeLocationName(XmlPullUtil.attr(pp, "place"));
 
-		XmlPullUtil.enter(pp, "itdOdvAssignedStop");
-		final String name = normalizeLocationName(pp.getText());
-		XmlPullUtil.exit(pp, "itdOdvAssignedStop");
+		final String name = normalizeLocationName(XmlPullUtil.valueTag(pp, "itdOdvAssignedStop"));
 
 		return new Location(LocationType.STATION, id, lat, lon, place, name);
 	}
@@ -1724,8 +1716,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					XmlPullUtil.enter(pp, "dp");
 
 					// misc
-					/* final String stationName = */normalizeLocationName(requireValueTag(pp, "n"));
-					final boolean isRealtime = requireValueTag(pp, "realtime").equals("1");
+					/* final String stationName = */normalizeLocationName(XmlPullUtil.valueTag(pp, "n"));
+					final boolean isRealtime = XmlPullUtil.valueTag(pp, "realtime").equals("1");
 
 					XmlPullUtil.optSkip(pp, "dt");
 
@@ -1735,12 +1727,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					final LineDestination lineDestination = parseMobileM(pp, true);
 
 					XmlPullUtil.enter(pp, "r");
-					final String assignedId = requireValueTag(pp, "id");
-					requireValueTag(pp, "a");
-					final Position position = new Position(optValueTag(pp, "pl"));
+					final String assignedId = XmlPullUtil.valueTag(pp, "id");
+					XmlPullUtil.valueTag(pp, "a");
+					final Position position = new Position(XmlPullUtil.optValueTag(pp, "pl", null));
 					XmlPullUtil.exit(pp, "r");
 
-					/* final Point positionCoordinate = */coordStrToPoint(optValueTag(pp, "c"));
+					/* final Point positionCoordinate = */coordStrToPoint(XmlPullUtil.optValueTag(pp, "c", null));
 
 					// TODO messages
 
@@ -1785,9 +1777,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	{
 		XmlPullUtil.enter(pp, "m");
 
-		final String n = optValueTag(pp, "n");
-		final String productNu = requireValueTag(pp, "nu");
-		final String ty = requireValueTag(pp, "ty");
+		final String n = XmlPullUtil.optValueTag(pp, "n", null);
+		final String productNu = XmlPullUtil.valueTag(pp, "nu");
+		final String ty = XmlPullUtil.valueTag(pp, "ty");
 
 		final Line line;
 		final Location destination;
@@ -1813,12 +1805,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 		else
 		{
-			final String co = requireValueTag(pp, "co");
+			final String co = XmlPullUtil.valueTag(pp, "co");
 			final String productType = tyOrCo ? ty : co;
-			final String destinationName = normalizeLocationName(requireValueTag(pp, "des"));
+			final String destinationName = normalizeLocationName(XmlPullUtil.valueTag(pp, "des"));
 			destination = new Location(LocationType.ANY, null, null, destinationName);
-			optValueTag(pp, "dy");
-			final String de = optValueTag(pp, "de");
+			XmlPullUtil.optValueTag(pp, "dy", null);
+			final String de = XmlPullUtil.optValueTag(pp, "de", null);
 			final String productName = n != null ? n : de;
 			final String lineId = parseMobileDv(pp);
 
@@ -1851,12 +1843,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private String parseMobileDv(final XmlPullParser pp) throws XmlPullParserException, IOException
 	{
 		XmlPullUtil.enter(pp, "dv");
-		optValueTag(pp, "branch");
-		final String lineIdLi = requireValueTag(pp, "li");
-		final String lineIdSu = requireValueTag(pp, "su");
-		final String lineIdPr = requireValueTag(pp, "pr");
-		final String lineIdDct = requireValueTag(pp, "dct");
-		final String lineIdNe = requireValueTag(pp, "ne");
+		XmlPullUtil.optValueTag(pp, "branch", null);
+		final String lineIdLi = XmlPullUtil.valueTag(pp, "li");
+		final String lineIdSu = XmlPullUtil.valueTag(pp, "su");
+		final String lineIdPr = XmlPullUtil.valueTag(pp, "pr");
+		final String lineIdDct = XmlPullUtil.valueTag(pp, "dct");
+		final String lineIdNe = XmlPullUtil.valueTag(pp, "ne");
 		XmlPullUtil.exit(pp, "dv");
 
 		return lineIdNe + ":" + lineIdLi + ":" + lineIdSu + ":" + lineIdDct + ":" + lineIdPr;
@@ -1868,14 +1860,14 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		XmlPullUtil.enter(pp, "st");
 
 		plannedDepartureTime.clear();
-		ParserUtils.parseIsoDate(plannedDepartureTime, requireValueTag(pp, "da"));
-		ParserUtils.parseIsoTime(plannedDepartureTime, requireValueTag(pp, "t"));
+		ParserUtils.parseIsoDate(plannedDepartureTime, XmlPullUtil.valueTag(pp, "da"));
+		ParserUtils.parseIsoTime(plannedDepartureTime, XmlPullUtil.valueTag(pp, "t"));
 
 		predictedDepartureTime.clear();
 		if (XmlPullUtil.test(pp, "rda"))
 		{
-			ParserUtils.parseIsoDate(predictedDepartureTime, requireValueTag(pp, "rda"));
-			ParserUtils.parseIsoTime(predictedDepartureTime, requireValueTag(pp, "rt"));
+			ParserUtils.parseIsoDate(predictedDepartureTime, XmlPullUtil.valueTag(pp, "rda"));
+			ParserUtils.parseIsoTime(predictedDepartureTime, XmlPullUtil.valueTag(pp, "rt"));
 		}
 
 		XmlPullUtil.exit(pp, "st");
@@ -2007,13 +1999,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			itdTrainType = pp.getAttributeValue(null, "type");
 			if (!pp.isEmptyElementTag())
 			{
-				XmlPullUtil.enter(pp, "itdNoTrain");
-				final String text = pp.getText();
+				final String text = XmlPullUtil.valueTag(pp, "itdNoTrain");
 				if (itdTrainName != null && itdTrainName.toLowerCase().contains("ruf"))
 					itdMessage = text;
 				else if (text != null && text.toLowerCase().contains("ruf"))
 					itdMessage = text;
-				XmlPullUtil.exit(pp, "itdNoTrain");
 			}
 			else
 			{
@@ -2620,17 +2610,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 									XmlPullUtil.enter(pp, "itdInfoTextList");
 									while (XmlPullUtil.test(pp, "infoTextListElem"))
 									{
-										XmlPullUtil.enter(pp, "infoTextListElem");
-										final String text = pp.getText();
-										if (text != null)
-										{
-											final String lcText = text.toLowerCase();
-											if ("niederflurwagen soweit verfügbar".equals(lcText)) // KVV
-												lowFloorVehicle = true;
-											else if (lcText.contains("ruf") || lcText.contains("anmeld")) // Bedarfsverkehr
-												message = text;
-										}
-										XmlPullUtil.exit(pp, "infoTextListElem");
+										final String text = XmlPullUtil.valueTag(pp, "infoTextListElem");
+										final String lcText = text.toLowerCase();
+										if ("niederflurwagen soweit verfügbar".equals(lcText)) // KVV
+											lowFloorVehicle = true;
+										else if (lcText.contains("ruf") || lcText.contains("anmeld")) // Bedarfsverkehr
+											message = text;
 									}
 									XmlPullUtil.exit(pp, "itdInfoTextList");
 								}
@@ -2734,12 +2719,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 								while (XmlPullUtil.test(pp, "genAttrElem"))
 								{
 									XmlPullUtil.enter(pp, "genAttrElem");
-									XmlPullUtil.enter(pp, "name");
-									final String name = pp.getText();
-									XmlPullUtil.exit(pp, "name");
-									XmlPullUtil.enter(pp, "value");
-									final String value = pp.getText();
-									XmlPullUtil.exit(pp, "value");
+									final String name = XmlPullUtil.valueTag(pp, "name");
+									final String value = XmlPullUtil.valueTag(pp, "value");
 									XmlPullUtil.exit(pp, "genAttrElem");
 
 									// System.out.println("genAttrElem: name='" + name + "' value='" + value + "'");
@@ -2883,9 +2864,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 					XmlPullUtil.optSkip(pp, "attrs");
 
-					requireValueTag(pp, "d"); // duration
-					final int numChanges = Integer.parseInt(requireValueTag(pp, "ic"));
-					final String tripId = requireValueTag(pp, "de");
+					XmlPullUtil.valueTag(pp, "d"); // duration
+					final int numChanges = Integer.parseInt(XmlPullUtil.valueTag(pp, "ic"));
+					final String tripId = XmlPullUtil.valueTag(pp, "de");
 
 					XmlPullUtil.enter(pp, "ls");
 
@@ -2906,9 +2887,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						{
 							XmlPullUtil.enter(pp, "p");
 
-							final String name = requireValueTag(pp, "n");
-							final String usage = requireValueTag(pp, "u");
-							optValueTag(pp, "de");
+							final String name = XmlPullUtil.valueTag(pp, "n");
+							final String usage = XmlPullUtil.valueTag(pp, "u");
+							XmlPullUtil.optValueTag(pp, "de", null);
 
 							XmlPullUtil.requireSkip(pp, "dt");
 
@@ -2917,11 +2898,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							XmlPullUtil.requireSkip(pp, "lis");
 
 							XmlPullUtil.enter(pp, "r");
-							final String id = requireValueTag(pp, "id");
-							optValueTag(pp, "a");
-							final Position position = new Position(optValueTag(pp, "pl"));
-							final String place = normalizeLocationName(optValueTag(pp, "pc"));
-							final Point coord = coordStrToPoint(requireValueTag(pp, "c"));
+							final String id = XmlPullUtil.valueTag(pp, "id");
+							XmlPullUtil.optValueTag(pp, "a", null);
+							final Position position = new Position(XmlPullUtil.optValueTag(pp, "pl", null));
+							final String place = normalizeLocationName(XmlPullUtil.optValueTag(pp, "pc", null));
+							final Point coord = coordStrToPoint(XmlPullUtil.valueTag(pp, "c"));
 							XmlPullUtil.exit(pp, "r");
 
 							final Location location;
@@ -2955,7 +2936,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 						XmlPullUtil.exit(pp, "ps");
 
-						final boolean isRealtime = requireValueTag(pp, "realtime").equals("1");
+						final boolean isRealtime = XmlPullUtil.valueTag(pp, "realtime").equals("1");
 
 						final LineDestination lineDestination = parseMobileM(pp, false);
 
@@ -2980,7 +2961,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 								plannedTime.clear();
 								predictedTime.clear();
 
-								final String s = requireValueTag(pp, "s");
+								final String s = XmlPullUtil.valueTag(pp, "s");
 								final String[] intermediateParts = s.split(";");
 								final String id = intermediateParts[0];
 								if (!id.equals(departure.location.id) && !id.equals(arrival.location.id))
@@ -3123,17 +3104,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	{
 		XmlPullUtil.enter(pp, "itdPathCoordinates");
 
-		XmlPullUtil.enter(pp, "coordEllipsoid");
-		final String ellipsoid = pp.getText();
-		XmlPullUtil.exit(pp, "coordEllipsoid");
-
+		final String ellipsoid = XmlPullUtil.valueTag(pp, "coordEllipsoid");
 		if (!"WGS84".equals(ellipsoid))
 			throw new IllegalStateException("unknown ellipsoid: " + ellipsoid);
 
-		XmlPullUtil.enter(pp, "coordType");
-		final String type = pp.getText();
-		XmlPullUtil.exit(pp, "coordType");
-
+		final String type = XmlPullUtil.valueTag(pp, "coordType");
 		if (!"GEO_DECIMAL".equals(type))
 			throw new IllegalStateException("unknown type: " + type);
 
@@ -3160,7 +3135,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	{
 		final List<Point> path = new LinkedList<Point>();
 
-		final String value = requireValueTag(pp, tag);
+		final String value = XmlPullUtil.valueTag(pp, tag);
 		for (final String coordStr : value.split(" +"))
 			path.add(coordStrToPoint(coordStr));
 
@@ -3177,8 +3152,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		{
 			XmlPullUtil.enter(pp, "itdCoordinateBaseElem");
 
-			final int lon = Math.round(Float.parseFloat(requireValueTag(pp, "x")));
-			final int lat = Math.round(Float.parseFloat(requireValueTag(pp, "y")));
+			final int lon = Math.round(Float.parseFloat(XmlPullUtil.valueTag(pp, "x")));
+			final int lat = Math.round(Float.parseFloat(XmlPullUtil.valueTag(pp, "y")));
 			path.add(new Point(lat, lon));
 
 			XmlPullUtil.exit(pp, "itdCoordinateBaseElem");
@@ -3210,24 +3185,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		{
 			XmlPullUtil.enter(pp, "itdGenericTicket");
 
-			XmlPullUtil.enter(pp, "ticket");
-			final String key = pp.getText().trim();
-			XmlPullUtil.exit(pp, "ticket");
-
-			String value = null;
-			XmlPullUtil.require(pp, "value");
-			if (!pp.isEmptyElementTag())
-			{
-				XmlPullUtil.enter(pp, "value");
-				value = pp.getText();
-				if (value != null)
-					value = value.trim();
-				XmlPullUtil.exit(pp, "value");
-			}
-			else
-			{
-				XmlPullUtil.next(pp);
-			}
+			final String key = XmlPullUtil.valueTag(pp, "ticket");
+			final String value = XmlPullUtil.valueTag(pp, "value");
 
 			if (key.equals("FOR_RIDER"))
 			{
@@ -3392,12 +3351,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		XmlPullUtil.enter(pp, "efa");
 
-		XmlPullUtil.enter(pp, "now");
-		final String now = pp.getText();
+		final String now = XmlPullUtil.valueTag(pp, "now");
 		final Calendar serverTime = new GregorianCalendar(timeZone());
 		ParserUtils.parseIsoDate(serverTime, now.substring(0, 10));
 		ParserUtils.parseEuropeanTime(serverTime, now.substring(11));
-		XmlPullUtil.exit(pp, "now");
 
 		final Map<String, String> params = processPas(pp);
 		final String sessionId = params.get("sessionID");
@@ -3417,8 +3374,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		while (XmlPullUtil.test(pp, "pa"))
 		{
 			XmlPullUtil.enter(pp, "pa");
-			final String name = requireValueTag(pp, "n");
-			final String value = requireValueTag(pp, "v");
+			final String name = XmlPullUtil.valueTag(pp, "n");
+			final String value = XmlPullUtil.valueTag(pp, "v");
 			params.put(name, value);
 			XmlPullUtil.exit(pp, "pa");
 		}
@@ -3426,34 +3383,5 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		XmlPullUtil.exit(pp, "pas");
 
 		return params;
-	}
-
-	private String optValueTag(final XmlPullParser pp, final String name) throws XmlPullParserException, IOException
-	{
-		if (XmlPullUtil.test(pp, name))
-		{
-			if (!pp.isEmptyElementTag())
-			{
-				return requireValueTag(pp, name);
-			}
-			else
-			{
-				pp.next();
-				return null;
-			}
-		}
-		else
-		{
-			return null;
-		}
-	}
-
-	private String requireValueTag(final XmlPullParser pp, final String name) throws XmlPullParserException, IOException
-	{
-		XmlPullUtil.enter(pp, name);
-		final String value = pp.getText();
-		XmlPullUtil.exit(pp, name);
-
-		return value != null ? value.trim() : null;
 	}
 }
