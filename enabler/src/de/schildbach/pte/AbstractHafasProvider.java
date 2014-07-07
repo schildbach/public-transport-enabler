@@ -89,7 +89,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	private String clientType;
 	private Charset jsonGetStopsEncoding;
 	private Charset jsonNearbyStationsEncoding;
-	private final Charset xmlMlcResEncoding;
 	private boolean dominantPlanStopTime = false;
 	private boolean canDoEquivs = true;
 	private boolean useIso8601 = false;
@@ -147,11 +146,11 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 	public AbstractHafasProvider(final String stationBoardEndpoint, final String getStopEndpoint, final String queryEndpoint, final int numProductBits)
 	{
-		this(stationBoardEndpoint, getStopEndpoint, queryEndpoint, numProductBits, ISO_8859_1, ISO_8859_1);
+		this(stationBoardEndpoint, getStopEndpoint, queryEndpoint, numProductBits, ISO_8859_1);
 	}
 
 	public AbstractHafasProvider(final String stationBoardEndpoint, final String getStopEndpoint, final String queryEndpoint,
-			final int numProductBits, final Charset jsonEncoding, final Charset xmlMlcResEncoding)
+			final int numProductBits, final Charset jsonEncoding)
 	{
 		this.stationBoardEndpoint = stationBoardEndpoint;
 		this.getStopEndpoint = getStopEndpoint;
@@ -159,7 +158,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		this.numProductBits = numProductBits;
 		this.jsonGetStopsEncoding = jsonEncoding;
 		this.jsonNearbyStationsEncoding = jsonEncoding;
-		this.xmlMlcResEncoding = xmlMlcResEncoding;
 	}
 
 	protected void setClientType(final String clientType)
@@ -414,99 +412,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		else
 		{
 			throw new RuntimeException("cannot parse: '" + page + "' on " + uri);
-		}
-	}
-
-	private static final Pattern P_XML_MLC_REQ_ID = Pattern.compile(".*?@L=0*(\\d+)@.*?");
-	private static final Pattern P_XML_MLC_REQ_LONLAT = Pattern.compile(".*?@X=(-?\\d+)@Y=(-?\\d+)@.*?");
-
-	protected final List<Location> xmlMLcReq(final CharSequence constraint) throws IOException
-	{
-		final String mlcReq = "<MLcReq><MLc n=\"" + constraint + "?\" t=\"ALLTYPE\" /></MLcReq>";
-		final String request = wrapReqC(mlcReq, xmlMlcResEncoding);
-
-		// ParserUtils.printXml(ParserUtils.scrape(queryEndpoint, request, xmlMlcResEncoding, null));
-
-		Reader reader = null;
-
-		try
-		{
-			reader = new InputStreamReader(ParserUtils.scrapeInputStream(queryEndpoint, request, xmlMlcResEncoding, null, null, 3), xmlMlcResEncoding);
-
-			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
-			final XmlPullParser pp = factory.newPullParser();
-			pp.setInput(reader);
-
-			final List<Location> results = new ArrayList<Location>();
-
-			XmlPullUtil.enter(pp, "ResC");
-			XmlPullUtil.enter(pp, "MLcRes");
-
-			while (XmlPullUtil.test(pp, "MLc"))
-			{
-				final String t = XmlPullUtil.attr(pp, "t");
-				final LocationType type;
-				if ("ST".equals(t))
-					type = LocationType.STATION;
-				else if ("POI".equals(t))
-					type = LocationType.POI;
-				else if ("ADR".equals(t))
-					type = LocationType.ADDRESS;
-				else
-					throw new IllegalStateException("cannot handle: '" + t + "'");
-
-				final String id;
-				final String i = pp.getAttributeValue(null, "i");
-				if (i != null)
-				{
-					final Matcher iMatcherId = P_XML_MLC_REQ_ID.matcher(i);
-					if (!iMatcherId.matches())
-						throw new IllegalStateException("cannot parse id: '" + i + "'");
-					id = iMatcherId.group(1);
-				}
-				else
-				{
-					id = null;
-				}
-
-				final String name = XmlPullUtil.attr(pp, "n");
-				final String[] placeAndName = splitPlaceAndName(name);
-
-				final String r = pp.getAttributeValue(null, "r");
-				final Matcher iMatcherLonLat = P_XML_MLC_REQ_LONLAT.matcher(i != null ? i : r);
-				final int lat;
-				final int lon;
-				if (iMatcherLonLat.matches())
-				{
-					lon = Integer.parseInt(iMatcherLonLat.group(1));
-					lat = Integer.parseInt(iMatcherLonLat.group(2));
-				}
-				else
-				{
-					lat = 0;
-					lon = 0;
-				}
-
-				final Location location = new Location(type, id, lat, lon, placeAndName[0], placeAndName[1]);
-				if (location.hasLocation())
-					results.add(location);
-
-				XmlPullUtil.next(pp);
-			}
-
-			XmlPullUtil.exit(pp, "MLcRes");
-			XmlPullUtil.exit(pp, "ResC");
-
-			return results;
-		}
-		catch (final XmlPullParserException x)
-		{
-			throw new RuntimeException(x);
-		}
-		finally
-		{
-			if (reader != null)
-				reader.close();
 		}
 	}
 

@@ -51,7 +51,7 @@ public class ShProvider extends AbstractHafasProvider
 
 	public ShProvider()
 	{
-		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 10, UTF_8, UTF_8);
+		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 10, UTF_8);
 	}
 
 	public NetworkId id()

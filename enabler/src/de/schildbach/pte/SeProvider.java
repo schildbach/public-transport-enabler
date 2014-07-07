@@ -42,7 +42,7 @@ public class SeProvider extends AbstractHafasProvider
 
 	public SeProvider()
 	{
-		super(API_BASE + "stboard.exe/sn", API_BASE + "ajax-getstop.exe/sny", API_BASE + "query.exe/sn", 14, UTF_8, null);
+		super(API_BASE + "stboard.exe/sn", API_BASE + "ajax-getstop.exe/sny", API_BASE + "query.exe/sn", 14, UTF_8);
 
 		setClientType("ANDROID");
 		setCanDoEquivs(false);

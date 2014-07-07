@@ -49,7 +49,7 @@ public class VbbProvider extends AbstractHafasProvider
 
 	public VbbProvider()
 	{
-		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 7, UTF_8, UTF_8);
+		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 7, UTF_8);
 	}
 
 	public NetworkId id()

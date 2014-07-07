@@ -40,7 +40,7 @@ public class JetProvider extends AbstractHafasProvider
 
 	public JetProvider()
 	{
-		super(API_BASE + "stboard.bin/yn", API_BASE + "ajax-getstop.bin/yn", API_BASE + "query.bin/yn", 4, UTF_8, null);
+		super(API_BASE + "stboard.bin/yn", API_BASE + "ajax-getstop.bin/yn", API_BASE + "query.bin/yn", 4, UTF_8);
 	}
 
 	public NetworkId id()
