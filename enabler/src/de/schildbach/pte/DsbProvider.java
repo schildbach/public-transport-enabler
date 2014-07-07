@@ -19,15 +19,12 @@ package de.schildbach.pte;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
 
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
-import de.schildbach.pte.util.ParserUtils;
 
 /**
  * @author Andreas Schildbach
@@ -42,7 +39,7 @@ public class DsbProvider extends AbstractHafasProvider
 
 	public DsbProvider()
 	{
-		super(API_BASE + "stboard.exe/mn", null, API_BASE + "query.exe/dn", 11);
+		super(API_BASE + "stboard.exe/mn", API_BASE + "ajax-getstop.exe/mn", API_BASE + "query.exe/dn", 11);
 	}
 
 	public NetworkId id()
@@ -135,21 +132,14 @@ public class DsbProvider extends AbstractHafasProvider
 		}
 	}
 
-	private static final String NEARBY_STATIONS_BY_COORDINATE_URI = "http://xmlopen.rejseplanen.dk/bin/rest.exe/stopsNearby?coordX=%d&coordY=%d";
-
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
 		if (location.hasLocation())
 		{
-			final StringBuilder uri = new StringBuilder(String.format(Locale.ENGLISH, NEARBY_STATIONS_BY_COORDINATE_URI, location.lon, location.lat));
-			if (maxStations != 0)
-				uri.append("&maxNumber=").append(maxStations);
-			if (maxDistance != 0)
-				uri.append("&maxRadius=").append(maxDistance);
+			final StringBuilder uri = new StringBuilder(queryEndpoint);
+			uri.append(jsonNearbyStationsParameters(location, maxDistance, maxStations));
 
-			final List<Location> locations = xmlLocationList(uri.toString());
-
-			return new NearbyStationsResult(null, locations);
+			return jsonNearbyStations(uri.toString());
 		}
 		else if (location.type == LocationType.STATION && location.hasId())
 		{
@@ -170,16 +160,6 @@ public class DsbProvider extends AbstractHafasProvider
 		uri.append(xmlQueryDeparturesParameters(stationId));
 
 		return xmlQueryDepartures(uri.toString(), stationId);
-	}
-
-	private static final String AUTOCOMPLETE_URI = "http://xmlopen.rejseplanen.dk/bin/rest.exe/location.name?input=%s";
-
-	@Override
-	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
-	{
-		final String uri = String.format(Locale.ENGLISH, AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ISO_8859_1));
-
-		return xmlLocationList(uri);
 	}
 
 	@Override
