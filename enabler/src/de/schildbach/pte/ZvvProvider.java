@@ -19,7 +19,6 @@ package de.schildbach.pte;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 
@@ -42,7 +41,7 @@ public class ZvvProvider extends AbstractHafasProvider
 
 	public ZvvProvider()
 	{
-		super(API_BASE + "stboard.exe/dn", null, API_BASE + "query.exe/dn", 10, UTF_8, UTF_8);
+		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 10, UTF_8, UTF_8);
 
 		setStyles(STYLES);
 	}
@@ -190,12 +189,6 @@ public class ZvvProvider extends AbstractHafasProvider
 		uri.append(xmlQueryDeparturesParameters(stationId));
 
 		return xmlQueryDepartures(uri.toString(), stationId);
-	}
-
-	@Override
-	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
-	{
-		return xmlMLcReq(constraint);
 	}
 
 	@Override
