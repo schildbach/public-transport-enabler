@@ -59,7 +59,7 @@ public class InvgProvider extends AbstractHafasProvider
 
 	public InvgProvider()
 	{
-		super(API_BASE + "stboard.exe/dn", null, API_BASE + "query.exe/dn", 10);
+		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 10, UTF_8, UTF_8);
 
 		setStyles(STYLES);
 		setExtXmlEndpoint(API_BASE + "extxml.exe");
@@ -277,12 +277,6 @@ public class InvgProvider extends AbstractHafasProvider
 		{
 			throw new IllegalArgumentException("cannot parse '" + page + "' on " + stationId);
 		}
-	}
-
-	@Override
-	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
-	{
-		return xmlMLcReq(constraint);
 	}
 
 	@Override
