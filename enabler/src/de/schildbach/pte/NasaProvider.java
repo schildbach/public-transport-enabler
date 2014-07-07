@@ -18,7 +18,6 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
-import java.util.List;
 
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
@@ -37,7 +36,7 @@ public class NasaProvider extends AbstractHafasProvider
 
 	public NasaProvider()
 	{
-		super(API_BASE + "stboard.exe/dn", null, API_BASE + "query.exe/dn", 8);
+		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 8);
 
 		setJsonNearbyStationsEncoding(UTF_8);
 	}
@@ -166,12 +165,6 @@ public class NasaProvider extends AbstractHafasProvider
 	protected void addCustomReplaces(final StringReplaceReader reader)
 	{
 		reader.replace("\"Florian Geyer\"", "Florian Geyer");
-	}
-
-	@Override
-	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
-	{
-		return xmlMLcReq(constraint);
 	}
 
 	@Override
