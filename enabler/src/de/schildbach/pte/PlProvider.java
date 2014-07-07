@@ -19,7 +19,6 @@ package de.schildbach.pte;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
 
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
@@ -41,7 +40,7 @@ public class PlProvider extends AbstractHafasProvider
 
 	public PlProvider()
 	{
-		super(API_BASE + "stboard.exe/pn", null, API_BASE + "query.exe/pn", 7, UTF_8, UTF_8);
+		super(API_BASE + "stboard.exe/pn", API_BASE + "ajax-getstop.exe/pn", API_BASE + "query.exe/pn", 7, UTF_8, UTF_8);
 	}
 
 	public NetworkId id()
@@ -171,12 +170,6 @@ public class PlProvider extends AbstractHafasProvider
 		reader.replace("dir=\"Eutingen i. G ", "dir=\"Eutingen\" "); // Poland
 		reader.replace("StargetLoc", "Süd\" targetLoc"); // Poland
 		reader.replace("platform=\"K ", " "); // Poland
-	}
-
-	@Override
-	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
-	{
-		return xmlMLcReq(constraint);
 	}
 
 	@Override
