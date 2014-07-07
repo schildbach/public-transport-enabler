@@ -19,7 +19,6 @@ package de.schildbach.pte;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
 
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
@@ -135,14 +134,6 @@ public class NsProvider extends AbstractHafasProvider
 	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
 		throw new UnsupportedOperationException();
-	}
-
-	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
-	{
-		final StringBuilder uri = new StringBuilder(getStopEndpoint);
-		uri.append(jsonGetStopsParameters(constraint));
-
-		return jsonGetStops(uri.toString());
 	}
 
 	@Override

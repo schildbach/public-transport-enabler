@@ -19,7 +19,6 @@ package de.schildbach.pte;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -166,14 +165,6 @@ public class StockholmProvider extends AbstractHafasProvider
 		uri.append(xmlQueryDeparturesParameters(stationId));
 
 		return xmlQueryDepartures(uri.toString(), stationId);
-	}
-
-	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
-	{
-		final StringBuilder uri = new StringBuilder(getStopEndpoint);
-		uri.append(jsonGetStopsParameters(constraint));
-
-		return jsonGetStops(uri.toString());
 	}
 
 	@Override

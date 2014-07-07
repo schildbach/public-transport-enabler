@@ -318,6 +318,14 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			return new Position(platformText);
 	}
 
+	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
+	{
+		final StringBuilder uri = new StringBuilder(getStopEndpoint);
+		uri.append(jsonGetStopsParameters(constraint));
+
+		return jsonGetStops(uri.toString());
+	}
+
 	protected StringBuilder jsonGetStopsParameters(final CharSequence constraint)
 	{
 		final StringBuilder parameters = new StringBuilder();

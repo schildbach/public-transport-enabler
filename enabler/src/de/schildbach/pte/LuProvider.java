@@ -169,6 +169,7 @@ public class LuProvider extends AbstractHafasProvider
 		return xmlQueryDepartures(uri.toString(), stationId);
 	}
 
+	@Override
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
 		return xmlMLcReq(constraint);

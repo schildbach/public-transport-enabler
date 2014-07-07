@@ -278,6 +278,7 @@ public class ShProvider extends AbstractHafasProvider
 		}
 	}
 
+	@Override
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
 		return xmlMLcReq(constraint);

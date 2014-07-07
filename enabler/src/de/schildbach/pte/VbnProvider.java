@@ -18,7 +18,6 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
-import java.util.List;
 
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
@@ -142,14 +141,6 @@ public class VbnProvider extends AbstractHafasProvider
 		uri.append(xmlQueryDeparturesParameters(stationId));
 
 		return xmlQueryDepartures(uri.toString(), stationId);
-	}
-
-	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
-	{
-		final StringBuilder uri = new StringBuilder(getStopEndpoint);
-		uri.append(jsonGetStopsParameters(constraint));
-
-		return jsonGetStops(uri.toString());
 	}
 
 	@Override

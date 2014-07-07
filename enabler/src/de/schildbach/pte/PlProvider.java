@@ -173,6 +173,7 @@ public class PlProvider extends AbstractHafasProvider
 		reader.replace("platform=\"K ", " "); // Poland
 	}
 
+	@Override
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
 		return xmlMLcReq(constraint);

@@ -508,14 +508,6 @@ public final class BvgProvider extends AbstractHafasProvider
 		ParserUtils.parseEuropeanTime(calendar, m.group(2));
 	}
 
-	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
-	{
-		final StringBuilder uri = new StringBuilder(getStopEndpoint);
-		uri.append(jsonGetStopsParameters(constraint));
-
-		return jsonGetStops(uri.toString());
-	}
-
 	@Override
 	protected boolean isValidStationId(final String id)
 	{

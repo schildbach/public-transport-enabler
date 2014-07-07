@@ -18,7 +18,6 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -137,14 +136,6 @@ public class JetProvider extends AbstractHafasProvider
 		uri.append(xmlQueryDeparturesParameters(stationId));
 
 		return xmlQueryDepartures(uri.toString(), stationId);
-	}
-
-	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
-	{
-		final StringBuilder uri = new StringBuilder(getStopEndpoint);
-		uri.append(jsonGetStopsParameters(constraint));
-
-		return jsonGetStops(uri.toString());
 	}
 
 	private static final Pattern P_NORMALIZE_BUS = Pattern.compile("([א]?\\d{1,3})#");

@@ -294,14 +294,6 @@ public class SeptaProvider extends AbstractHafasProvider
 		}
 	}
 
-	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
-	{
-		final StringBuilder uri = new StringBuilder(getStopEndpoint);
-		uri.append(jsonGetStopsParameters(constraint));
-
-		return jsonGetStops(uri.toString());
-	}
-
 	@Override
 	protected void appendCustomTripsQueryBinaryUri(final StringBuilder uri)
 	{

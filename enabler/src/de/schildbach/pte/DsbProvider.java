@@ -174,6 +174,7 @@ public class DsbProvider extends AbstractHafasProvider
 
 	private static final String AUTOCOMPLETE_URI = "http://xmlopen.rejseplanen.dk/bin/rest.exe/location.name?input=%s";
 
+	@Override
 	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
 	{
 		final String uri = String.format(Locale.ENGLISH, AUTOCOMPLETE_URI, ParserUtils.urlEncode(constraint.toString(), ISO_8859_1));
