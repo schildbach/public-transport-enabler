@@ -48,6 +48,7 @@ import de.schildbach.pte.dto.QueryTripsContext;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.ResultHeader;
 import de.schildbach.pte.dto.Stop;
+import de.schildbach.pte.dto.SuggestLocationsResult;
 import de.schildbach.pte.dto.Trip;
 import de.schildbach.pte.exception.ParserException;
 import de.schildbach.pte.util.ParserUtils;
@@ -185,7 +186,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 				apiBase + (stopFinderEndpoint != null ? stopFinderEndpoint : DEFAULT_STOPFINDER_ENDPOINT));
 	}
 
-	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
+	public SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException
 	{
 		final StringBuilder parameters = buildCommonRequestParams("SearchTripPoint", "json");
 		parameters.append("&MaxItems=").append(50); // XXX good value?
@@ -197,13 +198,13 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 		final CharSequence page = ParserUtils.scrape(uri.toString(), null, UTF_8, null, 3);
 		try
 		{
-			final List<Location> stations = new ArrayList<Location>();
+			final List<Location> locations = new ArrayList<Location>();
 			final JSONObject head = new JSONObject(page.toString());
 
 			int status = head.getInt("StatusCode");
 
 			if (status != 200)
-				return stations;
+				return new SuggestLocationsResult(HEADER, SuggestLocationsResult.Status.SERVICE_DOWN);
 
 			JSONArray dataArray = head.getJSONArray("Data");
 			for (int i = 0; i < dataArray.length(); i++)
@@ -213,10 +214,10 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 
 				if (location.isIdentified()) // make sure the location is really identified
 					// some addresses may not contain coordinates, we ignore them
-					stations.add(location);
+					locations.add(location);
 			}
 
-			return stations;
+			return new SuggestLocationsResult(HEADER, locations);
 		}
 		catch (final JSONException x)
 		{
@@ -266,11 +267,11 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 		if (location.isIdentified())
 			return Collections.singletonList(location);
 
-		final List<Location> result = autocompleteStations(location.uniqueShortName());
-		if (result == null)
+		final List<Location> locations = suggestLocations(location.uniqueShortName()).locations;
+		if (locations == null)
 			return new ArrayList<Location>(0);
 
-		return result;
+		return locations;
 	}
 
 	private NearbyStationsResult jsonCoordRequest(final int lat, final int lon, final int maxDistance, final int maxStations) throws IOException

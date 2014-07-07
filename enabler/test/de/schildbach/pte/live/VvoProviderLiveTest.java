@@ -23,7 +23,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -36,6 +35,7 @@ import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
+import de.schildbach.pte.dto.SuggestLocationsResult;
 
 /**
  * @author Andreas Schildbach
@@ -72,27 +72,27 @@ public class VvoProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
-	public void autocompleteIncomplete() throws Exception
+	public void suggestLocationsIncomplete() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("Kur");
+		final SuggestLocationsResult result = provider.suggestLocations("Kur");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test
-	public void autocompleteWithUmlaut() throws Exception
+	public void suggestLocationsWithUmlaut() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("Hülßestraße");
+		final SuggestLocationsResult result = provider.suggestLocations("Hülßestraße");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test
-	public void autocompleteCoverage() throws Exception
+	public void suggestLocationsCoverage() throws Exception
 	{
-		final List<Location> dresdenAutocompletes = provider.autocompleteStations("Dresden Postplatz");
-		print(dresdenAutocompletes);
-		assertThat(dresdenAutocompletes, hasItem(new Location(LocationType.STATION, "33000037")));
+		final SuggestLocationsResult dresdenResult = provider.suggestLocations("Dresden Postplatz");
+		print(dresdenResult);
+		assertThat(dresdenResult.locations, hasItem(new Location(LocationType.STATION, "33000037")));
 	}
 
 	@Test

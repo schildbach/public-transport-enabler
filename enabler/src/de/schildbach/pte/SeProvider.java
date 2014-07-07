@@ -57,7 +57,7 @@ public class SeProvider extends AbstractHafasProvider
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
 		for (final Capability capability : capabilities)
-			if (capability == Capability.AUTOCOMPLETE_ONE_LINE || capability == Capability.DEPARTURES)
+			if (capability == Capability.SUGGEST_LOCATIONS || capability == Capability.DEPARTURES)
 				return true;
 
 		return false;

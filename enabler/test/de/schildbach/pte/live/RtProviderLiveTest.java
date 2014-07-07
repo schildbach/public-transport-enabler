@@ -20,7 +20,6 @@ package de.schildbach.pte.live;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Date;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -33,6 +32,7 @@ import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
+import de.schildbach.pte.dto.SuggestLocationsResult;
 
 /**
  * @author Andreas Schildbach
@@ -77,27 +77,27 @@ public class RtProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
-	public void autocomplete() throws Exception
+	public void suggestLocations() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("haupt");
+		final SuggestLocationsResult result = provider.suggestLocations("haupt");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test
-	public void autocompleteAddress() throws Exception
+	public void suggestLocationsAddress() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("Dorfstrasse 10, Dällikon, Schweiz");
+		final SuggestLocationsResult result = provider.suggestLocations("Dorfstrasse 10, Dällikon, Schweiz");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test
-	public void autocompleteEncoding() throws Exception
+	public void suggestLocationsEncoding() throws Exception
 	{
-		List<Location> autocompletes = provider.autocompleteStations("Dorfstrasse 1, Schäftland");
-		assertEquals("Schöftland, Dorfstrasse", autocompletes.get(0).name);
-		print(autocompletes);
+		final SuggestLocationsResult result = provider.suggestLocations("Dorfstrasse 1, Schäftland");
+		assertEquals("Schöftland, Dorfstrasse", result.locations.get(0).name);
+		print(result);
 	}
 
 	@Test

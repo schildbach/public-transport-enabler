@@ -18,7 +18,6 @@
 package de.schildbach.pte.service;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +29,7 @@ import de.schildbach.pte.RtProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.SuggestLocationsResult;
 
 /**
  * @author Andreas Schildbach
@@ -41,9 +41,9 @@ public class LocationController
 
 	@RequestMapping(value = "/location/suggest", method = RequestMethod.GET)
 	@ResponseBody
-	public List<Location> autocomplete(@RequestParam("q") final String query) throws IOException
+	public SuggestLocationsResult suggest(@RequestParam("q") final String query) throws IOException
 	{
-		return provider.autocompleteStations(query);
+		return provider.suggestLocations(query);
 	}
 
 	@RequestMapping(value = "/location/nearby", method = RequestMethod.GET)

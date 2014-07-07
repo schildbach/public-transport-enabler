@@ -23,7 +23,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -36,6 +35,7 @@ import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
+import de.schildbach.pte.dto.SuggestLocationsResult;
 
 /**
  * @author Andreas Schildbach
@@ -84,63 +84,63 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
-	public void autocompleteIncomplete() throws Exception
+	public void suggestLocationsIncomplete() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("Kur");
+		final SuggestLocationsResult result = provider.suggestLocations("Kur");
 
-		print(autocompletes);
+		print(result);
 
-		final List<Location> autocompletes2 = provider.autocompleteStations("Paderborn Hbf");
+		final SuggestLocationsResult paderbornResult = provider.suggestLocations("Paderborn Hbf");
 
-		print(autocompletes2);
+		print(paderbornResult);
 	}
 
 	@Test
-	public void autocompleteWithUmlaut() throws Exception
+	public void suggestLocationsWithUmlaut() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("grün");
+		final SuggestLocationsResult result = provider.suggestLocations("grün");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test
-	public void autocompleteIdentified() throws Exception
+	public void suggestLocationsIdentified() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("Düsseldorf, Am Frohnhof");
+		final SuggestLocationsResult result = provider.suggestLocations("Düsseldorf, Am Frohnhof");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test
-	public void autocompleteCoverage() throws Exception
+	public void suggestLocationsCoverage() throws Exception
 	{
-		final List<Location> cologneAutocompletes = provider.autocompleteStations("Köln Ebertplatz");
-		print(cologneAutocompletes);
-		assertThat(cologneAutocompletes, hasItem(new Location(LocationType.STATION, "22000035")));
+		final SuggestLocationsResult cologneResult = provider.suggestLocations("Köln Ebertplatz");
+		print(cologneResult);
+		assertThat(cologneResult.locations, hasItem(new Location(LocationType.STATION, "22000035")));
 
-		final List<Location> dortmundAutocompletes = provider.autocompleteStations("Dortmund Zugstraße");
-		print(dortmundAutocompletes);
-		assertThat(dortmundAutocompletes, hasItem(new Location(LocationType.STATION, "20000524")));
+		final SuggestLocationsResult dortmundResult = provider.suggestLocations("Dortmund Zugstraße");
+		print(dortmundResult);
+		assertThat(dortmundResult.locations, hasItem(new Location(LocationType.STATION, "20000524")));
 
-		final List<Location> duesseldorfAutocompletes = provider.autocompleteStations("Düsseldorf Sternstraße");
-		print(duesseldorfAutocompletes);
-		assertThat(duesseldorfAutocompletes, hasItem(new Location(LocationType.STATION, "20018017")));
+		final SuggestLocationsResult duesseldorfResult = provider.suggestLocations("Düsseldorf Sternstraße");
+		print(duesseldorfResult);
+		assertThat(duesseldorfResult.locations, hasItem(new Location(LocationType.STATION, "20018017")));
 
-		final List<Location> muensterAutocompletes = provider.autocompleteStations("Münster Vennheideweg");
-		print(muensterAutocompletes);
-		assertThat(muensterAutocompletes, hasItem(new Location(LocationType.STATION, "24047291")));
+		final SuggestLocationsResult muensterResult = provider.suggestLocations("Münster Vennheideweg");
+		print(muensterResult);
+		assertThat(muensterResult.locations, hasItem(new Location(LocationType.STATION, "24047291")));
 
-		final List<Location> aachenAutocompletes = provider.autocompleteStations("Aachen Elisenbrunnen");
-		print(aachenAutocompletes);
-		assertThat(aachenAutocompletes, hasItem(new Location(LocationType.STATION, "21001029")));
+		final SuggestLocationsResult aachenResult = provider.suggestLocations("Aachen Elisenbrunnen");
+		print(aachenResult);
+		assertThat(aachenResult.locations, hasItem(new Location(LocationType.STATION, "21001029")));
 	}
 
 	@Test
-	public void autocompleteCity() throws Exception
+	public void suggestLocationsCity() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("Düsseldorf");
+		final SuggestLocationsResult result = provider.suggestLocations("Düsseldorf");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test

@@ -23,7 +23,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -36,6 +35,7 @@ import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
+import de.schildbach.pte.dto.SuggestLocationsResult;
 
 /**
  * @author Andreas Schildbach
@@ -72,19 +72,19 @@ public class VagfrProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
-	public void autocompleteIncomplete() throws Exception
+	public void suggestLocationsIncomplete() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("Kurf");
+		final SuggestLocationsResult result = provider.suggestLocations("Kurf");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test
-	public void autocompleteCoverage() throws Exception
+	public void suggestLocationsCoverage() throws Exception
 	{
-		final List<Location> freiburgAutocompletes = provider.autocompleteStations("Betzenhauser Torplatz");
-		print(freiburgAutocompletes);
-		assertThat(freiburgAutocompletes, hasItem(new Location(LocationType.STATION, "6930503")));
+		final SuggestLocationsResult freiburgResult = provider.suggestLocations("Betzenhauser Torplatz");
+		print(freiburgResult);
+		assertThat(freiburgResult.locations, hasItem(new Location(LocationType.STATION, "6930503")));
 	}
 
 	@Test

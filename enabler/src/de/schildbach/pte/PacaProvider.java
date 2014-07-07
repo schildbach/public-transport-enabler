@@ -39,7 +39,7 @@ public class PacaProvider extends AbstractTsiProvider
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
 		for (final Capability capability : capabilities)
-			if (capability == Capability.AUTOCOMPLETE_ONE_LINE || capability == Capability.TRIPS)
+			if (capability == Capability.SUGGEST_LOCATIONS || capability == Capability.TRIPS)
 				return true;
 
 		return false;

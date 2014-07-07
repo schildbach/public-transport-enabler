@@ -21,7 +21,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -34,6 +33,7 @@ import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
+import de.schildbach.pte.dto.SuggestLocationsResult;
 
 /**
  * @author Andreas Schildbach
@@ -70,43 +70,43 @@ public class GvhProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
-	public void autocompleteIncomplete() throws Exception
+	public void suggestLocationsIncomplete() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("Kur");
+		final SuggestLocationsResult result = provider.suggestLocations("Kur");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test
-	public void autocompleteWithUmlaut() throws Exception
+	public void suggestLocationsWithUmlaut() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("grün");
+		final SuggestLocationsResult result = provider.suggestLocations("grün");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test
-	public void autocompleteIdentified() throws Exception
+	public void suggestLocationsIdentified() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("Hannover, Hannoversche Straße");
+		final SuggestLocationsResult result = provider.suggestLocations("Hannover, Hannoversche Straße");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test
-	public void autocompleteCity() throws Exception
+	public void suggestLocationsCity() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("Hannover");
+		final SuggestLocationsResult result = provider.suggestLocations("Hannover");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test
-	public void autocomplete() throws Exception
+	public void suggestLocations() throws Exception
 	{
-		final List<Location> results = provider.autocompleteStations("Hannover");
+		final SuggestLocationsResult result = provider.suggestLocations("Hannover");
 
-		System.out.println(results.size() + "  " + results);
+		print(result);
 	}
 
 	@Test

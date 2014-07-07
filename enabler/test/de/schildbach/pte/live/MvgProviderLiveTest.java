@@ -23,7 +23,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -36,6 +35,7 @@ import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
+import de.schildbach.pte.dto.SuggestLocationsResult;
 
 /**
  * @author Andreas Schildbach
@@ -72,39 +72,39 @@ public class MvgProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
-	public void autocompleteIncomplete() throws Exception
+	public void suggestLocationsIncomplete() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("Schützenhalle");
+		final SuggestLocationsResult result = provider.suggestLocations("Schützenhalle");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test
-	public void autocompleteWithUmlaut() throws Exception
+	public void suggestLocationsWithUmlaut() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("grün");
+		final SuggestLocationsResult result = provider.suggestLocations("grün");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test
-	public void autocompleteCoverage() throws Exception
+	public void suggestLocationsCoverage() throws Exception
 	{
-		final List<Location> luedenscheidAutocompletes = provider.autocompleteStations("Lüdenscheid Freibad");
-		print(luedenscheidAutocompletes);
-		assertThat(luedenscheidAutocompletes, hasItem(new Location(LocationType.STATION, "24200153")));
+		final SuggestLocationsResult luedenscheidResult = provider.suggestLocations("Lüdenscheid Freibad");
+		print(luedenscheidResult);
+		assertThat(luedenscheidResult.locations, hasItem(new Location(LocationType.STATION, "24200153")));
 
-		final List<Location> iserlohnAutocompletes = provider.autocompleteStations("Iserlohn Rathaus");
-		print(iserlohnAutocompletes);
-		assertThat(iserlohnAutocompletes, hasItem(new Location(LocationType.STATION, "24200764")));
+		final SuggestLocationsResult iserlohnResult = provider.suggestLocations("Iserlohn Rathaus");
+		print(iserlohnResult);
+		assertThat(iserlohnResult.locations, hasItem(new Location(LocationType.STATION, "24200764")));
 
-		final List<Location> plettenbergAutocompletes = provider.autocompleteStations("Plettenberg Friedhof");
-		print(plettenbergAutocompletes);
-		assertThat(plettenbergAutocompletes, hasItem(new Location(LocationType.STATION, "24202864")));
+		final SuggestLocationsResult plettenbergResult = provider.suggestLocations("Plettenberg Friedhof");
+		print(plettenbergResult);
+		assertThat(plettenbergResult.locations, hasItem(new Location(LocationType.STATION, "24202864")));
 
-		final List<Location> mendenAutocompletes = provider.autocompleteStations("Menden Am Gillfeld");
-		print(mendenAutocompletes);
-		assertThat(mendenAutocompletes, hasItem(new Location(LocationType.STATION, "24202193")));
+		final SuggestLocationsResult mendenResult = provider.suggestLocations("Menden Am Gillfeld");
+		print(mendenResult);
+		assertThat(mendenResult.locations, hasItem(new Location(LocationType.STATION, "24202193")));
 	}
 
 	@Test

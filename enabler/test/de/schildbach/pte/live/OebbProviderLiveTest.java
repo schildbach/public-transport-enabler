@@ -21,7 +21,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -34,6 +33,7 @@ import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
+import de.schildbach.pte.dto.SuggestLocationsResult;
 
 /**
  * @author Andreas Schildbach
@@ -82,20 +82,20 @@ public class OebbProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
-	public void autocomplete() throws Exception
+	public void suggestLocations() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("Wien");
+		final SuggestLocationsResult result = provider.suggestLocations("Wien");
 
-		print(autocompletes);
-		assertTrue(autocompletes.size() > 0);
+		print(result);
+		assertTrue(result.locations.size() > 0);
 	}
 
 	@Test
-	public void autocompleteUmlaut() throws Exception
+	public void suggestLocationsUmlaut() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("Obirhöhle");
+		final SuggestLocationsResult result = provider.suggestLocations("Obirhöhle");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test

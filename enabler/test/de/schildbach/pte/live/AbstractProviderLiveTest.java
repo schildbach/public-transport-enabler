@@ -20,7 +20,6 @@ package de.schildbach.pte.live;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 import de.schildbach.pte.NetworkProvider;
 import de.schildbach.pte.NetworkProvider.Accessibility;
@@ -31,6 +30,7 @@ import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsContext;
 import de.schildbach.pte.dto.QueryTripsResult;
+import de.schildbach.pte.dto.SuggestLocationsResult;
 
 /**
  * @author Andreas Schildbach
@@ -59,11 +59,11 @@ public abstract class AbstractProviderLiveTest
 		// System.out.println(departure);
 	}
 
-	protected final void print(final List<Location> autocompletes)
+	protected final void print(final SuggestLocationsResult result)
 	{
-		System.out.print(autocompletes.size() + " ");
-		for (final Location autocomplete : autocompletes)
-			System.out.print(autocomplete + " ");
+		System.out.print(result.locations.size() + " ");
+		for (final Location location : result.locations)
+			System.out.print(location + " ");
 		System.out.println();
 	}
 

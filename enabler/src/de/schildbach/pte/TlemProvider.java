@@ -19,12 +19,12 @@ package de.schildbach.pte;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
 import java.util.TimeZone;
 
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.Product;
+import de.schildbach.pte.dto.SuggestLocationsResult;
 
 /**
  * @author Andreas Schildbach
@@ -56,7 +56,7 @@ public class TlemProvider extends AbstractEfaProvider
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
 		for (final Capability capability : capabilities)
-			if (capability == Capability.AUTOCOMPLETE_ONE_LINE || capability == Capability.DEPARTURES || capability == Capability.TRIPS)
+			if (capability == Capability.SUGGEST_LOCATIONS || capability == Capability.DEPARTURES || capability == Capability.TRIPS)
 				return true;
 
 		return false;
@@ -76,7 +76,7 @@ public class TlemProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
+	public SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException
 	{
 		return xmlStopfinderRequest(new Location(LocationType.ANY, null, null, constraint.toString()));
 	}

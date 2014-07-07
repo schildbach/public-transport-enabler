@@ -64,6 +64,7 @@ import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.ResultHeader;
 import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.dto.Stop;
+import de.schildbach.pte.dto.SuggestLocationsResult;
 import de.schildbach.pte.dto.Trip;
 import de.schildbach.pte.exception.ParserException;
 import de.schildbach.pte.exception.SessionExpiredException;
@@ -316,7 +317,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			return new Position(platformText);
 	}
 
-	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
+	public SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(getStopEndpoint);
 		uri.append(jsonGetStopsParameters(constraint));
@@ -339,7 +340,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	private static final Pattern P_AJAX_GET_STOPS_JSON = Pattern.compile("SLs\\.sls\\s*=\\s*(.*?);\\s*SLs\\.showSuggestion\\(\\);", Pattern.DOTALL);
 	private static final Pattern P_AJAX_GET_STOPS_ID = Pattern.compile(".*?@L=0*(\\d+)@.*?");
 
-	protected final List<Location> jsonGetStops(final String uri) throws IOException
+	protected final SuggestLocationsResult jsonGetStops(final String uri) throws IOException
 	{
 		final CharSequence page = ParserUtils.scrape(uri, null, jsonGetStopsEncoding, null);
 
@@ -347,7 +348,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		if (mJson.matches())
 		{
 			final String json = mJson.group(1);
-			final List<Location> results = new ArrayList<Location>();
+			final List<Location> locations = new ArrayList<Location>();
 
 			try
 			{
@@ -371,16 +372,16 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						if (type == 1) // station
 						{
 							final String[] placeAndName = splitPlaceAndName(value);
-							results.add(new Location(LocationType.STATION, localId, lat, lon, placeAndName[0], placeAndName[1]));
+							locations.add(new Location(LocationType.STATION, localId, lat, lon, placeAndName[0], placeAndName[1]));
 						}
 						else if (type == 2) // address
 						{
 							final String[] placeAndName = splitPlaceAndName(value);
-							results.add(new Location(LocationType.ADDRESS, null, lat, lon, placeAndName[0], placeAndName[1]));
+							locations.add(new Location(LocationType.ADDRESS, null, lat, lon, placeAndName[0], placeAndName[1]));
 						}
 						else if (type == 4) // poi
 						{
-							results.add(new Location(LocationType.POI, localId, lat, lon, null, value));
+							locations.add(new Location(LocationType.POI, localId, lat, lon, null, value));
 						}
 						else if (type == 71) // strange (VBN)
 						{
@@ -401,7 +402,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					}
 				}
 
-				return results;
+				return new SuggestLocationsResult(new ResultHeader(SERVER_PRODUCT), locations);
 			}
 			catch (final JSONException x)
 			{
@@ -752,32 +753,32 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 		if (!from.isIdentified())
 		{
-			final List<Location> autocompletes = autocompleteStations(from.name);
-			if (autocompletes.isEmpty())
+			final List<Location> locations = suggestLocations(from.name).locations;
+			if (locations.isEmpty())
 				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS); // TODO
-			if (autocompletes.size() > 1)
-				return new QueryTripsResult(header, autocompletes, null, null);
-			from = autocompletes.get(0);
+			if (locations.size() > 1)
+				return new QueryTripsResult(header, locations, null, null);
+			from = locations.get(0);
 		}
 
 		if (via != null && !via.isIdentified())
 		{
-			final List<Location> autocompletes = autocompleteStations(via.name);
-			if (autocompletes.isEmpty())
+			final List<Location> locations = suggestLocations(via.name).locations;
+			if (locations.isEmpty())
 				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS); // TODO
-			if (autocompletes.size() > 1)
-				return new QueryTripsResult(header, null, autocompletes, null);
-			via = autocompletes.get(0);
+			if (locations.size() > 1)
+				return new QueryTripsResult(header, null, locations, null);
+			via = locations.get(0);
 		}
 
 		if (!to.isIdentified())
 		{
-			final List<Location> autocompletes = autocompleteStations(to.name);
-			if (autocompletes.isEmpty())
+			final List<Location> locations = suggestLocations(to.name).locations;
+			if (locations.isEmpty())
 				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS); // TODO
-			if (autocompletes.size() > 1)
-				return new QueryTripsResult(header, null, null, autocompletes);
-			to = autocompletes.get(0);
+			if (locations.size() > 1)
+				return new QueryTripsResult(header, null, null, locations);
+			to = locations.get(0);
 		}
 
 		final Calendar c = new GregorianCalendar(timeZone());
@@ -1371,32 +1372,32 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 		if (!from.isIdentified())
 		{
-			final List<Location> autocompletes = autocompleteStations(from.name);
-			if (autocompletes.isEmpty())
+			final List<Location> locations = suggestLocations(from.name).locations;
+			if (locations.isEmpty())
 				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS); // TODO
-			if (autocompletes.size() > 1)
-				return new QueryTripsResult(header, autocompletes, null, null);
-			from = autocompletes.get(0);
+			if (locations.size() > 1)
+				return new QueryTripsResult(header, locations, null, null);
+			from = locations.get(0);
 		}
 
 		if (via != null && !via.isIdentified())
 		{
-			final List<Location> autocompletes = autocompleteStations(via.name);
-			if (autocompletes.isEmpty())
+			final List<Location> locations = suggestLocations(via.name).locations;
+			if (locations.isEmpty())
 				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS); // TODO
-			if (autocompletes.size() > 1)
-				return new QueryTripsResult(header, null, autocompletes, null);
-			via = autocompletes.get(0);
+			if (locations.size() > 1)
+				return new QueryTripsResult(header, null, locations, null);
+			via = locations.get(0);
 		}
 
 		if (!to.isIdentified())
 		{
-			final List<Location> autocompletes = autocompleteStations(to.name);
-			if (autocompletes.isEmpty())
+			final List<Location> locations = suggestLocations(to.name).locations;
+			if (locations.isEmpty())
 				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS); // TODO
-			if (autocompletes.size() > 1)
-				return new QueryTripsResult(header, null, null, autocompletes);
-			to = autocompletes.get(0);
+			if (locations.size() > 1)
+				return new QueryTripsResult(header, null, null, locations);
+			to = locations.get(0);
 		}
 
 		final StringBuilder uri = new StringBuilder(queryEndpoint);

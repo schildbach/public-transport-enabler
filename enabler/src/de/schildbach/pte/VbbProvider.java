@@ -60,7 +60,7 @@ public class VbbProvider extends AbstractHafasProvider
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
 		for (final Capability capability : capabilities)
-			if (capability == Capability.DEPARTURES || capability == Capability.AUTOCOMPLETE_ONE_LINE || capability == Capability.TRIPS)
+			if (capability == Capability.DEPARTURES || capability == Capability.SUGGEST_LOCATIONS || capability == Capability.TRIPS)
 				return true;
 
 		return false;

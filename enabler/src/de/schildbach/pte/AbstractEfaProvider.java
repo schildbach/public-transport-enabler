@@ -66,6 +66,7 @@ import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.ResultHeader;
 import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.dto.Stop;
+import de.schildbach.pte.dto.SuggestLocationsResult;
 import de.schildbach.pte.dto.Trip;
 import de.schildbach.pte.exception.InvalidDataException;
 import de.schildbach.pte.exception.ParserException;
@@ -243,7 +244,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			uri.append('&').append(additionalQueryParameter);
 	}
 
-	protected List<Location> jsonStopfinderRequest(final Location constraint) throws IOException
+	protected SuggestLocationsResult jsonStopfinderRequest(final Location constraint) throws IOException
 	{
 		final StringBuilder parameters = stopfinderRequestParameters(constraint, "JSON");
 
@@ -255,10 +256,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		// System.out.println(parameters);
 
 		final CharSequence page = ParserUtils.scrape(uri.toString(), httpPost ? parameters.substring(1) : null, UTF_8, null);
+		final ResultHeader header = new ResultHeader(SERVER_PRODUCT);
 
 		try
 		{
-			final List<Location> results = new ArrayList<Location>();
+			final List<Location> locations = new ArrayList<Location>();
 
 			final JSONObject head = new JSONObject(page.toString());
 			final JSONObject stopFinder = head.optJSONObject("stopFinder");
@@ -274,8 +276,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				{
 					final JSONObject stop = points.getJSONObject("point");
 					final Location location = parseJsonStop(stop);
-					results.add(location);
-					return results;
+					locations.add(location);
+					return new SuggestLocationsResult(header, locations);
 				}
 
 				stops = stopFinder.getJSONArray("points");
@@ -287,10 +289,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			{
 				final JSONObject stop = stops.optJSONObject(i);
 				final Location location = parseJsonStop(stop);
-				results.add(location);
+				locations.add(location);
 			}
 
-			return results;
+			return new SuggestLocationsResult(header, locations);
 		}
 		catch (final JSONException x)
 		{
@@ -357,7 +359,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		return parameters;
 	}
 
-	protected List<Location> xmlStopfinderRequest(final Location constraint) throws IOException
+	protected SuggestLocationsResult xmlStopfinderRequest(final Location constraint) throws IOException
 	{
 		final StringBuilder parameters = stopfinderRequestParameters(constraint, "XML");
 
@@ -378,9 +380,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
-			enterItdRequest(pp);
+			final ResultHeader header = enterItdRequest(pp);
 
-			final List<Location> results = new ArrayList<Location>();
+			final List<Location> locations = new ArrayList<Location>();
 
 			XmlPullUtil.enter(pp, "itdStopFinderRequest");
 
@@ -402,7 +404,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			if ("identified".equals(nameState) || "list".equals(nameState))
 			{
 				while (XmlPullUtil.test(pp, "odvNameElem"))
-					results.add(processOdvNameElem(pp, null));
+					locations.add(processOdvNameElem(pp, null));
 			}
 			else if ("notidentified".equals(nameState))
 			{
@@ -419,7 +421,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 			XmlPullUtil.exit(pp, "itdStopFinderRequest");
 
-			return results;
+			return new SuggestLocationsResult(header, locations);
 		}
 		catch (final XmlPullParserException x)
 		{
@@ -483,7 +485,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 	}
 
-	protected List<Location> mobileStopfinderRequest(final Location constraint) throws IOException
+	protected SuggestLocationsResult mobileStopfinderRequest(final Location constraint) throws IOException
 	{
 		final StringBuilder parameters = stopfinderRequestParameters(constraint, "XML");
 
@@ -504,7 +506,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
-			enterEfa(pp);
+			final ResultHeader header = enterEfa(pp);
 
 			final List<LocationAndQuality> locations = new ArrayList<LocationAndQuality>();
 
@@ -571,7 +573,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			for (final LocationAndQuality location : locations)
 				results.add(location.location);
 
-			return results;
+			return new SuggestLocationsResult(header, results);
 		}
 		catch (final XmlPullParserException x)
 		{
@@ -744,7 +746,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 	}
 
-	public List<Location> autocompleteStations(final CharSequence constraint) throws IOException
+	public SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException
 	{
 		return jsonStopfinderRequest(new Location(LocationType.ANY, null, null, constraint.toString()));
 	}

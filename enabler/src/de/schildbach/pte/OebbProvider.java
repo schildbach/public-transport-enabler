@@ -50,7 +50,7 @@ public class OebbProvider extends AbstractHafasProvider
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
 		for (final Capability capability : capabilities)
-			if (capability == Capability.NEARBY_STATIONS || capability == Capability.DEPARTURES || capability == Capability.AUTOCOMPLETE_ONE_LINE
+			if (capability == Capability.NEARBY_STATIONS || capability == Capability.DEPARTURES || capability == Capability.SUGGEST_LOCATIONS
 					|| capability == Capability.TRIPS)
 				return true;
 

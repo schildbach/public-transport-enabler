@@ -18,7 +18,6 @@
 package de.schildbach.pte.live;
 
 import java.util.Date;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -31,6 +30,7 @@ import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
+import de.schildbach.pte.dto.SuggestLocationsResult;
 
 /**
  * @author Andreas Schildbach
@@ -68,19 +68,19 @@ public class AtcProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
-	public void autocomplete() throws Exception
+	public void suggestLocations() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("ponte");
+		final SuggestLocationsResult result = provider.suggestLocations("ponte");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test
-	public void autocompleteWithUmlaut() throws Exception
+	public void suggestLocationsWithUmlaut() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("grünwink");
+		final SuggestLocationsResult result = provider.suggestLocations("grünwink");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test

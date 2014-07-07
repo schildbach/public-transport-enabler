@@ -20,7 +20,6 @@ package de.schildbach.pte.live;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Date;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -33,6 +32,7 @@ import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
+import de.schildbach.pte.dto.SuggestLocationsResult;
 
 /**
  * @author Andreas Schildbach
@@ -82,11 +82,11 @@ public class JetProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
-	public void autoComplete() throws Exception
+	public void suggestLocations() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("הנשיא - מוזיאון האיסלם, ירושלים");
+		final SuggestLocationsResult result = provider.suggestLocations("הנשיא - מוזיאון האיסלם, ירושלים");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test

@@ -21,7 +21,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -32,6 +31,7 @@ import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryTripsResult;
+import de.schildbach.pte.dto.SuggestLocationsResult;
 
 /**
  * @author Kjell Braden <afflux@pentabarf.de>
@@ -44,27 +44,27 @@ public class PacaProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
-	public void autocomplete() throws Exception
+	public void suggestLocations() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("aeroport");
+		final SuggestLocationsResult result = provider.suggestLocations("aeroport");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test
-	public void autocompleteIdentified() throws Exception
+	public void suggestLocationsIdentified() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("EGANAUDE, Biot");
+		final SuggestLocationsResult result = provider.suggestLocations("EGANAUDE, Biot");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test
-	public void autocompleteUmlaut() throws Exception
+	public void suggestLocationsUmlaut() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("Aéroport");
+		final SuggestLocationsResult result = provider.suggestLocations("Aéroport");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test

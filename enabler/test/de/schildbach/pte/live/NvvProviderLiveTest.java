@@ -22,7 +22,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -35,6 +34,7 @@ import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
+import de.schildbach.pte.dto.SuggestLocationsResult;
 
 /**
  * @author Andreas Schildbach
@@ -95,27 +95,27 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
-	public void autocomplete() throws Exception
+	public void suggestLocations() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("Flughafen");
+		final SuggestLocationsResult result = provider.suggestLocations("Flughafen");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test
-	public void autocompleteIdentified() throws Exception
+	public void suggestLocationsIdentified() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("Kassel Wilhelmshöhe");
+		final SuggestLocationsResult result = provider.suggestLocations("Kassel Wilhelmshöhe");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test
-	public void autocompleteUmlaut() throws Exception
+	public void suggestLocationsUmlaut() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("könig");
+		final SuggestLocationsResult result = provider.suggestLocations("könig");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test

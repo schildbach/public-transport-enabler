@@ -23,7 +23,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -36,6 +35,7 @@ import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
+import de.schildbach.pte.dto.SuggestLocationsResult;
 
 /**
  * @author Andreas Schildbach
@@ -72,35 +72,35 @@ public class NvbwProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
-	public void autocompleteIncomplete() throws Exception
+	public void suggestLocationsIncomplete() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("Kur");
+		final SuggestLocationsResult result = provider.suggestLocations("Kur");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test
-	public void autocompleteWithUmlaut() throws Exception
+	public void suggestLocationsWithUmlaut() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("grün");
+		final SuggestLocationsResult result = provider.suggestLocations("grün");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test
-	public void autocompleteCoverage() throws Exception
+	public void suggestLocationsCoverage() throws Exception
 	{
-		final List<Location> freiburgAutocompletes = provider.autocompleteStations("Freiburg Hauptbahnhof");
-		print(freiburgAutocompletes);
-		assertThat(freiburgAutocompletes, hasItem(new Location(LocationType.STATION, "6906508")));
+		final SuggestLocationsResult freiburgResult = provider.suggestLocations("Freiburg Hauptbahnhof");
+		print(freiburgResult);
+		assertThat(freiburgResult.locations, hasItem(new Location(LocationType.STATION, "6906508")));
 
-		final List<Location> baselAutocompletes = provider.autocompleteStations("Basel");
-		print(baselAutocompletes);
-		assertThat(baselAutocompletes, hasItem(new Location(LocationType.STATION, "51000007")));
+		final SuggestLocationsResult baselResult = provider.suggestLocations("Basel");
+		print(baselResult);
+		assertThat(baselResult.locations, hasItem(new Location(LocationType.STATION, "51000007")));
 
-		final List<Location> constanceAutocompletes = provider.autocompleteStations("Konstanz");
-		print(constanceAutocompletes);
-		assertThat(constanceAutocompletes, hasItem(new Location(LocationType.STATION, "8706554")));
+		final SuggestLocationsResult constanceResult = provider.suggestLocations("Konstanz");
+		print(constanceResult);
+		assertThat(constanceResult.locations, hasItem(new Location(LocationType.STATION, "8706554")));
 	}
 
 	@Test

@@ -76,7 +76,7 @@ public final class BvgProvider extends AbstractHafasProvider
 	public boolean hasCapabilities(final Capability... capabilities)
 	{
 		for (final Capability capability : capabilities)
-			if (capability == Capability.AUTOCOMPLETE_ONE_LINE || capability == Capability.NEARBY_STATIONS)
+			if (capability == Capability.SUGGEST_LOCATIONS || capability == Capability.NEARBY_STATIONS)
 				return false;
 
 		return true;

@@ -20,7 +20,6 @@ package de.schildbach.pte;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
 import de.schildbach.pte.dto.Location;
@@ -31,6 +30,7 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsContext;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.Style;
+import de.schildbach.pte.dto.SuggestLocationsResult;
 
 /**
  * Interface to be implemented by providers of transportation networks.
@@ -41,8 +41,8 @@ public interface NetworkProvider
 {
 	public enum Capability
 	{
-		/* can autocomplete locations */
-		AUTOCOMPLETE_ONE_LINE,
+		/* can suggest locations */
+		SUGGEST_LOCATIONS,
 		/* can determine nearby stations */
 		NEARBY_STATIONS,
 		/* can query for departures */
@@ -99,14 +99,14 @@ public interface NetworkProvider
 	QueryDeparturesResult queryDepartures(String stationId, int maxDepartures, boolean equivs) throws IOException;
 
 	/**
-	 * Meant for auto-completion of station names, like in an {@link android.widget.AutoCompleteTextView}
+	 * Meant for auto-completion of location names, like in an {@link android.widget.AutoCompleteTextView}
 	 * 
 	 * @param constraint
 	 *            input by user so far
-	 * @return auto-complete suggestions
+	 * @return location suggestions
 	 * @throws IOException
 	 */
-	List<Location> autocompleteStations(CharSequence constraint) throws IOException;
+	SuggestLocationsResult suggestLocations(CharSequence constraint) throws IOException;
 
 	/**
 	 * Typical products for a network

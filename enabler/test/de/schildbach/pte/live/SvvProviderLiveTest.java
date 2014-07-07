@@ -23,7 +23,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -36,6 +35,7 @@ import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
+import de.schildbach.pte.dto.SuggestLocationsResult;
 
 /**
  * @author Andreas Schildbach
@@ -72,31 +72,31 @@ public class SvvProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
-	public void autocompleteIncomplete() throws Exception
+	public void suggestLocationsIncomplete() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("Kur");
+		final SuggestLocationsResult result = provider.suggestLocations("Kur");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test
-	public void autocompleteCoverage() throws Exception
+	public void suggestLocationsCoverage() throws Exception
 	{
-		final List<Location> salzburgAutocompletes = provider.autocompleteStations("Salzburg Süd");
-		print(salzburgAutocompletes);
-		assertThat(salzburgAutocompletes, hasItem(new Location(LocationType.STATION, "60650458")));
+		final SuggestLocationsResult salzburgResult = provider.suggestLocations("Salzburg Süd");
+		print(salzburgResult);
+		assertThat(salzburgResult.locations, hasItem(new Location(LocationType.STATION, "60650458")));
 
-		final List<Location> strasswalchenAutocompletes = provider.autocompleteStations("Straßwalchen West");
-		print(strasswalchenAutocompletes);
-		assertThat(strasswalchenAutocompletes, hasItem(new Location(LocationType.STATION, "60656483")));
+		final SuggestLocationsResult strasswalchenResult = provider.suggestLocations("Straßwalchen West");
+		print(strasswalchenResult);
+		assertThat(strasswalchenResult.locations, hasItem(new Location(LocationType.STATION, "60656483")));
 
-		final List<Location> schwarzachAutocompletes = provider.autocompleteStations("Schwarzach Abtsdorf");
-		print(schwarzachAutocompletes);
-		assertThat(schwarzachAutocompletes, hasItem(new Location(LocationType.STATION, "60656614")));
+		final SuggestLocationsResult schwarzachResult = provider.suggestLocations("Schwarzach Abtsdorf");
+		print(schwarzachResult);
+		assertThat(schwarzachResult.locations, hasItem(new Location(LocationType.STATION, "60656614")));
 
-		final List<Location> trimmelkamAutocompletes = provider.autocompleteStations("Trimmelkam");
-		print(trimmelkamAutocompletes);
-		assertThat(trimmelkamAutocompletes, hasItem(new Location(LocationType.STATION, "60640776")));
+		final SuggestLocationsResult trimmelkamResult = provider.suggestLocations("Trimmelkam");
+		print(trimmelkamResult);
+		assertThat(trimmelkamResult.locations, hasItem(new Location(LocationType.STATION, "60640776")));
 	}
 
 	@Test

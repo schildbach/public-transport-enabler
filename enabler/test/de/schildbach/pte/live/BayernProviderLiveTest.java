@@ -20,7 +20,6 @@ package de.schildbach.pte.live;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Date;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -33,6 +32,7 @@ import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
+import de.schildbach.pte.dto.SuggestLocationsResult;
 
 /**
  * @author Andreas Schildbach
@@ -74,40 +74,40 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
-	public void autocompleteIncomplete() throws Exception
+	public void suggestLocationsIncomplete() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("Marien");
+		final SuggestLocationsResult result = provider.suggestLocations("Marien");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test
-	public void autocompleteWithUmlaut() throws Exception
+	public void suggestLocationsWithUmlaut() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("grün");
+		final SuggestLocationsResult result = provider.suggestLocations("grün");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test
-	public void autocompleteAddress() throws Exception
+	public void suggestLocationsAddress() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("München, Friedenstraße 2");
+		final SuggestLocationsResult result = provider.suggestLocations("München, Friedenstraße 2");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test
-	public void autocompleteLocal() throws Exception
+	public void suggestLocationsLocal() throws Exception
 	{
-		final List<Location> autocompleteRegensburg = provider.autocompleteStations("Regensburg");
-		assertEquals("80001083", autocompleteRegensburg.iterator().next().id);
+		final SuggestLocationsResult regensburgResult = provider.suggestLocations("Regensburg");
+		assertEquals("80001083", regensburgResult.locations.iterator().next().id);
 
-		final List<Location> autocompleteMunich = provider.autocompleteStations("München");
-		assertEquals("80000689", autocompleteMunich.iterator().next().id);
+		final SuggestLocationsResult munichResult = provider.suggestLocations("München");
+		assertEquals("80000689", munichResult.locations.iterator().next().id);
 
-		final List<Location> autocompleteNuremberg = provider.autocompleteStations("Nürnberg");
-		assertEquals("80001020", autocompleteNuremberg.iterator().next().id);
+		final SuggestLocationsResult nurembergResult = provider.suggestLocations("Nürnberg");
+		assertEquals("80001020", nurembergResult.locations.iterator().next().id);
 	}
 
 	@Test

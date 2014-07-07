@@ -21,7 +21,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -34,6 +33,7 @@ import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
+import de.schildbach.pte.dto.SuggestLocationsResult;
 
 /**
  * @author Andreas Schildbach
@@ -69,35 +69,35 @@ public class LinzProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
-	public void autocompleteIncomplete() throws Exception
+	public void suggestLocationsIncomplete() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("Friedhof");
+		final SuggestLocationsResult result = provider.suggestLocations("Friedhof");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test
-	public void autocompleteWithUmlaut() throws Exception
+	public void suggestLocationsWithUmlaut() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("grün");
+		final SuggestLocationsResult result = provider.suggestLocations("grün");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test
-	public void autocompleteIdentified() throws Exception
+	public void suggestLocationsIdentified() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("Leonding, Haag");
+		final SuggestLocationsResult result = provider.suggestLocations("Leonding, Haag");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test
-	public void autocompleteCity() throws Exception
+	public void suggestLocationsCity() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("Leonding");
+		final SuggestLocationsResult result = provider.suggestLocations("Leonding");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test

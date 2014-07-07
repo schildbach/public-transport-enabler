@@ -22,7 +22,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import java.util.Date;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -35,6 +34,7 @@ import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
+import de.schildbach.pte.dto.SuggestLocationsResult;
 
 /**
  * @author Andreas Schildbach
@@ -80,35 +80,35 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
-	public void autocompleteIncomplete() throws Exception
+	public void suggestLocationsIncomplete() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("Marien");
+		final SuggestLocationsResult result = provider.suggestLocations("Marien");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test
-	public void autocompleteWithUmlaut() throws Exception
+	public void suggestLocationsWithUmlaut() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("grün");
+		final SuggestLocationsResult result = provider.suggestLocations("grün");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test
-	public void autocompleteLocal() throws Exception
+	public void suggestLocationsLocal() throws Exception
 	{
-		final List<Location> autocompletesFraunhoferStr = provider.autocompleteStations("fraunhofer");
-		assertThat(autocompletesFraunhoferStr, hasItem(new Location(LocationType.STATION, "1000150")));
+		final SuggestLocationsResult fraunhoferStrResult = provider.suggestLocations("fraunhofer");
+		assertThat(fraunhoferStrResult.locations, hasItem(new Location(LocationType.STATION, "1000150")));
 
-		final List<Location> autocompletesHirschgarten = provider.autocompleteStations("Hirschgarten");
-		assertEquals("München", autocompletesHirschgarten.get(0).place);
+		final SuggestLocationsResult hirschgartenResult = provider.suggestLocations("Hirschgarten");
+		assertEquals("München", hirschgartenResult.locations.get(0).place);
 
-		final List<Location> autocompletesOstbahnhof = provider.autocompleteStations("Ostbahnhof");
-		assertEquals("München", autocompletesOstbahnhof.get(0).place);
+		final SuggestLocationsResult ostbahnhofResult = provider.suggestLocations("Ostbahnhof");
+		assertEquals("München", ostbahnhofResult.locations.get(0).place);
 
-		final List<Location> autocompletesMarienplatz = provider.autocompleteStations("Marienplatz");
-		assertEquals("München", autocompletesMarienplatz.get(0).place);
+		final SuggestLocationsResult marienplatzResult = provider.suggestLocations("Marienplatz");
+		assertEquals("München", marienplatzResult.locations.get(0).place);
 	}
 
 	@Test

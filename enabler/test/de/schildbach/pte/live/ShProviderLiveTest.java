@@ -20,7 +20,6 @@ package de.schildbach.pte.live;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Date;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -33,6 +32,7 @@ import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
+import de.schildbach.pte.dto.SuggestLocationsResult;
 
 /**
  * @author Andreas Schildbach
@@ -77,27 +77,27 @@ public class ShProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
-	public void autocomplete() throws Exception
+	public void suggestLocations() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("Lübeck");
+		final SuggestLocationsResult result = provider.suggestLocations("Lübeck");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test
-	public void autocompleteUmlaut() throws Exception
+	public void suggestLocationsUmlaut() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("Achterüm");
+		final SuggestLocationsResult result = provider.suggestLocations("Achterüm");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test
-	public void autocompleteWithoutCoordinatesInResult() throws Exception
+	public void suggestLocationsWithoutCoordinatesInResult() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("aachen");
+		final SuggestLocationsResult result = provider.suggestLocations("aachen");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test

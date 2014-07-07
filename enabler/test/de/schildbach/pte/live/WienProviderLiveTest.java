@@ -23,7 +23,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -36,6 +35,7 @@ import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
+import de.schildbach.pte.dto.SuggestLocationsResult;
 
 /**
  * @author Andreas Schildbach
@@ -72,31 +72,31 @@ public class WienProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
-	public void autocompleteIncomplete() throws Exception
+	public void suggestLocationsIncomplete() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("Kur");
+		final SuggestLocationsResult result = provider.suggestLocations("Kur");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test
-	public void autocompleteWithUmlaut() throws Exception
+	public void suggestLocationsWithUmlaut() throws Exception
 	{
-		final List<Location> autocompletes = provider.autocompleteStations("grün");
+		final SuggestLocationsResult result = provider.suggestLocations("grün");
 
-		print(autocompletes);
+		print(result);
 	}
 
 	@Test
-	public void autocompleteCoverage() throws Exception
+	public void suggestLocationsCoverage() throws Exception
 	{
-		final List<Location> huetteldorfAutocompletes = provider.autocompleteStations("Wien Hütteldorf");
-		print(huetteldorfAutocompletes);
-		assertThat(huetteldorfAutocompletes, hasItem(new Location(LocationType.STATION, "60200560")));
+		final SuggestLocationsResult huetteldorfResult = provider.suggestLocations("Wien Hütteldorf");
+		print(huetteldorfResult);
+		assertThat(huetteldorfResult.locations, hasItem(new Location(LocationType.STATION, "60200560")));
 
-		final List<Location> wienerNeustadtAutocompletes = provider.autocompleteStations("Wiener Neustadt Nord");
-		print(wienerNeustadtAutocompletes);
-		assertThat(wienerNeustadtAutocompletes, hasItem(new Location(LocationType.STATION, "60205223")));
+		final SuggestLocationsResult wienerNeustadtResult = provider.suggestLocations("Wiener Neustadt Nord");
+		print(wienerNeustadtResult);
+		assertThat(wienerNeustadtResult.locations, hasItem(new Location(LocationType.STATION, "60205223")));
 	}
 
 	@Test
