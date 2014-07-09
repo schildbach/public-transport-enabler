@@ -2920,14 +2920,16 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							XmlPullUtil.optValueTag(pp, "a", null);
 							final Position position = new Position(XmlPullUtil.optValueTag(pp, "pl", null));
 							final String place = normalizeLocationName(XmlPullUtil.optValueTag(pp, "pc", null));
-							final Point coord = coordStrToPoint(XmlPullUtil.valueTag(pp, "c"));
+							final Point coord = coordStrToPoint(XmlPullUtil.optValueTag(pp, "c", null));
 							XmlPullUtil.exit(pp, "r");
 
 							final Location location;
 							if (id.equals("99999997") || id.equals("99999998"))
-								location = new Location(LocationType.ADDRESS, null, coord.lat, coord.lon, place, name);
+								location = new Location(LocationType.ADDRESS, null, coord != null ? coord.lat : 0, coord != null ? coord.lon : 0,
+										place, name);
 							else
-								location = new Location(LocationType.STATION, id, coord.lat, coord.lon, place, name);
+								location = new Location(LocationType.STATION, id, coord != null ? coord.lat : 0, coord != null ? coord.lon : 0,
+										place, name);
 
 							XmlPullUtil.exit(pp, "p");
 
