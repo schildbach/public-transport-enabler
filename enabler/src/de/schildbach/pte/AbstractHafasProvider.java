@@ -1857,7 +1857,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 								individualType = Trip.Individual.Type.WALK;
 							else if ("BIKE".equals(routingType))
 								individualType = Trip.Individual.Type.BIKE;
-							else if ("P+R".equals(routingType))
+							else if ("CAR".equals(routingType) || "P+R".equals(routingType))
 								individualType = Trip.Individual.Type.CAR;
 							else
 								throw new IllegalStateException("unknown routingType: " + routingType);
