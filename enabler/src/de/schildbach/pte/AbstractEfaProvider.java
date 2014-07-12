@@ -3201,7 +3201,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	}
 
 	private static final Pattern P_POSITION = Pattern.compile(
-			"(?:Gleis|Gl\\.|Bahnsteig|Bstg\\.|Bussteig|Busstg\\.|Steig|Hp\\.|Stop|Pos\\.|Zone|Platform)?\\s*(.+)", Pattern.CASE_INSENSITIVE);
+			"(?:Gleis|Gl\\.|Bahnsteig|Bstg\\.|Bussteig|Busstg\\.|Steig|Hp\\.|Stop|Pos\\.|Zone|Platform|Stand|Bay|Stance)?\\s*(.+)",
+			Pattern.CASE_INSENSITIVE);
 
 	@Override
 	protected Position parsePosition(final String position)
