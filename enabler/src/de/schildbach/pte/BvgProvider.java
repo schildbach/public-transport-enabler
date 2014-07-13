@@ -42,7 +42,6 @@ import de.schildbach.pte.dto.ResultHeader;
 import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.dto.Style.Shape;
-import de.schildbach.pte.exception.UnexpectedRedirectException;
 import de.schildbach.pte.geo.Berlin;
 import de.schildbach.pte.util.ParserUtils;
 
@@ -290,8 +289,7 @@ public final class BvgProvider extends AbstractHafasProvider
 			+ "<a href=\"/Fahrinfo/bin/stboard\\.bin/dox/dox.*?evaId=(\\d+)&[^>]*>" // destinationId
 			+ "\\s*(.*?)\\s*</a>.*?" // destination
 	, Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_PLAN_ERRORS = Pattern.compile("(Bhf\\./Hst\\.:)|(Wartungsarbeiten)|" //
-			+ "(http-equiv=\"refresh\")", Pattern.CASE_INSENSITIVE);
+	private static final Pattern P_DEPARTURES_PLAN_ERRORS = Pattern.compile("(Bhf\\./Hst\\.:)|(Wartungsarbeiten)", Pattern.CASE_INSENSITIVE);
 
 	private static final Pattern P_DEPARTURES_LIVE_HEAD = Pattern.compile(".*?" //
 			+ "<strong>(.*?)</strong>.*?Datum:\\s*([^<\n]+)[<\n].*?" //
@@ -313,8 +311,8 @@ public final class BvgProvider extends AbstractHafasProvider
 			+ "<td class=\"ivu_table_c_dep\">\\s*(\\d{2}\\.\\d{2}\\.\\d{4})\\s*</td>\\s*" // date
 			+ "<td>([^<]*)</td>" // message
 	, Pattern.DOTALL);
-	private static final Pattern P_DEPARTURES_LIVE_ERRORS = Pattern.compile(
-			"(Haltestelle:)|(Wartungsgr&uuml;nden|nur eingeschränkt)|(http-equiv=\"refresh\")", Pattern.CASE_INSENSITIVE);
+	private static final Pattern P_DEPARTURES_LIVE_ERRORS = Pattern.compile("(Haltestelle:)|(Wartungsgr&uuml;nden|nur eingeschränkt)",
+			Pattern.CASE_INSENSITIVE);
 
 	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
@@ -334,8 +332,6 @@ public final class BvgProvider extends AbstractHafasProvider
 					return new QueryDeparturesResult(header, QueryDeparturesResult.Status.INVALID_STATION);
 				if (mError.group(2) != null)
 					return new QueryDeparturesResult(header, QueryDeparturesResult.Status.SERVICE_DOWN);
-				if (mError.group(3) != null)
-					throw new UnexpectedRedirectException();
 			}
 
 			// parse page
@@ -435,8 +431,6 @@ public final class BvgProvider extends AbstractHafasProvider
 					return new QueryDeparturesResult(header, QueryDeparturesResult.Status.INVALID_STATION);
 				if (mError.group(2) != null)
 					return new QueryDeparturesResult(header, QueryDeparturesResult.Status.SERVICE_DOWN);
-				if (mError.group(3) != null)
-					throw new UnexpectedRedirectException();
 			}
 
 			// parse page
