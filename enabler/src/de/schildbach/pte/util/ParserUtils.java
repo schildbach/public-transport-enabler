@@ -18,7 +18,6 @@
 package de.schildbach.pte.util;
 
 import java.io.BufferedInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -42,6 +41,7 @@ import java.util.zip.GZIPInputStream;
 
 import de.schildbach.pte.exception.BlockedException;
 import de.schildbach.pte.exception.InternalErrorException;
+import de.schildbach.pte.exception.NotFoundException;
 import de.schildbach.pte.exception.SessionExpiredException;
 import de.schildbach.pte.exception.UnexpectedRedirectException;
 
@@ -197,7 +197,7 @@ public final class ParserUtils
 			}
 			else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND)
 			{
-				throw new FileNotFoundException(url.toString());
+				throw new NotFoundException(url, new InputStreamReader(connection.getErrorStream(), requestEncoding));
 			}
 			else if (responseCode == HttpURLConnection.HTTP_MOVED_PERM || responseCode == HttpURLConnection.HTTP_MOVED_TEMP)
 			{

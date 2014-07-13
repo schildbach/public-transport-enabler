@@ -17,7 +17,6 @@
 
 package de.schildbach.pte;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -70,7 +69,6 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
 import de.schildbach.pte.dto.Trip;
 import de.schildbach.pte.exception.InvalidDataException;
 import de.schildbach.pte.exception.ParserException;
-import de.schildbach.pte.exception.SessionExpiredException;
 import de.schildbach.pte.util.ParserUtils;
 import de.schildbach.pte.util.XmlPullUtil;
 
@@ -2255,10 +2253,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		catch (final XmlPullParserException x)
 		{
 			throw new ParserException("cannot parse xml: " + firstChars, x);
-		}
-		catch (final FileNotFoundException x)
-		{
-			throw new SessionExpiredException();
 		}
 		catch (final RuntimeException x)
 		{
