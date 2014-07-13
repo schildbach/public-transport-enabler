@@ -17,34 +17,19 @@
 
 package de.schildbach.pte.exception;
 
-import java.io.IOException;
 import java.net.URL;
 
 /**
  * @author Andreas Schildbach
  */
-public class UnexpectedRedirectException extends IOException
+public class UnexpectedRedirectException extends AbstractHttpException
 {
-	private final URL originalUrl;
 	private final URL redirectedUrl;
-
-	public UnexpectedRedirectException()
-	{
-		this.originalUrl = null;
-		this.redirectedUrl = null;
-	}
 
 	public UnexpectedRedirectException(final URL originalUrl, final URL redirectedUrl)
 	{
-		super(originalUrl + " -> " + redirectedUrl);
-
-		this.originalUrl = originalUrl;
+		super(originalUrl, originalUrl + " -> " + redirectedUrl);
 		this.redirectedUrl = redirectedUrl;
-	}
-
-	public URL getUrl()
-	{
-		return originalUrl;
 	}
 
 	public URL getRedirectedUrl()

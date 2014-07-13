@@ -17,30 +17,16 @@
 
 package de.schildbach.pte.exception;
 
-import java.io.IOException;
+import java.io.Reader;
 import java.net.URL;
 
 /**
  * @author Andreas Schildbach
  */
-public class InternalErrorException extends IOException
+public class InternalErrorException extends AbstractHttpException
 {
-	private final URL url;
-
-	public InternalErrorException()
+	public InternalErrorException(final URL url, final Reader errorReader)
 	{
-		this.url = null;
-	}
-
-	public InternalErrorException(final URL url)
-	{
-		super(url.toString());
-
-		this.url = url;
-	}
-
-	public URL getUrl()
-	{
-		return url;
+		super(url, errorReader);
 	}
 }

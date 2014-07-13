@@ -52,7 +52,7 @@ public final class ParserUtils
 {
 	private static final String SCRAPE_USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:31.0) Gecko/20100101 Firefox/31.0";
 	private static final String SCRAPE_ACCEPT = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
-	private static final int SCRAPE_INITIAL_CAPACITY = 4096;
+	public static final int SCRAPE_INITIAL_CAPACITY = 4096;
 	private static final int SCRAPE_CONNECT_TIMEOUT = 5000;
 	private static final int SCRAPE_READ_TIMEOUT = 15000;
 	private static final Charset SCRAPE_DEFAULT_ENCODING = Charset.forName("ISO-8859-1");
@@ -89,7 +89,7 @@ public final class ParserUtils
 		return buffer;
 	}
 
-	private static final long copy(final Reader reader, final StringBuilder builder) throws IOException
+	public static final long copy(final Reader reader, final StringBuilder builder) throws IOException
 	{
 		final char[] buffer = new char[SCRAPE_INITIAL_CAPACITY];
 		long count = 0;
@@ -193,7 +193,7 @@ public final class ParserUtils
 					|| responseCode == HttpURLConnection.HTTP_FORBIDDEN || responseCode == HttpURLConnection.HTTP_NOT_ACCEPTABLE
 					|| responseCode == HttpURLConnection.HTTP_UNAVAILABLE)
 			{
-				throw new BlockedException(url);
+				throw new BlockedException(url, new InputStreamReader(connection.getErrorStream(), requestEncoding));
 			}
 			else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND)
 			{
@@ -205,7 +205,7 @@ public final class ParserUtils
 			}
 			else if (responseCode == HttpURLConnection.HTTP_INTERNAL_ERROR)
 			{
-				throw new InternalErrorException(url);
+				throw new InternalErrorException(url, new InputStreamReader(connection.getErrorStream(), requestEncoding));
 			}
 			else
 			{
