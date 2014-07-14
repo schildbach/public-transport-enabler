@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -227,11 +226,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	protected void setFareCorrectionFactor(final float fareCorrectionFactor)
 	{
 		this.fareCorrectionFactor = fareCorrectionFactor;
-	}
-
-	protected TimeZone timeZone()
-	{
-		return TimeZone.getTimeZone("Europe/Berlin");
 	}
 
 	private final void appendCommonRequestParams(final StringBuilder uri, final String outputFormat)
@@ -1549,8 +1543,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				if (XmlPullUtil.test(pp, "itdMessage"))
 					XmlPullUtil.next(pp);
 
-				final Calendar plannedDepartureTime = new GregorianCalendar(timeZone());
-				final Calendar predictedDepartureTime = new GregorianCalendar(timeZone());
+				final Calendar plannedDepartureTime = new GregorianCalendar(timeZone);
+				final Calendar predictedDepartureTime = new GregorianCalendar(timeZone);
 
 				XmlPullUtil.require(pp, "itdServingLines");
 				if (!pp.isEmptyElementTag())
@@ -1716,8 +1710,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			{
 				XmlPullUtil.enter(pp, "dps");
 
-				final Calendar plannedDepartureTime = new GregorianCalendar(timeZone());
-				final Calendar predictedDepartureTime = new GregorianCalendar(timeZone());
+				final Calendar plannedDepartureTime = new GregorianCalendar(timeZone);
+				final Calendar predictedDepartureTime = new GregorianCalendar(timeZone);
 
 				while (XmlPullUtil.test(pp, "dp"))
 				{
@@ -2440,7 +2434,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			{
 				XmlPullUtil.enter(pp, "itdRouteList");
 
-				final Calendar time = new GregorianCalendar(timeZone());
+				final Calendar time = new GregorianCalendar(timeZone);
 
 				while (XmlPullUtil.test(pp, "itdRoute"))
 				{
@@ -2859,8 +2853,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		pp.setInput(is, null);
 		final ResultHeader header = enterEfa(pp);
 
-		final Calendar plannedTime = new GregorianCalendar(timeZone());
-		final Calendar predictedTime = new GregorianCalendar(timeZone());
+		final Calendar plannedTime = new GregorianCalendar(timeZone);
+		final Calendar predictedTime = new GregorianCalendar(timeZone);
 
 		final List<Trip> trips = new ArrayList<Trip>();
 
@@ -3330,7 +3324,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		final String now = XmlPullUtil.attr(pp, "now");
 		final String sessionId = XmlPullUtil.attr(pp, "sessionID");
 
-		final Calendar serverTime = new GregorianCalendar(timeZone());
+		final Calendar serverTime = new GregorianCalendar(timeZone);
 		ParserUtils.parseIsoDate(serverTime, now.substring(0, 10));
 		ParserUtils.parseEuropeanTime(serverTime, now.substring(11));
 
@@ -3366,7 +3360,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		XmlPullUtil.enter(pp, "efa");
 
 		final String now = XmlPullUtil.valueTag(pp, "now");
-		final Calendar serverTime = new GregorianCalendar(timeZone());
+		final Calendar serverTime = new GregorianCalendar(timeZone);
 		ParserUtils.parseIsoDate(serverTime, now.substring(0, 10));
 		ParserUtils.parseEuropeanTime(serverTime, now.substring(11));
 

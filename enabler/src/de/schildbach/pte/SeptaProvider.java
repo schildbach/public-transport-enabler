@@ -27,7 +27,6 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -59,17 +58,13 @@ public class SeptaProvider extends AbstractHafasProvider
 	public SeptaProvider()
 	{
 		super(API_BASE + "stboard.exe/en", API_BASE + "ajax-getstop.exe/dny", API_BASE + "query.exe/en", 4);
+
+		setTimeZone("EST");
 	}
 
 	public NetworkId id()
 	{
 		return NETWORK_ID;
-	}
-
-	@Override
-	protected TimeZone timeZone()
-	{
-		return TimeZone.getTimeZone("EST");
 	}
 
 	public boolean hasCapabilities(final Capability... capabilities)
@@ -143,7 +138,7 @@ public class SeptaProvider extends AbstractHafasProvider
 
 	private String departuresQueryUri(final String stationId, final int maxDepartures)
 	{
-		final Calendar now = new GregorianCalendar(timeZone());
+		final Calendar now = new GregorianCalendar(timeZone);
 
 		final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
 		uri.append("?input=").append(normalizeStationId(stationId));
@@ -214,7 +209,7 @@ public class SeptaProvider extends AbstractHafasProvider
 				return new QueryDeparturesResult(header, Status.SERVICE_DOWN);
 
 			final String location = ParserUtils.resolveEntities(mPageCoarse.group(1));
-			final Calendar currentTime = new GregorianCalendar(timeZone());
+			final Calendar currentTime = new GregorianCalendar(timeZone);
 			currentTime.clear();
 			ParserUtils.parseAmericanDate(currentTime, mPageCoarse.group(2));
 			ParserUtils.parseAmericanTime(currentTime, mPageCoarse.group(3));
@@ -234,7 +229,7 @@ public class SeptaProvider extends AbstractHafasProvider
 				final Matcher mDepFine = P_DEPARTURES_FINE.matcher(mDepCoarse.group(2));
 				if (mDepFine.matches())
 				{
-					final Calendar plannedTime = new GregorianCalendar(timeZone());
+					final Calendar plannedTime = new GregorianCalendar(timeZone);
 					plannedTime.setTimeInMillis(currentTime.getTimeInMillis());
 					ParserUtils.parseAmericanTime(plannedTime, mDepFine.group(1));
 
@@ -245,7 +240,7 @@ public class SeptaProvider extends AbstractHafasProvider
 					final String prognosis = ParserUtils.resolveEntities(mDepFine.group(2));
 					if (prognosis != null)
 					{
-						predictedTime = new GregorianCalendar(timeZone());
+						predictedTime = new GregorianCalendar(timeZone);
 						if (prognosis.equals("pünktlich"))
 						{
 							predictedTime.setTimeInMillis(plannedTime.getTimeInMillis());

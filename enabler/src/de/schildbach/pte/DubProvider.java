@@ -18,7 +18,6 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
-import java.util.TimeZone;
 
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
@@ -36,6 +35,7 @@ public class DubProvider extends AbstractEfaProvider
 	{
 		super(API_BASE);
 
+		setTimeZone("Asia/Dubai");
 		setUseRouteIndexAsTripId(false);
 		setFareCorrectionFactor(0.01f);
 	}
@@ -43,12 +43,6 @@ public class DubProvider extends AbstractEfaProvider
 	public NetworkId id()
 	{
 		return NETWORK_ID;
-	}
-
-	@Override
-	protected TimeZone timeZone()
-	{
-		return TimeZone.getTimeZone("Asia/Dubai");
 	}
 
 	public boolean hasCapabilities(final Capability... capabilities)

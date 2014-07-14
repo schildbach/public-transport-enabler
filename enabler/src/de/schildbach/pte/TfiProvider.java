@@ -18,7 +18,6 @@
 package de.schildbach.pte;
 
 import java.util.Collection;
-import java.util.TimeZone;
 
 import de.schildbach.pte.dto.Product;
 
@@ -33,17 +32,13 @@ public class TfiProvider extends AbstractEfaProvider
 	public TfiProvider()
 	{
 		super(API_BASE);
+
+		setTimeZone("Europe/London");
 	}
 
 	public NetworkId id()
 	{
 		return NETWORK_ID;
-	}
-
-	@Override
-	protected TimeZone timeZone()
-	{
-		return TimeZone.getTimeZone("Europe/London");
 	}
 
 	public boolean hasCapabilities(final Capability... capabilities)

@@ -39,7 +39,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -199,11 +198,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	protected void setExtXmlEndpoint(final String extXmlEndpoint)
 	{
 		this.extXmlEndpoint = extXmlEndpoint;
-	}
-
-	protected TimeZone timeZone()
-	{
-		return TimeZone.getTimeZone("CET");
 	}
 
 	protected final String allProductsString()
@@ -529,7 +523,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 				if (!isEquivStation && !"cancel".equals(eDelay))
 				{
-					final Calendar plannedTime = new GregorianCalendar(timeZone());
+					final Calendar plannedTime = new GregorianCalendar(timeZone);
 					plannedTime.clear();
 					ParserUtils.parseEuropeanTime(plannedTime, fpTime);
 					if (fpDate.length() == 8)
@@ -542,7 +536,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					final Calendar predictedTime;
 					if (eDelay != null)
 					{
-						predictedTime = new GregorianCalendar(timeZone());
+						predictedTime = new GregorianCalendar(timeZone);
 						predictedTime.setTimeInMillis(plannedTime.getTimeInMillis());
 						predictedTime.add(Calendar.MINUTE, Integer.parseInt(eDelay));
 					}
@@ -553,7 +547,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						{
 							if (m.group(1) != null)
 							{
-								predictedTime = new GregorianCalendar(timeZone());
+								predictedTime = new GregorianCalendar(timeZone);
 								predictedTime.setTimeInMillis(plannedTime.getTimeInMillis());
 								predictedTime.add(Calendar.MINUTE, Integer.parseInt(m.group(1)));
 							}
@@ -710,7 +704,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 		uri.append("&REQ0HafasSearchForw=").append(dep ? "1" : "0");
 
-		final Calendar c = new GregorianCalendar(timeZone());
+		final Calendar c = new GregorianCalendar(timeZone);
 		c.setTime(date);
 		final String dateStr = useIso8601 ? String.format(Locale.ENGLISH, "%04d-%02d-%02d", c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1,
 				c.get(Calendar.DAY_OF_MONTH)) : String.format(Locale.ENGLISH, "%02d.%02d.%02d", c.get(Calendar.DAY_OF_MONTH),
@@ -781,7 +775,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			to = locations.get(0);
 		}
 
-		final Calendar c = new GregorianCalendar(timeZone());
+		final Calendar c = new GregorianCalendar(timeZone);
 		c.setTime(date);
 
 		final StringBuilder productsStr = new StringBuilder(numProductBits);
@@ -938,7 +932,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					XmlPullUtil.next(pp);
 				XmlPullUtil.enter(pp, "Overview");
 
-				final Calendar currentDate = new GregorianCalendar(timeZone());
+				final Calendar currentDate = new GregorianCalendar(timeZone);
 				currentDate.clear();
 				parseDate(currentDate, XmlPullUtil.valueTag(pp, "Date"));
 				XmlPullUtil.enter(pp, "Departure");
@@ -989,7 +983,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 				XmlPullUtil.enter(pp, "ConSectionList");
 
-				final Calendar time = new GregorianCalendar(timeZone());
+				final Calendar time = new GregorianCalendar(timeZone);
 
 				while (XmlPullUtil.test(pp, "ConSection"))
 				{
@@ -2004,7 +1998,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	{
 		final int days = is.readShortReverse();
 
-		final Calendar date = new GregorianCalendar(timeZone());
+		final Calendar date = new GregorianCalendar(timeZone);
 		date.clear();
 		date.set(Calendar.YEAR, 1980);
 		date.set(Calendar.DAY_OF_YEAR, days);
@@ -2024,7 +2018,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		if (minutes < 0 || minutes > 60)
 			throw new IllegalStateException("minutes out of range: " + minutes);
 
-		final Calendar time = new GregorianCalendar(timeZone());
+		final Calendar time = new GregorianCalendar(timeZone);
 
 		time.setTimeInMillis(baseDate);
 		if (time.get(Calendar.HOUR) != 0 || time.get(Calendar.MINUTE) != 0)

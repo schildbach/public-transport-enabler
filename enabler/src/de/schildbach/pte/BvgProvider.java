@@ -339,7 +339,7 @@ public final class BvgProvider extends AbstractHafasProvider
 			if (mHead.matches())
 			{
 				final String[] placeAndName = splitPlaceAndName(ParserUtils.resolveEntities(mHead.group(1)));
-				final Calendar currentTime = new GregorianCalendar(timeZone());
+				final Calendar currentTime = new GregorianCalendar(timeZone);
 				currentTime.clear();
 				parseDateTime(currentTime, mHead.group(2));
 
@@ -372,7 +372,7 @@ public final class BvgProvider extends AbstractHafasProvider
 					final Matcher mDepFine = P_DEPARTURES_LIVE_FINE.matcher(mDepCoarse.group(1));
 					if (mDepFine.matches())
 					{
-						final Calendar parsedTime = new GregorianCalendar(timeZone());
+						final Calendar parsedTime = new GregorianCalendar(timeZone);
 						parsedTime.setTimeInMillis(currentTime.getTimeInMillis());
 						ParserUtils.parseEuropeanTime(parsedTime, mDepFine.group(1));
 
@@ -438,7 +438,7 @@ public final class BvgProvider extends AbstractHafasProvider
 			if (mHead.matches())
 			{
 				final String[] placeAndName = splitPlaceAndName(ParserUtils.resolveEntities(mHead.group(1)));
-				final Calendar currentTime = new GregorianCalendar(timeZone());
+				final Calendar currentTime = new GregorianCalendar(timeZone);
 				currentTime.clear();
 				ParserUtils.parseGermanDate(currentTime, mHead.group(2));
 				final List<Departure> departures = new ArrayList<Departure>(8);
@@ -449,7 +449,7 @@ public final class BvgProvider extends AbstractHafasProvider
 					final Matcher mDepFine = P_DEPARTURES_PLAN_FINE.matcher(mDepCoarse.group(1));
 					if (mDepFine.matches())
 					{
-						final Calendar parsedTime = new GregorianCalendar(timeZone());
+						final Calendar parsedTime = new GregorianCalendar(timeZone);
 						parsedTime.setTimeInMillis(currentTime.getTimeInMillis());
 						ParserUtils.parseEuropeanTime(parsedTime, mDepFine.group(1));
 

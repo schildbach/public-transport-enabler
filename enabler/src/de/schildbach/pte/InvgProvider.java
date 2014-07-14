@@ -193,7 +193,7 @@ public class InvgProvider extends AbstractHafasProvider
 			if (mHeadFine.matches())
 			{
 				final String location = ParserUtils.resolveEntities(mHeadFine.group(1));
-				final Calendar currentTime = new GregorianCalendar(timeZone());
+				final Calendar currentTime = new GregorianCalendar(timeZone);
 				currentTime.clear();
 				ParserUtils.parseGermanDate(currentTime, mHeadFine.group(2));
 				ParserUtils.parseEuropeanTime(currentTime, mHeadFine.group(3));
@@ -212,7 +212,7 @@ public class InvgProvider extends AbstractHafasProvider
 					final Matcher mDepFine = P_DEPARTURES_FINE.matcher(mDepCoarse.group(2));
 					if (mDepFine.matches())
 					{
-						final Calendar plannedTime = new GregorianCalendar(timeZone());
+						final Calendar plannedTime = new GregorianCalendar(timeZone);
 						plannedTime.setTimeInMillis(currentTime.getTimeInMillis());
 						ParserUtils.parseEuropeanTime(plannedTime, mDepFine.group(1));
 
@@ -223,7 +223,7 @@ public class InvgProvider extends AbstractHafasProvider
 						final String prognosis = ParserUtils.resolveEntities(mDepFine.group(2));
 						if (prognosis != null)
 						{
-							predictedTime = new GregorianCalendar(timeZone());
+							predictedTime = new GregorianCalendar(timeZone);
 							if (prognosis.equals("pünktlich"))
 							{
 								predictedTime.setTimeInMillis(plannedTime.getTimeInMillis());

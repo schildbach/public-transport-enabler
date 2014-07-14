@@ -19,7 +19,6 @@ package de.schildbach.pte;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TimeZone;
 
 import de.schildbach.pte.dto.Style;
 
@@ -35,6 +34,7 @@ public class TflProvider extends AbstractEfaProvider
 	{
 		super(API_BASE);
 
+		setTimeZone("Europe/London");
 		setUseLineRestriction(false);
 		setStyles(STYLES);
 	}
@@ -42,12 +42,6 @@ public class TflProvider extends AbstractEfaProvider
 	public NetworkId id()
 	{
 		return NETWORK_ID;
-	}
-
-	@Override
-	protected TimeZone timeZone()
-	{
-		return TimeZone.getTimeZone("Europe/London");
 	}
 
 	public boolean hasCapabilities(final Capability... capabilities)

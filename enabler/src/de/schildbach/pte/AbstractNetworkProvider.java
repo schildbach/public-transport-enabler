@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 
 import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.Product;
@@ -36,8 +37,8 @@ public abstract class AbstractNetworkProvider implements NetworkProvider
 	protected static final Charset ISO_8859_1 = Charset.forName("ISO-8859-1");
 	protected static final Set<Product> ALL_EXCEPT_HIGHSPEED;
 
+	protected TimeZone timeZone = TimeZone.getTimeZone("CET");
 	protected int numTripsRequested = 6;
-
 	private Map<String, Style> styles = null;
 
 	static
@@ -49,6 +50,11 @@ public abstract class AbstractNetworkProvider implements NetworkProvider
 	public Collection<Product> defaultProducts()
 	{
 		return ALL_EXCEPT_HIGHSPEED;
+	}
+
+	protected void setTimeZone(final String timeZoneId)
+	{
+		this.timeZone = TimeZone.getTimeZone(timeZoneId);
 	}
 
 	protected void setNumTripsRequested(final int numTripsRequested)

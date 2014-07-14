@@ -19,7 +19,6 @@ package de.schildbach.pte;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TimeZone;
 
 import de.schildbach.pte.dto.Style;
 
@@ -35,6 +34,7 @@ public class SfProvider extends AbstractEfaProvider
 	{
 		super(API_BASE);
 
+		setTimeZone("America/Los_Angeles");
 		setUseRouteIndexAsTripId(false);
 		setFareCorrectionFactor(0.01f);
 		setStyles(STYLES);
@@ -43,12 +43,6 @@ public class SfProvider extends AbstractEfaProvider
 	public NetworkId id()
 	{
 		return NETWORK_ID;
-	}
-
-	@Override
-	protected TimeZone timeZone()
-	{
-		return TimeZone.getTimeZone("America/Los_Angeles");
 	}
 
 	public boolean hasCapabilities(final Capability... capabilities)

@@ -19,7 +19,6 @@ package de.schildbach.pte;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TimeZone;
 
 import de.schildbach.pte.dto.Style;
 
@@ -37,6 +36,7 @@ public class MetProvider extends AbstractEfaProvider
 	{
 		super(API_BASE);
 
+		setTimeZone("Australia/Melbourne");
 		setUseRouteIndexAsTripId(false);
 		setStyles(STYLES);
 	}
@@ -44,12 +44,6 @@ public class MetProvider extends AbstractEfaProvider
 	public NetworkId id()
 	{
 		return NETWORK_ID;
-	}
-
-	@Override
-	protected TimeZone timeZone()
-	{
-		return TimeZone.getTimeZone("Australia/Melbourne");
 	}
 
 	public boolean hasCapabilities(final Capability... capabilities)

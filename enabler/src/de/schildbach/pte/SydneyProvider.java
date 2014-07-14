@@ -17,8 +17,6 @@
 
 package de.schildbach.pte;
 
-import java.util.TimeZone;
-
 /**
  * @author Andreas Schildbach
  */
@@ -31,18 +29,13 @@ public class SydneyProvider extends AbstractEfaProvider
 	{
 		super(API_BASE);
 
+		setTimeZone("Australia/Sydney");
 		setUseRouteIndexAsTripId(false);
 	}
 
 	public NetworkId id()
 	{
 		return NETWORK_ID;
-	}
-
-	@Override
-	protected TimeZone timeZone()
-	{
-		return TimeZone.getTimeZone("Australia/Sydney");
 	}
 
 	public boolean hasCapabilities(final Capability... capabilities)

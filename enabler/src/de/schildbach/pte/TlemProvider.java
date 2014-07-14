@@ -19,7 +19,6 @@ package de.schildbach.pte;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.TimeZone;
 
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
@@ -40,17 +39,13 @@ public class TlemProvider extends AbstractEfaProvider
 	public TlemProvider()
 	{
 		super(API_BASE);
+
+		setTimeZone("Europe/London");
 	}
 
 	public NetworkId id()
 	{
 		return NETWORK_ID;
-	}
-
-	@Override
-	protected TimeZone timeZone()
-	{
-		return TimeZone.getTimeZone("Europe/London");
 	}
 
 	public boolean hasCapabilities(final Capability... capabilities)

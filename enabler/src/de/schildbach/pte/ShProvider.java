@@ -219,7 +219,7 @@ public class ShProvider extends AbstractHafasProvider
 				return new QueryDeparturesResult(header, Status.SERVICE_DOWN);
 
 			final String location = ParserUtils.resolveEntities(mHeadCoarse.group(1));
-			final Calendar currentTime = new GregorianCalendar(timeZone());
+			final Calendar currentTime = new GregorianCalendar(timeZone);
 			currentTime.clear();
 			ParserUtils.parseGermanDate(currentTime, mHeadCoarse.group(2));
 			ParserUtils.parseEuropeanTime(currentTime, mHeadCoarse.group(3));
@@ -239,7 +239,7 @@ public class ShProvider extends AbstractHafasProvider
 				final Matcher mDepFine = P_DEPARTURES_FINE.matcher(mDepCoarse.group(2));
 				if (mDepFine.matches())
 				{
-					final Calendar plannedTime = new GregorianCalendar(timeZone());
+					final Calendar plannedTime = new GregorianCalendar(timeZone);
 					plannedTime.setTimeInMillis(currentTime.getTimeInMillis());
 					ParserUtils.parseEuropeanTime(plannedTime, mDepFine.group(1));
 
