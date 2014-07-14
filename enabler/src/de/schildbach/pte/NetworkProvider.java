@@ -169,6 +169,7 @@ public interface NetworkProvider
 	 * Gets the primary covered area of the network
 	 * 
 	 * @return array containing points of a polygon (special case: just one coordinate defines just a center point)
+	 * @throws IOException
 	 */
-	Point[] getArea();
+	Point[] getArea() throws IOException;
 }
