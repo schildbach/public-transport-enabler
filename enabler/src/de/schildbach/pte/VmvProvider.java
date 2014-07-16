@@ -17,15 +17,11 @@
 
 package de.schildbach.pte;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.schildbach.pte.dto.Location;
-import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.dto.Style.Shape;
-import de.schildbach.pte.dto.SuggestLocationsResult;
 
 /**
  * @author Andreas Schildbach
@@ -55,12 +51,6 @@ public class VmvProvider extends AbstractEfaProvider
 				return true;
 
 		return false;
-	}
-
-	@Override
-	public SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException
-	{
-		return xmlStopfinderRequest(new Location(LocationType.STATION, null, null, constraint.toString()));
 	}
 
 	@Override
