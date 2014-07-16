@@ -17,12 +17,6 @@
 
 package de.schildbach.pte;
 
-import java.io.IOException;
-
-import de.schildbach.pte.dto.Location;
-import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.SuggestLocationsResult;
-
 /**
  * @author Andreas Schildbach
  */
@@ -48,11 +42,5 @@ public class VrtProvider extends AbstractEfaProvider
 				return true;
 
 		return false;
-	}
-
-	@Override
-	public SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException
-	{
-		return xmlStopfinderRequest(new Location(LocationType.ANY, null, null, constraint.toString()));
 	}
 }
