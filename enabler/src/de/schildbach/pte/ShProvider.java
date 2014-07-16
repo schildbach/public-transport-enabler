@@ -298,8 +298,17 @@ public class ShProvider extends AbstractHafasProvider
 	{
 		final String ucType = type.toUpperCase();
 
+		if ("IXB".equals(ucType)) // ICE
+			return 'I';
+		if ("ECW".equals(ucType)) // EC
+			return 'I';
 		if ("DPF".equals(ucType)) // Hamburg-Koeln-Express
 			return 'I';
+		if ("RRT".equals(ucType)) // TGV
+			return 'I';
+
+		if ("ZRB".equals(ucType)) // Zahnradbahn
+			return 'R';
 
 		if ("KBS".equals(ucType))
 			return 'B';

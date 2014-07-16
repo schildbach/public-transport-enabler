@@ -53,12 +53,22 @@ public class NvbwProvider extends AbstractEfaProvider
 	{
 		if ("0".equals(mot))
 		{
+			if ("ICE".equals(trainName) && trainNum == null)
+				return "IICE";
+			if ("Fernreisezug externer EU".equals(trainName))
+				return "I";
+			if ("Nahverkehrszug von Dritten".equals(trainName) || "DB-Zug".equals(trainName) || "REGIOBAHN".equals(trainName))
+				return "R";
 			if ("RR".equals(trainType))
 				return "RRR" + trainNum;
 			if ("Meridian".equals(trainName) && symbol != null)
 				return "R" + symbol;
-			if ("BSB-Zug".equals(longName))
-				return "SBSB";
+			if ("CityBahn".equals(trainName) && trainNum == null)
+				return "RCB";
+			if ("Trilex".equals(trainName) && trainNum == null)
+				return "RTLX";
+			if ("Koleje Dolnoslaskie".equals(trainName))
+				return "RKD";
 			if ("Bay. Seenschifffahrt".equals(trainName) && symbol != null)
 				return "F" + symbol;
 		}

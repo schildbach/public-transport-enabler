@@ -242,6 +242,8 @@ public class ZvvProvider extends AbstractHafasProvider
 
 		if ("D-SCHIFF".equals(ucType))
 			return 'F';
+		if ("DAMPFSCH".equals(ucType))
+			return 'F';
 
 		if ("BERGBAHN".equals(ucType))
 			return 'C';

@@ -164,9 +164,6 @@ public class VsnProvider extends AbstractHafasProvider
 		if ("E".equals(ucType))
 			return 'R';
 
-		if ("TB".equals(ucType)) // Hamburg-Koeln-Express
-			return 'P';
-
 		if ("T84".equals(ucType))
 			return '?';
 

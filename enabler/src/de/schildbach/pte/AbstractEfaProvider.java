@@ -1315,9 +1315,15 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return "RDPF" + trainNum;
 			if ("WBA".equals(trainType) || "Waldbahn".equals(trainName))
 				return "RWBA" + trainNum;
+			if ("ÖBA".equals(trainType) && trainNum != null) // Eisenbahn-Betriebsgesellschaft Ochsenhausen
+				return "RÖBA" + trainNum;
+			if (("UEF".equals(trainType) || "Ulmer Eisenbahnfreunde".equals(trainName)) && trainNum != null)
+				return "RUEF" + trainNum;
 
-			if ("BSB-Zug".equals(trainName)) // Breisgau-S-Bahn
+			if ("BSB-Zug".equals(trainName) && trainNum != null) // Breisgau-S-Bahn
 				return 'S' + trainNum;
+			if ("BSB-Zug".equals(longName))
+				return "SBSB";
 			if ("RSB".equals(trainType)) // Regionalschnellbahn, Wien
 				return "SRSB" + trainNum;
 			if ("RER".equals(trainName) && symbol.length() == 1) // Réseau Express Régional, Frankreich

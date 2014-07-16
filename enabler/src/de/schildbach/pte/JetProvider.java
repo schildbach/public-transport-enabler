@@ -138,7 +138,7 @@ public class JetProvider extends AbstractHafasProvider
 		if ("רק1#".equals(lineAndType))
 			return newLine('T', "רק1", null);
 
-		if ("א 11#".equals(lineAndType))
+		if ("א 11#".equals(lineAndType) || "11א#".equals(lineAndType))
 			return newLine('B', "א11", null);
 
 		final Matcher mBus = P_NORMALIZE_BUS.matcher(lineAndType);

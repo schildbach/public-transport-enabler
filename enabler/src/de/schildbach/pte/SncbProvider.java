@@ -170,6 +170,8 @@ public class SncbProvider extends AbstractHafasProvider
 			return 'R';
 		if ("CR".equals(ucType))
 			return 'R';
+		if ("TRN".equals(ucType))
+			return 'R';
 
 		if ("MÉTRO".equals(ucType))
 			return 'U';

@@ -63,6 +63,9 @@ public class VvoProvider extends AbstractEfaProvider
 				return "ROE";
 			if ("Meridian".equals(longName))
 				return "RM";
+
+			if ("Fernbus".equals(trainName) && trainNum == null)
+				return "B" + trainName;
 		}
 
 		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);

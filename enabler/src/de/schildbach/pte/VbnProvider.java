@@ -117,8 +117,6 @@ public class VbnProvider extends AbstractHafasProvider
 		if ("P".equals(ucType)) // Brohltalbahn
 			return 'R';
 
-		if ("TB".equals(ucType))
-			return 'B';
 		if ("RFTAST".equals(ucType))
 			return 'B';
 

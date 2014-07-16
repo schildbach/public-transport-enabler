@@ -2804,6 +2804,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			return 'P';
 		if (ucType.startsWith("BUXI")) // Bus-Taxi (Schweiz)
 			return 'P';
+		if ("TB".equals(ucType)) // Taxi-Bus?
+			return 'P';
 
 		// Ferry
 		if ("SCHIFF".equals(ucType))
