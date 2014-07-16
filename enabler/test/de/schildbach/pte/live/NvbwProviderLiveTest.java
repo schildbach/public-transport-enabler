@@ -92,15 +92,15 @@ public class NvbwProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final SuggestLocationsResult freiburgResult = provider.suggestLocations("Freiburg Hauptbahnhof");
 		print(freiburgResult);
-		assertThat(freiburgResult.locations, hasItem(new Location(LocationType.STATION, "6906508")));
+		assertThat(freiburgResult.getLocations(), hasItem(new Location(LocationType.STATION, "6906508")));
 
 		final SuggestLocationsResult baselResult = provider.suggestLocations("Basel");
 		print(baselResult);
-		assertThat(baselResult.locations, hasItem(new Location(LocationType.STATION, "51000007")));
+		assertThat(baselResult.getLocations(), hasItem(new Location(LocationType.STATION, "51000007")));
 
 		final SuggestLocationsResult constanceResult = provider.suggestLocations("Konstanz");
 		print(constanceResult);
-		assertThat(constanceResult.locations, hasItem(new Location(LocationType.STATION, "8706554")));
+		assertThat(constanceResult.getLocations(), hasItem(new Location(LocationType.STATION, "8706554")));
 	}
 
 	@Test

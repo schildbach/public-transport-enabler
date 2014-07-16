@@ -84,7 +84,7 @@ public class VagfrProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final SuggestLocationsResult freiburgResult = provider.suggestLocations("Betzenhauser Torplatz");
 		print(freiburgResult);
-		assertThat(freiburgResult.locations, hasItem(new Location(LocationType.STATION, "6930503")));
+		assertThat(freiburgResult.getLocations(), hasItem(new Location(LocationType.STATION, "6930503")));
 	}
 
 	@Test

@@ -92,23 +92,23 @@ public class StvProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final SuggestLocationsResult grazResult = provider.suggestLocations("Graz Brauhaus");
 		print(grazResult);
-		assertThat(grazResult.locations, hasItem(new Location(LocationType.STATION, "63203044")));
+		assertThat(grazResult.getLocations(), hasItem(new Location(LocationType.STATION, "63203044")));
 
 		final SuggestLocationsResult leobenResult = provider.suggestLocations("Leoben Blockhäuser");
 		print(leobenResult);
-		assertThat(leobenResult.locations, hasItem(new Location(LocationType.STATION, "63206224")));
+		assertThat(leobenResult.getLocations(), hasItem(new Location(LocationType.STATION, "63206224")));
 
 		final SuggestLocationsResult bruckResult = provider.suggestLocations("Bruck Hauptplatz");
 		print(bruckResult);
-		assertThat(bruckResult.locations, hasItem(new Location(LocationType.STATION, "63202063")));
+		assertThat(bruckResult.getLocations(), hasItem(new Location(LocationType.STATION, "63202063")));
 
 		final SuggestLocationsResult kindbergResult = provider.suggestLocations("Kindberg Friedhof");
 		print(kindbergResult);
-		assertThat(kindbergResult.locations, hasItem(new Location(LocationType.STATION, "63208877")));
+		assertThat(kindbergResult.getLocations(), hasItem(new Location(LocationType.STATION, "63208877")));
 
 		final SuggestLocationsResult mariborResult = provider.suggestLocations("Maribor Dravograjska Sokolska");
 		print(mariborResult);
-		assertThat(mariborResult.locations, hasItem(new Location(LocationType.STATION, "63300136")));
+		assertThat(mariborResult.getLocations(), hasItem(new Location(LocationType.STATION, "63300136")));
 	}
 
 	@Test

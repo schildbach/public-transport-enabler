@@ -99,16 +99,16 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsLocal() throws Exception
 	{
 		final SuggestLocationsResult fraunhoferStrResult = provider.suggestLocations("fraunhofer");
-		assertThat(fraunhoferStrResult.locations, hasItem(new Location(LocationType.STATION, "1000150")));
+		assertThat(fraunhoferStrResult.getLocations(), hasItem(new Location(LocationType.STATION, "1000150")));
 
 		final SuggestLocationsResult hirschgartenResult = provider.suggestLocations("Hirschgarten");
-		assertEquals("München", hirschgartenResult.locations.get(0).place);
+		assertEquals("München", hirschgartenResult.getLocations().get(0).place);
 
 		final SuggestLocationsResult ostbahnhofResult = provider.suggestLocations("Ostbahnhof");
-		assertEquals("München", ostbahnhofResult.locations.get(0).place);
+		assertEquals("München", ostbahnhofResult.getLocations().get(0).place);
 
 		final SuggestLocationsResult marienplatzResult = provider.suggestLocations("Marienplatz");
-		assertEquals("München", marienplatzResult.locations.get(0).place);
+		assertEquals("München", marienplatzResult.getLocations().get(0).place);
 	}
 
 	@Test

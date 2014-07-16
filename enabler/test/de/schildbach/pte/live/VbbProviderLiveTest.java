@@ -93,7 +93,7 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 
 		print(result);
 
-		Assert.assertEquals("Güntzelstr. (U)", result.locations.get(0).name);
+		Assert.assertEquals("Güntzelstr. (U)", result.getLocations().get(0).name);
 	}
 
 	@Test
@@ -103,7 +103,7 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 
 		print(result);
 
-		Assert.assertEquals("Sophienstr. 24", result.locations.get(0).name);
+		Assert.assertEquals("Sophienstr. 24", result.getLocations().get(0).name);
 	}
 
 	@Test

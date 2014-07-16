@@ -64,6 +64,7 @@ import de.schildbach.pte.dto.ResultHeader;
 import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.dto.Stop;
 import de.schildbach.pte.dto.SuggestLocationsResult;
+import de.schildbach.pte.dto.SuggestedLocation;
 import de.schildbach.pte.dto.Trip;
 import de.schildbach.pte.exception.ParserException;
 import de.schildbach.pte.exception.SessionExpiredException;
@@ -342,7 +343,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		if (mJson.matches())
 		{
 			final String json = mJson.group(1);
-			final List<Location> locations = new ArrayList<Location>();
+			final List<SuggestedLocation> locations = new ArrayList<SuggestedLocation>();
 
 			try
 			{
@@ -358,6 +359,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						final String value = suggestion.getString("value");
 						final int lat = suggestion.optInt("ycoord");
 						final int lon = suggestion.optInt("xcoord");
+						final int weight = suggestion.getInt("weight");
 						String localId = null;
 						final Matcher m = P_AJAX_GET_STOPS_ID.matcher(suggestion.getString("id"));
 						if (m.matches())
@@ -366,16 +368,19 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						if (type == 1) // station
 						{
 							final String[] placeAndName = splitPlaceAndName(value);
-							locations.add(new Location(LocationType.STATION, localId, lat, lon, placeAndName[0], placeAndName[1]));
+							final Location location = new Location(LocationType.STATION, localId, lat, lon, placeAndName[0], placeAndName[1]);
+							locations.add(new SuggestedLocation(location, weight));
 						}
 						else if (type == 2) // address
 						{
 							final String[] placeAndName = splitPlaceAndName(value);
-							locations.add(new Location(LocationType.ADDRESS, null, lat, lon, placeAndName[0], placeAndName[1]));
+							final Location location = new Location(LocationType.ADDRESS, null, lat, lon, placeAndName[0], placeAndName[1]);
+							locations.add(new SuggestedLocation(location, weight));
 						}
 						else if (type == 4) // poi
 						{
-							locations.add(new Location(LocationType.POI, localId, lat, lon, null, value));
+							final Location location = new Location(LocationType.POI, localId, lat, lon, null, value);
+							locations.add(new SuggestedLocation(location, weight));
 						}
 						else if (type == 71) // strange (VBN)
 						{
@@ -747,7 +752,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 		if (!from.isIdentified())
 		{
-			final List<Location> locations = suggestLocations(from.name).locations;
+			final List<Location> locations = suggestLocations(from.name).getLocations();
 			if (locations.isEmpty())
 				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS); // TODO
 			if (locations.size() > 1)
@@ -757,7 +762,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 		if (via != null && !via.isIdentified())
 		{
-			final List<Location> locations = suggestLocations(via.name).locations;
+			final List<Location> locations = suggestLocations(via.name).getLocations();
 			if (locations.isEmpty())
 				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS); // TODO
 			if (locations.size() > 1)
@@ -767,7 +772,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 		if (!to.isIdentified())
 		{
-			final List<Location> locations = suggestLocations(to.name).locations;
+			final List<Location> locations = suggestLocations(to.name).getLocations();
 			if (locations.isEmpty())
 				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS); // TODO
 			if (locations.size() > 1)
@@ -1366,7 +1371,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 		if (!from.isIdentified())
 		{
-			final List<Location> locations = suggestLocations(from.name).locations;
+			final List<Location> locations = suggestLocations(from.name).getLocations();
 			if (locations.isEmpty())
 				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS); // TODO
 			if (locations.size() > 1)
@@ -1376,7 +1381,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 		if (via != null && !via.isIdentified())
 		{
-			final List<Location> locations = suggestLocations(via.name).locations;
+			final List<Location> locations = suggestLocations(via.name).getLocations();
 			if (locations.isEmpty())
 				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS); // TODO
 			if (locations.size() > 1)
@@ -1386,7 +1391,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 		if (!to.isIdentified())
 		{
-			final List<Location> locations = suggestLocations(to.name).locations;
+			final List<Location> locations = suggestLocations(to.name).getLocations();
 			if (locations.isEmpty())
 				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS); // TODO
 			if (locations.size() > 1)

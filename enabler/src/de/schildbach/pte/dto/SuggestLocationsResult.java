@@ -18,6 +18,8 @@
 package de.schildbach.pte.dto;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -32,20 +34,20 @@ public final class SuggestLocationsResult implements Serializable
 
 	public final ResultHeader header;
 	public final Status status;
-	public final List<Location> locations;
+	private final List<SuggestedLocation> suggestedLocations;
 
-	public SuggestLocationsResult(final ResultHeader header, final List<Location> locations)
+	public SuggestLocationsResult(final ResultHeader header, final List<SuggestedLocation> suggestedLocations)
 	{
 		this.header = header;
 		this.status = Status.OK;
-		this.locations = locations;
+		this.suggestedLocations = suggestedLocations;
 	}
 
 	public SuggestLocationsResult(final ResultHeader header, final Status status)
 	{
 		this.header = header;
 		this.status = status;
-		this.locations = null;
+		this.suggestedLocations = null;
 	}
 
 	@Override
@@ -53,8 +55,19 @@ public final class SuggestLocationsResult implements Serializable
 	{
 		final StringBuilder builder = new StringBuilder(getClass().getName());
 		builder.append("[").append(this.status);
-		builder.append(" ").append(locations);
+		builder.append(" ").append(suggestedLocations);
 		builder.append("]");
 		return builder.toString();
+	}
+
+	public List<Location> getLocations()
+	{
+		Collections.sort(suggestedLocations);
+
+		final List<Location> locations = new ArrayList<Location>(suggestedLocations.size());
+		for (final SuggestedLocation location : suggestedLocations)
+			locations.add(location.location);
+
+		return locations;
 	}
 }

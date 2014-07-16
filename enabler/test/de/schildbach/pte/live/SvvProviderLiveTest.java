@@ -84,19 +84,19 @@ public class SvvProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final SuggestLocationsResult salzburgResult = provider.suggestLocations("Salzburg Süd");
 		print(salzburgResult);
-		assertThat(salzburgResult.locations, hasItem(new Location(LocationType.STATION, "60650458")));
+		assertThat(salzburgResult.getLocations(), hasItem(new Location(LocationType.STATION, "60650458")));
 
 		final SuggestLocationsResult strasswalchenResult = provider.suggestLocations("Straßwalchen West");
 		print(strasswalchenResult);
-		assertThat(strasswalchenResult.locations, hasItem(new Location(LocationType.STATION, "60656483")));
+		assertThat(strasswalchenResult.getLocations(), hasItem(new Location(LocationType.STATION, "60656483")));
 
 		final SuggestLocationsResult schwarzachResult = provider.suggestLocations("Schwarzach Abtsdorf");
 		print(schwarzachResult);
-		assertThat(schwarzachResult.locations, hasItem(new Location(LocationType.STATION, "60656614")));
+		assertThat(schwarzachResult.getLocations(), hasItem(new Location(LocationType.STATION, "60656614")));
 
 		final SuggestLocationsResult trimmelkamResult = provider.suggestLocations("Trimmelkam");
 		print(trimmelkamResult);
-		assertThat(trimmelkamResult.locations, hasItem(new Location(LocationType.STATION, "60640776")));
+		assertThat(trimmelkamResult.getLocations(), hasItem(new Location(LocationType.STATION, "60640776")));
 	}
 
 	@Test

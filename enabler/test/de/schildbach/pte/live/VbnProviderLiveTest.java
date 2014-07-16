@@ -91,7 +91,7 @@ public class VbnProviderLiveTest extends AbstractProviderLiveTest
 
 		print(result);
 
-		assertEquals("Göttingen", result.locations.get(0).place);
+		assertEquals("Göttingen", result.getLocations().get(0).place);
 	}
 
 	@Test

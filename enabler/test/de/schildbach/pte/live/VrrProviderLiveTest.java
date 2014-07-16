@@ -116,23 +116,23 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final SuggestLocationsResult cologneResult = provider.suggestLocations("Köln Ebertplatz");
 		print(cologneResult);
-		assertThat(cologneResult.locations, hasItem(new Location(LocationType.STATION, "22000035")));
+		assertThat(cologneResult.getLocations(), hasItem(new Location(LocationType.STATION, "22000035")));
 
 		final SuggestLocationsResult dortmundResult = provider.suggestLocations("Dortmund Zugstraße");
 		print(dortmundResult);
-		assertThat(dortmundResult.locations, hasItem(new Location(LocationType.STATION, "20000524")));
+		assertThat(dortmundResult.getLocations(), hasItem(new Location(LocationType.STATION, "20000524")));
 
 		final SuggestLocationsResult duesseldorfResult = provider.suggestLocations("Düsseldorf Sternstraße");
 		print(duesseldorfResult);
-		assertThat(duesseldorfResult.locations, hasItem(new Location(LocationType.STATION, "20018017")));
+		assertThat(duesseldorfResult.getLocations(), hasItem(new Location(LocationType.STATION, "20018017")));
 
 		final SuggestLocationsResult muensterResult = provider.suggestLocations("Münster Vennheideweg");
 		print(muensterResult);
-		assertThat(muensterResult.locations, hasItem(new Location(LocationType.STATION, "24047291")));
+		assertThat(muensterResult.getLocations(), hasItem(new Location(LocationType.STATION, "24047291")));
 
 		final SuggestLocationsResult aachenResult = provider.suggestLocations("Aachen Elisenbrunnen");
 		print(aachenResult);
-		assertThat(aachenResult.locations, hasItem(new Location(LocationType.STATION, "21001029")));
+		assertThat(aachenResult.getLocations(), hasItem(new Location(LocationType.STATION, "21001029")));
 	}
 
 	@Test

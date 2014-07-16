@@ -87,7 +87,7 @@ public class OebbProviderLiveTest extends AbstractProviderLiveTest
 		final SuggestLocationsResult result = provider.suggestLocations("Wien");
 
 		print(result);
-		assertTrue(result.locations.size() > 0);
+		assertTrue(result.getLocations().size() > 0);
 	}
 
 	@Test

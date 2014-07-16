@@ -49,6 +49,7 @@ import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.ResultHeader;
 import de.schildbach.pte.dto.Stop;
 import de.schildbach.pte.dto.SuggestLocationsResult;
+import de.schildbach.pte.dto.SuggestedLocation;
 import de.schildbach.pte.dto.Trip;
 import de.schildbach.pte.exception.ParserException;
 import de.schildbach.pte.util.ParserUtils;
@@ -198,7 +199,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 		final CharSequence page = ParserUtils.scrape(uri.toString(), null, UTF_8, null, 3);
 		try
 		{
-			final List<Location> locations = new ArrayList<Location>();
+			final List<SuggestedLocation> locations = new ArrayList<SuggestedLocation>();
 			final JSONObject head = new JSONObject(page.toString());
 
 			int status = head.getInt("StatusCode");
@@ -214,7 +215,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 
 				if (location.isIdentified()) // make sure the location is really identified
 					// some addresses may not contain coordinates, we ignore them
-					locations.add(location);
+					locations.add(new SuggestedLocation(location));
 			}
 
 			return new SuggestLocationsResult(HEADER, locations);
@@ -267,7 +268,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 		if (location.isIdentified())
 			return Collections.singletonList(location);
 
-		final List<Location> locations = suggestLocations(location.uniqueShortName()).locations;
+		final List<Location> locations = suggestLocations(location.uniqueShortName()).getLocations();
 		if (locations == null)
 			return new ArrayList<Location>(0);
 

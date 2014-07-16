@@ -92,7 +92,7 @@ public class VvoProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final SuggestLocationsResult dresdenResult = provider.suggestLocations("Dresden Postplatz");
 		print(dresdenResult);
-		assertThat(dresdenResult.locations, hasItem(new Location(LocationType.STATION, "33000037")));
+		assertThat(dresdenResult.getLocations(), hasItem(new Location(LocationType.STATION, "33000037")));
 	}
 
 	@Test

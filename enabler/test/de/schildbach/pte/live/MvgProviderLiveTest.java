@@ -92,19 +92,19 @@ public class MvgProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final SuggestLocationsResult luedenscheidResult = provider.suggestLocations("Lüdenscheid Freibad");
 		print(luedenscheidResult);
-		assertThat(luedenscheidResult.locations, hasItem(new Location(LocationType.STATION, "24200153")));
+		assertThat(luedenscheidResult.getLocations(), hasItem(new Location(LocationType.STATION, "24200153")));
 
 		final SuggestLocationsResult iserlohnResult = provider.suggestLocations("Iserlohn Rathaus");
 		print(iserlohnResult);
-		assertThat(iserlohnResult.locations, hasItem(new Location(LocationType.STATION, "24200764")));
+		assertThat(iserlohnResult.getLocations(), hasItem(new Location(LocationType.STATION, "24200764")));
 
 		final SuggestLocationsResult plettenbergResult = provider.suggestLocations("Plettenberg Friedhof");
 		print(plettenbergResult);
-		assertThat(plettenbergResult.locations, hasItem(new Location(LocationType.STATION, "24202864")));
+		assertThat(plettenbergResult.getLocations(), hasItem(new Location(LocationType.STATION, "24202864")));
 
 		final SuggestLocationsResult mendenResult = provider.suggestLocations("Menden Am Gillfeld");
 		print(mendenResult);
-		assertThat(mendenResult.locations, hasItem(new Location(LocationType.STATION, "24202193")));
+		assertThat(mendenResult.getLocations(), hasItem(new Location(LocationType.STATION, "24202193")));
 	}
 
 	@Test

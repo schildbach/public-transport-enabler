@@ -20,6 +20,7 @@ package de.schildbach.pte.live;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import de.schildbach.pte.NetworkProvider;
 import de.schildbach.pte.NetworkProvider.Accessibility;
@@ -61,8 +62,9 @@ public abstract class AbstractProviderLiveTest
 
 	protected final void print(final SuggestLocationsResult result)
 	{
-		System.out.print(result.locations.size() + " ");
-		for (final Location location : result.locations)
+		final List<Location> locations = result.getLocations();
+		System.out.print(locations.size() + " ");
+		for (final Location location : locations)
 			System.out.print(location + " ");
 		System.out.println();
 	}

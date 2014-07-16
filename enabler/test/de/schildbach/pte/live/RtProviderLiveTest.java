@@ -96,7 +96,7 @@ public class RtProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsEncoding() throws Exception
 	{
 		final SuggestLocationsResult result = provider.suggestLocations("Dorfstrasse 1, Schäftland");
-		assertEquals("Schöftland, Dorfstrasse", result.locations.get(0).name);
+		assertEquals("Schöftland, Dorfstrasse", result.getLocations().get(0).name);
 		print(result);
 	}
 

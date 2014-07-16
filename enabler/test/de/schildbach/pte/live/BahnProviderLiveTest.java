@@ -75,17 +75,17 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 
 		print(result);
 
-		assertEquals("Güntzelstr. (U), Berlin", result.locations.get(0).name);
+		assertEquals("Güntzelstr. (U), Berlin", result.getLocations().get(0).name);
 	}
 
 	@Test
 	public void suggestLocationsIncomplete() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Landungsbr");
+		final SuggestLocationsResult result = provider.suggestLocations("Dammt");
 
 		print(result);
 
-		assertEquals("Hamburg Landungsbrücken", result.locations.get(0).name);
+		assertEquals("Hamburg Dammtor", result.getLocations().get(0).name);
 	}
 
 	@Test

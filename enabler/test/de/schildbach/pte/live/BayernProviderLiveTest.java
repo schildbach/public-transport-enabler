@@ -101,13 +101,13 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsLocal() throws Exception
 	{
 		final SuggestLocationsResult regensburgResult = provider.suggestLocations("Regensburg");
-		assertEquals("80001083", regensburgResult.locations.iterator().next().id);
+		assertEquals("80001083", regensburgResult.getLocations().iterator().next().id);
 
 		final SuggestLocationsResult munichResult = provider.suggestLocations("München");
-		assertEquals("80000689", munichResult.locations.iterator().next().id);
+		assertEquals("80000689", munichResult.getLocations().iterator().next().id);
 
 		final SuggestLocationsResult nurembergResult = provider.suggestLocations("Nürnberg");
-		assertEquals("80001020", nurembergResult.locations.iterator().next().id);
+		assertEquals("80001020", nurembergResult.getLocations().iterator().next().id);
 	}
 
 	@Test

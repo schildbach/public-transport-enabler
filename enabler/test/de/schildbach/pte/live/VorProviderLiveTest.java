@@ -92,11 +92,11 @@ public class VorProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final SuggestLocationsResult huetteldorfResult = provider.suggestLocations("Hütteldorf");
 		print(huetteldorfResult);
-		assertThat(huetteldorfResult.locations, hasItem(new Location(LocationType.STATION, "60200560")));
+		assertThat(huetteldorfResult.getLocations(), hasItem(new Location(LocationType.STATION, "60200560")));
 
 		final SuggestLocationsResult wienerNeustadtResult = provider.suggestLocations("Wiener Neustadt Nord");
 		print(wienerNeustadtResult);
-		assertThat(wienerNeustadtResult.locations, hasItem(new Location(LocationType.STATION, "60205223")));
+		assertThat(wienerNeustadtResult.getLocations(), hasItem(new Location(LocationType.STATION, "60205223")));
 	}
 
 	@Test

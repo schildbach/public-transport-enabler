@@ -92,7 +92,7 @@ public class BsvagProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final SuggestLocationsResult braunschweigResult = provider.suggestLocations("Braunschweig Rhönweg");
 		print(braunschweigResult);
-		assertThat(braunschweigResult.locations, hasItem(new Location(LocationType.STATION, "26000351")));
+		assertThat(braunschweigResult.getLocations(), hasItem(new Location(LocationType.STATION, "26000351")));
 	}
 
 	@Test
