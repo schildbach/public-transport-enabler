@@ -20,8 +20,6 @@ package de.schildbach.pte;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -1995,9 +1993,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	protected String xsltTripRequestParameters(final Location from, final Location via, final Location to, final Date date, final boolean dep,
 			final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
 	{
-		final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd", Locale.US);
-		final DateFormat TIME_FORMAT = new SimpleDateFormat("HHmm", Locale.US);
-
 		final StringBuilder uri = new StringBuilder();
 		appendCommonRequestParams(uri, "XML");
 
@@ -2012,8 +2007,16 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		if (via != null)
 			appendLocation(uri, via, "via");
 
-		uri.append("&itdDate=").append(ParserUtils.urlEncode(DATE_FORMAT.format(date)));
-		uri.append("&itdTime=").append(ParserUtils.urlEncode(TIME_FORMAT.format(date)));
+		final Calendar c = new GregorianCalendar(timeZone);
+		c.setTime(date);
+		final int year = c.get(Calendar.YEAR);
+		final int month = c.get(Calendar.MONTH) + 1;
+		final int day = c.get(Calendar.DAY_OF_MONTH);
+		final int hour = c.get(Calendar.HOUR_OF_DAY);
+		final int minute = c.get(Calendar.MINUTE);
+		uri.append("&itdDate=").append(ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%04d%02d%02d", year, month, day)));
+		uri.append("&itdTime=").append(ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%02d%02d", hour, minute)));
+
 		uri.append("&itdTripDateTimeDepArr=").append(dep ? "dep" : "arr");
 
 		uri.append("&calcNumberOfTrips=").append(numTripsRequested);

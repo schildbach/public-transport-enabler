@@ -711,12 +711,15 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 		final Calendar c = new GregorianCalendar(timeZone);
 		c.setTime(date);
-		final String dateStr = useIso8601 ? String.format(Locale.ENGLISH, "%04d-%02d-%02d", c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1,
-				c.get(Calendar.DAY_OF_MONTH)) : String.format(Locale.ENGLISH, "%02d.%02d.%02d", c.get(Calendar.DAY_OF_MONTH),
-				c.get(Calendar.MONTH) + 1, c.get(Calendar.YEAR) - 2000);
-		uri.append("&REQ0JourneyDate=").append(ParserUtils.urlEncode(dateStr));
-		final String timeStr = String.format(Locale.ENGLISH, "%02d:%02d", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
-		uri.append("&REQ0JourneyTime=").append(ParserUtils.urlEncode(timeStr));
+		final int year = c.get(Calendar.YEAR);
+		final int month = c.get(Calendar.MONTH) + 1;
+		final int day = c.get(Calendar.DAY_OF_MONTH);
+		final int hour = c.get(Calendar.HOUR_OF_DAY);
+		final int minute = c.get(Calendar.MINUTE);
+		uri.append("&REQ0JourneyDate=").append(
+				ParserUtils.urlEncode(useIso8601 ? String.format(Locale.ENGLISH, "%04d-%02d-%02d", year, month, day) : String.format(Locale.ENGLISH,
+						"%02d.%02d.%02d", day, month, year - 2000)));
+		uri.append("&REQ0JourneyTime=").append(ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%02d:%02d", hour, minute)));
 
 		final StringBuilder productsStr = new StringBuilder(numProductBits);
 		if (products != null)
