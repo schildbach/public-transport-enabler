@@ -2068,8 +2068,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		final Calendar c = new GregorianCalendar(timeZone());
 		c.setTime(date);
-		uri.append("&itdDate=").append(ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%04d%02d%02d", c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH))));
-		uri.append("&itdTime=").append(ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%02d:%02d", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE))));
+		final String dateStr = String.format(Locale.ENGLISH, "%04d%02d%02d", c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH));
+		uri.append("&itdDate=").append(ParserUtils.urlEncode(dateStr));
+		final String timeStr = String.format(Locale.ENGLISH, "%02d:%02d", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
+		uri.append("&itdTime=").append(ParserUtils.urlEncode(timeStr));
 		uri.append("&itdTripDateTimeDepArr=").append(dep ? "dep" : "arr");
 
 		uri.append("&calcNumberOfTrips=").append(numTripsRequested);
