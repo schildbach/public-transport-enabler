@@ -22,6 +22,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import de.schildbach.pte.NetworkProvider.Accessibility;
@@ -34,6 +35,7 @@ import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
+import de.schildbach.pte.dto.Trip;
 
 /**
  * @author Andreas Schildbach
@@ -140,5 +142,33 @@ public class TflProviderLiveTest extends AbstractProviderLiveTest
 
 		final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
 		System.out.println(earlierResult);
+	}
+	
+	
+	@Test
+	public void utcTime() throws Exception
+	{
+		Date date = new Date();
+		
+		QueryTripsResult tflResult = queryTrips(
+				new Location(LocationType.ADDRESS, "0", (int) (51.5148683 * 1E6),
+				(int) (-0.13981000000001131 * 1E6), "Hills Place, London, Greater London W1F, Vereinigtes Königreich",
+				"Hills Place, London, Greater London W1F, Vereinigtes Königreich"), 
+				null, 
+				new Location(
+				LocationType.ADDRESS, "0", (int) (51.49992710000001 * 1E6), (int) (-0.09083910000003925 * 1E6),
+				"Sterry Street, London, Greater London SE1, Vereinigtes Königreich",
+				"Sterry Street, London, Greater London SE1, Vereinigtes Königreich"), 
+				date, true, null, null, null);
+		
+		Trip tflTrip = tflResult.trips.get(0);
+		
+//		System.out.println(date);
+//		System.out.println(tflTrip.getFirstDepartureTime());
+//		System.out.println(date.getTime() - tflTrip.getFirstDepartureTime().getTime());
+
+		// start time difference should be a maximum of 1/2 hour
+		long difference = date.getTime() - tflTrip.getFirstDepartureTime().getTime();
+		Assert.assertTrue(difference <= 1500000 && difference >= -1500000);
 	}
 }

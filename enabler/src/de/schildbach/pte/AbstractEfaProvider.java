@@ -2052,9 +2052,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	protected String xsltTripRequestParameters(final Location from, final Location via, final Location to, final Date date, final boolean dep,
 			final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
 	{
-		final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd", Locale.US);
-		final DateFormat TIME_FORMAT = new SimpleDateFormat("HHmm", Locale.US);
-
 		final StringBuilder uri = new StringBuilder();
 		appendCommonRequestParams(uri, "XML");
 
@@ -2069,8 +2066,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		if (via != null)
 			appendLocation(uri, via, "via");
 
-		uri.append("&itdDate=").append(ParserUtils.urlEncode(DATE_FORMAT.format(date)));
-		uri.append("&itdTime=").append(ParserUtils.urlEncode(TIME_FORMAT.format(date)));
+		final Calendar c = new GregorianCalendar(timeZone());
+		c.setTime(date);
+		uri.append("&itdDate=").append(ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%04d%02d%02d", c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH))));
+		uri.append("&itdTime=").append(ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%02d:%02d", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE))));
 		uri.append("&itdTripDateTimeDepArr=").append(dep ? "dep" : "arr");
 
 		uri.append("&calcNumberOfTrips=").append(numTripsRequested);
