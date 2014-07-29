@@ -1410,6 +1410,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		parameters.append("&mode=direct");
 		parameters.append("&ptOptionsActive=1");
 		parameters.append("&deleteAssignedStops_dm=").append(equivs ? '0' : '1');
+		parameters.append("&useProxFootSearch=").append(equivs ? '1' : '0');
 		parameters.append("&mergeDep=1"); // merge departures
 		if (maxDepartures > 0)
 			parameters.append("&limit=").append(maxDepartures);
