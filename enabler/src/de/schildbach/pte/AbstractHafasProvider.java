@@ -306,7 +306,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		final String platformText = XmlPullUtil.valueTag(pp, "Text");
 		XmlPullUtil.exit(pp, "Platform");
 
-		if (platformText.length() == 0)
+		if (platformText == null || platformText.length() == 0)
 			return null;
 		else
 			return new Position(platformText);
