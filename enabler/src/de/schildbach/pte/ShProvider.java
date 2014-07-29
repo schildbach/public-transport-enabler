@@ -141,6 +141,20 @@ public class ShProvider extends AbstractHafasProvider
 		}
 	}
 
+	private static final String[] PLACES = { "Kiel", "Lübeck" };
+
+	@Override
+	protected String[] splitPlaceAndName(final String name)
+	{
+		for (final String place : PLACES)
+		{
+			if (name.startsWith(place + " ") || name.startsWith(place + "-"))
+				return new String[] { place, name.substring(place.length() + 1) };
+		}
+
+		return super.splitPlaceAndName(name);
+	}
+
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
 		if (location.type == LocationType.STATION && location.hasId())
