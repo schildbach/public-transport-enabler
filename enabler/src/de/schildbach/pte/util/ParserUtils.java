@@ -50,13 +50,14 @@ import de.schildbach.pte.exception.UnexpectedRedirectException;
  */
 public final class ParserUtils
 {
+	public static final String P_PLATFORM = "[\\wÄÖÜäöüßáàâéèêíìîóòôúùû\\. -/&#;]+?";
 	private static final String SCRAPE_USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:31.0) Gecko/20100101 Firefox/31.0";
 	private static final String SCRAPE_ACCEPT = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
 	private static final int SCRAPE_INITIAL_CAPACITY = 4096;
-	private static final int SCRAPE_CONNECT_TIMEOUT = 5000;
-	private static final int SCRAPE_READ_TIMEOUT = 15000;
 	private static final Charset SCRAPE_DEFAULT_ENCODING = Charset.forName("ISO-8859-1");
 
+	private static int scrapeConnectTimeout = 5000;
+	private static int scrapeReadTimeout = 15000;	
 	private static String stateCookie;
 
 	public static void resetState()
@@ -120,8 +121,8 @@ public final class ParserUtils
 
 			connection.setDoInput(true);
 			connection.setDoOutput(postRequest != null);
-			connection.setConnectTimeout(SCRAPE_CONNECT_TIMEOUT);
-			connection.setReadTimeout(SCRAPE_READ_TIMEOUT);
+			connection.setConnectTimeout(scrapeConnectTimeout);
+			connection.setReadTimeout(scrapeReadTimeout);
 			connection.addRequestProperty("User-Agent", SCRAPE_USER_AGENT);
 			connection.addRequestProperty("Accept", SCRAPE_ACCEPT);
 			connection.addRequestProperty("Accept-Encoding", "gzip");
@@ -605,5 +606,11 @@ public final class ParserUtils
 		return null;
 	}
 
-	public static final String P_PLATFORM = "[\\wÄÖÜäöüßáàâéèêíìîóòôúùû\\. -/&#;]+?";
+	public static void setScrapeReadTimeout(int scrapeReadTimeout) {
+		ParserUtils.scrapeReadTimeout = scrapeReadTimeout;
+	}
+	
+	public static void setScrapeConnectTimeout(int scrapeConnectTimeout) {
+		ParserUtils.scrapeConnectTimeout = scrapeConnectTimeout;
+	}
 }
