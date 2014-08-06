@@ -415,6 +415,14 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 	}
 
+	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
+	{
+		final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
+		uri.append(xmlQueryDeparturesParameters(stationId));
+
+		return xmlQueryDepartures(uri.toString(), stationId);
+	}
+
 	protected StringBuilder xmlQueryDeparturesParameters(final String stationId)
 	{
 		final StringBuilder parameters = new StringBuilder();

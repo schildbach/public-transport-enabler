@@ -24,7 +24,6 @@ import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Product;
-import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.util.StringReplaceReader;
 
 /**
@@ -151,14 +150,6 @@ public class PlProvider extends AbstractHafasProvider
 		{
 			throw new IllegalArgumentException("cannot handle: " + location);
 		}
-	}
-
-	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
-	{
-		final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
-		uri.append(xmlQueryDeparturesParameters(stationId));
-
-		return xmlQueryDepartures(uri.toString(), stationId);
 	}
 
 	@Override

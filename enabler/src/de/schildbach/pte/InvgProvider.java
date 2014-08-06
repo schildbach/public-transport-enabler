@@ -162,6 +162,7 @@ public class InvgProvider extends AbstractHafasProvider
 			+ "(?:<td class=\"center sepline top\">\n(" + ParserUtils.P_PLATFORM + ").*?)?" // position
 	, Pattern.DOTALL);
 
+	@Override
 	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
 		final ResultHeader header = new ResultHeader(SERVER_PRODUCT);

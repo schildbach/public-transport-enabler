@@ -131,6 +131,7 @@ public class NsProvider extends AbstractHafasProvider
 		}
 	}
 
+	@Override
 	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
 		throw new UnsupportedOperationException();

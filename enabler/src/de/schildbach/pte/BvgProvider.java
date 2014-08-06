@@ -314,6 +314,7 @@ public final class BvgProvider extends AbstractHafasProvider
 	private static final Pattern P_DEPARTURES_LIVE_ERRORS = Pattern.compile("(Haltestelle:)|(Wartungsgr&uuml;nden|nur eingeschränkt)",
 			Pattern.CASE_INSENSITIVE);
 
+	@Override
 	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
 		final ResultHeader header = new ResultHeader(SERVER_PRODUCT);
