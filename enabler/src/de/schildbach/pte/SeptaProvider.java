@@ -150,8 +150,7 @@ public class SeptaProvider extends AbstractHafasProvider
 		uri.append("&date=");
 		uri.append(String.format(Locale.ENGLISH, "%02d%02d%04d", now.get(Calendar.MONTH) + 1, now.get(Calendar.DAY_OF_MONTH), now.get(Calendar.YEAR)));
 		uri.append("&productsFilter=").append(allProductsString());
-		if (maxDepartures != 0)
-			uri.append("&maxJourneys=").append(maxDepartures);
+		uri.append("&maxJourneys=").append(maxDepartures != 0 ? maxDepartures : DEFAULT_MAX_DEPARTURES);
 		uri.append("&disableEquivs=yes"); // don't use nearby stations
 		uri.append("&start=yes");
 

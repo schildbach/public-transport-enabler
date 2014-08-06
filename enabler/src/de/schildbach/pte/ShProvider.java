@@ -179,8 +179,7 @@ public class ShProvider extends AbstractHafasProvider
 		uri.append("?input=").append(normalizeStationId(stationId));
 		uri.append("&boardType=dep");
 		uri.append("&productsFilter=").append(allProductsString());
-		if (maxDepartures != 0)
-			uri.append("&maxJourneys=").append(maxDepartures);
+		uri.append("&maxJourneys=").append(maxDepartures != 0 ? maxDepartures : DEFAULT_MAX_DEPARTURES);
 		uri.append("&disableEquivs=yes"); // don't use nearby stations
 		uri.append("&start=yes");
 

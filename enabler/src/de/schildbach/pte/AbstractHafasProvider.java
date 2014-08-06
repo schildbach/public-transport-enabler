@@ -79,8 +79,8 @@ import de.schildbach.pte.util.XmlPullUtil;
 public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 {
 	protected final static String SERVER_PRODUCT = "hafas";
-
 	private static final String REQC_PROD = "hafas";
+	protected static final int DEFAULT_MAX_DEPARTURES = 100;
 
 	protected final String stationBoardEndpoint;
 	protected final String getStopEndpoint;
@@ -430,7 +430,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		parameters.append("&boardType=dep");
 		if (canDoEquivs)
 			parameters.append("&disableEquivs=yes"); // don't use nearby stations
-		parameters.append("&maxJourneys=50"); // ignore maxDepartures because result contains other stations
+		// ignore maxDepartures because result contains other stations
+		parameters.append("&maxJourneys=").append(DEFAULT_MAX_DEPARTURES);
 		parameters.append("&start=yes");
 		parameters.append("&L=vs_java3");
 		parameters.append("&input=").append(normalizeStationId(stationId));

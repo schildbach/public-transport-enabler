@@ -271,7 +271,7 @@ public final class BvgProvider extends AbstractHafasProvider
 		final StringBuilder uri = new StringBuilder();
 		uri.append(DEPARTURE_URL_PLAN);
 		uri.append("&input=").append(normalizeStationId(stationId));
-		uri.append("&maxJourneys=").append(maxDepartures != 0 ? maxDepartures : 50);
+		uri.append("&maxJourneys=").append(maxDepartures != 0 ? maxDepartures : DEFAULT_MAX_DEPARTURES);
 		if (additionalQueryParameter != null)
 			uri.append('&').append(additionalQueryParameter);
 		return uri.toString();
