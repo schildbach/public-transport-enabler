@@ -105,6 +105,7 @@ public class JetProvider extends AbstractHafasProvider
 		}
 	}
 
+	@Override
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
 		if (location.hasLocation())

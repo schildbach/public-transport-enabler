@@ -2188,6 +2188,28 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		return new Position(m.group(1));
 	}
 
+	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
+	{
+		if (location.hasLocation())
+		{
+			final StringBuilder uri = new StringBuilder(queryEndpoint);
+			uri.append(jsonNearbyStationsParameters(location, maxDistance, maxStations));
+
+			return jsonNearbyStations(uri.toString());
+		}
+		else if (location.type == LocationType.STATION && location.hasId())
+		{
+			final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
+			uri.append(xmlNearbyStationsParameters(location.id));
+
+			return xmlNearbyStations(uri.toString());
+		}
+		else
+		{
+			throw new IllegalArgumentException("cannot handle: " + location);
+		}
+	}
+
 	protected final StringBuilder xmlNearbyStationsParameters(final String stationId)
 	{
 		final StringBuilder parameters = new StringBuilder();

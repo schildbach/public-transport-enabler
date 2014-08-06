@@ -126,6 +126,7 @@ public class NasaProvider extends AbstractHafasProvider
 		return super.splitPlaceAndName(name);
 	}
 
+	@Override
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
 		if (location.hasLocation())

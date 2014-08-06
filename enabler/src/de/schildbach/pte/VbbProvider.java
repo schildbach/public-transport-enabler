@@ -17,7 +17,6 @@
 
 package de.schildbach.pte;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -25,9 +24,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.schildbach.pte.dto.Line;
-import de.schildbach.pte.dto.Location;
-import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyStationsResult;
 import de.schildbach.pte.dto.Product;
 
 /**
@@ -144,28 +140,6 @@ public class VbbProvider extends AbstractHafasProvider
 			return new String[] { mComma.group(1), mComma.group(2) };
 
 		return super.splitPlaceAndName(name);
-	}
-
-	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
-	{
-		if (location.hasLocation())
-		{
-			final StringBuilder uri = new StringBuilder(queryEndpoint);
-			uri.append(jsonNearbyStationsParameters(location, maxDistance, maxStations));
-
-			return jsonNearbyStations(uri.toString());
-		}
-		else if (location.type == LocationType.STATION && location.hasId())
-		{
-			final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
-			uri.append(xmlNearbyStationsParameters(location.id));
-
-			return xmlNearbyStations(uri.toString());
-		}
-		else
-		{
-			throw new IllegalArgumentException("cannot handle: '" + location);
-		}
 	}
 
 	@Override

@@ -175,6 +175,7 @@ public final class BvgProvider extends AbstractHafasProvider
 	private final static Pattern P_NEARBY_FINE_LOCATION = Pattern.compile("input=(\\d+)&[^\"]*\">([^<]*)<");
 	private static final Pattern P_NEARBY_ERRORS = Pattern.compile("(Haltestellen in der Umgebung anzeigen)");
 
+	@Override
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
 		if (location.hasLocation())
