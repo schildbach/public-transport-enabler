@@ -418,20 +418,19 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
-		uri.append(xmlQueryDeparturesParameters(stationId));
+		uri.append(xmlQueryDeparturesParameters(stationId, maxDepartures));
 
 		return xmlQueryDepartures(uri.toString(), stationId);
 	}
 
-	protected StringBuilder xmlQueryDeparturesParameters(final String stationId)
+	protected StringBuilder xmlQueryDeparturesParameters(final String stationId, final int maxDepartures)
 	{
 		final StringBuilder parameters = new StringBuilder();
 		parameters.append("?productsFilter=").append(allProductsString());
 		parameters.append("&boardType=dep");
 		if (canDoEquivs)
 			parameters.append("&disableEquivs=yes"); // don't use nearby stations
-		// ignore maxDepartures because result contains other stations
-		parameters.append("&maxJourneys=").append(DEFAULT_MAX_DEPARTURES);
+		parameters.append("&maxJourneys=").append(maxDepartures > 0 ? maxDepartures : DEFAULT_MAX_DEPARTURES);
 		parameters.append("&start=yes");
 		parameters.append("&L=vs_java3");
 		parameters.append("&input=").append(normalizeStationId(stationId));
