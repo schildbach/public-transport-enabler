@@ -20,7 +20,6 @@ package de.schildbach.pte.live;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 import de.schildbach.pte.NetworkProvider;
 import de.schildbach.pte.NetworkProvider.Accessibility;
@@ -47,13 +46,12 @@ public abstract class AbstractProviderLiveTest
 
 	protected final void print(final NearbyStationsResult result)
 	{
-		System.out.println(result.status
-				+ (result.status == NearbyStationsResult.Status.OK ? " " + result.stations.size() + "  " + result.stations : ""));
+		System.out.println(result);
 	}
 
 	protected final void print(final QueryDeparturesResult result)
 	{
-		System.out.println(result.status + (result.status == QueryDeparturesResult.Status.OK ? " " + result.stationDepartures : ""));
+		System.out.println(result);
 
 		// for (final StationDepartures stationDepartures : result.stationDepartures)
 		// for (final Departure departure : stationDepartures.departures)
@@ -62,11 +60,12 @@ public abstract class AbstractProviderLiveTest
 
 	protected final void print(final SuggestLocationsResult result)
 	{
-		final List<Location> locations = result.getLocations();
-		System.out.print(locations.size() + " ");
-		for (final Location location : locations)
-			System.out.print(location + " ");
-		System.out.println();
+		System.out.println(result);
+	}
+
+	protected final void print(final QueryTripsResult result)
+	{
+		System.out.println(result);
 	}
 
 	protected final QueryTripsResult queryTrips(final Location from, final Location via, final Location to, final Date date, final boolean dep,

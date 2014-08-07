@@ -65,7 +65,7 @@ public class LinzProviderLiveTest extends AbstractProviderLiveTest
 	public void queryDepartures() throws Exception
 	{
 		final QueryDeparturesResult result = provider.queryDepartures("60501720", 0, false);
-		System.out.println(result);
+		print(result);
 	}
 
 	@Test
@@ -105,7 +105,7 @@ public class LinzProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "linz"), null, new Location(LocationType.ANY, null,
 				null, "gel"), new Date(), true, Product.ALL, WalkSpeed.FAST, Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 	}
 
 	@Test
@@ -113,7 +113,7 @@ public class LinzProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, null, null, "Linz Hauptbahnhof"), null, new Location(
 				LocationType.STATION, null, null, "Linz Auwiesen"), new Date(), true, Product.ALL, WalkSpeed.FAST, Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);
 
@@ -121,19 +121,19 @@ public class LinzProviderLiveTest extends AbstractProviderLiveTest
 			return;
 
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 
 		if (!laterResult.context.canQueryLater())
 			return;
 
 		final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
-		System.out.println(later2Result);
+		print(later2Result);
 
 		if (!later2Result.context.canQueryEarlier())
 			return;
 
 		final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
-		System.out.println(earlierResult);
+		print(earlierResult);
 	}
 
 	@Test
@@ -141,8 +141,8 @@ public class LinzProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, null, null, "Linz Auwiesen"), null, new Location(
 				LocationType.STATION, null, null, "Linz Hafen"), new Date(), true, Product.ALL, WalkSpeed.SLOW, Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 		// final QueryTripsResult laterResult = queryMoreTrips(provider, result.context, true);
-		// System.out.println(laterResult);
+		// print(laterResult);
 	}
 }

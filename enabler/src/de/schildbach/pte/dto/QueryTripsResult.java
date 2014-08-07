@@ -97,13 +97,13 @@ public final class QueryTripsResult implements Serializable
 	@Override
 	public String toString()
 	{
-		final StringBuilder builder = new StringBuilder(getClass().getName());
-		builder.append("[");
+		final StringBuilder builder = new StringBuilder(getClass().getSimpleName());
+		builder.append("[").append(this.status).append(" ");
 
 		if (status == Status.OK)
 		{
 			if (trips != null)
-				builder.append(trips.size()).append(" trips " + trips + ", ");
+				builder.append(trips.size()).append(trips);
 		}
 		else if (status == Status.AMBIGUOUS)
 		{

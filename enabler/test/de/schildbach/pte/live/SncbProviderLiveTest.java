@@ -105,12 +105,12 @@ public class SncbProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8821006", "Antwerpen", "Centraal"), null, new Location(
 				LocationType.STATION, "8813003", "Brussel", "Centraal"), new Date(), true, null, WalkSpeed.FAST, Accessibility.NEUTRAL);
-		System.out.println(result.status + "  " + result.trips);
+		print(result);
 
 		if (result.context != null)
 		{
 			final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-			System.out.println(laterResult.status + "  " + laterResult.trips);
+			print(laterResult);
 		}
 	}
 
@@ -119,12 +119,12 @@ public class SncbProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "207280", "Brussel", "Wannecouter"), null, new Location(
 				LocationType.STATION, "207272", "Brussel", "Stadion"), new Date(), true, null, WalkSpeed.FAST, Accessibility.NEUTRAL);
-		System.out.println(result.status + "  " + result.trips);
+		print(result);
 
 		if (result.context != null)
 		{
 			final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-			System.out.println(laterResult.status + "  " + laterResult.trips);
+			print(laterResult);
 		}
 	}
 
@@ -133,12 +133,12 @@ public class SncbProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, null, "Bruxelles - Haren, Rue Paul Janson 9"), null,
 				new Location(LocationType.STATION, "8500010", null, "Basel"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		System.out.println(result.status + "  " + result.trips);
+		print(result);
 
 		if (result.context != null)
 		{
 			final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-			System.out.println(laterResult.status + " " + laterResult.trips);
+			print(laterResult);
 		}
 	}
 }

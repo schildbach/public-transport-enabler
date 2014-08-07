@@ -90,9 +90,9 @@ public class LuProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "200416001", null, "Cité Aéroport"), null, new Location(
 				LocationType.STATION, "200405035", "Luxembourg", "Gare Centrale"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 	}
 
 	@Test
@@ -101,8 +101,8 @@ public class LuProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 49611610, 6130265, null, "Luxembourg, Rue Génistre 2"),
 				null, new Location(LocationType.STATION, "200405035", "Luxembourg", "Gare Centrale"), new Date(), true, Product.ALL,
 				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 	}
 }

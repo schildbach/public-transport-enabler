@@ -50,9 +50,9 @@ public final class QueryDeparturesResult implements Serializable
 	@Override
 	public String toString()
 	{
-		final StringBuilder builder = new StringBuilder(getClass().getName());
+		final StringBuilder builder = new StringBuilder(getClass().getSimpleName());
 		builder.append("[").append(this.status);
-		builder.append(" ").append(stationDepartures);
+		builder.append(" ").append(stationDepartures.size()).append(stationDepartures);
 		builder.append("]");
 		return builder.toString();
 	}

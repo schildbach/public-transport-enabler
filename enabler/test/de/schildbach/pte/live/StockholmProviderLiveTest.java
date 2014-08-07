@@ -98,9 +98,9 @@ public class StockholmProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "200101051", "Stockholm", "T-Centralen"), null, new Location(
 				LocationType.STATION, "200101221", "Stockholm", "Abrahamsberg"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 	}
 
 	@Test
@@ -109,8 +109,8 @@ public class StockholmProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 59360519, 17989266, null, "Sommarvägen 1, Solna"), null,
 				new Location(LocationType.STATION, "300109205", 59340518, 18081532, "Stockholm", "Stadion"), new Date(), true, Product.ALL,
 				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 	}
 }

@@ -115,9 +115,9 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "80000793", "München", "Ostbahnhof"), null, new Location(
 				LocationType.STATION, "80000799", "München", "Pasing"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 	}
 
 	@Test
@@ -126,7 +126,7 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "1005530", "Starnberg", "Arbeitsamt"), null, new Location(
 				LocationType.STATION, "3001459", "Nürnberg", "Fallrohrstraße"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 		// seems like there are no more trips all the time
 	}
 
@@ -135,9 +135,9 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 48165238, 11577473), null, new Location(
 				LocationType.ADDRESS, null, 47987199, 11326532), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 	}
 
 	@Test
@@ -145,9 +145,9 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 48238341, 11478230), null, new Location(
 				LocationType.STATION, "80000793", "München", "Ostbahnhof"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 	}
 
 	@Test
@@ -155,9 +155,9 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, null, "München, Maximilianstr. 1"), null, new Location(
 				LocationType.ADDRESS, null, null, "Starnberg, Jahnstraße 50"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 	}
 
 	@Test
@@ -166,9 +166,9 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "1001220", null, "Josephsburg"), null, new Location(
 				LocationType.ADDRESS, null, 48188018, 11574239, null, "München Frankfurter Ring 35"), new Date(), true, Product.ALL,
 				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 	}
 
 	@Test
@@ -177,8 +177,8 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult result = queryTrips(new Location(LocationType.POI, null, 47710568, 12621970, null, "Ruhpolding, Seehaus"), null,
 				new Location(LocationType.POI, null, 47738372, 12630996, null, "Ruhpolding, Unternberg-Bahn"), new Date(), true, Product.ALL,
 				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 	}
 }

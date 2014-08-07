@@ -82,7 +82,7 @@ public class TflProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "1008730", null, "King & Queen Wharf"), null, new Location(
 				LocationType.STATION, "1006433", null, "Edinburgh Court"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);
 
@@ -90,19 +90,19 @@ public class TflProviderLiveTest extends AbstractProviderLiveTest
 			return;
 
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 
 		if (!laterResult.context.canQueryLater())
 			return;
 
 		final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
-		System.out.println(later2Result);
+		print(later2Result);
 
 		if (!later2Result.context.canQueryEarlier())
 			return;
 
 		final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
-		System.out.println(earlierResult);
+		print(earlierResult);
 	}
 
 	@Test
@@ -111,7 +111,7 @@ public class TflProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "sw19 8ta"), null, new Location(LocationType.STATION,
 				"1016019", 51655903, -397249, null, "Watford (Herts), Watford Town Centre"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 	}
 
 	@Test
@@ -121,24 +121,24 @@ public class TflProviderLiveTest extends AbstractProviderLiveTest
 				"Timsbury Walk, Wandsworth"), null, new Location(LocationType.STATION, "90046985", 53225140, -1472433, "Chesterfield (Derbys)",
 				"Walton (Chesterfield), Netherfield Road (on Somersall Lane)"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 
 		if (!result.context.canQueryLater())
 			return;
 
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 
 		if (!laterResult.context.canQueryLater())
 			return;
 
 		final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
-		System.out.println(later2Result);
+		print(later2Result);
 
 		if (!later2Result.context.canQueryEarlier())
 			return;
 
 		final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
-		System.out.println(earlierResult);
+		print(earlierResult);
 	}
 }

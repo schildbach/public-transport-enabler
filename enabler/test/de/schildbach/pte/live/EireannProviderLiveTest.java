@@ -49,7 +49,7 @@ public class EireannProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "8013500"), 0, 0);
 
-		System.out.println(result.status + "  " + result.stations.size() + "  " + result.stations);
+		print(result);
 	}
 
 	@Test
@@ -106,8 +106,8 @@ public class EireannProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8052281", null, "Dublin Rd (GMIT)"), null, new Location(
 				LocationType.STATION, "8013100", null, "Dublin Airport (Atrium Road)"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 	}
 }

@@ -97,7 +97,7 @@ public class NsProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8400058", null, "Amsterdam Centraal"), null, new Location(
 				LocationType.STATION, "8400061", null, "Amsterdam Zuid"), new Date(), true, null, WalkSpeed.FAST, Accessibility.NEUTRAL);
 
-		System.out.println(result.status + "  " + result.trips);
+		print(result);
 	}
 
 	@Test
@@ -106,6 +106,6 @@ public class NsProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "100024"), null, new Location(LocationType.STATION, "103624"),
 				new Date(), true, null, WalkSpeed.FAST, Accessibility.NEUTRAL);
 
-		System.out.println(result.status + "  " + result.trips);
+		print(result);
 	}
 }

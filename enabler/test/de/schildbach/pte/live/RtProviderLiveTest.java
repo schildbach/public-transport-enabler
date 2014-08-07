@@ -49,7 +49,7 @@ public class RtProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "8500010"), 0, 0);
 
-		System.out.println(result.status + "  " + result.stations.size() + "  " + result.stations);
+		print(result);
 	}
 
 	@Test
@@ -105,9 +105,9 @@ public class RtProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8503000", null, "Zürich HB"), null, new Location(
 				LocationType.STATION, "8507785", null, "Bern, Hauptbahnhof"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 	}
 
 	@Test
@@ -115,9 +115,9 @@ public class RtProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "Schocherswil, Alte Post!"), null, new Location(
 				LocationType.ANY, null, null, "Laconnex, Mollach"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 	}
 
 	@Test
@@ -126,9 +126,9 @@ public class RtProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, null, "Spiez, Seestraße 62"), null, new Location(
 				LocationType.ADDRESS, null, null, "Einsiedeln, Erlenmoosweg 24"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 	}
 
 	@Test
@@ -137,9 +137,9 @@ public class RtProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 51521886, -51447, null,
 				"26 Coopers Close, Poplar, Greater London E1 4, Vereinigtes Königreich"), null, new Location(LocationType.STATION, "8096022",
 				50941312, 6967206, null, "COLOGNE"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 	}
 
 	@Test
@@ -148,9 +148,9 @@ public class RtProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8400056", null, "Amsterdam RAI"), new Location(
 				LocationType.STATION, "8400058", null, "Amsterdam Centraal"), new Location(LocationType.STATION, "8000085", null, "Düsseldorf Hbf"),
 				new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 	}
 
 	@Test
@@ -158,8 +158,8 @@ public class RtProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8000207", null, "Köln Hbf"), null, new Location(
 				LocationType.STATION, "6096001", null, "DUBLIN"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 	}
 }

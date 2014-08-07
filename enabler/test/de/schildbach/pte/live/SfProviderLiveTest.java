@@ -83,7 +83,7 @@ public class SfProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "10001032", 37784976, -122406784, "San Francisco",
 				"BART Powell"), null, new Location(LocationType.STATION, "10001026", 37789376, -122401320, "San Francisco", "BART Montgomery"),
 				new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);
 
@@ -91,18 +91,18 @@ public class SfProviderLiveTest extends AbstractProviderLiveTest
 			return;
 
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 
 		if (!laterResult.context.canQueryLater())
 			return;
 
 		final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
-		System.out.println(later2Result);
+		print(later2Result);
 
 		if (!later2Result.context.canQueryEarlier())
 			return;
 
 		final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
-		System.out.println(earlierResult);
+		print(earlierResult);
 	}
 }

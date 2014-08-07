@@ -39,7 +39,7 @@ public final class StationDepartures implements Serializable
 	@Override
 	public String toString()
 	{
-		final StringBuilder builder = new StringBuilder(getClass().getName());
+		final StringBuilder builder = new StringBuilder(getClass().getSimpleName());
 		builder.append("[");
 		if (location != null)
 			builder.append(location);

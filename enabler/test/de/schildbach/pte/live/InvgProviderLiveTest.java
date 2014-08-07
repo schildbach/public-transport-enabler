@@ -90,8 +90,8 @@ public class InvgProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "80302", null, "Ingolstadt, Hauptbahnhof Stadteinwärts"), null,
 				new Location(LocationType.STATION, "181102", null, "Elisabethstraße"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 	}
 }

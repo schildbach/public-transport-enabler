@@ -53,9 +53,9 @@ public final class SuggestLocationsResult implements Serializable
 	@Override
 	public String toString()
 	{
-		final StringBuilder builder = new StringBuilder(getClass().getName());
+		final StringBuilder builder = new StringBuilder(getClass().getSimpleName());
 		builder.append("[").append(this.status);
-		builder.append(" ").append(suggestedLocations);
+		builder.append(" ").append(suggestedLocations.size()).append(suggestedLocations);
 		builder.append("]");
 		return builder.toString();
 	}

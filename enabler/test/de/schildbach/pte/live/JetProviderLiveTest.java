@@ -49,7 +49,7 @@ public class JetProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "1055"), 0, 0);
 
-		System.out.println(result.status + "  " + result.stations.size() + "  " + result.stations);
+		print(result);
 	}
 
 	@Test
@@ -94,8 +94,8 @@ public class JetProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "1055", null, null), null, new Location(LocationType.STATION,
 				"90010", null, null), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 	}
 }

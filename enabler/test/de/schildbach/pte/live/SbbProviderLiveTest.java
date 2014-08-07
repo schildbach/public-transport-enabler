@@ -49,7 +49,7 @@ public class SbbProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "8500010"), 0, 0);
 
-		System.out.println(result.status + "  " + result.stations.size() + "  " + result.stations);
+		print(result);
 	}
 
 	@Test
@@ -105,9 +105,9 @@ public class SbbProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8503000", null, "Zürich HB"), null, new Location(
 				LocationType.STATION, "8507785", null, "Bern, Hauptbahnhof"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 	}
 
 	@Test
@@ -116,9 +116,9 @@ public class SbbProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8587210", null, "Schocherswil, Alte Post"), null,
 				new Location(LocationType.STATION, "8592972", null, "Laconnex, Mollach"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 	}
 
 	@Test
@@ -127,9 +127,9 @@ public class SbbProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 46689354, 7683444, null, "Spiez, Seestraße 62"), null,
 				new Location(LocationType.ADDRESS, null, 47133169, 8767425, null, "Einsiedeln, Erlenmoosweg 24"), new Date(), true, Product.ALL,
 				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 	}
 
 	@Test
@@ -138,8 +138,8 @@ public class SbbProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 47438595, 8437369, null,
 				"Dorfstrasse 10, Dällikon, Schweiz"), null, new Location(LocationType.STATION, "8500010", null, "Basel"), new Date(), true,
 				Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 	}
 }

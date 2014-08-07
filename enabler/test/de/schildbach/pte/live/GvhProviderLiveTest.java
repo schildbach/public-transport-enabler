@@ -114,7 +114,7 @@ public class GvhProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "hann"), null, new Location(LocationType.ANY, null,
 				null, "laat"), new Date(), true, Product.ALL, WalkSpeed.FAST, Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 	}
 
 	@Test
@@ -123,7 +123,7 @@ public class GvhProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "25000031", null, "Hannover Hauptbahnhof"), null, new Location(
 				LocationType.STATION, "25001141", null, "Hannover Bismarckstraße"), new Date(), true, Product.ALL, WalkSpeed.FAST,
 				Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);
 
@@ -131,19 +131,19 @@ public class GvhProviderLiveTest extends AbstractProviderLiveTest
 			return;
 
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 
 		if (!laterResult.context.canQueryLater())
 			return;
 
 		final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
-		System.out.println(later2Result);
+		print(later2Result);
 
 		if (!later2Result.context.canQueryEarlier())
 			return;
 
 		final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
-		System.out.println(earlierResult);
+		print(earlierResult);
 	}
 
 	@Test
@@ -152,9 +152,9 @@ public class GvhProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, 53069619, 8799202, null, "bremen, neustadtswall 12"), null,
 				new Location(LocationType.ADDRESS, null, 53104124, 8788575, null, "Bremen Glücksburger Straße 37"), new Date(), true, Product.ALL,
 				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 	}
 
 	@Test
@@ -163,8 +163,8 @@ public class GvhProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 53622859, 10133545, null,
 				"Zamenhofweg 14, 22159 Hamburg, Deutschland"), null, new Location(LocationType.ADDRESS, null, 53734260, 9674990, null,
 				"Lehmkuhlen 5, 25337 Elmshorn, Deutschland"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 	}
 }

@@ -105,7 +105,7 @@ public class WienProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "60200657", 48200756, 16369001, "Wien", "Karlsplatz"), null,
 				new Location(LocationType.STATION, "60201094", 48198612, 16367719, "Wien", "Resselgasse"), new Date(), true, Product.ALL,
 				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);
 
@@ -113,19 +113,19 @@ public class WienProviderLiveTest extends AbstractProviderLiveTest
 			return;
 
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 
 		if (!laterResult.context.canQueryLater())
 			return;
 
 		final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
-		System.out.println(later2Result);
+		print(later2Result);
 
 		if (!later2Result.context.canQueryEarlier())
 			return;
 
 		final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
-		System.out.println(earlierResult);
+		print(earlierResult);
 	}
 
 	@Test
@@ -133,8 +133,8 @@ public class WienProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 48180281, 16333551), null, new Location(
 				LocationType.ADDRESS, null, 48240452, 16444788), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 	}
 }

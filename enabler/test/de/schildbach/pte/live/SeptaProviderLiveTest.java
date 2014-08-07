@@ -89,9 +89,9 @@ public class SeptaProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "1021532", null, "30th St Station"), null, new Location(
 				LocationType.STATION, "1001392", null, "15th St Station"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 	}
 
 	@Test
@@ -100,8 +100,8 @@ public class SeptaProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult result = queryTrips(
 				new Location(LocationType.ADDRESS, null, 40015670, -75209400, "Philadelphia 19127", "3601 Main St"), null, new Location(
 						LocationType.STATION, "2090227", null, "Main Street"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 	}
 }

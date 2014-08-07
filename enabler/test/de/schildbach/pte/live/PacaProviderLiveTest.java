@@ -72,7 +72,7 @@ public class PacaProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "61088", null, "Eganaude"), null, new Location(
 				LocationType.STATION, "58617", null, "Place de Gaulle"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);
 
@@ -80,61 +80,61 @@ public class PacaProviderLiveTest extends AbstractProviderLiveTest
 			return;
 
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 
 		if (!laterResult.context.canQueryLater())
 			return;
 
 		final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
-		System.out.println(later2Result);
+		print(later2Result);
 
 		if (!later2Result.context.canQueryLater())
 			return;
 
 		final QueryTripsResult later3Result = queryMoreTrips(later2Result.context, true);
-		System.out.println(later3Result);
+		print(later3Result);
 
 		if (!later3Result.context.canQueryLater())
 			return;
 
 		final QueryTripsResult later4Result = queryMoreTrips(later3Result.context, true);
-		System.out.println(later4Result);
+		print(later4Result);
 
 		if (!later4Result.context.canQueryLater())
 			return;
 
 		final QueryTripsResult later5Result = queryMoreTrips(later4Result.context, true);
-		System.out.println(later5Result);
+		print(later5Result);
 
 		if (!later5Result.context.canQueryLater())
 			return;
 
 		final QueryTripsResult later6Result = queryMoreTrips(later5Result.context, true);
-		System.out.println(later6Result);
+		print(later6Result);
 
 		if (!result.context.canQueryEarlier())
 			return;
 
 		final QueryTripsResult earlierResult = queryMoreTrips(result.context, false);
-		System.out.println(earlierResult);
+		print(earlierResult);
 
 		if (!earlierResult.context.canQueryEarlier())
 			return;
 
 		final QueryTripsResult earlier2Result = queryMoreTrips(earlierResult.context, false);
-		System.out.println(earlier2Result);
+		print(earlier2Result);
 
 		if (!earlier2Result.context.canQueryEarlier())
 			return;
 
 		final QueryTripsResult earlier3Result = queryMoreTrips(earlier2Result.context, false);
-		System.out.println(earlier3Result);
+		print(earlier3Result);
 
 		if (!earlier3Result.context.canQueryEarlier())
 			return;
 
 		final QueryTripsResult earlier4Result = queryMoreTrips(earlier3Result.context, false);
-		System.out.println(earlier4Result);
+		print(earlier4Result);
 	}
 
 	@Test
@@ -143,7 +143,7 @@ public class PacaProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "68629", 43441167, 5223055, "MARSEILLE", "Aeroport Hall 3 4"),
 				null, new Location(LocationType.STATION, "61088", 43623140, 7057545, "BIOT", "Eganaude"), new Date(), true, Product.ALL,
 				WalkSpeed.NORMAL, Accessibility.BARRIER_FREE);
-		System.out.println(result);
+		print(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);
 
@@ -151,7 +151,7 @@ public class PacaProviderLiveTest extends AbstractProviderLiveTest
 			return;
 
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 	}
 
 	@Test
@@ -159,7 +159,7 @@ public class PacaProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "Biot, Templiers!"), null, new Location(
 				LocationType.ANY, null, null, "Eganaude!"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 	}
 
 	@Test
@@ -167,7 +167,7 @@ public class PacaProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.POI, "30455", 0, 0, "CANNES", "Cannes"), null, new Location(
 				LocationType.POI, "30514", 0, 0, "NICE", "Nice"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);
 
@@ -175,6 +175,6 @@ public class PacaProviderLiveTest extends AbstractProviderLiveTest
 			return;
 
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 	}
 }

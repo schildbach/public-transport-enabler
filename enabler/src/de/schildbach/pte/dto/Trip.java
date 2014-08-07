@@ -317,7 +317,7 @@ public final class Trip implements Serializable
 		@Override
 		public String toString()
 		{
-			final StringBuilder builder = new StringBuilder(getClass().getName() + "[");
+			final StringBuilder builder = new StringBuilder(getClass().getSimpleName() + "[");
 			builder.append("line=").append(line);
 			if (destination != null)
 			{
@@ -357,7 +357,7 @@ public final class Trip implements Serializable
 		@Override
 		public String toString()
 		{
-			final StringBuilder builder = new StringBuilder(getClass().getName() + "[");
+			final StringBuilder builder = new StringBuilder(getClass().getSimpleName() + "[");
 			builder.append("type=").append(type);
 			builder.append(",");
 			builder.append("departure=").append(departure);

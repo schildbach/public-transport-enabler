@@ -47,4 +47,14 @@ public final class NearbyStationsResult implements Serializable
 		this.status = status;
 		this.stations = null;
 	}
+
+	@Override
+	public String toString()
+	{
+		final StringBuilder builder = new StringBuilder(getClass().getSimpleName());
+		builder.append("[").append(this.status);
+		builder.append(" ").append(stations.size()).append(stations);
+		builder.append("]");
+		return builder.toString();
+	}
 }

@@ -123,7 +123,7 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "3000001", null, "Hauptwache"), null, new Location(
 				LocationType.STATION, "3000912", null, "Südbahnhof"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);
 
@@ -131,61 +131,61 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest
 			return;
 
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 
 		if (!laterResult.context.canQueryLater())
 			return;
 
 		final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
-		System.out.println(later2Result);
+		print(later2Result);
 
 		if (!later2Result.context.canQueryLater())
 			return;
 
 		final QueryTripsResult later3Result = queryMoreTrips(later2Result.context, true);
-		System.out.println(later3Result);
+		print(later3Result);
 
 		if (!later3Result.context.canQueryLater())
 			return;
 
 		final QueryTripsResult later4Result = queryMoreTrips(later3Result.context, true);
-		System.out.println(later4Result);
+		print(later4Result);
 
 		if (!later4Result.context.canQueryLater())
 			return;
 
 		final QueryTripsResult later5Result = queryMoreTrips(later4Result.context, true);
-		System.out.println(later5Result);
+		print(later5Result);
 
 		if (!later5Result.context.canQueryLater())
 			return;
 
 		final QueryTripsResult later6Result = queryMoreTrips(later5Result.context, true);
-		System.out.println(later6Result);
+		print(later6Result);
 
 		if (!result.context.canQueryEarlier())
 			return;
 
 		final QueryTripsResult earlierResult = queryMoreTrips(result.context, false);
-		System.out.println(earlierResult);
+		print(earlierResult);
 
 		if (!earlierResult.context.canQueryEarlier())
 			return;
 
 		final QueryTripsResult earlier2Result = queryMoreTrips(earlierResult.context, false);
-		System.out.println(earlier2Result);
+		print(earlier2Result);
 
 		if (!earlier2Result.context.canQueryEarlier())
 			return;
 
 		final QueryTripsResult earlier3Result = queryMoreTrips(earlier2Result.context, false);
-		System.out.println(earlier3Result);
+		print(earlier3Result);
 
 		if (!earlier3Result.context.canQueryEarlier())
 			return;
 
 		final QueryTripsResult earlier4Result = queryMoreTrips(earlier3Result.context, false);
-		System.out.println(earlier4Result);
+		print(earlier4Result);
 	}
 
 	@Test
@@ -194,9 +194,9 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "2200007", null, "Kassel Wilhelmshöhe"), null, new Location(
 				LocationType.STATION, "2200278", null, "Kassel Wilhelmshöher Weg"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 	}
 
 	@Test
@@ -205,7 +205,7 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "3029079", 50017679, 8229480, "Mainz", "An den Dünen"), null,
 				new Location(LocationType.STATION, "3013508", 50142890, 8895203, "Hanau", "Beethovenplatz"), new Date(), true, Product.ALL,
 				WalkSpeed.NORMAL, Accessibility.BARRIER_FREE);
-		System.out.println(result);
+		print(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);
 
@@ -213,7 +213,7 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest
 			return;
 
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 	}
 
 	@Test
@@ -221,7 +221,7 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "Frankfurt Bockenheimer Warte!"), null, new Location(
 				LocationType.ANY, null, null, "Frankfurt Hauptbahnhof!"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		System.out.println(result);
+		print(result);
 	}
 
 	@Test
@@ -230,13 +230,13 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 50119563, 8697044, null,
 				"Hegelstrasse, 60316 Frankfurt am Main"), null, new Location(LocationType.ADDRESS, null, 50100364, 8615193, null,
 				"Mainzer Landstrasse, Frankfurt"), new Date(1378368840000l), true, Product.ALL, null, null);
-		System.out.println(result);
+		print(result);
 
 		if (!result.context.canQueryLater())
 			return;
 
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 	}
 
 	@Test
@@ -245,12 +245,12 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "3000909", 50094052, 8690923, null, "F Brauerei"), null,
 				new Location(LocationType.STATION, "3001201", 50119950, 8653924, null, "F Bockenheimer Warte"), new Date(1378368840000l), true,
 				Product.ALL, null, null);
-		System.out.println(result);
+		print(result);
 
 		if (!result.context.canQueryLater())
 			return;
 
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		System.out.println(laterResult);
+		print(laterResult);
 	}
 }
