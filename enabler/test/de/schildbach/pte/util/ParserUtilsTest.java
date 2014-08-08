@@ -99,4 +99,11 @@ public class ParserUtilsTest
 	{
 		assertTrue(ParserUtils.testExpired("<h2>Ihre Verbindungskennung ist nicht mehr gültig.</h2>"));
 	}
+
+	@Test
+	public void internalError() throws Exception
+	{
+		assertTrue(ParserUtils
+				.testInternalError("<?xml version=\"1.0\"?>     <!DOCTYPE html PUBLIC \"-//WAPFORUM//DTD XHTML Mobile 1.0//EN\"    \"http://www.wapforum.org/DTD/xhtml-mobile10.dtd\">      <html xmlns=\"http://www.w3.org/1999/xhtml\">      <head>        <title>          Internal error in gateway     </title>       </head>       <body>        <h1>          Internal error in gateway     </h1>       </body>      </html>"));
+	}
 }

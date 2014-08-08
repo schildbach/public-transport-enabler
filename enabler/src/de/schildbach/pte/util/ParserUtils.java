@@ -170,6 +170,9 @@ public final class ParserUtils
 				if (testExpired(firstChars))
 					throw new SessionExpiredException();
 
+				if (testInternalError(firstChars))
+					throw new InternalErrorException(url, new InputStreamReader(is, requestEncoding));
+
 				if (sessionCookieName != null)
 				{
 					for (final Map.Entry<String, List<String>> entry : connection.getHeaderFields().entrySet())
@@ -294,6 +297,18 @@ public final class ParserUtils
 		// check for expired session
 		final Matcher mSessionExpired = P_EXPIRED.matcher(content);
 		if (mSessionExpired.find())
+			return true;
+
+		return false;
+	}
+
+	private static final Pattern P_INTERNAL_ERROR = Pattern.compile(">\\s*(Internal error in gateway)\\s*<");
+
+	public static boolean testInternalError(final String content)
+	{
+		// check for internal error
+		final Matcher m = P_INTERNAL_ERROR.matcher(content);
+		if (m.find())
 			return true;
 
 		return false;
