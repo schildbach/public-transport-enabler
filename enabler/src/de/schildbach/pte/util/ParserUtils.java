@@ -263,6 +263,8 @@ public final class ParserUtils
 		is.mark(PEEK_SIZE);
 		final byte[] firstBytes = new byte[PEEK_SIZE];
 		final int read = is.read(firstBytes);
+		if (read == -1)
+			return "";
 		is.reset();
 		return new String(firstBytes, 0, read).replaceAll("\\p{C}", "");
 	}
