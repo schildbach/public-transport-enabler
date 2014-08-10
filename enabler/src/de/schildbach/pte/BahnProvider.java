@@ -34,6 +34,8 @@ public final class BahnProvider extends AbstractHafasProvider
 	public BahnProvider()
 	{
 		super(API_BASE + "bhftafel.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 14);
+
+		setStationBoardHasStationTable(false);
 	}
 
 	public NetworkId id()

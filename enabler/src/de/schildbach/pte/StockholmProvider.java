@@ -40,7 +40,8 @@ public class StockholmProvider extends AbstractHafasProvider
 		super(API_BASE + "stboard.exe/sn", API_BASE + "ajax-getstop.exe/sny", API_BASE + "query.exe/sn", 7);
 
 		setStyles(STYLES);
-		setCanDoEquivs(false);
+		setStationBoardHasStationTable(false);
+		setStationBoardCanDoEquivs(false);
 	}
 
 	public NetworkId id()

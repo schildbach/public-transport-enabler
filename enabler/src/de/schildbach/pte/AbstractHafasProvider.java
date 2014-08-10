@@ -91,9 +91,11 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	private Charset jsonGetStopsEncoding;
 	private Charset jsonNearbyStationsEncoding;
 	private boolean dominantPlanStopTime = false;
-	private boolean canDoEquivs = true;
 	private boolean useIso8601 = false;
 	private String extXmlEndpoint = null;
+	private boolean stationBoardHasStationTable = true;
+	private boolean stationBoardHasLocation = false;
+	private boolean stationBoardCanDoEquivs = true;
 
 	private static class Context implements QueryTripsContext
 	{
@@ -186,11 +188,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		this.jsonNearbyStationsEncoding = jsonNearbyStationsEncoding;
 	}
 
-	protected void setCanDoEquivs(final boolean canDoEquivs)
-	{
-		this.canDoEquivs = canDoEquivs;
-	}
-
 	protected void setUseIso8601(final boolean useIso8601)
 	{
 		this.useIso8601 = useIso8601;
@@ -199,6 +196,21 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	protected void setExtXmlEndpoint(final String extXmlEndpoint)
 	{
 		this.extXmlEndpoint = extXmlEndpoint;
+	}
+
+	protected void setStationBoardHasStationTable(final boolean stationBoardHasStationTable)
+	{
+		this.stationBoardHasStationTable = stationBoardHasStationTable;
+	}
+
+	protected void setStationBoardHasLocation(final boolean stationBoardHasLocation)
+	{
+		this.stationBoardHasLocation = stationBoardHasLocation;
+	}
+
+	protected void setStationBoardCanDoEquivs(final boolean canDoEquivs)
+	{
+		this.stationBoardCanDoEquivs = canDoEquivs;
 	}
 
 	protected final String allProductsString()
@@ -428,7 +440,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		final StringBuilder parameters = new StringBuilder();
 		parameters.append("?productsFilter=").append(allProductsString());
 		parameters.append("&boardType=dep");
-		if (canDoEquivs)
+		if (stationBoardCanDoEquivs)
 			parameters.append("&disableEquivs=yes"); // don't use nearby stations
 		parameters.append("&maxJourneys=").append(maxDepartures > 0 ? maxDepartures : DEFAULT_MAX_DEPARTURES);
 		parameters.append("&start=yes");
@@ -491,14 +503,15 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				throw new IllegalArgumentException("unknown error " + code + ", " + text);
 			}
 
-			if (XmlPullUtil.test(pp, "StationTable"))
-			{
-				XmlPullUtil.enter(pp, "StationTable");
-			}
-
 			String[] stationPlaceAndName = null;
-			if (XmlPullUtil.test(pp, "St"))
+
+			if (stationBoardHasStationTable)
+				XmlPullUtil.enter(pp, "StationTable");
+
+			if (stationBoardHasLocation)
 			{
+				XmlPullUtil.require(pp, "St");
+
 				final String evaId = XmlPullUtil.attr(pp, "evaId");
 				if (evaId != null)
 				{
@@ -532,7 +545,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				// TODO is_reachable
 				// TODO disableTrainInfo
 
-				final boolean isEquivStation = canDoEquivs && depStation != null;
+				final boolean isEquivStation = stationBoardCanDoEquivs && depStation != null;
 
 				if (!isEquivStation && !"cancel".equals(eDelay))
 				{
@@ -648,6 +661,11 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 				XmlPullUtil.requireSkip(pp, "Journey");
 			}
+
+			if (stationBoardHasStationTable)
+				XmlPullUtil.exit(pp, "StationTable");
+
+			XmlPullUtil.requireEndDocument(pp);
 
 			result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, normalizedStationId,
 					stationPlaceAndName != null ? stationPlaceAndName[0] : null, stationPlaceAndName != null ? stationPlaceAndName[1] : null),

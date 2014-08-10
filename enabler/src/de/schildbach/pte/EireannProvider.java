@@ -43,6 +43,8 @@ public class EireannProvider extends AbstractHafasProvider
 	public EireannProvider()
 	{
 		super(API_BASE + "stboard.exe/en", API_BASE + "ajax-getstop.exe/en", API_BASE + "query.exe/en", 4);
+
+		setStationBoardHasStationTable(false);
 	}
 
 	public NetworkId id()

@@ -69,6 +69,13 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
+	public void queryDeparturesInvalidStation() throws Exception
+	{
+		final QueryDeparturesResult resultLive = provider.queryDepartures("999999", 0, false);
+		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, resultLive.status);
+	}
+
+	@Test
 	public void suggestLocationsUmlaut() throws Exception
 	{
 		final SuggestLocationsResult result = provider.suggestLocations("Güntzelstr. (U)");

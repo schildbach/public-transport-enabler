@@ -39,6 +39,7 @@ public class SncbProvider extends AbstractHafasProvider
 
 		setJsonGetStopsEncoding(UTF_8);
 		setJsonNearbyStationsEncoding(UTF_8);
+		setStationBoardHasLocation(true);
 	}
 
 	public NetworkId id()

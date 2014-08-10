@@ -67,6 +67,12 @@ public final class XmlPullUtil
 		pp.next();
 	}
 
+	public static void exit(final XmlPullParser pp, final String tagName) throws XmlPullParserException, IOException
+	{
+		pp.require(XmlPullParser.END_TAG, null, tagName);
+		pp.next();
+	}
+
 	private static void skipToEnd(final XmlPullParser pp) throws XmlPullParserException, IOException
 	{
 		while (pp.getEventType() != XmlPullParser.END_TAG)
@@ -243,5 +249,13 @@ public final class XmlPullUtil
 		pp.require(XmlPullParser.END_TAG, namespace, name);
 
 		return text;
+	}
+
+	public static void requireEndDocument(final XmlPullParser pp) throws XmlPullParserException, IOException
+	{
+		skipWhitespace(pp);
+
+		if (pp.getEventType() != XmlPullParser.END_DOCUMENT)
+			throw new IllegalStateException("expecting end of document: " + pp.getPositionDescription());
 	}
 }
