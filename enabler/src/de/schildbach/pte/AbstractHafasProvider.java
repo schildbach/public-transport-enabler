@@ -418,12 +418,12 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
-		uri.append(xmlQueryDeparturesParameters(stationId, maxDepartures));
+		uri.append(xmlStationBoardParameters(stationId, maxDepartures));
 
-		return xmlQueryDepartures(uri.toString(), stationId);
+		return xmlStationBoard(uri.toString(), stationId);
 	}
 
-	protected StringBuilder xmlQueryDeparturesParameters(final String stationId, final int maxDepartures)
+	protected StringBuilder xmlStationBoardParameters(final String stationId, final int maxDepartures)
 	{
 		final StringBuilder parameters = new StringBuilder();
 		parameters.append("?productsFilter=").append(allProductsString());
@@ -440,9 +440,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		return parameters;
 	}
 
-	private static final Pattern P_XML_QUERY_DEPARTURES_DELAY = Pattern.compile("(?:-|k\\.A\\.?|cancel|\\+?\\s*(\\d+))");
+	private static final Pattern P_XML_STATION_BOARD_DELAY = Pattern.compile("(?:-|k\\.A\\.?|cancel|\\+?\\s*(\\d+))");
 
-	protected QueryDeparturesResult xmlQueryDepartures(final String uri, final String stationId) throws IOException
+	protected final QueryDeparturesResult xmlStationBoard(final String uri, final String stationId) throws IOException
 	{
 		final String normalizedStationId = normalizeStationId(stationId);
 
@@ -555,7 +555,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					}
 					else if (delay != null)
 					{
-						final Matcher m = P_XML_QUERY_DEPARTURES_DELAY.matcher(delay);
+						final Matcher m = P_XML_STATION_BOARD_DELAY.matcher(delay);
 						if (m.matches())
 						{
 							if (m.group(1) != null)
