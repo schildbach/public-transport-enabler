@@ -412,11 +412,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				throw new RuntimeException("unknown nameState '" + nameState + "' on " + uri);
 			}
 
-			XmlPullUtil.exit(pp, "itdOdvName");
+			XmlPullUtil.skipExit(pp, "itdOdvName");
 
-			XmlPullUtil.exit(pp, "itdOdv");
+			XmlPullUtil.skipExit(pp, "itdOdv");
 
-			XmlPullUtil.exit(pp, "itdStopFinderRequest");
+			XmlPullUtil.skipExit(pp, "itdStopFinderRequest");
 
 			return new SuggestLocationsResult(header, locations);
 		}
@@ -493,12 +493,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					XmlPullUtil.valueTag(pp, "pid");
 					final Point coord = coordStrToPoint(XmlPullUtil.optValueTag(pp, "c", null));
 
-					XmlPullUtil.exit(pp, "r");
+					XmlPullUtil.skipExit(pp, "r");
 
 					final String qal = XmlPullUtil.optValueTag(pp, "qal", null);
 					final int quality = qal != null ? Integer.parseInt(qal) : 0;
 
-					XmlPullUtil.exit(pp, "p");
+					XmlPullUtil.skipExit(pp, "p");
 
 					final Location location = new Location(type, type == LocationType.STATION ? id : null, coord != null ? coord.lat : 0,
 							coord != null ? coord.lon : 0, place, name);
@@ -506,7 +506,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					locations.add(locationAndQuality);
 				}
 
-				XmlPullUtil.exit(pp, "sf");
+				XmlPullUtil.skipExit(pp, "sf");
 			}
 			else
 			{
@@ -568,7 +568,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			XmlPullUtil.enter(pp, "itdCoordInfo");
 
 			XmlPullUtil.enter(pp, "coordInfoRequest");
-			XmlPullUtil.exit(pp, "coordInfoRequest");
+			XmlPullUtil.skipExit(pp, "coordInfoRequest");
 
 			final List<Location> stations = new ArrayList<Location>();
 
@@ -590,12 +590,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					// FIXME this is always only one coordinate
 					final Point coord = processItdPathCoordinates(pp).get(0);
 
-					XmlPullUtil.exit(pp, "coordInfoItem");
+					XmlPullUtil.skipExit(pp, "coordInfoItem");
 
 					stations.add(new Location(LocationType.STATION, id, coord.lat, coord.lon, place, name));
 				}
 
-				XmlPullUtil.exit(pp, "coordInfoItemList");
+				XmlPullUtil.skipExit(pp, "coordInfoItemList");
 			}
 
 			return new NearbyStationsResult(header, stations);
@@ -637,7 +637,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			XmlPullUtil.enter(pp, "ci");
 
 			XmlPullUtil.enter(pp, "request");
-			XmlPullUtil.exit(pp, "request");
+			XmlPullUtil.skipExit(pp, "request");
 
 			final List<Location> stations = new ArrayList<Location>();
 
@@ -665,13 +665,13 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 					stations.add(new Location(LocationType.STATION, id, coord.lat, coord.lon, place, name));
 
-					XmlPullUtil.exit(pp, "pi");
+					XmlPullUtil.skipExit(pp, "pi");
 				}
 
-				XmlPullUtil.exit(pp, "pis");
+				XmlPullUtil.skipExit(pp, "pis");
 			}
 
-			XmlPullUtil.exit(pp, "ci");
+			XmlPullUtil.skipExit(pp, "ci");
 
 			return new NearbyStationsResult(header, stations);
 		}
@@ -705,7 +705,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			if (XmlPullUtil.test(pp, "odvPlaceElem"))
 				place = normalizeLocationName(XmlPullUtil.valueTag(pp, "odvPlaceElem"));
 		}
-		XmlPullUtil.exit(pp, "itdOdvPlace");
+		XmlPullUtil.skipExit(pp, "itdOdvPlace");
 
 		return place;
 	}
@@ -919,7 +919,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				final Location ownLocation = processOdvNameElem(pp, place);
 				final Location ownStation = ownLocation.type == LocationType.STATION ? ownLocation : null;
 
-				XmlPullUtil.exit(pp, "itdOdvName");
+				XmlPullUtil.skipExit(pp, "itdOdvName");
 
 				final List<Location> stations = new ArrayList<Location>();
 
@@ -933,10 +933,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						if (!stations.contains(newStation))
 							stations.add(newStation);
 					}
-					XmlPullUtil.exit(pp, "itdOdvAssignedStops");
+					XmlPullUtil.skipExit(pp, "itdOdvAssignedStops");
 				}
 
-				XmlPullUtil.exit(pp, "itdOdv");
+				XmlPullUtil.skipExit(pp, "itdOdv");
 
 				if (ownStation != null && !stations.contains(ownStation))
 					stations.add(ownStation);
@@ -1460,7 +1460,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				final Location location = processOdvNameElem(pp, place);
 				result.stationDepartures.add(new StationDepartures(location, new LinkedList<Departure>(), new LinkedList<LineDestination>()));
 
-				XmlPullUtil.exit(pp, "itdOdvName");
+				XmlPullUtil.skipExit(pp, "itdOdvName");
 
 				if (XmlPullUtil.test(pp, "itdOdvAssignedStops"))
 				{
@@ -1472,10 +1472,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							result.stationDepartures.add(new StationDepartures(assignedLocation, new LinkedList<Departure>(),
 									new LinkedList<LineDestination>()));
 					}
-					XmlPullUtil.exit(pp, "itdOdvAssignedStops");
+					XmlPullUtil.skipExit(pp, "itdOdvAssignedStops");
 				}
 
-				XmlPullUtil.exit(pp, "itdOdv");
+				XmlPullUtil.skipExit(pp, "itdOdv");
 
 				if (XmlPullUtil.test(pp, "itdDateTime"))
 					XmlPullUtil.next(pp);
@@ -1521,7 +1521,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						if (!assignedStationDepartures.lines.contains(line))
 							assignedStationDepartures.lines.add(line);
 					}
-					XmlPullUtil.exit(pp, "itdServingLines");
+					XmlPullUtil.skipExit(pp, "itdServingLines");
 				}
 				else
 				{
@@ -1593,7 +1593,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						if (isRealtime && !predictedDepartureTime.isSet(Calendar.HOUR_OF_DAY))
 							predictedDepartureTime.setTimeInMillis(plannedDepartureTime.getTimeInMillis());
 
-						XmlPullUtil.exit(pp, "itdDeparture");
+						XmlPullUtil.skipExit(pp, "itdDeparture");
 
 						final Departure departure = new Departure(plannedDepartureTime.getTime(),
 								predictedDepartureTime.isSet(Calendar.HOUR_OF_DAY) ? predictedDepartureTime.getTime() : null, line, position,
@@ -1601,7 +1601,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						assignedStationDepartures.departures.add(departure);
 					}
 
-					XmlPullUtil.exit(pp, "itdDepartureList");
+					XmlPullUtil.skipExit(pp, "itdDepartureList");
 				}
 				else
 				{
@@ -1681,7 +1681,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					final String assignedId = XmlPullUtil.valueTag(pp, "id");
 					XmlPullUtil.valueTag(pp, "a");
 					final Position position = new Position(XmlPullUtil.optValueTag(pp, "pl", null));
-					XmlPullUtil.exit(pp, "r");
+					XmlPullUtil.skipExit(pp, "r");
 
 					/* final Point positionCoordinate = */coordStrToPoint(XmlPullUtil.optValueTag(pp, "c", null));
 
@@ -1699,10 +1699,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							predictedDepartureTime.isSet(Calendar.HOUR_OF_DAY) ? predictedDepartureTime.getTime() : null, lineDestination.line,
 							position, lineDestination.destination, null, null));
 
-					XmlPullUtil.exit(pp, "dp");
+					XmlPullUtil.skipExit(pp, "dp");
 				}
 
-				XmlPullUtil.exit(pp, "dps");
+				XmlPullUtil.skipExit(pp, "dps");
 
 				return result;
 			}
@@ -1786,7 +1786,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			line = new Line(lineId, lineLabel, lineStyle(network, lineLabel));
 		}
 
-		XmlPullUtil.exit(pp, "m");
+		XmlPullUtil.skipExit(pp, "m");
 
 		return new LineDestination(line, destination);
 	}
@@ -1800,7 +1800,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		final String lineIdPr = XmlPullUtil.valueTag(pp, "pr");
 		final String lineIdDct = XmlPullUtil.valueTag(pp, "dct");
 		final String lineIdNe = XmlPullUtil.valueTag(pp, "ne");
-		XmlPullUtil.exit(pp, "dv");
+		XmlPullUtil.skipExit(pp, "dv");
 
 		return lineIdNe + ":" + lineIdLi + ":" + lineIdSu + ":" + lineIdDct + ":" + lineIdPr;
 	}
@@ -1821,7 +1821,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			ParserUtils.parseIsoTime(predictedDepartureTime, XmlPullUtil.valueTag(pp, "rt"));
 		}
 
-		XmlPullUtil.exit(pp, "st");
+		XmlPullUtil.skipExit(pp, "st");
 	}
 
 	private StationDepartures findStationDepartures(final List<StationDepartures> stationDepartures, final String id)
@@ -1876,7 +1876,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		final boolean success = processItdDate(pp, calendar);
 		if (success)
 			processItdTime(pp, calendar);
-		XmlPullUtil.exit(pp);
+		XmlPullUtil.skipExit(pp);
 
 		return success;
 	}
@@ -1937,7 +1937,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			if (!pp.isEmptyElementTag())
 			{
 				XmlPullUtil.enter(pp, "itdTrain");
-				XmlPullUtil.exit(pp, "itdTrain");
+				XmlPullUtil.skipExit(pp, "itdTrain");
 			}
 			else
 			{
@@ -1965,7 +1965,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		XmlPullUtil.require(pp, "motDivaParams");
 		final String divaNetwork = XmlPullUtil.attr(pp, "network");
 
-		XmlPullUtil.exit(pp, "itdServingLine");
+		XmlPullUtil.skipExit(pp, "itdServingLine");
 
 		final String trainType = ParserUtils.firstNotEmpty(slTrainType, itdTrainType);
 		final String trainName = ParserUtils.firstNotEmpty(slTrainName, itdTrainName);
@@ -2342,8 +2342,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				else
 					throw new IllegalStateException("unknown usage: " + usage);
 			}
-			XmlPullUtil.exit(pp, "itdOdvName");
-			XmlPullUtil.exit(pp, "itdOdv");
+			XmlPullUtil.skipExit(pp, "itdOdvName");
+			XmlPullUtil.skipExit(pp, "itdOdv");
 		}
 
 		if (ambiguousFrom != null || ambiguousTo != null || ambiguousVia != null)
@@ -2364,14 +2364,14 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				else
 					throw new IllegalStateException("unknown message: " + message);
 			}
-			XmlPullUtil.exit(pp, "itdDate");
+			XmlPullUtil.skipExit(pp, "itdDate");
 		}
 		else
 		{
 			XmlPullUtil.next(pp);
 		}
-		XmlPullUtil.exit(pp, "itdDateTime");
-		XmlPullUtil.exit(pp, "itdTripDateTime");
+		XmlPullUtil.skipExit(pp, "itdDateTime");
+		XmlPullUtil.skipExit(pp, "itdTripDateTime");
 
 		XmlPullUtil.requireSkip(pp, "itdTripOptions");
 
@@ -2438,7 +2438,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						{
 							departureTargetTime = null;
 						}
-						XmlPullUtil.exit(pp, "itdPoint");
+						XmlPullUtil.skipExit(pp, "itdPoint");
 
 						XmlPullUtil.test(pp, "itdPoint");
 						if (!"arrival".equals(pp.getAttributeValue(null, "usage")))
@@ -2462,7 +2462,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						{
 							arrivalTargetTime = null;
 						}
-						XmlPullUtil.exit(pp, "itdPoint");
+						XmlPullUtil.skipExit(pp, "itdPoint");
 
 						XmlPullUtil.test(pp, "itdMeansOfTransport");
 						final String productName = pp.getAttributeValue(null, "productName");
@@ -2471,7 +2471,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							final Trip.Individual.Type type = "Taxi".equals(productName) ? Trip.Individual.Type.TRANSFER : Trip.Individual.Type.WALK;
 
 							XmlPullUtil.enter(pp, "itdMeansOfTransport");
-							XmlPullUtil.exit(pp, "itdMeansOfTransport");
+							XmlPullUtil.skipExit(pp, "itdMeansOfTransport");
 
 							if (XmlPullUtil.test(pp, "itdStopSeq"))
 								XmlPullUtil.next(pp);
@@ -2502,7 +2502,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							// ignore
 
 							XmlPullUtil.enter(pp, "itdMeansOfTransport");
-							XmlPullUtil.exit(pp, "itdMeansOfTransport");
+							XmlPullUtil.skipExit(pp, "itdMeansOfTransport");
 						}
 						else if ("PT".equals(partialRouteType))
 						{
@@ -2534,7 +2534,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							final String divaDirection = XmlPullUtil.attr(pp, "direction");
 							final String divaProject = XmlPullUtil.attr(pp, "project");
 							final String lineId = divaNetwork + ':' + divaLine + ':' + divaSupplement + ':' + divaDirection + ':' + divaProject;
-							XmlPullUtil.exit(pp, "itdMeansOfTransport");
+							XmlPullUtil.skipExit(pp, "itdMeansOfTransport");
 
 							final Integer departureDelay;
 							final Integer arrivalDelay;
@@ -2572,7 +2572,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 												message = text;
 										}
 									}
-									XmlPullUtil.exit(pp, "itdInfoTextList");
+									XmlPullUtil.skipExit(pp, "itdInfoTextList");
 								}
 								else
 								{
@@ -2589,7 +2589,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 								final String infoLinkText = XmlPullUtil.valueTag(pp, "infoLinkText");
 								if (message == null)
 									message = infoLinkText;
-								XmlPullUtil.exit(pp, "infoLink");
+								XmlPullUtil.skipExit(pp, "infoLink");
 							}
 
 							List<Stop> intermediateStops = null;
@@ -2653,9 +2653,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 									intermediateStops.add(stop);
 
-									XmlPullUtil.exit(pp, "itdPoint");
+									XmlPullUtil.skipExit(pp, "itdPoint");
 								}
-								XmlPullUtil.exit(pp, "itdStopSeq");
+								XmlPullUtil.skipExit(pp, "itdStopSeq");
 
 								// remove first and last, because they are not intermediate
 								final int size = intermediateStops.size();
@@ -2684,14 +2684,14 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 									XmlPullUtil.enter(pp, "genAttrElem");
 									final String name = XmlPullUtil.valueTag(pp, "name");
 									final String value = XmlPullUtil.valueTag(pp, "value");
-									XmlPullUtil.exit(pp, "genAttrElem");
+									XmlPullUtil.skipExit(pp, "genAttrElem");
 
 									// System.out.println("genAttrElem: name='" + name + "' value='" + value + "'");
 
 									if ("PlanWheelChairAccess".equals(name) && "1".equals(value))
 										wheelChairAccess = true;
 								}
-								XmlPullUtil.exit(pp, "genAttrList");
+								XmlPullUtil.skipExit(pp, "genAttrList");
 							}
 
 							if (XmlPullUtil.test(pp, "nextDeps"))
@@ -2702,7 +2702,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 									processItdDateTime(pp, time);
 									/* final Date nextDepartureTime = */time.getTime();
 								}
-								XmlPullUtil.exit(pp, "nextDeps");
+								XmlPullUtil.skipExit(pp, "nextDeps");
 							}
 
 							final Set<Line.Attr> lineAttrs = new HashSet<Line.Attr>();
@@ -2722,10 +2722,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							throw new IllegalStateException("unknown type: '" + partialRouteType + "' '" + productName + "'");
 						}
 
-						XmlPullUtil.exit(pp, "itdPartialRoute");
+						XmlPullUtil.skipExit(pp, "itdPartialRoute");
 					}
 
-					XmlPullUtil.exit(pp, "itdPartialRouteList");
+					XmlPullUtil.skipExit(pp, "itdPartialRouteList");
 
 					final List<Fare> fares = new ArrayList<Fare>(2);
 					if (XmlPullUtil.test(pp, "itdFare"))
@@ -2763,16 +2763,16 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 											if (fare != null)
 												fares.add(fare);
 										}
-										XmlPullUtil.exit(pp, "itdGenericTicketList");
+										XmlPullUtil.skipExit(pp, "itdGenericTicketList");
 									}
-									XmlPullUtil.exit(pp, "itdSingleTicket");
+									XmlPullUtil.skipExit(pp, "itdSingleTicket");
 								}
 								else
 								{
 									XmlPullUtil.next(pp);
 								}
 							}
-							XmlPullUtil.exit(pp, "itdFare");
+							XmlPullUtil.skipExit(pp, "itdFare");
 						}
 						else
 						{
@@ -2780,7 +2780,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						}
 					}
 
-					XmlPullUtil.exit(pp, "itdRoute");
+					XmlPullUtil.skipExit(pp, "itdRoute");
 
 					final Trip trip = new Trip(id, firstDepartureLocation, lastArrivalLocation, legs, fares.isEmpty() ? null : fares, null,
 							numChanges);
@@ -2789,9 +2789,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						trips.add(trip);
 				}
 
-				XmlPullUtil.exit(pp, "itdRouteList");
+				XmlPullUtil.skipExit(pp, "itdRouteList");
 			}
-			XmlPullUtil.exit(pp, "itdItinerary");
+			XmlPullUtil.skipExit(pp, "itdItinerary");
 		}
 		else
 		{
@@ -2866,7 +2866,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							final Position position = new Position(XmlPullUtil.optValueTag(pp, "pl", null));
 							final String place = normalizeLocationName(XmlPullUtil.optValueTag(pp, "pc", null));
 							final Point coord = coordStrToPoint(XmlPullUtil.optValueTag(pp, "c", null));
-							XmlPullUtil.exit(pp, "r");
+							XmlPullUtil.skipExit(pp, "r");
 
 							final Location location;
 							if (id.equals("99999997") || id.equals("99999998"))
@@ -2876,7 +2876,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 								location = new Location(LocationType.STATION, id, coord != null ? coord.lat : 0, coord != null ? coord.lon : 0,
 										place, name);
 
-							XmlPullUtil.exit(pp, "p");
+							XmlPullUtil.skipExit(pp, "p");
 
 							if ("departure".equals(usage))
 							{
@@ -2899,7 +2899,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							}
 						}
 
-						XmlPullUtil.exit(pp, "ps");
+						XmlPullUtil.skipExit(pp, "ps");
 
 						final boolean isRealtime = XmlPullUtil.valueTag(pp, "realtime").equals("1");
 
@@ -2975,7 +2975,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 								}
 							}
 
-							XmlPullUtil.exit(pp, "pss");
+							XmlPullUtil.skipExit(pp, "pss");
 						}
 						else
 						{
@@ -2989,7 +2989,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						XmlPullUtil.requireSkip(pp, "ns");
 						// TODO messages
 
-						XmlPullUtil.exit(pp, "l");
+						XmlPullUtil.skipExit(pp, "l");
 
 						if (lineDestination.line == Line.FOOTWAY)
 						{
@@ -3012,7 +3012,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						}
 					}
 
-					XmlPullUtil.exit(pp, "ls");
+					XmlPullUtil.skipExit(pp, "ls");
 
 					XmlPullUtil.require(pp, "tcs");
 
@@ -3028,10 +3028,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						{
 							XmlPullUtil.enter(pp, "tc");
 							// TODO fares
-							XmlPullUtil.exit(pp, "tc");
+							XmlPullUtil.skipExit(pp, "tc");
 						}
 
-						XmlPullUtil.exit(pp, "tcs");
+						XmlPullUtil.skipExit(pp, "tcs");
 					}
 					else
 					{
@@ -3043,10 +3043,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					final Trip trip = new Trip(tripId, firstDepartureLocation, lastArrivalLocation, legs, fares, null, numChanges);
 					trips.add(trip);
 
-					XmlPullUtil.exit(pp, "tp");
+					XmlPullUtil.skipExit(pp, "tp");
 				}
 
-				XmlPullUtil.exit(pp, "ts");
+				XmlPullUtil.skipExit(pp, "ts");
 			}
 			else
 			{
@@ -3091,7 +3091,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			throw new IllegalStateException(pp.getPositionDescription());
 		}
 
-		XmlPullUtil.exit(pp, "itdPathCoordinates");
+		XmlPullUtil.skipExit(pp, "itdPathCoordinates");
 
 		return path;
 	}
@@ -3121,10 +3121,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			final int lat = Math.round(Float.parseFloat(XmlPullUtil.valueTag(pp, "y")));
 			path.add(new Point(lat, lon));
 
-			XmlPullUtil.exit(pp, "itdCoordinateBaseElem");
+			XmlPullUtil.skipExit(pp, "itdCoordinateBaseElem");
 		}
 
-		XmlPullUtil.exit(pp, "itdCoordinateBaseElemList");
+		XmlPullUtil.skipExit(pp, "itdCoordinateBaseElemList");
 
 		return path;
 	}
@@ -3166,10 +3166,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				fare = Float.parseFloat(value) * fareCorrectionFactor;
 			}
 
-			XmlPullUtil.exit(pp, "itdGenericTicket");
+			XmlPullUtil.skipExit(pp, "itdGenericTicket");
 		}
 
-		XmlPullUtil.exit(pp, "itdGenericTicketGroup");
+		XmlPullUtil.skipExit(pp, "itdGenericTicketGroup");
 
 		if (type != null)
 			return new Fare(net, type, currency, fare, null, null);
@@ -3342,10 +3342,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			final String name = XmlPullUtil.valueTag(pp, "n");
 			final String value = XmlPullUtil.valueTag(pp, "v");
 			params.put(name, value);
-			XmlPullUtil.exit(pp, "pa");
+			XmlPullUtil.skipExit(pp, "pa");
 		}
 
-		XmlPullUtil.exit(pp, "pas");
+		XmlPullUtil.skipExit(pp, "pas");
 
 		return params;
 	}

@@ -304,7 +304,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	{
 		XmlPullUtil.enter(pp, "Platform");
 		final String platformText = XmlPullUtil.valueTag(pp, "Text");
-		XmlPullUtil.exit(pp, "Platform");
+		XmlPullUtil.skipExit(pp, "Platform");
 
 		if (platformText == null || platformText.length() == 0)
 			return null;
@@ -957,7 +957,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					XmlPullUtil.next(pp);
 				final Location departureLocation = parseLocation(pp);
 				XmlPullUtil.enter(pp, "Dep");
-				XmlPullUtil.exit(pp, "Dep");
+				XmlPullUtil.skipExit(pp, "Dep");
 				final int[] capacity;
 				if (XmlPullUtil.test(pp, "StopPrognosis"))
 				{
@@ -967,33 +967,33 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					if (XmlPullUtil.test(pp, "Dep"))
 						XmlPullUtil.next(pp);
 					XmlPullUtil.enter(pp, "Status");
-					XmlPullUtil.exit(pp, "Status");
+					XmlPullUtil.skipExit(pp, "Status");
 					final int capacity1st = Integer.parseInt(XmlPullUtil.optValueTag(pp, "Capacity1st", "0"));
 					final int capacity2nd = Integer.parseInt(XmlPullUtil.optValueTag(pp, "Capacity2nd", "0"));
 					if (capacity1st > 0 || capacity2nd > 0)
 						capacity = new int[] { capacity1st, capacity2nd };
 					else
 						capacity = null;
-					XmlPullUtil.exit(pp, "StopPrognosis");
+					XmlPullUtil.skipExit(pp, "StopPrognosis");
 				}
 				else
 				{
 					capacity = null;
 				}
-				XmlPullUtil.exit(pp, "BasicStop");
-				XmlPullUtil.exit(pp, "Departure");
+				XmlPullUtil.skipExit(pp, "BasicStop");
+				XmlPullUtil.skipExit(pp, "Departure");
 
 				XmlPullUtil.enter(pp, "Arrival");
 				XmlPullUtil.enter(pp, "BasicStop");
 				while (pp.getName().equals("StAttrList"))
 					XmlPullUtil.next(pp);
 				final Location arrivalLocation = parseLocation(pp);
-				XmlPullUtil.exit(pp, "BasicStop");
-				XmlPullUtil.exit(pp, "Arrival");
+				XmlPullUtil.skipExit(pp, "BasicStop");
+				XmlPullUtil.skipExit(pp, "Arrival");
 
 				final int numTransfers = Integer.parseInt(XmlPullUtil.valueTag(pp, "Transfers"));
 
-				XmlPullUtil.exit(pp, "Overview");
+				XmlPullUtil.skipExit(pp, "Overview");
 
 				final List<Trip.Leg> legs = new ArrayList<Trip.Leg>(4);
 
@@ -1015,17 +1015,17 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					if (XmlPullUtil.test(pp, "Arr"))
 					{
 						XmlPullUtil.enter(pp, "Arr");
-						XmlPullUtil.exit(pp, "Arr");
+						XmlPullUtil.skipExit(pp, "Arr");
 					}
 					XmlPullUtil.enter(pp, "Dep");
 					time.setTimeInMillis(currentDate.getTimeInMillis());
 					parseTime(time, XmlPullUtil.valueTag(pp, "Time"));
 					final Date departureTime = time.getTime();
 					final Position departurePos = parsePlatform(pp);
-					XmlPullUtil.exit(pp, "Dep");
+					XmlPullUtil.skipExit(pp, "Dep");
 
-					XmlPullUtil.exit(pp, "BasicStop");
-					XmlPullUtil.exit(pp, "Departure");
+					XmlPullUtil.skipExit(pp, "BasicStop");
+					XmlPullUtil.skipExit(pp, "Departure");
 
 					// journey
 					final Line line;
@@ -1053,8 +1053,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 							final String code = pp.getAttributeValue(null, "code");
 							XmlPullUtil.enter(pp, "Attribute");
 							final Map<String, String> attributeVariants = parseAttributeVariants(pp);
-							XmlPullUtil.exit(pp, "Attribute");
-							XmlPullUtil.exit(pp, "JourneyAttribute");
+							XmlPullUtil.skipExit(pp, "Attribute");
+							XmlPullUtil.skipExit(pp, "JourneyAttribute");
 
 							if ("bf".equals(code))
 							{
@@ -1076,7 +1076,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 								destination = new Location(LocationType.ANY, null, destinationPlaceAndName[0], destinationPlaceAndName[1]);
 							}
 						}
-						XmlPullUtil.exit(pp, "JourneyAttributeList");
+						XmlPullUtil.skipExit(pp, "JourneyAttributeList");
 
 						if (XmlPullUtil.test(pp, "PassList"))
 						{
@@ -1103,7 +1103,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 										parseTime(time, XmlPullUtil.valueTag(pp, "Time"));
 										stopArrivalTime = time.getTime();
 										stopArrivalPosition = parsePlatform(pp);
-										XmlPullUtil.exit(pp, "Arr");
+										XmlPullUtil.skipExit(pp, "Arr");
 									}
 
 									if (XmlPullUtil.test(pp, "Dep"))
@@ -1113,19 +1113,19 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 										parseTime(time, XmlPullUtil.valueTag(pp, "Time"));
 										stopDepartureTime = time.getTime();
 										stopDeparturePosition = parsePlatform(pp);
-										XmlPullUtil.exit(pp, "Dep");
+										XmlPullUtil.skipExit(pp, "Dep");
 									}
 
 									intermediateStops.add(new Stop(location, stopArrivalTime, stopArrivalPosition, stopDepartureTime,
 											stopDeparturePosition));
 								}
-								XmlPullUtil.exit(pp, "BasicStop");
+								XmlPullUtil.skipExit(pp, "BasicStop");
 							}
 
-							XmlPullUtil.exit(pp, "PassList");
+							XmlPullUtil.skipExit(pp, "PassList");
 						}
 
-						XmlPullUtil.exit(pp, "Journey");
+						XmlPullUtil.skipExit(pp, "Journey");
 
 						if (category == null)
 							category = shortCategory;
@@ -1136,8 +1136,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					{
 						XmlPullUtil.enter(pp);
 						XmlPullUtil.enter(pp, "Duration");
-						XmlPullUtil.exit(pp, "Duration");
-						XmlPullUtil.exit(pp);
+						XmlPullUtil.skipExit(pp, "Duration");
+						XmlPullUtil.skipExit(pp);
 
 						line = null;
 					}
@@ -1159,7 +1159,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 							path.add(new Point(y, x));
 							XmlPullUtil.next(pp);
 						}
-						XmlPullUtil.exit(pp, "Polyline");
+						XmlPullUtil.skipExit(pp, "Polyline");
 					}
 					else
 					{
@@ -1177,10 +1177,10 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					parseTime(time, XmlPullUtil.valueTag(pp, "Time"));
 					final Date arrivalTime = time.getTime();
 					final Position arrivalPos = parsePlatform(pp);
-					XmlPullUtil.exit(pp, "Arr");
+					XmlPullUtil.skipExit(pp, "Arr");
 
-					XmlPullUtil.exit(pp, "BasicStop");
-					XmlPullUtil.exit(pp, "Arrival");
+					XmlPullUtil.skipExit(pp, "BasicStop");
+					XmlPullUtil.skipExit(pp, "Arrival");
 
 					// remove last intermediate
 					final int size = intermediateStops != null ? intermediateStops.size() : 0;
@@ -1188,7 +1188,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						if (!intermediateStops.get(size - 1).location.id.equals(sectionArrivalLocation.id))
 							intermediateStops.remove(size - 1);
 
-					XmlPullUtil.exit(pp, "ConSection");
+					XmlPullUtil.skipExit(pp, "ConSection");
 
 					if (line != null)
 					{
@@ -1213,14 +1213,14 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					}
 				}
 
-				XmlPullUtil.exit(pp, "ConSectionList");
+				XmlPullUtil.skipExit(pp, "ConSectionList");
 
-				XmlPullUtil.exit(pp, "Connection");
+				XmlPullUtil.skipExit(pp, "Connection");
 
 				trips.add(new Trip(id, departureLocation, arrivalLocation, legs, null, capacity, numTransfers));
 			}
 
-			XmlPullUtil.exit(pp, "ConnectionList");
+			XmlPullUtil.skipExit(pp, "ConnectionList");
 
 			return new QueryTripsResult(header, null, from, via, to, context, trips);
 		}
@@ -1259,7 +1259,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			final String type = XmlPullUtil.attr(pp, "type");
 			XmlPullUtil.enter(pp, "AttributeVariant");
 			final String value = XmlPullUtil.optValueTag(pp, "Text", null);
-			XmlPullUtil.exit(pp, "AttributeVariant");
+			XmlPullUtil.skipExit(pp, "AttributeVariant");
 
 			attributeVariants.put(type, value);
 		}

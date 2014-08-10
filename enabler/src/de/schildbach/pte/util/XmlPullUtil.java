@@ -49,9 +49,9 @@ public final class XmlPullUtil
 		enter(pp);
 	}
 
-	public static void exit(final XmlPullParser pp) throws XmlPullParserException, IOException
+	public static void skipExit(final XmlPullParser pp) throws XmlPullParserException, IOException
 	{
-		exitSkipToEnd(pp);
+		skipToEnd(pp);
 
 		if (pp.getEventType() != XmlPullParser.END_TAG)
 			throw new IllegalStateException("expecting end tag to exit");
@@ -59,15 +59,15 @@ public final class XmlPullUtil
 		pp.next();
 	}
 
-	public static void exit(final XmlPullParser pp, final String tagName) throws XmlPullParserException, IOException
+	public static void skipExit(final XmlPullParser pp, final String tagName) throws XmlPullParserException, IOException
 	{
-		exitSkipToEnd(pp);
+		skipToEnd(pp);
 
 		pp.require(XmlPullParser.END_TAG, null, tagName);
 		pp.next();
 	}
 
-	private static void exitSkipToEnd(final XmlPullParser pp) throws XmlPullParserException, IOException
+	private static void skipToEnd(final XmlPullParser pp) throws XmlPullParserException, IOException
 	{
 		while (pp.getEventType() != XmlPullParser.END_TAG)
 		{
@@ -95,7 +95,7 @@ public final class XmlPullUtil
 		if (!pp.isEmptyElementTag())
 		{
 			enter(pp, tagName);
-			exit(pp, tagName);
+			skipExit(pp, tagName);
 		}
 		else
 		{
@@ -178,7 +178,7 @@ public final class XmlPullUtil
 	{
 		XmlPullUtil.enter(pp, tagName);
 		final String value = pp.getText();
-		XmlPullUtil.exit(pp, tagName);
+		XmlPullUtil.skipExit(pp, tagName);
 
 		return value != null ? value.trim() : null;
 	}
