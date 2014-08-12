@@ -20,6 +20,7 @@ package de.schildbach.pte.dto;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -40,7 +41,8 @@ public final class SuggestLocationsResult implements Serializable
 	{
 		this.header = header;
 		this.status = Status.OK;
-		this.suggestedLocations = suggestedLocations;
+		this.suggestedLocations = new LinkedList<SuggestedLocation>(suggestedLocations);
+		Collections.sort(this.suggestedLocations);
 	}
 
 	public SuggestLocationsResult(final ResultHeader header, final Status status)
@@ -62,8 +64,6 @@ public final class SuggestLocationsResult implements Serializable
 
 	public List<Location> getLocations()
 	{
-		Collections.sort(suggestedLocations);
-
 		final List<Location> locations = new ArrayList<Location>(suggestedLocations.size());
 		for (final SuggestedLocation location : suggestedLocations)
 			locations.add(location.location);
