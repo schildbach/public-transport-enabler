@@ -327,21 +327,19 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	public SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(getStopEndpoint);
-		uri.append(jsonGetStopsParameters(constraint));
+		appendJsonGetStopsParameters(uri, constraint, 0);
 
 		return jsonGetStops(uri.toString());
 	}
 
-	protected StringBuilder jsonGetStopsParameters(final CharSequence constraint)
+	protected void appendJsonGetStopsParameters(final StringBuilder uri, final CharSequence constraint, final int maxStops)
 	{
-		final StringBuilder parameters = new StringBuilder();
-		parameters.append("?getstop=1");
-		parameters.append("&REQ0JourneyStopsS0A=255");
-		parameters.append("&REQ0JourneyStopsS0G=").append(ParserUtils.urlEncode(constraint.toString(), jsonGetStopsEncoding)).append("?");
-		// parameters.append("&REQ0JourneyStopsB=12");
-		parameters.append("&js=true");
-
-		return parameters;
+		uri.append("?getstop=1");
+		uri.append("&REQ0JourneyStopsS0A=255");
+		uri.append("&REQ0JourneyStopsS0G=").append(ParserUtils.urlEncode(constraint.toString(), jsonGetStopsEncoding)).append("?");
+		if (maxStops > 0)
+			uri.append("&REQ0JourneyStopsB=").append(maxStops);
+		uri.append("&js=true");
 	}
 
 	private static final Pattern P_AJAX_GET_STOPS_JSON = Pattern.compile("SLs\\.sls\\s*=\\s*(.*?);\\s*SLs\\.showSuggestion\\(\\);", Pattern.DOTALL);
@@ -430,26 +428,23 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
-		uri.append(xmlStationBoardParameters(stationId, maxDepartures));
+		appendXmlStationBoardParameters(uri, stationId, maxDepartures);
 
 		return xmlStationBoard(uri.toString(), stationId);
 	}
 
-	protected StringBuilder xmlStationBoardParameters(final String stationId, final int maxDepartures)
+	protected void appendXmlStationBoardParameters(final StringBuilder uri, final String stationId, final int maxDepartures)
 	{
-		final StringBuilder parameters = new StringBuilder();
-		parameters.append("?productsFilter=").append(allProductsString());
-		parameters.append("&boardType=dep");
+		uri.append("?productsFilter=").append(allProductsString());
+		uri.append("&boardType=dep");
 		if (stationBoardCanDoEquivs)
-			parameters.append("&disableEquivs=yes"); // don't use nearby stations
-		parameters.append("&maxJourneys=").append(maxDepartures > 0 ? maxDepartures : DEFAULT_MAX_DEPARTURES);
-		parameters.append("&start=yes");
-		parameters.append("&L=vs_java3");
-		parameters.append("&input=").append(normalizeStationId(stationId));
+			uri.append("&disableEquivs=yes"); // don't use nearby stations
+		uri.append("&maxJourneys=").append(maxDepartures > 0 ? maxDepartures : DEFAULT_MAX_DEPARTURES);
+		uri.append("&start=yes");
+		uri.append("&L=vs_java3");
+		uri.append("&input=").append(normalizeStationId(stationId));
 		if (clientType != null)
-			parameters.append("&clientType=").append(ParserUtils.urlEncode(clientType));
-
-		return parameters;
+			uri.append("&clientType=").append(ParserUtils.urlEncode(clientType));
 	}
 
 	private static final Pattern P_XML_STATION_BOARD_DELAY = Pattern.compile("(?:-|k\\.A\\.?|cancel|\\+?\\s*(\\d+))");
@@ -697,80 +692,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	public QueryTripsResult queryMoreTrips(final QueryTripsContext context, final boolean later) throws IOException
 	{
 		return queryMoreTripsBinary(context, later);
-	}
-
-	protected final void appendTripsQueryUri(final StringBuilder uri, final Location from, final Location via, final Location to, final Date date,
-			final boolean dep, final Collection<Product> products, final Accessibility accessibility, final Set<Option> options)
-	{
-		uri.append("?start=Suchen");
-
-		uri.append("&REQ0JourneyStopsS0ID=").append(ParserUtils.urlEncode(locationId(from), ISO_8859_1));
-		uri.append("&REQ0JourneyStopsZ0ID=").append(ParserUtils.urlEncode(locationId(to), ISO_8859_1));
-
-		if (via != null)
-		{
-			// workaround, for there does not seem to be a REQ0JourneyStops1.0ID parameter
-
-			uri.append("&REQ0JourneyStops1.0A=").append(locationType(via));
-
-			if (via.type == LocationType.STATION && via.hasId() && isValidStationId(via.id))
-			{
-				uri.append("&REQ0JourneyStops1.0L=").append(via.id);
-			}
-			else if (via.hasLocation())
-			{
-				uri.append("&REQ0JourneyStops1.0X=").append(via.lon);
-				uri.append("&REQ0JourneyStops1.0Y=").append(via.lat);
-				if (via.name == null)
-					uri.append("&REQ0JourneyStops1.0O=").append(
-							ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%.6f, %.6f", via.lat / 1E6, via.lon / 1E6), ISO_8859_1));
-			}
-			else if (via.name != null)
-			{
-				uri.append("&REQ0JourneyStops1.0G=").append(ParserUtils.urlEncode(via.name, ISO_8859_1));
-				if (via.type != LocationType.ANY)
-					uri.append('!');
-			}
-		}
-
-		uri.append("&REQ0HafasSearchForw=").append(dep ? "1" : "0");
-
-		final Calendar c = new GregorianCalendar(timeZone);
-		c.setTime(date);
-		final int year = c.get(Calendar.YEAR);
-		final int month = c.get(Calendar.MONTH) + 1;
-		final int day = c.get(Calendar.DAY_OF_MONTH);
-		final int hour = c.get(Calendar.HOUR_OF_DAY);
-		final int minute = c.get(Calendar.MINUTE);
-		uri.append("&REQ0JourneyDate=").append(
-				ParserUtils.urlEncode(useIso8601 ? String.format(Locale.ENGLISH, "%04d-%02d-%02d", year, month, day) : String.format(Locale.ENGLISH,
-						"%02d.%02d.%02d", day, month, year - 2000)));
-		uri.append("&REQ0JourneyTime=").append(ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%02d:%02d", hour, minute)));
-
-		final StringBuilder productsStr = new StringBuilder(numProductBits);
-		if (products != null)
-		{
-			for (int i = 0; i < numProductBits; i++)
-				productsStr.append('0');
-			for (final Product p : products)
-				setProductBits(productsStr, p);
-		}
-		else
-		{
-			productsStr.append(allProductsString());
-		}
-		uri.append("&REQ0JourneyProduct_prod_list_1=").append(productsStr);
-
-		if (accessibility != null && accessibility != Accessibility.NEUTRAL)
-		{
-			if (accessibility == Accessibility.LIMITED)
-				uri.append("&REQ0AddParamBaimprofile=1");
-			else if (accessibility == Accessibility.BARRIER_FREE)
-				uri.append("&REQ0AddParamBaimprofile=0");
-		}
-
-		if (options != null && options.contains(Option.BIKE))
-			uri.append("&REQ0JourneyProduct_opt3=1");
 	}
 
 	protected final QueryTripsResult queryTripsXml(Location from, Location via, Location to, final Date date, final boolean dep,
@@ -1385,7 +1306,83 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		return true;
 	}
 
-	protected void appendCustomTripsQueryBinaryUri(final StringBuilder uri)
+	protected void appendQueryTripsBinaryParameters(final StringBuilder uri, final Location from, final Location via, final Location to,
+			final Date date, final boolean dep, final Collection<Product> products, final Accessibility accessibility, final Set<Option> options)
+	{
+		uri.append("?start=Suchen");
+
+		uri.append("&REQ0JourneyStopsS0ID=").append(ParserUtils.urlEncode(locationId(from), ISO_8859_1));
+		uri.append("&REQ0JourneyStopsZ0ID=").append(ParserUtils.urlEncode(locationId(to), ISO_8859_1));
+
+		if (via != null)
+		{
+			// workaround, for there does not seem to be a REQ0JourneyStops1.0ID parameter
+
+			uri.append("&REQ0JourneyStops1.0A=").append(locationType(via));
+
+			if (via.type == LocationType.STATION && via.hasId() && isValidStationId(via.id))
+			{
+				uri.append("&REQ0JourneyStops1.0L=").append(via.id);
+			}
+			else if (via.hasLocation())
+			{
+				uri.append("&REQ0JourneyStops1.0X=").append(via.lon);
+				uri.append("&REQ0JourneyStops1.0Y=").append(via.lat);
+				if (via.name == null)
+					uri.append("&REQ0JourneyStops1.0O=").append(
+							ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%.6f, %.6f", via.lat / 1E6, via.lon / 1E6), ISO_8859_1));
+			}
+			else if (via.name != null)
+			{
+				uri.append("&REQ0JourneyStops1.0G=").append(ParserUtils.urlEncode(via.name, ISO_8859_1));
+				if (via.type != LocationType.ANY)
+					uri.append('!');
+			}
+		}
+
+		uri.append("&REQ0HafasSearchForw=").append(dep ? "1" : "0");
+
+		final Calendar c = new GregorianCalendar(timeZone);
+		c.setTime(date);
+		final int year = c.get(Calendar.YEAR);
+		final int month = c.get(Calendar.MONTH) + 1;
+		final int day = c.get(Calendar.DAY_OF_MONTH);
+		final int hour = c.get(Calendar.HOUR_OF_DAY);
+		final int minute = c.get(Calendar.MINUTE);
+		uri.append("&REQ0JourneyDate=").append(
+				ParserUtils.urlEncode(useIso8601 ? String.format(Locale.ENGLISH, "%04d-%02d-%02d", year, month, day) : String.format(Locale.ENGLISH,
+						"%02d.%02d.%02d", day, month, year - 2000)));
+		uri.append("&REQ0JourneyTime=").append(ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%02d:%02d", hour, minute)));
+
+		final StringBuilder productsStr = new StringBuilder(numProductBits);
+		if (products != null)
+		{
+			for (int i = 0; i < numProductBits; i++)
+				productsStr.append('0');
+			for (final Product p : products)
+				setProductBits(productsStr, p);
+		}
+		else
+		{
+			productsStr.append(allProductsString());
+		}
+		uri.append("&REQ0JourneyProduct_prod_list_1=").append(productsStr);
+
+		if (accessibility != null && accessibility != Accessibility.NEUTRAL)
+		{
+			if (accessibility == Accessibility.LIMITED)
+				uri.append("&REQ0AddParamBaimprofile=1");
+			else if (accessibility == Accessibility.BARRIER_FREE)
+				uri.append("&REQ0AddParamBaimprofile=0");
+		}
+
+		if (options != null && options.contains(Option.BIKE))
+			uri.append("&REQ0JourneyProduct_opt3=1");
+
+		appendCommonQueryTripsBinaryParameters(uri);
+	}
+
+	protected void appendCommonQueryTripsBinaryParameters(final StringBuilder uri)
 	{
 		uri.append("&h2g-direct=11");
 	}
@@ -1429,10 +1426,20 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 
 		final StringBuilder uri = new StringBuilder(queryEndpoint);
-		appendTripsQueryUri(uri, from, via, to, date, dep, products, accessibility, options);
-		appendCustomTripsQueryBinaryUri(uri);
+		appendQueryTripsBinaryParameters(uri, from, via, to, date, dep, products, accessibility, options);
 
 		return queryTripsBinary(uri.toString(), from, via, to, QUERY_TRIPS_BINARY_BUFFER_SIZE);
+	}
+
+	protected void appendQueryMoreTripsBinaryParameters(final StringBuilder uri, final QueryTripsBinaryContext context, final boolean later)
+	{
+		uri.append("?seqnr=").append(context.seqNr);
+		uri.append("&ident=").append(context.ident);
+		if (context.ld != null)
+			uri.append("&ld=").append(context.ld);
+		uri.append("&REQ0HafasScrollDir=").append(later ? 1 : 2);
+
+		appendCommonQueryTripsBinaryParameters(uri);
 	}
 
 	protected QueryTripsResult queryMoreTripsBinary(final QueryTripsContext contextObj, final boolean later) throws IOException
@@ -1440,12 +1447,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		final QueryTripsBinaryContext context = (QueryTripsBinaryContext) contextObj;
 
 		final StringBuilder uri = new StringBuilder(queryEndpoint);
-		uri.append("?seqnr=").append(context.seqNr);
-		uri.append("&ident=").append(context.ident);
-		if (context.ld != null)
-			uri.append("&ld=").append(context.ld);
-		uri.append("&REQ0HafasScrollDir=").append(later ? 1 : 2);
-		appendCustomTripsQueryBinaryUri(uri);
+		appendQueryMoreTripsBinaryParameters(uri, context, later);
 
 		return queryTripsBinary(uri.toString(), null, null, null, QUERY_TRIPS_BINARY_BUFFER_SIZE + context.usedBufferSize);
 	}
@@ -2211,14 +2213,14 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		if (location.hasLocation())
 		{
 			final StringBuilder uri = new StringBuilder(queryEndpoint);
-			uri.append(jsonNearbyStationsParameters(location, maxDistance, maxStations));
+			appendJsonNearbyStationsParameters(uri, location, maxDistance, maxStations);
 
 			return jsonNearbyStations(uri.toString());
 		}
 		else if (location.type == LocationType.STATION && location.hasId())
 		{
 			final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
-			uri.append(xmlNearbyStationsParameters(location.id));
+			appendXmlNearbyStationsParameters(uri, location.id);
 
 			return xmlNearbyStations(uri.toString());
 		}
@@ -2228,17 +2230,14 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 	}
 
-	protected final StringBuilder xmlNearbyStationsParameters(final String stationId)
+	protected final void appendXmlNearbyStationsParameters(final StringBuilder uri, final String stationId)
 	{
-		final StringBuilder parameters = new StringBuilder();
-		parameters.append("?productsFilter=").append(allProductsString());
-		parameters.append("&boardType=dep");
-		parameters.append("&input=").append(normalizeStationId(stationId));
-		parameters.append("&sTI=1&start=yes&hcount=0&L=vs_java3");
+		uri.append("?productsFilter=").append(allProductsString());
+		uri.append("&boardType=dep");
+		uri.append("&input=").append(normalizeStationId(stationId));
+		uri.append("&sTI=1&start=yes&hcount=0&L=vs_java3");
 		if (clientType != null)
-			parameters.append("&clientType=").append(ParserUtils.urlEncode(clientType));
-
-		return parameters;
+			uri.append("&clientType=").append(ParserUtils.urlEncode(clientType));
 	}
 
 	private static final Pattern P_XML_NEARBY_STATIONS_COARSE = Pattern.compile("\\G<\\s*St\\s*(.*?)/?>(?:\n|\\z)", Pattern.DOTALL);
@@ -2306,20 +2305,16 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		return new NearbyStationsResult(null, stations);
 	}
 
-	protected final StringBuilder jsonNearbyStationsParameters(final Location location, final int maxDistance, final int maxStations)
+	protected void appendJsonNearbyStationsParameters(final StringBuilder uri, final Location location, final int maxDistance, final int maxStations)
 	{
-		final StringBuilder parameters = new StringBuilder();
-
-		parameters.append('y');
-		parameters.append("?performLocating=2&tpl=stop2json");
-		parameters.append("&look_maxno=").append(maxStations != 0 ? maxStations : 200);
-		parameters.append("&look_maxdist=").append(maxDistance != 0 ? maxDistance : 5000);
-		parameters.append("&look_stopclass=").append(allProductsInt());
-		parameters.append("&look_nv=get_stopweight|yes");
-		parameters.append("&look_x=").append(location.lon);
-		parameters.append("&look_y=").append(location.lat);
-
-		return parameters;
+		uri.append('y');
+		uri.append("?performLocating=2&tpl=stop2json");
+		uri.append("&look_maxno=").append(maxStations != 0 ? maxStations : 200);
+		uri.append("&look_maxdist=").append(maxDistance != 0 ? maxDistance : 5000);
+		uri.append("&look_stopclass=").append(allProductsInt());
+		uri.append("&look_nv=get_stopweight|yes");
+		uri.append("&look_x=").append(location.lon);
+		uri.append("&look_y=").append(location.lat);
 	}
 
 	protected final NearbyStationsResult jsonNearbyStations(final String uri) throws IOException

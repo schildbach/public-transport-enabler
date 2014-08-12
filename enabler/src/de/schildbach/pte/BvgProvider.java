@@ -181,7 +181,7 @@ public final class BvgProvider extends AbstractHafasProvider
 		if (location.hasLocation())
 		{
 			final StringBuilder uri = new StringBuilder(queryEndpoint);
-			uri.append(jsonNearbyStationsParameters(location, maxDistance, maxStations));
+			appendJsonNearbyStationsParameters(uri, location, maxDistance, maxStations);
 
 			return jsonNearbyStations(uri.toString());
 		}
@@ -511,9 +511,10 @@ public final class BvgProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected void appendCustomTripsQueryBinaryUri(final StringBuilder uri)
+	protected void appendCommonQueryTripsBinaryParameters(final StringBuilder uri)
 	{
-		super.appendCustomTripsQueryBinaryUri(uri);
+		super.appendCommonQueryTripsBinaryParameters(uri);
+
 		if (additionalQueryParameter != null)
 			uri.append('&').append(additionalQueryParameter);
 	}

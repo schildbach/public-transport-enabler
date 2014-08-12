@@ -121,7 +121,7 @@ public class VgsProvider extends AbstractHafasProvider
 		if (location.hasLocation())
 		{
 			final StringBuilder uri = new StringBuilder(queryEndpoint);
-			uri.append(jsonNearbyStationsParameters(location, maxDistance, maxStations));
+			appendJsonNearbyStationsParameters(uri, location, maxDistance, maxStations);
 
 			return jsonNearbyStations(uri.toString());
 		}

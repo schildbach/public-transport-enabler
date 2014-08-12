@@ -134,9 +134,10 @@ public class StockholmProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected void appendCustomTripsQueryBinaryUri(final StringBuilder uri)
+	protected void appendCommonQueryTripsBinaryParameters(final StringBuilder uri)
 	{
-		super.appendCustomTripsQueryBinaryUri(uri);
+		super.appendCommonQueryTripsBinaryParameters(uri);
+
 		uri.append("&REQ0HafasSearchIndividual=1&REQ0HafasSearchPublic=1"
 				+ "&existIntermodalDep_enable=yes&existIntermodalDest_enable=yes&existTotal_enable=yes"
 				+ "&REQ0JourneyDep_Foot_enable=1&REQ0JourneyDep_Foot_maxDist=5000&REQ0JourneyDep_Foot_minDist=0&REQ0JourneyDep_Foot_speed=100&REQ0JourneyDep_Bike_enable=0&REQ0JourneyDep_ParkRide_enable=0"

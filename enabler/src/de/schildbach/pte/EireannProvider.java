@@ -99,11 +99,6 @@ public class EireannProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected void appendCustomTripsQueryBinaryUri(final StringBuilder uri)
-	{
-	}
-
-	@Override
 	public QueryTripsResult queryTrips(final Location from, final Location via, final Location to, final Date date, final boolean dep,
 			final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
 			throws IOException
