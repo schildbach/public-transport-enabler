@@ -349,6 +349,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	{
 		final CharSequence page = ParserUtils.scrape(uri, null, jsonGetStopsEncoding, null);
 
+		// System.out.println(uri);
+		// System.out.println(page);
+
 		final Matcher mJson = P_AJAX_GET_STOPS_JSON.matcher(page);
 		if (mJson.matches())
 		{
@@ -375,38 +378,40 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						if (m.matches())
 							localId = m.group(1);
 
+						final Location location;
+
 						if (type == 1) // station
 						{
 							final String[] placeAndName = splitPlaceAndName(value);
-							final Location location = new Location(LocationType.STATION, localId, lat, lon, placeAndName[0], placeAndName[1]);
-							locations.add(new SuggestedLocation(location, weight));
+							location = new Location(LocationType.STATION, localId, lat, lon, placeAndName[0], placeAndName[1]);
 						}
 						else if (type == 2) // address
 						{
 							final String[] placeAndName = splitPlaceAndName(value);
-							final Location location = new Location(LocationType.ADDRESS, null, lat, lon, placeAndName[0], placeAndName[1]);
-							locations.add(new SuggestedLocation(location, weight));
+							location = new Location(LocationType.ADDRESS, null, lat, lon, placeAndName[0], placeAndName[1]);
 						}
 						else if (type == 4) // poi
 						{
-							final Location location = new Location(LocationType.POI, localId, lat, lon, null, value);
-							locations.add(new SuggestedLocation(location, weight));
+							location = new Location(LocationType.POI, localId, lat, lon, null, value);
 						}
-						else if (type == 71) // strange (VBN)
+						else if (type == 128) // crossing
 						{
-							// TODO don't know what to do
+							location = new Location(LocationType.ADDRESS, localId, lat, lon, null, value);
 						}
-						else if (type == 87) // strange (ZTM)
+						else if (type == 87)
 						{
-							// TODO don't know what to do
-						}
-						else if (type == 128) // strange (SEPTA)
-						{
-							// TODO don't know what to do
+							location = null;
+							// don't know what to do
 						}
 						else
 						{
 							throw new IllegalStateException("unknown type " + type + " on " + uri);
+						}
+
+						if (location != null)
+						{
+							final SuggestedLocation suggestedLocation = new SuggestedLocation(location, weight);
+							locations.add(suggestedLocation);
 						}
 					}
 				}
@@ -415,7 +420,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			}
 			catch (final JSONException x)
 			{
-				x.printStackTrace();
 				throw new RuntimeException("cannot parse: '" + json + "' on " + uri, x);
 			}
 		}
