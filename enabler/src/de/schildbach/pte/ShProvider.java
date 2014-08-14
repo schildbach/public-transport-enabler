@@ -141,7 +141,7 @@ public class ShProvider extends AbstractHafasProvider
 		}
 	}
 
-	private static final String[] PLACES = { "Kiel", "Lübeck" };
+	private static final String[] PLACES = { "Hamburg", "Kiel", "Lübeck", "Flensburg", "Neumünster" };
 
 	@Override
 	protected String[] splitPlaceAndName(final String name)
