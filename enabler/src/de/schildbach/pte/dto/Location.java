@@ -155,7 +155,11 @@ public final class Location implements Serializable
 			return this.id.equals(other.id);
 		if (this.lat != 0 && this.lon != 0)
 			return this.lat == other.lat && this.lon == other.lon;
-		if (!nullSafeEquals(this.name, other.name)) // only discriminate by name if no ids are given
+
+		// only discriminate by name/place if no ids are given
+		if (!nullSafeEquals(this.name, other.name))
+			return false;
+		if (!nullSafeEquals(this.place, other.place))
 			return false;
 		return true;
 	}

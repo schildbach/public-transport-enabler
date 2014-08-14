@@ -89,6 +89,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	private String accessId;
 	private String clientType;
 	private Charset jsonGetStopsEncoding;
+	private boolean jsonGetStopsUseWeight = true;
 	private Charset jsonNearbyStationsEncoding;
 	private boolean dominantPlanStopTime = false;
 	private boolean useIso8601 = false;
@@ -181,6 +182,11 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	protected void setJsonGetStopsEncoding(final Charset jsonGetStopsEncoding)
 	{
 		this.jsonGetStopsEncoding = jsonGetStopsEncoding;
+	}
+
+	protected void setJsonGetStopsUseWeight(final boolean jsonGetStopsUseWeight)
+	{
+		this.jsonGetStopsUseWeight = jsonGetStopsUseWeight;
 	}
 
 	protected void setJsonNearbyStationsEncoding(final Charset jsonNearbyStationsEncoding)
@@ -372,7 +378,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						final String value = suggestion.getString("value");
 						final int lat = suggestion.optInt("ycoord");
 						final int lon = suggestion.optInt("xcoord");
-						final int weight = suggestion.getInt("weight");
+						final int weight = jsonGetStopsUseWeight ? suggestion.getInt("weight") : -i;
 						String localId = null;
 						final Matcher m = P_AJAX_GET_STOPS_ID.matcher(suggestion.getString("id"));
 						if (m.matches())

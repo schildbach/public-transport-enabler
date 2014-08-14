@@ -63,6 +63,7 @@ public final class BvgProvider extends AbstractHafasProvider
 		super(API_BASE + "stboard.bin/dn", API_BASE + "ajax-getstop.bin/dny", API_BASE + "query.bin/dn", 8, UTF_8);
 
 		setStyles(STYLES);
+		setJsonGetStopsUseWeight(false);
 
 		this.additionalQueryParameter = additionalQueryParameter;
 	}

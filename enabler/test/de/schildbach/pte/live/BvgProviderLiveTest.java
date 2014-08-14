@@ -101,6 +101,16 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
+	public void suggestLocationsLocality() throws Exception
+	{
+		final SuggestLocationsResult result = provider.suggestLocations("seeling");
+
+		print(result);
+
+		Assert.assertEquals(new Location(LocationType.STATION, null, "Berlin", "Seelingstr."), result.getLocations().get(0));
+	}
+
+	@Test
 	public void suggestLocationsAddress() throws Exception
 	{
 		final SuggestLocationsResult result = provider.suggestLocations("Sophienstr. 24");
