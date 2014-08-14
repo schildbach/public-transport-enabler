@@ -233,7 +233,7 @@ public class ShProvider extends AbstractHafasProvider
 			else if (mHeadCoarse.group(7) != null)
 				return new QueryDeparturesResult(header, Status.SERVICE_DOWN);
 
-			final String location = ParserUtils.resolveEntities(mHeadCoarse.group(1));
+			final String[] placeAndName = splitPlaceAndName(ParserUtils.resolveEntities(mHeadCoarse.group(1)));
 			final Calendar currentTime = new GregorianCalendar(timeZone);
 			currentTime.clear();
 			ParserUtils.parseGermanDate(currentTime, mHeadCoarse.group(2));
@@ -266,9 +266,9 @@ public class ShProvider extends AbstractHafasProvider
 					final Line line = parseLine(lineType, ParserUtils.resolveEntities(mDepFine.group(3).trim()), false);
 
 					final String destinationId = mDepFine.group(4);
-					final String destinationName = ParserUtils.resolveEntities(mDepFine.group(5));
-					final Location destination = new Location(destinationId != null ? LocationType.STATION : LocationType.ANY, destinationId, null,
-							destinationName);
+					final String[] destinationPlaceAndName = splitPlaceAndName(ParserUtils.resolveEntities(mDepFine.group(5)));
+					final Location destination = new Location(destinationId != null ? LocationType.STATION : LocationType.ANY, destinationId,
+							destinationPlaceAndName[0], destinationPlaceAndName[1]);
 
 					final Position position = mDepFine.group(6) != null ? new Position("Gl. " + ParserUtils.resolveEntities(mDepFine.group(6)))
 							: null;
@@ -284,7 +284,8 @@ public class ShProvider extends AbstractHafasProvider
 				}
 			}
 
-			result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, stationId, null, location), departures, null));
+			result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, stationId, placeAndName[0], placeAndName[1]),
+					departures, null));
 			return result;
 		}
 		else

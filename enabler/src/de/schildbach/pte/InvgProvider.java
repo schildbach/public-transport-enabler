@@ -193,7 +193,7 @@ public class InvgProvider extends AbstractHafasProvider
 			final Matcher mHeadFine = P_DEPARTURES_HEAD_FINE.matcher(mHeadCoarse.group(1));
 			if (mHeadFine.matches())
 			{
-				final String location = ParserUtils.resolveEntities(mHeadFine.group(1));
+				final String[] placeAndName = splitPlaceAndName(ParserUtils.resolveEntities(mHeadFine.group(1)));
 				final Calendar currentTime = new GregorianCalendar(timeZone);
 				currentTime.clear();
 				ParserUtils.parseGermanDate(currentTime, mHeadFine.group(2));
@@ -245,9 +245,9 @@ public class InvgProvider extends AbstractHafasProvider
 						final Line line = parseLine(lineType, ParserUtils.resolveEntities(mDepFine.group(4)), false);
 
 						final String destinationId = mDepFine.group(5);
-						final String destinationName = ParserUtils.resolveEntities(mDepFine.group(6));
+						final String[] destinationPlaceAndName = splitPlaceAndName(ParserUtils.resolveEntities(mDepFine.group(6)));
 						final Location destination = new Location(destinationId != null ? LocationType.STATION : LocationType.ANY, destinationId,
-								null, destinationName);
+								destinationPlaceAndName[0], destinationPlaceAndName[1]);
 
 						final Position position = mDepFine.group(7) != null ? new Position("Gl. " + ParserUtils.resolveEntities(mDepFine.group(7)))
 								: null;
@@ -264,7 +264,6 @@ public class InvgProvider extends AbstractHafasProvider
 					}
 				}
 
-				final String[] placeAndName = splitPlaceAndName(location);
 				result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, locationId, placeAndName[0], placeAndName[1]),
 						departures, null));
 				return result;

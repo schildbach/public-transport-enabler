@@ -209,7 +209,7 @@ public class SeptaProvider extends AbstractHafasProvider
 			else if (mPageCoarse.group(7) != null)
 				return new QueryDeparturesResult(header, Status.SERVICE_DOWN);
 
-			final String location = ParserUtils.resolveEntities(mPageCoarse.group(1));
+			final String[] placeAndName = splitPlaceAndName(ParserUtils.resolveEntities(mPageCoarse.group(1)));
 			final Calendar currentTime = new GregorianCalendar(timeZone);
 			currentTime.clear();
 			ParserUtils.parseAmericanDate(currentTime, mPageCoarse.group(2));
@@ -262,9 +262,9 @@ public class SeptaProvider extends AbstractHafasProvider
 					final Line line = parseLine(lineType, ParserUtils.resolveEntities(mDepFine.group(4)), false);
 
 					final String destinationId = mDepFine.group(5);
-					final String destinationName = ParserUtils.resolveEntities(mDepFine.group(6));
-					final Location destination = new Location(destinationId != null ? LocationType.STATION : LocationType.ANY, destinationId, null,
-							destinationName);
+					final String[] destinationPlaceAndName = splitPlaceAndName(ParserUtils.resolveEntities(mDepFine.group(6)));
+					final Location destination = new Location(destinationId != null ? LocationType.STATION : LocationType.ANY, destinationId,
+							destinationPlaceAndName[0], destinationPlaceAndName[1]);
 
 					final Position position = mDepFine.group(7) != null ? new Position("Gl. " + ParserUtils.resolveEntities(mDepFine.group(7)))
 							: null;
@@ -281,7 +281,8 @@ public class SeptaProvider extends AbstractHafasProvider
 				}
 			}
 
-			result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, stationId, null, location), departures, null));
+			result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, stationId, placeAndName[0], placeAndName[1]),
+					departures, null));
 			return result;
 		}
 		else
