@@ -115,7 +115,8 @@ public final class ParserUtils
 
 		while (true)
 		{
-			final URL url = new URL(urlStr);
+			final String urlStrCleaned = urlStr.replaceAll(" ", "%20");
+			final URL url = new URL(urlStrCleaned);
 			final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
 			connection.setDoInput(true);
