@@ -125,4 +125,18 @@ public class Style implements Serializable
 	{
 		return color & 0xff;
 	}
+
+	public static int computeForegroundColor (final int bgColor)
+	{
+		int fgColor = BLACK;
+		double a = 1 - (0.299 * Style.red (bgColor) +
+						0.587 * Style.green (bgColor) +
+						0.114 * Style.blue (bgColor)) / 255;
+		if (a >= 0.5)
+		{
+			// Dark colors - white font.
+			fgColor = WHITE;
+		}
+		return fgColor;
+	}
 }
