@@ -110,4 +110,19 @@ public class Style implements Serializable
 	{
 		return (0xFF << 24) | (red << 16) | (green << 8) | blue;
 	}
+
+	public static int red(final int color)
+	{
+		return (color >> 16) & 0xff;
+	}
+
+	public static int green(final int color)
+	{
+		return (color >> 8) & 0xff;
+	}
+
+	public static int blue(final int color)
+	{
+		return color & 0xff;
+	}
 }
