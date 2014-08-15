@@ -125,4 +125,16 @@ public class Style implements Serializable
 	{
 		return color & 0xff;
 	}
+
+	public static int deriveForegroundColor(final int backgroundColor)
+	{
+		// formula for perceived brightness computation: http://www.w3.org/TR/AERT#color-contrast
+		final double a = 1 - (0.299 * Style.red(backgroundColor) + 0.587 * Style.green(backgroundColor) + 0.114 * Style.blue(backgroundColor)) / 255;
+
+		// dark colors, white font. Or light colors, black font
+		if (a >= 0.5)
+			return WHITE;
+		else
+			return BLACK;
+	}
 }
