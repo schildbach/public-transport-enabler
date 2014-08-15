@@ -204,7 +204,7 @@ public final class Trip implements Serializable
 		return getId().hashCode();
 	}
 
-	public static class Leg implements Serializable
+	public abstract static class Leg implements Serializable
 	{
 		private static final long serialVersionUID = 8498461220084523265L;
 
