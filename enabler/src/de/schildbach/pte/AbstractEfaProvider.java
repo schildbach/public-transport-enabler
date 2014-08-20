@@ -90,6 +90,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private boolean canAcceptPoiId = false;
 	private boolean needsSpEncId = false;
 	private boolean includeRegionId = true;
+	private boolean xsltDepartureMonitorUseProxFootSearch = true;
 	private Charset requestUrlEncoding = ISO_8859_1;
 	private String httpReferer = null;
 	private String httpRefererTrip = null;
@@ -193,6 +194,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	protected void setIncludeRegionId(final boolean includeRegionId)
 	{
 		this.includeRegionId = includeRegionId;
+	}
+
+	protected void setXsltDepartureMonitorUseProxFootSearch(final boolean xsltDepartureMonitorUseProxFootSearch)
+	{
+		this.xsltDepartureMonitorUseProxFootSearch = xsltDepartureMonitorUseProxFootSearch;
 	}
 
 	protected void setUseRouteIndexAsTripId(final boolean useRouteIndexAsTripId)
@@ -1404,7 +1410,18 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				+ "' trainType='" + trainType + "' trainNum='" + trainNum + "' trainName='" + trainName + "'");
 	}
 
-	protected StringBuilder queryDeparturesParameters(final String stationId, final int maxDepartures, final boolean equivs)
+	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
+	{
+		final StringBuilder parameters = xsltDepartureMonitorRequestParameters(stationId, maxDepartures, equivs);
+
+		final StringBuilder uri = new StringBuilder(departureMonitorEndpoint);
+		if (!httpPost)
+			uri.append(parameters);
+
+		return xsltDepartureMonitorRequest(stationId, maxDepartures, equivs);
+	}
+
+	protected StringBuilder xsltDepartureMonitorRequestParameters(final String stationId, final int maxDepartures, final boolean equivs)
 	{
 		final StringBuilder parameters = new StringBuilder();
 		appendCommonRequestParams(parameters, "XML");
@@ -1415,7 +1432,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		parameters.append("&mode=direct");
 		parameters.append("&ptOptionsActive=1");
 		parameters.append("&deleteAssignedStops_dm=").append(equivs ? '0' : '1');
-		parameters.append("&useProxFootSearch=").append(equivs ? '1' : '0');
+		if (xsltDepartureMonitorUseProxFootSearch)
+			parameters.append("&useProxFootSearch=").append(equivs ? '1' : '0');
 		parameters.append("&mergeDep=1"); // merge departures
 		if (maxDepartures > 0)
 			parameters.append("&limit=").append(maxDepartures);
@@ -1423,9 +1441,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		return parameters;
 	}
 
-	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
+	private QueryDeparturesResult xsltDepartureMonitorRequest(final String stationId, final int maxDepartures, final boolean equivs)
+			throws IOException
 	{
-		final StringBuilder parameters = queryDeparturesParameters(stationId, maxDepartures, equivs);
+		final StringBuilder parameters = xsltDepartureMonitorRequestParameters(stationId, maxDepartures, equivs);
 
 		final StringBuilder uri = new StringBuilder(departureMonitorEndpoint);
 		if (!httpPost)
@@ -1639,7 +1658,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	protected QueryDeparturesResult queryDeparturesMobile(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
-		final StringBuilder parameters = queryDeparturesParameters(stationId, maxDepartures, equivs);
+		final StringBuilder parameters = xsltDepartureMonitorRequestParameters(stationId, maxDepartures, equivs);
 
 		final StringBuilder uri = new StringBuilder(departureMonitorEndpoint);
 		if (!httpPost)

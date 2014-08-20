@@ -34,9 +34,10 @@ public class VrrProvider extends AbstractEfaProvider
 	{
 		super(API_BASE);
 
-		setUseRouteIndexAsTripId(false);
 		setIncludeRegionId(false);
+		setXsltDepartureMonitorUseProxFootSearch(false);
 		setNeedsSpEncId(true);
+		setUseRouteIndexAsTripId(false);
 		setStyles(STYLES);
 	}
 

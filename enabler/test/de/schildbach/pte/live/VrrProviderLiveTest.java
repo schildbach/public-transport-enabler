@@ -84,6 +84,14 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
+	public void queryManyDeparturesWithEquivs() throws Exception
+	{
+		final QueryDeparturesResult result = provider.queryDepartures("20018235", 200, true);
+
+		print(result);
+	}
+
+	@Test
 	public void suggestLocationsIncomplete() throws Exception
 	{
 		final SuggestLocationsResult result = provider.suggestLocations("Kur");
