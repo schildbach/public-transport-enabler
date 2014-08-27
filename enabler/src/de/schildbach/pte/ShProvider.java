@@ -262,8 +262,9 @@ public class ShProvider extends AbstractHafasProvider
 						plannedTime.add(Calendar.DAY_OF_MONTH, 1);
 
 					final String lineType = mDepFine.group(2);
-
-					final Line line = parseLine(lineType, ParserUtils.resolveEntities(mDepFine.group(3).trim()), false);
+					final char product = intToProduct(Integer.parseInt(lineType));
+					final String lineStr = Character.toString(product) + normalizeLineName(mDepFine.group(3).trim());
+					final Line line = new Line(null, lineStr, lineStyle(null, lineStr));
 
 					final String destinationId = mDepFine.group(4);
 					final String[] destinationPlaceAndName = splitPlaceAndName(ParserUtils.resolveEntities(mDepFine.group(5)));
