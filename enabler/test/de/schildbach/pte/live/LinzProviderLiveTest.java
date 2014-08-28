@@ -64,7 +64,7 @@ public class LinzProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("60501720", 0, false);
+		final QueryDeparturesResult result = queryDepartures("60501720", false);
 		print(result);
 	}
 

@@ -62,7 +62,7 @@ public class AtcProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("740", 0, false);
+		final QueryDeparturesResult result = queryDepartures("740", false);
 
 		print(result);
 	}

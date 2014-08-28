@@ -59,6 +59,7 @@ public class SeptaProvider extends AbstractHafasProvider
 	{
 		super(API_BASE + "stboard.exe/en", API_BASE + "ajax-getstop.exe/dny", API_BASE + "query.exe/en", 4);
 
+		setStationBoardCanDoEquivs(false);
 		setTimeZone("EST");
 	}
 
@@ -128,24 +129,21 @@ public class SeptaProvider extends AbstractHafasProvider
 		}
 	}
 
-	private String departuresQueryUri(final String stationId, final int maxDepartures)
+	@Override
+	protected void appendDateTimeParameters(final StringBuilder uri, final Date time, final String dateParamName, final String timeParamName)
 	{
-		final Calendar now = new GregorianCalendar(timeZone);
-
-		final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
-		uri.append("?input=").append(normalizeStationId(stationId));
-		uri.append("&boardType=dep");
-		uri.append("&time=");
-		uri.append(ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%02d:%02d %s", now.get(Calendar.HOUR), now.get(Calendar.MINUTE),
-				now.get(Calendar.AM_PM) == Calendar.AM ? "am" : "pm")));
-		uri.append("&date=");
-		uri.append(String.format(Locale.ENGLISH, "%02d%02d%04d", now.get(Calendar.MONTH) + 1, now.get(Calendar.DAY_OF_MONTH), now.get(Calendar.YEAR)));
-		uri.append("&productsFilter=").append(allProductsString());
-		uri.append("&maxJourneys=").append(maxDepartures != 0 ? maxDepartures : DEFAULT_MAX_DEPARTURES);
-		uri.append("&disableEquivs=yes"); // don't use nearby stations
-		uri.append("&start=yes");
-
-		return uri.toString();
+		final Calendar c = new GregorianCalendar(timeZone);
+		c.setTime(time);
+		final int year = c.get(Calendar.YEAR);
+		final int month = c.get(Calendar.MONTH) + 1;
+		final int day = c.get(Calendar.DAY_OF_MONTH);
+		final int hour = c.get(Calendar.HOUR);
+		final int minute = c.get(Calendar.MINUTE);
+		final String amPm = c.get(Calendar.AM_PM) == Calendar.AM ? "am" : "pm";
+		uri.append('&').append(dateParamName).append('=');
+		uri.append(ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%02d%02d%04d", month, day, year)));
+		uri.append('&').append(timeParamName).append('=');
+		uri.append(ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%02d:%02d %s", hour, minute, amPm)));
 	}
 
 	private static final Pattern P_DEPARTURES_PAGE_COARSE = Pattern
@@ -175,14 +173,19 @@ public class SeptaProvider extends AbstractHafasProvider
 	, Pattern.DOTALL);
 
 	@Override
-	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
+	public QueryDeparturesResult queryDepartures(final String stationId, final Date time, final int maxDepartures, final boolean equivs)
+			throws IOException
 	{
 		final ResultHeader header = new ResultHeader(SERVER_PRODUCT);
 		final QueryDeparturesResult result = new QueryDeparturesResult(header);
 
 		// scrape page
-		final String uri = departuresQueryUri(stationId, maxDepartures);
-		final CharSequence page = ParserUtils.scrape(uri);
+		final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
+		appendXmlStationBoardParameters(uri, time, stationId, maxDepartures, null);
+		final CharSequence page = ParserUtils.scrape(uri.toString());
+
+		// System.out.println(uri);
+		// System.out.println(page);
 
 		// parse page
 		final Matcher mPageCoarse = P_DEPARTURES_PAGE_COARSE.matcher(page);

@@ -64,7 +64,7 @@ public class TlwmProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("1001003", 0, false);
+		final QueryDeparturesResult result = queryDepartures("1001003", false);
 
 		print(result);
 	}

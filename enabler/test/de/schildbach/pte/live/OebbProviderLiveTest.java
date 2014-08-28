@@ -66,7 +66,7 @@ public class OebbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("902006", 0, false);
+		final QueryDeparturesResult result = queryDepartures("902006", false);
 
 		print(result);
 		assertEquals(QueryDeparturesResult.Status.OK, result.status);
@@ -76,7 +76,7 @@ public class OebbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDeparturesInvalidStation() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("999999", 0, false);
+		final QueryDeparturesResult result = queryDepartures("999999", false);
 
 		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
 	}

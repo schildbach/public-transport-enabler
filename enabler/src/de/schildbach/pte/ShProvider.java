@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -52,6 +53,8 @@ public class ShProvider extends AbstractHafasProvider
 	public ShProvider()
 	{
 		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 10, UTF_8);
+
+		setStationBoardCanDoEquivs(false);
 	}
 
 	public NetworkId id()
@@ -164,19 +167,6 @@ public class ShProvider extends AbstractHafasProvider
 		}
 	}
 
-	private String departuresQueryUri(final String stationId, final int maxDepartures)
-	{
-		final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
-		uri.append("?input=").append(normalizeStationId(stationId));
-		uri.append("&boardType=dep");
-		uri.append("&productsFilter=").append(allProductsString());
-		uri.append("&maxJourneys=").append(maxDepartures != 0 ? maxDepartures : DEFAULT_MAX_DEPARTURES);
-		uri.append("&disableEquivs=yes"); // don't use nearby stations
-		uri.append("&start=yes");
-
-		return uri.toString();
-	}
-
 	private static final Pattern P_DEPARTURES_HEAD_COARSE = Pattern.compile(".*?" //
 			+ "(?:" //
 			+ "Bhf\\./Haltest\\.:</span>\\n<span class=\"output\">([^<]*)<.*?" // location
@@ -199,14 +189,19 @@ public class ShProvider extends AbstractHafasProvider
 	, Pattern.DOTALL);
 
 	@Override
-	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
+	public QueryDeparturesResult queryDepartures(final String stationId, final Date time, final int maxDepartures, final boolean equivs)
+			throws IOException
 	{
 		final ResultHeader header = new ResultHeader(SERVER_PRODUCT);
 		final QueryDeparturesResult result = new QueryDeparturesResult(header);
 
 		// scrape page
-		final String uri = departuresQueryUri(stationId, maxDepartures);
-		final CharSequence page = ParserUtils.scrape(uri);
+		final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
+		appendXmlStationBoardParameters(uri, time, stationId, maxDepartures, null);
+		final CharSequence page = ParserUtils.scrape(uri.toString());
+
+		// System.out.println(uri);
+		// System.out.println(page);
 
 		// parse page
 		final Matcher mHeadCoarse = P_DEPARTURES_HEAD_COARSE.matcher(page);

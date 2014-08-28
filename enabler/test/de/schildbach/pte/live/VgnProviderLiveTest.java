@@ -61,7 +61,7 @@ public class VgnProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("3000510", 0, false);
+		final QueryDeparturesResult result = queryDepartures("3000510", false);
 
 		print(result);
 	}

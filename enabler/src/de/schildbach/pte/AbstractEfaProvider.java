@@ -1416,23 +1416,21 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				+ "' trainType='" + trainType + "' trainNum='" + trainNum + "' trainName='" + trainName + "'");
 	}
 
-	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
+	public QueryDeparturesResult queryDepartures(final String stationId, final Date time, final int maxDepartures, final boolean equivs)
+			throws IOException
 	{
-		final StringBuilder parameters = xsltDepartureMonitorRequestParameters(stationId, maxDepartures, equivs);
-
-		final StringBuilder uri = new StringBuilder(departureMonitorEndpoint);
-		if (!httpPost)
-			uri.append(parameters);
-
-		return xsltDepartureMonitorRequest(stationId, maxDepartures, equivs);
+		return xsltDepartureMonitorRequest(stationId, time, maxDepartures, equivs);
 	}
 
-	protected StringBuilder xsltDepartureMonitorRequestParameters(final String stationId, final int maxDepartures, final boolean equivs)
+	protected StringBuilder xsltDepartureMonitorRequestParameters(final String stationId, final Date time, final int maxDepartures,
+			final boolean equivs)
 	{
 		final StringBuilder parameters = new StringBuilder();
 		appendCommonRequestParams(parameters, "XML");
 		parameters.append("&type_dm=stop");
 		parameters.append("&name_dm=").append(normalizeStationId(stationId));
+		if (time != null)
+			appendItdDateTimeParameters(parameters, time);
 		if (useRealtime)
 			parameters.append("&useRealtime=1");
 		parameters.append("&mode=direct");
@@ -1447,10 +1445,23 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		return parameters;
 	}
 
-	private QueryDeparturesResult xsltDepartureMonitorRequest(final String stationId, final int maxDepartures, final boolean equivs)
+	private final void appendItdDateTimeParameters(final StringBuilder uri, final Date time)
+	{
+		final Calendar c = new GregorianCalendar(timeZone);
+		c.setTime(time);
+		final int year = c.get(Calendar.YEAR);
+		final int month = c.get(Calendar.MONTH) + 1;
+		final int day = c.get(Calendar.DAY_OF_MONTH);
+		final int hour = c.get(Calendar.HOUR_OF_DAY);
+		final int minute = c.get(Calendar.MINUTE);
+		uri.append("&itdDate=").append(ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%04d%02d%02d", year, month, day)));
+		uri.append("&itdTime=").append(ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%02d%02d", hour, minute)));
+	}
+
+	private QueryDeparturesResult xsltDepartureMonitorRequest(final String stationId, final Date time, final int maxDepartures, final boolean equivs)
 			throws IOException
 	{
-		final StringBuilder parameters = xsltDepartureMonitorRequestParameters(stationId, maxDepartures, equivs);
+		final StringBuilder parameters = xsltDepartureMonitorRequestParameters(stationId, time, maxDepartures, equivs);
 
 		final StringBuilder uri = new StringBuilder(departureMonitorEndpoint);
 		if (!httpPost)
@@ -1662,9 +1673,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 	}
 
-	protected QueryDeparturesResult queryDeparturesMobile(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
+	protected QueryDeparturesResult queryDeparturesMobile(final String stationId, final Date time, final int maxDepartures, final boolean equivs)
+			throws IOException
 	{
-		final StringBuilder parameters = xsltDepartureMonitorRequestParameters(stationId, maxDepartures, equivs);
+		final StringBuilder parameters = xsltDepartureMonitorRequestParameters(stationId, time, maxDepartures, equivs);
 
 		final StringBuilder uri = new StringBuilder(departureMonitorEndpoint);
 		if (!httpPost)
@@ -2022,7 +2034,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		return (double) value / 1000000;
 	}
 
-	protected String xsltTripRequestParameters(final Location from, final Location via, final Location to, final Date date, final boolean dep,
+	protected String xsltTripRequestParameters(final Location from, final Location via, final Location to, final Date time, final boolean dep,
 			final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
 	{
 		final StringBuilder uri = new StringBuilder();
@@ -2039,15 +2051,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		if (via != null)
 			appendLocation(uri, via, "via");
 
-		final Calendar c = new GregorianCalendar(timeZone);
-		c.setTime(date);
-		final int year = c.get(Calendar.YEAR);
-		final int month = c.get(Calendar.MONTH) + 1;
-		final int day = c.get(Calendar.DAY_OF_MONTH);
-		final int hour = c.get(Calendar.HOUR_OF_DAY);
-		final int minute = c.get(Calendar.MINUTE);
-		uri.append("&itdDate=").append(ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%04d%02d%02d", year, month, day)));
-		uri.append("&itdTime=").append(ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%02d%02d", hour, minute)));
+		appendItdDateTimeParameters(uri, time);
 
 		uri.append("&itdTripDateTimeDepArr=").append(dep ? "dep" : "arr");
 

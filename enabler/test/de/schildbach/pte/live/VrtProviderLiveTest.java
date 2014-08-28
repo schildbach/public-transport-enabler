@@ -64,7 +64,7 @@ public class VrtProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("17001301", 0, false);
+		final QueryDeparturesResult result = queryDepartures("17001301", false);
 
 		print(result);
 	}

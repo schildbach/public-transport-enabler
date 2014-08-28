@@ -62,8 +62,9 @@ public final class BvgProvider extends AbstractHafasProvider
 	{
 		super(API_BASE + "stboard.bin/dn", API_BASE + "ajax-getstop.bin/dny", API_BASE + "query.bin/dn", 8, UTF_8);
 
-		setStyles(STYLES);
 		setJsonGetStopsUseWeight(false);
+		setStationBoardCanDoEquivs(false);
+		setStyles(STYLES);
 
 		this.additionalQueryParameter = additionalQueryParameter;
 	}
@@ -258,11 +259,13 @@ public final class BvgProvider extends AbstractHafasProvider
 
 	private static final String DEPARTURE_URL_PLAN = DEPARTURE_URL + "/Fahrinfo/bin/stboard.bin/dox?boardType=dep&disableEquivs=yes&start=yes";
 
-	private String departuresQueryPlanUri(final String stationId, final int maxDepartures)
+	private String departuresQueryPlanUri(final String stationId, final Date time, final int maxDepartures)
 	{
 		final StringBuilder uri = new StringBuilder();
 		uri.append(DEPARTURE_URL_PLAN);
 		uri.append("&input=").append(normalizeStationId(stationId));
+		if (time != null)
+			appendDateTimeParameters(uri, time, "date", "time");
 		uri.append("&maxJourneys=").append(maxDepartures != 0 ? maxDepartures : DEFAULT_MAX_DEPARTURES);
 		if (additionalQueryParameter != null)
 			uri.append('&').append(additionalQueryParameter);
@@ -308,7 +311,8 @@ public final class BvgProvider extends AbstractHafasProvider
 			Pattern.CASE_INSENSITIVE);
 
 	@Override
-	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
+	public QueryDeparturesResult queryDepartures(final String stationId, final Date time, final int maxDepartures, final boolean equivs)
+			throws IOException
 	{
 		final ResultHeader header = new ResultHeader(SERVER_PRODUCT);
 		final QueryDeparturesResult result = new QueryDeparturesResult(header);
@@ -415,7 +419,7 @@ public final class BvgProvider extends AbstractHafasProvider
 		else
 		{
 			// scrape page
-			final String uri = departuresQueryPlanUri(stationId, maxDepartures);
+			final String uri = departuresQueryPlanUri(stationId, time, maxDepartures);
 			final CharSequence page = ParserUtils.scrape(uri);
 
 			final Matcher mError = P_DEPARTURES_PLAN_ERRORS.matcher(page);

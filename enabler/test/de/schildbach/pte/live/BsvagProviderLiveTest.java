@@ -66,7 +66,7 @@ public class BsvagProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("26000256", 0, false);
+		final QueryDeparturesResult result = queryDepartures("26000256", false);
 
 		print(result);
 	}

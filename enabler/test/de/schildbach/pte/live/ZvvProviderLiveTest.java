@@ -63,7 +63,7 @@ public class ZvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("8503000", 0, false);
+		final QueryDeparturesResult result = queryDepartures("8503000", false);
 
 		print(result);
 	}
@@ -71,7 +71,7 @@ public class ZvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDeparturesInvalidStation() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("999999", 0, false);
+		final QueryDeparturesResult result = queryDepartures("999999", false);
 
 		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
 	}

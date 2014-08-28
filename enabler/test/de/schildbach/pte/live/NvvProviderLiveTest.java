@@ -73,23 +73,23 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("3000408", 0, false);
+		final QueryDeparturesResult result = queryDepartures("3000408", false);
 		print(result);
 
-		final QueryDeparturesResult result2 = provider.queryDepartures("3000010", 0, false);
+		final QueryDeparturesResult result2 = queryDepartures("3000010", false);
 		print(result2);
 
-		final QueryDeparturesResult result3 = provider.queryDepartures("3015989", 0, false);
+		final QueryDeparturesResult result3 = queryDepartures("3015989", false);
 		print(result3);
 
-		final QueryDeparturesResult result4 = provider.queryDepartures("3000139", 0, false);
+		final QueryDeparturesResult result4 = queryDepartures("3000139", false);
 		print(result4);
 	}
 
 	@Test
 	public void queryDeparturesInvalidStation() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("999999", 0, false);
+		final QueryDeparturesResult result = queryDepartures("999999", false);
 
 		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
 	}

@@ -74,7 +74,7 @@ public class GvhProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("25000031", 0, false);
+		final QueryDeparturesResult result = queryDepartures("25000031", false);
 
 		print(result);
 	}

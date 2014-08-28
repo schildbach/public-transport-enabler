@@ -89,6 +89,8 @@ public interface NetworkProvider
 	 * 
 	 * @param stationId
 	 *            id of the station
+	 * @param time
+	 *            desired time for departing, optional
 	 * @param maxDepartures
 	 *            maximum number of departures to get or {@code 0}
 	 * @param equivs
@@ -96,7 +98,7 @@ public interface NetworkProvider
 	 * @return result object containing the departures
 	 * @throws IOException
 	 */
-	QueryDeparturesResult queryDepartures(String stationId, int maxDepartures, boolean equivs) throws IOException;
+	QueryDeparturesResult queryDepartures(String stationId, Date time, int maxDepartures, boolean equivs) throws IOException;
 
 	/**
 	 * Meant for auto-completion of location names, like in an {@link android.widget.AutoCompleteTextView}

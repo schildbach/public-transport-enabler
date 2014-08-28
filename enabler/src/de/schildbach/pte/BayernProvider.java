@@ -110,9 +110,10 @@ public class BayernProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
+	public QueryDeparturesResult queryDepartures(final String stationId, final Date time, final int maxDepartures, final boolean equivs)
+			throws IOException
 	{
-		return queryDeparturesMobile(stationId, maxDepartures, equivs);
+		return queryDeparturesMobile(stationId, time, maxDepartures, equivs);
 	}
 
 	@Override

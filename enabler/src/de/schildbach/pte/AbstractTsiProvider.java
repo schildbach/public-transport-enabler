@@ -605,7 +605,8 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 		return new Location(locType, id, latInt, lonInt, place, name);
 	}
 
-	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
+	public QueryDeparturesResult queryDepartures(final String stationId, final Date time, final int maxDepartures, final boolean equivs)
+			throws IOException
 	{
 		throw new UnsupportedOperationException();
 	}

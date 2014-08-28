@@ -63,7 +63,7 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("692991", 0, false);
+		final QueryDeparturesResult result = queryDepartures("692991", false);
 
 		print(result);
 	}
@@ -71,7 +71,7 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDeparturesInvalidStation() throws Exception
 	{
-		final QueryDeparturesResult resultLive = provider.queryDepartures("999999", 0, false);
+		final QueryDeparturesResult resultLive = queryDepartures("999999", false);
 		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, resultLive.status);
 	}
 

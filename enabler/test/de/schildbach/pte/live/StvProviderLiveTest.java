@@ -66,7 +66,7 @@ public class StvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("63203040", 0, false);
+		final QueryDeparturesResult result = queryDepartures("63203040", false);
 
 		print(result);
 	}

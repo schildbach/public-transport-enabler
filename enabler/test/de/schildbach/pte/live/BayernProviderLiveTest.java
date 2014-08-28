@@ -63,13 +63,13 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult munichOstbahnhof = provider.queryDepartures("80000793", 0, false);
+		final QueryDeparturesResult munichOstbahnhof = queryDepartures("80000793", false);
 		print(munichOstbahnhof);
 
-		final QueryDeparturesResult munichHauptbahnhof = provider.queryDepartures("80000689", 0, false);
+		final QueryDeparturesResult munichHauptbahnhof = queryDepartures("80000689", false);
 		print(munichHauptbahnhof);
 
-		final QueryDeparturesResult nurembergHauptbahnhof = provider.queryDepartures("80001020", 0, false);
+		final QueryDeparturesResult nurembergHauptbahnhof = queryDepartures("80001020", false);
 		print(nurembergHauptbahnhof);
 	}
 

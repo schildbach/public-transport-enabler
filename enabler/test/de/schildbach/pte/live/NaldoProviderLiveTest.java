@@ -64,7 +64,7 @@ public class NaldoProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("53019174", 0, false);
+		final QueryDeparturesResult result = queryDepartures("53019174", false);
 
 		print(result);
 	}

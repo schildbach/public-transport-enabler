@@ -64,7 +64,7 @@ public class TfiProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("51013670", 0, false);
+		final QueryDeparturesResult result = queryDepartures("51013670", false);
 
 		print(result);
 	}

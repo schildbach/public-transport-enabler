@@ -62,7 +62,7 @@ public class NsProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("8800004", 0, false);
+		final QueryDeparturesResult result = queryDepartures("8800004", false);
 
 		print(result);
 	}
@@ -70,7 +70,7 @@ public class NsProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDeparturesInvalidStation() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("999999", 0, false);
+		final QueryDeparturesResult result = queryDepartures("999999", false);
 
 		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
 	}

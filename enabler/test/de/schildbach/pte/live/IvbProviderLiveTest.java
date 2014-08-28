@@ -64,7 +64,7 @@ public class IvbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("60401187", 0, false);
+		final QueryDeparturesResult result = queryDepartures("60401187", false);
 
 		print(result);
 	}

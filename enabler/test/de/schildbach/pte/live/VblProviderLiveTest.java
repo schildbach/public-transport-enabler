@@ -64,7 +64,7 @@ public class VblProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("717", 0, false);
+		final QueryDeparturesResult result = queryDepartures("717", false);
 
 		print(result);
 	}

@@ -441,26 +441,46 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 	}
 
-	public QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
+	public QueryDeparturesResult queryDepartures(final String stationId, final Date time, final int maxDepartures, final boolean equivs)
+			throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
-		appendXmlStationBoardParameters(uri, stationId, maxDepartures);
+		appendXmlStationBoardParameters(uri, time, stationId, maxDepartures, "vs_java3");
 
 		return xmlStationBoard(uri.toString(), stationId);
 	}
 
-	protected void appendXmlStationBoardParameters(final StringBuilder uri, final String stationId, final int maxDepartures)
+	protected void appendXmlStationBoardParameters(final StringBuilder uri, final Date time, final String stationId, final int maxDepartures,
+			final String styleSheet)
 	{
 		uri.append("?productsFilter=").append(allProductsString());
 		uri.append("&boardType=dep");
 		if (stationBoardCanDoEquivs)
 			uri.append("&disableEquivs=yes"); // don't use nearby stations
 		uri.append("&maxJourneys=").append(maxDepartures > 0 ? maxDepartures : DEFAULT_MAX_DEPARTURES);
-		uri.append("&start=yes");
-		uri.append("&L=vs_java3");
 		uri.append("&input=").append(normalizeStationId(stationId));
+		appendDateTimeParameters(uri, time, "date", "time");
 		if (clientType != null)
 			uri.append("&clientType=").append(ParserUtils.urlEncode(clientType));
+		if (styleSheet != null)
+			uri.append("&L=").append(styleSheet);
+		uri.append("&start=yes");
+	}
+
+	protected void appendDateTimeParameters(final StringBuilder uri, final Date time, final String dateParamName, final String timeParamName)
+	{
+		final Calendar c = new GregorianCalendar(timeZone);
+		c.setTime(time);
+		final int year = c.get(Calendar.YEAR);
+		final int month = c.get(Calendar.MONTH) + 1;
+		final int day = c.get(Calendar.DAY_OF_MONTH);
+		final int hour = c.get(Calendar.HOUR_OF_DAY);
+		final int minute = c.get(Calendar.MINUTE);
+		uri.append('&').append(dateParamName).append('=');
+		uri.append(ParserUtils.urlEncode(useIso8601 ? String.format(Locale.ENGLISH, "%04d-%02d-%02d", year, month, day) : String.format(
+				Locale.ENGLISH, "%02d.%02d.%02d", day, month, year - 2000)));
+		uri.append('&').append(timeParamName).append('=');
+		uri.append(ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%02d:%02d", hour, minute)));
 	}
 
 	private static final Pattern P_XML_STATION_BOARD_DELAY = Pattern.compile("(?:-|k\\.A\\.?|cancel|\\+?\\s*(\\d+))");
@@ -1358,17 +1378,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 		uri.append("&REQ0HafasSearchForw=").append(dep ? "1" : "0");
 
-		final Calendar c = new GregorianCalendar(timeZone);
-		c.setTime(date);
-		final int year = c.get(Calendar.YEAR);
-		final int month = c.get(Calendar.MONTH) + 1;
-		final int day = c.get(Calendar.DAY_OF_MONTH);
-		final int hour = c.get(Calendar.HOUR_OF_DAY);
-		final int minute = c.get(Calendar.MINUTE);
-		uri.append("&REQ0JourneyDate=").append(
-				ParserUtils.urlEncode(useIso8601 ? String.format(Locale.ENGLISH, "%04d-%02d-%02d", year, month, day) : String.format(Locale.ENGLISH,
-						"%02d.%02d.%02d", day, month, year - 2000)));
-		uri.append("&REQ0JourneyTime=").append(ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%02d:%02d", hour, minute)));
+		appendDateTimeParameters(uri, date, "REQ0JourneyDate", "REQ0JourneyTime");
 
 		final StringBuilder productsStr = new StringBuilder(numProductBits);
 		if (products != null)

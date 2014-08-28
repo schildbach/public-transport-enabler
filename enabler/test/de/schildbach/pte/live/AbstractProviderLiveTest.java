@@ -68,6 +68,11 @@ public abstract class AbstractProviderLiveTest
 		System.out.println(result);
 	}
 
+	protected final QueryDeparturesResult queryDepartures(final String stationId, boolean equivs) throws IOException
+	{
+		return provider.queryDepartures(stationId, new Date(), 0, equivs);
+	}
+
 	protected final QueryTripsResult queryTrips(final Location from, final Location via, final Location to, final Date date, final boolean dep,
 			final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility) throws IOException
 	{

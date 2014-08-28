@@ -64,7 +64,7 @@ public class BvbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("10000", 0, false);
+		final QueryDeparturesResult result = queryDepartures("10000", false);
 
 		print(result);
 	}

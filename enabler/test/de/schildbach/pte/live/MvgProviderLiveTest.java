@@ -66,7 +66,7 @@ public class MvgProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("3", 0, false);
+		final QueryDeparturesResult result = queryDepartures("3", false);
 
 		print(result);
 	}

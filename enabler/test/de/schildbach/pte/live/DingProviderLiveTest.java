@@ -64,7 +64,7 @@ public class DingProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("90001611", 0, false);
+		final QueryDeparturesResult result = queryDepartures("90001611", false);
 
 		print(result);
 	}

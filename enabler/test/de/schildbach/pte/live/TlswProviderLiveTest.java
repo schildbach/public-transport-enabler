@@ -64,7 +64,7 @@ public class TlswProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("247616", 0, false);
+		final QueryDeparturesResult result = queryDepartures("247616", false);
 
 		print(result);
 	}

@@ -66,7 +66,7 @@ public class NvbwProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("6900001", 0, false);
+		final QueryDeparturesResult result = queryDepartures("6900001", false);
 
 		print(result);
 	}

@@ -71,11 +71,11 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult resultLive = provider.queryDepartures("309557", 0, false);
+		final QueryDeparturesResult resultLive = queryDepartures("309557", false);
 		assertEquals(QueryDeparturesResult.Status.OK, resultLive.status);
 		print(resultLive);
 
-		final QueryDeparturesResult resultPlan = provider.queryDepartures("9100003", 0, false);
+		final QueryDeparturesResult resultPlan = queryDepartures("9100003", false);
 		assertEquals(QueryDeparturesResult.Status.OK, resultPlan.status);
 		print(resultPlan);
 	}
@@ -83,10 +83,10 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDeparturesInvalidStation() throws Exception
 	{
-		final QueryDeparturesResult resultLive = provider.queryDepartures("111111", 0, false);
+		final QueryDeparturesResult resultLive = queryDepartures("111111", false);
 		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, resultLive.status);
 
-		final QueryDeparturesResult resultPlan = provider.queryDepartures("2449475", 0, false);
+		final QueryDeparturesResult resultPlan = queryDepartures("2449475", false);
 		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, resultPlan.status);
 	}
 

@@ -63,20 +63,20 @@ public class JetProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result1 = provider.queryDepartures("568", 0, false);
+		final QueryDeparturesResult result1 = queryDepartures("568", false);
 		print(result1);
 
-		final QueryDeparturesResult result2 = provider.queryDepartures("1055", 0, false);
+		final QueryDeparturesResult result2 = queryDepartures("1055", false);
 		print(result2);
 
-		final QueryDeparturesResult result3 = provider.queryDepartures("90010", 0, false);
+		final QueryDeparturesResult result3 = queryDepartures("90010", false);
 		print(result3);
 	}
 
 	@Test
 	public void queryDeparturesInvalidStation() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("999999", 0, false);
+		final QueryDeparturesResult result = queryDepartures("999999", false);
 
 		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
 	}

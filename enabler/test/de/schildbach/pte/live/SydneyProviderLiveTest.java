@@ -64,7 +64,7 @@ public class SydneyProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("10101101", 0, false);
+		final QueryDeparturesResult result = queryDepartures("10101101", false);
 
 		print(result);
 	}

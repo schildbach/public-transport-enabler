@@ -71,7 +71,7 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("9007102", 0, false);
+		final QueryDeparturesResult result = queryDepartures("9007102", false);
 
 		print(result);
 	}
@@ -79,10 +79,10 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDeparturesInvalidStation() throws Exception
 	{
-		final QueryDeparturesResult resultLive = provider.queryDepartures("111111", 0, false);
+		final QueryDeparturesResult resultLive = queryDepartures("111111", false);
 		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, resultLive.status);
 
-		final QueryDeparturesResult resultPlan = provider.queryDepartures("2449475", 0, false);
+		final QueryDeparturesResult resultPlan = queryDepartures("2449475", false);
 		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, resultPlan.status);
 	}
 
