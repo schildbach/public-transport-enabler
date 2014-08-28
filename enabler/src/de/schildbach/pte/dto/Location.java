@@ -138,7 +138,8 @@ public final class Location implements Serializable
 	@Override
 	public String toString()
 	{
-		return "[" + type + " " + id + " " + lat + "/" + lon + " " + (place != null ? "\"" + place + "\"" : "null") + " \"" + name + "\"]";
+		return "[" + type + " " + id + " " + lat + "/" + lon + " " + (place != null ? "\"" + place + "\"" : "null") + " "
+				+ (name != null ? "\"" + name + "\"" : "null") + "]";
 	}
 
 	@Override
