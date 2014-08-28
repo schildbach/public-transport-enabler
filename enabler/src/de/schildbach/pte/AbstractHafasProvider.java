@@ -445,18 +445,18 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
-		appendXmlStationBoardParameters(uri, time, stationId, maxDepartures, "vs_java3");
+		appendXmlStationBoardParameters(uri, time, stationId, maxDepartures, equivs, "vs_java3");
 
 		return xmlStationBoard(uri.toString(), stationId);
 	}
 
 	protected void appendXmlStationBoardParameters(final StringBuilder uri, final Date time, final String stationId, final int maxDepartures,
-			final String styleSheet)
+			final boolean equivs, final String styleSheet)
 	{
 		uri.append("?productsFilter=").append(allProductsString());
 		uri.append("&boardType=dep");
 		if (stationBoardCanDoEquivs)
-			uri.append("&disableEquivs=yes"); // don't use nearby stations
+			uri.append("&disableEquivs=").append(equivs ? "0" : "1");
 		uri.append("&maxJourneys=").append(maxDepartures > 0 ? maxDepartures : DEFAULT_MAX_DEPARTURES);
 		uri.append("&input=").append(normalizeStationId(stationId));
 		appendDateTimeParameters(uri, time, "date", "time");
@@ -516,7 +516,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 			final ResultHeader header = new ResultHeader(SERVER_PRODUCT);
 			final QueryDeparturesResult result = new QueryDeparturesResult(header);
-			final List<Departure> departures = new ArrayList<Departure>(8);
 
 			if (XmlPullUtil.test(pp, "Err"))
 			{
@@ -576,9 +575,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				// TODO is_reachable
 				// TODO disableTrainInfo
 
-				final boolean isEquivStation = stationBoardCanDoEquivs && depStation != null;
-
-				if (!isEquivStation && !"cancel".equals(eDelay))
+				if (!"cancel".equals(eDelay))
 				{
 					final Calendar plannedTime = new GregorianCalendar(timeZone);
 					plannedTime.clear();
@@ -687,7 +684,27 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 					final Departure departure = new Departure(plannedTime.getTime(), predictedTime != null ? predictedTime.getTime() : null, line,
 							position, destination, capacity, message);
-					departures.add(departure);
+
+					final Location location;
+					if (!stationBoardCanDoEquivs || depStation == null)
+					{
+						location = new Location(LocationType.STATION, normalizedStationId, stationPlaceAndName != null ? stationPlaceAndName[0]
+								: null, stationPlaceAndName != null ? stationPlaceAndName[1] : null);
+					}
+					else
+					{
+						final String[] depPlaceAndName = splitPlaceAndName(depStation);
+						location = new Location(LocationType.STATION, null, depPlaceAndName[0], depPlaceAndName[1]);
+					}
+
+					StationDepartures stationDepartures = findStationDepartures(result.stationDepartures, location);
+					if (stationDepartures == null)
+					{
+						stationDepartures = new StationDepartures(location, new ArrayList<Departure>(8), null);
+						result.stationDepartures.add(stationDepartures);
+					}
+
+					stationDepartures.departures.add(departure);
 				}
 
 				XmlPullUtil.requireSkip(pp, "Journey");
@@ -698,9 +715,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 			XmlPullUtil.requireEndDocument(pp);
 
-			result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, normalizedStationId,
-					stationPlaceAndName != null ? stationPlaceAndName[0] : null, stationPlaceAndName != null ? stationPlaceAndName[1] : null),
-					departures, null));
 			return result;
 		}
 		catch (final XmlPullParserException x)
@@ -712,6 +726,15 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			if (reader != null)
 				reader.close();
 		}
+	}
+
+	private StationDepartures findStationDepartures(final List<StationDepartures> stationDepartures, final Location location)
+	{
+		for (final StationDepartures stationDeparture : stationDepartures)
+			if (stationDeparture.location.equals(location))
+				return stationDeparture;
+
+		return null;
 	}
 
 	protected void addCustomReplaces(final StringReplaceReader reader)

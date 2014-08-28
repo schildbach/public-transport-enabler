@@ -87,6 +87,13 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
+	public void queryDeparturesEquivs() throws Exception
+	{
+		final QueryDeparturesResult result = queryDepartures("3000010", true);
+		print(result);
+	}
+
+	@Test
 	public void queryDeparturesInvalidStation() throws Exception
 	{
 		final QueryDeparturesResult result = queryDepartures("999999", false);

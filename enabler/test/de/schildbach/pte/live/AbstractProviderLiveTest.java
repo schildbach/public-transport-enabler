@@ -17,6 +17,8 @@
 
 package de.schildbach.pte.live;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
@@ -70,7 +72,17 @@ public abstract class AbstractProviderLiveTest
 
 	protected final QueryDeparturesResult queryDepartures(final String stationId, boolean equivs) throws IOException
 	{
-		return provider.queryDepartures(stationId, new Date(), 0, equivs);
+		final QueryDeparturesResult result = provider.queryDepartures(stationId, new Date(), 0, equivs);
+
+		if (result.status == QueryDeparturesResult.Status.OK)
+		{
+			if (equivs)
+				assertTrue(result.stationDepartures.size() > 1);
+			else
+				assertTrue(result.stationDepartures.size() == 1);
+		}
+
+		return result;
 	}
 
 	protected final QueryTripsResult queryTrips(final Location from, final Location via, final Location to, final Date date, final boolean dep,

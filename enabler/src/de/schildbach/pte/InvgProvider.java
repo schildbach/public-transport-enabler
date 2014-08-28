@@ -159,7 +159,7 @@ public class InvgProvider extends AbstractHafasProvider
 
 		// scrape page
 		final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
-		appendXmlStationBoardParameters(uri, time, stationId, maxDepartures, null);
+		appendXmlStationBoardParameters(uri, time, stationId, maxDepartures, false, null);
 		final CharSequence page = ParserUtils.scrape(uri.toString());
 
 		// System.out.println(uri);

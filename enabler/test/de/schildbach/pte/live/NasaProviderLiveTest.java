@@ -72,6 +72,14 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
+	public void queryDeparturesEquivs() throws Exception
+	{
+		final QueryDeparturesResult result = queryDepartures("13000", true);
+
+		print(result);
+	}
+
+	@Test
 	public void queryDeparturesInvalidStation() throws Exception
 	{
 		final QueryDeparturesResult result = queryDepartures("999999", false);
