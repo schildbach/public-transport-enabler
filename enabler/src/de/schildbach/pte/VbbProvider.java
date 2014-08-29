@@ -52,15 +52,6 @@ public class VbbProvider extends AbstractHafasProvider
 		return NETWORK_ID;
 	}
 
-	public boolean hasCapabilities(final Capability... capabilities)
-	{
-		for (final Capability capability : capabilities)
-			if (capability == Capability.DEPARTURES || capability == Capability.SUGGEST_LOCATIONS || capability == Capability.TRIPS)
-				return true;
-
-		return false;
-	}
-
 	@Override
 	protected char intToProduct(final int value)
 	{

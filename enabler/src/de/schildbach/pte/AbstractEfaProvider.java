@@ -231,6 +231,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		this.fareCorrectionFactor = fareCorrectionFactor;
 	}
 
+	@Override
+	protected boolean hasCapability(final Capability capability)
+	{
+		return true;
+	}
+
 	private final void appendCommonRequestParams(final StringBuilder uri, final String outputFormat)
 	{
 		uri.append("?outputFormat=").append(outputFormat);

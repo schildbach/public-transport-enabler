@@ -43,15 +43,6 @@ public class BsvagProvider extends AbstractEfaProvider
 		return NETWORK_ID;
 	}
 
-	public boolean hasCapabilities(final Capability... capabilities)
-	{
-		for (final Capability capability : capabilities)
-			if (capability == Capability.SUGGEST_LOCATIONS || capability == Capability.DEPARTURES || capability == Capability.TRIPS)
-				return true;
-
-		return false;
-	}
-
 	private static final Map<String, Style> STYLES = new HashMap<String, Style>();
 
 	static

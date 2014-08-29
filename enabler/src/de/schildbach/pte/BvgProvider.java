@@ -73,15 +73,6 @@ public final class BvgProvider extends AbstractHafasProvider
 		return NETWORK_ID;
 	}
 
-	public boolean hasCapabilities(final Capability... capabilities)
-	{
-		for (final Capability capability : capabilities)
-			if (capability == Capability.SUGGEST_LOCATIONS || capability == Capability.NEARBY_STATIONS)
-				return false;
-
-		return true;
-	}
-
 	@Override
 	protected char intToProduct(final int value)
 	{

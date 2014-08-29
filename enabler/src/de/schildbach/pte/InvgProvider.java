@@ -70,13 +70,13 @@ public class InvgProvider extends AbstractHafasProvider
 		return NETWORK_ID;
 	}
 
-	public boolean hasCapabilities(final Capability... capabilities)
+	@Override
+	protected boolean hasCapability(final Capability capability)
 	{
-		for (final Capability capability : capabilities)
-			if (capability == Capability.DEPARTURES)
-				return true;
-
-		return false;
+		if (capability == Capability.TRIPS)
+			return false;
+		else
+			return super.hasCapability(capability);
 	}
 
 	@Override

@@ -43,13 +43,13 @@ public class GvhProvider extends AbstractEfaProvider
 		return NETWORK_ID;
 	}
 
-	public boolean hasCapabilities(final Capability... capabilities)
+	@Override
+	protected boolean hasCapability(final Capability capability)
 	{
-		for (final Capability capability : capabilities)
-			if (capability == Capability.SUGGEST_LOCATIONS || capability == Capability.DEPARTURES || capability == Capability.TRIPS)
-				return true;
-
-		return false;
+		if (capability == Capability.SUGGEST_LOCATIONS || capability == Capability.TRIPS)
+			return false;
+		else
+			return super.hasCapability(capability);
 	}
 
 	@Override

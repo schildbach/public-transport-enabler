@@ -219,6 +219,12 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		this.stationBoardCanDoEquivs = canDoEquivs;
 	}
 
+	@Override
+	protected boolean hasCapability(final Capability capability)
+	{
+		return true;
+	}
+
 	protected final String allProductsString()
 	{
 		final StringBuilder allProducts = new StringBuilder(numProductBits);

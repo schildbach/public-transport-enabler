@@ -37,15 +37,6 @@ public class StvProvider extends AbstractEfaProvider
 		return NETWORK_ID;
 	}
 
-	public boolean hasCapabilities(final Capability... capabilities)
-	{
-		for (final Capability capability : capabilities)
-			if (capability == Capability.SUGGEST_LOCATIONS || capability == Capability.DEPARTURES || capability == Capability.TRIPS)
-				return true;
-
-		return false;
-	}
-
 	@Override
 	protected String parseLine(final String mot, final String symbol, final String name, final String longName, final String trainType,
 			final String trainNum, final String trainName)

@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
+import de.schildbach.pte.NetworkProvider.Capability;
 import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
@@ -46,6 +47,17 @@ public abstract class AbstractNetworkProvider implements NetworkProvider
 		ALL_EXCEPT_HIGHSPEED = new HashSet<Product>(Product.ALL);
 		ALL_EXCEPT_HIGHSPEED.remove(Product.HIGH_SPEED_TRAIN);
 	}
+
+	public final boolean hasCapabilities(final Capability... capabilities)
+	{
+		for (final Capability capability : capabilities)
+			if (!hasCapability(capability))
+				return false;
+
+		return true;
+	}
+
+	protected abstract boolean hasCapability(Capability capability);
 
 	public Collection<Product> defaultProducts()
 	{

@@ -187,6 +187,15 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 				apiBase + (stopFinderEndpoint != null ? stopFinderEndpoint : DEFAULT_STOPFINDER_ENDPOINT));
 	}
 
+	@Override
+	protected boolean hasCapability(final Capability capability)
+	{
+		if (capability == Capability.DEPARTURES)
+			return false;
+		else
+			return true;
+	}
+
 	public SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException
 	{
 		final StringBuilder parameters = buildCommonRequestParams("SearchTripPoint", "json");
