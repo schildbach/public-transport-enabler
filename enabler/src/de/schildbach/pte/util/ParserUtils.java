@@ -53,6 +53,8 @@ public final class ParserUtils
 	private static final String SCRAPE_USER_AGENT = "Mozilla/5.0 (Linux; Android 4.3; Galaxy Nexus Build/JWR66Y) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.117 Mobile Safari/537.36";
 	private static final String SCRAPE_ACCEPT = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
 	public static final int SCRAPE_INITIAL_CAPACITY = 4096;
+	private static final int SCRAPE_COPY_SIZE = 2048;
+	private static final int SCRAPE_PEEK_SIZE = 4096;
 	private static final int SCRAPE_CONNECT_TIMEOUT = 5000;
 	private static final int SCRAPE_READ_TIMEOUT = 15000;
 	private static final Charset SCRAPE_DEFAULT_ENCODING = Charset.forName("ISO-8859-1");
@@ -91,7 +93,7 @@ public final class ParserUtils
 
 	public static final long copy(final Reader reader, final StringBuilder builder) throws IOException
 	{
-		final char[] buffer = new char[SCRAPE_INITIAL_CAPACITY];
+		final char[] buffer = new char[SCRAPE_COPY_SIZE];
 		long count = 0;
 		int n = 0;
 		while (-1 != (n = reader.read(buffer)))
@@ -256,12 +258,10 @@ public final class ParserUtils
 		}
 	}
 
-	private static final int PEEK_SIZE = 2048;
-
 	public static String peekFirstChars(final InputStream is) throws IOException
 	{
-		is.mark(PEEK_SIZE);
-		final byte[] firstBytes = new byte[PEEK_SIZE];
+		is.mark(SCRAPE_PEEK_SIZE);
+		final byte[] firstBytes = new byte[SCRAPE_PEEK_SIZE];
 		final int read = is.read(firstBytes);
 		if (read == -1)
 			return "";
