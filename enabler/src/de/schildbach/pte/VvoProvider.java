@@ -50,10 +50,17 @@ public class VvoProvider extends AbstractEfaProvider
 	{
 		if ("0".equals(mot))
 		{
+			if ("Twoje Linie Kolejowe".equals(trainName) && symbol != null)
+				return "ITLK" + symbol;
+
+			if ("Regionalbahn".equals(trainName) && trainNum == null)
+				return "R";
 			if ("Ostdeutsche Eisenbahn GmbH".equals(longName))
 				return "ROE";
 			if ("Meridian".equals(longName))
 				return "RM";
+			if ("U28".equals(symbol)) // Nationalparkbahn
+				return "RU28";
 
 			if ("Fernbus".equals(trainName) && trainNum == null)
 				return "B" + trainName;

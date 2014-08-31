@@ -143,7 +143,7 @@ public class VbbProvider extends AbstractHafasProvider
 	protected Line parseLineAndType(final String lineAndType)
 	{
 		if ("X#".equals(lineAndType))
-			return newLine('?', "X", null);
+			return newLine('I', "X", null); // InterConnex
 		else
 			return super.parseLineAndType(lineAndType);
 	}

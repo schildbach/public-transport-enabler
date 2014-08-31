@@ -67,6 +67,10 @@ public class MvvProvider extends AbstractEfaProvider
 				return "SA";
 			if ("DB AG".equals(trainName))
 				return '?' + symbol;
+			if ("Zug".equals(symbol))
+				return "?Zug";
+			if ("alex".equals(symbol))
+				return "?alex";
 		}
 
 		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);

@@ -152,6 +152,15 @@ public final class BvgProvider extends AbstractHafasProvider
 	}
 
 	@Override
+	protected Line parseLineAndType(final String lineAndType)
+	{
+		if ("X#".equals(lineAndType))
+			return newLine('I', "X", null); // InterConnex
+		else
+			return super.parseLineAndType(lineAndType);
+	}
+
+	@Override
 	protected Line newLine(final char product, final String normalizedName, final String comment, final Attr... attrs)
 	{
 		if (product == 'S' && "S41".equals(normalizedName))

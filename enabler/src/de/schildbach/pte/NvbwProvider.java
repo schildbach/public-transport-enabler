@@ -44,24 +44,30 @@ public class NvbwProvider extends AbstractEfaProvider
 	{
 		if ("0".equals(mot))
 		{
-			if ("ICE".equals(trainName) && trainNum == null)
+			if (("ICE".equals(trainName) || "InterCityExpress".equals(trainName)) && trainNum == null)
 				return "IICE";
-			if ("Fernreisezug externer EU".equals(trainName))
+			if ("InterCity".equals(trainName) && trainNum == null)
+				return "IIC";
+			if ("Fernreisezug externer EU".equals(trainName) && trainNum == null)
 				return "I";
-			if ("Nahverkehrszug von Dritten".equals(trainName) || "DB-Zug".equals(trainName) || "REGIOBAHN".equals(trainName))
+			if ("SuperCity".equals(trainName) && trainNum == null)
+				return "ISC";
+			if ("REGIOBAHN".equals(trainName) && trainNum == null)
 				return "R";
-			if ("RR".equals(trainType))
-				return "RRR" + trainNum;
+			if ("RR".equals(trainType) && trainNum == null)
+				return "RRR";
 			if ("Meridian".equals(trainName) && symbol != null)
 				return "R" + symbol;
 			if ("CityBahn".equals(trainName) && trainNum == null)
 				return "RCB";
 			if ("Trilex".equals(trainName) && trainNum == null)
 				return "RTLX";
-			if ("Koleje Dolnoslaskie".equals(trainName))
-				return "RKD";
 			if ("Bay. Seenschifffahrt".equals(trainName) && symbol != null)
 				return "F" + symbol;
+			if ("Nahverkehrszug von Dritten".equals(trainName) && trainNum == null)
+				return "?Zug";
+			if ("DB".equals(trainName) && trainNum == null)
+				return "?DB";
 		}
 
 		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);

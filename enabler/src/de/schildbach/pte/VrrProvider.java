@@ -54,6 +54,10 @@ public class VrrProvider extends AbstractEfaProvider
 		{
 			if (trainType == null && "RB67/71".equals(trainNum))
 				return 'R' + trainNum;
+			if ("Regionalbahn".equals(trainName) && symbol != null)
+				return 'R' + symbol;
+			if ("NordWestBahn".equals(trainName) && symbol != null)
+				return 'R' + symbol;
 
 			if (trainType == null && "SEV7".equals(trainNum))
 				return 'B' + trainNum;

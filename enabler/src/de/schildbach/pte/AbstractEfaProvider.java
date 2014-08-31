@@ -1055,7 +1055,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return "IEC" + trainNum;
 			if ("EN".equals(trainType) || "EuroNight".equals(trainName))
 				return "IEN" + trainNum;
-			if ("IC".equals(trainType) || "InterCity".equals(trainName))
+			if (("IC".equals(trainType) || "InterCity".equals(trainName)) && trainNum != null)
 				return "IIC" + trainNum;
 			if ("InterCity".equals(longName))
 				return "IIC";
@@ -1120,7 +1120,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return 'R' + symbol;
 			if ("REX".equals(trainType)) // RegionalExpress, Österreich
 				return "RREX" + trainNum;
-			if ("RB".equals(trainType) || "Regionalbahn".equals(trainName))
+			if (("RB".equals(trainType) || "Regionalbahn".equals(trainName)) && trainNum != null)
 				return "RRB" + trainNum;
 			if (trainType == null && trainNum != null && P_LINE_RB.matcher(trainNum).matches())
 				return 'R' + trainNum;
@@ -1140,7 +1140,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return "RE" + trainNum;
 			if ("WFB".equals(trainType) || "WestfalenBahn".equals(trainName))
 				return "RWFB" + trainNum;
-			if ("NWB".equals(trainType) || "NordWestBahn".equals(trainName))
+			if (("NWB".equals(trainType) || "NordWestBahn".equals(trainName)) && trainNum != null)
 				return "RNWB" + trainNum;
 			if ("WES".equals(trainType) || "Westbahn".equals(trainName))
 				return "RWES" + trainNum;
@@ -1293,6 +1293,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return 'R' + symbol;
 			if ("KD".equals(trainType)) // Koleje Dolnośląskie (Niederschlesische Eisenbahn)
 				return 'R' + symbol;
+			if ("Koleje Dolnoslaskie".equals(trainName) && symbol != null) // Koleje Dolnośląskie
+				return "R" + symbol;
 			if ("OO".equals(trainType) || "Ordinary passenger (o.pas.)".equals(trainName)) // GB
 				return "ROO" + trainNum;
 			if ("XX".equals(trainType) || "Express passenger    (ex.pas.)".equals(trainName)) // GB
@@ -1337,9 +1339,13 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return "RÖBA" + trainNum;
 			if (("UEF".equals(trainType) || "Ulmer Eisenbahnfreunde".equals(trainName)) && trainNum != null)
 				return "RUEF" + trainNum;
+			if (("DBG".equals(trainType) || "Döllnitzbahn".equals(trainName)) && trainNum != null)
+				return "RDBG" + trainNum;
 
 			if ("BSB-Zug".equals(trainName) && trainNum != null) // Breisgau-S-Bahn
 				return 'S' + trainNum;
+			if ("BSB-Zug".equals(trainName) && trainNum == null)
+				return "SBSB";
 			if ("BSB-Zug".equals(longName))
 				return "SBSB";
 			if ("RSB".equals(trainType)) // Regionalschnellbahn, Wien
@@ -1369,6 +1375,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			if ("SB".equals(trainType)) // Seilbahn
 				return "CSB" + trainNum;
 
+			if ("ZUG".equals(trainType) && trainNum != null)
+				return '?' + trainNum;
 			if (trainType == null && trainName == null && P_LINE_NUMBER.matcher(symbol).matches())
 				return '?' + symbol;
 			if (trainType == null && trainName == null && symbol.equals(name) && symbol.equals(longName))
