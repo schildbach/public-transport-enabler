@@ -605,7 +605,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 					XmlPullUtil.skipExit(pp, "coordInfoItem");
 
-					stations.add(new Location(LocationType.STATION, id, coord.lat, coord.lon, place, name));
+					if (name != null)
+						stations.add(new Location(LocationType.STATION, id, coord.lat, coord.lon, place, name));
 				}
 
 				XmlPullUtil.skipExit(pp, "coordInfoItemList");
@@ -866,9 +867,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		final String place = normalizeLocationName(XmlPullUtil.attr(pp, "place"));
 
-		final String name = normalizeLocationName(XmlPullUtil.valueTag(pp, "itdOdvAssignedStop"));
+		final String name = normalizeLocationName(XmlPullUtil.optValueTag(pp, "itdOdvAssignedStop", null));
 
-		return new Location(LocationType.STATION, id, lat, lon, place, name);
+		if (name != null)
+			return new Location(LocationType.STATION, id, lat, lon, place, name);
+		else
+			return null;
 	}
 
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
@@ -943,7 +947,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					{
 						final Location newStation = processItdOdvAssignedStop(pp);
 
-						if (!stations.contains(newStation))
+						if (newStation != null && !stations.contains(newStation))
 							stations.add(newStation);
 					}
 					XmlPullUtil.skipExit(pp, "itdOdvAssignedStops");
@@ -1511,9 +1515,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					while (XmlPullUtil.test(pp, "itdOdvAssignedStop"))
 					{
 						final Location assignedLocation = processItdOdvAssignedStop(pp);
-						if (findStationDepartures(result.stationDepartures, assignedLocation.id) == null)
-							result.stationDepartures.add(new StationDepartures(assignedLocation, new LinkedList<Departure>(),
-									new LinkedList<LineDestination>()));
+						if (assignedLocation != null)
+							if (findStationDepartures(result.stationDepartures, assignedLocation.id) == null)
+								result.stationDepartures.add(new StationDepartures(assignedLocation, new LinkedList<Departure>(),
+										new LinkedList<LineDestination>()));
 					}
 					XmlPullUtil.skipExit(pp, "itdOdvAssignedStops");
 				}
