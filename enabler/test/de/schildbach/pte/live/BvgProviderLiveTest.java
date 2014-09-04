@@ -42,7 +42,7 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest
 {
 	public BvgProviderLiveTest()
 	{
-		super(new BvgProvider(null));
+		super(new BvgProvider());
 	}
 
 	@Test

@@ -56,17 +56,13 @@ public final class BvgProvider extends AbstractHafasProvider
 
 	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
 
-	private final String additionalQueryParameter;
-
-	public BvgProvider(final String additionalQueryParameter)
+	public BvgProvider()
 	{
 		super(API_BASE + "stboard.bin/dn", API_BASE + "ajax-getstop.bin/dny", API_BASE + "query.bin/dn", 8, UTF_8);
 
 		setJsonGetStopsUseWeight(false);
 		setStationBoardCanDoEquivs(false);
 		setStyles(STYLES);
-
-		this.additionalQueryParameter = additionalQueryParameter;
 	}
 
 	public NetworkId id()
@@ -252,8 +248,6 @@ public final class BvgProvider extends AbstractHafasProvider
 		final StringBuilder uri = new StringBuilder();
 		uri.append(DEPARTURE_URL_LIVE);
 		uri.append("input=").append(normalizeStationId(stationId));
-		if (additionalQueryParameter != null)
-			uri.append('&').append(additionalQueryParameter);
 		return uri.toString();
 	}
 
@@ -267,8 +261,6 @@ public final class BvgProvider extends AbstractHafasProvider
 		if (time != null)
 			appendDateTimeParameters(uri, time, "date", "time");
 		uri.append("&maxJourneys=").append(maxDepartures != 0 ? maxDepartures : DEFAULT_MAX_DEPARTURES);
-		if (additionalQueryParameter != null)
-			uri.append('&').append(additionalQueryParameter);
 		return uri.toString();
 	}
 
@@ -504,15 +496,6 @@ public final class BvgProvider extends AbstractHafasProvider
 	protected boolean isValidStationId(final String id)
 	{
 		return Integer.parseInt(id) >= 1000000;
-	}
-
-	@Override
-	protected void appendCommonQueryTripsBinaryParameters(final StringBuilder uri)
-	{
-		super.appendCommonQueryTripsBinaryParameters(uri);
-
-		if (additionalQueryParameter != null)
-			uri.append('&').append(additionalQueryParameter);
 	}
 
 	private static final Pattern P_NORMALIZE_LINE_NAME_TRAM = Pattern.compile("(?:tra|tram)\\s+(.*)", Pattern.CASE_INSENSITIVE);
