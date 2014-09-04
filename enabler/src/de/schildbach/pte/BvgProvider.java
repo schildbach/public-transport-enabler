@@ -51,7 +51,7 @@ import de.schildbach.pte.util.ParserUtils;
 public final class BvgProvider extends AbstractHafasProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.BVG;
-	private static final String API_BASE = "http://www.fahrinfo-berlin.de/Fahrinfo/bin/";
+	private static final String API_BASE = "http://fahrinfo.bvg.de/Fahrinfo/bin/";
 	private static final String DEPARTURE_URL = "http://mobil.bvg.de";
 
 	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
