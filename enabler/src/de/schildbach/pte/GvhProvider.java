@@ -46,7 +46,7 @@ public class GvhProvider extends AbstractEfaProvider
 	@Override
 	protected boolean hasCapability(final Capability capability)
 	{
-		if (capability == Capability.SUGGEST_LOCATIONS || capability == Capability.TRIPS)
+		if (capability == Capability.SUGGEST_LOCATIONS)
 			return false;
 		else
 			return super.hasCapability(capability);
