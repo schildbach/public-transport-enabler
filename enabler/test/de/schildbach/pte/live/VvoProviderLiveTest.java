@@ -96,6 +96,14 @@ public class VvoProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
+	public void suggestAddressLocation() throws Exception
+	{
+		final SuggestLocationsResult result = provider.suggestLocations("Dresden, Töpferstr. 10");
+
+		print(result);
+	}
+
+	@Test
 	public void shortTrip() throws Exception
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "33000013", null, "Dresden Albertplatz"), null, new Location(
@@ -122,5 +130,17 @@ public class VvoProviderLiveTest extends AbstractProviderLiveTest
 
 		final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
 		print(earlierResult);
+	}
+
+	@Test
+	public void tripFromAddressToAddress() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(
+				new Location(LocationType.ADDRESS, null, 51052260, 13740998, "Dresden", "Dresden, Töpferstraße 10"), null, new Location(
+						LocationType.ADDRESS, null, 51029752, 13700666, "Dresden", "Dresden, Tharandter Straße 88"), new Date(), true, Product.ALL,
+				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		print(result);
+		assertEquals(QueryTripsResult.Status.OK, result.status);
+		assertTrue(result.trips.size() > 0);
 	}
 }
