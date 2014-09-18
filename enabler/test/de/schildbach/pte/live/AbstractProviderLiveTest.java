@@ -68,6 +68,9 @@ public abstract class AbstractProviderLiveTest
 	protected final void print(final QueryTripsResult result)
 	{
 		System.out.println(result);
+
+		// for (final Trip trip : result.trips)
+		// System.out.println(trip);
 	}
 
 	protected final QueryDeparturesResult queryDepartures(final String stationId, boolean equivs) throws IOException

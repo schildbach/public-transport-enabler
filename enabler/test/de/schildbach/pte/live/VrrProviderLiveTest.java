@@ -207,4 +207,14 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
 		print(earlierResult);
 	}
+
+	@Test
+	public void shortTripDorsten() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "20009643", "Bottrop", "West S"), null, new Location(
+				LocationType.STATION, "20003214", "Dorsten", "ZOB Dorsten"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		print(result);
+		assertEquals(QueryTripsResult.Status.OK, result.status);
+		assertTrue(result.trips.size() > 0);
+	}
 }

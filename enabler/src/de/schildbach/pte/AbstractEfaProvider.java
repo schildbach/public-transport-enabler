@@ -90,7 +90,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private boolean canAcceptPoiId = false;
 	private boolean needsSpEncId = false;
 	private boolean includeRegionId = true;
-	private boolean xsltDepartureMonitorUseProxFootSearch = true;
+	private boolean useProxFootSearch = true;
 	private Charset requestUrlEncoding = ISO_8859_1;
 	private String httpReferer = null;
 	private String httpRefererTrip = null;
@@ -196,9 +196,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		this.includeRegionId = includeRegionId;
 	}
 
-	protected void setXsltDepartureMonitorUseProxFootSearch(final boolean xsltDepartureMonitorUseProxFootSearch)
+	protected void setUseProxFootSearch(final boolean useProxFootSearch)
 	{
-		this.xsltDepartureMonitorUseProxFootSearch = xsltDepartureMonitorUseProxFootSearch;
+		this.useProxFootSearch = useProxFootSearch;
 	}
 
 	protected void setUseRouteIndexAsTripId(final boolean useRouteIndexAsTripId)
@@ -896,7 +896,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		parameters.append("&type_dm=stop&name_dm=").append(normalizeStationId(stationId));
 		parameters.append("&itOptionsActive=1");
 		parameters.append("&ptOptionsActive=1");
-		parameters.append("&useProxFootSearch=1");
+		if (useProxFootSearch)
+			parameters.append("&useProxFootSearch=1");
 		parameters.append("&mergeDep=1");
 		parameters.append("&useAllStops=1");
 		parameters.append("&mode=direct");
@@ -1440,7 +1441,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		parameters.append("&mode=direct");
 		parameters.append("&ptOptionsActive=1");
 		parameters.append("&deleteAssignedStops_dm=").append(equivs ? '0' : '1');
-		if (xsltDepartureMonitorUseProxFootSearch)
+		if (useProxFootSearch)
 			parameters.append("&useProxFootSearch=").append(equivs ? '1' : '0');
 		parameters.append("&mergeDep=1"); // merge departures
 		if (maxDepartures > 0)
@@ -2120,7 +2121,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		uri.append("&locationServerActive=1");
 		if (useRealtime)
 			uri.append("&useRealtime=1");
-		uri.append("&useProxFootSearch=1"); // walk if it makes journeys quicker
+		if (useProxFootSearch)
+			uri.append("&useProxFootSearch=1"); // walk if it makes journeys quicker
 		uri.append("&nextDepsPerLeg=1"); // next departure in case previous was missed
 
 		return uri.toString();
