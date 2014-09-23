@@ -1323,7 +1323,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 		id.append("A=").append(locationType(location));
 
-		if (location.type == LocationType.STATION && location.hasId() && isValidStationId(location.id))
+		if (location.type == LocationType.STATION && location.hasId())
 		{
 			id.append("@L=").append(normalizeStationId(location.id));
 		}
@@ -1360,11 +1360,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		throw new IllegalArgumentException(location.type.toString());
 	}
 
-	protected boolean isValidStationId(final String id)
-	{
-		return true;
-	}
-
 	protected void appendQueryTripsBinaryParameters(final StringBuilder uri, final Location from, final Location via, final Location to,
 			final Date date, final boolean dep, final Collection<Product> products, final Accessibility accessibility, final Set<Option> options)
 	{
@@ -1379,7 +1374,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 			uri.append("&REQ0JourneyStops1.0A=").append(locationType(via));
 
-			if (via.type == LocationType.STATION && via.hasId() && isValidStationId(via.id))
+			if (via.type == LocationType.STATION && via.hasId())
 			{
 				uri.append("&REQ0JourneyStops1.0L=").append(via.id);
 			}
@@ -2930,7 +2925,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	}
 
 	private static final Pattern P_NORMALIZE_LINE_BUS = Pattern.compile("(?:Bus|BUS)\\s*(.*)");
-	private static final Pattern P_NORMALIZE_LINE_TRAM = Pattern.compile("(?:Tram|Str|STR)\\s*(.*)");
+	private static final Pattern P_NORMALIZE_LINE_TRAM = Pattern.compile("(?:Tram|Tra|Str|STR)\\s*(.*)");
 
 	protected Line parseLine(final String type, final String normalizedName, final boolean wheelchairAccess)
 	{

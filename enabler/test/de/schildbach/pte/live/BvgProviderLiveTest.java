@@ -71,23 +71,20 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult resultLive = queryDepartures("309557", false);
-		assertEquals(QueryDeparturesResult.Status.OK, resultLive.status);
-		print(resultLive);
+		final QueryDeparturesResult result1 = queryDepartures("9016254", false);
+		assertEquals(QueryDeparturesResult.Status.OK, result1.status);
+		print(result1);
 
-		final QueryDeparturesResult resultPlan = queryDepartures("9100003", false);
-		assertEquals(QueryDeparturesResult.Status.OK, resultPlan.status);
-		print(resultPlan);
+		final QueryDeparturesResult result2 = queryDepartures("9100003", false);
+		assertEquals(QueryDeparturesResult.Status.OK, result2.status);
+		print(result2);
 	}
 
 	@Test
 	public void queryDeparturesInvalidStation() throws Exception
 	{
-		final QueryDeparturesResult resultLive = queryDepartures("111111", false);
-		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, resultLive.status);
-
-		final QueryDeparturesResult resultPlan = queryDepartures("2449475", false);
-		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, resultPlan.status);
+		final QueryDeparturesResult result = queryDepartures("999999", false);
+		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
 	}
 
 	@Test
@@ -113,7 +110,7 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsAddress() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Sophienstr. 24");
+		final SuggestLocationsResult result = provider.suggestLocations("Berlin, Sophienstr. 24");
 
 		print(result);
 
@@ -209,17 +206,5 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest
 		print(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		print(laterResult);
-	}
-
-	@Test
-	public void testStationIdReverse() throws Exception
-	{
-		Assert.assertEquals(BvgProvider.migrateStationIdReverse("101000316"), "100316");
-		Assert.assertEquals(BvgProvider.migrateStationIdReverse("301000316"), "300316");
-
-		// no conversions
-		Assert.assertEquals(BvgProvider.migrateStationIdReverse("102000316"), "102000316");
-		Assert.assertEquals(BvgProvider.migrateStationIdReverse("1101000316"), "1101000316");
-		Assert.assertEquals(BvgProvider.migrateStationIdReverse("11000316"), "11000316");
 	}
 }
