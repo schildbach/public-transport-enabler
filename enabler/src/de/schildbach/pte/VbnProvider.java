@@ -85,7 +85,7 @@ public class VbnProvider extends AbstractHafasProvider
 		}
 	}
 
-	private static final String[] PLACES = { "Bremen", "Bremerhaven", "Oldenburg(Oldb)", "Göttingen" };
+	private static final String[] PLACES = { "Bremen", "Bremerhaven", "Oldenburg(Oldb)", "Osnabrück", "Göttingen" };
 
 	@Override
 	protected String[] splitPlaceAndName(final String name)
