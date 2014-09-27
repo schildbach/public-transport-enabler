@@ -70,6 +70,13 @@ public class NaldoProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
+	public void queryDeparturesInvalidStation() throws Exception
+	{
+		final QueryDeparturesResult result = queryDepartures("999999", false);
+		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
+	}
+
+	@Test
 	public void suggestLocationsIncomplete() throws Exception
 	{
 		final SuggestLocationsResult result = provider.suggestLocations("Kurf");
@@ -88,8 +95,9 @@ public class NaldoProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "3019697", null, "Amberg Kurfürstenbad"), null, new Location(
-				LocationType.STATION, "3019500", null, "Amberg Bahnhof"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8029333", 48492484, 9207456, "Reutlingen", "ZOB"), null,
+				new Location(LocationType.STATION, "8029109", 48496968, 9213320, "Reutlingen", "Bismarckstr."), new Date(), true, Product.ALL,
+				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);

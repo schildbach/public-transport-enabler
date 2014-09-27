@@ -17,23 +17,19 @@
 
 package de.schildbach.pte;
 
-import java.io.IOException;
-
-import de.schildbach.pte.dto.Location;
-import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.SuggestLocationsResult;
-
 /**
  * @author Andreas Schildbach
  */
 public class NaldoProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.NALDO;
-	private final static String API_BASE = "http://efa.naldo.de/naldo/";
+	private final static String API_BASE = "http://efa2.naldo.de/naldo/";
 
 	public NaldoProvider()
 	{
 		super(API_BASE);
+
+		setIncludeRegionId(false);
 	}
 
 	public NetworkId id()
@@ -52,11 +48,5 @@ public class NaldoProvider extends AbstractEfaProvider
 		}
 
 		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
-	}
-
-	@Override
-	public SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException
-	{
-		return xmlStopfinderRequest(new Location(LocationType.STATION, null, null, constraint.toString()));
 	}
 }
