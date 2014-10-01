@@ -127,6 +127,17 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
+	public void shortFootwayTrip() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 52435193, 13473409, "12357 Berlin-Buckow",
+				"Kernbeisserweg 4"), null, new Location(LocationType.ADDRESS, null, 52433989, 13474353, "12357 Berlin-Buckow", "Distelfinkweg 35"),
+				new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		print(result);
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+		print(laterResult);
+	}
+
+	@Test
 	public void shortViaTrip() throws Exception
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "9056102", "Berlin", "Nollendorfplatz"), new Location(

@@ -1566,6 +1566,31 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 			if (errorCode == 0)
 			{
+				// string encoding
+				is.skipBytes(14);
+				final Charset stringEncoding = Charset.forName(strings.read(is));
+				strings.setEncoding(stringEncoding);
+
+				// read number of trips
+				is.reset();
+				is.skipBytes(30);
+
+				final int numTrips = is.readShortReverse();
+				if (numTrips == 0)
+					return new QueryTripsResult(header, uri, from, via, to, null, new LinkedList<Trip>());
+
+				// read rest of header
+				is.reset();
+				is.skipBytes(0x02);
+
+				final Location resDeparture = location(is, strings);
+				final Location resArrival = location(is, strings);
+
+				is.skipBytes(10);
+
+				final long resDate = date(is);
+				/* final long resDate30 = */date(is);
+
 				is.reset();
 				is.skipBytes(extensionHeaderPtr + 0x8);
 
@@ -1585,10 +1610,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 				final int disruptionsPtr = is.readIntReverse();
 
-				is.skipBytes(8);
+				is.skipBytes(10);
 
-				final Charset stringEncoding = Charset.forName(strings.read(is));
-				strings.setEncoding(stringEncoding);
 				final String ld = strings.read(is);
 				final int attrsOffset = is.readIntReverse();
 
@@ -1625,21 +1648,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 				// read comments
 				final CommentTable comments = new CommentTable(is, commentTablePtr, tripDetailsPtr - commentTablePtr, strings);
-
-				// really read header
-				is.reset();
-				is.skipBytes(0x02);
-
-				final Location resDeparture = location(is, strings);
-				final Location resArrival = location(is, strings);
-
-				final int numTrips = is.readShortReverse();
-
-				is.readInt();
-				is.readInt();
-
-				final long resDate = date(is);
-				/* final long resDate30 = */date(is);
 
 				final List<Trip> trips = new ArrayList<Trip>(numTrips);
 
