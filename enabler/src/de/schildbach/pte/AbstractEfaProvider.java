@@ -3057,30 +3057,36 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 					XmlPullUtil.skipExit(pp, "ls");
 
-					XmlPullUtil.require(pp, "tcs");
+					XmlPullUtil.optSkip(pp, "seqroutes");
 
 					final List<Fare> fares;
-
-					if (!pp.isEmptyElementTag())
+					if (XmlPullUtil.test(pp, "tcs"))
 					{
-						XmlPullUtil.enter(pp, "tcs");
-
-						fares = new ArrayList<Fare>(2);
-
-						while (XmlPullUtil.test(pp, "tc"))
+						if (!pp.isEmptyElementTag())
 						{
-							XmlPullUtil.enter(pp, "tc");
-							// TODO fares
-							XmlPullUtil.skipExit(pp, "tc");
-						}
+							XmlPullUtil.enter(pp, "tcs");
 
-						XmlPullUtil.skipExit(pp, "tcs");
+							fares = new ArrayList<Fare>(2);
+
+							while (XmlPullUtil.test(pp, "tc"))
+							{
+								XmlPullUtil.enter(pp, "tc");
+								// TODO fares
+								XmlPullUtil.skipExit(pp, "tc");
+							}
+
+							XmlPullUtil.skipExit(pp, "tcs");
+						}
+						else
+						{
+							fares = null;
+
+							XmlPullUtil.next(pp);
+						}
 					}
 					else
 					{
 						fares = null;
-
-						XmlPullUtil.next(pp);
 					}
 
 					final Trip trip = new Trip(tripId, firstDepartureLocation, lastArrivalLocation, legs, fares, null, numChanges);
