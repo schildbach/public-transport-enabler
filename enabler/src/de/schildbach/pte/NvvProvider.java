@@ -172,6 +172,7 @@ public class NvvProvider extends AbstractHafasProvider
 		reader.replace("<li>", " ");
 		reader.replace("</li>", " ");
 		reader.replace("Park&Ride", "Park&amp;Ride");
+		reader.replace("C&A", "C&amp;A");
 	}
 
 	@Override
