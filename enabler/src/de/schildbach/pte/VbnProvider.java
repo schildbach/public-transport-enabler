@@ -25,18 +25,45 @@ import de.schildbach.pte.dto.Product;
 public class VbnProvider extends AbstractHafasProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.VBN;
-	private static final String API_BASE = "http://www.fahrplaner.de/hafas/";
+	private static final String API_BASE = "http://fahrplaner.vbn.de/hafas/";
 
 	public VbnProvider()
 	{
-		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dny", API_BASE + "query.exe/dn", 10);
+		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dny", API_BASE + "query.exe/dn", 10, UTF_8);
 
-		setStationBoardHasStationTable(false);
+		setStationBoardHasStationTable(true);
 	}
 
 	public NetworkId id()
 	{
 		return NETWORK_ID;
+	}
+
+	@Override
+	protected char intToProduct(final int value)
+	{
+		if (value == 1)
+			return 'I';
+		if (value == 2)
+			return 'I';
+		if (value == 4)
+			return 'R';
+		if (value == 8)
+			return 'R';
+		if (value == 16)
+			return 'S';
+		if (value == 32)
+			return 'B';
+		if (value == 64)
+			return 'F';
+		if (value == 128)
+			return 'U';
+		if (value == 256)
+			return 'T';
+		if (value == 512)
+			return 'P';
+
+		throw new IllegalArgumentException("cannot handle: " + value);
 	}
 
 	@Override
