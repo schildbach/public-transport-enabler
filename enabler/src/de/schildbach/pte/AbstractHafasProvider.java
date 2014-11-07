@@ -715,6 +715,10 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 			XmlPullUtil.requireEndDocument(pp);
 
+			// sort departures
+			for (final StationDepartures stationDepartures : result.stationDepartures)
+				Collections.sort(stationDepartures.departures, Departure.TIME_COMPARATOR);
+
 			return result;
 		}
 		catch (final XmlPullParserException x)

@@ -18,6 +18,7 @@
 package de.schildbach.pte.dto;
 
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.Date;
 
 /**
@@ -43,6 +44,16 @@ public final class Departure implements Serializable
 		this.destination = destination;
 		this.capacity = capacity;
 		this.message = message;
+	}
+
+	public Date getTime()
+	{
+		if (predictedTime != null)
+			return predictedTime;
+		else if (plannedTime != null)
+			return plannedTime;
+		else
+			return null;
 	}
 
 	@Override
@@ -110,4 +121,12 @@ public final class Departure implements Serializable
 			return 0;
 		return o.hashCode();
 	}
+
+	public static final Comparator<Departure> TIME_COMPARATOR = new Comparator<Departure>()
+	{
+		public int compare(final Departure departure0, final Departure departure1)
+		{
+			return departure0.getTime().compareTo(departure1.getTime());
+		}
+	};
 }
