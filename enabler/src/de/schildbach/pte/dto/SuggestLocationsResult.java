@@ -57,7 +57,8 @@ public final class SuggestLocationsResult implements Serializable
 	{
 		final StringBuilder builder = new StringBuilder(getClass().getSimpleName());
 		builder.append("[").append(this.status);
-		builder.append(" ").append(suggestedLocations.size()).append(suggestedLocations);
+		if (suggestedLocations != null)
+			builder.append(" ").append(suggestedLocations.size()).append(suggestedLocations);
 		builder.append("]");
 		return builder.toString();
 	}

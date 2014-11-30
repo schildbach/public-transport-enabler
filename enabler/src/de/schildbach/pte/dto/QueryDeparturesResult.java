@@ -52,7 +52,8 @@ public final class QueryDeparturesResult implements Serializable
 	{
 		final StringBuilder builder = new StringBuilder(getClass().getSimpleName());
 		builder.append("[").append(this.status);
-		builder.append(" ").append(stationDepartures.size()).append(stationDepartures);
+		if (stationDepartures != null)
+			builder.append(" ").append(stationDepartures.size()).append(stationDepartures);
 		builder.append("]");
 		return builder.toString();
 	}
