@@ -1019,6 +1019,35 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 					queryUri.append("&last_section_mode=bike");
 				}
 
+				// Set forbidden commercial modes.
+				if (!products.equals(Product.ALL))
+				{
+					if (!products.contains(Product.SUBURBAN_TRAIN))
+					{
+						queryUri.append("&forbidden_uris[]=commercial_mode:train");
+					}
+					if (!products.contains(Product.SUBWAY))
+					{
+						queryUri.append("&forbidden_uris[]=commercial_mode:metro");
+					}
+					if (!products.contains(Product.TRAM))
+					{
+						queryUri.append("&forbidden_uris[]=commercial_mode:tram");
+					}
+					if (!products.contains(Product.BUS))
+					{
+						queryUri.append("&forbidden_uris[]=commercial_mode:bus");
+					}
+					if (!products.contains(Product.FERRY))
+					{
+						queryUri.append("&forbidden_uris[]=commercial_mode:ferry");
+					}
+					if (!products.contains(Product.CABLECAR))
+					{
+						queryUri.append("&forbidden_uris[]=commercial_mode:cablecar");
+					}
+				}
+
 				final CharSequence page = ParserUtils.scrape(queryUri.toString(), authorization);
 
 				// System.out.println(queryUri);

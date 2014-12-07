@@ -22,6 +22,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -228,8 +230,10 @@ public class ParisProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryTripNoSolution() throws Exception
 	{
+		final List<Product> emptyList = new LinkedList<Product>();
+
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "stop_point:RTP:SP:3926410"), null, new Location(
-				LocationType.STATION, "stop_point:RTP:SP:3926410"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+				LocationType.STATION, "stop_point:RTP:SP:3926410"), new Date(), true, emptyList, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 
 		assertEquals(QueryTripsResult.Status.NO_TRIPS, result.status);
 
