@@ -44,23 +44,6 @@ public class VmvProvider extends AbstractEfaProvider
 		return NETWORK_ID;
 	}
 
-	@Override
-	protected String parseLine(final String mot, final String symbol, final String name, final String longName, final String trainType,
-			final String trainNum, final String trainName)
-	{
-		if ("5".equals(mot))
-		{
-			if ("0F1".equals(symbol))
-				return "BF1";
-			if ("0F1A".equals(symbol))
-				return "BF1A";
-			if ("0F2".equals(symbol))
-				return "BF2";
-		}
-
-		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
-	}
-
 	private static final Map<String, Style> STYLES = new HashMap<String, Style>();
 
 	static

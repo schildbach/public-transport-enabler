@@ -131,15 +131,6 @@ public class VbnProvider extends AbstractHafasProvider
 	{
 		final String ucType = type.toUpperCase();
 
-		if ("P".equals(ucType)) // Brohltalbahn
-			return 'R';
-
-		if ("RFTAST".equals(ucType))
-			return 'B';
-
-		if ("BUSFÄHRE".equals(ucType)) // Blexen - Bremerhaven
-			return 'F';
-
 		if ("SEILB".equals(ucType))
 			return 'C';
 

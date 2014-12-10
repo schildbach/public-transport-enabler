@@ -1051,50 +1051,52 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		{
 			final String trainNumStr = trainNum != null ? trainNum : "";
 
-			if ("EC".equals(trainType) || "EuroCity".equals(trainName) || "Eurocity".equals(trainName))
+			if (("EC".equals(trainType) || "EuroCity".equals(trainName) || "Eurocity".equals(trainName)) && trainNum != null)
 				return "IEC" + trainNum;
-			if ("EN".equals(trainType) || "EuroNight".equals(trainName))
+			if (("EN".equals(trainType) || "EuroNight".equals(trainName)) && trainNum != null)
 				return "IEN" + trainNum;
 			if (("IC".equals(trainType) || "InterCity".equals(trainName)) && trainNum != null)
 				return "IIC" + trainNum;
-			if ("InterCity".equals(longName))
-				return "IIC";
 			if (("ICE".equals(trainType) || "ICE".equals(trainName) || "Intercity-Express".equals(trainName)) && trainNum != null)
 				return "IICE" + trainNum;
-			if ("X".equals(trainType) || "InterConnex".equals(trainName))
+			if (("ICN".equals(trainType) || "InterCityNight".equals(trainName)) && trainNum != null)
+				return "IICN" + trainNum;
+			if (("X".equals(trainType) || "InterConnex".equals(trainName)) && trainNum != null)
 				return "IX" + trainNum;
-			if ("CNL".equals(trainType) || "CityNightLine".equals(trainName)) // City Night Line
+			if (("CNL".equals(trainType) || "CityNightLine".equals(trainName)) && trainNum != null) // City Night Line
 				return "ICNL" + trainNum;
-			if ("THA".equals(trainType) || "Thalys".equals(trainName))
+			if (("THA".equals(trainType) || "Thalys".equals(trainName)) && trainNum != null)
 				return "ITHA" + trainNum;
-			if ("RHI".equals(trainType))
+			if ("RHI".equals(trainType) && trainNum != null)
 				return "IRHI" + trainNum;
-			if ("TGV".equals(trainType) || "TGV".equals(trainName))
+			if (("TGV".equals(trainType) || "TGV".equals(trainName)) && trainNum != null)
 				return "ITGV" + trainNum;
-			if ("INZ".equals(trainType))
+			if ("TGD".equals(trainType) && trainNum != null)
+				return "ITGD" + trainNum;
+			if ("INZ".equals(trainType) && trainNum != null)
 				return "IINZ" + trainNum;
-			if ("RJ".equals(trainType) || "railjet".equals(trainName)) // railjet
+			if (("RJ".equals(trainType) || "railjet".equals(trainName)) && trainNum != null) // railjet
 				return "IRJ" + trainNum;
-			if ("OIC".equals(trainType) || "ÖBB InterCity".equals(trainName))
-				return 'I' + symbol;
-			if ("WB".equals(trainType) || "WESTbahn".equals(trainName))
+			if (("WB".equals(trainType) || "WESTbahn".equals(trainName)) && trainNum != null)
 				return "IWB" + trainNum;
-			if ("HKX".equals(trainType) || "Hamburg-Köln-Express".equals(trainName))
+			if (("HKX".equals(trainType) || "Hamburg-Köln-Express".equals(trainName)) && trainNum != null)
 				return "IHKX" + trainNum;
-			if ("INT".equals(trainType)) // SVV, VAGFR
+			if ("INT".equals(trainType) && trainNum != null) // SVV, VAGFR
 				return "IINT" + trainNum;
-			if ("SC".equals(trainType) || "SC Pendolino".equals(trainName)) // SuperCity, Tschechien
+			if (("SC".equals(trainType) || "SC Pendolino".equals(trainName)) && trainNum != null) // SuperCity
 				return "ISC" + trainNum;
-			if ("ECB".equals(trainType)) // EC, Verona-München
+			if ("ECB".equals(trainType) && trainNum != null) // EC, Verona-München
 				return "IECB" + trainNum;
-			if ("ES".equals(trainType)) // Eurostar Italia
+			if ("ES".equals(trainType) && trainNum != null) // Eurostar Italia
 				return "IES" + trainNum;
-			if ("EST".equals(trainType) || "EUROSTAR".equals(trainName))
+			if (("EST".equals(trainType) || "EUROSTAR".equals(trainName)) && trainNum != null)
 				return "IEST" + trainNum;
-			if ("EIC".equals(trainType)) // Ekspres InterCity, Polen
+			if ("EIC".equals(trainType) && trainNum != null) // Ekspres InterCity, Polen
 				return "IEIC" + trainNum;
-			if ("MT".equals(trainType) && "Schnee-Express".equals(trainName))
+			if ("MT".equals(trainType) && "Schnee-Express".equals(trainName) && trainNum != null)
 				return "IMT" + trainNum;
+			if (("TLK".equals(trainType) || "Tanie Linie Kolejowe".equals(trainName)) && trainNum != null)
+				return "ITLK" + trainNum;
 
 			if ("Zug".equals(trainName))
 				return 'R' + symbol;
@@ -1341,6 +1343,14 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return "RUEF" + trainNum;
 			if (("DBG".equals(trainType) || "Döllnitzbahn".equals(trainName)) && trainNum != null)
 				return "RDBG" + trainNum;
+			if (("TL".equals(trainType) || "Trilex".equals(trainName)) && trainNum != null)
+				return "RTL" + trainNum;
+			if (("OPB".equals(trainType) || "oberpfalzbahn".equals(trainName)) && trainNum != null)
+				return "ROPB" + trainNum;
+			if (("OPX".equals(trainType) || "oberpfalz-express".equals(trainName)) && trainNum != null)
+				return "ROPX" + trainNum;
+			if (("V6".equals(trainType) || "vlexx".equals(trainName)) && trainNum != null)
+				return "Rvlexx" + trainNum;
 
 			if ("BSB-Zug".equals(trainName) && trainNum != null) // Breisgau-S-Bahn
 				return 'S' + trainNum;
@@ -1379,12 +1389,14 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return '?' + trainNum;
 			if (trainType == null && trainName == null && P_LINE_NUMBER.matcher(symbol).matches())
 				return '?' + symbol;
-			if (trainType == null && trainName == null && symbol.equals(name) && symbol.equals(longName))
-				return '?' + symbol;
 			if ("N".equals(trainType) && trainName == null && symbol.length() == 0)
 				return "?N" + trainNum;
 			if ("Train".equals(trainName))
 				return "?";
+
+			// generic
+			if (trainName != null && trainType == null && trainNum == null)
+				return '?' + trainName;
 
 			throw new IllegalStateException("cannot normalize mot='" + mot + "' symbol='" + symbol + "' name='" + name + "' long='" + longName
 					+ "' trainType='" + trainType + "' trainNum='" + trainNum + "' trainName='" + trainName + "'");

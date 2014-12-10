@@ -36,25 +36,4 @@ public class VvvProvider extends AbstractEfaProvider
 	{
 		return NETWORK_ID;
 	}
-
-	@Override
-	protected String parseLine(final String mot, final String symbol, final String name, final String longName, final String trainType,
-			final String trainNum, final String trainName)
-	{
-		if ("0".equals(mot))
-		{
-			if ("VL1".equals(trainNum))
-				return "RVL1";
-			if ("VL2".equals(trainNum))
-				return "RVL2";
-			if ("VL3".equals(trainNum))
-				return "RVL3";
-			if ("VL4".equals(trainNum))
-				return "RVL4";
-			if ("VL5".equals(trainNum))
-				return "RVL5";
-		}
-
-		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
-	}
 }

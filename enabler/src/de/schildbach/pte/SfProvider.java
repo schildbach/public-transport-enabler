@@ -85,6 +85,8 @@ public class SfProvider extends AbstractEfaProvider
 				return "RLocal";
 			if ("CAP".equals(symbol) && "CAPITOL".equals(name))
 				return "RCapitol";
+			if ("OAK".equals(symbol) && "OAK / Coliseum".equals(name))
+				return "ROAK/Coliseum";
 
 			if ("Muni Rail".equals(trainName) && symbol != null) // Muni
 				return 'T' + symbol;

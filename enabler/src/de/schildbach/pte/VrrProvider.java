@@ -61,6 +61,9 @@ public class VrrProvider extends AbstractEfaProvider
 
 			if (trainType == null && "SEV7".equals(trainNum))
 				return 'B' + trainNum;
+
+			if ("Zug".equals(longName))
+				return "?Zug";
 		}
 		else if ("11".equals(mot))
 		{

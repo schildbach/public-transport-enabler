@@ -201,18 +201,6 @@ public class NvvProvider extends AbstractHafasProvider
 		if ("U-BAHN".equals(ucType))
 			return 'U';
 
-		if ("B".equals(ucType))
-			return 'B';
-		if ("BUFB".equals(ucType)) // BuFB
-			return 'B';
-		if ("BUVB".equals(ucType)) // BuVB
-			return 'B';
-		if ("LTAXI".equals(ucType))
-			return 'B';
-		if ("BN".equals(ucType)) // BN Venus
-			return 'B';
-		if ("ASOF".equals(ucType))
-			return 'B';
 		if ("AT".equals(ucType)) // Anschluß Sammel Taxi, Anmeldung nicht erforderlich
 			return 'B';
 

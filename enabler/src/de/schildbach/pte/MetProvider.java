@@ -57,6 +57,8 @@ public class MetProvider extends AbstractEfaProvider
 				return 'R' + symbol;
 			if ("Regional Train".equals(trainName))
 				return "R";
+			if ("vPK".equals(symbol) && "Regional Train Pakenham".equals(longName))
+				return "RV/Line";
 		}
 
 		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);

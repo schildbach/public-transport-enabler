@@ -43,8 +43,8 @@ public class StvProvider extends AbstractEfaProvider
 	{
 		if ("0".equals(mot))
 		{
-			if ("RR".equals(trainType)) // Tschechien
-				return "RRR" + trainNum;
+			if ("M".equals(trainType) && trainNum != null)
+				return "RM" + trainNum;
 		}
 
 		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);

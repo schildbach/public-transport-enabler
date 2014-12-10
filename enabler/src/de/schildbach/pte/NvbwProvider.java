@@ -55,6 +55,8 @@ public class NvbwProvider extends AbstractEfaProvider
 				return "I";
 			if ("SuperCity".equals(trainName) && trainNum == null)
 				return "ISC";
+			if ("InterRegio".equals(longName))
+				return "RIR";
 			if ("REGIOBAHN".equals(trainName) && trainNum == null)
 				return "R";
 			if ("RR".equals(trainType) && trainNum == null)

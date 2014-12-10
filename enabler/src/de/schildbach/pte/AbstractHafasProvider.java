@@ -2528,11 +2528,13 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			return 'I';
 		if ("ICT".equals(ucType)) // InterCity
 			return 'I';
-		if ("ICN".equals(ucType)) // Intercity-Neigezug, Schweiz
+		if ("ICN".equals(ucType)) // InterCityNight
 			return 'I';
 		if ("ICD".equals(ucType)) // Intercity direkt Amsterdam-Breda
 			return 'I';
 		if ("CNL".equals(ucType)) // CityNightLine
+			return 'I';
+		if ("MT".equals(ucType)) // Schnee-Express
 			return 'I';
 		if ("OEC".equals(ucType)) // ÖBB-EuroCity
 			return 'I';
@@ -2603,6 +2605,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		if ("FLUG".equals(ucType))
 			return 'I';
 		if ("TLK".equals(ucType)) // Tanie Linie Kolejowe, Polen
+			return 'I';
+		if ("EIP".equals(ucType)) // Express Intercity Premium
 			return 'I';
 		if ("INT".equals(ucType)) // Zürich-Brüssel - Budapest-Istanbul
 			return 'I';
@@ -2681,6 +2685,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		if ("VEC".equals(ucType)) // vectus Verkehrsgesellschaft
 			return 'R';
 		if ("TLX".equals(ucType)) // Trilex (Vogtlandbahn)
+			return 'R';
+		if ("TL".equals(ucType)) // Trilex (Vogtlandbahn)
 			return 'R';
 		if ("HZL".equals(ucType)) // Hohenzollerische Landesbahn
 			return 'R';
@@ -2804,6 +2810,12 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			return 'R';
 		if ("VAE".equals(ucType)) // Voralpen-Express
 			return 'R';
+		if ("OPB".equals(ucType)) // oberpfalzbahn
+			return 'R';
+		if ("OPX".equals(ucType)) // oberpfalz-express
+			return 'R';
+		if ("TER".equals(ucType)) // Transport express régional
+			return 'R';
 
 		// Suburban Trains
 		if (P_LINE_SBAHN.matcher(ucType).matches()) // Generic (Night) S-Bahn
@@ -2863,6 +2875,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		if ("FB".equals(ucType)) // Fernbus? Luxemburg-Saarbrücken
 			return 'B';
 		if ("EXB".equals(ucType)) // Expressbus München-Prag?
+			return 'B';
+		if ("ICB".equals(ucType)) // ÖBB ICBus
 			return 'B';
 		if ("TRO".equals(ucType)) // Trolleybus
 			return 'B';

@@ -47,6 +47,9 @@ public class VmsProvider extends AbstractEfaProvider
 				return "RM";
 			if ("CityBahn".equals(trainName) && trainNum == null)
 				return "RCB";
+
+			if ("RE 3".equals(symbol) && "Zug".equals(longName))
+				return "RRE3";
 		}
 
 		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);

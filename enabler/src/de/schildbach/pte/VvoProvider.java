@@ -59,6 +59,10 @@ public class VvoProvider extends AbstractEfaProvider
 				return "ROE";
 			if ("Meridian".equals(longName))
 				return "RM";
+			if ("trilex".equals(longName))
+				return "RTLX";
+			if ("Trilex".equals(trainName) && trainNum == null)
+				return "RTLX";
 			if ("U28".equals(symbol)) // Nationalparkbahn
 				return "RU28";
 

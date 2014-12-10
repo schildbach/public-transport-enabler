@@ -212,22 +212,16 @@ public class OebbProvider extends AbstractHafasProvider
 			return 'R';
 		if (ucType.equals("DPF")) // VX=Vogtland Express, Connections only?
 			return 'R';
-		// if (ucType.equals("SBE")) // Zittau-Seifhennersdorf, via JSON API
-		// return 'R';
 		if ("UAU".equals(ucType)) // Rußland
 			return 'R';
 
 		if (ucType.equals("RSB")) // Schnellbahn Wien
 			return 'S';
-		// if (ucType.equals("DPN")) // S3 Bad Reichenhall-Freilassing, via JSON API
-		// return 'S';
 
 		if (ucType.equals("LKB")) // Connections only?
 			return 'T';
 
 		if (ucType.equals("OBU")) // Connections only?
-			return 'B';
-		if (ucType.equals("ICB")) // ÖBB ICBus
 			return 'B';
 		if (ucType.equals("O-BUS")) // Stadtbus
 			return 'B';
@@ -245,8 +239,6 @@ public class OebbProvider extends AbstractHafasProvider
 			return 'C';
 		if (ucType.equals("SSB")) // Graz Schlossbergbahn
 			return 'C';
-		// if (ucType.equals("HBB")) // Innsbruck Hungerburgbahn, via JSON API
-		// return 'C';
 
 		final char t = super.normalizeType(type);
 		if (t != 0)
