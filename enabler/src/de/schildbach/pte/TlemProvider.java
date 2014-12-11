@@ -18,8 +18,11 @@
 package de.schildbach.pte;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import de.schildbach.pte.dto.Product;
+import de.schildbach.pte.dto.Style;
 
 /**
  * @author Andreas Schildbach
@@ -29,6 +32,8 @@ public class TlemProvider extends AbstractEfaProvider
 	public static final NetworkId NETWORK_ID = NetworkId.TLEM;
 	private final static String API_BASE = "http://www.travelineeastmidlands.co.uk/em/";
 
+	// http://www.travelineeastmidlands.co.uk/em/
+	// http://www.travelinesw.com/swe/
 	// http://www.travelinesoutheast.org.uk/se/
 	// http://www.travelineeastanglia.org.uk/ea/
 
@@ -37,6 +42,7 @@ public class TlemProvider extends AbstractEfaProvider
 		super(API_BASE);
 
 		setTimeZone("Europe/London");
+		setStyles(STYLES);
 	}
 
 	public NetworkId id()
@@ -55,21 +61,34 @@ public class TlemProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	protected String parseLine(final String mot, final String symbol, final String name, final String longName, final String trainType,
-			final String trainNum, final String trainName)
-	{
-		if ("0".equals(mot))
-		{
-			if ("Underground".equals(trainName) && trainType == null && name != null)
-				return "U" + name;
-		}
-
-		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
-	}
-
-	@Override
 	public Collection<Product> defaultProducts()
 	{
 		return Product.ALL;
+	}
+
+	private static final Map<String, Style> STYLES = new HashMap<String, Style>();
+
+	static
+	{
+		// London
+		STYLES.put("UBakerloo", new Style(Style.parseColor("#9D5324"), Style.WHITE));
+		STYLES.put("UCentral", new Style(Style.parseColor("#D52B1E"), Style.WHITE));
+		STYLES.put("UCircle", new Style(Style.parseColor("#FECB00"), Style.BLACK));
+		STYLES.put("UDistrict", new Style(Style.parseColor("#007934"), Style.WHITE));
+		STYLES.put("UEast London", new Style(Style.parseColor("#FFA100"), Style.WHITE));
+		STYLES.put("UHammersmith & City", new Style(Style.parseColor("#C5858F"), Style.BLACK));
+		STYLES.put("UJubilee", new Style(Style.parseColor("#818A8F"), Style.WHITE));
+		STYLES.put("UMetropolitan", new Style(Style.parseColor("#850057"), Style.WHITE));
+		STYLES.put("UNorthern", new Style(Style.BLACK, Style.WHITE));
+		STYLES.put("UPiccadilly", new Style(Style.parseColor("#0018A8"), Style.WHITE));
+		STYLES.put("UVictoria", new Style(Style.parseColor("#00A1DE"), Style.WHITE));
+		STYLES.put("UWaterloo & City", new Style(Style.parseColor("#76D2B6"), Style.BLACK));
+
+		STYLES.put("SDLR", new Style(Style.parseColor("#00B2A9"), Style.WHITE));
+		STYLES.put("SLO", new Style(Style.parseColor("#f46f1a"), Style.WHITE));
+
+		STYLES.put("TTramlink 1", new Style(Style.rgb(193, 215, 46), Style.WHITE));
+		STYLES.put("TTramlink 2", new Style(Style.rgb(193, 215, 46), Style.WHITE));
+		STYLES.put("TTramlink 3", new Style(Style.rgb(124, 194, 66), Style.BLACK));
 	}
 }

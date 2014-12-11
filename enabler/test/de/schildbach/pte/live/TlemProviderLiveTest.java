@@ -48,23 +48,48 @@ public class TlemProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "1001003"), 0, 0);
+		final NearbyStationsResult result1 = provider.queryNearbyStations(new Location(LocationType.STATION, "1001003"), 0, 0);
+		print(result1);
 
-		print(result);
+		final NearbyStationsResult result2 = provider.queryNearbyStations(new Location(LocationType.STATION, "1000086"), 0, 0);
+		print(result2);
 	}
 
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
 		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 51507161, -0127144), 0, 0);
-
 		print(result);
 	}
 
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = queryDepartures("1001003", false);
+		final QueryDeparturesResult result1 = queryDepartures("1001003", false);
+		print(result1);
+
+		final QueryDeparturesResult result3 = queryDepartures("1000086", false);
+		print(result3);
+	}
+
+	@Test
+	public void queryDeparturesEquivs() throws Exception
+	{
+		final QueryDeparturesResult result = queryDepartures("1001003", true);
+		print(result);
+	}
+
+	@Test
+	public void queryDeparturesInvalidStation() throws Exception
+	{
+		final QueryDeparturesResult resultLive = queryDepartures("999999", false);
+		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, resultLive.status);
+	}
+
+	@Test
+	public void suggestLocations() throws Exception
+	{
+		final SuggestLocationsResult result = provider.suggestLocations("Lower Arncott The Plough");
 
 		print(result);
 	}
@@ -82,6 +107,35 @@ public class TlemProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "1008730", null, "King & Queen Wharf"), null, new Location(
 				LocationType.STATION, "1006433", null, "Edinburgh Court"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		print(result);
+		assertEquals(QueryTripsResult.Status.OK, result.status);
+		assertTrue(result.trips.size() > 0);
+
+		if (!result.context.canQueryLater())
+			return;
+
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+		print(laterResult);
+
+		if (!laterResult.context.canQueryLater())
+			return;
+
+		final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
+		print(later2Result);
+
+		if (!later2Result.context.canQueryEarlier())
+			return;
+
+		final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
+		print(earlierResult);
+	}
+
+	@Test
+	public void tripArncott() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "60011202", 51850168, -1094302, "Upper Arncott",
+				"Bullingdon Prison"), null, new Location(LocationType.STATION, "60006013", 51856612, -1112904, "Lower Arncott", "The Plough E"),
+				new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);
