@@ -45,6 +45,16 @@ public class TlemProvider extends AbstractEfaProvider
 	}
 
 	@Override
+	protected String normalizeLocationName(final String name)
+	{
+		final String normalizedName = super.normalizeLocationName(name);
+		if (normalizedName != null && normalizedName.endsWith(" ()"))
+			return normalizedName.substring(0, normalizedName.length() - 3);
+		else
+			return normalizedName;
+	}
+
+	@Override
 	protected String parseLine(final String mot, final String symbol, final String name, final String longName, final String trainType,
 			final String trainNum, final String trainName)
 	{

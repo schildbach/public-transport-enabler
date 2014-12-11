@@ -43,6 +43,16 @@ public class TlswProvider extends AbstractEfaProvider
 	}
 
 	@Override
+	protected String normalizeLocationName(final String name)
+	{
+		final String normalizedName = super.normalizeLocationName(name);
+		if (normalizedName != null && normalizedName.endsWith(" ()"))
+			return normalizedName.substring(0, normalizedName.length() - 3);
+		else
+			return normalizedName;
+	}
+
+	@Override
 	public Collection<Product> defaultProducts()
 	{
 		return Product.ALL;
