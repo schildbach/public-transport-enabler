@@ -23,7 +23,7 @@ package de.schildbach.pte;
 public class MvgProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.MVG;
-	private static final String API_BASE = "http://mobil.mvg-online.de/";
+	private static final String API_BASE = "http://mobil.mvg-online.de/mvgMobil/";
 
 	public MvgProvider()
 	{
