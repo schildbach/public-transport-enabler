@@ -70,6 +70,14 @@ public class MetProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
+	public void queryDeparturesInvalidStation() throws Exception
+	{
+		final QueryDeparturesResult result = queryDepartures("999999", false);
+
+		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
+	}
+
+	@Test
 	public void suggestLocationsIncomplete() throws Exception
 	{
 		final SuggestLocationsResult result = provider.suggestLocations("Kur");
@@ -80,9 +88,9 @@ public class MetProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "10002717", "Melbourne City", "6-Franklin St/Elizabeth St"),
-				null, new Location(LocationType.STATION, "10002722", "Melbourne City", "1-Flinders Street Railway Station/Elizabeth St"), new Date(),
-				true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "10001181", -37818664, 144952784, "Melbourne City",
+				"Southern Cross Railway Station (Melbourne City)"), null, new Location(LocationType.STATION, "10002204", -37818248, 144967824,
+				"Melbourne City", "13-Federation Square/Swanston St"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);
