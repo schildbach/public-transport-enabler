@@ -35,6 +35,7 @@ public final class BahnProvider extends AbstractHafasProvider
 	{
 		super(API_BASE + "bhftafel.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 14);
 
+		setClientType("ANDROID");
 		setStationBoardHasStationTable(false);
 	}
 

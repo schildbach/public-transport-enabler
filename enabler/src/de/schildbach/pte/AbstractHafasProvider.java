@@ -1433,6 +1433,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	protected void appendCommonQueryTripsBinaryParameters(final StringBuilder uri)
 	{
 		uri.append("&h2g-direct=11");
+		if (clientType != null)
+			uri.append("&clientType=").append(ParserUtils.urlEncode(clientType));
 	}
 
 	private final static int QUERY_TRIPS_BINARY_BUFFER_SIZE = 384 * 1024;
