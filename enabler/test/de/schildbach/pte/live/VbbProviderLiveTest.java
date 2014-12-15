@@ -143,6 +143,10 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 				"Kernbeisserweg 4"), null, new Location(LocationType.ADDRESS, null, 52433989, 13474353, "12357 Berlin-Buckow", "Distelfinkweg 35"),
 				new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
+
+		if (!result.context.canQueryLater())
+			return;
+
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		print(laterResult);
 	}
@@ -154,6 +158,10 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 				LocationType.STATION, "9044202", "Berlin", "Bundesplatz"), new Location(LocationType.STATION, "9013103", "Berlin", "Prinzenstraße"),
 				new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
+
+		if (!result.context.canQueryLater())
+			return;
+
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		print(laterResult);
 	}
@@ -164,6 +172,10 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 52501507, 13357026, null, null), null, new Location(
 				LocationType.ADDRESS, null, 52513639, 13568648, null, null), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
+
+		if (!result.context.canQueryLater())
+			return;
+
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		print(laterResult);
 	}
@@ -176,6 +188,10 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 				new Location(LocationType.ADDRESS, null, 52513639, 13568648, null, null), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		print(result);
+
+		if (!result.context.canQueryLater())
+			return;
+
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		print(laterResult);
 	}
@@ -187,6 +203,10 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 				"Weimarische Str. 7"), null, new Location(LocationType.ADDRESS, null, 52541536, 13421290, "10437 Berlin-Prenzlauer Berg",
 				"Göhrener Str. 5"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
+
+		if (!result.context.canQueryLater())
+			return;
+
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		print(laterResult);
 	}
@@ -199,6 +219,10 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 				new Location(LocationType.ADDRESS, null, 52526029, 13399878, "10178 Berlin-Mitte", "Sophienstr. 24"), new Date(), true, Product.ALL,
 				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
+
+		if (!result.context.canQueryLater())
+			return;
+
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		print(laterResult);
 	}

@@ -128,23 +128,25 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		public final int seqNr;
 		public final String ld;
 		public final int usedBufferSize;
+		private final boolean canQueryMore;
 
-		public QueryTripsBinaryContext(final String ident, final int seqNr, final String ld, final int usedBufferSize)
+		public QueryTripsBinaryContext(final String ident, final int seqNr, final String ld, final int usedBufferSize, final boolean canQueryMore)
 		{
 			this.ident = ident;
 			this.seqNr = seqNr;
 			this.ld = ld;
 			this.usedBufferSize = usedBufferSize;
+			this.canQueryMore = canQueryMore;
 		}
 
 		public boolean canQueryLater()
 		{
-			return true;
+			return canQueryMore;
 		}
 
 		public boolean canQueryEarlier()
 		{
-			return true;
+			return canQueryMore;
 		}
 	}
 
@@ -2008,8 +2010,12 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						trips.add(trip);
 				}
 
+				// if result is only one single individual leg, don't query for more
+				final boolean canQueryMore = trips.size() != 1 || trips.get(0).legs.size() != 1
+						|| !(trips.get(0).legs.get(0) instanceof Trip.Individual);
+
 				final QueryTripsResult result = new QueryTripsResult(header, uri, from, via, to, new QueryTripsBinaryContext(requestId, seqNr, ld,
-						bis.getCount()), trips);
+						bis.getCount(), canQueryMore), trips);
 
 				return result;
 			}
