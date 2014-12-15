@@ -87,6 +87,16 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
+	public void suggestLocations() throws Exception
+	{
+		final SuggestLocationsResult result = provider.suggestLocations("Haubachstr.");
+
+		print(result);
+
+		Assert.assertEquals("Haubachstr.", result.getLocations().get(0).name);
+	}
+
+	@Test
 	public void suggestLocationsUmlaut() throws Exception
 	{
 		final SuggestLocationsResult result = provider.suggestLocations("Güntzelstr.");

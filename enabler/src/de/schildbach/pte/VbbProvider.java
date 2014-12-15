@@ -45,6 +45,8 @@ public class VbbProvider extends AbstractHafasProvider
 	public VbbProvider()
 	{
 		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 7, UTF_8);
+
+		setJsonGetStopsUseWeight(false);
 	}
 
 	public NetworkId id()
