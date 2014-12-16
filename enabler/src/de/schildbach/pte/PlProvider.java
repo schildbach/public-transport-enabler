@@ -28,10 +28,7 @@ import de.schildbach.pte.util.StringReplaceReader;
 public class PlProvider extends AbstractHafasProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.PL;
-	private static final String API_BASE = "http://rozklad-pkp.pl/bin/";
-
-	// http://rozklad.sitkol.pl/bin/
-	// http://h2g.sitkol.pl/bin/
+	private static final String API_BASE = "http://rozklad.bilkom.pl/bin/";
 
 	public PlProvider()
 	{
