@@ -37,6 +37,7 @@ public final class BahnProvider extends AbstractHafasProvider
 
 		setClientType("ANDROID");
 		setStationBoardHasStationTable(false);
+		setJsonGetStopsUseWeight(false);
 	}
 
 	public NetworkId id()
