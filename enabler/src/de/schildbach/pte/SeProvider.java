@@ -51,15 +51,6 @@ public class SeProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected boolean hasCapability(final Capability capability)
-	{
-		if (capability == Capability.TRIPS)
-			return false;
-		else
-			return super.hasCapability(capability);
-	}
-
-	@Override
 	protected char intToProduct(final int value)
 	{
 		if (value == 1) // Flyg

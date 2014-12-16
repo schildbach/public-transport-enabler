@@ -101,4 +101,15 @@ public class SeProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		print(laterResult);
 	}
+
+	@Test
+	public void longTrip() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "7498086", 67859847, 20212802, null, "KIRUNA"), null,
+				new Location(LocationType.STATION, "7498000", null, "STOCKHOLM"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
+				Accessibility.NEUTRAL);
+		print(result);
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+		print(laterResult);
+	}
 }
