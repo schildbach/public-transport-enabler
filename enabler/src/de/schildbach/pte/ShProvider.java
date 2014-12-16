@@ -138,7 +138,7 @@ public class ShProvider extends AbstractHafasProvider
 	private static final String[] PLACES = { "Hamburg", "Kiel", "Lübeck", "Flensburg", "Neumünster" };
 
 	@Override
-	protected String[] splitPlaceAndName(final String name)
+	protected String[] splitStationName(final String name)
 	{
 		for (final String place : PLACES)
 		{
@@ -146,7 +146,17 @@ public class ShProvider extends AbstractHafasProvider
 				return new String[] { place, name.substring(place.length() + 1) };
 		}
 
-		return super.splitPlaceAndName(name);
+		return super.splitStationName(name);
+	}
+
+	@Override
+	protected String[] splitAddress(final String address)
+	{
+		final Matcher mComma = P_SPLIT_NAME_FIRST_COMMA.matcher(address);
+		if (mComma.matches())
+			return new String[] { mComma.group(1), mComma.group(2) };
+
+		return super.splitStationName(address);
 	}
 
 	@Override
@@ -219,7 +229,7 @@ public class ShProvider extends AbstractHafasProvider
 			else if (mHeadCoarse.group(7) != null)
 				return new QueryDeparturesResult(header, Status.SERVICE_DOWN);
 
-			final String[] placeAndName = splitPlaceAndName(ParserUtils.resolveEntities(mHeadCoarse.group(1)));
+			final String[] placeAndName = splitStationName(ParserUtils.resolveEntities(mHeadCoarse.group(1)));
 			final Calendar currentTime = new GregorianCalendar(timeZone);
 			currentTime.clear();
 			ParserUtils.parseGermanDate(currentTime, mHeadCoarse.group(2));
@@ -253,9 +263,17 @@ public class ShProvider extends AbstractHafasProvider
 					final Line line = new Line(null, lineStr, lineStyle(null, lineStr));
 
 					final String destinationId = mDepFine.group(4);
-					final String[] destinationPlaceAndName = splitPlaceAndName(ParserUtils.resolveEntities(mDepFine.group(5)));
-					final Location destination = new Location(destinationId != null ? LocationType.STATION : LocationType.ANY, destinationId,
-							destinationPlaceAndName[0], destinationPlaceAndName[1]);
+					final String destinationName = ParserUtils.resolveEntities(mDepFine.group(5));
+					final Location destination;
+					if (destinationId != null)
+					{
+						final String[] destinationPlaceAndName = splitStationName(destinationName);
+						destination = new Location(LocationType.STATION, destinationId, destinationPlaceAndName[0], destinationPlaceAndName[1]);
+					}
+					else
+					{
+						destination = new Location(LocationType.ANY, null, null, destinationName);
+					}
 
 					final Position position = mDepFine.group(6) != null ? new Position("Gl. " + ParserUtils.resolveEntities(mDepFine.group(6)))
 							: null;

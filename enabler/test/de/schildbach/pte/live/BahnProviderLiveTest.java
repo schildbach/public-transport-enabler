@@ -82,7 +82,7 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 
 		print(result);
 
-		assertEquals("Güntzelstr. (U), Berlin", result.getLocations().get(0).name);
+		assertEquals("Güntzelstr. (U)", result.getLocations().get(0).name);
 	}
 
 	@Test
@@ -101,6 +101,16 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 		final SuggestLocationsResult result = provider.suggestLocations("Berlin");
 
 		print(result);
+	}
+
+	@Test
+	public void suggestLocationsAddress() throws Exception
+	{
+		final SuggestLocationsResult result = provider.suggestLocations("München, Friedenstraße 2");
+		print(result);
+
+		assertEquals(LocationType.ADDRESS, result.getLocations().get(0).type);
+		assertEquals("Friedenstraße 2", result.getLocations().get(0).name);
 	}
 
 	@Test

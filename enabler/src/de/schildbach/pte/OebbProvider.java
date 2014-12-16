@@ -19,6 +19,7 @@ package de.schildbach.pte;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.regex.Matcher;
 
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
@@ -157,6 +158,30 @@ public class OebbProvider extends AbstractHafasProvider
 	public Collection<Product> defaultProducts()
 	{
 		return Product.ALL;
+	}
+
+	private static final String[] PLACES = { "Wien", "Graz", "Linz/Donau", "Salzburg", "Innsbruck" };
+
+	@Override
+	protected String[] splitStationName(final String name)
+	{
+		for (final String place : PLACES)
+		{
+			if (name.startsWith(place + " "))
+				return new String[] { place, name.substring(place.length() + 1) };
+		}
+
+		return super.splitStationName(name);
+	}
+
+	@Override
+	protected String[] splitAddress(final String address)
+	{
+		final Matcher mComma = P_SPLIT_NAME_FIRST_COMMA.matcher(address);
+		if (mComma.matches())
+			return new String[] { mComma.group(1), mComma.group(2) };
+
+		return super.splitStationName(address);
 	}
 
 	@Override

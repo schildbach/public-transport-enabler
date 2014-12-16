@@ -18,6 +18,7 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
+import java.util.regex.Matcher;
 
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
@@ -90,20 +91,24 @@ public class VgsProvider extends AbstractHafasProvider
 		}
 	}
 
-	private static final String[] PLACES = { "Saarbrücken" };
+	@Override
+	protected String[] splitStationName(final String name)
+	{
+		final Matcher mComma = P_SPLIT_NAME_LAST_COMMA.matcher(name);
+		if (mComma.matches())
+			return new String[] { mComma.group(2), mComma.group(1) };
+
+		return super.splitStationName(name);
+	}
 
 	@Override
-	protected String[] splitPlaceAndName(final String name)
+	protected String[] splitAddress(final String address)
 	{
-		for (final String place : PLACES)
-		{
-			if (name.endsWith(", " + place))
-				return new String[] { place, name.substring(0, name.length() - place.length() - 2) };
-			else if (name.startsWith(place + " ") || name.startsWith(place + "-"))
-				return new String[] { place, name.substring(place.length() + 1) };
-		}
+		final Matcher mComma = P_SPLIT_NAME_FIRST_COMMA.matcher(address);
+		if (mComma.matches())
+			return new String[] { mComma.group(1), mComma.group(2) };
 
-		return super.splitPlaceAndName(name);
+		return super.splitStationName(address);
 	}
 
 	@Override

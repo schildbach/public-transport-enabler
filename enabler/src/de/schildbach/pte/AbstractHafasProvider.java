@@ -26,7 +26,6 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -247,15 +246,17 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 	protected abstract void setProductBits(StringBuilder productBits, Product product);
 
-	private static final Pattern P_SPLIT_ADDRESS = Pattern.compile("(\\d{4,5}\\s+[^,]+),\\s+(.*)");
+	protected static final Pattern P_SPLIT_NAME_FIRST_COMMA = Pattern.compile("([^,]*), (.*)");
+	protected static final Pattern P_SPLIT_NAME_LAST_COMMA = Pattern.compile("(.*), ([^,]*)");
 
-	protected String[] splitPlaceAndName(final String name)
+	protected String[] splitStationName(final String name)
 	{
-		final Matcher matcher = P_SPLIT_ADDRESS.matcher(name);
-		if (matcher.matches())
-			return new String[] { matcher.group(1), matcher.group(2) };
-		else
-			return new String[] { null, name };
+		return new String[] { null, name };
+	}
+
+	protected String[] splitAddress(final String address)
+	{
+		return new String[] { null, address };
 	}
 
 	private final String wrapReqC(final CharSequence request, final Charset encoding)
@@ -276,7 +277,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			final int x = Integer.parseInt(pp.getAttributeValue(null, "x"));
 			final int y = Integer.parseInt(pp.getAttributeValue(null, "y"));
 
-			final String[] placeAndName = splitPlaceAndName(name);
+			final String[] placeAndName = splitStationName(name);
 			return new Location(LocationType.STATION, id, y, x, placeAndName[0], placeAndName[1]);
 		}
 		throw new IllegalStateException("cannot handle: " + type);
@@ -308,20 +309,22 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			final int x = Integer.parseInt(pp.getAttributeValue(null, "x"));
 			final int y = Integer.parseInt(pp.getAttributeValue(null, "y"));
 
-			final String[] placeAndName = splitPlaceAndName(name);
+			final String[] placeAndName = splitAddress(name);
 			return new Location(LocationType.ADDRESS, null, y, x, placeAndName[0], placeAndName[1]);
 		}
 		throw new IllegalStateException("cannot handle: " + type);
 	}
 
-	private static final Location parseReqLoc(final XmlPullParser pp)
+	private final Location parseReqLoc(final XmlPullParser pp)
 	{
 		final String type = pp.getName();
 		if ("ReqLoc".equals(type))
 		{
 			XmlPullUtil.requireAttr(pp, "type", "ADR");
 			final String name = pp.getAttributeValue(null, "output").trim();
-			return new Location(LocationType.ADDRESS, null, null, name);
+
+			final String[] placeAndName = splitAddress(name);
+			return new Location(LocationType.ADDRESS, null, placeAndName[0], placeAndName[1]);
 		}
 		throw new IllegalStateException("cannot handle: " + type);
 	}
@@ -396,12 +399,12 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 						if (type == 1) // station
 						{
-							final String[] placeAndName = splitPlaceAndName(value);
+							final String[] placeAndName = splitStationName(value);
 							location = new Location(LocationType.STATION, localId, lat, lon, placeAndName[0], placeAndName[1]);
 						}
 						else if (type == 2) // address
 						{
-							final String[] placeAndName = splitPlaceAndName(value);
+							final String[] placeAndName = splitAddress(value);
 							location = new Location(LocationType.ADDRESS, null, lat, lon, placeAndName[0], placeAndName[1]);
 						}
 						else if (type == 4) // poi
@@ -410,7 +413,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						}
 						else if (type == 128) // crossing
 						{
-							location = new Location(LocationType.ADDRESS, localId, lat, lon, null, value);
+							final String[] placeAndName = splitAddress(value);
+							location = new Location(LocationType.ADDRESS, localId, lat, lon, placeAndName[0], placeAndName[1]);
 						}
 						else if (type == 87)
 						{
@@ -552,7 +556,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 					final String name = XmlPullUtil.attr(pp, "name");
 					if (name != null)
-						stationPlaceAndName = splitPlaceAndName(name.trim());
+						stationPlaceAndName = splitStationName(name.trim());
 				}
 				XmlPullUtil.requireSkip(pp, "St");
 			}
@@ -624,23 +628,24 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 					final Position position = platform != null ? new Position("Gl. " + ParserUtils.resolveEntities(platform)) : null;
 
-					final String[] destinationPlaceAndName;
+					final String destinationName;
 					if (dir != null)
-						destinationPlaceAndName = splitPlaceAndName(dir.trim());
+						destinationName = dir.trim();
 					else if (targetLoc != null)
-						destinationPlaceAndName = splitPlaceAndName(targetLoc.trim());
+						destinationName = targetLoc.trim();
 					else
-						destinationPlaceAndName = null;
+						destinationName = null;
 
-					final String destinationId;
+					final Location destination;
 					if (dirnr != null)
-						destinationId = dirnr;
+					{
+						final String[] destinationPlaceAndName = splitStationName(destinationName);
+						destination = new Location(LocationType.STATION, dirnr, destinationPlaceAndName[0], destinationPlaceAndName[1]);
+					}
 					else
-						destinationId = null;
-
-					final Location destination = new Location(destinationId != null ? LocationType.STATION : LocationType.ANY, destinationId,
-							destinationPlaceAndName != null ? destinationPlaceAndName[0] : null,
-							destinationPlaceAndName != null ? destinationPlaceAndName[1] : null);
+					{
+						destination = new Location(LocationType.ANY, null, null, destinationName);
+					}
 
 					final Line prodLine = parseLineAndType(prod);
 					final Line line;
@@ -695,7 +700,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					}
 					else
 					{
-						final String[] depPlaceAndName = splitPlaceAndName(depStation);
+						final String[] depPlaceAndName = splitStationName(depStation);
 						location = new Location(LocationType.STATION, null, depPlaceAndName[0], depPlaceAndName[1]);
 					}
 
@@ -1076,7 +1081,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 							}
 							else if ("DIRECTION".equals(attrName))
 							{
-								final String[] destinationPlaceAndName = splitPlaceAndName(attributeVariants.get("NORMAL"));
+								final String[] destinationPlaceAndName = splitStationName(attributeVariants.get("NORMAL"));
 								destination = new Location(LocationType.ANY, null, destinationPlaceAndName[0], destinationPlaceAndName[1]);
 							}
 						}
@@ -1980,7 +1985,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 							final Location direction;
 							if (directionStr != null)
 							{
-								final String[] directionPlaceAndName = splitPlaceAndName(directionStr);
+								final String[] directionPlaceAndName = splitStationName(directionStr);
 								direction = new Location(LocationType.ANY, null, directionPlaceAndName[0], directionPlaceAndName[1]);
 							}
 							else
@@ -2076,22 +2081,30 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 	private Location location(final LittleEndianDataInputStream is, final StringTable strings) throws IOException
 	{
-		final String[] placeAndName = splitPlaceAndName(strings.read(is));
+		final String name = strings.read(is);
 		is.readShort();
 		final int type = is.readShortReverse();
-		final LocationType locationType;
-		if (type == 1)
-			locationType = LocationType.STATION;
-		else if (type == 2)
-			locationType = LocationType.ADDRESS;
-		else if (type == 3)
-			locationType = LocationType.POI;
-		else
-			throw new IllegalStateException("unknown type: " + type + "  " + Arrays.toString(placeAndName));
 		final int lon = is.readIntReverse();
 		final int lat = is.readIntReverse();
 
-		return new Location(locationType, null, lat, lon, placeAndName[0], placeAndName[1]);
+		if (type == 1)
+		{
+			final String[] placeAndName = splitStationName(name);
+			return new Location(LocationType.STATION, null, lat, lon, placeAndName[0], placeAndName[1]);
+		}
+		else if (type == 2)
+		{
+			final String[] placeAndName = splitAddress(name);
+			return new Location(LocationType.ADDRESS, null, lat, lon, placeAndName[0], placeAndName[1]);
+		}
+		else if (type == 3)
+		{
+			return new Location(LocationType.POI, null, lat, lon, null, name);
+		}
+		else
+		{
+			throw new IllegalStateException("unknown type: " + type + "  " + name);
+		}
 	}
 
 	private long date(final LittleEndianDataInputStream is) throws IOException
@@ -2244,7 +2257,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 			try
 			{
-				final String[] placeAndName = splitPlaceAndName(strings.read(stationInputStream));
+				final String[] placeAndName = splitStationName(strings.read(stationInputStream));
 				final int id = stationInputStream.readIntReverse();
 				final int lon = stationInputStream.readIntReverse();
 				final int lat = stationInputStream.readIntReverse();
@@ -2357,7 +2370,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					parsedLat = 0;
 				}
 
-				final String[] placeAndName = splitPlaceAndName(parsedName);
+				final String[] placeAndName = splitStationName(parsedName);
 				stations.add(new Location(LocationType.STATION, parsedId, parsedLat, parsedLon, placeAndName[0], placeAndName[1]));
 			}
 			else
@@ -2406,7 +2419,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 					if (stopWeight != 0)
 					{
-						final String[] placeAndName = splitPlaceAndName(name);
+						final String[] placeAndName = splitStationName(name);
 						stations.add(new Location(LocationType.STATION, id, lat, lon, placeAndName[0], placeAndName[1]));
 					}
 				}
@@ -2474,7 +2487,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					parsedLat = Integer.parseInt(mFineCoords.group(2));
 				}
 
-				final String[] placeAndName = splitPlaceAndName(parsedName);
+				final String[] placeAndName = splitStationName(parsedName);
 				stations.add(new Location(LocationType.STATION, parsedId, parsedLat, parsedLon, placeAndName[0], placeAndName[1]));
 			}
 			else

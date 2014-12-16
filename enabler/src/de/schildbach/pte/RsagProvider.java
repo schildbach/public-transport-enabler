@@ -20,6 +20,7 @@ package de.schildbach.pte;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
 
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
@@ -121,7 +122,7 @@ public class RsagProvider extends AbstractHafasProvider
 	private static final String[] PLACES = { "Rostock", "Warnemünde" };
 
 	@Override
-	protected String[] splitPlaceAndName(final String name)
+	protected String[] splitStationName(final String name)
 	{
 		for (final String place : PLACES)
 		{
@@ -129,7 +130,17 @@ public class RsagProvider extends AbstractHafasProvider
 				return new String[] { place, name.substring(place.length() + 1) };
 		}
 
-		return super.splitPlaceAndName(name);
+		return super.splitStationName(name);
+	}
+
+	@Override
+	protected String[] splitAddress(final String address)
+	{
+		final Matcher mComma = P_SPLIT_NAME_FIRST_COMMA.matcher(address);
+		if (mComma.matches())
+			return new String[] { mComma.group(1), mComma.group(2) };
+
+		return super.splitStationName(address);
 	}
 
 	@Override

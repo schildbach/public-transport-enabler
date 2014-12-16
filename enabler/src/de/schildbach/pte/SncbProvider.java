@@ -105,13 +105,13 @@ public class SncbProvider extends AbstractHafasProvider
 	private static final String[] PLACES = { "Antwerpen", "Gent", "Charleroi", "Liege", "Liège", "Brussel" };
 
 	@Override
-	protected String[] splitPlaceAndName(final String name)
+	protected String[] splitStationName(final String name)
 	{
 		for (final String place : PLACES)
 			if (name.startsWith(place + " ") || name.startsWith(place + "-"))
 				return new String[] { place, name.substring(place.length() + 1) };
 
-		return super.splitPlaceAndName(name);
+		return super.splitStationName(name);
 	}
 
 	@Override

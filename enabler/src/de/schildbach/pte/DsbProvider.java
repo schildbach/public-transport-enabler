@@ -18,6 +18,8 @@
 package de.schildbach.pte;
 
 import java.util.Collection;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.schildbach.pte.dto.Product;
 
@@ -118,6 +120,18 @@ public class DsbProvider extends AbstractHafasProvider
 		{
 			throw new IllegalArgumentException("cannot handle: " + product);
 		}
+	}
+
+	private static final Pattern P_SPLIT_NAME_PAREN = Pattern.compile("(.*) \\((.{4,}?)\\)");
+
+	@Override
+	protected String[] splitStationName(final String name)
+	{
+		final Matcher mParen = P_SPLIT_NAME_PAREN.matcher(name);
+		if (mParen.matches())
+			return new String[] { mParen.group(2), mParen.group(1) };
+
+		return super.splitStationName(name);
 	}
 
 	@Override

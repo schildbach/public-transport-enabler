@@ -116,10 +116,9 @@ public class VbbProvider extends AbstractHafasProvider
 	}
 
 	private static final Pattern P_SPLIT_NAME_PAREN = Pattern.compile("(.*?) \\((.{4,}?)\\)(?: \\((U|S|S\\+U)\\))?");
-	private static final Pattern P_SPLIT_NAME_COMMA = Pattern.compile("([^,]*), ([^,]*)");
 
 	@Override
-	protected String[] splitPlaceAndName(final String name)
+	protected String[] splitStationName(final String name)
 	{
 		final Matcher mParen = P_SPLIT_NAME_PAREN.matcher(name);
 		if (mParen.matches())
@@ -128,11 +127,21 @@ public class VbbProvider extends AbstractHafasProvider
 			return new String[] { mParen.group(2), mParen.group(1) + (su != null ? " (" + su + ")" : "") };
 		}
 
-		final Matcher mComma = P_SPLIT_NAME_COMMA.matcher(name);
+		final Matcher mComma = P_SPLIT_NAME_FIRST_COMMA.matcher(name);
 		if (mComma.matches())
 			return new String[] { mComma.group(1), mComma.group(2) };
 
-		return super.splitPlaceAndName(name);
+		return super.splitStationName(name);
+	}
+
+	@Override
+	protected String[] splitAddress(final String address)
+	{
+		final Matcher mComma = P_SPLIT_NAME_FIRST_COMMA.matcher(address);
+		if (mComma.matches())
+			return new String[] { mComma.group(1), mComma.group(2) };
+
+		return super.splitStationName(address);
 	}
 
 	@Override

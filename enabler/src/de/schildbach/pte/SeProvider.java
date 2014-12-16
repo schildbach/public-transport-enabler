@@ -136,19 +136,29 @@ public class SeProvider extends AbstractHafasProvider
 	private static final Pattern P_SPLIT_NAME_PAREN = Pattern.compile("(.*) \\((.{3,}?) kn\\)");
 
 	@Override
-	protected String[] splitPlaceAndName(final String name)
+	protected String[] splitStationName(final String name)
 	{
 		final Matcher mParen = P_SPLIT_NAME_PAREN.matcher(name);
 		if (mParen.matches())
 			return new String[] { mParen.group(2), mParen.group(1) };
 
-		return super.splitPlaceAndName(name);
+		return super.splitStationName(name);
 	}
 
 	@Override
 	public Collection<Product> defaultProducts()
 	{
 		return Product.ALL;
+	}
+
+	@Override
+	protected String[] splitAddress(final String address)
+	{
+		final Matcher mComma = P_SPLIT_NAME_LAST_COMMA.matcher(address);
+		if (mComma.matches())
+			return new String[] { mComma.group(2), mComma.group(1) };
+
+		return super.splitStationName(address);
 	}
 
 	private static final Pattern P_NORMALIZE_LINE_BUS = Pattern.compile("Buss\\s*(.*)");

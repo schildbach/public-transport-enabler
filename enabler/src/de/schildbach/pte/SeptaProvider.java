@@ -99,18 +99,6 @@ public class SeptaProvider extends AbstractHafasProvider
 		}
 	}
 
-	private static final Pattern P_SPLIT_ADDRESS = Pattern.compile("(.*),\\s+([^,]+\\s+\\d{4,5})");
-
-	@Override
-	protected String[] splitPlaceAndName(final String name)
-	{
-		final Matcher matcher = P_SPLIT_ADDRESS.matcher(name);
-		if (matcher.matches())
-			return new String[] { matcher.group(2), matcher.group(1) };
-		else
-			return super.splitPlaceAndName(name);
-	}
-
 	@Override
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
@@ -203,7 +191,7 @@ public class SeptaProvider extends AbstractHafasProvider
 			else if (mPageCoarse.group(7) != null)
 				return new QueryDeparturesResult(header, Status.SERVICE_DOWN);
 
-			final String[] placeAndName = splitPlaceAndName(ParserUtils.resolveEntities(mPageCoarse.group(1)));
+			final String[] placeAndName = splitStationName(ParserUtils.resolveEntities(mPageCoarse.group(1)));
 			final Calendar currentTime = new GregorianCalendar(timeZone);
 			currentTime.clear();
 			ParserUtils.parseAmericanDate(currentTime, mPageCoarse.group(2));
@@ -256,9 +244,17 @@ public class SeptaProvider extends AbstractHafasProvider
 					final Line line = parseLine(lineType, ParserUtils.resolveEntities(mDepFine.group(4)), false);
 
 					final String destinationId = mDepFine.group(5);
-					final String[] destinationPlaceAndName = splitPlaceAndName(ParserUtils.resolveEntities(mDepFine.group(6)));
-					final Location destination = new Location(destinationId != null ? LocationType.STATION : LocationType.ANY, destinationId,
-							destinationPlaceAndName[0], destinationPlaceAndName[1]);
+					final String destinationName = ParserUtils.resolveEntities(mDepFine.group(6));
+					final Location destination;
+					if (destinationId != null)
+					{
+						final String[] destinationPlaceAndName = splitStationName(destinationName);
+						destination = new Location(LocationType.STATION, destinationId, destinationPlaceAndName[0], destinationPlaceAndName[1]);
+					}
+					else
+					{
+						destination = new Location(LocationType.ANY, null, null, destinationName);
+					}
 
 					final Position position = mDepFine.group(7) != null ? new Position("Gl. " + ParserUtils.resolveEntities(mDepFine.group(7)))
 							: null;
@@ -297,6 +293,16 @@ public class SeptaProvider extends AbstractHafasProvider
 	public QueryTripsResult queryMoreTrips(final QueryTripsContext context, final boolean later) throws IOException
 	{
 		return queryMoreTripsXml(context, later);
+	}
+
+	@Override
+	protected String[] splitAddress(final String address)
+	{
+		final Matcher mComma = P_SPLIT_NAME_LAST_COMMA.matcher(address);
+		if (mComma.matches())
+			return new String[] { mComma.group(2), mComma.group(1) };
+
+		return super.splitStationName(address);
 	}
 
 	@Override

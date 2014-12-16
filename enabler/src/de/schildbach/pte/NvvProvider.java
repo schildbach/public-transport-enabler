@@ -18,6 +18,7 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
+import java.util.regex.Matcher;
 
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
@@ -126,8 +127,15 @@ public class NvvProvider extends AbstractHafasProvider
 			"Darmstadt", "Aschaffenburg", "Berlin", "Fulda" };
 
 	@Override
-	protected String[] splitPlaceAndName(final String name)
+	protected String[] splitStationName(final String name)
 	{
+		if (name.startsWith("F "))
+			return new String[] { "Frankfurt", name.substring(2) };
+		if (name.startsWith("OF "))
+			return new String[] { "Offenbach", name.substring(3) };
+		if (name.startsWith("MZ "))
+			return new String[] { "Mainz", name.substring(3) };
+
 		for (final String place : PLACES)
 		{
 			if (name.startsWith(place + " - "))
@@ -136,7 +144,17 @@ public class NvvProvider extends AbstractHafasProvider
 				return new String[] { place, name.substring(place.length() + 1) };
 		}
 
-		return super.splitPlaceAndName(name);
+		return super.splitStationName(name);
+	}
+
+	@Override
+	protected String[] splitAddress(final String address)
+	{
+		final Matcher mComma = P_SPLIT_NAME_FIRST_COMMA.matcher(address);
+		if (mComma.matches())
+			return new String[] { mComma.group(1), mComma.group(2) };
+
+		return super.splitStationName(address);
 	}
 
 	@Override

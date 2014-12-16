@@ -17,6 +17,8 @@
 
 package de.schildbach.pte;
 
+import java.util.regex.Matcher;
+
 import de.schildbach.pte.dto.Product;
 
 /**
@@ -107,20 +109,24 @@ public class LuProvider extends AbstractHafasProvider
 		}
 	}
 
-	private static final String[] PLACES = { "Luxembourg", "Luxembourg/Centre" };
+	@Override
+	protected String[] splitStationName(final String name)
+	{
+		final Matcher mComma = P_SPLIT_NAME_FIRST_COMMA.matcher(name);
+		if (mComma.matches())
+			return new String[] { mComma.group(1), mComma.group(2) };
+
+		return super.splitStationName(name);
+	}
 
 	@Override
-	protected String[] splitPlaceAndName(final String name)
+	protected String[] splitAddress(final String address)
 	{
-		for (final String place : PLACES)
-		{
-			if (name.startsWith(place + " ") || name.startsWith(place + "-"))
-				return new String[] { place, name.substring(place.length() + 1) };
-			else if (name.startsWith(place + ", "))
-				return new String[] { place, name.substring(place.length() + 2) };
-		}
+		final Matcher mComma = P_SPLIT_NAME_FIRST_COMMA.matcher(address);
+		if (mComma.matches())
+			return new String[] { mComma.group(1), mComma.group(2) };
 
-		return super.splitPlaceAndName(name);
+		return super.splitStationName(address);
 	}
 
 	@Override

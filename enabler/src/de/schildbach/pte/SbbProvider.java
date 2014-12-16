@@ -18,6 +18,7 @@
 package de.schildbach.pte;
 
 import java.util.Collection;
+import java.util.regex.Matcher;
 
 import de.schildbach.pte.dto.Product;
 
@@ -112,6 +113,26 @@ public class SbbProvider extends AbstractHafasProvider
 	public Collection<Product> defaultProducts()
 	{
 		return Product.ALL;
+	}
+
+	@Override
+	protected String[] splitStationName(final String name)
+	{
+		final Matcher mComma = P_SPLIT_NAME_FIRST_COMMA.matcher(name);
+		if (mComma.matches())
+			return new String[] { mComma.group(1), mComma.group(2) };
+
+		return super.splitStationName(name);
+	}
+
+	@Override
+	protected String[] splitAddress(final String address)
+	{
+		final Matcher mComma = P_SPLIT_NAME_FIRST_COMMA.matcher(address);
+		if (mComma.matches())
+			return new String[] { mComma.group(1), mComma.group(2) };
+
+		return super.splitStationName(address);
 	}
 
 	@Override
