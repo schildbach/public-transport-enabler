@@ -2398,6 +2398,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	{
 		final CharSequence page = ParserUtils.scrape(uri, null, jsonNearbyStationsEncoding);
 
+		// System.out.println(uri);
+		// System.out.println(page);
+
 		try
 		{
 			final JSONObject head = new JSONObject(page.toString());
@@ -2412,14 +2415,15 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				{
 					final JSONObject stop = aStops.optJSONObject(i);
 					final String id = stop.getString("extId");
-					final String name = ParserUtils.resolveEntities(stop.getString("name"));
+					// final String name = ParserUtils.resolveEntities(stop.getString("name"));
+					final String urlname = ParserUtils.urlDecode(stop.getString("urlname"), jsonNearbyStationsEncoding);
 					final int lat = stop.getInt("y");
 					final int lon = stop.getInt("x");
 					final int stopWeight = stop.optInt("stopweight", -1);
 
 					if (stopWeight != 0)
 					{
-						final String[] placeAndName = splitStationName(name);
+						final String[] placeAndName = splitStationName(urlname);
 						stations.add(new Location(LocationType.STATION, id, lat, lon, placeAndName[0], placeAndName[1]));
 					}
 				}
