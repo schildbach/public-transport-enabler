@@ -205,7 +205,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 		final StringBuilder uri = new StringBuilder(stopFinderEndpoint);
 		uri.append(parameters);
 
-		final CharSequence page = ParserUtils.scrape(uri.toString(), null, UTF_8, null, 3);
+		final CharSequence page = ParserUtils.scrape(uri.toString(), null, UTF_8);
 		try
 		{
 			final List<SuggestedLocation> locations = new ArrayList<SuggestedLocation>();
@@ -295,7 +295,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 		final StringBuilder uri = new StringBuilder(stopFinderEndpoint);
 		uri.append(parameters);
 
-		final CharSequence page = ParserUtils.scrape(uri.toString(), null, UTF_8, null, 3);
+		final CharSequence page = ParserUtils.scrape(uri.toString(), null, UTF_8);
 		try
 		{
 
@@ -339,7 +339,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 		final StringBuilder uri = new StringBuilder(stopFinderEndpoint);
 		uri.append(parameters);
 
-		final CharSequence page = ParserUtils.scrape(uri.toString(), null, UTF_8, null, 3);
+		final CharSequence page = ParserUtils.scrape(uri.toString(), null, UTF_8);
 		try
 		{
 			final JSONObject head = new JSONObject(page.toString());
@@ -753,7 +753,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 
 		final StringBuilder uri = new StringBuilder(tripEndpoint);
 		uri.append(parameters);
-		final CharSequence page = ParserUtils.scrape(uri.toString(), null, UTF_8, null, 3);
+		final CharSequence page = ParserUtils.scrape(uri.toString(), null, UTF_8, null);
 		try
 		{
 			final JSONObject head = new JSONObject(page.toString());

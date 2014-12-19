@@ -68,7 +68,7 @@ public final class ParserUtils
 
 	public static final CharSequence scrape(final String url) throws IOException
 	{
-		return scrape(url, null, null, null, null);
+		return scrape(url, null);
 	}
 
 	public static final CharSequence scrape(final String url, final String authorization) throws IOException
@@ -76,32 +76,25 @@ public final class ParserUtils
 		return scrape(url, null, null, null, authorization);
 	}
 
-	public static final CharSequence scrape(final String url, final String postRequest, Charset encoding, final String sessionCookieName)
-			throws IOException
+	public static final CharSequence scrape(final String url, final String postRequest, final Charset encoding) throws IOException
 	{
-		return scrape(url, postRequest, encoding, sessionCookieName, null, 3);
+		return scrape(url, postRequest, encoding, null);
 	}
 
-	public static final CharSequence scrape(final String url, final String postRequest, Charset encoding, final String sessionCookieName, final String authorization)
-			throws IOException
+	public static final CharSequence scrape(final String urlStr, final String postRequest, final Charset requestEncoding,
+			final String sessionCookieName) throws IOException
 	{
-		return scrape(url, postRequest, encoding, sessionCookieName, authorization, 3);
+		return scrape(urlStr, postRequest, requestEncoding, sessionCookieName, null);
 	}
 
-	public static final CharSequence scrape(final String urlStr, final String postRequest, Charset requestEncoding, final String sessionCookieName,
-			int tries) throws IOException
-	{
-		return scrape(urlStr, postRequest, requestEncoding, sessionCookieName, null, tries);
-	}
-
-	public static final CharSequence scrape(final String urlStr, final String postRequest, Charset requestEncoding, final String sessionCookieName,
-											final String authorization, int tries) throws IOException
+	private static final CharSequence scrape(final String urlStr, final String postRequest, Charset requestEncoding, final String sessionCookieName,
+			final String authorization) throws IOException
 	{
 		if (requestEncoding == null)
 			requestEncoding = SCRAPE_DEFAULT_ENCODING;
 
 		final StringBuilder buffer = new StringBuilder(SCRAPE_INITIAL_CAPACITY);
-		final InputStream is = scrapeInputStream(urlStr, postRequest, requestEncoding, null, sessionCookieName, authorization, tries);
+		final InputStream is = scrapeInputStream(urlStr, postRequest, requestEncoding, null, sessionCookieName, authorization);
 		final Reader pageReader = new InputStreamReader(is, requestEncoding);
 		copy(pageReader, buffer);
 		pageReader.close();
@@ -123,20 +116,22 @@ public final class ParserUtils
 
 	public static final InputStream scrapeInputStream(final String url) throws IOException
 	{
-		return scrapeInputStream(url, null, null, null, null, null, 3);
+		return scrapeInputStream(url, null, null, null, null);
 	}
 
-	public static final InputStream scrapeInputStream(final String urlStr, final String postRequest, Charset requestEncoding, final String referer,
-													  final String sessionCookieName, int tries) throws IOException
+	public static final InputStream scrapeInputStream(final String urlStr, final String postRequest, final Charset requestEncoding,
+			final String referer, final String sessionCookieName) throws IOException
 	{
-		return scrapeInputStream(urlStr, postRequest, requestEncoding, referer, sessionCookieName, null, tries);
+		return scrapeInputStream(urlStr, postRequest, requestEncoding, referer, sessionCookieName, null);
 	}
 
 	public static final InputStream scrapeInputStream(final String urlStr, final String postRequest, Charset requestEncoding, final String referer,
-													  final String sessionCookieName, final String authorization, int tries) throws IOException
+			final String sessionCookieName, final String authorization) throws IOException
 	{
 		if (requestEncoding == null)
 			requestEncoding = SCRAPE_DEFAULT_ENCODING;
+
+		int tries = 3;
 
 		while (true)
 		{

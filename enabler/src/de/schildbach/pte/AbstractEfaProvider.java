@@ -256,7 +256,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		// System.out.println(uri);
 		// System.out.println(parameters);
 
-		final CharSequence page = ParserUtils.scrape(uri.toString(), httpPost ? parameters.substring(1) : null, UTF_8, null);
+		final CharSequence page = ParserUtils.scrape(uri.toString(), httpPost ? parameters.substring(1) : null, UTF_8);
 		final ResultHeader header = new ResultHeader(SERVER_PRODUCT);
 
 		try
@@ -381,7 +381,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null, 3);
+			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null);
 			firstChars = ParserUtils.peekFirstChars(is);
 
 			final XmlPullParser pp = parserFactory.newPullParser();
@@ -460,7 +460,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null, 3);
+			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null);
 			firstChars = ParserUtils.peekFirstChars(is);
 
 			final XmlPullParser pp = parserFactory.newPullParser();
@@ -569,7 +569,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null, 3);
+			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null);
 			firstChars = ParserUtils.peekFirstChars(is);
 
 			final XmlPullParser pp = parserFactory.newPullParser();
@@ -641,7 +641,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null, 3);
+			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null);
 			firstChars = ParserUtils.peekFirstChars(is);
 
 			final XmlPullParser pp = parserFactory.newPullParser();
@@ -914,7 +914,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, "NSC_", 3);
+			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, "NSC_");
 			firstChars = ParserUtils.peekFirstChars(is);
 
 			final XmlPullParser pp = parserFactory.newPullParser();
@@ -1488,7 +1488,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null, 3);
+			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null);
 			firstChars = ParserUtils.peekFirstChars(is);
 
 			final XmlPullParser pp = parserFactory.newPullParser();
@@ -1704,7 +1704,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null, 3);
+			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null);
 			firstChars = ParserUtils.peekFirstChars(is);
 
 			final XmlPullParser pp = parserFactory.newPullParser();
@@ -2173,7 +2173,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpRefererTrip, "NSC_", 3);
+			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpRefererTrip, "NSC_");
 			firstChars = ParserUtils.peekFirstChars(is);
 
 			return queryTrips(uri.toString(), is);
@@ -2212,7 +2212,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpRefererTrip, "NSC_", 3);
+			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpRefererTrip, "NSC_");
 			firstChars = ParserUtils.peekFirstChars(is);
 
 			return queryTripsMobile(uri.toString(), from, via, to, is);
@@ -2244,7 +2244,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri.toString(), null, null, httpRefererTrip, "NSC_", 3);
+			is = ParserUtils.scrapeInputStream(uri.toString(), null, null, httpRefererTrip, "NSC_");
 			firstChars = ParserUtils.peekFirstChars(is);
 
 			return queryTrips(uri.toString(), is);
@@ -2276,7 +2276,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri.toString(), null, null, httpRefererTrip, "NSC_", 3);
+			is = ParserUtils.scrapeInputStream(uri.toString(), null, null, httpRefererTrip, "NSC_");
 			firstChars = ParserUtils.peekFirstChars(is);
 			is.mark(512);
 
