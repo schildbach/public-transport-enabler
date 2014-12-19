@@ -39,6 +39,7 @@ public class MetProvider extends AbstractEfaProvider
 		setTimeZone("Australia/Melbourne");
 		setUseRouteIndexAsTripId(false);
 		setStyles(STYLES);
+		setSessionCookieName("BIGipServerpl_ptv_jp_lbvsvr");
 	}
 
 	public NetworkId id()
