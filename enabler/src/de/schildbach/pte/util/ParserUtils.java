@@ -24,6 +24,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -59,12 +60,7 @@ public final class ParserUtils
 	private static final int SCRAPE_READ_TIMEOUT = 15000;
 	private static final Charset SCRAPE_DEFAULT_ENCODING = Charset.forName("ISO-8859-1");
 
-	private static String stateCookie;
-
-	public static void resetState()
-	{
-		stateCookie = null;
-	}
+	private static HttpCookie sessionCookie;
 
 	public static final CharSequence scrape(final String url) throws IOException
 	{
@@ -116,7 +112,12 @@ public final class ParserUtils
 
 	public static final InputStream scrapeInputStream(final String url) throws IOException
 	{
-		return scrapeInputStream(url, null, null, null, null);
+		return scrapeInputStream(url, null);
+	}
+
+	public static final InputStream scrapeInputStream(final String url, final String sessionCookieName) throws IOException
+	{
+		return scrapeInputStream(url, null, null, null, sessionCookieName);
 	}
 
 	public static final InputStream scrapeInputStream(final String urlStr, final String postRequest, final Charset requestEncoding,
@@ -151,8 +152,8 @@ public final class ParserUtils
 			if (referer != null)
 				connection.addRequestProperty("Referer", referer);
 
-			if (sessionCookieName != null && stateCookie != null)
-				connection.addRequestProperty("Cookie", stateCookie);
+			if (sessionCookie != null && sessionCookie.getName().equals(sessionCookieName))
+				connection.addRequestProperty("Cookie", sessionCookie.toString());
 
 			// Set authorization.
 			if (authorization != null)
@@ -197,17 +198,22 @@ public final class ParserUtils
 				if (testInternalError(firstChars))
 					throw new InternalErrorException(url, new InputStreamReader(is, requestEncoding));
 
+				// save cookie
 				if (sessionCookieName != null)
 				{
-					for (final Map.Entry<String, List<String>> entry : connection.getHeaderFields().entrySet())
+					c: for (final Map.Entry<String, List<String>> entry : connection.getHeaderFields().entrySet())
 					{
-						if ("set-cookie".equalsIgnoreCase(entry.getKey()))
+						if ("set-cookie".equalsIgnoreCase(entry.getKey()) || "set-cookie2".equalsIgnoreCase(entry.getKey()))
 						{
 							for (final String value : entry.getValue())
 							{
-								if (value.startsWith(sessionCookieName))
+								for (final HttpCookie cookie : HttpCookie.parse(value))
 								{
-									stateCookie = value.split(";", 2)[0];
+									if (cookie.getName().equals(sessionCookieName))
+									{
+										sessionCookie = cookie;
+										break c;
+									}
 								}
 							}
 						}

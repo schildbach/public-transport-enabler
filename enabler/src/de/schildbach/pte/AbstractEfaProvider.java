@@ -914,7 +914,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, "NSC_");
+			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null);
 			firstChars = ParserUtils.peekFirstChars(is);
 
 			final XmlPullParser pp = parserFactory.newPullParser();
@@ -2173,7 +2173,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpRefererTrip, "NSC_");
+			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpRefererTrip, sessionCookieName);
 			firstChars = ParserUtils.peekFirstChars(is);
 
 			return queryTrips(uri.toString(), is);
@@ -2212,7 +2212,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpRefererTrip, "NSC_");
+			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpRefererTrip, sessionCookieName);
 			firstChars = ParserUtils.peekFirstChars(is);
 
 			return queryTripsMobile(uri.toString(), from, via, to, is);
@@ -2244,7 +2244,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri.toString(), null, null, httpRefererTrip, "NSC_");
+			is = ParserUtils.scrapeInputStream(uri.toString(), null, null, httpRefererTrip, sessionCookieName);
 			firstChars = ParserUtils.peekFirstChars(is);
 
 			return queryTrips(uri.toString(), is);
@@ -2276,7 +2276,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri.toString(), null, null, httpRefererTrip, "NSC_");
+			is = ParserUtils.scrapeInputStream(uri.toString(), null, null, httpRefererTrip, sessionCookieName);
 			firstChars = ParserUtils.peekFirstChars(is);
 			is.mark(512);
 

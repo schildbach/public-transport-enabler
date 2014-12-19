@@ -871,7 +871,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		try
 		{
 			final String endpoint = extXmlEndpoint != null ? extXmlEndpoint : queryEndpoint;
-			final InputStream is = ParserUtils.scrapeInputStream(endpoint, request, null, null, null);
+			final InputStream is = ParserUtils.scrapeInputStream(endpoint, request, null, null, sessionCookieName);
 			firstChars = ParserUtils.peekFirstChars(is);
 			reader = new InputStreamReader(is, ISO_8859_1);
 
@@ -1528,7 +1528,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 		try
 		{
-			final CustomBufferedInputStream bis = new CustomBufferedInputStream(ParserUtils.scrapeInputStream(uri));
+			final CustomBufferedInputStream bis = new CustomBufferedInputStream(ParserUtils.scrapeInputStream(uri, sessionCookieName));
 			final String firstChars = ParserUtils.peekFirstChars(bis);
 
 			// initialize input stream

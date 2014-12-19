@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
-import de.schildbach.pte.NetworkProvider.Capability;
 import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
@@ -42,6 +41,7 @@ public abstract class AbstractNetworkProvider implements NetworkProvider
 	protected TimeZone timeZone = TimeZone.getTimeZone("CET");
 	protected int numTripsRequested = 6;
 	private Map<String, Style> styles = null;
+	protected String sessionCookieName = null;
 
 	static
 	{
@@ -78,6 +78,11 @@ public abstract class AbstractNetworkProvider implements NetworkProvider
 	protected void setStyles(final Map<String, Style> styles)
 	{
 		this.styles = styles;
+	}
+
+	protected void setSessionCookieName(final String sessionCookieName)
+	{
+		this.sessionCookieName = sessionCookieName;
 	}
 
 	private static final char STYLES_SEP = '|';
