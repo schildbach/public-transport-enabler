@@ -42,6 +42,7 @@ public class MvvProvider extends AbstractEfaProvider
 
 		setIncludeRegionId(false);
 		setStyles(STYLES);
+		setSessionCookieName("NS-Sticky");
 	}
 
 	public NetworkId id()
