@@ -22,6 +22,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -226,10 +228,23 @@ public class ParisProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
+	public void queryTripStationsRapidTransit() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "stop_area:RTP:SA:1866"), null, new Location(LocationType.STATION,
+				"stop_area:RTP:SA:2045"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+
+		assertEquals(QueryTripsResult.Status.OK, result.status);
+
+		print(result);
+	}
+
+	@Test
 	public void queryTripNoSolution() throws Exception
 	{
+		final List<Product> emptyList = new LinkedList<Product> ();
+
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "stop_point:RTP:SP:3926410"), null, new Location(
-				LocationType.STATION, "stop_point:RTP:SP:3926410"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+				LocationType.STATION, "stop_point:RTP:SP:3926410"), new Date(), true, emptyList, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 
 		assertEquals(QueryTripsResult.Status.NO_TRIPS, result.status);
 
@@ -254,6 +269,28 @@ public class ParisProviderLiveTest extends AbstractProviderLiveTest
 				LocationType.STATION, "stop_area:RTP:SA:999999"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 
 		assertEquals(QueryTripsResult.Status.UNKNOWN_TO, result.status);
+
+		print(result);
+	}
+
+	@Test
+	public void queryTripSlowWalk() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 48877095, 2378431), null, new Location(LocationType.ADDRESS,
+				48847168, 2261272), new Date(), true, Product.ALL, WalkSpeed.SLOW, Accessibility.NEUTRAL);
+
+		assertEquals(QueryTripsResult.Status.OK, result.status);
+
+		print(result);
+	}
+
+	@Test
+	public void queryTripFastWalk() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 48877095, 2378431), null, new Location(LocationType.ADDRESS,
+				48847168, 2261272), new Date(), true, Product.ALL, WalkSpeed.FAST, Accessibility.NEUTRAL);
+
+		assertEquals(QueryTripsResult.Status.OK, result.status);
 
 		print(result);
 	}

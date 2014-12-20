@@ -91,7 +91,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 
 	private enum CommercialMode
 	{
-		BUS, TRAIN, TRAM, TRAMWAY, METRO, FERRY, CABLECAR, DEFAULT_COMMERCIAL_MODE
+		BUS, TRAIN, TRAM, TRAMWAY, METRO, FERRY, CABLECAR, RAPIDTRANSIT, FUNICULAR, DEFAULT_COMMERCIAL_MODE
 	}
 
 	private static class Context implements QueryTripsContext
@@ -602,6 +602,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 		{
 			case BUS:
 				return 'B';
+			case RAPIDTRANSIT:
 			case TRAIN:
 				return 'S';
 			case TRAM:
@@ -611,6 +612,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 				return 'U';
 			case FERRY:
 				return 'F';
+			case FUNICULAR:
 			case CABLECAR:
 				return 'C';
 			case DEFAULT_COMMERCIAL_MODE:
@@ -991,9 +993,26 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 				final String dateString = printDate(date);
 				final String dateTimeRep = dep ? "departure" : "arrival";
 
+				// Set walking speed.
+				double walkingSpeed;
+				switch (walkSpeed)
+				{
+				case SLOW:
+					walkingSpeed = 1.12 * 0.8;
+					break;
+				case NORMAL:
+					walkingSpeed = 1.12;
+					break;
+				case FAST:
+					walkingSpeed = 1.12 * 1.2;
+				default:
+					walkingSpeed = 1.12;
+					break;
+				}
+
 				final StringBuilder queryUri = new StringBuilder(tripUri() + "journeys?" + "from=" + ParserUtils.urlEncode(fromString) + "&to="
 						+ ParserUtils.urlEncode(toString) + "&datetime=" + dateString + "&datetime_represents=" + dateTimeRep + "&count=1"
-						+ "&depth=0");
+						+ "&walking_speed=" + walkingSpeed + "&depth=0");
 
 				if (options != null && options.contains(Option.BIKE))
 				{
@@ -1001,9 +1020,38 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 					queryUri.append("&last_section_mode=bike");
 				}
 
-				final CharSequence page = ParserUtils.scrape(queryUri.toString(), authorization);
+				// Set forbidden commercial modes.
+				if (!products.equals (Product.ALL))
+				{
+					if (!products.contains (Product.SUBURBAN_TRAIN))
+					{
+						queryUri.append("&forbidden_uris[]=commercial_mode:train");
+						queryUri.append("&forbidden_uris[]=commercial_mode:rapidtransit");
+					}
+					if (!products.contains (Product.SUBWAY))
+					{
+						queryUri.append("&forbidden_uris[]=commercial_mode:metro");
+					}
+					if (!products.contains (Product.TRAM))
+					{
+						queryUri.append("&forbidden_uris[]=commercial_mode:tram");
+					}
+					if (!products.contains (Product.BUS))
+					{
+						queryUri.append("&forbidden_uris[]=commercial_mode:bus");
+					}
+					if (!products.contains (Product.FERRY))
+					{
+						queryUri.append("&forbidden_uris[]=commercial_mode:ferry");
+					}
+					if (!products.contains (Product.CABLECAR))
+					{
+						queryUri.append("&forbidden_uris[]=commercial_mode:funicular");
+						queryUri.append("&forbidden_uris[]=commercial_mode:cablecar");
+					}
+				}
 
-				// System.out.println(queryUri);
+				final CharSequence page = ParserUtils.scrape(queryUri.toString(), authorization);
 
 				try
 				{
