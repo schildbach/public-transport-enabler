@@ -228,6 +228,17 @@ public class ParisProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
+	public void queryTripStationsRapidTransit() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "stop_area:RTP:SA:1866"), null, new Location(
+				LocationType.STATION, "stop_area:RTP:SA:2045"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+
+		assertEquals(QueryTripsResult.Status.OK, result.status);
+
+		print(result);
+	}
+
+	@Test
 	public void queryTripNoSolution() throws Exception
 	{
 		final List<Product> emptyList = new LinkedList<Product>();

@@ -91,7 +91,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 
 	private enum CommercialMode
 	{
-		BUS, TRAIN, TRAM, TRAMWAY, METRO, FERRY, CABLECAR, DEFAULT_COMMERCIAL_MODE
+		BUS, TRAIN, TRAM, TRAMWAY, METRO, FERRY, CABLECAR, RAPIDTRANSIT, FUNICULAR, DEFAULT_COMMERCIAL_MODE
 	}
 
 	private static class Context implements QueryTripsContext
@@ -602,6 +602,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 		{
 			case BUS:
 				return 'B';
+			case RAPIDTRANSIT:
 			case TRAIN:
 				return 'S';
 			case TRAM:
@@ -611,6 +612,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 				return 'U';
 			case FERRY:
 				return 'F';
+			case FUNICULAR:
 			case CABLECAR:
 				return 'C';
 			case DEFAULT_COMMERCIAL_MODE:
@@ -1025,6 +1027,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 					if (!products.contains(Product.SUBURBAN_TRAIN))
 					{
 						queryUri.append("&forbidden_uris[]=commercial_mode:train");
+						queryUri.append("&forbidden_uris[]=commercial_mode:rapidtransit");
 					}
 					if (!products.contains(Product.SUBWAY))
 					{
@@ -1044,6 +1047,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 					}
 					if (!products.contains(Product.CABLECAR))
 					{
+						queryUri.append("&forbidden_uris[]=commercial_mode:funicular");
 						queryUri.append("&forbidden_uris[]=commercial_mode:cablecar");
 					}
 				}
