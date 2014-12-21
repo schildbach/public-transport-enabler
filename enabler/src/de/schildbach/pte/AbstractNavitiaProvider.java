@@ -991,9 +991,27 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 				final String dateString = printDate(date);
 				final String dateTimeRep = dep ? "departure" : "arrival";
 
+				// Set walking speed.
+				final double walkingSpeed;
+				switch (walkSpeed)
+				{
+					case SLOW:
+						walkingSpeed = 1.12 * 0.8;
+						break;
+					case NORMAL:
+						walkingSpeed = 1.12;
+						break;
+					case FAST:
+						walkingSpeed = 1.12 * 1.2;
+						break;
+					default:
+						walkingSpeed = 1.12;
+						break;
+				}
+
 				final StringBuilder queryUri = new StringBuilder(tripUri() + "journeys?" + "from=" + ParserUtils.urlEncode(fromString) + "&to="
 						+ ParserUtils.urlEncode(toString) + "&datetime=" + dateString + "&datetime_represents=" + dateTimeRep + "&count=1"
-						+ "&depth=0");
+						+ "&walking_speed=" + walkingSpeed + "&depth=0");
 
 				if (options != null && options.contains(Option.BIKE))
 				{

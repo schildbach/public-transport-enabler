@@ -259,6 +259,28 @@ public class ParisProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
+	public void queryTripSlowWalk() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 48877095, 2378431), null, new Location(LocationType.ADDRESS,
+				48847168, 2261272), new Date(), true, Product.ALL, WalkSpeed.SLOW, Accessibility.NEUTRAL);
+
+		assertEquals(QueryTripsResult.Status.OK, result.status);
+
+		print(result);
+	}
+
+	@Test
+	public void queryTripFastWalk() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 48877095, 2378431), null, new Location(LocationType.ADDRESS,
+				48847168, 2261272), new Date(), true, Product.ALL, WalkSpeed.FAST, Accessibility.NEUTRAL);
+
+		assertEquals(QueryTripsResult.Status.OK, result.status);
+
+		print(result);
+	}
+
+	@Test
 	public void queryMoreTrips() throws Exception
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 48877095, 2378431), null, new Location(LocationType.ADDRESS,
