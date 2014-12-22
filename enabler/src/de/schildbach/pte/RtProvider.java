@@ -33,6 +33,7 @@ public class RtProvider extends AbstractHafasProvider
 	{
 		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 10, UTF_8);
 
+		setJsonNearbyStationsEncoding(ISO_8859_1);
 		setStationBoardHasStationTable(false);
 	}
 
