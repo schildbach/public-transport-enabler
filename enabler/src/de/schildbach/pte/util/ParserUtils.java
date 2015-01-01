@@ -50,7 +50,7 @@ import de.schildbach.pte.exception.UnexpectedRedirectException;
  */
 public final class ParserUtils
 {
-	private static final String SCRAPE_USER_AGENT = "Mozilla/5.0 (Linux; Android 4.3; Galaxy Nexus Build/JWR66Y) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.117 Mobile Safari/537.36";
+	private static final String SCRAPE_USER_AGENT = "Mozilla/5.0 (Linux; Android 4.4.4; Nexus 7 Build/KTU84P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.93 Safari/537.36";
 	private static final String SCRAPE_ACCEPT = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
 	public static final int SCRAPE_INITIAL_CAPACITY = 4096;
 	private static final int SCRAPE_COPY_SIZE = 2048;
