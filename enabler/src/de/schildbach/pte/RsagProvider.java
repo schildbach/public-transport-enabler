@@ -168,11 +168,17 @@ public class RsagProvider extends AbstractHafasProvider
 		STYLES.put("SS3", new Style(Shape.CIRCLE, Style.parseColor("#00a063"), Style.WHITE));
 
 		STYLES.put("T1", new Style(Shape.RECT, Style.parseColor("#712090"), Style.WHITE));
+		STYLES.put("TTram1", new Style(Shape.RECT, Style.parseColor("#712090"), Style.WHITE));
 		STYLES.put("T2", new Style(Shape.RECT, Style.parseColor("#d136a3"), Style.WHITE));
+		STYLES.put("TTram2", new Style(Shape.RECT, Style.parseColor("#d136a3"), Style.WHITE));
 		STYLES.put("T3", new Style(Shape.RECT, Style.parseColor("#870e12"), Style.WHITE));
+		STYLES.put("TTram3", new Style(Shape.RECT, Style.parseColor("#870e12"), Style.WHITE));
 		STYLES.put("T4", new Style(Shape.RECT, Style.parseColor("#f47216"), Style.WHITE));
+		STYLES.put("TTram4", new Style(Shape.RECT, Style.parseColor("#f47216"), Style.WHITE));
 		STYLES.put("T5", new Style(Shape.RECT, Style.parseColor("#ed1c24"), Style.WHITE));
+		STYLES.put("TTram5", new Style(Shape.RECT, Style.parseColor("#ed1c24"), Style.WHITE));
 		STYLES.put("T6", new Style(Shape.RECT, Style.parseColor("#fab20b"), Style.WHITE));
+		STYLES.put("TTram6", new Style(Shape.RECT, Style.parseColor("#fab20b"), Style.WHITE));
 
 		STYLES.put("B15", new Style(Style.parseColor("#008dc6"), Style.WHITE));
 		STYLES.put("B16", new Style(Style.parseColor("#1d3c85"), Style.WHITE));
