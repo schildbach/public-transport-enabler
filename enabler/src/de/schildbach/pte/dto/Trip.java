@@ -54,7 +54,7 @@ public final class Trip implements Serializable
 	public Date getFirstDepartureTime()
 	{
 		if (legs != null && !legs.isEmpty())
-			return legs.get(0).departureTime;
+			return legs.get(0).getDepartureTime();
 		else
 			return null;
 	}
@@ -81,7 +81,7 @@ public final class Trip implements Serializable
 	public Date getLastArrivalTime()
 	{
 		if (legs != null && !legs.isEmpty())
-			return legs.get(legs.size() - 1).arrivalTime;
+			return legs.get(legs.size() - 1).getArrivalTime();
 		else
 			return null;
 	}
@@ -209,25 +209,21 @@ public final class Trip implements Serializable
 		private static final long serialVersionUID = 8498461220084523265L;
 
 		public final Location departure;
-		public final Date departureTime;
 		public final Location arrival;
-		public final Date arrivalTime;
 		public List<Point> path;
-		public final int min;
 
-		public Leg(final Location departure, final Date departureTime, final Location arrival, final Date arrivalTime, final List<Point> path)
+		public Leg(final Location departure, final Location arrival, final List<Point> path)
 		{
 			this.departure = departure;
-			this.departureTime = departureTime;
 			this.arrival = arrival;
-			this.arrivalTime = arrivalTime;
 			this.path = path;
-
-			if (arrivalTime != null && departureTime != null)
-				this.min = (int) ((arrivalTime.getTime() - departureTime.getTime()) / 1000 / 60);
-			else
-				this.min = 0;
 		}
+
+		/** Coarse departure time. */
+		public abstract Date getDepartureTime();
+
+		/** Coarse arrival time. */
+		public abstract Date getArrivalTime();
 	}
 
 	public final static class Public extends Leg
@@ -244,7 +240,7 @@ public final class Trip implements Serializable
 		public Public(final Line line, final Location destination, final Stop departureStop, final Stop arrivalStop,
 				final List<Stop> intermediateStops, final List<Point> path, final String message)
 		{
-			super(departureStop.location, departureStop.getDepartureTime(), arrivalStop.location, arrivalStop.getArrivalTime(), path);
+			super(departureStop.location, arrivalStop.location, path);
 
 			this.line = line;
 			this.destination = destination;
@@ -254,6 +250,7 @@ public final class Trip implements Serializable
 			this.message = message;
 		}
 
+		@Override
 		public Date getDepartureTime()
 		{
 			final Date departureTime = departureStop.getDepartureTime();
@@ -284,6 +281,7 @@ public final class Trip implements Serializable
 			return departureStop.isDeparturePositionPredicted();
 		}
 
+		@Override
 		public Date getArrivalTime()
 		{
 			final Date arrivalTime = arrivalStop.getArrivalTime();
@@ -343,15 +341,38 @@ public final class Trip implements Serializable
 		private static final long serialVersionUID = -6651381862837233925L;
 
 		public final Type type;
+		public final Date departureTime;
+		public final Date arrivalTime;
+		public final int min;
 		public final int distance;
 
 		public Individual(final Type type, final Location departure, final Date departureTime, final Location arrival, final Date arrivalTime,
 				final List<Point> path, final int distance)
 		{
-			super(departure, departureTime, arrival, arrivalTime, path);
+			super(departure, arrival, path);
 
 			this.type = type;
+			this.departureTime = departureTime;
+			this.arrivalTime = arrivalTime;
+
+			if (arrivalTime != null && departureTime != null)
+				this.min = (int) ((arrivalTime.getTime() - departureTime.getTime()) / 1000 / 60);
+			else
+				this.min = 0;
+
 			this.distance = distance;
+		}
+
+		@Override
+		public Date getDepartureTime()
+		{
+			return departureTime;
+		}
+
+		@Override
+		public Date getArrivalTime()
+		{
+			return arrivalTime;
 		}
 
 		@Override
@@ -364,9 +385,9 @@ public final class Trip implements Serializable
 			builder.append(",");
 			builder.append("arrival=").append(arrival);
 			builder.append(",");
-			builder.append("distance=").append(distance);
-			builder.append(",");
 			builder.append("min=").append(min);
+			builder.append(",");
+			builder.append("distance=").append(distance);
 			builder.append("]");
 			return builder.toString();
 		}
