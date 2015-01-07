@@ -110,6 +110,30 @@ public final class Trip implements Serializable
 			return null;
 	}
 
+	/** Minimum time occuring in this trip. */
+	public Date getMinTime()
+	{
+		Date minTime = null;
+
+		for (final Leg leg : legs)
+			if (minTime == null || leg.getMinTime().before(minTime))
+				minTime = leg.getMinTime();
+
+		return minTime;
+	}
+
+	/** Maximum time occuring in this trip. */
+	public Date getMaxTime()
+	{
+		Date maxTime = null;
+
+		for (final Leg leg : legs)
+			if (maxTime == null || leg.getMaxTime().after(maxTime))
+				maxTime = leg.getMaxTime();
+
+		return maxTime;
+	}
+
 	public List<Product> products()
 	{
 		final List<Product> products = new LinkedList<Product>();
@@ -224,6 +248,12 @@ public final class Trip implements Serializable
 
 		/** Coarse arrival time. */
 		public abstract Date getArrivalTime();
+
+		/** Minimum time occuring in this leg. */
+		public abstract Date getMinTime();
+
+		/** Maximum time occuring in this leg. */
+		public abstract Date getMaxTime();
 	}
 
 	public final static class Public extends Leg
@@ -313,6 +343,18 @@ public final class Trip implements Serializable
 		}
 
 		@Override
+		public Date getMinTime()
+		{
+			return departureStop.getMinTime();
+		}
+
+		@Override
+		public Date getMaxTime()
+		{
+			return arrivalStop.getMaxTime();
+		}
+
+		@Override
 		public String toString()
 		{
 			final StringBuilder builder = new StringBuilder(getClass().getSimpleName() + "[");
@@ -371,6 +413,18 @@ public final class Trip implements Serializable
 
 		@Override
 		public Date getArrivalTime()
+		{
+			return arrivalTime;
+		}
+
+		@Override
+		public Date getMinTime()
+		{
+			return departureTime;
+		}
+
+		@Override
+		public Date getMaxTime()
 		{
 			return arrivalTime;
 		}

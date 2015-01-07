@@ -177,6 +177,22 @@ public final class Stop implements Serializable
 		return predictedDeparturePosition != null;
 	}
 
+	public Date getMinTime()
+	{
+		if (plannedDepartureTime == null || (predictedDepartureTime != null && predictedDepartureTime.before(plannedDepartureTime)))
+			return predictedDepartureTime;
+		else
+			return plannedDepartureTime;
+	}
+
+	public Date getMaxTime()
+	{
+		if (plannedArrivalTime == null || (predictedArrivalTime != null && predictedArrivalTime.after(plannedArrivalTime)))
+			return predictedArrivalTime;
+		else
+			return plannedArrivalTime;
+	}
+
 	@Override
 	public String toString()
 	{
