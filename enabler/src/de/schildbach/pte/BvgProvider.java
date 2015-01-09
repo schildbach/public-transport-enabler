@@ -119,23 +119,40 @@ public final class BvgProvider extends AbstractHafasProvider
 		}
 	}
 
-	private static final Pattern P_SPLIT_NAME_PAREN = Pattern.compile("(.*?) +\\((.{4,}?)\\)(?: +\\((U|S|S\\+U)\\))?");
+	private static final Pattern P_SPLIT_NAME_SU = Pattern.compile("(.*?)(?:\\s+\\((S|U|S\\+U)\\))?");
+	private static final Pattern P_SPLIT_NAME_BUS = Pattern.compile("(.*?)(\\s+\\[[^\\]]+\\])?");
 
 	@Override
-	protected String[] splitStationName(final String name)
+	protected String[] splitStationName(String name)
 	{
+		final Matcher mSu = P_SPLIT_NAME_SU.matcher(name);
+		if (!mSu.matches())
+			throw new IllegalStateException(name);
+		name = mSu.group(1);
+		final String su = mSu.group(2);
+
+		final Matcher mBus = P_SPLIT_NAME_BUS.matcher(name);
+		if (!mBus.matches())
+			throw new IllegalStateException(name);
+		name = mBus.group(1);
+
 		final Matcher mParen = P_SPLIT_NAME_PAREN.matcher(name);
 		if (mParen.matches())
-		{
-			final String su = mParen.group(3);
-			return new String[] { mParen.group(2), mParen.group(1) + (su != null ? " (" + su + ")" : "") };
-		}
+			return new String[] { normalizePlace(mParen.group(2)), (su != null ? su + " " : "") + mParen.group(1) };
 
 		final Matcher mComma = P_SPLIT_NAME_FIRST_COMMA.matcher(name);
 		if (mComma.matches())
-			return new String[] { mComma.group(1), mComma.group(2) };
+			return new String[] { normalizePlace(mComma.group(1)), mComma.group(2) };
 
 		return super.splitStationName(name);
+	}
+
+	private String normalizePlace(final String place)
+	{
+		if ("Bln".equals(place))
+			return "Berlin";
+		else
+			return place;
 	}
 
 	@Override
