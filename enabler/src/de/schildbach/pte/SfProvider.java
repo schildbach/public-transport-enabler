@@ -60,6 +60,32 @@ public class SfProvider extends AbstractEfaProvider
 	{
 		if ("0".equals(mot))
 		{
+			if (("XAA".equals(symbol) || "Daly City / Fremont".equals(symbol)) && "Daly City / Fremont".equals(name))
+				return "RDALY/FRMT";
+			if (("FRE".equals(symbol) || "Fremont / Daly City".equals(symbol)) && "Fremont / Daly City".equals(name))
+				return "RFRMT/DALY";
+			if (("XAC".equals(symbol) || "Fremont / Richmond".equals(symbol)) && "Fremont / Richmond".equals(name))
+				return "RFRMT/RICH";
+			if (("XAD".equals(symbol) || "Richmond / Fremont".equals(symbol)) && "Richmond / Fremont".equals(name))
+				return "RRICH/FRMT";
+			if (("XAE".equals(symbol) || "Pittsburg Bay Point / SFO".equals(symbol)) && "Pittsburg Bay Point / SFO".equals(name))
+				return "RPITT/SFIA";
+			if (("SFI".equals(symbol) || "SFO / Pittsburg Bay Point".equals(symbol)) && "SFO / Pittsburg Bay Point".equals(name))
+				return "RSFIA/PITT";
+			if (("XAF".equals(symbol) || "Millbrae / Richmond".equals(symbol)) && "Millbrae / Richmond".equals(name))
+				return "RMLBR/RICH";
+			if (("XAG".equals(symbol) || "Richmond / Millbrae".equals(symbol)) && "Richmond / Millbrae".equals(name))
+				return "RRICH/MLBR";
+			if (("XAH".equals(symbol) || "Daly City / Dublin Pleasanton".equals(symbol)) && "Daly City / Dublin Pleasanton".equals(name))
+				return "RDALY/DUBL";
+			if (("XAI".equals(symbol) || "Dublin Pleasanton / Daly City".equals(symbol)) && "Dublin Pleasanton / Daly City".equals(name))
+				return "RDUBL/DALY";
+
+			if ("LOC".equals(symbol) && "LOCAL".equals(name))
+				return "RLocal";
+			if ("CAP".equals(symbol) && "CAPITOL".equals(name))
+				return "RCapitol";
+
 			if ("Muni Rail".equals(trainName) && symbol != null) // Muni
 				return 'T' + symbol;
 			if (trainType == null && "F".equals(trainNum)) // Muni Historic Streetcar
@@ -88,19 +114,19 @@ public class SfProvider extends AbstractEfaProvider
 	static
 	{
 		// BART
-		STYLES.put("RDaly City / Dublin Pleasanton", new Style(Style.parseColor("#00AEEF"), Style.WHITE));
-		STYLES.put("RDulin Pleasanton / Daly City", new Style(Style.parseColor("#00AEEF"), Style.WHITE));
+		STYLES.put("RDALY/FRMT", new Style(Style.parseColor("#4EBF49"), Style.WHITE));
+		STYLES.put("RFRMT/DALY", new Style(Style.parseColor("#4EBF49"), Style.WHITE));
 
-		STYLES.put("RSFO / Pittsburg Bay Point", new Style(Style.parseColor("#FFE800"), Style.BLACK));
-		STYLES.put("RPittsburg Bay Point / SFO", new Style(Style.parseColor("#FFE800"), Style.BLACK));
+		STYLES.put("RFRMT/RICH", new Style(Style.parseColor("#FAA61A"), Style.WHITE));
+		STYLES.put("RRICH/FRMT", new Style(Style.parseColor("#FAA61A"), Style.WHITE));
 
-		STYLES.put("RDaly City / Fremont", new Style(Style.parseColor("#4EBF49"), Style.WHITE));
-		STYLES.put("RFremont / Daly City", new Style(Style.parseColor("#4EBF49"), Style.WHITE));
+		STYLES.put("RSFIA/PITT", new Style(Style.parseColor("#FFE800"), Style.BLACK));
+		STYLES.put("RPITT/SFIA", new Style(Style.parseColor("#FFE800"), Style.BLACK));
 
-		STYLES.put("RFremont / Richmond", new Style(Style.parseColor("#FAA61A"), Style.WHITE));
-		STYLES.put("RRichmond / Fremont", new Style(Style.parseColor("#FAA61A"), Style.WHITE));
+		STYLES.put("RMLBR/RICH", new Style(Style.parseColor("#F81A23"), Style.WHITE));
+		STYLES.put("RRICH/MLBR", new Style(Style.parseColor("#F81A23"), Style.WHITE));
 
-		STYLES.put("RMillbrae / Richmond", new Style(Style.parseColor("#F81A23"), Style.WHITE));
-		STYLES.put("RRichmond / Millbrae", new Style(Style.parseColor("#F81A23"), Style.WHITE));
+		STYLES.put("RDALY/DUBL", new Style(Style.parseColor("#00AEEF"), Style.WHITE));
+		STYLES.put("RDUBL/DALY", new Style(Style.parseColor("#00AEEF"), Style.WHITE));
 	}
 }
