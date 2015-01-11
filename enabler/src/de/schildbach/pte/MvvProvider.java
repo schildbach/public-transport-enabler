@@ -19,8 +19,11 @@ package de.schildbach.pte;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.schildbach.pte.dto.Point;
+import de.schildbach.pte.dto.Position;
 import de.schildbach.pte.dto.Style;
 
 /**
@@ -71,6 +74,28 @@ public class MvvProvider extends AbstractEfaProvider
 		}
 
 		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
+	}
+
+	private static final Pattern P_POSITION = Pattern.compile("(Fern|Regio|S-Bahn|U-Bahn|U\\d(?:/U\\d)*)\\s+(.*)");
+
+	@Override
+	protected Position parsePosition(final String position)
+	{
+		if (position == null)
+			return null;
+
+		final Matcher m = P_POSITION.matcher(position);
+		if (m.matches())
+		{
+			final char t = m.group(1).charAt(0);
+			final Position p = super.parsePosition(m.group(2));
+			if (t == 'S' || t == 'U')
+				return new Position(p.name + "(" + t + ")", p.section);
+			else
+				return p;
+		}
+
+		return super.parsePosition(position);
 	}
 
 	private static final Map<String, Style> STYLES = new HashMap<String, Style>();

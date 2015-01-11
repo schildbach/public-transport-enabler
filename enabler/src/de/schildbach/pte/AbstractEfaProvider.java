@@ -1620,7 +1620,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 								new LinkedList<Departure>(), new LinkedList<LineDestination>());
 					}
 
-					final Position position = normalizePlatformName(XmlPullUtil.optAttr(pp, "platformName", null));
+					final Position position = parsePosition(XmlPullUtil.optAttr(pp, "platformName", null));
 
 					XmlPullUtil.enter(pp, "itdDeparture");
 
@@ -1726,7 +1726,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					XmlPullUtil.enter(pp, "r");
 					final String assignedId = XmlPullUtil.valueTag(pp, "id");
 					XmlPullUtil.valueTag(pp, "a");
-					final Position position = new Position(XmlPullUtil.optValueTag(pp, "pl", null));
+					final Position position = super.parsePosition(XmlPullUtil.optValueTag(pp, "pl", null));
 					XmlPullUtil.skipExit(pp, "r");
 
 					/* final Point positionCoordinate = */coordStrToPoint(XmlPullUtil.optValueTag(pp, "c", null));
@@ -2438,7 +2438,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						final Location departureLocation = processItdPointAttributes(pp);
 						if (firstDepartureLocation == null)
 							firstDepartureLocation = departureLocation;
-						final Position departurePosition = normalizePlatformName(XmlPullUtil.optAttr(pp, "platformName", null));
+						final Position departurePosition = parsePosition(XmlPullUtil.optAttr(pp, "platformName", null));
 						XmlPullUtil.enter(pp, "itdPoint");
 						if (XmlPullUtil.test(pp, "itdMapItemList"))
 							XmlPullUtil.next(pp);
@@ -2462,7 +2462,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							throw new IllegalStateException();
 						final Location arrivalLocation = processItdPointAttributes(pp);
 						lastArrivalLocation = arrivalLocation;
-						final Position arrivalPosition = normalizePlatformName(XmlPullUtil.optAttr(pp, "platformName", null));
+						final Position arrivalPosition = parsePosition(XmlPullUtil.optAttr(pp, "platformName", null));
 						XmlPullUtil.enter(pp, "itdPoint");
 						if (XmlPullUtil.test(pp, "itdMapItemList"))
 							XmlPullUtil.next(pp);
@@ -2618,7 +2618,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 								{
 									final Location stopLocation = processItdPointAttributes(pp);
 
-									final Position stopPosition = normalizePlatformName(XmlPullUtil.optAttr(pp, "platformName", null));
+									final Position stopPosition = parsePosition(XmlPullUtil.optAttr(pp, "platformName", null));
 
 									XmlPullUtil.enter(pp, "itdPoint");
 									XmlPullUtil.require(pp, "itdDateTime");
@@ -2880,7 +2880,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							XmlPullUtil.enter(pp, "r");
 							final String id = XmlPullUtil.valueTag(pp, "id");
 							XmlPullUtil.optValueTag(pp, "a", null);
-							final Position position = new Position(XmlPullUtil.optValueTag(pp, "pl", null));
+							final Position position = super.parsePosition(XmlPullUtil.optValueTag(pp, "pl", null));
 							final String place = normalizeLocationName(XmlPullUtil.optValueTag(pp, "pc", null));
 							final Point coord = coordStrToPoint(XmlPullUtil.optValueTag(pp, "c", null));
 							XmlPullUtil.skipExit(pp, "r");
@@ -3209,32 +3209,23 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		return Currency.getInstance(currencyStr);
 	}
 
-	private static final Pattern P_PLATFORM_NAME = Pattern.compile("(?:Gleis|Gl\\.|Bstg\\.)?\\s*" + //
-			"(\\d+)\\s*" + //
-			"(?:([A-Z])\\s*(?:-\\s*([A-Z]))?)?", Pattern.CASE_INSENSITIVE);
+	private static final Pattern P_POSITION = Pattern.compile(
+			"(?:Gleis|Gl\\.|Bahnsteig|Bstg\\.|Bussteig|Busstg\\.|Steig|Hp\\.|Stop|Pos\\.|Zone|Platform)?\\s*(.+)", Pattern.CASE_INSENSITIVE);
 
-	private static final Position normalizePlatformName(final String platformName)
+	@Override
+	protected Position parsePosition(final String position)
 	{
-		if (platformName != null)
-		{
-			final Matcher m = P_PLATFORM_NAME.matcher(platformName);
-			if (m.matches())
-			{
-				final String simple = Integer.toString(Integer.parseInt(m.group(1)));
-				if (m.group(2) != null && m.group(3) != null)
-					return new Position(simple + m.group(2) + "-" + m.group(3));
-				else if (m.group(2) != null)
-					return new Position(simple + m.group(2));
-				else
-					return new Position(simple);
-			}
-			else
-			{
-				return new Position(platformName);
-			}
-		}
+		if (position == null)
+			return null;
 
-		return null;
+		if (position.startsWith("Ri.") || position.startsWith("Richtung "))
+			return null;
+
+		final Matcher m = P_POSITION.matcher(position);
+		if (m.matches())
+			return super.parsePosition(m.group(1));
+
+		return super.parsePosition(position);
 	}
 
 	private void appendLocation(final StringBuilder uri, final Location location, final String paramSuffix)

@@ -17,6 +17,8 @@
 
 package de.schildbach.pte;
 
+import de.schildbach.pte.dto.Position;
+
 /**
  * @author Andreas Schildbach
  */
@@ -33,5 +35,17 @@ public class MvgProvider extends AbstractEfaProvider
 	public NetworkId id()
 	{
 		return NETWORK_ID;
+	}
+
+	@Override
+	protected Position parsePosition(final String position)
+	{
+		if (position == null)
+			return null;
+
+		if (position.startsWith(" - "))
+			return super.parsePosition(position.substring(3));
+
+		return super.parsePosition(position);
 	}
 }

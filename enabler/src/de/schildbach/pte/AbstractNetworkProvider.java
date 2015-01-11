@@ -24,8 +24,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.schildbach.pte.dto.Point;
+import de.schildbach.pte.dto.Position;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
 
@@ -156,5 +159,33 @@ public abstract class AbstractNetworkProvider implements NetworkProvider
 			normalized.deleteCharAt(0);
 
 		return normalized.toString();
+	}
+
+	private static final Pattern P_NAME_SECTION = Pattern.compile("(\\d+)\\s*" + //
+			"([A-Z](?:\\s*-?\\s*[A-Z])?)?", Pattern.CASE_INSENSITIVE);
+
+	private static final Pattern P_NAME_NOSW = Pattern.compile("(\\d+)\\s*" + //
+			"(Nord|Süd|Ost|West)", Pattern.CASE_INSENSITIVE);
+
+	protected Position parsePosition(final String position)
+	{
+		if (position == null)
+			return null;
+
+		final Matcher mSection = P_NAME_SECTION.matcher(position);
+		if (mSection.matches())
+		{
+			final String name = Integer.toString(Integer.parseInt(mSection.group(1)));
+			if (mSection.group(2) != null)
+				return new Position(name, mSection.group(2).replaceAll("\\s+", ""));
+			else
+				return new Position(name);
+		}
+
+		final Matcher mNosw = P_NAME_NOSW.matcher(position);
+		if (mNosw.matches())
+			return new Position(Integer.toString(Integer.parseInt(mNosw.group(1))), mNosw.group(2).substring(0, 1));
+
+		return new Position(position);
 	}
 }

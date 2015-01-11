@@ -330,7 +330,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		throw new IllegalStateException("cannot handle: " + type);
 	}
 
-	private static final Position parsePlatform(final XmlPullParser pp) throws XmlPullParserException, IOException
+	private final Position parsePlatform(final XmlPullParser pp) throws XmlPullParserException, IOException
 	{
 		XmlPullUtil.enter(pp, "Platform");
 		final String platformText = XmlPullUtil.valueTag(pp, "Text");
@@ -339,7 +339,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		if (platformText == null || platformText.length() == 0)
 			return null;
 		else
-			return new Position(platformText);
+			return parsePosition(platformText);
 	}
 
 	public SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException
@@ -627,7 +627,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						predictedTime = null;
 					}
 
-					final Position position = platform != null ? new Position("Gl. " + ParserUtils.resolveEntities(platform)) : null;
+					final Position position = parsePosition(ParserUtils.resolveEntities(platform));
 
 					final String destinationName;
 					if (dir != null)
@@ -2272,7 +2272,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 	}
 
-	private static final Pattern P_POSITION_PLATFORM = Pattern.compile("Gleis\\s*([^\\s]*)\\s*", Pattern.CASE_INSENSITIVE);
+	private static final Pattern P_POSITION_PLATFORM = Pattern.compile("Gleis\\s*(.*)\\s*", Pattern.CASE_INSENSITIVE);
 
 	private Position normalizePosition(final String position)
 	{
@@ -2281,9 +2281,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 		final Matcher m = P_POSITION_PLATFORM.matcher(position);
 		if (!m.matches())
-			return new Position(position);
+			return parsePosition(position);
 
-		return new Position(m.group(1));
+		return parsePosition(m.group(1));
 	}
 
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException

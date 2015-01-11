@@ -25,18 +25,33 @@ import java.io.Serializable;
 public final class Position implements Serializable
 {
 	public final String name;
+	public final String section;
 
 	public Position(final String name)
 	{
+		this(name, null);
+	}
+
+	public Position(final String name, final String section)
+	{
+		if (name == null)
+			throw new IllegalArgumentException("name cannot be null");
+		// else if (name.length() > 5)
+		// throw new IllegalArgumentException("name too long: " + name);
+
+		if (section != null && section.length() > 3)
+			throw new IllegalArgumentException("section too long: " + section);
+
 		this.name = name;
+		this.section = section;
 	}
 
 	@Override
 	public String toString()
 	{
-		final StringBuilder builder = new StringBuilder("Position(");
-		builder.append(name != null ? name : "null");
-		builder.append(")");
+		final StringBuilder builder = new StringBuilder(name);
+		if (section != null)
+			builder.append(section);
 		return builder.toString();
 	}
 
@@ -48,7 +63,9 @@ public final class Position implements Serializable
 		if (!(o instanceof Position))
 			return false;
 		final Position other = (Position) o;
-		if (!nullSafeEquals(this.name, other.name))
+		if (!this.name.equals(other.name))
+			return false;
+		if (!nullSafeEquals(this.section, other.section))
 			return false;
 		return true;
 	}
@@ -57,7 +74,8 @@ public final class Position implements Serializable
 	public int hashCode()
 	{
 		int hashCode = 0;
-		hashCode += nullSafeHashCode(name);
+		hashCode += name.hashCode();
+		hashCode += nullSafeHashCode(section);
 		return hashCode;
 	}
 

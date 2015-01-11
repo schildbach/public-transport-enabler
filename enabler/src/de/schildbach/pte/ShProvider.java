@@ -275,8 +275,7 @@ public class ShProvider extends AbstractHafasProvider
 						destination = new Location(LocationType.ANY, null, null, destinationName);
 					}
 
-					final Position position = mDepFine.group(6) != null ? new Position("Gl. " + ParserUtils.resolveEntities(mDepFine.group(6)))
-							: null;
+					final Position position = parsePosition(ParserUtils.resolveEntities(mDepFine.group(6)));
 
 					final Departure dep = new Departure(plannedTime.getTime(), null, line, position, destination, null, null);
 
