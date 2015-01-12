@@ -277,7 +277,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					return new SuggestLocationsResult(header, locations);
 				}
 
-				stops = stopFinder.getJSONArray("points");
+				stops = stopFinder.optJSONArray("points");
+				if (stops == null)
+					return new SuggestLocationsResult(header, locations);
 			}
 
 			final int nStops = stops.length();

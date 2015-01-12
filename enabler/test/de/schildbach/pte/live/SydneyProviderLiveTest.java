@@ -81,6 +81,13 @@ public class SydneyProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
+	public void suggestLocationsEmpty() throws Exception
+	{
+		final SuggestLocationsResult result = provider.suggestLocations("kreide");
+		print(result);
+	}
+
+	@Test
 	public void shortTrip() throws Exception
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "10101100", "Sydney", "Central Station"), null, new Location(
