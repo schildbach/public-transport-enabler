@@ -2594,7 +2594,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							while (XmlPullUtil.test(pp, "infoLink"))
 							{
 								XmlPullUtil.enter(pp, "infoLink");
-								XmlPullUtil.requireSkip(pp, "paramList");
+								XmlPullUtil.optSkip(pp, "paramList");
 								final String infoLinkText = XmlPullUtil.valueTag(pp, "infoLinkText");
 								if (message == null)
 									message = infoLinkText;
