@@ -46,7 +46,6 @@ public class VgnProviderLiveTest extends AbstractProviderLiveTest
 	public void nearbyStations() throws Exception
 	{
 		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "3000510"));
-
 		print(result);
 	}
 
@@ -54,7 +53,6 @@ public class VgnProviderLiveTest extends AbstractProviderLiveTest
 	public void nearbyStationsByCoordinate() throws Exception
 	{
 		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 49455472, 11079655));
-
 		print(result);
 	}
 
@@ -62,7 +60,6 @@ public class VgnProviderLiveTest extends AbstractProviderLiveTest
 	public void queryDepartures() throws Exception
 	{
 		final QueryDeparturesResult result = queryDepartures("3000510", false);
-
 		print(result);
 	}
 
@@ -70,7 +67,6 @@ public class VgnProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsIncomplete() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Kur");
-
 		print(result);
 	}
 
@@ -78,7 +74,6 @@ public class VgnProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsWithUmlaut() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("grün");
-
 		print(result);
 	}
 
@@ -87,6 +82,17 @@ public class VgnProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "451", "Nürnberg", "Ostring"), null, new Location(
 				LocationType.STATION, "510", "Nürnberg", "Hauptbahnhof"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		print(result);
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+		print(laterResult);
+	}
+
+	@Test
+	public void tripToPOI() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 49527298, 10836204), null, new Location(LocationType.POI,
+				"poiID:246:9564000:1:Grundschule Grimmstr.:Nürnberg:Grundschule Grimmstr.:ANY:POI:4436708:678322:NAV4:VGN", 49468692, 11125334,
+				"Nürnberg", "Grundschule Grimmstr."), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		print(laterResult);

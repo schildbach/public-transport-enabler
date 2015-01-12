@@ -50,7 +50,6 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 	public void nearbyStations() throws Exception
 	{
 		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "350"));
-
 		print(result);
 	}
 
@@ -58,7 +57,6 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 	public void nearbyStationsByCoordinate() throws Exception
 	{
 		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 48135232, 11560650));
-
 		print(result);
 	}
 
@@ -66,7 +64,6 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 	public void queryDepartures() throws Exception
 	{
 		final QueryDeparturesResult result = queryDepartures("2", false);
-
 		assertEquals(QueryDeparturesResult.Status.OK, result.status);
 		print(result);
 	}
@@ -75,15 +72,20 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 	public void queryDeparturesInvalidStation() throws Exception
 	{
 		final QueryDeparturesResult result = queryDepartures("999999", false);
-
 		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
+	}
+
+	@Test
+	public void suggestLocationsIdentified() throws Exception
+	{
+		final SuggestLocationsResult result = suggestLocations("Starnberg, Agentur für Arbeit");
+		print(result);
 	}
 
 	@Test
 	public void suggestLocationsIncomplete() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Marien");
-
 		print(result);
 	}
 
@@ -91,7 +93,6 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsWithUmlaut() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("grün");
-
 		print(result);
 	}
 
@@ -126,10 +127,10 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void longTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "Starnberg, Arbeitsamt"), null, new Location(
-				LocationType.STATION, null, null, "Ackermannstraße"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "1005530", 48002924, 11340144, "Starnberg",
+				"Agentur für Arbeit"), null, new Location(LocationType.STATION, null, null, "Ackermannstraße"), new Date(), true, Product.ALL,
+				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
-		// seems like there are no more trips all the time
 	}
 
 	@Test

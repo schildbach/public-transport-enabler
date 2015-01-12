@@ -49,7 +49,6 @@ public class DingProviderLiveTest extends AbstractProviderLiveTest
 	public void nearbyStations() throws Exception
 	{
 		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "90001611"));
-
 		print(result);
 	}
 
@@ -57,7 +56,6 @@ public class DingProviderLiveTest extends AbstractProviderLiveTest
 	public void nearbyStationsByCoordinate() throws Exception
 	{
 		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 48401092, 9992037));
-
 		print(result);
 	}
 
@@ -65,7 +63,13 @@ public class DingProviderLiveTest extends AbstractProviderLiveTest
 	public void queryDepartures() throws Exception
 	{
 		final QueryDeparturesResult result = queryDepartures("90001611", false);
+		print(result);
+	}
 
+	@Test
+	public void suggestLocationsIdentified() throws Exception
+	{
+		final SuggestLocationsResult result = suggestLocations("Ulm, Justizgebäude");
 		print(result);
 	}
 
@@ -73,7 +77,6 @@ public class DingProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsIncomplete() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Kur");
-
 		print(result);
 	}
 
@@ -81,15 +84,14 @@ public class DingProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsWithUmlaut() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("grün");
-
 		print(result);
 	}
 
 	@Test
 	public void shortTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "9001011", null, "Justizgebäude"), null, new Location(
-				LocationType.STATION, "2504524", null, "Theater"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "9001011", "Ulm", "Justizgebäude"), null, new Location(
+				LocationType.STATION, "9001010", "Ulm", "Theater"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);

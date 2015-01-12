@@ -51,7 +51,6 @@ public class VorProviderLiveTest extends AbstractProviderLiveTest
 	public void nearbyStations() throws Exception
 	{
 		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "60203090"));
-
 		print(result);
 	}
 
@@ -59,7 +58,6 @@ public class VorProviderLiveTest extends AbstractProviderLiveTest
 	public void nearbyStationsByCoordinate() throws Exception
 	{
 		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 48207355, 16370602));
-
 		print(result);
 	}
 
@@ -67,7 +65,6 @@ public class VorProviderLiveTest extends AbstractProviderLiveTest
 	public void queryDepartures() throws Exception
 	{
 		final QueryDeparturesResult result = queryDepartures("60203090", false);
-
 		print(result);
 	}
 
@@ -75,7 +72,6 @@ public class VorProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsIncomplete() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Kur");
-
 		print(result);
 	}
 
@@ -83,7 +79,6 @@ public class VorProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsWithUmlaut() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("grün");
-
 		print(result);
 	}
 
@@ -126,6 +121,17 @@ public class VorProviderLiveTest extends AbstractProviderLiveTest
 
 		final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
 		print(earlierResult);
+	}
+
+	@Test
+	public void tripToPOI() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 48221088, 16342658, "Wien", "Antonigasse 4"), null,
+				new Location(LocationType.POI, "poiID:1005:49000000:-1", 48199844, 16365834, "Wien", "Naschmarkt"), new Date(), true, Product.ALL,
+				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		print(result);
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+		print(laterResult);
 	}
 
 	@Test

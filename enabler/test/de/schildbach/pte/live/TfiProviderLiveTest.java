@@ -49,7 +49,6 @@ public class TfiProviderLiveTest extends AbstractProviderLiveTest
 	public void nearbyStations() throws Exception
 	{
 		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "51013670"));
-
 		print(result);
 	}
 
@@ -57,7 +56,6 @@ public class TfiProviderLiveTest extends AbstractProviderLiveTest
 	public void nearbyStationsByCoordinate() throws Exception
 	{
 		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 53348656, -6262221));
-
 		print(result);
 	}
 
@@ -65,7 +63,6 @@ public class TfiProviderLiveTest extends AbstractProviderLiveTest
 	public void queryDepartures() throws Exception
 	{
 		final QueryDeparturesResult result = queryDepartures("51013670", false);
-
 		print(result);
 	}
 
@@ -73,7 +70,6 @@ public class TfiProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsIncomplete() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Lower O'Connell Street");
-
 		print(result);
 	}
 
@@ -81,7 +77,7 @@ public class TfiProviderLiveTest extends AbstractProviderLiveTest
 	public void shortTrip() throws Exception
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "51013670", "Dublin City South",
-				"O'Connell Bridge (on Lower O'Connell Street)"), null, new Location(LocationType.STATION, "52003679", "Dublin City South",
+				"O'Connell Bridge (on Lower O'Connell Street)"), null, new Location(LocationType.STATION, "51005661", "Dublin City South",
 				"Dublin (Baggot Street)"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);

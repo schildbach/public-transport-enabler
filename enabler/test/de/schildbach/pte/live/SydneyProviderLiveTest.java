@@ -49,7 +49,6 @@ public class SydneyProviderLiveTest extends AbstractProviderLiveTest
 	public void nearbyStations() throws Exception
 	{
 		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "10101101"));
-
 		print(result);
 	}
 
@@ -57,7 +56,6 @@ public class SydneyProviderLiveTest extends AbstractProviderLiveTest
 	public void nearbyStationsByCoordinate() throws Exception
 	{
 		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, -32823911, 151462824));
-
 		print(result);
 	}
 
@@ -65,15 +63,13 @@ public class SydneyProviderLiveTest extends AbstractProviderLiveTest
 	public void queryDepartures() throws Exception
 	{
 		final QueryDeparturesResult result = queryDepartures("10101101", false);
-
 		print(result);
 	}
 
 	@Test
-	public void suggestLocations() throws Exception
+	public void suggestLocationsIdentified() throws Exception
 	{
-		final SuggestLocationsResult result = suggestLocations("Town Hall Station");
-
+		final SuggestLocationsResult result = suggestLocations("Sydney, Town Hall Station");
 		print(result);
 	}
 
@@ -81,7 +77,6 @@ public class SydneyProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsIncomplete() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Kur");
-
 		print(result);
 	}
 

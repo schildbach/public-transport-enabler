@@ -49,7 +49,6 @@ public class VmobilProviderLiveTest extends AbstractProviderLiveTest
 	public void nearbyStations() throws Exception
 	{
 		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "60001296"));
-
 		print(result);
 	}
 
@@ -57,7 +56,6 @@ public class VmobilProviderLiveTest extends AbstractProviderLiveTest
 	public void nearbyStationsByCoordinate() throws Exception
 	{
 		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 47271228, 11402063));
-
 		print(result);
 	}
 
@@ -65,7 +63,13 @@ public class VmobilProviderLiveTest extends AbstractProviderLiveTest
 	public void queryDepartures() throws Exception
 	{
 		final QueryDeparturesResult result = queryDepartures("60001296", false);
+		print(result);
+	}
 
+	@Test
+	public void suggestLocationsIdentified() throws Exception
+	{
+		final SuggestLocationsResult result = suggestLocations("Katzenturm");
 		print(result);
 	}
 
@@ -73,7 +77,6 @@ public class VmobilProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsIncomplete() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Kur");
-
 		print(result);
 	}
 
@@ -81,15 +84,14 @@ public class VmobilProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsWithUmlaut() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("grün");
-
 		print(result);
 	}
 
 	@Test
 	public void shortTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "60000822", 47238428, 9596940, "Feldkirch", "Katzenturm"),
-				null, new Location(LocationType.STATION, "60000305", 47240744, 9589368, "Tosters", "Vorarlberghalle"), new Date(), true, Product.ALL,
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "66200822", 47238428, 9596940, "Feldkirch", "Katzenturm"),
+				null, new Location(LocationType.STATION, "66200305", 47240744, 9589368, "Tosters", "Vorarlberghalle"), new Date(), true, Product.ALL,
 				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);

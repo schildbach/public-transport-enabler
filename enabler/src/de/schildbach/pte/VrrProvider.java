@@ -39,6 +39,7 @@ public class VrrProvider extends AbstractEfaProvider
 		setNeedsSpEncId(true);
 		setUseRouteIndexAsTripId(false);
 		setStyles(STYLES);
+		setRequestUrlEncoding(UTF_8);
 	}
 
 	public NetworkId id()

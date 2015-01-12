@@ -90,7 +90,6 @@ public class TlemProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocations() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Lower Arncott The Plough");
-
 		print(result);
 	}
 
@@ -98,7 +97,6 @@ public class TlemProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsIncomplete() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Birming");
-
 		print(result);
 	}
 
@@ -186,5 +184,23 @@ public class TlemProviderLiveTest extends AbstractProviderLiveTest
 
 		final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
 		print(earlierResult);
+	}
+
+	@Test
+	public void tripFromPOI() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.POI,
+				"poiID:48863:31117134:-1:Statue:Ham (London):Statue:ANY:POI:517246:826916:TFLV:uk", 51444620, -314316, "Ham (London)", "Statue"),
+				null, new Location(LocationType.ADDRESS, "streetID:106269::31117001:-1", "London", "Cannon Street, London"), new Date(), true,
+				Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		print(result);
+	}
+
+	@Test
+	public void tripPostcode() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "se7 7tr"), null, new Location(LocationType.ANY, null,
+				null, "n9 0nx"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		print(result);
 	}
 }

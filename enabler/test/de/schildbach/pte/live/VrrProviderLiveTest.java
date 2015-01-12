@@ -51,7 +51,6 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest
 	public void nearbyStations() throws Exception
 	{
 		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "20019904"));
-
 		print(result);
 	}
 
@@ -59,11 +58,9 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest
 	public void nearbyStationsByCoordinate() throws Exception
 	{
 		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 51218693, 6777785));
-
 		print(result);
 
 		final NearbyStationsResult result2 = queryNearbyStations(new Location(LocationType.ADDRESS, 51719648, 8754330));
-
 		print(result2);
 	}
 
@@ -71,11 +68,9 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest
 	public void queryDepartures() throws Exception
 	{
 		final QueryDeparturesResult result = queryDepartures("1007258", false);
-
 		print(result);
 
 		final QueryDeparturesResult result2 = queryDepartures("20019904", false);
-
 		print(result2);
 
 		// Bonn
@@ -87,7 +82,6 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest
 	public void queryManyDeparturesWithEquivs() throws Exception
 	{
 		final QueryDeparturesResult result = queryDepartures("20018235", true);
-
 		print(result);
 	}
 
@@ -95,11 +89,9 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsIncomplete() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Kur");
-
 		print(result);
 
 		final SuggestLocationsResult paderbornResult = suggestLocations("Paderborn Hbf");
-
 		print(paderbornResult);
 	}
 
@@ -107,7 +99,6 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsWithUmlaut() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("grün");
-
 		print(result);
 	}
 
@@ -115,7 +106,6 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsIdentified() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Düsseldorf, Am Frohnhof");
-
 		print(result);
 	}
 
@@ -147,8 +137,16 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsCity() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Düsseldorf");
-
 		print(result);
+	}
+
+	@Test
+	public void anyTrip() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "Köln"), null, new Location(LocationType.ANY, null,
+				null, "Bonn"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		print(result);
+		assertEquals(QueryTripsResult.Status.AMBIGUOUS, result.status);
 	}
 
 	@Test

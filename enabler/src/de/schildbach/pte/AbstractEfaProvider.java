@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -87,7 +88,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	private String additionalQueryParameter = null;
 	private boolean useRealtime = true;
-	private boolean canAcceptPoiId = false;
 	private boolean needsSpEncId = false;
 	private boolean includeRegionId = true;
 	private boolean useProxFootSearch = true;
@@ -216,11 +216,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		this.useStringCoordListOutputFormat = useStringCoordListOutputFormat;
 	}
 
-	protected void setCanAcceptPoiId(final boolean canAcceptPoiId)
-	{
-		this.canAcceptPoiId = canAcceptPoiId;
-	}
-
 	protected void setNeedsSpEncId(final boolean needsSpEncId)
 	{
 		this.needsSpEncId = needsSpEncId;
@@ -240,6 +235,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private final void appendCommonRequestParams(final StringBuilder uri, final String outputFormat)
 	{
 		uri.append("?outputFormat=").append(outputFormat);
+		uri.append("&stateless=1");
 		uri.append("&coordOutputFormat=WGS84");
 		if (additionalQueryParameter != null)
 			uri.append('&').append(additionalQueryParameter);
@@ -306,8 +302,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		String type = stop.getString("type");
 		if ("any".equals(type))
 			type = stop.getString("anyType");
+		final String id = stop.getString("stateless");
 		final String name = normalizeLocationName(stop.optString("name"));
 		final String object = normalizeLocationName(stop.optString("object"));
+		final String postcode = stop.optString("postcode");
 		final int quality = stop.getInt("quality");
 		final JSONObject ref = stop.getJSONObject("ref");
 		String place = ref.getString("place");
@@ -330,13 +328,15 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		final Location location;
 		if ("stop".equals(type))
-			location = new Location(LocationType.STATION, stop.getString("stateless"), lat, lon, place, object);
+			location = new Location(LocationType.STATION, id, lat, lon, place, object);
 		else if ("poi".equals(type))
-			location = new Location(LocationType.POI, null, lat, lon, place, object);
+			location = new Location(LocationType.POI, id, lat, lon, place, object);
 		else if ("crossing".equals(type))
-			location = new Location(LocationType.ADDRESS, null, lat, lon, place, object);
+			location = new Location(LocationType.ADDRESS, id, lat, lon, place, object);
 		else if ("street".equals(type) || "address".equals(type) || "singlehouse".equals(type) || "buildingname".equals(type))
-			location = new Location(LocationType.ADDRESS, null, lat, lon, place, name);
+			location = new Location(LocationType.ADDRESS, id, lat, lon, place, name);
+		else if ("postcode".equals(type))
+			location = new Location(LocationType.ADDRESS, id, lat, lon, place, postcode);
 		else
 			throw new JSONException("unknown type: " + type);
 
@@ -392,42 +392,13 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 			XmlPullUtil.enter(pp, "itdStopFinderRequest");
 
-			XmlPullUtil.require(pp, "itdOdv");
-			if (!"sf".equals(pp.getAttributeValue(null, "usage")))
-				throw new IllegalStateException("cannot find <itdOdv usage=\"sf\" />");
-			XmlPullUtil.enter(pp, "itdOdv");
-
-			XmlPullUtil.require(pp, "itdOdvPlace");
-			XmlPullUtil.next(pp);
-
-			XmlPullUtil.require(pp, "itdOdvName");
-			final String nameState = pp.getAttributeValue(null, "state");
-			XmlPullUtil.enter(pp, "itdOdvName");
-
-			if (XmlPullUtil.test(pp, "itdMessage"))
-				XmlPullUtil.next(pp);
-
-			if ("identified".equals(nameState) || "list".equals(nameState))
+			processItdOdv(pp, "sf", new ProcessItdOdvCallback()
 			{
-				while (XmlPullUtil.test(pp, "odvNameElem"))
+				public void location(final String nameState, final Location location, final int matchQuality)
 				{
-					final int matchQuality = XmlPullUtil.intAttr(pp, "matchQuality");
-					final Location location = processOdvNameElem(pp, null);
 					locations.add(new SuggestedLocation(location, matchQuality));
 				}
-			}
-			else if ("notidentified".equals(nameState))
-			{
-				// do nothing
-			}
-			else
-			{
-				throw new RuntimeException("unknown nameState '" + nameState + "' on " + uri);
-			}
-
-			XmlPullUtil.skipExit(pp, "itdOdvName");
-
-			XmlPullUtil.skipExit(pp, "itdOdv");
+			});
 
 			XmlPullUtil.skipExit(pp, "itdStopFinderRequest");
 
@@ -705,6 +676,93 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		return jsonStopfinderRequest(new Location(LocationType.ANY, null, null, constraint.toString()));
 	}
 
+	private interface ProcessItdOdvCallback
+	{
+		void location(String nameState, Location location, int matchQuality);
+	}
+
+	private String processItdOdv(final XmlPullParser pp, final String expectedUsage, final ProcessItdOdvCallback callback)
+			throws XmlPullParserException, IOException
+	{
+		if (!XmlPullUtil.test(pp, "itdOdv"))
+			throw new IllegalStateException("expecting <itdOdv />");
+
+		final String usage = XmlPullUtil.attr(pp, "usage");
+		if (expectedUsage != null && !usage.equals(expectedUsage))
+			throw new IllegalStateException("expecting <itdOdv usage=\"" + expectedUsage + "\" />");
+
+		final String type = XmlPullUtil.attr(pp, "type");
+
+		XmlPullUtil.enter(pp, "itdOdv");
+
+		final String place = processItdOdvPlace(pp);
+
+		XmlPullUtil.require(pp, "itdOdvName");
+		final String nameState = XmlPullUtil.attr(pp, "state");
+		XmlPullUtil.enter(pp, "itdOdvName");
+
+		XmlPullUtil.optSkip(pp, "itdMessage");
+
+		if ("identified".equals(nameState))
+		{
+			final Location location = processOdvNameElem(pp, type, place);
+			if (location != null)
+				callback.location(nameState, location, Integer.MAX_VALUE);
+		}
+		else if ("list".equals(nameState))
+		{
+			while (XmlPullUtil.test(pp, "odvNameElem"))
+			{
+				final int matchQuality = XmlPullUtil.intAttr(pp, "matchQuality");
+				final Location location = processOdvNameElem(pp, type, place);
+				if (location != null)
+					callback.location(nameState, location, matchQuality);
+			}
+		}
+		else if ("notidentified".equals(nameState) || "empty".equals(nameState))
+		{
+			XmlPullUtil.optSkip(pp, "odvNameElem");
+		}
+		else
+		{
+			throw new RuntimeException("cannot handle nameState '" + nameState + "'");
+		}
+
+		while (XmlPullUtil.test(pp, "infoLink"))
+			XmlPullUtil.requireSkip(pp, "infoLink");
+
+		XmlPullUtil.optSkip(pp, "odvNameInput");
+
+		XmlPullUtil.exit(pp, "itdOdvName");
+
+		XmlPullUtil.optSkip(pp, "odvInfoList");
+
+		XmlPullUtil.optSkip(pp, "itdPoiHierarchyRoot");
+
+		if (XmlPullUtil.test(pp, "itdOdvAssignedStops"))
+		{
+			XmlPullUtil.enter(pp, "itdOdvAssignedStops");
+
+			while (XmlPullUtil.test(pp, "itdOdvAssignedStop"))
+			{
+				final Location stop = processItdOdvAssignedStop(pp);
+
+				if (stop != null)
+					callback.location("assigned", stop, 0);
+			}
+
+			XmlPullUtil.exit(pp, "itdOdvAssignedStops");
+		}
+
+		XmlPullUtil.optSkip(pp, "itdServingModes");
+
+		XmlPullUtil.optSkip(pp, "genAttrList");
+
+		XmlPullUtil.exit(pp, "itdOdv");
+
+		return nameState;
+	}
+
 	private String processItdOdvPlace(final XmlPullParser pp) throws XmlPullParserException, IOException
 	{
 		if (!XmlPullUtil.test(pp, "itdOdvPlace"))
@@ -724,24 +782,23 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		return place;
 	}
 
-	private Location processOdvNameElem(final XmlPullParser pp, final String defaultPlace) throws XmlPullParserException, IOException
+	private Location processOdvNameElem(final XmlPullParser pp, String type, final String defaultPlace) throws XmlPullParserException, IOException
 	{
 		if (!XmlPullUtil.test(pp, "odvNameElem"))
 			throw new IllegalStateException("expecting <odvNameElem />");
 
-		final String anyType = pp.getAttributeValue(null, "anyType");
-		final String idStr = pp.getAttributeValue(null, "id");
-		final String stopIdStr = pp.getAttributeValue(null, "stopID");
-		final String poiIdStr = pp.getAttributeValue(null, "poiID");
-		final String streetIdStr = pp.getAttributeValue(null, "streetID");
+		if ("any".equals(type))
+			type = XmlPullUtil.attr(pp, "anyType");
+		final String id = XmlPullUtil.attr(pp, "stateless");
 		final String locality = normalizeLocationName(pp.getAttributeValue(null, "locality"));
 		final String objectName = normalizeLocationName(pp.getAttributeValue(null, "objectName"));
+		final String buildingName = XmlPullUtil.optAttr(pp, "buildingName", null);
+		final String buildingNumber = XmlPullUtil.optAttr(pp, "buildingNumber", null);
+		final String postCode = XmlPullUtil.optAttr(pp, "postCode", null);
 
 		final String mapName = XmlPullUtil.optAttr(pp, "mapName", null);
 		final float x = XmlPullUtil.optFloatAttr(pp, "x", 0);
 		final float y = XmlPullUtil.optFloatAttr(pp, "y", 0);
-
-		final String elemName = normalizeLocationName(XmlPullUtil.valueTag(pp, "odvNameElem"));
 
 		final int lat;
 		final int lon;
@@ -761,83 +818,64 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			throw new IllegalStateException("unknown mapName=" + mapName + " x=" + x + " y=" + y);
 		}
 
-		final LocationType type;
-		final String id;
+		final String nameElem = normalizeLocationName(XmlPullUtil.valueTag(pp, "odvNameElem"));
+
+		final LocationType locationType;
 		final String place;
 		final String name;
 
-		if ("stop".equals(anyType))
+		if ("stop".equals(type))
 		{
-			type = LocationType.STATION;
-			id = idStr;
+			locationType = LocationType.STATION;
 			place = locality;
 			name = objectName;
 		}
-		else if ("poi".equals(anyType) || "poiHierarchy".equals(anyType))
+		else if ("poi".equals(type))
 		{
-			type = LocationType.POI;
-			id = idStr;
+			locationType = LocationType.POI;
 			place = locality;
 			name = objectName;
 		}
-		else if ("loc".equals(anyType))
+		else if ("loc".equals(type))
 		{
-			type = LocationType.ANY;
-			id = null;
-			place = locality;
-			name = locality;
+			return null;
 		}
-		else if ("address".equals(anyType))
+		else if ("address".equals(type) || "singlehouse".equals(type))
 		{
-			type = LocationType.ADDRESS;
-			id = null;
+			locationType = LocationType.ADDRESS;
+			place = locality;
+			name = objectName + (buildingNumber != null ? " " + buildingNumber : "");
+		}
+		else if ("street".equals(type) || "crossing".equals(type))
+		{
+			locationType = LocationType.ADDRESS;
 			place = locality;
 			name = objectName;
 		}
-		else if ("postcode".equals(anyType) || "street".equals(anyType) || "crossing".equals(anyType) || "singlehouse".equals(anyType)
-				|| "buildingname".equals(anyType))
+		else if ("postcode".equals(type))
 		{
-			type = LocationType.ADDRESS;
-			id = null;
+			locationType = LocationType.ADDRESS;
 			place = locality;
-			name = objectName;
+			name = postCode;
 		}
-		else if (anyType == null || "unknown".equals(anyType))
+		else if ("buildingname".equals(type))
 		{
-			if (stopIdStr != null)
-			{
-				type = LocationType.STATION;
-				id = stopIdStr;
-			}
-			else if (poiIdStr != null)
-			{
-				type = LocationType.POI;
-				id = poiIdStr;
-			}
-			else if (streetIdStr != null)
-			{
-				type = LocationType.ADDRESS;
-				id = streetIdStr;
-			}
-			else if (lat != 0 || lon != 0)
-			{
-				type = LocationType.ADDRESS;
-				id = null;
-			}
-			else
-			{
-				throw new IllegalArgumentException("cannot substitute type");
-			}
-
+			locationType = LocationType.ADDRESS;
 			place = locality;
-			name = objectName;
+			name = buildingName;
+		}
+		else if ("coord".equals(type))
+		{
+			locationType = LocationType.ADDRESS;
+			place = defaultPlace;
+			name = nameElem;
 		}
 		else
 		{
-			throw new IllegalArgumentException("unknown type: " + anyType);
+			throw new IllegalArgumentException("unknown type/anyType: " + type);
 		}
 
-		return new Location(type, id, lat, lon, place != null ? place : defaultPlace, name != null ? name : elemName);
+		return new Location(locationType, id, lat, lon, place != null ? place : defaultPlace, name != null ? name : nameElem);
 	}
 
 	private Location processItdOdvAssignedStop(final XmlPullParser pp) throws XmlPullParserException, IOException
@@ -923,71 +961,33 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 			XmlPullUtil.enter(pp, "itdDepartureMonitorRequest");
 
-			if (!XmlPullUtil.test(pp, "itdOdv") || !"dm".equals(pp.getAttributeValue(null, "usage")))
-				throw new IllegalStateException("cannot find <itdOdv usage=\"dm\" />");
-			XmlPullUtil.enter(pp, "itdOdv");
+			final AtomicReference<Location> ownStation = new AtomicReference<Location>();
+			final List<Location> stations = new ArrayList<Location>();
 
-			final String place = processItdOdvPlace(pp);
-
-			XmlPullUtil.require(pp, "itdOdvName");
-			final String nameState = pp.getAttributeValue(null, "state");
-			XmlPullUtil.enter(pp, "itdOdvName");
-			if ("identified".equals(nameState))
+			final String nameState = processItdOdv(pp, "dm", new ProcessItdOdvCallback()
 			{
-				final Location ownLocation = processOdvNameElem(pp, place);
-				final Location ownStation = ownLocation.type == LocationType.STATION ? ownLocation : null;
-
-				XmlPullUtil.skipExit(pp, "itdOdvName");
-
-				final List<Location> stations = new ArrayList<Location>();
-
-				if (XmlPullUtil.test(pp, "itdOdvAssignedStops"))
+				public void location(final String nameState, final Location location, final int matchQuality)
 				{
-					XmlPullUtil.enter(pp, "itdOdvAssignedStops");
-					while (XmlPullUtil.test(pp, "itdOdvAssignedStop"))
+					if (location.type == LocationType.STATION)
 					{
-						final Location newStation = processItdOdvAssignedStop(pp);
-
-						if (newStation != null && !stations.contains(newStation))
-							stations.add(newStation);
+						if ("identified".equals(nameState))
+							ownStation.set(location);
+						else if ("assigned".equals(nameState))
+							stations.add(location);
 					}
-					XmlPullUtil.skipExit(pp, "itdOdvAssignedStops");
 				}
+			});
 
-				XmlPullUtil.skipExit(pp, "itdOdv");
-
-				if (ownStation != null && !stations.contains(ownStation))
-					stations.add(ownStation);
-
-				if (maxStations == 0 || maxStations >= stations.size())
-					return new NearbyStationsResult(header, stations);
-				else
-					return new NearbyStationsResult(header, stations.subList(0, maxStations));
-			}
-			else if ("list".equals(nameState))
-			{
-				final List<Location> stations = new ArrayList<Location>();
-
-				if (XmlPullUtil.test(pp, "itdMessage"))
-					XmlPullUtil.next(pp);
-				while (XmlPullUtil.test(pp, "odvNameElem"))
-				{
-					final Location newLocation = processOdvNameElem(pp, place);
-					if (newLocation.type == LocationType.STATION && !stations.contains(newLocation))
-						stations.add(newLocation);
-				}
-
-				return new NearbyStationsResult(header, stations);
-			}
-			else if ("notidentified".equals(nameState))
-			{
+			if ("notidentified".equals(nameState))
 				return new NearbyStationsResult(header, NearbyStationsResult.Status.INVALID_STATION);
-			}
+
+			if (ownStation.get() != null && !stations.contains(ownStation))
+				stations.add(ownStation.get());
+
+			if (maxStations == 0 || maxStations >= stations.size())
+				return new NearbyStationsResult(header, stations);
 			else
-			{
-				throw new RuntimeException("unknown nameState '" + nameState + "' on " + uri);
-			}
-			// XmlPullUtil.exit(pp, "itdOdvName");
+				return new NearbyStationsResult(header, stations.subList(0, maxStations));
 		}
 		catch (final XmlPullParserException x)
 		{
@@ -1507,186 +1507,153 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			pp.setInput(is, null);
 			final ResultHeader header = enterItdRequest(pp);
 
+			final QueryDeparturesResult result = new QueryDeparturesResult(header);
+
 			XmlPullUtil.enter(pp, "itdDepartureMonitorRequest");
 
-			if (XmlPullUtil.test(pp, "itdMessage"))
-				XmlPullUtil.next(pp);
+			XmlPullUtil.optSkip(pp, "itdMessage");
 
-			if (!XmlPullUtil.test(pp, "itdOdv") || !"dm".equals(XmlPullUtil.attr(pp, "usage")))
-				throw new IllegalStateException("cannot find <itdOdv usage=\"dm\" />, first chars: " + firstChars);
-			XmlPullUtil.enter(pp, "itdOdv");
-
-			final String place = processItdOdvPlace(pp);
-
-			XmlPullUtil.require(pp, "itdOdvName");
-			final String nameState = pp.getAttributeValue(null, "state");
-			XmlPullUtil.enter(pp, "itdOdvName");
-			if ("identified".equals(nameState))
+			final String nameState = processItdOdv(pp, "dm", new ProcessItdOdvCallback()
 			{
-				final QueryDeparturesResult result = new QueryDeparturesResult(header);
-
-				final Location location = processOdvNameElem(pp, place);
-				result.stationDepartures.add(new StationDepartures(location, new LinkedList<Departure>(), new LinkedList<LineDestination>()));
-
-				XmlPullUtil.skipExit(pp, "itdOdvName");
-
-				if (XmlPullUtil.test(pp, "itdOdvAssignedStops"))
+				public void location(final String nameState, final Location location, final int matchQuality)
 				{
-					XmlPullUtil.enter(pp, "itdOdvAssignedStops");
-					while (XmlPullUtil.test(pp, "itdOdvAssignedStop"))
-					{
-						final Location assignedLocation = processItdOdvAssignedStop(pp);
-						if (assignedLocation != null)
-							if (findStationDepartures(result.stationDepartures, assignedLocation.id) == null)
-								result.stationDepartures.add(new StationDepartures(assignedLocation, new LinkedList<Departure>(),
-										new LinkedList<LineDestination>()));
-					}
-					XmlPullUtil.skipExit(pp, "itdOdvAssignedStops");
+					if (location.type == LocationType.STATION)
+						if (findStationDepartures(result.stationDepartures, location.id) == null)
+							result.stationDepartures.add(new StationDepartures(location, new LinkedList<Departure>(),
+									new LinkedList<LineDestination>()));
 				}
+			});
 
-				XmlPullUtil.skipExit(pp, "itdOdv");
-
-				if (XmlPullUtil.test(pp, "itdDateTime"))
-					XmlPullUtil.next(pp);
-
-				if (XmlPullUtil.test(pp, "itdDMDateTime"))
-					XmlPullUtil.next(pp);
-
-				if (XmlPullUtil.test(pp, "itdDateRange"))
-					XmlPullUtil.next(pp);
-
-				if (XmlPullUtil.test(pp, "itdTripOptions"))
-					XmlPullUtil.next(pp);
-
-				if (XmlPullUtil.test(pp, "itdMessage"))
-					XmlPullUtil.next(pp);
-
-				final Calendar plannedDepartureTime = new GregorianCalendar(timeZone);
-				final Calendar predictedDepartureTime = new GregorianCalendar(timeZone);
-
-				XmlPullUtil.require(pp, "itdServingLines");
-				if (!pp.isEmptyElementTag())
-				{
-					XmlPullUtil.enter(pp, "itdServingLines");
-					while (XmlPullUtil.test(pp, "itdServingLine"))
-					{
-						final String assignedStopId = pp.getAttributeValue(null, "assignedStopID");
-						final String destinationName = normalizeLocationName(pp.getAttributeValue(null, "direction"));
-						final String destinationId = XmlPullUtil.optAttr(pp, "destID", null);
-						final Location destination = new Location(destinationId != null ? LocationType.STATION : LocationType.ANY, destinationId,
-								null, destinationName);
-						final LineDestination line = new LineDestination(processItdServingLine(pp), destination);
-
-						StationDepartures assignedStationDepartures;
-						if (assignedStopId == null)
-							assignedStationDepartures = result.stationDepartures.get(0);
-						else
-							assignedStationDepartures = findStationDepartures(result.stationDepartures, assignedStopId);
-
-						if (assignedStationDepartures == null)
-							assignedStationDepartures = new StationDepartures(new Location(LocationType.STATION, assignedStopId),
-									new LinkedList<Departure>(), new LinkedList<LineDestination>());
-
-						if (!assignedStationDepartures.lines.contains(line))
-							assignedStationDepartures.lines.add(line);
-					}
-					XmlPullUtil.skipExit(pp, "itdServingLines");
-				}
-				else
-				{
-					XmlPullUtil.next(pp);
-				}
-
-				XmlPullUtil.require(pp, "itdDepartureList");
-				if (!pp.isEmptyElementTag())
-				{
-					XmlPullUtil.enter(pp, "itdDepartureList");
-					while (XmlPullUtil.test(pp, "itdDeparture"))
-					{
-						final String assignedStopId = XmlPullUtil.attr(pp, "stopID");
-
-						StationDepartures assignedStationDepartures = findStationDepartures(result.stationDepartures, assignedStopId);
-						if (assignedStationDepartures == null)
-						{
-							final String mapName = XmlPullUtil.optAttr(pp, "mapName", null);
-							final float x = XmlPullUtil.optFloatAttr(pp, "x", 0);
-							final float y = XmlPullUtil.optFloatAttr(pp, "y", 0);
-
-							final int lat;
-							final int lon;
-							if (mapName == null || (x == 0 && y == 0))
-							{
-								lat = 0;
-								lon = 0;
-							}
-							else if ("WGS84".equals(mapName))
-							{
-								lat = Math.round(y);
-								lon = Math.round(x);
-							}
-							else
-							{
-								throw new IllegalStateException("unknown mapName=" + mapName + " x=" + x + " y=" + y);
-							}
-
-							// final String name = normalizeLocationName(XmlPullUtil.attr(pp, "nameWO"));
-
-							assignedStationDepartures = new StationDepartures(new Location(LocationType.STATION, assignedStopId, lat, lon),
-									new LinkedList<Departure>(), new LinkedList<LineDestination>());
-						}
-
-						final Position position = normalizePlatformName(XmlPullUtil.optAttr(pp, "platformName", null));
-
-						XmlPullUtil.enter(pp, "itdDeparture");
-
-						XmlPullUtil.require(pp, "itdDateTime");
-						plannedDepartureTime.clear();
-						processItdDateTime(pp, plannedDepartureTime);
-
-						predictedDepartureTime.clear();
-						if (XmlPullUtil.test(pp, "itdRTDateTime"))
-							processItdDateTime(pp, predictedDepartureTime);
-
-						if (XmlPullUtil.test(pp, "itdFrequencyInfo"))
-							XmlPullUtil.next(pp);
-
-						XmlPullUtil.require(pp, "itdServingLine");
-						final boolean isRealtime = pp.getAttributeValue(null, "realtime").equals("1");
-						final String destinationName = normalizeLocationName(pp.getAttributeValue(null, "direction"));
-						final String destinationIdStr = XmlPullUtil.optAttr(pp, "destID", null);
-						final String destinationId = !"-1".equals(destinationIdStr) ? destinationIdStr : null;
-						final Location destination = new Location(destinationId != null ? LocationType.STATION : LocationType.ANY, destinationId,
-								null, destinationName);
-						final Line line = processItdServingLine(pp);
-
-						if (isRealtime && !predictedDepartureTime.isSet(Calendar.HOUR_OF_DAY))
-							predictedDepartureTime.setTimeInMillis(plannedDepartureTime.getTimeInMillis());
-
-						XmlPullUtil.skipExit(pp, "itdDeparture");
-
-						final Departure departure = new Departure(plannedDepartureTime.getTime(),
-								predictedDepartureTime.isSet(Calendar.HOUR_OF_DAY) ? predictedDepartureTime.getTime() : null, line, position,
-								destination, null, null);
-						assignedStationDepartures.departures.add(departure);
-					}
-
-					XmlPullUtil.skipExit(pp, "itdDepartureList");
-				}
-				else
-				{
-					XmlPullUtil.next(pp);
-				}
-
-				return result;
-			}
-			else if ("notidentified".equals(nameState) || "list".equals(nameState))
-			{
+			if ("notidentified".equals(nameState) || "list".equals(nameState))
 				return new QueryDeparturesResult(header, QueryDeparturesResult.Status.INVALID_STATION);
+
+			XmlPullUtil.optSkip(pp, "itdDateTime");
+
+			XmlPullUtil.optSkip(pp, "itdDMDateTime");
+
+			XmlPullUtil.optSkip(pp, "itdDateRange");
+
+			XmlPullUtil.optSkip(pp, "itdTripOptions");
+
+			XmlPullUtil.optSkip(pp, "itdMessage");
+
+			final Calendar plannedDepartureTime = new GregorianCalendar(timeZone);
+			final Calendar predictedDepartureTime = new GregorianCalendar(timeZone);
+
+			XmlPullUtil.require(pp, "itdServingLines");
+			if (!pp.isEmptyElementTag())
+			{
+				XmlPullUtil.enter(pp, "itdServingLines");
+				while (XmlPullUtil.test(pp, "itdServingLine"))
+				{
+					final String assignedStopId = pp.getAttributeValue(null, "assignedStopID");
+					final String destinationName = normalizeLocationName(pp.getAttributeValue(null, "direction"));
+					final String destinationId = XmlPullUtil.optAttr(pp, "destID", null);
+					final Location destination = new Location(destinationId != null ? LocationType.STATION : LocationType.ANY, destinationId, null,
+							destinationName);
+					final LineDestination line = new LineDestination(processItdServingLine(pp), destination);
+
+					StationDepartures assignedStationDepartures;
+					if (assignedStopId == null)
+						assignedStationDepartures = result.stationDepartures.get(0);
+					else
+						assignedStationDepartures = findStationDepartures(result.stationDepartures, assignedStopId);
+
+					if (assignedStationDepartures == null)
+						assignedStationDepartures = new StationDepartures(new Location(LocationType.STATION, assignedStopId),
+								new LinkedList<Departure>(), new LinkedList<LineDestination>());
+
+					if (!assignedStationDepartures.lines.contains(line))
+						assignedStationDepartures.lines.add(line);
+				}
+				XmlPullUtil.skipExit(pp, "itdServingLines");
 			}
 			else
 			{
-				throw new RuntimeException("unknown nameState '" + nameState + "' on " + uri);
+				XmlPullUtil.next(pp);
 			}
+
+			XmlPullUtil.require(pp, "itdDepartureList");
+			if (!pp.isEmptyElementTag())
+			{
+				XmlPullUtil.enter(pp, "itdDepartureList");
+				while (XmlPullUtil.test(pp, "itdDeparture"))
+				{
+					final String assignedStopId = XmlPullUtil.attr(pp, "stopID");
+
+					StationDepartures assignedStationDepartures = findStationDepartures(result.stationDepartures, assignedStopId);
+					if (assignedStationDepartures == null)
+					{
+						final String mapName = XmlPullUtil.optAttr(pp, "mapName", null);
+						final float x = XmlPullUtil.optFloatAttr(pp, "x", 0);
+						final float y = XmlPullUtil.optFloatAttr(pp, "y", 0);
+
+						final int lat;
+						final int lon;
+						if (mapName == null || (x == 0 && y == 0))
+						{
+							lat = 0;
+							lon = 0;
+						}
+						else if ("WGS84".equals(mapName))
+						{
+							lat = Math.round(y);
+							lon = Math.round(x);
+						}
+						else
+						{
+							throw new IllegalStateException("unknown mapName=" + mapName + " x=" + x + " y=" + y);
+						}
+
+						// final String name = normalizeLocationName(XmlPullUtil.attr(pp, "nameWO"));
+
+						assignedStationDepartures = new StationDepartures(new Location(LocationType.STATION, assignedStopId, lat, lon),
+								new LinkedList<Departure>(), new LinkedList<LineDestination>());
+					}
+
+					final Position position = normalizePlatformName(XmlPullUtil.optAttr(pp, "platformName", null));
+
+					XmlPullUtil.enter(pp, "itdDeparture");
+
+					XmlPullUtil.require(pp, "itdDateTime");
+					plannedDepartureTime.clear();
+					processItdDateTime(pp, plannedDepartureTime);
+
+					predictedDepartureTime.clear();
+					if (XmlPullUtil.test(pp, "itdRTDateTime"))
+						processItdDateTime(pp, predictedDepartureTime);
+
+					if (XmlPullUtil.test(pp, "itdFrequencyInfo"))
+						XmlPullUtil.next(pp);
+
+					XmlPullUtil.require(pp, "itdServingLine");
+					final boolean isRealtime = pp.getAttributeValue(null, "realtime").equals("1");
+					final String destinationName = normalizeLocationName(pp.getAttributeValue(null, "direction"));
+					final String destinationIdStr = XmlPullUtil.optAttr(pp, "destID", null);
+					final String destinationId = !"-1".equals(destinationIdStr) ? destinationIdStr : null;
+					final Location destination = new Location(destinationId != null ? LocationType.STATION : LocationType.ANY, destinationId, null,
+							destinationName);
+					final Line line = processItdServingLine(pp);
+
+					if (isRealtime && !predictedDepartureTime.isSet(Calendar.HOUR_OF_DAY))
+						predictedDepartureTime.setTimeInMillis(plannedDepartureTime.getTimeInMillis());
+
+					XmlPullUtil.skipExit(pp, "itdDeparture");
+
+					final Departure departure = new Departure(plannedDepartureTime.getTime(),
+							predictedDepartureTime.isSet(Calendar.HOUR_OF_DAY) ? predictedDepartureTime.getTime() : null, line, position,
+							destination, null, null);
+					assignedStationDepartures.departures.add(departure);
+				}
+
+				XmlPullUtil.skipExit(pp, "itdDepartureList");
+			}
+			else
+			{
+				XmlPullUtil.next(pp);
+			}
+
+			return result;
 		}
 		catch (final XmlPullParserException x)
 		{
@@ -2337,60 +2304,41 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		if (XmlPullUtil.test(pp, "itdAddress"))
 			XmlPullUtil.next(pp);
 
-		// parse odv name elements
 		List<Location> ambiguousFrom = null, ambiguousTo = null, ambiguousVia = null;
 		Location from = null, via = null, to = null;
 
 		while (XmlPullUtil.test(pp, "itdOdv"))
 		{
-			final String usage = XmlPullUtil.attr(pp, "usage");
-			XmlPullUtil.enter(pp, "itdOdv");
+			final String usage = pp.getAttributeValue(null, "usage");
 
-			final String place = processItdOdvPlace(pp);
-
-			if (!XmlPullUtil.test(pp, "itdOdvName"))
-				throw new IllegalStateException("cannot find <itdOdvName /> inside " + usage);
-			final String nameState = XmlPullUtil.attr(pp, "state");
-			XmlPullUtil.enter(pp, "itdOdvName");
-			if (XmlPullUtil.test(pp, "itdMessage"))
-				XmlPullUtil.next(pp);
+			final List<Location> locations = new ArrayList<Location>();
+			final String nameState = processItdOdv(pp, usage, new ProcessItdOdvCallback()
+			{
+				public void location(final String nameState, final Location location, final int matchQuality)
+				{
+					locations.add(location);
+				}
+			});
 
 			if ("list".equals(nameState))
 			{
 				if ("origin".equals(usage))
-				{
-					ambiguousFrom = new ArrayList<Location>();
-					while (XmlPullUtil.test(pp, "odvNameElem"))
-						ambiguousFrom.add(processOdvNameElem(pp, place));
-				}
+					ambiguousFrom = locations;
 				else if ("via".equals(usage))
-				{
-					ambiguousVia = new ArrayList<Location>();
-					while (XmlPullUtil.test(pp, "odvNameElem"))
-						ambiguousVia.add(processOdvNameElem(pp, place));
-				}
+					ambiguousVia = locations;
 				else if ("destination".equals(usage))
-				{
-					ambiguousTo = new ArrayList<Location>();
-					while (XmlPullUtil.test(pp, "odvNameElem"))
-						ambiguousTo.add(processOdvNameElem(pp, place));
-				}
+					ambiguousTo = locations;
 				else
-				{
 					throw new IllegalStateException("unknown usage: " + usage);
-				}
 			}
 			else if ("identified".equals(nameState))
 			{
-				if (!XmlPullUtil.test(pp, "odvNameElem"))
-					throw new IllegalStateException("cannot find <odvNameElem /> inside " + usage);
-
 				if ("origin".equals(usage))
-					from = processOdvNameElem(pp, place);
+					from = locations.get(0);
 				else if ("via".equals(usage))
-					via = processOdvNameElem(pp, place);
+					via = locations.get(0);
 				else if ("destination".equals(usage))
-					to = processOdvNameElem(pp, place);
+					to = locations.get(0);
 				else
 					throw new IllegalStateException("unknown usage: " + usage);
 			}
@@ -2405,8 +2353,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				else
 					throw new IllegalStateException("unknown usage: " + usage);
 			}
-			XmlPullUtil.skipExit(pp, "itdOdvName");
-			XmlPullUtil.skipExit(pp, "itdOdv");
 		}
 
 		if (ambiguousFrom != null || ambiguousTo != null || ambiguousVia != null)
@@ -3285,12 +3231,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	private void appendLocation(final StringBuilder uri, final Location location, final String paramSuffix)
 	{
-		if (canAcceptPoiId && location.type == LocationType.POI && location.hasId())
-		{
-			uri.append("&type_").append(paramSuffix).append("=poiID");
-			uri.append("&name_").append(paramSuffix).append("=").append(normalizeStationId(location.id));
-		}
-		else if ((location.type == LocationType.POI || location.type == LocationType.ADDRESS) && location.hasLocation())
+		if (location.type == LocationType.ADDRESS && location.hasLocation())
 		{
 			uri.append("&type_").append(paramSuffix).append("=coord");
 			uri.append("&name_").append(paramSuffix).append("=")
@@ -3319,7 +3260,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	protected static final String locationValue(final Location location)
 	{
-		if ((location.type == LocationType.STATION || location.type == LocationType.POI) && location.hasId())
+		if (location.type == LocationType.STATION && location.hasId())
+			return normalizeStationId(location.id);
+		else if (location.type == LocationType.POI && location.hasId())
 			return location.id;
 		else
 			return location.name;

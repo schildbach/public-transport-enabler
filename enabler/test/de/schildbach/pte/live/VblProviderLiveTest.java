@@ -49,7 +49,6 @@ public class VblProviderLiveTest extends AbstractProviderLiveTest
 	public void nearbyStations() throws Exception
 	{
 		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "119"));
-
 		print(result);
 	}
 
@@ -57,7 +56,6 @@ public class VblProviderLiveTest extends AbstractProviderLiveTest
 	public void nearbyStationsByCoordinate() throws Exception
 	{
 		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 47049107, 8312502));
-
 		print(result);
 	}
 
@@ -65,7 +63,13 @@ public class VblProviderLiveTest extends AbstractProviderLiveTest
 	public void queryDepartures() throws Exception
 	{
 		final QueryDeparturesResult result = queryDepartures("717", false);
+		print(result);
+	}
 
+	@Test
+	public void suggestLocationsIdentified() throws Exception
+	{
+		final SuggestLocationsResult result = suggestLocations("Luzern, Kantonalbank");
 		print(result);
 	}
 
@@ -73,7 +77,6 @@ public class VblProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsIncomplete() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Kur");
-
 		print(result);
 	}
 
@@ -81,15 +84,14 @@ public class VblProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsWithUmlaut() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("grün");
-
 		print(result);
 	}
 
 	@Test
 	public void shortTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "119", 47050760, 8310252, "Luzern", "Luzern, Bahnhof"), null,
-				new Location(LocationType.STATION, "118", 47048844, 8306433, "Luzern", "Kantonalbank"), new Date(), true, Product.ALL,
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "53020041", 47050164, 8310352, "Luzern", "Bahnhof"), null,
+				new Location(LocationType.STATION, "53028841", 47048564, 8306016, "Luzern", "Kantonalbank"), new Date(), true, Product.ALL,
 				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
