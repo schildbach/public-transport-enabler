@@ -332,7 +332,7 @@ public final class ParserUtils
 		return false;
 	}
 
-	private static final Pattern P_INTERNAL_ERROR = Pattern.compile(">\\s*(Internal error in gateway)\\s*<");
+	private static final Pattern P_INTERNAL_ERROR = Pattern.compile(">\\s*(Server ein Fehler aufgetreten|Internal error in gateway)\\s*<");
 
 	public static boolean testInternalError(final String content)
 	{
