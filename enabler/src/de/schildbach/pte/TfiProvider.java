@@ -33,6 +33,7 @@ public class TfiProvider extends AbstractEfaProvider
 	{
 		super(API_BASE);
 
+		setLanguage("en");
 		setTimeZone("Europe/London");
 	}
 

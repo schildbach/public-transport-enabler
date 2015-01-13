@@ -36,6 +36,7 @@ public class MetProvider extends AbstractEfaProvider
 	{
 		super(API_BASE);
 
+		setLanguage("en");
 		setTimeZone("Australia/Melbourne");
 		setUseRouteIndexAsTripId(false);
 		setStyles(STYLES);

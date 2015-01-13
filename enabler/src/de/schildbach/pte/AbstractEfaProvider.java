@@ -86,6 +86,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private final String stopFinderEndpoint;
 	private final String coordEndpoint;
 
+	private String language = "de";
 	private String additionalQueryParameter = null;
 	private boolean useRealtime = true;
 	private boolean needsSpEncId = false;
@@ -158,6 +159,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		this.tripEndpoint = tripEndpoint;
 		this.stopFinderEndpoint = stopFinderEndpoint;
 		this.coordEndpoint = coordEndpoint;
+	}
+
+	protected void setLanguage(final String language)
+	{
+		this.language = language;
 	}
 
 	protected void setAdditionalQueryParameter(final String additionalQueryParameter)
@@ -235,6 +241,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private final void appendCommonRequestParams(final StringBuilder uri, final String outputFormat)
 	{
 		uri.append("?outputFormat=").append(outputFormat);
+		uri.append("&language=").append(language);
 		uri.append("&stateless=1");
 		uri.append("&coordOutputFormat=WGS84");
 		if (additionalQueryParameter != null)
@@ -2037,7 +2044,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		uri.append("&sessionID=0");
 		uri.append("&requestID=0");
-		uri.append("&language=de");
 
 		appendCommonXsltTripRequest2Params(uri);
 

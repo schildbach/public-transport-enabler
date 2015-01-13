@@ -34,6 +34,7 @@ public class SfProvider extends AbstractEfaProvider
 	{
 		super(API_BASE);
 
+		setLanguage("en");
 		setTimeZone("America/Los_Angeles");
 		setUseRouteIndexAsTripId(false);
 		setFareCorrectionFactor(0.01f);

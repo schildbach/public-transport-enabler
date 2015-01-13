@@ -43,6 +43,7 @@ public class TlemProvider extends AbstractEfaProvider
 	{
 		super(API_BASE);
 
+		setLanguage("en");
 		setTimeZone("Europe/London");
 		setUseProxFootSearch(false);
 		setStyles(STYLES);

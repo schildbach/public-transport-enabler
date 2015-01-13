@@ -29,6 +29,7 @@ public class SydneyProvider extends AbstractEfaProvider
 	{
 		super(API_BASE);
 
+		setLanguage("en");
 		setTimeZone("Australia/Sydney");
 		setUseRouteIndexAsTripId(false);
 	}
