@@ -41,7 +41,7 @@ public final class Location implements Serializable
 		this.name = name;
 
 		if (name == null && place != null)
-			throw new IllegalArgumentException("places without name cannot exist");
+			throw new IllegalArgumentException("place '" + place + "' without name cannot exist");
 	}
 
 	public Location(final LocationType type, final String id, final String place, final String name)
@@ -54,7 +54,7 @@ public final class Location implements Serializable
 		this.name = name;
 
 		if (name == null && place != null)
-			throw new IllegalArgumentException("places without name cannot exist");
+			throw new IllegalArgumentException("place '" + place + "' without name cannot exist");
 	}
 
 	public Location(final LocationType type, final String id, final int lat, final int lon)
