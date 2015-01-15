@@ -48,32 +48,37 @@ public class VrnProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "6032236"), 0, 0);
+		final NearbyStationsResult result1 = provider.queryNearbyStations(new Location(LocationType.STATION, "6032236"), 0, 0);
+		print(result1);
 
-		print(result);
+		final NearbyStationsResult result2 = provider.queryNearbyStations(new Location(LocationType.STATION, "17001301"), 0, 0);
+		print(result2);
 	}
 
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 49486561, 8477297), 0, 0);
+		final NearbyStationsResult result1 = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 49486561, 8477297), 0, 0);
+		print(result1);
 
-		print(result);
+		final NearbyStationsResult result2 = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 49757571, 6639147), 0, 0);
+		print(result2);
 	}
 
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = queryDepartures("6032236", false);
+		final QueryDeparturesResult result1 = queryDepartures("6032236", false);
+		print(result1);
 
-		print(result);
+		final QueryDeparturesResult result2 = queryDepartures("17001301", false);
+		print(result2);
 	}
 
 	@Test
 	public void suggestLocationsIncomplete() throws Exception
 	{
 		final SuggestLocationsResult result = provider.suggestLocations("Kur");
-
 		print(result);
 	}
 
@@ -81,7 +86,6 @@ public class VrnProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsWithUmlaut() throws Exception
 	{
 		final SuggestLocationsResult result = provider.suggestLocations("grün");
-
 		print(result);
 	}
 
@@ -89,7 +93,6 @@ public class VrnProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsIdentified() throws Exception
 	{
 		final SuggestLocationsResult result = provider.suggestLocations("Bremen, KUR");
-
 		print(result);
 	}
 
@@ -97,7 +100,6 @@ public class VrnProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsLocality() throws Exception
 	{
 		final SuggestLocationsResult result = provider.suggestLocations("Bremen");
-
 		print(result);
 	}
 
@@ -105,7 +107,6 @@ public class VrnProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsCity() throws Exception
 	{
 		final SuggestLocationsResult result = provider.suggestLocations("Mannheim");
-
 		print(result);
 	}
 
@@ -115,6 +116,34 @@ public class VrnProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "6002417", 49479748, 8469938, "Mannheim",
 				"Mannheim, Hauptbahnhof"), null, new Location(LocationType.STATION, "6005542", 49482892, 8473050, "Mannheim", "Kunsthalle"),
 				new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		print(result);
+		assertEquals(QueryTripsResult.Status.OK, result.status);
+		assertTrue(result.trips.size() > 0);
+
+		if (!result.context.canQueryLater())
+			return;
+
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+		print(laterResult);
+
+		if (!laterResult.context.canQueryLater())
+			return;
+
+		final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
+		print(later2Result);
+
+		if (!later2Result.context.canQueryEarlier())
+			return;
+
+		final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
+		print(earlierResult);
+	}
+
+	@Test
+	public void shortTrip2() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "17002402", null, "Bahnhof"), null, new Location(
+				LocationType.STATION, "17009001", null, "Bahnhof"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);
