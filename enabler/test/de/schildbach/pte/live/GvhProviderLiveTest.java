@@ -18,7 +18,6 @@
 package de.schildbach.pte.live;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
@@ -27,7 +26,6 @@ import org.junit.Test;
 
 import de.schildbach.pte.GvhProvider;
 import de.schildbach.pte.NetworkProvider.Accessibility;
-import de.schildbach.pte.NetworkProvider.Capability;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
@@ -45,14 +43,6 @@ public class GvhProviderLiveTest extends AbstractProviderLiveTest
 	public GvhProviderLiveTest()
 	{
 		super(new GvhProvider(null));
-	}
-
-	@Test
-	public void capabilities() throws Exception
-	{
-		assertTrue(provider.hasCapabilities(Capability.NEARBY_STATIONS, Capability.DEPARTURES));
-		assertFalse(provider.hasCapabilities(Capability.SUGGEST_LOCATIONS, Capability.TRIPS));
-		assertFalse(provider.hasCapabilities(Capability.DEPARTURES, Capability.TRIPS));
 	}
 
 	@Test

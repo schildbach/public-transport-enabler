@@ -28,7 +28,10 @@ import de.schildbach.pte.dto.Style;
 public class GvhProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.GVH;
-	private static final String API_BASE = "http://mobil.efa.de/mobile3/";
+	private static final String API_BASE = "http://bhb.efa.de/bhb/";
+
+	// http://bhb.efa.de/bhb/
+	// http://mobil.efa.de/mobile3/
 
 	public GvhProvider(final String additionalQueryParameter)
 	{
@@ -36,52 +39,12 @@ public class GvhProvider extends AbstractEfaProvider
 
 		setAdditionalQueryParameter(additionalQueryParameter);
 		setStyles(STYLES);
+		setSessionCookieName("HASESSIONID");
 	}
 
 	public NetworkId id()
 	{
 		return NETWORK_ID;
-	}
-
-	@Override
-	protected boolean hasCapability(final Capability capability)
-	{
-		if (capability == Capability.SUGGEST_LOCATIONS)
-			return false;
-		else
-			return super.hasCapability(capability);
-	}
-
-	@Override
-	protected String parseLine(final String mot, final String symbol, final String name, final String longName, final String trainType,
-			final String trainNum, final String trainName)
-	{
-		if ("0".equals(mot))
-		{
-			if ("S1".equals(symbol))
-				return "SS1";
-			if ("S11".equals(symbol))
-				return "SS11";
-			if ("S2".equals(symbol))
-				return "SS2";
-			if ("S21".equals(symbol))
-				return "SS21";
-			if ("S3".equals(symbol))
-				return "SS3";
-			if ("S31".equals(symbol))
-				return "SS31";
-
-			if ("U1".equals(symbol))
-				return "UU1";
-			if ("U2".equals(symbol))
-				return "UU2";
-			if ("U3".equals(symbol))
-				return "UU3";
-			if ("U4".equals(symbol))
-				return "UU4";
-		}
-
-		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
 	}
 
 	private static final Map<String, Style> STYLES = new HashMap<String, Style>();
