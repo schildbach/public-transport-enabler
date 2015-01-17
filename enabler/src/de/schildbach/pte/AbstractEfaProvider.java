@@ -320,32 +320,19 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		String place = ref.getString("place");
 		if (place != null && place.length() == 0)
 			place = null;
-		final String coords = ref.optString("coords", null);
-		final int lat;
-		final int lon;
-		if (coords != null)
-		{
-			final String[] coordParts = coords.split(",");
-			lat = Math.round(Float.parseFloat(coordParts[1]));
-			lon = Math.round(Float.parseFloat(coordParts[0]));
-		}
-		else
-		{
-			lat = 0;
-			lon = 0;
-		}
+		final Point coord = parseCoord(ref.optString("coords", null));
 
 		final Location location;
 		if ("stop".equals(type))
-			location = new Location(LocationType.STATION, id, lat, lon, place, object);
+			location = new Location(LocationType.STATION, id, coord, place, object);
 		else if ("poi".equals(type))
-			location = new Location(LocationType.POI, id, lat, lon, place, object);
+			location = new Location(LocationType.POI, id, coord, place, object);
 		else if ("crossing".equals(type))
-			location = new Location(LocationType.ADDRESS, id, lat, lon, place, object);
+			location = new Location(LocationType.ADDRESS, id, coord, place, object);
 		else if ("street".equals(type) || "address".equals(type) || "singlehouse".equals(type) || "buildingname".equals(type))
-			location = new Location(LocationType.ADDRESS, id, lat, lon, place, name);
+			location = new Location(LocationType.ADDRESS, id, coord, place, name);
 		else if ("postcode".equals(type))
-			location = new Location(LocationType.ADDRESS, id, lat, lon, place, postcode);
+			location = new Location(LocationType.ADDRESS, id, coord, place, postcode);
 		else
 			throw new JSONException("unknown type: " + type);
 
@@ -484,7 +471,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					XmlPullUtil.valueTag(pp, "omc");
 					final String place = normalizeLocationName(XmlPullUtil.optValueTag(pp, "pc", null));
 					XmlPullUtil.valueTag(pp, "pid");
-					final Point coord = coordStrToPoint(XmlPullUtil.optValueTag(pp, "c", null));
+					final Point coord = parseCoord(XmlPullUtil.optValueTag(pp, "c", null));
 
 					XmlPullUtil.skipExit(pp, "r");
 
@@ -493,8 +480,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 					XmlPullUtil.skipExit(pp, "p");
 
-					final Location location = new Location(type, type == LocationType.STATION ? id : null, coord != null ? coord.lat : 0,
-							coord != null ? coord.lon : 0, place, name);
+					final Location location = new Location(type, type == LocationType.STATION ? id : null, coord, place, name);
 					final SuggestedLocation locationAndQuality = new SuggestedLocation(location, quality);
 					locations.add(locationAndQuality);
 				}
@@ -586,7 +572,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					XmlPullUtil.skipExit(pp, "coordInfoItem");
 
 					if (name != null)
-						stations.add(new Location(LocationType.STATION, id, coord.lat, coord.lon, place, name));
+						stations.add(new Location(LocationType.STATION, id, coord, place, name));
 				}
 
 				XmlPullUtil.skipExit(pp, "coordInfoItemList");
@@ -655,9 +641,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					XmlPullUtil.valueTag(pp, "layer");
 					XmlPullUtil.valueTag(pp, "gisID");
 					XmlPullUtil.valueTag(pp, "ds");
-					final Point coord = coordStrToPoint(XmlPullUtil.valueTag(pp, "c"));
+					final Point coord = parseCoord(XmlPullUtil.valueTag(pp, "c"));
 
-					stations.add(new Location(LocationType.STATION, id, coord.lat, coord.lon, place, name));
+					stations.add(new Location(LocationType.STATION, id, coord, place, name));
 
 					XmlPullUtil.skipExit(pp, "pi");
 				}
@@ -804,28 +790,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		final String buildingName = XmlPullUtil.optAttr(pp, "buildingName", null);
 		final String buildingNumber = XmlPullUtil.optAttr(pp, "buildingNumber", null);
 		final String postCode = XmlPullUtil.optAttr(pp, "postCode", null);
-
-		final String mapName = XmlPullUtil.optAttr(pp, "mapName", null);
-		final float x = XmlPullUtil.optFloatAttr(pp, "x", 0);
-		final float y = XmlPullUtil.optFloatAttr(pp, "y", 0);
-
-		final int lat;
-		final int lon;
-
-		if (mapName == null || (x == 0 && y == 0))
-		{
-			lat = 0;
-			lon = 0;
-		}
-		else if ("WGS84".equals(mapName))
-		{
-			lat = Math.round(y);
-			lon = Math.round(x);
-		}
-		else
-		{
-			throw new IllegalStateException("unknown mapName=" + mapName + " x=" + x + " y=" + y);
-		}
+		final Point coord = processCoordAttr(pp);
 
 		final String nameElem = normalizeLocationName(XmlPullUtil.valueTag(pp, "odvNameElem"));
 
@@ -884,40 +849,18 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			throw new IllegalArgumentException("unknown type/anyType: " + type);
 		}
 
-		return new Location(locationType, id, lat, lon, place != null ? place : defaultPlace, name != null ? name : nameElem);
+		return new Location(locationType, id, coord, place != null ? place : defaultPlace, name != null ? name : nameElem);
 	}
 
 	private Location processItdOdvAssignedStop(final XmlPullParser pp) throws XmlPullParserException, IOException
 	{
 		final String id = pp.getAttributeValue(null, "stopID");
-
-		final String mapName = XmlPullUtil.optAttr(pp, "mapName", null);
-		final float x = XmlPullUtil.optFloatAttr(pp, "x", 0);
-		final float y = XmlPullUtil.optFloatAttr(pp, "y", 0);
-
-		final int lat;
-		final int lon;
-		if (mapName == null || (x == 0 && y == 0))
-		{
-			lat = 0;
-			lon = 0;
-		}
-		else if ("WGS84".equals(mapName))
-		{
-			lat = Math.round(y);
-			lon = Math.round(x);
-		}
-		else
-		{
-			throw new IllegalStateException("unknown mapName=" + mapName + " x=" + x + " y=" + y);
-		}
-
+		final Point coord = processCoordAttr(pp);
 		final String place = normalizeLocationName(XmlPullUtil.attr(pp, "place"));
-
 		final String name = normalizeLocationName(XmlPullUtil.optValueTag(pp, "itdOdvAssignedStop", null));
 
 		if (name != null)
-			return new Location(LocationType.STATION, id, lat, lon, place, name);
+			return new Location(LocationType.STATION, id, coord, place, name);
 		else
 			return null;
 	}
@@ -1593,30 +1536,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					StationDepartures assignedStationDepartures = findStationDepartures(result.stationDepartures, assignedStopId);
 					if (assignedStationDepartures == null)
 					{
-						final String mapName = XmlPullUtil.optAttr(pp, "mapName", null);
-						final float x = XmlPullUtil.optFloatAttr(pp, "x", 0);
-						final float y = XmlPullUtil.optFloatAttr(pp, "y", 0);
-
-						final int lat;
-						final int lon;
-						if (mapName == null || (x == 0 && y == 0))
-						{
-							lat = 0;
-							lon = 0;
-						}
-						else if ("WGS84".equals(mapName))
-						{
-							lat = Math.round(y);
-							lon = Math.round(x);
-						}
-						else
-						{
-							throw new IllegalStateException("unknown mapName=" + mapName + " x=" + x + " y=" + y);
-						}
+						final Point coord = processCoordAttr(pp);
 
 						// final String name = normalizeLocationName(XmlPullUtil.attr(pp, "nameWO"));
 
-						assignedStationDepartures = new StationDepartures(new Location(LocationType.STATION, assignedStopId, lat, lon),
+						assignedStationDepartures = new StationDepartures(new Location(LocationType.STATION, assignedStopId, coord),
 								new LinkedList<Departure>(), new LinkedList<LineDestination>());
 					}
 
@@ -1729,7 +1653,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					final Position position = super.parsePosition(XmlPullUtil.optValueTag(pp, "pl", null));
 					XmlPullUtil.skipExit(pp, "r");
 
-					/* final Point positionCoordinate = */coordStrToPoint(XmlPullUtil.optValueTag(pp, "c", null));
+					/* final Point positionCoordinate = */parseCoord(XmlPullUtil.optValueTag(pp, "c", null));
 
 					// TODO messages
 
@@ -1891,28 +1815,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		if (name == null)
 			name = normalizeLocationName(pp.getAttributeValue(null, "name"));
 
-		final String mapName = XmlPullUtil.optAttr(pp, "mapName", null);
-		final float x = XmlPullUtil.optFloatAttr(pp, "x", 0);
-		final float y = XmlPullUtil.optFloatAttr(pp, "y", 0);
+		final Point coord = processCoordAttr(pp);
 
-		final int lat;
-		final int lon;
-		if (mapName == null || (x == 0 && y == 0))
-		{
-			lat = 0;
-			lon = 0;
-		}
-		else if ("WGS84".equals(mapName))
-		{
-			lat = Math.round(y);
-			lon = Math.round(x);
-		}
-		else
-		{
-			throw new IllegalStateException("unknown mapName=" + mapName + " x=" + x + " y=" + y);
-		}
-
-		return new Location(LocationType.STATION, id, lat, lon, place, name);
+		return new Location(LocationType.STATION, id, coord, place, name);
 	}
 
 	private boolean processItdDateTime(final XmlPullParser pp, final Calendar calendar) throws XmlPullParserException, IOException
@@ -2882,16 +2787,14 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							XmlPullUtil.optValueTag(pp, "a", null);
 							final Position position = super.parsePosition(XmlPullUtil.optValueTag(pp, "pl", null));
 							final String place = normalizeLocationName(XmlPullUtil.optValueTag(pp, "pc", null));
-							final Point coord = coordStrToPoint(XmlPullUtil.optValueTag(pp, "c", null));
+							final Point coord = parseCoord(XmlPullUtil.optValueTag(pp, "c", null));
 							XmlPullUtil.skipExit(pp, "r");
 
 							final Location location;
 							if (id.equals("99999997") || id.equals("99999998"))
-								location = new Location(LocationType.ADDRESS, null, coord != null ? coord.lat : 0, coord != null ? coord.lon : 0,
-										place, name);
+								location = new Location(LocationType.ADDRESS, null, coord, place, name);
 							else
-								location = new Location(LocationType.STATION, id, coord != null ? coord.lat : 0, coord != null ? coord.lon : 0,
-										place, name);
+								location = new Location(LocationType.STATION, id, coord, place, name);
 
 							XmlPullUtil.skipExit(pp, "p");
 
@@ -2975,9 +2878,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 										final String[] coordParts = coord.split(":");
 										if (!"WGS84".equals(coordParts[2]))
 											throw new IllegalStateException("unknown map name: " + coordParts[2]);
-										final int lat = Math.round(Float.parseFloat(coordParts[1]));
-										final int lon = Math.round(Float.parseFloat(coordParts[0]));
-										location = new Location(LocationType.STATION, id, lat, lon, null, name);
+										final double lat = Double.parseDouble(coordParts[1]);
+										final double lon = Double.parseDouble(coordParts[0]);
+										location = new Location(LocationType.STATION, id, Point.fromDouble(lat, lon), null, name);
 									}
 									else
 									{
@@ -3125,7 +3028,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		final String value = XmlPullUtil.valueTag(pp, tag);
 		for (final String coordStr : value.split(" +"))
-			path.add(coordStrToPoint(coordStr));
+			path.add(parseCoord(coordStr));
 
 		return path;
 	}
@@ -3140,9 +3043,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		{
 			XmlPullUtil.enter(pp, "itdCoordinateBaseElem");
 
-			final int lon = Math.round(Float.parseFloat(XmlPullUtil.valueTag(pp, "x")));
-			final int lat = Math.round(Float.parseFloat(XmlPullUtil.valueTag(pp, "y")));
-			path.add(new Point(lat, lon));
+			final double lon = Double.parseDouble(XmlPullUtil.valueTag(pp, "x"));
+			final double lat = Double.parseDouble(XmlPullUtil.valueTag(pp, "y"));
+			path.add(Point.fromDouble(lat, lon));
 
 			XmlPullUtil.skipExit(pp, "itdCoordinateBaseElem");
 		}
@@ -3152,13 +3055,29 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		return path;
 	}
 
-	private Point coordStrToPoint(final String coordStr)
+	private Point parseCoord(final String coordStr)
 	{
 		if (coordStr == null)
 			return null;
 
 		final String[] parts = coordStr.split(",");
-		return new Point(Math.round(Float.parseFloat(parts[1])), Math.round(Float.parseFloat(parts[0])));
+		final int lat = (int) Math.round(Double.parseDouble(parts[1]));
+		final int lon = (int) Math.round(Double.parseDouble(parts[0]));
+		return new Point(lat, lon);
+	}
+
+	private Point processCoordAttr(final XmlPullParser pp)
+	{
+		final String mapName = XmlPullUtil.optAttr(pp, "mapName", null);
+		if (mapName == null)
+			return null;
+
+		if (!"WGS84".equals(mapName))
+			throw new IllegalStateException("unknown mapName=" + mapName);
+
+		final int x = (int) Math.round(XmlPullUtil.floatAttr(pp, "x"));
+		final int y = (int) Math.round(XmlPullUtil.floatAttr(pp, "y"));
+		return new Point(y, x);
 	}
 
 	private Fare processItdGenericTicketGroup(final XmlPullParser pp, final String net, final Currency currency) throws XmlPullParserException,

@@ -160,16 +160,16 @@ public final class XmlPullUtil
 			return defaultValue;
 	}
 
-	public static float floatAttr(final XmlPullParser pp, final String attrName)
+	public static double floatAttr(final XmlPullParser pp, final String attrName)
 	{
-		return Float.parseFloat(attr(pp, attrName));
+		return Double.parseDouble(attr(pp, attrName));
 	}
 
-	public static float optFloatAttr(final XmlPullParser pp, final String attrName, final float defaultValue)
+	public static double optFloatAttr(final XmlPullParser pp, final String attrName, final float defaultValue)
 	{
 		final String attr = optAttr(pp, attrName, null);
 		if (attr != null)
-			return Float.parseFloat(attr);
+			return Double.parseDouble(attr);
 		else
 			return defaultValue;
 	}

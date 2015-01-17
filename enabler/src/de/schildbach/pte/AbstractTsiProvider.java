@@ -457,7 +457,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 		{
 			final double lat = posObj.getDouble("Lat");
 			final double lon = posObj.getDouble("Long");
-			coord = new Point((int) Math.round(lat * 1E6), (int) Math.round(lon * 1E6));
+			coord = Point.fromDouble(lat, lon);
 		}
 		else
 		{
@@ -466,7 +466,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 
 		final String name = data.getString("Name");
 		final String place = jsonOptString(data, "CityName");
-		return new Location(locType, id, coord.lat, coord.lon, place, name);
+		return new Location(locType, id, coord, place, name);
 	}
 
 	private Trip.Public parseJsonJourneyplannerPublicLeg(final JSONObject ptrInfo) throws JSONException
@@ -592,8 +592,6 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 
 		final double lat = data.optDouble("Latitude", 0);
 		final double lon = data.optDouble("Longitude", 0);
-		final int latInt = (int) Math.round(lat * 1E6);
-		final int lonInt = (int) Math.round(lon * 1E6);
 
 		final String name = data.getString("Name");
 		String place = null;
@@ -602,7 +600,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 		{
 			place = localityObj.getString("Name");
 		}
-		return new Location(locType, id, latInt, lonInt, place, name);
+		return new Location(locType, id, Point.fromDouble(lat, lon), place, name);
 	}
 
 	public QueryDeparturesResult queryDepartures(final String stationId, final Date time, final int maxDepartures, final boolean equivs)

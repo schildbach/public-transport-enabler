@@ -44,6 +44,11 @@ public final class Location implements Serializable
 			throw new IllegalArgumentException("place '" + place + "' without name cannot exist");
 	}
 
+	public Location(final LocationType type, final String id, final Point coord, final String place, final String name)
+	{
+		this(type, id, coord != null ? coord.lat : 0, coord != null ? coord.lon : 0, place, name);
+	}
+
 	public Location(final LocationType type, final String id, final String place, final String name)
 	{
 		this.type = type;
@@ -67,6 +72,11 @@ public final class Location implements Serializable
 		this.name = null;
 	}
 
+	public Location(final LocationType type, final String id, final Point coord)
+	{
+		this(type, id, coord != null ? coord.lat : 0, coord != null ? coord.lon : 0);
+	}
+
 	public Location(final LocationType type, final String id)
 	{
 		this.type = type;
@@ -85,6 +95,11 @@ public final class Location implements Serializable
 		this.lon = lon;
 		this.place = null;
 		this.name = null;
+	}
+
+	public Location(final LocationType type, final Point coord)
+	{
+		this(type, coord != null ? coord.lat : 0, coord != null ? coord.lon : 0);
 	}
 
 	public final boolean hasId()

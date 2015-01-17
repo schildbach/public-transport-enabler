@@ -160,9 +160,9 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 	{
 		try
 		{
-			final float lat = (float) coord.getDouble("lat");
-			final float lon = (float) coord.getDouble("lon");
-			return new Point(lat, lon);
+			final double lat = coord.getDouble("lat");
+			final double lon = coord.getDouble("lon");
+			return Point.fromDouble(lat, lon);
 		}
 		catch (final JSONException jsonExc)
 		{
@@ -181,7 +181,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 
 			final String name = WordUtils.capitalizeFully(stopPoint.getString("name"));
 
-			return new Location(LocationType.STATION, id, point.lat, point.lon, null, name);
+			return new Location(LocationType.STATION, id, point, null, name);
 		}
 		catch (final JSONException jsonExc)
 		{
@@ -219,7 +219,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 
 					final String name = WordUtils.capitalizeFully(place.getString("name"));
 
-					return new Location(LocationType.ADDRESS, id, point.lat, point.lon, null, name);
+					return new Location(LocationType.ADDRESS, id, point, null, name);
 				}
 				case POI:
 				{
@@ -273,9 +273,9 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 			try
 			{
 				final JSONArray jsonPoint = coordinates.getJSONArray(i);
-				final int lon = (int) (jsonPoint.getDouble(0) * 1E6);
-				final int lat = (int) (jsonPoint.getDouble(1) * 1E6);
-				final Point point = new Point(lat, lon);
+				final double lon = jsonPoint.getDouble(0);
+				final double lat = jsonPoint.getDouble(1);
+				final Point point = Point.fromDouble(lat, lon);
 				path.add(point);
 			}
 			catch (final JSONException jsonExc)
@@ -1200,13 +1200,15 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 			while (c != ')')
 			{
 				// Navitia coordinates are in (longitude, latitude) order.
-				String lonString = shapeTokener.nextTo(' ');
+				final String lonString = shapeTokener.nextTo(' ');
 				shapeTokener.next();
-				String latString = shapeTokener.nextTo(",)");
+				final String latString = shapeTokener.nextTo(",)");
 				c = shapeTokener.next();
 
 				// Append new point with (latitude, longitude) order.
-				pointList.add(new Point(Float.parseFloat(latString), Float.parseFloat(lonString)));
+				final double lat = Double.parseDouble(latString);
+				final double lon = Double.parseDouble(lonString);
+				pointList.add(Point.fromDouble(lat, lon));
 			}
 
 			// Fill point array.

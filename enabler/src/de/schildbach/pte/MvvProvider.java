@@ -141,6 +141,6 @@ public class MvvProvider extends AbstractEfaProvider
 	@Override
 	public Point[] getArea()
 	{
-		return new Point[] { new Point(48.140377f, 11.560643f) };
+		return new Point[] { Point.fromDouble(48.140377, 11.560643) };
 	}
 }

@@ -45,6 +45,6 @@ public class VvsProvider extends AbstractEfaProvider
 	@Override
 	public Point[] getArea()
 	{
-		return new Point[] { new Point(48.784068f, 9.181713f) };
+		return new Point[] { Point.fromDouble(48.784068, 9.181713) };
 	}
 }
