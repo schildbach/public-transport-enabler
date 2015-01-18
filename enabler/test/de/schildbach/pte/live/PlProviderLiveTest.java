@@ -47,7 +47,7 @@ public class PlProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "5100065"), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "5100065"));
 
 		print(result);
 	}
@@ -55,7 +55,7 @@ public class PlProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 52227027, 20989795), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 52227027, 20989795));
 
 		print(result);
 	}
@@ -79,7 +79,7 @@ public class PlProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocations() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Warszawa");
+		final SuggestLocationsResult result = suggestLocations("Warszawa");
 
 		print(result);
 	}
@@ -87,7 +87,7 @@ public class PlProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsUmlaut() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Służewiec");
+		final SuggestLocationsResult result = suggestLocations("Służewiec");
 
 		print(result);
 	}

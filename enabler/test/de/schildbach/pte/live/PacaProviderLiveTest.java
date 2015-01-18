@@ -46,7 +46,7 @@ public class PacaProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocations() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("aeroport");
+		final SuggestLocationsResult result = suggestLocations("aeroport");
 
 		print(result);
 	}
@@ -54,7 +54,7 @@ public class PacaProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsIdentified() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("EGANAUDE, Biot");
+		final SuggestLocationsResult result = suggestLocations("EGANAUDE, Biot");
 
 		print(result);
 	}
@@ -62,7 +62,7 @@ public class PacaProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsUmlaut() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Aéroport");
+		final SuggestLocationsResult result = suggestLocations("Aéroport");
 
 		print(result);
 	}

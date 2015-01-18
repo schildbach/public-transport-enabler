@@ -48,17 +48,17 @@ public class TlemProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result1 = provider.queryNearbyStations(new Location(LocationType.STATION, "1001003"), 0, 0);
+		final NearbyStationsResult result1 = queryNearbyStations(new Location(LocationType.STATION, "1001003"));
 		print(result1);
 
-		final NearbyStationsResult result2 = provider.queryNearbyStations(new Location(LocationType.STATION, "1000086"), 0, 0);
+		final NearbyStationsResult result2 = queryNearbyStations(new Location(LocationType.STATION, "1000086"));
 		print(result2);
 	}
 
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 51507161, -0127144), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 51507161, -0127144));
 		print(result);
 	}
 
@@ -89,7 +89,7 @@ public class TlemProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocations() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Lower Arncott The Plough");
+		final SuggestLocationsResult result = suggestLocations("Lower Arncott The Plough");
 
 		print(result);
 	}
@@ -97,7 +97,7 @@ public class TlemProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsIncomplete() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Birming");
+		final SuggestLocationsResult result = suggestLocations("Birming");
 
 		print(result);
 	}

@@ -50,7 +50,7 @@ public class MvgProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "24200006"), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "24200006"));
 
 		print(result);
 	}
@@ -58,7 +58,7 @@ public class MvgProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 51219852, 7639217), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 51219852, 7639217));
 
 		print(result);
 	}
@@ -74,7 +74,7 @@ public class MvgProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsIncomplete() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Schützenhalle");
+		final SuggestLocationsResult result = suggestLocations("Schützenhalle");
 
 		print(result);
 	}
@@ -82,7 +82,7 @@ public class MvgProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsWithUmlaut() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("grün");
+		final SuggestLocationsResult result = suggestLocations("grün");
 
 		print(result);
 	}
@@ -90,19 +90,19 @@ public class MvgProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsCoverage() throws Exception
 	{
-		final SuggestLocationsResult luedenscheidResult = provider.suggestLocations("Lüdenscheid Freibad");
+		final SuggestLocationsResult luedenscheidResult = suggestLocations("Lüdenscheid Freibad");
 		print(luedenscheidResult);
 		assertThat(luedenscheidResult.getLocations(), hasItem(new Location(LocationType.STATION, "24200153")));
 
-		final SuggestLocationsResult iserlohnResult = provider.suggestLocations("Iserlohn Rathaus");
+		final SuggestLocationsResult iserlohnResult = suggestLocations("Iserlohn Rathaus");
 		print(iserlohnResult);
 		assertThat(iserlohnResult.getLocations(), hasItem(new Location(LocationType.STATION, "24200764")));
 
-		final SuggestLocationsResult plettenbergResult = provider.suggestLocations("Plettenberg Friedhof");
+		final SuggestLocationsResult plettenbergResult = suggestLocations("Plettenberg Friedhof");
 		print(plettenbergResult);
 		assertThat(plettenbergResult.getLocations(), hasItem(new Location(LocationType.STATION, "24202864")));
 
-		final SuggestLocationsResult mendenResult = provider.suggestLocations("Menden Am Gillfeld");
+		final SuggestLocationsResult mendenResult = suggestLocations("Menden Am Gillfeld");
 		print(mendenResult);
 		assertThat(mendenResult.getLocations(), hasItem(new Location(LocationType.STATION, "24202193")));
 	}

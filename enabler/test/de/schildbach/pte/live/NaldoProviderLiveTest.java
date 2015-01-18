@@ -48,7 +48,7 @@ public class NaldoProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "53019174"), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "53019174"));
 
 		print(result);
 	}
@@ -56,7 +56,7 @@ public class NaldoProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 48493550, 9205656), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 48493550, 9205656));
 
 		print(result);
 	}
@@ -79,7 +79,7 @@ public class NaldoProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsIncomplete() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Kurf");
+		final SuggestLocationsResult result = suggestLocations("Kurf");
 
 		print(result);
 	}
@@ -87,7 +87,7 @@ public class NaldoProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsWithUmlaut() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("grünwink");
+		final SuggestLocationsResult result = suggestLocations("grünwink");
 
 		print(result);
 	}

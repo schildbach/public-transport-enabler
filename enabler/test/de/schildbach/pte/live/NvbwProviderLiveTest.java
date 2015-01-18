@@ -50,7 +50,7 @@ public class NvbwProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "6900001"), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "6900001"));
 
 		print(result);
 	}
@@ -58,7 +58,7 @@ public class NvbwProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 48778953, 9178963), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 48778953, 9178963));
 
 		print(result);
 	}
@@ -74,7 +74,7 @@ public class NvbwProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsIncomplete() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Kur");
+		final SuggestLocationsResult result = suggestLocations("Kur");
 
 		print(result);
 	}
@@ -82,7 +82,7 @@ public class NvbwProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsWithUmlaut() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("grün");
+		final SuggestLocationsResult result = suggestLocations("grün");
 
 		print(result);
 	}
@@ -90,15 +90,15 @@ public class NvbwProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsCoverage() throws Exception
 	{
-		final SuggestLocationsResult freiburgResult = provider.suggestLocations("Freiburg Hauptbahnhof");
+		final SuggestLocationsResult freiburgResult = suggestLocations("Freiburg Hauptbahnhof");
 		print(freiburgResult);
 		assertThat(freiburgResult.getLocations(), hasItem(new Location(LocationType.STATION, "6906508")));
 
-		final SuggestLocationsResult baselResult = provider.suggestLocations("Basel");
+		final SuggestLocationsResult baselResult = suggestLocations("Basel");
 		print(baselResult);
 		assertThat(baselResult.getLocations(), hasItem(new Location(LocationType.STATION, "51000007")));
 
-		final SuggestLocationsResult constanceResult = provider.suggestLocations("Konstanz");
+		final SuggestLocationsResult constanceResult = suggestLocations("Konstanz");
 		print(constanceResult);
 		assertThat(constanceResult.getLocations(), hasItem(new Location(LocationType.STATION, "8706554")));
 	}

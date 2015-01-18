@@ -50,7 +50,7 @@ public class VagfrProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "6930112"), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "6930112"));
 
 		print(result);
 	}
@@ -58,7 +58,7 @@ public class VagfrProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 48000295, 7854338), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 48000295, 7854338));
 
 		print(result);
 	}
@@ -74,7 +74,7 @@ public class VagfrProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsIncomplete() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Kurf");
+		final SuggestLocationsResult result = suggestLocations("Kurf");
 
 		print(result);
 	}
@@ -82,7 +82,7 @@ public class VagfrProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsCoverage() throws Exception
 	{
-		final SuggestLocationsResult freiburgResult = provider.suggestLocations("Betzenhauser Torplatz");
+		final SuggestLocationsResult freiburgResult = suggestLocations("Betzenhauser Torplatz");
 		print(freiburgResult);
 		assertThat(freiburgResult.getLocations(), hasItem(new Location(LocationType.STATION, "6930503")));
 	}

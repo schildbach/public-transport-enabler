@@ -48,20 +48,20 @@ public class VrnProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result1 = provider.queryNearbyStations(new Location(LocationType.STATION, "6032236"), 0, 0);
+		final NearbyStationsResult result1 = queryNearbyStations(new Location(LocationType.STATION, "6032236"));
 		print(result1);
 
-		final NearbyStationsResult result2 = provider.queryNearbyStations(new Location(LocationType.STATION, "17001301"), 0, 0);
+		final NearbyStationsResult result2 = queryNearbyStations(new Location(LocationType.STATION, "17001301"));
 		print(result2);
 	}
 
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result1 = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 49486561, 8477297), 0, 0);
+		final NearbyStationsResult result1 = queryNearbyStations(new Location(LocationType.ADDRESS, 49486561, 8477297));
 		print(result1);
 
-		final NearbyStationsResult result2 = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 49757571, 6639147), 0, 0);
+		final NearbyStationsResult result2 = queryNearbyStations(new Location(LocationType.ADDRESS, 49757571, 6639147));
 		print(result2);
 	}
 
@@ -78,35 +78,35 @@ public class VrnProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsIncomplete() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Kur");
+		final SuggestLocationsResult result = suggestLocations("Kur");
 		print(result);
 	}
 
 	@Test
 	public void suggestLocationsWithUmlaut() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("grün");
+		final SuggestLocationsResult result = suggestLocations("grün");
 		print(result);
 	}
 
 	@Test
 	public void suggestLocationsIdentified() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Bremen, KUR");
+		final SuggestLocationsResult result = suggestLocations("Bremen, KUR");
 		print(result);
 	}
 
 	@Test
 	public void suggestLocationsLocality() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Bremen");
+		final SuggestLocationsResult result = suggestLocations("Bremen");
 		print(result);
 	}
 
 	@Test
 	public void suggestLocationsCity() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Mannheim");
+		final SuggestLocationsResult result = suggestLocations("Mannheim");
 		print(result);
 	}
 

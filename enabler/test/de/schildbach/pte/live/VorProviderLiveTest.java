@@ -50,7 +50,7 @@ public class VorProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "60203090"), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "60203090"));
 
 		print(result);
 	}
@@ -58,7 +58,7 @@ public class VorProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 48207355, 16370602), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 48207355, 16370602));
 
 		print(result);
 	}
@@ -74,7 +74,7 @@ public class VorProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsIncomplete() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Kur");
+		final SuggestLocationsResult result = suggestLocations("Kur");
 
 		print(result);
 	}
@@ -82,7 +82,7 @@ public class VorProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsWithUmlaut() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("grün");
+		final SuggestLocationsResult result = suggestLocations("grün");
 
 		print(result);
 	}
@@ -90,11 +90,11 @@ public class VorProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsCoverage() throws Exception
 	{
-		final SuggestLocationsResult huetteldorfResult = provider.suggestLocations("Hütteldorf");
+		final SuggestLocationsResult huetteldorfResult = suggestLocations("Hütteldorf");
 		print(huetteldorfResult);
 		assertThat(huetteldorfResult.getLocations(), hasItem(new Location(LocationType.STATION, "60200560")));
 
-		final SuggestLocationsResult wienerNeustadtResult = provider.suggestLocations("Wiener Neustadt Nord");
+		final SuggestLocationsResult wienerNeustadtResult = suggestLocations("Wiener Neustadt Nord");
 		print(wienerNeustadtResult);
 		assertThat(wienerNeustadtResult.getLocations(), hasItem(new Location(LocationType.STATION, "60205223")));
 	}

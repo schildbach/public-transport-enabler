@@ -73,9 +73,29 @@ public abstract class AbstractProviderLiveTest
 		// System.out.println(trip);
 	}
 
-	protected final QueryDeparturesResult queryDepartures(final String stationId, boolean equivs) throws IOException
+	protected final NearbyStationsResult queryNearbyStations(final Location location) throws IOException
 	{
-		final QueryDeparturesResult result = provider.queryDepartures(stationId, new Date(), 0, equivs);
+		return queryNearbyStations(location, 0, 0);
+	}
+
+	protected final NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations)
+			throws IOException
+	{
+		return provider.queryNearbyStations(location, maxDistance, maxStations);
+	}
+
+	protected final QueryDeparturesResult queryDepartures(final String stationId, final boolean equivs) throws IOException
+	{
+		return queryDepartures(stationId, 0, equivs);
+	}
+
+	protected final QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
+	{
+		final QueryDeparturesResult result = provider.queryDepartures(stationId, new Date(), maxDepartures, equivs);
+
+		// for (final StationDepartures stationDepartures : result.stationDepartures)
+		// for (final Departure departure : stationDepartures.departures)
+		// System.out.println(departure);
 
 		if (result.status == QueryDeparturesResult.Status.OK)
 		{
@@ -86,6 +106,11 @@ public abstract class AbstractProviderLiveTest
 		}
 
 		return result;
+	}
+
+	protected final SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException
+	{
+		return provider.suggestLocations(constraint);
 	}
 
 	protected final QueryTripsResult queryTrips(final Location from, final Location via, final Location to, final Date date, final boolean dep,

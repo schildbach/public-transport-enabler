@@ -49,7 +49,7 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "3000001"), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "3000001"));
 
 		print(result);
 	}
@@ -57,7 +57,7 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 50108625, 8669604), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 50108625, 8669604));
 
 		print(result);
 	}
@@ -65,7 +65,7 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinateKassel() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 51318447, 9496250), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 51318447, 9496250));
 
 		print(result);
 	}
@@ -104,7 +104,7 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocations() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Flughafen");
+		final SuggestLocationsResult result = suggestLocations("Flughafen");
 
 		print(result);
 	}
@@ -112,7 +112,7 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsIdentified() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Kassel Wilhelmshöhe");
+		final SuggestLocationsResult result = suggestLocations("Kassel Wilhelmshöhe");
 
 		print(result);
 	}
@@ -120,7 +120,7 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsUmlaut() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("könig");
+		final SuggestLocationsResult result = suggestLocations("könig");
 
 		print(result);
 	}

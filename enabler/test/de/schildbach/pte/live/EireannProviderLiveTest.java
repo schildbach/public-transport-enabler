@@ -47,7 +47,7 @@ public class EireannProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "8013500"), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "8013500"));
 
 		print(result);
 	}
@@ -55,7 +55,7 @@ public class EireannProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 53343993, -6267371), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 53343993, -6267371));
 
 		print(result);
 	}
@@ -79,7 +79,7 @@ public class EireannProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocations() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Dublin");
+		final SuggestLocationsResult result = suggestLocations("Dublin");
 
 		print(result);
 	}
@@ -87,7 +87,7 @@ public class EireannProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsUmlaut() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Busáras");
+		final SuggestLocationsResult result = suggestLocations("Busáras");
 
 		print(result);
 	}
@@ -95,7 +95,7 @@ public class EireannProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsAddress() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Dorfstrasse 10, Dällikon, Schweiz");
+		final SuggestLocationsResult result = suggestLocations("Dorfstrasse 10, Dällikon, Schweiz");
 
 		print(result);
 	}

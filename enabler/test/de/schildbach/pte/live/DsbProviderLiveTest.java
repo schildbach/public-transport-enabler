@@ -47,7 +47,7 @@ public class DsbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "8600858"), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "8600858"));
 
 		print(result);
 	}
@@ -55,7 +55,7 @@ public class DsbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 55670305, 12554169), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 55670305, 12554169));
 
 		print(result);
 	}
@@ -79,7 +79,7 @@ public class DsbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocations() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Airport");
+		final SuggestLocationsResult result = suggestLocations("Airport");
 
 		print(result);
 	}

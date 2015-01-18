@@ -47,7 +47,7 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "3001459"), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "3001459"));
 
 		print(result);
 	}
@@ -55,7 +55,7 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 48135232, 11560650), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 48135232, 11560650));
 
 		print(result);
 	}
@@ -76,7 +76,7 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsIncomplete() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Marien");
+		final SuggestLocationsResult result = suggestLocations("Marien");
 
 		print(result);
 	}
@@ -84,7 +84,7 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsWithUmlaut() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("grün");
+		final SuggestLocationsResult result = suggestLocations("grün");
 
 		print(result);
 	}
@@ -92,7 +92,7 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsAddress() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("München, Friedenstraße 2");
+		final SuggestLocationsResult result = suggestLocations("München, Friedenstraße 2");
 
 		print(result);
 	}
@@ -100,13 +100,13 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsLocal() throws Exception
 	{
-		final SuggestLocationsResult regensburgResult = provider.suggestLocations("Regensburg");
+		final SuggestLocationsResult regensburgResult = suggestLocations("Regensburg");
 		assertEquals("80001083", regensburgResult.getLocations().iterator().next().id);
 
-		final SuggestLocationsResult munichResult = provider.suggestLocations("München");
+		final SuggestLocationsResult munichResult = suggestLocations("München");
 		assertEquals("80000689", munichResult.getLocations().iterator().next().id);
 
-		final SuggestLocationsResult nurembergResult = provider.suggestLocations("Nürnberg");
+		final SuggestLocationsResult nurembergResult = suggestLocations("Nürnberg");
 		assertEquals("80001020", nurembergResult.getLocations().iterator().next().id);
 	}
 

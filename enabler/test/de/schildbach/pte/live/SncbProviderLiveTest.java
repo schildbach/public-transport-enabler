@@ -47,7 +47,7 @@ public class SncbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "8813003"), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "8813003"));
 
 		print(result);
 	}
@@ -55,7 +55,7 @@ public class SncbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 50748017, 3407118), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 50748017, 3407118));
 
 		print(result);
 	}
@@ -79,7 +79,7 @@ public class SncbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsIncomplete() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Brussel S");
+		final SuggestLocationsResult result = suggestLocations("Brussel S");
 
 		print(result);
 	}
@@ -87,7 +87,7 @@ public class SncbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsUmlaut() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Brüssel");
+		final SuggestLocationsResult result = suggestLocations("Brüssel");
 
 		print(result);
 	}
@@ -95,7 +95,7 @@ public class SncbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsAddress() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Rue Paul Janson 9, 1030 Bruxelles");
+		final SuggestLocationsResult result = suggestLocations("Rue Paul Janson 9, 1030 Bruxelles");
 
 		print(result);
 	}

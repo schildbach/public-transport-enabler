@@ -50,7 +50,7 @@ public class VvoProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "33000013"), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "33000013"));
 
 		print(result);
 	}
@@ -58,7 +58,7 @@ public class VvoProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 51052467, 13733196), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 51052467, 13733196));
 
 		print(result);
 	}
@@ -74,7 +74,7 @@ public class VvoProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsIncomplete() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Kur");
+		final SuggestLocationsResult result = suggestLocations("Kur");
 
 		print(result);
 	}
@@ -82,7 +82,7 @@ public class VvoProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsWithUmlaut() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Hülßestraße");
+		final SuggestLocationsResult result = suggestLocations("Hülßestraße");
 
 		print(result);
 	}
@@ -90,7 +90,7 @@ public class VvoProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsCoverage() throws Exception
 	{
-		final SuggestLocationsResult dresdenResult = provider.suggestLocations("Dresden Postplatz");
+		final SuggestLocationsResult dresdenResult = suggestLocations("Dresden Postplatz");
 		print(dresdenResult);
 		assertThat(dresdenResult.getLocations(), hasItem(new Location(LocationType.STATION, "33000037")));
 	}
@@ -98,7 +98,7 @@ public class VvoProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestAddressLocation() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Dresden, Töpferstr. 10");
+		final SuggestLocationsResult result = suggestLocations("Dresden, Töpferstr. 10");
 
 		print(result);
 	}

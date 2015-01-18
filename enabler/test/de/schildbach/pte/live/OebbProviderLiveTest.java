@@ -48,7 +48,7 @@ public class OebbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "902006"), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "902006"));
 
 		print(result);
 	}
@@ -56,7 +56,7 @@ public class OebbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 48200239, 16370773), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 48200239, 16370773));
 
 		print(result);
 		assertEquals(NearbyStationsResult.Status.OK, result.status);
@@ -84,7 +84,7 @@ public class OebbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocations() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Wien");
+		final SuggestLocationsResult result = suggestLocations("Wien");
 
 		print(result);
 		assertTrue(result.getLocations().size() > 0);
@@ -93,7 +93,7 @@ public class OebbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsUmlaut() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Obirhöhle");
+		final SuggestLocationsResult result = suggestLocations("Obirhöhle");
 
 		print(result);
 	}

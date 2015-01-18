@@ -47,7 +47,7 @@ public class ZvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByStation() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "8503000"), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "8503000"));
 
 		print(result);
 	}
@@ -55,7 +55,7 @@ public class ZvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 47378968, 8540534), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 47378968, 8540534));
 
 		print(result);
 	}
@@ -79,7 +79,7 @@ public class ZvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocations() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Flughafen");
+		final SuggestLocationsResult result = suggestLocations("Flughafen");
 
 		print(result);
 	}

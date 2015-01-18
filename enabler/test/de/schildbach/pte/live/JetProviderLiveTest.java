@@ -47,7 +47,7 @@ public class JetProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "1055"), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "1055"));
 
 		print(result);
 	}
@@ -55,7 +55,7 @@ public class JetProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 31769757, 35213506), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 31769757, 35213506));
 
 		print(result);
 	}
@@ -84,7 +84,7 @@ public class JetProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocations() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("הנשיא - מוזיאון האיסלם, ירושלים");
+		final SuggestLocationsResult result = suggestLocations("הנשיא - מוזיאון האיסלם, ירושלים");
 
 		print(result);
 	}

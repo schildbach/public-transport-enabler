@@ -45,7 +45,7 @@ public class AtcProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "740"), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "740"));
 
 		print(result);
 	}
@@ -54,7 +54,7 @@ public class AtcProviderLiveTest extends AbstractProviderLiveTest
 	public void nearbyStationsByCoordinate() throws Exception
 	{
 		// TODO bad coordinate!
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 8168907, 10609969), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 8168907, 10609969));
 
 		print(result);
 	}
@@ -70,7 +70,7 @@ public class AtcProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocations() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("ponte");
+		final SuggestLocationsResult result = suggestLocations("ponte");
 
 		print(result);
 	}
@@ -78,7 +78,7 @@ public class AtcProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsWithUmlaut() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("grünwink");
+		final SuggestLocationsResult result = suggestLocations("grünwink");
 
 		print(result);
 	}

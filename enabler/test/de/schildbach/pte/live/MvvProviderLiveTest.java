@@ -49,7 +49,7 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "350"), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "350"));
 
 		print(result);
 	}
@@ -57,7 +57,7 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 48135232, 11560650), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 48135232, 11560650));
 
 		print(result);
 	}
@@ -82,7 +82,7 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsIncomplete() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Marien");
+		final SuggestLocationsResult result = suggestLocations("Marien");
 
 		print(result);
 	}
@@ -90,7 +90,7 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsWithUmlaut() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("grün");
+		final SuggestLocationsResult result = suggestLocations("grün");
 
 		print(result);
 	}
@@ -98,16 +98,16 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsLocal() throws Exception
 	{
-		final SuggestLocationsResult fraunhoferStrResult = provider.suggestLocations("fraunhofer");
+		final SuggestLocationsResult fraunhoferStrResult = suggestLocations("fraunhofer");
 		assertThat(fraunhoferStrResult.getLocations(), hasItem(new Location(LocationType.STATION, "1000150")));
 
-		final SuggestLocationsResult hirschgartenResult = provider.suggestLocations("Hirschgarten");
+		final SuggestLocationsResult hirschgartenResult = suggestLocations("Hirschgarten");
 		assertEquals("München", hirschgartenResult.getLocations().get(0).place);
 
-		final SuggestLocationsResult ostbahnhofResult = provider.suggestLocations("Ostbahnhof");
+		final SuggestLocationsResult ostbahnhofResult = suggestLocations("Ostbahnhof");
 		assertEquals("München", ostbahnhofResult.getLocations().get(0).place);
 
-		final SuggestLocationsResult marienplatzResult = provider.suggestLocations("Marienplatz");
+		final SuggestLocationsResult marienplatzResult = suggestLocations("Marienplatz");
 		assertEquals("München", marienplatzResult.getLocations().get(0).place);
 	}
 

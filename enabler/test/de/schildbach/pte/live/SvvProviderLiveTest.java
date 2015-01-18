@@ -50,7 +50,7 @@ public class SvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "60650002"), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "60650002"));
 
 		print(result);
 	}
@@ -58,7 +58,7 @@ public class SvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 47809195, 13054919), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 47809195, 13054919));
 
 		print(result);
 	}
@@ -74,7 +74,7 @@ public class SvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsIncomplete() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Kur");
+		final SuggestLocationsResult result = suggestLocations("Kur");
 
 		print(result);
 	}
@@ -82,19 +82,19 @@ public class SvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsCoverage() throws Exception
 	{
-		final SuggestLocationsResult salzburgResult = provider.suggestLocations("Salzburg Süd");
+		final SuggestLocationsResult salzburgResult = suggestLocations("Salzburg Süd");
 		print(salzburgResult);
 		assertThat(salzburgResult.getLocations(), hasItem(new Location(LocationType.STATION, "60650458")));
 
-		final SuggestLocationsResult strasswalchenResult = provider.suggestLocations("Straßwalchen West");
+		final SuggestLocationsResult strasswalchenResult = suggestLocations("Straßwalchen West");
 		print(strasswalchenResult);
 		assertThat(strasswalchenResult.getLocations(), hasItem(new Location(LocationType.STATION, "60656483")));
 
-		final SuggestLocationsResult schwarzachResult = provider.suggestLocations("Schwarzach Abtsdorf");
+		final SuggestLocationsResult schwarzachResult = suggestLocations("Schwarzach Abtsdorf");
 		print(schwarzachResult);
 		assertThat(schwarzachResult.getLocations(), hasItem(new Location(LocationType.STATION, "60656614")));
 
-		final SuggestLocationsResult trimmelkamResult = provider.suggestLocations("Trimmelkam");
+		final SuggestLocationsResult trimmelkamResult = suggestLocations("Trimmelkam");
 		print(trimmelkamResult);
 		assertThat(trimmelkamResult.getLocations(), hasItem(new Location(LocationType.STATION, "60640776")));
 	}

@@ -48,7 +48,7 @@ public class LinzProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "60500090"), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "60500090"));
 
 		print(result);
 	}
@@ -56,7 +56,7 @@ public class LinzProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 48305726, 14287863), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 48305726, 14287863));
 
 		print(result);
 	}
@@ -71,7 +71,7 @@ public class LinzProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsIncomplete() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Friedhof");
+		final SuggestLocationsResult result = suggestLocations("Friedhof");
 
 		print(result);
 	}
@@ -79,7 +79,7 @@ public class LinzProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsWithUmlaut() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("grün");
+		final SuggestLocationsResult result = suggestLocations("grün");
 
 		print(result);
 	}
@@ -87,7 +87,7 @@ public class LinzProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsIdentified() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Leonding, Haag");
+		final SuggestLocationsResult result = suggestLocations("Leonding, Haag");
 
 		print(result);
 	}
@@ -95,7 +95,7 @@ public class LinzProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsCity() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Leonding");
+		final SuggestLocationsResult result = suggestLocations("Leonding");
 
 		print(result);
 	}

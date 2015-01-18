@@ -47,7 +47,7 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "692991"), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "692991"));
 
 		print(result);
 	}
@@ -55,7 +55,7 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 52525589, 13369548), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 52525589, 13369548));
 
 		print(result);
 	}
@@ -78,7 +78,7 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsUmlaut() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Güntzelstr. (U)");
+		final SuggestLocationsResult result = suggestLocations("Güntzelstr. (U)");
 
 		print(result);
 
@@ -88,7 +88,7 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsIncomplete() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Dammt");
+		final SuggestLocationsResult result = suggestLocations("Dammt");
 
 		print(result);
 
@@ -98,7 +98,7 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsIdentified() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Berlin");
+		final SuggestLocationsResult result = suggestLocations("Berlin");
 
 		print(result);
 	}
@@ -106,7 +106,7 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsAddress() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("München, Friedenstraße 2");
+		final SuggestLocationsResult result = suggestLocations("München, Friedenstraße 2");
 		print(result);
 
 		assertEquals(LocationType.ADDRESS, result.getLocations().get(0).type);

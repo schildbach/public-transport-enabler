@@ -49,7 +49,7 @@ public class RsagProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "8010304"), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "8010304"));
 
 		print(result);
 	}
@@ -57,7 +57,7 @@ public class RsagProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 54078314, 12131715), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 54078314, 12131715));
 
 		print(result);
 	}
@@ -81,7 +81,7 @@ public class RsagProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocations() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Rostock");
+		final SuggestLocationsResult result = suggestLocations("Rostock");
 
 		print(result);
 	}
@@ -89,7 +89,7 @@ public class RsagProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsUmlaut() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Lütten Klein");
+		final SuggestLocationsResult result = suggestLocations("Lütten Klein");
 
 		print(result);
 
@@ -99,11 +99,11 @@ public class RsagProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsCoverage() throws Exception
 	{
-		final SuggestLocationsResult rostockResult = provider.suggestLocations("Rostock");
+		final SuggestLocationsResult rostockResult = suggestLocations("Rostock");
 		print(rostockResult);
 		assertThat(rostockResult.getLocations(), hasItem(new Location(LocationType.STATION, "8010304")));
 
-		final SuggestLocationsResult warnemuendeResult = provider.suggestLocations("Warnemünde");
+		final SuggestLocationsResult warnemuendeResult = suggestLocations("Warnemünde");
 		print(warnemuendeResult);
 		assertThat(warnemuendeResult.getLocations(), hasItem(new Location(LocationType.STATION, "8013236")));
 	}
@@ -111,7 +111,7 @@ public class RsagProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsLocality() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("lange");
+		final SuggestLocationsResult result = suggestLocations("lange");
 		assertEquals("Rostock", result.getLocations().get(0).place);
 		assertEquals("Lange Straße", result.getLocations().get(0).name);
 	}

@@ -54,7 +54,7 @@ public class ParisProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsAddress() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 48877523, 2378353), 700, 10);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 48877523, 2378353), 700, 10);
 
 		assertEquals(NearbyStationsResult.Status.OK, result.status);
 
@@ -64,7 +64,7 @@ public class ParisProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsAddress2() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 48785420, 2212050), 2000, 30);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 48785420, 2212050), 2000, 30);
 
 		assertEquals(NearbyStationsResult.Status.OK, result.status);
 
@@ -74,7 +74,7 @@ public class ParisProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsStation() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "stop_point:RTP:SP:3926410"), 700, 10);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "stop_point:RTP:SP:3926410"), 700, 10);
 
 		assertEquals(NearbyStationsResult.Status.OK, result.status);
 
@@ -84,7 +84,7 @@ public class ParisProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsPoi() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.POI, "poi:n668579722"), 700, 10);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.POI, "poi:n668579722"), 700, 10);
 
 		assertEquals(NearbyStationsResult.Status.OK, result.status);
 
@@ -94,7 +94,7 @@ public class ParisProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsInvalidStation() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "stop_point:RTP:SP:392"), 700, 10);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "stop_point:RTP:SP:392"), 700, 10);
 
 		assertEquals(NearbyStationsResult.Status.INVALID_STATION, result.status);
 
@@ -105,7 +105,7 @@ public class ParisProviderLiveTest extends AbstractProviderLiveTest
 	public void queryDeparturesEquivsFalse() throws Exception
 	{
 		final int maxDepartures = 5;
-		final QueryDeparturesResult result = provider.queryDepartures("stop_point:RTP:SP:3926410", new Date(), maxDepartures, false);
+		final QueryDeparturesResult result = queryDepartures("stop_point:RTP:SP:3926410", maxDepartures, false);
 
 		assertEquals(QueryDeparturesResult.Status.OK, result.status);
 		assertEquals(1, result.stationDepartures.size());
@@ -118,7 +118,7 @@ public class ParisProviderLiveTest extends AbstractProviderLiveTest
 	public void queryDeparturesEquivsTrue() throws Exception
 	{
 		final int maxDepartures = 5;
-		final QueryDeparturesResult result = provider.queryDepartures("stop_point:RTP:SP:3926410", new Date(), maxDepartures, true);
+		final QueryDeparturesResult result = queryDepartures("stop_point:RTP:SP:3926410", maxDepartures, true);
 
 		assertEquals(QueryDeparturesResult.Status.OK, result.status);
 		assertTrue(result.stationDepartures.size() > 1);
@@ -137,7 +137,7 @@ public class ParisProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDeparturesInvalidStation() throws Exception
 	{
-		final QueryDeparturesResult result = provider.queryDepartures("stop_point:RTP:SP:999999", new Date(), 0, false);
+		final QueryDeparturesResult result = queryDepartures("stop_point:RTP:SP:999999", false);
 
 		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
 	}
@@ -145,7 +145,7 @@ public class ParisProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocations() throws Exception
 	{
-		SuggestLocationsResult result = provider.suggestLocations("bellevi");
+		final SuggestLocationsResult result = suggestLocations("bellevi");
 
 		assertTrue(result.getLocations().size() > 0);
 
@@ -155,7 +155,7 @@ public class ParisProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsFromAddress() throws Exception
 	{
-		SuggestLocationsResult result = provider.suggestLocations("13 rue man");
+		final SuggestLocationsResult result = suggestLocations("13 rue man");
 
 		assertTrue(result.getLocations().size() > 0);
 
@@ -165,7 +165,7 @@ public class ParisProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsNoLocation() throws Exception
 	{
-		SuggestLocationsResult result = provider.suggestLocations("bellevilleadasdjkaskd");
+		final SuggestLocationsResult result = suggestLocations("bellevilleadasdjkaskd");
 
 		assertEquals(result.getLocations().size(), 0);
 
@@ -302,17 +302,17 @@ public class ParisProviderLiveTest extends AbstractProviderLiveTest
 				48847168, 2261272), Calendar.getInstance().getTime(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		final QueryTripsContext context = result.context;
 
-		final QueryTripsResult nextResult = provider.queryMoreTrips(context, true);
+		final QueryTripsResult nextResult = queryMoreTrips(context, true);
 		print(nextResult);
 
-		final QueryTripsResult prevResult = provider.queryMoreTrips(context, false);
+		final QueryTripsResult prevResult = queryMoreTrips(context, false);
 		print(prevResult);
 	}
 
 	@Test
 	public void getArea() throws Exception
 	{
-		Point[] polygon = provider.getArea();
+		final Point[] polygon = provider.getArea();
 
 		assertTrue(polygon.length > 0);
 	}
@@ -320,13 +320,13 @@ public class ParisProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void directionsSession() throws Exception
 	{
-		SuggestLocationsResult suggestedDepartures = provider.suggestLocations("13 rue man");
+		final SuggestLocationsResult suggestedDepartures = suggestLocations("13 rue man");
 		assertTrue(suggestedDepartures.getLocations().size() > 0);
-		Location departure = suggestedDepartures.getLocations().get(0);
+		final Location departure = suggestedDepartures.getLocations().get(0);
 
-		SuggestLocationsResult suggestedArrivals = provider.suggestLocations("10 marcel dassault veli");
+		final SuggestLocationsResult suggestedArrivals = suggestLocations("10 marcel dassault veli");
 		assertTrue(suggestedArrivals.getLocations().size() > 0);
-		Location arrival = suggestedDepartures.getLocations().get(0);
+		final Location arrival = suggestedDepartures.getLocations().get(0);
 
 		final QueryTripsResult result = queryTrips(departure, null, arrival, new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		assertEquals(QueryTripsResult.Status.OK, result.status);

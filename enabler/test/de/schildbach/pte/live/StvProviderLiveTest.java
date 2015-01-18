@@ -50,7 +50,7 @@ public class StvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "63203040"), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "63203040"));
 
 		print(result);
 	}
@@ -58,7 +58,7 @@ public class StvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 47072612, 15431814), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 47072612, 15431814));
 
 		print(result);
 	}
@@ -74,7 +74,7 @@ public class StvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsIncomplete() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Kur");
+		final SuggestLocationsResult result = suggestLocations("Kur");
 
 		print(result);
 	}
@@ -82,7 +82,7 @@ public class StvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsWithUmlaut() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("grün");
+		final SuggestLocationsResult result = suggestLocations("grün");
 
 		print(result);
 	}
@@ -90,23 +90,23 @@ public class StvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsCoverage() throws Exception
 	{
-		final SuggestLocationsResult grazResult = provider.suggestLocations("Graz Brauhaus");
+		final SuggestLocationsResult grazResult = suggestLocations("Graz Brauhaus");
 		print(grazResult);
 		assertThat(grazResult.getLocations(), hasItem(new Location(LocationType.STATION, "63203044")));
 
-		final SuggestLocationsResult leobenResult = provider.suggestLocations("Leoben Blockhäuser");
+		final SuggestLocationsResult leobenResult = suggestLocations("Leoben Blockhäuser");
 		print(leobenResult);
 		assertThat(leobenResult.getLocations(), hasItem(new Location(LocationType.STATION, "63206224")));
 
-		final SuggestLocationsResult bruckResult = provider.suggestLocations("Bruck Hauptplatz");
+		final SuggestLocationsResult bruckResult = suggestLocations("Bruck Hauptplatz");
 		print(bruckResult);
 		assertThat(bruckResult.getLocations(), hasItem(new Location(LocationType.STATION, "63202063")));
 
-		final SuggestLocationsResult kindbergResult = provider.suggestLocations("Kindberg Friedhof");
+		final SuggestLocationsResult kindbergResult = suggestLocations("Kindberg Friedhof");
 		print(kindbergResult);
 		assertThat(kindbergResult.getLocations(), hasItem(new Location(LocationType.STATION, "63208877")));
 
-		final SuggestLocationsResult mariborResult = provider.suggestLocations("Maribor Dravograjska Sokolska");
+		final SuggestLocationsResult mariborResult = suggestLocations("Maribor Dravograjska Sokolska");
 		print(mariborResult);
 		assertThat(mariborResult.getLocations(), hasItem(new Location(LocationType.STATION, "63300136")));
 	}

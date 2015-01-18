@@ -48,7 +48,7 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "13000"), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "13000"));
 
 		print(result);
 	}
@@ -56,7 +56,7 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 51346546, 12383333), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 51346546, 12383333));
 
 		print(result);
 		assertEquals(NearbyStationsResult.Status.OK, result.status);
@@ -90,7 +90,7 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocations() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Flughafen");
+		final SuggestLocationsResult result = suggestLocations("Flughafen");
 
 		print(result);
 	}
@@ -98,7 +98,7 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsUmlaut() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Höhle");
+		final SuggestLocationsResult result = suggestLocations("Höhle");
 
 		print(result);
 	}

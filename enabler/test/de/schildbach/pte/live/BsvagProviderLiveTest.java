@@ -50,7 +50,7 @@ public class BsvagProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "26000178"), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "26000178"));
 
 		print(result);
 	}
@@ -58,7 +58,7 @@ public class BsvagProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 52272065, 10524788), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 52272065, 10524788));
 
 		print(result);
 	}
@@ -74,7 +74,7 @@ public class BsvagProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsIncomplete() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Kurf");
+		final SuggestLocationsResult result = suggestLocations("Kurf");
 
 		print(result);
 	}
@@ -82,7 +82,7 @@ public class BsvagProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsWithUmlaut() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("grün");
+		final SuggestLocationsResult result = suggestLocations("grün");
 
 		print(result);
 	}
@@ -90,7 +90,7 @@ public class BsvagProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsCoverage() throws Exception
 	{
-		final SuggestLocationsResult braunschweigResult = provider.suggestLocations("Braunschweig Rhönweg");
+		final SuggestLocationsResult braunschweigResult = suggestLocations("Braunschweig Rhönweg");
 		print(braunschweigResult);
 		assertThat(braunschweigResult.getLocations(), hasItem(new Location(LocationType.STATION, "26000351")));
 	}

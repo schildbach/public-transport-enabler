@@ -48,7 +48,7 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "9220302"), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "9220302"));
 		assertEquals(NearbyStationsResult.Status.OK, result.status);
 		print(result);
 	}
@@ -56,7 +56,7 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 52486400, 13350744), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 52486400, 13350744));
 
 		print(result);
 	}
@@ -64,7 +64,7 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsInvalidStation() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "2449475"), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "2449475"));
 		assertEquals(NearbyStationsResult.Status.INVALID_STATION, result.status);
 	}
 
@@ -90,7 +90,7 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsUmlaut() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Güntzelstr.");
+		final SuggestLocationsResult result = suggestLocations("Güntzelstr.");
 
 		print(result);
 
@@ -100,7 +100,7 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsLocality() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("seeling");
+		final SuggestLocationsResult result = suggestLocations("seeling");
 
 		print(result);
 
@@ -110,7 +110,7 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsAddress() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Berlin, Sophienstr. 24");
+		final SuggestLocationsResult result = suggestLocations("Berlin, Sophienstr. 24");
 
 		print(result);
 
@@ -120,7 +120,7 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsIncomplete() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("nol");
+		final SuggestLocationsResult result = suggestLocations("nol");
 
 		print(result);
 	}

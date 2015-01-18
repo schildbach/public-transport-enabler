@@ -50,7 +50,7 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "20019904"), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "20019904"));
 
 		print(result);
 	}
@@ -58,11 +58,11 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 51218693, 6777785), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 51218693, 6777785));
 
 		print(result);
 
-		final NearbyStationsResult result2 = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 51719648, 8754330), 0, 0);
+		final NearbyStationsResult result2 = queryNearbyStations(new Location(LocationType.ADDRESS, 51719648, 8754330));
 
 		print(result2);
 	}
@@ -94,11 +94,11 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsIncomplete() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Kur");
+		final SuggestLocationsResult result = suggestLocations("Kur");
 
 		print(result);
 
-		final SuggestLocationsResult paderbornResult = provider.suggestLocations("Paderborn Hbf");
+		final SuggestLocationsResult paderbornResult = suggestLocations("Paderborn Hbf");
 
 		print(paderbornResult);
 	}
@@ -106,7 +106,7 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsWithUmlaut() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("grün");
+		final SuggestLocationsResult result = suggestLocations("grün");
 
 		print(result);
 	}
@@ -114,7 +114,7 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsIdentified() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Düsseldorf, Am Frohnhof");
+		final SuggestLocationsResult result = suggestLocations("Düsseldorf, Am Frohnhof");
 
 		print(result);
 	}
@@ -122,23 +122,23 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsCoverage() throws Exception
 	{
-		final SuggestLocationsResult cologneResult = provider.suggestLocations("Köln Ebertplatz");
+		final SuggestLocationsResult cologneResult = suggestLocations("Köln Ebertplatz");
 		print(cologneResult);
 		assertThat(cologneResult.getLocations(), hasItem(new Location(LocationType.STATION, "22000035")));
 
-		final SuggestLocationsResult dortmundResult = provider.suggestLocations("Dortmund Zugstraße");
+		final SuggestLocationsResult dortmundResult = suggestLocations("Dortmund Zugstraße");
 		print(dortmundResult);
 		assertThat(dortmundResult.getLocations(), hasItem(new Location(LocationType.STATION, "20000524")));
 
-		final SuggestLocationsResult duesseldorfResult = provider.suggestLocations("Düsseldorf Sternstraße");
+		final SuggestLocationsResult duesseldorfResult = suggestLocations("Düsseldorf Sternstraße");
 		print(duesseldorfResult);
 		assertThat(duesseldorfResult.getLocations(), hasItem(new Location(LocationType.STATION, "20018017")));
 
-		final SuggestLocationsResult muensterResult = provider.suggestLocations("Münster Vennheideweg");
+		final SuggestLocationsResult muensterResult = suggestLocations("Münster Vennheideweg");
 		print(muensterResult);
 		assertThat(muensterResult.getLocations(), hasItem(new Location(LocationType.STATION, "24047291")));
 
-		final SuggestLocationsResult aachenResult = provider.suggestLocations("Aachen Elisenbrunnen");
+		final SuggestLocationsResult aachenResult = suggestLocations("Aachen Elisenbrunnen");
 		print(aachenResult);
 		assertThat(aachenResult.getLocations(), hasItem(new Location(LocationType.STATION, "21001029")));
 	}
@@ -146,7 +146,7 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsCity() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Düsseldorf");
+		final SuggestLocationsResult result = suggestLocations("Düsseldorf");
 
 		print(result);
 	}

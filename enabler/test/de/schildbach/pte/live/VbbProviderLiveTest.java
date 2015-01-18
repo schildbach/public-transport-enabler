@@ -48,7 +48,7 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "9007102"), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "9007102"));
 
 		print(result);
 	}
@@ -56,14 +56,14 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsInvalidStation() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "2449475"), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "2449475"));
 		assertEquals(NearbyStationsResult.Status.INVALID_STATION, result.status);
 	}
 
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 52548505, 1338864), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 52548505, 1338864));
 
 		print(result);
 	}
@@ -89,7 +89,7 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocations() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Haubachstr.");
+		final SuggestLocationsResult result = suggestLocations("Haubachstr.");
 
 		print(result);
 
@@ -99,7 +99,7 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsUmlaut() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Güntzelstr.");
+		final SuggestLocationsResult result = suggestLocations("Güntzelstr.");
 
 		print(result);
 
@@ -109,7 +109,7 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsAddress() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Sophienstr. 24");
+		final SuggestLocationsResult result = suggestLocations("Sophienstr. 24");
 
 		print(result);
 
@@ -119,7 +119,7 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsIncomplete() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("nol");
+		final SuggestLocationsResult result = suggestLocations("nol");
 
 		print(result);
 	}

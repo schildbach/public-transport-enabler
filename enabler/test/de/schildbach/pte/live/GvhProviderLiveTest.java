@@ -48,7 +48,7 @@ public class GvhProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "25000031"), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "25000031"));
 
 		print(result);
 	}
@@ -56,7 +56,7 @@ public class GvhProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 52379497, 9735832), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 52379497, 9735832));
 
 		print(result);
 	}
@@ -72,7 +72,7 @@ public class GvhProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsIncomplete() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Kur");
+		final SuggestLocationsResult result = suggestLocations("Kur");
 
 		print(result);
 	}
@@ -80,7 +80,7 @@ public class GvhProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsWithUmlaut() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("grün");
+		final SuggestLocationsResult result = suggestLocations("grün");
 
 		print(result);
 	}
@@ -88,7 +88,7 @@ public class GvhProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsIdentified() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Hannover, Hannoversche Straße");
+		final SuggestLocationsResult result = suggestLocations("Hannover, Hannoversche Straße");
 
 		print(result);
 	}
@@ -96,7 +96,7 @@ public class GvhProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsCity() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Hannover");
+		final SuggestLocationsResult result = suggestLocations("Hannover");
 
 		print(result);
 	}
@@ -104,7 +104,7 @@ public class GvhProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocations() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Hannover");
+		final SuggestLocationsResult result = suggestLocations("Hannover");
 
 		print(result);
 	}

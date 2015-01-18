@@ -47,7 +47,7 @@ public class VbnProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.STATION, "8000110"), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "8000110"));
 
 		print(result);
 	}
@@ -55,7 +55,7 @@ public class VbnProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = provider.queryNearbyStations(new Location(LocationType.ADDRESS, 51318447, 9496250), 0, 0);
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 51318447, 9496250));
 
 		print(result);
 	}
@@ -79,7 +79,7 @@ public class VbnProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocations() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Coppengrave");
+		final SuggestLocationsResult result = suggestLocations("Coppengrave");
 
 		print(result);
 	}
@@ -87,7 +87,7 @@ public class VbnProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsUmlaut() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Göttingen Hauptbahnhof");
+		final SuggestLocationsResult result = suggestLocations("Göttingen Hauptbahnhof");
 
 		print(result);
 
