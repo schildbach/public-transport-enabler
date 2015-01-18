@@ -255,6 +255,11 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		return new String[] { null, name };
 	}
 
+	protected String[] splitPOI(final String poi)
+	{
+		return new String[] { null, poi };
+	}
+
 	protected String[] splitAddress(final String address)
 	{
 		return new String[] { null, address };
@@ -410,7 +415,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						}
 						else if (type == 4) // poi
 						{
-							location = new Location(LocationType.POI, localId, lat, lon, null, value);
+							final String[] placeAndName = splitPOI(value);
+							location = new Location(LocationType.POI, localId, lat, lon, placeAndName[0], placeAndName[1]);
 						}
 						else if (type == 128) // crossing
 						{
@@ -2100,7 +2106,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 		else if (type == 3)
 		{
-			return new Location(LocationType.POI, null, lat, lon, null, name);
+			final String[] placeAndName = splitPOI(name);
+			return new Location(LocationType.POI, null, lat, lon, placeAndName[0], placeAndName[1]);
 		}
 		else
 		{

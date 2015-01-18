@@ -91,15 +91,35 @@ public class InvgProvider extends AbstractHafasProvider
 	@Override
 	protected String[] splitStationName(final String name)
 	{
+		final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(name);
+		if (m.matches())
+			return new String[] { m.group(1), m.group(2) };
+
 		for (final String place : PLACES)
-		{
 			if (name.startsWith(place + " ") || name.startsWith(place + "-"))
 				return new String[] { place, name.substring(place.length() + 1) };
-			else if (name.startsWith(place + ", "))
-				return new String[] { place, name.substring(place.length() + 2) };
-		}
 
 		return super.splitStationName(name);
+	}
+
+	@Override
+	protected String[] splitPOI(final String poi)
+	{
+		final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(poi);
+		if (m.matches())
+			return new String[] { m.group(1), m.group(2) };
+
+		return super.splitStationName(poi);
+	}
+
+	@Override
+	protected String[] splitAddress(final String address)
+	{
+		final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(address);
+		if (m.matches())
+			return new String[] { m.group(1), m.group(2) };
+
+		return super.splitStationName(address);
 	}
 
 	@Override

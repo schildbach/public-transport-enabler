@@ -121,6 +121,16 @@ public class JetProvider extends AbstractHafasProvider
 		}
 	}
 
+	@Override
+	protected String[] splitAddress(final String address)
+	{
+		final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(address);
+		if (m.matches())
+			return new String[] { m.group(1), m.group(2) };
+
+		return super.splitStationName(address);
+	}
+
 	private static final Pattern P_NORMALIZE_BUS = Pattern.compile("([א]?\\d{1,3})#");
 
 	@Override

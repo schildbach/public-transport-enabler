@@ -166,20 +166,28 @@ public class OebbProvider extends AbstractHafasProvider
 	protected String[] splitStationName(final String name)
 	{
 		for (final String place : PLACES)
-		{
 			if (name.startsWith(place + " "))
 				return new String[] { place, name.substring(place.length() + 1) };
-		}
 
 		return super.splitStationName(name);
 	}
 
 	@Override
+	protected String[] splitPOI(final String poi)
+	{
+		final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(poi);
+		if (m.matches())
+			return new String[] { m.group(1), m.group(2) };
+
+		return super.splitStationName(poi);
+	}
+
+	@Override
 	protected String[] splitAddress(final String address)
 	{
-		final Matcher mComma = P_SPLIT_NAME_FIRST_COMMA.matcher(address);
-		if (mComma.matches())
-			return new String[] { mComma.group(1), mComma.group(2) };
+		final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(address);
+		if (m.matches())
+			return new String[] { m.group(1), m.group(2) };
 
 		return super.splitStationName(address);
 	}

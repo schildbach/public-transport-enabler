@@ -145,9 +145,9 @@ public class SeProvider extends AbstractHafasProvider
 	@Override
 	protected String[] splitAddress(final String address)
 	{
-		final Matcher mComma = P_SPLIT_NAME_LAST_COMMA.matcher(address);
-		if (mComma.matches())
-			return new String[] { mComma.group(2), mComma.group(1) };
+		final Matcher m = P_SPLIT_NAME_LAST_COMMA.matcher(address);
+		if (m.matches())
+			return new String[] { m.group(2), m.group(1) };
 
 		return super.splitStationName(address);
 	}

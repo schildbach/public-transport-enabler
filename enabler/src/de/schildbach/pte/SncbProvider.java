@@ -19,6 +19,7 @@ package de.schildbach.pte;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.regex.Matcher;
 
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
@@ -112,6 +113,16 @@ public class SncbProvider extends AbstractHafasProvider
 				return new String[] { place, name.substring(place.length() + 1) };
 
 		return super.splitStationName(name);
+	}
+
+	@Override
+	protected String[] splitAddress(final String address)
+	{
+		final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(address);
+		if (m.matches())
+			return new String[] { m.group(1), m.group(2) };
+
+		return super.splitStationName(address);
 	}
 
 	@Override

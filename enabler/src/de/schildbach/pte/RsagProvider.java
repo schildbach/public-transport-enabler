@@ -136,9 +136,9 @@ public class RsagProvider extends AbstractHafasProvider
 	@Override
 	protected String[] splitAddress(final String address)
 	{
-		final Matcher mComma = P_SPLIT_NAME_FIRST_COMMA.matcher(address);
-		if (mComma.matches())
-			return new String[] { mComma.group(1), mComma.group(2) };
+		final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(address);
+		if (m.matches())
+			return new String[] { m.group(1), m.group(2) };
 
 		return super.splitStationName(address);
 	}

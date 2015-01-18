@@ -124,9 +124,9 @@ public class DsbProvider extends AbstractHafasProvider
 	@Override
 	protected String[] splitStationName(final String name)
 	{
-		final Matcher mParen = P_SPLIT_NAME_PAREN.matcher(name);
-		if (mParen.matches())
-			return new String[] { mParen.group(2), mParen.group(1) };
+		final Matcher m = P_SPLIT_NAME_PAREN.matcher(name);
+		if (m.matches())
+			return new String[] { m.group(2), m.group(1) };
 
 		return super.splitStationName(name);
 	}
