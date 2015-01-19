@@ -2009,7 +2009,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 
 		XmlPullUtil.require(pp, "motDivaParams");
-		final String divaNetwork = XmlPullUtil.attr(pp, "network");
+		final String divaNetwork = XmlPullUtil.optAttr(pp, "network", null);
 
 		XmlPullUtil.skipExit(pp, "itdServingLine");
 
