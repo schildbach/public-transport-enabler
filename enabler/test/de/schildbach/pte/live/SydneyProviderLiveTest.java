@@ -62,8 +62,14 @@ public class SydneyProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = queryDepartures("10101101", false);
-		print(result);
+		final QueryDeparturesResult resultTownHall = queryDepartures("10101101", false);
+		print(resultTownHall);
+
+		final QueryDeparturesResult resultCircularQuay = queryDepartures("10101103", false);
+		print(resultCircularQuay);
+
+		final QueryDeparturesResult resultConvention = queryDepartures("10101439", false);
+		print(resultConvention);
 	}
 
 	@Test
