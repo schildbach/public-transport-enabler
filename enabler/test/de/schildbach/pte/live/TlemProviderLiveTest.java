@@ -68,8 +68,8 @@ public class TlemProviderLiveTest extends AbstractProviderLiveTest
 		final QueryDeparturesResult result1 = queryDepartures("1001003", false);
 		print(result1);
 
-		final QueryDeparturesResult result3 = queryDepartures("1000086", false);
-		print(result3);
+		final QueryDeparturesResult result2 = queryDepartures("1000086", false);
+		print(result2);
 	}
 
 	@Test
@@ -97,16 +97,45 @@ public class TlemProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsIncomplete() throws Exception
 	{
-		final SuggestLocationsResult result = provider.suggestLocations("Kur");
+		final SuggestLocationsResult result = provider.suggestLocations("Birming");
 
 		print(result);
 	}
 
 	@Test
-	public void shortTrip() throws Exception
+	public void shortTrip1() throws Exception
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "1008730", null, "King & Queen Wharf"), null, new Location(
 				LocationType.STATION, "1006433", null, "Edinburgh Court"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		print(result);
+		assertEquals(QueryTripsResult.Status.OK, result.status);
+		assertTrue(result.trips.size() > 0);
+
+		if (!result.context.canQueryLater())
+			return;
+
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+		print(laterResult);
+
+		if (!laterResult.context.canQueryLater())
+			return;
+
+		final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
+		print(later2Result);
+
+		if (!later2Result.context.canQueryEarlier())
+			return;
+
+		final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
+		print(earlierResult);
+	}
+
+	@Test
+	public void shortTrip2() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "2099014", 52478184, -1898364, "Birmingham",
+				"Birmingham New Street Rail Station"), null, new Location(LocationType.STATION, "2099150", 52585468, -2122962, "Wolverhampton",
+				"Wolverhampton Rail Station"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);

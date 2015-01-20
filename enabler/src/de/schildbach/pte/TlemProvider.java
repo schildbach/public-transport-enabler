@@ -36,12 +36,15 @@ public class TlemProvider extends AbstractEfaProvider
 	// http://www.travelinesw.com/swe/
 	// http://www.travelinesoutheast.org.uk/se/
 	// http://www.travelineeastanglia.org.uk/ea/
+	// http://www.travelinemidlands.co.uk/wmtis/
+	// http://jp.networkwestmidlands.com/centro/
 
 	public TlemProvider()
 	{
 		super(API_BASE);
 
 		setTimeZone("Europe/London");
+		setUseProxFootSearch(false);
 		setStyles(STYLES);
 	}
 

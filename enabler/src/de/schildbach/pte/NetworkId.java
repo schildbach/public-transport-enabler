@@ -56,7 +56,7 @@ public enum NetworkId
 	LU,
 
 	// United Kingdom
-	TLEM, TLWM,
+	TLEM,
 
 	// Ireland
 	TFI, EIREANN,
