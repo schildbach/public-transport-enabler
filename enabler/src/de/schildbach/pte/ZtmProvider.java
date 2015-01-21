@@ -17,65 +17,28 @@
 
 package de.schildbach.pte;
 
+import de.schildbach.pte.dto.Product;
+
 /**
  * @author Andreas Schildbach
  */
-public enum NetworkId
+public class ZtmProvider extends AbstractHafasProvider
 {
-	// Europe
-	RT,
+	private static final String API_BASE = "http://wyszukiwarka.ztm.waw.pl/bin/";
+	private static final Product[] PRODUCTS_MAP = { null, null, Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.BUS,
+			Product.TRAM, Product.SUBWAY, null, Product.FERRY };
 
-	// Germany
-	DB, BVG, VBB, NVV, BAYERN, MVV, INVG, AVV, VGN, VVM, VMV, HVV, SH, GVH, BSVAG, VBN, NASA, VVO, VMS, VGS, VRR, VRS, MVG, NPH, VRN, VVS, DING, KVV, VAGFR, NVBW, VVV,
+	public ZtmProvider()
+	{
+		super(NetworkId.ZTM, API_BASE, "pn", PRODUCTS_MAP);
+	}
 
-	// Austria
-	OEBB, VAO, VOR, WIEN, LINZ, SVV, VVT, IVB, STV,
-
-	// Switzerland
-	SBB, BVB, VBL, ZVV,
-
-	// France
-	PACA, PARIS,
-
-	// Belgium
-	SNCB,
-
-	// Netherlands
-	NS,
-
-	// Denmark
-	DSB,
-
-	// Sweden
-	SE, STOCKHOLM,
-
-	// Norway
-	NRI,
-
-	// Luxembourg
-	LU,
-
-	// United Kingdom
-	TLEM, MERSEY,
-
-	// Ireland
-	TFI, EIREANN,
-
-	// Poland
-	PL, ZTM,
-
-	// Italy
-	ATC,
-
-	// United Arab Emirates
-	DUB,
-
-	// Israel
-	JET,
-
-	// United States
-	SF, SEPTA,
-
-	// Australia
-	SYDNEY, MET
+	@Override
+	public boolean hasCapability(final Capability capability)
+	{
+		if (capability == Capability.DEPARTURES)
+			return true;
+		else
+			return super.hasCapability(capability);
+	}
 }
