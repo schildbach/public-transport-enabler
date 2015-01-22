@@ -3288,12 +3288,15 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private ResultHeader enterItdRequest(final XmlPullParser pp) throws XmlPullParserException, IOException
 	{
 		if (pp.getEventType() != XmlPullParser.START_DOCUMENT)
-			throw new IllegalStateException("start of document expected");
+			throw new ParserException("start of document expected");
 
 		pp.next();
 
 		if (pp.getEventType() == XmlPullParser.DOCDECL)
 			pp.next();
+
+		if (pp.getEventType() == XmlPullParser.END_DOCUMENT)
+			throw new ParserException("empty document");
 
 		XmlPullUtil.require(pp, "itdRequest");
 
@@ -3330,9 +3333,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private ResultHeader enterEfa(final XmlPullParser pp) throws XmlPullParserException, IOException
 	{
 		if (pp.getEventType() != XmlPullParser.START_DOCUMENT)
-			throw new IllegalStateException("start of document expected");
+			throw new ParserException("start of document expected");
 
 		pp.next();
+
+		if (pp.getEventType() == XmlPullParser.END_DOCUMENT)
+			throw new ParserException("empty document");
 
 		XmlPullUtil.enter(pp, "efa");
 
