@@ -102,7 +102,7 @@ public final class Line implements Serializable, Comparable<Line>
 	@Override
 	public int hashCode()
 	{
-		return nullSafeHashCode(label);
+		return Objects.hashCode(label);
 	}
 
 	public int compareTo(final Line other)
@@ -116,12 +116,5 @@ public final class Line implements Serializable, Comparable<Line>
 			return compareProduct;
 
 		return this.label.compareTo(other.label);
-	}
-
-	private int nullSafeHashCode(final Object o)
-	{
-		if (o == null)
-			return 0;
-		return o.hashCode();
 	}
 }

@@ -19,6 +19,8 @@ package de.schildbach.pte.dto;
 
 import java.io.Serializable;
 
+import com.google.common.base.Objects;
+
 /**
  * @author Andreas Schildbach
  */
@@ -61,6 +63,6 @@ public final class Point implements Serializable
 	@Override
 	public int hashCode()
 	{
-		return lat + 27 * lon;
+		return Objects.hashCode(lat, lon);
 	}
 }

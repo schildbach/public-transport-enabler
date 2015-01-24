@@ -227,7 +227,7 @@ public final class Trip implements Serializable
 	@Override
 	public int hashCode()
 	{
-		return getId().hashCode();
+		return Objects.hashCode(getId());
 	}
 
 	public abstract static class Leg implements Serializable

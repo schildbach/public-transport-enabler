@@ -185,26 +185,9 @@ public final class Location implements Serializable
 	@Override
 	public int hashCode()
 	{
-		int hashCode = 0;
-		hashCode += type.hashCode();
-		hashCode *= 29;
 		if (id != null)
-		{
-			hashCode += id.hashCode();
-		}
-		else if (lat != 0 || lon != 0)
-		{
-			hashCode += lat;
-			hashCode *= 29;
-			hashCode += lon;
-		}
-		return hashCode;
-	}
-
-	private int nullSafeHashCode(final Object o)
-	{
-		if (o == null)
-			return 0;
-		return o.hashCode();
+			return Objects.hashCode(type, id);
+		else
+			return Objects.hashCode(type, lat, lon);
 	}
 }

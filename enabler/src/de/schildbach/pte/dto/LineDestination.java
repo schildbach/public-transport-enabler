@@ -64,17 +64,6 @@ public final class LineDestination implements Serializable
 	@Override
 	public int hashCode()
 	{
-		int hashCode = 0;
-		hashCode += nullSafeHashCode(line);
-		hashCode *= 29;
-		hashCode += nullSafeHashCode(destination);
-		return hashCode;
-	}
-
-	private int nullSafeHashCode(final Object o)
-	{
-		if (o == null)
-			return 0;
-		return o.hashCode();
+		return Objects.hashCode(line, destination);
 	}
 }

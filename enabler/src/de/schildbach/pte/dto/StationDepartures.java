@@ -67,4 +67,10 @@ public final class StationDepartures implements Serializable
 			return false;
 		return true;
 	}
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hashCode(location, departures, lines);
+	}
 }

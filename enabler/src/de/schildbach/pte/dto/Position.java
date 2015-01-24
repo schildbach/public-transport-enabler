@@ -64,27 +64,17 @@ public final class Position implements Serializable
 	}
 
 	@Override
+	public int hashCode()
+	{
+		return Objects.hashCode(name, section);
+	}
+
+	@Override
 	public String toString()
 	{
 		final StringBuilder builder = new StringBuilder(name);
 		if (section != null)
 			builder.append(section);
 		return builder.toString();
-	}
-
-	@Override
-	public int hashCode()
-	{
-		int hashCode = 0;
-		hashCode += name.hashCode();
-		hashCode += nullSafeHashCode(section);
-		return hashCode;
-	}
-
-	private int nullSafeHashCode(final Object o)
-	{
-		if (o == null)
-			return 0;
-		return o.hashCode();
 	}
 }

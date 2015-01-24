@@ -70,7 +70,7 @@ public final class SuggestedLocation implements Serializable, Comparable<Suggest
 	@Override
 	public int hashCode()
 	{
-		return location.hashCode();
+		return Objects.hashCode(location);
 	}
 
 	@Override

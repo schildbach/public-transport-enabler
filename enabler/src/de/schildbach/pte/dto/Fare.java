@@ -71,4 +71,10 @@ public final class Fare implements Serializable
 			return false;
 		return true;
 	}
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hashCode(network, type, currency, fare, unitName, units);
+	}
 }

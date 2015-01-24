@@ -97,22 +97,7 @@ public final class Departure implements Serializable
 	@Override
 	public int hashCode()
 	{
-		int hashCode = 0;
-		hashCode += nullSafeHashCode(plannedTime);
-		hashCode *= 29;
-		hashCode += nullSafeHashCode(predictedTime);
-		hashCode *= 29;
-		hashCode += nullSafeHashCode(line);
-		hashCode *= 29;
-		hashCode += nullSafeHashCode(destination);
-		return hashCode;
-	}
-
-	private int nullSafeHashCode(final Object o)
-	{
-		if (o == null)
-			return 0;
-		return o.hashCode();
+		return Objects.hashCode(plannedTime, predictedTime, line, destination);
 	}
 
 	public static final Comparator<Departure> TIME_COMPARATOR = new Comparator<Departure>()

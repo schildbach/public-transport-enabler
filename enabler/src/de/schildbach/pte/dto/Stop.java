@@ -252,4 +252,12 @@ public final class Stop implements Serializable
 			return false;
 		return true;
 	}
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hashCode(location, plannedArrivalTime, predictedArrivalTime, plannedArrivalPosition, predictedArrivalPosition,
+				arrivalCancelled, plannedDepartureTime, predictedDepartureTime, plannedDeparturePosition, predictedDeparturePosition,
+				departureCancelled);
+	}
 }
