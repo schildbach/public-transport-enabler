@@ -21,6 +21,8 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Date;
 
+import com.google.common.base.Objects;
+
 /**
  * @author Andreas Schildbach
  */
@@ -81,13 +83,13 @@ public final class Departure implements Serializable
 		if (!(o instanceof Departure))
 			return false;
 		final Departure other = (Departure) o;
-		if (!nullSafeEquals(this.plannedTime, other.plannedTime))
+		if (!Objects.equal(this.plannedTime, other.plannedTime))
 			return false;
-		if (!nullSafeEquals(this.predictedTime, other.predictedTime))
+		if (!Objects.equal(this.predictedTime, other.predictedTime))
 			return false;
-		if (!nullSafeEquals(this.line, other.line))
+		if (!Objects.equal(this.line, other.line))
 			return false;
-		if (!nullSafeEquals(this.destination, other.destination))
+		if (!Objects.equal(this.destination, other.destination))
 			return false;
 		return true;
 	}
@@ -104,15 +106,6 @@ public final class Departure implements Serializable
 		hashCode *= 29;
 		hashCode += nullSafeHashCode(destination);
 		return hashCode;
-	}
-
-	private boolean nullSafeEquals(final Object o1, final Object o2)
-	{
-		if (o1 == null && o2 == null)
-			return true;
-		if (o1 != null && o1.equals(o2))
-			return true;
-		return false;
 	}
 
 	private int nullSafeHashCode(final Object o)

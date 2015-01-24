@@ -24,6 +24,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
+import com.google.common.base.Objects;
+
 /**
  * @author Andreas Schildbach
  */
@@ -219,7 +221,7 @@ public final class Trip implements Serializable
 		if (!(o instanceof Trip))
 			return false;
 		final Trip other = (Trip) o;
-		return getId().equals(other.getId());
+		return Objects.equal(this.getId(), other.getId());
 	}
 
 	@Override

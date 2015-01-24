@@ -20,6 +20,8 @@ package de.schildbach.pte.dto;
 import java.io.Serializable;
 import java.util.Set;
 
+import com.google.common.base.Objects;
+
 /**
  * @author Andreas Schildbach
  */
@@ -94,7 +96,7 @@ public final class Line implements Serializable, Comparable<Line>
 		if (!(o instanceof Line))
 			return false;
 		final Line other = (Line) o;
-		return nullSafeEquals(this.label, other.label);
+		return Objects.equal(this.label, other.label);
 	}
 
 	@Override
@@ -114,15 +116,6 @@ public final class Line implements Serializable, Comparable<Line>
 			return compareProduct;
 
 		return this.label.compareTo(other.label);
-	}
-
-	private boolean nullSafeEquals(final Object o1, final Object o2)
-	{
-		if (o1 == null && o2 == null)
-			return true;
-		if (o1 != null && o1.equals(o2))
-			return true;
-		return false;
 	}
 
 	private int nullSafeHashCode(final Object o)

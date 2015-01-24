@@ -20,6 +20,8 @@ package de.schildbach.pte.dto;
 import java.io.Serializable;
 import java.util.Arrays;
 
+import com.google.common.base.Objects;
+
 /**
  * @author Andreas Schildbach
  */
@@ -165,17 +167,17 @@ public final class Location implements Serializable
 		if (!(o instanceof Location))
 			return false;
 		final Location other = (Location) o;
-		if (this.type != other.type)
+		if (!Objects.equal(this.type, other.type))
 			return false;
 		if (this.id != null)
-			return this.id.equals(other.id);
+			return Objects.equal(this.id, other.id);
 		if (this.lat != 0 && this.lon != 0)
 			return this.lat == other.lat && this.lon == other.lon;
 
 		// only discriminate by name/place if no ids are given
-		if (!nullSafeEquals(this.name, other.name))
+		if (!Objects.equal(this.name, other.name))
 			return false;
-		if (!nullSafeEquals(this.place, other.place))
+		if (!Objects.equal(this.place, other.place))
 			return false;
 		return true;
 	}
@@ -197,15 +199,6 @@ public final class Location implements Serializable
 			hashCode += lon;
 		}
 		return hashCode;
-	}
-
-	private boolean nullSafeEquals(final Object o1, final Object o2)
-	{
-		if (o1 == null && o2 == null)
-			return true;
-		if (o1 != null && o1.equals(o2))
-			return true;
-		return false;
 	}
 
 	private int nullSafeHashCode(final Object o)

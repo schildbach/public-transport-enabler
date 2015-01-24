@@ -19,6 +19,8 @@ package de.schildbach.pte.dto;
 
 import java.io.Serializable;
 
+import com.google.common.base.Objects;
+
 /**
  * @author Andreas Schildbach
  */
@@ -62,7 +64,7 @@ public final class SuggestedLocation implements Serializable, Comparable<Suggest
 		if (!(o instanceof SuggestedLocation))
 			return false;
 		final SuggestedLocation other = (SuggestedLocation) o;
-		return location.equals(other.location);
+		return Objects.equal(this.location, other.location);
 	}
 
 	@Override

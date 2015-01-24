@@ -19,6 +19,8 @@ package de.schildbach.pte.dto;
 
 import java.io.Serializable;
 
+import com.google.common.base.Objects;
+
 /**
  * @author Andreas Schildbach
  */
@@ -52,9 +54,9 @@ public final class LineDestination implements Serializable
 		if (!(o instanceof LineDestination))
 			return false;
 		final LineDestination other = (LineDestination) o;
-		if (!nullSafeEquals(this.line, other.line))
+		if (!Objects.equal(this.line, other.line))
 			return false;
-		if (!nullSafeEquals(this.destination, other.destination))
+		if (!Objects.equal(this.destination, other.destination))
 			return false;
 		return true;
 	}
@@ -67,15 +69,6 @@ public final class LineDestination implements Serializable
 		hashCode *= 29;
 		hashCode += nullSafeHashCode(destination);
 		return hashCode;
-	}
-
-	private boolean nullSafeEquals(final Object o1, final Object o2)
-	{
-		if (o1 == null && o2 == null)
-			return true;
-		if (o1 != null && o1.equals(o2))
-			return true;
-		return false;
 	}
 
 	private int nullSafeHashCode(final Object o)

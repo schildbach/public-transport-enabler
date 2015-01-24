@@ -20,6 +20,8 @@ package de.schildbach.pte.dto;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.google.common.base.Objects;
+
 /**
  * @author Andreas Schildbach
  */
@@ -216,5 +218,38 @@ public final class Stop implements Serializable
 		builder.append(predictedDeparturePosition != null ? predictedDeparturePosition : "-");
 		builder.append(")");
 		return builder.toString();
+	}
+
+	@Override
+	public boolean equals(final Object o)
+	{
+		if (o == this)
+			return true;
+		if (!(o instanceof Stop))
+			return false;
+		final Stop other = (Stop) o;
+		if (!Objects.equal(this.location, other.location))
+			return false;
+		if (!Objects.equal(this.plannedArrivalTime, other.plannedArrivalTime))
+			return false;
+		if (!Objects.equal(this.predictedArrivalTime, other.predictedArrivalTime))
+			return false;
+		if (!Objects.equal(this.plannedArrivalPosition, other.plannedArrivalPosition))
+			return false;
+		if (!Objects.equal(this.predictedArrivalPosition, other.predictedArrivalPosition))
+			return false;
+		if (this.arrivalCancelled != other.arrivalCancelled)
+			return false;
+		if (!Objects.equal(this.plannedDepartureTime, other.plannedDepartureTime))
+			return false;
+		if (!Objects.equal(this.predictedDepartureTime, other.predictedDepartureTime))
+			return false;
+		if (!Objects.equal(this.plannedDeparturePosition, other.plannedDeparturePosition))
+			return false;
+		if (!Objects.equal(this.predictedDeparturePosition, other.predictedDeparturePosition))
+			return false;
+		if (this.departureCancelled != other.departureCancelled)
+			return false;
+		return true;
 	}
 }

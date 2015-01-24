@@ -20,6 +20,8 @@ package de.schildbach.pte.dto;
 import java.io.Serializable;
 import java.util.Currency;
 
+import com.google.common.base.Objects;
+
 /**
  * @author Andreas Schildbach
  */
@@ -45,5 +47,28 @@ public final class Fare implements Serializable
 		this.fare = fare;
 		this.unitName = unitName;
 		this.units = units;
+	}
+
+	@Override
+	public boolean equals(final Object o)
+	{
+		if (o == this)
+			return true;
+		if (!(o instanceof Fare))
+			return false;
+		final Fare other = (Fare) o;
+		if (!Objects.equal(this.network, other.network))
+			return false;
+		if (!Objects.equal(this.type, other.type))
+			return false;
+		if (!Objects.equal(this.currency, other.currency))
+			return false;
+		if (this.fare != other.fare)
+			return false;
+		if (!Objects.equal(this.unitName, other.unitName))
+			return false;
+		if (!Objects.equal(this.units, other.units))
+			return false;
+		return true;
 	}
 }

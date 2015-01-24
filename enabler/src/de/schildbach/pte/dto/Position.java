@@ -19,6 +19,8 @@ package de.schildbach.pte.dto;
 
 import java.io.Serializable;
 
+import com.google.common.base.Objects;
+
 /**
  * @author Andreas Schildbach
  */
@@ -47,6 +49,21 @@ public final class Position implements Serializable
 	}
 
 	@Override
+	public boolean equals(final Object o)
+	{
+		if (o == this)
+			return true;
+		if (!(o instanceof Position))
+			return false;
+		final Position other = (Position) o;
+		if (!Objects.equal(this.name, other.name))
+			return false;
+		if (!Objects.equal(this.section, other.section))
+			return false;
+		return true;
+	}
+
+	@Override
 	public String toString()
 	{
 		final StringBuilder builder = new StringBuilder(name);
@@ -56,36 +73,12 @@ public final class Position implements Serializable
 	}
 
 	@Override
-	public boolean equals(final Object o)
-	{
-		if (o == this)
-			return true;
-		if (!(o instanceof Position))
-			return false;
-		final Position other = (Position) o;
-		if (!this.name.equals(other.name))
-			return false;
-		if (!nullSafeEquals(this.section, other.section))
-			return false;
-		return true;
-	}
-
-	@Override
 	public int hashCode()
 	{
 		int hashCode = 0;
 		hashCode += name.hashCode();
 		hashCode += nullSafeHashCode(section);
 		return hashCode;
-	}
-
-	private boolean nullSafeEquals(final Object o1, final Object o2)
-	{
-		if (o1 == null && o2 == null)
-			return true;
-		if (o1 != null && o1.equals(o2))
-			return true;
-		return false;
 	}
 
 	private int nullSafeHashCode(final Object o)

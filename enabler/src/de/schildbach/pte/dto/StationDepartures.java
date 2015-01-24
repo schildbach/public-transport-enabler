@@ -20,6 +20,8 @@ package de.schildbach.pte.dto;
 import java.io.Serializable;
 import java.util.List;
 
+import com.google.common.base.Objects;
+
 /**
  * @author Andreas Schildbach
  */
@@ -47,5 +49,22 @@ public final class StationDepartures implements Serializable
 			builder.append(" ").append(departures.size()).append(" departures");
 		builder.append("]");
 		return builder.toString();
+	}
+
+	@Override
+	public boolean equals(final Object o)
+	{
+		if (o == this)
+			return true;
+		if (!(o instanceof StationDepartures))
+			return false;
+		final StationDepartures other = (StationDepartures) o;
+		if (!Objects.equal(this.location, other.location))
+			return false;
+		if (!Objects.equal(this.departures, other.departures))
+			return false;
+		if (!Objects.equal(this.lines, other.lines))
+			return false;
+		return true;
 	}
 }
