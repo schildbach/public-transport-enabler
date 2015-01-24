@@ -559,12 +559,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 				while (XmlPullUtil.test(pp, "coordInfoItem"))
 				{
-					if (!"STOP".equals(pp.getAttributeValue(null, "type")))
+					if (!"STOP".equals(XmlPullUtil.attr(pp, "type")))
 						throw new RuntimeException("unknown type");
 
 					final String id = XmlPullUtil.attr(pp, "id");
 					final String name = normalizeLocationName(XmlPullUtil.optAttr(pp, "name", null));
-					final String place = normalizeLocationName(XmlPullUtil.attr(pp, "locality"));
+					final String place = normalizeLocationName(XmlPullUtil.optAttr(pp, "locality", null));
 
 					XmlPullUtil.enter(pp, "coordInfoItem");
 
@@ -787,8 +787,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		if ("any".equals(type))
 			type = XmlPullUtil.attr(pp, "anyType");
 		final String id = XmlPullUtil.attr(pp, "stateless");
-		final String locality = normalizeLocationName(pp.getAttributeValue(null, "locality"));
-		final String objectName = normalizeLocationName(pp.getAttributeValue(null, "objectName"));
+		final String locality = normalizeLocationName(XmlPullUtil.optAttr(pp, "locality", null));
+		final String objectName = normalizeLocationName(XmlPullUtil.optAttr(pp, "objectName", null));
 		final String buildingName = XmlPullUtil.optAttr(pp, "buildingName", null);
 		final String buildingNumber = XmlPullUtil.optAttr(pp, "buildingNumber", null);
 		final String postCode = XmlPullUtil.optAttr(pp, "postCode", null);
@@ -856,9 +856,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	private Location processItdOdvAssignedStop(final XmlPullParser pp) throws XmlPullParserException, IOException
 	{
-		final String id = pp.getAttributeValue(null, "stopID");
+		final String id = XmlPullUtil.attr(pp, "stopID");
 		final Point coord = processCoordAttr(pp);
-		final String place = normalizeLocationName(XmlPullUtil.attr(pp, "place"));
+		final String place = normalizeLocationName(XmlPullUtil.optAttr(pp, "place", null));
 		final String name = normalizeLocationName(XmlPullUtil.optValueTag(pp, "itdOdvAssignedStop", null));
 
 		if (name != null)
@@ -957,7 +957,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private static final Pattern P_LINE_RE = Pattern.compile("RE ?\\d+");
 	private static final Pattern P_LINE_RB = Pattern.compile("RB ?\\d+");
 	private static final Pattern P_LINE_R = Pattern.compile("R ?\\d+");
-	private static final Pattern P_LINE_S = Pattern.compile("^(?:%)?(S\\d+)");
+	private static final Pattern P_LINE_S = Pattern.compile("S ?\\d+");
 	private static final Pattern P_LINE_NUMBER = Pattern.compile("\\d+");
 
 	protected String parseLine(final String mot, String symbol, final String name, final String longName, final String trainType,
@@ -1314,7 +1314,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return "SBSB";
 			if ("RSB".equals(trainType)) // Regionalschnellbahn, Wien
 				return "SRSB" + trainNum;
-			if ("RER".equals(trainName) && symbol.length() == 1) // Réseau Express Régional, Frankreich
+			if ("RER".equals(trainName) && symbol != null && symbol.length() == 1) // Réseau Express Régional,
+																					// Frankreich
 				return 'S' + symbol;
 			if ("S".equals(trainType))
 				return "SS" + trainNum;
@@ -1341,9 +1342,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 			if ("ZUG".equals(trainType) && trainNum != null)
 				return '?' + trainNum;
-			if (trainType == null && trainName == null && P_LINE_NUMBER.matcher(symbol).matches())
+			if (symbol != null && P_LINE_NUMBER.matcher(symbol).matches() && trainType == null && trainName == null)
 				return '?' + symbol;
-			if ("N".equals(trainType) && trainName == null && symbol.length() == 0)
+			if ("N".equals(trainType) && trainName == null && symbol == null)
 				return "?N" + trainNum;
 			if ("Train".equals(trainName))
 				return "?";
@@ -1357,11 +1358,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 		else if ("1".equals(mot))
 		{
-			final Matcher m = P_LINE_S.matcher(name);
-			if (m.find())
-				return 'S' + m.group(1);
-			else
-				return 'S' + name;
+			if (symbol != null && P_LINE_S.matcher(symbol).matches())
+				return "S" + symbol;
+			if (name != null && P_LINE_S.matcher(name).matches())
+				return "S" + name;
+			if ("S-Bahn".equals(trainName) && trainNum == null)
+				return "SS";
 		}
 		else if ("2".equals(mot))
 		{
@@ -1373,7 +1375,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 		else if ("5".equals(mot) || "6".equals(mot) || "7".equals(mot) || "10".equals(mot))
 		{
-			if (name.equals("Schienenersatzverkehr"))
+			if ("Schienenersatzverkehr".equals(name))
 				return "BSEV";
 			else
 				return 'B' + name;
@@ -1500,8 +1502,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				XmlPullUtil.enter(pp, "itdServingLines");
 				while (XmlPullUtil.test(pp, "itdServingLine"))
 				{
-					final String assignedStopId = pp.getAttributeValue(null, "assignedStopID");
-					final String destinationName = normalizeLocationName(pp.getAttributeValue(null, "direction"));
+					final String assignedStopId = XmlPullUtil.optAttr(pp, "assignedStopID", null);
+					final String destinationName = normalizeLocationName(XmlPullUtil.attr(pp, "direction"));
 					final String destinationId = XmlPullUtil.optAttr(pp, "destID", null);
 					final Location destination = new Location(destinationId != null ? LocationType.STATION : LocationType.ANY, destinationId, null,
 							destinationName);
@@ -1562,8 +1564,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						XmlPullUtil.next(pp);
 
 					XmlPullUtil.require(pp, "itdServingLine");
-					final boolean isRealtime = pp.getAttributeValue(null, "realtime").equals("1");
-					final String destinationName = normalizeLocationName(pp.getAttributeValue(null, "direction"));
+					final boolean isRealtime = XmlPullUtil.attr(pp, "realtime").equals("1");
+					final String destinationName = normalizeLocationName(XmlPullUtil.attr(pp, "direction"));
 					final String destinationIdStr = XmlPullUtil.optAttr(pp, "destID", null);
 					final String destinationId = !"-1".equals(destinationIdStr) ? destinationIdStr : null;
 					final Location destination = new Location(destinationId != null ? LocationType.STATION : LocationType.ANY, destinationId, null,
@@ -1807,15 +1809,15 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	private Location processItdPointAttributes(final XmlPullParser pp)
 	{
-		final String id = pp.getAttributeValue(null, "stopID");
+		final String id = XmlPullUtil.attr(pp, "stopID");
 
-		String place = normalizeLocationName(pp.getAttributeValue(null, "locality"));
+		String place = normalizeLocationName(XmlPullUtil.optAttr(pp, "locality", null));
 		if (place == null)
-			place = normalizeLocationName(pp.getAttributeValue(null, "place"));
+			place = normalizeLocationName(XmlPullUtil.optAttr(pp, "place", null));
 
-		String name = normalizeLocationName(pp.getAttributeValue(null, "nameWO"));
+		String name = normalizeLocationName(XmlPullUtil.optAttr(pp, "nameWO", null));
 		if (name == null)
-			name = normalizeLocationName(pp.getAttributeValue(null, "name"));
+			name = normalizeLocationName(XmlPullUtil.optAttr(pp, "name", null));
 
 		final Point coord = processCoordAttr(pp);
 
@@ -1837,10 +1839,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private boolean processItdDate(final XmlPullParser pp, final Calendar calendar) throws XmlPullParserException, IOException
 	{
 		XmlPullUtil.require(pp, "itdDate");
-		final int year = Integer.parseInt(pp.getAttributeValue(null, "year"));
-		final int month = Integer.parseInt(pp.getAttributeValue(null, "month")) - 1;
-		final int day = Integer.parseInt(pp.getAttributeValue(null, "day"));
-		final int weekday = Integer.parseInt(pp.getAttributeValue(null, "weekday"));
+		final int year = XmlPullUtil.intAttr(pp, "year");
+		final int month = XmlPullUtil.intAttr(pp, "month") - 1;
+		final int day = XmlPullUtil.intAttr(pp, "day");
+		final int weekday = XmlPullUtil.intAttr(pp, "weekday");
 		XmlPullUtil.next(pp);
 
 		if (weekday < 0)
@@ -1863,21 +1865,21 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private void processItdTime(final XmlPullParser pp, final Calendar calendar) throws XmlPullParserException, IOException
 	{
 		XmlPullUtil.require(pp, "itdTime");
-		calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(pp.getAttributeValue(null, "hour")));
-		calendar.set(Calendar.MINUTE, Integer.parseInt(pp.getAttributeValue(null, "minute")));
+		calendar.set(Calendar.HOUR_OF_DAY, XmlPullUtil.intAttr(pp, "hour"));
+		calendar.set(Calendar.MINUTE, XmlPullUtil.intAttr(pp, "minute"));
 		XmlPullUtil.next(pp);
 	}
 
 	private Line processItdServingLine(final XmlPullParser pp) throws XmlPullParserException, IOException
 	{
 		XmlPullUtil.require(pp, "itdServingLine");
-		final String slMotType = pp.getAttributeValue(null, "motType");
-		final String slSymbol = pp.getAttributeValue(null, "symbol");
-		final String slNumber = pp.getAttributeValue(null, "number");
-		final String slStateless = pp.getAttributeValue(null, "stateless");
-		final String slTrainType = pp.getAttributeValue(null, "trainType");
-		final String slTrainName = pp.getAttributeValue(null, "trainName");
-		final String slTrainNum = pp.getAttributeValue(null, "trainNum");
+		final String slMotType = XmlPullUtil.attr(pp, "motType");
+		final String slSymbol = XmlPullUtil.optAttr(pp, "symbol", null);
+		final String slNumber = XmlPullUtil.optAttr(pp, "number", null);
+		final String slStateless = XmlPullUtil.optAttr(pp, "stateless", null);
+		final String slTrainType = XmlPullUtil.optAttr(pp, "trainType", null);
+		final String slTrainName = XmlPullUtil.optAttr(pp, "trainName", null);
+		final String slTrainNum = XmlPullUtil.optAttr(pp, "trainNum", null);
 
 		XmlPullUtil.enter(pp, "itdServingLine");
 		String itdTrainName = null;
@@ -1885,8 +1887,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		String itdMessage = null;
 		if (XmlPullUtil.test(pp, "itdTrain"))
 		{
-			itdTrainName = pp.getAttributeValue(null, "name");
-			itdTrainType = pp.getAttributeValue(null, "type");
+			itdTrainName = XmlPullUtil.attr(pp, "name");
+			itdTrainType = XmlPullUtil.attr(pp, "type");
 			if (!pp.isEmptyElementTag())
 			{
 				XmlPullUtil.enter(pp, "itdTrain");
@@ -1899,8 +1901,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 		if (XmlPullUtil.test(pp, "itdNoTrain"))
 		{
-			itdTrainName = pp.getAttributeValue(null, "name");
-			itdTrainType = pp.getAttributeValue(null, "type");
+			itdTrainName = XmlPullUtil.optAttr(pp, "name", null);
+			itdTrainType = XmlPullUtil.optAttr(pp, "type", null);
 			if (!pp.isEmptyElementTag())
 			{
 				final String text = XmlPullUtil.valueTag(pp, "itdNoTrain");
@@ -2224,7 +2226,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		while (XmlPullUtil.test(pp, "itdOdv"))
 		{
-			final String usage = pp.getAttributeValue(null, "usage");
+			final String usage = XmlPullUtil.attr(pp, "usage");
 
 			final List<Location> locations = new ArrayList<Location>();
 			final String nameState = processItdOdv(pp, usage, new ProcessItdOdvCallback()
@@ -2316,8 +2318,20 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 				while (XmlPullUtil.test(pp, "itdRoute"))
 				{
-					final String id = useRouteIndexAsTripId ? pp.getAttributeValue(null, "routeIndex") + "-"
-							+ pp.getAttributeValue(null, "routeTripIndex") : null;
+					final String id;
+					if (useRouteIndexAsTripId)
+					{
+						final String routeIndex = XmlPullUtil.optAttr(pp, "routeIndex", null);
+						final String routeTripIndex = XmlPullUtil.optAttr(pp, "routeTripIndex", null);
+						if (routeIndex != null && routeTripIndex != null)
+							id = routeIndex + "-" + routeTripIndex;
+						else
+							id = null;
+					}
+					else
+					{
+						id = null;
+					}
 					final int numChanges = XmlPullUtil.intAttr(pp, "changes");
 					XmlPullUtil.enter(pp, "itdRoute");
 
@@ -2340,7 +2354,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						XmlPullUtil.enter(pp, "itdPartialRoute");
 
 						XmlPullUtil.test(pp, "itdPoint");
-						if (!"departure".equals(pp.getAttributeValue(null, "usage")))
+						if (!"departure".equals(XmlPullUtil.attr(pp, "usage")))
 							throw new IllegalStateException();
 						final Location departureLocation = processItdPointAttributes(pp);
 						if (firstDepartureLocation == null)
@@ -2365,7 +2379,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						XmlPullUtil.skipExit(pp, "itdPoint");
 
 						XmlPullUtil.test(pp, "itdPoint");
-						if (!"arrival".equals(pp.getAttributeValue(null, "usage")))
+						if (!"arrival".equals(XmlPullUtil.attr(pp, "usage")))
 							throw new IllegalStateException();
 						final Location arrivalLocation = processItdPointAttributes(pp);
 						lastArrivalLocation = arrivalLocation;
@@ -2389,7 +2403,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						XmlPullUtil.skipExit(pp, "itdPoint");
 
 						XmlPullUtil.test(pp, "itdMeansOfTransport");
-						final String productName = pp.getAttributeValue(null, "productName");
+						final String productName = XmlPullUtil.optAttr(pp, "productName", null);
 						if ("IT".equals(partialRouteType) || "Fussweg".equals(productName) || "Taxi".equals(productName))
 						{
 							final Trip.Individual.Type type = "Taxi".equals(productName) ? Trip.Individual.Type.TRANSFER : Trip.Individual.Type.WALK;
@@ -2430,23 +2444,23 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						}
 						else if ("PT".equals(partialRouteType))
 						{
-							final String destinationName = normalizeLocationName(pp.getAttributeValue(null, "destination"));
+							final String destinationName = normalizeLocationName(XmlPullUtil.attr(pp, "destination"));
 							final String destinationId = XmlPullUtil.optAttr(pp, "destID", null);
 							final Location destination = new Location(destinationId != null ? LocationType.STATION : LocationType.ANY, destinationId,
 									null, destinationName);
 							final String lineLabel;
-							final String motSymbol = pp.getAttributeValue(null, "symbol");
+							final String motSymbol = XmlPullUtil.optAttr(pp, "symbol", null);
 							if ("AST".equals(motSymbol))
 							{
 								lineLabel = "BAST";
 							}
 							else
 							{
-								final String motType = pp.getAttributeValue(null, "motType");
-								final String motShortName = pp.getAttributeValue(null, "shortname");
-								final String motName = pp.getAttributeValue(null, "name");
-								final String motTrainName = pp.getAttributeValue(null, "trainName");
-								final String motTrainType = pp.getAttributeValue(null, "trainType");
+								final String motType = XmlPullUtil.attr(pp, "motType");
+								final String motShortName = XmlPullUtil.optAttr(pp, "shortname", null);
+								final String motName = XmlPullUtil.attr(pp, "name");
+								final String motTrainName = XmlPullUtil.optAttr(pp, "trainName", null);
+								final String motTrainType = XmlPullUtil.optAttr(pp, "trainType", null);
 
 								lineLabel = parseLine(motType, motSymbol, motShortName, motName, motTrainType, motShortName, motTrainName);
 							}
@@ -3071,14 +3085,15 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private Point processCoordAttr(final XmlPullParser pp)
 	{
 		final String mapName = XmlPullUtil.optAttr(pp, "mapName", null);
-		if (mapName == null)
+		final int x = (int) Math.round(XmlPullUtil.optFloatAttr(pp, "x", 0));
+		final int y = (int) Math.round(XmlPullUtil.optFloatAttr(pp, "y", 0));
+
+		if (mapName == null || (x == 0 && y == 0))
 			return null;
 
 		if (!"WGS84".equals(mapName))
 			throw new IllegalStateException("unknown mapName=" + mapName);
 
-		final int x = (int) Math.round(XmlPullUtil.floatAttr(pp, "x"));
-		final int y = (int) Math.round(XmlPullUtil.floatAttr(pp, "y"));
 		return new Point(y, x);
 	}
 

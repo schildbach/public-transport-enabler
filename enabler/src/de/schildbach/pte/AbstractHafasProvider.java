@@ -280,10 +280,10 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		final String type = pp.getName();
 		if ("Station".equals(type))
 		{
-			final String name = pp.getAttributeValue(null, "name").trim();
-			final String id = pp.getAttributeValue(null, "externalStationNr");
-			final int x = Integer.parseInt(pp.getAttributeValue(null, "x"));
-			final int y = Integer.parseInt(pp.getAttributeValue(null, "y"));
+			final String name = XmlPullUtil.attr(pp, "name");
+			final String id = XmlPullUtil.attr(pp, "externalStationNr");
+			final int x = XmlPullUtil.intAttr(pp, "x");
+			final int y = XmlPullUtil.intAttr(pp, "y");
 
 			final String[] placeAndName = splitStationName(name);
 			return new Location(LocationType.STATION, id, y, x, placeAndName[0], placeAndName[1]);
@@ -296,11 +296,11 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		final String type = pp.getName();
 		if ("Poi".equals(type))
 		{
-			String name = pp.getAttributeValue(null, "name").trim();
+			String name = XmlPullUtil.attr(pp, "name");
 			if (name.equals("unknown"))
 				name = null;
-			final int x = Integer.parseInt(pp.getAttributeValue(null, "x"));
-			final int y = Integer.parseInt(pp.getAttributeValue(null, "y"));
+			final int x = XmlPullUtil.intAttr(pp, "x");
+			final int y = XmlPullUtil.intAttr(pp, "y");
 			return new Location(LocationType.POI, null, y, x, null, name);
 		}
 		throw new IllegalStateException("cannot handle: " + type);
@@ -311,11 +311,11 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		final String type = pp.getName();
 		if ("Address".equals(type))
 		{
-			String name = pp.getAttributeValue(null, "name").trim();
+			String name = XmlPullUtil.attr(pp, "name");
 			if (name.equals("unknown"))
 				name = null;
-			final int x = Integer.parseInt(pp.getAttributeValue(null, "x"));
-			final int y = Integer.parseInt(pp.getAttributeValue(null, "y"));
+			final int x = XmlPullUtil.intAttr(pp, "x");
+			final int y = XmlPullUtil.intAttr(pp, "y");
 
 			final String[] placeAndName = splitAddress(name);
 			return new Location(LocationType.ADDRESS, null, y, x, placeAndName[0], placeAndName[1]);
@@ -329,7 +329,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		if ("ReqLoc".equals(type))
 		{
 			XmlPullUtil.requireAttr(pp, "type", "ADR");
-			final String name = pp.getAttributeValue(null, "output").trim();
+			final String name = XmlPullUtil.attr(pp, "output");
 
 			final String[] placeAndName = splitAddress(name);
 			return new Location(LocationType.ADDRESS, null, placeAndName[0], placeAndName[1]);
@@ -575,18 +575,18 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				final String fpTime = XmlPullUtil.attr(pp, "fpTime");
 				final String fpDate = XmlPullUtil.attr(pp, "fpDate");
 				final String delay = XmlPullUtil.attr(pp, "delay");
-				final String eDelay = pp.getAttributeValue(null, "e_delay");
-				final String platform = pp.getAttributeValue(null, "platform");
+				final String eDelay = XmlPullUtil.optAttr(pp, "e_delay", null);
+				final String platform = XmlPullUtil.optAttr(pp, "platform", null);
 				// TODO newpl
-				final String targetLoc = pp.getAttributeValue(null, "targetLoc");
+				final String targetLoc = XmlPullUtil.optAttr(pp, "targetLoc", null);
 				// TODO hafasname
-				final String dirnr = pp.getAttributeValue(null, "dirnr");
+				final String dirnr = XmlPullUtil.optAttr(pp, "dirnr", null);
 				final String prod = XmlPullUtil.attr(pp, "prod");
-				final String classStr = pp.getAttributeValue(null, "class");
-				final String dir = pp.getAttributeValue(null, "dir");
-				final String capacityStr = pp.getAttributeValue(null, "capacity");
-				final String depStation = pp.getAttributeValue(null, "depStation");
-				final String delayReason = pp.getAttributeValue(null, "delayReason");
+				final String classStr = XmlPullUtil.optAttr(pp, "class", null);
+				final String dir = XmlPullUtil.optAttr(pp, "dir", null);
+				final String capacityStr = XmlPullUtil.optAttr(pp, "capacity", null);
+				final String depStation = XmlPullUtil.optAttr(pp, "depStation", null);
+				final String delayReason = XmlPullUtil.optAttr(pp, "delayReason", null);
 				// TODO is_reachable
 				// TODO disableTrainInfo
 
@@ -1067,8 +1067,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						{
 							XmlPullUtil.enter(pp, "JourneyAttribute");
 							XmlPullUtil.require(pp, "Attribute");
-							final String attrName = pp.getAttributeValue(null, "type");
-							final String code = pp.getAttributeValue(null, "code");
+							final String attrName = XmlPullUtil.attr(pp, "type");
+							final String code = XmlPullUtil.optAttr(pp, "code", null);
 							XmlPullUtil.enter(pp, "Attribute");
 							final Map<String, String> attributeVariants = parseAttributeVariants(pp);
 							XmlPullUtil.skipExit(pp, "Attribute");
@@ -1172,8 +1172,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						XmlPullUtil.enter(pp, "Polyline");
 						while (XmlPullUtil.test(pp, "Point"))
 						{
-							final int x = Integer.parseInt(pp.getAttributeValue(null, "x"));
-							final int y = Integer.parseInt(pp.getAttributeValue(null, "y"));
+							final int x = XmlPullUtil.intAttr(pp, "x");
+							final int y = XmlPullUtil.intAttr(pp, "y");
 							path.add(new Point(y, x));
 							XmlPullUtil.next(pp);
 						}

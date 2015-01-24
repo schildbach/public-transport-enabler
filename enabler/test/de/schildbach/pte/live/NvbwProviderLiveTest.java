@@ -170,4 +170,15 @@ public class NvbwProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
 		print(earlierResult);
 	}
+
+	@Test
+	public void trip() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(
+				new Location(LocationType.STATION, "6900037", 48063184, 7779532, "Buchheim (Breisgau)", "Fortuna"), null, new Location(
+						LocationType.STATION, "6906508", 47996616, 7840450, "Freiburg im Breisgau", "Freiburg im Breisgau, Hauptbahnhof"),
+				new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		print(result);
+		assertEquals(QueryTripsResult.Status.OK, result.status);
+	}
 }
