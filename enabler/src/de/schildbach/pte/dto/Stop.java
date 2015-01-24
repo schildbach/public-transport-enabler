@@ -19,7 +19,10 @@ package de.schildbach.pte.dto;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Locale;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.MoreObjects.ToStringHelper;
 import com.google.common.base.Objects;
 
 /**
@@ -196,31 +199,6 @@ public final class Stop implements Serializable
 	}
 
 	@Override
-	public String toString()
-	{
-		final StringBuilder builder = new StringBuilder("Stop('");
-		builder.append(location);
-		builder.append("', arr: ");
-		builder.append(plannedArrivalTime != null ? plannedArrivalTime : "-");
-		builder.append("/");
-		builder.append(arrivalCancelled ? "cancelled" : (predictedArrivalTime != null ? predictedArrivalTime : "-"));
-		builder.append(", ");
-		builder.append(plannedArrivalPosition != null ? plannedArrivalPosition : "-");
-		builder.append("/");
-		builder.append(predictedArrivalPosition != null ? predictedArrivalPosition : "-");
-		builder.append(", dep: ");
-		builder.append(plannedDepartureTime != null ? plannedDepartureTime : "-");
-		builder.append("/");
-		builder.append(departureCancelled ? "cancelled" : (predictedDepartureTime != null ? predictedDepartureTime : "-"));
-		builder.append(", ");
-		builder.append(plannedDeparturePosition != null ? plannedDeparturePosition : "-");
-		builder.append("/");
-		builder.append(predictedDeparturePosition != null ? predictedDeparturePosition : "-");
-		builder.append(")");
-		return builder.toString();
-	}
-
-	@Override
 	public boolean equals(final Object o)
 	{
 		if (o == this)
@@ -259,5 +237,24 @@ public final class Stop implements Serializable
 		return Objects.hashCode(location, plannedArrivalTime, predictedArrivalTime, plannedArrivalPosition, predictedArrivalPosition,
 				arrivalCancelled, plannedDepartureTime, predictedDepartureTime, plannedDeparturePosition, predictedDeparturePosition,
 				departureCancelled);
+	}
+
+	@Override
+	public String toString()
+	{
+		final ToStringHelper helper = MoreObjects.toStringHelper(this).addValue(location);
+		if (plannedArrivalTime != null)
+			helper.add("plannedArrivalTime", String.format(Locale.US, "%ta %<tR", plannedArrivalTime));
+		if (arrivalCancelled)
+			helper.addValue("cancelled");
+		else if (predictedArrivalTime != null)
+			helper.add("predictedArrivalTime", String.format(Locale.US, "%ta %<tR", predictedArrivalTime));
+		if (plannedDepartureTime != null)
+			helper.add("plannedDepartureTime", String.format(Locale.US, "%ta %<tR", plannedDepartureTime));
+		if (departureCancelled)
+			helper.addValue("cancelled");
+		else if (predictedDepartureTime != null)
+			helper.add("predictedDepartureTime", String.format(Locale.US, "%ta %<tR", predictedDepartureTime));
+		return helper.toString();
 	}
 }

@@ -18,12 +18,13 @@
 package de.schildbach.pte.dto;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.MoreObjects.ToStringHelper;
 import com.google.common.base.Objects;
 
 /**
@@ -197,23 +198,6 @@ public final class Trip implements Serializable
 	}
 
 	@Override
-	public String toString()
-	{
-		final SimpleDateFormat FORMAT = new SimpleDateFormat("E HH:mm", Locale.US);
-
-		final StringBuilder str = new StringBuilder(getId());
-		str.append(' ');
-		final Date firstPublicLegDepartureTime = getFirstPublicLegDepartureTime();
-		str.append(firstPublicLegDepartureTime != null ? FORMAT.format(firstPublicLegDepartureTime) : "null");
-		str.append('-');
-		final Date lastPublicLegArrivalTime = getLastPublicLegArrivalTime();
-		str.append(lastPublicLegArrivalTime != null ? FORMAT.format(lastPublicLegArrivalTime) : "null");
-		str.append(' ').append(numChanges).append("ch");
-
-		return str.toString();
-	}
-
-	@Override
 	public boolean equals(Object o)
 	{
 		if (o == this)
@@ -228,6 +212,18 @@ public final class Trip implements Serializable
 	public int hashCode()
 	{
 		return Objects.hashCode(getId());
+	}
+
+	@Override
+	public String toString()
+	{
+		final ToStringHelper helper = MoreObjects.toStringHelper(this).addValue(getId());
+		final Date firstPublicLegDepartureTime = getFirstPublicLegDepartureTime();
+		final Date lastPublicLegArrivalTime = getLastPublicLegArrivalTime();
+		helper.addValue(firstPublicLegDepartureTime != null ? String.format(Locale.US, "%ta %<tR", firstPublicLegDepartureTime) : "null" + '-'
+				+ lastPublicLegArrivalTime != null ? String.format(Locale.US, "%ta %<tR", lastPublicLegArrivalTime) : "null");
+		helper.add("numChanges", numChanges);
+		return helper.toString();
 	}
 
 	public abstract static class Leg implements Serializable
@@ -359,19 +355,8 @@ public final class Trip implements Serializable
 		@Override
 		public String toString()
 		{
-			final StringBuilder builder = new StringBuilder(getClass().getSimpleName() + "[");
-			builder.append("line=").append(line);
-			if (destination != null)
-			{
-				builder.append(",");
-				builder.append("destination=").append(destination);
-			}
-			builder.append(",");
-			builder.append("departure=").append(departureStop);
-			builder.append(",");
-			builder.append("arrival=").append(arrivalStop);
-			builder.append("]");
-			return builder.toString();
+			return MoreObjects.toStringHelper(this).add("line", line).add("destination", destination).add("departureStop", departureStop)
+					.add("arrivalStop", arrivalStop).omitNullValues().toString();
 		}
 	}
 
@@ -434,18 +419,8 @@ public final class Trip implements Serializable
 		@Override
 		public String toString()
 		{
-			final StringBuilder builder = new StringBuilder(getClass().getSimpleName() + "[");
-			builder.append("type=").append(type);
-			builder.append(",");
-			builder.append("departure=").append(departure);
-			builder.append(",");
-			builder.append("arrival=").append(arrival);
-			builder.append(",");
-			builder.append("min=").append(min);
-			builder.append(",");
-			builder.append("distance=").append(distance);
-			builder.append("]");
-			return builder.toString();
+			return MoreObjects.toStringHelper(this).addValue(type).add("departure", departure).add("arrival", arrival).add("min", min)
+					.add("distance", distance).omitNullValues().toString();
 		}
 	}
 }

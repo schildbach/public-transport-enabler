@@ -20,6 +20,8 @@ package de.schildbach.pte.dto;
 import java.io.Serializable;
 import java.util.Arrays;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.MoreObjects.ToStringHelper;
 import com.google.common.base.Objects;
 
 /**
@@ -153,13 +155,6 @@ public final class Location implements Serializable
 	}
 
 	@Override
-	public String toString()
-	{
-		return "[" + type + " " + id + " " + lat + "/" + lon + " " + (place != null ? "\"" + place + "\"" : "null") + " "
-				+ (name != null ? "\"" + name + "\"" : "null") + "]";
-	}
-
-	@Override
 	public boolean equals(final Object o)
 	{
 		if (o == this)
@@ -189,5 +184,14 @@ public final class Location implements Serializable
 			return Objects.hashCode(type, id);
 		else
 			return Objects.hashCode(type, lat, lon);
+	}
+
+	@Override
+	public String toString()
+	{
+		final ToStringHelper helper = MoreObjects.toStringHelper(this).addValue(type).addValue(id);
+		if (lat != 0 || lon != 0)
+			helper.addValue(lat + "/" + lon);
+		return helper.add("place", place).add("name", name).omitNullValues().toString();
 	}
 }

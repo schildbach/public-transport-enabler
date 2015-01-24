@@ -20,6 +20,9 @@ package de.schildbach.pte.dto;
 import java.io.Serializable;
 import java.util.List;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.MoreObjects.ToStringHelper;
+
 /**
  * @author Andreas Schildbach
  */
@@ -51,11 +54,9 @@ public final class NearbyStationsResult implements Serializable
 	@Override
 	public String toString()
 	{
-		final StringBuilder builder = new StringBuilder(getClass().getSimpleName());
-		builder.append("[").append(this.status);
+		final ToStringHelper helper = MoreObjects.toStringHelper(this).addValue(status);
 		if (stations != null)
-			builder.append(" ").append(stations.size()).append(stations);
-		builder.append("]");
-		return builder.toString();
+			helper.add("size", stations.size()).add("stations", stations);
+		return helper.toString();
 	}
 }

@@ -20,6 +20,7 @@ package de.schildbach.pte.dto;
 import java.io.Serializable;
 import java.util.Currency;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 /**
@@ -76,5 +77,12 @@ public final class Fare implements Serializable
 	public int hashCode()
 	{
 		return Objects.hashCode(network, type, currency, fare, unitName, units);
+	}
+
+	@Override
+	public String toString()
+	{
+		return MoreObjects.toStringHelper(this).addValue(network).addValue(type).addValue(currency).addValue(fare).addValue(unitName).addValue(units)
+				.toString();
 	}
 }

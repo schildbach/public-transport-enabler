@@ -19,6 +19,7 @@ package de.schildbach.pte.dto;
 
 import java.io.Serializable;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 /**
@@ -33,17 +34,6 @@ public final class LineDestination implements Serializable
 	{
 		this.line = line;
 		this.destination = destination;
-	}
-
-	@Override
-	public String toString()
-	{
-		StringBuilder builder = new StringBuilder("LineDestination(");
-		builder.append(line != null ? line : "null");
-		builder.append(",");
-		builder.append(destination != null ? destination : "null");
-		builder.append(")");
-		return builder.toString();
 	}
 
 	@Override
@@ -65,5 +55,11 @@ public final class LineDestination implements Serializable
 	public int hashCode()
 	{
 		return Objects.hashCode(line, destination);
+	}
+
+	@Override
+	public String toString()
+	{
+		return MoreObjects.toStringHelper(this).add("line", line).add("destination", destination).omitNullValues().toString();
 	}
 }

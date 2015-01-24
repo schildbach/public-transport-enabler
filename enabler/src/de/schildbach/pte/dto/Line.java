@@ -20,6 +20,7 @@ package de.schildbach.pte.dto;
 import java.io.Serializable;
 import java.util.Set;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 /**
@@ -80,15 +81,6 @@ public final class Line implements Serializable, Comparable<Line>
 	}
 
 	@Override
-	public String toString()
-	{
-		final StringBuilder builder = new StringBuilder("Line(");
-		builder.append(label);
-		builder.append(")");
-		return builder.toString();
-	}
-
-	@Override
 	public boolean equals(final Object o)
 	{
 		if (o == this)
@@ -103,6 +95,12 @@ public final class Line implements Serializable, Comparable<Line>
 	public int hashCode()
 	{
 		return Objects.hashCode(label);
+	}
+
+	@Override
+	public String toString()
+	{
+		return MoreObjects.toStringHelper(this).addValue(label).toString();
 	}
 
 	public int compareTo(final Line other)

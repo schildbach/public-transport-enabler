@@ -20,6 +20,8 @@ package de.schildbach.pte.dto;
 import java.io.Serializable;
 import java.util.List;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.MoreObjects.ToStringHelper;
 import com.google.common.base.Objects;
 
 /**
@@ -36,19 +38,6 @@ public final class StationDepartures implements Serializable
 		this.location = location;
 		this.departures = departures;
 		this.lines = lines;
-	}
-
-	@Override
-	public String toString()
-	{
-		final StringBuilder builder = new StringBuilder(getClass().getSimpleName());
-		builder.append("[");
-		if (location != null)
-			builder.append(location);
-		if (departures != null)
-			builder.append(" ").append(departures.size()).append(" departures");
-		builder.append("]");
-		return builder.toString();
 	}
 
 	@Override
@@ -72,5 +61,14 @@ public final class StationDepartures implements Serializable
 	public int hashCode()
 	{
 		return Objects.hashCode(location, departures, lines);
+	}
+
+	@Override
+	public String toString()
+	{
+		final ToStringHelper helper = MoreObjects.toStringHelper(this).addValue(location);
+		if (departures != null)
+			helper.add("size", departures.size()).add("departures", departures);
+		return helper.toString();
 	}
 }

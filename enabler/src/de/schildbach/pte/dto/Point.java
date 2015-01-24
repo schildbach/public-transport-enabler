@@ -40,12 +40,6 @@ public final class Point implements Serializable
 	}
 
 	@Override
-	public String toString()
-	{
-		return "[" + lat + "/" + lon + "]";
-	}
-
-	@Override
 	public boolean equals(final Object o)
 	{
 		if (o == this)
@@ -64,5 +58,11 @@ public final class Point implements Serializable
 	public int hashCode()
 	{
 		return Objects.hashCode(lat, lon);
+	}
+
+	@Override
+	public String toString()
+	{
+		return lat + "/" + lon;
 	}
 }

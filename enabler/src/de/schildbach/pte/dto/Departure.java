@@ -20,7 +20,10 @@ package de.schildbach.pte.dto;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Locale;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.MoreObjects.ToStringHelper;
 import com.google.common.base.Objects;
 
 /**
@@ -61,18 +64,12 @@ public final class Departure implements Serializable
 	@Override
 	public String toString()
 	{
-		final StringBuilder builder = new StringBuilder("Departure(");
-		builder.append(plannedTime != null ? plannedTime : "null");
-		builder.append(",");
-		builder.append(predictedTime != null ? predictedTime : "null");
-		builder.append(",");
-		builder.append(line != null ? line : "null");
-		builder.append(",");
-		builder.append(position != null ? position : "null");
-		builder.append(",");
-		builder.append(destination != null ? destination : "null");
-		builder.append(")");
-		return builder.toString();
+		final ToStringHelper helper = MoreObjects.toStringHelper(this);
+		if (plannedTime != null)
+			helper.add("planned", String.format(Locale.US, "%ta %<tR", plannedTime));
+		if (predictedTime != null)
+			helper.add("predicted", String.format(Locale.US, "%ta %<tR", predictedTime));
+		return helper.addValue(line).addValue(position).add("destination", destination).omitNullValues().toString();
 	}
 
 	@Override

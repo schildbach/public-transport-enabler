@@ -20,6 +20,9 @@ package de.schildbach.pte.dto;
 import java.io.Serializable;
 import java.util.List;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.MoreObjects.ToStringHelper;
+
 /**
  * @author Andreas Schildbach
  */
@@ -97,31 +100,25 @@ public final class QueryTripsResult implements Serializable
 	@Override
 	public String toString()
 	{
-		final StringBuilder builder = new StringBuilder(getClass().getSimpleName());
-		builder.append("[").append(this.status).append(" ");
-
+		final ToStringHelper helper = MoreObjects.toStringHelper(this).addValue(status);
 		if (status == Status.OK)
 		{
 			if (trips != null)
-				builder.append(trips.size()).append(trips);
+				helper.add("size", trips.size()).add("trips", trips);
 		}
 		else if (status == Status.AMBIGUOUS)
 		{
 			if (ambiguousFrom != null)
-				builder.append(ambiguousFrom.size()).append(" ambiguous from, ");
+				helper.add("size", ambiguousFrom.size()).add("ambiguousFrom", ambiguousFrom);
 			if (ambiguousVia != null)
-				builder.append(ambiguousVia.size()).append(" ambiguous via, ");
+				helper.add("size", ambiguousVia.size()).add("ambiguousVia", ambiguousVia);
 			if (ambiguousTo != null)
-				builder.append(ambiguousTo.size()).append(" ambiguous to, ");
+				helper.add("size", ambiguousTo.size()).add("ambiguousTo", ambiguousTo);
 		}
 		else
 		{
-			builder.append(this.status);
+			helper.addValue(status);
 		}
-
-		if (builder.substring(builder.length() - 2).equals(", "))
-			builder.setLength(builder.length() - 2);
-		builder.append("]");
-		return builder.toString();
+		return helper.toString();
 	}
 }

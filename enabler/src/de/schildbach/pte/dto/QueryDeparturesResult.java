@@ -21,6 +21,9 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.MoreObjects.ToStringHelper;
+
 /**
  * @author Andreas Schildbach
  */
@@ -47,17 +50,6 @@ public final class QueryDeparturesResult implements Serializable
 		this.status = status;
 	}
 
-	@Override
-	public String toString()
-	{
-		final StringBuilder builder = new StringBuilder(getClass().getSimpleName());
-		builder.append("[").append(this.status);
-		if (stationDepartures != null)
-			builder.append(" ").append(stationDepartures.size()).append(stationDepartures);
-		builder.append("]");
-		return builder.toString();
-	}
-
 	public StationDepartures findStationDepartures(final String stationId)
 	{
 		for (final StationDepartures departures : stationDepartures)
@@ -67,5 +59,14 @@ public final class QueryDeparturesResult implements Serializable
 		}
 
 		return null;
+	}
+
+	@Override
+	public String toString()
+	{
+		final ToStringHelper helper = MoreObjects.toStringHelper(this).addValue(status);
+		if (stationDepartures != null)
+			helper.add("size", stationDepartures.size()).add("stationDepartures", stationDepartures);
+		return helper.toString();
 	}
 }

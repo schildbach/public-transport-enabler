@@ -19,6 +19,8 @@ package de.schildbach.pte.dto;
 
 import java.io.Serializable;
 
+import com.google.common.base.MoreObjects;
+
 /**
  * @author Andreas Schildbach
  */
@@ -43,5 +45,12 @@ public final class ResultHeader implements Serializable
 		this.serverVersion = serverVersion;
 		this.serverTime = serverTime;
 		this.context = context;
+	}
+
+	@Override
+	public String toString()
+	{
+		return MoreObjects.toStringHelper(this).add("serverProduct", serverProduct).add("serverVersion", serverVersion).add("serverTime", serverTime)
+				.add("context", context).omitNullValues().toString();
 	}
 }

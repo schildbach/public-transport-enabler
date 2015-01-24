@@ -23,6 +23,9 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.MoreObjects.ToStringHelper;
+
 /**
  * @author Andreas Schildbach
  */
@@ -52,17 +55,6 @@ public final class SuggestLocationsResult implements Serializable
 		this.suggestedLocations = null;
 	}
 
-	@Override
-	public String toString()
-	{
-		final StringBuilder builder = new StringBuilder(getClass().getSimpleName());
-		builder.append("[").append(this.status);
-		if (suggestedLocations != null)
-			builder.append(" ").append(suggestedLocations.size()).append(suggestedLocations);
-		builder.append("]");
-		return builder.toString();
-	}
-
 	public List<Location> getLocations()
 	{
 		final List<Location> locations = new ArrayList<Location>(suggestedLocations.size());
@@ -70,5 +62,14 @@ public final class SuggestLocationsResult implements Serializable
 			locations.add(location.location);
 
 		return locations;
+	}
+
+	@Override
+	public String toString()
+	{
+		final ToStringHelper helper = MoreObjects.toStringHelper(this).addValue(status);
+		if (suggestedLocations != null)
+			helper.add("size", suggestedLocations.size()).add("suggestedLocations", suggestedLocations);
+		return helper.toString();
 	}
 }
