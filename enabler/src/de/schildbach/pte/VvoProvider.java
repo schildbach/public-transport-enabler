@@ -17,6 +17,8 @@
 
 package de.schildbach.pte;
 
+import com.google.common.base.Charsets;
+
 /**
  * @author Andreas Schildbach
  */
@@ -36,7 +38,7 @@ public class VvoProvider extends AbstractEfaProvider
 
 		setUseRealtime(false);
 		setUseStringCoordListOutputFormat(false);
-		setRequestUrlEncoding(UTF_8);
+		setRequestUrlEncoding(Charsets.UTF_8);
 	}
 
 	public NetworkId id()

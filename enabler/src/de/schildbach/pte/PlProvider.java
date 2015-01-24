@@ -19,6 +19,8 @@ package de.schildbach.pte;
 
 import java.util.Collection;
 
+import com.google.common.base.Charsets;
+
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.util.StringReplaceReader;
 
@@ -32,7 +34,7 @@ public class PlProvider extends AbstractHafasProvider
 
 	public PlProvider()
 	{
-		super(API_BASE + "stboard.exe/pn", API_BASE + "ajax-getstop.exe/pn", API_BASE + "query.exe/pn", 7, UTF_8);
+		super(API_BASE + "stboard.exe/pn", API_BASE + "ajax-getstop.exe/pn", API_BASE + "query.exe/pn", 7, Charsets.UTF_8);
 	}
 
 	public NetworkId id()

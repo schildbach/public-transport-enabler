@@ -22,6 +22,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 
+import com.google.common.base.Charsets;
+
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -46,7 +48,7 @@ public class BayernProvider extends AbstractEfaProvider
 	{
 		super(API_BASE, DEPARTURE_MONITOR_ENDPOINT, TRIP_ENDPOINT, STOP_FINDER_ENDPOINT, null);
 
-		setRequestUrlEncoding(UTF_8);
+		setRequestUrlEncoding(Charsets.UTF_8);
 		setIncludeRegionId(false);
 		setNumTripsRequested(12);
 	}

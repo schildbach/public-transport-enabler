@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.regex.Matcher;
 
+import com.google.common.base.Charsets;
+
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -38,8 +40,8 @@ public class SncbProvider extends AbstractHafasProvider
 	{
 		super(API_BASE + "stboard.exe/nn", API_BASE + "ajax-getstop.exe/nny", API_BASE + "query.exe/nn", 16);
 
-		setJsonGetStopsEncoding(UTF_8);
-		setJsonNearbyStationsEncoding(UTF_8);
+		setJsonGetStopsEncoding(Charsets.UTF_8);
+		setJsonNearbyStationsEncoding(Charsets.UTF_8);
 		setStationBoardHasLocation(true);
 	}
 

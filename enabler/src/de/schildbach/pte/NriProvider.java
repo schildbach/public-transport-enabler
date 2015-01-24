@@ -22,6 +22,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 
+import com.google.common.base.Charsets;
+
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryTripsContext;
@@ -39,7 +41,7 @@ public class NriProvider extends AbstractHafasProvider
 	{
 		super(API_BASE + "stboard.exe/on", API_BASE + "ajax-getstop.exe/ony", API_BASE + "query.exe/on", 8);
 
-		setJsonGetStopsEncoding(UTF_8);
+		setJsonGetStopsEncoding(Charsets.UTF_8);
 	}
 
 	public NetworkId id()

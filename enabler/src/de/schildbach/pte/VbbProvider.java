@@ -23,6 +23,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.common.base.Charsets;
+
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Product;
 
@@ -44,7 +46,7 @@ public class VbbProvider extends AbstractHafasProvider
 
 	public VbbProvider()
 	{
-		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 7, UTF_8);
+		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 7, Charsets.UTF_8);
 
 		setJsonGetStopsUseWeight(false);
 	}

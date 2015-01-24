@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.common.base.Charsets;
+
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Line.Attr;
 import de.schildbach.pte.dto.Point;
@@ -41,7 +43,7 @@ public final class BvgProvider extends AbstractHafasProvider
 
 	public BvgProvider()
 	{
-		super(API_BASE_STATION_BOARD + "stboard.exe/dn", API_BASE + "ajax-getstop.bin/dny", API_BASE + "query.bin/dn", 8, UTF_8);
+		super(API_BASE_STATION_BOARD + "stboard.exe/dn", API_BASE + "ajax-getstop.bin/dny", API_BASE + "query.bin/dn", 8, Charsets.UTF_8);
 
 		setJsonGetStopsUseWeight(false);
 		setStyles(STYLES);

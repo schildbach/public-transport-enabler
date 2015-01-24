@@ -19,6 +19,8 @@ package de.schildbach.pte;
 
 import java.util.Collection;
 
+import com.google.common.base.Charsets;
+
 import de.schildbach.pte.dto.Product;
 
 /**
@@ -31,9 +33,9 @@ public class RtProvider extends AbstractHafasProvider
 
 	public RtProvider()
 	{
-		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 10, UTF_8);
+		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 10, Charsets.UTF_8);
 
-		setJsonNearbyStationsEncoding(ISO_8859_1);
+		setJsonNearbyStationsEncoding(Charsets.ISO_8859_1);
 		setStationBoardHasStationTable(false);
 	}
 

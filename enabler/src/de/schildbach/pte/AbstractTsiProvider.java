@@ -37,6 +37,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.google.common.base.Charsets;
+
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
@@ -200,12 +202,12 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 	{
 		final StringBuilder parameters = buildCommonRequestParams("SearchTripPoint", "json");
 		parameters.append("&MaxItems=").append(50); // XXX good value?
-		parameters.append("&Keywords=").append(ParserUtils.urlEncode(constraint.toString(), UTF_8));
+		parameters.append("&Keywords=").append(ParserUtils.urlEncode(constraint.toString(), Charsets.UTF_8));
 
 		final StringBuilder uri = new StringBuilder(stopFinderEndpoint);
 		uri.append(parameters);
 
-		final CharSequence page = ParserUtils.scrape(uri.toString(), null, UTF_8);
+		final CharSequence page = ParserUtils.scrape(uri.toString(), null, Charsets.UTF_8);
 		try
 		{
 			final List<SuggestedLocation> locations = new ArrayList<SuggestedLocation>();
@@ -295,7 +297,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 		final StringBuilder uri = new StringBuilder(stopFinderEndpoint);
 		uri.append(parameters);
 
-		final CharSequence page = ParserUtils.scrape(uri.toString(), null, UTF_8);
+		final CharSequence page = ParserUtils.scrape(uri.toString(), null, Charsets.UTF_8);
 		try
 		{
 
@@ -339,7 +341,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 		final StringBuilder uri = new StringBuilder(stopFinderEndpoint);
 		uri.append(parameters);
 
-		final CharSequence page = ParserUtils.scrape(uri.toString(), null, UTF_8);
+		final CharSequence page = ParserUtils.scrape(uri.toString(), null, Charsets.UTF_8);
 		try
 		{
 			final JSONObject head = new JSONObject(page.toString());
@@ -747,11 +749,11 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 		parameters.append("&WalkSpeed=").append(walkSpeedStr);
 
 		if (mode != null)
-			parameters.append("&Modes=").append(ParserUtils.urlEncode(mode.toString(), UTF_8));
+			parameters.append("&Modes=").append(ParserUtils.urlEncode(mode.toString(), Charsets.UTF_8));
 
 		final StringBuilder uri = new StringBuilder(tripEndpoint);
 		uri.append(parameters);
-		final CharSequence page = ParserUtils.scrape(uri.toString(), null, UTF_8, null);
+		final CharSequence page = ParserUtils.scrape(uri.toString(), null, Charsets.UTF_8, null);
 		try
 		{
 			final JSONObject head = new JSONObject(page.toString());

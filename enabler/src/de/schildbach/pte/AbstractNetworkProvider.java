@@ -18,7 +18,6 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
@@ -37,8 +36,6 @@ import de.schildbach.pte.dto.Style;
  */
 public abstract class AbstractNetworkProvider implements NetworkProvider
 {
-	protected static final Charset UTF_8 = Charset.forName("UTF-8");
-	protected static final Charset ISO_8859_1 = Charset.forName("ISO-8859-1");
 	protected static final Set<Product> ALL_EXCEPT_HIGHSPEED;
 
 	protected TimeZone timeZone = TimeZone.getTimeZone("CET");

@@ -44,6 +44,8 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import com.google.common.base.Charsets;
+
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.Fare;
 import de.schildbach.pte.dto.Fare.Type;
@@ -92,7 +94,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private boolean needsSpEncId = false;
 	private boolean includeRegionId = true;
 	private boolean useProxFootSearch = true;
-	private Charset requestUrlEncoding = ISO_8859_1;
+	private Charset requestUrlEncoding = Charsets.ISO_8859_1;
 	private String httpReferer = null;
 	private String httpRefererTrip = null;
 	private boolean httpPost = false;
@@ -259,7 +261,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		// System.out.println(uri);
 		// System.out.println(parameters);
 
-		final CharSequence page = ParserUtils.scrape(uri.toString(), httpPost ? parameters.substring(1) : null, UTF_8);
+		final CharSequence page = ParserUtils.scrape(uri.toString(), httpPost ? parameters.substring(1) : null, Charsets.UTF_8);
 		final ResultHeader header = new ResultHeader(SERVER_PRODUCT);
 
 		try

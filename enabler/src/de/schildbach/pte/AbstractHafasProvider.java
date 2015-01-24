@@ -48,6 +48,8 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import com.google.common.base.Charsets;
+
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
@@ -151,7 +153,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 	public AbstractHafasProvider(final String stationBoardEndpoint, final String getStopEndpoint, final String queryEndpoint, final int numProductBits)
 	{
-		this(stationBoardEndpoint, getStopEndpoint, queryEndpoint, numProductBits, ISO_8859_1);
+		this(stationBoardEndpoint, getStopEndpoint, queryEndpoint, numProductBits, Charsets.ISO_8859_1);
 	}
 
 	public AbstractHafasProvider(final String stationBoardEndpoint, final String getStopEndpoint, final String queryEndpoint,
@@ -507,7 +509,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		try
 		{
 			// work around unparsable XML
-			reader = new StringReplaceReader(new InputStreamReader(ParserUtils.scrapeInputStream(uri), ISO_8859_1), " & ", " &amp; ");
+			reader = new StringReplaceReader(new InputStreamReader(ParserUtils.scrapeInputStream(uri), Charsets.ISO_8859_1), " & ", " &amp; ");
 			reader.replace("<b>", " ");
 			reader.replace("</b>", " ");
 			reader.replace("<u>", " ");
@@ -887,7 +889,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			final String endpoint = extXmlEndpoint != null ? extXmlEndpoint : queryEndpoint;
 			final InputStream is = ParserUtils.scrapeInputStream(endpoint, request, null, null, sessionCookieName);
 			firstChars = ParserUtils.peekFirstChars(is);
-			reader = new InputStreamReader(is, ISO_8859_1);
+			reader = new InputStreamReader(is, Charsets.ISO_8859_1);
 
 			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
 			final XmlPullParser pp = factory.newPullParser();
@@ -1383,8 +1385,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	{
 		uri.append("?start=Suchen");
 
-		uri.append("&REQ0JourneyStopsS0ID=").append(ParserUtils.urlEncode(locationId(from), ISO_8859_1));
-		uri.append("&REQ0JourneyStopsZ0ID=").append(ParserUtils.urlEncode(locationId(to), ISO_8859_1));
+		uri.append("&REQ0JourneyStopsS0ID=").append(ParserUtils.urlEncode(locationId(from), Charsets.ISO_8859_1));
+		uri.append("&REQ0JourneyStopsZ0ID=").append(ParserUtils.urlEncode(locationId(to), Charsets.ISO_8859_1));
 
 		if (via != null)
 		{
@@ -1402,11 +1404,11 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				uri.append("&REQ0JourneyStops1.0Y=").append(via.lat);
 				if (via.name == null)
 					uri.append("&REQ0JourneyStops1.0O=").append(
-							ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%.6f, %.6f", via.lat / 1E6, via.lon / 1E6), ISO_8859_1));
+							ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%.6f, %.6f", via.lat / 1E6, via.lon / 1E6), Charsets.ISO_8859_1));
 			}
 			else if (via.name != null)
 			{
-				uri.append("&REQ0JourneyStops1.0G=").append(ParserUtils.urlEncode(via.name, ISO_8859_1));
+				uri.append("&REQ0JourneyStops1.0G=").append(ParserUtils.urlEncode(via.name, Charsets.ISO_8859_1));
 				if (via.type != LocationType.ANY)
 					uri.append('!');
 			}
@@ -2155,7 +2157,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 	private static class StringTable
 	{
-		private Charset encoding = Charset.forName("ASCII");
+		private Charset encoding = Charsets.US_ASCII;
 		private final byte[] table;
 
 		public StringTable(final DataInputStream is, final int stringTablePtr, final int length) throws IOException

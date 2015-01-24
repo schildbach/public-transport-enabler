@@ -20,6 +20,8 @@ package de.schildbach.pte;
 import java.io.IOException;
 import java.util.regex.Matcher;
 
+import com.google.common.base.Charsets;
+
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -36,7 +38,7 @@ public class NasaProvider extends AbstractHafasProvider
 
 	public NasaProvider()
 	{
-		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 8, UTF_8);
+		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 8, Charsets.UTF_8);
 
 		setStationBoardHasLocation(true);
 	}

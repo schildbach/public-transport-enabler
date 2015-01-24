@@ -19,6 +19,8 @@ package de.schildbach.pte;
 
 import java.util.regex.Matcher;
 
+import com.google.common.base.Charsets;
+
 import de.schildbach.pte.dto.Product;
 
 /**
@@ -31,7 +33,7 @@ public class LuProvider extends AbstractHafasProvider
 
 	public LuProvider()
 	{
-		super(API_BASE + "stboard.exe/fn", API_BASE + "ajax-getstop.exe/fn", API_BASE + "query.exe/fn", 9, UTF_8);
+		super(API_BASE + "stboard.exe/fn", API_BASE + "ajax-getstop.exe/fn", API_BASE + "query.exe/fn", 9, Charsets.UTF_8);
 	}
 
 	public NetworkId id()

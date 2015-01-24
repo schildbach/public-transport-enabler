@@ -21,6 +21,8 @@ import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.common.base.Charsets;
+
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Product;
 
@@ -37,7 +39,7 @@ public class SeProvider extends AbstractHafasProvider
 
 	public SeProvider()
 	{
-		super(API_BASE + "stboard.exe/sn", API_BASE + "ajax-getstop.exe/sny", API_BASE + "query.exe/sn", 14, UTF_8);
+		super(API_BASE + "stboard.exe/sn", API_BASE + "ajax-getstop.exe/sny", API_BASE + "query.exe/sn", 14, Charsets.UTF_8);
 
 		setClientType("ANDROID");
 		setUseIso8601(true);

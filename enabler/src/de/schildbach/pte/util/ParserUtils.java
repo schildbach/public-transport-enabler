@@ -40,6 +40,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
+import com.google.common.base.Charsets;
+
 import de.schildbach.pte.exception.BlockedException;
 import de.schildbach.pte.exception.InternalErrorException;
 import de.schildbach.pte.exception.NotFoundException;
@@ -58,8 +60,6 @@ public final class ParserUtils
 	private static final int SCRAPE_PEEK_SIZE = 4096;
 	private static final int SCRAPE_CONNECT_TIMEOUT = 5000;
 	private static final int SCRAPE_READ_TIMEOUT = 15000;
-	private static final Charset SCRAPE_DEFAULT_ENCODING = Charset.forName("ISO-8859-1");
-
 	private static HttpCookie sessionCookie;
 
 	public static final CharSequence scrape(final String url) throws IOException
@@ -87,7 +87,7 @@ public final class ParserUtils
 			final String authorization) throws IOException
 	{
 		if (requestEncoding == null)
-			requestEncoding = SCRAPE_DEFAULT_ENCODING;
+			requestEncoding = Charsets.ISO_8859_1;
 
 		final StringBuilder buffer = new StringBuilder(SCRAPE_INITIAL_CAPACITY);
 		final InputStream is = scrapeInputStream(urlStr, postRequest, requestEncoding, null, sessionCookieName, authorization);
@@ -130,7 +130,7 @@ public final class ParserUtils
 			final String sessionCookieName, final String authorization) throws IOException
 	{
 		if (requestEncoding == null)
-			requestEncoding = SCRAPE_DEFAULT_ENCODING;
+			requestEncoding = Charsets.ISO_8859_1;
 
 		int tries = 3;
 

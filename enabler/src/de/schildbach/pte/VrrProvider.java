@@ -20,6 +20,8 @@ package de.schildbach.pte;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.common.base.Charsets;
+
 import de.schildbach.pte.dto.Style;
 
 /**
@@ -39,7 +41,7 @@ public class VrrProvider extends AbstractEfaProvider
 		setNeedsSpEncId(true);
 		setUseRouteIndexAsTripId(false);
 		setStyles(STYLES);
-		setRequestUrlEncoding(UTF_8);
+		setRequestUrlEncoding(Charsets.UTF_8);
 	}
 
 	public NetworkId id()

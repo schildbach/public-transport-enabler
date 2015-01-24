@@ -17,6 +17,8 @@
 
 package de.schildbach.pte;
 
+import com.google.common.base.Charsets;
+
 import de.schildbach.pte.dto.Product;
 
 /**
@@ -29,7 +31,7 @@ public class VbnProvider extends AbstractHafasProvider
 
 	public VbnProvider()
 	{
-		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dny", API_BASE + "query.exe/dn", 10, UTF_8);
+		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dny", API_BASE + "query.exe/dn", 10, Charsets.UTF_8);
 
 		setStationBoardHasStationTable(true);
 	}

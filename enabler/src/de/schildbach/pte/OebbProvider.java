@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.regex.Matcher;
 
+import com.google.common.base.Charsets;
+
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyStationsResult;
@@ -39,7 +41,7 @@ public class OebbProvider extends AbstractHafasProvider
 		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dny", API_BASE + "query.exe/dn", 13);
 
 		setDominantPlanStopTime(true);
-		setJsonGetStopsEncoding(UTF_8);
+		setJsonGetStopsEncoding(Charsets.UTF_8);
 	}
 
 	public NetworkId id()
