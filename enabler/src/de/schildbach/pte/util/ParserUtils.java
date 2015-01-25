@@ -623,24 +623,6 @@ public final class ParserUtils
 		}
 	}
 
-	public static <T> T selectNotNull(final T... groups)
-	{
-		T selected = null;
-
-		for (final T group : groups)
-		{
-			if (group != null)
-			{
-				if (selected == null)
-					selected = group;
-				else
-					throw new IllegalStateException("ambiguous");
-			}
-		}
-
-		return selected;
-	}
-
 	public static String firstNotEmpty(final String... strings)
 	{
 		for (final String str : strings)
