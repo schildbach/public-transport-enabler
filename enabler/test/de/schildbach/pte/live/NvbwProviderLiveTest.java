@@ -50,40 +50,51 @@ public class NvbwProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "6900001"));
+		final NearbyStationsResult result1 = queryNearbyStations(new Location(LocationType.STATION, "6900001"));
+		print(result1);
 
-		print(result);
+		final NearbyStationsResult result2 = queryNearbyStations(new Location(LocationType.STATION, "53019174"));
+		print(result2);
 	}
 
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 48778953, 9178963));
+		final NearbyStationsResult result1 = queryNearbyStations(new Location(LocationType.ADDRESS, 48778953, 9178963));
+		print(result1);
 
-		print(result);
+		final NearbyStationsResult result2 = queryNearbyStations(new Location(LocationType.ADDRESS, 48493550, 9205656));
+		print(result2);
 	}
 
 	@Test
 	public void queryDepartures() throws Exception
 	{
-		final QueryDeparturesResult result = queryDepartures("6900001", false);
+		final QueryDeparturesResult result1 = queryDepartures("6900001", false);
+		print(result1);
 
-		print(result);
+		final QueryDeparturesResult result2 = queryDepartures("53019174", false);
+		print(result2);
+	}
+
+	@Test
+	public void queryDeparturesInvalidStation() throws Exception
+	{
+		final QueryDeparturesResult result = queryDepartures("999999", false);
+		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
 	}
 
 	@Test
 	public void suggestLocationsIncomplete() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Kur");
-
 		print(result);
 	}
 
 	@Test
 	public void suggestLocationsWithUmlaut() throws Exception
 	{
-		final SuggestLocationsResult result = suggestLocations("grün");
-
+		final SuggestLocationsResult result = suggestLocations("grünwink");
 		print(result);
 	}
 
@@ -108,6 +119,35 @@ public class NvbwProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "17002402", null, "Bahnhof"), null, new Location(
 				LocationType.STATION, "17009001", null, "Bahnhof"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		print(result);
+		assertEquals(QueryTripsResult.Status.OK, result.status);
+		assertTrue(result.trips.size() > 0);
+
+		if (!result.context.canQueryLater())
+			return;
+
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+		print(laterResult);
+
+		if (!laterResult.context.canQueryLater())
+			return;
+
+		final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
+		print(later2Result);
+
+		if (!later2Result.context.canQueryEarlier())
+			return;
+
+		final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
+		print(earlierResult);
+	}
+
+	@Test
+	public void shortTripReutlingen() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8029333", 48492484, 9207456, "Reutlingen", "ZOB"), null,
+				new Location(LocationType.STATION, "8029109", 48496968, 9213320, "Reutlingen", "Bismarckstr."), new Date(), true, Product.ALL,
+				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);

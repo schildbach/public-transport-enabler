@@ -23,7 +23,10 @@ package de.schildbach.pte;
 public class NvbwProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.NVBW;
-	private final static String API_BASE = "http://www.efa-bw.de/nvbw/"; // http://www.efa-bw.de/android/
+	private final static String API_BASE = "http://www.efa-bw.de/nvbw/";
+
+	// http://www.efa-bw.de/android/
+	// http://efa2.naldo.de/naldo/
 
 	public NvbwProvider()
 	{
