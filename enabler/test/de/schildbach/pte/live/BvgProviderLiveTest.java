@@ -17,11 +17,12 @@
 
 package de.schildbach.pte.live;
 
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import java.util.Date;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import de.schildbach.pte.BvgProvider;
@@ -91,37 +92,38 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsUmlaut() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Güntzelstr.");
-
 		print(result);
-
-		Assert.assertEquals("Güntzelstr. (U)", result.getLocations().get(0).name);
+		assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "9043201", "Berlin", "U Güntzelstr.")));
 	}
 
 	@Test
 	public void suggestLocationsLocality() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("seeling");
-
 		print(result);
+		assertEquals(new Location(LocationType.STATION, null, "Berlin", "Seelingstr."), result.getLocations().get(0));
+	}
 
-		Assert.assertEquals(new Location(LocationType.STATION, null, "Berlin", "Seelingstr."), result.getLocations().get(0));
+	@Test
+	public void suggestLocationsPOI() throws Exception
+	{
+		final SuggestLocationsResult result = suggestLocations("schwules museum");
+		print(result);
+		assertThat(result.getLocations(), hasItem(new Location(LocationType.POI, "9980141")));
 	}
 
 	@Test
 	public void suggestLocationsAddress() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Berlin, Sophienstr. 24");
-
 		print(result);
-
-		Assert.assertEquals("Sophienstr. 24", result.getLocations().get(0).name);
+		assertEquals("Sophienstr. 24", result.getLocations().get(0).name);
 	}
 
 	@Test
 	public void suggestLocationsIncomplete() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("nol");
-
 		print(result);
 	}
 

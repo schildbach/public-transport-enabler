@@ -17,7 +17,9 @@
 
 package de.schildbach.pte.live;
 
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 
@@ -49,7 +51,6 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 	public void nearbyStations() throws Exception
 	{
 		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "9007102"));
-
 		print(result);
 	}
 
@@ -63,16 +64,15 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 52548505, 1338864));
-
+		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 52548505, 13388640));
 		print(result);
+		assertTrue(result.stations.size() > 0);
 	}
 
 	@Test
 	public void queryDepartures() throws Exception
 	{
 		final QueryDeparturesResult result = queryDepartures("9007102", false);
-
 		print(result);
 	}
 
@@ -90,9 +90,7 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocations() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Haubachstr.");
-
 		print(result);
-
 		Assert.assertEquals("Haubachstr.", result.getLocations().get(0).name);
 	}
 
@@ -100,19 +98,23 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsUmlaut() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Güntzelstr.");
-
 		print(result);
+		Assert.assertEquals("U Güntzelstr.", result.getLocations().get(0).name);
+	}
 
-		Assert.assertEquals("Güntzelstr. (U)", result.getLocations().get(0).name);
+	@Test
+	public void suggestLocationsPOI() throws Exception
+	{
+		final SuggestLocationsResult result = suggestLocations("schwules museum");
+		print(result);
+		Assert.assertThat(result.getLocations(), hasItem(new Location(LocationType.POI, "9980141")));
 	}
 
 	@Test
 	public void suggestLocationsAddress() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Sophienstr. 24");
-
 		print(result);
-
 		Assert.assertEquals("Sophienstr. 24", result.getLocations().get(0).name);
 	}
 
@@ -120,7 +122,6 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsIncomplete() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("nol");
-
 		print(result);
 	}
 
