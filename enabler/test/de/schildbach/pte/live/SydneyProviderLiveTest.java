@@ -29,7 +29,7 @@ import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.SydneyProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
@@ -48,14 +48,14 @@ public class SydneyProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "10101101"));
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "10101101"));
 		print(result);
 	}
 
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, -32823911, 151462824));
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, -32823911, 151462824));
 		print(result);
 	}
 

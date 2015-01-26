@@ -29,7 +29,7 @@ import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.VrnProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
@@ -48,20 +48,20 @@ public class VrnProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result1 = queryNearbyStations(new Location(LocationType.STATION, "6032236"));
+		final NearbyLocationsResult result1 = queryNearbyStations(new Location(LocationType.STATION, "6032236"));
 		print(result1);
 
-		final NearbyStationsResult result2 = queryNearbyStations(new Location(LocationType.STATION, "17001301"));
+		final NearbyLocationsResult result2 = queryNearbyStations(new Location(LocationType.STATION, "17001301"));
 		print(result2);
 	}
 
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result1 = queryNearbyStations(new Location(LocationType.ADDRESS, 49486561, 8477297));
+		final NearbyLocationsResult result1 = queryNearbyStations(new Location(LocationType.ADDRESS, 49486561, 8477297));
 		print(result1);
 
-		final NearbyStationsResult result2 = queryNearbyStations(new Location(LocationType.ADDRESS, 49757571, 6639147));
+		final NearbyLocationsResult result2 = queryNearbyStations(new Location(LocationType.ADDRESS, 49757571, 6639147));
 		print(result2);
 	}
 

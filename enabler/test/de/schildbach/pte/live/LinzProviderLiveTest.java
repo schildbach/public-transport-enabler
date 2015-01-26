@@ -29,7 +29,7 @@ import de.schildbach.pte.NetworkProvider.Accessibility;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
@@ -48,16 +48,14 @@ public class LinzProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "60500090"));
-
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "60500090"));
 		print(result);
 	}
 
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 48305726, 14287863));
-
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 48305726, 14287863));
 		print(result);
 	}
 
@@ -72,7 +70,6 @@ public class LinzProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsIncomplete() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Friedhof");
-
 		print(result);
 	}
 
@@ -80,7 +77,6 @@ public class LinzProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsWithUmlaut() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("grün");
-
 		print(result);
 	}
 
@@ -88,7 +84,6 @@ public class LinzProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsIdentified() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Leonding, Haag");
-
 		print(result);
 	}
 
@@ -96,7 +91,6 @@ public class LinzProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsCity() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Leonding");
-
 		print(result);
 	}
 

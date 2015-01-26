@@ -29,7 +29,7 @@ import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.OebbProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
@@ -48,7 +48,7 @@ public class OebbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "902006"));
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "902006"));
 
 		print(result);
 	}
@@ -56,11 +56,11 @@ public class OebbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 48200239, 16370773));
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 48200239, 16370773));
 
 		print(result);
-		assertEquals(NearbyStationsResult.Status.OK, result.status);
-		assertTrue(result.stations.size() > 0);
+		assertEquals(NearbyLocationsResult.Status.OK, result.status);
+		assertTrue(result.locations.size() > 0);
 	}
 
 	@Test

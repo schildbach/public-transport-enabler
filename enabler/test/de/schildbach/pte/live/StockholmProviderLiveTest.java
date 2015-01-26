@@ -28,7 +28,7 @@ import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.StockholmProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
@@ -47,16 +47,14 @@ public class StockholmProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "301109600"));
-
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "301109600"));
 		print(result);
 	}
 
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 59329897, 18072281));
-
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 59329897, 18072281));
 		print(result);
 	}
 
@@ -64,7 +62,6 @@ public class StockholmProviderLiveTest extends AbstractProviderLiveTest
 	public void queryDepartures() throws Exception
 	{
 		final QueryDeparturesResult result = queryDepartures("301109600", false);
-
 		print(result);
 	}
 
@@ -72,7 +69,6 @@ public class StockholmProviderLiveTest extends AbstractProviderLiveTest
 	public void queryDeparturesInvalidStation() throws Exception
 	{
 		final QueryDeparturesResult result = queryDepartures("999999", false);
-
 		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
 	}
 
@@ -80,7 +76,6 @@ public class StockholmProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocations() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Luleå Airport");
-
 		print(result);
 	}
 
@@ -88,7 +83,6 @@ public class StockholmProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsUmlaut() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("östra");
-
 		print(result);
 	}
 
@@ -99,6 +93,7 @@ public class StockholmProviderLiveTest extends AbstractProviderLiveTest
 				LocationType.STATION, "200101221", "Stockholm", "Abrahamsberg"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		print(result);
+
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		print(laterResult);
 	}
@@ -110,6 +105,7 @@ public class StockholmProviderLiveTest extends AbstractProviderLiveTest
 				new Location(LocationType.STATION, "300109205", 59340518, 18081532, "Stockholm", "Stadion"), new Date(), true, Product.ALL,
 				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
+
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		print(laterResult);
 	}

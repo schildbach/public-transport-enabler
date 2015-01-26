@@ -28,7 +28,7 @@ import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.VgsProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
@@ -47,16 +47,14 @@ public class VgsProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "8000244"));
-
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "8000244"));
 		print(result);
 	}
 
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 49234783, 6995687));
-
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 49234783, 6995687));
 		print(result);
 	}
 
@@ -64,7 +62,6 @@ public class VgsProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocations() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Flughafen");
-
 		print(result);
 	}
 
@@ -72,7 +69,6 @@ public class VgsProviderLiveTest extends AbstractProviderLiveTest
 	public void queryDepartures() throws Exception
 	{
 		final QueryDeparturesResult result = queryDepartures("8000244", false);
-
 		print(result);
 	}
 
@@ -80,7 +76,6 @@ public class VgsProviderLiveTest extends AbstractProviderLiveTest
 	public void queryDeparturesInvalidStation() throws Exception
 	{
 		final QueryDeparturesResult result = queryDepartures("999999", false);
-
 		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
 	}
 
@@ -90,6 +85,7 @@ public class VgsProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "10640", "Saarbrücken", "Hauptbahnhof"), null, new Location(
 				LocationType.STATION, "10700", "Saarbrücken", "Ostbahnhof"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
+
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		print(laterResult);
 	}

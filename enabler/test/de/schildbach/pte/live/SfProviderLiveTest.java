@@ -29,7 +29,7 @@ import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.SfProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
@@ -48,16 +48,14 @@ public class SfProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "10001017"));
-
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "10001017"));
 		print(result);
 	}
 
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 37777811, -122419481));
-
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 37777811, -122419481));
 		print(result);
 	}
 
@@ -65,7 +63,6 @@ public class SfProviderLiveTest extends AbstractProviderLiveTest
 	public void queryDepartures() throws Exception
 	{
 		final QueryDeparturesResult result = queryDepartures("10001017", false);
-
 		print(result);
 	}
 
@@ -73,7 +70,6 @@ public class SfProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsIncomplete() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Kur");
-
 		print(result);
 	}
 

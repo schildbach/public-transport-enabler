@@ -20,8 +20,10 @@ package de.schildbach.pte.live;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
+import java.util.EnumSet;
 
 import org.junit.Test;
 
@@ -30,7 +32,7 @@ import de.schildbach.pte.NetworkProvider.Accessibility;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
@@ -49,15 +51,25 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "350"));
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "350"));
 		print(result);
 	}
 
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 48135232, 11560650));
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 48135232, 11560650));
 		print(result);
+		assertTrue(result.locations.size() > 0);
+	}
+
+	@Test
+	public void nearbyLocationsByCoordinate() throws Exception
+	{
+		final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION, LocationType.POI), new Location(
+				LocationType.ADDRESS, 48135232, 11560650));
+		print(result);
+		assertTrue(result.locations.size() > 0);
 	}
 
 	@Test

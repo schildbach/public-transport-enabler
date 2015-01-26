@@ -28,7 +28,7 @@ import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.ZvvProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
@@ -47,16 +47,14 @@ public class ZvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByStation() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "8503000"));
-
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "8503000"));
 		print(result);
 	}
 
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 47378968, 8540534));
-
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 47378968, 8540534));
 		print(result);
 	}
 
@@ -64,7 +62,6 @@ public class ZvvProviderLiveTest extends AbstractProviderLiveTest
 	public void queryDepartures() throws Exception
 	{
 		final QueryDeparturesResult result = queryDepartures("8503000", false);
-
 		print(result);
 	}
 
@@ -72,7 +69,6 @@ public class ZvvProviderLiveTest extends AbstractProviderLiveTest
 	public void queryDeparturesInvalidStation() throws Exception
 	{
 		final QueryDeparturesResult result = queryDepartures("999999", false);
-
 		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
 	}
 
@@ -80,7 +76,6 @@ public class ZvvProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocations() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Flughafen");
-
 		print(result);
 	}
 

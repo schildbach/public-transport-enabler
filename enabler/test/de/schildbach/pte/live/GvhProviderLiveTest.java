@@ -29,7 +29,7 @@ import de.schildbach.pte.NetworkProvider.Accessibility;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
@@ -48,16 +48,14 @@ public class GvhProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "25000031"));
-
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "25000031"));
 		print(result);
 	}
 
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 52379497, 9735832));
-
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 52379497, 9735832));
 		print(result);
 	}
 
@@ -65,7 +63,6 @@ public class GvhProviderLiveTest extends AbstractProviderLiveTest
 	public void queryDepartures() throws Exception
 	{
 		final QueryDeparturesResult result = queryDepartures("25000031", false);
-
 		print(result);
 	}
 
@@ -73,7 +70,6 @@ public class GvhProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsIncomplete() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Kur");
-
 		print(result);
 	}
 
@@ -81,7 +77,6 @@ public class GvhProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsWithUmlaut() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("grün");
-
 		print(result);
 	}
 
@@ -89,7 +84,6 @@ public class GvhProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsIdentified() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Hannover, Hannoversche Straße");
-
 		print(result);
 	}
 
@@ -97,7 +91,6 @@ public class GvhProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsCity() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Hannover");
-
 		print(result);
 	}
 
@@ -105,7 +98,6 @@ public class GvhProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocations() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Hannover");
-
 		print(result);
 	}
 

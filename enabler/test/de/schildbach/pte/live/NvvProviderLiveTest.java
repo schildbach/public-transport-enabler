@@ -30,7 +30,7 @@ import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.NvvProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
@@ -49,24 +49,21 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "3000001"));
-
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "3000001"));
 		print(result);
 	}
 
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 50108625, 8669604));
-
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 50108625, 8669604));
 		print(result);
 	}
 
 	@Test
 	public void nearbyStationsByCoordinateKassel() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 51318447, 9496250));
-
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 51318447, 9496250));
 		print(result);
 	}
 
@@ -97,7 +94,6 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest
 	public void queryDeparturesInvalidStation() throws Exception
 	{
 		final QueryDeparturesResult result = queryDepartures("999999", false);
-
 		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
 	}
 
@@ -105,7 +101,6 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocations() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Flughafen");
-
 		print(result);
 	}
 
@@ -113,7 +108,6 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsIdentified() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Kassel Wilhelmshöhe");
-
 		print(result);
 	}
 
@@ -121,7 +115,6 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsUmlaut() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("könig");
-
 		print(result);
 	}
 

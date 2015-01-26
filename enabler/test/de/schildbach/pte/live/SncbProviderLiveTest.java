@@ -28,7 +28,7 @@ import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.SncbProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
@@ -47,16 +47,14 @@ public class SncbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "8813003"));
-
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "8813003"));
 		print(result);
 	}
 
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 50748017, 3407118));
-
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 50748017, 3407118));
 		print(result);
 	}
 
@@ -64,7 +62,6 @@ public class SncbProviderLiveTest extends AbstractProviderLiveTest
 	public void queryDepartures() throws Exception
 	{
 		final QueryDeparturesResult result = queryDepartures("8813003", false);
-
 		print(result);
 	}
 
@@ -72,7 +69,6 @@ public class SncbProviderLiveTest extends AbstractProviderLiveTest
 	public void queryDeparturesInvalidStation() throws Exception
 	{
 		final QueryDeparturesResult result = queryDepartures("999999", false);
-
 		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
 	}
 
@@ -80,7 +76,6 @@ public class SncbProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsIncomplete() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Brussel S");
-
 		print(result);
 	}
 
@@ -88,7 +83,6 @@ public class SncbProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsUmlaut() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Brüssel");
-
 		print(result);
 	}
 
@@ -96,7 +90,6 @@ public class SncbProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsAddress() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Rue Paul Janson 9, 1030 Bruxelles");
-
 		print(result);
 	}
 
@@ -107,11 +100,11 @@ public class SncbProviderLiveTest extends AbstractProviderLiveTest
 				LocationType.STATION, "8813003", "Brussel", "Centraal"), new Date(), true, null, WalkSpeed.FAST, Accessibility.NEUTRAL);
 		print(result);
 
-		if (result.context != null)
-		{
-			final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-			print(laterResult);
-		}
+		if (result.context == null)
+			return;
+
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+		print(laterResult);
 	}
 
 	@Test
@@ -121,11 +114,11 @@ public class SncbProviderLiveTest extends AbstractProviderLiveTest
 				LocationType.STATION, "207272", "Brussel", "Stadion"), new Date(), true, null, WalkSpeed.FAST, Accessibility.NEUTRAL);
 		print(result);
 
-		if (result.context != null)
-		{
-			final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-			print(laterResult);
-		}
+		if (result.context == null)
+			return;
+
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+		print(laterResult);
 	}
 
 	@Test
@@ -135,10 +128,10 @@ public class SncbProviderLiveTest extends AbstractProviderLiveTest
 				new Location(LocationType.STATION, "8500010", null, "Basel"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
 
-		if (result.context != null)
-		{
-			final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-			print(laterResult);
-		}
+		if (result.context == null)
+			return;
+
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+		print(laterResult);
 	}
 }

@@ -28,7 +28,7 @@ import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.RtProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
@@ -47,16 +47,14 @@ public class RtProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "8500010"));
-
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "8500010"));
 		print(result);
 	}
 
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 52525589, 13369548));
-
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 52525589, 13369548));
 		print(result);
 	}
 
@@ -64,7 +62,6 @@ public class RtProviderLiveTest extends AbstractProviderLiveTest
 	public void queryDepartures() throws Exception
 	{
 		final QueryDeparturesResult result = queryDepartures("8588344", false);
-
 		print(result);
 	}
 
@@ -72,7 +69,6 @@ public class RtProviderLiveTest extends AbstractProviderLiveTest
 	public void queryDeparturesInvalidStation() throws Exception
 	{
 		final QueryDeparturesResult result = queryDepartures("999999", false);
-
 		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
 	}
 
@@ -80,7 +76,6 @@ public class RtProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocations() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("haupt");
-
 		print(result);
 	}
 
@@ -88,7 +83,6 @@ public class RtProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsAddress() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Dorfstrasse 10, Dällikon, Schweiz");
-
 		print(result);
 	}
 

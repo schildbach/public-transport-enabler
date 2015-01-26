@@ -29,7 +29,7 @@ import de.schildbach.pte.NetworkProvider.Accessibility;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
@@ -48,26 +48,24 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "13000"));
-
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "13000"));
 		print(result);
 	}
 
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 51346546, 12383333));
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 51346546, 12383333));
 
 		print(result);
-		assertEquals(NearbyStationsResult.Status.OK, result.status);
-		assertTrue(result.stations.size() > 0);
+		assertEquals(NearbyLocationsResult.Status.OK, result.status);
+		assertTrue(result.locations.size() > 0);
 	}
 
 	@Test
 	public void queryDepartures() throws Exception
 	{
 		final QueryDeparturesResult result = queryDepartures("13000", false);
-
 		print(result);
 	}
 
@@ -75,7 +73,6 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest
 	public void queryDeparturesEquivs() throws Exception
 	{
 		final QueryDeparturesResult result = queryDepartures("13000", true);
-
 		print(result);
 	}
 
@@ -83,7 +80,6 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest
 	public void queryDeparturesInvalidStation() throws Exception
 	{
 		final QueryDeparturesResult result = queryDepartures("999999", false);
-
 		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
 	}
 
@@ -91,7 +87,6 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocations() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Flughafen");
-
 		print(result);
 	}
 
@@ -99,7 +94,6 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsUmlaut() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Höhle");
-
 		print(result);
 	}
 

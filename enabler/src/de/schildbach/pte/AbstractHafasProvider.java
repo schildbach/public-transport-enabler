@@ -30,6 +30,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -54,7 +55,7 @@ import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.Position;
 import de.schildbach.pte.dto.Product;
@@ -91,7 +92,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	private String clientType;
 	private Charset jsonGetStopsEncoding;
 	private boolean jsonGetStopsUseWeight = true;
-	private Charset jsonNearbyStationsEncoding;
+	private Charset jsonNearbyLocationsEncoding;
 	private boolean dominantPlanStopTime = false;
 	private boolean useIso8601 = false;
 	private String extXmlEndpoint = null;
@@ -164,7 +165,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		this.queryEndpoint = queryEndpoint;
 		this.numProductBits = numProductBits;
 		this.jsonGetStopsEncoding = jsonEncoding;
-		this.jsonNearbyStationsEncoding = jsonEncoding;
+		this.jsonNearbyLocationsEncoding = jsonEncoding;
 	}
 
 	protected void setClientType(final String clientType)
@@ -192,9 +193,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		this.jsonGetStopsUseWeight = jsonGetStopsUseWeight;
 	}
 
-	protected void setJsonNearbyStationsEncoding(final Charset jsonNearbyStationsEncoding)
+	protected void setJsonNearbyLocationsEncoding(final Charset jsonNearbyLocationsEncoding)
 	{
-		this.jsonNearbyStationsEncoding = jsonNearbyStationsEncoding;
+		this.jsonNearbyLocationsEncoding = jsonNearbyLocationsEncoding;
 	}
 
 	protected void setUseIso8601(final boolean useIso8601)
@@ -2295,26 +2296,41 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		return parsePosition(m.group(1));
 	}
 
-	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
+	public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location, final int maxDistance,
+			final int maxLocations) throws IOException
 	{
 		if (location.hasLocation())
-			return nearbyStationsByCoordinate(location.lat, location.lon, maxDistance, maxStations);
+			return nearbyLocationsByCoordinate(types, location.lat, location.lon, maxDistance, maxLocations);
 		else if (location.type == LocationType.STATION && location.hasId())
 			return nearbyStationsById(location.id);
 		else
 			throw new IllegalArgumentException("cannot handle: " + location);
 	}
 
-	protected final NearbyStationsResult nearbyStationsByCoordinate(final int lat, final int lon, final int maxDistance, final int maxStations)
-			throws IOException
+	protected final NearbyLocationsResult nearbyLocationsByCoordinate(final EnumSet<LocationType> types, final int lat, final int lon,
+			final int maxDistance, final int maxLocations) throws IOException
 	{
-		final StringBuilder uri = new StringBuilder(queryEndpoint);
-		appendJsonNearbyStationsParameters(uri, lat, lon, maxDistance, maxStations);
+		if (types.contains(LocationType.STATION))
+		{
+			final StringBuilder uri = new StringBuilder(queryEndpoint);
+			appendJsonNearbyStationsParameters(uri, lat, lon, maxDistance, maxLocations);
 
-		return jsonNearbyStations(uri.toString());
+			return jsonNearbyLocations(uri.toString());
+		}
+		else if (types.contains(LocationType.POI))
+		{
+			final StringBuilder uri = new StringBuilder(queryEndpoint);
+			appendJsonNearbyPOIsParameters(uri, lat, lon, maxDistance, maxLocations);
+
+			return jsonNearbyLocations(uri.toString());
+		}
+		else
+		{
+			return new NearbyLocationsResult(null, Collections.<Location> emptyList());
+		}
 	}
 
-	protected final NearbyStationsResult nearbyStationsById(final String id) throws IOException
+	protected final NearbyLocationsResult nearbyStationsById(final String id) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
 		appendXmlNearbyStationsParameters(uri, id);
@@ -2341,7 +2357,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	, Pattern.DOTALL);
 	private static final Pattern P_XML_NEARBY_STATIONS_MESSAGES = Pattern.compile("<Err code=\"([^\"]*)\" text=\"([^\"]*)\"");
 
-	protected final NearbyStationsResult xmlNearbyStations(final String uri) throws IOException
+	protected final NearbyLocationsResult xmlNearbyStations(final String uri) throws IOException
 	{
 		// scrape page
 		final CharSequence page = ParserUtils.scrape(uri);
@@ -2356,9 +2372,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			final String text = mMessage.group(2);
 
 			if (code.equals("H730")) // Your input is not valid
-				return new NearbyStationsResult(null, NearbyStationsResult.Status.INVALID_STATION);
+				return new NearbyLocationsResult(null, NearbyLocationsResult.Status.INVALID_ID);
 			if (code.equals("H890")) // No trains in result
-				return new NearbyStationsResult(null, stations);
+				return new NearbyLocationsResult(null, stations);
 			throw new IllegalArgumentException("unknown error " + code + ", " + text);
 		}
 
@@ -2394,7 +2410,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			}
 		}
 
-		return new NearbyStationsResult(null, stations);
+		return new NearbyLocationsResult(null, stations);
 	}
 
 	protected void appendJsonNearbyStationsParameters(final StringBuilder uri, final int lat, final int lon, final int maxDistance,
@@ -2402,17 +2418,34 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	{
 		uri.append('y');
 		uri.append("?performLocating=2&tpl=stop2json");
-		uri.append("&look_maxno=").append(maxStations != 0 ? maxStations : 200);
-		uri.append("&look_maxdist=").append(maxDistance != 0 ? maxDistance : 5000);
 		uri.append("&look_stopclass=").append(allProductsInt());
 		uri.append("&look_nv=get_stopweight|yes");
+		// get_shortjson|yes
+		// get_lines|yes
+		// combinemode|2
+		// density|80
+		// get_stopweight|yes
+		// get_infotext|yes
 		uri.append("&look_x=").append(lon);
 		uri.append("&look_y=").append(lat);
+		uri.append("&look_maxno=").append(maxStations != 0 ? maxStations : 200);
+		uri.append("&look_maxdist=").append(maxDistance != 0 ? maxDistance : 5000);
 	}
 
-	protected final NearbyStationsResult jsonNearbyStations(final String uri) throws IOException
+	protected void appendJsonNearbyPOIsParameters(final StringBuilder uri, final int lat, final int lon, final int maxDistance, final int maxStations)
 	{
-		final CharSequence page = ParserUtils.scrape(uri, null, jsonNearbyStationsEncoding);
+		uri.append('y');
+		uri.append("?performLocating=4&tpl=poi2json");
+		uri.append("&look_pois="); // all categories
+		uri.append("&look_x=").append(lon);
+		uri.append("&look_y=").append(lat);
+		uri.append("&look_maxno=").append(maxStations != 0 ? maxStations : 200);
+		uri.append("&look_maxdist=").append(maxDistance != 0 ? maxDistance : 5000);
+	}
+
+	protected final NearbyLocationsResult jsonNearbyLocations(final String uri) throws IOException
+	{
+		final CharSequence page = ParserUtils.scrape(uri, null, jsonNearbyLocationsEncoding);
 
 		// System.out.println(uri);
 		// System.out.println(page);
@@ -2423,32 +2456,55 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			final int error = head.getInt("error");
 			if (error == 0)
 			{
-				final JSONArray aStops = head.getJSONArray("stops");
-				final int nStops = aStops.length();
-				final List<Location> stations = new ArrayList<Location>(nStops);
+				final List<Location> locations = new LinkedList<Location>();
 
-				for (int i = 0; i < nStops; i++)
+				final JSONArray aStops = head.optJSONArray("stops");
+				if (aStops != null)
 				{
-					final JSONObject stop = aStops.optJSONObject(i);
-					final String id = stop.getString("extId");
-					// final String name = ParserUtils.resolveEntities(stop.getString("name"));
-					final String urlname = ParserUtils.urlDecode(stop.getString("urlname"), jsonNearbyStationsEncoding);
-					final int lat = stop.getInt("y");
-					final int lon = stop.getInt("x");
-					final int stopWeight = stop.optInt("stopweight", -1);
+					final int nStops = aStops.length();
 
-					if (stopWeight != 0)
+					for (int i = 0; i < nStops; i++)
 					{
-						final String[] placeAndName = splitStationName(urlname);
-						stations.add(new Location(LocationType.STATION, id, lat, lon, placeAndName[0], placeAndName[1]));
+						final JSONObject stop = aStops.optJSONObject(i);
+						final String id = stop.getString("extId");
+						// final String name = ParserUtils.resolveEntities(stop.getString("name"));
+						final String urlname = ParserUtils.urlDecode(stop.getString("urlname"), jsonNearbyLocationsEncoding);
+						final int lat = stop.getInt("y");
+						final int lon = stop.getInt("x");
+						final int stopWeight = stop.optInt("stopweight", -1);
+
+						if (stopWeight != 0)
+						{
+							final String[] placeAndName = splitStationName(urlname);
+							locations.add(new Location(LocationType.STATION, id, lat, lon, placeAndName[0], placeAndName[1]));
+						}
 					}
 				}
 
-				return new NearbyStationsResult(null, stations);
+				final JSONArray aPOIs = head.optJSONArray("pois");
+				if (aPOIs != null)
+				{
+					final int nPOIs = aPOIs.length();
+
+					for (int i = 0; i < nPOIs; i++)
+					{
+						final JSONObject poi = aPOIs.optJSONObject(i);
+						final String id = poi.getString("extId");
+						// final String name = ParserUtils.resolveEntities(stop.getString("name"));
+						final String urlname = ParserUtils.urlDecode(poi.getString("urlname"), jsonNearbyLocationsEncoding);
+						final int lat = poi.getInt("y");
+						final int lon = poi.getInt("x");
+
+						final String[] placeAndName = splitPOI(urlname);
+						locations.add(new Location(LocationType.POI, id, lat, lon, placeAndName[0], placeAndName[1]));
+					}
+				}
+
+				return new NearbyLocationsResult(null, locations);
 			}
 			else if (error == 2)
 			{
-				return new NearbyStationsResult(null, NearbyStationsResult.Status.SERVICE_DOWN);
+				return new NearbyLocationsResult(null, NearbyLocationsResult.Status.SERVICE_DOWN);
 			}
 			else
 			{
@@ -2473,7 +2529,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			.compile("REQMapRoute0\\.Location0\\.X=(-?\\d+)&(?:amp;)?REQMapRoute0\\.Location0\\.Y=(-?\\d+)&");
 	private final static Pattern P_NEARBY_FINE_LOCATION = Pattern.compile("[\\?&;]input=(\\d+)&[^\"]*\">([^<]*)<");
 
-	protected final NearbyStationsResult htmlNearbyStations(final String uri) throws IOException
+	protected final NearbyLocationsResult htmlNearbyStations(final String uri) throws IOException
 	{
 		final List<Location> stations = new ArrayList<Location>();
 
@@ -2516,7 +2572,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			}
 		}
 
-		return new NearbyStationsResult(null, stations);
+		return new NearbyLocationsResult(null, stations);
 	}
 
 	private static final Pattern P_LINE_SBAHN = Pattern.compile("SN?\\d*");

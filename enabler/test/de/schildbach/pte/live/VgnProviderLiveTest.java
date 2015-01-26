@@ -26,7 +26,7 @@ import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.VgnProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
@@ -45,14 +45,14 @@ public class VgnProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "3000510"));
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "3000510"));
 		print(result);
 	}
 
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 49455472, 11079655));
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 49455472, 11079655));
 		print(result);
 	}
 
@@ -94,6 +94,7 @@ public class VgnProviderLiveTest extends AbstractProviderLiveTest
 				"poiID:246:9564000:1:Grundschule Grimmstr.:Nürnberg:Grundschule Grimmstr.:ANY:POI:4436708:678322:NAV4:VGN", 49468692, 11125334,
 				"Nürnberg", "Grundschule Grimmstr."), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
+
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		print(laterResult);
 	}
@@ -105,6 +106,7 @@ public class VgnProviderLiveTest extends AbstractProviderLiveTest
 				LocationType.ADDRESS, null, 49437392, 11094524, "Nürnberg", "Wodanstraße 25"), new Date(), false, Product.ALL, WalkSpeed.FAST,
 				Accessibility.NEUTRAL);
 		print(result);
+
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		print(laterResult);
 	}

@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -40,8 +41,8 @@ import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.LineDestination;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyStationsResult;
-import de.schildbach.pte.dto.NearbyStationsResult.Status;
+import de.schildbach.pte.dto.NearbyLocationsResult;
+import de.schildbach.pte.dto.NearbyLocationsResult.Status;
 import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.Position;
 import de.schildbach.pte.dto.Product;
@@ -749,14 +750,15 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 	@Override
 	protected boolean hasCapability(final Capability capability)
 	{
-		if (capability == Capability.SUGGEST_LOCATIONS || capability == Capability.NEARBY_STATIONS || capability == Capability.DEPARTURES
+		if (capability == Capability.SUGGEST_LOCATIONS || capability == Capability.NEARBY_LOCATIONS || capability == Capability.DEPARTURES
 				|| capability == Capability.TRIPS)
 			return true;
 		else
 			return false;
 	}
 
-	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
+	public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location, final int maxDistance,
+			final int maxLocations) throws IOException
 	{
 		final ResultHeader resultHeader = new ResultHeader(SERVER_PRODUCT, SERVER_VERSION, 0, null);
 
@@ -786,7 +788,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 			throw new IllegalArgumentException("Unhandled location type: " + location.type);
 		}
 
-		final String queryUri = uri() + queryUriType + "places_nearby?type[]=stop_point" + "&distance=" + maxDistance + "&count=" + maxStations
+		final String queryUri = uri() + queryUriType + "places_nearby?type[]=stop_point" + "&distance=" + maxDistance + "&count=" + maxLocations
 				+ "&depth=0";
 		final CharSequence page = ParserUtils.scrape(queryUri, authorization);
 
@@ -802,7 +804,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 			// faulty.
 			if (nbResults == 0)
 			{
-				return new NearbyStationsResult(resultHeader, Status.INVALID_STATION);
+				return new NearbyLocationsResult(resultHeader, Status.INVALID_ID);
 			}
 			else
 			{
@@ -823,7 +825,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 						stations.add(nearbyLocation);
 				}
 
-				return new NearbyStationsResult(resultHeader, stations);
+				return new NearbyLocationsResult(resultHeader, stations);
 			}
 		}
 		catch (final JSONException jsonExc)

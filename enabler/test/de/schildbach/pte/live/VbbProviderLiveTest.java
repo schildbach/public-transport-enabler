@@ -31,7 +31,7 @@ import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.VbbProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
@@ -50,23 +50,23 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "9007102"));
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "9007102"));
 		print(result);
 	}
 
 	@Test
 	public void nearbyStationsInvalidStation() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "2449475"));
-		assertEquals(NearbyStationsResult.Status.INVALID_STATION, result.status);
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "2449475"));
+		assertEquals(NearbyLocationsResult.Status.INVALID_ID, result.status);
 	}
 
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 52548505, 13388640));
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 52548505, 13388640));
 		print(result);
-		assertTrue(result.stations.size() > 0);
+		assertTrue(result.locations.size() > 0);
 	}
 
 	@Test
@@ -131,8 +131,10 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "9056102", "Berlin", "Nollendorfplatz"), null, new Location(
 				LocationType.STATION, "9013103", "Berlin", "Prinzenstraße"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
+
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		print(laterResult);
+
 		final QueryTripsResult earlierResult = queryMoreTrips(laterResult.context, false);
 		print(earlierResult);
 	}

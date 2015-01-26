@@ -22,12 +22,14 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
+import java.util.EnumSet;
 
 import de.schildbach.pte.NetworkProvider;
 import de.schildbach.pte.NetworkProvider.Accessibility;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Location;
-import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.LocationType;
+import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsContext;
@@ -46,7 +48,7 @@ public abstract class AbstractProviderLiveTest
 		this.provider = provider;
 	}
 
-	protected final void print(final NearbyStationsResult result)
+	protected final void print(final NearbyLocationsResult result)
 	{
 		System.out.println(result);
 	}
@@ -73,15 +75,20 @@ public abstract class AbstractProviderLiveTest
 		// System.out.println(trip);
 	}
 
-	protected final NearbyStationsResult queryNearbyStations(final Location location) throws IOException
+	protected final NearbyLocationsResult queryNearbyStations(final Location location) throws IOException
 	{
-		return queryNearbyStations(location, 0, 0);
+		return queryNearbyLocations(EnumSet.of(LocationType.STATION), location, 0, 0);
 	}
 
-	protected final NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations)
-			throws IOException
+	protected final NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location) throws IOException
 	{
-		return provider.queryNearbyStations(location, maxDistance, maxStations);
+		return queryNearbyLocations(types, location, 0, 0);
+	}
+
+	protected final NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location, final int maxDistance,
+			final int maxStations) throws IOException
+	{
+		return provider.queryNearbyLocations(types, location, maxDistance, maxStations);
 	}
 
 	protected final QueryDeparturesResult queryDepartures(final String stationId, final boolean equivs) throws IOException

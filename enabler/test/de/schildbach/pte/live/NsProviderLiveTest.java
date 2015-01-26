@@ -28,7 +28,7 @@ import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.NsProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -46,16 +46,14 @@ public class NsProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "8800004"));
-
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "8800004"));
 		print(result);
 	}
 
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 52377548, 4901218));
-
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 52377548, 4901218));
 		print(result);
 	}
 
@@ -63,7 +61,6 @@ public class NsProviderLiveTest extends AbstractProviderLiveTest
 	public void queryDepartures() throws Exception
 	{
 		final QueryDeparturesResult result = queryDepartures("8800004", false);
-
 		print(result);
 	}
 
@@ -71,7 +68,6 @@ public class NsProviderLiveTest extends AbstractProviderLiveTest
 	public void queryDeparturesInvalidStation() throws Exception
 	{
 		final QueryDeparturesResult result = queryDepartures("999999", false);
-
 		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
 	}
 
@@ -79,7 +75,6 @@ public class NsProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsIncomplete() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Brussel S");
-
 		print(result);
 	}
 
@@ -87,7 +82,6 @@ public class NsProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsUmlaut() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Brüssel");
-
 		print(result);
 	}
 
@@ -96,7 +90,7 @@ public class NsProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8400058", null, "Amsterdam Centraal"), null, new Location(
 				LocationType.STATION, "8400061", null, "Amsterdam Zuid"), new Date(), true, null, WalkSpeed.FAST, Accessibility.NEUTRAL);
-
 		print(result);
+		assertEquals(QueryTripsResult.Status.OK, result.status);
 	}
 }

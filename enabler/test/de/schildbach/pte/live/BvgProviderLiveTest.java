@@ -30,7 +30,7 @@ import de.schildbach.pte.NetworkProvider.Accessibility;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
@@ -49,24 +49,23 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "9220302"));
-		assertEquals(NearbyStationsResult.Status.OK, result.status);
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "9220302"));
+		assertEquals(NearbyLocationsResult.Status.OK, result.status);
 		print(result);
 	}
 
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 52486400, 13350744));
-
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 52486400, 13350744));
 		print(result);
 	}
 
 	@Test
 	public void nearbyStationsInvalidStation() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "2449475"));
-		assertEquals(NearbyStationsResult.Status.INVALID_STATION, result.status);
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "2449475"));
+		assertEquals(NearbyLocationsResult.Status.INVALID_ID, result.status);
 	}
 
 	@Test

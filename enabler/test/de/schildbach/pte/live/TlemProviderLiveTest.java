@@ -29,7 +29,7 @@ import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.TlemProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
@@ -48,17 +48,17 @@ public class TlemProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result1 = queryNearbyStations(new Location(LocationType.STATION, "1001003"));
+		final NearbyLocationsResult result1 = queryNearbyStations(new Location(LocationType.STATION, "1001003"));
 		print(result1);
 
-		final NearbyStationsResult result2 = queryNearbyStations(new Location(LocationType.STATION, "1000086"));
+		final NearbyLocationsResult result2 = queryNearbyStations(new Location(LocationType.STATION, "1000086"));
 		print(result2);
 	}
 
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 51507161, -0127144));
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 51507161, -0127144));
 		print(result);
 	}
 

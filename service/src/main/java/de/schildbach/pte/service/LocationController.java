@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,6 +18,7 @@
 package de.schildbach.pte.service;
 
 import java.io.IOException;
+import java.util.EnumSet;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,7 +29,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import de.schildbach.pte.RtProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
 
 /**
@@ -48,9 +49,9 @@ public class LocationController
 
 	@RequestMapping(value = "/location/nearby", method = RequestMethod.GET)
 	@ResponseBody
-	public NearbyStationsResult nearby(@RequestParam("lat") final int lat, @RequestParam("lon") final int lon) throws IOException
+	public NearbyLocationsResult nearby(@RequestParam("lat") final int lat, @RequestParam("lon") final int lon) throws IOException
 	{
 		final Location location = new Location(LocationType.ANY, lat, lon);
-		return provider.queryNearbyStations(location, 5000, 100);
+		return provider.queryNearbyLocations(EnumSet.of(LocationType.STATION, LocationType.POI), location, 5000, 100);
 	}
 }

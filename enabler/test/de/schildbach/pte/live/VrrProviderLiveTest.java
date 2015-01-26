@@ -31,7 +31,7 @@ import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.VrrProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
@@ -50,17 +50,17 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "20019904"));
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "20019904"));
 		print(result);
 	}
 
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 51218693, 6777785));
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 51218693, 6777785));
 		print(result);
 
-		final NearbyStationsResult result2 = queryNearbyStations(new Location(LocationType.ADDRESS, 51719648, 8754330));
+		final NearbyLocationsResult result2 = queryNearbyStations(new Location(LocationType.ADDRESS, 51719648, 8754330));
 		print(result2);
 	}
 

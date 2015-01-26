@@ -26,7 +26,7 @@ import de.schildbach.pte.NetworkProvider.Accessibility;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
@@ -45,8 +45,7 @@ public class AtcProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "740"));
-
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "740"));
 		print(result);
 	}
 
@@ -54,8 +53,7 @@ public class AtcProviderLiveTest extends AbstractProviderLiveTest
 	public void nearbyStationsByCoordinate() throws Exception
 	{
 		// TODO bad coordinate!
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 8168907, 10609969));
-
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 8168907, 10609969));
 		print(result);
 	}
 
@@ -63,7 +61,6 @@ public class AtcProviderLiveTest extends AbstractProviderLiveTest
 	public void queryDepartures() throws Exception
 	{
 		final QueryDeparturesResult result = queryDepartures("740", false);
-
 		print(result);
 	}
 
@@ -71,7 +68,6 @@ public class AtcProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocations() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("ponte");
-
 		print(result);
 	}
 
@@ -79,7 +75,6 @@ public class AtcProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsWithUmlaut() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("grünwink");
-
 		print(result);
 	}
 

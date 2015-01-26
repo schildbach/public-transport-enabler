@@ -25,6 +25,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Currency;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -53,7 +54,7 @@ import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.LineDestination;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.Position;
 import de.schildbach.pte.dto.Product;
@@ -507,23 +508,37 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 	}
 
-	private StringBuilder xmlCoordRequestParameters(final int lat, final int lon, final int maxDistance, final int maxStations)
+	private StringBuilder xmlCoordRequestParameters(final EnumSet<LocationType> types, final int lat, final int lon, final int maxDistance,
+			final int maxLocations)
 	{
 		final StringBuilder parameters = new StringBuilder();
 		appendCommonRequestParams(parameters, "XML");
 		parameters.append("&coord=").append(String.format(Locale.ENGLISH, "%2.6f:%2.6f:WGS84", latLonToDouble(lon), latLonToDouble(lat)));
 		if (useStringCoordListOutputFormat)
 			parameters.append("&coordListOutputFormat=STRING");
-		parameters.append("&max=").append(maxStations != 0 ? maxStations : 50);
-		parameters.append("&inclFilter=1&radius_1=").append(maxDistance != 0 ? maxDistance : 1320);
-		parameters.append("&type_1=STOP"); // ENTRANCE, BUS_POINT, POI_POINT
+		parameters.append("&max=").append(maxLocations != 0 ? maxLocations : 50);
+		parameters.append("&inclFilter=1");
+		int i = 1;
+		for (final LocationType type : types)
+		{
+			parameters.append("&radius_").append(i).append('=').append(maxDistance != 0 ? maxDistance : 1320);
+			parameters.append("&type_").append(i).append('=');
+			if (type == LocationType.STATION)
+				parameters.append("STOP");
+			else if (type == LocationType.POI)
+				parameters.append("POI_POINT");
+			else
+				throw new IllegalArgumentException("cannot handle location type: " + type); // ENTRANCE, BUS_POINT
+			i++;
+		}
 
 		return parameters;
 	}
 
-	protected NearbyStationsResult xmlCoordRequest(final int lat, final int lon, final int maxDistance, final int maxStations) throws IOException
+	protected NearbyLocationsResult xmlCoordRequest(final EnumSet<LocationType> types, final int lat, final int lon, final int maxDistance,
+			final int maxStations) throws IOException
 	{
-		final StringBuilder parameters = xmlCoordRequestParameters(lat, lon, maxDistance, maxStations);
+		final StringBuilder parameters = xmlCoordRequestParameters(types, lat, lon, maxDistance, maxStations);
 
 		final StringBuilder uri = new StringBuilder(coordEndpoint);
 		if (!httpPost)
@@ -551,7 +566,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			XmlPullUtil.enter(pp, "coordInfoRequest");
 			XmlPullUtil.skipExit(pp, "coordInfoRequest");
 
-			final List<Location> stations = new ArrayList<Location>();
+			final List<Location> locations = new ArrayList<Location>();
 
 			if (XmlPullUtil.test(pp, "coordInfoItemList"))
 			{
@@ -559,10 +574,19 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 				while (XmlPullUtil.test(pp, "coordInfoItem"))
 				{
-					if (!"STOP".equals(XmlPullUtil.attr(pp, "type")))
-						throw new RuntimeException("unknown type");
+					final String type = XmlPullUtil.attr(pp, "type");
+					final LocationType locationType;
+					if ("STOP".equals(type))
+						locationType = LocationType.STATION;
+					else if ("POI_POINT".equals(type))
+						locationType = LocationType.POI;
+					else
+						throw new IllegalStateException("unknown type: " + type);
 
-					final String id = XmlPullUtil.attr(pp, "id");
+					String id = XmlPullUtil.optAttr(pp, "stateless", null);
+					if (id == null)
+						id = XmlPullUtil.attr(pp, "id");
+
 					final String name = normalizeLocationName(XmlPullUtil.optAttr(pp, "name", null));
 					final String place = normalizeLocationName(XmlPullUtil.optAttr(pp, "locality", null));
 
@@ -574,13 +598,13 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					XmlPullUtil.skipExit(pp, "coordInfoItem");
 
 					if (name != null)
-						stations.add(new Location(LocationType.STATION, id, coord, place, name));
+						locations.add(new Location(locationType, id, coord, place, name));
 				}
 
 				XmlPullUtil.skipExit(pp, "coordInfoItemList");
 			}
 
-			return new NearbyStationsResult(header, stations);
+			return new NearbyLocationsResult(header, locations);
 		}
 		catch (final XmlPullParserException x)
 		{
@@ -593,9 +617,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 	}
 
-	protected NearbyStationsResult mobileCoordRequest(final int lat, final int lon, final int maxDistance, final int maxStations) throws IOException
+	protected NearbyLocationsResult mobileCoordRequest(final EnumSet<LocationType> types, final int lat, final int lon, final int maxDistance,
+			final int maxStations) throws IOException
 	{
-		final StringBuilder parameters = xmlCoordRequestParameters(lat, lon, maxDistance, maxStations);
+		final StringBuilder parameters = xmlCoordRequestParameters(types, lat, lon, maxDistance, maxStations);
 
 		final StringBuilder uri = new StringBuilder(coordEndpoint);
 		if (!httpPost)
@@ -633,8 +658,13 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 					final String name = normalizeLocationName(XmlPullUtil.valueTag(pp, "de"));
 					final String type = XmlPullUtil.valueTag(pp, "ty");
-					if (!"STOP".equals(type))
-						throw new RuntimeException("unknown type");
+					final LocationType locationType;
+					if ("STOP".equals(type))
+						locationType = LocationType.STATION;
+					else if ("POI_POINT".equals(type))
+						locationType = LocationType.POI;
+					else
+						throw new IllegalStateException("unknown type: " + type);
 
 					final String id = XmlPullUtil.valueTag(pp, "id");
 					XmlPullUtil.valueTag(pp, "omc");
@@ -645,7 +675,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					XmlPullUtil.valueTag(pp, "ds");
 					final Point coord = parseCoord(XmlPullUtil.valueTag(pp, "c"));
 
-					stations.add(new Location(LocationType.STATION, id, coord, place, name));
+					stations.add(new Location(locationType, id, coord, place, name));
 
 					XmlPullUtil.skipExit(pp, "pi");
 				}
@@ -655,7 +685,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 			XmlPullUtil.skipExit(pp, "ci");
 
-			return new NearbyStationsResult(header, stations);
+			return new NearbyLocationsResult(header, stations);
 		}
 		catch (final XmlPullParserException x)
 		{
@@ -867,10 +897,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			return null;
 	}
 
-	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
+	public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location, final int maxDistance,
+			final int maxLocations) throws IOException
 	{
 		if (location.hasLocation())
-			return xmlCoordRequest(location.lat, location.lon, maxDistance, maxStations);
+			return xmlCoordRequest(types, location.lat, location.lon, maxDistance, maxLocations);
 
 		if (location.type != LocationType.STATION)
 			throw new IllegalArgumentException("cannot handle: " + location.type);
@@ -878,10 +909,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		if (!location.hasId())
 			throw new IllegalArgumentException("at least one of stationId or lat/lon must be given");
 
-		return nearbyStationsRequest(location.id, maxStations);
+		return nearbyStationsRequest(location.id, maxLocations);
 	}
 
-	private NearbyStationsResult nearbyStationsRequest(final String stationId, final int maxStations) throws IOException
+	private NearbyLocationsResult nearbyStationsRequest(final String stationId, final int maxLocations) throws IOException
 	{
 		final StringBuilder parameters = new StringBuilder();
 		appendCommonRequestParams(parameters, "XML");
@@ -929,19 +960,23 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						else if ("assigned".equals(nameState))
 							stations.add(location);
 					}
+					else
+					{
+						throw new IllegalStateException("cannot handle: " + location.type);
+					}
 				}
 			});
 
 			if ("notidentified".equals(nameState))
-				return new NearbyStationsResult(header, NearbyStationsResult.Status.INVALID_STATION);
+				return new NearbyLocationsResult(header, NearbyLocationsResult.Status.INVALID_ID);
 
 			if (ownStation.get() != null && !stations.contains(ownStation))
 				stations.add(ownStation.get());
 
-			if (maxStations == 0 || maxStations >= stations.size())
-				return new NearbyStationsResult(header, stations);
+			if (maxLocations == 0 || maxLocations >= stations.size())
+				return new NearbyLocationsResult(header, stations);
 			else
-				return new NearbyStationsResult(header, stations.subList(0, maxStations));
+				return new NearbyLocationsResult(header, stations.subList(0, maxLocations));
 		}
 		catch (final XmlPullParserException x)
 		{

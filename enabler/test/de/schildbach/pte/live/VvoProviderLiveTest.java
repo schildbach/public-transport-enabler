@@ -31,7 +31,7 @@ import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.VvoProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
@@ -50,16 +50,14 @@ public class VvoProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "33000013"));
-
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "33000013"));
 		print(result);
 	}
 
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 51052467, 13733196));
-
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 51052467, 13733196));
 		print(result);
 	}
 
@@ -67,7 +65,6 @@ public class VvoProviderLiveTest extends AbstractProviderLiveTest
 	public void queryDepartures() throws Exception
 	{
 		final QueryDeparturesResult result = queryDepartures("100", false);
-
 		print(result);
 	}
 
@@ -75,7 +72,6 @@ public class VvoProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsIncomplete() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Kur");
-
 		print(result);
 	}
 
@@ -83,7 +79,6 @@ public class VvoProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsWithUmlaut() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Hülßestraße");
-
 		print(result);
 	}
 
@@ -99,7 +94,6 @@ public class VvoProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestAddressLocation() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Dresden, Töpferstr. 10");
-
 		print(result);
 	}
 

@@ -26,37 +26,37 @@ import com.google.common.base.MoreObjects.ToStringHelper;
 /**
  * @author Andreas Schildbach
  */
-public final class NearbyStationsResult implements Serializable
+public final class NearbyLocationsResult implements Serializable
 {
 	public enum Status
 	{
-		OK, INVALID_STATION, SERVICE_DOWN
+		OK, INVALID_ID, SERVICE_DOWN
 	}
 
 	public final ResultHeader header;
 	public final Status status;
-	public final List<Location> stations;
+	public final List<Location> locations;
 
-	public NearbyStationsResult(final ResultHeader header, final List<Location> stations)
+	public NearbyLocationsResult(final ResultHeader header, final List<Location> locations)
 	{
 		this.header = header;
 		this.status = Status.OK;
-		this.stations = stations;
+		this.locations = locations;
 	}
 
-	public NearbyStationsResult(final ResultHeader header, final Status status)
+	public NearbyLocationsResult(final ResultHeader header, final Status status)
 	{
 		this.header = header;
 		this.status = status;
-		this.stations = null;
+		this.locations = null;
 	}
 
 	@Override
 	public String toString()
 	{
 		final ToStringHelper helper = MoreObjects.toStringHelper(this).addValue(status);
-		if (stations != null)
-			helper.add("size", stations.size()).add("stations", stations);
+		if (locations != null)
+			helper.add("size", locations.size()).add("locations", locations);
 		return helper.toString();
 	}
 }

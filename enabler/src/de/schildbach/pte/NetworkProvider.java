@@ -20,10 +20,12 @@ package de.schildbach.pte;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.Set;
 
 import de.schildbach.pte.dto.Location;
-import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.LocationType;
+import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
@@ -43,8 +45,8 @@ public interface NetworkProvider
 	{
 		/* can suggest locations */
 		SUGGEST_LOCATIONS,
-		/* can determine nearby stations */
-		NEARBY_STATIONS,
+		/* can determine nearby locations */
+		NEARBY_LOCATIONS,
 		/* can query for departures */
 		DEPARTURES,
 		/* can query trips */
@@ -71,18 +73,20 @@ public interface NetworkProvider
 	boolean hasCapabilities(final Capability... capabilities);
 
 	/**
-	 * Determine stations near to given location. At least one of stationId or lat/lon pair must be present.
+	 * Find locations near to given location. At least one of lat/lon pair or station id must be present.
 	 * 
+	 * @param types
+	 *            types of locations to find
 	 * @param location
 	 *            location to determine nearby stations (optional)
 	 * @param maxDistance
 	 *            maximum distance in meters, or {@code 0}
-	 * @param maxStations
-	 *            maximum number of stations, or {@code 0}
+	 * @param maxLocations
+	 *            maximum number of locations, or {@code 0}
 	 * @return nearby stations
 	 * @throws IOException
 	 */
-	NearbyStationsResult queryNearbyStations(Location location, int maxDistance, int maxStations) throws IOException;
+	NearbyLocationsResult queryNearbyLocations(EnumSet<LocationType> types, Location location, int maxDistance, int maxLocations) throws IOException;
 
 	/**
 	 * Get departures at a given station, probably live

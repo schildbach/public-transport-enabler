@@ -28,7 +28,7 @@ import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.VsnProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
@@ -47,16 +47,14 @@ public class VsnProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "8000128"));
-
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "8000128"));
 		print(result);
 	}
 
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 51536614, 9925673));
-
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 51536614, 9925673));
 		print(result);
 	}
 
@@ -64,7 +62,6 @@ public class VsnProviderLiveTest extends AbstractProviderLiveTest
 	public void queryDepartures() throws Exception
 	{
 		final QueryDeparturesResult result = queryDepartures("8000128", false);
-
 		print(result);
 	}
 
@@ -72,7 +69,6 @@ public class VsnProviderLiveTest extends AbstractProviderLiveTest
 	public void queryDeparturesInvalidStation() throws Exception
 	{
 		final QueryDeparturesResult result = queryDepartures("999999", false);
-
 		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
 	}
 
@@ -80,7 +76,6 @@ public class VsnProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocations() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Hannover");
-
 		print(result);
 	}
 
@@ -88,7 +83,6 @@ public class VsnProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsUmlaut() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Göttingen");
-
 		print(result);
 	}
 
@@ -96,7 +90,6 @@ public class VsnProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsWithoutCoordinatesInResult() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("aachen");
-
 		print(result);
 	}
 
@@ -107,6 +100,7 @@ public class VsnProviderLiveTest extends AbstractProviderLiveTest
 				LocationType.STATION, "1140061", null, "Göttingen Nikolausberger Weg"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		print(result);
+
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		print(laterResult);
 	}

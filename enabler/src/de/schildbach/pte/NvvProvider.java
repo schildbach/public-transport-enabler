@@ -18,13 +18,14 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
+import java.util.EnumSet;
 import java.util.regex.Matcher;
 
 import com.google.common.base.Charsets;
 
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.util.StringReplaceReader;
 
@@ -160,11 +161,12 @@ public class NvvProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
+	public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location, final int maxDistance,
+			final int maxLocations) throws IOException
 	{
 		if (location.hasLocation())
 		{
-			return nearbyStationsByCoordinate(location.lat, location.lon, maxDistance, maxStations);
+			return nearbyLocationsByCoordinate(types, location.lat, location.lon, maxDistance, maxLocations);
 		}
 		else if (location.type == LocationType.STATION && location.hasId())
 		{

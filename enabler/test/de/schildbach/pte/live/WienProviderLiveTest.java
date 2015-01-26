@@ -23,6 +23,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
+import java.util.EnumSet;
 
 import org.junit.Test;
 
@@ -31,7 +32,7 @@ import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.WienProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
@@ -50,24 +51,30 @@ public class WienProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStations() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.STATION, "60203090"));
-
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "60203090"));
 		print(result);
 	}
 
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyStationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 48207355, 16370602));
-
+		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 48207355, 16370602));
 		print(result);
+	}
+
+	@Test
+	public void nearbyLocationsByCoordinate() throws Exception
+	{
+		final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION, LocationType.POI), new Location(
+				LocationType.ADDRESS, 48207355, 16370602));
+		print(result);
+		assertTrue(result.locations.size() > 0);
 	}
 
 	@Test
 	public void queryDepartures() throws Exception
 	{
 		final QueryDeparturesResult result = queryDepartures("60203090", false);
-
 		print(result);
 	}
 
@@ -75,7 +82,6 @@ public class WienProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsIncomplete() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("Kur");
-
 		print(result);
 	}
 
@@ -83,7 +89,6 @@ public class WienProviderLiveTest extends AbstractProviderLiveTest
 	public void suggestLocationsWithUmlaut() throws Exception
 	{
 		final SuggestLocationsResult result = suggestLocations("grün");
-
 		print(result);
 	}
 

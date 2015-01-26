@@ -26,6 +26,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -42,7 +43,7 @@ import com.google.common.base.Charsets;
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyStationsResult;
+import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
@@ -286,7 +287,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 		return locations;
 	}
 
-	private NearbyStationsResult jsonCoordRequest(final int lat, final int lon, final int maxDistance, final int maxStations) throws IOException
+	private NearbyLocationsResult jsonCoordRequest(final int lat, final int lon, final int maxDistance, final int maxStations) throws IOException
 	{
 		final StringBuilder parameters = buildCommonRequestParams("SearchTripPoint", "json");
 		parameters.append(String.format(Locale.FRENCH, "&Latitude=%2.6f&Longitude=%2.6f", latLonToDouble(lat), latLonToDouble(lon)));
@@ -308,8 +309,8 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 
 			if (status != 200)
 			{
-				return new NearbyStationsResult(HEADER, status == 300 ? NearbyStationsResult.Status.INVALID_STATION
-						: NearbyStationsResult.Status.SERVICE_DOWN);
+				return new NearbyLocationsResult(HEADER, status == 300 ? NearbyLocationsResult.Status.INVALID_ID
+						: NearbyLocationsResult.Status.SERVICE_DOWN);
 			}
 
 			JSONArray dataArray = head.getJSONArray("Data");
@@ -319,7 +320,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 				stations.add(parseJsonTransportLocation(data));
 			}
 
-			return new NearbyStationsResult(HEADER, stations);
+			return new NearbyLocationsResult(HEADER, stations);
 		}
 		catch (final JSONException x)
 		{
@@ -616,7 +617,8 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 		return ((Context) context).queryMore(this, later);
 	}
 
-	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
+	public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location, final int maxDistance,
+			final int maxLocations) throws IOException
 	{
 		Location queryLocation = location;
 		if (!queryLocation.hasLocation())
@@ -629,7 +631,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 		if (queryLocation == null)
 			throw new IllegalArgumentException("null location or station not found");
 
-		return jsonCoordRequest(location.lat, location.lon, maxDistance, maxStations);
+		return jsonCoordRequest(location.lat, location.lon, maxDistance, maxLocations);
 	}
 
 	public QueryTripsResult queryTrips(final Location from, final Location via, final Location to, final Date date, final boolean dep,
