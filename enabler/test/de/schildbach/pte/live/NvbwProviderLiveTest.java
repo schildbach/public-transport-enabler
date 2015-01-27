@@ -60,10 +60,10 @@ public class NvbwProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyLocationsResult result1 = queryNearbyStations(new Location(LocationType.ADDRESS, 48778953, 9178963));
+		final NearbyLocationsResult result1 = queryNearbyStations(Location.coord(48778953, 9178963));
 		print(result1);
 
-		final NearbyLocationsResult result2 = queryNearbyStations(new Location(LocationType.ADDRESS, 48493550, 9205656));
+		final NearbyLocationsResult result2 = queryNearbyStations(Location.coord(48493550, 9205656));
 		print(result2);
 	}
 

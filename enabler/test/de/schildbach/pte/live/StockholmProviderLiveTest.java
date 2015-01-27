@@ -54,7 +54,7 @@ public class StockholmProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 59329897, 18072281));
+		final NearbyLocationsResult result = queryNearbyStations(Location.coord(59329897, 18072281));
 		print(result);
 	}
 

@@ -58,7 +58,7 @@ public class TlemProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 51507161, -0127144));
+		final NearbyLocationsResult result = queryNearbyStations(Location.coord(51507161, -0127144));
 		print(result);
 	}
 
@@ -193,6 +193,16 @@ public class TlemProviderLiveTest extends AbstractProviderLiveTest
 				"poiID:48863:31117134:-1:Statue:Ham (London):Statue:ANY:POI:517246:826916:TFLV:uk", 51444620, -314316, "Ham (London)", "Statue"),
 				null, new Location(LocationType.ADDRESS, "streetID:106269::31117001:-1", "London", "Cannon Street, London"), new Date(), true,
 				Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		print(result);
+	}
+
+	@Test
+	public void tripFromAddress() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(
+				new Location(LocationType.ADDRESS, "streetID:203417::31117006:-1", "London", "Kings Cross, London"), null, new Location(
+						LocationType.STATION, "1002070", 51508530, 46706, "Royal Albert", "Royal Albert"), new Date(), true, Product.ALL,
+				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
 	}
 

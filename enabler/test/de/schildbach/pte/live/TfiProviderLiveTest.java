@@ -55,7 +55,7 @@ public class TfiProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 53348656, -6262221));
+		final NearbyLocationsResult result = queryNearbyStations(Location.coord(53348656, -6262221));
 		print(result);
 	}
 

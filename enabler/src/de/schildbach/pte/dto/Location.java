@@ -53,6 +53,11 @@ public final class Location implements Serializable
 
 		checkArgument(id == null || id.length() > 0, "ID cannot be the empty string");
 		checkArgument(place == null || name != null, "place '%s' without name cannot exist", place);
+		if (type == LocationType.COORD)
+		{
+			checkArgument(hasLocation(), "coordinates missing");
+			checkArgument(place == null && name == null, "coordinates cannot have place or name");
+		}
 	}
 
 	public Location(final LocationType type, final String id, final Point coord, final String place, final String name)
@@ -62,24 +67,12 @@ public final class Location implements Serializable
 
 	public Location(final LocationType type, final String id, final String place, final String name)
 	{
-		this.type = checkNotNull(type);
-		this.id = id;
-		this.lat = 0;
-		this.lon = 0;
-		this.place = place;
-		this.name = name;
-
-		checkArgument(place == null || name != null, "place '%s' without name cannot exist", place);
+		this(type, id, 0, 0, place, name);
 	}
 
 	public Location(final LocationType type, final String id, final int lat, final int lon)
 	{
-		this.type = checkNotNull(type);
-		this.id = id;
-		this.lat = lat;
-		this.lon = lon;
-		this.place = null;
-		this.name = null;
+		this(type, id, lat, lon, null, null);
 	}
 
 	public Location(final LocationType type, final String id, final Point coord)
@@ -89,27 +82,17 @@ public final class Location implements Serializable
 
 	public Location(final LocationType type, final String id)
 	{
-		this.type = checkNotNull(type);
-		this.id = id;
-		this.lat = 0;
-		this.lon = 0;
-		this.place = null;
-		this.name = null;
+		this(type, id, null, null);
 	}
 
-	public Location(final LocationType type, final int lat, final int lon)
+	public static Location coord(final int lat, final int lon)
 	{
-		this.type = checkNotNull(type);
-		this.id = null;
-		this.lat = lat;
-		this.lon = lon;
-		this.place = null;
-		this.name = null;
+		return new Location(LocationType.COORD, null, lat, lon);
 	}
 
-	public Location(final LocationType type, final Point coord)
+	public static Location coord(final Point coord)
 	{
-		this(type, coord != null ? coord.lat : 0, coord != null ? coord.lon : 0);
+		return new Location(LocationType.COORD, null, coord.lat, coord.lon);
 	}
 
 	public final boolean hasId()
@@ -135,7 +118,7 @@ public final class Location implements Serializable
 		if (type == LocationType.POI)
 			return true;
 
-		if (type == LocationType.ADDRESS)
+		if (type == LocationType.ADDRESS || type == LocationType.COORD)
 			return hasLocation();
 
 		return false;
@@ -196,7 +179,7 @@ public final class Location implements Serializable
 	public String toString()
 	{
 		final ToStringHelper helper = MoreObjects.toStringHelper(this).addValue(type).addValue(id);
-		if (lat != 0 || lon != 0)
+		if (hasLocation())
 			helper.addValue(lat + "/" + lon);
 		return helper.add("place", place).add("name", name).omitNullValues().toString();
 	}

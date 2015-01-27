@@ -22,5 +22,14 @@ package de.schildbach.pte.dto;
  */
 public enum LocationType
 {
-	ANY, STATION, POI, ADDRESS
+	/** Location can represent any of the below. Mainly meant for user input. */
+	ANY,
+	/** Location represents a station or stop. */
+	STATION,
+	/** Location represents a point of interest. */
+	POI,
+	/** Location represents a postal address. */
+	ADDRESS,
+	/** Location represents a just a plain coordinate, e.g. acquired by GPS. */
+	COORD
 }

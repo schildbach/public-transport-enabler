@@ -1316,6 +1316,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		else if (location.type == LocationType.ADDRESS && location.hasLocation())
 			return "<Address type=\"WGS84\" x=\"" + location.lon + "\" y=\"" + location.lat + "\" name=\""
 					+ (location.place != null ? location.place + ", " : "") + location.name + "\" />";
+		else if (location.type == LocationType.COORD && location.hasLocation())
+			return "<Coord type=\"WGS84\" x=\"" + location.lon + "\" y=\"" + location.lat + "\" />";
 		else
 			throw new IllegalArgumentException("cannot handle: " + location);
 	}
@@ -1354,7 +1356,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			return 1;
 		if (type == LocationType.POI)
 			return 4;
-		if (type == LocationType.ADDRESS && location.hasLocation())
+		if (type == LocationType.COORD || (type == LocationType.ADDRESS && location.hasLocation()))
 			return 16;
 		if (type == LocationType.ADDRESS && location.name != null)
 			return 2;

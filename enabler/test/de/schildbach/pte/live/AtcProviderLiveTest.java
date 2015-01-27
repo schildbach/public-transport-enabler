@@ -53,7 +53,7 @@ public class AtcProviderLiveTest extends AbstractProviderLiveTest
 	public void nearbyStationsByCoordinate() throws Exception
 	{
 		// TODO bad coordinate!
-		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 8168907, 10609969));
+		final NearbyLocationsResult result = queryNearbyStations(Location.coord(8168907, 10609969));
 		print(result);
 	}
 

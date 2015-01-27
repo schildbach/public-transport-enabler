@@ -57,15 +57,14 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 52525589, 13369548));
+		final NearbyLocationsResult result = queryNearbyStations(Location.coord(52525589, 13369548));
 		print(result);
 	}
 
 	@Test
 	public void nearbyPOIsByCoordinate() throws Exception
 	{
-		final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.POI),
-				new Location(LocationType.ADDRESS, 52525589, 13369548));
+		final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.POI), Location.coord(52525589, 13369548));
 		print(result);
 		assertThat(result.locations, hasItem(new Location(LocationType.POI, "990416076", "Berlin", "Museum für Naturkunde")));
 	}
@@ -112,7 +111,6 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final SuggestLocationsResult result = suggestLocations("München, Friedenstraße 2");
 		print(result);
-
 		assertEquals(LocationType.ADDRESS, result.getLocations().get(0).type);
 		assertEquals("Friedenstraße 2", result.getLocations().get(0).name);
 	}
@@ -179,7 +177,6 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf"), null, new Location(
 				LocationType.STATION, "8010205", null, "Leipzig Hbf"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
-
 		assertEquals(QueryTripsResult.Status.TOO_CLOSE, result.status);
 	}
 
@@ -189,7 +186,6 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8011160", null, "Berlin Hbf"), null, new Location(
 				LocationType.STATION, "8010205", null, "Leipzig Hbf"), new Date(0), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
-
 		assertEquals(QueryTripsResult.Status.INVALID_DATE, result.status);
 	}
 }

@@ -56,14 +56,14 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 50108625, 8669604));
+		final NearbyLocationsResult result = queryNearbyStations(Location.coord(50108625, 8669604));
 		print(result);
 	}
 
 	@Test
 	public void nearbyStationsByCoordinateKassel() throws Exception
 	{
-		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 51318447, 9496250));
+		final NearbyLocationsResult result = queryNearbyStations(Location.coord(51318447, 9496250));
 		print(result);
 	}
 

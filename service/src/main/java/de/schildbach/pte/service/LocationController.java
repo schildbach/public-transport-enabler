@@ -51,7 +51,7 @@ public class LocationController
 	@ResponseBody
 	public NearbyLocationsResult nearby(@RequestParam("lat") final int lat, @RequestParam("lon") final int lon) throws IOException
 	{
-		final Location location = new Location(LocationType.ANY, lat, lon);
-		return provider.queryNearbyLocations(EnumSet.of(LocationType.STATION, LocationType.POI), location, 5000, 100);
+		final Location coord = Location.coord(lat, lon);
+		return provider.queryNearbyLocations(EnumSet.of(LocationType.STATION, LocationType.POI), coord, 5000, 100);
 	}
 }

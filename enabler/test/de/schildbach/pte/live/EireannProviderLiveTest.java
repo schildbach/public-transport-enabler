@@ -54,7 +54,7 @@ public class EireannProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 53343993, -6267371));
+		final NearbyLocationsResult result = queryNearbyStations(Location.coord(53343993, -6267371));
 		print(result);
 	}
 

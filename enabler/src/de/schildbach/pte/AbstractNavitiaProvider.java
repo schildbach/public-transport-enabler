@@ -791,7 +791,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 
 		// Build query uri depending of location type.
 		final String queryUriType;
-		if (location.type == LocationType.ADDRESS || location.type == LocationType.ANY)
+		if (location.type == LocationType.COORD || location.type == LocationType.ADDRESS || location.type == LocationType.ANY)
 		{
 			if (!location.hasLocation())
 			{

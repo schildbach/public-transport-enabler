@@ -56,15 +56,15 @@ public class MerseyProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 53401112, -2958903));
+		final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION), Location.coord(53401112, -2958903));
 		print(result);
 	}
 
 	@Test
 	public void nearbyLocationsByCoordinate() throws Exception
 	{
-		final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION, LocationType.POI), new Location(
-				LocationType.ADDRESS, 53401112, -2958903));
+		final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION, LocationType.POI),
+				Location.coord(53401112, -2958903));
 		print(result);
 	}
 

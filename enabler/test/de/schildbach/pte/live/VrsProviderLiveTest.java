@@ -73,29 +73,27 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ANY, 51218693, 6777785));
+		final NearbyLocationsResult result = queryNearbyStations(Location.coord(51218693, 6777785));
 		print(result);
 
-		final NearbyLocationsResult result2 = queryNearbyStations(new Location(LocationType.ANY, 51719648, 8754330));
+		final NearbyLocationsResult result2 = queryNearbyStations(Location.coord(51719648, 8754330));
 		print(result2);
 	}
 
 	@Test
 	public void nearbyLocationsByCoordinate() throws Exception
 	{
-		final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION),
-				new Location(LocationType.ANY, 50732100, 7096820), 100, 1);
+		final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION), Location.coord(50732100, 7096820), 100, 1);
 		print(result);
 
-		final NearbyLocationsResult result2 = queryNearbyLocations(EnumSet.of(LocationType.ADDRESS),
-				new Location(LocationType.ANY, 50732100, 7096820));
+		final NearbyLocationsResult result2 = queryNearbyLocations(EnumSet.of(LocationType.ADDRESS), Location.coord(50732100, 7096820));
 		print(result2);
 
-		final NearbyLocationsResult result3 = queryNearbyLocations(EnumSet.of(LocationType.POI), new Location(LocationType.ANY, 50732100, 7096820));
+		final NearbyLocationsResult result3 = queryNearbyLocations(EnumSet.of(LocationType.POI), Location.coord(50732100, 7096820));
 		print(result3);
 
-		final NearbyLocationsResult result4 = queryNearbyLocations(EnumSet.of(LocationType.ADDRESS, LocationType.STATION), new Location(
-				LocationType.ANY, 50732100, 7096820));
+		final NearbyLocationsResult result4 = queryNearbyLocations(EnumSet.of(LocationType.ADDRESS, LocationType.STATION),
+				Location.coord(50732100, 7096820));
 		print(result4);
 	}
 
@@ -111,7 +109,7 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest
 		{
 			int lat = LAT_FROM + rand.nextInt(LAT_TO - LAT_FROM);
 			int lon = LON_FROM + rand.nextInt(LON_TO - LON_FROM);
-			NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.ANY), new Location(LocationType.ANY, lat, lon));
+			NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.ANY), Location.coord(lat, lon));
 			System.out.println(result);
 			assertNotNull(result.locations);
 			assertNotNull(result.locations.get(0));
@@ -121,23 +119,20 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsWithLimits() throws Exception
 	{
-		final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION),
-				new Location(LocationType.ANY, 50732100, 7096820), 0, 0);
+		final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION), Location.coord(50732100, 7096820), 0, 0);
 		print(result);
 
-		final NearbyLocationsResult result2 = queryNearbyLocations(EnumSet.of(LocationType.STATION),
-				new Location(LocationType.ANY, 50732100, 7096820), 0, 50);
+		final NearbyLocationsResult result2 = queryNearbyLocations(EnumSet.of(LocationType.STATION), Location.coord(50732100, 7096820), 0, 50);
 		print(result2);
 
-		final NearbyLocationsResult result3 = queryNearbyLocations(EnumSet.of(LocationType.STATION),
-				new Location(LocationType.ANY, 50732100, 7096820), 1000, 50);
+		final NearbyLocationsResult result3 = queryNearbyLocations(EnumSet.of(LocationType.STATION), Location.coord(50732100, 7096820), 1000, 50);
 		print(result3);
 	}
 
 	@Test
 	public void nearbyLocationsEmpty() throws Exception
 	{
-		final NearbyLocationsResult result = queryNearbyLocations(EnumSet.allOf(LocationType.class), new Location(LocationType.ANY, 1, 0), 0, 0);
+		final NearbyLocationsResult result = queryNearbyLocations(EnumSet.allOf(LocationType.class), Location.coord(1, 0), 0, 0);
 		print(result);
 		assertEquals(0, result.locations.size());
 	}
@@ -416,8 +411,8 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void testTripByCoord() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, 50740530, 7129200), null, new Location(LocationType.ANY, 50933930,
-				6932440), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(Location.coord(50740530, 7129200), null, Location.coord(50933930, 6932440), new Date(), true,
+				Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);
@@ -457,8 +452,8 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest
 				int fromLon = lonFrom + rand.nextInt(lonTo - lonFrom);
 				int toLat = latFrom + rand.nextInt(latTo - latFrom);
 				int toLon = lonFrom + rand.nextInt(lonTo - lonFrom);
-				final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, fromLat, fromLon), null, new Location(LocationType.ANY,
-						toLat, toLon), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+				final QueryTripsResult result = queryTrips(Location.coord(fromLat, fromLon), null, Location.coord(toLat, toLon), new Date(), true,
+						Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 				System.out.println("# " + (i + 1));
 				if (result.status.equals(QueryTripsResult.Status.OK))
 				{
@@ -527,7 +522,7 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest
 			int lat = latFrom + rand.nextInt(latTo - latFrom);
 			int lon = lonFrom + rand.nextInt(lonTo - lonFrom);
 			System.out.println(i + " " + lat + " " + lon);
-			NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION), new Location(LocationType.STATION, lat, lon), 0, 3);
+			NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION), Location.coord(lat, lon), 0, 3);
 			if (result.status == NearbyLocationsResult.Status.OK)
 			{
 				stations.addAll(result.locations);

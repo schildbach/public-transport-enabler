@@ -54,7 +54,7 @@ public class InvgProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 48744678, 11437941));
+		final NearbyLocationsResult result = queryNearbyStations(Location.coord(48744678, 11437941));
 		print(result);
 	}
 

@@ -470,7 +470,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					else if ("poi".equals(ty))
 						type = LocationType.POI;
 					else if ("loc".equals(ty))
-						type = LocationType.ADDRESS;
+						type = LocationType.COORD;
 					else if ("street".equals(ty))
 						type = LocationType.ADDRESS;
 					else if ("singlehouse".equals(ty))
@@ -833,6 +833,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		final String buildingName = XmlPullUtil.optAttr(pp, "buildingName", null);
 		final String buildingNumber = XmlPullUtil.optAttr(pp, "buildingNumber", null);
 		final String postCode = XmlPullUtil.optAttr(pp, "postCode", null);
+		final String streetName = XmlPullUtil.optAttr(pp, "streetName", null);
 		final Point coord = processCoordAttr(pp);
 
 		final String nameElem = normalizeLocationName(XmlPullUtil.valueTag(pp, "odvNameElem"));
@@ -844,42 +845,53 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		if ("stop".equals(type))
 		{
 			locationType = LocationType.STATION;
-			place = locality;
-			name = objectName;
+			place = locality != null ? locality : defaultPlace;
+			name = objectName != null ? objectName : nameElem;
 		}
 		else if ("poi".equals(type))
 		{
 			locationType = LocationType.POI;
-			place = locality;
-			name = objectName;
+			place = locality != null ? locality : defaultPlace;
+			name = objectName != null ? objectName : nameElem;
 		}
 		else if ("loc".equals(type))
 		{
-			return null;
+			if (coord != null)
+			{
+				locationType = LocationType.COORD;
+				place = null;
+				name = null;
+			}
+			else
+			{
+				locationType = LocationType.ADDRESS;
+				place = null;
+				name = locality;
+			}
 		}
 		else if ("address".equals(type) || "singlehouse".equals(type))
 		{
 			locationType = LocationType.ADDRESS;
-			place = locality;
+			place = locality != null ? locality : defaultPlace;
 			name = objectName + (buildingNumber != null ? " " + buildingNumber : "");
 		}
 		else if ("street".equals(type) || "crossing".equals(type))
 		{
 			locationType = LocationType.ADDRESS;
-			place = locality;
-			name = objectName;
+			place = locality != null ? locality : defaultPlace;
+			name = objectName != null ? objectName : nameElem;
 		}
 		else if ("postcode".equals(type))
 		{
 			locationType = LocationType.ADDRESS;
-			place = locality;
+			place = locality != null ? locality : defaultPlace;
 			name = postCode;
 		}
 		else if ("buildingname".equals(type))
 		{
 			locationType = LocationType.ADDRESS;
-			place = locality;
-			name = buildingName;
+			place = locality != null ? locality : defaultPlace;
+			name = buildingName != null ? buildingName : streetName;
 		}
 		else if ("coord".equals(type))
 		{
@@ -892,7 +904,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			throw new IllegalArgumentException("unknown type/anyType: " + type);
 		}
 
-		return new Location(locationType, id, coord, place != null ? place : defaultPlace, name != null ? name : nameElem);
+		return new Location(locationType, id, coord, place, name);
 	}
 
 	private Location processItdOdvAssignedStop(final XmlPullParser pp) throws XmlPullParserException, IOException
@@ -3271,7 +3283,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	private void appendLocation(final StringBuilder uri, final Location location, final String paramSuffix)
 	{
-		if (location.type == LocationType.ADDRESS && location.hasLocation())
+		if ((location.type == LocationType.ADDRESS || location.type == LocationType.COORD) && location.hasLocation())
 		{
 			uri.append("&type_").append(paramSuffix).append("=coord");
 			uri.append("&name_").append(paramSuffix).append("=")
@@ -3291,6 +3303,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			return "stop";
 		if (type == LocationType.ADDRESS)
 			return "any"; // strange, matches with anyObjFilter
+		if (type == LocationType.COORD)
+			return "coord";
 		if (type == LocationType.POI)
 			return "poi";
 		if (type == LocationType.ANY)
