@@ -162,10 +162,7 @@ public class NvvProvider extends AbstractHafasProvider
 	{
 		if (location.hasLocation())
 		{
-			final StringBuilder uri = new StringBuilder(queryEndpoint);
-			appendJsonNearbyStationsParameters(uri, location, maxDistance, maxStations);
-
-			return jsonNearbyStations(uri.toString());
+			return nearbyStationsByCoordinate(location.lat, location.lon, maxDistance, maxStations);
 		}
 		else if (location.type == LocationType.STATION && location.hasId())
 		{

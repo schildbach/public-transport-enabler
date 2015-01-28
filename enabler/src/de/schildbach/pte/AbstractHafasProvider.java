@@ -2296,23 +2296,28 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	public NearbyStationsResult queryNearbyStations(final Location location, final int maxDistance, final int maxStations) throws IOException
 	{
 		if (location.hasLocation())
-		{
-			final StringBuilder uri = new StringBuilder(queryEndpoint);
-			appendJsonNearbyStationsParameters(uri, location, maxDistance, maxStations);
-
-			return jsonNearbyStations(uri.toString());
-		}
+			return nearbyStationsByCoordinate(location.lat, location.lon, maxDistance, maxStations);
 		else if (location.type == LocationType.STATION && location.hasId())
-		{
-			final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
-			appendXmlNearbyStationsParameters(uri, location.id);
-
-			return xmlNearbyStations(uri.toString());
-		}
+			return nearbyStationsById(location.id);
 		else
-		{
 			throw new IllegalArgumentException("cannot handle: " + location);
-		}
+	}
+
+	protected final NearbyStationsResult nearbyStationsByCoordinate(final int lat, final int lon, final int maxDistance, final int maxStations)
+			throws IOException
+	{
+		final StringBuilder uri = new StringBuilder(queryEndpoint);
+		appendJsonNearbyStationsParameters(uri, lat, lon, maxDistance, maxStations);
+
+		return jsonNearbyStations(uri.toString());
+	}
+
+	protected final NearbyStationsResult nearbyStationsById(final String id) throws IOException
+	{
+		final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
+		appendXmlNearbyStationsParameters(uri, id);
+
+		return xmlNearbyStations(uri.toString());
 	}
 
 	protected final void appendXmlNearbyStationsParameters(final StringBuilder uri, final String stationId)
@@ -2390,7 +2395,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		return new NearbyStationsResult(null, stations);
 	}
 
-	protected void appendJsonNearbyStationsParameters(final StringBuilder uri, final Location location, final int maxDistance, final int maxStations)
+	protected void appendJsonNearbyStationsParameters(final StringBuilder uri, final int lat, final int lon, final int maxDistance,
+			final int maxStations)
 	{
 		uri.append('y');
 		uri.append("?performLocating=2&tpl=stop2json");
@@ -2398,8 +2404,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		uri.append("&look_maxdist=").append(maxDistance != 0 ? maxDistance : 5000);
 		uri.append("&look_stopclass=").append(allProductsInt());
 		uri.append("&look_nv=get_stopweight|yes");
-		uri.append("&look_x=").append(location.lon);
-		uri.append("&look_y=").append(location.lat);
+		uri.append("&look_x=").append(lon);
+		uri.append("&look_y=").append(lat);
 	}
 
 	protected final NearbyStationsResult jsonNearbyStations(final String uri) throws IOException
