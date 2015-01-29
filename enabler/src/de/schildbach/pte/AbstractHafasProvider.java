@@ -480,6 +480,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			uri.append("&clientType=").append(ParserUtils.urlEncode(clientType));
 		if (styleSheet != null)
 			uri.append("&L=").append(styleSheet);
+		uri.append("&hcount=0"); // prevents showing old departures
 		uri.append("&start=yes");
 	}
 
