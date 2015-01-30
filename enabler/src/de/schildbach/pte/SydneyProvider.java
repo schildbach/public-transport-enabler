@@ -117,6 +117,8 @@ public class SydneyProvider extends AbstractEfaProvider
 				return "FF7";
 			if ("Private ferry servic".equals(trainName) && symbol != null)
 				return 'F' + symbol;
+			if ("MFF".equals(symbol) || "Manly Fast Ferry".equals(name))
+				return "FMFF";
 
 			throw new IllegalStateException("cannot normalize mot='" + mot + "' symbol='" + symbol + "' name='" + name + "' long='" + longName
 					+ "' trainType='" + trainType + "' trainNum='" + trainNum + "' trainName='" + trainName + "'");

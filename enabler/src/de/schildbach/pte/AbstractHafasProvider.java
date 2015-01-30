@@ -2934,8 +2934,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			return 'B';
 		if ("LT".equals(ucType)) // Linien-Taxi
 			return 'B';
-		// if ("N".equals(normalizedType)) // Nachtbus
-		// return "B" + normalizedName;
+		if ("NB".equals(ucType)) // Nachtbus Zürich
+			return 'B';
 
 		// Phone
 		if (ucType.startsWith("AST")) // Anruf-Sammel-Taxi

@@ -155,6 +155,8 @@ public class PlProvider extends AbstractHafasProvider
 
 		if ("IRB".equals(ucType)) // interREGIO Bus
 			return 'B';
+		if ("ZKA".equals(ucType)) // Zastępcza Komunikacja Autobusowa (Schienenersatzverkehr)
+			return 'B';
 
 		if ("FRE".equals(ucType))
 			return 'F';

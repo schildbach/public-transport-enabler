@@ -149,7 +149,7 @@ public class StockholmProvider extends AbstractHafasProvider
 		if (m.matches())
 		{
 			final String type = m.group(1);
-			final String number = m.group(2).replaceAll("\\s+", " ");
+			final String number = m.group(2).replaceAll("\\s+", "");
 
 			if (type.length() > 0)
 			{

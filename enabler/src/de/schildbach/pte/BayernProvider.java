@@ -74,28 +74,28 @@ public class BayernProvider extends AbstractEfaProvider
 		}
 		else if ("16".equals(mot))
 		{
-			if ("EC".equals(trainType))
+			if ("EC".equals(trainType) && trainNum != null)
 				return "IEC" + trainNum;
-			if ("IC".equals(trainType))
+			if ("IC".equals(trainType) && trainNum != null)
 				return "IIC" + trainNum;
-			if ("ICE".equals(trainType))
+			if ("ICE".equals(trainType) && trainNum != null)
 				return "IICE" + trainNum;
-			if ("CNL".equals(trainType))
+			if ("CNL".equals(trainType) && trainNum != null)
 				return "ICNL" + trainNum;
-			if ("THA".equals(trainType)) // Thalys
+			if ("THA".equals(trainType) && trainNum != null) // Thalys
 				return "ITHA" + trainNum;
-			if ("TGV".equals(trainType)) // Train a grande Vitesse
+			if ("TGV".equals(trainType) && trainNum != null) // Train a grande Vitesse
 				return "ITGV" + trainNum;
-			if ("RJ".equals(trainType)) // railjet
+			if ("RJ".equals(trainType) && trainNum != null) // railjet
 				return "IRJ" + trainNum;
-			if ("WB".equals(trainType)) // WESTbahn
+			if ("WB".equals(trainType) && trainNum != null) // WESTbahn
 				return "IWB" + trainNum;
-			if ("HKX".equals(trainType)) // Hamburg-Köln-Express
+			if ("HKX".equals(trainType) && trainNum != null) // Hamburg-Köln-Express
 				return "IHKX" + trainNum;
-			if ("D".equals(trainType)) // Schnellzug
+			if ("D".equals(trainType) && trainNum != null) // Schnellzug
 				return "ID" + trainNum;
 
-			if ("IR".equals(trainType)) // InterRegio
+			if ("IR".equals(trainType) && trainNum != null) // InterRegio
 				return "RIR" + trainNum;
 		}
 

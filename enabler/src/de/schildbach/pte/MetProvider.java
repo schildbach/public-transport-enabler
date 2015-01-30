@@ -20,6 +20,8 @@ package de.schildbach.pte;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.common.base.Strings;
+
 import de.schildbach.pte.dto.Style;
 
 /**
@@ -60,6 +62,13 @@ public class MetProvider extends AbstractEfaProvider
 				return "R";
 			if ("vPK".equals(symbol) && "Regional Train Pakenham".equals(longName))
 				return "RV/Line";
+		}
+		else if ("1".equals(mot))
+		{
+			if (trainType == null && trainNum != null)
+				return 'S' + trainNum;
+			if ("Metropolitan Train".equals(trainName) && trainNum == null)
+				return 'S' + Strings.nullToEmpty(name);
 		}
 
 		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);

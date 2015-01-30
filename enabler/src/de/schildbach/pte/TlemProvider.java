@@ -70,6 +70,19 @@ public class TlemProvider extends AbstractEfaProvider
 		return Product.ALL;
 	}
 
+	@Override
+	protected String parseLine(final String mot, final String symbol, final String name, final String longName, final String trainType,
+			final String trainNum, final String trainName)
+	{
+		if ("1".equals(mot))
+		{
+			if (trainType == null && ("DLR".equals(trainNum) || "Light Railway".equals(trainName)))
+				return "SDLR";
+		}
+
+		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
+	}
+
 	private static final Map<String, Style> STYLES = new HashMap<String, Style>();
 
 	static

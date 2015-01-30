@@ -20,6 +20,8 @@ package de.schildbach.pte;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.Product;
@@ -52,6 +54,8 @@ public class NvbwProvider extends AbstractEfaProvider
 		return NETWORK_ID;
 	}
 
+	private static final Pattern P_LINE_S_AVG_VBK = Pattern.compile("(S\\d+) \\((?:AVG|VBK)\\)");
+
 	@Override
 	protected String parseLine(final String mot, final String symbol, final String name, final String longName, final String trainType,
 			final String trainNum, final String trainName)
@@ -66,7 +70,7 @@ public class NvbwProvider extends AbstractEfaProvider
 				return "I";
 			if ("SuperCity".equals(trainName) && trainNum == null)
 				return "ISC";
-			if ("InterRegio".equals(longName))
+			if ("InterRegio".equals(longName) && symbol == null)
 				return "RIR";
 			if ("REGIOBAHN".equals(trainName) && trainNum == null)
 				return "R";
@@ -84,6 +88,15 @@ public class NvbwProvider extends AbstractEfaProvider
 				return "?Zug";
 			if ("DB".equals(trainName) && trainNum == null)
 				return "?DB";
+		}
+		else if ("1".equals(mot))
+		{
+			if (symbol != null && symbol.equals(name))
+			{
+				final Matcher m = P_LINE_S_AVG_VBK.matcher(symbol);
+				if (m.matches())
+					return "S" + m.group(1);
+			}
 		}
 
 		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);

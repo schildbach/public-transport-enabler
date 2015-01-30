@@ -175,7 +175,7 @@ public class ZvvProvider extends AbstractHafasProvider
 		final Matcher m = P_NORMALIZE_LINE_AND_TYPE.matcher(lineAndType);
 		if (m.matches())
 		{
-			final String number = m.group(1).replaceAll("\\s+", " ");
+			final String number = m.group(1).replaceAll("\\s+", "");
 			final String type = m.group(2);
 
 			if ("Bus".equals(type))
@@ -207,12 +207,8 @@ public class ZvvProvider extends AbstractHafasProvider
 	private String stripPrefix(final String str, final String... prefixes)
 	{
 		for (final String prefix : prefixes)
-		{
-			if (str.equals(prefix))
-				return "";
-			if (str.startsWith(prefix + ' '))
-				return str.substring(prefix.length() + 1);
-		}
+			if (str.startsWith(prefix))
+				return str.substring(prefix.length());
 
 		return str;
 	}
@@ -222,35 +218,11 @@ public class ZvvProvider extends AbstractHafasProvider
 	{
 		final String ucType = type.toUpperCase();
 
-		// E-Bus: Bus, Tram oder Zug?
-
-		if ("S-BAHN".equals(ucType))
-			return 'S';
-
-		if ("T".equals(ucType))
-			return 'T';
-		if ("TRM".equals(ucType))
-			return 'T';
-		if ("TRM-NF".equals(ucType)) // Niederflur
-			return 'T';
-
-		if ("BUS-NF".equals(ucType)) // Niederflur
-			return 'B';
-		if ("TRO-NF".equals(ucType)) // Niederflur
-			return 'B';
 		if ("N".equals(ucType)) // Nachtbus
-			return 'B';
-		if ("BUXI".equals(ucType))
 			return 'B';
 		if ("TX".equals(ucType))
 			return 'B';
-		if ("E-BUS".equals(ucType))
-			return 'B';
-		if ("TROLLEY".equals(ucType))
-			return 'B';
 		if ("KB".equals(ucType)) // Kleinbus?
-			return 'B';
-		if ("EE".equals(ucType))
 			return 'B';
 
 		if ("D-SCHIFF".equals(ucType))
@@ -264,13 +236,6 @@ public class ZvvProvider extends AbstractHafasProvider
 			return 'C';
 		if ("SLB".equals(ucType)) // Sesselliftbahn
 			return 'C';
-
-		if ("UNB".equals(ucType))
-			return '?';
-		if ("UUU".equals(ucType))
-			return '?';
-		if ("???".equals(ucType))
-			return '?';
 
 		final char t = super.normalizeType(type);
 		if (t != 0)

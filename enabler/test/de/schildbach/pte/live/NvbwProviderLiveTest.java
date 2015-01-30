@@ -181,4 +181,13 @@ public class NvbwProviderLiveTest extends AbstractProviderLiveTest
 		print(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 	}
+
+	@Test
+	public void tripPforzheimToKarlsruhe() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "7900050"), null,
+				new Location(LocationType.STATION, "7000090"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		print(result);
+		assertEquals(QueryTripsResult.Status.OK, result.status);
+	}
 }

@@ -48,6 +48,7 @@ import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Strings;
 
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.Fare;
@@ -995,6 +996,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private static final Pattern P_LINE_RB = Pattern.compile("RB ?\\d+");
 	private static final Pattern P_LINE_R = Pattern.compile("R ?\\d+");
 	private static final Pattern P_LINE_S = Pattern.compile("S ?\\d+");
+	private static final Pattern P_LINE_S_DB = Pattern.compile("(S\\d+) \\((?:DB Regio AG)\\)");
 	private static final Pattern P_LINE_NUMBER = Pattern.compile("\\d+");
 
 	protected String parseLine(final String mot, String symbol, final String name, final String longName, final String trainType,
@@ -1034,9 +1036,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				if (trainName.equals("Vienna Airport Lines"))
 					return 'B' + str;
 			}
-
-			throw new IllegalStateException("cannot normalize mot='" + mot + "' symbol='" + symbol + "' name='" + name + "' long='" + longName
-					+ "' trainType='" + trainType + "' trainNum='" + trainNum + "' trainName='" + trainName + "'");
 		}
 		else if ("0".equals(mot))
 		{
@@ -1342,6 +1341,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return "ROPX" + trainNum;
 			if (("V6".equals(trainType) || "vlexx".equals(trainName)) && trainNum != null)
 				return "Rvlexx" + trainNum;
+			if (("ARZ".equals(trainType) || "Autoreisezug".equals(trainName)) && trainNum != null)
+				return "RARZ" + trainNum;
 
 			if ("BSB-Zug".equals(trainName) && trainNum != null) // Breisgau-S-Bahn
 				return 'S' + trainNum;
@@ -1389,9 +1390,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			// generic
 			if (trainName != null && trainType == null && trainNum == null)
 				return '?' + trainName;
-
-			throw new IllegalStateException("cannot normalize mot='" + mot + "' symbol='" + symbol + "' name='" + name + "' long='" + longName
-					+ "' trainType='" + trainType + "' trainNum='" + trainNum + "' trainName='" + trainName + "'");
 		}
 		else if ("1".equals(mot))
 		{
@@ -1399,8 +1397,16 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return "S" + symbol;
 			if (name != null && P_LINE_S.matcher(name).matches())
 				return "S" + name;
-			if ("S-Bahn".equals(trainName) && trainNum == null)
-				return "SS";
+			if ("S-Bahn".equals(trainName))
+				return "SS" + Strings.nullToEmpty(trainNum);
+			if ("S5X".equals(symbol))
+				return "SS5X";
+			if (symbol != null && symbol.equals(name))
+			{
+				final Matcher m = P_LINE_S_DB.matcher(symbol);
+				if (m.matches())
+					return "S" + m.group(1);
+			}
 		}
 		else if ("2".equals(mot))
 		{

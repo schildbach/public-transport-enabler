@@ -54,8 +54,12 @@ public class TfiProvider extends AbstractEfaProvider
 	{
 		if ("0".equals(mot))
 		{
+			if ("DART".equals(name))
+				return "SDART";
 			if ("Rail".equals(trainName) && trainNum == null)
-				return "RRail";
+				return "?Rail";
+			if ("Train".equals(name) && "Train".equals(symbol))
+				return "?Train";
 		}
 
 		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
