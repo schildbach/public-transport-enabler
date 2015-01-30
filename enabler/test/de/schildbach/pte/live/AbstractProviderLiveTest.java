@@ -51,6 +51,9 @@ public abstract class AbstractProviderLiveTest
 	protected final void print(final NearbyLocationsResult result)
 	{
 		System.out.println(result);
+
+		// for (final Location location : result.locations)
+		// System.out.println(location);
 	}
 
 	protected final void print(final QueryDeparturesResult result)
@@ -65,6 +68,9 @@ public abstract class AbstractProviderLiveTest
 	protected final void print(final SuggestLocationsResult result)
 	{
 		System.out.println(result);
+
+		// for (final Location location : result.getLocations())
+		// System.out.println(location);
 	}
 
 	protected final void print(final QueryTripsResult result)
@@ -72,7 +78,11 @@ public abstract class AbstractProviderLiveTest
 		System.out.println(result);
 
 		// for (final Trip trip : result.trips)
+		// {
 		// System.out.println(trip);
+		// for (final Leg leg : trip.legs)
+		// System.out.println("- " + leg);
+		// }
 	}
 
 	protected final NearbyLocationsResult queryNearbyStations(final Location location) throws IOException
@@ -99,10 +109,6 @@ public abstract class AbstractProviderLiveTest
 	protected final QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
 	{
 		final QueryDeparturesResult result = provider.queryDepartures(stationId, new Date(), maxDepartures, equivs);
-
-		// for (final StationDepartures stationDepartures : result.stationDepartures)
-		// for (final Departure departure : stationDepartures.departures)
-		// System.out.println(departure);
 
 		if (result.status == QueryDeparturesResult.Status.OK)
 		{
