@@ -78,8 +78,9 @@ public class BsvagProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsWithUmlaut() throws Exception
 	{
-		final SuggestLocationsResult result = suggestLocations("grün");
+		final SuggestLocationsResult result = suggestLocations("Münzstraße");
 		print(result);
+		assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "26000300")));
 	}
 
 	@Test
