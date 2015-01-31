@@ -137,6 +137,27 @@ public final class Trip implements Serializable
 		return maxTime;
 	}
 
+	/** Returns true if no legs overlap, false otherwise. */
+	public boolean isTravelable()
+	{
+		Date time = null;
+
+		for (final Leg leg : legs)
+		{
+			final Date departureTime = leg.getDepartureTime();
+			if (time != null && departureTime.before(time))
+				return false;
+			time = departureTime;
+
+			final Date arrivalTime = leg.getArrivalTime();
+			if (time != null && arrivalTime.before(time))
+				return false;
+			time = arrivalTime;
+		}
+
+		return true;
+	}
+
 	public List<Product> products()
 	{
 		final List<Product> products = new LinkedList<Product>();
