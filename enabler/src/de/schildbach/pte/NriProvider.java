@@ -125,7 +125,7 @@ public class NriProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	public Collection<Product> defaultProducts()
+	public Set<Product> defaultProducts()
 	{
 		return Product.ALL;
 	}

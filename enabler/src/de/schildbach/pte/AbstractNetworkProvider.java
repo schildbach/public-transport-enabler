@@ -18,8 +18,7 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
@@ -36,18 +35,12 @@ import de.schildbach.pte.dto.Style;
  */
 public abstract class AbstractNetworkProvider implements NetworkProvider
 {
-	protected static final Set<Product> ALL_EXCEPT_HIGHSPEED;
+	protected static final Set<Product> ALL_EXCEPT_HIGHSPEED = EnumSet.complementOf(EnumSet.of(Product.HIGH_SPEED_TRAIN));
 
 	protected TimeZone timeZone = TimeZone.getTimeZone("CET");
 	protected int numTripsRequested = 6;
 	private Map<String, Style> styles = null;
 	protected String sessionCookieName = null;
-
-	static
-	{
-		ALL_EXCEPT_HIGHSPEED = new HashSet<Product>(Product.ALL);
-		ALL_EXCEPT_HIGHSPEED.remove(Product.HIGH_SPEED_TRAIN);
-	}
 
 	public final boolean hasCapabilities(final Capability... capabilities)
 	{
@@ -60,7 +53,7 @@ public abstract class AbstractNetworkProvider implements NetworkProvider
 
 	protected abstract boolean hasCapability(Capability capability);
 
-	public Collection<Product> defaultProducts()
+	public Set<Product> defaultProducts()
 	{
 		return ALL_EXCEPT_HIGHSPEED;
 	}

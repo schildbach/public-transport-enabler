@@ -18,8 +18,8 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.EnumSet;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import de.schildbach.pte.dto.Location;
@@ -144,7 +144,7 @@ public class NsProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	public Collection<Product> defaultProducts()
+	public Set<Product> defaultProducts()
 	{
 		return Product.ALL;
 	}

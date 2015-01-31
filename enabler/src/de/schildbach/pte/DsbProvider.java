@@ -17,7 +17,7 @@
 
 package de.schildbach.pte;
 
-import java.util.Collection;
+import java.util.Set;
 import java.util.regex.Matcher;
 
 import de.schildbach.pte.dto.Product;
@@ -132,7 +132,7 @@ public class DsbProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	public Collection<Product> defaultProducts()
+	public Set<Product> defaultProducts()
 	{
 		return Product.ALL;
 	}

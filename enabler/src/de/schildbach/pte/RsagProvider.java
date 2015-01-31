@@ -17,9 +17,9 @@
 
 package de.schildbach.pte;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 
 import com.google.common.base.Charsets;
@@ -146,7 +146,7 @@ public class RsagProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	public Collection<Product> defaultProducts()
+	public Set<Product> defaultProducts()
 	{
 		return Product.ALL;
 	}

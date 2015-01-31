@@ -17,9 +17,9 @@
 
 package de.schildbach.pte;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
@@ -65,7 +65,7 @@ public class TlemProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	public Collection<Product> defaultProducts()
+	public Set<Product> defaultProducts()
 	{
 		return Product.ALL;
 	}

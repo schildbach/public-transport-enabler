@@ -18,8 +18,8 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.EnumSet;
+import java.util.Set;
 import java.util.regex.Matcher;
 
 import com.google.common.base.Charsets;
@@ -156,7 +156,7 @@ public class OebbProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	public Collection<Product> defaultProducts()
+	public Set<Product> defaultProducts()
 	{
 		return Product.ALL;
 	}

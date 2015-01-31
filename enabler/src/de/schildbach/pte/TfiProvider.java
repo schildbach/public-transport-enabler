@@ -17,7 +17,7 @@
 
 package de.schildbach.pte;
 
-import java.util.Collection;
+import java.util.Set;
 
 import de.schildbach.pte.dto.Product;
 
@@ -43,7 +43,7 @@ public class TfiProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	public Collection<Product> defaultProducts()
+	public Set<Product> defaultProducts()
 	{
 		return Product.ALL;
 	}

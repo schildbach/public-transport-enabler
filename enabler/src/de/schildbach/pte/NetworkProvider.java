@@ -119,7 +119,7 @@ public interface NetworkProvider
 	 * 
 	 * @return products
 	 */
-	Collection<Product> defaultProducts();
+	Set<Product> defaultProducts();
 
 	/**
 	 * Query trips, asking for any ambiguousnesses

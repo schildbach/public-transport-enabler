@@ -17,7 +17,6 @@
 
 package de.schildbach.pte;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -174,7 +173,7 @@ public class VbbProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	public Collection<Product> defaultProducts()
+	public Set<Product> defaultProducts()
 	{
 		return ALL_EXCEPT_HIGHSPEED_AND_ONDEMAND;
 	}

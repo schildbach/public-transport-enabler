@@ -17,7 +17,7 @@
 
 package de.schildbach.pte;
 
-import java.util.Collection;
+import java.util.Set;
 
 import com.google.common.base.Charsets;
 
@@ -128,7 +128,7 @@ public class PlProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	public Collection<Product> defaultProducts()
+	public Set<Product> defaultProducts()
 	{
 		return Product.ALL;
 	}

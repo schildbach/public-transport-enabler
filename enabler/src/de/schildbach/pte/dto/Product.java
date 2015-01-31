@@ -17,8 +17,8 @@
 
 package de.schildbach.pte.dto;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.EnumSet;
+import java.util.Set;
 
 /**
  * @author Andreas Schildbach
@@ -28,7 +28,7 @@ public enum Product
 	HIGH_SPEED_TRAIN('I'), REGIONAL_TRAIN('R'), SUBURBAN_TRAIN('S'), SUBWAY('U'), TRAM('T'), BUS('B'), FERRY('F'), CABLECAR('C'), ON_DEMAND('P');
 
 	public static final char UNKNOWN = '?';
-	public static final List<Product> ALL = Arrays.asList(values());
+	public static final Set<Product> ALL = EnumSet.allOf(Product.class);
 
 	public final char code;
 
