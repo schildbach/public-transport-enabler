@@ -20,9 +20,9 @@ package de.schildbach.pte.live;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.Set;
 
 import de.schildbach.pte.NetworkProvider;
 import de.schildbach.pte.NetworkProvider.Accessibility;
@@ -121,7 +121,7 @@ public abstract class AbstractProviderLiveTest
 	}
 
 	protected final QueryTripsResult queryTrips(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility) throws IOException
+			final Set<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility) throws IOException
 	{
 		return provider.queryTrips(from, via, to, date, dep, products, walkSpeed, accessibility, null);
 	}

@@ -18,7 +18,6 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 
@@ -132,8 +131,7 @@ public class NriProvider extends AbstractHafasProvider
 
 	@Override
 	public QueryTripsResult queryTrips(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
-			throws IOException
+			final Set<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options) throws IOException
 	{
 		return queryTripsXml(from, via, to, date, dep, products, walkSpeed, accessibility, options);
 	}

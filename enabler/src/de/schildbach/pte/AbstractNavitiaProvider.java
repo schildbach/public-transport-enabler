@@ -22,7 +22,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.LinkedList;
@@ -985,8 +984,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 	}
 
 	public QueryTripsResult queryTrips(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
-			throws IOException
+			final Set<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options) throws IOException
 	{
 		final ResultHeader resultHeader = new ResultHeader(SERVER_PRODUCT, SERVER_VERSION, 0, null);
 

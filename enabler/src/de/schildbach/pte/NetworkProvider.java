@@ -18,7 +18,6 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.Set;
@@ -145,7 +144,7 @@ public interface NetworkProvider
 	 * @return result object that can contain alternatives to clear up ambiguousnesses, or contains possible trips
 	 * @throws IOException
 	 */
-	QueryTripsResult queryTrips(Location from, Location via, Location to, Date date, boolean dep, Collection<Product> products, WalkSpeed walkSpeed,
+	QueryTripsResult queryTrips(Location from, Location via, Location to, Date date, boolean dep, Set<Product> products, WalkSpeed walkSpeed,
 			Accessibility accessibility, Set<Option> options) throws IOException;
 
 	/**
