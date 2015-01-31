@@ -2790,8 +2790,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		pp.setInput(is, null);
 		final ResultHeader header = enterEfa(pp);
 
-		final Calendar plannedTime = new GregorianCalendar(timeZone);
-		final Calendar predictedTime = new GregorianCalendar(timeZone);
+		final Calendar plannedTimeCal = new GregorianCalendar(timeZone);
+		final Calendar predictedTimeCal = new GregorianCalendar(timeZone);
 
 		final List<Trip> trips = new ArrayList<Trip>();
 
@@ -2836,7 +2836,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 							XmlPullUtil.requireSkip(pp, "dt");
 
-							parseMobileSt(pp, plannedTime, predictedTime);
+							parseMobileSt(pp, plannedTimeCal, predictedTimeCal);
 
 							XmlPullUtil.requireSkip(pp, "lis");
 
@@ -2856,19 +2856,18 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 							XmlPullUtil.skipExit(pp, "p");
 
+							final Date plannedTime = plannedTimeCal.isSet(Calendar.HOUR_OF_DAY) ? plannedTimeCal.getTime() : null;
+							final Date predictedTime = predictedTimeCal.isSet(Calendar.HOUR_OF_DAY) ? predictedTimeCal.getTime() : null;
+
 							if ("departure".equals(usage))
 							{
-								departure = new Stop(location, true, plannedTime.isSet(Calendar.HOUR_OF_DAY) ? plannedTime.getTime()
-										: predictedTime.getTime(), predictedTime.isSet(Calendar.HOUR_OF_DAY) ? predictedTime.getTime() : null,
-										position, null);
+								departure = new Stop(location, true, plannedTime, predictedTime, position, null);
 								if (firstDepartureLocation == null)
 									firstDepartureLocation = location;
 							}
 							else if ("arrival".equals(usage))
 							{
-								arrival = new Stop(location, false, plannedTime.isSet(Calendar.HOUR_OF_DAY) ? plannedTime.getTime()
-										: predictedTime.getTime(), predictedTime.isSet(Calendar.HOUR_OF_DAY) ? predictedTime.getTime() : null,
-										position, null);
+								arrival = new Stop(location, false, plannedTime, predictedTime, position, null);
 								lastArrivalLocation = location;
 							}
 							else
@@ -2904,8 +2903,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 							while (XmlPullUtil.test(pp, "s"))
 							{
-								plannedTime.clear();
-								predictedTime.clear();
+								plannedTimeCal.clear();
+								predictedTimeCal.clear();
 
 								final String s = XmlPullUtil.valueTag(pp, "s");
 								final String[] intermediateParts = s.split(";");
@@ -2916,18 +2915,18 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 									if (!("0000-1".equals(intermediateParts[2]) && "000-1".equals(intermediateParts[3])))
 									{
-										ParserUtils.parseIsoDate(plannedTime, intermediateParts[2]);
-										ParserUtils.parseIsoTime(plannedTime, intermediateParts[3]);
+										ParserUtils.parseIsoDate(plannedTimeCal, intermediateParts[2]);
+										ParserUtils.parseIsoTime(plannedTimeCal, intermediateParts[3]);
 
 										if (isRealtime)
 										{
-											ParserUtils.parseIsoDate(predictedTime, intermediateParts[2]);
-											ParserUtils.parseIsoTime(predictedTime, intermediateParts[3]);
+											ParserUtils.parseIsoDate(predictedTimeCal, intermediateParts[2]);
+											ParserUtils.parseIsoTime(predictedTimeCal, intermediateParts[3]);
 
 											if (intermediateParts.length > 5)
 											{
 												final int delay = Integer.parseInt(intermediateParts[5]);
-												predictedTime.add(Calendar.MINUTE, delay);
+												predictedTimeCal.add(Calendar.MINUTE, delay);
 											}
 										}
 									}
@@ -2948,9 +2947,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 										location = new Location(LocationType.STATION, id, null, name);
 									}
 
-									final Stop stop = new Stop(location, false, plannedTime.isSet(Calendar.HOUR_OF_DAY) ? plannedTime.getTime()
-											: predictedTime.getTime(), predictedTime.isSet(Calendar.HOUR_OF_DAY) ? predictedTime.getTime() : null,
-											null, null);
+									final Date plannedTime = plannedTimeCal.isSet(Calendar.HOUR_OF_DAY) ? plannedTimeCal.getTime() : null;
+									final Date predictedTime = predictedTimeCal.isSet(Calendar.HOUR_OF_DAY) ? predictedTimeCal.getTime() : null;
+									final Stop stop = new Stop(location, false, plannedTime, predictedTime, null, null);
 
 									intermediateStops.add(stop);
 								}
