@@ -1776,8 +1776,14 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			final String productName = n != null ? n : de;
 			final String lineId = parseMobileDv(pp);
 
-			final String symbol = productNu.endsWith(" " + productName) ? productNu.substring(0, productNu.length() - productName.length() - 1)
-					: productNu;
+			final String symbol;
+			if (productName != null && productNu == null)
+				symbol = productName;
+			else if (productName != null && productNu.endsWith(" " + productName))
+				symbol = productNu.substring(0, productNu.length() - productName.length() - 1);
+			else
+				symbol = productNu;
+
 			final String trainType;
 			final String trainNum;
 			final Matcher mSymbol = P_MOBILE_M_SYMBOL.matcher(symbol);
