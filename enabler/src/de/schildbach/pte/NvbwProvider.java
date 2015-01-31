@@ -17,23 +17,34 @@
 
 package de.schildbach.pte;
 
+import java.io.IOException;
+import java.util.Date;
+import java.util.Set;
+
+import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.dto.Product;
+import de.schildbach.pte.dto.QueryTripsContext;
+import de.schildbach.pte.dto.QueryTripsResult;
+
 /**
  * @author Andreas Schildbach
  */
 public class NvbwProvider extends AbstractEfaProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.NVBW;
-	private final static String API_BASE = "http://www.efa-bw.de/nvbw/";
+	private final static String API_BASE = "http://www.efa-bw.de/nvbw/"; // no intermeditate stops
+	private final static String API_BASE_MOBILE = "http://www.efa-bw.de/android/";
 
-	// http://www.efa-bw.de/android/
 	// http://efa2.naldo.de/naldo/
 
 	public NvbwProvider()
 	{
-		super(API_BASE);
+		super(API_BASE + DEFAULT_DEPARTURE_MONITOR_ENDPOINT, API_BASE_MOBILE + DEFAULT_TRIP_ENDPOINT, API_BASE + DEFAULT_STOPFINDER_ENDPOINT,
+				API_BASE + DEFAULT_COORD_ENDPOINT);
 
 		setIncludeRegionId(false);
 		setUseRouteIndexAsTripId(false);
+		setNumTripsRequested(12);
 	}
 
 	public NetworkId id()
@@ -76,5 +87,18 @@ public class NvbwProvider extends AbstractEfaProvider
 		}
 
 		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
+	}
+
+	@Override
+	public QueryTripsResult queryTrips(final Location from, final Location via, final Location to, final Date date, final boolean dep,
+			final Set<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options) throws IOException
+	{
+		return queryTripsMobile(from, via, to, date, dep, products, walkSpeed, accessibility, options);
+	}
+
+	@Override
+	public QueryTripsResult queryMoreTrips(final QueryTripsContext contextObj, final boolean later) throws IOException
+	{
+		return queryMoreTripsMobile(contextObj, later);
 	}
 }
