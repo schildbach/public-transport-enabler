@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryTripsContext;
@@ -57,37 +58,37 @@ public class NvbwProvider extends AbstractEfaProvider
 	private static final Pattern P_LINE_S_AVG_VBK = Pattern.compile("(S\\d+) \\((?:AVG|VBK)\\)");
 
 	@Override
-	protected String parseLine(final String mot, final String symbol, final String name, final String longName, final String trainType,
-			final String trainNum, final String trainName)
+	protected Line parseLine(final String id, final String mot, final String symbol, final String name, final String longName,
+			final String trainType, final String trainNum, final String trainName)
 	{
 		if ("0".equals(mot))
 		{
 			if (("ICE".equals(trainName) || "InterCityExpress".equals(trainName)) && trainNum == null)
-				return "IICE";
+				return new Line(id, Product.HIGH_SPEED_TRAIN, "ICE");
 			if ("InterCity".equals(trainName) && trainNum == null)
-				return "IIC";
+				return new Line(id, Product.HIGH_SPEED_TRAIN, "IC");
 			if ("Fernreisezug externer EU".equals(trainName) && trainNum == null)
-				return "I";
+				return new Line(id, Product.HIGH_SPEED_TRAIN, null);
 			if ("SuperCity".equals(trainName) && trainNum == null)
-				return "ISC";
+				return new Line(id, Product.HIGH_SPEED_TRAIN, "SC");
 			if ("InterRegio".equals(longName) && symbol == null)
-				return "RIR";
+				return new Line(id, Product.REGIONAL_TRAIN, "IR");
 			if ("REGIOBAHN".equals(trainName) && trainNum == null)
-				return "R";
+				return new Line(id, Product.REGIONAL_TRAIN, null);
 			if ("RR".equals(trainType) && trainNum == null)
-				return "RRR";
+				return new Line(id, Product.REGIONAL_TRAIN, "RR");
 			if ("Meridian".equals(trainName) && symbol != null)
-				return "R" + symbol;
+				return new Line(id, Product.REGIONAL_TRAIN, symbol);
 			if ("CityBahn".equals(trainName) && trainNum == null)
-				return "RCB";
+				return new Line(id, Product.REGIONAL_TRAIN, "CB");
 			if ("Trilex".equals(trainName) && trainNum == null)
-				return "RTLX";
+				return new Line(id, Product.REGIONAL_TRAIN, "TLX");
 			if ("Bay. Seenschifffahrt".equals(trainName) && symbol != null)
-				return "F" + symbol;
+				return new Line(id, Product.FERRY, symbol);
 			if ("Nahverkehrszug von Dritten".equals(trainName) && trainNum == null)
-				return "?Zug";
+				return new Line(id, null, "Zug");
 			if ("DB".equals(trainName) && trainNum == null)
-				return "?DB";
+				return new Line(id, null, "DB");
 		}
 		else if ("1".equals(mot))
 		{
@@ -95,11 +96,11 @@ public class NvbwProvider extends AbstractEfaProvider
 			{
 				final Matcher m = P_LINE_S_AVG_VBK.matcher(symbol);
 				if (m.matches())
-					return "S" + m.group(1);
+					return new Line(id, Product.SUBURBAN_TRAIN, m.group(1));
 			}
 		}
 
-		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
+		return super.parseLine(id, mot, symbol, name, longName, trainType, trainNum, trainName);
 	}
 
 	@Override

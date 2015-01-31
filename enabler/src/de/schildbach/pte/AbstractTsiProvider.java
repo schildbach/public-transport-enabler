@@ -129,34 +129,34 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 
 	private static final ResultHeader HEADER = new ResultHeader("tsi");
 
-	private static Map<String, Character> TRANSPORT_MODE_SHORTS = new HashMap<String, Character>();
+	private static Map<String, Product> TRANSPORT_MODES = new HashMap<String, Product>();
 	static
 	{
 		// HIGH_SPEED_TRAIN
-		TRANSPORT_MODE_SHORTS.put("TGV", 'I');
-		TRANSPORT_MODE_SHORTS.put("HST", 'I');
+		TRANSPORT_MODES.put("TGV", Product.HIGH_SPEED_TRAIN);
+		TRANSPORT_MODES.put("HST", Product.HIGH_SPEED_TRAIN);
 
 		// REGIONAL_TRAIN
-		TRANSPORT_MODE_SHORTS.put("TRAIN", 'R');
-		TRANSPORT_MODE_SHORTS.put("TER", 'R');
+		TRANSPORT_MODES.put("TRAIN", Product.REGIONAL_TRAIN);
+		TRANSPORT_MODES.put("TER", Product.REGIONAL_TRAIN);
 
 		// SUBURBAN_TRAIN
-		TRANSPORT_MODE_SHORTS.put("LOCAL_TRAIN", 'S');
+		TRANSPORT_MODES.put("LOCAL_TRAIN", Product.SUBURBAN_TRAIN);
 
 		// SUBWAY
-		TRANSPORT_MODE_SHORTS.put("METRO", 'U');
+		TRANSPORT_MODES.put("METRO", Product.SUBWAY);
 
 		// TRAM
-		TRANSPORT_MODE_SHORTS.put("TRAM", 'T');
-		TRANSPORT_MODE_SHORTS.put("TRAMWAY", 'T');
+		TRANSPORT_MODES.put("TRAM", Product.TRAM);
+		TRANSPORT_MODES.put("TRAMWAY", Product.TRAM);
 
 		// BUS
-		TRANSPORT_MODE_SHORTS.put("BUS", 'B');
-		TRANSPORT_MODE_SHORTS.put("COACH", 'B');
+		TRANSPORT_MODES.put("BUS", Product.BUS);
+		TRANSPORT_MODES.put("COACH", Product.BUS);
 
 		// CABLECAR
-		TRANSPORT_MODE_SHORTS.put("TROLLEY", 'C');
-		TRANSPORT_MODE_SHORTS.put("TROLLEY_BUS", 'C');
+		TRANSPORT_MODES.put("TROLLEY", Product.CABLECAR);
+		TRANSPORT_MODES.put("TROLLEY_BUS", Product.CABLECAR);
 	}
 
 	protected static double latLonToDouble(final int value)
@@ -242,18 +242,17 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 		return uri;
 	}
 
-	private String createLineLabel(final String mode, final String number, final String name, final String operatorCode, final String codeActivity)
+	private Line createLine(final String id, final String mode, final String number, final String name, final String operatorCode,
+			final String codeActivity)
 	{
-		final Character modePrefix = TRANSPORT_MODE_SHORTS.get(mode);
+		final Product product = TRANSPORT_MODES.get(mode);
 
-		if (modePrefix == null)
+		if (product == null)
 			throw new IllegalStateException("cannot normalize mode '" + mode + "' number '" + number + "'");
 
 		final StringBuilder label = new StringBuilder();
 
-		label.append(modePrefix);
-
-		if (number != null && number.length() > 0)
+		if (number != null)
 		{
 			label.append(number);
 		}
@@ -268,7 +267,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 			label.append(name);
 		}
 
-		return label.toString();
+		return new Line(id, product, label.toString());
 	}
 
 	private List<Location> identifyLocation(final Location location) throws IOException
@@ -552,6 +551,9 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 			network = null;
 
 		final JSONObject lineInfo = ptrInfo.getJSONObject("Line");
+
+		final String id = lineInfo.getString("id");
+
 		final String transportMode = ptrInfo.getString("TransportMode");
 
 		final String lineNumber = lineInfo.optString("Number");
@@ -566,9 +568,9 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 
 		final String codeActivity = jsonOptString(ptrInfo, "CodeActivity");
 
-		final String lineLabel = createLineLabel(transportMode, lineNumber, lineName, operatorCode, codeActivity);
-
-		return new Line(lineInfo.getString("id"), lineLabel, lineStyle(network, lineLabel), null, null);
+		final Line line = createLine(id, transportMode, lineNumber, lineName, operatorCode, codeActivity);
+		final Line styledLine = new Line(line.id, line.product, line.label, lineStyle(network, line.product, line.label));
+		return styledLine;
 	}
 
 	private Location parseJsonTransportLocation(final JSONObject data) throws JSONException

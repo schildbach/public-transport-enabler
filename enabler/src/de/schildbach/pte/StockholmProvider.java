@@ -49,22 +49,22 @@ public class StockholmProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected char intToProduct(final int value)
+	protected Product intToProduct(final int value)
 	{
 		if (value == 1) // Pendeltåg
-			return 'S';
+			return Product.SUBURBAN_TRAIN;
 		if (value == 2) // Tunnelbana
-			return 'U';
+			return Product.SUBWAY;
 		if (value == 4) // Lokalbanor
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if (value == 8) // Bussar
-			return 'B';
+			return Product.BUS;
 		if (value == 16) // Flygbussar
-			return 'B';
+			return Product.BUS;
 		if (value == 32)
-			return 'F';
+			return Product.FERRY;
 		if (value == 64) // Waxholmsbåtar
-			return 'F';
+			return Product.FERRY;
 
 		throw new IllegalArgumentException("cannot handle: " + value);
 	}
@@ -153,9 +153,9 @@ public class StockholmProvider extends AbstractHafasProvider
 
 			if (type.length() > 0)
 			{
-				final char normalizedType = normalizeType(type);
-				if (normalizedType != 0)
-					return newLine(normalizedType, number, null);
+				final Product product = normalizeType(type);
+				if (product != null)
+					return newLine(product, number, null);
 			}
 
 			throw new IllegalStateException("cannot normalize type " + type + " number " + number + " line#type " + lineAndType);
@@ -165,43 +165,43 @@ public class StockholmProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected char normalizeType(final String type)
+	protected Product normalizeType(final String type)
 	{
 		final String ucType = type.toUpperCase();
 
 		if ("TRAIN".equals(ucType))
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("NÄRTRAFIKEN".equals(ucType))
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("LOKALTÅG".equals(ucType))
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 
 		if ("PENDELTÅG".equals(ucType))
-			return 'S';
+			return Product.SUBURBAN_TRAIN;
 
 		if ("METRO".equals(ucType))
-			return 'U';
+			return Product.SUBWAY;
 		if ("TUNNELBANA".equals(ucType))
-			return 'U';
+			return Product.SUBWAY;
 
 		if ("TRAM".equals(ucType))
-			return 'T';
+			return Product.TRAM;
 
 		if ("BUS".equals(ucType))
-			return 'B';
+			return Product.BUS;
 		if ("BUSS".equals(ucType))
-			return 'B';
+			return Product.BUS;
 		if ("FLYG".equals(ucType))
-			return 'B';
+			return Product.BUS;
 
 		if ("SHIP".equals(ucType))
-			return 'F';
+			return Product.FERRY;
 		if ("BÅT".equals(ucType))
-			return 'F';
+			return Product.FERRY;
 		if ("FÄRJA".equals(ucType))
-			return 'F';
+			return Product.FERRY;
 
-		return 0;
+		return null;
 	}
 
 	private static final Map<String, Style> STYLES = new HashMap<String, Style>();

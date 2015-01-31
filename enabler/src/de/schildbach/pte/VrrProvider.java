@@ -22,6 +22,8 @@ import java.util.Map;
 
 import com.google.common.base.Charsets;
 
+import de.schildbach.pte.dto.Line;
+import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
 
 /**
@@ -50,36 +52,36 @@ public class VrrProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	protected String parseLine(final String mot, final String symbol, final String name, final String longName, final String trainType,
-			final String trainNum, final String trainName)
+	protected Line parseLine(final String id, final String mot, final String symbol, final String name, final String longName,
+			final String trainType, final String trainNum, final String trainName)
 	{
 		if ("0".equals(mot))
 		{
 			if (trainType == null && "RB67/71".equals(trainNum))
-				return 'R' + trainNum;
+				return new Line(id, Product.REGIONAL_TRAIN, trainNum);
 			if ("Regionalbahn".equals(trainName) && symbol != null)
-				return 'R' + symbol;
+				return new Line(id, Product.REGIONAL_TRAIN, symbol);
 			if ("NordWestBahn".equals(trainName) && symbol != null)
-				return 'R' + symbol;
+				return new Line(id, Product.REGIONAL_TRAIN, symbol);
 
 			if (trainType == null && "SEV7".equals(trainNum))
-				return 'B' + trainNum;
+				return new Line(id, Product.BUS, trainNum);
 
 			if ("Zug".equals(longName))
-				return "?Zug";
+				return new Line(id, null, "Zug");
 		}
 		else if ("11".equals(mot))
 		{
 			// Wuppertaler Schwebebahn & SkyTrain D'dorf
 			if ("Schwebebahn".equals(trainName) || (longName != null && longName.startsWith("Schwebebahn")))
-				return 'C' + name;
+				return new Line(id, Product.CABLECAR, name);
 
 			// H-Bahn TU Dortmund
 			if ("H-Bahn".equals(trainName) || (longName != null && longName.startsWith("H-Bahn")))
-				return 'C' + name;
+				return new Line(id, Product.CABLECAR, name);
 		}
 
-		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
+		return super.parseLine(id, mot, symbol, name, longName, trainType, trainNum, trainName);
 	}
 
 	private static final Map<String, Style> STYLES = new HashMap<String, Style>();
@@ -188,11 +190,11 @@ public class VrrProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	public Style lineStyle(final String network, final String line)
+	public Style lineStyle(final String network, final Product product, final String label)
 	{
-		if (line != null && line.startsWith("BSB"))
-			return super.lineStyle(network, "BSB");
+		if (product == Product.BUS && label != null && label.startsWith("SB"))
+			return super.lineStyle(network, product, "SB");
 
-		return super.lineStyle(network, line);
+		return super.lineStyle(network, product, label);
 	}
 }

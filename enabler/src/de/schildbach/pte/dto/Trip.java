@@ -188,7 +188,7 @@ public final class Trip implements Serializable
 
 		for (final Leg leg : legs)
 			if (leg instanceof Public)
-				products.add(Product.fromCode(((Public) leg).line.label.charAt(0)));
+				products.add(((Public) leg).line.product);
 
 		return products;
 	}
@@ -219,7 +219,9 @@ public final class Trip implements Serializable
 				final Public publicLeg = (Public) leg;
 				builder.append(publicLeg.departureStop.plannedDepartureTime.getTime()).append('-');
 				builder.append(publicLeg.arrivalStop.plannedArrivalTime.getTime()).append('-');
-				builder.append(publicLeg.line.label);
+				final Line line = publicLeg.line;
+				builder.append(line.productCode());
+				builder.append(line.label);
 			}
 
 			builder.append('|');

@@ -51,12 +51,12 @@ public class JetProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected char intToProduct(final int value)
+	protected Product intToProduct(final int value)
 	{
 		if (value == 4)
-			return 'T';
+			return Product.TRAM;
 		if (value == 8)
-			return 'B';
+			return Product.BUS;
 
 		throw new IllegalArgumentException("cannot handle: " + value);
 	}
@@ -138,14 +138,14 @@ public class JetProvider extends AbstractHafasProvider
 	protected Line parseLineAndType(final String lineAndType)
 	{
 		if ("רק1#".equals(lineAndType))
-			return newLine('T', "רק1", null);
+			return newLine(Product.TRAM, "רק1", null);
 
 		if ("א 11#".equals(lineAndType) || "11א#".equals(lineAndType))
-			return newLine('B', "א11", null);
+			return newLine(Product.BUS, "א11", null);
 
 		final Matcher mBus = P_NORMALIZE_BUS.matcher(lineAndType);
 		if (mBus.matches())
-			return newLine('B', mBus.group(1), null);
+			return newLine(Product.BUS, mBus.group(1), null);
 
 		throw new IllegalStateException("cannot normalize line#type '" + lineAndType + "'");
 	}

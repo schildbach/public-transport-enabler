@@ -17,6 +17,9 @@
 
 package de.schildbach.pte;
 
+import de.schildbach.pte.dto.Line;
+import de.schildbach.pte.dto.Product;
+
 /**
  * @author Andreas Schildbach
  */
@@ -38,61 +41,61 @@ public class VblProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	protected String parseLine(final String mot, final String symbol, final String name, final String longName, final String trainType,
-			final String trainNum, final String trainName)
+	protected Line parseLine(final String id, final String mot, final String symbol, final String name, final String longName,
+			final String trainType, final String trainNum, final String trainName)
 	{
 		if ("0".equals(mot))
 		{
 			if ("BLS".equals(trainType) && trainNum != null)
-				return "RBLS" + trainNum;
+				return new Line(id, Product.REGIONAL_TRAIN, "BLS" + trainNum);
 			if ("ASM".equals(trainType) && trainNum != null) // Aare Seeland mobil
-				return "RASM" + trainNum;
+				return new Line(id, Product.REGIONAL_TRAIN, "ASM" + trainNum);
 			if ("SOB".equals(trainType) && trainNum != null) // Schweizerische Südostbahn
-				return "RSOB" + trainNum;
+				return new Line(id, Product.REGIONAL_TRAIN, "SOB" + trainNum);
 			if ("RhB".equals(trainType) && trainNum != null) // Rhätische Bahn
-				return "RRhB" + trainNum;
+				return new Line(id, Product.REGIONAL_TRAIN, "RhB" + trainNum);
 			if ("AB-".equals(trainType) && trainNum != null) // Appenzeller Bahnen
-				return "RAB" + trainNum;
+				return new Line(id, Product.REGIONAL_TRAIN, "AB" + trainNum);
 			if ("BDW".equals(trainType) && trainNum != null) // BDWM Transport
-				return "RBDW" + trainNum;
+				return new Line(id, Product.REGIONAL_TRAIN, "BDW" + trainNum);
 			if ("ZB".equals(trainType) && trainNum != null) // Zentralbahn
-				return "RZB" + trainNum;
+				return new Line(id, Product.REGIONAL_TRAIN, "ZB" + trainNum);
 			if ("TPF".equals(trainType) && trainNum != null) // Transports publics fribourgeois
-				return "RTPF" + trainNum;
+				return new Line(id, Product.REGIONAL_TRAIN, "TPF" + trainNum);
 			if ("MGB".equals(trainType) && trainNum != null) // Matterhorn Gotthard Bahn
-				return "RMGB" + trainNum;
+				return new Line(id, Product.REGIONAL_TRAIN, "MGB" + trainNum);
 			if ("CJ".equals(trainType) && trainNum != null) // Chemins de fer du Jura
-				return "RCJ" + trainNum;
+				return new Line(id, Product.REGIONAL_TRAIN, "CJ" + trainNum);
 			if ("LEB".equals(trainType) && trainNum != null) // Lausanne-Echallens-Bercher
-				return "RLEB" + trainNum;
+				return new Line(id, Product.REGIONAL_TRAIN, "LEB" + trainNum);
 			if ("FAR".equals(trainType) && trainNum != null) // Ferrovie Autolinee Regionali Ticinesi
-				return "RFAR" + trainNum;
+				return new Line(id, Product.REGIONAL_TRAIN, "FAR" + trainNum);
 			if ("WAB".equals(trainType) && trainNum != null) // Wengernalpbahn
-				return "RWAB" + trainNum;
+				return new Line(id, Product.REGIONAL_TRAIN, "WAB" + trainNum);
 			if ("JB".equals(trainType) && trainNum != null) // Jungfraubahn
-				return "RJB" + trainNum;
+				return new Line(id, Product.REGIONAL_TRAIN, "JB" + trainNum);
 			if ("NSt".equals(trainType) && trainNum != null) // Nyon-St-Cergue-Morez
-				return "RNSt" + trainNum;
+				return new Line(id, Product.REGIONAL_TRAIN, "NSt" + trainNum);
 			if ("RA".equals(trainType) && trainNum != null) // Regionalps
-				return "RRA" + trainNum;
+				return new Line(id, Product.REGIONAL_TRAIN, "RA" + trainNum);
 			if ("TRN".equals(trainType) && trainNum != null) // Transport Publics Neuchâtelois
-				return "RTRN" + trainNum;
+				return new Line(id, Product.REGIONAL_TRAIN, "TRN" + trainNum);
 			if ("TPC".equals(trainType) && trainNum != null) // Transports Publics du Chablais
-				return "RTPC" + trainNum;
+				return new Line(id, Product.REGIONAL_TRAIN, "TPC" + trainNum);
 			if ("MVR".equals(trainType) && trainNum != null) // Montreux-Vevey-Riviera
-				return "RMVR" + trainNum;
+				return new Line(id, Product.REGIONAL_TRAIN, "MVR" + trainNum);
 			if ("MOB".equals(trainType) && trainNum != null) // Montreux-Oberland Bernois
-				return "RMOB" + trainNum;
+				return new Line(id, Product.REGIONAL_TRAIN, "MOB" + trainNum);
 			if ("TRA".equals(trainType) && trainNum != null) // Transports Vallée de Joux-Yverdon-Ste-Croix
-				return "RTRA" + trainNum;
+				return new Line(id, Product.REGIONAL_TRAIN, "TRA" + trainNum);
 			if ("TMR".equals(trainType) && trainNum != null) // Transports de Martigny et Régions
-				return "RTMR" + trainNum;
+				return new Line(id, Product.REGIONAL_TRAIN, "TMR" + trainNum);
 			if ("GGB".equals(trainType) && trainNum != null) // Gornergratbahn
-				return "RGGB" + trainNum;
+				return new Line(id, Product.REGIONAL_TRAIN, "GGB" + trainNum);
 			if ("BLM".equals(trainType) && trainNum != null) // Lauterbrunnen-Mürren
-				return "RBLM" + trainNum;
+				return new Line(id, Product.REGIONAL_TRAIN, "BLM" + trainNum);
 		}
 
-		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
+		return super.parseLine(id, mot, symbol, name, longName, trainType, trainNum, trainName);
 	}
 }

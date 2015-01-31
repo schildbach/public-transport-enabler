@@ -330,29 +330,29 @@ public class InvgProvider extends AbstractHafasProvider
 			final Matcher mBus = P_NORMALIZE_LINE_BUS.matcher(line);
 			if (mBus.matches())
 			{
-				final String lineStr = "B" + mBus.group(1);
-				return new Line(null, lineStr, lineStyle(null, lineStr));
+				final String label = mBus.group(1);
+				return new Line(null, Product.BUS, label, lineStyle(null, Product.BUS, label));
 			}
 
 			final Matcher mNachtbus = P_NORMALIZE_LINE_NACHTBUS.matcher(line);
 			if (mNachtbus.matches())
 			{
-				final String lineStr = "BN" + mNachtbus.group(1);
-				return new Line(null, lineStr, lineStyle(null, lineStr));
+				final String label = "N" + mNachtbus.group(1);
+				return new Line(null, Product.BUS, label, lineStyle(null, Product.BUS, label));
 			}
 
 			final Matcher mBusS = P_NORMALIZE_LINE_BUS_S.matcher(line);
 			if (mBusS.matches())
 			{
-				final String lineStr = "BS" + mBusS.group(1);
-				return new Line(null, lineStr, lineStyle(null, lineStr));
+				final String label = "S" + mBusS.group(1);
+				return new Line(null, Product.BUS, label, lineStyle(null, Product.BUS, label));
 			}
 
 			final Matcher mBusX = P_NORMALIZE_LINE_BUS_X.matcher(line);
 			if (mBusX.matches())
 			{
-				final String lineStr = "BX" + mBusX.group(1);
-				return new Line(null, lineStr, lineStyle(null, lineStr));
+				final String label = "X" + mBusX.group(1);
+				return new Line(null, Product.BUS, label, lineStyle(null, Product.BUS, label));
 			}
 		}
 
@@ -360,12 +360,12 @@ public class InvgProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected char normalizeType(final String type)
+	protected Product normalizeType(final String type)
 	{
 		if ("1".equals(type))
-			return 'B';
+			return Product.BUS;
 
-		return 0;
+		return null;
 	}
 
 	private static final Map<String, Style> STYLES = new HashMap<String, Style>();

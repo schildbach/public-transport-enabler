@@ -242,9 +242,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		return (1 << numProductBits) - 1;
 	}
 
-	protected char intToProduct(final int value)
+	protected Product intToProduct(final int value)
 	{
-		return 0;
+		return null;
 	}
 
 	protected abstract void setProductBits(StringBuilder productBits, Product product);
@@ -648,16 +648,14 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					final Line line;
 					if (classStr != null)
 					{
-						final char classChar = intToProduct(Integer.parseInt(classStr));
-						if (classChar == 0)
+						final Product product = intToProduct(Integer.parseInt(classStr));
+						if (product == null)
 							throw new IllegalArgumentException();
 						// could check for type consistency here
-						final String lineName = prodLine.label.substring(1);
 						if (prodLine.attrs != null)
-							line = newLine(classChar, lineName, null, prodLine.attrs.toArray(new Line.Attr[0]));
+							line = newLine(product, prodLine.label, null, prodLine.attrs.toArray(new Line.Attr[0]));
 						else
-							line = newLine(classChar, lineName, null);
-
+							line = newLine(product, prodLine.label, null);
 					}
 					else
 					{
@@ -1955,9 +1953,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						}
 						else if (type == 2)
 						{
-							final char lineProduct;
+							final Product lineProduct;
 							if (lineOnDemand)
-								lineProduct = Product.ON_DEMAND.code;
+								lineProduct = Product.ON_DEMAND;
 							else if (lineClass != 0)
 								lineProduct = intToProduct(lineClass);
 							else
@@ -2553,444 +2551,435 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	private static final Pattern P_LINE_BUS = Pattern.compile("BUS\\w{0,5}");
 	private static final Pattern P_LINE_TAXI = Pattern.compile("TAX\\w{0,5}");
 
-	protected char normalizeType(final String type)
+	protected Product normalizeType(final String type)
 	{
 		final String ucType = type.toUpperCase();
 
 		// Intercity
 		if ("EC".equals(ucType)) // EuroCity
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("EN".equals(ucType)) // EuroNight
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("D".equals(ucType)) // EuroNight, Sitzwagenabteil
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("EIC".equals(ucType)) // Ekspres InterCity, Polen
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("ICE".equals(ucType)) // InterCityExpress
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("IC".equals(ucType)) // InterCity
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("ICT".equals(ucType)) // InterCity
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("ICN".equals(ucType)) // InterCityNight
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("ICD".equals(ucType)) // Intercity direkt Amsterdam-Breda
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("CNL".equals(ucType)) // CityNightLine
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("MT".equals(ucType)) // Schnee-Express
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("OEC".equals(ucType)) // ÖBB-EuroCity
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("OIC".equals(ucType)) // ÖBB-InterCity
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("RJ".equals(ucType)) // RailJet, Österreichische Bundesbahnen
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("WB".equals(ucType)) // westbahn
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("THA".equals(ucType)) // Thalys
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("TGV".equals(ucType)) // Train à Grande Vitesse
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("DNZ".equals(ucType)) // Nachtzug Basel-Moskau
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("AIR".equals(ucType)) // Generic Flight
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("ECB".equals(ucType)) // EC, Verona-München
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("LYN".equals(ucType)) // Dänemark
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("NZ".equals(ucType)) // Schweden, Nacht
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("INZ".equals(ucType)) // Nacht
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("RHI".equals(ucType)) // ICE
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("RHT".equals(ucType)) // TGV
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("TGD".equals(ucType)) // TGV
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("IRX".equals(ucType)) // IC
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("ES".equals(ucType)) // Eurostar Italia
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("EST".equals(ucType)) // Eurostar Frankreich
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("EM".equals(ucType)) // Euromed, Barcelona-Alicante, Spanien
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("A".equals(ucType)) // Spain, Highspeed
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("AVE".equals(ucType)) // Alta Velocidad Española, Spanien
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("ARC".equals(ucType)) // Arco (Renfe), Spanien
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("ALS".equals(ucType)) // Alaris (Renfe), Spanien
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("ATR".equals(ucType)) // Altaria (Renfe), Spanien
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("TAL".equals(ucType)) // Talgo, Spanien
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("TLG".equals(ucType)) // Spanien, Madrid
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("HOT".equals(ucType)) // Spanien, Nacht
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("X2".equals(ucType)) // X2000 Neigezug, Schweden
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("X".equals(ucType)) // InterConnex
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("FYR".equals(ucType)) // Fyra, Amsterdam-Schiphol-Rotterdam
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("FYRA".equals(ucType)) // Fyra, Amsterdam-Schiphol-Rotterdam
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("SC".equals(ucType)) // SuperCity, Tschechien
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("LE".equals(ucType)) // LEO Express, Prag
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("FLUG".equals(ucType))
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("TLK".equals(ucType)) // Tanie Linie Kolejowe, Polen
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("EIP".equals(ucType)) // Express Intercity Premium
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("INT".equals(ucType)) // Zürich-Brüssel - Budapest-Istanbul
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("HKX".equals(ucType)) // Hamburg-Koeln-Express
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 
 		// Regional
 		if ("ZUG".equals(ucType)) // Generic Train
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("R".equals(ucType)) // Generic Regional Train
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("DPN".equals(ucType)) // Dritter Personen Nahverkehr
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("RB".equals(ucType)) // RegionalBahn
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("RE".equals(ucType)) // RegionalExpress
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("IR".equals(ucType)) // Interregio
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("IRE".equals(ucType)) // Interregio Express
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("HEX".equals(ucType)) // Harz-Berlin-Express, Veolia
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("WFB".equals(ucType)) // Westfalenbahn
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("RT".equals(ucType)) // RegioTram
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("REX".equals(ucType)) // RegionalExpress, Österreich
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("OS".equals(ucType)) // Osobný vlak, Slovakia oder Osobní vlak, Czech Republic
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("SP".equals(ucType)) // Spěšný vlak, Czech Republic
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("EZ".equals(ucType)) // ÖBB ErlebnisBahn
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("ARZ".equals(ucType)) // Auto-Reisezug Brig - Iselle di Trasquera
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("OE".equals(ucType)) // Ostdeutsche Eisenbahn
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("MR".equals(ucType)) // Märkische Regionalbahn
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("PE".equals(ucType)) // Prignitzer Eisenbahn GmbH
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("NE".equals(ucType)) // NEB Betriebsgesellschaft mbH
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("MRB".equals(ucType)) // Mitteldeutsche Regiobahn
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("ERB".equals(ucType)) // eurobahn (Keolis Deutschland)
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("HLB".equals(ucType)) // Hessische Landesbahn
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("VIA".equals(ucType))
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("HSB".equals(ucType)) // Harzer Schmalspurbahnen
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("OSB".equals(ucType)) // Ortenau-S-Bahn
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("VBG".equals(ucType)) // Vogtlandbahn
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("AKN".equals(ucType)) // AKN Eisenbahn AG
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("OLA".equals(ucType)) // Ostseeland Verkehr
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("UBB".equals(ucType)) // Usedomer Bäderbahn
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("PEG".equals(ucType)) // Prignitzer Eisenbahn
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("NWB".equals(ucType)) // NordWestBahn
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("CAN".equals(ucType)) // cantus Verkehrsgesellschaft
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("BRB".equals(ucType)) // ABELLIO Rail
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("SBB".equals(ucType)) // Schweizerische Bundesbahnen
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("VEC".equals(ucType)) // vectus Verkehrsgesellschaft
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("TLX".equals(ucType)) // Trilex (Vogtlandbahn)
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("TL".equals(ucType)) // Trilex (Vogtlandbahn)
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("HZL".equals(ucType)) // Hohenzollerische Landesbahn
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("ABR".equals(ucType)) // Bayerische Regiobahn
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("CB".equals(ucType)) // City Bahn Chemnitz
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("WEG".equals(ucType)) // Württembergische Eisenbahn-Gesellschaft
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("NEB".equals(ucType)) // Niederbarnimer Eisenbahn
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("ME".equals(ucType)) // metronom Eisenbahngesellschaft
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("MER".equals(ucType)) // metronom regional
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("ALX".equals(ucType)) // Arriva-Länderbahn-Express
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("EB".equals(ucType)) // Erfurter Bahn
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("EBX".equals(ucType)) // Erfurter Bahn
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("VEN".equals(ucType)) // Rhenus Veniro
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("BOB".equals(ucType)) // Bayerische Oberlandbahn
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("SBS".equals(ucType)) // Städtebahn Sachsen
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("SES".equals(ucType)) // Städtebahn Sachsen Express
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("EVB".equals(ucType)) // Eisenbahnen und Verkehrsbetriebe Elbe-Weser
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("STB".equals(ucType)) // Süd-Thüringen-Bahn
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("AG".equals(ucType)) // Ingolstadt-Landshut
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("PRE".equals(ucType)) // Pressnitztalbahn
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("DBG".equals(ucType)) // Döllnitzbahn GmbH
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("SHB".equals(ucType)) // Schleswig-Holstein-Bahn
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("NOB".equals(ucType)) // Nord-Ostsee-Bahn
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("RTB".equals(ucType)) // Rurtalbahn
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("BLB".equals(ucType)) // Berchtesgadener Land Bahn
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("NBE".equals(ucType)) // Nordbahn Eisenbahngesellschaft
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("SOE".equals(ucType)) // Sächsisch-Oberlausitzer Eisenbahngesellschaft
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("SDG".equals(ucType)) // Sächsische Dampfeisenbahngesellschaft
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("VE".equals(ucType)) // Lutherstadt Wittenberg
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("DAB".equals(ucType)) // Daadetalbahn
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("WTB".equals(ucType)) // Wutachtalbahn e.V.
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("BE".equals(ucType)) // Grensland-Express
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("ARR".equals(ucType)) // Ostfriesland
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("HTB".equals(ucType)) // Hörseltalbahn
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("FEG".equals(ucType)) // Freiberger Eisenbahngesellschaft
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("NEG".equals(ucType)) // Norddeutsche Eisenbahngesellschaft Niebüll
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("RBG".equals(ucType)) // Regental Bahnbetriebs GmbH
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("MBB".equals(ucType)) // Mecklenburgische Bäderbahn Molli
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("VEB".equals(ucType)) // Vulkan-Eifel-Bahn Betriebsgesellschaft
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("LEO".equals(ucType)) // Chiemgauer Lokalbahn
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("VX".equals(ucType)) // Vogtland Express
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("MSB".equals(ucType)) // Mainschleifenbahn
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("P".equals(ucType)) // Kasbachtalbahn
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("ÖBA".equals(ucType)) // Öchsle-Bahn Betriebsgesellschaft
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("KTB".equals(ucType)) // Kandertalbahn
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("ERX".equals(ucType)) // erixx
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("ATZ".equals(ucType)) // Autotunnelzug
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("ATB".equals(ucType)) // Autoschleuse Tauernbahn
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("CAT".equals(ucType)) // City Airport Train
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("EXTRA".equals(ucType) || "EXT".equals(ucType)) // Extrazug
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("KD".equals(ucType)) // Koleje Dolnośląskie (Niederschlesische Eisenbahn)
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("KM".equals(ucType)) // Koleje Mazowieckie
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("EX".equals(ucType)) // Polen
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("PCC".equals(ucType)) // PCC Rail, Polen
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("ZR".equals(ucType)) // ZSR (Slovakian Republic Railways)
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("RNV".equals(ucType)) // Rhein-Neckar-Verkehr GmbH
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("DWE".equals(ucType)) // Dessau-Wörlitzer Eisenbahn
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("BKB".equals(ucType)) // Buckower Kleinbahn
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("GEX".equals(ucType)) // Glacier Express
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("M".equals(ucType)) // Meridian
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("WBA".equals(ucType)) // Waldbahn
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("BEX".equals(ucType)) // Bernina Express
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("VAE".equals(ucType)) // Voralpen-Express
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("OPB".equals(ucType)) // oberpfalzbahn
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("OPX".equals(ucType)) // oberpfalz-express
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("TER".equals(ucType)) // Transport express régional
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 
 		// Suburban Trains
 		if (P_LINE_SBAHN.matcher(ucType).matches()) // Generic (Night) S-Bahn
-			return 'S';
+			return Product.SUBURBAN_TRAIN;
 		if ("S-BAHN".equals(ucType))
-			return 'S';
+			return Product.SUBURBAN_TRAIN;
 		if ("BSB".equals(ucType)) // Breisgau S-Bahn
-			return 'S';
+			return Product.SUBURBAN_TRAIN;
 		if ("SWE".equals(ucType)) // Südwestdeutsche Verkehrs-AG, Ortenau-S-Bahn
-			return 'S';
+			return Product.SUBURBAN_TRAIN;
 		if ("RER".equals(ucType)) // Réseau Express Régional, Frankreich
-			return 'S';
+			return Product.SUBURBAN_TRAIN;
 		if ("WKD".equals(ucType)) // Warszawska Kolej Dojazdowa (Warsaw Suburban Railway)
-			return 'S';
+			return Product.SUBURBAN_TRAIN;
 		if ("SKM".equals(ucType)) // Szybka Kolej Miejska Tricity
-			return 'S';
+			return Product.SUBURBAN_TRAIN;
 		if ("SKW".equals(ucType)) // Szybka Kolej Miejska Warschau
-			return 'S';
-		// if ("SPR".equals(normalizedType)) // Sprinter, Niederlande
-		// return "S" + normalizedName;
+			return Product.SUBURBAN_TRAIN;
 
 		// Subway
 		if ("U".equals(ucType)) // Generic U-Bahn
-			return 'U';
+			return Product.SUBWAY;
 		if ("MET".equals(ucType))
-			return 'U';
+			return Product.SUBWAY;
 		if ("METRO".equals(ucType))
-			return 'U';
+			return Product.SUBWAY;
 
 		// Tram
 		if (P_LINE_TRAM.matcher(ucType).matches()) // Generic Tram
-			return 'T';
+			return Product.TRAM;
 		if ("NFT".equals(ucType)) // Niederflur-Tram
-			return 'T';
+			return Product.TRAM;
 		if ("TRAM".equals(ucType))
-			return 'T';
+			return Product.TRAM;
 		if ("TRA".equals(ucType))
-			return 'T';
+			return Product.TRAM;
 		if ("WLB".equals(ucType)) // Wiener Lokalbahnen
-			return 'T';
+			return Product.TRAM;
 		if ("STRWLB".equals(ucType)) // Wiener Lokalbahnen
-			return 'T';
+			return Product.TRAM;
 		if ("SCHW-B".equals(ucType)) // Schwebebahn, gilt als "Straßenbahn besonderer Bauart"
-			return 'T';
+			return Product.TRAM;
 
 		// Bus
 		if (P_LINE_BUS.matcher(ucType).matches()) // Generic Bus
-			return 'B';
+			return Product.BUS;
 		if ("NFB".equals(ucType)) // Niederflur-Bus
-			return 'B';
+			return Product.BUS;
 		if ("SEV".equals(ucType)) // Schienen-Ersatz-Verkehr
-			return 'B';
+			return Product.BUS;
 		if ("BUSSEV".equals(ucType)) // Schienen-Ersatz-Verkehr
-			return 'B';
+			return Product.BUS;
 		if ("BSV".equals(ucType)) // Bus SEV
-			return 'B';
+			return Product.BUS;
 		if ("FB".equals(ucType)) // Fernbus? Luxemburg-Saarbrücken
-			return 'B';
+			return Product.BUS;
 		if ("EXB".equals(ucType)) // Expressbus München-Prag?
-			return 'B';
+			return Product.BUS;
 		if ("ICB".equals(ucType)) // ÖBB ICBus
-			return 'B';
+			return Product.BUS;
 		if ("TRO".equals(ucType)) // Trolleybus
-			return 'B';
+			return Product.BUS;
 		if ("RFB".equals(ucType)) // Rufbus
-			return 'B';
+			return Product.BUS;
 		if ("RUF".equals(ucType)) // Rufbus
-			return 'B';
+			return Product.BUS;
 		if (P_LINE_TAXI.matcher(ucType).matches()) // Generic Taxi
-			return 'B';
+			return Product.BUS;
 		if ("RFT".equals(ucType)) // Ruftaxi
-			return 'B';
+			return Product.BUS;
 		if ("LT".equals(ucType)) // Linien-Taxi
-			return 'B';
+			return Product.BUS;
 		if ("NB".equals(ucType)) // Nachtbus Zürich
-			return 'B';
+			return Product.BUS;
 
 		// Phone
 		if (ucType.startsWith("AST")) // Anruf-Sammel-Taxi
-			return 'P';
+			return Product.ON_DEMAND;
 		if (ucType.startsWith("ALT")) // Anruf-Linien-Taxi
-			return 'P';
+			return Product.ON_DEMAND;
 		if (ucType.startsWith("BUXI")) // Bus-Taxi (Schweiz)
-			return 'P';
+			return Product.ON_DEMAND;
 		if ("TB".equals(ucType)) // Taxi-Bus?
-			return 'P';
+			return Product.ON_DEMAND;
 
 		// Ferry
 		if ("SCHIFF".equals(ucType))
-			return 'F';
+			return Product.FERRY;
 		if ("FÄHRE".equals(ucType))
-			return 'F';
+			return Product.FERRY;
 		if ("FÄH".equals(ucType))
-			return 'F';
+			return Product.FERRY;
 		if ("FAE".equals(ucType))
-			return 'F';
+			return Product.FERRY;
 		if ("SCH".equals(ucType)) // Schiff
-			return 'F';
+			return Product.FERRY;
 		if ("AS".equals(ucType)) // SyltShuttle, eigentlich Autoreisezug
-			return 'F';
+			return Product.FERRY;
 		if ("KAT".equals(ucType)) // Katamaran, e.g. Friedrichshafen - Konstanz
-			return 'F';
+			return Product.FERRY;
 		if ("BAT".equals(ucType)) // Boots Anlege Terminal?
-			return 'F';
+			return Product.FERRY;
 		if ("BAV".equals(ucType)) // Boots Anlege?
-			return 'F';
+			return Product.FERRY;
 
 		// Cable Car
 		if ("SEILBAHN".equals(ucType))
-			return 'C';
+			return Product.CABLECAR;
 		if ("SB".equals(ucType)) // Seilbahn
-			return 'C';
+			return Product.CABLECAR;
 		if ("ZAHNR".equals(ucType)) // Zahnradbahn, u.a. Zugspitzbahn
-			return 'C';
+			return Product.CABLECAR;
 		if ("GB".equals(ucType)) // Gondelbahn
-			return 'C';
+			return Product.CABLECAR;
 		if ("LB".equals(ucType)) // Luftseilbahn
-			return 'C';
+			return Product.CABLECAR;
 		if ("FUN".equals(ucType)) // Funiculaire (Standseilbahn)
-			return 'C';
+			return Product.CABLECAR;
 		if ("SL".equals(ucType)) // Sessel-Lift
-			return 'C';
+			return Product.CABLECAR;
 
-		// if ("L".equals(normalizedType))
-		// return "?" + normalizedName;
-		// if ("CR".equals(normalizedType))
-		// return "?" + normalizedName;
-		// if ("TRN".equals(normalizedType))
-		// return "?" + normalizedName;
-
-		return 0;
+		throw new IllegalStateException("cannot normalize type '" + type + "'");
 	}
 
 	private static final Pattern P_NORMALIZE_LINE_NAME_BUS = Pattern.compile("bus\\s+(.*)", Pattern.CASE_INSENSITIVE);
@@ -3029,15 +3018,15 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		{
 			final Matcher mBus = P_NORMALIZE_LINE_BUS.matcher(normalizedName);
 			if (mBus.matches())
-				return newLine('B', mBus.group(1), null);
+				return newLine(Product.BUS, mBus.group(1), null);
 
 			final Matcher mTram = P_NORMALIZE_LINE_TRAM.matcher(normalizedName);
 			if (mTram.matches())
-				return newLine('T', mTram.group(1), null);
+				return newLine(Product.TRAM, mTram.group(1), null);
 		}
 
-		final char normalizedType = normalizeType(type);
-		if (normalizedType == 0)
+		final Product normalizedType = normalizeType(type);
+		if (normalizedType == null)
 			throw new IllegalStateException("cannot normalize type '" + type + "' line '" + normalizedName + "'");
 
 		final Line.Attr[] attrs;
@@ -3076,29 +3065,29 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			if (type.length() == 0)
 			{
 				if (number.length() == 0)
-					return newLine('?', null, null);
+					return newLine(null, null, null);
 				if (P_NORMALIZE_LINE_NUMBER.matcher(number).matches())
-					return newLine('?', number, null);
+					return newLine(null, number, null);
 				if (P_LINE_RUSSIA.matcher(number).matches())
-					return newLine('R', number, null);
+					return newLine(Product.REGIONAL_TRAIN, number, null);
 			}
 			else
 			{
-				final char normalizedType = normalizeType(type);
-				if (normalizedType != 0)
+				final Product normalizedType = normalizeType(type);
+				if (normalizedType != null)
 				{
-					if (normalizedType == 'B')
+					if (normalizedType == Product.BUS)
 					{
 						final Matcher mBus = P_NORMALIZE_LINE_BUS.matcher(number);
 						if (mBus.matches())
-							return newLine('B', mBus.group(1), null);
+							return newLine(Product.BUS, mBus.group(1), null);
 					}
 
-					if (normalizedType == 'T')
+					if (normalizedType == Product.TRAM)
 					{
 						final Matcher mTram = P_NORMALIZE_LINE_TRAM.matcher(number);
 						if (mTram.matches())
-							return newLine('T', mTram.group(1), null);
+							return newLine(Product.TRAM, mTram.group(1), null);
 					}
 
 					return newLine(normalizedType, number.replaceAll("\\s+", ""), null);
@@ -3111,20 +3100,18 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		throw new IllegalStateException("cannot normalize line#type '" + lineAndType + "'");
 	}
 
-	protected Line newLine(final char product, final String normalizedName, final String comment, final Line.Attr... attrs)
+	protected Line newLine(final Product product, final String normalizedName, final String comment, final Line.Attr... attrs)
 	{
-		final String lineStr = (product != 0 ? Character.toString(product) : Product.UNKNOWN) + (normalizedName != null ? normalizedName : "?");
-
 		if (attrs.length == 0)
 		{
-			return new Line(null, lineStr, lineStyle(null, lineStr), comment);
+			return new Line(null, product, normalizedName, lineStyle(null, product, normalizedName), comment);
 		}
 		else
 		{
 			final Set<Line.Attr> attrSet = new HashSet<Line.Attr>();
 			for (final Line.Attr attr : attrs)
 				attrSet.add(attr);
-			return new Line(null, lineStr, lineStyle(null, lineStr), attrSet, comment);
+			return new Line(null, product, normalizedName, lineStyle(null, product, normalizedName), attrSet, comment);
 		}
 	}
 }

@@ -49,28 +49,28 @@ public class ZvvProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected char intToProduct(final int value)
+	protected Product intToProduct(final int value)
 	{
 		if (value == 1)
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if (value == 2)
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if (value == 4)
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if (value == 8)
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if (value == 16)
-			return 'F';
+			return Product.FERRY;
 		if (value == 32)
-			return 'S';
+			return Product.SUBURBAN_TRAIN;
 		if (value == 64)
-			return 'B';
+			return Product.BUS;
 		if (value == 128)
-			return 'C';
+			return Product.CABLECAR;
 		if (value == 256)
-			return 'U';
+			return Product.SUBWAY;
 		if (value == 512)
-			return 'T';
+			return Product.TRAM;
 
 		throw new IllegalArgumentException("cannot handle: " + value);
 	}
@@ -179,23 +179,23 @@ public class ZvvProvider extends AbstractHafasProvider
 			final String type = m.group(2);
 
 			if ("Bus".equals(type))
-				return newLine('B', stripPrefix(number, "Bus"), null);
+				return newLine(Product.BUS, stripPrefix(number, "Bus"), null);
 			if ("Bus-NF".equals(type))
-				return newLine('B', stripPrefix(number, "Bus", "Bus-NF"), null, Line.Attr.WHEEL_CHAIR_ACCESS);
+				return newLine(Product.BUS, stripPrefix(number, "Bus", "Bus-NF"), null, Line.Attr.WHEEL_CHAIR_ACCESS);
 			if ("Tro".equals(type) || "Trolley".equals(type))
-				return newLine('B', stripPrefix(number, "Tro"), null);
+				return newLine(Product.BUS, stripPrefix(number, "Tro"), null);
 			if ("Tro-NF".equals(type))
-				return newLine('B', stripPrefix(number, "Tro", "Tro-NF"), null, Line.Attr.WHEEL_CHAIR_ACCESS);
+				return newLine(Product.BUS, stripPrefix(number, "Tro", "Tro-NF"), null, Line.Attr.WHEEL_CHAIR_ACCESS);
 			if ("Trm".equals(type))
-				return newLine('T', stripPrefix(number, "Trm"), null);
+				return newLine(Product.TRAM, stripPrefix(number, "Trm"), null);
 			if ("Trm-NF".equals(type))
-				return newLine('T', stripPrefix(number, "Trm", "Trm-NF"), null, Line.Attr.WHEEL_CHAIR_ACCESS);
+				return newLine(Product.TRAM, stripPrefix(number, "Trm", "Trm-NF"), null, Line.Attr.WHEEL_CHAIR_ACCESS);
 
 			if (type.length() > 0)
 			{
-				final char normalizedType = normalizeType(type);
-				if (normalizedType != 0)
-					return newLine(normalizedType, number, null);
+				final Product product = normalizeType(type);
+				if (product != null)
+					return newLine(product, number, null);
 			}
 
 			throw new IllegalStateException("cannot normalize type " + type + " number " + number + " line#type " + lineAndType);
@@ -214,34 +214,30 @@ public class ZvvProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected char normalizeType(final String type)
+	protected Product normalizeType(final String type)
 	{
 		final String ucType = type.toUpperCase();
 
 		if ("N".equals(ucType)) // Nachtbus
-			return 'B';
+			return Product.BUS;
 		if ("TX".equals(ucType))
-			return 'B';
+			return Product.BUS;
 		if ("KB".equals(ucType)) // Kleinbus?
-			return 'B';
+			return Product.BUS;
 
 		if ("D-SCHIFF".equals(ucType))
-			return 'F';
+			return Product.FERRY;
 		if ("DAMPFSCH".equals(ucType))
-			return 'F';
+			return Product.FERRY;
 
 		if ("BERGBAHN".equals(ucType))
-			return 'C';
+			return Product.CABLECAR;
 		if ("LSB".equals(ucType)) // Luftseilbahn
-			return 'C';
+			return Product.CABLECAR;
 		if ("SLB".equals(ucType)) // Sesselliftbahn
-			return 'C';
+			return Product.CABLECAR;
 
-		final char t = super.normalizeType(type);
-		if (t != 0)
-			return t;
-
-		return 0;
+		return super.normalizeType(type);
 	}
 
 	private static final Map<String, Style> STYLES = new HashMap<String, Style>();

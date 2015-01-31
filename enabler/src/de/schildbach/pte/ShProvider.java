@@ -49,28 +49,28 @@ public class ShProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected char intToProduct(final int value)
+	protected Product intToProduct(final int value)
 	{
 		if (value == 1)
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if (value == 2)
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if (value == 4)
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if (value == 8)
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if (value == 16)
-			return 'S';
+			return Product.SUBURBAN_TRAIN;
 		if (value == 32)
-			return 'B';
+			return Product.BUS;
 		if (value == 64)
-			return 'F';
+			return Product.FERRY;
 		if (value == 128)
-			return 'U';
+			return Product.SUBWAY;
 		if (value == 256)
-			return 'T';
+			return Product.TRAM;
 		if (value == 512)
-			return 'P';
+			return Product.ON_DEMAND;
 
 		throw new IllegalArgumentException("cannot handle: " + value);
 	}

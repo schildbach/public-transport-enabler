@@ -19,6 +19,9 @@ package de.schildbach.pte;
 
 import com.google.common.base.Charsets;
 
+import de.schildbach.pte.dto.Line;
+import de.schildbach.pte.dto.Product;
+
 /**
  * @author Andreas Schildbach
  */
@@ -46,31 +49,31 @@ public class VvoProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	protected String parseLine(final String mot, final String symbol, final String name, final String longName, final String trainType,
-			final String trainNum, final String trainName)
+	protected Line parseLine(final String id, final String mot, final String symbol, final String name, final String longName,
+			final String trainType, final String trainNum, final String trainName)
 	{
 		if ("0".equals(mot))
 		{
 			if ("Twoje Linie Kolejowe".equals(trainName) && symbol != null)
-				return "ITLK" + symbol;
+				return new Line(id, Product.HIGH_SPEED_TRAIN, "TLK" + symbol);
 
 			if ("Regionalbahn".equals(trainName) && trainNum == null)
-				return "R";
+				return new Line(id, Product.REGIONAL_TRAIN, null);
 			if ("Ostdeutsche Eisenbahn GmbH".equals(longName))
-				return "ROE";
+				return new Line(id, Product.REGIONAL_TRAIN, "OE");
 			if ("Meridian".equals(longName))
-				return "RM";
+				return new Line(id, Product.REGIONAL_TRAIN, "M");
 			if ("trilex".equals(longName))
-				return "RTLX";
+				return new Line(id, Product.REGIONAL_TRAIN, "TLX");
 			if ("Trilex".equals(trainName) && trainNum == null)
-				return "RTLX";
+				return new Line(id, Product.REGIONAL_TRAIN, "TLX");
 			if ("U28".equals(symbol)) // Nationalparkbahn
-				return "RU28";
+				return new Line(id, Product.REGIONAL_TRAIN, "U28");
 
 			if ("Fernbus".equals(trainName) && trainNum == null)
-				return "B" + trainName;
+				return new Line(id, Product.BUS, trainName);
 		}
 
-		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
+		return super.parseLine(id, mot, symbol, name, longName, trainType, trainNum, trainName);
 	}
 }

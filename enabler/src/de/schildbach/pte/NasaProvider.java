@@ -50,24 +50,24 @@ public class NasaProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected char intToProduct(final int value)
+	protected Product intToProduct(final int value)
 	{
 		if (value == 1)
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if (value == 2)
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if (value == 4)
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if (value == 8)
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if (value == 16)
-			return 'S';
+			return Product.SUBURBAN_TRAIN;
 		if (value == 32)
-			return 'T';
+			return Product.TRAM;
 		if (value == 64)
-			return 'B';
+			return Product.BUS;
 		if (value == 128) // Rufbus
-			return 'P';
+			return Product.ON_DEMAND;
 
 		throw new IllegalArgumentException("cannot handle: " + value);
 	}
@@ -167,44 +167,40 @@ public class NasaProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected char normalizeType(String type)
+	protected Product normalizeType(String type)
 	{
 		final String ucType = type.toUpperCase();
 
 		if ("ECW".equals(ucType))
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("IXB".equals(ucType)) // ICE International
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("RRT".equals(ucType))
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 
 		if ("DPF".equals(ucType)) // mit Dampflok bespannter Zug
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("DAM".equals(ucType)) // Harzer Schmalspurbahnen: mit Dampflok bespannter Zug
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("TW".equals(ucType)) // Harzer Schmalspurbahnen: Triebwagen
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("RR".equals(ucType)) // Polen
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("BAHN".equals(ucType))
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("ZUGBAHN".equals(ucType))
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("DAMPFZUG".equals(ucType))
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 
 		if ("E".equals(ucType)) // Stadtbahn Karlsruhe: S4/S31/xxxxx
-			return 'S';
+			return Product.SUBURBAN_TRAIN;
 
 		if ("RUFBUS".equals(ucType)) // Rufbus
-			return 'B';
+			return Product.BUS;
 		if ("RBS".equals(ucType)) // Rufbus
-			return 'B';
+			return Product.BUS;
 
-		final char t = super.normalizeType(type);
-		if (t != 0)
-			return t;
-
-		return 0;
+		return super.normalizeType(type);
 	}
 }

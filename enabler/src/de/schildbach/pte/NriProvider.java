@@ -49,24 +49,24 @@ public class NriProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected char intToProduct(final int value)
+	protected Product intToProduct(final int value)
 	{
 		if (value == 1) // Air
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if (value == 2)
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if (value == 4)
-			return 'B';
+			return Product.BUS;
 		if (value == 8)
-			return 'T';
+			return Product.TRAM;
 		if (value == 16)
-			return 'U';
+			return Product.SUBWAY;
 		if (value == 32)
-			return 'F';
+			return Product.FERRY;
 		if (value == 64)
-			return 'F';
+			return Product.FERRY;
 		if (value == 128)
-			return 'F';
+			return Product.FERRY;
 
 		throw new IllegalArgumentException("cannot handle: " + value);
 	}
@@ -143,44 +143,44 @@ public class NriProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected char normalizeType(final String type)
+	protected Product normalizeType(final String type)
 	{
 		final String ucType = type.toUpperCase();
 
 		if ("AIR".equals(ucType))
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 
 		if ("TRA".equals(ucType))
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("TRAIN".equals(ucType))
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("HEL".equals(ucType)) // Heli
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 
 		if ("U".equals(ucType))
-			return 'U';
+			return Product.SUBWAY;
 
 		if ("TRAM".equals(ucType))
-			return 'T';
+			return Product.TRAM;
 		if ("MTR".equals(ucType))
-			return 'T';
+			return Product.TRAM;
 
 		if (ucType.startsWith("BUS"))
-			return 'B';
+			return Product.BUS;
 
 		if ("EXP".equals(ucType))
-			return 'F';
+			return Product.FERRY;
 		if ("EXP.BOAT".equals(ucType))
-			return 'F';
+			return Product.FERRY;
 		if ("FERRY".equals(ucType))
-			return 'F';
+			return Product.FERRY;
 		if ("FER".equals(ucType))
-			return 'F';
+			return Product.FERRY;
 		if ("SHIP".equals(ucType))
-			return 'F';
+			return Product.FERRY;
 		if ("SHI".equals(ucType))
-			return 'F';
+			return Product.FERRY;
 
-		return 0;
+		return null;
 	}
 }

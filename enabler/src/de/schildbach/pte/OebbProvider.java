@@ -51,34 +51,34 @@ public class OebbProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected char intToProduct(final int value)
+	protected Product intToProduct(final int value)
 	{
 		if (value == 1)
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if (value == 2)
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if (value == 4)
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if (value == 8)
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if (value == 16)
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if (value == 32)
-			return 'S';
+			return Product.SUBURBAN_TRAIN;
 		if (value == 64)
-			return 'B';
+			return Product.BUS;
 		if (value == 128)
-			return 'F';
+			return Product.FERRY;
 		if (value == 256)
-			return 'U';
+			return Product.SUBWAY;
 		if (value == 512)
-			return 'T';
+			return Product.TRAM;
 		if (value == 1024) // Autoreisezug
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if (value == 2048)
-			return 'P';
+			return Product.ON_DEMAND;
 		if (value == 4096)
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 
 		throw new IllegalArgumentException("cannot handle: " + value);
 	}
@@ -194,76 +194,72 @@ public class OebbProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected char normalizeType(final String type)
+	protected Product normalizeType(final String type)
 	{
 		final String ucType = type.toUpperCase();
 
 		if (ucType.equals("RR")) // Finnland, Connections only?
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if (ucType.equals("EE")) // Rumänien, Connections only?
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if (ucType.equals("OZ")) // Schweden, Oeresundzug, Connections only?
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if (ucType.equals("UUU")) // Italien, Nacht, Connections only?
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 
 		if (ucType.equals("S2")) // Helsinki-Turku, Connections only?
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if (ucType.equals("RE")) // RegionalExpress Deutschland
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if (ucType.equals("DPN")) // Connections only? TODO nicht evtl. doch eher ne S-Bahn?
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if (ucType.equals("E")) // Budapest, Ungarn
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if (ucType.equals("IP")) // Ozd, Ungarn
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if (ucType.equals("N")) // Frankreich, Tours
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if (ucType.equals("DPF")) // VX=Vogtland Express, Connections only?
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("UAU".equals(ucType)) // Rußland
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 
 		if (ucType.equals("RSB")) // Schnellbahn Wien
-			return 'S';
+			return Product.SUBURBAN_TRAIN;
 
 		if (ucType.equals("LKB")) // Connections only?
-			return 'T';
+			return Product.TRAM;
 
 		if (ucType.equals("OBU")) // Connections only?
-			return 'B';
+			return Product.BUS;
 		if (ucType.equals("O-BUS")) // Stadtbus
-			return 'B';
+			return Product.BUS;
 		if (ucType.equals("O")) // Stadtbus
-			return 'B';
+			return Product.BUS;
 
 		if (ucType.equals("SCH")) // Connections only?
-			return 'F';
+			return Product.FERRY;
 		if (ucType.equals("F")) // Fähre
-			return 'F';
+			return Product.FERRY;
 
 		if (ucType.equals("LIF"))
-			return 'C';
+			return Product.CABLECAR;
 		if (ucType.equals("LIFT")) // Graz Uhrturm
-			return 'C';
+			return Product.CABLECAR;
 		if (ucType.equals("SSB")) // Graz Schlossbergbahn
-			return 'C';
-
-		final char t = super.normalizeType(type);
-		if (t != 0)
-			return t;
+			return Product.CABLECAR;
 
 		if (ucType.equals("U70")) // U.K., Connections only?
-			return '?';
+			return null;
 		if (ucType.equals("X70")) // U.K., Connections only?
-			return '?';
+			return null;
 		if (ucType.equals("R84")) // U.K., Connections only?
-			return '?';
+			return null;
 		if (ucType.equals("S84")) // U.K., Connections only?
-			return '?';
+			return null;
 		if (ucType.equals("T84")) // U.K., Connections only?
-			return '?';
+			return null;
 
-		return 0;
+		return super.normalizeType(type);
 	}
 }

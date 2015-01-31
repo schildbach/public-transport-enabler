@@ -17,6 +17,7 @@
 
 package de.schildbach.pte;
 
+import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.dto.Style.Shape;
 
@@ -47,11 +48,11 @@ public class ParisProvider extends AbstractNavitiaProvider
 	}
 
 	@Override
-	protected Style getLineStyle(final char product, final String code, final String color)
+	protected Style getLineStyle(final Product product, final String code, final String color)
 	{
 		switch (product)
 		{
-			case 'S':
+			case SUBURBAN_TRAIN:
 			{
 				// RER
 				if (code.compareTo("F") < 0)
@@ -64,17 +65,17 @@ public class ParisProvider extends AbstractNavitiaProvider
 					return new Style(Shape.ROUNDED, Style.TRANSPARENT, Style.parseColor(color), Style.parseColor(color));
 				}
 			}
-			case 'U':
+			case SUBWAY:
 			{
 				// Metro
 				return new Style(Shape.CIRCLE, Style.parseColor(color), computeForegroundColor(color));
 			}
-			case 'T':
+			case TRAM:
 			{
 				// Tram
 				return new Style(Shape.RECT, Style.parseColor(color), computeForegroundColor(color));
 			}
-			case 'B':
+			case BUS:
 			{
 				// Bus + Noctilien
 				return new Style(Shape.RECT, Style.parseColor(color), computeForegroundColor(color));

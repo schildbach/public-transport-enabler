@@ -55,24 +55,24 @@ public final class BvgProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected char intToProduct(final int value)
+	protected Product intToProduct(final int value)
 	{
 		if (value == 1)
-			return 'S';
+			return Product.SUBURBAN_TRAIN;
 		if (value == 2)
-			return 'U';
+			return Product.SUBWAY;
 		if (value == 4)
-			return 'T';
+			return Product.TRAM;
 		if (value == 8)
-			return 'B';
+			return Product.BUS;
 		if (value == 16)
-			return 'F';
+			return Product.FERRY;
 		if (value == 32)
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if (value == 64)
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if (value == 128)
-			return 'P';
+			return Product.ON_DEMAND;
 
 		throw new IllegalArgumentException("cannot handle: " + value);
 	}
@@ -193,29 +193,29 @@ public final class BvgProvider extends AbstractHafasProvider
 	protected Line parseLineAndType(final String lineAndType)
 	{
 		if ("X#".equals(lineAndType))
-			return newLine('I', "X", null); // InterConnex
+			return newLine(Product.HIGH_SPEED_TRAIN, "X", null); // InterConnex
 		else
 			return super.parseLineAndType(lineAndType);
 	}
 
 	@Override
-	protected Line newLine(final char product, final String normalizedName, final String comment, final Attr... attrs)
+	protected Line newLine(final Product product, final String normalizedName, final String comment, final Attr... attrs)
 	{
-		if (product == 'S' && "S41".equals(normalizedName))
+		if (product == Product.SUBURBAN_TRAIN && "S41".equals(normalizedName))
 			return super.newLine(product, normalizedName, comment, concatAttrs(attrs, Attr.CIRCLE_CLOCKWISE));
-		if (product == 'S' && "S42".equals(normalizedName))
+		if (product == Product.SUBURBAN_TRAIN && "S42".equals(normalizedName))
 			return super.newLine(product, normalizedName, comment, concatAttrs(attrs, Attr.CIRCLE_ANTICLOCKWISE));
 
-		if (product == 'B' && "S41".equals(normalizedName))
+		if (product == Product.BUS && "S41".equals(normalizedName))
 			return super.newLine(product, normalizedName, comment, concatAttrs(attrs, Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_CLOCKWISE));
-		if (product == 'B' && "S42".equals(normalizedName))
+		if (product == Product.BUS && "S42".equals(normalizedName))
 			return super.newLine(product, normalizedName, comment, concatAttrs(attrs, Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_ANTICLOCKWISE));
 
-		if (product == 'B' && "TXL".equals(normalizedName))
+		if (product == Product.BUS && "TXL".equals(normalizedName))
 			return super.newLine(product, normalizedName, comment, concatAttrs(attrs, Attr.LINE_AIRPORT));
-		if (product == 'S' && "S9".equals(normalizedName))
+		if (product == Product.SUBURBAN_TRAIN && "S9".equals(normalizedName))
 			return super.newLine(product, normalizedName, comment, concatAttrs(attrs, Attr.LINE_AIRPORT));
-		if (product == 'S' && "S45".equals(normalizedName))
+		if (product == Product.SUBURBAN_TRAIN && "S45".equals(normalizedName))
 			return super.newLine(product, normalizedName, comment, concatAttrs(attrs, Attr.LINE_AIRPORT));
 
 		return super.newLine(product, normalizedName, comment, attrs);

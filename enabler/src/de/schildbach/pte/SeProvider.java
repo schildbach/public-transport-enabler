@@ -53,30 +53,30 @@ public class SeProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected char intToProduct(final int value)
+	protected Product intToProduct(final int value)
 	{
 		if (value == 1) // Flyg
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if (value == 2) // X2000
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if (value == 4)
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if (value == 8) // Expressbus
-			return 'B';
+			return Product.BUS;
 		if (value == 16)
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if (value == 32) // Tunnelbana
-			return 'U';
+			return Product.SUBWAY;
 		if (value == 64) // Spårvagn
-			return 'T';
+			return Product.TRAM;
 		if (value == 128)
-			return 'B';
+			return Product.BUS;
 		if (value == 256)
-			return 'F';
+			return Product.FERRY;
 		if (value == 512) // Länstaxi
-			return 'F';
+			return Product.FERRY;
 		if (value == 1024) // Future
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 
 		throw new IllegalArgumentException("cannot handle: " + value);
 	}
@@ -162,12 +162,12 @@ public class SeProvider extends AbstractHafasProvider
 	{
 		final Matcher mBus = P_NORMALIZE_LINE_BUS.matcher(line);
 		if (mBus.matches())
-			return newLine('B', mBus.group(1), null);
+			return newLine(Product.BUS, mBus.group(1), null);
 
 		final Matcher mSubway = P_NORMALIZE_LINE_SUBWAY.matcher(line);
 		if (mSubway.matches())
-			return newLine('U', "T" + mSubway.group(1), null);
+			return newLine(Product.SUBWAY, "T" + mSubway.group(1), null);
 
-		return newLine('?', line, null);
+		return newLine(null, line, null);
 	}
 }

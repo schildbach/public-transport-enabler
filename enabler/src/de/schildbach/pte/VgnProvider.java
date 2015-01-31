@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 
+import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.Product;
 
@@ -44,20 +45,20 @@ public class VgnProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	protected String parseLine(final String mot, final String symbol, final String name, final String longName, final String trainType,
-			final String trainNum, final String trainName)
+	protected Line parseLine(final String id, final String mot, final String symbol, final String name, final String longName,
+			final String trainType, final String trainNum, final String trainName)
 	{
 		if ("0".equals(mot))
 		{
 			if ("R5(z)".equals(trainNum))
-				return "RR5(z)";
+				return new Line(id, Product.REGIONAL_TRAIN, "R5(z)");
 			if ("R7(z)".equals(trainNum))
-				return "RR7(z)";
+				return new Line(id, Product.REGIONAL_TRAIN, "R7(z)");
 			if ("R8(z)".equals(trainNum))
-				return "RR8(z)";
+				return new Line(id, Product.REGIONAL_TRAIN, "R8(z)");
 		}
 
-		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
+		return super.parseLine(id, mot, symbol, name, longName, trainType, trainNum, trainName);
 	}
 
 	@Override

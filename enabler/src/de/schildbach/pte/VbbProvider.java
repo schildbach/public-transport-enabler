@@ -50,22 +50,22 @@ public class VbbProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected char intToProduct(final int value)
+	protected Product intToProduct(final int value)
 	{
 		if (value == 1)
-			return 'S';
+			return Product.SUBURBAN_TRAIN;
 		if (value == 2)
-			return 'U';
+			return Product.SUBWAY;
 		if (value == 4)
-			return 'T';
+			return Product.TRAM;
 		if (value == 8)
-			return 'B';
+			return Product.BUS;
 		if (value == 16)
-			return 'F';
+			return Product.FERRY;
 		if (value == 32)
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if (value == 64)
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 
 		throw new IllegalArgumentException("cannot handle: " + value);
 	}
@@ -176,7 +176,7 @@ public class VbbProvider extends AbstractHafasProvider
 	protected Line parseLineAndType(final String lineAndType)
 	{
 		if ("X#".equals(lineAndType))
-			return newLine('I', "X", null); // InterConnex
+			return newLine(Product.HIGH_SPEED_TRAIN, "X", null); // InterConnex
 		else
 			return super.parseLineAndType(lineAndType);
 	}

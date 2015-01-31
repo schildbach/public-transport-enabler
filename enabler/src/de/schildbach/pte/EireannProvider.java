@@ -108,21 +108,21 @@ public class EireannProvider extends AbstractHafasProvider
 	{
 		final Matcher mLine = P_NORMALIZE_LINE.matcher(lineAndType);
 		if (mLine.matches())
-			return newLine('B', mLine.group(1), null);
+			return newLine(Product.BUS, mLine.group(1), null);
 
 		return super.parseLineAndType(lineAndType);
 	}
 
 	@Override
-	protected char normalizeType(final String type)
+	protected Product normalizeType(final String type)
 	{
 		final String ucType = type.toUpperCase();
 
 		if ("COA".equals(ucType))
-			return 'B';
+			return Product.BUS;
 		if ("CIT".equals(ucType))
-			return 'B';
+			return Product.BUS;
 
-		return 0;
+		return null;
 	}
 }

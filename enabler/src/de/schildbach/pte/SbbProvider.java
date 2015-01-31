@@ -43,28 +43,28 @@ public class SbbProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected char intToProduct(final int value)
+	protected Product intToProduct(final int value)
 	{
 		if (value == 1)
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if (value == 2)
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if (value == 4)
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if (value == 8)
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if (value == 16)
-			return 'F';
+			return Product.FERRY;
 		if (value == 32)
-			return 'S';
+			return Product.SUBURBAN_TRAIN;
 		if (value == 64)
-			return 'B';
+			return Product.BUS;
 		if (value == 128)
-			return 'C';
+			return Product.CABLECAR;
 		if (value == 256)
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if (value == 512)
-			return 'T';
+			return Product.TRAM;
 
 		throw new IllegalArgumentException("cannot handle: " + value);
 	}
@@ -146,29 +146,25 @@ public class SbbProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected char normalizeType(final String type)
+	protected Product normalizeType(final String type)
 	{
 		final String ucType = type.toUpperCase();
 
 		if ("IN".equals(ucType)) // Italien Roma-Lecce
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 
 		if ("E".equals(ucType))
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("T".equals(ucType))
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 
 		if ("TX".equals(ucType))
-			return 'B';
+			return Product.BUS;
 		if ("NFO".equals(ucType))
-			return 'B';
+			return Product.BUS;
 		if ("KB".equals(ucType)) // Kleinbus?
-			return 'B';
+			return Product.BUS;
 
-		final char t = super.normalizeType(type);
-		if (t != 0)
-			return t;
-
-		return 0;
+		return super.normalizeType(type);
 	}
 }

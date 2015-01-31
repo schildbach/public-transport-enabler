@@ -141,7 +141,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 		return Style.deriveForegroundColor(bgColor);
 	}
 
-	protected Style getLineStyle(final char product, final String code, final String color)
+	protected Style getLineStyle(final Product product, final String code, final String color)
 	{
 		return new Style(Shape.RECT, Style.parseColor(color), computeForegroundColor(color));
 	}
@@ -393,15 +393,14 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 					modeId = link.getString("id");
 			}
 
-			final char product = parseLineProductFromMode(modeId);
+			final Product product = parseLineProductFromMode(modeId);
 			final JSONObject displayInfo = section.getJSONObject("display_informations");
 			final String code = displayInfo.getString("code");
-			final String lineLabel = product + code;
 			final String colorHex = displayInfo.getString("color");
 			final String color = colorHex.equals("000000") ? "#FFFFFF" : "#" + colorHex;
 			final Style lineStyle = getLineStyle(product, code, color);
 
-			return new Line(lineId, lineLabel, lineStyle);
+			return new Line(lineId, product, code, lineStyle);
 		}
 		catch (final JSONException jsonExc)
 		{
@@ -582,12 +581,11 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 		try
 		{
 			final String lineId = jsonLine.getString("id");
-			final char product = parseLineProduct(jsonLine);
+			final Product product = parseLineProduct(jsonLine);
 			final String code = jsonLine.getString("code");
-			final String lineLabel = product + code;
 			final String color = "#" + jsonLine.getString("color");
 			final Style lineStyle = getLineStyle(product, code, color);
-			return new Line(lineId, lineLabel, lineStyle);
+			return new Line(lineId, product, code, lineStyle);
 		}
 		catch (final JSONException jsonExc)
 		{
@@ -595,9 +593,9 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 		}
 	}
 
-	private Map<String, Character> lineProductCache = new WeakHashMap<String, Character>();
+	private Map<String, Product> lineProductCache = new WeakHashMap<String, Product>();
 
-	private char parseLineProductFromMode(final String modeId)
+	private Product parseLineProductFromMode(final String modeId)
 	{
 		final String modeType = modeId.replace("commercial_mode:", "");
 		final CommercialMode commercialMode = CommercialMode.valueOf(modeType.toUpperCase());
@@ -605,38 +603,38 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 		switch (commercialMode)
 		{
 			case BUS:
-				return 'B';
+				return Product.BUS;
 			case RAPIDTRANSIT:
 			case TRAIN:
-				return 'S';
+				return Product.SUBURBAN_TRAIN;
 			case TRAM:
 			case TRAMWAY:
-				return 'T';
+				return Product.TRAM;
 			case METRO:
-				return 'U';
+				return Product.SUBWAY;
 			case FERRY:
-				return 'F';
+				return Product.FERRY;
 			case FUNICULAR:
 			case CABLECAR:
-				return 'C';
+				return Product.CABLECAR;
 			case DEFAULT_COMMERCIAL_MODE:
 			default:
 				throw new IllegalArgumentException("Unhandled place type: " + modeId);
 		}
 	}
 
-	private char parseLineProduct(final JSONObject line) throws IOException
+	private Product parseLineProduct(final JSONObject line) throws IOException
 	{
 		try
 		{
 			final String lineId = line.getString("id");
-			final Character cachedProduct = lineProductCache.get(lineId);
+			final Product cachedProduct = lineProductCache.get(lineId);
 			if (cachedProduct != null)
 				return cachedProduct;
 
 			final JSONObject mode = line.getJSONObject("commercial_mode");
 			final String modeId = mode.getString("id");
-			final char product = parseLineProductFromMode(modeId);
+			final Product product = parseLineProductFromMode(modeId);
 
 			lineProductCache.put(lineId, product);
 

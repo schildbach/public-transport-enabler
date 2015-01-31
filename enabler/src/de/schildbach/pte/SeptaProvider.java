@@ -305,7 +305,7 @@ public class SeptaProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected char normalizeType(final String type)
+	protected Product normalizeType(final String type)
 	{
 		final String ucType = type.toUpperCase();
 
@@ -313,39 +313,39 @@ public class SeptaProvider extends AbstractHafasProvider
 
 		// Regional
 		if (ucType.equals("RAI"))
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 
 		// Subway
 		if (ucType.equals("BSS"))
-			return 'U';
+			return Product.SUBWAY;
 		if (ucType.equals("BSL"))
-			return 'U';
+			return Product.SUBWAY;
 		if (ucType.equals("MFL"))
-			return 'U';
+			return Product.SUBWAY;
 
 		// Tram
 		if (ucType.equals("TRM"))
-			return 'T';
+			return Product.TRAM;
 		if (ucType.equals("NHS")) // Tro NHSL
-			return 'T';
+			return Product.TRAM;
 
 		// Bus
 		if (ucType.equals("BUS"))
-			return 'B';
+			return Product.BUS;
 		if (ucType.equals("TRO"))
-			return 'B';
+			return Product.BUS;
 
 		// from Connections:
 
 		if (ucType.equals("RAIL"))
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 
 		if (ucType.equals("SUBWAY"))
-			return 'U';
+			return Product.SUBWAY;
 
 		if (ucType.equals("TROLLEY"))
-			return 'B';
+			return Product.BUS;
 
-		return 0;
+		return null;
 	}
 }

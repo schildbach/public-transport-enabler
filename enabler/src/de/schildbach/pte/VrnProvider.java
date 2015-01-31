@@ -17,6 +17,9 @@
 
 package de.schildbach.pte;
 
+import de.schildbach.pte.dto.Line;
+import de.schildbach.pte.dto.Product;
+
 /**
  * @author Andreas Schildbach
  */
@@ -38,15 +41,15 @@ public class VrnProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	protected String parseLine(final String mot, final String symbol, final String name, final String longName, final String trainType,
-			final String trainNum, final String trainName)
+	protected Line parseLine(final String id, final String mot, final String symbol, final String name, final String longName,
+			final String trainType, final String trainNum, final String trainName)
 	{
 		if ("0".equals(mot))
 		{
 			if ("InterRegio".equals(longName) && symbol == null)
-				return "RIR";
+				return new Line(id, Product.REGIONAL_TRAIN, "IR");
 		}
 
-		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
+		return super.parseLine(id, mot, symbol, name, longName, trainType, trainNum, trainName);
 	}
 }

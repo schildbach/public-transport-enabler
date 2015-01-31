@@ -97,26 +97,22 @@ public class RtProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected char normalizeType(final String type)
+	protected Product normalizeType(final String type)
 	{
 		final String ucType = type.toUpperCase();
 
 		if ("E".equals(ucType)) // Romania, Croatia
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("N".equals(ucType)) // Frankreich, Tours
-			return 'R';
-
-		final char t = super.normalizeType(type);
-		if (t != 0)
-			return t;
+			return Product.REGIONAL_TRAIN;
 
 		if (ucType.equals("U70"))
-			return '?';
+			return null;
 		if (ucType.equals("X70"))
-			return '?';
+			return null;
 		if (ucType.equals("T84"))
-			return '?';
+			return null;
 
-		return 0;
+		return super.normalizeType(type);
 	}
 }

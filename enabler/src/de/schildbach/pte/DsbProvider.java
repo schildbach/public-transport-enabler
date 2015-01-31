@@ -46,30 +46,30 @@ public class DsbProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected char intToProduct(final int value)
+	protected Product intToProduct(final int value)
 	{
 		if (value == 1)
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if (value == 2)
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if (value == 4)
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if (value == 8)
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if (value == 16)
-			return 'S';
+			return Product.SUBURBAN_TRAIN;
 		if (value == 32)
-			return 'B';
+			return Product.BUS;
 		if (value == 64)
-			return 'B';
+			return Product.BUS;
 		if (value == 128)
-			return 'B';
+			return Product.BUS;
 		if (value == 256)
-			return 'B';
+			return Product.BUS;
 		if (value == 512)
-			return 'F';
+			return Product.FERRY;
 		if (value == 1024)
-			return 'U';
+			return Product.SUBWAY;
 
 		throw new IllegalArgumentException("cannot handle: " + value);
 	}
@@ -138,52 +138,48 @@ public class DsbProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected char normalizeType(final String type)
+	protected Product normalizeType(final String type)
 	{
 		final String ucType = type.toUpperCase();
 
 		if ("ICL".equals(ucType))
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("IB".equals(ucType))
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if ("SJ".equals(ucType))
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 
 		if ("ØR".equals(ucType))
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("RA".equals(ucType))
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("RX".equals(ucType))
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if ("PP".equals(ucType))
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 
 		if ("S-TOG".equals(ucType))
-			return 'S';
+			return Product.SUBURBAN_TRAIN;
 
 		if ("BYBUS".equals(ucType))
-			return 'B';
+			return Product.BUS;
 		if ("X-BUS".equals(ucType) || "X BUS".equals(ucType))
-			return 'B';
+			return Product.BUS;
 		if ("HV-BUS".equals(ucType)) // Havnebus
-			return 'B';
+			return Product.BUS;
 		if ("T-BUS".equals(ucType)) // Togbus
-			return 'B';
+			return Product.BUS;
 		if ("TOGBUS".equals(ucType))
-			return 'B';
+			return Product.BUS;
 
 		if ("TELEBUS".equals(ucType))
-			return 'P';
+			return Product.ON_DEMAND;
 		if ("TELETAXI".equals(ucType))
-			return 'P';
+			return Product.ON_DEMAND;
 
 		if ("FÆRGE".equals(ucType))
-			return 'F';
+			return Product.FERRY;
 
-		final char t = super.normalizeType(type);
-		if (t != 0)
-			return t;
-
-		return 0;
+		return super.normalizeType(type);
 	}
 }

@@ -22,6 +22,8 @@ import java.util.Set;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+import com.google.common.collect.ComparisonChain;
+import com.google.common.collect.Ordering;
 
 /**
  * @author Andreas Schildbach
@@ -36,43 +38,50 @@ public final class Line implements Serializable, Comparable<Line>
 	private static final long serialVersionUID = -5642533805998375070L;
 
 	public final String id;
-	private final transient char product; // TODO make true field
+	public final Product product;
 	public final String label;
 	public final Style style;
 	public final Set<Attr> attrs;
 	public final String message;
-
-	private static final String PRODUCT_ORDER = "IRSUTBPFC?";
 
 	public static final Line FOOTWAY = new Line(null, null, null);
 	public static final Line TRANSFER = new Line(null, null, null);
 	public static final Line SECURE_CONNECTION = new Line(null, null, null);
 	public static final Line DO_NOT_CHANGE = new Line(null, null, null);
 
-	public Line(final String id, final String label, final Style style)
+	public Line(final String id, final Product product, final String label)
 	{
-		this(id, label, style, null, null);
+		this(id, product, label, null, null, null);
 	}
 
-	public Line(final String id, final String label, final Style style, final String message)
+	public Line(final String id, final Product product, final String label, final Style style)
 	{
-		this(id, label, style, null, message);
+		this(id, product, label, style, null, null);
 	}
 
-	public Line(final String id, final String label, final Style style, final Set<Attr> attrs)
+	public Line(final String id, final Product product, final String label, final Style style, final String message)
 	{
-		this(id, label, style, attrs, null);
+		this(id, product, label, style, null, message);
 	}
 
-	public Line(final String id, final String label, final Style style, final Set<Attr> attrs, final String message)
+	public Line(final String id, final Product product, final String label, final Style style, final Set<Attr> attrs)
+	{
+		this(id, product, label, style, attrs, null);
+	}
+
+	public Line(final String id, final Product product, final String label, final Style style, final Set<Attr> attrs, final String message)
 	{
 		this.id = id;
+		this.product = product;
 		this.label = label;
 		this.style = style;
 		this.attrs = attrs;
 		this.message = message;
+	}
 
-		product = (label != null && label.length() >= 1) ? label.charAt(0) : '?';
+	public char productCode()
+	{
+		return product != null ? product.code : Product.UNKNOWN;
 	}
 
 	public boolean hasAttr(final Attr attr)
@@ -88,31 +97,31 @@ public final class Line implements Serializable, Comparable<Line>
 		if (!(o instanceof Line))
 			return false;
 		final Line other = (Line) o;
+		if (!Objects.equal(this.product, other.product))
+			return false;
 		return Objects.equal(this.label, other.label);
 	}
 
 	@Override
 	public int hashCode()
 	{
-		return Objects.hashCode(label);
+		return Objects.hashCode(product, label);
 	}
 
 	@Override
 	public String toString()
 	{
-		return MoreObjects.toStringHelper(this).addValue(label).toString();
+		return MoreObjects.toStringHelper(this) //
+				.addValue(product) //
+				.addValue(label) //
+				.toString();
 	}
 
 	public int compareTo(final Line other)
 	{
-		final int productThis = PRODUCT_ORDER.indexOf(this.product);
-		final int productOther = PRODUCT_ORDER.indexOf(other.product);
-
-		final int compareProduct = new Integer(productThis >= 0 ? productThis : Integer.MAX_VALUE).compareTo(productOther >= 0 ? productOther
-				: Integer.MAX_VALUE);
-		if (compareProduct != 0)
-			return compareProduct;
-
-		return this.label.compareTo(other.label);
+		return ComparisonChain.start() //
+				.compare(this.product, other.product, Ordering.natural().nullsLast()) //
+				.compare(this.label, other.label, Ordering.natural().nullsLast()) //
+				.result();
 	}
 }

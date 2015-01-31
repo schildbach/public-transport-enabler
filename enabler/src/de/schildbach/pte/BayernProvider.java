@@ -24,6 +24,7 @@ import java.util.Set;
 
 import com.google.common.base.Charsets;
 
+import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
@@ -62,44 +63,44 @@ public class BayernProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	protected String parseLine(final String mot, final String symbol, final String name, final String longName, final String trainType,
-			final String trainNum, final String trainName)
+	protected Line parseLine(final String id, final String mot, final String symbol, final String name, final String longName,
+			final String trainType, final String trainNum, final String trainName)
 	{
 		if ("0".equals(mot))
 		{
 			if ("M".equals(trainType) && trainNum != null && trainName != null && trainName.endsWith("Meridian"))
-				return "RM" + trainNum;
+				return new Line(id, Product.REGIONAL_TRAIN, "M" + trainNum);
 			if ("ZUG".equals(trainType) && trainNum != null)
-				return "R" + trainNum;
+				return new Line(id, Product.REGIONAL_TRAIN, trainNum);
 		}
 		else if ("16".equals(mot))
 		{
 			if ("EC".equals(trainType) && trainNum != null)
-				return "IEC" + trainNum;
+				return new Line(id, Product.HIGH_SPEED_TRAIN, "EC" + trainNum);
 			if ("IC".equals(trainType) && trainNum != null)
-				return "IIC" + trainNum;
+				return new Line(id, Product.HIGH_SPEED_TRAIN, "IC" + trainNum);
 			if ("ICE".equals(trainType) && trainNum != null)
-				return "IICE" + trainNum;
+				return new Line(id, Product.HIGH_SPEED_TRAIN, "ICE" + trainNum);
 			if ("CNL".equals(trainType) && trainNum != null)
-				return "ICNL" + trainNum;
+				return new Line(id, Product.HIGH_SPEED_TRAIN, "CNL" + trainNum);
 			if ("THA".equals(trainType) && trainNum != null) // Thalys
-				return "ITHA" + trainNum;
+				return new Line(id, Product.HIGH_SPEED_TRAIN, "THA" + trainNum);
 			if ("TGV".equals(trainType) && trainNum != null) // Train a grande Vitesse
-				return "ITGV" + trainNum;
+				return new Line(id, Product.HIGH_SPEED_TRAIN, "TGV" + trainNum);
 			if ("RJ".equals(trainType) && trainNum != null) // railjet
-				return "IRJ" + trainNum;
+				return new Line(id, Product.HIGH_SPEED_TRAIN, "RJ" + trainNum);
 			if ("WB".equals(trainType) && trainNum != null) // WESTbahn
-				return "IWB" + trainNum;
+				return new Line(id, Product.HIGH_SPEED_TRAIN, "WB" + trainNum);
 			if ("HKX".equals(trainType) && trainNum != null) // Hamburg-Köln-Express
-				return "IHKX" + trainNum;
+				return new Line(id, Product.HIGH_SPEED_TRAIN, "HKX" + trainNum);
 			if ("D".equals(trainType) && trainNum != null) // Schnellzug
-				return "ID" + trainNum;
+				return new Line(id, Product.HIGH_SPEED_TRAIN, "D" + trainNum);
 
 			if ("IR".equals(trainType) && trainNum != null) // InterRegio
-				return "RIR" + trainNum;
+				return new Line(id, Product.REGIONAL_TRAIN, "IR" + trainNum);
 		}
 
-		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
+		return super.parseLine(id, mot, symbol, name, longName, trainType, trainNum, trainName);
 	}
 
 	@Override

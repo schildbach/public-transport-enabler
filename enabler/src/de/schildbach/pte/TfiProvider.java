@@ -19,6 +19,7 @@ package de.schildbach.pte;
 
 import java.util.Set;
 
+import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Product;
 
 /**
@@ -49,19 +50,19 @@ public class TfiProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	protected String parseLine(final String mot, final String symbol, final String name, final String longName, final String trainType,
-			final String trainNum, final String trainName)
+	protected Line parseLine(final String id, final String mot, final String symbol, final String name, final String longName,
+			final String trainType, final String trainNum, final String trainName)
 	{
 		if ("0".equals(mot))
 		{
 			if ("DART".equals(name))
-				return "SDART";
+				return new Line(id, Product.SUBURBAN_TRAIN, "DART");
 			if ("Rail".equals(trainName) && trainNum == null)
-				return "?Rail";
+				return new Line(id, null, "Rail");
 			if ("Train".equals(name) && "Train".equals(symbol))
-				return "?Train";
+				return new Line(id, null, "Train");
 		}
 
-		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
+		return super.parseLine(id, mot, symbol, name, longName, trainType, trainNum, trainName);
 	}
 }

@@ -22,8 +22,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.Position;
+import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
 
 /**
@@ -54,26 +56,26 @@ public class MvvProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	protected String parseLine(final String mot, final String symbol, final String name, final String longName, final String trainType,
-			final String trainNum, final String trainName)
+	protected Line parseLine(final String id, final String mot, final String symbol, final String name, final String longName,
+			final String trainType, final String trainNum, final String trainName)
 	{
 		if ("0".equals(mot))
 		{
 			if ("Mittelrheinbahn (trans regio)".equals(trainName))
-				return "RMiRhBa";
+				return new Line(id, Product.REGIONAL_TRAIN, "MiRhBa");
 			if ("Süd-Thüringen-Bahn".equals(longName))
-				return "RSTB";
+				return new Line(id, Product.REGIONAL_TRAIN, "STB");
 			if ("agilis".equals(longName))
-				return "Ragilis";
+				return new Line(id, Product.REGIONAL_TRAIN, "agilis");
 			if ("SBB".equals(trainName))
-				return "RSBB";
+				return new Line(id, Product.REGIONAL_TRAIN, "SBB");
 			if ("A".equals(trainNum))
-				return "SA";
+				return new Line(id, Product.SUBURBAN_TRAIN, "A");
 			if ("DB AG".equals(trainName))
-				return '?' + symbol;
+				return new Line(id, null, symbol);
 		}
 
-		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
+		return super.parseLine(id, mot, symbol, name, longName, trainType, trainNum, trainName);
 	}
 
 	private static final Pattern P_POSITION = Pattern.compile("(Fern|Regio|S-Bahn|U-Bahn|U\\d(?:/U\\d)*)\\s+(.*)");

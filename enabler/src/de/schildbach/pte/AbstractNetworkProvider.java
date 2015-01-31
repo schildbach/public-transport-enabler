@@ -25,6 +25,8 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.common.base.Strings;
+
 import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.Position;
 import de.schildbach.pte.dto.Product;
@@ -80,27 +82,24 @@ public abstract class AbstractNetworkProvider implements NetworkProvider
 
 	private static final char STYLES_SEP = '|';
 
-	public Style lineStyle(final String network, final String line)
+	public Style lineStyle(final String network, final Product product, final String label)
 	{
-		if (line == null || line.length() == 0)
-			return null;
-
-		if (styles != null)
+		if (styles != null && product != null)
 		{
 			if (network != null)
 			{
 				// check for line match
-				final Style lineStyle = styles.get(network + STYLES_SEP + line);
+				final Style lineStyle = styles.get(network + STYLES_SEP + product.code + Strings.nullToEmpty(label));
 				if (lineStyle != null)
 					return lineStyle;
 
 				// check for product match
-				final Style productStyle = styles.get(network + STYLES_SEP + line.charAt(0));
+				final Style productStyle = styles.get(network + STYLES_SEP + product.code);
 				if (productStyle != null)
 					return productStyle;
 
 				// check for night bus, as that's a common special case
-				if (line.startsWith("BN"))
+				if (product == Product.BUS && label.startsWith("N"))
 				{
 					final Style nightStyle = styles.get(network + STYLES_SEP + "BN");
 					if (nightStyle != null)
@@ -109,17 +108,18 @@ public abstract class AbstractNetworkProvider implements NetworkProvider
 			}
 
 			// check for line match
-			final Style lineStyle = styles.get(line);
+			final String string = product.code + Strings.nullToEmpty(label);
+			final Style lineStyle = styles.get(string);
 			if (lineStyle != null)
 				return lineStyle;
 
 			// check for product match
-			final Style productStyle = styles.get(new Character(line.charAt(0)).toString());
+			final Style productStyle = styles.get(Character.toString(product.code));
 			if (productStyle != null)
 				return productStyle;
 
 			// check for night bus, as that's a common special case
-			if (line.startsWith("BN"))
+			if (product == Product.BUS && label.startsWith("N"))
 			{
 				final Style nightStyle = styles.get("BN");
 				if (nightStyle != null)
@@ -128,7 +128,7 @@ public abstract class AbstractNetworkProvider implements NetworkProvider
 		}
 
 		// standard colors
-		return Standard.STYLES.get(line.charAt(0));
+		return Standard.STYLES.get(product);
 	}
 
 	public Point[] getArea() throws IOException

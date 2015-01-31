@@ -96,32 +96,32 @@ public class NvvProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected char intToProduct(final int value)
+	protected Product intToProduct(final int value)
 	{
 		if (value == 1)
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if (value == 2)
-			return 'I';
+			return Product.HIGH_SPEED_TRAIN;
 		if (value == 4)
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if (value == 8)
-			return 'S';
+			return Product.SUBURBAN_TRAIN;
 		if (value == 16)
-			return 'U';
+			return Product.SUBWAY;
 		if (value == 32)
-			return 'T';
+			return Product.TRAM;
 		if (value == 64)
-			return 'B';
+			return Product.BUS;
 		if (value == 128)
-			return 'B';
+			return Product.BUS;
 		if (value == 256)
-			return 'F';
+			return Product.FERRY;
 		if (value == 512)
-			return 'P';
+			return Product.ON_DEMAND;
 		if (value == 1024)
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 		if (value == 2048)
-			return 'R';
+			return Product.REGIONAL_TRAIN;
 
 		throw new IllegalArgumentException("cannot handle: " + value);
 	}
@@ -195,23 +195,19 @@ public class NvvProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected char normalizeType(final String type)
+	protected Product normalizeType(final String type)
 	{
 		final String ucType = type.toUpperCase();
 
 		if ("U-BAHN".equals(ucType))
-			return 'U';
+			return Product.SUBWAY;
 
 		if ("AT".equals(ucType)) // Anschluß Sammel Taxi, Anmeldung nicht erforderlich
-			return 'B';
+			return Product.BUS;
 
 		if ("MOFA".equals(ucType)) // Mobilfalt-Fahrt
-			return 'P';
+			return Product.ON_DEMAND;
 
-		final char t = super.normalizeType(type);
-		if (t != 0)
-			return t;
-
-		return 0;
+		return super.normalizeType(type);
 	}
 }

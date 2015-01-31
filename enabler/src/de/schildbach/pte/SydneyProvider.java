@@ -20,6 +20,8 @@ package de.schildbach.pte;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.schildbach.pte.dto.Line;
+import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
 
 /**
@@ -56,37 +58,37 @@ public class SydneyProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	protected String parseLine(final String mot, final String symbol, final String name, final String longName, final String trainType,
-			final String trainNum, final String trainName)
+	protected Line parseLine(final String id, final String mot, final String symbol, final String name, final String longName,
+			final String trainType, final String trainNum, final String trainName)
 	{
 		if ("1".equals(mot))
 		{
 			if ("BMT".equals(symbol) || "Blue Mountains Line".equals(symbol))
-				return "SBMT";
+				return new Line(id, Product.SUBURBAN_TRAIN, "BMT");
 			if ("CCN".equals(symbol) || "Central Coast & Newcastle Line".equals(symbol))
-				return "SCCN";
+				return new Line(id, Product.SUBURBAN_TRAIN, "CCN");
 			if ("SHL".equals(symbol) || "Southern Highlands Line".equals(symbol))
-				return "SSHL";
+				return new Line(id, Product.SUBURBAN_TRAIN, "SHL");
 			if ("SCO".equals(symbol) || "South Coast Line".equals(symbol))
-				return "SSCO";
+				return new Line(id, Product.SUBURBAN_TRAIN, "SCO");
 			if ("HUN".equals(symbol) || "Hunter Line".equals(symbol))
-				return "SHUN";
+				return new Line(id, Product.SUBURBAN_TRAIN, "HUN");
 
 			if ("T1".equals(symbol) || "T1 North Shore & Northern Line".equals(symbol) || "T1 Northern Line".equals(symbol)
 					|| "T1 Western Line".equals(symbol))
-				return "ST1";
+				return new Line(id, Product.SUBURBAN_TRAIN, "T1");
 			if ("T2".equals(symbol) || "T2 Inner West & South Line".equals(symbol) || "T2 Airport Line".equals(symbol))
-				return "ST2";
+				return new Line(id, Product.SUBURBAN_TRAIN, "T2");
 			if ("T3".equals(symbol) || "T3 Bankstown Line".equals(symbol))
-				return "ST3";
+				return new Line(id, Product.SUBURBAN_TRAIN, "T3");
 			if ("T4".equals(symbol) || "T4 Eastern Suburbs & Illawarra Line".equals(symbol))
-				return "ST4";
+				return new Line(id, Product.SUBURBAN_TRAIN, "T4");
 			if ("T5".equals(symbol) || "T5 Cumberland Line".equals(symbol))
-				return "ST5";
+				return new Line(id, Product.SUBURBAN_TRAIN, "T5");
 			if ("T6".equals(symbol) || "T6 Carlingford Line".equals(symbol))
-				return "ST6";
+				return new Line(id, Product.SUBURBAN_TRAIN, "T6");
 			if ("T7".equals(symbol) || "T7 Olympic Park Line".equals(symbol))
-				return "ST7";
+				return new Line(id, Product.SUBURBAN_TRAIN, "T7");
 
 			throw new IllegalStateException("cannot normalize mot='" + mot + "' symbol='" + symbol + "' name='" + name + "' long='" + longName
 					+ "' trainType='" + trainType + "' trainNum='" + trainNum + "' trainName='" + trainName + "'");
@@ -94,7 +96,7 @@ public class SydneyProvider extends AbstractEfaProvider
 		else if ("4".equals(mot))
 		{
 			if ("L1".equals(symbol) || "L1 Dulwich Hill Line".equals(symbol))
-				return "TL1";
+				return new Line(id, Product.TRAM, "L1");
 
 			throw new IllegalStateException("cannot normalize mot='" + mot + "' symbol='" + symbol + "' name='" + name + "' long='" + longName
 					+ "' trainType='" + trainType + "' trainNum='" + trainNum + "' trainName='" + trainName + "'");
@@ -102,29 +104,29 @@ public class SydneyProvider extends AbstractEfaProvider
 		else if ("9".equals(mot))
 		{
 			if ("F1".equals(symbol) || "F1 Manly".equals(symbol))
-				return "FF1";
+				return new Line(id, Product.FERRY, "F1");
 			if ("F2".equals(symbol) || "F2 Taronga Zoo".equals(symbol))
-				return "FF2";
+				return new Line(id, Product.FERRY, "F2");
 			if ("F3".equals(symbol) || "F3 Parramatta River".equals(symbol))
-				return "FF3";
+				return new Line(id, Product.FERRY, "F3");
 			if ("F4".equals(symbol) || "F4 Darling Harbour".equals(symbol))
-				return "FF4";
+				return new Line(id, Product.FERRY, "F4");
 			if ("F5".equals(symbol) || "F5 Neutral Bay".equals(symbol))
-				return "FF5";
+				return new Line(id, Product.FERRY, "F5");
 			if ("F6".equals(symbol) || "F6 Mosman Bay".equals(symbol))
-				return "FF6";
+				return new Line(id, Product.FERRY, "F6");
 			if ("F7".equals(symbol) || "F7 Eastern Suburbs".equals(symbol))
-				return "FF7";
+				return new Line(id, Product.FERRY, "F7");
 			if ("Private ferry servic".equals(trainName) && symbol != null)
-				return 'F' + symbol;
+				return new Line(id, Product.FERRY, symbol);
 			if ("MFF".equals(symbol) || "Manly Fast Ferry".equals(name))
-				return "FMFF";
+				return new Line(id, Product.FERRY, "MFF");
 
 			throw new IllegalStateException("cannot normalize mot='" + mot + "' symbol='" + symbol + "' name='" + name + "' long='" + longName
 					+ "' trainType='" + trainType + "' trainNum='" + trainNum + "' trainName='" + trainName + "'");
 		}
 
-		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
+		return super.parseLine(id, mot, symbol, name, longName, trainType, trainNum, trainName);
 	}
 
 	private static final Map<String, Style> STYLES = new HashMap<String, Style>();

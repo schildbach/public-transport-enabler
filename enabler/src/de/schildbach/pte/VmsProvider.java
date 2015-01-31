@@ -17,6 +17,9 @@
 
 package de.schildbach.pte;
 
+import de.schildbach.pte.dto.Line;
+import de.schildbach.pte.dto.Product;
+
 /**
  * @author Andreas Schildbach
  */
@@ -36,22 +39,22 @@ public class VmsProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	protected String parseLine(final String mot, final String symbol, final String name, final String longName, final String trainType,
-			final String trainNum, final String trainName)
+	protected Line parseLine(final String id, final String mot, final String symbol, final String name, final String longName,
+			final String trainType, final String trainNum, final String trainName)
 	{
 		if ("0".equals(mot))
 		{
 			if ("Ilztalbahn".equals(trainName) && trainNum == null)
-				return "RITB";
+				return new Line(id, Product.REGIONAL_TRAIN, "ITB");
 			if ("Meridian".equals(trainName) && trainNum == null)
-				return "RM";
+				return new Line(id, Product.REGIONAL_TRAIN, "M");
 			if ("CityBahn".equals(trainName) && trainNum == null)
-				return "RCB";
+				return new Line(id, Product.REGIONAL_TRAIN, "CB");
 
 			if ("RE 3".equals(symbol) && "Zug".equals(longName))
-				return "RRE3";
+				return new Line(id, Product.REGIONAL_TRAIN, "RE3");
 		}
 
-		return super.parseLine(mot, symbol, name, longName, trainType, trainNum, trainName);
+		return super.parseLine(id, mot, symbol, name, longName, trainType, trainNum, trainName);
 	}
 }
