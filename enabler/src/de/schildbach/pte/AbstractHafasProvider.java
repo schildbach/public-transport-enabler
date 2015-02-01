@@ -2302,7 +2302,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		if (location.hasLocation())
 			return nearbyLocationsByCoordinate(types, location.lat, location.lon, maxDistance, maxLocations);
 		else if (location.type == LocationType.STATION && location.hasId())
-			return nearbyStationsById(location.id);
+			return nearbyStationsById(location.id, maxDistance);
 		else
 			throw new IllegalArgumentException("cannot handle: " + location);
 	}
@@ -2330,7 +2330,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 	}
 
-	protected final NearbyLocationsResult nearbyStationsById(final String id) throws IOException
+	protected NearbyLocationsResult nearbyStationsById(final String id, final int maxDistance) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
 		appendXmlNearbyStationsParameters(uri, id);

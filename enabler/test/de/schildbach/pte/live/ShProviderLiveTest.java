@@ -92,6 +92,10 @@ public class ShProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8002547", null, "Flughafen Hamburg"), null, new Location(
 				LocationType.STATION, "8003781", null, "Lübeck Airport"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
+
+		if (!result.context.canQueryLater())
+			return;
+
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		print(laterResult);
 	}
