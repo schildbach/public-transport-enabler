@@ -197,8 +197,8 @@ public class ParisProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryTripStations() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "stop_area:RTP:SA:1166834"), null, new Location(
-				LocationType.STATION, "stop_area:RTP:SA:1666"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "stop_area:RTP:SA:4036290"), null, new Location(
+				LocationType.STATION, "stop_area:RTP:SA:1804"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 
@@ -209,7 +209,7 @@ public class ParisProviderLiveTest extends AbstractProviderLiveTest
 	public void queryTripStations2() throws Exception
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "stop_area:RTP:SA:3812993"), null, new Location(
-				LocationType.STATION, "stop_area:RTP:SA:4009392"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+				LocationType.STATION, "stop_area:RTP:SA:4036290"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 
@@ -220,7 +220,7 @@ public class ParisProviderLiveTest extends AbstractProviderLiveTest
 	public void queryTripStations3() throws Exception
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 48787056, 2209731), null, new Location(LocationType.STATION,
-				"stop_area:RTP:SA:4009392"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+				"stop_area:RTP:SA:4036290"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 
