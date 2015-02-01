@@ -265,9 +265,11 @@ public class ParisProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsContext context = result.context;
 
 		final QueryTripsResult nextResult = queryMoreTrips(context, true);
+		assertEquals(QueryTripsResult.Status.OK, nextResult.status);
 		print(nextResult);
 
 		final QueryTripsResult prevResult = queryMoreTrips(context, false);
+		assertEquals(QueryTripsResult.Status.OK, prevResult.status);
 		print(prevResult);
 	}
 
