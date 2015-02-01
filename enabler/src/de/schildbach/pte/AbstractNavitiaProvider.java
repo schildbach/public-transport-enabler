@@ -1077,11 +1077,22 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 					else
 					{
 						// Fill context.
+						String prevQueryUri = null;
+						String nextQueryUri = null;
 						final JSONArray links = head.getJSONArray("links");
-						final JSONObject prev = links.getJSONObject(0);
-						final String prevQueryUri = prev.getString("href");
-						final JSONObject next = links.getJSONObject(1);
-						final String nextQueryUri = next.getString("href");
+						for (int i = 0; i < links.length(); ++i)
+						{
+							final JSONObject link = links.getJSONObject(i);
+							final String type = link.getString("type");
+							if (type.equals("prev"))
+							{
+								prevQueryUri = link.getString("href");
+							}
+							else if (type.equals("next"))
+							{
+								nextQueryUri = link.getString("href");
+							}
+						}
 
 						final QueryTripsResult result = new QueryTripsResult(resultHeader, queryUri.toString(), from, null, to, new Context(from, to,
 								prevQueryUri, nextQueryUri), new LinkedList<Trip>());
