@@ -1016,8 +1016,8 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 				}
 
 				final StringBuilder queryUri = new StringBuilder(tripUri() + "journeys?" + "from=" + ParserUtils.urlEncode(fromString) + "&to="
-						+ ParserUtils.urlEncode(toString) + "&datetime=" + dateString + "&datetime_represents=" + dateTimeRep + "&count=1"
-						+ "&walking_speed=" + walkingSpeed + "&depth=0");
+						+ ParserUtils.urlEncode(toString) + "&datetime=" + dateString + "&datetime_represents=" + dateTimeRep + "&count="
+						+ this.numTripsRequested + "&walking_speed=" + walkingSpeed + "&depth=0");
 
 				if (options != null && options.contains(Option.BIKE))
 				{
