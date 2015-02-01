@@ -1016,7 +1016,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 				}
 
 				final StringBuilder queryUri = new StringBuilder(tripUri() + "journeys?" + "from=" + ParserUtils.urlEncode(fromString) + "&to="
-						+ ParserUtils.urlEncode(toString) + "&datetime=" + dateString + "&datetime_represents=" + dateTimeRep + "&count=1"
+						+ ParserUtils.urlEncode(toString) + "&datetime=" + dateString + "&datetime_represents=" + dateTimeRep + "&count=" + this.numTripsRequested
 						+ "&walking_speed=" + walkingSpeed + "&depth=0");
 
 				if (options != null && options.contains(Option.BIKE))
@@ -1077,11 +1077,22 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 					else
 					{
 						// Fill context.
+						String prevQueryUri = new String ();
+						String nextQueryUri = new String ();
 						final JSONArray links = head.getJSONArray("links");
-						final JSONObject prev = links.getJSONObject(0);
-						final String prevQueryUri = prev.getString("href");
-						final JSONObject next = links.getJSONObject(1);
-						final String nextQueryUri = next.getString("href");
+						for (int i = 0; i < links.length (); ++i)
+						{
+							final JSONObject link = links.getJSONObject(i);
+							final String type = link.getString ("type");
+							if (type.equals ("prev"))
+							{
+								prevQueryUri = link.getString("href");
+							}
+							else if (type.equals ("next"))
+							{
+								nextQueryUri = link.getString("href");
+							}
+						}
 
 						final QueryTripsResult result = new QueryTripsResult(resultHeader, queryUri.toString(), from, null, to, new Context(from, to,
 								prevQueryUri, nextQueryUri), new LinkedList<Trip>());
