@@ -457,6 +457,10 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 			{
 				case CROW_FLY:
 				{
+					// Return null leg if duration is 0.
+					if (legInfo.min == 0)
+						return null;
+
 					// Build type.
 					final Individual.Type individualType = Individual.Type.WALK;
 
