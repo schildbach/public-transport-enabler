@@ -3103,9 +3103,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		{
 			XmlPullUtil.enter(pp, "itdCoordinateBaseElem");
 
-			final double lon = Double.parseDouble(XmlPullUtil.valueTag(pp, "x"));
-			final double lat = Double.parseDouble(XmlPullUtil.valueTag(pp, "y"));
-			path.add(Point.fromDouble(lat, lon));
+			final int lon = (int) Math.round(Double.parseDouble(XmlPullUtil.valueTag(pp, "x")));
+			final int lat = (int) Math.round(Double.parseDouble(XmlPullUtil.valueTag(pp, "y")));
+			path.add(new Point(lat, lon));
 
 			XmlPullUtil.skipExit(pp, "itdCoordinateBaseElem");
 		}
