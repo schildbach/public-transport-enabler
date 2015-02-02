@@ -113,6 +113,25 @@ public final class Trip implements Serializable
 			return null;
 	}
 
+	/** Duration of whole trip in milliseconds, including leading and trailing individual legs. */
+	public long getDuration()
+	{
+		final Date first = getFirstDepartureTime();
+		final Date last = getLastArrivalTime();
+		return last.getTime() - first.getTime();
+	}
+
+	/**
+	 * Duration of the public leg part in milliseconds. This includes individual legs between public legs, but excludes
+	 * individual legs that lead or trail the trip.
+	 */
+	public long getPublicDuration()
+	{
+		final Date first = getFirstPublicLegDepartureTime();
+		final Date last = getLastPublicLegArrivalTime();
+		return last.getTime() - first.getTime();
+	}
+
 	/** Minimum time occuring in this trip. */
 	public Date getMinTime()
 	{
