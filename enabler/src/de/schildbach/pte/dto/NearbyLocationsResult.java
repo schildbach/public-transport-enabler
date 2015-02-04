@@ -17,6 +17,8 @@
 
 package de.schildbach.pte.dto;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -41,13 +43,13 @@ public final class NearbyLocationsResult implements Serializable
 	{
 		this.header = header;
 		this.status = Status.OK;
-		this.locations = locations;
+		this.locations = checkNotNull(locations);
 	}
 
 	public NearbyLocationsResult(final ResultHeader header, final Status status)
 	{
 		this.header = header;
-		this.status = status;
+		this.status = checkNotNull(status);
 		this.locations = null;
 	}
 

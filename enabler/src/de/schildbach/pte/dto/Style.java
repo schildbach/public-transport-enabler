@@ -17,6 +17,8 @@
 
 package de.schildbach.pte.dto;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.Serializable;
 
 /**
@@ -46,7 +48,7 @@ public class Style implements Serializable
 
 	public Style(final Shape shape, final int backgroundColor, final int foregroundColor)
 	{
-		this.shape = shape;
+		this.shape = checkNotNull(shape);
 		this.backgroundColor = backgroundColor;
 		this.foregroundColor = foregroundColor;
 		this.borderColor = 0;
@@ -54,7 +56,7 @@ public class Style implements Serializable
 
 	public Style(final Shape shape, final int backgroundColor, final int foregroundColor, final int borderColor)
 	{
-		this.shape = shape;
+		this.shape = checkNotNull(shape);
 		this.backgroundColor = backgroundColor;
 		this.foregroundColor = foregroundColor;
 		this.borderColor = borderColor;

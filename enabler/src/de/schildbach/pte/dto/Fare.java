@@ -17,6 +17,8 @@
 
 package de.schildbach.pte.dto;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.Serializable;
 import java.util.Currency;
 
@@ -42,9 +44,9 @@ public final class Fare implements Serializable
 
 	public Fare(final String network, final Type type, final Currency currency, final float fare, final String unitName, final String units)
 	{
-		this.network = network;
-		this.type = type;
-		this.currency = currency;
+		this.network = checkNotNull(network);
+		this.type = checkNotNull(type);
+		this.currency = checkNotNull(currency);
 		this.fare = fare;
 		this.unitName = unitName;
 		this.units = units;

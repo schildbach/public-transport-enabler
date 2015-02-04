@@ -17,6 +17,8 @@
 
 package de.schildbach.pte.dto;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.Serializable;
 
 import com.google.common.base.MoreObjects;
@@ -33,15 +35,12 @@ public final class ResultHeader implements Serializable
 
 	public ResultHeader(final String serverProduct)
 	{
-		this.serverProduct = serverProduct;
-		this.serverVersion = null;
-		this.serverTime = 0;
-		this.context = null;
+		this(serverProduct, null, 0, null);
 	}
 
 	public ResultHeader(final String serverProduct, final String serverVersion, final long serverTime, final Object context)
 	{
-		this.serverProduct = serverProduct;
+		this.serverProduct = checkNotNull(serverProduct);
 		this.serverVersion = serverVersion;
 		this.serverTime = serverTime;
 		this.context = context;

@@ -17,6 +17,9 @@
 
 package de.schildbach.pte.dto;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.Serializable;
 import java.util.Arrays;
 
@@ -37,15 +40,14 @@ public final class Location implements Serializable
 
 	public Location(final LocationType type, final String id, final int lat, final int lon, final String place, final String name)
 	{
-		this.type = type;
+		this.type = checkNotNull(type);
 		this.id = id;
 		this.lat = lat;
 		this.lon = lon;
 		this.place = place;
 		this.name = name;
 
-		if (name == null && place != null)
-			throw new IllegalArgumentException("place '" + place + "' without name cannot exist");
+		checkArgument(place == null || name != null, "place '%s' without name cannot exist", place);
 	}
 
 	public Location(final LocationType type, final String id, final Point coord, final String place, final String name)
@@ -55,20 +57,19 @@ public final class Location implements Serializable
 
 	public Location(final LocationType type, final String id, final String place, final String name)
 	{
-		this.type = type;
+		this.type = checkNotNull(type);
 		this.id = id;
 		this.lat = 0;
 		this.lon = 0;
 		this.place = place;
 		this.name = name;
 
-		if (name == null && place != null)
-			throw new IllegalArgumentException("place '" + place + "' without name cannot exist");
+		checkArgument(place == null || name != null, "place '%s' without name cannot exist", place);
 	}
 
 	public Location(final LocationType type, final String id, final int lat, final int lon)
 	{
-		this.type = type;
+		this.type = checkNotNull(type);
 		this.id = id;
 		this.lat = lat;
 		this.lon = lon;
@@ -83,7 +84,7 @@ public final class Location implements Serializable
 
 	public Location(final LocationType type, final String id)
 	{
-		this.type = type;
+		this.type = checkNotNull(type);
 		this.id = id;
 		this.lat = 0;
 		this.lon = 0;
@@ -93,7 +94,7 @@ public final class Location implements Serializable
 
 	public Location(final LocationType type, final int lat, final int lon)
 	{
-		this.type = type;
+		this.type = checkNotNull(type);
 		this.id = null;
 		this.lat = lat;
 		this.lon = lon;

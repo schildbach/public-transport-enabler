@@ -17,6 +17,8 @@
 
 package de.schildbach.pte.dto;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.Serializable;
 
 import com.google.common.base.MoreObjects;
@@ -32,7 +34,7 @@ public final class LineDestination implements Serializable
 
 	public LineDestination(final Line line, final Location destination)
 	{
-		this.line = line;
+		this.line = checkNotNull(line);
 		this.destination = destination;
 	}
 

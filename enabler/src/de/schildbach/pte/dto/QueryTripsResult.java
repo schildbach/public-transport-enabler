@@ -17,6 +17,8 @@
 
 package de.schildbach.pte.dto;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -56,8 +58,8 @@ public final class QueryTripsResult implements Serializable
 		this.from = from;
 		this.via = via;
 		this.to = to;
-		this.context = context;
-		this.trips = trips;
+		this.context = checkNotNull(context);
+		this.trips = checkNotNull(trips);
 
 		this.ambiguousFrom = null;
 		this.ambiguousVia = null;
@@ -84,7 +86,7 @@ public final class QueryTripsResult implements Serializable
 	public QueryTripsResult(final ResultHeader header, final Status status)
 	{
 		this.header = header;
-		this.status = status;
+		this.status = checkNotNull(status);
 
 		this.ambiguousFrom = null;
 		this.ambiguousVia = null;

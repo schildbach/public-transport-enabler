@@ -17,6 +17,9 @@
 
 package de.schildbach.pte.dto;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.Serializable;
 
 import com.google.common.base.Objects;
@@ -36,16 +39,10 @@ public final class Position implements Serializable
 
 	public Position(final String name, final String section)
 	{
-		if (name == null)
-			throw new IllegalArgumentException("name cannot be null");
-		// else if (name.length() > 5)
-		// throw new IllegalArgumentException("name too long: " + name);
-
-		if (section != null && section.length() > 3)
-			throw new IllegalArgumentException("section too long: " + section);
-
-		this.name = name;
+		this.name = checkNotNull(name);
+		// checkArgument(name.length() <= 5, "name too long: %s", name);
 		this.section = section;
+		checkArgument(section == null || section.length() <= 3, "section too long: %s", section);
 	}
 
 	@Override

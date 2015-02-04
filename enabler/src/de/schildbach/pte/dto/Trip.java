@@ -17,6 +17,9 @@
 
 package de.schildbach.pte.dto;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.EnumSet;
@@ -47,28 +50,26 @@ public final class Trip implements Serializable
 			final Integer numChanges)
 	{
 		this.id = id;
-		this.from = from;
-		this.to = to;
-		this.legs = legs;
+		this.from = checkNotNull(from);
+		this.to = checkNotNull(to);
+		this.legs = checkNotNull(legs);
 		this.fares = fares;
 		this.capacity = capacity;
 		this.numChanges = numChanges;
+
+		checkArgument(!legs.isEmpty());
 	}
 
 	public Date getFirstDepartureTime()
 	{
-		if (legs != null && !legs.isEmpty())
-			return legs.get(0).getDepartureTime();
-		else
-			return null;
+		return legs.get(0).getDepartureTime();
 	}
 
 	public Public getFirstPublicLeg()
 	{
-		if (legs != null)
-			for (final Leg leg : legs)
-				if (leg instanceof Public)
-					return (Public) leg;
+		for (final Leg leg : legs)
+			if (leg instanceof Public)
+				return (Public) leg;
 
 		return null;
 	}
@@ -84,22 +85,16 @@ public final class Trip implements Serializable
 
 	public Date getLastArrivalTime()
 	{
-		if (legs != null && !legs.isEmpty())
-			return legs.get(legs.size() - 1).getArrivalTime();
-		else
-			return null;
+		return legs.get(legs.size() - 1).getArrivalTime();
 	}
 
 	public Public getLastPublicLeg()
 	{
-		if (legs != null)
+		for (int i = legs.size() - 1; i >= 0; i--)
 		{
-			for (int i = legs.size() - 1; i >= 0; i--)
-			{
-				final Leg leg = legs.get(i);
-				if (leg instanceof Public)
-					return (Public) leg;
-			}
+			final Leg leg = legs.get(i);
+			if (leg instanceof Public)
+				return (Public) leg;
 		}
 
 		return null;
@@ -191,10 +186,9 @@ public final class Trip implements Serializable
 	{
 		final Set<Product> products = EnumSet.noneOf(Product.class);
 
-		if (legs != null)
-			for (final Leg leg : legs)
-				if (leg instanceof Public)
-					products.add(Product.fromCode(((Public) leg).line.label.charAt(0)));
+		for (final Leg leg : legs)
+			if (leg instanceof Public)
+				products.add(Product.fromCode(((Public) leg).line.label.charAt(0)));
 
 		return products;
 	}
@@ -211,30 +205,27 @@ public final class Trip implements Serializable
 	{
 		final StringBuilder builder = new StringBuilder();
 
-		if (legs != null && legs.size() > 0)
+		for (final Leg leg : legs)
 		{
-			for (final Leg leg : legs)
+			builder.append(leg.departure.hasId() ? leg.departure.id : leg.departure.lat + '/' + leg.departure.lon).append('-');
+			builder.append(leg.arrival.hasId() ? leg.arrival.id : leg.arrival.lat + '/' + leg.arrival.lon).append('-');
+
+			if (leg instanceof Individual)
 			{
-				builder.append(leg.departure.hasId() ? leg.departure.id : leg.departure.lat + '/' + leg.departure.lon).append('-');
-				builder.append(leg.arrival.hasId() ? leg.arrival.id : leg.arrival.lat + '/' + leg.arrival.lon).append('-');
-
-				if (leg instanceof Individual)
-				{
-					builder.append(((Individual) leg).min);
-				}
-				else if (leg instanceof Public)
-				{
-					final Public publicLeg = (Public) leg;
-					builder.append(publicLeg.departureStop.plannedDepartureTime.getTime()).append('-');
-					builder.append(publicLeg.arrivalStop.plannedArrivalTime.getTime()).append('-');
-					builder.append(publicLeg.line.label);
-				}
-
-				builder.append('|');
+				builder.append(((Individual) leg).min);
+			}
+			else if (leg instanceof Public)
+			{
+				final Public publicLeg = (Public) leg;
+				builder.append(publicLeg.departureStop.plannedDepartureTime.getTime()).append('-');
+				builder.append(publicLeg.arrivalStop.plannedArrivalTime.getTime()).append('-');
+				builder.append(publicLeg.line.label);
 			}
 
-			builder.setLength(builder.length() - 1);
+			builder.append('|');
 		}
+
+		builder.setLength(builder.length() - 1);
 
 		return builder.toString();
 	}
@@ -278,8 +269,8 @@ public final class Trip implements Serializable
 
 		public Leg(final Location departure, final Location arrival, final List<Point> path)
 		{
-			this.departure = departure;
-			this.arrival = arrival;
+			this.departure = checkNotNull(departure);
+			this.arrival = checkNotNull(arrival);
 			this.path = path;
 		}
 
@@ -312,23 +303,21 @@ public final class Trip implements Serializable
 		{
 			super(departureStop.location, arrivalStop.location, path);
 
-			this.line = line;
+			this.line = checkNotNull(line);
 			this.destination = destination;
-			this.departureStop = departureStop;
-			this.arrivalStop = arrivalStop;
+			this.departureStop = checkNotNull(departureStop);
+			this.arrivalStop = checkNotNull(arrivalStop);
 			this.intermediateStops = intermediateStops;
 			this.message = message;
+
+			checkNotNull(departureStop.getDepartureTime());
+			checkNotNull(arrivalStop.getArrivalTime());
 		}
 
 		@Override
 		public Date getDepartureTime()
 		{
-			final Date departureTime = departureStop.getDepartureTime();
-
-			if (departureTime == null)
-				throw new IllegalStateException();
-
-			return departureTime;
+			return departureStop.getDepartureTime();
 		}
 
 		public boolean isDepartureTimePredicted()
@@ -354,12 +343,7 @@ public final class Trip implements Serializable
 		@Override
 		public Date getArrivalTime()
 		{
-			final Date arrivalTime = arrivalStop.getArrivalTime();
-
-			if (arrivalTime == null)
-				throw new IllegalStateException();
-
-			return arrivalTime;
+			return arrivalStop.getArrivalTime();
 		}
 
 		public boolean isArrivalTimePredicted()
@@ -422,15 +406,10 @@ public final class Trip implements Serializable
 		{
 			super(departure, arrival, path);
 
-			this.type = type;
-			this.departureTime = departureTime;
-			this.arrivalTime = arrivalTime;
-
-			if (arrivalTime != null && departureTime != null)
-				this.min = (int) ((arrivalTime.getTime() - departureTime.getTime()) / 1000 / 60);
-			else
-				this.min = 0;
-
+			this.type = checkNotNull(type);
+			this.departureTime = checkNotNull(departureTime);
+			this.arrivalTime = checkNotNull(arrivalTime);
+			this.min = (int) ((arrivalTime.getTime() - departureTime.getTime()) / 1000 / 60);
 			this.distance = distance;
 		}
 

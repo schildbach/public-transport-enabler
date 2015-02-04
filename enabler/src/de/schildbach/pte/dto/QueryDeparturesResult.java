@@ -17,6 +17,8 @@
 
 package de.schildbach.pte.dto;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,7 +49,7 @@ public final class QueryDeparturesResult implements Serializable
 	public QueryDeparturesResult(final ResultHeader header, final Status status)
 	{
 		this.header = header;
-		this.status = status;
+		this.status = checkNotNull(status);
 	}
 
 	public StationDepartures findStationDepartures(final String stationId)
