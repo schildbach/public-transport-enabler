@@ -22,6 +22,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import com.google.common.base.MoreObjects;
 import com.google.common.base.MoreObjects.ToStringHelper;
 
@@ -35,7 +37,7 @@ public final class QueryTripsResult implements Serializable
 		OK, AMBIGUOUS, TOO_CLOSE, UNKNOWN_FROM, UNKNOWN_VIA, UNKNOWN_TO, UNRESOLVABLE_ADDRESS, NO_TRIPS, INVALID_DATE, SERVICE_DOWN;
 	}
 
-	public final ResultHeader header;
+	public final @Nullable ResultHeader header;
 	public final Status status;
 
 	public final List<Location> ambiguousFrom;

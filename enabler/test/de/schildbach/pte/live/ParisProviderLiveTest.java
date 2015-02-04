@@ -18,17 +18,20 @@
 package de.schildbach.pte.live;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.List;
 
 import org.junit.Test;
 
 import de.schildbach.pte.NetworkProvider.Accessibility;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.ParisProvider;
+import de.schildbach.pte.dto.LineDestination;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
@@ -103,7 +106,9 @@ public class ParisProviderLiveTest extends AbstractProviderLiveTest
 		assertEquals(QueryDeparturesResult.Status.OK, result.status);
 		assertEquals(1, result.stationDepartures.size());
 		assertTrue(result.stationDepartures.get(0).departures.size() <= maxDepartures);
-		assertTrue(result.stationDepartures.get(0).lines.size() >= 1);
+		final List<LineDestination> lines = result.stationDepartures.get(0).lines;
+		assertNotNull(lines);
+		assertTrue(lines.size() >= 1);
 		print(result);
 	}
 
@@ -119,7 +124,9 @@ public class ParisProviderLiveTest extends AbstractProviderLiveTest
 		for (StationDepartures stationDepartures : result.stationDepartures)
 		{
 			nbDepartures += stationDepartures.departures.size();
-			nbLines += stationDepartures.lines.size();
+			final List<LineDestination> lines = stationDepartures.lines;
+			assertNotNull(lines);
+			nbLines += lines.size();
 		}
 		assertTrue(nbDepartures <= maxDepartures);
 		assertTrue(nbLines >= 2);

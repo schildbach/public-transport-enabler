@@ -22,6 +22,8 @@ import java.util.Date;
 import java.util.EnumSet;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
@@ -72,12 +74,13 @@ public interface NetworkProvider
 	boolean hasCapabilities(final Capability... capabilities);
 
 	/**
-	 * Find locations near to given location. At least one of lat/lon pair or station id must be present.
+	 * Find locations near to given location. At least one of lat/lon pair or station id must be present in that
+	 * location.
 	 * 
 	 * @param types
 	 *            types of locations to find
 	 * @param location
-	 *            location to determine nearby stations (optional)
+	 *            location to determine nearby stations
 	 * @param maxDistance
 	 *            maximum distance in meters, or {@code 0}
 	 * @param maxLocations
@@ -93,7 +96,7 @@ public interface NetworkProvider
 	 * @param stationId
 	 *            id of the station
 	 * @param time
-	 *            desired time for departing, optional
+	 *            desired time for departing, or {@code null} for the provider default
 	 * @param maxDepartures
 	 *            maximum number of departures to get or {@code 0}
 	 * @param equivs
@@ -101,7 +104,7 @@ public interface NetworkProvider
 	 * @return result object containing the departures
 	 * @throws IOException
 	 */
-	QueryDeparturesResult queryDepartures(String stationId, Date time, int maxDepartures, boolean equivs) throws IOException;
+	QueryDeparturesResult queryDepartures(String stationId, @Nullable Date time, int maxDepartures, boolean equivs) throws IOException;
 
 	/**
 	 * Meant for auto-completion of location names, like in an {@link android.widget.AutoCompleteTextView}
@@ -134,18 +137,18 @@ public interface NetworkProvider
 	 * @param dep
 	 *            date is departure date? {@code true} for departure, {@code false} for arrival
 	 * @param products
-	 *            products to take into account
+	 *            products to take into account, or {@code null} for the provider default
 	 * @param walkSpeed
-	 *            how fast can you walk?
+	 *            walking ability, or {@code null} for the provider default
 	 * @param accessibility
-	 *            how accessible do you need the route to be?
+	 *            route accessibility, or {@code null} for the provider default
 	 * @param options
-	 *            additional options
+	 *            additional options, or {@code null} for the provider default
 	 * @return result object that can contain alternatives to clear up ambiguousnesses, or contains possible trips
 	 * @throws IOException
 	 */
-	QueryTripsResult queryTrips(Location from, Location via, Location to, Date date, boolean dep, Set<Product> products, WalkSpeed walkSpeed,
-			Accessibility accessibility, Set<Option> options) throws IOException;
+	QueryTripsResult queryTrips(Location from, @Nullable Location via, Location to, Date date, boolean dep, @Nullable Set<Product> products,
+			@Nullable WalkSpeed walkSpeed, @Nullable Accessibility accessibility, @Nullable Set<Option> options) throws IOException;
 
 	/**
 	 * Query more trips (e.g. earlier or later)
@@ -163,14 +166,14 @@ public interface NetworkProvider
 	 * Get style of line
 	 * 
 	 * @param network
-	 *            network to disambiguate line
+	 *            network to disambiguate line, may be {@code null}
 	 * @param product
-	 *            line product to get style of
+	 *            line product to get style of, may be {@code null}
 	 * @param label
-	 *            line label to get style of, or null
+	 *            line label to get style of, may be {@code null}
 	 * @return object containing background, foreground and optional border colors
 	 */
-	Style lineStyle(String network, Product product, String label);
+	Style lineStyle(@Nullable String network, @Nullable Product product, @Nullable String label);
 
 	/**
 	 * Gets the primary covered area of the network

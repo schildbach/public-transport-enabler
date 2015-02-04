@@ -22,6 +22,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.io.Serializable;
 import java.util.Currency;
 
+import javax.annotation.Nullable;
+
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
@@ -39,8 +41,8 @@ public final class Fare implements Serializable
 	public final Type type;
 	public final Currency currency;
 	public final float fare;
-	public final String unitName;
-	public final String units;
+	public final @Nullable String unitName;
+	public final @Nullable String units;
 
 	public Fare(final String network, final Type type, final Currency currency, final float fare, final String unitName, final String units)
 	{

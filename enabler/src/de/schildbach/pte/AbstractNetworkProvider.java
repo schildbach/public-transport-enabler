@@ -25,6 +25,8 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
+
 import com.google.common.base.Strings;
 
 import de.schildbach.pte.dto.Point;
@@ -41,8 +43,8 @@ public abstract class AbstractNetworkProvider implements NetworkProvider
 
 	protected TimeZone timeZone = TimeZone.getTimeZone("CET");
 	protected int numTripsRequested = 6;
-	private Map<String, Style> styles = null;
-	protected String sessionCookieName = null;
+	private @Nullable Map<String, Style> styles = null;
+	protected @Nullable String sessionCookieName = null;
 
 	public final boolean hasCapabilities(final Capability... capabilities)
 	{
@@ -82,8 +84,9 @@ public abstract class AbstractNetworkProvider implements NetworkProvider
 
 	private static final char STYLES_SEP = '|';
 
-	public Style lineStyle(final String network, final Product product, final String label)
+	public Style lineStyle(final @Nullable String network, final @Nullable Product product, final @Nullable String label)
 	{
+		final Map<String, Style> styles = this.styles;
 		if (styles != null && product != null)
 		{
 			if (network != null)
@@ -99,7 +102,7 @@ public abstract class AbstractNetworkProvider implements NetworkProvider
 					return productStyle;
 
 				// check for night bus, as that's a common special case
-				if (product == Product.BUS && label.startsWith("N"))
+				if (product == Product.BUS && label != null && label.startsWith("N"))
 				{
 					final Style nightStyle = styles.get(network + STYLES_SEP + "BN");
 					if (nightStyle != null)
@@ -119,7 +122,7 @@ public abstract class AbstractNetworkProvider implements NetworkProvider
 				return productStyle;
 
 			// check for night bus, as that's a common special case
-			if (product == Product.BUS && label.startsWith("N"))
+			if (product == Product.BUS && label != null && label.startsWith("N"))
 			{
 				final Style nightStyle = styles.get("BN");
 				if (nightStyle != null)

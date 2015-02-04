@@ -21,6 +21,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.Product;
@@ -45,8 +47,8 @@ public class VgnProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	protected Line parseLine(final String id, final String mot, final String symbol, final String name, final String longName,
-			final String trainType, final String trainNum, final String trainName)
+	protected Line parseLine(final @Nullable String id, final @Nullable String mot, final @Nullable String symbol, final @Nullable String name,
+			final @Nullable String longName, final @Nullable String trainType, final @Nullable String trainNum, final @Nullable String trainName)
 	{
 		if ("0".equals(mot))
 		{
@@ -62,8 +64,9 @@ public class VgnProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	protected String xsltTripRequestParameters(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
+	protected String xsltTripRequestParameters(final Location from, final @Nullable Location via, final Location to, final Date date,
+			final boolean dep, final @Nullable Collection<Product> products, final @Nullable WalkSpeed walkSpeed,
+			final @Nullable Accessibility accessibility, final @Nullable Set<Option> options)
 	{
 		return super.xsltTripRequestParameters(from, via, to, date, dep, products, walkSpeed, accessibility, options) + "&itdLPxx_showTariffLevel=1";
 	}

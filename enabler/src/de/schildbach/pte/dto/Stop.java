@@ -23,6 +23,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Locale;
 
+import javax.annotation.Nullable;
+
 import com.google.common.base.MoreObjects;
 import com.google.common.base.MoreObjects.ToStringHelper;
 import com.google.common.base.Objects;
@@ -33,15 +35,15 @@ import com.google.common.base.Objects;
 public final class Stop implements Serializable
 {
 	public final Location location;
-	public final Date plannedArrivalTime;
-	public final Date predictedArrivalTime;
-	public final Position plannedArrivalPosition;
-	public final Position predictedArrivalPosition;
+	public final @Nullable Date plannedArrivalTime;
+	public final @Nullable Date predictedArrivalTime;
+	public final @Nullable Position plannedArrivalPosition;
+	public final @Nullable Position predictedArrivalPosition;
 	public final boolean arrivalCancelled;
-	public final Date plannedDepartureTime;
-	public final Date predictedDepartureTime;
-	public final Position plannedDeparturePosition;
-	public final Position predictedDeparturePosition;
+	public final @Nullable Date plannedDepartureTime;
+	public final @Nullable Date predictedDepartureTime;
+	public final @Nullable Position plannedDeparturePosition;
+	public final @Nullable Position predictedDeparturePosition;
 	public final boolean departureCancelled;
 
 	public Stop(final Location location, final Date plannedArrivalTime, final Date predictedArrivalTime, final Position plannedArrivalPosition,
@@ -125,6 +127,8 @@ public final class Stop implements Serializable
 
 	public Long getArrivalDelay()
 	{
+		final Date plannedArrivalTime = this.plannedArrivalTime;
+		final Date predictedArrivalTime = this.predictedArrivalTime;
 		if (plannedArrivalTime != null && predictedArrivalTime != null)
 			return predictedArrivalTime.getTime() - plannedArrivalTime.getTime();
 		else
@@ -163,6 +167,8 @@ public final class Stop implements Serializable
 
 	public Long getDepartureDelay()
 	{
+		final Date plannedDepartureTime = this.plannedDepartureTime;
+		final Date predictedDepartureTime = this.predictedDepartureTime;
 		if (plannedDepartureTime != null && predictedDepartureTime != null)
 			return predictedDepartureTime.getTime() - plannedDepartureTime.getTime();
 		else
@@ -186,6 +192,7 @@ public final class Stop implements Serializable
 
 	public Date getMinTime()
 	{
+		final Date predictedDepartureTime = this.predictedDepartureTime;
 		if (plannedDepartureTime == null || (predictedDepartureTime != null && predictedDepartureTime.before(plannedDepartureTime)))
 			return predictedDepartureTime;
 		else
@@ -194,6 +201,7 @@ public final class Stop implements Serializable
 
 	public Date getMaxTime()
 	{
+		final Date predictedArrivalTime = this.predictedArrivalTime;
 		if (plannedArrivalTime == null || (predictedArrivalTime != null && predictedArrivalTime.after(plannedArrivalTime)))
 			return predictedArrivalTime;
 		else

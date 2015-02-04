@@ -7,6 +7,8 @@ package de.schildbach.pte.util;
 
 import java.io.IOException;
 
+import javax.annotation.Nullable;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -131,7 +133,7 @@ public final class XmlPullUtil
 			throw new IllegalStateException("expecting attribute: " + attrName);
 	}
 
-	public static String optAttr(final XmlPullParser pp, final String attrName, final String defaultValue)
+	public static String optAttr(final XmlPullParser pp, final String attrName, final @Nullable String defaultValue)
 	{
 		final String attr = pp.getAttributeValue(null, attrName);
 
@@ -189,8 +191,8 @@ public final class XmlPullUtil
 		return value != null ? value.trim() : null;
 	}
 
-	public static String optValueTag(final XmlPullParser pp, final String tagName, final String defaultValue) throws XmlPullParserException,
-			IOException
+	public static String optValueTag(final XmlPullParser pp, final String tagName, final @Nullable String defaultValue)
+			throws XmlPullParserException, IOException
 	{
 		if (XmlPullUtil.test(pp, tagName))
 		{
@@ -236,9 +238,6 @@ public final class XmlPullUtil
 
 	public static String nextText(final XmlPullParser pp, final String namespace, final String name) throws IOException, XmlPullParserException
 	{
-		if (name == null)
-			throw new XmlPullParserException("name for element can not be null");
-
 		pp.require(XmlPullParser.START_TAG, namespace, name);
 		final String text = pp.nextText();
 

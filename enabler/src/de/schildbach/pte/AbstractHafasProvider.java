@@ -42,6 +42,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -53,6 +55,7 @@ import com.google.common.base.Charsets;
 
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.Line;
+import de.schildbach.pte.dto.Line.Attr;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
@@ -88,14 +91,14 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	protected final String getStopEndpoint;
 	protected final String queryEndpoint;
 	private final int numProductBits;
-	private String accessId;
-	private String clientType;
+	private @Nullable String accessId = null;
+	private @Nullable String clientType = null;
 	private Charset jsonGetStopsEncoding;
 	private boolean jsonGetStopsUseWeight = true;
 	private Charset jsonNearbyLocationsEncoding;
 	private boolean dominantPlanStopTime = false;
 	private boolean useIso8601 = false;
-	private String extXmlEndpoint = null;
+	private @Nullable String extXmlEndpoint = null;
 	private boolean stationBoardHasStationTable = true;
 	private boolean stationBoardHasLocation = false;
 	private boolean stationBoardCanDoEquivs = true;
@@ -443,7 +446,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 	}
 
-	public QueryDeparturesResult queryDepartures(final String stationId, final Date time, final int maxDepartures, final boolean equivs)
+	public QueryDeparturesResult queryDepartures(final String stationId, final @Nullable Date time, final int maxDepartures, final boolean equivs)
 			throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
@@ -452,8 +455,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		return xmlStationBoard(uri.toString(), stationId);
 	}
 
-	protected void appendXmlStationBoardParameters(final StringBuilder uri, final Date time, final String stationId, final int maxDepartures,
-			final boolean equivs, final String styleSheet)
+	protected void appendXmlStationBoardParameters(final StringBuilder uri, final @Nullable Date time, final String stationId,
+			final int maxDepartures, final boolean equivs, final @Nullable String styleSheet)
 	{
 		uri.append("?productsFilter=").append(allProductsString());
 		uri.append("&boardType=dep");
@@ -652,8 +655,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						if (product == null)
 							throw new IllegalArgumentException();
 						// could check for type consistency here
-						if (prodLine.attrs != null)
-							line = newLine(product, prodLine.label, null, prodLine.attrs.toArray(new Line.Attr[0]));
+						final Set<Attr> attrs = prodLine.attrs;
+						if (attrs != null)
+							line = newLine(product, prodLine.label, null, attrs.toArray(new Line.Attr[0]));
 						else
 							line = newLine(product, prodLine.label, null);
 					}
@@ -747,8 +751,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	{
 	}
 
-	public QueryTripsResult queryTrips(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final Set<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options) throws IOException
+	public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to, final Date date, final boolean dep,
+			final @Nullable Set<Product> products, final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
+			final @Nullable Set<Option> options) throws IOException
 	{
 		return queryTripsBinary(from, via, to, date, dep, products, walkSpeed, accessibility, options);
 	}
@@ -758,9 +763,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		return queryMoreTripsBinary(context, later);
 	}
 
-	protected final QueryTripsResult queryTripsXml(Location from, Location via, Location to, final Date date, final boolean dep,
-			final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
-			throws IOException
+	protected final QueryTripsResult queryTripsXml(Location from, @Nullable Location via, Location to, final Date date, final boolean dep,
+			final @Nullable Collection<Product> products, final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
+			final @Nullable Set<Option> options) throws IOException
 	{
 		final ResultHeader header = new ResultHeader(SERVER_PRODUCT);
 
@@ -859,7 +864,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	}
 
 	private QueryTripsResult queryTripsXml(final Context previousContext, final boolean later, final CharSequence conReq, final Location from,
-			final Location via, final Location to) throws IOException
+			final @Nullable Location via, final Location to) throws IOException
 	{
 		final String request = wrapReqC(conReq, null);
 
@@ -1187,7 +1192,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					// remove last intermediate
 					if (intermediateStops != null)
 						if (!intermediateStops.isEmpty())
-							if (!intermediateStops.get(intermediateStops.size() - 1).location.id.equals(sectionArrivalLocation.id))
+							if (!intermediateStops.get(intermediateStops.size() - 1).location.equals(sectionArrivalLocation))
 								intermediateStops.remove(intermediateStops.size() - 1);
 
 					XmlPullUtil.skipExit(pp, "ConSection");
@@ -1353,8 +1358,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		throw new IllegalArgumentException(location.type.toString());
 	}
 
-	protected void appendQueryTripsBinaryParameters(final StringBuilder uri, final Location from, final Location via, final Location to,
-			final Date date, final boolean dep, final Collection<Product> products, final Accessibility accessibility, final Set<Option> options)
+	protected void appendQueryTripsBinaryParameters(final StringBuilder uri, final Location from, final @Nullable Location via, final Location to,
+			final Date date, final boolean dep, final @Nullable Collection<Product> products, final @Nullable Accessibility accessibility,
+			final @Nullable Set<Option> options)
 	{
 		uri.append("?start=Suchen");
 
@@ -1428,9 +1434,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 	private final static int QUERY_TRIPS_BINARY_BUFFER_SIZE = 384 * 1024;
 
-	protected final QueryTripsResult queryTripsBinary(Location from, Location via, Location to, final Date date, final boolean dep,
-			final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
-			throws IOException
+	protected final QueryTripsResult queryTripsBinary(Location from, @Nullable Location via, Location to, final Date date, final boolean dep,
+			final @Nullable Collection<Product> products, final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
+			final @Nullable Set<Option> options) throws IOException
 	{
 		final ResultHeader header = new ResultHeader(SERVER_PRODUCT);
 
@@ -1504,7 +1510,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 	}
 
-	private QueryTripsResult queryTripsBinary(final String uri, final Location from, final Location via, final Location to,
+	private QueryTripsResult queryTripsBinary(final String uri, final Location from, final @Nullable Location via, final Location to,
 			final int expectedBufferSize) throws IOException
 	{
 		/*

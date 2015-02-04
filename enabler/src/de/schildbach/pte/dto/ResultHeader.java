@@ -21,6 +21,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.Serializable;
 
+import javax.annotation.Nullable;
+
 import com.google.common.base.MoreObjects;
 
 /**
@@ -29,7 +31,7 @@ import com.google.common.base.MoreObjects;
 public final class ResultHeader implements Serializable
 {
 	public final String serverProduct;
-	public final String serverVersion;
+	public final @Nullable String serverVersion;
 	public final long serverTime;
 	public final Object context;
 

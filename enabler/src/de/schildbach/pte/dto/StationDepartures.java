@@ -22,6 +22,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import com.google.common.base.MoreObjects;
 import com.google.common.base.MoreObjects.ToStringHelper;
 import com.google.common.base.Objects;
@@ -33,7 +35,7 @@ public final class StationDepartures implements Serializable
 {
 	public final Location location;
 	public final List<Departure> departures;
-	public final List<LineDestination> lines;
+	public final @Nullable List<LineDestination> lines;
 
 	public StationDepartures(final Location location, final List<Departure> departures, final List<LineDestination> lines)
 	{

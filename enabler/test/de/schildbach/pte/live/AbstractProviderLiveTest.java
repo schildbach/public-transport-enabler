@@ -24,6 +24,8 @@ import java.util.Date;
 import java.util.EnumSet;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import de.schildbach.pte.NetworkProvider;
 import de.schildbach.pte.NetworkProvider.Accessibility;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
@@ -126,8 +128,9 @@ public abstract class AbstractProviderLiveTest
 		return provider.suggestLocations(constraint);
 	}
 
-	protected final QueryTripsResult queryTrips(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final Set<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility) throws IOException
+	protected final QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to, final Date date,
+			final boolean dep, final @Nullable Set<Product> products, final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility)
+			throws IOException
 	{
 		return provider.queryTrips(from, via, to, date, dep, products, walkSpeed, accessibility, null);
 	}

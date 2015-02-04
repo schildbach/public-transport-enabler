@@ -17,6 +17,8 @@
 
 package de.schildbach.pte;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -29,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
+
+import javax.annotation.Nullable;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -96,8 +100,8 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 
 	private static class Context implements QueryTripsContext
 	{
-		private Location from;
-		private Location to;
+		private final Location from;
+		private final Location to;
 		private final String prevQueryUri;
 		private final String nextQueryUri;
 
@@ -831,7 +835,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 		}
 	}
 
-	public QueryDeparturesResult queryDepartures(final String stationId, final Date time, final int maxDepartures, final boolean equivs)
+	public QueryDeparturesResult queryDepartures(final String stationId, final @Nullable Date time, final int maxDepartures, final boolean equivs)
 			throws IOException
 	{
 		final ResultHeader resultHeader = new ResultHeader(SERVER_PRODUCT, SERVER_VERSION, 0, null);
@@ -885,7 +889,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 					final List<LineDestination> lineDestinations = getStationLines(location.id);
 
 					for (LineDestination lineDestination : lineDestinations)
-						stationDepartures.lines.add(lineDestination);
+						checkNotNull(stationDepartures.lines).add(lineDestination);
 				}
 
 				// Build departure date.
@@ -981,8 +985,9 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 		}
 	}
 
-	public QueryTripsResult queryTrips(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final Set<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options) throws IOException
+	public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to, final Date date, final boolean dep,
+			final @Nullable Set<Product> products, final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
+			final @Nullable Set<Option> options) throws IOException
 	{
 		final ResultHeader resultHeader = new ResultHeader(SERVER_PRODUCT, SERVER_VERSION, 0, null);
 
@@ -990,32 +995,34 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 		{
 			if (from != null && from.isIdentified() && to != null && to.isIdentified())
 			{
-				final String fromString = printLocation(from);
-				final String toString = printLocation(to);
-				final String dateString = printDate(date);
-				final String dateTimeRep = dep ? "departure" : "arrival";
+				final StringBuilder queryUri = new StringBuilder(tripUri()).append("journeys");
+				queryUri.append("?from=").append(ParserUtils.urlEncode(printLocation(from)));
+				queryUri.append("&to=").append(ParserUtils.urlEncode(printLocation(to)));
+				queryUri.append("&datetime=").append(printDate(date));
+				queryUri.append("&datetime_represents=").append(dep ? "departure" : "arrival");
+				queryUri.append("&count=").append(this.numTripsRequested);
+				queryUri.append("&depth=0");
 
 				// Set walking speed.
-				final double walkingSpeed;
-				switch (walkSpeed)
+				if (walkSpeed != null)
 				{
-					case SLOW:
-						walkingSpeed = 1.12 * 0.8;
-						break;
-					case NORMAL:
-						walkingSpeed = 1.12;
-						break;
-					case FAST:
-						walkingSpeed = 1.12 * 1.2;
-						break;
-					default:
-						walkingSpeed = 1.12;
-						break;
-				}
+					final double walkingSpeed;
+					switch (walkSpeed)
+					{
+						case SLOW:
+							walkingSpeed = 1.12 * 0.8;
+							break;
+						case FAST:
+							walkingSpeed = 1.12 * 1.2;
+							break;
+						case NORMAL:
+						default:
+							walkingSpeed = 1.12;
+							break;
+					}
 
-				final StringBuilder queryUri = new StringBuilder(tripUri() + "journeys?" + "from=" + ParserUtils.urlEncode(fromString) + "&to="
-						+ ParserUtils.urlEncode(toString) + "&datetime=" + dateString + "&datetime_represents=" + dateTimeRep + "&count="
-						+ this.numTripsRequested + "&walking_speed=" + walkingSpeed + "&depth=0");
+					queryUri.append("&walking_speed=").append(walkingSpeed);
+				}
 
 				if (options != null && options.contains(Option.BIKE))
 				{
@@ -1024,7 +1031,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 				}
 
 				// Set forbidden commercial modes.
-				if (!products.equals(Product.ALL))
+				if (products != null && !products.equals(Product.ALL))
 				{
 					if (!products.contains(Product.SUBURBAN_TRAIN))
 					{

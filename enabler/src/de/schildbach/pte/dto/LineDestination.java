@@ -21,6 +21,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.Serializable;
 
+import javax.annotation.Nullable;
+
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
@@ -30,7 +32,7 @@ import com.google.common.base.Objects;
 public final class LineDestination implements Serializable
 {
 	final public Line line;
-	final public Location destination;
+	final public @Nullable Location destination;
 
 	public LineDestination(final Line line, final Location destination)
 	{

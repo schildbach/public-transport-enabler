@@ -17,6 +17,7 @@
 
 package de.schildbach.pte;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import java.io.IOException;
@@ -39,6 +40,8 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.annotation.Nullable;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -93,14 +96,14 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private final String coordEndpoint;
 
 	private String language = "de";
-	private String additionalQueryParameter = null;
+	private @Nullable String additionalQueryParameter = null;
 	private boolean useRealtime = true;
 	private boolean needsSpEncId = false;
 	private boolean includeRegionId = true;
 	private boolean useProxFootSearch = true;
 	private Charset requestUrlEncoding = Charsets.ISO_8859_1;
-	private String httpReferer = null;
-	private String httpRefererTrip = null;
+	private @Nullable String httpReferer = null;
+	private @Nullable String httpRefererTrip = null;
 	private boolean httpPost = false;
 	private boolean useRouteIndexAsTripId = true;
 	private boolean useLineRestriction = true;
@@ -999,8 +1002,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private static final Pattern P_LINE_S_DB = Pattern.compile("(S\\d+) \\((?:DB Regio AG)\\)");
 	private static final Pattern P_LINE_NUMBER = Pattern.compile("\\d+");
 
-	protected Line parseLine(final String id, final String mot, String symbol, final String name, final String longName, final String trainType,
-			final String trainNum, final String trainName)
+	protected Line parseLine(final @Nullable String id, final @Nullable String mot, @Nullable String symbol, final @Nullable String name,
+			final @Nullable String longName, final @Nullable String trainType, final @Nullable String trainNum, final @Nullable String trainName)
 	{
 		if (mot == null)
 		{
@@ -1370,7 +1373,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return new Line(id, Product.BUS, "SEV" + trainNumStr);
 			if ("Bus replacement".equals(trainName)) // GB
 				return new Line(id, Product.BUS, "BR");
-			if ("BR".equals(trainType) && trainName.startsWith("Bus")) // GB
+			if ("BR".equals(trainType) && trainName != null && trainName.startsWith("Bus")) // GB
 				return new Line(id, Product.BUS, "BR" + trainNum);
 
 			if ("GB".equals(trainType)) // Gondelbahn
@@ -1440,13 +1443,13 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				+ "' trainType='" + trainType + "' trainNum='" + trainNum + "' trainName='" + trainName + "'");
 	}
 
-	public QueryDeparturesResult queryDepartures(final String stationId, final Date time, final int maxDepartures, final boolean equivs)
+	public QueryDeparturesResult queryDepartures(final String stationId, final @Nullable Date time, final int maxDepartures, final boolean equivs)
 			throws IOException
 	{
 		return xsltDepartureMonitorRequest(stationId, time, maxDepartures, equivs);
 	}
 
-	protected StringBuilder xsltDepartureMonitorRequestParameters(final String stationId, final Date time, final int maxDepartures,
+	protected StringBuilder xsltDepartureMonitorRequestParameters(final String stationId, final @Nullable Date time, final int maxDepartures,
 			final boolean equivs)
 	{
 		final StringBuilder parameters = new StringBuilder();
@@ -1482,8 +1485,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		uri.append("&itdTime=").append(ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%02d%02d", hour, minute)));
 	}
 
-	private QueryDeparturesResult xsltDepartureMonitorRequest(final String stationId, final Date time, final int maxDepartures, final boolean equivs)
-			throws IOException
+	private QueryDeparturesResult xsltDepartureMonitorRequest(final String stationId, final @Nullable Date time, final int maxDepartures,
+			final boolean equivs) throws IOException
 	{
 		final StringBuilder parameters = xsltDepartureMonitorRequestParameters(stationId, time, maxDepartures, equivs);
 
@@ -1562,8 +1565,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 						assignedStationDepartures = new StationDepartures(new Location(LocationType.STATION, assignedStopId),
 								new LinkedList<Departure>(), new LinkedList<LineDestination>());
 
-					if (!assignedStationDepartures.lines.contains(line))
-						assignedStationDepartures.lines.add(line);
+					final List<LineDestination> assignedStationDeparturesLines = checkNotNull(assignedStationDepartures.lines);
+					if (!assignedStationDeparturesLines.contains(line))
+						assignedStationDeparturesLines.add(line);
 				}
 				XmlPullUtil.skipExit(pp, "itdServingLines");
 			}
@@ -1646,8 +1650,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 	}
 
-	protected QueryDeparturesResult queryDeparturesMobile(final String stationId, final Date time, final int maxDepartures, final boolean equivs)
-			throws IOException
+	protected QueryDeparturesResult queryDeparturesMobile(final String stationId, final @Nullable Date time, final int maxDepartures,
+			final boolean equivs) throws IOException
 	{
 		final StringBuilder parameters = xsltDepartureMonitorRequestParameters(stationId, time, maxDepartures, equivs);
 
@@ -1850,7 +1854,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private StationDepartures findStationDepartures(final List<StationDepartures> stationDepartures, final String id)
 	{
 		for (final StationDepartures stationDeparture : stationDepartures)
-			if (stationDeparture.location.id.equals(id))
+			if (id.equals(stationDeparture.location.id))
 				return stationDeparture;
 
 		return null;
@@ -1994,8 +1998,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		return (double) value / 1000000;
 	}
 
-	protected String xsltTripRequestParameters(final Location from, final Location via, final Location to, final Date time, final boolean dep,
-			final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
+	protected String xsltTripRequestParameters(final Location from, final @Nullable Location via, final Location to, final Date time,
+			final boolean dep, final @Nullable Collection<Product> products, final @Nullable WalkSpeed walkSpeed,
+			final @Nullable Accessibility accessibility, final @Nullable Set<Option> options)
 	{
 		final StringBuilder uri = new StringBuilder();
 		appendCommonRequestParams(uri, "XML");
@@ -2099,8 +2104,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			uri.append("&coordListOutputFormat=STRING");
 	}
 
-	public QueryTripsResult queryTrips(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final Set<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options) throws IOException
+	public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to, final Date date, final boolean dep,
+			final @Nullable Set<Product> products, final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
+			final @Nullable Set<Option> options) throws IOException
 	{
 
 		final String parameters = xsltTripRequestParameters(from, via, to, date, dep, products, walkSpeed, accessibility, options);
@@ -2137,9 +2143,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 	}
 
-	protected QueryTripsResult queryTripsMobile(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final Collection<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options)
-			throws IOException
+	protected QueryTripsResult queryTripsMobile(final Location from, final @Nullable Location via, final Location to, final Date date,
+			final boolean dep, final @Nullable Collection<Product> products, final @Nullable WalkSpeed walkSpeed,
+			final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) throws IOException
 	{
 
 		final String parameters = xsltTripRequestParameters(from, via, to, date, dep, products, walkSpeed, accessibility, options);
@@ -2645,11 +2651,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 								final int size = intermediateStops.size();
 								if (size >= 2)
 								{
-									if (!intermediateStops.get(size - 1).location.id.equals(arrivalLocation.id))
+									if (!intermediateStops.get(size - 1).location.equals(arrivalLocation))
 										throw new IllegalStateException();
 									intermediateStops.remove(size - 1);
 
-									if (!intermediateStops.get(0).location.id.equals(departureLocation.id))
+									if (!intermediateStops.get(0).location.equals(departureLocation))
 										throw new IllegalStateException();
 									intermediateStops.remove(0);
 								}
@@ -2786,8 +2792,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		return new QueryTripsResult(header, uri, from, via, to, new Context(commandLink((String) context, requestId)), trips);
 	}
 
-	private QueryTripsResult queryTripsMobile(final String uri, final Location from, final Location via, final Location to, final InputStream is)
-			throws XmlPullParserException, IOException
+	private QueryTripsResult queryTripsMobile(final String uri, final Location from, final @Nullable Location via, final Location to,
+			final InputStream is) throws XmlPullParserException, IOException
 	{
 		// System.out.println(uri);
 

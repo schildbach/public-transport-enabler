@@ -22,6 +22,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.Serializable;
 
+import javax.annotation.Nullable;
+
 import com.google.common.base.Objects;
 
 /**
@@ -30,7 +32,7 @@ import com.google.common.base.Objects;
 public final class Position implements Serializable
 {
 	public final String name;
-	public final String section;
+	public final @Nullable String section;
 
 	public Position(final String name)
 	{

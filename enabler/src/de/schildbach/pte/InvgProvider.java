@@ -31,6 +31,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
+
 import com.google.common.base.Charsets;
 
 import de.schildbach.pte.dto.Departure;
@@ -176,7 +178,7 @@ public class InvgProvider extends AbstractHafasProvider
 	, Pattern.DOTALL);
 
 	@Override
-	public QueryDeparturesResult queryDepartures(final String stationId, final Date time, final int maxDepartures, final boolean equivs)
+	public QueryDeparturesResult queryDepartures(final String stationId, final @Nullable Date time, final int maxDepartures, final boolean equivs)
 			throws IOException
 	{
 		final ResultHeader header = new ResultHeader(SERVER_PRODUCT);
@@ -305,8 +307,9 @@ public class InvgProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	public QueryTripsResult queryTrips(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final Set<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options) throws IOException
+	public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to, final Date date, final boolean dep,
+			final @Nullable Set<Product> products, final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
+			final @Nullable Set<Option> options) throws IOException
 	{
 		return queryTripsXml(from, via, to, date, dep, products, walkSpeed, accessibility, options);
 	}

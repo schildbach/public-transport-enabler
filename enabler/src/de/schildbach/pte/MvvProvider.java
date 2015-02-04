@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
+
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.Position;
@@ -56,8 +58,8 @@ public class MvvProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	protected Line parseLine(final String id, final String mot, final String symbol, final String name, final String longName,
-			final String trainType, final String trainNum, final String trainName)
+	protected Line parseLine(final @Nullable String id, final @Nullable String mot, final @Nullable String symbol, final @Nullable String name,
+			final @Nullable String longName, final @Nullable String trainType, final @Nullable String trainNum, final @Nullable String trainName)
 	{
 		if ("0".equals(mot))
 		{

@@ -20,6 +20,8 @@ package de.schildbach.pte;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import com.google.common.base.Charsets;
 
 import de.schildbach.pte.dto.Line;
@@ -52,8 +54,8 @@ public class VrrProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	protected Line parseLine(final String id, final String mot, final String symbol, final String name, final String longName,
-			final String trainType, final String trainNum, final String trainName)
+	protected Line parseLine(final @Nullable String id, final @Nullable String mot, final @Nullable String symbol, final @Nullable String name,
+			final @Nullable String longName, final @Nullable String trainType, final @Nullable String trainNum, final @Nullable String trainName)
 	{
 		if ("0".equals(mot))
 		{
@@ -190,7 +192,7 @@ public class VrrProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	public Style lineStyle(final String network, final Product product, final String label)
+	public Style lineStyle(final @Nullable String network, final @Nullable Product product, final @Nullable String label)
 	{
 		if (product == Product.BUS && label != null && label.startsWith("SB"))
 			return super.lineStyle(network, product, "SB");

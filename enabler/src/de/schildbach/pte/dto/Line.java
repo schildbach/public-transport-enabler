@@ -20,6 +20,8 @@ package de.schildbach.pte.dto;
 import java.io.Serializable;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.collect.ComparisonChain;
@@ -37,12 +39,12 @@ public final class Line implements Serializable, Comparable<Line>
 
 	private static final long serialVersionUID = -5642533805998375070L;
 
-	public final String id;
-	public final Product product;
-	public final String label;
-	public final Style style;
-	public final Set<Attr> attrs;
-	public final String message;
+	public final @Nullable String id;
+	public final @Nullable Product product;
+	public final @Nullable String label;
+	public final @Nullable Style style;
+	public final @Nullable Set<Attr> attrs;
+	public final @Nullable String message;
 
 	public static final Line FOOTWAY = new Line(null, null, null);
 	public static final Line TRANSFER = new Line(null, null, null);
@@ -81,11 +83,13 @@ public final class Line implements Serializable, Comparable<Line>
 
 	public char productCode()
 	{
+		final Product product = this.product;
 		return product != null ? product.code : Product.UNKNOWN;
 	}
 
 	public boolean hasAttr(final Attr attr)
 	{
+		final Set<Attr> attrs = this.attrs;
 		return attrs != null && attrs.contains(attr);
 	}
 

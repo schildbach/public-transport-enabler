@@ -23,6 +23,8 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import com.google.common.base.MoreObjects;
 import com.google.common.base.MoreObjects.ToStringHelper;
 
@@ -36,7 +38,7 @@ public final class QueryDeparturesResult implements Serializable
 		OK, INVALID_STATION, SERVICE_DOWN
 	}
 
-	public final ResultHeader header;
+	public final @Nullable ResultHeader header;
 	public final Status status;
 	public final List<StationDepartures> stationDepartures = new LinkedList<StationDepartures>();
 
@@ -56,7 +58,8 @@ public final class QueryDeparturesResult implements Serializable
 	{
 		for (final StationDepartures departures : stationDepartures)
 		{
-			if (stationId.equals(departures.location.id))
+			final Location location = departures.location;
+			if (location != null && stationId.equals(location.id))
 				return departures;
 		}
 

@@ -25,6 +25,8 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Locale;
 
+import javax.annotation.Nullable;
+
 import com.google.common.base.MoreObjects;
 import com.google.common.base.MoreObjects.ToStringHelper;
 import com.google.common.base.Objects;
@@ -34,13 +36,13 @@ import com.google.common.base.Objects;
  */
 public final class Departure implements Serializable
 {
-	final public Date plannedTime;
-	final public Date predictedTime;
+	final public @Nullable Date plannedTime;
+	final public @Nullable Date predictedTime;
 	final public Line line;
-	final public Position position;
-	final public Location destination;
-	final public int[] capacity;
-	final public String message;
+	final public @Nullable Position position;
+	final public @Nullable Location destination;
+	final public @Nullable int[] capacity;
+	final public @Nullable String message;
 
 	public Departure(final Date plannedTime, final Date predictedTime, final Line line, final Position position, final Location destination,
 			final int[] capacity, final String message)

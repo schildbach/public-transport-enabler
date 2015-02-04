@@ -23,6 +23,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
+
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.Product;
@@ -58,8 +60,8 @@ public class NvbwProvider extends AbstractEfaProvider
 	private static final Pattern P_LINE_S_AVG_VBK = Pattern.compile("(S\\d+) \\((?:AVG|VBK)\\)");
 
 	@Override
-	protected Line parseLine(final String id, final String mot, final String symbol, final String name, final String longName,
-			final String trainType, final String trainNum, final String trainName)
+	protected Line parseLine(final @Nullable String id, final @Nullable String mot, final @Nullable String symbol, final @Nullable String name,
+			final @Nullable String longName, final @Nullable String trainType, final @Nullable String trainNum, final @Nullable String trainName)
 	{
 		if ("0".equals(mot))
 		{
@@ -104,8 +106,9 @@ public class NvbwProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	public QueryTripsResult queryTrips(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final Set<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options) throws IOException
+	public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to, final Date date, final boolean dep,
+			final @Nullable Set<Product> products, final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
+			final @Nullable Set<Option> options) throws IOException
 	{
 		return queryTripsMobile(from, via, to, date, dep, products, walkSpeed, accessibility, options);
 	}

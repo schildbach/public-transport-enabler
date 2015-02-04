@@ -23,6 +23,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.io.Serializable;
 import java.util.Arrays;
 
+import javax.annotation.Nullable;
+
 import com.google.common.base.MoreObjects;
 import com.google.common.base.MoreObjects.ToStringHelper;
 import com.google.common.base.Objects;
@@ -33,10 +35,10 @@ import com.google.common.base.Objects;
 public final class Location implements Serializable
 {
 	public final LocationType type;
-	public final String id;
+	public final @Nullable String id;
 	public final int lat, lon;
-	public final String place;
-	public final String name;
+	public final @Nullable String place;
+	public final @Nullable String name;
 
 	public Location(final LocationType type, final String id, final int lat, final int lon, final String place, final String name)
 	{

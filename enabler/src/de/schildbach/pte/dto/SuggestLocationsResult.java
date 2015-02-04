@@ -25,6 +25,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import com.google.common.base.MoreObjects;
 import com.google.common.base.MoreObjects.ToStringHelper;
 
@@ -38,7 +40,7 @@ public final class SuggestLocationsResult implements Serializable
 		OK, SERVICE_DOWN
 	}
 
-	public final ResultHeader header;
+	public final @Nullable ResultHeader header;
 	public final Status status;
 	private final List<SuggestedLocation> suggestedLocations;
 

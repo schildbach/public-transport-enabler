@@ -22,6 +22,8 @@ import java.util.Date;
 import java.util.EnumSet;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import com.google.common.base.Charsets;
 
 import de.schildbach.pte.dto.Line;
@@ -63,8 +65,8 @@ public class BayernProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	protected Line parseLine(final String id, final String mot, final String symbol, final String name, final String longName,
-			final String trainType, final String trainNum, final String trainName)
+	protected Line parseLine(final @Nullable String id, final @Nullable String mot, final @Nullable String symbol, final @Nullable String name,
+			final @Nullable String longName, final @Nullable String trainType, final @Nullable String trainNum, final @Nullable String trainName)
 	{
 		if ("0".equals(mot))
 		{
@@ -117,7 +119,7 @@ public class BayernProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	public QueryDeparturesResult queryDepartures(final String stationId, final Date time, final int maxDepartures, final boolean equivs)
+	public QueryDeparturesResult queryDepartures(final String stationId, final @Nullable Date time, final int maxDepartures, final boolean equivs)
 			throws IOException
 	{
 		return queryDeparturesMobile(stationId, time, maxDepartures, equivs);
@@ -130,8 +132,9 @@ public class BayernProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	public QueryTripsResult queryTrips(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final Set<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options) throws IOException
+	public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to, final Date date, final boolean dep,
+			final @Nullable Set<Product> products, final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
+			final @Nullable Set<Option> options) throws IOException
 	{
 		return queryTripsMobile(from, via, to, date, dep, products, walkSpeed, accessibility, options);
 	}

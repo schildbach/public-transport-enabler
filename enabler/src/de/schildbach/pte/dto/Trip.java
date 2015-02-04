@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import com.google.common.base.MoreObjects;
 import com.google.common.base.MoreObjects.ToStringHelper;
 import com.google.common.base.Objects;
@@ -65,7 +67,7 @@ public final class Trip implements Serializable
 		return legs.get(0).getDepartureTime();
 	}
 
-	public Public getFirstPublicLeg()
+	public @Nullable Public getFirstPublicLeg()
 	{
 		for (final Leg leg : legs)
 			if (leg instanceof Public)
@@ -74,7 +76,7 @@ public final class Trip implements Serializable
 		return null;
 	}
 
-	public Date getFirstPublicLegDepartureTime()
+	public @Nullable Date getFirstPublicLegDepartureTime()
 	{
 		final Public firstPublicLeg = getFirstPublicLeg();
 		if (firstPublicLeg != null)
@@ -88,7 +90,7 @@ public final class Trip implements Serializable
 		return legs.get(legs.size() - 1).getArrivalTime();
 	}
 
-	public Public getLastPublicLeg()
+	public @Nullable Public getLastPublicLeg()
 	{
 		for (int i = legs.size() - 1; i >= 0; i--)
 		{
@@ -100,7 +102,7 @@ public final class Trip implements Serializable
 		return null;
 	}
 
-	public Date getLastPublicLegArrivalTime()
+	public @Nullable Date getLastPublicLegArrivalTime()
 	{
 		final Public lastPublicLeg = getLastPublicLeg();
 		if (lastPublicLeg != null)
@@ -127,7 +129,7 @@ public final class Trip implements Serializable
 	 * 
 	 * @return duration in ms, or null if there are no public legs
 	 */
-	public Long getPublicDuration()
+	public @Nullable Long getPublicDuration()
 	{
 		final Date first = getFirstPublicLegDepartureTime();
 		final Date last = getLastPublicLegArrivalTime();
@@ -217,8 +219,12 @@ public final class Trip implements Serializable
 			else if (leg instanceof Public)
 			{
 				final Public publicLeg = (Public) leg;
-				builder.append(publicLeg.departureStop.plannedDepartureTime.getTime()).append('-');
-				builder.append(publicLeg.arrivalStop.plannedArrivalTime.getTime()).append('-');
+				final Date plannedDepartureTime = publicLeg.departureStop.plannedDepartureTime;
+				if (plannedDepartureTime != null)
+					builder.append(plannedDepartureTime.getTime()).append('-');
+				final Date plannedArrivalTime = publicLeg.arrivalStop.plannedArrivalTime;
+				if (plannedArrivalTime != null)
+					builder.append(plannedArrivalTime.getTime()).append('-');
 				final Line line = publicLeg.line;
 				builder.append(line.productCode());
 				builder.append(line.label);
@@ -294,11 +300,11 @@ public final class Trip implements Serializable
 		private static final long serialVersionUID = 1312066446239817422L;
 
 		public final Line line;
-		public final Location destination;
+		public final @Nullable Location destination;
 		public final Stop departureStop;
 		public final Stop arrivalStop;
-		public final List<Stop> intermediateStops;
-		public final String message;
+		public final @Nullable List<Stop> intermediateStops;
+		public final @Nullable String message;
 
 		public Public(final Line line, final Location destination, final Stop departureStop, final Stop arrivalStop,
 				final List<Stop> intermediateStops, final List<Point> path, final String message)

@@ -34,6 +34,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
+import javax.annotation.Nullable;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -164,7 +166,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 		return (double) value / 1000000;
 	}
 
-	private final String apiKey;
+	private final @Nullable String apiKey;
 	private final String stopFinderEndpoint;
 	private final String tripEndpoint;
 
@@ -604,7 +606,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 		return new Location(locType, id, Point.fromDouble(lat, lon), place, name);
 	}
 
-	public QueryDeparturesResult queryDepartures(final String stationId, final Date time, final int maxDepartures, final boolean equivs)
+	public QueryDeparturesResult queryDepartures(final String stationId, final @Nullable Date time, final int maxDepartures, final boolean equivs)
 			throws IOException
 	{
 		throw new UnsupportedOperationException();
@@ -632,8 +634,9 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 		return jsonCoordRequest(location.lat, location.lon, maxDistance, maxLocations);
 	}
 
-	public QueryTripsResult queryTrips(final Location from, final Location via, final Location to, final Date date, final boolean dep,
-			final Set<Product> products, final WalkSpeed walkSpeed, final Accessibility accessibility, final Set<Option> options) throws IOException
+	public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to, final Date date, final boolean dep,
+			final @Nullable Set<Product> products, final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
+			final @Nullable Set<Option> options) throws IOException
 	{
 		final List<Location> possibleFroms, possibleTos, possibleVias;
 
