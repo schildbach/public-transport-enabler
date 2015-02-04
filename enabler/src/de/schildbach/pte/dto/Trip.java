@@ -19,9 +19,10 @@ package de.schildbach.pte.dto;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.LinkedList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.MoreObjects.ToStringHelper;
@@ -186,22 +187,14 @@ public final class Trip implements Serializable
 		return true;
 	}
 
-	public List<Product> products()
+	public Set<Product> products()
 	{
-		final List<Product> products = new LinkedList<Product>();
+		final Set<Product> products = EnumSet.noneOf(Product.class);
 
 		if (legs != null)
-		{
 			for (final Leg leg : legs)
-			{
 				if (leg instanceof Public)
-				{
-					final Product product = Product.fromCode(((Public) leg).line.label.charAt(0));
-					if (!products.contains(product))
-						products.add(product);
-				}
-			}
-		}
+					products.add(Product.fromCode(((Public) leg).line.label.charAt(0)));
 
 		return products;
 	}
