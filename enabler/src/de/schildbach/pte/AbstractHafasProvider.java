@@ -1201,10 +1201,10 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					XmlPullUtil.skipExit(pp, "Arrival");
 
 					// remove last intermediate
-					final int size = intermediateStops != null ? intermediateStops.size() : 0;
-					if (size >= 1)
-						if (!intermediateStops.get(size - 1).location.id.equals(sectionArrivalLocation.id))
-							intermediateStops.remove(size - 1);
+					if (intermediateStops != null)
+						if (!intermediateStops.isEmpty())
+							if (!intermediateStops.get(intermediateStops.size() - 1).location.id.equals(sectionArrivalLocation.id))
+								intermediateStops.remove(intermediateStops.size() - 1);
 
 					XmlPullUtil.skipExit(pp, "ConSection");
 

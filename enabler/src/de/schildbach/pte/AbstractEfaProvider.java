@@ -17,6 +17,8 @@
 
 package de.schildbach.pte;
 
+import static com.google.common.base.Preconditions.checkState;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -2868,6 +2870,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 								throw new IllegalStateException("unknown usage: " + usage);
 							}
 						}
+
+						checkState(departure != null);
+						checkState(arrival != null);
 
 						XmlPullUtil.skipExit(pp, "ps");
 
