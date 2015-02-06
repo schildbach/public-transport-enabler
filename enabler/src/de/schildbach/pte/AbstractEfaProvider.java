@@ -1679,7 +1679,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 					// misc
 					/* final String stationName = */normalizeLocationName(XmlPullUtil.valueTag(pp, "n"));
-					final boolean isRealtime = XmlPullUtil.valueTag(pp, "realtime").equals("1");
+					/* final boolean isRealtime = */XmlPullUtil.valueTag(pp, "realtime").equals("1");
 
 					XmlPullUtil.optSkip(pp, "dt");
 

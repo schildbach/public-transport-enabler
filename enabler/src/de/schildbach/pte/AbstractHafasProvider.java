@@ -324,20 +324,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		throw new IllegalStateException("cannot handle: " + type);
 	}
 
-	private final Location parseReqLoc(final XmlPullParser pp)
-	{
-		final String type = pp.getName();
-		if ("ReqLoc".equals(type))
-		{
-			XmlPullUtil.requireAttr(pp, "type", "ADR");
-			final String name = XmlPullUtil.attr(pp, "output");
-
-			final String[] placeAndName = splitAddress(name);
-			return new Location(LocationType.ADDRESS, null, placeAndName[0], placeAndName[1]);
-		}
-		throw new IllegalStateException("cannot handle: " + type);
-	}
-
 	private final Position parsePlatform(final XmlPullParser pp) throws XmlPullParserException, IOException
 	{
 		XmlPullUtil.enter(pp, "Platform");
@@ -1063,7 +1049,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						String name = null;
 						String category = null;
 						String shortCategory = null;
-						String longCategory = null;
 						while (XmlPullUtil.test(pp, "JourneyAttribute"))
 						{
 							XmlPullUtil.enter(pp, "JourneyAttribute");
@@ -1087,7 +1072,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 							{
 								shortCategory = attributeVariants.get("SHORT");
 								category = attributeVariants.get("NORMAL");
-								longCategory = attributeVariants.get("LONG");
+								// longCategory = attributeVariants.get("LONG");
 							}
 							else if ("DIRECTION".equals(attrName))
 							{
@@ -1256,7 +1241,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 	private final Location parseLocation(final XmlPullParser pp) throws XmlPullParserException, IOException
 	{
-		Location location;
+		final Location location;
 		if (pp.getName().equals("Station"))
 			location = parseStation(pp);
 		else if (pp.getName().equals("Poi"))
@@ -1312,17 +1297,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		calendar.set(Calendar.SECOND, Integer.parseInt(m.group(4)));
 		calendar.set(Calendar.MILLISECOND, 0);
 		calendar.add(Calendar.DAY_OF_MONTH, Integer.parseInt(m.group(1)));
-	}
-
-	private static final Pattern P_DURATION = Pattern.compile("(\\d+):(\\d{2})");
-
-	private static final int parseDuration(final CharSequence str)
-	{
-		final Matcher m = P_DURATION.matcher(str);
-		if (m.matches())
-			return Integer.parseInt(m.group(1)) * 60 + Integer.parseInt(m.group(2));
-		else
-			throw new IllegalArgumentException("cannot parse duration: '" + str + "'");
 	}
 
 	private static final String locationXml(final Location location)
@@ -1801,7 +1775,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						String directionStr = null;
 						int lineClass = 0;
 						String lineCategory = null;
-						String lineOperator = null;
 						String routingType = null;
 						while (true)
 						{
@@ -1814,8 +1787,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 								lineClass = Integer.parseInt(strings.read(is));
 							else if (key.equals("Category"))
 								lineCategory = strings.read(is);
-							else if (key.equals("Operator"))
-								lineOperator = strings.read(is);
+							// else if (key.equals("Operator"))
+							// lineOperator = strings.read(is);
 							else if (key.equals("GisRoutingType"))
 								routingType = strings.read(is);
 							else

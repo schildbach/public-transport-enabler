@@ -66,9 +66,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 	{
 		private static final long serialVersionUID = -6847355540229473013L;
 
-		public final Accessibility accessibility;
 		public final Location from;
-		public final Set<Option> options;
 		public final Collection<Product> products;
 		public final Location to;
 		public final Location via;
@@ -85,8 +83,6 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 			this.to = to;
 			this.products = products;
 			this.walkSpeed = walkSpeed;
-			this.accessibility = accessibility;
-			this.options = options;
 		}
 
 		public boolean canQueryEarlier()
