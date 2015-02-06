@@ -83,9 +83,9 @@ public class KvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void shortTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "7000070", 49009208, 8404126, "Karlsruhe",
-				"Marktplatz (Pyramide)"), null, new Location(LocationType.STATION, "7000002", 49009392, 8409086, "Karlsruhe",
-				"Kronenplatz (Kaiserstr.)"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "7000001", 49009526, 8404914, "Karlsruhe", "Marktplatz"), null,
+				new Location(LocationType.STATION, "7000002", 49009393, 8408866, "Karlsruhe", "Kronenplatz (Kaiserstr.)"), new Date(), true,
+				Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);
@@ -116,6 +116,10 @@ public class KvvProviderLiveTest extends AbstractProviderLiveTest
 				"Konstanzer Straße 17, 76199 Karlsruhe, Deutschland"), null, new Location(LocationType.ADDRESS, null, 49007706, 8356358, null,
 				"Durmersheimer Straße 6, 76185 Karlsruhe, Deutschland"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
+
+		if (!result.context.canQueryLater())
+			return;
+
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		print(laterResult);
 	}

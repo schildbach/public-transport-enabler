@@ -43,6 +43,7 @@ public class KvvProvider extends AbstractEfaProvider
 		super(apiBase);
 
 		setStyles(STYLES);
+		setSessionCookieName("HASESSIONID");
 	}
 
 	public NetworkId id()
