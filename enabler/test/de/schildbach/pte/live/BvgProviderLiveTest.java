@@ -81,6 +81,22 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
+	public void queryDeparturesMast() throws Exception
+	{
+		final QueryDeparturesResult result1 = queryDepartures("~308864", false);
+		assertEquals(QueryDeparturesResult.Status.OK, result1.status);
+		print(result1);
+
+		final QueryDeparturesResult result2 = queryDepartures("~309306", false);
+		assertEquals(QueryDeparturesResult.Status.OK, result2.status);
+		print(result2);
+
+		final QueryDeparturesResult result3 = queryDepartures("~105837", false);
+		assertEquals(QueryDeparturesResult.Status.OK, result3.status);
+		print(result3);
+	}
+
+	@Test
 	public void queryDeparturesInvalidStation() throws Exception
 	{
 		final QueryDeparturesResult result = queryDepartures("999999", false);
