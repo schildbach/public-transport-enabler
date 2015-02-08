@@ -37,7 +37,7 @@ public enum Product
 		this.code = code;
 	}
 
-	public static Product fromCode(char code)
+	public static Product fromCode(final char code)
 	{
 		if (code == HIGH_SPEED_TRAIN.code)
 			return HIGH_SPEED_TRAIN;
@@ -58,6 +58,6 @@ public enum Product
 		else if (code == ON_DEMAND.code)
 			return ON_DEMAND;
 		else
-			throw new IllegalArgumentException(Character.toString(code));
+			throw new IllegalArgumentException("unknown code: '" + code + "'");
 	}
 }
