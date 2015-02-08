@@ -17,7 +17,9 @@
 
 package de.schildbach.pte.live;
 
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
@@ -78,6 +80,14 @@ public class VvsProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final SuggestLocationsResult result = suggestLocations("grün");
 		print(result);
+	}
+
+	@Test
+	public void suggestLocationsCoverage() throws Exception
+	{
+		final SuggestLocationsResult result = suggestLocations("backnang");
+		print(result);
+		assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "5007600")));
 	}
 
 	@Test
