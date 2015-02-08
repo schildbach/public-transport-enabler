@@ -1936,7 +1936,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		String itdMessage = null;
 		if (XmlPullUtil.test(pp, "itdTrain"))
 		{
-			itdTrainName = XmlPullUtil.attr(pp, "name");
+			itdTrainName = XmlPullUtil.optAttr(pp, "name", null);
 			itdTrainType = XmlPullUtil.attr(pp, "type");
 			if (!pp.isEmptyElementTag())
 			{
