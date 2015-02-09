@@ -34,20 +34,14 @@ import de.schildbach.pte.dto.Product;
  */
 public class OebbProvider extends AbstractHafasProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.OEBB;
 	private static final String API_BASE = "http://fahrplan.oebb.at/bin/";
 
 	public OebbProvider()
 	{
-		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dny", API_BASE + "query.exe/dn", 13);
+		super(NetworkId.OEBB, API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dny", API_BASE + "query.exe/dn", 13);
 
 		setDominantPlanStopTime(true);
 		setJsonGetStopsEncoding(Charsets.UTF_8);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 
 	@Override

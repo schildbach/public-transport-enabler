@@ -28,20 +28,14 @@ import de.schildbach.pte.dto.Product;
  */
 public class RtProvider extends AbstractHafasProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.RT;
 	private static final String API_BASE = "http://railteam.hafas.de/bin/";
 
 	public RtProvider()
 	{
-		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 10, Charsets.UTF_8);
+		super(NetworkId.RT, API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 10, Charsets.UTF_8);
 
 		setJsonNearbyLocationsEncoding(Charsets.ISO_8859_1);
 		setStationBoardHasStationTable(false);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 
 	@Override

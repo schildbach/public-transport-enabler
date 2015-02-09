@@ -26,19 +26,13 @@ import de.schildbach.pte.dto.Style.Shape;
  */
 public class ParisProvider extends AbstractNavitiaProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.PARIS;
 	private static String API_REGION = "fr-idf";
 
 	public ParisProvider(final String authorization)
 	{
-		super(authorization);
+		super(NetworkId.PARIS, authorization);
 
 		setTimeZone("Europe/Paris");
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 
 	@Override

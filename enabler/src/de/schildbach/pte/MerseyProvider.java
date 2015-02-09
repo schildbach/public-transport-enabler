@@ -29,20 +29,14 @@ import de.schildbach.pte.dto.Product;
  */
 public class MerseyProvider extends AbstractEfaProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.MERSEY;
 	private final static String API_BASE = "http://jp.merseytravel.gov.uk/nwm/";
 
 	public MerseyProvider()
 	{
-		super(API_BASE);
+		super(NetworkId.MERSEY, API_BASE);
 
 		setLanguage("en");
 		setTimeZone("Europe/London");
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 
 	@Override

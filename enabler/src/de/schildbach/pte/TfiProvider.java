@@ -29,20 +29,16 @@ import de.schildbach.pte.dto.Product;
  */
 public class TfiProvider extends AbstractEfaProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.TFI;
-	private static final String API_BASE = "http://www.journeyplanner.transportforireland.ie/nta/"; // http://www.journeyplanner.transportforireland.ie/ultraLite/
+	private static final String API_BASE = "http://www.journeyplanner.transportforireland.ie/nta/";
+
+	// http://www.journeyplanner.transportforireland.ie/ultraLite/
 
 	public TfiProvider()
 	{
-		super(API_BASE);
+		super(NetworkId.TFI, API_BASE);
 
 		setLanguage("en");
 		setTimeZone("Europe/London");
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 
 	@Override

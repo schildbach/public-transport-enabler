@@ -33,7 +33,6 @@ import de.schildbach.pte.dto.Style.Shape;
  */
 public class KvvProvider extends AbstractEfaProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.KVV;
 	private final static String API_BASE = "http://213.144.24.66/kvv2/";
 
 	public KvvProvider()
@@ -43,15 +42,10 @@ public class KvvProvider extends AbstractEfaProvider
 
 	public KvvProvider(final String apiBase)
 	{
-		super(apiBase);
+		super(NetworkId.KVV, apiBase);
 
 		setStyles(STYLES);
 		setSessionCookieName("HASESSIONID");
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 
 	private static final Pattern P_LINE = Pattern.compile("(.*?)\\s+\\([\\w/]+\\)", Pattern.CASE_INSENSITIVE);

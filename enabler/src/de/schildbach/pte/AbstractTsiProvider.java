@@ -170,21 +170,24 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 	private final String stopFinderEndpoint;
 	private final String tripEndpoint;
 
-	public AbstractTsiProvider(final String apiKey, final String apiBase)
+	public AbstractTsiProvider(final NetworkId network, final String apiKey, final String apiBase)
 	{
-		this(apiKey, apiBase, null, null);
+		this(network, apiKey, apiBase, null, null);
 	}
 
-	public AbstractTsiProvider(final String apiKey, final String tripEndpoint, final String stopFinderEndpoint)
+	public AbstractTsiProvider(final NetworkId network, final String apiKey, final String tripEndpoint, final String stopFinderEndpoint)
 	{
+		super(network);
+
 		this.apiKey = apiKey;
 		this.tripEndpoint = tripEndpoint;
 		this.stopFinderEndpoint = stopFinderEndpoint;
 	}
 
-	public AbstractTsiProvider(final String apiKey, final String apiBase, final String tripEndpoint, final String stopFinderEndpoint)
+	public AbstractTsiProvider(final NetworkId network, final String apiKey, final String apiBase, final String tripEndpoint,
+			final String stopFinderEndpoint)
 	{
-		this(apiKey, apiBase + (tripEndpoint != null ? tripEndpoint : DEFAULT_TRIP_ENDPOINT), //
+		this(network, apiKey, apiBase + (tripEndpoint != null ? tripEndpoint : DEFAULT_TRIP_ENDPOINT), //
 				apiBase + (stopFinderEndpoint != null ? stopFinderEndpoint : DEFAULT_STOPFINDER_ENDPOINT));
 	}
 

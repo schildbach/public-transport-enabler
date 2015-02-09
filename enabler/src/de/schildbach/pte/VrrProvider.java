@@ -33,12 +33,11 @@ import de.schildbach.pte.dto.Style;
  */
 public class VrrProvider extends AbstractEfaProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.VRR;
 	private static final String API_BASE = "http://app.vrr.de/standard/";
 
 	public VrrProvider()
 	{
-		super(API_BASE);
+		super(NetworkId.VRR, API_BASE);
 
 		setIncludeRegionId(false);
 		setUseProxFootSearch(false);
@@ -46,11 +45,6 @@ public class VrrProvider extends AbstractEfaProvider
 		setUseRouteIndexAsTripId(false);
 		setStyles(STYLES);
 		setRequestUrlEncoding(Charsets.UTF_8);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 
 	@Override

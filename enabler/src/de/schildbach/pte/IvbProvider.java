@@ -22,18 +22,12 @@ package de.schildbach.pte;
  */
 public class IvbProvider extends AbstractEfaProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.IVB;
 	private final static String API_BASE = "http://efa.ivb.at/ivb/";
 
 	public IvbProvider()
 	{
-		super(API_BASE);
+		super(NetworkId.IVB, API_BASE);
 
 		setUseRouteIndexAsTripId(false);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 }

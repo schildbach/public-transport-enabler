@@ -37,17 +37,11 @@ import de.schildbach.pte.dto.Product;
  */
 public class JetProvider extends AbstractHafasProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.JET;
 	private static final String API_BASE = "http://planner.jet.org.il/bin/";
 
 	public JetProvider()
 	{
-		super(API_BASE + "stboard.bin/yn", API_BASE + "ajax-getstop.bin/yn", API_BASE + "query.bin/yn", 4, Charsets.UTF_8);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
+		super(NetworkId.JET, API_BASE + "stboard.bin/yn", API_BASE + "ajax-getstop.bin/yn", API_BASE + "query.bin/yn", 4, Charsets.UTF_8);
 	}
 
 	@Override

@@ -27,19 +27,13 @@ import de.schildbach.pte.dto.Product;
  */
 public class VrnProvider extends AbstractEfaProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.VRN;
 	private static final String API_BASE = "http://fahrplanauskunft.vrn.de/vrn_mobile/";
 
 	// http://efa9.vrn.de/vrt/
 
 	public VrnProvider()
 	{
-		super(API_BASE);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
+		super(NetworkId.VRN, API_BASE);
 	}
 
 	@Override

@@ -34,21 +34,17 @@ import de.schildbach.pte.dto.Product;
  */
 public class SncbProvider extends AbstractHafasProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.SNCB;
-	private static final String API_BASE = "http://www.belgianrail.be/jp/sncb-nmbs-routeplanner/"; // http://hari.b-rail.be/hafas/bin/
+	private static final String API_BASE = "http://www.belgianrail.be/jp/sncb-nmbs-routeplanner/";
+
+	// http://hari.b-rail.be/hafas/bin/
 
 	public SncbProvider()
 	{
-		super(API_BASE + "stboard.exe/nn", API_BASE + "ajax-getstop.exe/nny", API_BASE + "query.exe/nn", 16);
+		super(NetworkId.SNCB, API_BASE + "stboard.exe/nn", API_BASE + "ajax-getstop.exe/nny", API_BASE + "query.exe/nn", 16);
 
 		setJsonGetStopsEncoding(Charsets.UTF_8);
 		setJsonNearbyLocationsEncoding(Charsets.UTF_8);
 		setStationBoardHasLocation(true);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 
 	@Override

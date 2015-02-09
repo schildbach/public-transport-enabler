@@ -24,17 +24,11 @@ import de.schildbach.pte.dto.Position;
  */
 public class MvgProvider extends AbstractEfaProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.MVG;
 	private static final String API_BASE = "http://mobil.mvg-online.de/mvgMobil/";
 
 	public MvgProvider()
 	{
-		super(API_BASE);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
+		super(NetworkId.MVG, API_BASE);
 	}
 
 	@Override

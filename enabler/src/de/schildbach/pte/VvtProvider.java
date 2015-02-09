@@ -22,18 +22,12 @@ package de.schildbach.pte;
  */
 public class VvtProvider extends AbstractEfaProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.VVT;
 	private final static String API_BASE = "http://efa.vvt.at/vvtadr/";
 
 	public VvtProvider()
 	{
-		super(API_BASE);
+		super(NetworkId.VVT, API_BASE);
 
 		setUseRouteIndexAsTripId(false);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 }

@@ -27,19 +27,13 @@ import de.schildbach.pte.dto.Product;
  */
 public class VblProvider extends AbstractEfaProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.VBL;
 	private final static String API_BASE = "http://mobil.vbl.ch/vblmobil/";
 
 	public VblProvider()
 	{
-		super(API_BASE);
+		super(NetworkId.VBL, API_BASE);
 
 		setUseRouteIndexAsTripId(false);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 
 	@Override

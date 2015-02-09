@@ -27,24 +27,19 @@ import de.schildbach.pte.dto.Style;
  */
 public class GvhProvider extends AbstractEfaProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.GVH;
 	private static final String API_BASE = "http://bhb.efa.de/bhb/";
 
+	// http://www.efa.de/efaws2/cmsembedded_gvh/
 	// http://bhb.efa.de/bhb/
 	// http://mobil.efa.de/mobile3/
 
 	public GvhProvider(final String additionalQueryParameter)
 	{
-		super(API_BASE);
+		super(NetworkId.GVH, API_BASE);
 
 		setAdditionalQueryParameter(additionalQueryParameter);
 		setStyles(STYLES);
 		setSessionCookieName("HASESSIONID");
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 
 	private static final Map<String, Style> STYLES = new HashMap<String, Style>();

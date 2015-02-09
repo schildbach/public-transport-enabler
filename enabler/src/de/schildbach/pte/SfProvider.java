@@ -31,23 +31,17 @@ import de.schildbach.pte.dto.Style;
  */
 public class SfProvider extends AbstractEfaProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.SF;
 	private final static String API_BASE = "http://tripplanner.transit.511.org/mtc/";
 
 	public SfProvider()
 	{
-		super(API_BASE);
+		super(NetworkId.SF, API_BASE);
 
 		setLanguage("en");
 		setTimeZone("America/Los_Angeles");
 		setUseRouteIndexAsTripId(false);
 		setFareCorrectionFactor(0.01f);
 		setStyles(STYLES);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 
 	@Override

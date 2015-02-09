@@ -28,17 +28,11 @@ import de.schildbach.pte.dto.Product;
  */
 public class LuProvider extends AbstractHafasProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.LU;
 	private static final String API_BASE = "http://mobiliteitszentral.hafas.de/hafas/";
 
 	public LuProvider()
 	{
-		super(API_BASE + "stboard.exe/fn", API_BASE + "ajax-getstop.exe/fn", API_BASE + "query.exe/fn", 9, Charsets.UTF_8);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
+		super(NetworkId.LU, API_BASE + "stboard.exe/fn", API_BASE + "ajax-getstop.exe/fn", API_BASE + "query.exe/fn", 9, Charsets.UTF_8);
 	}
 
 	@Override

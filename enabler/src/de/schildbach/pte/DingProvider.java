@@ -22,16 +22,12 @@ package de.schildbach.pte;
  */
 public class DingProvider extends AbstractEfaProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.DING;
-	private final static String API_BASE = "http://www.ding-ulm.de/ding2/"; // http://www.ding.eu/swu
+	private final static String API_BASE = "http://www.ding-ulm.de/ding2/";
+
+	// http://www.ding.eu/swu
 
 	public DingProvider()
 	{
-		super(API_BASE);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
+		super(NetworkId.DING, API_BASE);
 	}
 }

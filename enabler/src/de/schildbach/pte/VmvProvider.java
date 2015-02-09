@@ -28,20 +28,16 @@ import de.schildbach.pte.dto.Style.Shape;
  */
 public class VmvProvider extends AbstractEfaProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.VMV;
-	private static final String API_BASE = "http://80.146.180.107/delfi/"; // http://80.146.180.107/vmv/
+	private static final String API_BASE = "http://80.146.180.107/delfi/";
+
+	// http://80.146.180.107/vmv/
 
 	public VmvProvider()
 	{
-		super(API_BASE);
+		super(NetworkId.VMV, API_BASE);
 
 		setUseRouteIndexAsTripId(false);
 		setStyles(STYLES);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 
 	private static final Map<String, Style> STYLES = new HashMap<String, Style>();

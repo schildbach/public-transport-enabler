@@ -28,20 +28,14 @@ import de.schildbach.pte.dto.Style.Shape;
  */
 public class VagfrProvider extends AbstractEfaProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.VAGFR;
 	private final static String API_BASE = "http://efa.vag-freiburg.de/vagfr/";
 
 	public VagfrProvider()
 	{
-		super(API_BASE);
+		super(NetworkId.VAGFR, API_BASE);
 
 		setUseRouteIndexAsTripId(false);
 		setStyles(STYLES);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 
 	private static final Map<String, Style> STYLES = new HashMap<String, Style>();

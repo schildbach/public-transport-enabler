@@ -138,23 +138,25 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 	}
 
-	public AbstractEfaProvider(final String apiBase)
+	public AbstractEfaProvider(final NetworkId network, final String apiBase)
 	{
-		this(apiBase, null, null, null, null);
+		this(network, apiBase, null, null, null, null);
 	}
 
-	public AbstractEfaProvider(final String apiBase, final String departureMonitorEndpoint, final String tripEndpoint,
+	public AbstractEfaProvider(final NetworkId network, final String apiBase, final String departureMonitorEndpoint, final String tripEndpoint,
 			final String stopFinderEndpoint, final String coordEndpoint)
 	{
-		this(apiBase + (departureMonitorEndpoint != null ? departureMonitorEndpoint : DEFAULT_DEPARTURE_MONITOR_ENDPOINT), //
+		this(network, apiBase + (departureMonitorEndpoint != null ? departureMonitorEndpoint : DEFAULT_DEPARTURE_MONITOR_ENDPOINT), //
 				apiBase + (tripEndpoint != null ? tripEndpoint : DEFAULT_TRIP_ENDPOINT), //
 				apiBase + (stopFinderEndpoint != null ? stopFinderEndpoint : DEFAULT_STOPFINDER_ENDPOINT), //
 				apiBase + (coordEndpoint != null ? coordEndpoint : DEFAULT_COORD_ENDPOINT));
 	}
 
-	public AbstractEfaProvider(final String departureMonitorEndpoint, final String tripEndpoint, final String stopFinderEndpoint,
-			final String coordEndpoint)
+	public AbstractEfaProvider(final NetworkId network, final String departureMonitorEndpoint, final String tripEndpoint,
+			final String stopFinderEndpoint, final String coordEndpoint)
 	{
+		super(network);
+
 		try
 		{
 			parserFactory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);

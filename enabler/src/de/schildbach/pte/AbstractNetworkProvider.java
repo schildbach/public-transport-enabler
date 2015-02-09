@@ -39,12 +39,24 @@ import de.schildbach.pte.dto.Style;
  */
 public abstract class AbstractNetworkProvider implements NetworkProvider
 {
-	protected static final Set<Product> ALL_EXCEPT_HIGHSPEED = EnumSet.complementOf(EnumSet.of(Product.HIGH_SPEED_TRAIN));
+	protected final NetworkId network;
 
 	protected TimeZone timeZone = TimeZone.getTimeZone("CET");
 	protected int numTripsRequested = 6;
 	private @Nullable Map<String, Style> styles = null;
 	protected @Nullable String sessionCookieName = null;
+
+	protected static final Set<Product> ALL_EXCEPT_HIGHSPEED = EnumSet.complementOf(EnumSet.of(Product.HIGH_SPEED_TRAIN));
+
+	protected AbstractNetworkProvider(final NetworkId network)
+	{
+		this.network = network;
+	}
+
+	public final NetworkId id()
+	{
+		return network;
+	}
 
 	public final boolean hasCapabilities(final Capability... capabilities)
 	{

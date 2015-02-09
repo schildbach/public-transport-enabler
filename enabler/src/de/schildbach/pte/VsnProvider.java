@@ -32,17 +32,11 @@ import de.schildbach.pte.dto.Product;
  */
 public class VsnProvider extends AbstractHafasProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.VSN;
 	private static final String API_BASE = "http://fahrplaner.vsninfo.de/hafas/";
 
 	public VsnProvider()
 	{
-		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 10, Charsets.UTF_8);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
+		super(NetworkId.VSN, API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 10, Charsets.UTF_8);
 	}
 
 	@Override

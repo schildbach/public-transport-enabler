@@ -155,14 +155,17 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 	}
 
-	public AbstractHafasProvider(final String stationBoardEndpoint, final String getStopEndpoint, final String queryEndpoint, final int numProductBits)
+	public AbstractHafasProvider(final NetworkId network, final String stationBoardEndpoint, final String getStopEndpoint,
+			final String queryEndpoint, final int numProductBits)
 	{
-		this(stationBoardEndpoint, getStopEndpoint, queryEndpoint, numProductBits, Charsets.ISO_8859_1);
+		this(network, stationBoardEndpoint, getStopEndpoint, queryEndpoint, numProductBits, Charsets.ISO_8859_1);
 	}
 
-	public AbstractHafasProvider(final String stationBoardEndpoint, final String getStopEndpoint, final String queryEndpoint,
-			final int numProductBits, final Charset jsonEncoding)
+	public AbstractHafasProvider(final NetworkId network, final String stationBoardEndpoint, final String getStopEndpoint,
+			final String queryEndpoint, final int numProductBits, final Charset jsonEncoding)
 	{
+		super(network);
+
 		this.stationBoardEndpoint = stationBoardEndpoint;
 		this.getStopEndpoint = getStopEndpoint;
 		this.queryEndpoint = queryEndpoint;

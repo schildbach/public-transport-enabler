@@ -33,19 +33,13 @@ import de.schildbach.pte.dto.Product;
  */
 public class ShProvider extends AbstractHafasProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.SH;
 	private static final String API_BASE = "http://nah.sh.hafas.de/bin/";
 
 	public ShProvider()
 	{
-		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 10, Charsets.UTF_8);
+		super(NetworkId.SH, API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 10, Charsets.UTF_8);
 
 		setStationBoardCanDoEquivs(false);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 
 	@Override

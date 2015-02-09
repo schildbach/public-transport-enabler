@@ -52,22 +52,16 @@ import de.schildbach.pte.util.ParserUtils;
  */
 public class SeptaProvider extends AbstractHafasProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.SEPTA;
 	private static final String API_BASE = "http://airs1.septa.org/bin/";
 
 	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
 
 	public SeptaProvider()
 	{
-		super(API_BASE + "stboard.exe/en", API_BASE + "ajax-getstop.exe/dny", API_BASE + "query.exe/en", 4);
+		super(NetworkId.SEPTA, API_BASE + "stboard.exe/en", API_BASE + "ajax-getstop.exe/dny", API_BASE + "query.exe/en", 4);
 
 		setStationBoardCanDoEquivs(false);
 		setTimeZone("EST");
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 
 	@Override

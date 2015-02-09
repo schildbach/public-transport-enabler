@@ -26,19 +26,13 @@ import de.schildbach.pte.dto.Product;
  */
 public class VbnProvider extends AbstractHafasProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.VBN;
 	private static final String API_BASE = "http://fahrplaner.vbn.de/bin/";
 
 	// http://fahrplaner.vbn.de/hafas/
 
 	public VbnProvider()
 	{
-		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dny", API_BASE + "query.exe/dn", 10, Charsets.UTF_8);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
+		super(NetworkId.VBN, API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dny", API_BASE + "query.exe/dn", 10, Charsets.UTF_8);
 	}
 
 	@Override

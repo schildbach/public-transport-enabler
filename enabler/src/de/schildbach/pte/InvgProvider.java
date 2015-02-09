@@ -56,7 +56,6 @@ import de.schildbach.pte.util.ParserUtils;
  */
 public class InvgProvider extends AbstractHafasProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.INVG;
 	private static final String API_BASE = "http://fpa.invg.de/bin/";
 
 	// http://invg.hafas.de/bin/
@@ -65,16 +64,11 @@ public class InvgProvider extends AbstractHafasProvider
 
 	public InvgProvider()
 	{
-		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 10, Charsets.UTF_8);
+		super(NetworkId.INVG, API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 10, Charsets.UTF_8);
 
 		setStationBoardCanDoEquivs(false);
 		setStyles(STYLES);
 		setExtXmlEndpoint(API_BASE + "extxml.exe");
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 
 	@Override

@@ -41,7 +41,6 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
  */
 public class BayernProvider extends AbstractEfaProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.BAYERN;
 	private final static String API_BASE = "http://mobile.defas-fgi.de/beg/";
 
 	// http://mobile.defas-fgi.de/xml/
@@ -52,16 +51,11 @@ public class BayernProvider extends AbstractEfaProvider
 
 	public BayernProvider()
 	{
-		super(API_BASE, DEPARTURE_MONITOR_ENDPOINT, TRIP_ENDPOINT, STOP_FINDER_ENDPOINT, null);
+		super(NetworkId.BAYERN, API_BASE, DEPARTURE_MONITOR_ENDPOINT, TRIP_ENDPOINT, STOP_FINDER_ENDPOINT, null);
 
 		setRequestUrlEncoding(Charsets.UTF_8);
 		setIncludeRegionId(false);
 		setNumTripsRequested(12);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 
 	@Override

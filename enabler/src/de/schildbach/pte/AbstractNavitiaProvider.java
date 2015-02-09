@@ -132,8 +132,10 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 
 	private final String authorization;
 
-	public AbstractNavitiaProvider(final String authorization)
+	public AbstractNavitiaProvider(final NetworkId network, final String authorization)
 	{
+		super(network);
+
 		this.authorization = authorization;
 	}
 

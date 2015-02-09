@@ -35,23 +35,17 @@ import de.schildbach.pte.dto.Style;
  */
 public class MetProvider extends AbstractEfaProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.MET;
 	private final static String API_BASE = "http://jp.ptv.vic.gov.au/ptv/";
 
 	public MetProvider()
 	{
-		super(API_BASE);
+		super(NetworkId.MET, API_BASE);
 
 		setLanguage("en");
 		setTimeZone("Australia/Melbourne");
 		setUseRouteIndexAsTripId(false);
 		setStyles(STYLES);
 		setSessionCookieName("BIGipServerpl_ptv_jp_lbvsvr");
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 
 	@Override

@@ -22,20 +22,14 @@ package de.schildbach.pte;
  */
 public class DubProvider extends AbstractEfaProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.DUB;
 	private final static String API_BASE = "http://wojhati.rta.ae/dub/";
 
 	public DubProvider()
 	{
-		super(API_BASE);
+		super(NetworkId.DUB, API_BASE);
 
 		setTimeZone("Asia/Dubai");
 		setUseRouteIndexAsTripId(false);
 		setFareCorrectionFactor(0.01f);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 }

@@ -34,17 +34,11 @@ import de.schildbach.pte.util.StringReplaceReader;
  */
 public class NvvProvider extends AbstractHafasProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.NVV;
 	private static final String API_BASE = "http://auskunft.nvv.de/auskunft/bin/jp/";
 
 	public NvvProvider()
 	{
-		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 12, Charsets.UTF_8);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
+		super(NetworkId.NVV, API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 12, Charsets.UTF_8);
 	}
 
 	@Override
