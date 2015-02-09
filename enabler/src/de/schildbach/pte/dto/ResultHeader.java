@@ -25,23 +25,27 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 
+import de.schildbach.pte.NetworkId;
+
 /**
  * @author Andreas Schildbach
  */
 public final class ResultHeader implements Serializable
 {
+	public final NetworkId network;
 	public final String serverProduct;
 	public final @Nullable String serverVersion;
 	public final long serverTime;
 	public final Object context;
 
-	public ResultHeader(final String serverProduct)
+	public ResultHeader(final NetworkId network, final String serverProduct)
 	{
-		this(serverProduct, null, 0, null);
+		this(network, serverProduct, null, 0, null);
 	}
 
-	public ResultHeader(final String serverProduct, final String serverVersion, final long serverTime, final Object context)
+	public ResultHeader(final NetworkId network, final String serverProduct, final String serverVersion, final long serverTime, final Object context)
 	{
+		this.network = checkNotNull(network);
 		this.serverProduct = checkNotNull(serverProduct);
 		this.serverVersion = serverVersion;
 		this.serverTime = serverTime;

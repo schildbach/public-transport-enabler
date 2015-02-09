@@ -161,7 +161,7 @@ public class SeptaProvider extends AbstractHafasProvider
 	public QueryDeparturesResult queryDepartures(final String stationId, final @Nullable Date time, final int maxDepartures, final boolean equivs)
 			throws IOException
 	{
-		final ResultHeader header = new ResultHeader(SERVER_PRODUCT);
+		final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
 		final QueryDeparturesResult result = new QueryDeparturesResult(header);
 
 		// scrape page

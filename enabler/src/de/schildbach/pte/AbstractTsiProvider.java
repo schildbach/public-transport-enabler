@@ -128,8 +128,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 
 	private static final String DEFAULT_STOPFINDER_ENDPOINT = "/Transport/v2/";
 	private static final String DEFAULT_TRIP_ENDPOINT = "/journeyplanner/v2/";
-
-	private static final ResultHeader HEADER = new ResultHeader("tsi");
+	private static final String SERVER_PRODUCT = "tsi";
 
 	private static Map<String, Product> TRANSPORT_MODES = new HashMap<String, Product>();
 	static
@@ -215,10 +214,12 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 			final List<SuggestedLocation> locations = new ArrayList<SuggestedLocation>();
 			final JSONObject head = new JSONObject(page.toString());
 
-			int status = head.getInt("StatusCode");
+			final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
+
+			final int status = head.getInt("StatusCode");
 
 			if (status != 200)
-				return new SuggestLocationsResult(HEADER, SuggestLocationsResult.Status.SERVICE_DOWN);
+				return new SuggestLocationsResult(header, SuggestLocationsResult.Status.SERVICE_DOWN);
 
 			JSONArray dataArray = head.getJSONArray("Data");
 			for (int i = 0; i < dataArray.length(); i++)
@@ -231,7 +232,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 					locations.add(new SuggestedLocation(location));
 			}
 
-			return new SuggestLocationsResult(HEADER, locations);
+			return new SuggestLocationsResult(header, locations);
 		}
 		catch (final JSONException x)
 		{
@@ -301,15 +302,16 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 		final CharSequence page = ParserUtils.scrape(uri.toString(), null, Charsets.UTF_8);
 		try
 		{
-
 			final List<Location> stations = new ArrayList<Location>();
 			final JSONObject head = new JSONObject(page.toString());
 
-			int status = head.getInt("StatusCode");
+			final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
+
+			final int status = head.getInt("StatusCode");
 
 			if (status != 200)
 			{
-				return new NearbyLocationsResult(HEADER, status == 300 ? NearbyLocationsResult.Status.INVALID_ID
+				return new NearbyLocationsResult(header, status == 300 ? NearbyLocationsResult.Status.INVALID_ID
 						: NearbyLocationsResult.Status.SERVICE_DOWN);
 			}
 
@@ -320,7 +322,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 				stations.add(parseJsonTransportLocation(data));
 			}
 
-			return new NearbyLocationsResult(HEADER, stations);
+			return new NearbyLocationsResult(header, stations);
 		}
 		catch (final JSONException x)
 		{
@@ -641,6 +643,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 			final @Nullable Set<Product> products, final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
 			final @Nullable Set<Option> options) throws IOException
 	{
+		final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
 		final List<Location> possibleFroms, possibleTos, possibleVias;
 
 		possibleFroms = identifyLocation(from);
@@ -652,14 +655,14 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 			possibleVias = Collections.singletonList(null);
 
 		if (possibleFroms.isEmpty())
-			return new QueryTripsResult(HEADER, QueryTripsResult.Status.UNKNOWN_FROM);
+			return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_FROM);
 		if (possibleTos.isEmpty())
-			return new QueryTripsResult(HEADER, QueryTripsResult.Status.UNKNOWN_TO);
+			return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_TO);
 		if (possibleVias.isEmpty())
-			return new QueryTripsResult(HEADER, QueryTripsResult.Status.UNKNOWN_VIA);
+			return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_VIA);
 
 		if (possibleFroms.size() > 1 || possibleVias.size() > 1 || possibleTos.size() > 1)
-			return new QueryTripsResult(HEADER, possibleFroms.size() > 1 ? possibleFroms : null, possibleVias.size() > 1 ? possibleVias : null,
+			return new QueryTripsResult(header, possibleFroms.size() > 1 ? possibleFroms : null, possibleVias.size() > 1 ? possibleVias : null,
 					possibleTos.size() > 1 ? possibleTos : null);
 
 		final Context context = new Context(possibleFroms.get(0), possibleVias.get(0), possibleTos.get(0), products, walkSpeed, accessibility,
@@ -763,23 +766,25 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 		{
 			final JSONObject head = new JSONObject(page.toString());
 
+			final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
+
 			final JSONObject statusObj = head.optJSONObject("Status");
 
 			if (statusObj == null)
 			{
-				return new QueryTripsResult(HEADER, QueryTripsResult.Status.SERVICE_DOWN);
+				return new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN);
 			}
 
 			final String statusStr = statusObj.optString("Code");
 
 			if ("NO_SOLUTION_FOR_REQUEST".equals(statusStr))
 			{
-				return new QueryTripsResult(HEADER, QueryTripsResult.Status.NO_TRIPS);
+				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
 			}
 
 			if (!"OK".equals(statusStr))
 			{
-				return new QueryTripsResult(HEADER, QueryTripsResult.Status.SERVICE_DOWN);
+				return new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN);
 			}
 
 			final JSONArray tripArray = head.getJSONObject("trips").getJSONArray("Trip");
@@ -797,7 +802,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 				context.updateLatestDeparture(trips.get(trips.size() - 1).getFirstDepartureTime());
 			}
 
-			return new QueryTripsResult(HEADER, uri.toString(), context.from, context.via, context.to, context, trips);
+			return new QueryTripsResult(header, uri.toString(), context.from, context.via, context.to, context, trips);
 		}
 		catch (final JSONException x)
 		{

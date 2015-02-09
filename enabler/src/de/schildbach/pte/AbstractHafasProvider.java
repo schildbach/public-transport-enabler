@@ -436,7 +436,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					}
 				}
 
-				return new SuggestLocationsResult(new ResultHeader(SERVER_PRODUCT), locations);
+				return new SuggestLocationsResult(new ResultHeader(network, SERVER_PRODUCT), locations);
 			}
 			catch (final JSONException x)
 			{
@@ -523,7 +523,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 			pp.nextTag();
 
-			final ResultHeader header = new ResultHeader(SERVER_PRODUCT);
+			final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
 			final QueryDeparturesResult result = new QueryDeparturesResult(header);
 
 			if (XmlPullUtil.test(pp, "Err"))
@@ -770,7 +770,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			final @Nullable Collection<Product> products, final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
 			final @Nullable Set<Option> options) throws IOException
 	{
-		final ResultHeader header = new ResultHeader(SERVER_PRODUCT);
+		final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
 
 		if (!from.isIdentified())
 		{
@@ -890,7 +890,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 			XmlPullUtil.require(pp, "ResC");
 			final String product = XmlPullUtil.attr(pp, "prod").split(" ")[0];
-			final ResultHeader header = new ResultHeader(SERVER_PRODUCT, product, 0, null);
+			final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, product, 0, null);
 			XmlPullUtil.enter(pp, "ResC");
 
 			if (XmlPullUtil.test(pp, "Err"))
@@ -1441,7 +1441,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			final @Nullable Collection<Product> products, final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
 			final @Nullable Set<Option> options) throws IOException
 	{
-		final ResultHeader header = new ResultHeader(SERVER_PRODUCT);
+		final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
 
 		if (!from.isIdentified())
 		{
@@ -1537,7 +1537,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			final int version = is.readShortReverse();
 			if (version != 6 && version != 5)
 				throw new IllegalStateException("unknown version: " + version + ", first chars: " + firstChars);
-			final ResultHeader header = new ResultHeader(SERVER_PRODUCT, Integer.toString(version), 0, null);
+			final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, Integer.toString(version), 0, null);
 
 			// quick seek for pointers
 			is.reset();

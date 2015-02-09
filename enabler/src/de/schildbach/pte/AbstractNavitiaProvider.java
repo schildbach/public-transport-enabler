@@ -763,7 +763,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 	public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location, final int maxDistance,
 			final int maxLocations) throws IOException
 	{
-		final ResultHeader resultHeader = new ResultHeader(SERVER_PRODUCT, SERVER_VERSION, 0, null);
+		final ResultHeader resultHeader = new ResultHeader(network, SERVER_PRODUCT, SERVER_VERSION, 0, null);
 
 		// Check that Location object has coordinates.
 		if (!location.isIdentified())
@@ -840,7 +840,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 	public QueryDeparturesResult queryDepartures(final String stationId, final @Nullable Date time, final int maxDepartures, final boolean equivs)
 			throws IOException
 	{
-		final ResultHeader resultHeader = new ResultHeader(SERVER_PRODUCT, SERVER_VERSION, 0, null);
+		final ResultHeader resultHeader = new ResultHeader(network, SERVER_PRODUCT, SERVER_VERSION, 0, null);
 
 		try
 		{
@@ -978,7 +978,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 				}
 			}
 
-			final ResultHeader resultHeader = new ResultHeader(SERVER_PRODUCT, SERVER_VERSION, 0, null);
+			final ResultHeader resultHeader = new ResultHeader(network, SERVER_PRODUCT, SERVER_VERSION, 0, null);
 			return new SuggestLocationsResult(resultHeader, locations);
 		}
 		catch (final JSONException jsonExc)
@@ -991,7 +991,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 			final @Nullable Set<Product> products, final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
 			final @Nullable Set<Option> options) throws IOException
 	{
-		final ResultHeader resultHeader = new ResultHeader(SERVER_PRODUCT, SERVER_VERSION, 0, null);
+		final ResultHeader resultHeader = new ResultHeader(network, SERVER_PRODUCT, SERVER_VERSION, 0, null);
 
 		try
 		{
@@ -1155,7 +1155,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 
 	public QueryTripsResult queryMoreTrips(final QueryTripsContext contextObj, final boolean later) throws IOException
 	{
-		final ResultHeader resultHeader = new ResultHeader(SERVER_PRODUCT, SERVER_VERSION, 0, null);
+		final ResultHeader resultHeader = new ResultHeader(network, SERVER_PRODUCT, SERVER_VERSION, 0, null);
 
 		final Context context = (Context) contextObj;
 		final Location from = context.from;

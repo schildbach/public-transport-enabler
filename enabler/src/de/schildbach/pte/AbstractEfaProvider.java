@@ -271,7 +271,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		// System.out.println(parameters);
 
 		final CharSequence page = ParserUtils.scrape(uri.toString(), httpPost ? parameters.substring(1) : null, Charsets.UTF_8);
-		final ResultHeader header = new ResultHeader(SERVER_PRODUCT);
+		final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
 
 		try
 		{
@@ -3293,7 +3293,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		ParserUtils.parseIsoDate(serverTime, now.substring(0, 10));
 		ParserUtils.parseEuropeanTime(serverTime, now.substring(11));
 
-		final ResultHeader header = new ResultHeader(SERVER_PRODUCT, serverVersion, serverTime.getTimeInMillis(), sessionId);
+		final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, serverVersion, serverTime.getTimeInMillis(), sessionId);
 
 		XmlPullUtil.enter(pp, "itdRequest");
 
@@ -3336,7 +3336,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		final String sessionId = params.get("sessionID");
 		final String requestId = params.get("requestID");
 
-		final ResultHeader header = new ResultHeader(SERVER_PRODUCT, null, serverTime.getTimeInMillis(), new String[] { sessionId, requestId });
+		final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, null, serverTime.getTimeInMillis(),
+				new String[] { sessionId, requestId });
 
 		return header;
 	}
