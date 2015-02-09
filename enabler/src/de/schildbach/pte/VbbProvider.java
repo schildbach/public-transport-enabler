@@ -17,7 +17,7 @@
 
 package de.schildbach.pte;
 
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,14 +34,8 @@ public class VbbProvider extends AbstractHafasProvider
 {
 	public static final NetworkId NETWORK_ID = NetworkId.VBB;
 	private static final String API_BASE = "http://fahrinfo.vbb.de/bin/";
-	private static final Set<Product> ALL_EXCEPT_HIGHSPEED_AND_ONDEMAND;
-
-	static
-	{
-		ALL_EXCEPT_HIGHSPEED_AND_ONDEMAND = new HashSet<Product>(Product.ALL);
-		ALL_EXCEPT_HIGHSPEED_AND_ONDEMAND.remove(Product.HIGH_SPEED_TRAIN);
-		ALL_EXCEPT_HIGHSPEED_AND_ONDEMAND.remove(Product.ON_DEMAND);
-	}
+	private static final Set<Product> ALL_EXCEPT_HIGHSPEED_AND_ONDEMAND = EnumSet.complementOf(EnumSet
+			.of(Product.HIGH_SPEED_TRAIN, Product.ON_DEMAND));
 
 	public VbbProvider()
 	{
