@@ -1947,17 +1947,19 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 							else
 								throw new IllegalStateException("unknown routingType: " + routingType);
 
+							final Date departureTime = new Date(predictedDepartureTime != 0 ? predictedDepartureTime : plannedDepartureTime);
+							final Date arrivalTime = new Date(predictedArrivalTime != 0 ? predictedArrivalTime : plannedArrivalTime);
+
 							final Trip.Leg lastLeg = legs.size() > 0 ? legs.get(legs.size() - 1) : null;
 							if (lastLeg != null && lastLeg instanceof Trip.Individual && ((Trip.Individual) lastLeg).type == individualType)
 							{
 								final Trip.Individual lastIndividualLeg = (Trip.Individual) legs.remove(legs.size() - 1);
 								leg = new Trip.Individual(individualType, lastIndividualLeg.departure, lastIndividualLeg.departureTime,
-										arrivalLocation, new Date(plannedArrivalTime), null, 0);
+										arrivalLocation, arrivalTime, null, 0);
 							}
 							else
 							{
-								leg = new Trip.Individual(individualType, departureLocation, new Date(plannedDepartureTime), arrivalLocation,
-										new Date(plannedArrivalTime), null, 0);
+								leg = new Trip.Individual(individualType, departureLocation, departureTime, arrivalLocation, arrivalTime, null, 0);
 							}
 						}
 						else if (type == 2)
