@@ -35,89 +35,13 @@ import de.schildbach.pte.util.StringReplaceReader;
 public class NvvProvider extends AbstractHafasProvider
 {
 	private static final String API_BASE = "http://auskunft.nvv.de/auskunft/bin/jp/";
+	private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN,
+			Product.SUBURBAN_TRAIN, Product.SUBWAY, Product.TRAM, Product.BUS, Product.BUS, Product.FERRY, Product.ON_DEMAND, Product.REGIONAL_TRAIN,
+			Product.REGIONAL_TRAIN };
 
 	public NvvProvider()
 	{
-		super(NetworkId.NVV, API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 12, Charsets.UTF_8);
-	}
-
-	@Override
-	protected void setProductBits(final StringBuilder productBits, final Product product)
-	{
-		if (product == Product.HIGH_SPEED_TRAIN)
-		{
-			productBits.setCharAt(0, '1'); // ICE
-			productBits.setCharAt(1, '1'); // IC/EC
-		}
-		else if (product == Product.REGIONAL_TRAIN)
-		{
-			productBits.setCharAt(2, '1'); // Regionalzug
-			productBits.setCharAt(10, '1'); // Zug
-			productBits.setCharAt(11, '1'); // RegioTram
-		}
-		else if (product == Product.SUBURBAN_TRAIN)
-		{
-			productBits.setCharAt(3, '1'); // S-Bahn
-		}
-		else if (product == Product.SUBWAY)
-		{
-			productBits.setCharAt(4, '1'); // U-Bahn
-		}
-		else if (product == Product.TRAM)
-		{
-			productBits.setCharAt(5, '1'); // Straßenbahn
-		}
-		else if (product == Product.BUS)
-		{
-			productBits.setCharAt(6, '1'); // Niederflurbus
-			productBits.setCharAt(7, '1'); // Bus
-		}
-		else if (product == Product.ON_DEMAND)
-		{
-			productBits.setCharAt(9, '1'); // AST/Rufbus
-		}
-		else if (product == Product.FERRY)
-		{
-			productBits.setCharAt(8, '1'); // Fähre/Schiff
-		}
-		else if (product == Product.CABLECAR)
-		{
-		}
-		else
-		{
-			throw new IllegalArgumentException("cannot handle: " + product);
-		}
-	}
-
-	@Override
-	protected Product intToProduct(final int value)
-	{
-		if (value == 1)
-			return Product.HIGH_SPEED_TRAIN;
-		if (value == 2)
-			return Product.HIGH_SPEED_TRAIN;
-		if (value == 4)
-			return Product.REGIONAL_TRAIN;
-		if (value == 8)
-			return Product.SUBURBAN_TRAIN;
-		if (value == 16)
-			return Product.SUBWAY;
-		if (value == 32)
-			return Product.TRAM;
-		if (value == 64)
-			return Product.BUS;
-		if (value == 128)
-			return Product.BUS;
-		if (value == 256)
-			return Product.FERRY;
-		if (value == 512)
-			return Product.ON_DEMAND;
-		if (value == 1024)
-			return Product.REGIONAL_TRAIN;
-		if (value == 2048)
-			return Product.REGIONAL_TRAIN;
-
-		throw new IllegalArgumentException("cannot handle: " + value);
+		super(NetworkId.NVV, API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", PRODUCTS_MAP, Charsets.UTF_8);
 	}
 
 	private static final String[] PLACES = { "Frankfurt (Main)", "Offenbach (Main)", "Mainz", "Wiesbaden", "Marburg", "Kassel", "Hanau", "Göttingen",

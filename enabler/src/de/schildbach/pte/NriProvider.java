@@ -36,75 +36,14 @@ import de.schildbach.pte.dto.QueryTripsResult;
 public class NriProvider extends AbstractHafasProvider
 {
 	private static final String API_BASE = "http://hafas.websrv05.reiseinfo.no/bin/dev/nri/";
+	private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, Product.BUS, Product.TRAM, Product.SUBWAY,
+			Product.FERRY, Product.FERRY, Product.FERRY };
 
 	public NriProvider()
 	{
-		super(NetworkId.NRI, API_BASE + "stboard.exe/on", API_BASE + "ajax-getstop.exe/ony", API_BASE + "query.exe/on", 8);
+		super(NetworkId.NRI, API_BASE + "stboard.exe/on", API_BASE + "ajax-getstop.exe/ony", API_BASE + "query.exe/on", PRODUCTS_MAP);
 
 		setJsonGetStopsEncoding(Charsets.UTF_8);
-	}
-
-	@Override
-	protected Product intToProduct(final int value)
-	{
-		if (value == 1) // Air
-			return Product.HIGH_SPEED_TRAIN;
-		if (value == 2)
-			return Product.REGIONAL_TRAIN;
-		if (value == 4)
-			return Product.BUS;
-		if (value == 8)
-			return Product.TRAM;
-		if (value == 16)
-			return Product.SUBWAY;
-		if (value == 32)
-			return Product.FERRY;
-		if (value == 64)
-			return Product.FERRY;
-		if (value == 128)
-			return Product.FERRY;
-
-		throw new IllegalArgumentException("cannot handle: " + value);
-	}
-
-	@Override
-	protected void setProductBits(final StringBuilder productBits, final Product product)
-	{
-		if (product == Product.HIGH_SPEED_TRAIN)
-		{
-			productBits.setCharAt(0, '1'); // Flugzeug
-		}
-		else if (product == Product.REGIONAL_TRAIN)
-		{
-			productBits.setCharAt(1, '1'); // Regionalverkehrszug
-			productBits.setCharAt(7, '1'); // Tourismus-Züge
-			productBits.setCharAt(2, '1'); // undokumentiert
-		}
-		else if (product == Product.SUBURBAN_TRAIN || product == Product.TRAM)
-		{
-			productBits.setCharAt(3, '1'); // Stadtbahn
-		}
-		else if (product == Product.SUBWAY)
-		{
-			productBits.setCharAt(4, '1'); // U-Bahn
-		}
-		else if (product == Product.BUS || product == Product.ON_DEMAND)
-		{
-			productBits.setCharAt(2, '1'); // Bus
-		}
-		else if (product == Product.FERRY)
-		{
-			productBits.setCharAt(5, '1'); // Express-Boot
-			productBits.setCharAt(6, '1'); // Schiff
-			productBits.setCharAt(7, '1'); // Fähre
-		}
-		else if (product == Product.CABLECAR)
-		{
-		}
-		else
-		{
-			throw new IllegalArgumentException("cannot handle: " + product);
-		}
 	}
 
 	private static final String[] PLACES = { "Oslo", "Bergen" };

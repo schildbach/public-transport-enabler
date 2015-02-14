@@ -30,68 +30,12 @@ import de.schildbach.pte.util.StringReplaceReader;
 public class PlProvider extends AbstractHafasProvider
 {
 	private static final String API_BASE = "http://rozklad.bilkom.pl/bin/";
+	private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN,
+			Product.SUBURBAN_TRAIN, Product.BUS, Product.BUS, Product.FERRY };
 
 	public PlProvider()
 	{
-		super(NetworkId.PL, API_BASE + "stboard.exe/pn", API_BASE + "ajax-getstop.exe/pn", API_BASE + "query.exe/pn", 7, Charsets.UTF_8);
-	}
-
-	@Override
-	protected Product intToProduct(final int value)
-	{
-		if (value == 1)
-			return Product.HIGH_SPEED_TRAIN;
-		if (value == 2)
-			return Product.HIGH_SPEED_TRAIN;
-		if (value == 4)
-			return Product.REGIONAL_TRAIN;
-		if (value == 8)
-			return Product.SUBURBAN_TRAIN;
-		if (value == 16) // Bus
-			return Product.BUS;
-		if (value == 32) // AST, SEV
-			return Product.BUS;
-		if (value == 64)
-			return Product.FERRY;
-
-		throw new IllegalArgumentException("cannot handle: " + value);
-	}
-
-	@Override
-	protected void setProductBits(final StringBuilder productBits, final Product product)
-	{
-		if (product == Product.HIGH_SPEED_TRAIN)
-		{
-			productBits.setCharAt(0, '1'); // Kolej dużych prędkości
-			productBits.setCharAt(1, '1'); // EC/IC/EIC/Ex
-		}
-		else if (product == Product.REGIONAL_TRAIN)
-		{
-			productBits.setCharAt(2, '1'); // TLK/IR/RE/D/Posp.
-		}
-		else if (product == Product.SUBURBAN_TRAIN)
-		{
-			productBits.setCharAt(3, '1'); // Regio/Osobowe
-		}
-		else if (product == Product.SUBWAY)
-		{
-			productBits.setCharAt(6, '1'); // Metro
-		}
-		else if (product == Product.TRAM)
-		{
-			productBits.setCharAt(5, '1'); // Tramwaj
-		}
-		else if (product == Product.BUS || product == Product.ON_DEMAND)
-		{
-			productBits.setCharAt(4, '1'); // Autobus
-		}
-		else if (product == Product.FERRY || product == Product.CABLECAR)
-		{
-		}
-		else
-		{
-			throw new IllegalArgumentException("cannot handle: " + product);
-		}
+		super(NetworkId.PL, API_BASE + "stboard.exe/pn", API_BASE + "ajax-getstop.exe/pn", API_BASE + "query.exe/pn", PRODUCTS_MAP, Charsets.UTF_8);
 	}
 
 	private static final String[] PLACES = { "Warszawa", "Kraków" };

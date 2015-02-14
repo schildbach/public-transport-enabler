@@ -35,70 +35,14 @@ import de.schildbach.pte.util.StringReplaceReader;
 public class NasaProvider extends AbstractHafasProvider
 {
 	private static final String API_BASE = "http://reiseauskunft.insa.de/bin/";
+	private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN,
+			Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.TRAM, Product.BUS, Product.ON_DEMAND };
 
 	public NasaProvider()
 	{
-		super(NetworkId.NASA, API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 8, Charsets.UTF_8);
+		super(NetworkId.NASA, API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", PRODUCTS_MAP, Charsets.UTF_8);
 
 		setStationBoardHasLocation(true);
-	}
-
-	@Override
-	protected Product intToProduct(final int value)
-	{
-		if (value == 1)
-			return Product.HIGH_SPEED_TRAIN;
-		if (value == 2)
-			return Product.HIGH_SPEED_TRAIN;
-		if (value == 4)
-			return Product.REGIONAL_TRAIN;
-		if (value == 8)
-			return Product.REGIONAL_TRAIN;
-		if (value == 16)
-			return Product.SUBURBAN_TRAIN;
-		if (value == 32)
-			return Product.TRAM;
-		if (value == 64)
-			return Product.BUS;
-		if (value == 128) // Rufbus
-			return Product.ON_DEMAND;
-
-		throw new IllegalArgumentException("cannot handle: " + value);
-	}
-
-	@Override
-	protected void setProductBits(final StringBuilder productBits, final Product product)
-	{
-		if (product == Product.HIGH_SPEED_TRAIN)
-		{
-			productBits.setCharAt(0, '1'); // ICE
-			productBits.setCharAt(1, '1'); // IC/EC
-		}
-		else if (product == Product.REGIONAL_TRAIN)
-		{
-			productBits.setCharAt(3, '1'); // RE/RB
-			productBits.setCharAt(7, '1'); // Tourismus-Züge
-			productBits.setCharAt(2, '1'); // undokumentiert
-		}
-		else if (product == Product.SUBURBAN_TRAIN || product == Product.SUBWAY)
-		{
-			productBits.setCharAt(4, '1'); // S/U
-		}
-		else if (product == Product.TRAM)
-		{
-			productBits.setCharAt(5, '1'); // Straßenbahn
-		}
-		else if (product == Product.BUS || product == Product.ON_DEMAND)
-		{
-			productBits.setCharAt(6, '1'); // Bus
-		}
-		else if (product == Product.FERRY || product == Product.CABLECAR)
-		{
-		}
-		else
-		{
-			throw new IllegalArgumentException("cannot handle: " + product);
-		}
 	}
 
 	@Override

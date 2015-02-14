@@ -30,86 +30,16 @@ public final class BahnProvider extends AbstractHafasProvider
 {
 	private static final String API_BASE = "http://reiseauskunft.bahn.de/bin/";
 	private static final String API_BASE_STATION_BOARD = "http://mobile.bahn.de/bin/mobil/";
+	private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN,
+			Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.BUS, Product.FERRY, Product.SUBWAY, Product.TRAM, Product.ON_DEMAND, null, null,
+			null, null };
 
 	public BahnProvider()
 	{
-		super(NetworkId.DB, API_BASE_STATION_BOARD + "bhftafel.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 14);
+		super(NetworkId.DB, API_BASE_STATION_BOARD + "bhftafel.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", PRODUCTS_MAP);
 
 		setStationBoardHasStationTable(false);
 		setJsonGetStopsUseWeight(false);
-	}
-
-	@Override
-	protected Product intToProduct(final int value)
-	{
-		if (value == 1)
-			return Product.HIGH_SPEED_TRAIN;
-		if (value == 2)
-			return Product.HIGH_SPEED_TRAIN;
-		if (value == 4)
-			return Product.REGIONAL_TRAIN;
-		if (value == 8)
-			return Product.REGIONAL_TRAIN;
-		if (value == 16)
-			return Product.SUBURBAN_TRAIN;
-		if (value == 32)
-			return Product.BUS;
-		if (value == 64)
-			return Product.FERRY;
-		if (value == 128)
-			return Product.SUBWAY;
-		if (value == 256)
-			return Product.TRAM;
-		if (value == 512)
-			return Product.ON_DEMAND;
-
-		throw new IllegalArgumentException("cannot handle: " + value);
-	}
-
-	@Override
-	protected void setProductBits(final StringBuilder productBits, final Product product)
-	{
-		if (product == Product.HIGH_SPEED_TRAIN)
-		{
-			productBits.setCharAt(0, '1');
-			productBits.setCharAt(1, '1');
-		}
-		else if (product == Product.REGIONAL_TRAIN)
-		{
-			productBits.setCharAt(2, '1');
-			productBits.setCharAt(3, '1');
-		}
-		else if (product == Product.SUBURBAN_TRAIN)
-		{
-			productBits.setCharAt(4, '1');
-		}
-		else if (product == Product.SUBWAY)
-		{
-			productBits.setCharAt(7, '1');
-		}
-		else if (product == Product.TRAM)
-		{
-			productBits.setCharAt(8, '1');
-		}
-		else if (product == Product.BUS)
-		{
-			productBits.setCharAt(5, '1');
-		}
-		else if (product == Product.ON_DEMAND)
-		{
-			productBits.setCharAt(9, '1');
-		}
-		else if (product == Product.FERRY)
-		{
-			productBits.setCharAt(6, '1');
-		}
-		else if (product == Product.CABLECAR)
-		{
-		}
-		else
-		{
-			throw new IllegalArgumentException("cannot handle: " + product);
-		}
 	}
 
 	@Override

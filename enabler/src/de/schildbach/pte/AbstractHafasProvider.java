@@ -17,6 +17,7 @@
 
 package de.schildbach.pte;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
@@ -30,7 +31,6 @@ import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
@@ -95,7 +95,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	protected final String stationBoardEndpoint;
 	protected final String getStopEndpoint;
 	protected final String queryEndpoint;
-	private final int numProductBits;
+	private Product[] productsMap;
 	private @Nullable String accessId = null;
 	private @Nullable String clientType = "ANDROID";
 	private Charset jsonGetStopsEncoding;
@@ -162,21 +162,21 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 	}
 
-	public AbstractHafasProvider(final NetworkId network, final String stationBoardEndpoint, final String getStopEndpoint,
-			final String queryEndpoint, final int numProductBits)
+	public AbstractHafasProvider(final NetworkId network, final String stationBoardEndpoint, final String getStopEndpoint, final String queryEndpoint,
+			final Product[] productsMap)
 	{
-		this(network, stationBoardEndpoint, getStopEndpoint, queryEndpoint, numProductBits, Charsets.ISO_8859_1);
+		this(network, stationBoardEndpoint, getStopEndpoint, queryEndpoint, productsMap, Charsets.ISO_8859_1);
 	}
 
-	public AbstractHafasProvider(final NetworkId network, final String stationBoardEndpoint, final String getStopEndpoint,
-			final String queryEndpoint, final int numProductBits, final Charset jsonEncoding)
+	public AbstractHafasProvider(final NetworkId network, final String stationBoardEndpoint, final String getStopEndpoint, final String queryEndpoint,
+			final Product[] productsMap, final Charset jsonEncoding)
 	{
 		super(network);
 
 		this.stationBoardEndpoint = stationBoardEndpoint;
 		this.getStopEndpoint = getStopEndpoint;
 		this.queryEndpoint = queryEndpoint;
-		this.numProductBits = numProductBits;
+		this.productsMap = productsMap;
 		this.jsonGetStopsEncoding = jsonEncoding;
 		this.jsonNearbyLocationsEncoding = jsonEncoding;
 	}
@@ -242,25 +242,52 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		return true;
 	}
 
-	protected final String allProductsString()
+	protected final CharSequence productsString(final Set<Product> products)
 	{
-		final StringBuilder allProducts = new StringBuilder(numProductBits);
-		for (int i = 0; i < numProductBits; i++)
-			allProducts.append('1');
-		return allProducts.toString();
+		final StringBuilder productsStr = new StringBuilder(productsMap.length);
+		for (int i = 0; i < productsMap.length; i++)
+		{
+			if (productsMap[i] != null && products.contains(productsMap[i]))
+				productsStr.append('1');
+			else
+				productsStr.append('0');
+		}
+		return productsStr;
+	}
+
+	protected final CharSequence allProductsString()
+	{
+		final StringBuilder productsStr = new StringBuilder(productsMap.length);
+		for (int i = 0; i < productsMap.length; i++)
+			productsStr.append('1');
+		return productsStr;
 	}
 
 	protected final int allProductsInt()
 	{
-		return (1 << numProductBits) - 1;
+		return (1 << productsMap.length) - 1;
 	}
 
-	protected Product intToProduct(final int value)
+	protected final Product intToProduct(int value)
 	{
-		return null;
-	}
+		final int allProductsInt = allProductsInt();
+		checkArgument(value < allProductsInt, "value " + value + " must be smaller than " + allProductsInt);
 
-	protected abstract void setProductBits(StringBuilder productBits, Product product);
+		Product product = null;
+		for (int i = productsMap.length - 1; i >= 0; i--)
+		{
+			final int v = 1 << i;
+			if (value >= v)
+			{
+				if (product != null)
+					throw new IllegalArgumentException("ambigous value: " + value);
+				product = productsMap[i];
+				value -= v;
+			}
+		}
+		checkState(value == 0);
+		return product;
+	}
 
 	protected static final Pattern P_SPLIT_NAME_FIRST_COMMA = Pattern.compile("([^,]*), (.*)");
 	protected static final Pattern P_SPLIT_NAME_LAST_COMMA = Pattern.compile("(.*), ([^,]*)");
@@ -779,7 +806,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	}
 
 	protected final QueryTripsResult queryTripsXml(Location from, @Nullable Location via, Location to, final Date date, final boolean dep,
-			final @Nullable Collection<Product> products, final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
+			final @Nullable Set<Product> products, final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
 			final @Nullable Set<Option> options) throws IOException
 	{
 		final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
@@ -817,18 +844,11 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		final Calendar c = new GregorianCalendar(timeZone);
 		c.setTime(date);
 
-		final StringBuilder productsStr = new StringBuilder(numProductBits);
+		final CharSequence productsStr;
 		if (products != null)
-		{
-			for (int i = 0; i < numProductBits; i++)
-				productsStr.append('0');
-			for (final Product p : products)
-				setProductBits(productsStr, p);
-		}
+			productsStr = productsString(products);
 		else
-		{
-			productsStr.append(allProductsString());
-		}
+			productsStr = allProductsString();
 
 		final char bikeChar = (options != null && options.contains(Option.BIKE)) ? '1' : '0';
 
@@ -1373,7 +1393,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	}
 
 	protected void appendQueryTripsBinaryParameters(final StringBuilder uri, final Location from, final @Nullable Location via, final Location to,
-			final Date date, final boolean dep, final @Nullable Collection<Product> products, final @Nullable Accessibility accessibility,
+			final Date date, final boolean dep, final @Nullable Set<Product> products, final @Nullable Accessibility accessibility,
 			final @Nullable Set<Option> options)
 	{
 		uri.append("?start=Suchen");
@@ -1411,18 +1431,11 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 		appendDateTimeParameters(uri, date, "REQ0JourneyDate", "REQ0JourneyTime");
 
-		final StringBuilder productsStr = new StringBuilder(numProductBits);
+		final CharSequence productsStr;
 		if (products != null)
-		{
-			for (int i = 0; i < numProductBits; i++)
-				productsStr.append('0');
-			for (final Product p : products)
-				setProductBits(productsStr, p);
-		}
+			productsStr = productsString(products);
 		else
-		{
-			productsStr.append(allProductsString());
-		}
+			productsStr = allProductsString();
 		uri.append("&REQ0JourneyProduct_prod_list_1=").append(productsStr);
 
 		if (accessibility != null && accessibility != Accessibility.NEUTRAL)
@@ -1449,7 +1462,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	private final static int QUERY_TRIPS_BINARY_BUFFER_SIZE = 384 * 1024;
 
 	protected final QueryTripsResult queryTripsBinary(Location from, @Nullable Location via, Location to, final Date date, final boolean dep,
-			final @Nullable Collection<Product> products, final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
+			final @Nullable Set<Product> products, final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
 			final @Nullable Set<Option> options) throws IOException
 	{
 		final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);

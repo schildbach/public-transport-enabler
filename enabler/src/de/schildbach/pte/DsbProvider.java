@@ -28,91 +28,17 @@ import de.schildbach.pte.dto.Product;
 public class DsbProvider extends AbstractHafasProvider
 {
 	private static final String API_BASE = "http://mobil.rejseplanen.dk/mobil-bin/";
-
 	// http://dk.hafas.de/bin/fat/
 	// http://mobil.rejseplanen.dk/mobil-bin/
+	// http://www.dsb.dk/Rejseplan/bin/
+	private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN,
+			Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.BUS, Product.BUS, Product.BUS, Product.BUS, Product.FERRY, Product.SUBWAY };
 
 	public DsbProvider()
 	{
-		super(NetworkId.DSB, API_BASE + "stboard.exe/mn", API_BASE + "ajax-getstop.exe/mn", API_BASE + "query.exe/dn", 11);
+		super(NetworkId.DSB, API_BASE + "stboard.exe/mn", API_BASE + "ajax-getstop.exe/mn", API_BASE + "query.exe/dn", PRODUCTS_MAP);
 
 		setStationBoardHasStationTable(false);
-	}
-
-	@Override
-	protected Product intToProduct(final int value)
-	{
-		if (value == 1)
-			return Product.HIGH_SPEED_TRAIN;
-		if (value == 2)
-			return Product.HIGH_SPEED_TRAIN;
-		if (value == 4)
-			return Product.REGIONAL_TRAIN;
-		if (value == 8)
-			return Product.REGIONAL_TRAIN;
-		if (value == 16)
-			return Product.SUBURBAN_TRAIN;
-		if (value == 32)
-			return Product.BUS;
-		if (value == 64)
-			return Product.BUS;
-		if (value == 128)
-			return Product.BUS;
-		if (value == 256)
-			return Product.BUS;
-		if (value == 512)
-			return Product.FERRY;
-		if (value == 1024)
-			return Product.SUBWAY;
-
-		throw new IllegalArgumentException("cannot handle: " + value);
-	}
-
-	@Override
-	protected void setProductBits(final StringBuilder productBits, final Product product)
-	{
-		if (product == Product.HIGH_SPEED_TRAIN)
-		{
-			productBits.setCharAt(0, '1'); // Intercity
-			productBits.setCharAt(1, '1'); // InterCityExpress
-		}
-		else if (product == Product.REGIONAL_TRAIN)
-		{
-			productBits.setCharAt(2, '1'); // Regionalzug
-			productBits.setCharAt(3, '1'); // sonstige Züge
-		}
-		else if (product == Product.SUBURBAN_TRAIN)
-		{
-			productBits.setCharAt(4, '1'); // S-Bahn
-		}
-		else if (product == Product.SUBWAY)
-		{
-			productBits.setCharAt(10, '1'); // Metro
-		}
-		else if (product == Product.TRAM)
-		{
-		}
-		else if (product == Product.BUS)
-		{
-			productBits.setCharAt(5, '1'); // Bus
-			productBits.setCharAt(6, '1'); // ExpressBus
-			productBits.setCharAt(7, '1'); // Nachtbus
-		}
-		else if (product == Product.ON_DEMAND)
-		{
-			productBits.setCharAt(8, '1'); // Telebus/andere
-		}
-		else if (product == Product.FERRY)
-		{
-			productBits.setCharAt(9, '1'); // Fähre
-		}
-		else if (product == Product.CABLECAR)
-		{
-		}
-		else
-		{
-			throw new IllegalArgumentException("cannot handle: " + product);
-		}
 	}
 
 	@Override

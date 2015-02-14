@@ -57,46 +57,15 @@ import de.schildbach.pte.util.ParserUtils;
 public class SeptaProvider extends AbstractHafasProvider
 {
 	private static final String API_BASE = "http://airs1.septa.org/bin/";
-
+	private static final Product[] PRODUCTS_MAP = { Product.SUBWAY, Product.TRAM, Product.BUS, Product.SUBURBAN_TRAIN };
 	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
 
 	public SeptaProvider()
 	{
-		super(NetworkId.SEPTA, API_BASE + "stboard.exe/en", API_BASE + "ajax-getstop.exe/dny", API_BASE + "query.exe/en", 4);
+		super(NetworkId.SEPTA, API_BASE + "stboard.exe/en", API_BASE + "ajax-getstop.exe/dny", API_BASE + "query.exe/en", PRODUCTS_MAP);
 
 		setStationBoardCanDoEquivs(false);
 		setTimeZone("EST");
-	}
-
-	@Override
-	protected void setProductBits(final StringBuilder productBits, final Product product)
-	{
-		if (product == Product.HIGH_SPEED_TRAIN)
-		{
-		}
-		else if (product == Product.REGIONAL_TRAIN || product == Product.SUBURBAN_TRAIN)
-		{
-			productBits.setCharAt(3, '1'); // Regional Rail
-		}
-		else if (product == Product.SUBWAY)
-		{
-			productBits.setCharAt(0, '1'); // Subway
-		}
-		else if (product == Product.TRAM)
-		{
-			productBits.setCharAt(1, '1'); // Trolley
-		}
-		else if (product == Product.BUS)
-		{
-			productBits.setCharAt(2, '1'); // Bus
-		}
-		else if (product == Product.ON_DEMAND || product == Product.FERRY || product == Product.CABLECAR)
-		{
-		}
-		else
-		{
-			throw new IllegalArgumentException("cannot handle: " + product);
-		}
 	}
 
 	@Override

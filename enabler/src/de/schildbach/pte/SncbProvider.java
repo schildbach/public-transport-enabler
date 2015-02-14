@@ -35,71 +35,17 @@ import de.schildbach.pte.dto.Product;
 public class SncbProvider extends AbstractHafasProvider
 {
 	private static final String API_BASE = "http://www.belgianrail.be/jp/sncb-nmbs-routeplanner/";
-
 	// http://hari.b-rail.be/hafas/bin/
+	private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, null, Product.HIGH_SPEED_TRAIN, null, null, Product.BUS,
+			Product.REGIONAL_TRAIN, null, Product.SUBWAY, Product.BUS, Product.TRAM, null, null, null, null, null };
 
 	public SncbProvider()
 	{
-		super(NetworkId.SNCB, API_BASE + "stboard.exe/nn", API_BASE + "ajax-getstop.exe/nny", API_BASE + "query.exe/nn", 16);
+		super(NetworkId.SNCB, API_BASE + "stboard.exe/nn", API_BASE + "ajax-getstop.exe/nny", API_BASE + "query.exe/nn", PRODUCTS_MAP);
 
 		setJsonGetStopsEncoding(Charsets.UTF_8);
 		setJsonNearbyLocationsEncoding(Charsets.UTF_8);
 		setStationBoardHasLocation(true);
-	}
-
-	@Override
-	protected Product intToProduct(final int value)
-	{
-		if (value == 1)
-			return Product.HIGH_SPEED_TRAIN;
-		if (value == 4)
-			return Product.HIGH_SPEED_TRAIN;
-		if (value == 32)
-			return Product.BUS;
-		if (value == 64)
-			return Product.REGIONAL_TRAIN;
-		if (value == 256)
-			return Product.SUBWAY;
-		if (value == 512)
-			return Product.BUS;
-		if (value == 1024)
-			return Product.TRAM;
-
-		throw new IllegalArgumentException("cannot handle: " + value);
-	}
-
-	@Override
-	protected void setProductBits(final StringBuilder productBits, final Product product)
-	{
-		if (product == Product.HIGH_SPEED_TRAIN)
-		{
-			productBits.setCharAt(0, '1'); // Hochgeschwindigkeitszug
-			productBits.setCharAt(2, '1'); // IC/IR/P/ICT
-		}
-		else if (product == Product.REGIONAL_TRAIN || product == Product.SUBURBAN_TRAIN)
-		{
-			productBits.setCharAt(6, '1'); // Zug
-		}
-		else if (product == Product.SUBWAY)
-		{
-			productBits.setCharAt(8, '1'); // Metro
-		}
-		else if (product == Product.TRAM)
-		{
-			productBits.setCharAt(10, '1'); // Stadtbahn
-		}
-		else if (product == Product.BUS || product == Product.ON_DEMAND)
-		{
-			productBits.setCharAt(5, '1'); // Bus
-			productBits.setCharAt(9, '1'); // Bus
-		}
-		else if (product == Product.FERRY || product == Product.CABLECAR)
-		{
-		}
-		else
-		{
-			throw new IllegalArgumentException("cannot handle: " + product);
-		}
 	}
 
 	private static final String[] PLACES = { "Antwerpen", "Gent", "Charleroi", "Liege", "Liège", "Brussel" };

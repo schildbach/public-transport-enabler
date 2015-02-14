@@ -39,81 +39,16 @@ public final class BvgProvider extends AbstractHafasProvider
 {
 	private static final String API_BASE = "https://fahrinfo.bvg.de/Fahrinfo/bin/";
 	private static final String API_BASE_STATION_BOARD = "http://bvg.hafas.de/bin/";
+	private static final Product[] PRODUCTS_MAP = { Product.SUBURBAN_TRAIN, Product.SUBWAY, Product.TRAM, Product.BUS, Product.FERRY,
+			Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, Product.ON_DEMAND };
 
 	public BvgProvider()
 	{
-		super(NetworkId.BVG, API_BASE_STATION_BOARD + "stboard.exe/dn", API_BASE + "ajax-getstop.bin/dny", API_BASE + "query.bin/dn", 8,
+		super(NetworkId.BVG, API_BASE_STATION_BOARD + "stboard.exe/dn", API_BASE + "ajax-getstop.bin/dny", API_BASE + "query.bin/dn", PRODUCTS_MAP,
 				Charsets.UTF_8);
 
 		setJsonGetStopsUseWeight(false);
 		setStyles(STYLES);
-	}
-
-	@Override
-	protected Product intToProduct(final int value)
-	{
-		if (value == 1)
-			return Product.SUBURBAN_TRAIN;
-		if (value == 2)
-			return Product.SUBWAY;
-		if (value == 4)
-			return Product.TRAM;
-		if (value == 8)
-			return Product.BUS;
-		if (value == 16)
-			return Product.FERRY;
-		if (value == 32)
-			return Product.HIGH_SPEED_TRAIN;
-		if (value == 64)
-			return Product.REGIONAL_TRAIN;
-		if (value == 128)
-			return Product.ON_DEMAND;
-
-		throw new IllegalArgumentException("cannot handle: " + value);
-	}
-
-	@Override
-	protected void setProductBits(final StringBuilder productBits, final Product product)
-	{
-		if (product == Product.HIGH_SPEED_TRAIN)
-		{
-			productBits.setCharAt(5, '1');
-		}
-		else if (product == Product.REGIONAL_TRAIN)
-		{
-			productBits.setCharAt(6, '1');
-		}
-		else if (product == Product.SUBURBAN_TRAIN)
-		{
-			productBits.setCharAt(0, '1');
-		}
-		else if (product == Product.SUBWAY)
-		{
-			productBits.setCharAt(1, '1');
-		}
-		else if (product == Product.TRAM)
-		{
-			productBits.setCharAt(2, '1');
-		}
-		else if (product == Product.BUS)
-		{
-			productBits.setCharAt(3, '1');
-		}
-		else if (product == Product.ON_DEMAND)
-		{
-			productBits.setCharAt(7, '1');
-		}
-		else if (product == Product.FERRY)
-		{
-			productBits.setCharAt(4, '1');
-		}
-		else if (product == Product.CABLECAR)
-		{
-		}
-		else
-		{
-			throw new IllegalArgumentException("cannot handle: " + product);
-		}
 	}
 
 	private static final Pattern P_SPLIT_NAME_SU = Pattern.compile("(.*?)(?:\\s+\\((S|U|S\\+U)\\))?");

@@ -60,14 +60,13 @@ import de.schildbach.pte.util.ParserUtils;
 public class InvgProvider extends AbstractHafasProvider
 {
 	private static final String API_BASE = "http://fpa.invg.de/bin/";
-
 	// http://invg.hafas.de/bin/
-
+	private static final Product[] PRODUCTS_MAP = { null, null, null, null, null, null, null, null, null, null };
 	private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
 
 	public InvgProvider()
 	{
-		super(NetworkId.INVG, API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 10, Charsets.UTF_8);
+		super(NetworkId.INVG, API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", PRODUCTS_MAP, Charsets.UTF_8);
 
 		setStationBoardCanDoEquivs(false);
 		setStyles(STYLES);
@@ -81,12 +80,6 @@ public class InvgProvider extends AbstractHafasProvider
 			return false;
 		else
 			return super.hasCapability(capability);
-	}
-
-	@Override
-	protected void setProductBits(final StringBuilder productBits, final Product product)
-	{
-		throw new UnsupportedOperationException();
 	}
 
 	private static final String[] PLACES = { "Ingolstadt", "München" };

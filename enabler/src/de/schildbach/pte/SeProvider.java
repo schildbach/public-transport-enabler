@@ -32,91 +32,19 @@ import de.schildbach.pte.dto.Product;
 public class SeProvider extends AbstractHafasProvider
 {
 	private static final String API_BASE = "http://samtrafiken.hafas.de/bin/";
-
 	// http://reseplanerare.resrobot.se/bin/
 	// http://api.vasttrafik.se/bin/
+	private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, Product.BUS,
+			Product.REGIONAL_TRAIN, Product.SUBWAY, Product.TRAM, Product.BUS, Product.FERRY, Product.FERRY, Product.REGIONAL_TRAIN, null, null,
+			null };
 
 	public SeProvider()
 	{
-		super(NetworkId.SE, API_BASE + "stboard.exe/sn", API_BASE + "ajax-getstop.exe/sny", API_BASE + "query.exe/sn", 14, Charsets.UTF_8);
+		super(NetworkId.SE, API_BASE + "stboard.exe/sn", API_BASE + "ajax-getstop.exe/sny", API_BASE + "query.exe/sn", PRODUCTS_MAP, Charsets.UTF_8);
 
 		setUseIso8601(true);
 		setStationBoardHasStationTable(false);
 		setStationBoardCanDoEquivs(false);
-	}
-
-	@Override
-	protected Product intToProduct(final int value)
-	{
-		if (value == 1) // Flyg
-			return Product.HIGH_SPEED_TRAIN;
-		if (value == 2) // X2000
-			return Product.HIGH_SPEED_TRAIN;
-		if (value == 4)
-			return Product.REGIONAL_TRAIN;
-		if (value == 8) // Expressbus
-			return Product.BUS;
-		if (value == 16)
-			return Product.REGIONAL_TRAIN;
-		if (value == 32) // Tunnelbana
-			return Product.SUBWAY;
-		if (value == 64) // Spårvagn
-			return Product.TRAM;
-		if (value == 128)
-			return Product.BUS;
-		if (value == 256)
-			return Product.FERRY;
-		if (value == 512) // Länstaxi
-			return Product.FERRY;
-		if (value == 1024) // Future
-			return Product.REGIONAL_TRAIN;
-
-		throw new IllegalArgumentException("cannot handle: " + value);
-	}
-
-	@Override
-	protected void setProductBits(final StringBuilder productBits, final Product product)
-	{
-		if (product == Product.HIGH_SPEED_TRAIN)
-		{
-			productBits.setCharAt(0, '1'); // Flyg
-			productBits.setCharAt(1, '1'); // Snabbtåg
-		}
-		else if (product == Product.REGIONAL_TRAIN)
-		{
-			productBits.setCharAt(2, '1'); // Tåg
-			productBits.setCharAt(4, '1'); // Lokaltåg
-		}
-		else if (product == Product.SUBURBAN_TRAIN)
-		{
-		}
-		else if (product == Product.SUBWAY)
-		{
-			productBits.setCharAt(5, '1'); // Tunnelbana
-		}
-		else if (product == Product.TRAM)
-		{
-			productBits.setCharAt(6, '1'); // Spårvagn
-		}
-		else if (product == Product.BUS)
-		{
-			productBits.setCharAt(3, '1'); // Expressbuss
-			productBits.setCharAt(7, '1'); // Buss
-		}
-		else if (product == Product.ON_DEMAND)
-		{
-		}
-		else if (product == Product.FERRY)
-		{
-			productBits.setCharAt(8, '1'); // Båt
-		}
-		else if (product == Product.CABLECAR)
-		{
-		}
-		else
-		{
-			throw new IllegalArgumentException("cannot handle: " + product);
-		}
 	}
 
 	private static final Pattern P_SPLIT_NAME_PAREN = Pattern.compile("(.*) \\((.{3,}?) kn\\)");

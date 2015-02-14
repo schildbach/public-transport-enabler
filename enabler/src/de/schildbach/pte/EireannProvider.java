@@ -39,49 +39,13 @@ import de.schildbach.pte.dto.QueryTripsResult;
 public class EireannProvider extends AbstractHafasProvider
 {
 	private static final String API_BASE = "http://journeyplanner.buseireann.ie/jp/bin/";
+	private static final Product[] PRODUCTS_MAP = { null, null, null, Product.BUS };
 
 	public EireannProvider()
 	{
-		super(NetworkId.EIREANN, API_BASE + "stboard.exe/en", API_BASE + "ajax-getstop.exe/en", API_BASE + "query.exe/en", 4);
+		super(NetworkId.EIREANN, API_BASE + "stboard.exe/en", API_BASE + "ajax-getstop.exe/en", API_BASE + "query.exe/en", PRODUCTS_MAP);
 
 		setStationBoardHasStationTable(false);
-	}
-
-	@Override
-	protected void setProductBits(final StringBuilder productBits, final Product product)
-	{
-		if (product == Product.HIGH_SPEED_TRAIN)
-		{
-		}
-		else if (product == Product.REGIONAL_TRAIN)
-		{
-		}
-		else if (product == Product.SUBURBAN_TRAIN)
-		{
-		}
-		else if (product == Product.SUBWAY)
-		{
-		}
-		else if (product == Product.TRAM)
-		{
-		}
-		else if (product == Product.BUS)
-		{
-			productBits.setCharAt(3, '1');
-		}
-		else if (product == Product.ON_DEMAND)
-		{
-		}
-		else if (product == Product.FERRY)
-		{
-		}
-		else if (product == Product.CABLECAR)
-		{
-		}
-		else
-		{
-			throw new IllegalArgumentException("cannot handle: " + product);
-		}
 	}
 
 	@Override

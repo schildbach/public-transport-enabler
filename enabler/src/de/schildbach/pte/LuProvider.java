@@ -29,80 +29,12 @@ import de.schildbach.pte.dto.Product;
 public class LuProvider extends AbstractHafasProvider
 {
 	private static final String API_BASE = "http://mobiliteitszentral.hafas.de/hafas/";
+	private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
+			Product.REGIONAL_TRAIN, Product.REGIONAL_TRAIN, Product.BUS, Product.BUS, Product.BUS, Product.BUS };
 
 	public LuProvider()
 	{
-		super(NetworkId.LU, API_BASE + "stboard.exe/fn", API_BASE + "ajax-getstop.exe/fn", API_BASE + "query.exe/fn", 9, Charsets.UTF_8);
-	}
-
-	@Override
-	protected Product intToProduct(final int value)
-	{
-		if (value == 1)
-			return Product.HIGH_SPEED_TRAIN;
-		if (value == 2)
-			return Product.HIGH_SPEED_TRAIN;
-		if (value == 4)
-			return Product.HIGH_SPEED_TRAIN;
-		if (value == 8)
-			return Product.REGIONAL_TRAIN;
-		if (value == 16)
-			return Product.SUBURBAN_TRAIN;
-		if (value == 32)
-			return Product.BUS;
-		if (value == 64)
-			return Product.BUS;
-		if (value == 128)
-			return Product.BUS;
-		if (value == 256)
-			return Product.BUS;
-
-		throw new IllegalArgumentException("cannot handle: " + value);
-	}
-
-	@Override
-	protected void setProductBits(final StringBuilder productBits, final Product product)
-	{
-		if (product == Product.HIGH_SPEED_TRAIN)
-		{
-			productBits.setCharAt(0, '1'); // Hochgeschwindigkeitszug
-			productBits.setCharAt(1, '1'); // IC/EC
-			productBits.setCharAt(2, '1'); // Fernverkehrszug
-		}
-		else if (product == Product.REGIONAL_TRAIN)
-		{
-			productBits.setCharAt(3, '1'); // Regionalverkehrszug
-		}
-		else if (product == Product.SUBURBAN_TRAIN)
-		{
-			productBits.setCharAt(4, '1'); // S-Bahn
-		}
-		else if (product == Product.SUBWAY)
-		{
-		}
-		else if (product == Product.TRAM)
-		{
-		}
-		else if (product == Product.BUS)
-		{
-			productBits.setCharAt(5, '1');
-			productBits.setCharAt(6, '1');
-			productBits.setCharAt(7, '1');
-			productBits.setCharAt(8, '1');
-		}
-		else if (product == Product.ON_DEMAND)
-		{
-		}
-		else if (product == Product.FERRY)
-		{
-		}
-		else if (product == Product.CABLECAR)
-		{
-		}
-		else
-		{
-			throw new IllegalArgumentException("cannot handle: " + product);
-		}
+		super(NetworkId.LU, API_BASE + "stboard.exe/fn", API_BASE + "ajax-getstop.exe/fn", API_BASE + "query.exe/fn", PRODUCTS_MAP, Charsets.UTF_8);
 	}
 
 	@Override

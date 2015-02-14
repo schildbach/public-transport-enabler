@@ -28,79 +28,14 @@ import de.schildbach.pte.dto.Product;
 public class SbbProvider extends AbstractHafasProvider
 {
 	private static final String API_BASE = "http://fahrplan.sbb.ch/bin/";
+	private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
+			Product.REGIONAL_TRAIN, Product.FERRY, Product.SUBURBAN_TRAIN, Product.BUS, Product.CABLECAR, Product.REGIONAL_TRAIN, Product.TRAM };
 
 	public SbbProvider()
 	{
-		super(NetworkId.SBB, API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 10);
+		super(NetworkId.SBB, API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", PRODUCTS_MAP);
 
 		setStationBoardHasStationTable(false);
-	}
-
-	@Override
-	protected Product intToProduct(final int value)
-	{
-		if (value == 1)
-			return Product.HIGH_SPEED_TRAIN;
-		if (value == 2)
-			return Product.HIGH_SPEED_TRAIN;
-		if (value == 4)
-			return Product.REGIONAL_TRAIN;
-		if (value == 8)
-			return Product.REGIONAL_TRAIN;
-		if (value == 16)
-			return Product.FERRY;
-		if (value == 32)
-			return Product.SUBURBAN_TRAIN;
-		if (value == 64)
-			return Product.BUS;
-		if (value == 128)
-			return Product.CABLECAR;
-		if (value == 256)
-			return Product.REGIONAL_TRAIN;
-		if (value == 512)
-			return Product.TRAM;
-
-		throw new IllegalArgumentException("cannot handle: " + value);
-	}
-
-	@Override
-	protected void setProductBits(final StringBuilder productBits, final Product product)
-	{
-		if (product == Product.HIGH_SPEED_TRAIN)
-		{
-			productBits.setCharAt(0, '1'); // ICE/TGV/IRJ
-			productBits.setCharAt(1, '1'); // EC/IC
-		}
-		else if (product == Product.REGIONAL_TRAIN)
-		{
-			productBits.setCharAt(2, '1'); // IR
-			productBits.setCharAt(3, '1'); // RE/D
-			productBits.setCharAt(8, '1'); // ARZ/EXT
-		}
-		else if (product == Product.SUBURBAN_TRAIN)
-		{
-			productBits.setCharAt(5, '1'); // S/SN/R
-		}
-		else if (product == Product.SUBWAY || product == Product.TRAM)
-		{
-			productBits.setCharAt(9, '1'); // Tram/Metro
-		}
-		else if (product == Product.BUS || product == Product.ON_DEMAND)
-		{
-			productBits.setCharAt(6, '1'); // Bus
-		}
-		else if (product == Product.FERRY)
-		{
-			productBits.setCharAt(4, '1'); // Schiff
-		}
-		else if (product == Product.CABLECAR)
-		{
-			productBits.setCharAt(7, '1'); // Seilbahn
-		}
-		else
-		{
-			throw new IllegalArgumentException("cannot handle: " + product);
-		}
 	}
 
 	@Override

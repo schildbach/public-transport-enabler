@@ -32,77 +32,16 @@ import de.schildbach.pte.dto.Style.Shape;
 public class StockholmProvider extends AbstractHafasProvider
 {
 	private static final String API_BASE = "http://reseplanerare.trafiken.nu/bin/";
+	private static final Product[] PRODUCTS_MAP = { Product.SUBURBAN_TRAIN, Product.SUBWAY, Product.REGIONAL_TRAIN, Product.BUS, Product.BUS,
+			Product.FERRY, Product.FERRY };
 
 	public StockholmProvider()
 	{
-		super(NetworkId.STOCKHOLM, API_BASE + "stboard.exe/sn", API_BASE + "ajax-getstop.exe/sny", API_BASE + "query.exe/sn", 7);
+		super(NetworkId.STOCKHOLM, API_BASE + "stboard.exe/sn", API_BASE + "ajax-getstop.exe/sny", API_BASE + "query.exe/sn", PRODUCTS_MAP);
 
 		setStyles(STYLES);
 		setStationBoardHasStationTable(false);
 		setStationBoardCanDoEquivs(false);
-	}
-
-	@Override
-	protected Product intToProduct(final int value)
-	{
-		if (value == 1) // Pendeltåg
-			return Product.SUBURBAN_TRAIN;
-		if (value == 2) // Tunnelbana
-			return Product.SUBWAY;
-		if (value == 4) // Lokalbanor
-			return Product.REGIONAL_TRAIN;
-		if (value == 8) // Bussar
-			return Product.BUS;
-		if (value == 16) // Flygbussar
-			return Product.BUS;
-		if (value == 32)
-			return Product.FERRY;
-		if (value == 64) // Waxholmsbåtar
-			return Product.FERRY;
-
-		throw new IllegalArgumentException("cannot handle: " + value);
-	}
-
-	@Override
-	protected void setProductBits(final StringBuilder productBits, final Product product)
-	{
-		if (product == Product.HIGH_SPEED_TRAIN)
-		{
-		}
-		else if (product == Product.REGIONAL_TRAIN)
-		{
-			productBits.setCharAt(2, '1'); // Lokalbanor
-		}
-		else if (product == Product.SUBURBAN_TRAIN)
-		{
-			productBits.setCharAt(0, '1'); // Pendeltåg
-		}
-		else if (product == Product.SUBWAY)
-		{
-			productBits.setCharAt(1, '1'); // Tunnelbana
-		}
-		else if (product == Product.TRAM)
-		{
-		}
-		else if (product == Product.BUS)
-		{
-			productBits.setCharAt(3, '1'); // Bussar
-			productBits.setCharAt(4, '1'); // Flygbussar
-		}
-		else if (product == Product.ON_DEMAND)
-		{
-		}
-		else if (product == Product.FERRY)
-		{
-			productBits.setCharAt(6, '1'); // Waxholmsbåtar
-		}
-		else if (product == Product.CABLECAR)
-		{
-		}
-		else
-		{
-			throw new IllegalArgumentException("cannot handle: " + product);
-		}
 	}
 
 	@Override

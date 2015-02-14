@@ -38,59 +38,11 @@ import de.schildbach.pte.dto.Product;
 public class JetProvider extends AbstractHafasProvider
 {
 	private static final String API_BASE = "http://planner.jet.org.il/bin/";
+	private static final Product[] PRODUCTS_MAP = { null, null, Product.TRAM, Product.BUS };
 
 	public JetProvider()
 	{
-		super(NetworkId.JET, API_BASE + "stboard.bin/yn", API_BASE + "ajax-getstop.bin/yn", API_BASE + "query.bin/yn", 4, Charsets.UTF_8);
-	}
-
-	@Override
-	protected Product intToProduct(final int value)
-	{
-		if (value == 4)
-			return Product.TRAM;
-		if (value == 8)
-			return Product.BUS;
-
-		throw new IllegalArgumentException("cannot handle: " + value);
-	}
-
-	@Override
-	protected void setProductBits(final StringBuilder productBits, final Product product)
-	{
-		if (product == Product.HIGH_SPEED_TRAIN)
-		{
-		}
-		else if (product == Product.REGIONAL_TRAIN)
-		{
-		}
-		else if (product == Product.SUBURBAN_TRAIN)
-		{
-		}
-		else if (product == Product.SUBWAY)
-		{
-		}
-		else if (product == Product.TRAM)
-		{
-			productBits.setCharAt(2, '1'); // Stadtbahn
-		}
-		else if (product == Product.BUS)
-		{
-			productBits.setCharAt(3, '1'); // Bus
-		}
-		else if (product == Product.ON_DEMAND)
-		{
-		}
-		else if (product == Product.FERRY)
-		{
-		}
-		else if (product == Product.CABLECAR)
-		{
-		}
-		else
-		{
-			throw new IllegalArgumentException("cannot handle: " + product);
-		}
+		super(NetworkId.JET, API_BASE + "stboard.bin/yn", API_BASE + "ajax-getstop.bin/yn", API_BASE + "query.bin/yn", PRODUCTS_MAP, Charsets.UTF_8);
 	}
 
 	@Override
