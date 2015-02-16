@@ -52,26 +52,27 @@ public class MvvProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	protected Line parseLine(final @Nullable String id, final @Nullable String mot, final @Nullable String symbol, final @Nullable String name,
-			final @Nullable String longName, final @Nullable String trainType, final @Nullable String trainNum, final @Nullable String trainName)
+	protected Line parseLine(final @Nullable String id, final @Nullable String network, final @Nullable String mot, final @Nullable String symbol,
+			final @Nullable String name, final @Nullable String longName, final @Nullable String trainType, final @Nullable String trainNum,
+			final @Nullable String trainName)
 	{
 		if ("0".equals(mot))
 		{
 			if ("Mittelrheinbahn (trans regio)".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "MiRhBa");
+				return new Line(id, network, Product.REGIONAL_TRAIN, "MiRhBa");
 			if ("Süd-Thüringen-Bahn".equals(longName))
-				return new Line(id, Product.REGIONAL_TRAIN, "STB");
+				return new Line(id, network, Product.REGIONAL_TRAIN, "STB");
 			if ("agilis".equals(longName))
-				return new Line(id, Product.REGIONAL_TRAIN, "agilis");
+				return new Line(id, network, Product.REGIONAL_TRAIN, "agilis");
 			if ("SBB".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "SBB");
+				return new Line(id, network, Product.REGIONAL_TRAIN, "SBB");
 			if ("A".equals(trainNum))
-				return new Line(id, Product.SUBURBAN_TRAIN, "A");
+				return new Line(id, network, Product.SUBURBAN_TRAIN, "A");
 			if ("DB AG".equals(trainName))
-				return new Line(id, null, symbol);
+				return new Line(id, network, null, symbol);
 		}
 
-		return super.parseLine(id, mot, symbol, name, longName, trainType, trainNum, trainName);
+		return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
 	}
 
 	private static final Pattern P_POSITION = Pattern.compile("(Fern|Regio|S-Bahn|U-Bahn|U\\d(?:/U\\d)*)\\s+(.*)");

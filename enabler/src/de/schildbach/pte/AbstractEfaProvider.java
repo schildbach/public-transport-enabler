@@ -1004,8 +1004,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private static final Pattern P_LINE_S_DB = Pattern.compile("(S\\d+) \\((?:DB Regio AG)\\)");
 	private static final Pattern P_LINE_NUMBER = Pattern.compile("\\d+");
 
-	protected Line parseLine(final @Nullable String id, final @Nullable String mot, @Nullable String symbol, final @Nullable String name,
-			final @Nullable String longName, final @Nullable String trainType, final @Nullable String trainNum, final @Nullable String trainName)
+	protected Line parseLine(final @Nullable String id, final @Nullable String network, final @Nullable String mot, @Nullable String symbol,
+			final @Nullable String name, final @Nullable String longName, final @Nullable String trainType, final @Nullable String trainNum,
+			final @Nullable String trainName)
 	{
 		if (mot == null)
 		{
@@ -1013,33 +1014,33 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			{
 				final String str = Strings.nullToEmpty(name);
 				if (trainName.equals("S-Bahn"))
-					return new Line(id, Product.SUBURBAN_TRAIN, str);
+					return new Line(id, network, Product.SUBURBAN_TRAIN, str);
 				if (trainName.equals("U-Bahn"))
-					return new Line(id, Product.SUBWAY, str);
+					return new Line(id, network, Product.SUBWAY, str);
 				if (trainName.equals("Straßenbahn"))
-					return new Line(id, Product.TRAM, str);
+					return new Line(id, network, Product.TRAM, str);
 				if (trainName.equals("Badner Bahn"))
-					return new Line(id, Product.TRAM, str);
+					return new Line(id, network, Product.TRAM, str);
 				if (trainName.equals("Stadtbus"))
-					return new Line(id, Product.BUS, str);
+					return new Line(id, network, Product.BUS, str);
 				if (trainName.equals("Citybus"))
-					return new Line(id, Product.BUS, str);
+					return new Line(id, network, Product.BUS, str);
 				if (trainName.equals("Regionalbus"))
-					return new Line(id, Product.BUS, str);
+					return new Line(id, network, Product.BUS, str);
 				if (trainName.equals("ÖBB-Postbus"))
-					return new Line(id, Product.BUS, str);
+					return new Line(id, network, Product.BUS, str);
 				if (trainName.equals("Autobus"))
-					return new Line(id, Product.BUS, str);
+					return new Line(id, network, Product.BUS, str);
 				if (trainName.equals("Discobus"))
-					return new Line(id, Product.BUS, str);
+					return new Line(id, network, Product.BUS, str);
 				if (trainName.equals("Nachtbus"))
-					return new Line(id, Product.BUS, str);
+					return new Line(id, network, Product.BUS, str);
 				if (trainName.equals("Anrufsammeltaxi"))
-					return new Line(id, Product.BUS, str);
+					return new Line(id, network, Product.BUS, str);
 				if (trainName.equals("Ersatzverkehr"))
-					return new Line(id, Product.BUS, str);
+					return new Line(id, network, Product.BUS, str);
 				if (trainName.equals("Vienna Airport Lines"))
-					return new Line(id, Product.BUS, str);
+					return new Line(id, network, Product.BUS, str);
 			}
 		}
 		else if ("0".equals(mot))
@@ -1047,398 +1048,398 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			final String trainNumStr = Strings.nullToEmpty(trainNum);
 
 			if (("EC".equals(trainType) || "EuroCity".equals(trainName) || "Eurocity".equals(trainName)) && trainNum != null)
-				return new Line(id, Product.HIGH_SPEED_TRAIN, "EC" + trainNum);
+				return new Line(id, network, Product.HIGH_SPEED_TRAIN, "EC" + trainNum);
 			if (("EN".equals(trainType) || "EuroNight".equals(trainName)) && trainNum != null)
-				return new Line(id, Product.HIGH_SPEED_TRAIN, "EN" + trainNum);
+				return new Line(id, network, Product.HIGH_SPEED_TRAIN, "EN" + trainNum);
 			if (("IC".equals(trainType) || "InterCity".equals(trainName)) && trainNum != null)
-				return new Line(id, Product.HIGH_SPEED_TRAIN, "IC" + trainNum);
+				return new Line(id, network, Product.HIGH_SPEED_TRAIN, "IC" + trainNum);
 			if (("ICE".equals(trainType) || "ICE".equals(trainName) || "Intercity-Express".equals(trainName)) && trainNum != null)
-				return new Line(id, Product.HIGH_SPEED_TRAIN, "ICE" + trainNum);
+				return new Line(id, network, Product.HIGH_SPEED_TRAIN, "ICE" + trainNum);
 			if (("ICN".equals(trainType) || "InterCityNight".equals(trainName)) && trainNum != null)
-				return new Line(id, Product.HIGH_SPEED_TRAIN, "ICN" + trainNum);
+				return new Line(id, network, Product.HIGH_SPEED_TRAIN, "ICN" + trainNum);
 			if (("X".equals(trainType) || "InterConnex".equals(trainName)) && trainNum != null)
-				return new Line(id, Product.HIGH_SPEED_TRAIN, "X" + trainNum);
+				return new Line(id, network, Product.HIGH_SPEED_TRAIN, "X" + trainNum);
 			if (("CNL".equals(trainType) || "CityNightLine".equals(trainName)) && trainNum != null) // City Night Line
-				return new Line(id, Product.HIGH_SPEED_TRAIN, "CNL" + trainNum);
+				return new Line(id, network, Product.HIGH_SPEED_TRAIN, "CNL" + trainNum);
 			if (("THA".equals(trainType) || "Thalys".equals(trainName)) && trainNum != null)
-				return new Line(id, Product.HIGH_SPEED_TRAIN, "THA" + trainNum);
+				return new Line(id, network, Product.HIGH_SPEED_TRAIN, "THA" + trainNum);
 			if ("RHI".equals(trainType) && trainNum != null)
-				return new Line(id, Product.HIGH_SPEED_TRAIN, "RHI" + trainNum);
+				return new Line(id, network, Product.HIGH_SPEED_TRAIN, "RHI" + trainNum);
 			if (("TGV".equals(trainType) || "TGV".equals(trainName)) && trainNum != null)
-				return new Line(id, Product.HIGH_SPEED_TRAIN, "TGV" + trainNum);
+				return new Line(id, network, Product.HIGH_SPEED_TRAIN, "TGV" + trainNum);
 			if ("TGD".equals(trainType) && trainNum != null)
-				return new Line(id, Product.HIGH_SPEED_TRAIN, "TGD" + trainNum);
+				return new Line(id, network, Product.HIGH_SPEED_TRAIN, "TGD" + trainNum);
 			if ("INZ".equals(trainType) && trainNum != null)
-				return new Line(id, Product.HIGH_SPEED_TRAIN, "INZ" + trainNum);
+				return new Line(id, network, Product.HIGH_SPEED_TRAIN, "INZ" + trainNum);
 			if (("RJ".equals(trainType) || "railjet".equals(trainName)) && trainNum != null) // railjet
-				return new Line(id, Product.HIGH_SPEED_TRAIN, "RJ" + trainNum);
+				return new Line(id, network, Product.HIGH_SPEED_TRAIN, "RJ" + trainNum);
 			if (("WB".equals(trainType) || "WESTbahn".equals(trainName)) && trainNum != null)
-				return new Line(id, Product.HIGH_SPEED_TRAIN, "WB" + trainNum);
+				return new Line(id, network, Product.HIGH_SPEED_TRAIN, "WB" + trainNum);
 			if (("HKX".equals(trainType) || "Hamburg-Köln-Express".equals(trainName)) && trainNum != null)
-				return new Line(id, Product.HIGH_SPEED_TRAIN, "HKX" + trainNum);
+				return new Line(id, network, Product.HIGH_SPEED_TRAIN, "HKX" + trainNum);
 			if ("INT".equals(trainType) && trainNum != null) // SVV, VAGFR
-				return new Line(id, Product.HIGH_SPEED_TRAIN, "INT" + trainNum);
+				return new Line(id, network, Product.HIGH_SPEED_TRAIN, "INT" + trainNum);
 			if (("SC".equals(trainType) || "SC Pendolino".equals(trainName)) && trainNum != null) // SuperCity
-				return new Line(id, Product.HIGH_SPEED_TRAIN, "SC" + trainNum);
+				return new Line(id, network, Product.HIGH_SPEED_TRAIN, "SC" + trainNum);
 			if ("ECB".equals(trainType) && trainNum != null) // EC, Verona-München
-				return new Line(id, Product.HIGH_SPEED_TRAIN, "ECB" + trainNum);
+				return new Line(id, network, Product.HIGH_SPEED_TRAIN, "ECB" + trainNum);
 			if ("ES".equals(trainType) && trainNum != null) // Eurostar Italia
-				return new Line(id, Product.HIGH_SPEED_TRAIN, "ES" + trainNum);
+				return new Line(id, network, Product.HIGH_SPEED_TRAIN, "ES" + trainNum);
 			if (("EST".equals(trainType) || "EUROSTAR".equals(trainName)) && trainNum != null)
-				return new Line(id, Product.HIGH_SPEED_TRAIN, "EST" + trainNum);
+				return new Line(id, network, Product.HIGH_SPEED_TRAIN, "EST" + trainNum);
 			if ("EIC".equals(trainType) && trainNum != null) // Ekspres InterCity, Polen
-				return new Line(id, Product.HIGH_SPEED_TRAIN, "EIC" + trainNum);
+				return new Line(id, network, Product.HIGH_SPEED_TRAIN, "EIC" + trainNum);
 			if ("MT".equals(trainType) && "Schnee-Express".equals(trainName) && trainNum != null)
-				return new Line(id, Product.HIGH_SPEED_TRAIN, "MT" + trainNum);
+				return new Line(id, network, Product.HIGH_SPEED_TRAIN, "MT" + trainNum);
 			if (("TLK".equals(trainType) || "Tanie Linie Kolejowe".equals(trainName)) && trainNum != null)
-				return new Line(id, Product.HIGH_SPEED_TRAIN, "TLK" + trainNum);
+				return new Line(id, network, Product.HIGH_SPEED_TRAIN, "TLK" + trainNum);
 
 			if ("Zug".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, symbol);
+				return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
 			if ("Zuglinie".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, symbol);
+				return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
 			if ("IR".equals(trainType) || "Interregio".equals(trainName) || "InterRegio".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "IR" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "IR" + trainNum);
 			if ("IRE".equals(trainType) || "Interregio-Express".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "IRE" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "IRE" + trainNum);
 			if ("InterRegioExpress".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "IRE" + trainNumStr);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "IRE" + trainNumStr);
 			if ("RE".equals(trainType) || "Regional-Express".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "RE" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "RE" + trainNum);
 			if (trainType == null && trainNum != null && P_LINE_RE.matcher(trainNum).matches())
-				return new Line(id, Product.REGIONAL_TRAIN, trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, trainNum);
 			if ("Regionalexpress".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, symbol);
+				return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
 			if ("R-Bahn".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, symbol);
+				return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
 			if ("RB-Bahn".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, symbol);
+				return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
 			if ("RE-Bahn".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, symbol);
+				return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
 			if ("REX".equals(trainType)) // RegionalExpress, Österreich
-				return new Line(id, Product.REGIONAL_TRAIN, "REX" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "REX" + trainNum);
 			if (("RB".equals(trainType) || "Regionalbahn".equals(trainName)) && trainNum != null)
-				return new Line(id, Product.REGIONAL_TRAIN, "RB" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "RB" + trainNum);
 			if (trainType == null && trainNum != null && P_LINE_RB.matcher(trainNum).matches())
-				return new Line(id, Product.REGIONAL_TRAIN, trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, trainNum);
 			if ("Abellio-Zug".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, symbol);
+				return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
 			if ("Westfalenbahn".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, symbol);
+				return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
 			if ("Chiemseebahn".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, symbol);
+				return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
 			if ("R".equals(trainType) || "Regionalzug".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "R" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "R" + trainNum);
 			if (trainType == null && trainNum != null && P_LINE_R.matcher(trainNum).matches())
-				return new Line(id, Product.REGIONAL_TRAIN, trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, trainNum);
 			if ("D".equals(trainType) || "Schnellzug".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "D" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "D" + trainNum);
 			if ("E".equals(trainType) || "Eilzug".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "E" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "E" + trainNum);
 			if ("WFB".equals(trainType) || "WestfalenBahn".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "WFB" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "WFB" + trainNum);
 			if (("NWB".equals(trainType) || "NordWestBahn".equals(trainName)) && trainNum != null)
-				return new Line(id, Product.REGIONAL_TRAIN, "NWB" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "NWB" + trainNum);
 			if ("WES".equals(trainType) || "Westbahn".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "WES" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "WES" + trainNum);
 			if ("ERB".equals(trainType) || "eurobahn".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "ERB" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "ERB" + trainNum);
 			if ("CAN".equals(trainType) || "cantus Verkehrsgesellschaft".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "CAN" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "CAN" + trainNum);
 			if ("HEX".equals(trainType) || "Veolia Verkehr Sachsen-Anhalt".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "HEX" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "HEX" + trainNum);
 			if ("EB".equals(trainType) || "Erfurter Bahn".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "EB" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "EB" + trainNum);
 			if ("Erfurter Bahn".equals(longName))
-				return new Line(id, Product.REGIONAL_TRAIN, "EB");
+				return new Line(id, network, Product.REGIONAL_TRAIN, "EB");
 			if ("EBx".equals(trainType) || "Erfurter Bahn Express".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "EBx" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "EBx" + trainNum);
 			if ("Erfurter Bahn Express".equals(longName))
-				return new Line(id, Product.REGIONAL_TRAIN, "EBx");
+				return new Line(id, network, Product.REGIONAL_TRAIN, "EBx");
 			if ("MRB".equals(trainType) || "Mitteldeutsche Regiobahn".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "MRB" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "MRB" + trainNum);
 			if ("ABR".equals(trainType) || "ABELLIO Rail NRW GmbH".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "ABR" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "ABR" + trainNum);
 			if ("NEB".equals(trainType) || "NEB Niederbarnimer Eisenbahn".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "NEB" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "NEB" + trainNum);
 			if ("OE".equals(trainType) || "Ostdeutsche Eisenbahn GmbH".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "OE" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "OE" + trainNum);
 			if ("ODE".equals(trainType))
-				return new Line(id, Product.REGIONAL_TRAIN, symbol);
+				return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
 			if ("OLA".equals(trainType) || "Ostseeland Verkehr GmbH".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "OLA" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "OLA" + trainNum);
 			if ("UBB".equals(trainType) || "Usedomer Bäderbahn".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "UBB" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "UBB" + trainNum);
 			if ("EVB".equals(trainType) || "ELBE-WESER GmbH".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "EVB" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "EVB" + trainNum);
 			if ("RTB".equals(trainType) || "Rurtalbahn GmbH".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "RTB" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "RTB" + trainNum);
 			if ("STB".equals(trainType) || "Süd-Thüringen-Bahn".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "STB" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "STB" + trainNum);
 			if ("HTB".equals(trainType) || "Hellertalbahn".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "HTB" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "HTB" + trainNum);
 			if ("VBG".equals(trainType) || "Vogtlandbahn".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "VBG" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "VBG" + trainNum);
 			if ("CB".equals(trainType) || "City-Bahn Chemnitz".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "CB" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "CB" + trainNum);
 			if ("VEC".equals(trainType) || "vectus Verkehrsgesellschaft".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "VEC" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "VEC" + trainNum);
 			if ("HzL".equals(trainType) || "Hohenzollerische Landesbahn AG".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "HzL" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "HzL" + trainNum);
 			if ("SBB".equals(trainType) || "SBB GmbH".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "SBB" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "SBB" + trainNum);
 			if ("MBB".equals(trainType) || "Mecklenburgische Bäderbahn Molli".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "MBB" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "MBB" + trainNum);
 			if ("OS".equals(trainType)) // Osobní vlak
-				return new Line(id, Product.REGIONAL_TRAIN, "OS" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "OS" + trainNum);
 			if ("SP".equals(trainType) || "Sp".equals(trainType)) // Spěšný vlak
-				return new Line(id, Product.REGIONAL_TRAIN, "SP" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "SP" + trainNum);
 			if ("Dab".equals(trainType) || "Daadetalbahn".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "Dab" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "Dab" + trainNum);
 			if ("FEG".equals(trainType) || "Freiberger Eisenbahngesellschaft".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "FEG" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "FEG" + trainNum);
 			if ("ARR".equals(trainType) || "ARRIVA".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "ARR" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "ARR" + trainNum);
 			if ("HSB".equals(trainType) || "Harzer Schmalspurbahn".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "HSB" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "HSB" + trainNum);
 			if ("ALX".equals(trainType) || "alex - Länderbahn und Vogtlandbahn GmbH".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "ALX" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "ALX" + trainNum);
 			if ("EX".equals(trainType) || "Fatra".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "EX" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "EX" + trainNum);
 			if ("ME".equals(trainType) || "metronom".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "ME" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "ME" + trainNum);
 			if ("metronom".equals(longName))
-				return new Line(id, Product.REGIONAL_TRAIN, "ME");
+				return new Line(id, network, Product.REGIONAL_TRAIN, "ME");
 			if ("MEr".equals(trainType))
-				return new Line(id, Product.REGIONAL_TRAIN, "MEr" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "MEr" + trainNum);
 			if ("AKN".equals(trainType) || "AKN Eisenbahn AG".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "AKN" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "AKN" + trainNum);
 			if ("SOE".equals(trainType) || "Sächsisch-Oberlausitzer Eisenbahngesellschaft".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "SOE" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "SOE" + trainNum);
 			if ("VIA".equals(trainType) || "VIAS GmbH".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "VIA" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "VIA" + trainNum);
 			if ("BRB".equals(trainType) || "Bayerische Regiobahn".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "BRB" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "BRB" + trainNum);
 			if ("BLB".equals(trainType) || "Berchtesgadener Land Bahn".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "BLB" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "BLB" + trainNum);
 			if ("HLB".equals(trainType) || "Hessische Landesbahn".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "HLB" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "HLB" + trainNum);
 			if ("NOB".equals(trainType) || "NordOstseeBahn".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "NOB" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "NOB" + trainNum);
 			if ("NBE".equals(trainType) || "Nordbahn Eisenbahngesellschaft".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "NBE" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "NBE" + trainNum);
 			if ("VEN".equals(trainType) || "Rhenus Veniro".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "VEN" + trainType);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "VEN" + trainType);
 			if ("DPN".equals(trainType) || "Nahreisezug".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "DPN" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "DPN" + trainNum);
 			if ("RBG".equals(trainType) || "Regental Bahnbetriebs GmbH".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "RBG" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "RBG" + trainNum);
 			if ("BOB".equals(trainType) || "Bodensee-Oberschwaben-Bahn".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "BOB" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "BOB" + trainNum);
 			if ("VE".equals(trainType) || "Vetter".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "VE" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "VE" + trainNum);
 			if ("SDG".equals(trainType) || "SDG Sächsische Dampfeisenbahngesellschaft mbH".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "SDG" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "SDG" + trainNum);
 			if ("PRE".equals(trainType) || "Pressnitztalbahn".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "PRE" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "PRE" + trainNum);
 			if ("VEB".equals(trainType) || "Vulkan-Eifel-Bahn".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "VEB" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "VEB" + trainNum);
 			if ("neg".equals(trainType) || "Norddeutsche Eisenbahn Gesellschaft".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "neg" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "neg" + trainNum);
 			if ("AVG".equals(trainType) || "Felsenland-Express".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "AVG" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "AVG" + trainNum);
 			if ("P".equals(trainType) || "BayernBahn Betriebs-GmbH".equals(trainName) || "Brohltalbahn".equals(trainName)
 					|| "Kasbachtalbahn".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "P" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "P" + trainNum);
 			if ("SBS".equals(trainType) || "Städtebahn Sachsen".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "SBS" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "SBS" + trainNum);
 			if ("SES".equals(trainType) || "Städteexpress Sachsen".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "SES" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "SES" + trainNum);
 			if ("SB-".equals(trainType)) // Städtebahn Sachsen
-				return new Line(id, Product.REGIONAL_TRAIN, "SB" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "SB" + trainNum);
 			if ("ag".equals(trainType)) // agilis
-				return new Line(id, Product.REGIONAL_TRAIN, "ag" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "ag" + trainNum);
 			if ("agi".equals(trainType) || "agilis".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "agi" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "agi" + trainNum);
 			if ("as".equals(trainType) || "agilis-Schnellzug".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "as" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "as" + trainNum);
 			if ("TLX".equals(trainType) || "TRILEX".equals(trainName)) // Trilex (Vogtlandbahn)
-				return new Line(id, Product.REGIONAL_TRAIN, "TLX" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "TLX" + trainNum);
 			if ("MSB".equals(trainType) || "Mainschleifenbahn".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "MSB" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "MSB" + trainNum);
 			if ("BE".equals(trainType) || "Bentheimer Eisenbahn".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "BE" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "BE" + trainNum);
 			if ("erx".equals(trainType) || "erixx - Der Heidesprinter".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "erx" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "erx" + trainNum);
 			if ("SWEG-Zug".equals(trainName)) // Südwestdeutschen Verkehrs-Aktiengesellschaft
-				return new Line(id, Product.REGIONAL_TRAIN, "SWEG" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "SWEG" + trainNum);
 			if ("SWEG-Zug".equals(longName))
-				return new Line(id, Product.REGIONAL_TRAIN, "SWEG");
+				return new Line(id, network, Product.REGIONAL_TRAIN, "SWEG");
 			if ("EGP Eisenbahngesellschaft Potsdam".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "EGP" + trainNumStr);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "EGP" + trainNumStr);
 			if ("ÖBB".equals(trainType) || "ÖBB".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "ÖBB" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "ÖBB" + trainNum);
 			if ("CAT".equals(trainType)) // City Airport Train Wien
-				return new Line(id, Product.REGIONAL_TRAIN, "CAT" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "CAT" + trainNum);
 			if ("DZ".equals(trainType) || "Dampfzug".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "DZ" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "DZ" + trainNum);
 			if ("CD".equals(trainType)) // Tschechien
-				return new Line(id, Product.REGIONAL_TRAIN, "CD" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "CD" + trainNum);
 			if ("VR".equals(trainType)) // Polen
-				return new Line(id, Product.REGIONAL_TRAIN, symbol);
+				return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
 			if ("PR".equals(trainType)) // Polen
-				return new Line(id, Product.REGIONAL_TRAIN, symbol);
+				return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
 			if ("KD".equals(trainType)) // Koleje Dolnośląskie (Niederschlesische Eisenbahn)
-				return new Line(id, Product.REGIONAL_TRAIN, symbol);
+				return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
 			if ("Koleje Dolnoslaskie".equals(trainName) && symbol != null) // Koleje Dolnośląskie
-				return new Line(id, Product.REGIONAL_TRAIN, symbol);
+				return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
 			if ("OO".equals(trainType) || "Ordinary passenger (o.pas.)".equals(trainName)) // GB
-				return new Line(id, Product.REGIONAL_TRAIN, "OO" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "OO" + trainNum);
 			if ("XX".equals(trainType) || "Express passenger    (ex.pas.)".equals(trainName)) // GB
-				return new Line(id, Product.REGIONAL_TRAIN, "XX" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "XX" + trainNum);
 			if ("XZ".equals(trainType) || "Express passenger sleeper".equals(trainName)) // GB
-				return new Line(id, Product.REGIONAL_TRAIN, "XZ" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "XZ" + trainNum);
 			if ("ATB".equals(trainType)) // Autoschleuse Tauernbahn
-				return new Line(id, Product.REGIONAL_TRAIN, "ATB" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "ATB" + trainNum);
 			if ("ATZ".equals(trainType)) // Autozug
-				return new Line(id, Product.REGIONAL_TRAIN, "ATZ" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "ATZ" + trainNum);
 			if ("AZ".equals(trainType) || "Auto-Zug".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "AZ" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "AZ" + trainNum);
 			if ("DWE".equals(trainType) || "Dessau-Wörlitzer Eisenbahn".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "DWE" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "DWE" + trainNum);
 			if ("KTB".equals(trainType) || "Kandertalbahn".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "KTB" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "KTB" + trainNum);
 			if ("CBC".equals(trainType) || "CBC".equals(trainName)) // City-Bahn Chemnitz
-				return new Line(id, Product.REGIONAL_TRAIN, "CBC" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "CBC" + trainNum);
 			if ("Bernina Express".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, trainNum);
 			if ("STR".equals(trainType)) // Harzquerbahn, Nordhausen
-				return new Line(id, Product.REGIONAL_TRAIN, "STR" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "STR" + trainNum);
 			if ("EXT".equals(trainType) || "Extrazug".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "EXT" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "EXT" + trainNum);
 			if ("Heritage Railway".equals(trainName)) // GB
-				return new Line(id, Product.REGIONAL_TRAIN, symbol);
+				return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
 			if ("WTB".equals(trainType) || "Wutachtalbahn".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "WTB" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "WTB" + trainNum);
 			if ("DB".equals(trainType) || "DB Regio".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "DB" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "DB" + trainNum);
 			if ("M".equals(trainType) && "Meridian".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "M" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "M" + trainNum);
 			if ("M".equals(trainType) && "Messezug".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "M" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "M" + trainNum);
 			if ("EZ".equals(trainType)) // ÖBB Erlebniszug
-				return new Line(id, Product.REGIONAL_TRAIN, "EZ" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "EZ" + trainNum);
 			if ("DPF".equals(trainType))
-				return new Line(id, Product.REGIONAL_TRAIN, "DPF" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "DPF" + trainNum);
 			if ("WBA".equals(trainType) || "Waldbahn".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, "WBA" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "WBA" + trainNum);
 			if ("ÖBA".equals(trainType) && trainNum != null) // Eisenbahn-Betriebsgesellschaft Ochsenhausen
-				return new Line(id, Product.REGIONAL_TRAIN, "ÖBA" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "ÖBA" + trainNum);
 			if (("UEF".equals(trainType) || "Ulmer Eisenbahnfreunde".equals(trainName)) && trainNum != null)
-				return new Line(id, Product.REGIONAL_TRAIN, "UEF" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "UEF" + trainNum);
 			if (("DBG".equals(trainType) || "Döllnitzbahn".equals(trainName)) && trainNum != null)
-				return new Line(id, Product.REGIONAL_TRAIN, "DBG" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "DBG" + trainNum);
 			if (("TL".equals(trainType) || "Trilex".equals(trainName)) && trainNum != null)
-				return new Line(id, Product.REGIONAL_TRAIN, "TL" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "TL" + trainNum);
 			if (("OPB".equals(trainType) || "oberpfalzbahn".equals(trainName)) && trainNum != null)
-				return new Line(id, Product.REGIONAL_TRAIN, "OPB" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "OPB" + trainNum);
 			if (("OPX".equals(trainType) || "oberpfalz-express".equals(trainName)) && trainNum != null)
-				return new Line(id, Product.REGIONAL_TRAIN, "OPX" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "OPX" + trainNum);
 			if (("V6".equals(trainType) || "vlexx".equals(trainName)) && trainNum != null)
-				return new Line(id, Product.REGIONAL_TRAIN, "vlexx" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "vlexx" + trainNum);
 			if (("ARZ".equals(trainType) || "Autoreisezug".equals(trainName)) && trainNum != null)
-				return new Line(id, Product.REGIONAL_TRAIN, "ARZ" + trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, "ARZ" + trainNum);
 
 			if ("BSB-Zug".equals(trainName) && trainNum != null) // Breisgau-S-Bahn
-				return new Line(id, Product.SUBURBAN_TRAIN, trainNum);
+				return new Line(id, network, Product.SUBURBAN_TRAIN, trainNum);
 			if ("BSB-Zug".equals(trainName) && trainNum == null)
-				return new Line(id, Product.SUBURBAN_TRAIN, "BSB");
+				return new Line(id, network, Product.SUBURBAN_TRAIN, "BSB");
 			if ("BSB-Zug".equals(longName))
-				return new Line(id, Product.SUBURBAN_TRAIN, "BSB");
+				return new Line(id, network, Product.SUBURBAN_TRAIN, "BSB");
 			if ("RSB".equals(trainType)) // Regionalschnellbahn, Wien
-				return new Line(id, Product.SUBURBAN_TRAIN, "RSB" + trainNum);
+				return new Line(id, network, Product.SUBURBAN_TRAIN, "RSB" + trainNum);
 			if ("RER".equals(trainName) && symbol != null && symbol.length() == 1) // Réseau Express Régional,
 																					// Frankreich
-				return new Line(id, Product.SUBURBAN_TRAIN, symbol);
+				return new Line(id, network, Product.SUBURBAN_TRAIN, symbol);
 			if ("S".equals(trainType))
-				return new Line(id, Product.SUBURBAN_TRAIN, "S" + trainNum);
+				return new Line(id, network, Product.SUBURBAN_TRAIN, "S" + trainNum);
 			if ("S-Bahn".equals(trainName))
-				return new Line(id, Product.SUBURBAN_TRAIN, "S" + trainNumStr);
+				return new Line(id, network, Product.SUBURBAN_TRAIN, "S" + trainNumStr);
 
 			if ("RT".equals(trainType) || "RegioTram".equals(trainName))
-				return new Line(id, Product.TRAM, "RT" + trainNum);
+				return new Line(id, network, Product.TRAM, "RT" + trainNum);
 
 			if ("Bus".equals(trainType))
-				return new Line(id, Product.BUS, "" + trainNum);
+				return new Line(id, network, Product.BUS, "" + trainNum);
 			if ("SEV".equals(trainType) || "SEV".equals(trainNum) || "SEV".equals(trainName) || "SEV".equals(symbol) || "BSV".equals(trainType)
 					|| "Ersatzverkehr".equals(trainName) || "Schienenersatzverkehr".equals(trainName))
-				return new Line(id, Product.BUS, "SEV" + trainNumStr);
+				return new Line(id, network, Product.BUS, "SEV" + trainNumStr);
 			if ("Bus replacement".equals(trainName)) // GB
-				return new Line(id, Product.BUS, "BR");
+				return new Line(id, network, Product.BUS, "BR");
 			if ("BR".equals(trainType) && trainName != null && trainName.startsWith("Bus")) // GB
-				return new Line(id, Product.BUS, "BR" + trainNum);
+				return new Line(id, network, Product.BUS, "BR" + trainNum);
 
 			if ("GB".equals(trainType)) // Gondelbahn
-				return new Line(id, Product.CABLECAR, "GB" + trainNum);
+				return new Line(id, network, Product.CABLECAR, "GB" + trainNum);
 			if ("SB".equals(trainType)) // Seilbahn
-				return new Line(id, Product.SUBURBAN_TRAIN, "SB" + trainNum);
+				return new Line(id, network, Product.SUBURBAN_TRAIN, "SB" + trainNum);
 
 			if ("ZUG".equals(trainType) && trainNum != null)
-				return new Line(id, null, trainNum);
+				return new Line(id, network, null, trainNum);
 			if (symbol != null && P_LINE_NUMBER.matcher(symbol).matches() && trainType == null && trainName == null)
-				return new Line(id, null, symbol);
+				return new Line(id, network, null, symbol);
 			if ("N".equals(trainType) && trainName == null && symbol == null)
-				return new Line(id, null, "N" + trainNum);
+				return new Line(id, network, null, "N" + trainNum);
 			if ("Train".equals(trainName))
-				return new Line(id, null, null);
+				return new Line(id, network, null, null);
 
 			// generic
 			if (trainName != null && trainType == null && trainNum == null)
-				return new Line(id, null, trainName);
+				return new Line(id, network, null, trainName);
 		}
 		else if ("1".equals(mot))
 		{
 			if (symbol != null && P_LINE_S.matcher(symbol).matches())
-				return new Line(id, Product.SUBURBAN_TRAIN, symbol);
+				return new Line(id, network, Product.SUBURBAN_TRAIN, symbol);
 			if (name != null && P_LINE_S.matcher(name).matches())
-				return new Line(id, Product.SUBURBAN_TRAIN, name);
+				return new Line(id, network, Product.SUBURBAN_TRAIN, name);
 			if ("S-Bahn".equals(trainName))
-				return new Line(id, Product.SUBURBAN_TRAIN, "S" + Strings.nullToEmpty(trainNum));
+				return new Line(id, network, Product.SUBURBAN_TRAIN, "S" + Strings.nullToEmpty(trainNum));
 			if ("S5X".equals(symbol))
-				return new Line(id, Product.SUBURBAN_TRAIN, "S5X");
+				return new Line(id, network, Product.SUBURBAN_TRAIN, "S5X");
 			if (symbol != null && symbol.equals(name))
 			{
 				final Matcher m = P_LINE_S_DB.matcher(symbol);
 				if (m.matches())
-					return new Line(id, Product.SUBURBAN_TRAIN, m.group(1));
+					return new Line(id, network, Product.SUBURBAN_TRAIN, m.group(1));
 			}
 		}
 		else if ("2".equals(mot))
 		{
-			return new Line(id, Product.SUBWAY, name);
+			return new Line(id, network, Product.SUBWAY, name);
 		}
 		else if ("3".equals(mot) || "4".equals(mot))
 		{
-			return new Line(id, Product.TRAM, name);
+			return new Line(id, network, Product.TRAM, name);
 		}
 		else if ("5".equals(mot) || "6".equals(mot) || "7".equals(mot) || "10".equals(mot))
 		{
 			if ("Schienenersatzverkehr".equals(name))
-				return new Line(id, Product.BUS, "SEV");
+				return new Line(id, network, Product.BUS, "SEV");
 			else
-				return new Line(id, Product.BUS, name);
+				return new Line(id, network, Product.BUS, name);
 		}
 		else if ("8".equals(mot))
 		{
-			return new Line(id, Product.CABLECAR, name);
+			return new Line(id, network, Product.CABLECAR, name);
 		}
 		else if ("9".equals(mot))
 		{
-			return new Line(id, Product.FERRY, name);
+			return new Line(id, network, Product.FERRY, name);
 		}
 		else if ("11".equals(mot))
 		{
-			return new Line(id, null, ParserUtils.firstNotEmpty(symbol, name));
+			return new Line(id, network, null, ParserUtils.firstNotEmpty(symbol, name));
 		}
 
 		throw new IllegalStateException("cannot normalize mot='" + mot + "' symbol='" + symbol + "' name='" + name + "' long='" + longName
@@ -1811,8 +1812,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			}
 
 			final String network = lineId.substring(0, lineId.indexOf(':'));
-			final Line parsedLine = parseLine(lineId, productType, symbol, symbol, null, trainType, trainNum, productName);
-			line = new Line(parsedLine.id, parsedLine.product, parsedLine.label, lineStyle(network, parsedLine.product, parsedLine.label));
+			final Line parsedLine = parseLine(lineId, network, productType, symbol, symbol, null, trainType, trainNum, productName);
+			line = new Line(parsedLine.id, parsedLine.network, parsedLine.product, parsedLine.label, lineStyle(parsedLine.network,
+					parsedLine.product, parsedLine.label));
 		}
 
 		XmlPullUtil.skipExit(pp, "m");
@@ -1980,9 +1982,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		final String trainType = ParserUtils.firstNotEmpty(slTrainType, itdTrainType);
 		final String trainName = ParserUtils.firstNotEmpty(slTrainName, itdTrainName);
 
-		final Line line = parseLine(slStateless, slMotType, slSymbol, slNumber, slNumber, trainType, slTrainNum, trainName);
-
-		return new Line(line.id, line.product, line.label, lineStyle(divaNetwork, line.product, line.label), itdMessage);
+		final Line line = parseLine(slStateless, divaNetwork, slMotType, slSymbol, slNumber, slNumber, trainType, slTrainNum, trainName);
+		return new Line(line.id, line.network, line.product, line.label, lineStyle(line.network, line.product, line.label), itdMessage);
 	}
 
 	private static final Pattern P_STATION_NAME_WHITESPACE = Pattern.compile("\\s+");
@@ -2524,9 +2525,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 							final Line line;
 							if ("AST".equals(motSymbol))
-								line = new Line(null, Product.BUS, "AST");
+								line = new Line(null, divaNetwork, Product.BUS, "AST");
 							else
-								line = parseLine(lineId, motType, motSymbol, motShortName, motName, motTrainType, motShortName, motTrainName);
+								line = parseLine(lineId, divaNetwork, motType, motSymbol, motShortName, motName, motTrainType, motShortName,
+										motTrainName);
 
 							final Integer departureDelay;
 							final Integer arrivalDelay;
@@ -2700,8 +2702,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							final Set<Line.Attr> lineAttrs = new HashSet<Line.Attr>();
 							if (wheelChairAccess || lowFloorVehicle)
 								lineAttrs.add(Line.Attr.WHEEL_CHAIR_ACCESS);
-							final Line styledLine = new Line(line.id, line.product, line.label, lineStyle(divaNetwork, line.product, line.label),
-									lineAttrs);
+							final Line styledLine = new Line(line.id, line.network, line.product, line.label, lineStyle(line.network, line.product,
+									line.label), lineAttrs);
 
 							final Stop departure = new Stop(departureLocation, true, departureTargetTime != null ? departureTargetTime
 									: departureTime, departureTime != null ? departureTime : null, departurePosition, null);

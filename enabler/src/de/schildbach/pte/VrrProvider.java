@@ -48,36 +48,37 @@ public class VrrProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	protected Line parseLine(final @Nullable String id, final @Nullable String mot, final @Nullable String symbol, final @Nullable String name,
-			final @Nullable String longName, final @Nullable String trainType, final @Nullable String trainNum, final @Nullable String trainName)
+	protected Line parseLine(final @Nullable String id, final @Nullable String network, final @Nullable String mot, final @Nullable String symbol,
+			final @Nullable String name, final @Nullable String longName, final @Nullable String trainType, final @Nullable String trainNum,
+			final @Nullable String trainName)
 	{
 		if ("0".equals(mot))
 		{
 			if (trainType == null && "RB67/71".equals(trainNum))
-				return new Line(id, Product.REGIONAL_TRAIN, trainNum);
+				return new Line(id, network, Product.REGIONAL_TRAIN, trainNum);
 			if ("Regionalbahn".equals(trainName) && symbol != null)
-				return new Line(id, Product.REGIONAL_TRAIN, symbol);
+				return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
 			if ("NordWestBahn".equals(trainName) && symbol != null)
-				return new Line(id, Product.REGIONAL_TRAIN, symbol);
+				return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
 
 			if (trainType == null && "SEV7".equals(trainNum))
-				return new Line(id, Product.BUS, trainNum);
+				return new Line(id, network, Product.BUS, trainNum);
 
 			if ("Zug".equals(longName))
-				return new Line(id, null, "Zug");
+				return new Line(id, network, null, "Zug");
 		}
 		else if ("11".equals(mot))
 		{
 			// Wuppertaler Schwebebahn & SkyTrain D'dorf
 			if ("Schwebebahn".equals(trainName) || (longName != null && longName.startsWith("Schwebebahn")))
-				return new Line(id, Product.CABLECAR, name);
+				return new Line(id, network, Product.CABLECAR, name);
 
 			// H-Bahn TU Dortmund
 			if ("H-Bahn".equals(trainName) || (longName != null && longName.startsWith("H-Bahn")))
-				return new Line(id, Product.CABLECAR, name);
+				return new Line(id, network, Product.CABLECAR, name);
 		}
 
-		return super.parseLine(id, mot, symbol, name, longName, trainType, trainNum, trainName);
+		return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
 	}
 
 	private static final Map<String, Style> STYLES = new HashMap<String, Style>();

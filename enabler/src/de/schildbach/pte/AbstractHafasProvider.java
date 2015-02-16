@@ -3115,14 +3115,14 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	{
 		if (attrs.length == 0)
 		{
-			return new Line(null, product, normalizedName, lineStyle(null, product, normalizedName), comment);
+			return new Line(null, null, product, normalizedName, lineStyle(null, product, normalizedName), comment);
 		}
 		else
 		{
 			final Set<Line.Attr> attrSet = new HashSet<Line.Attr>();
 			for (final Line.Attr attr : attrs)
 				attrSet.add(attr);
-			return new Line(null, product, normalizedName, lineStyle(null, product, normalizedName), attrSet, comment);
+			return new Line(null, null, product, normalizedName, lineStyle(null, product, normalizedName), attrSet, comment);
 		}
 	}
 }

@@ -40,40 +40,43 @@ public final class Line implements Serializable, Comparable<Line>
 	private static final long serialVersionUID = -5642533805998375070L;
 
 	public final @Nullable String id;
+	public final @Nullable String network;
 	public final @Nullable Product product;
 	public final @Nullable String label;
 	public final @Nullable Style style;
 	public final @Nullable Set<Attr> attrs;
 	public final @Nullable String message;
 
-	public static final Line FOOTWAY = new Line(null, null, null);
-	public static final Line TRANSFER = new Line(null, null, null);
-	public static final Line SECURE_CONNECTION = new Line(null, null, null);
-	public static final Line DO_NOT_CHANGE = new Line(null, null, null);
+	public static final Line FOOTWAY = new Line(null, null, null, null);
+	public static final Line TRANSFER = new Line(null, null, null, null);
+	public static final Line SECURE_CONNECTION = new Line(null, null, null, null);
+	public static final Line DO_NOT_CHANGE = new Line(null, null, null, null);
 
-	public Line(final String id, final Product product, final String label)
+	public Line(final String id, final String network, final Product product, final String label)
 	{
-		this(id, product, label, null, null, null);
+		this(id, network, product, label, null, null, null);
 	}
 
-	public Line(final String id, final Product product, final String label, final Style style)
+	public Line(final String id, final String network, final Product product, final String label, final Style style)
 	{
-		this(id, product, label, style, null, null);
+		this(id, network, product, label, style, null, null);
 	}
 
-	public Line(final String id, final Product product, final String label, final Style style, final String message)
+	public Line(final String id, final String network, final Product product, final String label, final Style style, final String message)
 	{
-		this(id, product, label, style, null, message);
+		this(id, network, product, label, style, null, message);
 	}
 
-	public Line(final String id, final Product product, final String label, final Style style, final Set<Attr> attrs)
+	public Line(final String id, final String network, final Product product, final String label, final Style style, final Set<Attr> attrs)
 	{
-		this(id, product, label, style, attrs, null);
+		this(id, network, product, label, style, attrs, null);
 	}
 
-	public Line(final String id, final Product product, final String label, final Style style, final Set<Attr> attrs, final String message)
+	public Line(final String id, final String network, final Product product, final String label, final Style style, final Set<Attr> attrs,
+			final String message)
 	{
 		this.id = id;
+		this.network = network;
 		this.product = product;
 		this.label = label;
 		this.style = style;
@@ -101,21 +104,26 @@ public final class Line implements Serializable, Comparable<Line>
 		if (!(o instanceof Line))
 			return false;
 		final Line other = (Line) o;
+		if (!Objects.equal(this.network, other.network))
+			return false;
 		if (!Objects.equal(this.product, other.product))
 			return false;
-		return Objects.equal(this.label, other.label);
+		if (!Objects.equal(this.label, other.label))
+			return false;
+		return true;
 	}
 
 	@Override
 	public int hashCode()
 	{
-		return Objects.hashCode(product, label);
+		return Objects.hashCode(network, product, label);
 	}
 
 	@Override
 	public String toString()
 	{
 		return MoreObjects.toStringHelper(this) //
+				.addValue(network) //
 				.addValue(product) //
 				.addValue(label) //
 				.toString();
@@ -124,6 +132,7 @@ public final class Line implements Serializable, Comparable<Line>
 	public int compareTo(final Line other)
 	{
 		return ComparisonChain.start() //
+				.compare(this.network, other.network, Ordering.natural().nullsLast()) //
 				.compare(this.product, other.product, Ordering.natural().nullsLast()) //
 				.compare(this.label, other.label, Ordering.natural().nullsLast()) //
 				.result();

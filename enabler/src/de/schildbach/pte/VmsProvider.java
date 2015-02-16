@@ -35,22 +35,23 @@ public class VmsProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	protected Line parseLine(final @Nullable String id, final @Nullable String mot, final @Nullable String symbol, final @Nullable String name,
-			final @Nullable String longName, final @Nullable String trainType, final @Nullable String trainNum, final @Nullable String trainName)
+	protected Line parseLine(final @Nullable String id, final @Nullable String network, final @Nullable String mot, final @Nullable String symbol,
+			final @Nullable String name, final @Nullable String longName, final @Nullable String trainType, final @Nullable String trainNum,
+			final @Nullable String trainName)
 	{
 		if ("0".equals(mot))
 		{
 			if ("Ilztalbahn".equals(trainName) && trainNum == null)
-				return new Line(id, Product.REGIONAL_TRAIN, "ITB");
+				return new Line(id, network, Product.REGIONAL_TRAIN, "ITB");
 			if ("Meridian".equals(trainName) && trainNum == null)
-				return new Line(id, Product.REGIONAL_TRAIN, "M");
+				return new Line(id, network, Product.REGIONAL_TRAIN, "M");
 			if ("CityBahn".equals(trainName) && trainNum == null)
-				return new Line(id, Product.REGIONAL_TRAIN, "CB");
+				return new Line(id, network, Product.REGIONAL_TRAIN, "CB");
 
 			if ("RE 3".equals(symbol) && "Zug".equals(longName))
-				return new Line(id, Product.REGIONAL_TRAIN, "RE3");
+				return new Line(id, network, Product.REGIONAL_TRAIN, "RE3");
 		}
 
-		return super.parseLine(id, mot, symbol, name, longName, trainType, trainNum, trainName);
+		return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
 	}
 }

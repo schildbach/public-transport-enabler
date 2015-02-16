@@ -51,17 +51,18 @@ public class KvvProvider extends AbstractEfaProvider
 	private static final Pattern P_LINE = Pattern.compile("(.*?)\\s+\\([\\w/]+\\)", Pattern.CASE_INSENSITIVE);
 
 	@Override
-	protected Line parseLine(final @Nullable String id, final @Nullable String mot, final @Nullable String symbol, final @Nullable String name,
-			final @Nullable String longName, final @Nullable String trainType, final @Nullable String trainNum, final @Nullable String trainName)
+	protected Line parseLine(final @Nullable String id, final @Nullable String network, final @Nullable String mot, final @Nullable String symbol,
+			final @Nullable String name, final @Nullable String longName, final @Nullable String trainType, final @Nullable String trainNum,
+			final @Nullable String trainName)
 	{
 		if (name != null)
 		{
 			final Matcher m = P_LINE.matcher(name);
 			if (m.matches())
-				return super.parseLine(id, mot, symbol, m.group(1), longName, trainType, trainNum, trainName);
+				return super.parseLine(id, network, mot, symbol, m.group(1), longName, trainType, trainNum, trainName);
 		}
 
-		return super.parseLine(id, mot, symbol, name, longName, trainType, trainNum, trainName);
+		return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
 		// TODO check for " (Ersatzverkehr)"
 	}
 
