@@ -19,6 +19,8 @@ package de.schildbach.pte;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.Charsets;
+
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Product;
 
@@ -27,13 +29,16 @@ import de.schildbach.pte.dto.Product;
  */
 public class VrnProvider extends AbstractEfaProvider
 {
-	private static final String API_BASE = "http://fahrplanauskunft.vrn.de/vrn_mobile/";
+	private static final String API_BASE = "http://fahrplanauskunft.vrn.de/vrn/";
 
+	// http://fahrplanauskunft.vrn.de/vrn_mobile/
 	// http://efa9.vrn.de/vrt/
 
 	public VrnProvider()
 	{
 		super(NetworkId.VRN, API_BASE);
+
+		setRequestUrlEncoding(Charsets.UTF_8);
 	}
 
 	@Override
