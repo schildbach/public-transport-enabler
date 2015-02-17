@@ -1484,8 +1484,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		final int day = c.get(Calendar.DAY_OF_MONTH);
 		final int hour = c.get(Calendar.HOUR_OF_DAY);
 		final int minute = c.get(Calendar.MINUTE);
-		uri.append("&itdDate=").append(ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%04d%02d%02d", year, month, day)));
-		uri.append("&itdTime=").append(ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%02d%02d", hour, minute)));
+		uri.append("&itdDate=").append(String.format(Locale.ENGLISH, "%04d%02d%02d", year, month, day));
+		uri.append("&itdTime=").append(String.format(Locale.ENGLISH, "%02d%02d", hour, minute));
 	}
 
 	private QueryDeparturesResult xsltDepartureMonitorRequest(final String stationId, final @Nullable Date time, final int maxDepartures,
