@@ -20,6 +20,8 @@ package de.schildbach.pte;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.common.base.Charsets;
+
 import de.schildbach.pte.dto.Style;
 
 /**
@@ -33,6 +35,7 @@ public class SvvProvider extends AbstractEfaProvider
 	{
 		super(NetworkId.SVV, API_BASE);
 
+		setRequestUrlEncoding(Charsets.UTF_8);
 		setStyles(STYLES);
 	}
 

@@ -76,6 +76,14 @@ public class SvvProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
+	public void suggestLocationsWithUmlaut() throws Exception
+	{
+		final SuggestLocationsResult result = suggestLocations("Salzburg Süd");
+		print(result);
+		assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "60650458")));
+	}
+
+	@Test
 	public void suggestLocationsCoverage() throws Exception
 	{
 		final SuggestLocationsResult salzburgResult = suggestLocations("Salzburg Süd");
