@@ -74,6 +74,11 @@ public class BayernProvider extends AbstractEfaProvider
 			if ("ZUG".equals(trainType) && trainNum != null)
 				return new Line(id, network, Product.REGIONAL_TRAIN, trainNum);
 		}
+		else if ("1".equals(mot))
+		{
+			if ("ABR".equals(trainType) || "ABELLIO Rail NRW GmbH".equals(trainName))
+				return new Line(id, network, Product.SUBURBAN_TRAIN, "ABR" + trainNum);
+		}
 		else if ("16".equals(mot))
 		{
 			if ("EC".equals(trainType) && trainNum != null)

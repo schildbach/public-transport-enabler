@@ -100,6 +100,8 @@ public class SydneyProvider extends AbstractEfaProvider
 				return new Line(id, network, Product.SUBURBAN_TRAIN, "SCO");
 			if ("HUN".equals(symbol) || "Hunter Line".equals(symbol))
 				return new Line(id, network, Product.SUBURBAN_TRAIN, "HUN");
+			if ("SWR".equals(symbol)) // South West Rail Link
+				return new Line(id, network, Product.SUBURBAN_TRAIN, "SWR");
 
 			if ("T1".equals(symbol) || "T1 North Shore & Northern Line".equals(symbol) || "T1 Northern Line".equals(symbol)
 					|| "T1 Western Line".equals(symbol))

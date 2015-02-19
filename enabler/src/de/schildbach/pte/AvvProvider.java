@@ -50,6 +50,18 @@ public class AvvProvider extends AbstractEfaProvider
 		{
 			if ("Regionalbahn".equals(trainName) && symbol != null)
 				return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
+
+			// Streikfahrplan
+			if ("R1S".equals(symbol))
+				return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
+			if ("R4S".equals(symbol))
+				return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
+			if ("R6S".equals(symbol))
+				return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
+			if ("R7S".equals(symbol))
+				return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
+			if ("R8S".equals(symbol))
+				return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
 		}
 
 		return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);

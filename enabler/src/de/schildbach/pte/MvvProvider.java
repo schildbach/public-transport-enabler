@@ -71,6 +71,11 @@ public class MvvProvider extends AbstractEfaProvider
 			if ("DB AG".equals(trainName))
 				return new Line(id, network, null, symbol);
 		}
+		else if ("1".equals(mot))
+		{
+			if ("S".equals(symbol) && "Pendelverkehr".equals(name))
+				return new Line(id, network, Product.SUBURBAN_TRAIN, "S⇆");
+		}
 
 		return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
 	}

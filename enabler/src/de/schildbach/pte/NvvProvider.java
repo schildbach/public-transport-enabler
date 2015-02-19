@@ -198,6 +198,8 @@ public class NvvProvider extends AbstractHafasProvider
 
 		if ("AT".equals(ucType)) // Anschluß Sammel Taxi, Anmeldung nicht erforderlich
 			return Product.BUS;
+		if ("LTAXI".equals(ucType))
+			return Product.BUS;
 
 		if ("MOFA".equals(ucType)) // Mobilfalt-Fahrt
 			return Product.ON_DEMAND;

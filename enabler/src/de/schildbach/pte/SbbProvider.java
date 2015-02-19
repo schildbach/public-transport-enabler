@@ -151,6 +151,8 @@ public class SbbProvider extends AbstractHafasProvider
 			return Product.REGIONAL_TRAIN;
 		if ("T".equals(ucType))
 			return Product.REGIONAL_TRAIN;
+		if ("TE2".equals(ucType)) // Basel - Strasbourg
+			return Product.REGIONAL_TRAIN;
 
 		if ("TX".equals(ucType))
 			return Product.BUS;

@@ -27,6 +27,7 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.Charsets;
 
+import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
@@ -67,6 +68,20 @@ public class VorProvider extends AbstractEfaProvider
 		}
 
 		return uri.toString();
+	}
+
+	@Override
+	protected Line parseLine(final @Nullable String id, final @Nullable String network, final @Nullable String mot, final @Nullable String symbol,
+			final @Nullable String name, final @Nullable String longName, final @Nullable String trainType, final @Nullable String trainNum,
+			final @Nullable String trainName)
+	{
+		if ("0".equals(mot))
+		{
+			if ("WLB".equals(trainNum) && trainType == null)
+				return new Line(id, network, Product.TRAM, "WLB");
+		}
+
+		return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
 	}
 
 	private static final Map<String, Style> STYLES = new HashMap<String, Style>();
