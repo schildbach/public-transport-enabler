@@ -106,4 +106,18 @@ public class ParserUtilsTest
 		assertTrue(ParserUtils
 				.testInternalError("<?xml version=\"1.0\"?>     <!DOCTYPE html PUBLIC \"-//WAPFORUM//DTD XHTML Mobile 1.0//EN\"    \"http://www.wapforum.org/DTD/xhtml-mobile10.dtd\">      <html xmlns=\"http://www.w3.org/1999/xhtml\">      <head>        <title>          Internal error in gateway     </title>       </head>       <body>        <h1>          Internal error in gateway     </h1>       </body>      </html>"));
 	}
+
+	@Test
+	public void vgnInternalError() throws Exception
+	{
+		assertTrue(ParserUtils
+				.testInternalError("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=ISO-8859-1\"/><meta http-equiv=\"Expires\" content=\"0\"/><title>Efa9 Internal Error</title></head><body><div style=\"font: bold large Arial;\">Internal Error</div><div style=\"font: normal x-small Arial;\">.\\EfaHttpServer.cpp</div><div style=\"font: normal x-small Arial;\">Line: 2507</div></body></html>"));
+	}
+
+	@Test
+	public void vrnInternalError() throws Exception
+	{
+		assertTrue(ParserUtils
+				.testInternalError("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"><html><head><title>VRN - Keine Verbindung zum Server möglich</title></head><body><center><table border=\"0\" width=\"450\" cellpadding=\"5\"><tr><td height=\"50\">&nbsp;</td></tr><tr><td align=\"center\"><img src=\"/vrn/ExceptionFiles/cookies.jpg\"></td></tr></table></center></body></html>"));
+	}
 }
