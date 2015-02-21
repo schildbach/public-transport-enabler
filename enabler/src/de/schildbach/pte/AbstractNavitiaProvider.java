@@ -854,8 +854,16 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 			queryUri.append(uri());
 			if (equivs)
 			{
-				final String stopAreaId = getStopAreaId(stationId);
-				queryUri.append("stop_areas/" + stopAreaId + "/");
+				final String header = stationId.substring(0, stationId.indexOf(":"));
+				if (header.equals("stop_point"))
+				{
+					final String stopAreaId = getStopAreaId(stationId);
+					queryUri.append("stop_areas/" + stopAreaId + "/");
+				}
+				else if (header.equals("stop_area"))
+				{
+					queryUri.append("stop_areas/" + stationId + "/");
+				}
 			}
 			else
 			{

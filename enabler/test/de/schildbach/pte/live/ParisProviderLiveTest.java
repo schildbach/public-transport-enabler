@@ -113,6 +113,27 @@ public class ParisProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
+	public void queryDeparturesStopArea() throws Exception
+	{
+		final int maxDepartures = 5;
+		final QueryDeparturesResult result = queryDepartures("stop_area:RTP:SA:1958", maxDepartures, true);
+		assertEquals(QueryDeparturesResult.Status.OK, result.status);
+		assertTrue(result.stationDepartures.size() > 1);
+		int nbDepartures = 0;
+		int nbLines = 0;
+		for (final StationDepartures stationDepartures : result.stationDepartures)
+		{
+			nbDepartures += stationDepartures.departures.size();
+			final List<LineDestination> lines = stationDepartures.lines;
+			if (lines != null)
+				nbLines += lines.size();
+		}
+		assertTrue(nbDepartures <= maxDepartures);
+		assertTrue(nbLines >= 2);
+		print(result);
+	}
+
+	@Test
 	public void queryDeparturesEquivsTrue() throws Exception
 	{
 		final int maxDepartures = 5;
