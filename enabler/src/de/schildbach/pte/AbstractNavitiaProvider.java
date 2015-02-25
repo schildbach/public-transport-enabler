@@ -765,14 +765,14 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 	{
 		final ResultHeader resultHeader = new ResultHeader(network, SERVER_PRODUCT, SERVER_VERSION, 0, null);
 
-		// Check that Location object has coordinates.
-		if (!location.isIdentified())
-			throw new IllegalArgumentException();
-
 		// Build query uri depending of location type.
 		final String queryUriType;
-		if (location.type == LocationType.ADDRESS)
+		if (location.type == LocationType.ADDRESS || location.type == LocationType.ANY)
 		{
+			if (!location.hasLocation())
+			{
+				throw new IllegalArgumentException();
+			}
 			final double lon = location.lon / 1E6;
 			final double lat = location.lat / 1E6;
 
@@ -780,10 +780,18 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 		}
 		else if (location.type == LocationType.STATION)
 		{
+			if (!location.isIdentified())
+			{
+				throw new IllegalArgumentException();
+			}
 			queryUriType = "stop_point/" + location.id + "/";
 		}
 		else if (location.type == LocationType.POI)
 		{
+			if (!location.isIdentified())
+			{
+				throw new IllegalArgumentException();
+			}
 			queryUriType = "poi/" + location.id + "/";
 		}
 		else

@@ -90,6 +90,15 @@ public class ParisProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
+	public void nearbyStationsAny() throws Exception
+	{
+		final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION),
+				new Location(LocationType.ANY, 48877523, 2378353), 700, 10);
+		assertEquals(NearbyLocationsResult.Status.OK, result.status);
+		print(result);
+	}
+
+	@Test
 	public void nearbyStationsInvalidStation() throws Exception
 	{
 		final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION), new Location(LocationType.STATION,
