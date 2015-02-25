@@ -197,8 +197,13 @@ public class ParisProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryTripAddressStation() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 48785419, 2212051), null, new Location(LocationType.STATION,
-				"stop_area:RTP:SA:4284898"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final SuggestLocationsResult fromResult = suggestLocations("155 bd hopital paris");
+		assertTrue(fromResult.getLocations().size() > 0);
+		final SuggestLocationsResult toResult = suggestLocations("Gare St-Lazare");
+		assertTrue(toResult.getLocations().size() > 0);
+
+		final QueryTripsResult result = queryTrips(fromResult.getLocations().get(0), null, toResult.getLocations().get(0), new Date(), true,
+				Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		print(result);
 	}
@@ -206,8 +211,13 @@ public class ParisProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryTripStations() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "stop_area:RTP:SA:4036290"), null, new Location(
-				LocationType.STATION, "stop_area:RTP:SA:1804"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final SuggestLocationsResult fromResult = suggestLocations("Campo Formio");
+		assertTrue(fromResult.getLocations().size() > 0);
+		final SuggestLocationsResult toResult = suggestLocations("Gare St-Lazare");
+		assertTrue(toResult.getLocations().size() > 0);
+
+		final QueryTripsResult result = queryTrips(fromResult.getLocations().get(0), null, toResult.getLocations().get(0), new Date(), true,
+				Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		print(result);
 	}
@@ -215,8 +225,13 @@ public class ParisProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryTripStations2() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "stop_area:RTP:SA:3812993"), null, new Location(
-				LocationType.STATION, "stop_area:RTP:SA:4036290"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final SuggestLocationsResult fromResult = suggestLocations("Tour Eiffel");
+		assertTrue(fromResult.getLocations().size() > 0);
+		final SuggestLocationsResult toResult = suggestLocations("Orsay Ville");
+		assertTrue(toResult.getLocations().size() > 0);
+
+		final QueryTripsResult result = queryTrips(fromResult.getLocations().get(0), null, toResult.getLocations().get(0), new Date(), true,
+				Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		print(result);
 	}
@@ -224,8 +239,13 @@ public class ParisProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void queryTripStations3() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 48787056, 2209731), null, new Location(LocationType.STATION,
-				"stop_area:RTP:SA:4036290"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final SuggestLocationsResult fromResult = suggestLocations("Tour Eiffel");
+		assertTrue(fromResult.getLocations().size() > 0);
+		final SuggestLocationsResult toResult = suggestLocations("Campo Formio");
+		assertTrue(toResult.getLocations().size() > 0);
+
+		final QueryTripsResult result = queryTrips(fromResult.getLocations().get(0), null, toResult.getLocations().get(0), new Date(), true,
+				Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		print(result);
 	}
