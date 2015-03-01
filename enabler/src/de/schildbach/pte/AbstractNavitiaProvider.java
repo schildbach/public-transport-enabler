@@ -85,7 +85,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 
 	private enum SectionType
 	{
-		CROW_FLY, PUBLIC_TRANSPORT, STREET_NETWORK, TRANSFER, WAITING
+		CROW_FLY, PUBLIC_TRANSPORT, STREET_NETWORK, TRANSFER, WAITING, STAY_IN, ON_DEMAND_TRANSPORT, BSS_RENT, BSS_PUT_BACK, BOARDING, LANDING
 	}
 
 	private enum TransferType
