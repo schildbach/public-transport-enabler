@@ -65,7 +65,7 @@ public enum NetworkId
 	PL,
 
 	// Italy
-	ATC,
+	ATC, IT,
 
 	// United Arab Emirates
 	DUB,
