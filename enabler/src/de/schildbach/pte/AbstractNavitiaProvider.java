@@ -93,9 +93,9 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 		BIKE, WALKING
 	}
 
-	private enum CommercialMode
+	private enum PhysicalMode
 	{
-		BUS, TRAIN, TRAM, TRAMWAY, METRO, FERRY, CABLECAR, RAPIDTRANSIT, FUNICULAR, DEFAULT_COMMERCIAL_MODE
+		AIR, BOAT, BUS, BUSRAPIDTRANSIT, COACH, FERRY, FUNICULAR, LOCALTRAIN, LONGDISTANCETRAIN, METRO, RAPIDTRANSIT, SHUTTLE, TAXI, TRAIN, TRAMWAY
 	}
 
 	@SuppressWarnings("serial")
@@ -396,7 +396,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 				final String linkType = link.getString("type");
 				if (linkType.equals("line"))
 					lineId = link.getString("id");
-				else if (linkType.equals("commercial_mode"))
+				else if (linkType.equals("physical_mode"))
 					modeId = link.getString("id");
 			}
 
@@ -604,17 +604,21 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 
 	private Product parseLineProductFromMode(final String modeId)
 	{
-		final String modeType = modeId.replace("commercial_mode:", "");
-		final CommercialMode commercialMode = CommercialMode.valueOf(modeType.toUpperCase());
+		final String modeType = modeId.replace("physical_mode:", "");
+		final PhysicalMode physicalMode = PhysicalMode.valueOf(modeType.toUpperCase());
 
-		switch (commercialMode)
+		switch (physicalMode)
 		{
 			case BUS:
+			case BUSRAPIDTRANSIT:
+			case COACH:
+			case SHUTTLE:
 				return Product.BUS;
 			case RAPIDTRANSIT:
 			case TRAIN:
+			case LOCALTRAIN:
+			case LONGDISTANCETRAIN:
 				return Product.SUBURBAN_TRAIN;
-			case TRAM:
 			case TRAMWAY:
 				return Product.TRAM;
 			case METRO:
@@ -622,9 +626,9 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 			case FERRY:
 				return Product.FERRY;
 			case FUNICULAR:
-			case CABLECAR:
 				return Product.CABLECAR;
-			case DEFAULT_COMMERCIAL_MODE:
+			case TAXI:
+				return Product.ON_DEMAND;
 			default:
 				throw new IllegalArgumentException("Unhandled place type: " + modeId);
 		}
@@ -639,13 +643,32 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 			if (cachedProduct != null)
 				return cachedProduct;
 
-			final JSONObject mode = line.getJSONObject("commercial_mode");
+			final JSONObject mode = getLinePhysicalMode(lineId);
 			final String modeId = mode.getString("id");
 			final Product product = parseLineProductFromMode(modeId);
 
 			lineProductCache.put(lineId, product);
 
 			return product;
+		}
+		catch (final JSONException jsonExc)
+		{
+			throw new ParserException(jsonExc);
+		}
+	}
+
+	private JSONObject getLinePhysicalMode(final String lineId) throws IOException
+	{
+		final String uri = uri() + "lines/" + ParserUtils.urlEncode(lineId) + "/physical_modes";
+		final CharSequence page = ParserUtils.scrape(uri, authorization);
+
+		try
+		{
+			final JSONObject head = new JSONObject(page.toString());
+			final JSONArray physicalModes = head.getJSONArray("physical_modes");
+			final JSONObject physicalMode = physicalModes.getJSONObject(0);
+
+			return physicalMode;
 		}
 		catch (final JSONException jsonExc)
 		{
@@ -1049,34 +1072,48 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 					queryUri.append("&last_section_mode=bike");
 				}
 
-				// Set forbidden commercial modes.
+				// Set forbidden physical modes.
 				if (products != null && !products.equals(Product.ALL))
 				{
+					queryUri.append("&forbidden_uris[]=physical_mode:Air");
+					queryUri.append("&forbidden_uris[]=physical_mode:Boat");
+					if (!products.contains(Product.REGIONAL_TRAIN))
+					{
+						queryUri.append("&forbidden_uris[]=physical_mode:Localdistancetrain");
+						queryUri.append("&forbidden_uris[]=physical_mode:Train");
+					}
 					if (!products.contains(Product.SUBURBAN_TRAIN))
 					{
-						queryUri.append("&forbidden_uris[]=commercial_mode:train");
-						queryUri.append("&forbidden_uris[]=commercial_mode:rapidtransit");
+						queryUri.append("&forbidden_uris[]=physical_mode:Localtrain");
+						queryUri.append("&forbidden_uris[]=physical_mode:Train");
+						queryUri.append("&forbidden_uris[]=physical_mode:Rapidtransit");
 					}
 					if (!products.contains(Product.SUBWAY))
 					{
-						queryUri.append("&forbidden_uris[]=commercial_mode:metro");
+						queryUri.append("&forbidden_uris[]=physical_mode:Metro");
 					}
 					if (!products.contains(Product.TRAM))
 					{
-						queryUri.append("&forbidden_uris[]=commercial_mode:tram");
+						queryUri.append("&forbidden_uris[]=physical_mode:Tramway");
 					}
 					if (!products.contains(Product.BUS))
 					{
-						queryUri.append("&forbidden_uris[]=commercial_mode:bus");
+						queryUri.append("&forbidden_uris[]=physical_mode:Bus");
+						queryUri.append("&forbidden_uris[]=physical_mode:Busrapidtransit");
+						queryUri.append("&forbidden_uris[]=physical_mode:Coach");
+						queryUri.append("&forbidden_uris[]=physical_mode:Shuttle");
 					}
 					if (!products.contains(Product.FERRY))
 					{
-						queryUri.append("&forbidden_uris[]=commercial_mode:ferry");
+						queryUri.append("&forbidden_uris[]=physical_mode:Ferry");
 					}
 					if (!products.contains(Product.CABLECAR))
 					{
-						queryUri.append("&forbidden_uris[]=commercial_mode:funicular");
-						queryUri.append("&forbidden_uris[]=commercial_mode:cablecar");
+						queryUri.append("&forbidden_uris[]=physical_mode:Funicular");
+					}
+					if (!products.contains(Product.ON_DEMAND))
+					{
+						queryUri.append("&forbidden_uris[]=physical_mode:Taxi");
 					}
 				}
 
