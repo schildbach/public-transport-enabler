@@ -37,7 +37,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
-import javax.annotation.RegEx;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -365,7 +364,7 @@ public class VrsProvider extends AbstractNetworkProvider {
 				final JSONObject line = lines.getJSONObject(i);
 				final String number = line.getString("number");
 				final Product product = productFromLineNumber(number);
-				final LineDestination lineDestination = new LineDestination(new Line(null /* id */, product, number, lineStyle("vrs", product, number)), null /* destination */);
+				final LineDestination lineDestination = new LineDestination(new Line(null /* id */, NetworkId.VRS.toString(), product, number, lineStyle("vrs", product, number)), null /* destination */);
 				lineDestinations.add(lineDestination);
 				// System.out.println("LineDestination " + lineDestination);
 			}
@@ -669,7 +668,7 @@ public class VrsProvider extends AbstractNetworkProvider {
 		final Product productObj = parseProduct(product, number);
 		final Style style = lineStyle("vrs", productObj, number);
 		// System.out.format("Line %s has style %x %x %x\n", number, style.backgroundColor & 0xFFFFFF, style.foregroundColor & 0xFFFFFF, style.borderColor & 0xFFFFFF);
-		return new Line(null /* id=? */, productObj, number, style);
+		return new Line(null /* id=? */, NetworkId.VRS.toString(), productObj, number, style);
 	}
 
 	private Product parseProduct(String product, String number) {
