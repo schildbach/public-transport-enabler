@@ -116,7 +116,7 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
 
 	@Test
 	public void queryDepartures() throws Exception {
-		final QueryDeparturesResult result = queryDepartures("1502", false);
+		final QueryDeparturesResult result = queryDepartures("687", false);
 		print(result);
 	}
 
@@ -246,6 +246,22 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
 	}
 
 	@Test
+	public void testTripBonnHbfBonnBeuel() throws Exception {
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "687"), null, new Location(LocationType.STATION, "1504"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		print(result);
+		assertEquals(QueryTripsResult.Status.OK, result.status);
+		assertTrue(result.trips.size() > 0);
+	}
+
+	@Test
+	public void testTripBonnHbfDorotheenstr() throws Exception {
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "687"), null, new Location(LocationType.STATION, "1150"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		print(result);
+		assertEquals(QueryTripsResult.Status.OK, result.status);
+		assertTrue(result.trips.size() > 0);
+	}
+
+	@Test
 	public void testTripByCoord() throws Exception {
 		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, 50740530, 7129200), null, new Location(LocationType.ANY, 50933930, 6932440), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
@@ -259,12 +275,6 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
 		print(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);
-	}
-
-	@Test
-	public void testTripTooClose() throws Exception {
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, 50738590, 7127650), null, new Location(LocationType.ANY, 50738590, 7127650), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		assertEquals(QueryTripsResult.Status.SERVICE_DOWN, result.status);
 	}
 
 	@Ignore

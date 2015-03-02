@@ -33,8 +33,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
+import javax.annotation.RegEx;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -113,7 +116,8 @@ public class VrsProvider extends AbstractNetworkProvider {
 	protected static final String API_BASE = "http://android.vrsinfo.de/index.php";
 	protected static final boolean httpPost = false;
 	protected static final String SERVER_PRODUCT = "vrs";
-	protected static final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'kk:mm:ssX");
+	protected static final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'kk:mm:ssZ");
+	protected static final Pattern nameWithPosition = Pattern.compile("(.*) - (.*)");
 
 	protected static final Map<String, Style> STYLES = new HashMap<String, Style>();
 
@@ -202,13 +206,10 @@ public class VrsProvider extends AbstractNetworkProvider {
 	}
 
 	public VrsProvider() {
+		super(NetworkId.VRS);
 		setStyles(STYLES);
 	}
 	
-	public NetworkId id() {
-		return NetworkId.VRS;
-	}
-
 	@Override
 	protected boolean hasCapability(Capability capability) {
 		switch (capability) {
@@ -251,7 +252,7 @@ public class VrsProvider extends AbstractNetworkProvider {
 			final List<Location> locations = new ArrayList<Location>();
 			final JSONObject head = new JSONObject(page.toString());
 			if (contains(head, "error")) {
-				return new NearbyLocationsResult(new ResultHeader(SERVER_PRODUCT), NearbyLocationsResult.Status.SERVICE_DOWN);
+				return new NearbyLocationsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT), NearbyLocationsResult.Status.SERVICE_DOWN);
 			}
 			final JSONArray timetable = head.getJSONArray("timetable");
 			long serverTime = 0;
@@ -266,9 +267,9 @@ public class VrsProvider extends AbstractNetworkProvider {
 				if (types.contains(loc.type) || types.contains(LocationType.ANY)) {
 					locations.add(loc);
 				}
-				serverTime = dateTimeFormat.parse(timetable.getJSONObject(i).getString("generated")).getTime();
+				serverTime = parseDateTime(timetable.getJSONObject(i).getString("generated")).getTime();
 			}
-			final ResultHeader header = new ResultHeader(SERVER_PRODUCT, null, serverTime != 0 ? serverTime : null, null);
+			final ResultHeader header = new ResultHeader(NetworkId.VRS, SERVER_PRODUCT, null, serverTime != 0 ? serverTime : null, null);
 			return new NearbyLocationsResult(header, locations);
 		} catch (final JSONException x) {
 			throw new RuntimeException("cannot parse: '" + page + "' on " + uri, x);
@@ -295,10 +296,10 @@ public class VrsProvider extends AbstractNetworkProvider {
 		try {
 			final JSONObject head = new JSONObject(page.toString());
 			if (contains(head, "error")) {
-				return new QueryDeparturesResult(new ResultHeader(SERVER_PRODUCT), QueryDeparturesResult.Status.SERVICE_DOWN);
+				return new QueryDeparturesResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT), QueryDeparturesResult.Status.SERVICE_DOWN);
 			}
 			final JSONArray timetable = head.getJSONArray("timetable");
-			final ResultHeader header = new ResultHeader(SERVER_PRODUCT);
+			final ResultHeader header = new ResultHeader(NetworkId.VRS, SERVER_PRODUCT);
 			final QueryDeparturesResult result = new QueryDeparturesResult(header);
 			// for all stations
 			for (int i = 0; i < timetable.length(); i++) {
@@ -312,17 +313,19 @@ public class VrsProvider extends AbstractNetworkProvider {
 					Date plannedTime = null;
 					Date predictedTime = null;
 					if (contains(event, "departureScheduled")) {
-						plannedTime = dateTimeFormat.parse(event.getString("departureScheduled"));
-						predictedTime = dateTimeFormat.parse(event.getString("departure"));
+						plannedTime = parseDateTime(event.getString("departureScheduled"));
+						predictedTime = parseDateTime(event.getString("departure"));
 					} else {
-						plannedTime = dateTimeFormat.parse(event.getString("departure"));
+						plannedTime = parseDateTime(event.getString("departure"));
 					}
 					final JSONObject lineObj = event.getJSONObject("line");
 					final Line line = parseLine(lineObj);
 					Position position = null;
 					if (contains(event, "post")) {
 						JSONObject post = event.getJSONObject("post");
-						position = new Position(post.getString("name"));
+						final String positionStr = post.getString("name");
+						position = new Position(positionStr.substring(positionStr.lastIndexOf(' ') + 1));
+						// System.out.println("Position is " + position);
 					}
 					final Location destination = new Location(LocationType.STATION, null, null, lineObj.getString("direction"));
 					Departure d = new Departure(plannedTime, predictedTime, line, position, destination, null, null);
@@ -393,7 +396,7 @@ public class VrsProvider extends AbstractNetworkProvider {
 
 			final JSONObject head = new JSONObject(page.toString());
 			if (contains(head, "error")) {
-				return new SuggestLocationsResult(new ResultHeader(SERVER_PRODUCT), SuggestLocationsResult.Status.SERVICE_DOWN);
+				return new SuggestLocationsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT), SuggestLocationsResult.Status.SERVICE_DOWN);
 			}
 			final JSONArray stops = head.optJSONArray("stops");
 			final JSONArray addresses = head.optJSONArray("addresses");
@@ -420,7 +423,7 @@ public class VrsProvider extends AbstractNetworkProvider {
 				locations.add(new SuggestedLocation(location, i + stops.length() + pois.length()));
 			}
 
-			final ResultHeader header = new ResultHeader(SERVER_PRODUCT);
+			final ResultHeader header = new ResultHeader(NetworkId.VRS, SERVER_PRODUCT);
 			return new SuggestLocationsResult(header, locations);
 		} catch (final JSONException x) {
 			throw new RuntimeException("cannot parse: '" + page + "' on " + uri, x);
@@ -448,22 +451,22 @@ public class VrsProvider extends AbstractNetworkProvider {
 		String toString = generateLocation(to, ambiguousTo);
 		
 		if (!ambiguousFrom.isEmpty() || !ambiguousVia.isEmpty() || !ambiguousTo.isEmpty()) {
-			return new QueryTripsResult(new ResultHeader(SERVER_PRODUCT),
+			return new QueryTripsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT),
 					ambiguousFrom.isEmpty() ? null : ambiguousFrom,
 					ambiguousVia.isEmpty() ? null : ambiguousVia,
 					ambiguousTo.isEmpty() ? null : ambiguousTo);
 		}
 		
 		if (fromString == null) {
-			return new QueryTripsResult(new ResultHeader(SERVER_PRODUCT), QueryTripsResult.Status.UNKNOWN_FROM);
+			return new QueryTripsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT), QueryTripsResult.Status.UNKNOWN_FROM);
 		}
 		if (via != null && viaString == null) {
-			return new QueryTripsResult(new ResultHeader(SERVER_PRODUCT), QueryTripsResult.Status.UNKNOWN_VIA);
+			return new QueryTripsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT), QueryTripsResult.Status.UNKNOWN_VIA);
 		}
 		if (toString == null) {
-			return new QueryTripsResult(new ResultHeader(SERVER_PRODUCT), QueryTripsResult.Status.UNKNOWN_TO);
+			return new QueryTripsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT), QueryTripsResult.Status.UNKNOWN_TO);
 		}
-		
+
 		final StringBuilder parameters = new StringBuilder();
 		parameters.append("?eID=tx_vrsinfo_ass2_router&f=").append(fromString).append("&t=").append(toString);
 		if (via != null) {
@@ -492,7 +495,7 @@ public class VrsProvider extends AbstractNetworkProvider {
 			final List<Trip> trips = new ArrayList<Trip>();
 			final JSONObject head = new JSONObject(page.toString());
 			if (contains(head, "error")) {
-				return new QueryTripsResult(new ResultHeader(SERVER_PRODUCT), QueryTripsResult.Status.SERVICE_DOWN);
+				return new QueryTripsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT), QueryTripsResult.Status.SERVICE_DOWN);
 			}
 			final JSONArray routes = head.getJSONArray("routes");
 			final Context context = new Context();
@@ -509,32 +512,36 @@ public class VrsProvider extends AbstractNetworkProvider {
 					// System.out.println("Segment " + j);
 					final JSONObject segment = segments.getJSONObject(j);
 					final String type = segment.getString("type");
-					final Location segmentOrigin = parseLocation(segment.getJSONObject("origin"));
+					final JSONObject origin = segment.getJSONObject("origin");
+					final Location segmentOrigin = parseLocation(origin);
+					final Position segmentOriginPosition = parsePositionFromJSONObject(origin);
 					if (j == 0) {
 						tripOrigin = segmentOrigin;
 					}
-					final Location segmentDestination = parseLocation(segment.getJSONObject("destination"));
+					final JSONObject destination = segment.getJSONObject("destination");
+					final Location segmentDestination = parseLocation(destination);
+					final Position segmentDestinationPosition = parsePositionFromJSONObject(destination);
 					if (j == segments.length() - 1) {
 						tripDestination = segmentDestination;
 					}
 					Date departurePlanned = null;
 					Date departurePredicted = null;
 					if (contains(segment, "departureScheduled")) {
-						departurePlanned = dateTimeFormat.parse(segment.getString("departureScheduled"));
-						departurePredicted = (contains(segment, "departure")) ? dateTimeFormat.parse(segment.getString("departure")) : null;
+						departurePlanned = parseDateTime(segment.getString("departureScheduled"));
+						departurePredicted = (contains(segment, "departure")) ? parseDateTime(segment.getString("departure")) : null;
 						context.departure(departurePredicted);
 					} else if (contains(segment, "departure")) {
-						departurePlanned = dateTimeFormat.parse(segment.getString("departure"));
+						departurePlanned = parseDateTime(segment.getString("departure"));
 						context.departure(departurePlanned);
 					}
 					Date arrivalPlanned = null;
 					Date arrivalPredicted = null;
 					if (contains(segment, "arrivalScheduled")) {
-						arrivalPlanned = dateTimeFormat.parse(segment.getString("arrivalScheduled"));
-						arrivalPredicted = (contains(segment, "arrival")) ? dateTimeFormat.parse(segment.getString("arrival")) : null;
+						arrivalPlanned = parseDateTime(segment.getString("arrivalScheduled"));
+						arrivalPredicted = (contains(segment, "arrival")) ? parseDateTime(segment.getString("arrival")) : null;
 						context.arrival(arrivalPredicted);
 					} else if (contains(segment, "arrival")) {
-						arrivalPlanned = dateTimeFormat.parse(segment.getString("arrival"));
+						arrivalPlanned = parseDateTime(segment.getString("arrival"));
 						context.arrival(arrivalPlanned);
 					}
 					long traveltime = segment.getLong("traveltime");
@@ -567,13 +574,13 @@ public class VrsProvider extends AbstractNetworkProvider {
 							arrivalPlanned = new Date(legs.get(j - 1).getArrivalTime().getTime() + traveltime * 1000);
 						}
 						legs.add(new Trip.Individual(Trip.Individual.Type.WALK, segmentOrigin, departurePlanned, segmentDestination, arrivalPlanned, points, (int) distance));
-						System.out.println("walk from " + departurePlanned + " until " + arrivalPlanned);
+						// System.out.println("walk from " + segmentOrigin + "//" + segmentOriginPosition + " at "+ departurePlanned + " to " + segmentDestination + "//" + segmentDestinationPosition + " at " + arrivalPlanned);
 					} else if (type.equals("publicTransport")) {
 						legs.add(new Trip.Public(line, segmentDestination,
-								new Stop(segmentOrigin, true /* departure */, departurePlanned, departurePredicted, null /* plannedPosition */, null /* predictedPosition */),
-								new Stop(segmentOrigin, false /* departure */, arrivalPlanned, arrivalPredicted, null /* plannedPosition */, null /* predeicedPosition */),
+								new Stop(segmentOrigin, true /* departure */, departurePlanned, departurePredicted, segmentOriginPosition, segmentOriginPosition),
+								new Stop(segmentOrigin, false /* departure */, arrivalPlanned, arrivalPredicted, segmentDestinationPosition, segmentDestinationPosition),
 								null /* intermediateStops */, points, message.toString()));
-						System.out.println("ride from " + departurePlanned + " until " + arrivalPlanned);
+						// System.out.println("ride from " + segmentOrigin + "//" + segmentOriginPosition + " at "+ departurePlanned + " to " + segmentDestination + "//" + segmentDestinationPosition + " at " + arrivalPlanned);
 					}
 				}
 				int changes = route.getInt("changes");
@@ -592,8 +599,8 @@ public class VrsProvider extends AbstractNetworkProvider {
 
 				trips.add(new Trip(null /* id */, tripOrigin, tripDestination, legs, fares, null /* capacity */, changes));
 			}
-			long serverTime = dateTimeFormat.parse(head.getString("generated")).getTime();
-			final ResultHeader header = new ResultHeader(SERVER_PRODUCT, null, serverTime, null);
+			long serverTime = parseDateTime(head.getString("generated")).getTime();
+			final ResultHeader header = new ResultHeader(NetworkId.VRS, SERVER_PRODUCT, null, serverTime, null);
 			context.from = from;
 			context.to = to;
 			context.via = via;
@@ -732,6 +739,11 @@ public class VrsProvider extends AbstractNetworkProvider {
 			locationType = LocationType.STATION;
 			id = location.getString("id");
 			name = location.getString("name");
+			// strip position (e.g.  "Bonn Hauptbahnhof (ZOB) - Bussteig F2")
+			Matcher matcher = nameWithPosition.matcher(name);
+			if (matcher.matches()) {
+				name = matcher.group(1);
+			}
 		} else if (contains(location, "street")) {
 			locationType = LocationType.ADDRESS;
 			id = location.getString("tempId");
@@ -784,5 +796,23 @@ public class VrsProvider extends AbstractNetworkProvider {
 		final int minute = c.get(Calendar.MINUTE);
 		final int second = c.get(Calendar.SECOND);
 		uri.append(ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%04d-%02d-%02dT%02d:%02d:%02dZ", year, month, day, hour, minute, second)));
+	}
+
+	private final Date parseDateTime(final String dateTimeStr) throws ParseException {
+		return dateTimeFormat.parse(dateTimeStr.substring(0, dateTimeStr.lastIndexOf(':')) + "00");
+	}
+
+	private Position parsePositionFromJSONObject(JSONObject location) throws JSONException {
+		if (contains(location, "id")) {
+			final String name = location.getString("name");
+			if (name != null) {
+				Matcher matcher = nameWithPosition.matcher(name);
+				if (matcher.matches()) {
+					final String position = matcher.group(2);
+					return new Position(position.substring(position.lastIndexOf(" ") + 1));
+				}
+			}
+		}
+		return null;
 	}
 }
