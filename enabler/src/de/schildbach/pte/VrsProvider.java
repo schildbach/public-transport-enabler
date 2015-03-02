@@ -34,6 +34,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
+import javax.annotation.Nullable;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -277,7 +279,7 @@ public class VrsProvider extends AbstractNetworkProvider {
 
 	// VRS does not show LongDistanceTrains departures. Parameter p for product
 	// filter is supported, but LongDistanceTrains filter seems to be ignored.
-	public QueryDeparturesResult queryDepartures(String stationId, Date time, int maxDepartures, boolean equivs /* not supported */) throws IOException {
+	public QueryDeparturesResult queryDepartures(String stationId, @Nullable Date time, int maxDepartures, boolean equivs /* not supported */) throws IOException {
 		// g=p means group by product
 		// d=minutes overwrites c=count and returns departures for the next d minutes
 		final StringBuilder parameters = new StringBuilder();
@@ -435,7 +437,7 @@ public class VrsProvider extends AbstractNetworkProvider {
 	// s: t => allow surcharge
 	// p: products as comma separated list
 	// TODO intermediate stops - how to query?
-	public QueryTripsResult queryTrips(final Location from, final Location via, final Location to, Date date, boolean dep, final Set<Product> products, final WalkSpeed walkSpeed /* not supported */, final Accessibility accessibility /* not * supported */, Set<Option> options /* not supported */) throws IOException {
+	public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to, Date date, boolean dep, final @Nullable Set<Product> products, final @Nullable WalkSpeed walkSpeed /* not supported */, final @Nullable Accessibility accessibility /* not * supported */, @Nullable Set<Option> options /* not supported */) throws IOException {
 		final List<Location> ambiguousFrom = new ArrayList<Location>();
 		String fromString = generateLocation(from, ambiguousFrom);
 
@@ -614,7 +616,7 @@ public class VrsProvider extends AbstractNetworkProvider {
 	}
 
 	@Override
-	public Style lineStyle(final String network, final Product product, final String label)
+	public Style lineStyle(final @Nullable String network, final @Nullable Product product, final @Nullable String label)
 	{
 		if (product == Product.BUS && label != null && label.startsWith("SB")) {
 			return super.lineStyle(network, product, "SB");
