@@ -54,60 +54,61 @@ public class SfProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	protected Line parseLine(final @Nullable String id, final @Nullable String mot, final @Nullable String symbol, final @Nullable String name,
-			final @Nullable String longName, final @Nullable String trainType, final @Nullable String trainNum, final @Nullable String trainName)
+	protected Line parseLine(final @Nullable String id, final @Nullable String network, final @Nullable String mot, final @Nullable String symbol,
+			final @Nullable String name, final @Nullable String longName, final @Nullable String trainType, final @Nullable String trainNum,
+			final @Nullable String trainName)
 	{
 		if ("0".equals(mot))
 		{
 			if (("XAA".equals(symbol) || "Daly City / Fremont".equals(symbol)) && "Daly City / Fremont".equals(name))
-				return new Line(id, Product.REGIONAL_TRAIN, "DALY/FRMT");
+				return new Line(id, network, Product.REGIONAL_TRAIN, "DALY/FRMT");
 			if (("FRE".equals(symbol) || "Fremont / Daly City".equals(symbol)) && "Fremont / Daly City".equals(name))
-				return new Line(id, Product.REGIONAL_TRAIN, "FRMT/DALY");
+				return new Line(id, network, Product.REGIONAL_TRAIN, "FRMT/DALY");
 			if (("XAC".equals(symbol) || "Fremont / Richmond".equals(symbol)) && "Fremont / Richmond".equals(name))
-				return new Line(id, Product.REGIONAL_TRAIN, "FRMT/RICH");
+				return new Line(id, network, Product.REGIONAL_TRAIN, "FRMT/RICH");
 			if (("XAD".equals(symbol) || "Richmond / Fremont".equals(symbol)) && "Richmond / Fremont".equals(name))
-				return new Line(id, Product.REGIONAL_TRAIN, "RICH/FRMT");
+				return new Line(id, network, Product.REGIONAL_TRAIN, "RICH/FRMT");
 			if (("XAE".equals(symbol) || "Pittsburg Bay Point / SFO".equals(symbol)) && "Pittsburg Bay Point / SFO".equals(name))
-				return new Line(id, Product.REGIONAL_TRAIN, "PITT/SFIA");
+				return new Line(id, network, Product.REGIONAL_TRAIN, "PITT/SFIA");
 			if (("SFI".equals(symbol) || "SFO / Pittsburg Bay Point".equals(symbol)) && "SFO / Pittsburg Bay Point".equals(name))
-				return new Line(id, Product.REGIONAL_TRAIN, "SFIA/PITT");
+				return new Line(id, network, Product.REGIONAL_TRAIN, "SFIA/PITT");
 			if (("XAF".equals(symbol) || "Millbrae / Richmond".equals(symbol)) && "Millbrae / Richmond".equals(name))
-				return new Line(id, Product.REGIONAL_TRAIN, "MLBR/RICH");
+				return new Line(id, network, Product.REGIONAL_TRAIN, "MLBR/RICH");
 			if (("XAG".equals(symbol) || "Richmond / Millbrae".equals(symbol)) && "Richmond / Millbrae".equals(name))
-				return new Line(id, Product.REGIONAL_TRAIN, "RICH/MLBR");
+				return new Line(id, network, Product.REGIONAL_TRAIN, "RICH/MLBR");
 			if (("XAH".equals(symbol) || "Daly City / Dublin Pleasanton".equals(symbol)) && "Daly City / Dublin Pleasanton".equals(name))
-				return new Line(id, Product.REGIONAL_TRAIN, "DALY/DUBL");
+				return new Line(id, network, Product.REGIONAL_TRAIN, "DALY/DUBL");
 			if (("XAI".equals(symbol) || "Dublin Pleasanton / Daly City".equals(symbol)) && "Dublin Pleasanton / Daly City".equals(name))
-				return new Line(id, Product.REGIONAL_TRAIN, "DUBL/DALY");
+				return new Line(id, network, Product.REGIONAL_TRAIN, "DUBL/DALY");
 
 			if ("LOC".equals(symbol) && "LOCAL".equals(name))
-				return new Line(id, Product.REGIONAL_TRAIN, "Local");
+				return new Line(id, network, Product.REGIONAL_TRAIN, "Local");
 			if ("CAP".equals(symbol) && "CAPITOL".equals(name))
-				return new Line(id, Product.REGIONAL_TRAIN, "Capitol");
+				return new Line(id, network, Product.REGIONAL_TRAIN, "Capitol");
 			if ("OAK".equals(symbol) && "OAK / Coliseum".equals(name))
-				return new Line(id, Product.REGIONAL_TRAIN, "OAK/Coliseum");
+				return new Line(id, network, Product.REGIONAL_TRAIN, "OAK/Coliseum");
 
 			if ("Muni Rail".equals(trainName) && symbol != null) // Muni
-				return new Line(id, Product.TRAM, symbol);
+				return new Line(id, network, Product.TRAM, symbol);
 			if (trainType == null && "F".equals(trainNum)) // Muni Historic Streetcar
-				return new Line(id, Product.TRAM, "F");
+				return new Line(id, network, Product.TRAM, "F");
 			if (trainType == null && "J".equals(trainNum)) // Muni Metro
-				return new Line(id, Product.TRAM, "J");
+				return new Line(id, network, Product.TRAM, "J");
 			if (trainType == null && "K".equals(trainNum)) // Muni Metro
-				return new Line(id, Product.TRAM, "K");
+				return new Line(id, network, Product.TRAM, "K");
 			if (trainType == null && "KT".equals(trainNum)) // Muni Metro
-				return new Line(id, Product.TRAM, "KT");
+				return new Line(id, network, Product.TRAM, "KT");
 			if (trainType == null && "L".equals(trainNum)) // Muni Metro
-				return new Line(id, Product.TRAM, "L");
+				return new Line(id, network, Product.TRAM, "L");
 			if (trainType == null && "M".equals(trainNum)) // Muni Metro
-				return new Line(id, Product.TRAM, "M");
+				return new Line(id, network, Product.TRAM, "M");
 			if (trainType == null && "N".equals(trainNum)) // Muni Metro
-				return new Line(id, Product.TRAM, "N");
+				return new Line(id, network, Product.TRAM, "N");
 			if (trainType == null && "T".equals(trainNum)) // Muni Metro
-				return new Line(id, Product.TRAM, "T");
+				return new Line(id, network, Product.TRAM, "T");
 		}
 
-		return super.parseLine(id, mot, symbol, name, longName, trainType, trainNum, trainName);
+		return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
 	}
 
 	private static final Map<String, Style> STYLES = new HashMap<String, Style>();

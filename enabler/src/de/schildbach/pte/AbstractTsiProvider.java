@@ -273,7 +273,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 			label.append(name);
 		}
 
-		return new Line(id, product, label.toString());
+		return new Line(id, operatorCode, product, label.toString());
 	}
 
 	private List<Location> identifyLocation(final Location location) throws IOException
@@ -576,7 +576,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 		final String codeActivity = jsonOptString(ptrInfo, "CodeActivity");
 
 		final Line line = createLine(id, transportMode, lineNumber, lineName, operatorCode, codeActivity);
-		final Line styledLine = new Line(line.id, line.product, line.label, lineStyle(network, line.product, line.label));
+		final Line styledLine = new Line(line.id, line.network, line.product, line.label, lineStyle(network, line.product, line.label));
 		return styledLine;
 	}
 

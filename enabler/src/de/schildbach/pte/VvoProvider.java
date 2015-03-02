@@ -45,31 +45,32 @@ public class VvoProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	protected Line parseLine(final @Nullable String id, final @Nullable String mot, final @Nullable String symbol, final @Nullable String name,
-			final @Nullable String longName, final @Nullable String trainType, final @Nullable String trainNum, final @Nullable String trainName)
+	protected Line parseLine(final @Nullable String id, final @Nullable String network, final @Nullable String mot, final @Nullable String symbol,
+			final @Nullable String name, final @Nullable String longName, final @Nullable String trainType, final @Nullable String trainNum,
+			final @Nullable String trainName)
 	{
 		if ("0".equals(mot))
 		{
 			if ("Twoje Linie Kolejowe".equals(trainName) && symbol != null)
-				return new Line(id, Product.HIGH_SPEED_TRAIN, "TLK" + symbol);
+				return new Line(id, network, Product.HIGH_SPEED_TRAIN, "TLK" + symbol);
 
 			if ("Regionalbahn".equals(trainName) && trainNum == null)
-				return new Line(id, Product.REGIONAL_TRAIN, null);
+				return new Line(id, network, Product.REGIONAL_TRAIN, null);
 			if ("Ostdeutsche Eisenbahn GmbH".equals(longName))
-				return new Line(id, Product.REGIONAL_TRAIN, "OE");
+				return new Line(id, network, Product.REGIONAL_TRAIN, "OE");
 			if ("Meridian".equals(longName))
-				return new Line(id, Product.REGIONAL_TRAIN, "M");
+				return new Line(id, network, Product.REGIONAL_TRAIN, "M");
 			if ("trilex".equals(longName))
-				return new Line(id, Product.REGIONAL_TRAIN, "TLX");
+				return new Line(id, network, Product.REGIONAL_TRAIN, "TLX");
 			if ("Trilex".equals(trainName) && trainNum == null)
-				return new Line(id, Product.REGIONAL_TRAIN, "TLX");
+				return new Line(id, network, Product.REGIONAL_TRAIN, "TLX");
 			if ("U28".equals(symbol)) // Nationalparkbahn
-				return new Line(id, Product.REGIONAL_TRAIN, "U28");
+				return new Line(id, network, Product.REGIONAL_TRAIN, "U28");
 
 			if ("Fernbus".equals(trainName) && trainNum == null)
-				return new Line(id, Product.BUS, trainName);
+				return new Line(id, network, Product.BUS, trainName);
 		}
 
-		return super.parseLine(id, mot, symbol, name, longName, trainType, trainNum, trainName);
+		return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
 	}
 }

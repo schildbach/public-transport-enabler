@@ -406,7 +406,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 			final String color = colorHex.equals("000000") ? "#FFFFFF" : "#" + colorHex;
 			final Style lineStyle = getLineStyle(product, code, color);
 
-			return new Line(lineId, product, code, lineStyle);
+			return new Line(lineId, null, product, code, lineStyle);
 		}
 		catch (final JSONException jsonExc)
 		{
@@ -591,7 +591,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 			final String code = jsonLine.getString("code");
 			final String color = "#" + jsonLine.getString("color");
 			final Style lineStyle = getLineStyle(product, code, color);
-			return new Line(lineId, product, code, lineStyle);
+			return new Line(lineId, null, product, code, lineStyle);
 		}
 		catch (final JSONException jsonExc)
 		{

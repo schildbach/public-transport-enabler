@@ -17,7 +17,9 @@
 
 package de.schildbach.pte.live;
 
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
@@ -85,7 +87,8 @@ public class VrnProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsWithUmlaut() throws Exception
 	{
-		final SuggestLocationsResult result = suggestLocations("grün");
+		final SuggestLocationsResult result = suggestLocations("Käfertal");
+		assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "6005547")));
 		print(result);
 	}
 
@@ -165,5 +168,16 @@ public class VrnProviderLiveTest extends AbstractProviderLiveTest
 
 		final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
 		print(earlierResult);
+	}
+
+	@Test
+	public void tripWithUmlaut() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "Käfertal"), null, new Location(LocationType.STATION,
+				"6002417", "Mannheim", "Hauptbahnhof"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		print(result);
+		assertEquals(QueryTripsResult.Status.OK, result.status);
+		assertTrue(result.trips.size() > 0);
+		assertEquals(result.trips.get(0).from, new Location(LocationType.STATION, "6005547"));
 	}
 }

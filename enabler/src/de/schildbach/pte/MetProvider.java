@@ -49,27 +49,28 @@ public class MetProvider extends AbstractEfaProvider
 	}
 
 	@Override
-	protected Line parseLine(final @Nullable String id, final @Nullable String mot, final @Nullable String symbol, final @Nullable String name,
-			final @Nullable String longName, final @Nullable String trainType, final @Nullable String trainNum, final @Nullable String trainName)
+	protected Line parseLine(final @Nullable String id, final @Nullable String network, final @Nullable String mot, final @Nullable String symbol,
+			final @Nullable String name, final @Nullable String longName, final @Nullable String trainType, final @Nullable String trainNum,
+			final @Nullable String trainName)
 	{
 		if ("0".equals(mot))
 		{
 			if ("Regional Train :".equals(longName))
-				return new Line(id, Product.REGIONAL_TRAIN, symbol);
+				return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
 			if ("Regional Train".equals(trainName))
-				return new Line(id, Product.REGIONAL_TRAIN, null);
+				return new Line(id, network, Product.REGIONAL_TRAIN, null);
 			if ("vPK".equals(symbol) && "Regional Train Pakenham".equals(longName))
-				return new Line(id, Product.REGIONAL_TRAIN, "V/Line");
+				return new Line(id, network, Product.REGIONAL_TRAIN, "V/Line");
 		}
 		else if ("1".equals(mot))
 		{
 			if (trainType == null && trainNum != null)
-				return new Line(id, Product.SUBURBAN_TRAIN, trainNum);
+				return new Line(id, network, Product.SUBURBAN_TRAIN, trainNum);
 			if ("Metropolitan Train".equals(trainName) && trainNum == null)
-				return new Line(id, Product.SUBURBAN_TRAIN, Strings.nullToEmpty(name));
+				return new Line(id, network, Product.SUBURBAN_TRAIN, Strings.nullToEmpty(name));
 		}
 
-		return super.parseLine(id, mot, symbol, name, longName, trainType, trainNum, trainName);
+		return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
 	}
 
 	private static final Map<String, Style> STYLES = new HashMap<String, Style>();

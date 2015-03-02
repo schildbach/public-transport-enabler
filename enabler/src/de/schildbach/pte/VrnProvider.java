@@ -19,6 +19,8 @@ package de.schildbach.pte;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.Charsets;
+
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Product;
 
@@ -27,25 +29,29 @@ import de.schildbach.pte.dto.Product;
  */
 public class VrnProvider extends AbstractEfaProvider
 {
-	private static final String API_BASE = "http://fahrplanauskunft.vrn.de/vrn_mobile/";
+	private static final String API_BASE = "http://fahrplanauskunft.vrn.de/vrn/";
 
+	// http://fahrplanauskunft.vrn.de/vrn_mobile/
 	// http://efa9.vrn.de/vrt/
 
 	public VrnProvider()
 	{
 		super(NetworkId.VRN, API_BASE);
+
+		setRequestUrlEncoding(Charsets.UTF_8);
 	}
 
 	@Override
-	protected Line parseLine(final @Nullable String id, final @Nullable String mot, final @Nullable String symbol, final @Nullable String name,
-			final @Nullable String longName, final @Nullable String trainType, final @Nullable String trainNum, final @Nullable String trainName)
+	protected Line parseLine(final @Nullable String id, final @Nullable String network, final @Nullable String mot, final @Nullable String symbol,
+			final @Nullable String name, final @Nullable String longName, final @Nullable String trainType, final @Nullable String trainNum,
+			final @Nullable String trainName)
 	{
 		if ("0".equals(mot))
 		{
 			if ("InterRegio".equals(longName) && symbol == null)
-				return new Line(id, Product.REGIONAL_TRAIN, "IR");
+				return new Line(id, network, Product.REGIONAL_TRAIN, "IR");
 		}
 
-		return super.parseLine(id, mot, symbol, name, longName, trainType, trainNum, trainName);
+		return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
 	}
 }
