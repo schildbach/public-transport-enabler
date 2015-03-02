@@ -270,7 +270,7 @@ public class VrsProvider extends AbstractNetworkProvider {
 				}
 				serverTime = parseDateTime(timetable.getJSONObject(i).getString("generated")).getTime();
 			}
-			final ResultHeader header = new ResultHeader(NetworkId.VRS, SERVER_PRODUCT, null, serverTime != 0 ? serverTime : null, null);
+			final ResultHeader header = new ResultHeader(NetworkId.VRS, SERVER_PRODUCT, null, serverTime, null);
 			return new NearbyLocationsResult(header, locations);
 		} catch (final JSONException x) {
 			throw new RuntimeException("cannot parse: '" + page + "' on " + uri, x);
