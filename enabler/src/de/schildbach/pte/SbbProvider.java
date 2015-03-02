@@ -27,19 +27,13 @@ import de.schildbach.pte.dto.Product;
  */
 public class SbbProvider extends AbstractHafasProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.SBB;
 	private static final String API_BASE = "http://fahrplan.sbb.ch/bin/";
 
 	public SbbProvider()
 	{
-		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 10);
+		super(NetworkId.SBB, API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 10);
 
 		setStationBoardHasStationTable(false);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 
 	@Override

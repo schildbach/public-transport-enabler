@@ -28,21 +28,15 @@ import de.schildbach.pte.dto.Product;
  */
 public final class BahnProvider extends AbstractHafasProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.DB;
 	private static final String API_BASE = "http://reiseauskunft.bahn.de/bin/";
 
 	public BahnProvider()
 	{
-		super(API_BASE + "bhftafel.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 14);
+		super(NetworkId.DB, API_BASE + "bhftafel.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 14);
 
 		setClientType("ANDROID");
 		setStationBoardHasStationTable(false);
 		setJsonGetStopsUseWeight(false);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 
 	@Override

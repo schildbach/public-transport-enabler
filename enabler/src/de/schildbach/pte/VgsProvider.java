@@ -35,14 +35,9 @@ public class VgsProvider extends AbstractHafasProvider
 
 	public VgsProvider()
 	{
-		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 11);
+		super(NetworkId.VGS, API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 11);
 
 		setStationBoardHasStationTable(false);
-	}
-
-	public NetworkId id()
-	{
-		return NetworkId.VGS;
 	}
 
 	@Override

@@ -37,21 +37,16 @@ import de.schildbach.pte.geo.Berlin;
  */
 public final class BvgProvider extends AbstractHafasProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.BVG;
 	private static final String API_BASE = "http://fahrinfo.bvg.de/Fahrinfo/bin/";
 	private static final String API_BASE_STATION_BOARD = "http://bvg.hafas.de/bin/";
 
 	public BvgProvider()
 	{
-		super(API_BASE_STATION_BOARD + "stboard.exe/dn", API_BASE + "ajax-getstop.bin/dny", API_BASE + "query.bin/dn", 8, Charsets.UTF_8);
+		super(NetworkId.BVG, API_BASE_STATION_BOARD + "stboard.exe/dn", API_BASE + "ajax-getstop.bin/dny", API_BASE + "query.bin/dn", 8,
+				Charsets.UTF_8);
 
 		setJsonGetStopsUseWeight(false);
 		setStyles(STYLES);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 
 	@Override

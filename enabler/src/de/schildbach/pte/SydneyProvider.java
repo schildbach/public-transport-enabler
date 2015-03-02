@@ -31,23 +31,17 @@ import de.schildbach.pte.dto.Style;
  */
 public class SydneyProvider extends AbstractEfaProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.SYDNEY;
 	private final static String API_BASE = "http://tp.transportnsw.info/nsw/";
 
 	public SydneyProvider()
 	{
-		super(API_BASE);
+		super(NetworkId.SYDNEY, API_BASE);
 
 		setLanguage("en");
 		setTimeZone("Australia/Sydney");
 		setUseProxFootSearch(false);
 		setUseRouteIndexAsTripId(false);
 		setStyles(STYLES);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 
 	@Override

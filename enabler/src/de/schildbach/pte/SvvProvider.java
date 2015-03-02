@@ -22,16 +22,10 @@ package de.schildbach.pte;
  */
 public class SvvProvider extends AbstractEfaProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.SVV;
 	private final static String API_BASE = "http://efa.svv-info.at/svv/";
 
 	public SvvProvider()
 	{
-		super(API_BASE);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
+		super(NetworkId.SVV, API_BASE);
 	}
 }

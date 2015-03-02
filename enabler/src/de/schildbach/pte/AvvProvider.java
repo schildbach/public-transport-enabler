@@ -31,20 +31,14 @@ import de.schildbach.pte.dto.Style;
  */
 public class AvvProvider extends AbstractEfaProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.AVV;
 	private final static String API_BASE = "http://efa.avv-augsburg.de/avv/";
 
 	public AvvProvider()
 	{
-		super(API_BASE);
+		super(NetworkId.AVV, API_BASE);
 
 		setUseRouteIndexAsTripId(false);
 		setStyles(STYLES);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 
 	@Override

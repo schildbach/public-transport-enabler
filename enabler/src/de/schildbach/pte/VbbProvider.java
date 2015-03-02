@@ -32,21 +32,15 @@ import de.schildbach.pte.dto.Product;
  */
 public class VbbProvider extends AbstractHafasProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.VBB;
 	private static final String API_BASE = "http://fahrinfo.vbb.de/bin/";
 	private static final Set<Product> ALL_EXCEPT_HIGHSPEED_AND_ONDEMAND = EnumSet.complementOf(EnumSet
 			.of(Product.HIGH_SPEED_TRAIN, Product.ON_DEMAND));
 
 	public VbbProvider()
 	{
-		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 7, Charsets.UTF_8);
+		super(NetworkId.VBB, API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 7, Charsets.UTF_8);
 
 		setJsonGetStopsUseWeight(false);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 
 	@Override

@@ -31,21 +31,15 @@ import de.schildbach.pte.dto.Style.Shape;
  */
 public class StockholmProvider extends AbstractHafasProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.STOCKHOLM;
 	private static final String API_BASE = "http://reseplanerare.trafiken.nu/bin/";
 
 	public StockholmProvider()
 	{
-		super(API_BASE + "stboard.exe/sn", API_BASE + "ajax-getstop.exe/sny", API_BASE + "query.exe/sn", 7);
+		super(NetworkId.STOCKHOLM, API_BASE + "stboard.exe/sn", API_BASE + "ajax-getstop.exe/sny", API_BASE + "query.exe/sn", 7);
 
 		setStyles(STYLES);
 		setStationBoardHasStationTable(false);
 		setStationBoardCanDoEquivs(false);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 
 	@Override

@@ -27,20 +27,16 @@ import de.schildbach.pte.dto.Style;
  */
 public class LinzProvider extends AbstractEfaProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.LINZ;
-	public static final String API_BASE = "http://www.linzag.at/linz2/"; // open data: http://www.linzag.at/static/
+	public static final String API_BASE = "http://www.linzag.at/linz2/";
+
+	// http://www.linzag.at/static/
 
 	public LinzProvider()
 	{
-		super(API_BASE);
+		super(NetworkId.LINZ, API_BASE);
 
 		setUseRouteIndexAsTripId(false);
 		setStyles(STYLES);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 
 	private static final Map<String, Style> STYLES = new HashMap<String, Style>();

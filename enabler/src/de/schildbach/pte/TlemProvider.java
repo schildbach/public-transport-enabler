@@ -32,7 +32,6 @@ import de.schildbach.pte.dto.Style;
  */
 public class TlemProvider extends AbstractEfaProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.TLEM;
 	private final static String API_BASE = "http://www.travelineeastmidlands.co.uk/em/";
 
 	// http://www.travelineeastmidlands.co.uk/em/
@@ -44,17 +43,12 @@ public class TlemProvider extends AbstractEfaProvider
 
 	public TlemProvider()
 	{
-		super(API_BASE);
+		super(NetworkId.TLEM, API_BASE);
 
 		setLanguage("en");
 		setTimeZone("Europe/London");
 		setUseProxFootSearch(false);
 		setStyles(STYLES);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 
 	@Override

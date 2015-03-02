@@ -34,19 +34,13 @@ import de.schildbach.pte.util.StringReplaceReader;
  */
 public class NasaProvider extends AbstractHafasProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.NASA;
 	private static final String API_BASE = "http://reiseauskunft.insa.de/bin/";
 
 	public NasaProvider()
 	{
-		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 8, Charsets.UTF_8);
+		super(NetworkId.NASA, API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 8, Charsets.UTF_8);
 
 		setStationBoardHasLocation(true);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 
 	@Override

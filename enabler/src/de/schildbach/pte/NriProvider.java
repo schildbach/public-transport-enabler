@@ -35,19 +35,13 @@ import de.schildbach.pte.dto.QueryTripsResult;
  */
 public class NriProvider extends AbstractHafasProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.NRI;
 	private static final String API_BASE = "http://hafas.websrv05.reiseinfo.no/bin/dev/nri/";
 
 	public NriProvider()
 	{
-		super(API_BASE + "stboard.exe/on", API_BASE + "ajax-getstop.exe/ony", API_BASE + "query.exe/on", 8);
+		super(NetworkId.NRI, API_BASE + "stboard.exe/on", API_BASE + "ajax-getstop.exe/ony", API_BASE + "query.exe/on", 8);
 
 		setJsonGetStopsEncoding(Charsets.UTF_8);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 
 	@Override

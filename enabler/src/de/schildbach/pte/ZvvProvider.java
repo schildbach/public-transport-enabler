@@ -33,19 +33,13 @@ import de.schildbach.pte.dto.Style.Shape;
  */
 public class ZvvProvider extends AbstractHafasProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.ZVV;
 	private static final String API_BASE = "http://online.fahrplan.zvv.ch/bin/";
 
 	public ZvvProvider()
 	{
-		super(API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 10, Charsets.UTF_8);
+		super(NetworkId.ZVV, API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 10, Charsets.UTF_8);
 
 		setStyles(STYLES);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 
 	@Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright 2014-2015 the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,19 +17,35 @@
 
 package de.schildbach.pte;
 
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import de.schildbach.pte.dto.Position;
+import de.schildbach.pte.dto.Product;
 
 /**
  * @author Andreas Schildbach
  */
-public class MvgProvider extends AbstractEfaProvider
+public class MerseyProvider extends AbstractEfaProvider
 {
-	private static final String API_BASE = "http://mobil.mvg-online.de/mvgMobil/";
+	private final static String API_BASE = "http://jp.merseytravel.gov.uk/nwm/";
 
-	public MvgProvider()
+	public MerseyProvider()
 	{
-		super(NetworkId.MVG, API_BASE);
+		super(NetworkId.MERSEY, API_BASE);
+
+		setLanguage("en");
+		setTimeZone("Europe/London");
 	}
+
+	@Override
+	public Set<Product> defaultProducts()
+	{
+		return Product.ALL;
+	}
+
+	private static final Pattern P_POSITION_BOUND = Pattern.compile("([NESW]+)-bound", Pattern.CASE_INSENSITIVE);
 
 	@Override
 	protected Position parsePosition(final String position)
@@ -37,8 +53,9 @@ public class MvgProvider extends AbstractEfaProvider
 		if (position == null)
 			return null;
 
-		if (position.startsWith(" - "))
-			return super.parsePosition(position.substring(3));
+		final Matcher m = P_POSITION_BOUND.matcher(position);
+		if (m.matches())
+			return new Position(m.group(1));
 
 		return super.parsePosition(position);
 	}

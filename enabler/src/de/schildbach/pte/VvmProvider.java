@@ -22,18 +22,12 @@ package de.schildbach.pte;
  */
 public class VvmProvider extends AbstractEfaProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.VVM;
 	private final static String API_BASE = "http://efa.mobilitaetsverbund.de/web/";
 
 	public VvmProvider()
 	{
-		super(API_BASE);
+		super(NetworkId.VVM, API_BASE);
 
 		setNeedsSpEncId(true);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 }

@@ -38,19 +38,13 @@ import de.schildbach.pte.dto.QueryTripsResult;
  */
 public class EireannProvider extends AbstractHafasProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.EIREANN;
 	private static final String API_BASE = "http://journeyplanner.buseireann.ie/jp/bin/";
 
 	public EireannProvider()
 	{
-		super(API_BASE + "stboard.exe/en", API_BASE + "ajax-getstop.exe/en", API_BASE + "query.exe/en", 4);
+		super(NetworkId.EIREANN, API_BASE + "stboard.exe/en", API_BASE + "ajax-getstop.exe/en", API_BASE + "query.exe/en", 4);
 
 		setStationBoardHasStationTable(false);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 
 	@Override

@@ -24,16 +24,10 @@ package de.schildbach.pte;
  */
 public class VvvProvider extends AbstractEfaProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.VVV;
 	private final static String API_BASE = "http://195.30.98.162:8081/vvv2/";
 
 	public VvvProvider()
 	{
-		super(API_BASE);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
+		super(NetworkId.VVV, API_BASE);
 	}
 }

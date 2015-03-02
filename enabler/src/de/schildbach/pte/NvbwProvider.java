@@ -36,7 +36,6 @@ import de.schildbach.pte.dto.QueryTripsResult;
  */
 public class NvbwProvider extends AbstractEfaProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.NVBW;
 	private final static String API_BASE = "http://www.efa-bw.de/nvbw/"; // no intermeditate stops
 	private final static String API_BASE_MOBILE = "http://www.efa-bw.de/android/";
 
@@ -44,17 +43,12 @@ public class NvbwProvider extends AbstractEfaProvider
 
 	public NvbwProvider()
 	{
-		super(API_BASE + DEFAULT_DEPARTURE_MONITOR_ENDPOINT, API_BASE_MOBILE + DEFAULT_TRIP_ENDPOINT, API_BASE + DEFAULT_STOPFINDER_ENDPOINT,
-				API_BASE + DEFAULT_COORD_ENDPOINT);
+		super(NetworkId.NVBW, API_BASE + DEFAULT_DEPARTURE_MONITOR_ENDPOINT, API_BASE_MOBILE + DEFAULT_TRIP_ENDPOINT, API_BASE
+				+ DEFAULT_STOPFINDER_ENDPOINT, API_BASE + DEFAULT_COORD_ENDPOINT);
 
 		setIncludeRegionId(false);
 		setUseRouteIndexAsTripId(false);
 		setNumTripsRequested(12);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 
 	private static final Pattern P_LINE_S_AVG_VBK = Pattern.compile("(S\\d+) \\((?:AVG|VBK)\\)");

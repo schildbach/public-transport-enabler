@@ -27,7 +27,6 @@ import de.schildbach.pte.dto.Product;
  */
 public class DsbProvider extends AbstractHafasProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.DSB;
 	private static final String API_BASE = "http://mobil.rejseplanen.dk/mobil-bin/";
 
 	// http://dk.hafas.de/bin/fat/
@@ -35,14 +34,9 @@ public class DsbProvider extends AbstractHafasProvider
 
 	public DsbProvider()
 	{
-		super(API_BASE + "stboard.exe/mn", API_BASE + "ajax-getstop.exe/mn", API_BASE + "query.exe/dn", 11);
+		super(NetworkId.DSB, API_BASE + "stboard.exe/mn", API_BASE + "ajax-getstop.exe/mn", API_BASE + "query.exe/dn", 11);
 
 		setStationBoardHasStationTable(false);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 
 	@Override

@@ -32,18 +32,12 @@ import de.schildbach.pte.dto.Product;
  */
 public class VgnProvider extends AbstractEfaProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.VGN;
 	private static final String DEPARTURE_MONITOR_ENDPOINT = "XML_DM_REQUEST";
 	private static final String TRIP_ENDPOINT = "XML_TRIP_REQUEST2";
 
 	public VgnProvider(final String apiBase)
 	{
-		super(apiBase, DEPARTURE_MONITOR_ENDPOINT, TRIP_ENDPOINT, null, null);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
+		super(NetworkId.VGN, apiBase, DEPARTURE_MONITOR_ENDPOINT, TRIP_ENDPOINT, null, null);
 	}
 
 	@Override

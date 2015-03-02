@@ -29,17 +29,11 @@ import de.schildbach.pte.util.StringReplaceReader;
  */
 public class PlProvider extends AbstractHafasProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.PL;
 	private static final String API_BASE = "http://rozklad.bilkom.pl/bin/";
 
 	public PlProvider()
 	{
-		super(API_BASE + "stboard.exe/pn", API_BASE + "ajax-getstop.exe/pn", API_BASE + "query.exe/pn", 7, Charsets.UTF_8);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
+		super(NetworkId.PL, API_BASE + "stboard.exe/pn", API_BASE + "ajax-getstop.exe/pn", API_BASE + "query.exe/pn", 7, Charsets.UTF_8);
 	}
 
 	@Override

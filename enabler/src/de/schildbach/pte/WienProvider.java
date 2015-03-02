@@ -29,21 +29,15 @@ import de.schildbach.pte.dto.Style;
  */
 public class WienProvider extends AbstractEfaProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.WIEN;
 	private final static String API_BASE = "http://www.wienerlinien.at/ogd_routing/";
 
 	public WienProvider()
 	{
-		super(API_BASE);
+		super(NetworkId.WIEN, API_BASE);
 
 		setIncludeRegionId(false);
 		setStyles(STYLES);
 		setRequestUrlEncoding(Charsets.UTF_8);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 
 	private static final Map<String, Style> STYLES = new HashMap<String, Style>();

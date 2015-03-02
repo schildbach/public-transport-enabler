@@ -24,16 +24,9 @@ import de.schildbach.pte.dto.Product;
  */
 public class PacaProvider extends AbstractTsiProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.PACA;
-
 	public PacaProvider()
 	{
-		super("PACA", "http://www.pacamobilite.fr/WebServices/TransinfoService/api");
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
+		super(NetworkId.PACA, "PACA", "http://www.pacamobilite.fr/WebServices/TransinfoService/api");
 	}
 
 	@Override

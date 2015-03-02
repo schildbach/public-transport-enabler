@@ -138,23 +138,25 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		}
 	}
 
-	public AbstractEfaProvider(final String apiBase)
+	public AbstractEfaProvider(final NetworkId network, final String apiBase)
 	{
-		this(apiBase, null, null, null, null);
+		this(network, apiBase, null, null, null, null);
 	}
 
-	public AbstractEfaProvider(final String apiBase, final String departureMonitorEndpoint, final String tripEndpoint,
+	public AbstractEfaProvider(final NetworkId network, final String apiBase, final String departureMonitorEndpoint, final String tripEndpoint,
 			final String stopFinderEndpoint, final String coordEndpoint)
 	{
-		this(apiBase + (departureMonitorEndpoint != null ? departureMonitorEndpoint : DEFAULT_DEPARTURE_MONITOR_ENDPOINT), //
+		this(network, apiBase + (departureMonitorEndpoint != null ? departureMonitorEndpoint : DEFAULT_DEPARTURE_MONITOR_ENDPOINT), //
 				apiBase + (tripEndpoint != null ? tripEndpoint : DEFAULT_TRIP_ENDPOINT), //
 				apiBase + (stopFinderEndpoint != null ? stopFinderEndpoint : DEFAULT_STOPFINDER_ENDPOINT), //
 				apiBase + (coordEndpoint != null ? coordEndpoint : DEFAULT_COORD_ENDPOINT));
 	}
 
-	public AbstractEfaProvider(final String departureMonitorEndpoint, final String tripEndpoint, final String stopFinderEndpoint,
-			final String coordEndpoint)
+	public AbstractEfaProvider(final NetworkId network, final String departureMonitorEndpoint, final String tripEndpoint,
+			final String stopFinderEndpoint, final String coordEndpoint)
 	{
+		super(network);
+
 		try
 		{
 			parserFactory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
@@ -269,7 +271,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		// System.out.println(parameters);
 
 		final CharSequence page = ParserUtils.scrape(uri.toString(), httpPost ? parameters.substring(1) : null, Charsets.UTF_8);
-		final ResultHeader header = new ResultHeader(SERVER_PRODUCT);
+		final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
 
 		try
 		{
@@ -3201,7 +3203,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	}
 
 	private static final Pattern P_POSITION = Pattern.compile(
-			"(?:Gleis|Gl\\.|Bahnsteig|Bstg\\.|Bussteig|Busstg\\.|Steig|Hp\\.|Stop|Pos\\.|Zone|Platform)?\\s*(.+)", Pattern.CASE_INSENSITIVE);
+			"(?:Gleis|Gl\\.|Bahnsteig|Bstg\\.|Bussteig|Busstg\\.|Steig|Hp\\.|Stop|Pos\\.|Zone|Platform|Stand|Bay|Stance)?\\s*(.+)",
+			Pattern.CASE_INSENSITIVE);
 
 	@Override
 	protected Position parsePosition(final String position)
@@ -3290,7 +3293,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		ParserUtils.parseIsoDate(serverTime, now.substring(0, 10));
 		ParserUtils.parseEuropeanTime(serverTime, now.substring(11));
 
-		final ResultHeader header = new ResultHeader(SERVER_PRODUCT, serverVersion, serverTime.getTimeInMillis(), sessionId);
+		final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, serverVersion, serverTime.getTimeInMillis(), sessionId);
 
 		XmlPullUtil.enter(pp, "itdRequest");
 
@@ -3333,7 +3336,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		final String sessionId = params.get("sessionID");
 		final String requestId = params.get("requestID");
 
-		final ResultHeader header = new ResultHeader(SERVER_PRODUCT, null, serverTime.getTimeInMillis(), new String[] { sessionId, requestId });
+		final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, null, serverTime.getTimeInMillis(),
+				new String[] { sessionId, requestId });
 
 		return header;
 	}

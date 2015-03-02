@@ -27,19 +27,13 @@ import de.schildbach.pte.dto.Product;
  */
 public class StvProvider extends AbstractEfaProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.STV;
 	private final static String API_BASE = "http://fahrplan.verbundlinie.at/stv/";
 
 	public StvProvider()
 	{
-		super(API_BASE);
+		super(NetworkId.STV, API_BASE);
 
 		setIncludeRegionId(false);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 
 	@Override

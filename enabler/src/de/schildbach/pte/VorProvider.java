@@ -29,23 +29,17 @@ import de.schildbach.pte.dto.Style;
  */
 public class VorProvider extends AbstractEfaProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.VOR;
 	private final static String API_BASE = "http://efa.vor.at/vor/";
 
 	public VorProvider()
 	{
-		super(API_BASE);
+		super(NetworkId.VOR, API_BASE);
 
 		setHttpReferer(API_BASE + DEFAULT_TRIP_ENDPOINT);
 		setHttpPost(true);
 		setIncludeRegionId(false);
 		setStyles(STYLES);
 		setRequestUrlEncoding(Charsets.UTF_8);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 
 	private static final Map<String, Style> STYLES = new HashMap<String, Style>();

@@ -132,8 +132,10 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 
 	private final String authorization;
 
-	public AbstractNavitiaProvider(final String authorization)
+	public AbstractNavitiaProvider(final NetworkId network, final String authorization)
 	{
+		super(network);
+
 		this.authorization = authorization;
 	}
 
@@ -761,16 +763,16 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 	public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location, final int maxDistance,
 			final int maxLocations) throws IOException
 	{
-		final ResultHeader resultHeader = new ResultHeader(SERVER_PRODUCT, SERVER_VERSION, 0, null);
-
-		// Check that Location object has coordinates.
-		if (!location.isIdentified())
-			throw new IllegalArgumentException();
+		final ResultHeader resultHeader = new ResultHeader(network, SERVER_PRODUCT, SERVER_VERSION, 0, null);
 
 		// Build query uri depending of location type.
 		final String queryUriType;
-		if (location.type == LocationType.ADDRESS)
+		if (location.type == LocationType.ADDRESS || location.type == LocationType.ANY)
 		{
+			if (!location.hasLocation())
+			{
+				throw new IllegalArgumentException();
+			}
 			final double lon = location.lon / 1E6;
 			final double lat = location.lat / 1E6;
 
@@ -778,10 +780,18 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 		}
 		else if (location.type == LocationType.STATION)
 		{
+			if (!location.isIdentified())
+			{
+				throw new IllegalArgumentException();
+			}
 			queryUriType = "stop_point/" + location.id + "/";
 		}
 		else if (location.type == LocationType.POI)
 		{
+			if (!location.isIdentified())
+			{
+				throw new IllegalArgumentException();
+			}
 			queryUriType = "poi/" + location.id + "/";
 		}
 		else
@@ -838,7 +848,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 	public QueryDeparturesResult queryDepartures(final String stationId, final @Nullable Date time, final int maxDepartures, final boolean equivs)
 			throws IOException
 	{
-		final ResultHeader resultHeader = new ResultHeader(SERVER_PRODUCT, SERVER_VERSION, 0, null);
+		final ResultHeader resultHeader = new ResultHeader(network, SERVER_PRODUCT, SERVER_VERSION, 0, null);
 
 		try
 		{
@@ -852,8 +862,16 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 			queryUri.append(uri());
 			if (equivs)
 			{
-				final String stopAreaId = getStopAreaId(stationId);
-				queryUri.append("stop_areas/" + stopAreaId + "/");
+				final String header = stationId.substring(0, stationId.indexOf(":"));
+				if (header.equals("stop_point"))
+				{
+					final String stopAreaId = getStopAreaId(stationId);
+					queryUri.append("stop_areas/" + stopAreaId + "/");
+				}
+				else if (header.equals("stop_area"))
+				{
+					queryUri.append("stop_areas/" + stationId + "/");
+				}
 			}
 			else
 			{
@@ -976,7 +994,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 				}
 			}
 
-			final ResultHeader resultHeader = new ResultHeader(SERVER_PRODUCT, SERVER_VERSION, 0, null);
+			final ResultHeader resultHeader = new ResultHeader(network, SERVER_PRODUCT, SERVER_VERSION, 0, null);
 			return new SuggestLocationsResult(resultHeader, locations);
 		}
 		catch (final JSONException jsonExc)
@@ -989,7 +1007,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 			final @Nullable Set<Product> products, final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
 			final @Nullable Set<Option> options) throws IOException
 	{
-		final ResultHeader resultHeader = new ResultHeader(SERVER_PRODUCT, SERVER_VERSION, 0, null);
+		final ResultHeader resultHeader = new ResultHeader(network, SERVER_PRODUCT, SERVER_VERSION, 0, null);
 
 		try
 		{
@@ -1153,7 +1171,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 
 	public QueryTripsResult queryMoreTrips(final QueryTripsContext contextObj, final boolean later) throws IOException
 	{
-		final ResultHeader resultHeader = new ResultHeader(SERVER_PRODUCT, SERVER_VERSION, 0, null);
+		final ResultHeader resultHeader = new ResultHeader(network, SERVER_PRODUCT, SERVER_VERSION, 0, null);
 
 		final Context context = (Context) contextObj;
 		final Location from = context.from;

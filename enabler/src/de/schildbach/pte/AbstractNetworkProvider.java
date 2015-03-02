@@ -39,12 +39,24 @@ import de.schildbach.pte.dto.Style;
  */
 public abstract class AbstractNetworkProvider implements NetworkProvider
 {
-	protected static final Set<Product> ALL_EXCEPT_HIGHSPEED = EnumSet.complementOf(EnumSet.of(Product.HIGH_SPEED_TRAIN));
+	protected final NetworkId network;
 
 	protected TimeZone timeZone = TimeZone.getTimeZone("CET");
 	protected int numTripsRequested = 6;
 	private @Nullable Map<String, Style> styles = null;
 	protected @Nullable String sessionCookieName = null;
+
+	protected static final Set<Product> ALL_EXCEPT_HIGHSPEED = EnumSet.complementOf(EnumSet.of(Product.HIGH_SPEED_TRAIN));
+
+	protected AbstractNetworkProvider(final NetworkId network)
+	{
+		this.network = network;
+	}
+
+	public final NetworkId id()
+	{
+		return network;
+	}
 
 	public final boolean hasCapabilities(final Capability... capabilities)
 	{
@@ -154,10 +166,10 @@ public abstract class AbstractNetworkProvider implements NetworkProvider
 		return normalized.toString();
 	}
 
-	private static final Pattern P_NAME_SECTION = Pattern.compile("(\\d+)\\s*" + //
+	private static final Pattern P_NAME_SECTION = Pattern.compile("(\\d{1,5})\\s*" + //
 			"([A-Z](?:\\s*-?\\s*[A-Z])?)?", Pattern.CASE_INSENSITIVE);
 
-	private static final Pattern P_NAME_NOSW = Pattern.compile("(\\d+)\\s*" + //
+	private static final Pattern P_NAME_NOSW = Pattern.compile("(\\d{1,5})\\s*" + //
 			"(Nord|Süd|Ost|West)", Pattern.CASE_INSENSITIVE);
 
 	protected Position parsePosition(final String position)

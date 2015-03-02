@@ -28,17 +28,11 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
  */
 public class BvbProvider extends AbstractEfaProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.BVB;
 	private final static String API_BASE = "http://www.efa-bvb.ch/bvb/";
 
 	public BvbProvider()
 	{
-		super(API_BASE);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
+		super(NetworkId.BVB, API_BASE);
 	}
 
 	@Override

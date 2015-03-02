@@ -27,17 +27,11 @@ import de.schildbach.pte.dto.Product;
  */
 public class VmsProvider extends AbstractEfaProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.VMS;
 	private static final String API_BASE = "http://www.vms.de/vms2/";
 
 	public VmsProvider()
 	{
-		super(API_BASE);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
+		super(NetworkId.VMS, API_BASE);
 	}
 
 	@Override

@@ -24,16 +24,10 @@ package de.schildbach.pte;
  */
 public class VmobilProvider extends AbstractEfaProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.VMOBIL;
 	private final static String API_BASE = "http://efaneu.vmobil.at/vvvmobile/";
 
 	public VmobilProvider()
 	{
-		super(API_BASE);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
+		super(NetworkId.VMOBIL, API_BASE);
 	}
 }

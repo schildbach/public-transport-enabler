@@ -32,22 +32,16 @@ import de.schildbach.pte.dto.Product;
  */
 public class NsProvider extends AbstractHafasProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.NS;
 	private static final String API_BASE = "http://hafas.bene-system.com/bin/";
 
 	private static final Pattern HTML_NEARBY_STATIONS_PATTERN = Pattern.compile("<tr bgcolor=\"#(E7EEF9|99BAE4)\">(.*?)</tr>", Pattern.DOTALL);
 
 	public NsProvider()
 	{
-		super(API_BASE + "stboard.exe/nn", API_BASE + "ajax-getstop.exe/nny", API_BASE + "query.exe/nn", 10);
+		super(NetworkId.NS, API_BASE + "stboard.exe/nn", API_BASE + "ajax-getstop.exe/nny", API_BASE + "query.exe/nn", 10);
 
 		setHtmlNearbyStationsPattern(HTML_NEARBY_STATIONS_PATTERN);
 		setStationBoardHasLocation(true);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 
 	@Override

@@ -22,16 +22,12 @@ package de.schildbach.pte;
  */
 public class AtcProvider extends AbstractEfaProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.ATC;
-	private final static String API_BASE = "http://82.187.83.50/TravelPlanner/"; // "http://cisium.webhop.net/TravelPlanner/"
+	private final static String API_BASE = "http://82.187.83.50/TravelPlanner/";
+
+	// http://cisium.webhop.net/TravelPlanner/
 
 	public AtcProvider()
 	{
-		super(API_BASE);
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
+		super(NetworkId.ATC, API_BASE);
 	}
 }

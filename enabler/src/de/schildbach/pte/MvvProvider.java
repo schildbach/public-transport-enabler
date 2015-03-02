@@ -35,7 +35,6 @@ import de.schildbach.pte.dto.Style;
  */
 public class MvvProvider extends AbstractEfaProvider
 {
-	public static final NetworkId NETWORK_ID = NetworkId.MVV;
 	private static final String API_BASE = "http://efa.mvv-muenchen.de/mobile/";
 
 	public MvvProvider()
@@ -45,16 +44,11 @@ public class MvvProvider extends AbstractEfaProvider
 
 	public MvvProvider(final String apiBase)
 	{
-		super(apiBase);
+		super(NetworkId.MVV, apiBase);
 
 		setIncludeRegionId(false);
 		setStyles(STYLES);
 		setSessionCookieName("NS-Sticky");
-	}
-
-	public NetworkId id()
-	{
-		return NETWORK_ID;
 	}
 
 	@Override
