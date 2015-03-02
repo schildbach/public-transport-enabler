@@ -86,7 +86,7 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
 	}
 
 	@Test
-	public void nearbyLocationsByRandomCoortinates() throws Exception {
+	public void nearbyLocationsByRandomCoordinates() throws Exception {
 		Random rand = new Random(new Date().getTime());
 		int LAT_FROM = 50500000;
 		int LAT_TO = 51600000;
