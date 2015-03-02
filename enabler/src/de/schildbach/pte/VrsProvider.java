@@ -230,10 +230,12 @@ public class VrsProvider extends AbstractNetworkProvider {
 		// g=p means group by product
 		final StringBuilder parameters = new StringBuilder();
 		parameters.append("?eID=tx_vrsinfo_ass2_timetable");
-		if (location.hasId()) {
+		if (location.hasLocation()) {
+			parameters.append("&r=").append(location.lat / 1E6).append(",").append(location.lon / 1E6);
+		} else if (location.type == LocationType.STATION && location.hasId()) {
 			parameters.append("&i=").append(location.id);
 		} else {
-			parameters.append("&r=").append(location.lat / 1E6).append(",").append(location.lon / 1E6);
+			throw new IllegalArgumentException("at least one of stationId or lat/lon must be given");
 		}
 		parameters.append("&c=1");
 		// c=1 limits the departures at each stop to 1 - actually we don't need any at this point
