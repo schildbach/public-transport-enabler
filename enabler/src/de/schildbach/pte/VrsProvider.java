@@ -242,7 +242,7 @@ public class VrsProvider extends AbstractNetworkProvider {
 		parameters.append("&c=1");
 		// c=1 limits the departures at each stop to 1 - actually we don't need any at this point
 		if (maxLocations > 0) {
-			parameters.append("&s=").append(maxLocations);
+			parameters.append("&s=").append(Math.min(16, maxLocations)); // artificial server limit
 		}
 		// s=number of stops
 		final StringBuilder uri = new StringBuilder(API_BASE);
