@@ -115,6 +115,13 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
 	}
 
 	@Test
+	public void nearbyLocationsEmpty() throws Exception {
+		final NearbyLocationsResult result = queryNearbyLocations(EnumSet.allOf(LocationType.class), new Location(LocationType.ANY, 1, 0), 0, 0);
+		print(result);
+		assertEquals(0, result.locations.size());
+	}
+
+	@Test
 	public void queryDepartures() throws Exception {
 		final QueryDeparturesResult result = queryDepartures("687", false);
 		print(result);

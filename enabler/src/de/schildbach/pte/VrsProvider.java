@@ -252,8 +252,14 @@ public class VrsProvider extends AbstractNetworkProvider {
 		try {
 			final List<Location> locations = new ArrayList<Location>();
 			final JSONObject head = new JSONObject(page.toString());
-			if (contains(head, "error")) {
-				return new NearbyLocationsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT), NearbyLocationsResult.Status.SERVICE_DOWN);
+			final String error = head.optString("error", null);
+			if (error != null) {
+				if (error.equals("Leere Koordinate."))
+					return new NearbyLocationsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT, null, 0, null), locations);
+				else if (error.equals("ASS2-Server lieferte leere Antwort."))
+					return new NearbyLocationsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT), NearbyLocationsResult.Status.SERVICE_DOWN);
+				else
+					throw new IllegalStateException("unknown error: " + error);
 			}
 			final JSONArray timetable = head.getJSONArray("timetable");
 			long serverTime = 0;
