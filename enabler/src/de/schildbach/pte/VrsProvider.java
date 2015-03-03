@@ -112,7 +112,9 @@ public class VrsProvider extends AbstractNetworkProvider {
 		}
 	}
 
-	protected static final String API_BASE = "http://android.vrsinfo.de/index.php";
+	// valid host names: www.vrsinfo.de, android.vrsinfo.de, ios.vrsinfo.de
+	// performance comparison March 2015 showed www.vrsinfo.de to be fastest for trips
+	protected static final String API_BASE = "http://www.vrsinfo.de/index.php";
 	protected static final boolean httpPost = false;
 	protected static final String SERVER_PRODUCT = "vrs";
 	protected static final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'kk:mm:ssZ");
@@ -254,7 +256,7 @@ public class VrsProvider extends AbstractNetworkProvider {
 			final JSONObject head = new JSONObject(page.toString());
 			final String error = head.optString("error", null);
 			if (error != null) {
-				if (error.equals("Leere Koordinate."))
+				if (error.equals("Leere Koordinate.") || error.equals("Leere ASS-ID und leere Koordinate"))
 					return new NearbyLocationsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT, null, 0, null), locations);
 				else if (error.equals("ASS2-Server lieferte leere Antwort."))
 					return new NearbyLocationsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT), NearbyLocationsResult.Status.SERVICE_DOWN);
@@ -302,13 +304,20 @@ public class VrsProvider extends AbstractNetworkProvider {
 		final CharSequence page = ParserUtils.scrape(uri.toString(), httpPost ? parameters.substring(1) : null, Charsets.UTF_8);
 		try {
 			final JSONObject head = new JSONObject(page.toString());
-			if (contains(head, "error")) {
-				return new QueryDeparturesResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT), QueryDeparturesResult.Status.SERVICE_DOWN);
+			final String error = head.optString("error", null);
+			if (error != null) {
+				if (error.equals("ASS2-Server lieferte leere Antwort."))
+					return new QueryDeparturesResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT), QueryDeparturesResult.Status.SERVICE_DOWN);
+				else
+					throw new IllegalStateException("unknown error: " + error);
 			}
 			final JSONArray timetable = head.getJSONArray("timetable");
 			final ResultHeader header = new ResultHeader(NetworkId.VRS, SERVER_PRODUCT);
 			final QueryDeparturesResult result = new QueryDeparturesResult(header);
 			// for all stations
+			if (timetable.length() == 0) {
+				return new QueryDeparturesResult(header, QueryDeparturesResult.Status.INVALID_STATION);
+			}
 			for (int i = 0; i < timetable.length(); i++) {
 				final List<Departure> departures = new ArrayList<Departure>();
 				JSONObject station = timetable.getJSONObject(i);
@@ -367,14 +376,16 @@ public class VrsProvider extends AbstractNetworkProvider {
 				return lineDestinations;
 			}
 			final JSONObject his = head.getJSONObject("his");
-			final JSONArray lines = his.getJSONArray("lines");
-			for (int i = 0; i < lines.length(); i++) {
-				final JSONObject line = lines.getJSONObject(i);
-				final String number = line.getString("number");
-				final Product product = productFromLineNumber(number);
-				final LineDestination lineDestination = new LineDestination(new Line(null /* id */, NetworkId.VRS.toString(), product, number, lineStyle("vrs", product, number)), null /* destination */);
-				lineDestinations.add(lineDestination);
-				// System.out.println("LineDestination " + lineDestination);
+			if (contains(his, "lines")) {
+				final JSONArray lines = his.getJSONArray("lines");
+				for (int i = 0; i < lines.length(); i++) {
+					final JSONObject line = lines.getJSONObject(i);
+					final String number = line.getString("number");
+					final Product product = productFromLineNumber(number);
+					final LineDestination lineDestination = new LineDestination(new Line(null /* id */, NetworkId.VRS.toString(), product, number, lineStyle("vrs", product, number)), null /* destination */);
+					lineDestinations.add(lineDestination);
+					// System.out.println("LineDestination " + lineDestination);
+				}
 			}
 		} catch (final JSONException x) {
 			throw new RuntimeException("cannot parse: '" + page + "' on " + uri, x);
@@ -402,8 +413,14 @@ public class VrsProvider extends AbstractNetworkProvider {
 			final List<SuggestedLocation> locations = new ArrayList<SuggestedLocation>();
 
 			final JSONObject head = new JSONObject(page.toString());
-			if (contains(head, "error")) {
-				return new SuggestLocationsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT), SuggestLocationsResult.Status.SERVICE_DOWN);
+			final String error = head.optString("error", null);
+			if (error != null) {
+				if (error.equals("ASS2-Server lieferte leere Antwort."))
+					return new SuggestLocationsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT), SuggestLocationsResult.Status.SERVICE_DOWN);
+				else if (error.equals("Leere Suche"))
+					return new SuggestLocationsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT), locations);
+				else
+					throw new IllegalStateException("unknown error: " + error);
 			}
 			final JSONArray stops = head.optJSONArray("stops");
 			final JSONArray addresses = head.optJSONArray("addresses");
@@ -501,8 +518,16 @@ public class VrsProvider extends AbstractNetworkProvider {
 		try {
 			final List<Trip> trips = new ArrayList<Trip>();
 			final JSONObject head = new JSONObject(page.toString());
-			if (contains(head, "error")) {
-				return new QueryTripsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT), QueryTripsResult.Status.SERVICE_DOWN);
+			final String error = head.optString("error", null);
+			if (error != null) {
+				if (error.equals("ASS2-Server lieferte leere Antwort."))
+					return new QueryTripsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT), QueryTripsResult.Status.SERVICE_DOWN);
+				else if (error.equals("Keine Verbindungen gefunden."))
+					return new QueryTripsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT), QueryTripsResult.Status.NO_TRIPS);
+				else if (error.startsWith("Keine Verbindung gefunden."))
+					return new QueryTripsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT), QueryTripsResult.Status.NO_TRIPS);
+				else
+					throw new IllegalStateException("unknown error: " + error);
 			}
 			final JSONArray routes = head.getJSONArray("routes");
 			final Context context = new Context();

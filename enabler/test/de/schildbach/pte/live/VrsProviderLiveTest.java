@@ -26,12 +26,10 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.util.Arrays;
+import java.net.SocketTimeoutException;
 import java.util.Date;
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.Random;
-import java.util.Set;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -127,14 +125,20 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
 		print(result);
 	}
 
-	@Ignore
 	@Test
 	public void queryManyDepartures() throws Exception {
-		Set<Integer> skip = new HashSet<Integer>(Arrays.asList(new Integer[] { 5, 10, 14, 16, 33, 49, 50, 55 }));
-		for (Integer i = 1; i < 55; i++) {
-			if (!skip.contains(i)) {
-				final QueryDeparturesResult result = queryDepartures(i.toString(), false);
-				print(result);
+		Random rand = new Random(new Date().getTime());
+		for (int i = 0; i < 10; i++) {
+			Integer id = 1 + rand.nextInt(20000);
+			try {
+				final QueryDeparturesResult result = queryDepartures(id.toString(), false);
+				if (result.status == QueryDeparturesResult.Status.OK) {
+					print(result);
+				} else {
+					System.out.println("Status is " + result.status);
+				}
+			} catch (SocketTimeoutException ex) {
+				System.out.println("SocketTimeoutException: " + ex);
 			}
 		}
 	}
@@ -194,6 +198,22 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
 	public void suggestLocationsCity() throws Exception {
 		final SuggestLocationsResult result = suggestLocations("Düsseldorf");
 		print(result);
+	}
+
+	@Test
+	public void suggestManyLocations() throws Exception {
+		Random rand = new Random(new Date().getTime());
+		for (int i = 0; i < 10; i++) {
+			String s = "";
+			int len = rand.nextInt(256);
+			for (int j = 0; j < len; j++) {
+				char c = (char) ('a' + rand.nextInt(26));
+				s += c;
+			}
+			final SuggestLocationsResult result = suggestLocations(s);
+			System.out.print(s + " => ");
+			print(result);
+		}
 	}
 
 	@Test
@@ -282,6 +302,42 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
 		print(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);
+	}
+
+	@Test
+	public void manyRandomTrips() throws Exception {
+		Random rand = new Random(new Date().getTime());
+		int LAT_FROM = 50500000;
+		int LAT_TO = 51600000;
+		int LON_FROM = 6200000;
+		int LON_TO = 7600000;
+		int errors = 0;
+		long startTime = System.currentTimeMillis();
+		for (int i = 0; i < 3; i++) {
+			try {
+				int fromLat = LAT_FROM + rand.nextInt(LAT_TO - LAT_FROM);
+				int fromLon = LON_FROM + rand.nextInt(LON_TO - LON_FROM);
+				int toLat = LAT_FROM + rand.nextInt(LAT_TO - LAT_FROM);
+				int toLon = LON_FROM + rand.nextInt(LON_TO - LON_FROM);
+				final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, fromLat, fromLon), null,
+						new Location(LocationType.ANY, toLat, toLon), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
+						Accessibility.NEUTRAL);
+				System.out.println("# " + (i+1));
+				if (result.status.equals(QueryTripsResult.Status.OK)) {
+					print(result);
+				} else {
+					System.out.println("Status is " + result.status);
+					errors++;
+				}
+			} catch (SocketTimeoutException ex) {
+				System.out.println("SocketTimeoutException: " + ex);
+				errors++;
+			}
+		}
+		long stopTime = System.currentTimeMillis();
+		long elapsedTime = stopTime - startTime;
+		System.out.println("Elapsed: " + (elapsedTime / 1000) + " seconds");
+		System.out.println("Errors: " + errors);
 	}
 
 	@Ignore
