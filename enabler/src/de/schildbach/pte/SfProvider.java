@@ -23,6 +23,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 import de.schildbach.pte.dto.Line;
+import de.schildbach.pte.dto.Position;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
 
@@ -51,6 +52,23 @@ public class SfProvider extends AbstractEfaProvider
 			return null;
 
 		return super.normalizeLocationName(name).replace("$XINT$", "&");
+	}
+
+	@Override
+	protected Position parsePosition(final String position)
+	{
+		if (position == null)
+			return null;
+
+		final int i = position.lastIndexOf("##");
+		if (i < 0)
+			return position.length() < 16 ? super.parsePosition(position) : null;
+
+		final String name = position.substring(i + 2).trim();
+		if (name.isEmpty())
+			return null;
+
+		return new Position(name);
 	}
 
 	@Override
