@@ -1079,6 +1079,10 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 					{
 						queryUri.append("&forbidden_uris[]=physical_mode:Taxi");
 					}
+					if (!products.contains(Product.ON_DEMAND))
+					{
+						queryUri.append("&forbidden_uris[]=physical_mode:Taxi");
+					}
 				}
 
 				final CharSequence page = ParserUtils.scrape(queryUri.toString(), authorization);
