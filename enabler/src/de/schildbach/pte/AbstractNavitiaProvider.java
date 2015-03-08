@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.LinkedList;
@@ -742,38 +741,6 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 		}
 	}
 
-	private boolean isStationActive(final Location location) throws IOException
-	{
-		try
-		{
-			final String stationId = location.id;
-
-			final StringBuilder queryUri = new StringBuilder();
-			queryUri.append(uri());
-			queryUri.append("stop_points/" + stationId + "/");
-
-			final Calendar now = Calendar.getInstance(timeZone);
-			final String dateTime = printDate(now.getTime());
-
-			// Look for at least one departure in less than an hour.
-			queryUri.append("departures?from_datetime=" + dateTime + "&count=" + 1 + "&duration=3600" + "&depth=0");
-
-			final CharSequence page = ParserUtils.scrape(queryUri.toString(), authorization);
-
-			final JSONObject head = new JSONObject(page.toString());
-
-			final JSONArray departures = head.getJSONArray("departures");
-			if (departures.length() == 0)
-				return false;
-			else
-				return true;
-		}
-		catch (final JSONException jsonExc)
-		{
-			throw new ParserException(jsonExc);
-		}
-	}
-
 	@Override
 	protected boolean hasCapability(final Capability capability)
 	{
@@ -856,8 +823,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 					// station is active, i.e. at least one
 					// departure exists within one hour.
 					final Location nearbyLocation = parseLocation(place);
-					if (isStationActive(nearbyLocation))
-						stations.add(nearbyLocation);
+					stations.add(nearbyLocation);
 				}
 
 				return new NearbyLocationsResult(resultHeader, stations);
