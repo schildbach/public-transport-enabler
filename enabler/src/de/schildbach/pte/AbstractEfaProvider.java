@@ -3283,20 +3283,26 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	private void appendLocation(final StringBuilder uri, final Location location, final String paramSuffix)
 	{
+		final String name = locationValue(location);
+
 		if ((location.type == LocationType.ADDRESS || location.type == LocationType.COORD) && location.hasLocation())
 		{
 			uri.append("&type_").append(paramSuffix).append("=coord");
 			uri.append("&name_").append(paramSuffix).append("=")
 					.append(String.format(Locale.ENGLISH, "%.6f:%.6f", location.lon / 1E6, location.lat / 1E6)).append(":WGS84");
 		}
-		else
+		else if (name != null)
 		{
 			uri.append("&type_").append(paramSuffix).append("=").append(locationTypeValue(location));
-			uri.append("&name_").append(paramSuffix).append("=").append(ParserUtils.urlEncode(locationValue(location), requestUrlEncoding));
+			uri.append("&name_").append(paramSuffix).append("=").append(ParserUtils.urlEncode(name, requestUrlEncoding));
+		}
+		else
+		{
+			throw new IllegalArgumentException("cannot append location: " + location);
 		}
 	}
 
-	protected static final String locationTypeValue(final Location location)
+	private static String locationTypeValue(final Location location)
 	{
 		final LocationType type = location.type;
 		if (type == LocationType.STATION)
@@ -3312,7 +3318,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		throw new IllegalArgumentException(type.toString());
 	}
 
-	protected static final String locationValue(final Location location)
+	private static @Nullable String locationValue(final Location location)
 	{
 		if (location.type == LocationType.STATION && location.hasId())
 			return normalizeStationId(location.id);
@@ -3322,7 +3328,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			return location.name;
 	}
 
-	protected static final Map<WalkSpeed, String> WALKSPEED_MAP = new HashMap<WalkSpeed, String>();
+	private static final Map<WalkSpeed, String> WALKSPEED_MAP = new HashMap<WalkSpeed, String>();
 
 	static
 	{
