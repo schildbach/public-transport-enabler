@@ -120,8 +120,14 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
 	}
 
 	@Test
-	public void queryDepartures() throws Exception {
+	public void queryDeparturesBonnHbf() throws Exception {
 		final QueryDeparturesResult result = queryDepartures("687", false);
+		print(result);
+	}
+
+	@Test
+	public void queryDeparturesKoelnHbf() throws Exception {
+		final QueryDeparturesResult result = queryDepartures("8", false);
 		print(result);
 	}
 
