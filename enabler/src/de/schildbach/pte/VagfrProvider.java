@@ -28,7 +28,7 @@ import de.schildbach.pte.dto.Style.Shape;
  */
 public class VagfrProvider extends AbstractEfaProvider
 {
-	private final static String API_BASE = "http://efa.vag-freiburg.de/vagfr/";
+	private final static String API_BASE = "https://efaserver.vag-freiburg.de/vagfr/";
 
 	public VagfrProvider()
 	{

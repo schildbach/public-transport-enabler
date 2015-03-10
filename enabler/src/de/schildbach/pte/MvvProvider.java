@@ -48,7 +48,7 @@ public class MvvProvider extends AbstractEfaProvider
 
 		setIncludeRegionId(false);
 		setStyles(STYLES);
-		setSessionCookieName("NS-Sticky");
+		setSessionCookieName("SIDefaalt");
 	}
 
 	@Override
