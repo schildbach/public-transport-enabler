@@ -49,6 +49,7 @@ public class NvbwProvider extends AbstractEfaProvider
 		setIncludeRegionId(false);
 		setUseRouteIndexAsTripId(false);
 		setNumTripsRequested(12);
+		setSessionCookieName("EFABWLB");
 	}
 
 	private static final Pattern P_LINE_S_AVG_VBK = Pattern.compile("(S\\d+) \\((?:AVG|VBK)\\)");

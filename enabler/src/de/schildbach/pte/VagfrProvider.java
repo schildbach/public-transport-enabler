@@ -36,6 +36,7 @@ public class VagfrProvider extends AbstractEfaProvider
 
 		setUseRouteIndexAsTripId(false);
 		setStyles(STYLES);
+		setSessionCookieName("EFABWLB");
 	}
 
 	private static final Map<String, Style> STYLES = new HashMap<String, Style>();
