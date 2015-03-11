@@ -2274,9 +2274,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		final ResultHeader header = enterItdRequest(pp);
 		final Object context = header.context;
 
-		if (XmlPullUtil.test(pp, "itdLayoutParams"))
-			XmlPullUtil.next(pp);
-
 		XmlPullUtil.require(pp, "itdTripRequest");
 		final String requestId = XmlPullUtil.attr(pp, "requestID");
 		XmlPullUtil.enter(pp, "itdTripRequest");
@@ -3371,6 +3368,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			XmlPullUtil.next(pp);
 
 		if (XmlPullUtil.test(pp, "itdVersionInfo"))
+			XmlPullUtil.next(pp);
+
+		if (XmlPullUtil.test(pp, "itdLayoutParams"))
 			XmlPullUtil.next(pp);
 
 		if (XmlPullUtil.test(pp, "itdInfoLinkList"))
