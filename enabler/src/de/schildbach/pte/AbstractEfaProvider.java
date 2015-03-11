@@ -2091,14 +2091,16 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				uri.append("&lineRestriction=403"); // means: all but ice
 		}
 
+		if (useProxFootSearch)
+			uri.append("&useProxFootSearch=1"); // walk if it makes journeys quicker
+		uri.append("&trITMOTvalue100=10"); // maximum time to walk to first or from last stop
+
 		if (options != null && options.contains(Option.BIKE))
 			uri.append("&bikeTakeAlong=1");
 
 		uri.append("&locationServerActive=1");
 		if (useRealtime)
 			uri.append("&useRealtime=1");
-		if (useProxFootSearch)
-			uri.append("&useProxFootSearch=1"); // walk if it makes journeys quicker
 		uri.append("&nextDepsPerLeg=1"); // next departure in case previous was missed
 
 		return uri.toString();
