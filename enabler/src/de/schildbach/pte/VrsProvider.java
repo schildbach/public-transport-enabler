@@ -320,6 +320,8 @@ public class VrsProvider extends AbstractNetworkProvider {
 			if (error != null) {
 				if (error.equals("ASS2-Server lieferte leere Antwort."))
 					return new QueryDeparturesResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT), QueryDeparturesResult.Status.SERVICE_DOWN);
+				else if (error.equals("Leere ASS-ID und leere Koordinate"))
+					return new QueryDeparturesResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT), QueryDeparturesResult.Status.INVALID_STATION);
 				else
 					throw new IllegalStateException("unknown error: " + error);
 			}
@@ -359,7 +361,7 @@ public class VrsProvider extends AbstractNetworkProvider {
 						position = new Position(positionStr.substring(positionStr.lastIndexOf(' ') + 1));
 						// System.out.println("Position is " + position);
 					}
-					final Location destination = new Location(LocationType.STATION, lineObj.getString("direction"));
+					final Location destination = new Location(LocationType.STATION, null /* id */, null /* place */, lineObj.getString("direction"));
 					final Departure d = new Departure(plannedTime, predictedTime, line, position, destination, null, null);
 					departures.add(d);
 				}

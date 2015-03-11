@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.net.SocketTimeoutException;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.Random;
@@ -250,7 +251,7 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
 	}
 
 	@Test
-	public void shortTrip() throws Exception {
+	public void tripEarlierLater() throws Exception {
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8"), null, new Location(LocationType.STATION, "9"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);
@@ -383,8 +384,14 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
 		manyRandomTrips(51123960, 51353094, 6689381, 6940006);
 	}
 
+	private static class LocationComparator implements Comparator<Location> {
+		public int compare(Location o1, Location o2) {
+			return o1.name.compareTo(o2.name);
+		}
+	}
+
 	private void crawlStationsAndLines(int latFrom, int latTo, int lonFrom, int lonTo) throws Exception {
-		Set<Location> stations = new TreeSet<Location>();
+		Set<Location> stations = new TreeSet<Location>(new LocationComparator());
 		Random rand = new Random(new Date().getTime());
 		for (int i = 0; i < 5; i++) {
 			int lat = latFrom + rand.nextInt(latTo - latFrom);
