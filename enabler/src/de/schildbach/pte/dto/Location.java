@@ -32,7 +32,7 @@ import com.google.common.base.Objects;
 /**
  * @author Andreas Schildbach
  */
-public final class Location implements Serializable
+public final class Location implements Serializable, Comparable<Location>
 {
 	public final LocationType type;
 	public final @Nullable String id;
@@ -196,5 +196,9 @@ public final class Location implements Serializable
 		if (lat != 0 || lon != 0)
 			helper.addValue(lat + "/" + lon);
 		return helper.add("place", place).add("name", name).omitNullValues().toString();
+	}
+
+	public int compareTo(Location o) {
+		return place.compareTo(o.place) == 0 ? name.compareTo(o.name) : place.compareTo(o.place);
 	}
 }

@@ -30,6 +30,8 @@ import java.net.SocketTimeoutException;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.Random;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -37,12 +39,15 @@ import org.junit.Test;
 import de.schildbach.pte.NetworkProvider.Accessibility;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.VrsProvider;
+import de.schildbach.pte.dto.Line;
+import de.schildbach.pte.dto.LineDestination;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
+import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.dto.SuggestLocationsResult;
 
 /**
@@ -344,6 +349,61 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
 		long elapsedTime = stopTime - startTime;
 		System.out.println("Elapsed: " + (elapsedTime / 1000) + " seconds");
 		System.out.println("Errors: " + errors);
+	}
+
+	private void crawlStationsAndLines(int LAT_FROM, int LAT_TO, int LON_FROM, int LON_TO) throws Exception {
+		Set<Location> stations = new TreeSet<Location>();
+		Random rand = new Random(new Date().getTime());
+		for (int i = 0; i < 5; i++) {
+			int lat = LAT_FROM + rand.nextInt(LAT_TO - LAT_FROM);
+			int lon = LON_FROM + rand.nextInt(LON_TO - LON_FROM);
+			System.out.println(i + " " + lat + " " + lon);
+			NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION), new Location(LocationType.STATION, lat, lon), 0, 1);
+			stations.addAll(result.locations);
+		}
+		Set<Line> lines = new TreeSet<Line>();
+		for (Location station : stations) {
+			QueryDeparturesResult qdr = queryDepartures(station.id, false);
+			if (qdr.status == QueryDeparturesResult.Status.OK) {
+				for (StationDepartures sds : qdr.stationDepartures) {
+					for (LineDestination ld : sds.lines) {
+						lines.add(ld.line);
+					}
+				}
+			}
+		}
+
+		for (Location station : stations) {
+			System.out.println(station.toString());
+		}
+		for (Line line : lines) {
+			System.out.println(line.toString());
+		}
+	}
+
+	@Test
+	public void crawlStationsAndLinesNRW() throws Exception {
+		crawlStationsAndLines(50500000, 51600000, 6200000, 7600000);
+	}
+
+	@Test
+	public void crawlStationsAndLinesCologne() throws Exception {
+		crawlStationsAndLines(50828176, 51083369, 6770942, 7161643);
+	}
+
+	@Test
+	public void crawlStationsAndLinesBonn() throws Exception {
+		crawlStationsAndLines(50632639, 50774408, 7019582, 7209096);
+	}
+
+	@Test
+	public void crawlStationsAndLinesDuesseldorf() throws Exception {
+		crawlStationsAndLines(51123960, 51353094, 6689381, 6940006);
+	}
+
+	@Test
+	public void crawlStationsAndLinesEssen() throws Exception {
+		crawlStationsAndLines(51347508, 51533689, 6893109, 7137554);
 	}
 
 	@Ignore

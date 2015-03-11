@@ -70,7 +70,6 @@ import de.schildbach.pte.util.ParserUtils;
 /**
  * @author Michael Dyrna
  */
-// TODO replace contains()
 public class VrsProvider extends AbstractNetworkProvider {
 	private static class Context implements QueryTripsContext {
 		private static final long serialVersionUID = 8758709354176420641L;
@@ -149,15 +148,15 @@ public class VrsProvider extends AbstractNetworkProvider {
 		STYLES.put("vrs|T68", new Style(Style.parseColor("#ca93d0"), Style.WHITE));
 
 		// Busse Bonn
-		STYLES.put("vrs|B63", new Style(Style.parseColor("#0065ae"), Style.WHITE));
-		STYLES.put("vrs|B16", new Style(Style.parseColor("#0065ae"), Style.WHITE));
-		STYLES.put("vrs|B66", new Style(Style.parseColor("#0065ae"), Style.WHITE));
-		STYLES.put("vrs|B67", new Style(Style.parseColor("#0065ae"), Style.WHITE));
-		STYLES.put("vrs|B68", new Style(Style.parseColor("#0065ae"), Style.WHITE));
-		STYLES.put("vrs|B18", new Style(Style.parseColor("#0065ae"), Style.WHITE));
-		STYLES.put("vrs|B61", new Style(Style.parseColor("#e4000b"), Style.WHITE));
-		STYLES.put("vrs|B62", new Style(Style.parseColor("#e4000b"), Style.WHITE));
-		STYLES.put("vrs|B65", new Style(Style.parseColor("#e4000b"), Style.WHITE));
+		STYLES.put("vrs|B16", new Style(Style.parseColor("#33baab"), Style.WHITE));
+		STYLES.put("vrs|B18", new Style(Style.parseColor("#05a1e6"), Style.WHITE));
+		STYLES.put("vrs|B61", new Style(Style.parseColor("#80cc28"), Style.WHITE));
+		STYLES.put("vrs|B62", new Style(Style.parseColor("#4dbd38"), Style.WHITE));
+		STYLES.put("vrs|B63", new Style(Style.parseColor("#73d2f6"), Style.WHITE));
+		STYLES.put("vrs|B65", new Style(Style.parseColor("#b3db18"), Style.WHITE));
+		STYLES.put("vrs|B66", new Style(Style.parseColor("#ec008c"), Style.WHITE));
+		STYLES.put("vrs|B67", new Style(Style.parseColor("#f680c5"), Style.WHITE));
+		STYLES.put("vrs|B68", new Style(Style.parseColor("#ca93d0"), Style.WHITE));
 		STYLES.put("vrs|BSB55", new Style(Style.parseColor("#00919e"), Style.WHITE));
 		STYLES.put("vrs|BSB60", new Style(Style.parseColor("#8f9867"), Style.WHITE));
 		STYLES.put("vrs|BSB69", new Style(Style.parseColor("#db5f1f"), Style.WHITE));
@@ -202,7 +201,7 @@ public class VrsProvider extends AbstractNetworkProvider {
 		STYLES.put("vrs|B855", new Style(Style.parseColor("#4e6578"), Style.WHITE));
 		STYLES.put("vrs|B856", new Style(Style.parseColor("#4e6578"), Style.WHITE));
 		STYLES.put("vrs|B857", new Style(Style.parseColor("#4e6578"), Style.WHITE));
-		
+
 		STYLES.put("vrs|S", new Style(Style.parseColor("#f18e00"), Style.WHITE));
 		STYLES.put("vrs|R", new Style(Style.parseColor("#009d81"), Style.WHITE));
 	}
@@ -329,7 +328,7 @@ public class VrsProvider extends AbstractNetworkProvider {
 					JSONObject event = events.getJSONObject(j);
 					Date plannedTime = null;
 					Date predictedTime = null;
-					if (contains(event, "departureScheduled")) {
+					if (event.has("departureScheduled")) {
 						plannedTime = parseDateTime(event.getString("departureScheduled"));
 						predictedTime = parseDateTime(event.getString("departure"));
 					} else {
@@ -338,7 +337,7 @@ public class VrsProvider extends AbstractNetworkProvider {
 					final JSONObject lineObj = event.getJSONObject("line");
 					final Line line = parseLine(lineObj);
 					Position position = null;
-					if (contains(event, "post")) {
+					if (event.has("post")) {
 						JSONObject post = event.getJSONObject("post");
 						final String positionStr = post.getString("name");
 						position = new Position(positionStr.substring(positionStr.lastIndexOf(' ') + 1));
@@ -373,18 +372,18 @@ public class VrsProvider extends AbstractNetworkProvider {
 		final CharSequence page = ParserUtils.scrape(uri.toString(), httpPost ? parameters.substring(1) : null, Charsets.UTF_8);
 		try {
 			final JSONObject head = new JSONObject(page.toString());
-			if (!contains(head, "his")) {
+			if (!head.has("his")) {
 				return lineDestinations;
 			}
 			final JSONObject his = head.getJSONObject("his");
-			if (contains(his, "lines")) {
+			if (his.has("lines")) {
 				final JSONArray lines = his.getJSONArray("lines");
 				for (int i = 0; i < lines.length(); i++) {
 					final JSONObject line = lines.getJSONObject(i);
-					final String number = line.getString("number");
+					final String number = processLineNumber(line.getString("number"));
 					final Product product = productFromLineNumber(number);
 					String direction = null;
-					if (contains(line, "postings")) {
+					if (line.has("postings")) {
 						final JSONArray postings = line.getJSONArray("postings");
 						for (int j = 0; j < postings.length(); j++) {
 							JSONObject posting = (JSONObject) postings.get(j);
@@ -571,33 +570,33 @@ public class VrsProvider extends AbstractNetworkProvider {
 					}
 					Date departurePlanned = null;
 					Date departurePredicted = null;
-					if (contains(segment, "departureScheduled")) {
+					if (segment.has("departureScheduled")) {
 						departurePlanned = parseDateTime(segment.getString("departureScheduled"));
-						departurePredicted = (contains(segment, "departure")) ? parseDateTime(segment.getString("departure")) : null;
+						departurePredicted = (segment.has("departure")) ? parseDateTime(segment.getString("departure")) : null;
 						context.departure(departurePredicted);
-					} else if (contains(segment, "departure")) {
+					} else if (segment.has("departure")) {
 						departurePlanned = parseDateTime(segment.getString("departure"));
 						context.departure(departurePlanned);
 					}
 					Date arrivalPlanned = null;
 					Date arrivalPredicted = null;
-					if (contains(segment, "arrivalScheduled")) {
+					if (segment.has("arrivalScheduled")) {
 						arrivalPlanned = parseDateTime(segment.getString("arrivalScheduled"));
-						arrivalPredicted = (contains(segment, "arrival")) ? parseDateTime(segment.getString("arrival")) : null;
+						arrivalPredicted = (segment.has("arrival")) ? parseDateTime(segment.getString("arrival")) : null;
 						context.arrival(arrivalPredicted);
-					} else if (contains(segment, "arrival")) {
+					} else if (segment.has("arrival")) {
 						arrivalPlanned = parseDateTime(segment.getString("arrival"));
 						context.arrival(arrivalPlanned);
 					}
 					long traveltime = segment.getLong("traveltime");
-					long distance = contains(segment, "distance") ? segment.getLong("distance") : 0;
+					long distance = segment.has("distance") ? segment.getLong("distance") : 0;
 					Line line = null;
-					if (contains(segment, "line")) {
+					if (segment.has("line")) {
 						JSONObject lineObject = segment.getJSONObject("line");
 						line = parseLine(lineObject);
 					}
 					StringBuilder message = new StringBuilder();
-					if (contains(segment, "infos")) {
+					if (segment.has("infos")) {
 						JSONArray infos = segment.getJSONArray("infos");
 						for (int k = 0; k < infos.length(); k++) {
 							if (k > 0) {
@@ -630,12 +629,12 @@ public class VrsProvider extends AbstractNetworkProvider {
 				}
 				int changes = route.getInt("changes");
 				List<Fare> fares = new ArrayList<Fare>();
-				if (contains(route, "costs")) {
+				if (route.has("costs")) {
 					final JSONObject costs = route.getJSONObject("costs");
 
 					// final String name = costs.getString("name"); // seems constant "VRS-Tarif"
 					final String text = costs.getString("text"); // e.g. "Preisstufe 4 [RegioTicket] 7,70 €", "VRR-Tarif! (Details: www.vrr.de)"
-					float price = contains(costs, "price") ? (float) costs.getDouble("price") : 0; // e.g. 7.7 or not existent outside VRS
+					float price = costs.has("price") ? (float) costs.getDouble("price") : 0; // e.g. 7.7 or not existent outside VRS
 					// long zone = costs.getLong("zone"); // e.g. 2600
 					// final String level = costs.getString("level"); // e.g. "4"
 
@@ -679,7 +678,7 @@ public class VrsProvider extends AbstractNetworkProvider {
 
 	@Override
 	public Point[] getArea() throws IOException {
-		return new Point[] { new Point(50929981, 6967821) };
+		return new Point[] { new Point(50937531, 6960279) };
 	}
 
 	private Product productFromLineNumber(String number) {
@@ -687,34 +686,33 @@ public class VrsProvider extends AbstractNetworkProvider {
 			return Product.HIGH_SPEED_TRAIN;
 		} else if (number.startsWith("R") || number.startsWith("MRB") || number.startsWith("DPN")) {
 			return Product.REGIONAL_TRAIN;
-		} else if (number.startsWith("S")) {
+		} else if (number.startsWith("S") && !number.startsWith("SB") && !number.startsWith("SEV")) {
 			return Product.SUBURBAN_TRAIN;
 		} else if (number.startsWith("U")) {
 			return Product.SUBWAY;
-		} else if (number.length() <= 2 || number.length() == 3 && (number.startsWith("70")|| number.startsWith("71"))) {
+		} else if (number.length() <= 2 && !number.startsWith("N")) {
 			return Product.TRAM;
 		} else {
 			return Product.BUS;
 		}
 	}
 
-	private boolean contains(JSONObject jsonObject, String attribute) throws JSONException {
-		final JSONArray attributes = jsonObject.names();
-		for (int i = 0; i < attributes.length(); i++) {
-			if (attributes.get(i).equals(attribute)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	private Line parseLine(JSONObject line) throws JSONException {
-		final String number = line.getString("number");
-		final String product = line.getString("product");
-		final Product productObj = parseProduct(product, number);
+		final String number = processLineNumber(line.getString("number"));
+		final Product productObj = parseProduct(line.getString("product"), number);
 		final Style style = lineStyle("vrs", productObj, number);
 		// System.out.format("Line %s has style %x %x %x\n", number, style.backgroundColor & 0xFFFFFF, style.foregroundColor & 0xFFFFFF, style.borderColor & 0xFFFFFF);
 		return new Line(null /* id=? */, NetworkId.VRS.toString(), productObj, number, style);
+	}
+
+	private String processLineNumber(final String number) {
+		if (number.startsWith("AST ") || number.startsWith("VRM ") || number.startsWith("VRR ")) {
+			return number.substring(4);
+		} else if (number.equals("Schienen-Ersatz-Verkehr (SEV)")) {
+			return "SEV";
+		} else {
+			return number;
+		}
 	}
 
 	private Product parseProduct(String product, String number) {
@@ -780,7 +778,7 @@ public class VrsProvider extends AbstractNetworkProvider {
 		final LocationType locationType;
 		String id = null;
 		String name = null;
-		if (contains(location, "id")) {
+		if (location.has("id")) {
 			locationType = LocationType.STATION;
 			id = location.getString("id");
 			name = location.getString("name");
@@ -789,11 +787,11 @@ public class VrsProvider extends AbstractNetworkProvider {
 			if (matcher.matches()) {
 				name = matcher.group(1);
 			}
-		} else if (contains(location, "street")) {
+		} else if (location.has("street")) {
 			locationType = LocationType.ADDRESS;
 			id = location.getString("tempId");
 			name = (location.getString("street") + " " + location.getString("number")).trim();
-		} else if (contains(location, "name")) {
+		} else if (location.has("name")) {
 			locationType = LocationType.POI;
 			id = location.getString("tempId");
 			name = location.getString("name");
@@ -801,14 +799,14 @@ public class VrsProvider extends AbstractNetworkProvider {
 			locationType = LocationType.ANY;
 		}
 		String place = null;
-		if (contains(location, "city")) {
+		if (location.has("city")) {
 			place = location.getString("city");
-			if (contains(location, "district") && !location.getString("district").isEmpty()) {
+			if (location.has("district") && !location.getString("district").isEmpty()) {
 				place += "-" + location.getString("district");
 			}
 		}
-		final int lat = contains(location, "x") ? (int) Math.round(location.getDouble("x") * 1E6) : 0;
-		final int lon = contains(location, "y") ? (int) Math.round(location.getDouble("y") * 1E6) : 0;
+		final int lat = location.has("x") ? (int) Math.round(location.getDouble("x") * 1E6) : 0;
+		final int lon = location.has("y") ? (int) Math.round(location.getDouble("y") * 1E6) : 0;
 		return new Location(locationType, id, lat, lon, place, name);
 	}
 
@@ -848,7 +846,7 @@ public class VrsProvider extends AbstractNetworkProvider {
 	}
 
 	private Position parsePositionFromJSONObject(JSONObject location) throws JSONException {
-		if (contains(location, "id")) {
+		if (location.has("id")) {
 			final String name = location.getString("name");
 			if (name != null) {
 				Matcher matcher = nameWithPosition.matcher(name);
