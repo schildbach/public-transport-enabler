@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright 2015 the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -91,10 +91,10 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
 	@Test
 	public void nearbyLocationsByRandomCoordinates() throws Exception {
 		Random rand = new Random(new Date().getTime());
-		int LAT_FROM = 50500000;
-		int LAT_TO = 51600000;
-		int LON_FROM = 6200000;
-		int LON_TO = 7600000;
+		final int LAT_FROM = 50500000;
+		final int LAT_TO = 51600000;
+		final int LON_FROM = 6200000;
+		final int LON_TO = 7600000;
 		for (int i = 0; i < 10; i++) {
 			int lat = LAT_FROM + rand.nextInt(LAT_TO - LAT_FROM);
 			int lon = LON_FROM + rand.nextInt(LON_TO - LON_FROM);
@@ -251,27 +251,24 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
 
 	@Test
 	public void shortTrip() throws Exception {
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8"), null, new Location(LocationType.STATION, "587"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		print(result);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8"), null, new Location(LocationType.STATION, "9"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);
-
-		if (!result.context.canQueryLater())
-			return;
+		print(result);
 
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+		assertEquals(QueryTripsResult.Status.OK, laterResult.status);
+		assertTrue(laterResult.trips.size() > 0);
 		print(laterResult);
 
-		if (!laterResult.context.canQueryLater())
-			return;
-
 		final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
+		assertEquals(QueryTripsResult.Status.OK, later2Result.status);
+		assertTrue(later2Result.trips.size() > 0);
 		print(later2Result);
 
-		if (!later2Result.context.canQueryEarlier())
-			return;
-
 		final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
+		assertEquals(QueryTripsResult.Status.OK, earlierResult.status);
+		assertTrue(earlierResult.trips.size() > 0);
 		print(earlierResult);
 	}
 
@@ -300,6 +297,22 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
 	}
 
 	@Test
+	public void testTripKoelnHbfBresslauerPlatz() throws Exception {
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8"), null, new Location(LocationType.STATION, "9"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		print(result);
+		assertEquals(QueryTripsResult.Status.OK, result.status);
+		assertTrue(result.trips.size() > 0);
+	}
+
+	@Test
+	public void testTripDuerenLammersdorf() throws Exception {
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "6868"), null, new Location(LocationType.STATION, "21322"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		print(result);
+		assertEquals(QueryTripsResult.Status.OK, result.status);
+		assertTrue(result.trips.size() > 0);
+	}
+
+	@Test
 	public void testTripByCoord() throws Exception {
 		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, 50740530, 7129200), null, new Location(LocationType.ANY, 50933930, 6932440), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
@@ -315,21 +328,16 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
 		assertTrue(result.trips.size() > 0);
 	}
 
-	@Test
-	public void manyRandomTrips() throws Exception {
+	private void manyRandomTrips(int latFrom, int latTo, int lonFrom, int lonTo) throws Exception {
 		Random rand = new Random(new Date().getTime());
-		int LAT_FROM = 50500000;
-		int LAT_TO = 51600000;
-		int LON_FROM = 6200000;
-		int LON_TO = 7600000;
 		int errors = 0;
 		long startTime = System.currentTimeMillis();
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < 5; i++) {
 			try {
-				int fromLat = LAT_FROM + rand.nextInt(LAT_TO - LAT_FROM);
-				int fromLon = LON_FROM + rand.nextInt(LON_TO - LON_FROM);
-				int toLat = LAT_FROM + rand.nextInt(LAT_TO - LAT_FROM);
-				int toLon = LON_FROM + rand.nextInt(LON_TO - LON_FROM);
+				int fromLat = latFrom + rand.nextInt(latTo - latFrom);
+				int fromLon = lonFrom + rand.nextInt(lonTo - lonFrom);
+				int toLat = latFrom + rand.nextInt(latTo - latFrom);
+				int toLon = lonFrom + rand.nextInt(lonTo - lonFrom);
 				final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, fromLat, fromLon), null,
 						new Location(LocationType.ANY, toLat, toLon), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
 						Accessibility.NEUTRAL);
@@ -345,18 +353,42 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
 				errors++;
 			}
 		}
-		long stopTime = System.currentTimeMillis();
-		long elapsedTime = stopTime - startTime;
+		final long stopTime = System.currentTimeMillis();
+		final long elapsedTime = stopTime - startTime;
 		System.out.println("Elapsed: " + (elapsedTime / 1000) + " seconds");
 		System.out.println("Errors: " + errors);
 	}
 
-	private void crawlStationsAndLines(int LAT_FROM, int LAT_TO, int LON_FROM, int LON_TO) throws Exception {
+	@Ignore
+	@Test
+	public void manyRandomTripsNRW() throws Exception {
+		manyRandomTrips(50500000, 51600000, 6200000, 7600000);
+	}
+
+	@Ignore
+	@Test
+	public void manyRandomTripsCologne() throws Exception {
+		manyRandomTrips(50828176, 51083369, 6770942, 7161643);
+	}
+
+	@Ignore
+	@Test
+	public void manyRandomTripsBonn() throws Exception {
+		manyRandomTrips(50632639, 50774408, 7019582, 7209096);
+	}
+
+	@Ignore
+	@Test
+	public void manyRandomTripsDuesseldorf() throws Exception {
+		manyRandomTrips(51123960, 51353094, 6689381, 6940006);
+	}
+
+	private void crawlStationsAndLines(int latFrom, int latTo, int lonFrom, int lonTo) throws Exception {
 		Set<Location> stations = new TreeSet<Location>();
 		Random rand = new Random(new Date().getTime());
 		for (int i = 0; i < 5; i++) {
-			int lat = LAT_FROM + rand.nextInt(LAT_TO - LAT_FROM);
-			int lon = LON_FROM + rand.nextInt(LON_TO - LON_FROM);
+			int lat = latFrom + rand.nextInt(latTo - latFrom);
+			int lon = lonFrom + rand.nextInt(lonTo - lonFrom);
 			System.out.println(i + " " + lat + " " + lon);
 			NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION), new Location(LocationType.STATION, lat, lon), 0, 1);
 			stations.addAll(result.locations);
@@ -381,26 +413,31 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
 		}
 	}
 
+	@Ignore
 	@Test
 	public void crawlStationsAndLinesNRW() throws Exception {
 		crawlStationsAndLines(50500000, 51600000, 6200000, 7600000);
 	}
 
+	@Ignore
 	@Test
 	public void crawlStationsAndLinesCologne() throws Exception {
 		crawlStationsAndLines(50828176, 51083369, 6770942, 7161643);
 	}
 
+	@Ignore
 	@Test
 	public void crawlStationsAndLinesBonn() throws Exception {
 		crawlStationsAndLines(50632639, 50774408, 7019582, 7209096);
 	}
 
+	@Ignore
 	@Test
 	public void crawlStationsAndLinesDuesseldorf() throws Exception {
 		crawlStationsAndLines(51123960, 51353094, 6689381, 6940006);
 	}
 
+	@Ignore
 	@Test
 	public void crawlStationsAndLinesEssen() throws Exception {
 		crawlStationsAndLines(51347508, 51533689, 6893109, 7137554);
