@@ -28,6 +28,7 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.MoreObjects.ToStringHelper;
 import com.google.common.base.Objects;
+import com.google.common.base.Strings;
 
 /**
  * @author Andreas Schildbach
@@ -50,6 +51,7 @@ public final class Location implements Serializable
 		this.place = place;
 		this.name = name;
 
+		checkArgument(id == null || id.length() > 0, "ID cannot be the empty string");
 		checkArgument(place == null || name != null, "place '%s' without name cannot exist", place);
 	}
 
@@ -112,7 +114,7 @@ public final class Location implements Serializable
 
 	public final boolean hasId()
 	{
-		return id != null;
+		return !Strings.isNullOrEmpty(id);
 	}
 
 	public final boolean hasLocation()
