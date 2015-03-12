@@ -27,6 +27,7 @@ import java.net.SocketTimeoutException;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
@@ -143,9 +144,13 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest
 	{
 		for (StationDepartures stationDepartures : result.stationDepartures)
 		{
-			for (LineDestination lineDestination : stationDepartures.lines)
+			final List<LineDestination> lines = stationDepartures.lines;
+			if (lines != null)
 			{
-				System.out.println(lineDestination.line + " to " + lineDestination.destination);
+				for (LineDestination lineDestination : lines)
+				{
+					System.out.println(lineDestination.line + " to " + lineDestination.destination);
+				}
 			}
 		}
 	}
@@ -502,11 +507,15 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest
 			QueryDeparturesResult qdr = queryDepartures(station.id, false);
 			if (qdr.status == QueryDeparturesResult.Status.OK)
 			{
-				for (StationDepartures sds : qdr.stationDepartures)
+				for (StationDepartures stationDepartures : qdr.stationDepartures)
 				{
-					for (LineDestination ld : sds.lines)
+					final List<LineDestination> stationDeparturesLines = stationDepartures.lines;
+					if (stationDeparturesLines != null)
 					{
-						lines.add(ld.line);
+						for (LineDestination ld : stationDeparturesLines)
+						{
+							lines.add(ld.line);
+						}
 					}
 				}
 			}
