@@ -23,9 +23,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.net.SocketTimeoutException;
 import java.util.Comparator;
 import java.util.Date;
@@ -558,43 +555,5 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest
 	public void crawlStationsAndLinesEssen() throws Exception
 	{
 		crawlStationsAndLines(51347508, 51533689, 6893109, 7137554);
-	}
-
-	@Ignore
-	@Test
-	public void getStringsFromDEXFile() throws Exception
-	{
-		File inFile = new File("/mnt/hgfs/Transfer/de.vrsinfo-1/classes.dex");
-		File outFile = new File("/mnt/hgfs/Transfer/de.vrsinfo-1/strings.txt");
-		FileInputStream in = new FileInputStream(inFile);
-		FileOutputStream out = new FileOutputStream(outFile);
-		byte contents[] = new byte[(int) inFile.length()];
-		in.read(contents);
-		in.close();
-		int i = 0;
-		for (int pointer = 0x70; pointer < inFile.length(); pointer += 4)
-		{
-			int offsetString = byteArrayToInt(contents, pointer);
-			// System.out.println("offset " + offsetString);
-			int length = byteArrayToShort(contents, offsetString);
-			// System.out.println("length " + length);
-			String string = new String(contents, offsetString + 1, length);
-			System.out.println(string);
-			out.write(string.getBytes());
-			out.write(0x0a);
-			if (i++ > 17758)
-				break;
-		}
-		out.close();
-	}
-
-	private int byteArrayToInt(byte[] b, int offset)
-	{
-		return b[offset + 0] & 0xFF | (b[offset + 1] & 0xFF) << 8 | (b[offset + 2] & 0xFF) << 16 | (b[offset + 3] & 0xFF) << 24;
-	}
-
-	private int byteArrayToShort(byte[] b, int offset)
-	{
-		return b[offset] & 0xFF;
 	}
 }
