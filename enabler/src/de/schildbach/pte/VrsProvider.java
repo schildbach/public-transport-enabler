@@ -598,16 +598,24 @@ public class VrsProvider extends AbstractNetworkProvider {
 					final String type = segment.getString("type");
 					final JSONObject origin = segment.getJSONObject("origin");
 					final LocationWithPosition segmentOriginLocationWithPosition = parseLocationAndPosition(origin);
-					final Location segmentOrigin = segmentOriginLocationWithPosition.location;
+					Location segmentOrigin = segmentOriginLocationWithPosition.location;
 					final Position segmentOriginPosition = segmentOriginLocationWithPosition.position;
 					if (j == 0) {
+						// special case: the origin is an address
+						if  (from.type == LocationType.ADDRESS) {
+							segmentOrigin = from;
+						}
 						tripOrigin = segmentOrigin;
 					}
 					final JSONObject destination = segment.getJSONObject("destination");
 					final LocationWithPosition segmentDestinationLocationWithPosition = parseLocationAndPosition(destination);
-					final Location segmentDestination = segmentDestinationLocationWithPosition.location;
+					Location segmentDestination = segmentDestinationLocationWithPosition.location;
 					final Position segmentDestinationPosition = segmentDestinationLocationWithPosition.position;
 					if (j == segments.length() - 1) {
+						// special case: the destination is an address
+						if (to.type == LocationType.ADDRESS) {
+							segmentDestination = to;
+						}
 						tripDestination = segmentDestination;
 					}
 					List<Stop> intermediateStops = new ArrayList<Stop> ();
