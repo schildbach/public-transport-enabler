@@ -56,19 +56,23 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
 /**
  * @author Michael Dyrna
  */
-public class VrsProviderLiveTest extends AbstractProviderLiveTest {
-	public VrsProviderLiveTest() {
+public class VrsProviderLiveTest extends AbstractProviderLiveTest
+{
+	public VrsProviderLiveTest()
+	{
 		super(new VrsProvider());
 	}
 
 	@Test
-	public void nearbyStations() throws Exception {
+	public void nearbyStations() throws Exception
+	{
 		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "8"));
 		print(result);
 	}
 
 	@Test
-	public void nearbyStationsByCoordinate() throws Exception {
+	public void nearbyStationsByCoordinate() throws Exception
+	{
 		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ANY, 51218693, 6777785));
 		print(result);
 
@@ -77,28 +81,34 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
 	}
 
 	@Test
-	public void nearbyLocationsByCoordinate() throws Exception {
-		final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION), new Location(LocationType.ANY, 50732100, 7096820), 100, 1);
+	public void nearbyLocationsByCoordinate() throws Exception
+	{
+		final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION),
+				new Location(LocationType.ANY, 50732100, 7096820), 100, 1);
 		print(result);
 
-		final NearbyLocationsResult result2 = queryNearbyLocations(EnumSet.of(LocationType.ADDRESS), new Location(LocationType.ANY, 50732100, 7096820));
+		final NearbyLocationsResult result2 = queryNearbyLocations(EnumSet.of(LocationType.ADDRESS),
+				new Location(LocationType.ANY, 50732100, 7096820));
 		print(result2);
 
 		final NearbyLocationsResult result3 = queryNearbyLocations(EnumSet.of(LocationType.POI), new Location(LocationType.ANY, 50732100, 7096820));
 		print(result3);
 
-		final NearbyLocationsResult result4 = queryNearbyLocations(EnumSet.of(LocationType.ADDRESS, LocationType.STATION), new Location(LocationType.ANY, 50732100, 7096820));
+		final NearbyLocationsResult result4 = queryNearbyLocations(EnumSet.of(LocationType.ADDRESS, LocationType.STATION), new Location(
+				LocationType.ANY, 50732100, 7096820));
 		print(result4);
 	}
 
 	@Test
-	public void nearbyLocationsByRandomCoordinates() throws Exception {
+	public void nearbyLocationsByRandomCoordinates() throws Exception
+	{
 		Random rand = new Random(new Date().getTime());
 		final int LAT_FROM = 50500000;
 		final int LAT_TO = 51600000;
 		final int LON_FROM = 6200000;
 		final int LON_TO = 7600000;
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 10; i++)
+		{
 			int lat = LAT_FROM + rand.nextInt(LAT_TO - LAT_FROM);
 			int lon = LON_FROM + rand.nextInt(LON_TO - LON_FROM);
 			NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.ANY), new Location(LocationType.ANY, lat, lon));
@@ -107,69 +117,88 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
 			assertNotNull(result.locations.get(0));
 		}
 	}
-	
+
 	@Test
-	public void nearbyStationsWithLimits() throws Exception {
-		final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION), new Location(LocationType.ANY, 50732100, 7096820), 0, 0);
+	public void nearbyStationsWithLimits() throws Exception
+	{
+		final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION),
+				new Location(LocationType.ANY, 50732100, 7096820), 0, 0);
 		print(result);
 
-		final NearbyLocationsResult result2 = queryNearbyLocations(EnumSet.of(LocationType.STATION), new Location(LocationType.ANY, 50732100, 7096820), 0, 50);
+		final NearbyLocationsResult result2 = queryNearbyLocations(EnumSet.of(LocationType.STATION),
+				new Location(LocationType.ANY, 50732100, 7096820), 0, 50);
 		print(result2);
 
-		final NearbyLocationsResult result3 = queryNearbyLocations(EnumSet.of(LocationType.STATION), new Location(LocationType.ANY, 50732100, 7096820), 1000, 50);
+		final NearbyLocationsResult result3 = queryNearbyLocations(EnumSet.of(LocationType.STATION),
+				new Location(LocationType.ANY, 50732100, 7096820), 1000, 50);
 		print(result3);
 	}
 
 	@Test
-	public void nearbyLocationsEmpty() throws Exception {
+	public void nearbyLocationsEmpty() throws Exception
+	{
 		final NearbyLocationsResult result = queryNearbyLocations(EnumSet.allOf(LocationType.class), new Location(LocationType.ANY, 1, 0), 0, 0);
 		print(result);
 		assertEquals(0, result.locations.size());
 	}
 
-	private void printLineDestinations(final QueryDeparturesResult result) {
-		for (StationDepartures stationDepartures : result.stationDepartures) {
-			for (LineDestination lineDestination : stationDepartures.lines) {
+	private void printLineDestinations(final QueryDeparturesResult result)
+	{
+		for (StationDepartures stationDepartures : result.stationDepartures)
+		{
+			for (LineDestination lineDestination : stationDepartures.lines)
+			{
 				System.out.println(lineDestination.line + " to " + lineDestination.destination);
 			}
 		}
 	}
 
 	@Test
-	public void queryDeparturesBonnHbf() throws Exception {
+	public void queryDeparturesBonnHbf() throws Exception
+	{
 		final QueryDeparturesResult result = queryDepartures("687", false);
 		print(result);
 		printLineDestinations(result);
 	}
 
 	@Test
-	public void queryDeparturesKoelnHbf() throws Exception {
+	public void queryDeparturesKoelnHbf() throws Exception
+	{
 		final QueryDeparturesResult result = queryDepartures("8", false);
 		print(result);
 		printLineDestinations(result);
 	}
 
 	@Test
-	public void queryManyDepartures() throws Exception {
+	public void queryManyDepartures() throws Exception
+	{
 		Random rand = new Random(new Date().getTime());
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 10; i++)
+		{
 			Integer id = 1 + rand.nextInt(20000);
-			try {
+			try
+			{
 				final QueryDeparturesResult result = queryDepartures(id.toString(), false);
-				if (result.status == QueryDeparturesResult.Status.OK) {
+				if (result.status == QueryDeparturesResult.Status.OK)
+				{
 					print(result);
 					printLineDestinations(result);
-				} else {
+				}
+				else
+				{
 					System.out.println("Status is " + result.status);
 				}
-			} catch (SocketTimeoutException ex) {
+			}
+			catch (SocketTimeoutException ex)
+			{
 				System.out.println("SocketTimeoutException: " + ex);
 			}
 		}
 	}
 
 	@Test
-	public void suggestLocationsIncomplete() throws Exception {
+	public void suggestLocationsIncomplete() throws Exception
+	{
 		final SuggestLocationsResult stationResult = suggestLocations("Beuel");
 		print(stationResult);
 
@@ -181,19 +210,22 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
 	}
 
 	@Test
-	public void suggestLocationsWithUmlaut() throws Exception {
+	public void suggestLocationsWithUmlaut() throws Exception
+	{
 		final SuggestLocationsResult result = suggestLocations("grün");
 		print(result);
 	}
 
 	@Test
-	public void suggestLocationsIdentified() throws Exception {
+	public void suggestLocationsIdentified() throws Exception
+	{
 		final SuggestLocationsResult result = suggestLocations("Düsseldorf, Am Frohnhof");
 		print(result);
 	}
 
 	@Test
-	public void suggestLocationsCoverage() throws Exception {
+	public void suggestLocationsCoverage() throws Exception
+	{
 		final SuggestLocationsResult cologneResult = suggestLocations("Köln Ebertplatz");
 		print(cologneResult);
 		assertThat(cologneResult.getLocations(), hasItem(new Location(LocationType.STATION, "35")));
@@ -220,18 +252,22 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
 	}
 
 	@Test
-	public void suggestLocationsCity() throws Exception {
+	public void suggestLocationsCity() throws Exception
+	{
 		final SuggestLocationsResult result = suggestLocations("Düsseldorf");
 		print(result);
 	}
 
 	@Test
-	public void suggestManyLocations() throws Exception {
+	public void suggestManyLocations() throws Exception
+	{
 		Random rand = new Random(new Date().getTime());
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 10; i++)
+		{
 			String s = "";
 			int len = rand.nextInt(256);
-			for (int j = 0; j < len; j++) {
+			for (int j = 0; j < len; j++)
+			{
 				char c = (char) ('a' + rand.nextInt(26));
 				s += c;
 			}
@@ -242,8 +278,11 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
 	}
 
 	@Test
-	public void anyTripAmbiguous() throws Exception {
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "Köln"), new Location(LocationType.ANY, null, null, "Leverkusen"), new Location(LocationType.ANY, null, null, "Bonn"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+	public void anyTripAmbiguous() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "Köln"), new Location(LocationType.ANY, null, null,
+				"Leverkusen"), new Location(LocationType.ANY, null, null, "Bonn"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
+				Accessibility.NEUTRAL);
 		assertEquals(QueryTripsResult.Status.AMBIGUOUS, result.status);
 		assertNotNull(result.ambiguousFrom);
 		assertNotNull(result.ambiguousVia);
@@ -251,21 +290,27 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
 	}
 
 	@Test
-	public void anyTripUnique() throws Exception {
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "T-Mobile"), null, new Location(LocationType.ANY, null, null, "Schauspielhalle"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+	public void anyTripUnique() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "T-Mobile"), null, new Location(LocationType.ANY, null,
+				null, "Schauspielhalle"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 	}
 
 	@Test
-	public void anyTripUnknown() throws Exception {
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "\1"), null, new Location(LocationType.ANY, null, null, "\2"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+	public void anyTripUnknown() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "\1"), null, new Location(LocationType.ANY, null, null,
+				"\2"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		assertEquals(QueryTripsResult.Status.UNKNOWN_FROM, result.status);
 	}
 
 	@Test
-	public void tripEarlierLater() throws Exception {
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8"), null, new Location(LocationType.STATION, "9"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+	public void tripEarlierLater() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8"), null, new Location(LocationType.STATION, "9"),
+				new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);
 		print(result);
@@ -287,90 +332,115 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
 	}
 
 	@Test
-	public void testTripBeuelKoelnSued() throws Exception {
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "1504"), null, new Location(LocationType.STATION, "25"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+	public void testTripBeuelKoelnSued() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "1504"), null, new Location(LocationType.STATION, "25"),
+				new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);
 	}
 
 	@Test
-	public void testTripBonnHbfBonnBeuel() throws Exception {
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "687"), null, new Location(LocationType.STATION, "1504"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+	public void testTripBonnHbfBonnBeuel() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "687"), null, new Location(LocationType.STATION, "1504"),
+				new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);
 	}
 
 	@Test
-	public void testTripBonnHbfDorotheenstr() throws Exception {
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "687"), null, new Location(LocationType.STATION, "1150"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+	public void testTripBonnHbfDorotheenstr() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "687"), null, new Location(LocationType.STATION, "1150"),
+				new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);
 	}
 
 	@Test
-	public void testTripKoelnHbfBresslauerPlatz() throws Exception {
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8"), null, new Location(LocationType.STATION, "9"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+	public void testTripKoelnHbfBresslauerPlatz() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8"), null, new Location(LocationType.STATION, "9"),
+				new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);
 	}
 
 	@Test
-	public void testTripDuerenLammersdorf() throws Exception {
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "6868"), null, new Location(LocationType.STATION, "21322"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+	public void testTripDuerenLammersdorf() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "6868"), null, new Location(LocationType.STATION, "21322"),
+				new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);
 	}
 
 	@Test
-	public void testTripByCoord() throws Exception {
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, 50740530, 7129200), null, new Location(LocationType.ANY, 50933930, 6932440), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+	public void testTripByCoord() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, 50740530, 7129200), null, new Location(LocationType.ANY, 50933930,
+				6932440), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);
 	}
 
 	@Test
-	public void testTripByAddress() throws Exception {
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null /* id */, 50740530, 7129200, "Bonn-Beuel", "Siegburger Str. 26"), null, new Location(LocationType.ADDRESS, null /* id */, 50933930, 6932440, "Köln-Neustadt-Süd", "Lützowstr. 41"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+	public void testTripByAddress() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null /* id */, 50740530, 7129200, "Bonn-Beuel",
+				"Siegburger Str. 26"), null,
+				new Location(LocationType.ADDRESS, null /* id */, 50933930, 6932440, "Köln-Neustadt-Süd", "Lützowstr. 41"), new Date(), true,
+				Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);
 	}
 
 	@Test
-	public void testTripWithSurchargeInfo() throws Exception {
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "687"), null, new Location(LocationType.STATION, "892"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+	public void testTripWithSurchargeInfo() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "687"), null, new Location(LocationType.STATION, "892"),
+				new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);
 	}
 
-	private void manyRandomTrips(int latFrom, int latTo, int lonFrom, int lonTo) throws Exception {
+	private void manyRandomTrips(int latFrom, int latTo, int lonFrom, int lonTo) throws Exception
+	{
 		Random rand = new Random(new Date().getTime());
 		int errors = 0;
 		long startTime = System.currentTimeMillis();
-		for (int i = 0; i < 5; i++) {
-			try {
+		for (int i = 0; i < 5; i++)
+		{
+			try
+			{
 				int fromLat = latFrom + rand.nextInt(latTo - latFrom);
 				int fromLon = lonFrom + rand.nextInt(lonTo - lonFrom);
 				int toLat = latFrom + rand.nextInt(latTo - latFrom);
 				int toLon = lonFrom + rand.nextInt(lonTo - lonFrom);
-				final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, fromLat, fromLon), null,
-						new Location(LocationType.ANY, toLat, toLon), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-						Accessibility.NEUTRAL);
-				System.out.println("# " + (i+1));
-				if (result.status.equals(QueryTripsResult.Status.OK)) {
+				final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, fromLat, fromLon), null, new Location(LocationType.ANY,
+						toLat, toLon), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+				System.out.println("# " + (i + 1));
+				if (result.status.equals(QueryTripsResult.Status.OK))
+				{
 					print(result);
-				} else {
+				}
+				else
+				{
 					System.out.println("Status is " + result.status);
 					errors++;
 				}
-			} catch (SocketTimeoutException ex) {
+			}
+			catch (SocketTimeoutException ex)
+			{
 				System.out.println("SocketTimeoutException: " + ex);
 				errors++;
 			}
@@ -383,38 +453,46 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
 
 	@Ignore
 	@Test
-	public void manyRandomTripsNRW() throws Exception {
+	public void manyRandomTripsNRW() throws Exception
+	{
 		manyRandomTrips(50500000, 51600000, 6200000, 7600000);
 	}
 
 	@Ignore
 	@Test
-	public void manyRandomTripsCologne() throws Exception {
+	public void manyRandomTripsCologne() throws Exception
+	{
 		manyRandomTrips(50828176, 51083369, 6770942, 7161643);
 	}
 
 	@Ignore
 	@Test
-	public void manyRandomTripsBonn() throws Exception {
+	public void manyRandomTripsBonn() throws Exception
+	{
 		manyRandomTrips(50632639, 50774408, 7019582, 7209096);
 	}
 
 	@Ignore
 	@Test
-	public void manyRandomTripsDuesseldorf() throws Exception {
+	public void manyRandomTripsDuesseldorf() throws Exception
+	{
 		manyRandomTrips(51123960, 51353094, 6689381, 6940006);
 	}
 
-	private static class LocationComparator implements Comparator<Location> {
-		public int compare(Location o1, Location o2) {
+	private static class LocationComparator implements Comparator<Location>
+	{
+		public int compare(Location o1, Location o2)
+		{
 			return ComparisonChain.start().compare(o1.name, o2.name).result();
 		}
 	}
 
-	private void crawlStationsAndLines(int latFrom, int latTo, int lonFrom, int lonTo) throws Exception {
+	private void crawlStationsAndLines(int latFrom, int latTo, int lonFrom, int lonTo) throws Exception
+	{
 		Set<Location> stations = new TreeSet<Location>(new LocationComparator());
 		Random rand = new Random(new Date().getTime());
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < 5; i++)
+		{
 			int lat = latFrom + rand.nextInt(latTo - latFrom);
 			int lon = lonFrom + rand.nextInt(lonTo - lonFrom);
 			System.out.println(i + " " + lat + " " + lon);
@@ -422,58 +500,70 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
 			stations.addAll(result.locations);
 		}
 		Set<Line> lines = new TreeSet<Line>();
-		for (Location station : stations) {
+		for (Location station : stations)
+		{
 			QueryDeparturesResult qdr = queryDepartures(station.id, false);
-			if (qdr.status == QueryDeparturesResult.Status.OK) {
-				for (StationDepartures sds : qdr.stationDepartures) {
-					for (LineDestination ld : sds.lines) {
+			if (qdr.status == QueryDeparturesResult.Status.OK)
+			{
+				for (StationDepartures sds : qdr.stationDepartures)
+				{
+					for (LineDestination ld : sds.lines)
+					{
 						lines.add(ld.line);
 					}
 				}
 			}
 		}
 
-		for (Location station : stations) {
+		for (Location station : stations)
+		{
 			System.out.println(station.toString());
 		}
-		for (Line line : lines) {
+		for (Line line : lines)
+		{
 			System.out.println(line.toString());
 		}
 	}
 
 	@Ignore
 	@Test
-	public void crawlStationsAndLinesNRW() throws Exception {
+	public void crawlStationsAndLinesNRW() throws Exception
+	{
 		crawlStationsAndLines(50500000, 51600000, 6200000, 7600000);
 	}
 
 	@Ignore
 	@Test
-	public void crawlStationsAndLinesCologne() throws Exception {
+	public void crawlStationsAndLinesCologne() throws Exception
+	{
 		crawlStationsAndLines(50828176, 51083369, 6770942, 7161643);
 	}
 
 	@Ignore
 	@Test
-	public void crawlStationsAndLinesBonn() throws Exception {
+	public void crawlStationsAndLinesBonn() throws Exception
+	{
 		crawlStationsAndLines(50632639, 50774408, 7019582, 7209096);
 	}
 
 	@Ignore
 	@Test
-	public void crawlStationsAndLinesDuesseldorf() throws Exception {
+	public void crawlStationsAndLinesDuesseldorf() throws Exception
+	{
 		crawlStationsAndLines(51123960, 51353094, 6689381, 6940006);
 	}
 
 	@Ignore
 	@Test
-	public void crawlStationsAndLinesEssen() throws Exception {
+	public void crawlStationsAndLinesEssen() throws Exception
+	{
 		crawlStationsAndLines(51347508, 51533689, 6893109, 7137554);
 	}
 
 	@Ignore
 	@Test
-	public void getStringsFromDEXFile() throws Exception {
+	public void getStringsFromDEXFile() throws Exception
+	{
 		File inFile = new File("/mnt/hgfs/Transfer/de.vrsinfo-1/classes.dex");
 		File outFile = new File("/mnt/hgfs/Transfer/de.vrsinfo-1/strings.txt");
 		FileInputStream in = new FileInputStream(inFile);
@@ -482,7 +572,8 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
 		in.read(contents);
 		in.close();
 		int i = 0;
-		for (int pointer = 0x70; pointer < inFile.length(); pointer += 4) {
+		for (int pointer = 0x70; pointer < inFile.length(); pointer += 4)
+		{
 			int offsetString = byteArrayToInt(contents, pointer);
 			// System.out.println("offset " + offsetString);
 			int length = byteArrayToShort(contents, offsetString);
@@ -497,11 +588,13 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
 		out.close();
 	}
 
-	private int byteArrayToInt(byte[] b, int offset) {
+	private int byteArrayToInt(byte[] b, int offset)
+	{
 		return b[offset + 0] & 0xFF | (b[offset + 1] & 0xFF) << 8 | (b[offset + 2] & 0xFF) << 16 | (b[offset + 3] & 0xFF) << 24;
 	}
 
-	private int byteArrayToShort(byte[] b, int offset) {
+	private int byteArrayToShort(byte[] b, int offset)
+	{
 		return b[offset] & 0xFF;
 	}
 }
