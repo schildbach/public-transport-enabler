@@ -22,11 +22,14 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Currency;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -337,6 +340,7 @@ public class VrsProvider extends AbstractNetworkProvider {
 				JSONObject station = timetable.getJSONObject(i);
 				final Location location = parseLocationAndPosition(station.getJSONObject("stop")).location;
 				final JSONArray events = station.getJSONArray("events");
+				final List<LineDestination> lines = new ArrayList<LineDestination>();
 				// for all departures
 				for (int j = 0; j < events.length(); j++) {
 					JSONObject event = events.getJSONObject(j);
@@ -362,11 +366,16 @@ public class VrsProvider extends AbstractNetworkProvider {
 						// System.out.println("Position is " + position);
 					}
 					final Location destination = new Location(LocationType.STATION, null /* id */, null /* place */, lineObj.getString("direction"));
+
+					final LineDestination lineDestination = new LineDestination(line, destination);
+					if (!lines.contains(lineDestination)) {
+						lines.add(lineDestination);
+					}
 					final Departure d = new Departure(plannedTime, predictedTime, line, position, destination, null, null);
 					departures.add(d);
 				}
 
-				final List<LineDestination> lines = queryLinesForStation(location.id);
+				queryLinesForStation(location.id, lines);
 
 				result.stationDepartures.add(new StationDepartures(location, departures, lines));
 			}
@@ -379,15 +388,18 @@ public class VrsProvider extends AbstractNetworkProvider {
 		}
 	}
 
-	private List<LineDestination> queryLinesForStation(String stationId) throws IOException {
-		final List<LineDestination> lineDestinations = new ArrayList<LineDestination>();
+	private void queryLinesForStation(String stationId, List<LineDestination> lineDestinations) throws IOException {
+		Set<String> lineNumbersAlreadyKnown = new HashSet<String>();
+		for (LineDestination lineDestionation : lineDestinations) {
+			lineNumbersAlreadyKnown.add(lineDestionation.line.label);
+		}
 		final StringBuilder uri = new StringBuilder(API_BASE);
 		uri.append("?eID=tx_vrsinfo_his_info&i=").append(ParserUtils.urlEncode(stationId));
 		final CharSequence page = ParserUtils.scrape(uri.toString(), null, Charsets.UTF_8);
 		try {
 			final JSONObject head = new JSONObject(page.toString());
 			if (!head.has("his")) {
-				return lineDestinations;
+				return;
 			}
 			final JSONObject his = head.getJSONObject("his");
 			if (his.has("lines")) {
@@ -395,6 +407,9 @@ public class VrsProvider extends AbstractNetworkProvider {
 				for (int i = 0; i < lines.length(); i++) {
 					final JSONObject line = lines.getJSONObject(i);
 					final String number = processLineNumber(line.getString("number"));
+					if (lineNumbersAlreadyKnown.contains(number)) {
+						continue;
+					}
 					final Product product = productFromLineNumber(number);
 					String direction = null;
 					if (line.has("postings")) {
@@ -403,7 +418,7 @@ public class VrsProvider extends AbstractNetworkProvider {
 							JSONObject posting = (JSONObject) postings.get(j);
 							direction = posting.getString("direction");
 							// System.out.println("Direction: " + direction);
-							lineDestinations.add(new LineDestination(new Line(null /* id */, NetworkId.VRS.toString(), product, number, lineStyle("vrs", product, number)), new Location(LocationType.STATION, direction)));
+							lineDestinations.add(new LineDestination(new Line(null /* id */, NetworkId.VRS.toString(), product, number, lineStyle("vrs", product, number)), new Location(LocationType.STATION, null /* id */, null /* place */, direction)));
 						}
 					} else {
 						lineDestinations.add(new LineDestination(new Line(null /* id */, NetworkId.VRS.toString(), product, number, lineStyle("vrs", product, number)), null /* direction */));
@@ -413,7 +428,13 @@ public class VrsProvider extends AbstractNetworkProvider {
 		} catch (final JSONException x) {
 			throw new RuntimeException("cannot parse: '" + page + "' on " + uri, x);
 		}
-		return lineDestinations;
+		Collections.sort(lineDestinations, new LineDestinationComparator());
+	}
+
+	private static class LineDestinationComparator implements Comparator<LineDestination> {
+		public int compare(LineDestination o1, LineDestination o2) {
+			return o1.line.compareTo(o2.line);
+		}
 	}
 
 	public SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException {
@@ -651,7 +672,7 @@ public class VrsProvider extends AbstractNetworkProvider {
 						legs.add(new Trip.Individual(Trip.Individual.Type.WALK, segmentOrigin, departurePlanned, segmentDestination, arrivalPlanned, points, (int) distance));
 						// System.out.println("walk from " + segmentOrigin + "//" + segmentOriginPosition + " at "+ departurePlanned + " to " + segmentDestination + "//" + segmentDestinationPosition + " at " + arrivalPlanned);
 					} else if (type.equals("publicTransport")) {
-						legs.add(new Trip.Public(line, direction != null ? new Location(LocationType.STATION, direction) : null,
+						legs.add(new Trip.Public(line, direction != null ? new Location(LocationType.STATION, null /* id */, null /* place */, direction) : null,
 								new Stop(segmentOrigin, true /* departure */, departurePlanned, departurePredicted, segmentOriginPosition, segmentOriginPosition),
 								new Stop(segmentDestination, false /* departure */, arrivalPlanned, arrivalPredicted, segmentDestinationPosition, segmentDestinationPosition),
 								intermediateStops, points, message.toString()));

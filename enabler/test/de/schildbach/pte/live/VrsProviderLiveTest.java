@@ -125,16 +125,26 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
 		assertEquals(0, result.locations.size());
 	}
 
+	private void printLineDestinations(final QueryDeparturesResult result) {
+		for (StationDepartures stationDepartures : result.stationDepartures) {
+			for (LineDestination lineDestination : stationDepartures.lines) {
+				System.out.println(lineDestination.line + " to " + lineDestination.destination);
+			}
+		}
+	}
+
 	@Test
 	public void queryDeparturesBonnHbf() throws Exception {
 		final QueryDeparturesResult result = queryDepartures("687", false);
 		print(result);
+		printLineDestinations(result);
 	}
 
 	@Test
 	public void queryDeparturesKoelnHbf() throws Exception {
 		final QueryDeparturesResult result = queryDepartures("8", false);
 		print(result);
+		printLineDestinations(result);
 	}
 
 	@Test
@@ -146,6 +156,7 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
 				final QueryDeparturesResult result = queryDepartures(id.toString(), false);
 				if (result.status == QueryDeparturesResult.Status.OK) {
 					print(result);
+					printLineDestinations(result);
 				} else {
 					System.out.println("Status is " + result.status);
 				}
