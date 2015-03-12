@@ -103,6 +103,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	private boolean stationBoardHasLocation = false;
 	private boolean stationBoardCanDoEquivs = true;
 
+	@SuppressWarnings("serial")
 	private static class Context implements QueryTripsContext
 	{
 		public final String laterContext;
@@ -127,6 +128,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 	}
 
+	@SuppressWarnings("serial")
 	public static class QueryTripsBinaryContext implements QueryTripsContext
 	{
 		public final String ident;

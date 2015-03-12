@@ -26,6 +26,7 @@ import java.util.Locale;
 /**
  * @author Andreas Schildbach
  */
+@SuppressWarnings("serial")
 public class Iso8601Format extends SimpleDateFormat
 {
 	private Iso8601Format(final String formatString)

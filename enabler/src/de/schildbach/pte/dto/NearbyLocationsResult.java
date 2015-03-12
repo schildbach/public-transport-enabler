@@ -30,6 +30,7 @@ import com.google.common.base.MoreObjects.ToStringHelper;
 /**
  * @author Andreas Schildbach
  */
+@SuppressWarnings("serial")
 public final class NearbyLocationsResult implements Serializable
 {
 	public enum Status

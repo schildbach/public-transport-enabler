@@ -29,6 +29,7 @@ import com.google.common.base.Objects;
 /**
  * @author Andreas Schildbach
  */
+@SuppressWarnings("serial")
 public final class Position implements Serializable
 {
 	public final String name;

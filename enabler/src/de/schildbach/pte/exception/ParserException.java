@@ -22,6 +22,7 @@ import java.io.IOException;
 /**
  * @author Andreas Schildbach
  */
+@SuppressWarnings("serial")
 public class ParserException extends IOException
 {
 	public ParserException()

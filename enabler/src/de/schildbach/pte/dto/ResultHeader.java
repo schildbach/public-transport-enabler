@@ -30,6 +30,7 @@ import de.schildbach.pte.NetworkId;
 /**
  * @author Andreas Schildbach
  */
+@SuppressWarnings("serial")
 public final class ResultHeader implements Serializable
 {
 	public final NetworkId network;

@@ -26,6 +26,7 @@ import de.schildbach.pte.util.ParserUtils;
 /**
  * @author Andreas Schildbach
  */
+@SuppressWarnings("serial")
 public abstract class AbstractHttpException extends ParserException
 {
 	private final URL url;

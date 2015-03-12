@@ -31,6 +31,7 @@ import com.google.common.base.Objects;
 /**
  * @author Andreas Schildbach
  */
+@SuppressWarnings("serial")
 public final class StationDepartures implements Serializable
 {
 	public final Location location;
