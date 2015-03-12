@@ -2531,7 +2531,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							XmlPullUtil.enter(pp, "itdFare");
 							if (XmlPullUtil.test(pp, "itdSingleTicket"))
 							{
-								final String net = XmlPullUtil.attr(pp, "net");
+								final String net = XmlPullUtil.attr(pp, "net").toUpperCase();
 								final Currency currency = parseCurrency(XmlPullUtil.attr(pp, "currency"));
 								final String fareAdult = XmlPullUtil.optAttr(pp, "fareAdult", null);
 								final String fareChild = XmlPullUtil.optAttr(pp, "fareChild", null);
