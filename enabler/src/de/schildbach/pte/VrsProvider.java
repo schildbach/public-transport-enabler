@@ -46,6 +46,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Strings;
 
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.Fare;
@@ -674,7 +675,7 @@ public class VrsProvider extends AbstractNetworkProvider {
 						legs.add(new Trip.Public(line, direction != null ? new Location(LocationType.STATION, null /* id */, null /* place */, direction) : null,
 								new Stop(segmentOrigin, true /* departure */, departurePlanned, departurePredicted, segmentOriginPosition, segmentOriginPosition),
 								new Stop(segmentDestination, false /* departure */, arrivalPlanned, arrivalPredicted, segmentDestinationPosition, segmentDestinationPosition),
-								intermediateStops, points, message.toString()));
+								intermediateStops, points, Strings.emptyToNull(message.toString())));
 						// System.out.println("ride from " + segmentOrigin + "//" + segmentOriginPosition + " at "+ departurePlanned + " to " + segmentDestination + "//" + segmentDestinationPosition + " at " + arrivalPlanned + " taking " + (line == null ? "null" : line) + " direction " + (direction ==  null ? "null" : direction));
 					}
 				}
