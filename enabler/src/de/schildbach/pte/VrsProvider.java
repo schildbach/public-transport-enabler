@@ -506,8 +506,13 @@ public class VrsProvider extends AbstractNetworkProvider {
 	// vt: via time in minutes - not supported by Öffi
 	// s: t => allow surcharge
 	// p: products as comma separated list
-	// o: options - 'v' for showing via stations; 'd' for ???
+	// o: options:
+	//    'v' for showing via stations
+	//    'd' for showing walking directions
+	//    'p' for showing exact geographical coordinates along the route
 	public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to, Date date, boolean dep, final @Nullable Set<Product> products, final @Nullable WalkSpeed walkSpeed /* not supported */, final @Nullable Accessibility accessibility /* not * supported */, @Nullable Set<Option> options /* not supported */) throws IOException {
+		// The EXACT_POINTS feature generates an about 50% bigger API response, probably well compressible.
+		final boolean EXACT_POINTS = true;
 		final List<Location> ambiguousFrom = new ArrayList<Location>();
 		String fromString = generateLocation(from, ambiguousFrom);
 
@@ -548,7 +553,10 @@ public class VrsProvider extends AbstractNetworkProvider {
 		uri.append("&s=t");
 		uri.append("&p=");
 		uri.append(generateProducts(products));
-		uri.append("&o=vd");
+		uri.append("&o=v");
+		if (EXACT_POINTS) {
+			uri.append("p");
+		}
 		// System.out.println(uri);
 
 		final CharSequence page = ParserUtils.scrape(uri.toString(), null, Charsets.UTF_8);
@@ -664,8 +672,12 @@ public class VrsProvider extends AbstractNetworkProvider {
 
 					List<Point> points = new ArrayList<Point>();
 					points.add(new Point(segmentOrigin.lat, segmentOrigin.lon));
-					for (Stop intermediateStop : intermediateStops) {
-						points.add(new Point(intermediateStop.location.lat, intermediateStop.location.lon));
+					if (EXACT_POINTS && segment.has("polygon")) {
+						parsePolygon(segment.getString("polygon"), points);
+					} else {
+						for (Stop intermediateStop : intermediateStops) {
+							points.add(new Point(intermediateStop.location.lat, intermediateStop.location.lon));
+						}
 					}
 					points.add(new Point(segmentDestination.lat, segmentDestination.lon));
 					if (type.equals("walk")) {
@@ -713,6 +725,14 @@ public class VrsProvider extends AbstractNetworkProvider {
 			throw new RuntimeException("cannot parse: '" + page + "' on " + uri, x);
 		} catch (final ParseException e) {
 			throw new RuntimeException("cannot parse: '" + page + "' on " + uri, e);
+		}
+	}
+
+	protected void parsePolygon(final String polygonStr, final List<Point> polygonArr) {
+		String pointsArr[] = polygonStr.split("\\s");
+		for (String point : pointsArr) {
+			String latlon[] = point.split(",");
+			polygonArr.add(new Point((int) Math.round(Double.parseDouble(latlon[0]) * 1E6), (int) Math.round(Double.parseDouble(latlon[1]) * 1E6)));
 		}
 	}
 
