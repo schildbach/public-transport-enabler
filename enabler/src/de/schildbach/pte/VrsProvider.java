@@ -296,8 +296,12 @@ public class VrsProvider extends AbstractNetworkProvider
 			// s=number of stops
 			uri.append("&s=").append(Math.min(16, maxLocations)); // artificial server limit
 		}
-		// System.out.println(uri);
+
 		final CharSequence page = ParserUtils.scrape(uri.toString(), null, Charsets.UTF_8);
+
+		// System.out.println(uri);
+		// System.out.println(page);
+
 		try
 		{
 			final List<Location> locations = new ArrayList<Location>();
@@ -359,6 +363,10 @@ public class VrsProvider extends AbstractNetworkProvider
 			appendDate(uri, time);
 		}
 		final CharSequence page = ParserUtils.scrape(uri.toString(), null, Charsets.UTF_8);
+
+		// System.out.println(uri);
+		// System.out.println(page);
+
 		try
 		{
 			final JSONObject head = new JSONObject(page.toString());
@@ -414,7 +422,6 @@ public class VrsProvider extends AbstractNetworkProvider
 						// Bonn Hauptbahnhof (ZOB) - Bussteig C4
 						// A
 						position = new Position(positionStr.substring(positionStr.lastIndexOf(' ') + 1));
-						// System.out.println("Position is " + position);
 					}
 					final Location destination = new Location(LocationType.STATION, null /* id */, null /* place */, lineObj.getString("direction"));
 
@@ -453,7 +460,12 @@ public class VrsProvider extends AbstractNetworkProvider
 		}
 		final StringBuilder uri = new StringBuilder(API_BASE);
 		uri.append("?eID=tx_vrsinfo_his_info&i=").append(ParserUtils.urlEncode(stationId));
+
 		final CharSequence page = ParserUtils.scrape(uri.toString(), null, Charsets.UTF_8);
+
+		// System.out.println(uri);
+		// System.out.println(page);
+
 		try
 		{
 			final JSONObject head = new JSONObject(page.toString());
@@ -480,7 +492,6 @@ public class VrsProvider extends AbstractNetworkProvider
 							{
 								JSONObject posting = (JSONObject) postings.get(j);
 								direction = posting.getString("direction");
-								// System.out.println("Direction: " + direction);
 								lineDestinations.add(new LineDestination(new Line(null /* id */, NetworkId.VRS.toString(), product, number,
 										lineStyle("vrs", product, number)), new Location(LocationType.STATION, null /* id */, null /* place */,
 										direction)));
@@ -521,9 +532,11 @@ public class VrsProvider extends AbstractNetworkProvider
 		// t = sap (stops and/or addresses and/or pois)
 		final String uri = API_BASE + "?eID=tx_vrsinfo_ass2_objects&sc=" + sc + "&ac=" + ac + "&pc=" + ac + "&t=sap&q="
 				+ ParserUtils.urlEncode(new Location(LocationType.ANY, null, null, constraint.toString()).name);
-		// System.out.println(uri);
 
 		final CharSequence page = ParserUtils.scrape(uri, null, Charsets.UTF_8);
+
+		// System.out.println(uri);
+		// System.out.println(page);
 
 		try
 		{
@@ -650,9 +663,11 @@ public class VrsProvider extends AbstractNetworkProvider
 		{
 			uri.append("p");
 		}
-		// System.out.println(uri);
 
 		final CharSequence page = ParserUtils.scrape(uri.toString(), null, Charsets.UTF_8);
+
+		// System.out.println(uri);
+		// System.out.println(page);
 
 		try
 		{
@@ -681,7 +696,6 @@ public class VrsProvider extends AbstractNetworkProvider
 			// for all routes
 			for (int i = 0; i < routes.length(); i++)
 			{
-				// System.out.println("Route " + i);
 				final JSONObject route = routes.getJSONObject(i);
 				final JSONArray segments = route.getJSONArray("segments");
 				List<Leg> legs = new ArrayList<Leg>();
@@ -690,7 +704,6 @@ public class VrsProvider extends AbstractNetworkProvider
 				// for all segments
 				for (int j = 0; j < segments.length(); j++)
 				{
-					// System.out.println("Segment " + j);
 					final JSONObject segment = segments.getJSONObject(j);
 					final String type = segment.getString("type");
 					final JSONObject origin = segment.getJSONObject("origin");
@@ -740,7 +753,6 @@ public class VrsProvider extends AbstractNetworkProvider
 							}
 							final Stop intermediateStop = new Stop(viaLocation, false /* arrival */, arrivalPlanned, arrivalPredicted,
 									null /* plannedPosition */, null /* predictedPosition */);
-							// System.out.println("intermediateStop: " + intermediateStop);
 							intermediateStops.add(intermediateStop);
 						}
 					}
@@ -792,7 +804,6 @@ public class VrsProvider extends AbstractNetworkProvider
 							}
 							message.append(infos.getJSONObject(k).getString("text"));
 						}
-						// System.out.println("Message is " + message.toString());
 					}
 
 					List<Point> points = new ArrayList<Point>();
@@ -821,9 +832,6 @@ public class VrsProvider extends AbstractNetworkProvider
 						}
 						legs.add(new Trip.Individual(Trip.Individual.Type.WALK, segmentOrigin, departurePlanned, segmentDestination, arrivalPlanned,
 								points, (int) distance));
-						// System.out.println("walk from " + segmentOrigin + "//" + segmentOriginPosition + " at "+
-						// departurePlanned + " to " + segmentDestination + "//" + segmentDestinationPosition + " at " +
-						// arrivalPlanned);
 					}
 					else if (type.equals("publicTransport"))
 					{
@@ -832,10 +840,6 @@ public class VrsProvider extends AbstractNetworkProvider
 								segmentOriginPosition, segmentOriginPosition), new Stop(segmentDestination, false /* departure */, arrivalPlanned,
 								arrivalPredicted, segmentDestinationPosition, segmentDestinationPosition), intermediateStops, points, Strings
 								.emptyToNull(message.toString())));
-						// System.out.println("ride from " + segmentOrigin + "//" + segmentOriginPosition + " at "+
-						// departurePlanned + " to " + segmentDestination + "//" + segmentDestinationPosition + " at " +
-						// arrivalPlanned + " taking " + (line == null ? "null" : line) + " direction " + (direction ==
-						// null ? "null" : direction));
 					}
 				}
 				int changes = route.getInt("changes");
@@ -950,7 +954,6 @@ public class VrsProvider extends AbstractNetworkProvider
 		final String number = processLineNumber(line.getString("number"));
 		final Product productObj = parseProduct(line.getString("product"), number);
 		final Style style = lineStyle("vrs", productObj, number);
-		// System.out.format("Line %s has style %x %x %x\n", number, style.backgroundColor & 0xFFFFFF,
 		// style.foregroundColor & 0xFFFFFF, style.borderColor & 0xFFFFFF);
 		return new Line(null /* id=? */, NetworkId.VRS.toString(), productObj, number, style);
 	}
@@ -1068,7 +1071,6 @@ public class VrsProvider extends AbstractNetworkProvider
 			locationType = LocationType.STATION;
 			id = location.getString("id");
 			name = location.getString("name");
-			// System.out.println("name: " + name);
 			for (Pattern pattern : nameWithPositionPatterns)
 			{
 				Matcher matcher = pattern.matcher(name);
@@ -1076,8 +1078,6 @@ public class VrsProvider extends AbstractNetworkProvider
 				{
 					name = matcher.group(1);
 					position = matcher.group(2);
-					// System.out.println("MATCH! [" + name + "] [" + position.substring(position.lastIndexOf(" ") + 1)
-					// + "]");
 					break;
 				}
 			}
