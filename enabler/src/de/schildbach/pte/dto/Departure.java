@@ -34,6 +34,7 @@ import com.google.common.base.Objects;
 /**
  * @author Andreas Schildbach
  */
+@SuppressWarnings("serial")
 public final class Departure implements Serializable
 {
 	final public @Nullable Date plannedTime;

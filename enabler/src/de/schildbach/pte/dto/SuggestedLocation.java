@@ -26,6 +26,7 @@ import com.google.common.base.Objects;
 /**
  * @author Andreas Schildbach
  */
+@SuppressWarnings("serial")
 public final class SuggestedLocation implements Serializable, Comparable<SuggestedLocation>
 {
 	public final Location location;

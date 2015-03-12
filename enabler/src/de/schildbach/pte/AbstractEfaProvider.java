@@ -114,6 +114,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	private final XmlPullParserFactory parserFactory;
 
+	@SuppressWarnings("serial")
 	private static class Context implements QueryTripsContext
 	{
 		private final String context;

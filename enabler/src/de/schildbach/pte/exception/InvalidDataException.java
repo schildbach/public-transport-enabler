@@ -20,6 +20,7 @@ package de.schildbach.pte.exception;
 /**
  * @author Andreas Schildbach
  */
+@SuppressWarnings("serial")
 public class InvalidDataException extends ParserException
 {
 	public InvalidDataException()

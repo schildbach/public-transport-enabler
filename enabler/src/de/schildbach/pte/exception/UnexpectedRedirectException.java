@@ -22,6 +22,7 @@ import java.net.URL;
 /**
  * @author Andreas Schildbach
  */
+@SuppressWarnings("serial")
 public class UnexpectedRedirectException extends AbstractHttpException
 {
 	private final URL redirectedUrl;

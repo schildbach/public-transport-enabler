@@ -31,6 +31,7 @@ import com.google.common.base.MoreObjects.ToStringHelper;
 /**
  * @author Andreas Schildbach
  */
+@SuppressWarnings("serial")
 public final class QueryDeparturesResult implements Serializable
 {
 	public enum Status

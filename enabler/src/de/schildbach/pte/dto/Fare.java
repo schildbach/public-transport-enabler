@@ -30,6 +30,7 @@ import com.google.common.base.Objects;
 /**
  * @author Andreas Schildbach
  */
+@SuppressWarnings("serial")
 public final class Fare implements Serializable
 {
 	public enum Type

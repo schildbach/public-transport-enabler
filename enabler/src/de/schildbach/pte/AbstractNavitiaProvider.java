@@ -98,6 +98,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 		BUS, TRAIN, TRAM, TRAMWAY, METRO, FERRY, CABLECAR, RAPIDTRANSIT, FUNICULAR, DEFAULT_COMMERCIAL_MODE
 	}
 
+	@SuppressWarnings("serial")
 	private static class Context implements QueryTripsContext
 	{
 		private final Location from;
