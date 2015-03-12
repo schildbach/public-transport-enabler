@@ -564,6 +564,12 @@ public class VrsProvider extends AbstractNetworkProvider {
 					return new QueryTripsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT), QueryTripsResult.Status.NO_TRIPS);
 				else if (error.startsWith("Keine Verbindung gefunden."))
 					return new QueryTripsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT), QueryTripsResult.Status.NO_TRIPS);
+				else if (error.equals("Origin invalid."))
+					return new QueryTripsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT), QueryTripsResult.Status.UNKNOWN_FROM);
+				else if (error.equals("Via invalid."))
+					return new QueryTripsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT), QueryTripsResult.Status.UNKNOWN_VIA);
+				else if (error.equals("Destination invalid."))
+					return new QueryTripsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT), QueryTripsResult.Status.UNKNOWN_TO);
 				else
 					throw new IllegalStateException("unknown error: " + error);
 			}
@@ -850,7 +856,6 @@ public class VrsProvider extends AbstractNetworkProvider {
 			}
 		} else if (location.has("street")) {
 			locationType = LocationType.ADDRESS;
-			id = location.getString("tempId");
 			name = (location.getString("street") + " " + location.getString("number")).trim();
 		} else if (location.has("name")) {
 			locationType = LocationType.POI;

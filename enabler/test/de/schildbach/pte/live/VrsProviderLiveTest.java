@@ -335,6 +335,14 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
 	}
 
 	@Test
+	public void testTripByAddress() throws Exception {
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null /* id */, 50740530, 7129200, "Bonn-Beuel", "Siegburger Str. 26"), null, new Location(LocationType.ADDRESS, null /* id */, 50933930, 6932440, "Köln-Neustadt-Süd", "Lützowstr. 41"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		print(result);
+		assertEquals(QueryTripsResult.Status.OK, result.status);
+		assertTrue(result.trips.size() > 0);
+	}
+
+	@Test
 	public void testTripWithSurchargeInfo() throws Exception {
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "687"), null, new Location(LocationType.STATION, "892"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
