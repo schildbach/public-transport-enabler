@@ -129,7 +129,7 @@ public class VrsProvider extends AbstractNetworkProvider {
 	// performance comparison March 2015 showed www.vrsinfo.de to be fastest for trips
 	protected static final String API_BASE = "https://www.vrsinfo.de/index.php";
 	protected static final String SERVER_PRODUCT = "vrs";
-	protected final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'kk:mm:ssZ");
+
 	@SuppressWarnings("serial")
 	protected static final List<Pattern> nameWithPositionPatterns = new ArrayList<Pattern>() {
 		{
@@ -855,8 +855,10 @@ public class VrsProvider extends AbstractNetworkProvider {
 			locationType = LocationType.POI;
 			id = location.getString("tempId");
 			name = location.getString("name");
-		} else {
+		} else if (location.has("x") && location.has("y")) {
 			locationType = LocationType.ANY;
+		} else {
+			throw new IllegalArgumentException("unknown location JSONObject: " + location);
 		}
 		String place = location.optString("city", null);
 		if (place != null) {
@@ -901,6 +903,6 @@ public class VrsProvider extends AbstractNetworkProvider {
 	}
 
 	private final Date parseDateTime(final String dateTimeStr) throws ParseException {
-		return dateTimeFormat.parse(dateTimeStr.substring(0, dateTimeStr.lastIndexOf(':')) + "00");
+		return new SimpleDateFormat("yyyy-MM-dd'T'kk:mm:ssZ").parse(dateTimeStr.substring(0, dateTimeStr.lastIndexOf(':')) + "00");
 	}
 }
