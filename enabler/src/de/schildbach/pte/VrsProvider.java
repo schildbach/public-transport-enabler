@@ -74,8 +74,8 @@ import de.schildbach.pte.util.ParserUtils;
  * @author Michael Dyrna
  */
 public class VrsProvider extends AbstractNetworkProvider {
+	@SuppressWarnings("serial")
 	private static class Context implements QueryTripsContext {
-		private static final long serialVersionUID = 8758709354176420641L;
 		private Date lastDeparture = null;
 		private Date firstArrival = null;
 		public Location from;
@@ -129,9 +129,9 @@ public class VrsProvider extends AbstractNetworkProvider {
 	// performance comparison March 2015 showed www.vrsinfo.de to be fastest for trips
 	protected static final String API_BASE = "https://www.vrsinfo.de/index.php";
 	protected static final String SERVER_PRODUCT = "vrs";
-	protected static final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'kk:mm:ssZ");
+	protected final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'kk:mm:ssZ");
+	@SuppressWarnings("serial")
 	protected static final List<Pattern> nameWithPositionPatterns = new ArrayList<Pattern>() {
-		private static final long serialVersionUID = -3188113588028261938L;
 		{
 			// Bonn Hauptbahnhof (ZOB) - Bussteig F2
 			// Beuel Bf - D
@@ -314,8 +314,10 @@ public class VrsProvider extends AbstractNetworkProvider {
 		final StringBuilder uri = new StringBuilder(API_BASE);
 		uri.append("?eID=tx_vrsinfo_ass2_timetable&i=").append(ParserUtils.urlEncode(stationId));
 		uri.append("&c=").append(maxDepartures);
-		uri.append("&t=");
-		appendDate(uri, time);
+		if (time != null) {
+			uri.append("&t=");
+			appendDate(uri, time);
+		}
 		final CharSequence page = ParserUtils.scrape(uri.toString(), null, Charsets.UTF_8);
 		try {
 			final JSONObject head = new JSONObject(page.toString());
