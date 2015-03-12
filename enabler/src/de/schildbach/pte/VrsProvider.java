@@ -355,8 +355,8 @@ public class VrsProvider extends AbstractNetworkProvider {
 					final JSONObject lineObj = event.getJSONObject("line");
 					final Line line = parseLine(lineObj);
 					Position position = null;
-					if (event.has("post")) {
-						JSONObject post = event.getJSONObject("post");
+					final JSONObject post = event.optJSONObject("post");
+					if (post != null) {
 						final String positionStr = post.getString("name");
 						// examples for post:
 						// (U) Gleis 2
@@ -398,30 +398,29 @@ public class VrsProvider extends AbstractNetworkProvider {
 		final CharSequence page = ParserUtils.scrape(uri.toString(), null, Charsets.UTF_8);
 		try {
 			final JSONObject head = new JSONObject(page.toString());
-			if (!head.has("his")) {
-				return;
-			}
-			final JSONObject his = head.getJSONObject("his");
-			if (his.has("lines")) {
-				final JSONArray lines = his.getJSONArray("lines");
-				for (int i = 0; i < lines.length(); i++) {
-					final JSONObject line = lines.getJSONObject(i);
-					final String number = processLineNumber(line.getString("number"));
-					if (lineNumbersAlreadyKnown.contains(number)) {
-						continue;
-					}
-					final Product product = productFromLineNumber(number);
-					String direction = null;
-					if (line.has("postings")) {
-						final JSONArray postings = line.getJSONArray("postings");
-						for (int j = 0; j < postings.length(); j++) {
-							JSONObject posting = (JSONObject) postings.get(j);
-							direction = posting.getString("direction");
-							// System.out.println("Direction: " + direction);
-							lineDestinations.add(new LineDestination(new Line(null /* id */, NetworkId.VRS.toString(), product, number, lineStyle("vrs", product, number)), new Location(LocationType.STATION, null /* id */, null /* place */, direction)));
+			final JSONObject his = head.optJSONObject("his");
+			if (his != null) {
+				final JSONArray lines = his.optJSONArray("lines");
+				if (lines != null) {
+					for (int i = 0; i < lines.length(); i++) {
+						final JSONObject line = lines.getJSONObject(i);
+						final String number = processLineNumber(line.getString("number"));
+						if (lineNumbersAlreadyKnown.contains(number)) {
+							continue;
 						}
-					} else {
-						lineDestinations.add(new LineDestination(new Line(null /* id */, NetworkId.VRS.toString(), product, number, lineStyle("vrs", product, number)), null /* direction */));
+						final Product product = productFromLineNumber(number);
+						String direction = null;
+						final JSONArray postings = line.optJSONArray("postings");
+						if (postings != null) {
+							for (int j = 0; j < postings.length(); j++) {
+								JSONObject posting = (JSONObject) postings.get(j);
+								direction = posting.getString("direction");
+								// System.out.println("Direction: " + direction);
+								lineDestinations.add(new LineDestination(new Line(null /* id */, NetworkId.VRS.toString(), product, number, lineStyle("vrs", product, number)), new Location(LocationType.STATION, null /* id */, null /* place */, direction)));
+							}
+						} else {
+							lineDestinations.add(new LineDestination(new Line(null /* id */, NetworkId.VRS.toString(), product, number, lineStyle("vrs", product, number)), null /* direction */));
+						}
 					}
 				}
 			}
@@ -595,8 +594,8 @@ public class VrsProvider extends AbstractNetworkProvider {
 						tripDestination = segmentDestination;
 					}
 					List<Stop> intermediateStops = new ArrayList<Stop> ();
-					if (segment.has("vias")) {
-						final JSONArray vias = segment.getJSONArray("vias");
+					final JSONArray vias = segment.optJSONArray("vias");
+					if (vias != null) {
 						for (int k = 0; k < vias.length(); k++) {
 							final JSONObject viaJsonObject = vias.getJSONObject(k);
 							Location viaLocation = parseLocationAndPosition(viaJsonObject).location;
@@ -634,19 +633,17 @@ public class VrsProvider extends AbstractNetworkProvider {
 						context.arrival(arrivalPlanned);
 					}
 					long traveltime = segment.getLong("traveltime");
-					long distance = segment.has("distance") ? segment.getLong("distance") : 0;
+					long distance = segment.optLong("distance", 0);
 					Line line = null;
 					String direction = null;
-					if (segment.has("line")) {
-						JSONObject lineObject = segment.getJSONObject("line");
+					JSONObject lineObject = segment.optJSONObject("line");
+					if (lineObject != null) {
 						line = parseLine(lineObject);
-						if (lineObject.has("direction")) {
-							direction = lineObject.getString("direction");
-						}
+						direction = lineObject.optString("direction", null);
 					}
 					StringBuilder message = new StringBuilder();
-					if (segment.has("infos")) {
-						JSONArray infos = segment.getJSONArray("infos");
+					JSONArray infos = segment.optJSONArray("infos");
+					if (infos != null) {
 						for (int k = 0; k < infos.length(); k++) {
 							if (k > 0) {
 								message.append(", ");
@@ -681,12 +678,11 @@ public class VrsProvider extends AbstractNetworkProvider {
 				}
 				int changes = route.getInt("changes");
 				List<Fare> fares = new ArrayList<Fare>();
-				if (route.has("costs")) {
-					final JSONObject costs = route.getJSONObject("costs");
-
-					final String name = costs.has("name") ? costs.getString("name") : null; // seems constant "VRS-Tarif"
+				final JSONObject costs = route.optJSONObject("costs");
+				if (costs != null) {
+					final String name = costs.optString("name", null); // seems constant "VRS-Tarif"
 					// final String text = costs.getString("text"); // e.g. "Preisstufe 4 [RegioTicket] 7,70 €", "VRR-Tarif! (Details: www.vrr.de)", "NRW-Tarif"
-					float price = costs.has("price") ? (float) costs.getDouble("price") : 0; // e.g. 7.7 or not existent outside VRS
+					float price = (float) costs.optDouble("price", 0.0); // e.g. 7.7 or not existent outside VRS
 					// long zone = costs.getLong("zone"); // e.g. 2600
 					final String level = costs.has("level") ? "Preisstufe " + costs.getString("level") : null; // e.g. "4"
 
@@ -860,15 +856,14 @@ public class VrsProvider extends AbstractNetworkProvider {
 		} else {
 			locationType = LocationType.ANY;
 		}
-		String place = null;
-		if (location.has("city")) {
-			place = location.getString("city");
+		String place = location.optString("city", null);
+		if (place != null) {
 			if (location.has("district") && !location.getString("district").isEmpty()) {
 				place += "-" + location.getString("district");
 			}
 		}
-		final int lat = location.has("x") ? (int) Math.round(location.getDouble("x") * 1E6) : 0;
-		final int lon = location.has("y") ? (int) Math.round(location.getDouble("y") * 1E6) : 0;
+		final int lat = (int) Math.round(location.optDouble("x", 0) * 1E6);
+		final int lon = (int) Math.round(location.optDouble("y", 0) * 1E6);
 		return new LocationWithPosition(new Location(locationType, id, lat, lon, place, name), position != null ? new Position(position.substring(position.lastIndexOf(" ") + 1)) : null);
 	}
 

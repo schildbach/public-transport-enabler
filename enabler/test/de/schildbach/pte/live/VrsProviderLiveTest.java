@@ -37,6 +37,8 @@ import java.util.TreeSet;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.google.common.collect.ComparisonChain;
+
 import de.schildbach.pte.NetworkProvider.Accessibility;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.VrsProvider;
@@ -397,7 +399,7 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
 
 	private static class LocationComparator implements Comparator<Location> {
 		public int compare(Location o1, Location o2) {
-			return o1.name.compareTo(o2.name);
+			return ComparisonChain.start().compare(o1.name, o2.name).result();
 		}
 	}
 
