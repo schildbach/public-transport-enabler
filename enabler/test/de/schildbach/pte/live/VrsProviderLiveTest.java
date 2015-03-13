@@ -27,6 +27,7 @@ import java.net.SocketTimeoutException;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -331,6 +332,33 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest
 		assertEquals(QueryTripsResult.Status.OK, earlierResult.status);
 		assertTrue(earlierResult.trips.size() > 0);
 		print(earlierResult);
+	}
+
+	@Test
+	public void tripEarlierLaterCologneBerlin() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "1"), null, new Location(LocationType.STATION, "11458"),
+				new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		assertEquals(QueryTripsResult.Status.OK, result.status);
+		assertTrue(result.trips.size() > 0);
+		print(result);
+
+		System.out.println("And now earlier...");
+
+		final QueryTripsResult earlierResult = queryMoreTrips(result.context, false);
+		assertEquals(QueryTripsResult.Status.OK, earlierResult.status);
+		assertTrue(earlierResult.trips.size() > 0);
+		print(earlierResult);
+	}
+
+	@Test
+	public void testTripWithProductFilter() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "1504"), null, new Location(LocationType.STATION, "1"),
+				new Date(), true, new HashSet<Product>(){{add(Product.ON_DEMAND); add(Product.SUBWAY); add(Product.FERRY); add(Product.TRAM); add(Product.CABLECAR); add(Product.BUS); }}, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		assertEquals(QueryTripsResult.Status.OK, result.status);
+		assertTrue(result.trips.size() > 0);
+		print(result);
 	}
 
 	@Test
