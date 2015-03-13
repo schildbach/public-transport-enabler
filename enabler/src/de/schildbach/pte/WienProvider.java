@@ -17,11 +17,18 @@
 
 package de.schildbach.pte;
 
+import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+
+import javax.annotation.Nullable;
 
 import com.google.common.base.Charsets;
 
+import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
 
 /**
@@ -38,6 +45,26 @@ public class WienProvider extends AbstractEfaProvider
 		setIncludeRegionId(false);
 		setStyles(STYLES);
 		setRequestUrlEncoding(Charsets.UTF_8);
+	}
+
+	@Override
+	protected String xsltTripRequestParameters(final Location from, final @Nullable Location via, final Location to, final Date time,
+			final boolean dep, final @Nullable Collection<Product> products, final @Nullable WalkSpeed walkSpeed,
+			final @Nullable Accessibility accessibility, final @Nullable Set<Option> options)
+	{
+		final StringBuilder uri = new StringBuilder(super.xsltTripRequestParameters(from, via, to, time, dep, products, walkSpeed, accessibility,
+				options));
+
+		if (products != null)
+		{
+			for (final Product p : products)
+			{
+				if (p == Product.BUS)
+					uri.append("&inclMOT_11=on"); // night bus
+			}
+		}
+
+		return uri.toString();
 	}
 
 	private static final Map<String, Style> STYLES = new HashMap<String, Style>();

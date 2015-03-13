@@ -2062,8 +2062,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					uri.append("&inclMOT_8=on");
 			}
 
-			uri.append("&inclMOT_11=on"); // TODO always show 'others', for now
-
 			// workaround for highspeed trains: fails when you want highspeed, but not regional
 			if (useLineRestriction && !hasI)
 				uri.append("&lineRestriction=403"); // means: all but ice
