@@ -688,6 +688,8 @@ public class VrsProvider extends AbstractNetworkProvider
 					return new QueryTripsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT), QueryTripsResult.Status.UNKNOWN_VIA);
 				else if (error.equals("Destination invalid."))
 					return new QueryTripsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT), QueryTripsResult.Status.UNKNOWN_TO);
+				else if (error.equals("Produkt ungültig."))
+					return new QueryTripsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT), QueryTripsResult.Status.NO_TRIPS);
 				else
 					throw new IllegalStateException("unknown error: " + error);
 			}
@@ -712,7 +714,7 @@ public class VrsProvider extends AbstractNetworkProvider
 					final Position segmentOriginPosition = segmentOriginLocationWithPosition.position;
 					if (j == 0)
 					{
-						// special case: the origin is an address
+						// special case: first origin is an address
 						if (from.type == LocationType.ADDRESS)
 						{
 							segmentOrigin = from;
@@ -725,7 +727,7 @@ public class VrsProvider extends AbstractNetworkProvider
 					final Position segmentDestinationPosition = segmentDestinationLocationWithPosition.position;
 					if (j == segments.length() - 1)
 					{
-						// special case: the destination is an address
+						// special case: last destination is an address
 						if (to.type == LocationType.ADDRESS)
 						{
 							segmentDestination = to;
@@ -762,12 +764,18 @@ public class VrsProvider extends AbstractNetworkProvider
 					{
 						departurePlanned = parseDateTime(segment.getString("departureScheduled"));
 						departurePredicted = (segment.has("departure")) ? parseDateTime(segment.getString("departure")) : null;
-						context.departure(departurePredicted);
+						if (j == 0)
+						{
+							context.departure(departurePredicted);
+						}
 					}
 					else if (segment.has("departure"))
 					{
 						departurePlanned = parseDateTime(segment.getString("departure"));
-						context.departure(departurePlanned);
+						if (j == 0)
+						{
+							context.departure(departurePlanned);
+						}
 					}
 					Date arrivalPlanned = null;
 					Date arrivalPredicted = null;
@@ -775,12 +783,18 @@ public class VrsProvider extends AbstractNetworkProvider
 					{
 						arrivalPlanned = parseDateTime(segment.getString("arrivalScheduled"));
 						arrivalPredicted = (segment.has("arrival")) ? parseDateTime(segment.getString("arrival")) : null;
-						context.arrival(arrivalPredicted);
+						if (j == segments.length() - 1)
+						{
+							context.arrival(arrivalPredicted);
+						}
 					}
 					else if (segment.has("arrival"))
 					{
 						arrivalPlanned = parseDateTime(segment.getString("arrival"));
-						context.arrival(arrivalPlanned);
+						if (j == segments.length() - 1)
+						{
+							context.arrival(arrivalPlanned);  // TODO only last segment!!
+						}
 					}
 					long traveltime = segment.getLong("traveltime");
 					long distance = segment.optLong("distance", 0);
@@ -998,6 +1012,8 @@ public class VrsProvider extends AbstractNetworkProvider
 		}
 		else if (product.equals("LightRail"))
 		{
+			// note that also the Skytrain (Flughafen Düsseldorf Bahnhof - Flughafen Düsseldorf Terminan
+			// and Schwebebahn Wuppertal (line 60) are both returned as product "LightRail".
 			return Product.TRAM;
 		}
 		else if (product.equals("Bus") || product.equals("CommunityBus") || product.equals("RailReplacementServices"))
@@ -1025,11 +1041,12 @@ public class VrsProvider extends AbstractNetworkProvider
 		while (it.hasNext())
 		{
 			final Product product = it.next();
-			if (ret.length() > 0 && !ret.substring(ret.length() - 1).equals(","))
+			final String productStr = generateProduct(product);
+			if (ret.length() > 0 && !ret.substring(ret.length() - 1).equals(",") && !productStr.isEmpty())
 			{
 				ret.append(",");
 			}
-			ret.append(generateProduct(product));
+			ret.append(productStr);
 		}
 		return ret.toString();
 	}
@@ -1039,8 +1056,10 @@ public class VrsProvider extends AbstractNetworkProvider
 		switch (product)
 		{
 			case BUS:
+				// can't filter for RailReplacementServices although this value is valid in API responses
 				return "Bus,CommunityBus";
 			case CABLECAR:
+				// no mapping in VRS
 				return "";
 			case FERRY:
 				return "Boat";
