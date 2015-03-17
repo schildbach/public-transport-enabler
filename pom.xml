@@ -13,7 +13,8 @@
 	<modules>
 		<module>enabler</module>
 		<module>service</module>
-	</modules>
+        <module>oeffi-public-transportation</module>
+    </modules>
 
 	<developers>
 		<developer>

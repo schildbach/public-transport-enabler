@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.goeuro</groupId>
+        <artifactId>ParentWithoutDeps</artifactId>
+        <version>1.21</version>
+    </parent>
+
+    <!-- Needs this to find his Parent-->
+    <repositories>
+        <repository>
+            <id>GoEuro Nexus</id>
+            <url>http://nexus.goeuro.int/content/groups/goeuro/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+    </repositories>
+
+
+    <modelVersion>4.0.0</modelVersion>
+    <version>created-at-2015-03-17</version>
+    <groupId>com.goeuro.providers</groupId>
+    <artifactId>oeffi-public-transportation</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>de.schildbach.pte</groupId>
+            <artifactId>public-transport-enabler</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <version>1.0-alpha-2</version>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>set-system-properties</goal>
+                        </goals>
+                        <configuration>
+                            <properties>
+                                <property>
+                                    <name>https.proxyHost</name>
+                                    <value>10.208.0.250</value>
+                                </property>
+                                <property>
+                                    <name>https.proxyPort</name>
+                                    <value>3128</value>
+                                </property>
+                            </properties>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
