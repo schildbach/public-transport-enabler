@@ -941,12 +941,14 @@ public class VrsProvider extends AbstractNetworkProvider
 
 	protected static void parsePolygon(final String polygonStr, final List<Point> polygonArr)
 	{
-		if (polygonStr != null && !polygonStr.isEmpty()) {
+		if (polygonStr != null && !polygonStr.isEmpty())
+		{
 			String pointsArr[] = polygonStr.split("\\s");
 			for (String point : pointsArr)
 			{
 				String latlon[] = point.split(",");
-				polygonArr.add(new Point((int) Math.round(Double.parseDouble(latlon[0]) * 1E6), (int) Math.round(Double.parseDouble(latlon[1]) * 1E6)));
+				polygonArr
+						.add(new Point((int) Math.round(Double.parseDouble(latlon[0]) * 1E6), (int) Math.round(Double.parseDouble(latlon[1]) * 1E6)));
 			}
 		}
 	}

@@ -51,6 +51,7 @@ import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.dto.SuggestLocationsResult;
+import de.schildbach.pte.util.Iso8601Format;
 
 /**
  * @author Michael Dyrna
@@ -425,11 +426,9 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void testTripByAddressAndEmptyPolygon() throws Exception
 	{
-		@SuppressWarnings("deprecation")
 		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null /* id */, 50909350, 6676310, "Kerpen-Sindorf",
-				"Erftstraße 43"), null,
-				new Location(LocationType.ADDRESS, null /* id */, 50923000, 6818440, "Frechen", "Zedernweg 1"), new Date(115, 2, 17, 21, 11, 18), true,
-				Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+				"Erftstraße 43"), null, new Location(LocationType.ADDRESS, null /* id */, 50923000, 6818440, "Frechen", "Zedernweg 1"),
+				Iso8601Format.parseDateTime("2015-03-17 21:11:18"), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);
@@ -529,15 +528,15 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest
 			int lon = lonFrom + rand.nextInt(lonTo - lonFrom);
 			System.out.println(i + " " + lat + " " + lon);
 			NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION), new Location(LocationType.STATION, lat, lon), 0, 3);
-			if (result.status == NearbyLocationsResult.Status.OK) {
+			if (result.status == NearbyLocationsResult.Status.OK)
+			{
 				stations.addAll(result.locations);
 			}
 		}
 		Set<Line> lines = new TreeSet<Line>();
 		for (Location station : stations)
 		{
-			@SuppressWarnings("deprecation")
-			QueryDeparturesResult qdr = provider.queryDepartures(station.id, new Date(115, 2, 16, 2, 0, 0), 100, false);
+			QueryDeparturesResult qdr = provider.queryDepartures(station.id, Iso8601Format.parseDateTime("2015-03-16 02:00:00"), 100, false);
 			if (qdr.status == QueryDeparturesResult.Status.OK)
 			{
 				for (StationDepartures stationDepartures : qdr.stationDepartures)
