@@ -49,7 +49,9 @@ import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.StationDepartures;
+import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.dto.SuggestLocationsResult;
+import de.schildbach.pte.util.Iso8601Format;
 
 /**
  * @author Michael Dyrna
@@ -140,7 +142,7 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest
 		assertEquals(0, result.locations.size());
 	}
 
-	private void printLineDestinations(final QueryDeparturesResult result)
+	private static void printLineDestinations(final QueryDeparturesResult result)
 	{
 		for (StationDepartures stationDepartures : result.stationDepartures)
 		{
@@ -422,12 +424,11 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
-	public void testTripByAddress() throws Exception
+	public void testTripByAddressAndEmptyPolygon() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null /* id */, 50740530, 7129200, "Bonn-Beuel",
-				"Siegburger Str. 26"), null,
-				new Location(LocationType.ADDRESS, null /* id */, 50933930, 6932440, "Köln-Neustadt-Süd", "Lützowstr. 41"), new Date(), true,
-				Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null /* id */, 50909350, 6676310, "Kerpen-Sindorf",
+				"Erftstraße 43"), null, new Location(LocationType.ADDRESS, null /* id */, 50923000, 6818440, "Frechen", "Zedernweg 1"),
+				Iso8601Format.parseDateTime("2015-03-17 21:11:18"), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);
@@ -526,13 +527,16 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest
 			int lat = latFrom + rand.nextInt(latTo - latFrom);
 			int lon = lonFrom + rand.nextInt(lonTo - lonFrom);
 			System.out.println(i + " " + lat + " " + lon);
-			NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION), new Location(LocationType.STATION, lat, lon), 0, 1);
-			stations.addAll(result.locations);
+			NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION), new Location(LocationType.STATION, lat, lon), 0, 3);
+			if (result.status == NearbyLocationsResult.Status.OK)
+			{
+				stations.addAll(result.locations);
+			}
 		}
 		Set<Line> lines = new TreeSet<Line>();
 		for (Location station : stations)
 		{
-			QueryDeparturesResult qdr = queryDepartures(station.id, false);
+			QueryDeparturesResult qdr = provider.queryDepartures(station.id, Iso8601Format.parseDateTime("2015-03-16 02:00:00"), 100, false);
 			if (qdr.status == QueryDeparturesResult.Status.OK)
 			{
 				for (StationDepartures stationDepartures : qdr.stationDepartures)
@@ -555,7 +559,18 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest
 		}
 		for (Line line : lines)
 		{
-			System.out.println(line.toString());
+			final Product product = line.product;
+			if (product != null)
+			{
+				if (product.equals(Product.BUS))
+				{
+					final Style style = line.style;
+					if (style != null)
+					{
+						System.out.printf("%s %6x\n", line.label, style.backgroundColor);
+					}
+				}
+			}
 		}
 	}
 
