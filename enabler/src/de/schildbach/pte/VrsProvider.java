@@ -118,12 +118,12 @@ public class VrsProvider extends AbstractNetworkProvider
 
 		public Date getLastDeparture()
 		{
-			return lastDeparture;
+			return this.lastDeparture;
 		}
 
 		public Date getFirstArrival()
 		{
-			return firstArrival;
+			return this.firstArrival;
 		}
 	}
 
@@ -283,7 +283,7 @@ public class VrsProvider extends AbstractNetworkProvider
 		STYLES.put("B857", new Style(Style.parseColor("#4e6578"), Style.WHITE));
 
 		STYLES.put("BN", new Style(Style.parseColor("#000000"), Style.WHITE));
-		STYLES.put("BNE1", new Style(Style.parseColor("#993399"), Style.WHITE));  // default
+		STYLES.put("BNE1", new Style(Style.parseColor("#993399"), Style.WHITE)); // default
 
 		STYLES.put("S", new Style(Style.parseColor("#f18e00"), Style.WHITE));
 		STYLES.put("R", new Style(Style.parseColor("#009d81"), Style.WHITE));
@@ -837,7 +837,7 @@ public class VrsProvider extends AbstractNetworkProvider
 						arrivalPlanned = parseDateTime(segment.getString("arrival"));
 						if (j == segments.length() - 1)
 						{
-							context.arrival(arrivalPlanned); // TODO only last segment!!
+							context.arrival(arrivalPlanned);
 						}
 					}
 					long traveltime = segment.getLong("traveltime");
@@ -939,7 +939,7 @@ public class VrsProvider extends AbstractNetworkProvider
 		}
 	}
 
-	protected void parsePolygon(final String polygonStr, final List<Point> polygonArr)
+	protected static void parsePolygon(final String polygonStr, final List<Point> polygonArr)
 	{
 		if (polygonStr != null && !polygonStr.isEmpty()) {
 			String pointsArr[] = polygonStr.split("\\s");
@@ -981,7 +981,7 @@ public class VrsProvider extends AbstractNetworkProvider
 		return new Point[] { new Point(50937531, 6960279) };
 	}
 
-	private Product productFromLineNumber(String number)
+	private static Product productFromLineNumber(String number)
 	{
 		if (number.startsWith("I") || number.startsWith("E"))
 		{
@@ -1017,7 +1017,7 @@ public class VrsProvider extends AbstractNetworkProvider
 		return new Line(null /* id */, NetworkId.VRS.toString(), productObj, number, style);
 	}
 
-	private String processLineNumber(final String number)
+	private static String processLineNumber(final String number)
 	{
 		if (number.startsWith("AST ") || number.startsWith("VRM ") || number.startsWith("VRR "))
 		{
@@ -1037,7 +1037,7 @@ public class VrsProvider extends AbstractNetworkProvider
 		}
 	}
 
-	private Product parseProduct(String product, String number)
+	private static Product parseProduct(String product, String number)
 	{
 		if (product.equals("LongDistanceTrains"))
 		{
@@ -1079,7 +1079,7 @@ public class VrsProvider extends AbstractNetworkProvider
 		}
 	}
 
-	private String generateProducts(Set<Product> products)
+	private static String generateProducts(Set<Product> products)
 	{
 		StringBuilder ret = new StringBuilder();
 		Iterator<Product> it = products.iterator();
@@ -1096,7 +1096,7 @@ public class VrsProvider extends AbstractNetworkProvider
 		return ret.toString();
 	}
 
-	private String generateProduct(Product product)
+	private static String generateProduct(Product product)
 	{
 		switch (product)
 		{
@@ -1120,11 +1120,12 @@ public class VrsProvider extends AbstractNetworkProvider
 				return "LightRail,Underground";
 			case TRAM:
 				return "LightRail";
+			default:
+				throw new IllegalArgumentException("unknown product: '" + product + "'");
 		}
-		throw new IllegalArgumentException("unknown product: '" + product + "'");
 	}
 
-	public LocationWithPosition parseLocationAndPosition(JSONObject location) throws JSONException
+	public static LocationWithPosition parseLocationAndPosition(JSONObject location) throws JSONException
 	{
 		final LocationType locationType;
 		String id = null;
@@ -1191,7 +1192,7 @@ public class VrsProvider extends AbstractNetworkProvider
 		}
 		else if (loc.lat != 0 && loc.lon != 0)
 		{
-			return String.format(Locale.ENGLISH, "%f,%f", (double) loc.lat / 1E6, (double) loc.lon / 1E6);
+			return String.format(Locale.ENGLISH, "%f,%f", loc.lat / 1E6, loc.lon / 1E6);
 		}
 		else
 		{
@@ -1209,7 +1210,7 @@ public class VrsProvider extends AbstractNetworkProvider
 		}
 	}
 
-	private final void appendDate(final StringBuilder uri, final Date time)
+	private final static void appendDate(final StringBuilder uri, final Date time)
 	{
 		final Calendar c = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
 		c.setTime(time);
@@ -1222,7 +1223,7 @@ public class VrsProvider extends AbstractNetworkProvider
 		uri.append(ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%04d-%02d-%02dT%02d:%02d:%02dZ", year, month, day, hour, minute, second)));
 	}
 
-	private final Date parseDateTime(final String dateTimeStr) throws ParseException
+	private final static Date parseDateTime(final String dateTimeStr) throws ParseException
 	{
 		return new SimpleDateFormat("yyyy-MM-dd'T'kk:mm:ssZ").parse(dateTimeStr.substring(0, dateTimeStr.lastIndexOf(':')) + "00");
 	}

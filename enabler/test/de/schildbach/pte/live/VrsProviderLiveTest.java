@@ -49,6 +49,7 @@ import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.StationDepartures;
+import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.dto.SuggestLocationsResult;
 
 /**
@@ -140,7 +141,7 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest
 		assertEquals(0, result.locations.size());
 	}
 
-	private void printLineDestinations(final QueryDeparturesResult result)
+	private static void printLineDestinations(final QueryDeparturesResult result)
 	{
 		for (StationDepartures stationDepartures : result.stationDepartures)
 		{
@@ -424,6 +425,7 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void testTripByAddressAndEmptyPolygon() throws Exception
 	{
+		@SuppressWarnings("deprecation")
 		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null /* id */, 50909350, 6676310, "Kerpen-Sindorf",
 				"Erftstraße 43"), null,
 				new Location(LocationType.ADDRESS, null /* id */, 50923000, 6818440, "Frechen", "Zedernweg 1"), new Date(115, 2, 17, 21, 11, 18), true,
@@ -534,6 +536,7 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest
 		Set<Line> lines = new TreeSet<Line>();
 		for (Location station : stations)
 		{
+			@SuppressWarnings("deprecation")
 			QueryDeparturesResult qdr = provider.queryDepartures(station.id, new Date(115, 2, 16, 2, 0, 0), 100, false);
 			if (qdr.status == QueryDeparturesResult.Status.OK)
 			{
@@ -557,8 +560,17 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest
 		}
 		for (Line line : lines)
 		{
-			if (line.product.equals(Product.BUS)) {
-				System.out.printf("%s %6x\n", line.label, line.style.backgroundColor);
+			final Product product = line.product;
+			if (product != null)
+			{
+				if (product.equals(Product.BUS))
+				{
+					final Style style = line.style;
+					if (style != null)
+					{
+						System.out.printf("%s %6x\n", line.label, style.backgroundColor);
+					}
+				}
 			}
 		}
 	}
