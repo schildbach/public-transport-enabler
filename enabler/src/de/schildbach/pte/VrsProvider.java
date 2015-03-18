@@ -186,6 +186,47 @@ public class VrsProvider extends AbstractNetworkProvider
 		STYLES.put("T67", new Style(Style.parseColor("#f680c5"), Style.WHITE));
 		STYLES.put("T68", new Style(Style.parseColor("#ca93d0"), Style.WHITE));
 
+		// Busse Köln - source: http://www.koelnwiki.de/
+		STYLES.put("BSB40", new Style(Style.parseColor("#FF0000"), Style.WHITE));
+		STYLES.put("B120", new Style(Style.parseColor("#24C6E8"), Style.WHITE));
+		STYLES.put("B121", new Style(Style.parseColor("#89E82D"), Style.WHITE));
+		STYLES.put("B122", new Style(Style.parseColor("#4D44FF"), Style.WHITE));
+		STYLES.put("B125", new Style(Style.parseColor("#FF9A2E"), Style.WHITE));
+		STYLES.put("B126", new Style(Style.parseColor("#FF8EE5"), Style.WHITE));
+		STYLES.put("B127", new Style(Style.parseColor("#D164A4"), Style.WHITE));
+		STYLES.put("B130", new Style(Style.parseColor("#5AC0E8"), Style.WHITE));
+		STYLES.put("B132", new Style(Style.parseColor("#E8840C"), Style.WHITE));
+		STYLES.put("B133", new Style(Style.parseColor("#FF9EEE"), Style.WHITE));
+		STYLES.put("B136", new Style(Style.parseColor("#C96C44"), Style.WHITE));
+		STYLES.put("B139", new Style(Style.parseColor("#D13D1E"), Style.WHITE));
+		STYLES.put("B140", new Style(Style.parseColor("#FFD239"), Style.WHITE));
+		STYLES.put("B141", new Style(Style.parseColor("#2CE8D0"), Style.WHITE));
+		STYLES.put("B142", new Style(Style.parseColor("#9E54FF"), Style.WHITE));
+		STYLES.put("B143", new Style(Style.parseColor("#82E827"), Style.WHITE));
+		STYLES.put("B144", new Style(Style.parseColor("#FF8930"), Style.WHITE));
+		STYLES.put("B145", new Style(Style.parseColor("#24C6E8"), Style.WHITE));
+		STYLES.put("B146", new Style(Style.parseColor("#F25006"), Style.WHITE));
+		STYLES.put("B147", new Style(Style.parseColor("#FF8EE5"), Style.WHITE));
+		STYLES.put("B148", new Style(Style.parseColor("#65B0FF"), Style.WHITE));
+		STYLES.put("B151", new Style(Style.parseColor("#ECB43A"), Style.WHITE));
+		STYLES.put("B152", new Style(Style.parseColor("#FFDE44"), Style.WHITE));
+		STYLES.put("B153", new Style(Style.parseColor("#C069FF"), Style.WHITE));
+		STYLES.put("B154", new Style(Style.parseColor("#E85D25"), Style.WHITE));
+		STYLES.put("B156", new Style(Style.parseColor("#4B69EC"), Style.WHITE));
+		STYLES.put("B157", new Style(Style.parseColor("#5CC3F9"), Style.WHITE));
+		STYLES.put("B159", new Style(Style.parseColor("#FF00CC"), Style.WHITE));
+		STYLES.put("B181", new Style(Style.parseColor("#333333"), Style.WHITE));
+		STYLES.put("B185", new Style(Style.parseColor("#D3D2D2"), Style.WHITE));
+		STYLES.put("B187", new Style(Style.parseColor("#D3D2D2"), Style.WHITE));
+		STYLES.put("B190", new Style(Style.parseColor("#4D44FF"), Style.WHITE));
+		STYLES.put("B250", new Style(Style.parseColor("#8FE84B"), Style.WHITE));
+		STYLES.put("B260", new Style(Style.parseColor("#FF8365"), Style.WHITE));
+		STYLES.put("B423", new Style(Style.parseColor("#D3D2D2"), Style.WHITE));
+		STYLES.put("B434", new Style(Style.parseColor("#14E80B"), Style.WHITE));
+		STYLES.put("B436", new Style(Style.parseColor("#BEEC49"), Style.WHITE));
+		STYLES.put("B481", new Style(Style.parseColor("#D3D2D2"), Style.WHITE));
+		STYLES.put("B965", new Style(Style.parseColor("#FF0000"), Style.WHITE));
+
 		// Busse Bonn
 		STYLES.put("B16", new Style(Style.parseColor("#33baab"), Style.WHITE));
 		STYLES.put("B18", new Style(Style.parseColor("#05a1e6"), Style.WHITE));
@@ -241,6 +282,9 @@ public class VrsProvider extends AbstractNetworkProvider
 		STYLES.put("B856", new Style(Style.parseColor("#4e6578"), Style.WHITE));
 		STYLES.put("B857", new Style(Style.parseColor("#4e6578"), Style.WHITE));
 
+		STYLES.put("BN", new Style(Style.parseColor("#000000"), Style.WHITE));
+		STYLES.put("BNE1", new Style(Style.parseColor("#993399"), Style.WHITE));  // default
+
 		STYLES.put("S", new Style(Style.parseColor("#f18e00"), Style.WHITE));
 		STYLES.put("R", new Style(Style.parseColor("#009d81"), Style.WHITE));
 	}
@@ -279,7 +323,7 @@ public class VrsProvider extends AbstractNetworkProvider
 		uri.append("?eID=tx_vrsinfo_ass2_timetable");
 		if (location.hasLocation())
 		{
-			uri.append("&r=").append(String.format(Locale.ENGLISH, "%.6f,%.6f", location.lon / 1E6, location.lat / 1E6));
+			uri.append("&r=").append(String.format(Locale.ENGLISH, "%.6f,%.6f", location.lat / 1E6, location.lon / 1E6));
 		}
 		else if (location.type == LocationType.STATION && location.hasId())
 		{
@@ -897,11 +941,13 @@ public class VrsProvider extends AbstractNetworkProvider
 
 	protected void parsePolygon(final String polygonStr, final List<Point> polygonArr)
 	{
-		String pointsArr[] = polygonStr.split("\\s");
-		for (String point : pointsArr)
-		{
-			String latlon[] = point.split(",");
-			polygonArr.add(new Point((int) Math.round(Double.parseDouble(latlon[0]) * 1E6), (int) Math.round(Double.parseDouble(latlon[1]) * 1E6)));
+		if (polygonStr != null && !polygonStr.isEmpty()) {
+			String pointsArr[] = polygonStr.split("\\s");
+			for (String point : pointsArr)
+			{
+				String latlon[] = point.split(",");
+				polygonArr.add(new Point((int) Math.round(Double.parseDouble(latlon[0]) * 1E6), (int) Math.round(Double.parseDouble(latlon[1]) * 1E6)));
+			}
 		}
 	}
 
@@ -968,8 +1014,7 @@ public class VrsProvider extends AbstractNetworkProvider
 		final String number = processLineNumber(line.getString("number"));
 		final Product productObj = parseProduct(line.getString("product"), number);
 		final Style style = lineStyle("vrs", productObj, number);
-		// style.foregroundColor & 0xFFFFFF, style.borderColor & 0xFFFFFF);
-		return new Line(null /* id=? */, NetworkId.VRS.toString(), productObj, number, style);
+		return new Line(null /* id */, NetworkId.VRS.toString(), productObj, number, style);
 	}
 
 	private String processLineNumber(final String number)
