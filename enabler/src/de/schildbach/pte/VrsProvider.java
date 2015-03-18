@@ -279,7 +279,7 @@ public class VrsProvider extends AbstractNetworkProvider
 		uri.append("?eID=tx_vrsinfo_ass2_timetable");
 		if (location.hasLocation())
 		{
-			uri.append("&r=").append(String.format(Locale.ENGLISH, "%.6f,%.6f", location.lon / 1E6, location.lat / 1E6));
+			uri.append("&r=").append(String.format(Locale.ENGLISH, "%.6f,%.6f", location.lat / 1E6, location.lon / 1E6));
 		}
 		else if (location.type == LocationType.STATION && location.hasId())
 		{
