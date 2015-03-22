@@ -98,8 +98,9 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsWithUmlaut() throws Exception
 	{
-		final SuggestLocationsResult result = suggestLocations("grün");
+		final SuggestLocationsResult result = suggestLocations("Köln Mülheim");
 		print(result);
+		assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "22000572")));
 	}
 
 	@Test
