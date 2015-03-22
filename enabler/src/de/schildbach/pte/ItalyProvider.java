@@ -26,7 +26,7 @@ public class ItalyProvider extends AbstractNavitiaProvider
 
 	public ItalyProvider(final String authorization)
 	{
-		super(NetworkId.PARIS, authorization);
+		super(NetworkId.IT, authorization);
 
 		setTimeZone("Europe/Rome");
 	}
