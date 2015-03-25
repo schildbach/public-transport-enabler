@@ -165,9 +165,6 @@ public class VrsProvider extends AbstractNetworkProvider
 
 	static
 	{
-		// Schnellbusse VRR
-		STYLES.put("BSB", new Style(Style.parseColor("#00919d"), Style.WHITE));
-
 		// Stadtbahn Köln-Bonn
 		STYLES.put("T1", new Style(Style.parseColor("#ed1c24"), Style.WHITE));
 		STYLES.put("T3", new Style(Style.parseColor("#f680c5"), Style.WHITE));
@@ -188,8 +185,9 @@ public class VrsProvider extends AbstractNetworkProvider
 		STYLES.put("T67", new Style(Style.parseColor("#f680c5"), Style.WHITE));
 		STYLES.put("T68", new Style(Style.parseColor("#ca93d0"), Style.WHITE));
 
-		// Busse Köln - source: http://www.koelnwiki.de/
+		// Busse Köln
 		STYLES.put("BSB40", new Style(Style.parseColor("#FF0000"), Style.WHITE));
+		STYLES.put("B106", new Style(Style.parseColor("#0994dd"), Style.WHITE));
 		STYLES.put("B120", new Style(Style.parseColor("#24C6E8"), Style.WHITE));
 		STYLES.put("B121", new Style(Style.parseColor("#89E82D"), Style.WHITE));
 		STYLES.put("B122", new Style(Style.parseColor("#4D44FF"), Style.WHITE));
@@ -197,9 +195,12 @@ public class VrsProvider extends AbstractNetworkProvider
 		STYLES.put("B126", new Style(Style.parseColor("#FF8EE5"), Style.WHITE));
 		STYLES.put("B127", new Style(Style.parseColor("#D164A4"), Style.WHITE));
 		STYLES.put("B130", new Style(Style.parseColor("#5AC0E8"), Style.WHITE));
+		STYLES.put("B131", new Style(Style.parseColor("#8cd024"), Style.WHITE));
 		STYLES.put("B132", new Style(Style.parseColor("#E8840C"), Style.WHITE));
 		STYLES.put("B133", new Style(Style.parseColor("#FF9EEE"), Style.WHITE));
+		STYLES.put("B135", new Style(Style.parseColor("#f24caf"), Style.WHITE));
 		STYLES.put("B136", new Style(Style.parseColor("#C96C44"), Style.WHITE));
+		STYLES.put("B138", new Style(Style.parseColor("#ef269d"), Style.WHITE));
 		STYLES.put("B139", new Style(Style.parseColor("#D13D1E"), Style.WHITE));
 		STYLES.put("B140", new Style(Style.parseColor("#FFD239"), Style.WHITE));
 		STYLES.put("B141", new Style(Style.parseColor("#2CE8D0"), Style.WHITE));
@@ -209,25 +210,38 @@ public class VrsProvider extends AbstractNetworkProvider
 		STYLES.put("B145", new Style(Style.parseColor("#24C6E8"), Style.WHITE));
 		STYLES.put("B146", new Style(Style.parseColor("#F25006"), Style.WHITE));
 		STYLES.put("B147", new Style(Style.parseColor("#FF8EE5"), Style.WHITE));
-		STYLES.put("B148", new Style(Style.parseColor("#65B0FF"), Style.WHITE));
+		STYLES.put("B149", new Style(Style.parseColor("#176fc1"), Style.WHITE));
+		STYLES.put("B150", new Style(Style.parseColor("#f68712"), Style.WHITE));
 		STYLES.put("B151", new Style(Style.parseColor("#ECB43A"), Style.WHITE));
 		STYLES.put("B152", new Style(Style.parseColor("#FFDE44"), Style.WHITE));
 		STYLES.put("B153", new Style(Style.parseColor("#C069FF"), Style.WHITE));
 		STYLES.put("B154", new Style(Style.parseColor("#E85D25"), Style.WHITE));
+		STYLES.put("B155", new Style(Style.parseColor("#0994dd"), Style.WHITE));
 		STYLES.put("B156", new Style(Style.parseColor("#4B69EC"), Style.WHITE));
 		STYLES.put("B157", new Style(Style.parseColor("#5CC3F9"), Style.WHITE));
+		STYLES.put("B158", new Style(Style.parseColor("#66c530"), Style.WHITE));
 		STYLES.put("B159", new Style(Style.parseColor("#FF00CC"), Style.WHITE));
-		STYLES.put("B181", new Style(Style.parseColor("#333333"), Style.WHITE));
+		STYLES.put("B160", new Style(Style.parseColor("#66c530"), Style.WHITE));
+		STYLES.put("B161", new Style(Style.parseColor("#33bef3"), Style.WHITE));
+		STYLES.put("B162", new Style(Style.parseColor("#f033a3"), Style.WHITE));
+		STYLES.put("B163", new Style(Style.parseColor("#00adef"), Style.WHITE));
+		STYLES.put("B163/550", new Style(Style.parseColor("#00adef"), Style.WHITE));
+		STYLES.put("B164", new Style(Style.parseColor("#885bb4"), Style.WHITE));
+		STYLES.put("B164/501", new Style(Style.parseColor("#885bb4"), Style.WHITE));
+		STYLES.put("B165", new Style(Style.parseColor("#7b7979"), Style.WHITE));
+		STYLES.put("B166", new Style(Style.parseColor("#7b7979"), Style.WHITE));
+		STYLES.put("B167", new Style(Style.parseColor("#7b7979"), Style.WHITE));
+		STYLES.put("B180", new Style(Style.parseColor("#918f90"), Style.WHITE));
+		STYLES.put("B181", new Style(Style.parseColor("#918f90"), Style.WHITE));
+		STYLES.put("B182", new Style(Style.parseColor("#918f90"), Style.WHITE));
+		STYLES.put("B183", new Style(Style.parseColor("#918f90"), Style.WHITE));
+		STYLES.put("B184", new Style(Style.parseColor("#918f90"), Style.WHITE));
 		STYLES.put("B185", new Style(Style.parseColor("#D3D2D2"), Style.WHITE));
+		STYLES.put("B186", new Style(Style.parseColor("#D3D2D2"), Style.WHITE));
 		STYLES.put("B187", new Style(Style.parseColor("#D3D2D2"), Style.WHITE));
+		STYLES.put("B188", new Style(Style.parseColor("#918f90"), Style.WHITE));
 		STYLES.put("B190", new Style(Style.parseColor("#4D44FF"), Style.WHITE));
-		STYLES.put("B250", new Style(Style.parseColor("#8FE84B"), Style.WHITE));
-		STYLES.put("B260", new Style(Style.parseColor("#FF8365"), Style.WHITE));
-		STYLES.put("B423", new Style(Style.parseColor("#D3D2D2"), Style.WHITE));
-		STYLES.put("B434", new Style(Style.parseColor("#14E80B"), Style.WHITE));
-		STYLES.put("B436", new Style(Style.parseColor("#BEEC49"), Style.WHITE));
-		STYLES.put("B481", new Style(Style.parseColor("#D3D2D2"), Style.WHITE));
-		STYLES.put("B965", new Style(Style.parseColor("#FF0000"), Style.WHITE));
+		STYLES.put("B191", new Style(Style.parseColor("#00a998"), Style.WHITE));
 
 		// Busse Bonn
 		STYLES.put("B16", new Style(Style.parseColor("#33baab"), Style.WHITE));
@@ -245,8 +259,6 @@ public class VrsProvider extends AbstractNetworkProvider
 		STYLES.put("B529", new Style(Style.parseColor("#2e2383"), Style.WHITE));
 		STYLES.put("B537", new Style(Style.parseColor("#2e2383"), Style.WHITE));
 		STYLES.put("B541", new Style(Style.parseColor("#2e2383"), Style.WHITE));
-		STYLES.put("B550", new Style(Style.parseColor("#2e2383"), Style.WHITE));
-		STYLES.put("B163", new Style(Style.parseColor("#2e2383"), Style.WHITE));
 		STYLES.put("B551", new Style(Style.parseColor("#2e2383"), Style.WHITE));
 		STYLES.put("B600", new Style(Style.parseColor("#817db7"), Style.WHITE));
 		STYLES.put("B601", new Style(Style.parseColor("#831b82"), Style.WHITE));
@@ -283,6 +295,24 @@ public class VrsProvider extends AbstractNetworkProvider
 		STYLES.put("B855", new Style(Style.parseColor("#4e6578"), Style.WHITE));
 		STYLES.put("B856", new Style(Style.parseColor("#4e6578"), Style.WHITE));
 		STYLES.put("B857", new Style(Style.parseColor("#4e6578"), Style.WHITE));
+
+		// andere Busse
+		STYLES.put("B250", new Style(Style.parseColor("#8FE84B"), Style.WHITE));
+		STYLES.put("B260", new Style(Style.parseColor("#FF8365"), Style.WHITE));
+		STYLES.put("B423", new Style(Style.parseColor("#D3D2D2"), Style.WHITE));
+		STYLES.put("B434", new Style(Style.parseColor("#14E80B"), Style.WHITE));
+		STYLES.put("B436", new Style(Style.parseColor("#BEEC49"), Style.WHITE));
+		STYLES.put("B481", new Style(Style.parseColor("#D3D2D2"), Style.WHITE));
+		STYLES.put("B504", new Style(Style.parseColor("#8cd024"), Style.WHITE));
+		STYLES.put("B505", new Style(Style.parseColor("#0994dd"), Style.WHITE));
+		STYLES.put("B885", new Style(Style.parseColor("#40bb6a"), Style.WHITE));
+		STYLES.put("B935", new Style(Style.parseColor("#bf7e71"), Style.WHITE));
+		STYLES.put("B961", new Style(Style.parseColor("#f140a9"), Style.WHITE));
+		STYLES.put("B962", new Style(Style.parseColor("#9c83c9"), Style.WHITE));
+		STYLES.put("B963", new Style(Style.parseColor("#f46c68"), Style.WHITE));
+		STYLES.put("B965", new Style(Style.parseColor("#FF0000"), Style.WHITE));
+		STYLES.put("B970", new Style(Style.parseColor("#f68712"), Style.WHITE));
+		STYLES.put("B980", new Style(Style.parseColor("#c38bcc"), Style.WHITE));
 
 		STYLES.put("BN", new Style(Style.parseColor("#000000"), Style.WHITE));
 		STYLES.put("BNE1", new Style(Style.parseColor("#993399"), Style.WHITE)); // default
@@ -1030,6 +1060,14 @@ public class VrsProvider extends AbstractNetworkProvider
 		else if (number.startsWith("AST") || number.startsWith("VRM") || number.startsWith("VRR"))
 		{
 			return number.substring(3);
+		}
+		else if (number.startsWith("TaxiBus "))
+		{
+			return number.substring(8);
+		}
+		else if (number.startsWith("TaxiBus"))
+		{
+			return number.substring(7);
 		}
 		else if (number.equals("Schienen-Ersatz-Verkehr (SEV)"))
 		{
