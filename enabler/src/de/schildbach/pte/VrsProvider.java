@@ -79,6 +79,8 @@ public class VrsProvider extends AbstractNetworkProvider
 	@SuppressWarnings("serial")
 	private static class Context implements QueryTripsContext
 	{
+		private boolean canQueryLater = true;
+		private boolean canQueryEarlier = true;
 		private Date lastDeparture = null;
 		private Date firstArrival = null;
 		public Location from;
@@ -92,12 +94,12 @@ public class VrsProvider extends AbstractNetworkProvider
 
 		public boolean canQueryLater()
 		{
-			return true;
+			return this.canQueryLater;
 		}
 
 		public boolean canQueryEarlier()
 		{
-			return true;
+			return this.canQueryEarlier;
 		}
 
 		public void departure(Date departure)
@@ -124,6 +126,16 @@ public class VrsProvider extends AbstractNetworkProvider
 		public Date getFirstArrival()
 		{
 			return this.firstArrival;
+		}
+
+		public void disableEarlier()
+		{
+			this.canQueryEarlier = false;
+		}
+
+		public void disableLater()
+		{
+			this.canQueryLater = false;
 		}
 	}
 
@@ -948,6 +960,13 @@ public class VrsProvider extends AbstractNetworkProvider
 			context.to = to;
 			context.via = via;
 			context.products = products;
+			if (trips.size() == 1)
+			{
+				if (dep)
+					context.disableLater();
+				else
+					context.disableEarlier();
+			}
 			return new QueryTripsResult(header, uri.toString(), from, via, to, context, trips);
 		}
 		catch (final JSONException x)
