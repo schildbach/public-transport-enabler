@@ -156,6 +156,8 @@ public class VrsProvider extends AbstractNetworkProvider
 			add(Pattern.compile("(.*) Gleis (.*)"));
 			// Düren Bf (Bussteig D/E)
 			add(Pattern.compile("(.*) \\(Bussteig (.*)\\)"));
+			// Venloer Str./Gürtel (Gleis 1)
+			add(Pattern.compile("(.*) \\(Gleis (.*)\\)"));
 		}
 	};
 

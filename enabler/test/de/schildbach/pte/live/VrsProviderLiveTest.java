@@ -409,6 +409,16 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
+	public void testTripEhrenfeldNeumarkt() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "251"), null, new Location(LocationType.STATION, "2"),
+				new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		print(result);
+		assertEquals(QueryTripsResult.Status.OK, result.status);
+		assertTrue(result.trips.size() > 0);
+	}
+
+	@Test
 	public void testTripByCoord() throws Exception
 	{
 		final QueryTripsResult result = queryTrips(Location.coord(50740530, 7129200), null, Location.coord(50933930, 6932440), new Date(), true,
