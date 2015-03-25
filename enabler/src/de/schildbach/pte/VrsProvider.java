@@ -160,6 +160,7 @@ public class VrsProvider extends AbstractNetworkProvider
 			add(Pattern.compile("(.*) \\(Gleis (.*)\\)"));
 		}
 	};
+	protected static final Pattern nrwTarifPattern = Pattern.compile("([\\d]+,\\d\\d)");
 
 	protected static final Map<String, Style> STYLES = new HashMap<String, Style>();
 
@@ -933,23 +934,7 @@ public class VrsProvider extends AbstractNetworkProvider
 					}
 				}
 				int changes = route.getInt("changes");
-				List<Fare> fares = new ArrayList<Fare>();
-				final JSONObject costs = route.optJSONObject("costs");
-				if (costs != null)
-				{
-					final String name = costs.optString("name", null); // seems constant "VRS-Tarif"
-					// final String text = costs.getString("text"); // e.g. "Preisstufe 4 [RegioTicket] 7,70 €",
-					// "VRR-Tarif! (Details: www.vrr.de)", "NRW-Tarif"
-					float price = (float) costs.optDouble("price", 0.0); // e.g. 7.7 or not existent outside VRS
-					// long zone = costs.getLong("zone"); // e.g. 2600
-					final String level = costs.has("level") ? "Preisstufe " + costs.getString("level") : null; // e.g.
-																												// "4"
-
-					if (name != null && price != 0.0 && level != null)
-					{
-						fares.add(new Fare(name, Fare.Type.ADULT, Currency.getInstance("EUR"), price, level, null /* units */));
-					}
-				}
+				List<Fare> fares = parseFare(route.optJSONObject("costs"));
 
 				trips.add(new Trip(null /* id */, tripOrigin, tripDestination, legs, fares, null /* capacity */, changes));
 			}
@@ -969,6 +954,35 @@ public class VrsProvider extends AbstractNetworkProvider
 		{
 			throw new RuntimeException("cannot parse: '" + page + "' on " + uri, e);
 		}
+	}
+
+	private static List<Fare> parseFare(final JSONObject costs) throws JSONException
+	{
+		List<Fare> fares = new ArrayList<Fare>();
+		if (costs != null)
+		{
+			final String name = costs.optString("name", null); // e.g. "VRS-Tarif", "NRW-Tarif"
+			final String text = costs.optString("text", null); // e.g. "Preisstufe 4 [RegioTicket] 7,70 €",
+			// "VRR-Tarif! (Details: www.vrr.de)", "17,30 € (2.Kl) / PauschalpreisTickets gültig"
+			float price = (float) costs.optDouble("price", 0.0); // e.g. 7.7 or not existent outside VRS
+			// long zone = costs.getLong("zone"); // e.g. 2600
+			final String level = costs.has("level") ? "Preisstufe " + costs.getString("level") : null; // e.g. "4"
+
+			if (name != null && price != 0.0 && level != null)
+			{
+				fares.add(new Fare(name, Fare.Type.ADULT, Currency.getInstance("EUR"), price, level, null /* units */));
+			}
+			else if (name != null && name.equals("NRW-Tarif") && text != null)
+			{
+				Matcher matcher = nrwTarifPattern.matcher(text);
+				if (matcher.find())
+				{
+					fares.add(new Fare(name, Fare.Type.ADULT, Currency.getInstance("EUR"), Float.parseFloat(matcher.group(0).replace(",", ".")),
+							null /* level */, null /* units */));
+				}
+			}
+		}
+		return fares;
 	}
 
 	protected static void parsePolygon(final String polygonStr, final List<Point> polygonArr)
