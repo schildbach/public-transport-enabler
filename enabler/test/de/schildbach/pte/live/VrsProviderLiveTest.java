@@ -460,6 +460,16 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest
 		assertTrue(result.trips.size() > 0);
 	}
 
+	@Test
+	public void testTripAachenEschweilerBus() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "10004"), null, new Location(LocationType.STATION, "10003"),
+				new Date(), true, EnumSet.of(Product.BUS), WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		print(result);
+		assertEquals(QueryTripsResult.Status.OK, result.status);
+		assertTrue(result.trips.size() > 0);
+	}
+
 	private void manyRandomTrips(int latFrom, int latTo, int lonFrom, int lonTo) throws Exception
 	{
 		Random rand = new Random(new Date().getTime());

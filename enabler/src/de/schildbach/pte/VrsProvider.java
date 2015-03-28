@@ -158,6 +158,8 @@ public class VrsProvider extends AbstractNetworkProvider
 			add(Pattern.compile("(.*) \\(Bussteig (.*)\\)"));
 			// Venloer Str./Gürtel (Gleis 1)
 			add(Pattern.compile("(.*) \\(Gleis (.*)\\)"));
+			// Aachen alle Buslinien
+			add(Pattern.compile("(.*) \\(H\\.(\\d+).*\\)"));
 		}
 	};
 	protected static final Pattern nrwTarifPattern = Pattern.compile("([\\d]+,\\d\\d)");
@@ -818,7 +820,9 @@ public class VrsProvider extends AbstractNetworkProvider
 						for (int k = 0; k < vias.length(); k++)
 						{
 							final JSONObject viaJsonObject = vias.getJSONObject(k);
-							Location viaLocation = parseLocationAndPosition(viaJsonObject).location;
+							LocationWithPosition viaLocationWithPosition = parseLocationAndPosition(viaJsonObject);
+							Location viaLocation = viaLocationWithPosition.location;
+							Position viaPosition = viaLocationWithPosition.position;
 							Date arrivalPlanned = null;
 							Date arrivalPredicted = null;
 							if (viaJsonObject.has("arrivalScheduled"))
@@ -830,8 +834,8 @@ public class VrsProvider extends AbstractNetworkProvider
 							{
 								arrivalPlanned = parseDateTime(viaJsonObject.getString("arrival"));
 							}
-							final Stop intermediateStop = new Stop(viaLocation, false /* arrival */, arrivalPlanned, arrivalPredicted,
-									null /* plannedPosition */, null /* predictedPosition */);
+							final Stop intermediateStop = new Stop(viaLocation, false /* arrival */, arrivalPlanned, arrivalPredicted, viaPosition,
+									viaPosition);
 							intermediateStops.add(intermediateStop);
 						}
 					}
