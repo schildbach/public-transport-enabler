@@ -390,9 +390,6 @@ public class VrsProvider extends AbstractNetworkProvider
 
 		final CharSequence page = ParserUtils.scrape(uri.toString(), null, Charsets.UTF_8);
 
-		// System.out.println(uri);
-		// System.out.println(page);
-
 		try
 		{
 			final List<Location> locations = new ArrayList<Location>();
@@ -454,9 +451,6 @@ public class VrsProvider extends AbstractNetworkProvider
 			appendDate(uri, time);
 		}
 		final CharSequence page = ParserUtils.scrape(uri.toString(), null, Charsets.UTF_8);
-
-		// System.out.println(uri);
-		// System.out.println(page);
 
 		try
 		{
@@ -554,9 +548,6 @@ public class VrsProvider extends AbstractNetworkProvider
 
 		final CharSequence page = ParserUtils.scrape(uri.toString(), null, Charsets.UTF_8);
 
-		// System.out.println(uri);
-		// System.out.println(page);
-
 		try
 		{
 			final JSONObject head = new JSONObject(page.toString());
@@ -625,9 +616,6 @@ public class VrsProvider extends AbstractNetworkProvider
 				+ ParserUtils.urlEncode(new Location(LocationType.ANY, null, null, constraint.toString()).name);
 
 		final CharSequence page = ParserUtils.scrape(uri, null, Charsets.UTF_8);
-
-		// System.out.println(uri);
-		// System.out.println(page);
 
 		try
 		{
@@ -756,9 +744,6 @@ public class VrsProvider extends AbstractNetworkProvider
 		}
 
 		final CharSequence page = ParserUtils.scrape(uri.toString(), null, Charsets.UTF_8);
-
-		// System.out.println(uri);
-		// System.out.println(page);
 
 		try
 		{

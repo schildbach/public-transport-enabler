@@ -369,9 +369,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	{
 		final CharSequence page = ParserUtils.scrape(uri, null, jsonGetStopsEncoding);
 
-		// System.out.println(uri);
-		// System.out.println(page);
-
 		final Matcher mJson = P_AJAX_GET_STOPS_JSON.matcher(page);
 		if (mJson.matches())
 		{
@@ -515,9 +512,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			reader.replace(" <-", " &#x2190;"); // left arrow
 			reader.replace(" <> ", " &#x2194; "); // left-right arrow
 			addCustomReplaces(reader);
-
-			// System.out.println(uri);
-			// ParserUtils.printFromReader(reader);
 
 			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
 			final XmlPullParser pp = factory.newPullParser();
@@ -872,9 +866,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			final @Nullable Location via, final Location to) throws IOException
 	{
 		final String request = wrapReqC(conReq, null);
-
-		// System.out.println(request);
-		// ParserUtils.printXml(ParserUtils.scrape(queryEndpoint, request, null, null));
 
 		Reader reader = null;
 		String firstChars = null;
@@ -1523,8 +1514,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		/*
 		 * Many thanks to Malte Starostik and Robert, who helped a lot with analyzing this API!
 		 */
-
-		// System.out.println(uri);
 
 		LittleEndianDataInputStream is = null;
 
@@ -2432,9 +2421,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	protected final NearbyLocationsResult jsonNearbyLocations(final String uri) throws IOException
 	{
 		final CharSequence page = ParserUtils.scrape(uri, null, jsonNearbyLocationsEncoding);
-
-		// System.out.println(uri);
-		// System.out.println(page);
 
 		try
 		{

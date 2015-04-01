@@ -794,8 +794,6 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 				+ "&depth=0";
 		final CharSequence page = ParserUtils.scrape(queryUri, authorization);
 
-		// System.out.println(queryUri);
-
 		try
 		{
 			final JSONObject head = new JSONObject(page.toString());
@@ -870,8 +868,6 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 			queryUri.append("departures?from_datetime=" + dateTime + "&count=" + maxDepartures + "&duration=3600" + "&depth=0");
 
 			final CharSequence page = ParserUtils.scrape(queryUri.toString(), authorization);
-
-			// System.out.println(queryUri);
 
 			final JSONObject head = new JSONObject(page.toString());
 
@@ -961,8 +957,6 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 
 		final String queryUri = uri() + "places?q=" + ParserUtils.urlEncode(nameCstr) + "&type[]=stop_area&type[]=address" + "&depth=1";
 		final CharSequence page = ParserUtils.scrape(queryUri, authorization);
-
-		// System.out.println(queryUri);
 
 		try
 		{
@@ -1085,8 +1079,6 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 
 				final CharSequence page = ParserUtils.scrape(queryUri.toString(), authorization);
 
-				// System.out.println(queryUri);
-
 				try
 				{
 					final JSONObject head = new JSONObject(page.toString());
@@ -1183,8 +1175,6 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 		final String queryUri = later ? context.nextQueryUri : context.prevQueryUri;
 		final CharSequence page = ParserUtils.scrape(queryUri, authorization);
 
-		// System.out.println(queryUri);
-
 		try
 		{
 			if (from.isIdentified() && to.isIdentified())
@@ -1221,8 +1211,6 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 	{
 		final String queryUri = uri();
 		final CharSequence page = ParserUtils.scrape(queryUri, authorization);
-
-		// System.out.println(queryUri);
 
 		try
 		{

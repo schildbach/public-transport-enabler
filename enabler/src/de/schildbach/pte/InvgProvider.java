@@ -183,9 +183,6 @@ public class InvgProvider extends AbstractHafasProvider
 		appendXmlStationBoardParameters(uri, time, stationId, maxDepartures, false, null);
 		final CharSequence page = ParserUtils.scrape(uri.toString());
 
-		// System.out.println(uri);
-		// System.out.println(page);
-
 		// parse page
 		final Matcher mHeadCoarse = P_DEPARTURES_HEAD_COARSE.matcher(page);
 		if (mHeadCoarse.matches())

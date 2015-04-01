@@ -270,9 +270,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		if (!httpPost)
 			uri.append(parameters);
 
-		// System.out.println(uri);
-		// System.out.println(parameters);
-
 		final CharSequence page = ParserUtils.scrape(uri.toString(), httpPost ? parameters.substring(1) : null, Charsets.UTF_8);
 		final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
 
@@ -383,9 +380,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		if (!httpPost)
 			uri.append(parameters);
 
-		// System.out.println(uri);
-		// System.out.println(parameters);
-
 		InputStream is = null;
 		String firstChars = null;
 
@@ -432,9 +426,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		final StringBuilder uri = new StringBuilder(stopFinderEndpoint);
 		if (!httpPost)
 			uri.append(parameters);
-
-		// System.out.println(uri);
-		// System.out.println(parameters);
 
 		InputStream is = null;
 		String firstChars = null;
@@ -555,9 +546,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		if (!httpPost)
 			uri.append(parameters);
 
-		// System.out.println(uri);
-		// System.out.println(parameters);
-
 		InputStream is = null;
 		String firstChars = null;
 
@@ -636,9 +624,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		final StringBuilder uri = new StringBuilder(coordEndpoint);
 		if (!httpPost)
 			uri.append(parameters);
-
-		// System.out.println(uri);
-		// System.out.println(parameters);
 
 		InputStream is = null;
 		String firstChars = null;
@@ -951,9 +936,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		final StringBuilder uri = new StringBuilder(departureMonitorEndpoint);
 		if (!httpPost)
 			uri.append(parameters);
-
-		// System.out.println(uri);
-		// System.out.println(parameters);
 
 		InputStream is = null;
 		String firstChars = null;
@@ -1512,9 +1494,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		if (!httpPost)
 			uri.append(parameters);
 
-		// System.out.println(uri);
-		// System.out.println(parameters);
-
 		InputStream is = null;
 		String firstChars = null;
 
@@ -1676,9 +1655,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		final StringBuilder uri = new StringBuilder(departureMonitorEndpoint);
 		if (!httpPost)
 			uri.append(parameters);
-
-		// System.out.println(uri);
-		// System.out.println(parameters);
 
 		InputStream is = null;
 		String firstChars = null;
@@ -2135,9 +2111,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		if (!httpPost)
 			uri.append(parameters);
 
-		// System.out.println(uri);
-		// System.out.println(parameters);
-
 		InputStream is = null;
 		String firstChars = null;
 
@@ -2173,9 +2146,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		final StringBuilder uri = new StringBuilder(tripEndpoint);
 		if (!httpPost)
 			uri.append(parameters);
-
-		// System.out.println(uri);
-		// System.out.println(parameters);
 
 		InputStream is = null;
 		String firstChars = null;
@@ -2269,8 +2239,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	private QueryTripsResult queryTrips(final String uri, final InputStream is) throws XmlPullParserException, IOException
 	{
-		// System.out.println(uri);
-
 		final XmlPullParser pp = parserFactory.newPullParser();
 		pp.setInput(is, null);
 		final ResultHeader header = enterItdRequest(pp);
@@ -2855,8 +2823,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private QueryTripsResult queryTripsMobile(final String uri, final Location from, final @Nullable Location via, final Location to,
 			final InputStream is) throws XmlPullParserException, IOException
 	{
-		// System.out.println(uri);
-
 		final XmlPullParser pp = parserFactory.newPullParser();
 		pp.setInput(is, null);
 		final ResultHeader header = enterEfa(pp);
