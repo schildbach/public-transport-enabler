@@ -17,6 +17,8 @@
 
 package de.schildbach.pte;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -31,6 +33,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
+
+import com.google.common.base.Strings;
 
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.Line;
@@ -161,6 +165,8 @@ public class SeptaProvider extends AbstractHafasProvider
 	public QueryDeparturesResult queryDepartures(final String stationId, final @Nullable Date time, final int maxDepartures, final boolean equivs)
 			throws IOException
 	{
+		checkNotNull(Strings.emptyToNull(stationId));
+
 		final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
 		final QueryDeparturesResult result = new QueryDeparturesResult(header);
 

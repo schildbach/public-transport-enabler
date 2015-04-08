@@ -17,6 +17,8 @@
 
 package de.schildbach.pte;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -438,8 +440,10 @@ public class VrsProvider extends AbstractNetworkProvider
 	// VRS does not show LongDistanceTrains departures. Parameter p for product
 	// filter is supported, but LongDistanceTrains filter seems to be ignored.
 	// equivs not supported.
-	public QueryDeparturesResult queryDepartures(String stationId, @Nullable Date time, int maxDepartures, boolean equivs) throws IOException
+	public QueryDeparturesResult queryDepartures(final String stationId, @Nullable Date time, int maxDepartures, boolean equivs) throws IOException
 	{
+		checkNotNull(Strings.emptyToNull(stationId));
+
 		// g=p means group by product; not used here
 		// d=minutes overwrites c=count and returns departures for the next d minutes
 		final StringBuilder uri = new StringBuilder(API_BASE);
