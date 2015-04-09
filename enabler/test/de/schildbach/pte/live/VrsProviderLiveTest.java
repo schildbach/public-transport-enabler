@@ -169,6 +169,15 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
+	public void queryDeparturesGaussstr() throws Exception
+	{
+		final QueryDeparturesResult result = queryDepartures("8984", false);
+		// will return {"error": "Keine Abfahrten gefunden."}
+		print(result);
+		printLineDestinations(result);
+	}
+
+	@Test
 	public void queryManyDepartures() throws Exception
 	{
 		Random rand = new Random(new Date().getTime());
