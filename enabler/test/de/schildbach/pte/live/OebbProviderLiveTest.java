@@ -56,7 +56,7 @@ public class OebbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 48200239, 16370773));
+		final NearbyLocationsResult result = queryNearbyStations(Location.coord(48200239, 16370773));
 
 		print(result);
 		assertEquals(NearbyLocationsResult.Status.OK, result.status);

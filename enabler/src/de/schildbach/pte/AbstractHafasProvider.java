@@ -17,6 +17,8 @@
 
 package de.schildbach.pte;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -52,6 +54,7 @@ import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Strings;
 
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.Line;
@@ -369,9 +372,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	{
 		final CharSequence page = ParserUtils.scrape(uri, null, jsonGetStopsEncoding);
 
-		// System.out.println(uri);
-		// System.out.println(page);
-
 		final Matcher mJson = P_AJAX_GET_STOPS_JSON.matcher(page);
 		if (mJson.matches())
 		{
@@ -454,6 +454,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	public QueryDeparturesResult queryDepartures(final String stationId, final @Nullable Date time, final int maxDepartures, final boolean equivs)
 			throws IOException
 	{
+		checkNotNull(Strings.emptyToNull(stationId));
+
 		final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
 		appendXmlStationBoardParameters(uri, time, stationId, maxDepartures, equivs, "vs_java3");
 
@@ -515,9 +517,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			reader.replace(" <-", " &#x2190;"); // left arrow
 			reader.replace(" <> ", " &#x2194; "); // left-right arrow
 			addCustomReplaces(reader);
-
-			// System.out.println(uri);
-			// ParserUtils.printFromReader(reader);
 
 			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
 			final XmlPullParser pp = factory.newPullParser();
@@ -872,9 +871,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			final @Nullable Location via, final Location to) throws IOException
 	{
 		final String request = wrapReqC(conReq, null);
-
-		// System.out.println(request);
-		// ParserUtils.printXml(ParserUtils.scrape(queryEndpoint, request, null, null));
 
 		Reader reader = null;
 		String firstChars = null;
@@ -1316,6 +1312,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		else if (location.type == LocationType.ADDRESS && location.hasLocation())
 			return "<Address type=\"WGS84\" x=\"" + location.lon + "\" y=\"" + location.lat + "\" name=\""
 					+ (location.place != null ? location.place + ", " : "") + location.name + "\" />";
+		else if (location.type == LocationType.COORD && location.hasLocation())
+			return "<Coord type=\"WGS84\" x=\"" + location.lon + "\" y=\"" + location.lat + "\" />";
 		else
 			throw new IllegalArgumentException("cannot handle: " + location);
 	}
@@ -1354,7 +1352,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			return 1;
 		if (type == LocationType.POI)
 			return 4;
-		if (type == LocationType.ADDRESS && location.hasLocation())
+		if (type == LocationType.COORD || (type == LocationType.ADDRESS && location.hasLocation()))
 			return 16;
 		if (type == LocationType.ADDRESS && location.name != null)
 			return 2;
@@ -1521,8 +1519,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		/*
 		 * Many thanks to Malte Starostik and Robert, who helped a lot with analyzing this API!
 		 */
-
-		// System.out.println(uri);
 
 		LittleEndianDataInputStream is = null;
 
@@ -2430,9 +2426,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	protected final NearbyLocationsResult jsonNearbyLocations(final String uri) throws IOException
 	{
 		final CharSequence page = ParserUtils.scrape(uri, null, jsonNearbyLocationsEncoding);
-
-		// System.out.println(uri);
-		// System.out.println(page);
 
 		try
 		{

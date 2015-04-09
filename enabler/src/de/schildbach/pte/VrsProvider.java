@@ -17,6 +17,8 @@
 
 package de.schildbach.pte;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -137,7 +139,7 @@ public class VrsProvider extends AbstractNetworkProvider
 		{
 			this.canQueryLater = false;
 		}
-}
+	}
 
 	private static class LocationWithPosition
 	{
@@ -390,9 +392,6 @@ public class VrsProvider extends AbstractNetworkProvider
 
 		final CharSequence page = ParserUtils.scrape(uri.toString(), null, Charsets.UTF_8);
 
-		// System.out.println(uri);
-		// System.out.println(page);
-
 		try
 		{
 			final List<Location> locations = new ArrayList<Location>();
@@ -441,8 +440,10 @@ public class VrsProvider extends AbstractNetworkProvider
 	// VRS does not show LongDistanceTrains departures. Parameter p for product
 	// filter is supported, but LongDistanceTrains filter seems to be ignored.
 	// equivs not supported.
-	public QueryDeparturesResult queryDepartures(String stationId, @Nullable Date time, int maxDepartures, boolean equivs) throws IOException
+	public QueryDeparturesResult queryDepartures(final String stationId, @Nullable Date time, int maxDepartures, boolean equivs) throws IOException
 	{
+		checkNotNull(Strings.emptyToNull(stationId));
+
 		// g=p means group by product; not used here
 		// d=minutes overwrites c=count and returns departures for the next d minutes
 		final StringBuilder uri = new StringBuilder(API_BASE);
@@ -454,9 +455,6 @@ public class VrsProvider extends AbstractNetworkProvider
 			appendDate(uri, time);
 		}
 		final CharSequence page = ParserUtils.scrape(uri.toString(), null, Charsets.UTF_8);
-
-		// System.out.println(uri);
-		// System.out.println(page);
 
 		try
 		{
@@ -554,9 +552,6 @@ public class VrsProvider extends AbstractNetworkProvider
 
 		final CharSequence page = ParserUtils.scrape(uri.toString(), null, Charsets.UTF_8);
 
-		// System.out.println(uri);
-		// System.out.println(page);
-
 		try
 		{
 			final JSONObject head = new JSONObject(page.toString());
@@ -625,9 +620,6 @@ public class VrsProvider extends AbstractNetworkProvider
 				+ ParserUtils.urlEncode(new Location(LocationType.ANY, null, null, constraint.toString()).name);
 
 		final CharSequence page = ParserUtils.scrape(uri, null, Charsets.UTF_8);
-
-		// System.out.println(uri);
-		// System.out.println(page);
 
 		try
 		{
@@ -757,9 +749,6 @@ public class VrsProvider extends AbstractNetworkProvider
 
 		final CharSequence page = ParserUtils.scrape(uri.toString(), null, Charsets.UTF_8);
 
-		// System.out.println(uri);
-		// System.out.println(page);
-
 		try
 		{
 			final List<Trip> trips = new ArrayList<Trip>();
@@ -846,8 +835,8 @@ public class VrsProvider extends AbstractNetworkProvider
 							{
 								arrivalPlanned = parseDateTime(viaJsonObject.getString("arrival"));
 							}
-							final Stop intermediateStop = new Stop(viaLocation, false /* arrival */, arrivalPlanned, arrivalPredicted,
-									viaPosition, viaPosition);
+							final Stop intermediateStop = new Stop(viaLocation, false /* arrival */, arrivalPlanned, arrivalPredicted, viaPosition,
+									viaPosition);
 							intermediateStops.add(intermediateStop);
 						}
 					}
@@ -979,7 +968,8 @@ public class VrsProvider extends AbstractNetworkProvider
 		}
 	}
 
-	private static List<Fare> parseFare(final JSONObject costs) throws JSONException {
+	private static List<Fare> parseFare(final JSONObject costs) throws JSONException
+	{
 		List<Fare> fares = new ArrayList<Fare>();
 		if (costs != null)
 		{
@@ -999,7 +989,8 @@ public class VrsProvider extends AbstractNetworkProvider
 				Matcher matcher = nrwTarifPattern.matcher(text);
 				if (matcher.find())
 				{
-					fares.add(new Fare(name, Fare.Type.ADULT, Currency.getInstance("EUR"), Float.parseFloat(matcher.group(0).replace(",", ".")), null /* level */, null /* units */));
+					fares.add(new Fare(name, Fare.Type.ADULT, Currency.getInstance("EUR"), Float.parseFloat(matcher.group(0).replace(",", ".")),
+							null /* level */, null /* units */));
 				}
 			}
 		}

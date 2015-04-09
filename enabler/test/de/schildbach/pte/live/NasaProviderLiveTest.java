@@ -55,7 +55,7 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 51346546, 12383333));
+		final NearbyLocationsResult result = queryNearbyStations(Location.coord(51346546, 12383333));
 
 		print(result);
 		assertEquals(NearbyLocationsResult.Status.OK, result.status);

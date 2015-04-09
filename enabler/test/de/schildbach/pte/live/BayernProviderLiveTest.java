@@ -56,7 +56,7 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 48135232, 11560650));
+		final NearbyLocationsResult result = queryNearbyStations(Location.coord(48135232, 11560650));
 		print(result);
 		assertTrue(result.locations.size() > 0);
 	}
@@ -64,8 +64,8 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyLocationsByCoordinate() throws Exception
 	{
-		final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION, LocationType.POI), new Location(
-				LocationType.ADDRESS, 48135232, 11560650));
+		final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION, LocationType.POI),
+				Location.coord(48135232, 11560650));
 		print(result);
 		assertTrue(result.locations.size() > 0);
 	}
@@ -140,8 +140,8 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void tripBetweenCoordinates() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 48165238, 11577473), null, new Location(
-				LocationType.ADDRESS, null, 47987199, 11326532), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(Location.coord(48165238, 11577473), null, Location.coord(47987199, 11326532), new Date(), true,
+				Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		print(laterResult);

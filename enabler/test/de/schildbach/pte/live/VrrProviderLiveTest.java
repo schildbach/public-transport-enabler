@@ -57,10 +57,10 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 51218693, 6777785));
+		final NearbyLocationsResult result = queryNearbyStations(Location.coord(51218693, 6777785));
 		print(result);
 
-		final NearbyLocationsResult result2 = queryNearbyStations(new Location(LocationType.ADDRESS, 51719648, 8754330));
+		final NearbyLocationsResult result2 = queryNearbyStations(Location.coord(51719648, 8754330));
 		print(result2);
 	}
 
@@ -98,8 +98,9 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsWithUmlaut() throws Exception
 	{
-		final SuggestLocationsResult result = suggestLocations("grün");
+		final SuggestLocationsResult result = suggestLocations("Köln Mülheim");
 		print(result);
+		assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "22000572")));
 	}
 
 	@Test

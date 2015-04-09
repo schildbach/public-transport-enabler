@@ -40,6 +40,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.base.Charsets;
 
 import de.schildbach.pte.exception.BlockedException;
@@ -61,6 +64,8 @@ public final class ParserUtils
 	private static final int SCRAPE_CONNECT_TIMEOUT = 5000;
 	private static final int SCRAPE_READ_TIMEOUT = 15000;
 	private static HttpCookie sessionCookie;
+
+	private static final Logger log = LoggerFactory.getLogger(ParserUtils.class);
 
 	public static final CharSequence scrape(final String url) throws IOException
 	{
@@ -129,6 +134,8 @@ public final class ParserUtils
 	public static final InputStream scrapeInputStream(final String urlStr, final String postRequest, Charset requestEncoding, final String referer,
 			final String sessionCookieName, final String authorization) throws IOException
 	{
+		log.debug("{}: {}", postRequest != null ? "POST" : "GET", urlStr);
+
 		if (requestEncoding == null)
 			requestEncoding = Charsets.ISO_8859_1;
 
@@ -244,7 +251,7 @@ public final class ParserUtils
 			{
 				final String message = "got response: " + responseCode + " " + connection.getResponseMessage();
 				if (tries-- > 0)
-					System.out.println(message + ", retrying...");
+					log.info("{}, retrying...", message);
 				else
 					throw new IOException(message + ": " + url);
 			}

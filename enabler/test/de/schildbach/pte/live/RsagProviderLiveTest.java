@@ -56,7 +56,7 @@ public class RsagProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 54078314, 12131715));
+		final NearbyLocationsResult result = queryNearbyStations(Location.coord(54078314, 12131715));
 		print(result);
 	}
 

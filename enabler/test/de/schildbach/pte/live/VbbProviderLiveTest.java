@@ -64,7 +64,7 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 52548505, 13388640));
+		final NearbyLocationsResult result = queryNearbyStations(Location.coord(52548505, 13388640));
 		print(result);
 		assertTrue(result.locations.size() > 0);
 	}
@@ -172,8 +172,8 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void tripBetweenCoordinates() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 52501507, 13357026, null, null), null, new Location(
-				LocationType.ADDRESS, null, 52513639, 13568648, null, null), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(Location.coord(52501507, 13357026), null, Location.coord(52513639, 13568648), new Date(), true,
+				Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
 
 		if (!result.context.canQueryLater())
@@ -186,10 +186,8 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void viaTripBetweenCoordinates() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 52501507, 13357026, null, null), new Location(
-				LocationType.ADDRESS, null, 52479868, 13324247, null, null),
-				new Location(LocationType.ADDRESS, null, 52513639, 13568648, null, null), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-				Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(Location.coord(52501507, 13357026), Location.coord(52479868, 13324247),
+				Location.coord(52513639, 13568648), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
 
 		if (!result.context.canQueryLater())

@@ -270,9 +270,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		if (!httpPost)
 			uri.append(parameters);
 
-		// System.out.println(uri);
-		// System.out.println(parameters);
-
 		final CharSequence page = ParserUtils.scrape(uri.toString(), httpPost ? parameters.substring(1) : null, Charsets.UTF_8);
 		final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
 
@@ -383,9 +380,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		if (!httpPost)
 			uri.append(parameters);
 
-		// System.out.println(uri);
-		// System.out.println(parameters);
-
 		InputStream is = null;
 		String firstChars = null;
 
@@ -433,9 +427,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		if (!httpPost)
 			uri.append(parameters);
 
-		// System.out.println(uri);
-		// System.out.println(parameters);
-
 		InputStream is = null;
 		String firstChars = null;
 
@@ -470,7 +461,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					else if ("poi".equals(ty))
 						type = LocationType.POI;
 					else if ("loc".equals(ty))
-						type = LocationType.ADDRESS;
+						type = LocationType.COORD;
 					else if ("street".equals(ty))
 						type = LocationType.ADDRESS;
 					else if ("singlehouse".equals(ty))
@@ -555,9 +546,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		if (!httpPost)
 			uri.append(parameters);
 
-		// System.out.println(uri);
-		// System.out.println(parameters);
-
 		InputStream is = null;
 		String firstChars = null;
 
@@ -636,9 +624,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		final StringBuilder uri = new StringBuilder(coordEndpoint);
 		if (!httpPost)
 			uri.append(parameters);
-
-		// System.out.println(uri);
-		// System.out.println(parameters);
 
 		InputStream is = null;
 		String firstChars = null;
@@ -833,6 +818,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		final String buildingName = XmlPullUtil.optAttr(pp, "buildingName", null);
 		final String buildingNumber = XmlPullUtil.optAttr(pp, "buildingNumber", null);
 		final String postCode = XmlPullUtil.optAttr(pp, "postCode", null);
+		final String streetName = XmlPullUtil.optAttr(pp, "streetName", null);
 		final Point coord = processCoordAttr(pp);
 
 		final String nameElem = normalizeLocationName(XmlPullUtil.valueTag(pp, "odvNameElem"));
@@ -844,42 +830,53 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		if ("stop".equals(type))
 		{
 			locationType = LocationType.STATION;
-			place = locality;
-			name = objectName;
+			place = locality != null ? locality : defaultPlace;
+			name = objectName != null ? objectName : nameElem;
 		}
 		else if ("poi".equals(type))
 		{
 			locationType = LocationType.POI;
-			place = locality;
-			name = objectName;
+			place = locality != null ? locality : defaultPlace;
+			name = objectName != null ? objectName : nameElem;
 		}
 		else if ("loc".equals(type))
 		{
-			return null;
+			if (coord != null)
+			{
+				locationType = LocationType.COORD;
+				place = null;
+				name = null;
+			}
+			else
+			{
+				locationType = LocationType.ADDRESS;
+				place = null;
+				name = locality;
+			}
 		}
 		else if ("address".equals(type) || "singlehouse".equals(type))
 		{
 			locationType = LocationType.ADDRESS;
-			place = locality;
+			place = locality != null ? locality : defaultPlace;
 			name = objectName + (buildingNumber != null ? " " + buildingNumber : "");
 		}
 		else if ("street".equals(type) || "crossing".equals(type))
 		{
 			locationType = LocationType.ADDRESS;
-			place = locality;
-			name = objectName;
+			place = locality != null ? locality : defaultPlace;
+			name = objectName != null ? objectName : nameElem;
 		}
 		else if ("postcode".equals(type))
 		{
 			locationType = LocationType.ADDRESS;
-			place = locality;
+			place = locality != null ? locality : defaultPlace;
 			name = postCode;
 		}
 		else if ("buildingname".equals(type))
 		{
 			locationType = LocationType.ADDRESS;
-			place = locality;
-			name = buildingName;
+			place = locality != null ? locality : defaultPlace;
+			name = buildingName != null ? buildingName : streetName;
 		}
 		else if ("coord".equals(type))
 		{
@@ -892,7 +889,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			throw new IllegalArgumentException("unknown type/anyType: " + type);
 		}
 
-		return new Location(locationType, id, coord, place != null ? place : defaultPlace, name != null ? name : nameElem);
+		return new Location(locationType, id, coord, place, name);
 	}
 
 	private Location processItdOdvAssignedStop(final XmlPullParser pp) throws XmlPullParserException, IOException
@@ -939,9 +936,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		final StringBuilder uri = new StringBuilder(departureMonitorEndpoint);
 		if (!httpPost)
 			uri.append(parameters);
-
-		// System.out.println(uri);
-		// System.out.println(parameters);
 
 		InputStream is = null;
 		String firstChars = null;
@@ -1452,6 +1446,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	public QueryDeparturesResult queryDepartures(final String stationId, final @Nullable Date time, final int maxDepartures, final boolean equivs)
 			throws IOException
 	{
+		checkNotNull(Strings.emptyToNull(stationId));
+
 		return xsltDepartureMonitorRequest(stationId, time, maxDepartures, equivs);
 	}
 
@@ -1499,9 +1495,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		final StringBuilder uri = new StringBuilder(departureMonitorEndpoint);
 		if (!httpPost)
 			uri.append(parameters);
-
-		// System.out.println(uri);
-		// System.out.println(parameters);
 
 		InputStream is = null;
 		String firstChars = null;
@@ -1664,9 +1657,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		final StringBuilder uri = new StringBuilder(departureMonitorEndpoint);
 		if (!httpPost)
 			uri.append(parameters);
-
-		// System.out.println(uri);
-		// System.out.println(parameters);
 
 		InputStream is = null;
 		String firstChars = null;
@@ -2079,14 +2069,16 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				uri.append("&lineRestriction=403"); // means: all but ice
 		}
 
+		if (useProxFootSearch)
+			uri.append("&useProxFootSearch=1"); // walk if it makes journeys quicker
+		uri.append("&trITMOTvalue100=10"); // maximum time to walk to first or from last stop
+
 		if (options != null && options.contains(Option.BIKE))
 			uri.append("&bikeTakeAlong=1");
 
 		uri.append("&locationServerActive=1");
 		if (useRealtime)
 			uri.append("&useRealtime=1");
-		if (useProxFootSearch)
-			uri.append("&useProxFootSearch=1"); // walk if it makes journeys quicker
 		uri.append("&nextDepsPerLeg=1"); // next departure in case previous was missed
 
 		return uri.toString();
@@ -2120,9 +2112,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		final StringBuilder uri = new StringBuilder(tripEndpoint);
 		if (!httpPost)
 			uri.append(parameters);
-
-		// System.out.println(uri);
-		// System.out.println(parameters);
 
 		InputStream is = null;
 		String firstChars = null;
@@ -2159,9 +2148,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		final StringBuilder uri = new StringBuilder(tripEndpoint);
 		if (!httpPost)
 			uri.append(parameters);
-
-		// System.out.println(uri);
-		// System.out.println(parameters);
 
 		InputStream is = null;
 		String firstChars = null;
@@ -2255,15 +2241,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	private QueryTripsResult queryTrips(final String uri, final InputStream is) throws XmlPullParserException, IOException
 	{
-		// System.out.println(uri);
-
 		final XmlPullParser pp = parserFactory.newPullParser();
 		pp.setInput(is, null);
 		final ResultHeader header = enterItdRequest(pp);
 		final Object context = header.context;
-
-		if (XmlPullUtil.test(pp, "itdLayoutParams"))
-			XmlPullUtil.next(pp);
 
 		XmlPullUtil.require(pp, "itdTripRequest");
 		final String requestId = XmlPullUtil.attr(pp, "requestID");
@@ -2520,7 +2501,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							XmlPullUtil.enter(pp, "itdFare");
 							if (XmlPullUtil.test(pp, "itdSingleTicket"))
 							{
-								final String net = XmlPullUtil.attr(pp, "net");
+								final String net = XmlPullUtil.attr(pp, "net").toUpperCase();
 								final Currency currency = parseCurrency(XmlPullUtil.attr(pp, "currency"));
 								final String fareAdult = XmlPullUtil.optAttr(pp, "fareAdult", null);
 								final String fareChild = XmlPullUtil.optAttr(pp, "fareChild", null);
@@ -2844,8 +2825,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private QueryTripsResult queryTripsMobile(final String uri, final Location from, final @Nullable Location via, final Location to,
 			final InputStream is) throws XmlPullParserException, IOException
 	{
-		// System.out.println(uri);
-
 		final XmlPullParser pp = parserFactory.newPullParser();
 		pp.setInput(is, null);
 		final ResultHeader header = enterEfa(pp);
@@ -3271,26 +3250,34 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	private void appendLocation(final StringBuilder uri, final Location location, final String paramSuffix)
 	{
-		if (location.type == LocationType.ADDRESS && location.hasLocation())
+		final String name = locationValue(location);
+
+		if ((location.type == LocationType.ADDRESS || location.type == LocationType.COORD) && location.hasLocation())
 		{
 			uri.append("&type_").append(paramSuffix).append("=coord");
 			uri.append("&name_").append(paramSuffix).append("=")
 					.append(String.format(Locale.ENGLISH, "%.6f:%.6f", location.lon / 1E6, location.lat / 1E6)).append(":WGS84");
 		}
-		else
+		else if (name != null)
 		{
 			uri.append("&type_").append(paramSuffix).append("=").append(locationTypeValue(location));
-			uri.append("&name_").append(paramSuffix).append("=").append(ParserUtils.urlEncode(locationValue(location), requestUrlEncoding));
+			uri.append("&name_").append(paramSuffix).append("=").append(ParserUtils.urlEncode(name, requestUrlEncoding));
+		}
+		else
+		{
+			throw new IllegalArgumentException("cannot append location: " + location);
 		}
 	}
 
-	protected static final String locationTypeValue(final Location location)
+	private static String locationTypeValue(final Location location)
 	{
 		final LocationType type = location.type;
 		if (type == LocationType.STATION)
 			return "stop";
 		if (type == LocationType.ADDRESS)
 			return "any"; // strange, matches with anyObjFilter
+		if (type == LocationType.COORD)
+			return "coord";
 		if (type == LocationType.POI)
 			return "poi";
 		if (type == LocationType.ANY)
@@ -3298,7 +3285,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		throw new IllegalArgumentException(type.toString());
 	}
 
-	protected static final String locationValue(final Location location)
+	private static @Nullable String locationValue(final Location location)
 	{
 		if (location.type == LocationType.STATION && location.hasId())
 			return normalizeStationId(location.id);
@@ -3308,7 +3295,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			return location.name;
 	}
 
-	protected static final Map<WalkSpeed, String> WALKSPEED_MAP = new HashMap<WalkSpeed, String>();
+	private static final Map<WalkSpeed, String> WALKSPEED_MAP = new HashMap<WalkSpeed, String>();
 
 	static
 	{
@@ -3351,6 +3338,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			XmlPullUtil.next(pp);
 
 		if (XmlPullUtil.test(pp, "itdVersionInfo"))
+			XmlPullUtil.next(pp);
+
+		if (XmlPullUtil.test(pp, "itdLayoutParams"))
 			XmlPullUtil.next(pp);
 
 		if (XmlPullUtil.test(pp, "itdInfoLinkList"))

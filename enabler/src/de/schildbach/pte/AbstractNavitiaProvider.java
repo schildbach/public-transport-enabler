@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.LinkedList;
@@ -38,6 +37,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+
+import com.google.common.base.Strings;
 
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.Line;
@@ -85,7 +86,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 
 	private enum SectionType
 	{
-		CROW_FLY, PUBLIC_TRANSPORT, STREET_NETWORK, TRANSFER, WAITING
+		CROW_FLY, PUBLIC_TRANSPORT, STREET_NETWORK, TRANSFER, WAITING, STAY_IN, ON_DEMAND_TRANSPORT, BSS_RENT, BSS_PUT_BACK, BOARDING, LANDING
 	}
 
 	private enum TransferType
@@ -93,9 +94,9 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 		BIKE, WALKING
 	}
 
-	private enum CommercialMode
+	private enum PhysicalMode
 	{
-		BUS, TRAIN, TRAM, TRAMWAY, METRO, FERRY, CABLECAR, RAPIDTRANSIT, FUNICULAR, DEFAULT_COMMERCIAL_MODE
+		AIR, BOAT, BUS, BUSRAPIDTRANSIT, COACH, FERRY, FUNICULAR, LOCALTRAIN, LONGDISTANCETRAIN, METRO, RAPIDTRANSIT, SHUTTLE, TAXI, TRAIN, TRAMWAY
 	}
 
 	@SuppressWarnings("serial")
@@ -396,7 +397,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 				final String linkType = link.getString("type");
 				if (linkType.equals("line"))
 					lineId = link.getString("id");
-				else if (linkType.equals("commercial_mode"))
+				else if (linkType.equals("physical_mode"))
 					modeId = link.getString("id");
 			}
 
@@ -604,17 +605,21 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 
 	private Product parseLineProductFromMode(final String modeId)
 	{
-		final String modeType = modeId.replace("commercial_mode:", "");
-		final CommercialMode commercialMode = CommercialMode.valueOf(modeType.toUpperCase());
+		final String modeType = modeId.replace("physical_mode:", "");
+		final PhysicalMode physicalMode = PhysicalMode.valueOf(modeType.toUpperCase());
 
-		switch (commercialMode)
+		switch (physicalMode)
 		{
 			case BUS:
+			case BUSRAPIDTRANSIT:
+			case COACH:
+			case SHUTTLE:
 				return Product.BUS;
 			case RAPIDTRANSIT:
 			case TRAIN:
+			case LOCALTRAIN:
+			case LONGDISTANCETRAIN:
 				return Product.SUBURBAN_TRAIN;
-			case TRAM:
 			case TRAMWAY:
 				return Product.TRAM;
 			case METRO:
@@ -622,9 +627,9 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 			case FERRY:
 				return Product.FERRY;
 			case FUNICULAR:
-			case CABLECAR:
 				return Product.CABLECAR;
-			case DEFAULT_COMMERCIAL_MODE:
+			case TAXI:
+				return Product.ON_DEMAND;
 			default:
 				throw new IllegalArgumentException("Unhandled place type: " + modeId);
 		}
@@ -639,13 +644,32 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 			if (cachedProduct != null)
 				return cachedProduct;
 
-			final JSONObject mode = line.getJSONObject("commercial_mode");
+			final JSONObject mode = getLinePhysicalMode(lineId);
 			final String modeId = mode.getString("id");
 			final Product product = parseLineProductFromMode(modeId);
 
 			lineProductCache.put(lineId, product);
 
 			return product;
+		}
+		catch (final JSONException jsonExc)
+		{
+			throw new ParserException(jsonExc);
+		}
+	}
+
+	private JSONObject getLinePhysicalMode(final String lineId) throws IOException
+	{
+		final String uri = uri() + "lines/" + ParserUtils.urlEncode(lineId) + "/physical_modes";
+		final CharSequence page = ParserUtils.scrape(uri, authorization);
+
+		try
+		{
+			final JSONObject head = new JSONObject(page.toString());
+			final JSONArray physicalModes = head.getJSONArray("physical_modes");
+			final JSONObject physicalMode = physicalModes.getJSONObject(0);
+
+			return physicalMode;
 		}
 		catch (final JSONException jsonExc)
 		{
@@ -719,38 +743,6 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 		}
 	}
 
-	private boolean isStationActive(final Location location) throws IOException
-	{
-		try
-		{
-			final String stationId = location.id;
-
-			final StringBuilder queryUri = new StringBuilder();
-			queryUri.append(uri());
-			queryUri.append("stop_points/" + stationId + "/");
-
-			final Calendar now = Calendar.getInstance(timeZone);
-			final String dateTime = printDate(now.getTime());
-
-			// Look for at least one departure in less than an hour.
-			queryUri.append("departures?from_datetime=" + dateTime + "&count=" + 1 + "&duration=3600" + "&depth=0");
-
-			final CharSequence page = ParserUtils.scrape(queryUri.toString(), authorization);
-
-			final JSONObject head = new JSONObject(page.toString());
-
-			final JSONArray departures = head.getJSONArray("departures");
-			if (departures.length() == 0)
-				return false;
-			else
-				return true;
-		}
-		catch (final JSONException jsonExc)
-		{
-			throw new ParserException(jsonExc);
-		}
-	}
-
 	@Override
 	protected boolean hasCapability(final Capability capability)
 	{
@@ -768,7 +760,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 
 		// Build query uri depending of location type.
 		final String queryUriType;
-		if (location.type == LocationType.ADDRESS || location.type == LocationType.ANY)
+		if (location.type == LocationType.COORD || location.type == LocationType.ADDRESS || location.type == LocationType.ANY)
 		{
 			if (!location.hasLocation())
 			{
@@ -804,8 +796,6 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 				+ "&depth=0";
 		final CharSequence page = ParserUtils.scrape(queryUri, authorization);
 
-		// System.out.println(queryUri);
-
 		try
 		{
 			final JSONObject head = new JSONObject(page.toString());
@@ -833,8 +823,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 					// station is active, i.e. at least one
 					// departure exists within one hour.
 					final Location nearbyLocation = parseLocation(place);
-					if (isStationActive(nearbyLocation))
-						stations.add(nearbyLocation);
+					stations.add(nearbyLocation);
 				}
 
 				return new NearbyLocationsResult(resultHeader, stations);
@@ -849,6 +838,8 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 	public QueryDeparturesResult queryDepartures(final String stationId, final @Nullable Date time, final int maxDepartures, final boolean equivs)
 			throws IOException
 	{
+		checkNotNull(Strings.emptyToNull(stationId));
+
 		final ResultHeader resultHeader = new ResultHeader(network, SERVER_PRODUCT, SERVER_VERSION, 0, null);
 
 		try
@@ -881,8 +872,6 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 			queryUri.append("departures?from_datetime=" + dateTime + "&count=" + maxDepartures + "&duration=3600" + "&depth=0");
 
 			final CharSequence page = ParserUtils.scrape(queryUri.toString(), authorization);
-
-			// System.out.println(queryUri);
 
 			final JSONObject head = new JSONObject(page.toString());
 
@@ -973,8 +962,6 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 		final String queryUri = uri() + "places?q=" + ParserUtils.urlEncode(nameCstr) + "&type[]=stop_area&type[]=address" + "&depth=1";
 		final CharSequence page = ParserUtils.scrape(queryUri, authorization);
 
-		// System.out.println(queryUri);
-
 		try
 		{
 			final List<SuggestedLocation> locations = new ArrayList<SuggestedLocation>();
@@ -1049,40 +1036,52 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 					queryUri.append("&last_section_mode=bike");
 				}
 
-				// Set forbidden commercial modes.
+				// Set forbidden physical modes.
 				if (products != null && !products.equals(Product.ALL))
 				{
+					queryUri.append("&forbidden_uris[]=physical_mode:Air");
+					queryUri.append("&forbidden_uris[]=physical_mode:Boat");
+					if (!products.contains(Product.REGIONAL_TRAIN))
+					{
+						queryUri.append("&forbidden_uris[]=physical_mode:Localdistancetrain");
+						queryUri.append("&forbidden_uris[]=physical_mode:Train");
+					}
 					if (!products.contains(Product.SUBURBAN_TRAIN))
 					{
-						queryUri.append("&forbidden_uris[]=commercial_mode:train");
-						queryUri.append("&forbidden_uris[]=commercial_mode:rapidtransit");
+						queryUri.append("&forbidden_uris[]=physical_mode:Localtrain");
+						queryUri.append("&forbidden_uris[]=physical_mode:Train");
+						queryUri.append("&forbidden_uris[]=physical_mode:Rapidtransit");
 					}
 					if (!products.contains(Product.SUBWAY))
 					{
-						queryUri.append("&forbidden_uris[]=commercial_mode:metro");
+						queryUri.append("&forbidden_uris[]=physical_mode:Metro");
 					}
 					if (!products.contains(Product.TRAM))
 					{
-						queryUri.append("&forbidden_uris[]=commercial_mode:tram");
+						queryUri.append("&forbidden_uris[]=physical_mode:Tramway");
 					}
 					if (!products.contains(Product.BUS))
 					{
-						queryUri.append("&forbidden_uris[]=commercial_mode:bus");
+						queryUri.append("&forbidden_uris[]=physical_mode:Bus");
+						queryUri.append("&forbidden_uris[]=physical_mode:Busrapidtransit");
+						queryUri.append("&forbidden_uris[]=physical_mode:Coach");
+						queryUri.append("&forbidden_uris[]=physical_mode:Shuttle");
 					}
 					if (!products.contains(Product.FERRY))
 					{
-						queryUri.append("&forbidden_uris[]=commercial_mode:ferry");
+						queryUri.append("&forbidden_uris[]=physical_mode:Ferry");
 					}
 					if (!products.contains(Product.CABLECAR))
 					{
-						queryUri.append("&forbidden_uris[]=commercial_mode:funicular");
-						queryUri.append("&forbidden_uris[]=commercial_mode:cablecar");
+						queryUri.append("&forbidden_uris[]=physical_mode:Funicular");
+					}
+					if (!products.contains(Product.ON_DEMAND))
+					{
+						queryUri.append("&forbidden_uris[]=physical_mode:Taxi");
 					}
 				}
 
 				final CharSequence page = ParserUtils.scrape(queryUri.toString(), authorization);
-
-				// System.out.println(queryUri);
 
 				try
 				{
@@ -1180,8 +1179,6 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 		final String queryUri = later ? context.nextQueryUri : context.prevQueryUri;
 		final CharSequence page = ParserUtils.scrape(queryUri, authorization);
 
-		// System.out.println(queryUri);
-
 		try
 		{
 			if (from.isIdentified() && to.isIdentified())
@@ -1218,8 +1215,6 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 	{
 		final String queryUri = uri();
 		final CharSequence page = ParserUtils.scrape(queryUri, authorization);
-
-		// System.out.println(queryUri);
 
 		try
 		{

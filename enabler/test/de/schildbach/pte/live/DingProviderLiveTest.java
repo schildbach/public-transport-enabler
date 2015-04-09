@@ -55,7 +55,7 @@ public class DingProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 48401092, 9992037));
+		final NearbyLocationsResult result = queryNearbyStations(Location.coord(48401092, 9992037));
 		print(result);
 	}
 
@@ -113,5 +113,13 @@ public class DingProviderLiveTest extends AbstractProviderLiveTest
 
 		final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
 		print(earlierResult);
+	}
+
+	@Test
+	public void tripAnyToAny() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "Hermaringen"), null, new Location(LocationType.ANY,
+				null, null, "Heidenheim"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		print(result);
 	}
 }

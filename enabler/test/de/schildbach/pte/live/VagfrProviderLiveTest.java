@@ -57,7 +57,7 @@ public class VagfrProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsByCoordinate() throws Exception
 	{
-		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.ADDRESS, 48000295, 7854338));
+		final NearbyLocationsResult result = queryNearbyStations(Location.coord(48000295, 7854338));
 		print(result);
 	}
 
@@ -110,5 +110,14 @@ public class VagfrProviderLiveTest extends AbstractProviderLiveTest
 
 		final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
 		print(earlierResult);
+	}
+
+	@Test
+	public void trip() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "6930120"), null,
+				new Location(LocationType.STATION, "6930071"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		print(result);
+		assertEquals(QueryTripsResult.Status.OK, result.status);
 	}
 }

@@ -17,36 +17,17 @@
 
 package de.schildbach.pte.live;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.EnumSet;
-import java.util.List;
 
 import org.junit.Test;
 
-import de.schildbach.pte.NetworkProvider.Accessibility;
-import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.ParisProvider;
-import de.schildbach.pte.dto.LineDestination;
-import de.schildbach.pte.dto.Location;
-import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Point;
-import de.schildbach.pte.dto.Product;
-import de.schildbach.pte.dto.QueryDeparturesResult;
-import de.schildbach.pte.dto.QueryTripsContext;
-import de.schildbach.pte.dto.QueryTripsResult;
-import de.schildbach.pte.dto.StationDepartures;
-import de.schildbach.pte.dto.SuggestLocationsResult;
 
 /**
  * @author Antonio El Khoury
  */
-public class ParisProviderLiveTest extends AbstractProviderLiveTest
+public class ParisProviderLiveTest extends AbstractNavitiaProviderLiveTest
 {
 	public ParisProviderLiveTest()
 	{
@@ -56,278 +37,151 @@ public class ParisProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void nearbyStationsAddress() throws Exception
 	{
-		final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION), new Location(LocationType.ADDRESS, 48877523,
-				2378353), 700, 10);
-		assertEquals(NearbyLocationsResult.Status.OK, result.status);
-		print(result);
+		nearbyStationsAddress(48877523, 2378353);
 	}
 
 	@Test
 	public void nearbyStationsAddress2() throws Exception
 	{
-		final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION), new Location(LocationType.ADDRESS, 48785420,
-				2212050), 2000, 30);
-		assertEquals(NearbyLocationsResult.Status.OK, result.status);
-		print(result);
+		nearbyStationsAddress(48785420, 2212050);
 	}
 
 	@Test
 	public void nearbyStationsStation() throws Exception
 	{
-		final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION), new Location(LocationType.STATION,
-				"stop_point:RTP:SP:3926410"), 700, 10);
-		assertEquals(NearbyLocationsResult.Status.OK, result.status);
-		print(result);
+		nearbyStationsStation("stop_point:RTP:SP:3926410");
 	}
 
 	@Test
 	public void nearbyStationsPoi() throws Exception
 	{
-		final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION), new Location(LocationType.POI, "poi:n668579722"),
-				700, 10);
-		assertEquals(NearbyLocationsResult.Status.OK, result.status);
-		print(result);
+		nearbyStationsPoi("poi:n668579722");
 	}
 
 	@Test
 	public void nearbyStationsAny() throws Exception
 	{
-		final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION),
-				new Location(LocationType.ANY, 48877523, 2378353), 700, 10);
-		assertEquals(NearbyLocationsResult.Status.OK, result.status);
-		print(result);
+		nearbyStationsAny(48877523, 2378353);
 	}
 
 	@Test
 	public void nearbyStationsInvalidStation() throws Exception
 	{
-		final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION), new Location(LocationType.STATION,
-				"stop_point:RTP:SP:392"), 700, 10);
-		assertEquals(NearbyLocationsResult.Status.INVALID_ID, result.status);
-		print(result);
+		nearbyStationsInvalidStation("stop_point:RTP:SP:392");
 	}
 
 	@Test
 	public void queryDeparturesEquivsFalse() throws Exception
 	{
-		final int maxDepartures = 5;
-		final QueryDeparturesResult result = queryDepartures("stop_point:RTP:SP:3926410", maxDepartures, false);
-		assertEquals(QueryDeparturesResult.Status.OK, result.status);
-		assertEquals(1, result.stationDepartures.size());
-		assertTrue(result.stationDepartures.get(0).departures.size() <= maxDepartures);
-		final List<LineDestination> lines = result.stationDepartures.get(0).lines;
-		assertNotNull(lines);
-		assertTrue(lines.size() >= 1);
-		print(result);
+		queryDeparturesEquivsFalse("stop_point:RTP:SP:3926410");
 	}
 
 	@Test
 	public void queryDeparturesStopArea() throws Exception
 	{
-		final int maxDepartures = 5;
-		final QueryDeparturesResult result = queryDepartures("stop_area:RTP:SA:1958", maxDepartures, true);
-		assertEquals(QueryDeparturesResult.Status.OK, result.status);
-		assertTrue(result.stationDepartures.size() > 1);
-		int nbDepartures = 0;
-		int nbLines = 0;
-		for (final StationDepartures stationDepartures : result.stationDepartures)
-		{
-			nbDepartures += stationDepartures.departures.size();
-			final List<LineDestination> lines = stationDepartures.lines;
-			if (lines != null)
-				nbLines += lines.size();
-		}
-		assertTrue(nbDepartures <= maxDepartures);
-		assertTrue(nbLines >= 2);
-		print(result);
+		queryDeparturesStopArea("stop_area:RTP:SA:1958");
 	}
 
 	@Test
 	public void queryDeparturesEquivsTrue() throws Exception
 	{
-		final int maxDepartures = 5;
-		final QueryDeparturesResult result = queryDepartures("stop_point:RTP:SP:3926410", maxDepartures, true);
-		assertEquals(QueryDeparturesResult.Status.OK, result.status);
-		assertTrue(result.stationDepartures.size() > 1);
-		int nbDepartures = 0;
-		int nbLines = 0;
-		for (StationDepartures stationDepartures : result.stationDepartures)
-		{
-			nbDepartures += stationDepartures.departures.size();
-			final List<LineDestination> lines = stationDepartures.lines;
-			assertNotNull(lines);
-			nbLines += lines.size();
-		}
-		assertTrue(nbDepartures <= maxDepartures);
-		assertTrue(nbLines >= 2);
-		print(result);
+		queryDeparturesEquivsTrue("stop_point:RTP:SP:3926410");
 	}
 
 	@Test
 	public void queryDeparturesInvalidStation() throws Exception
 	{
-		final QueryDeparturesResult result = queryDepartures("stop_point:RTP:SP:999999", false);
-		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
+		queryDeparturesInvalidStation("stop_point:RTP:SP:999999");
 	}
 
 	@Test
 	public void suggestLocations() throws Exception
 	{
-		final SuggestLocationsResult result = suggestLocations("bellevi");
-		assertTrue(result.getLocations().size() > 0);
-		print(result);
+		suggestLocationsFromName("bellevi");
 	}
 
 	@Test
 	public void suggestLocationsFromAddress() throws Exception
 	{
-		final SuggestLocationsResult result = suggestLocations("13 rue man");
-		assertTrue(result.getLocations().size() > 0);
-		print(result);
+		suggestLocationsFromAddress("13 rue man");
 	}
 
 	@Test
 	public void suggestLocationsNoLocation() throws Exception
 	{
-		final SuggestLocationsResult result = suggestLocations("bellevilleadasdjkaskd");
-		assertEquals(result.getLocations().size(), 0);
-		print(result);
+		suggestLocationsNoLocation("bellevilleadasdjkaskd");
 	}
 
 	@Test
 	public void queryTripAddresses() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 48877095, 2378431), null, new Location(LocationType.ADDRESS,
-				48847168, 2261272), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		assertEquals(QueryTripsResult.Status.OK, result.status);
-		print(result);
+		queryTrip("5 rue Manin Paris", "10 rue Elanger Paris");
 	}
 
 	@Test
 	public void queryTripAddressStation() throws Exception
 	{
-		final SuggestLocationsResult fromResult = suggestLocations("155 bd hopital paris");
-		assertTrue(fromResult.getLocations().size() > 0);
-		final SuggestLocationsResult toResult = suggestLocations("Gare St-Lazare");
-		assertTrue(toResult.getLocations().size() > 0);
-
-		final QueryTripsResult result = queryTrips(fromResult.getLocations().get(0), null, toResult.getLocations().get(0), new Date(), true,
-				Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		assertEquals(QueryTripsResult.Status.OK, result.status);
-		print(result);
+		queryTrip("155 bd hopital paris", "Gare St-Lazare");
 	}
 
 	@Test
 	public void queryTripStations() throws Exception
 	{
-		final SuggestLocationsResult fromResult = suggestLocations("Campo Formio");
-		assertTrue(fromResult.getLocations().size() > 0);
-		final SuggestLocationsResult toResult = suggestLocations("Gare St-Lazare");
-		assertTrue(toResult.getLocations().size() > 0);
-
-		final QueryTripsResult result = queryTrips(fromResult.getLocations().get(0), null, toResult.getLocations().get(0), new Date(), true,
-				Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		assertEquals(QueryTripsResult.Status.OK, result.status);
-		print(result);
+		queryTrip("Campo Formio", "Gare St-Lazare");
 	}
 
 	@Test
 	public void queryTripStations2() throws Exception
 	{
-		final SuggestLocationsResult fromResult = suggestLocations("Tour Eiffel");
-		assertTrue(fromResult.getLocations().size() > 0);
-		final SuggestLocationsResult toResult = suggestLocations("Orsay Ville");
-		assertTrue(toResult.getLocations().size() > 0);
-
-		final QueryTripsResult result = queryTrips(fromResult.getLocations().get(0), null, toResult.getLocations().get(0), new Date(), true,
-				Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		assertEquals(QueryTripsResult.Status.OK, result.status);
-		print(result);
+		queryTrip("Tour Eiffel", "Orsay Ville");
 	}
 
 	@Test
 	public void queryTripStations3() throws Exception
 	{
-		final SuggestLocationsResult fromResult = suggestLocations("Tour Eiffel");
-		assertTrue(fromResult.getLocations().size() > 0);
-		final SuggestLocationsResult toResult = suggestLocations("Campo Formio");
-		assertTrue(toResult.getLocations().size() > 0);
-
-		final QueryTripsResult result = queryTrips(fromResult.getLocations().get(0), null, toResult.getLocations().get(0), new Date(), true,
-				Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		assertEquals(QueryTripsResult.Status.OK, result.status);
-		print(result);
+		queryTrip("Tour Eiffel", "Campo Formio");
 	}
 
 	@Test
 	public void queryTripStationsRapidTransit() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "stop_area:RTP:SA:1866"), null, new Location(
-				LocationType.STATION, "stop_area:RTP:SA:2045"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		assertEquals(QueryTripsResult.Status.OK, result.status);
-		print(result);
+		queryTrip("Luxembourg Paris", "Antony Antony");
 	}
 
 	@Test
 	public void queryTripNoSolution() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "stop_point:RTP:SP:3926410"), null, new Location(
-				LocationType.STATION, "stop_point:RTP:SP:3926410"), new Date(), true, EnumSet.noneOf(Product.class), WalkSpeed.NORMAL,
-				Accessibility.NEUTRAL);
-		assertEquals(QueryTripsResult.Status.NO_TRIPS, result.status);
-		print(result);
+		queryTripNoSolution("secretan buttes chaumont paris", "Antony Antony");
 	}
 
 	@Test
 	public void queryTripUnknownFrom() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "stop_area:RTP:SA:999999"), null, new Location(
-				LocationType.STATION, "stop_area:RTP:SA:1666"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		assertEquals(QueryTripsResult.Status.UNKNOWN_FROM, result.status);
-		print(result);
+		queryTripUnknownFrom("secretan buttes chaumont paris");
 	}
 
 	@Test
 	public void queryTripUnknownTo() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "stop_point:RTP:SP:3926410"), null, new Location(
-				LocationType.STATION, "stop_area:RTP:SA:999999"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		assertEquals(QueryTripsResult.Status.UNKNOWN_TO, result.status);
-		print(result);
+		queryTripUnknownTo("secretan buttes chaumont paris");
 	}
 
 	@Test
 	public void queryTripSlowWalk() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 48877095, 2378431), null, new Location(LocationType.ADDRESS,
-				48847168, 2261272), new Date(), true, Product.ALL, WalkSpeed.SLOW, Accessibility.NEUTRAL);
-		assertEquals(QueryTripsResult.Status.OK, result.status);
-		print(result);
+		queryTripSlowWalk("5 rue manin paris", "10 rue marcel dassault velizy");
 	}
 
 	@Test
 	public void queryTripFastWalk() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 48877095, 2378431), null, new Location(LocationType.ADDRESS,
-				48847168, 2261272), new Date(), true, Product.ALL, WalkSpeed.FAST, Accessibility.NEUTRAL);
-		assertEquals(QueryTripsResult.Status.OK, result.status);
-		print(result);
+		queryTripFastWalk("5 rue manin paris", "10 rue marcel dassault velizy");
 	}
 
 	@Test
 	public void queryMoreTrips() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, 48877095, 2378431), null, new Location(LocationType.ADDRESS,
-				48847168, 2261272), Calendar.getInstance().getTime(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		final QueryTripsContext context = result.context;
-
-		final QueryTripsResult nextResult = queryMoreTrips(context, true);
-		assertEquals(QueryTripsResult.Status.OK, nextResult.status);
-		print(nextResult);
-
-		final QueryTripsResult prevResult = queryMoreTrips(context, false);
-		assertEquals(QueryTripsResult.Status.OK, prevResult.status);
-		print(prevResult);
+		queryMoreTrips("5 rue manin paris", "10 rue marcel dassault velizy");
 	}
 
 	@Test
@@ -335,21 +189,5 @@ public class ParisProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final Point[] polygon = provider.getArea();
 		assertTrue(polygon.length > 0);
-	}
-
-	@Test
-	public void directionsSession() throws Exception
-	{
-		final SuggestLocationsResult suggestedDepartures = suggestLocations("13 rue man");
-		assertTrue(suggestedDepartures.getLocations().size() > 0);
-		final Location departure = suggestedDepartures.getLocations().get(0);
-
-		final SuggestLocationsResult suggestedArrivals = suggestLocations("10 marcel dassault veli");
-		assertTrue(suggestedArrivals.getLocations().size() > 0);
-		final Location arrival = suggestedDepartures.getLocations().get(0);
-
-		final QueryTripsResult result = queryTrips(departure, null, arrival, new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		assertEquals(QueryTripsResult.Status.OK, result.status);
-		print(result);
 	}
 }

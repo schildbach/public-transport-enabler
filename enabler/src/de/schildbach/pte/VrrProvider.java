@@ -44,7 +44,7 @@ public class VrrProvider extends AbstractEfaProvider
 		setNeedsSpEncId(true);
 		setUseRouteIndexAsTripId(false);
 		setStyles(STYLES);
-		setRequestUrlEncoding(Charsets.UTF_8);
+		setRequestUrlEncoding(Charsets.ISO_8859_1);
 	}
 
 	@Override

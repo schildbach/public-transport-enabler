@@ -36,6 +36,7 @@ public class VvsProvider extends AbstractEfaProvider
 		super(NetworkId.VVS, apiBase);
 
 		setIncludeRegionId(false);
+		setNumTripsRequested(4);
 	}
 
 	@Override
