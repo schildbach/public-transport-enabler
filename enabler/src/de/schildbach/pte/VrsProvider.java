@@ -174,6 +174,8 @@ public class VrsProvider extends AbstractNetworkProvider
 			add(Pattern.compile("(.*) \\(Gleis (.*)\\)"));
 			// Aachen alle Buslinien
 			add(Pattern.compile("(.*) \\(H\\.(\\d+).*\\)"));
+			// Neumarkt Bussteig B
+			add(Pattern.compile("(.*) Bussteig (.*)"));
 		}
 	};
 	protected static final Pattern nrwTarifPattern = Pattern.compile("([\\d]+,\\d\\d)");
