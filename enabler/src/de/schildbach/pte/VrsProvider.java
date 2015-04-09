@@ -439,7 +439,7 @@ public class VrsProvider extends AbstractNetworkProvider
 
 	// VRS does not show LongDistanceTrains departures. Parameter p for product
 	// filter is supported, but LongDistanceTrains filter seems to be ignored.
-	// equivs not supported.
+	// TODO equivs not supported; JSON result would support multiple timetables
 	public QueryDeparturesResult queryDepartures(final String stationId, @Nullable Date time, int maxDepartures, boolean equivs) throws IOException
 	{
 		checkNotNull(Strings.emptyToNull(stationId));
@@ -465,6 +465,8 @@ public class VrsProvider extends AbstractNetworkProvider
 				if (error.equals("ASS2-Server lieferte leere Antwort."))
 					return new QueryDeparturesResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT), QueryDeparturesResult.Status.SERVICE_DOWN);
 				else if (error.equals("Leere ASS-ID und leere Koordinate"))
+					return new QueryDeparturesResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT), QueryDeparturesResult.Status.INVALID_STATION);
+				else if (error.equals("Keine Abfahrten gefunden."))
 					return new QueryDeparturesResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT), QueryDeparturesResult.Status.INVALID_STATION);
 				else
 					throw new IllegalStateException("unknown error: " + error);
@@ -821,9 +823,9 @@ public class VrsProvider extends AbstractNetworkProvider
 						for (int k = 0; k < vias.length(); k++)
 						{
 							final JSONObject viaJsonObject = vias.getJSONObject(k);
-							LocationWithPosition viaLocationWithPosition = parseLocationAndPosition(viaJsonObject);
-							Location viaLocation = viaLocationWithPosition.location;
-							Position viaPosition = viaLocationWithPosition.position;
+							final LocationWithPosition viaLocationWithPosition = parseLocationAndPosition(viaJsonObject);
+							final Location viaLocation = viaLocationWithPosition.location;
+							final Position viaPosition = viaLocationWithPosition.position;
 							Date arrivalPlanned = null;
 							Date arrivalPredicted = null;
 							if (viaJsonObject.has("arrivalScheduled"))
@@ -894,6 +896,7 @@ public class VrsProvider extends AbstractNetworkProvider
 					{
 						for (int k = 0; k < infos.length(); k++)
 						{
+							// TODO there can also be a "header" string
 							if (k > 0)
 							{
 								message.append(", ");
