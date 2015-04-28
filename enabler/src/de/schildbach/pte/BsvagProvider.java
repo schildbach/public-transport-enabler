@@ -20,6 +20,8 @@ package de.schildbach.pte;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.common.base.Charsets;
+
 import de.schildbach.pte.dto.Style;
 
 /**
@@ -27,7 +29,7 @@ import de.schildbach.pte.dto.Style;
  */
 public class BsvagProvider extends AbstractEfaProvider
 {
-	private final static String API_BASE = "http://212.68.73.240/bsvag/";
+	private final static String API_BASE = "http://bsvg.efa.de/bsvagstd/";
 
 	// http://212.68.73.240/vrbstd/
 
@@ -35,8 +37,10 @@ public class BsvagProvider extends AbstractEfaProvider
 	{
 		super(NetworkId.BSVAG, API_BASE);
 
+		setRequestUrlEncoding(Charsets.UTF_8);
 		setUseRouteIndexAsTripId(false);
 		setStyles(STYLES);
+		setSessionCookieName("HASESSIONID");
 	}
 
 	private static final Map<String, Style> STYLES = new HashMap<String, Style>();
