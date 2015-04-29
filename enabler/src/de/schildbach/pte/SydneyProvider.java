@@ -65,6 +65,12 @@ public class SydneyProvider extends AbstractEfaProvider
 			}
 		}
 
+		uri.append("&inclMOT_13=on");
+		uri.append("&inclMOT_14=on");
+		uri.append("&inclMOT_15=on");
+		uri.append("&inclMOT_16=on");
+		uri.append("&inclMOT_17=on");
+
 		return uri.toString();
 	}
 
