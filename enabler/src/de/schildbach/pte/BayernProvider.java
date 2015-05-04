@@ -140,7 +140,20 @@ public class BayernProvider extends AbstractEfaProvider
 		final StringBuilder uri = new StringBuilder(super.xsltTripRequestParameters(from, via, to, time, dep, products, walkSpeed, accessibility,
 				options));
 
+		if (products != null)
+		{
+			for (final Product p : products)
+			{
+				if (p == Product.HIGH_SPEED_TRAIN)
+					uri.append("&inclMOT_15=on&inclMOT_16=on");
+
+				if (p == Product.REGIONAL_TRAIN)
+					uri.append("&inclMOT_13=on");
+			}
+		}
+
 		uri.append("&inclMOT_11=on");
+		uri.append("&inclMOT_14=on");
 
 		return uri.toString();
 	}
