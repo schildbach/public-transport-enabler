@@ -188,4 +188,14 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		print(laterResult);
 	}
+
+	@Test
+	public void tripRegensburg() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "4014051", "Regensburg", "Klenzestraße"), null, new Location(
+				LocationType.STATION, "4014080", "Regensburg", "Universität"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		print(result);
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+		print(laterResult);
+	}
 }

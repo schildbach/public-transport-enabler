@@ -2062,8 +2062,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					uri.append("&inclMOT_8=on");
 			}
 
-			uri.append("&inclMOT_11=on"); // TODO always show 'others', for now
-
 			// workaround for highspeed trains: fails when you want highspeed, but not regional
 			if (useLineRestriction && !hasI)
 				uri.append("&lineRestriction=403"); // means: all but ice
@@ -3331,23 +3329,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		XmlPullUtil.enter(pp, "itdRequest");
 
-		if (XmlPullUtil.test(pp, "clientHeaderLines"))
-			XmlPullUtil.next(pp);
-
-		if (XmlPullUtil.test(pp, "itdMessageList"))
-			XmlPullUtil.next(pp);
-
-		if (XmlPullUtil.test(pp, "itdVersionInfo"))
-			XmlPullUtil.next(pp);
-
-		if (XmlPullUtil.test(pp, "itdLayoutParams"))
-			XmlPullUtil.next(pp);
-
-		if (XmlPullUtil.test(pp, "itdInfoLinkList"))
-			XmlPullUtil.next(pp);
-
-		if (XmlPullUtil.test(pp, "serverMetaInfo"))
-			XmlPullUtil.next(pp);
+		XmlPullUtil.optSkip(pp, "itdMessageList");
+		XmlPullUtil.optSkip(pp, "clientHeaderLines");
+		XmlPullUtil.optSkip(pp, "itdVersionInfo");
+		XmlPullUtil.optSkip(pp, "itdLayoutParams");
+		XmlPullUtil.optSkip(pp, "itdInfoLinkList");
+		XmlPullUtil.optSkip(pp, "serverMetaInfo");
 
 		return header;
 	}

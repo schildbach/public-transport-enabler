@@ -20,6 +20,7 @@ package de.schildbach.pte;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.Set;
@@ -129,6 +130,32 @@ public class BayernProvider extends AbstractEfaProvider
 	public SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException
 	{
 		return mobileStopfinderRequest(new Location(LocationType.ANY, null, null, constraint.toString()));
+	}
+
+	@Override
+	protected String xsltTripRequestParameters(final Location from, final @Nullable Location via, final Location to, final Date time,
+			final boolean dep, final @Nullable Collection<Product> products, final @Nullable WalkSpeed walkSpeed,
+			final @Nullable Accessibility accessibility, final @Nullable Set<Option> options)
+	{
+		final StringBuilder uri = new StringBuilder(super.xsltTripRequestParameters(from, via, to, time, dep, products, walkSpeed, accessibility,
+				options));
+
+		if (products != null)
+		{
+			for (final Product p : products)
+			{
+				if (p == Product.HIGH_SPEED_TRAIN)
+					uri.append("&inclMOT_15=on&inclMOT_16=on");
+
+				if (p == Product.REGIONAL_TRAIN)
+					uri.append("&inclMOT_13=on");
+			}
+		}
+
+		uri.append("&inclMOT_11=on");
+		uri.append("&inclMOT_14=on");
+
+		return uri.toString();
 	}
 
 	@Override
