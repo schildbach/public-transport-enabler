@@ -156,7 +156,7 @@ public class VrsProvider extends AbstractNetworkProvider
 	// valid host names: www.vrsinfo.de, android.vrsinfo.de, ios.vrsinfo.de, ekap.vrsinfo.de (only SSL encrypted with
 	// client certificate)
 	// performance comparison March 2015 showed www.vrsinfo.de to be fastest for trips
-	protected static final String API_BASE = "https://www.vrsinfo.de/index.php";
+	protected static final String API_BASE = "http://android.vrsinfo.de/index.php";
 	protected static final String SERVER_PRODUCT = "vrs";
 
 	@SuppressWarnings("serial")
