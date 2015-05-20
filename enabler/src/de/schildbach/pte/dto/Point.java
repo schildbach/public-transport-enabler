@@ -24,9 +24,10 @@ import com.google.common.base.Objects;
 /**
  * @author Andreas Schildbach
  */
-@SuppressWarnings("serial")
 public final class Point implements Serializable
 {
+	private static final long serialVersionUID = -256077054671402897L;
+
 	public final int lat, lon;
 
 	public Point(final int lat, final int lon)

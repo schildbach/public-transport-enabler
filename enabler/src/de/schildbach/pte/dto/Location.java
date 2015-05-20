@@ -33,9 +33,10 @@ import com.google.common.base.Strings;
 /**
  * @author Andreas Schildbach
  */
-@SuppressWarnings("serial")
 public final class Location implements Serializable
 {
+	private static final long serialVersionUID = -2124775933106309127L;
+
 	public final LocationType type;
 	public final @Nullable String id;
 	public final int lat, lon;
