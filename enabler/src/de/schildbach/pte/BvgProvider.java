@@ -252,6 +252,7 @@ public final class BvgProvider extends AbstractHafasProvider
 
 		STYLES.put("UU1", new Style(Shape.RECT, Style.rgb(84, 131, 47), Style.WHITE));
 		STYLES.put("UU2", new Style(Shape.RECT, Style.rgb(215, 25, 16), Style.WHITE));
+		STYLES.put("UU12", new Style(Shape.RECT, Style.rgb(84, 131, 47), Style.rgb(215, 25, 16), Style.WHITE, 0));
 		STYLES.put("UU3", new Style(Shape.RECT, Style.rgb(47, 152, 154), Style.WHITE));
 		STYLES.put("UU4", new Style(Shape.RECT, Style.rgb(255, 233, 42), Style.BLACK));
 		STYLES.put("UU5", new Style(Shape.RECT, Style.rgb(91, 31, 16), Style.WHITE));

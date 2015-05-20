@@ -140,6 +140,7 @@ public class MvvProvider extends AbstractEfaProvider
 		STYLES.put("UU4", new Style(Style.parseColor("#00ccaa"), Style.WHITE));
 		STYLES.put("UU5", new Style(Style.parseColor("#bb7700"), Style.WHITE));
 		STYLES.put("UU6", new Style(Style.parseColor("#0000cc"), Style.WHITE));
+		STYLES.put("UU7", new Style(Style.parseColor("#227700"), Style.parseColor("#bb0000"), Style.WHITE, 0));
 	}
 
 	@Override
