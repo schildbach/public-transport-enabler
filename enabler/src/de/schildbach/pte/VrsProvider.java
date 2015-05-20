@@ -694,8 +694,8 @@ public class VrsProvider extends AbstractNetworkProvider
 	// accessibility not supported.
 	// options not supported.
 	public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to, Date date, boolean dep,
-			final @Nullable Set<Product> products, final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
-			@Nullable Set<Option> options) throws IOException
+			final @Nullable Set<Product> products, final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
+			final @Nullable Accessibility accessibility, @Nullable Set<Option> options) throws IOException
 	{
 		// The EXACT_POINTS feature generates an about 50% bigger API response, probably well compressible.
 		final boolean EXACT_POINTS = true;
@@ -1021,11 +1021,11 @@ public class VrsProvider extends AbstractNetworkProvider
 		Context ctx = (Context) context;
 		if (later)
 		{
-			return queryTrips(ctx.from, ctx.via, ctx.to, ctx.getLastDeparture(), true, ctx.products, null, null, null);
+			return queryTrips(ctx.from, ctx.via, ctx.to, ctx.getLastDeparture(), true, ctx.products, null, null, null, null);
 		}
 		else
 		{
-			return queryTrips(ctx.from, ctx.via, ctx.to, ctx.getFirstArrival(), false, ctx.products, null, null, null);
+			return queryTrips(ctx.from, ctx.via, ctx.to, ctx.getFirstArrival(), false, ctx.products, null, null, null, null);
 		}
 	}
 

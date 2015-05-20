@@ -86,8 +86,8 @@ public class EireannProvider extends AbstractHafasProvider
 
 	@Override
 	public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to, final Date date, final boolean dep,
-			final @Nullable Set<Product> products, final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
-			final @Nullable Set<Option> options) throws IOException
+			final @Nullable Set<Product> products, final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
+			final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) throws IOException
 	{
 		return queryTripsXml(from, via, to, date, dep, products, walkSpeed, accessibility, options);
 	}

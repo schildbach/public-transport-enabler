@@ -103,10 +103,10 @@ public class NvbwProvider extends AbstractEfaProvider
 
 	@Override
 	public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to, final Date date, final boolean dep,
-			final @Nullable Set<Product> products, final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
-			final @Nullable Set<Option> options) throws IOException
+			final @Nullable Set<Product> products, final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
+			final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) throws IOException
 	{
-		return queryTripsMobile(from, via, to, date, dep, products, walkSpeed, accessibility, options);
+		return queryTripsMobile(from, via, to, date, dep, products, optimize, walkSpeed, accessibility, options);
 	}
 
 	@Override

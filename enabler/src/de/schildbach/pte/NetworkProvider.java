@@ -54,6 +54,11 @@ public interface NetworkProvider
 		TRIPS
 	}
 
+	public enum Optimize
+	{
+		LEAST_DURATION, LEAST_CHANGES, LEAST_WALKING
+	}
+
 	public enum WalkSpeed
 	{
 		SLOW, NORMAL, FAST
@@ -138,6 +143,8 @@ public interface NetworkProvider
 	 *            date is departure date? {@code true} for departure, {@code false} for arrival
 	 * @param products
 	 *            products to take into account, or {@code null} for the provider default
+	 * @param optimize
+	 *            optimize trip for one aspect, e.g. duration
 	 * @param walkSpeed
 	 *            walking ability, or {@code null} for the provider default
 	 * @param accessibility
@@ -148,7 +155,8 @@ public interface NetworkProvider
 	 * @throws IOException
 	 */
 	QueryTripsResult queryTrips(Location from, @Nullable Location via, Location to, Date date, boolean dep, @Nullable Set<Product> products,
-			@Nullable WalkSpeed walkSpeed, @Nullable Accessibility accessibility, @Nullable Set<Option> options) throws IOException;
+			@Nullable Optimize optimize, @Nullable WalkSpeed walkSpeed, @Nullable Accessibility accessibility, @Nullable Set<Option> options)
+			throws IOException;
 
 	/**
 	 * Query more trips (e.g. earlier or later)

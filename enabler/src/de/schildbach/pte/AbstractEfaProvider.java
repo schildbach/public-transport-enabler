@@ -46,6 +46,8 @@ import javax.annotation.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -113,6 +115,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private float fareCorrectionFactor = 1f;
 
 	private final XmlPullParserFactory parserFactory;
+
+	private static final Logger log = LoggerFactory.getLogger(AbstractEfaProvider.class);
 
 	@SuppressWarnings("serial")
 	private static class Context implements QueryTripsContext
@@ -1999,7 +2003,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	}
 
 	protected String xsltTripRequestParameters(final Location from, final @Nullable Location via, final Location to, final Date time,
-			final boolean dep, final @Nullable Collection<Product> products, final @Nullable WalkSpeed walkSpeed,
+			final boolean dep, final @Nullable Collection<Product> products, final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
 			final @Nullable Accessibility accessibility, final @Nullable Set<Option> options)
 	{
 		final StringBuilder uri = new StringBuilder();
@@ -2023,6 +2027,16 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		uri.append("&ptOptionsActive=1"); // enable public transport options
 		uri.append("&itOptionsActive=1"); // enable individual transport options
+
+		if (optimize == Optimize.LEAST_DURATION)
+			uri.append("&routeType=LEASTTIME");
+		else if (optimize == Optimize.LEAST_CHANGES)
+			uri.append("&routeType=LEASTINTERCHANGE");
+		else if (optimize == Optimize.LEAST_WALKING)
+			uri.append("&routeType=LEASTWALKING");
+		else if (optimize != null)
+			log.info("Cannot handle " + optimize + ", ignoring.");
+
 		uri.append("&changeSpeed=").append(WALKSPEED_MAP.get(walkSpeed));
 
 		if (accessibility == Accessibility.BARRIER_FREE)
@@ -2105,11 +2119,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	}
 
 	public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to, final Date date, final boolean dep,
-			final @Nullable Set<Product> products, final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
-			final @Nullable Set<Option> options) throws IOException
+			final @Nullable Set<Product> products, final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
+			final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) throws IOException
 	{
 
-		final String parameters = xsltTripRequestParameters(from, via, to, date, dep, products, walkSpeed, accessibility, options);
+		final String parameters = xsltTripRequestParameters(from, via, to, date, dep, products, optimize, walkSpeed, accessibility, options);
 
 		final StringBuilder uri = new StringBuilder(tripEndpoint);
 		if (!httpPost)
@@ -2141,11 +2155,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	}
 
 	protected QueryTripsResult queryTripsMobile(final Location from, final @Nullable Location via, final Location to, final Date date,
-			final boolean dep, final @Nullable Collection<Product> products, final @Nullable WalkSpeed walkSpeed,
+			final boolean dep, final @Nullable Collection<Product> products, final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
 			final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) throws IOException
 	{
 
-		final String parameters = xsltTripRequestParameters(from, via, to, date, dep, products, walkSpeed, accessibility, options);
+		final String parameters = xsltTripRequestParameters(from, via, to, date, dep, products, optimize, walkSpeed, accessibility, options);
 
 		final StringBuilder uri = new StringBuilder(tripEndpoint);
 		if (!httpPost)
