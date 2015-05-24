@@ -102,11 +102,19 @@ public class SydneyProvider extends AbstractEfaProvider
 				return new Line(id, network, Product.SUBURBAN_TRAIN, "HUN");
 			if ("SWR".equals(symbol)) // South West Rail Link
 				return new Line(id, network, Product.SUBURBAN_TRAIN, "SWR");
+			if ("NRC".equals(symbol)) // North Coast NSW Line
+				return new Line(id, network, Product.SUBURBAN_TRAIN, "NRC");
+			if ("WST".equals(symbol)) // Western NSW Line
+				return new Line(id, network, Product.SUBURBAN_TRAIN, "WST");
+			if ("STH".equals(symbol)) // Southern NSW Line
+				return new Line(id, network, Product.SUBURBAN_TRAIN, "STH");
 
-			if ("T1".equals(symbol) || "T1 North Shore & Northern Line".equals(symbol) || "T1 Northern Line".equals(symbol)
-					|| "T1 Western Line".equals(symbol))
+			if ("T1".equals(symbol) || "T1 North Shore & Northern Line".equals(symbol) || "T1 North Shore and Northern Line".equals(symbol)
+					|| "T1 Northern Line".equals(symbol) || "T1 Western Line".equals(symbol)
+					|| "T1 North Shore, Northern & Western Line".equals(symbol))
 				return new Line(id, network, Product.SUBURBAN_TRAIN, "T1");
-			if ("T2".equals(symbol) || "T2 Inner West & South Line".equals(symbol) || "T2 Airport Line".equals(symbol))
+			if ("T2".equals(symbol) || "T2 Inner West & South Line".equals(symbol) || "T2 Airport Line".equals(symbol)
+					|| "T2 Airport, Inner West & South Line".equals(symbol))
 				return new Line(id, network, Product.SUBURBAN_TRAIN, "T2");
 			if ("T3".equals(symbol) || "T3 Bankstown Line".equals(symbol))
 				return new Line(id, network, Product.SUBURBAN_TRAIN, "T3");
@@ -150,6 +158,8 @@ public class SydneyProvider extends AbstractEfaProvider
 				return new Line(id, network, Product.FERRY, symbol);
 			if ("MFF".equals(symbol) || "Manly Fast Ferry".equals(name))
 				return new Line(id, network, Product.FERRY, "MFF");
+			if ("LneCv".equals(symbol) || "Lane Cove Ferry".equals(name))
+				return new Line(id, network, Product.FERRY, "LneCv");
 
 			throw new IllegalStateException("cannot normalize mot='" + mot + "' symbol='" + symbol + "' name='" + name + "' long='" + longName
 					+ "' trainType='" + trainType + "' trainNum='" + trainNum + "' trainName='" + trainName + "'");

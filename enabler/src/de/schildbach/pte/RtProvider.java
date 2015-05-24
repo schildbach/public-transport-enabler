@@ -98,8 +98,6 @@ public class RtProvider extends AbstractHafasProvider
 	{
 		final String ucType = type.toUpperCase();
 
-		if ("E".equals(ucType)) // Romania, Croatia
-			return Product.REGIONAL_TRAIN;
 		if ("N".equals(ucType)) // Frankreich, Tours
 			return Product.REGIONAL_TRAIN;
 

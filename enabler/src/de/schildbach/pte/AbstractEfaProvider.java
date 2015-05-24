@@ -1351,6 +1351,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return new Line(id, network, Product.REGIONAL_TRAIN, "OPB" + trainNum);
 			if (("OPX".equals(trainType) || "oberpfalz-express".equals(trainName)) && trainNum != null)
 				return new Line(id, network, Product.REGIONAL_TRAIN, "OPX" + trainNum);
+			if (("LEO".equals(trainType) || "Chiemgauer Lokalbahn".equals(trainName)) && trainNum != null)
+				return new Line(id, network, Product.REGIONAL_TRAIN, "LEO" + trainNum);
 			if (("V6".equals(trainType) || "vlexx".equals(trainName)) && trainNum != null)
 				return new Line(id, network, Product.REGIONAL_TRAIN, "vlexx" + trainNum);
 			if (("ARZ".equals(trainType) || "Autoreisezug".equals(trainName)) && trainNum != null)

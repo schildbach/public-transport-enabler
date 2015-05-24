@@ -79,6 +79,13 @@ public class BayernProvider extends AbstractEfaProvider
 			if ("ABR".equals(trainType) || "ABELLIO Rail NRW GmbH".equals(trainName))
 				return new Line(id, network, Product.SUBURBAN_TRAIN, "ABR" + trainNum);
 		}
+		else if ("5".equals(mot))
+		{
+			if (name != null && name.startsWith("Stadtbus Linie ")) // Lindau
+				return super.parseLine(id, network, mot, symbol, name.substring(15), longName, trainType, trainNum, trainName);
+			else
+				return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
+		}
 		else if ("16".equals(mot))
 		{
 			if ("EC".equals(trainType) && trainNum != null)

@@ -150,8 +150,6 @@ public class NsProvider extends AbstractHafasProvider
 
 		if (ucType.equals("SPR"))
 			return Product.REGIONAL_TRAIN;
-		if (ucType.equals("E")) // Budapest, Ungarn
-			return Product.REGIONAL_TRAIN;
 		if (ucType.equals("N")) // Avignon
 			return Product.REGIONAL_TRAIN;
 

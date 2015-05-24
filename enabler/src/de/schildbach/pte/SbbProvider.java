@@ -146,9 +146,9 @@ public class SbbProvider extends AbstractHafasProvider
 
 		if ("IN".equals(ucType)) // Italien Roma-Lecce
 			return Product.HIGH_SPEED_TRAIN;
+		if ("IT".equals(ucType)) // Italien Roma-Venezia
+			return Product.HIGH_SPEED_TRAIN;
 
-		if ("E".equals(ucType))
-			return Product.REGIONAL_TRAIN;
 		if ("T".equals(ucType))
 			return Product.REGIONAL_TRAIN;
 		if ("TE2".equals(ucType)) // Basel - Strasbourg

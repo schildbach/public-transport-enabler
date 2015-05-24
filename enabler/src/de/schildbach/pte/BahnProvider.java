@@ -167,8 +167,6 @@ public final class BahnProvider extends AbstractHafasProvider
 	{
 		final String ucType = type.toUpperCase();
 
-		if ("E".equals(ucType))
-			return null;
 		if ("N".equals(ucType))
 			return null;
 

@@ -156,9 +156,6 @@ public class VsnProvider extends AbstractHafasProvider
 	{
 		final String ucType = type.toUpperCase();
 
-		if ("E".equals(ucType))
-			return Product.REGIONAL_TRAIN;
-
 		if ("T84".equals(ucType))
 			return null;
 

@@ -207,8 +207,6 @@ public class OebbProvider extends AbstractHafasProvider
 			return Product.REGIONAL_TRAIN;
 		if (ucType.equals("DPN")) // Connections only? TODO nicht evtl. doch eher ne S-Bahn?
 			return Product.REGIONAL_TRAIN;
-		if (ucType.equals("E")) // Budapest, Ungarn
-			return Product.REGIONAL_TRAIN;
 		if (ucType.equals("IP")) // Ozd, Ungarn
 			return Product.REGIONAL_TRAIN;
 		if (ucType.equals("N")) // Frankreich, Tours

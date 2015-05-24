@@ -3002,6 +3002,10 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		if ("SL".equals(ucType)) // Sessel-Lift
 			return Product.CABLECAR;
 
+		// Unknown product
+		if ("E".equals(ucType))
+			return null;
+
 		throw new IllegalStateException("cannot normalize type '" + type + "'");
 	}
 
