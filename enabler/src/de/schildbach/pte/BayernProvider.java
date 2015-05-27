@@ -169,6 +169,8 @@ public class BayernProvider extends AbstractEfaProvider
 		uri.append("&inclMOT_11=on");
 		uri.append("&inclMOT_14=on");
 
+		uri.append("&calcOneDirection=1");
+
 		return uri.toString();
 	}
 
