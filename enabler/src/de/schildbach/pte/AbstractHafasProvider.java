@@ -18,6 +18,7 @@
 package de.schildbach.pte;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -547,6 +548,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 			if (stationBoardHasStationTable)
 				XmlPullUtil.enter(pp, "StationTable");
+			else
+				checkState(!XmlPullUtil.test(pp, "StationTable"));
 
 			if (stationBoardHasLocation)
 			{
@@ -563,6 +566,10 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						stationPlaceAndName = splitStationName(name.trim());
 				}
 				XmlPullUtil.requireSkip(pp, "St");
+			}
+			else
+			{
+				checkState(!XmlPullUtil.test(pp, "St"));
 			}
 
 			while (XmlPullUtil.test(pp, "Journey"))
