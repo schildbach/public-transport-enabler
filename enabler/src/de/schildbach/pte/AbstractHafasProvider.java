@@ -2025,6 +2025,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				throw new SessionExpiredException();
 			else if (errorCode == 8)
 				return new QueryTripsResult(header, QueryTripsResult.Status.AMBIGUOUS);
+			else if (errorCode == 207)
+				// H207: Unfortunately your connection request can currently not be processed.
+				return new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN);
 			else if (errorCode == 887)
 				// H887: Your inquiry was too complex. Please try entering less intermediate stations.
 				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
