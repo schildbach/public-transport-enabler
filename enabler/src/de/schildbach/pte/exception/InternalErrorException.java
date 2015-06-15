@@ -17,15 +17,14 @@
 
 package de.schildbach.pte.exception;
 
-import java.io.Reader;
-import java.net.URL;
+import okhttp3.HttpUrl;
 
 /**
  * @author Andreas Schildbach
  */
 @SuppressWarnings("serial")
 public class InternalErrorException extends AbstractHttpException {
-    public InternalErrorException(final URL url, final Reader errorReader) {
-        super(url, errorReader);
+    public InternalErrorException(final HttpUrl url, final CharSequence bodyPeek) {
+        super(url, bodyPeek);
     }
 }

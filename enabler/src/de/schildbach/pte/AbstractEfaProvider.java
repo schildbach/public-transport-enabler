@@ -83,6 +83,9 @@ import de.schildbach.pte.util.HttpClient;
 import de.schildbach.pte.util.ParserUtils;
 import de.schildbach.pte.util.XmlPullUtil;
 
+import okhttp3.HttpUrl;
+import okhttp3.ResponseBody;
+
 /**
  * @author Andreas Schildbach
  */
@@ -244,10 +247,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         final StringBuilder parameters = stopfinderRequestParameters(constraint, "JSON");
         final CharSequence page;
         if (httpPost)
-            page = httpClient.get(uri.toString(), parameters.substring(1), "application/x-www-form-urlencoded",
-                    Charsets.UTF_8);
+            page = httpClient.get(HttpUrl.parse(uri.toString()), parameters.substring(1),
+                    "application/x-www-form-urlencoded", Charsets.UTF_8);
         else
-            page = httpClient.get(uri.append(parameters).toString(), Charsets.UTF_8);
+            page = httpClient.get(HttpUrl.parse(uri.append(parameters).toString()), Charsets.UTF_8);
         final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
 
         try {
@@ -354,126 +357,128 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     protected SuggestLocationsResult xmlStopfinderRequest(final Location constraint) throws IOException {
         final StringBuilder uri = new StringBuilder(stopFinderEndpoint);
         final StringBuilder parameters = stopfinderRequestParameters(constraint, "XML");
+        final AtomicReference<SuggestLocationsResult> result = new AtomicReference<SuggestLocationsResult>();
 
-        InputStream is = null;
-        String firstChars = null;
+        final HttpClient.Callback callback = new HttpClient.Callback() {
+            @Override
+            public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
+                try {
+                    final XmlPullParser pp = parserFactory.newPullParser();
+                    pp.setInput(body.byteStream(), null); // Read encoding from XML declaration
+                    final ResultHeader header = enterItdRequest(pp);
 
-        try {
-            if (httpPost)
-                is = httpClient.getInputStream(uri.toString(), parameters.substring(1),
-                        "application/x-www-form-urlencoded", null, httpReferer);
-            else
-                is = httpClient.getInputStream(uri.append(parameters).toString(), null, httpReferer);
-            firstChars = HttpClient.peekFirstChars(is);
+                    final List<SuggestedLocation> locations = new ArrayList<SuggestedLocation>();
 
-            final XmlPullParser pp = parserFactory.newPullParser();
-            pp.setInput(is, null);
-            final ResultHeader header = enterItdRequest(pp);
+                    XmlPullUtil.enter(pp, "itdStopFinderRequest");
 
-            final List<SuggestedLocation> locations = new ArrayList<SuggestedLocation>();
+                    processItdOdv(pp, "sf", new ProcessItdOdvCallback() {
+                        @Override
+                        public void location(final String nameState, final Location location, final int matchQuality) {
+                            locations.add(new SuggestedLocation(location, matchQuality));
+                        }
+                    });
 
-            XmlPullUtil.enter(pp, "itdStopFinderRequest");
+                    XmlPullUtil.skipExit(pp, "itdStopFinderRequest");
 
-            processItdOdv(pp, "sf", new ProcessItdOdvCallback() {
-                @Override
-                public void location(final String nameState, final Location location, final int matchQuality) {
-                    locations.add(new SuggestedLocation(location, matchQuality));
+                    result.set(new SuggestLocationsResult(header, locations));
+                } catch (final XmlPullParserException x) {
+                    throw new ParserException("cannot parse xml: " + bodyPeek, x);
                 }
-            });
+            }
+        };
 
-            XmlPullUtil.skipExit(pp, "itdStopFinderRequest");
+        if (httpPost)
+            httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()), parameters.substring(1),
+                    "application/x-www-form-urlencoded", null, httpReferer);
+        else
+            httpClient.getInputStream(callback, HttpUrl.parse(uri.append(parameters).toString()), null, httpReferer);
 
-            return new SuggestLocationsResult(header, locations);
-        } catch (final XmlPullParserException x) {
-            throw new ParserException("cannot parse xml: " + firstChars, x);
-        } finally {
-            if (is != null)
-                is.close();
-        }
+        return result.get();
     }
 
     protected SuggestLocationsResult mobileStopfinderRequest(final Location constraint) throws IOException {
         final StringBuilder uri = new StringBuilder(stopFinderEndpoint);
         final StringBuilder parameters = stopfinderRequestParameters(constraint, "XML");
+        final AtomicReference<SuggestLocationsResult> result = new AtomicReference<SuggestLocationsResult>();
 
-        InputStream is = null;
-        String firstChars = null;
+        final HttpClient.Callback callback = new HttpClient.Callback() {
+            @Override
+            public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
+                try {
+                    final XmlPullParser pp = parserFactory.newPullParser();
+                    pp.setInput(body.byteStream(), null); // Read encoding from XML declaration
+                    final ResultHeader header = enterEfa(pp);
 
-        try {
-            if (httpPost)
-                is = httpClient.getInputStream(uri.toString(), parameters.substring(1),
-                        "application/x-www-form-urlencoded", null, httpReferer);
-            else
-                is = httpClient.getInputStream(uri.append(parameters).toString(), null, httpReferer);
-            firstChars = HttpClient.peekFirstChars(is);
+                    final List<SuggestedLocation> locations = new ArrayList<SuggestedLocation>();
 
-            final XmlPullParser pp = parserFactory.newPullParser();
-            pp.setInput(is, null);
-            final ResultHeader header = enterEfa(pp);
+                    XmlPullUtil.require(pp, "sf");
+                    if (!pp.isEmptyElementTag()) {
+                        XmlPullUtil.enter(pp, "sf");
 
-            final List<SuggestedLocation> locations = new ArrayList<SuggestedLocation>();
+                        while (XmlPullUtil.test(pp, "p")) {
+                            XmlPullUtil.enter(pp, "p");
 
-            XmlPullUtil.require(pp, "sf");
-            if (!pp.isEmptyElementTag()) {
-                XmlPullUtil.enter(pp, "sf");
+                            final String name = normalizeLocationName(XmlPullUtil.valueTag(pp, "n"));
+                            final String u = XmlPullUtil.valueTag(pp, "u");
+                            if (!"sf".equals(u))
+                                throw new RuntimeException("unknown usage: " + u);
+                            final String ty = XmlPullUtil.valueTag(pp, "ty");
+                            final LocationType type;
+                            if ("stop".equals(ty))
+                                type = LocationType.STATION;
+                            else if ("poi".equals(ty))
+                                type = LocationType.POI;
+                            else if ("loc".equals(ty))
+                                type = LocationType.COORD;
+                            else if ("street".equals(ty))
+                                type = LocationType.ADDRESS;
+                            else if ("singlehouse".equals(ty))
+                                type = LocationType.ADDRESS;
+                            else
+                                throw new RuntimeException("unknown type: " + ty);
 
-                while (XmlPullUtil.test(pp, "p")) {
-                    XmlPullUtil.enter(pp, "p");
+                            XmlPullUtil.enter(pp, "r");
 
-                    final String name = normalizeLocationName(XmlPullUtil.valueTag(pp, "n"));
-                    final String u = XmlPullUtil.valueTag(pp, "u");
-                    if (!"sf".equals(u))
-                        throw new RuntimeException("unknown usage: " + u);
-                    final String ty = XmlPullUtil.valueTag(pp, "ty");
-                    final LocationType type;
-                    if ("stop".equals(ty))
-                        type = LocationType.STATION;
-                    else if ("poi".equals(ty))
-                        type = LocationType.POI;
-                    else if ("loc".equals(ty))
-                        type = LocationType.COORD;
-                    else if ("street".equals(ty))
-                        type = LocationType.ADDRESS;
-                    else if ("singlehouse".equals(ty))
-                        type = LocationType.ADDRESS;
-                    else
-                        throw new RuntimeException("unknown type: " + ty);
+                            final String id = XmlPullUtil.valueTag(pp, "id");
+                            XmlPullUtil.optValueTag(pp, "gid", null);
+                            XmlPullUtil.valueTag(pp, "stateless");
+                            XmlPullUtil.valueTag(pp, "omc");
+                            final String place = normalizeLocationName(XmlPullUtil.optValueTag(pp, "pc", null));
+                            XmlPullUtil.valueTag(pp, "pid");
+                            final Point coord = parseCoord(XmlPullUtil.optValueTag(pp, "c", null));
 
-                    XmlPullUtil.enter(pp, "r");
+                            XmlPullUtil.skipExit(pp, "r");
 
-                    final String id = XmlPullUtil.valueTag(pp, "id");
-                    XmlPullUtil.optValueTag(pp, "gid", null);
-                    XmlPullUtil.valueTag(pp, "stateless");
-                    XmlPullUtil.valueTag(pp, "omc");
-                    final String place = normalizeLocationName(XmlPullUtil.optValueTag(pp, "pc", null));
-                    XmlPullUtil.valueTag(pp, "pid");
-                    final Point coord = parseCoord(XmlPullUtil.optValueTag(pp, "c", null));
+                            final String qal = XmlPullUtil.optValueTag(pp, "qal", null);
+                            final int quality = qal != null ? Integer.parseInt(qal) : 0;
 
-                    XmlPullUtil.skipExit(pp, "r");
+                            XmlPullUtil.skipExit(pp, "p");
 
-                    final String qal = XmlPullUtil.optValueTag(pp, "qal", null);
-                    final int quality = qal != null ? Integer.parseInt(qal) : 0;
+                            final Location location = new Location(type, type == LocationType.STATION ? id : null,
+                                    coord, place, name);
+                            final SuggestedLocation locationAndQuality = new SuggestedLocation(location, quality);
+                            locations.add(locationAndQuality);
+                        }
 
-                    XmlPullUtil.skipExit(pp, "p");
+                        XmlPullUtil.skipExit(pp, "sf");
+                    } else {
+                        XmlPullUtil.next(pp);
+                    }
 
-                    final Location location = new Location(type, type == LocationType.STATION ? id : null, coord, place,
-                            name);
-                    final SuggestedLocation locationAndQuality = new SuggestedLocation(location, quality);
-                    locations.add(locationAndQuality);
+                    result.set(new SuggestLocationsResult(header, locations));
+                } catch (final XmlPullParserException x) {
+                    throw new ParserException("cannot parse xml: " + bodyPeek, x);
                 }
-
-                XmlPullUtil.skipExit(pp, "sf");
-            } else {
-                XmlPullUtil.next(pp);
             }
+        };
 
-            return new SuggestLocationsResult(header, locations);
-        } catch (final XmlPullParserException x) {
-            throw new ParserException("cannot parse xml: " + firstChars, x);
-        } finally {
-            if (is != null)
-                is.close();
-        }
+        if (httpPost)
+            httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()), parameters.substring(1),
+                    "application/x-www-form-urlencoded", null, httpReferer);
+        else
+            httpClient.getInputStream(callback, HttpUrl.parse(uri.append(parameters).toString()), null, httpReferer);
+
+        return result.get();
     }
 
     private StringBuilder xmlCoordRequestParameters(final EnumSet<LocationType> types, final int lat, final int lon,
@@ -507,149 +512,151 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             final int maxDistance, final int maxStations) throws IOException {
         final StringBuilder uri = new StringBuilder(coordEndpoint);
         final StringBuilder parameters = xmlCoordRequestParameters(types, lat, lon, maxDistance, maxStations);
+        final AtomicReference<NearbyLocationsResult> result = new AtomicReference<NearbyLocationsResult>();
 
-        InputStream is = null;
-        String firstChars = null;
+        final HttpClient.Callback callback = new HttpClient.Callback() {
+            @Override
+            public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
+                try {
+                    final XmlPullParser pp = parserFactory.newPullParser();
+                    pp.setInput(body.byteStream(), null); // Read encoding from XML declaration
+                    final ResultHeader header = enterItdRequest(pp);
 
-        try {
-            if (httpPost)
-                is = httpClient.getInputStream(uri.toString(), parameters.substring(1),
-                        "application/x-www-form-urlencoded", null, httpReferer);
-            else
-                is = httpClient.getInputStream(uri.append(parameters).toString(), null, httpReferer);
-            firstChars = HttpClient.peekFirstChars(is);
+                    XmlPullUtil.enter(pp, "itdCoordInfoRequest");
 
-            final XmlPullParser pp = parserFactory.newPullParser();
-            pp.setInput(is, null);
-            final ResultHeader header = enterItdRequest(pp);
+                    XmlPullUtil.enter(pp, "itdCoordInfo");
 
-            XmlPullUtil.enter(pp, "itdCoordInfoRequest");
+                    XmlPullUtil.enter(pp, "coordInfoRequest");
+                    XmlPullUtil.skipExit(pp, "coordInfoRequest");
 
-            XmlPullUtil.enter(pp, "itdCoordInfo");
+                    final List<Location> locations = new ArrayList<Location>();
 
-            XmlPullUtil.enter(pp, "coordInfoRequest");
-            XmlPullUtil.skipExit(pp, "coordInfoRequest");
+                    if (XmlPullUtil.test(pp, "coordInfoItemList")) {
+                        XmlPullUtil.enter(pp, "coordInfoItemList");
 
-            final List<Location> locations = new ArrayList<Location>();
+                        while (XmlPullUtil.test(pp, "coordInfoItem")) {
+                            final String type = XmlPullUtil.attr(pp, "type");
+                            final LocationType locationType;
+                            if ("STOP".equals(type))
+                                locationType = LocationType.STATION;
+                            else if ("POI_POINT".equals(type))
+                                locationType = LocationType.POI;
+                            else
+                                throw new IllegalStateException("unknown type: " + type);
 
-            if (XmlPullUtil.test(pp, "coordInfoItemList")) {
-                XmlPullUtil.enter(pp, "coordInfoItemList");
+                            String id = XmlPullUtil.optAttr(pp, "stateless", null);
+                            if (id == null)
+                                id = XmlPullUtil.attr(pp, "id");
 
-                while (XmlPullUtil.test(pp, "coordInfoItem")) {
-                    final String type = XmlPullUtil.attr(pp, "type");
-                    final LocationType locationType;
-                    if ("STOP".equals(type))
-                        locationType = LocationType.STATION;
-                    else if ("POI_POINT".equals(type))
-                        locationType = LocationType.POI;
-                    else
-                        throw new IllegalStateException("unknown type: " + type);
+                            final String name = normalizeLocationName(XmlPullUtil.optAttr(pp, "name", null));
+                            final String place = normalizeLocationName(XmlPullUtil.optAttr(pp, "locality", null));
 
-                    String id = XmlPullUtil.optAttr(pp, "stateless", null);
-                    if (id == null)
-                        id = XmlPullUtil.attr(pp, "id");
+                            XmlPullUtil.enter(pp, "coordInfoItem");
 
-                    final String name = normalizeLocationName(XmlPullUtil.optAttr(pp, "name", null));
-                    final String place = normalizeLocationName(XmlPullUtil.optAttr(pp, "locality", null));
+                            // FIXME this is always only one coordinate
+                            final Point coord = processItdPathCoordinates(pp).get(0);
 
-                    XmlPullUtil.enter(pp, "coordInfoItem");
+                            XmlPullUtil.skipExit(pp, "coordInfoItem");
 
-                    // FIXME this is always only one coordinate
-                    final Point coord = processItdPathCoordinates(pp).get(0);
+                            if (name != null)
+                                locations.add(new Location(locationType, id, coord, place, name));
+                        }
 
-                    XmlPullUtil.skipExit(pp, "coordInfoItem");
+                        XmlPullUtil.skipExit(pp, "coordInfoItemList");
+                    }
 
-                    if (name != null)
-                        locations.add(new Location(locationType, id, coord, place, name));
+                    result.set(new NearbyLocationsResult(header, locations));
+                } catch (final XmlPullParserException x) {
+                    throw new ParserException("cannot parse xml: " + bodyPeek, x);
                 }
-
-                XmlPullUtil.skipExit(pp, "coordInfoItemList");
             }
+        };
 
-            return new NearbyLocationsResult(header, locations);
-        } catch (final XmlPullParserException x) {
-            throw new ParserException("cannot parse xml: " + firstChars, x);
-        } finally {
-            if (is != null)
-                is.close();
-        }
+        if (httpPost)
+            httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()), parameters.substring(1),
+                    "application/x-www-form-urlencoded", null, httpReferer);
+        else
+            httpClient.getInputStream(callback, HttpUrl.parse(uri.append(parameters).toString()), null, httpReferer);
+
+        return result.get();
     }
 
     protected NearbyLocationsResult mobileCoordRequest(final EnumSet<LocationType> types, final int lat, final int lon,
             final int maxDistance, final int maxStations) throws IOException {
         final StringBuilder uri = new StringBuilder(coordEndpoint);
         final StringBuilder parameters = xmlCoordRequestParameters(types, lat, lon, maxDistance, maxStations);
+        final AtomicReference<NearbyLocationsResult> result = new AtomicReference<NearbyLocationsResult>();
 
-        InputStream is = null;
-        String firstChars = null;
+        final HttpClient.Callback callback = new HttpClient.Callback() {
+            @Override
+            public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
+                try {
+                    final XmlPullParser pp = parserFactory.newPullParser();
+                    pp.setInput(body.byteStream(), null); // Read encoding from XML declaration
+                    final ResultHeader header = enterEfa(pp);
 
-        try {
-            if (httpPost)
-                is = httpClient.getInputStream(uri.toString(), parameters.substring(1),
-                        "application/x-www-form-urlencoded", null, httpReferer);
-            else
-                is = httpClient.getInputStream(uri.append(parameters).toString(), null, httpReferer);
-            firstChars = HttpClient.peekFirstChars(is);
+                    XmlPullUtil.enter(pp, "ci");
 
-            final XmlPullParser pp = parserFactory.newPullParser();
-            pp.setInput(is, null);
-            final ResultHeader header = enterEfa(pp);
+                    XmlPullUtil.enter(pp, "request");
+                    XmlPullUtil.skipExit(pp, "request");
 
-            XmlPullUtil.enter(pp, "ci");
+                    final List<Location> stations = new ArrayList<Location>();
 
-            XmlPullUtil.enter(pp, "request");
-            XmlPullUtil.skipExit(pp, "request");
+                    if (XmlPullUtil.test(pp, "pis")) {
+                        XmlPullUtil.enter(pp, "pis");
 
-            final List<Location> stations = new ArrayList<Location>();
+                        while (XmlPullUtil.test(pp, "pi")) {
+                            XmlPullUtil.enter(pp, "pi");
 
-            if (XmlPullUtil.test(pp, "pis")) {
-                XmlPullUtil.enter(pp, "pis");
+                            final String name = normalizeLocationName(XmlPullUtil.optValueTag(pp, "de", null));
+                            final String type = XmlPullUtil.valueTag(pp, "ty");
+                            final LocationType locationType;
+                            if ("STOP".equals(type))
+                                locationType = LocationType.STATION;
+                            else if ("POI_POINT".equals(type))
+                                locationType = LocationType.POI;
+                            else
+                                throw new IllegalStateException("unknown type: " + type);
 
-                while (XmlPullUtil.test(pp, "pi")) {
-                    XmlPullUtil.enter(pp, "pi");
+                            final String id = XmlPullUtil.valueTag(pp, "id");
+                            XmlPullUtil.valueTag(pp, "omc");
+                            XmlPullUtil.optValueTag(pp, "pid", null);
+                            final String place = normalizeLocationName(XmlPullUtil.valueTag(pp, "locality"));
+                            XmlPullUtil.valueTag(pp, "layer");
+                            XmlPullUtil.valueTag(pp, "gisID");
+                            XmlPullUtil.valueTag(pp, "ds");
+                            XmlPullUtil.valueTag(pp, "stateless");
+                            final Point coord = parseCoord(XmlPullUtil.valueTag(pp, "c"));
 
-                    final String name = normalizeLocationName(XmlPullUtil.optValueTag(pp, "de", null));
-                    final String type = XmlPullUtil.valueTag(pp, "ty");
-                    final LocationType locationType;
-                    if ("STOP".equals(type))
-                        locationType = LocationType.STATION;
-                    else if ("POI_POINT".equals(type))
-                        locationType = LocationType.POI;
-                    else
-                        throw new IllegalStateException("unknown type: " + type);
+                            final Location location;
+                            if (name != null)
+                                location = new Location(locationType, id, coord, place, name);
+                            else
+                                location = new Location(locationType, id, coord, null, place);
+                            stations.add(location);
 
-                    final String id = XmlPullUtil.valueTag(pp, "id");
-                    XmlPullUtil.valueTag(pp, "omc");
-                    XmlPullUtil.optValueTag(pp, "pid", null);
-                    final String place = normalizeLocationName(XmlPullUtil.valueTag(pp, "locality"));
-                    XmlPullUtil.valueTag(pp, "layer");
-                    XmlPullUtil.valueTag(pp, "gisID");
-                    XmlPullUtil.valueTag(pp, "ds");
-                    XmlPullUtil.valueTag(pp, "stateless");
-                    final Point coord = parseCoord(XmlPullUtil.valueTag(pp, "c"));
+                            XmlPullUtil.skipExit(pp, "pi");
+                        }
 
-                    final Location location;
-                    if (name != null)
-                        location = new Location(locationType, id, coord, place, name);
-                    else
-                        location = new Location(locationType, id, coord, null, place);
-                    stations.add(location);
+                        XmlPullUtil.skipExit(pp, "pis");
+                    }
 
-                    XmlPullUtil.skipExit(pp, "pi");
+                    XmlPullUtil.skipExit(pp, "ci");
+
+                    result.set(new NearbyLocationsResult(header, stations));
+                } catch (final XmlPullParserException x) {
+                    throw new ParserException("cannot parse xml: " + bodyPeek, x);
                 }
-
-                XmlPullUtil.skipExit(pp, "pis");
             }
+        };
 
-            XmlPullUtil.skipExit(pp, "ci");
+        if (httpPost)
+            httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()), parameters.substring(1),
+                    "application/x-www-form-urlencoded", null, httpReferer);
+        else
+            httpClient.getInputStream(callback, HttpUrl.parse(uri.append(parameters).toString()), null, httpReferer);
 
-            return new NearbyLocationsResult(header, stations);
-        } catch (final XmlPullParserException x) {
-            throw new ParserException("cannot parse xml: " + firstChars, x);
-        } finally {
-            if (is != null)
-                is.close();
-        }
+        return result.get();
     }
 
     @Override
@@ -856,57 +863,60 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         parameters.append("&mergeDep=1");
         parameters.append("&useAllStops=1");
         parameters.append("&mode=direct");
+        final AtomicReference<NearbyLocationsResult> result = new AtomicReference<NearbyLocationsResult>();
 
-        InputStream is = null;
-        String firstChars = null;
+        final HttpClient.Callback callback = new HttpClient.Callback() {
+            @Override
+            public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
+                try {
+                    final XmlPullParser pp = parserFactory.newPullParser();
+                    pp.setInput(body.byteStream(), null); // Read encoding from XML declaration
+                    final ResultHeader header = enterItdRequest(pp);
 
-        try {
-            if (httpPost)
-                is = httpClient.getInputStream(uri.toString(), parameters.substring(1),
-                        "application/x-www-form-urlencoded", null, httpReferer);
-            else
-                is = httpClient.getInputStream(uri.append(parameters).toString(), null, httpReferer);
-            firstChars = HttpClient.peekFirstChars(is);
+                    XmlPullUtil.enter(pp, "itdDepartureMonitorRequest");
 
-            final XmlPullParser pp = parserFactory.newPullParser();
-            pp.setInput(is, null);
-            final ResultHeader header = enterItdRequest(pp);
+                    final AtomicReference<Location> ownStation = new AtomicReference<Location>();
+                    final List<Location> stations = new ArrayList<Location>();
 
-            XmlPullUtil.enter(pp, "itdDepartureMonitorRequest");
+                    final String nameState = processItdOdv(pp, "dm", new ProcessItdOdvCallback() {
+                        @Override
+                        public void location(final String nameState, final Location location, final int matchQuality) {
+                            if (location.type == LocationType.STATION) {
+                                if ("identified".equals(nameState))
+                                    ownStation.set(location);
+                                else if ("assigned".equals(nameState))
+                                    stations.add(location);
+                            } else {
+                                throw new IllegalStateException("cannot handle: " + location.type);
+                            }
+                        }
+                    });
 
-            final AtomicReference<Location> ownStation = new AtomicReference<Location>();
-            final List<Location> stations = new ArrayList<Location>();
-
-            final String nameState = processItdOdv(pp, "dm", new ProcessItdOdvCallback() {
-                @Override
-                public void location(final String nameState, final Location location, final int matchQuality) {
-                    if (location.type == LocationType.STATION) {
-                        if ("identified".equals(nameState))
-                            ownStation.set(location);
-                        else if ("assigned".equals(nameState))
-                            stations.add(location);
-                    } else {
-                        throw new IllegalStateException("cannot handle: " + location.type);
+                    if ("notidentified".equals(nameState)) {
+                        result.set(new NearbyLocationsResult(header, NearbyLocationsResult.Status.INVALID_ID));
+                        return;
                     }
+
+                    if (ownStation.get() != null && !stations.contains(ownStation))
+                        stations.add(ownStation.get());
+
+                    if (maxLocations == 0 || maxLocations >= stations.size())
+                        result.set(new NearbyLocationsResult(header, stations));
+                    else
+                        result.set(new NearbyLocationsResult(header, stations.subList(0, maxLocations)));
+                } catch (final XmlPullParserException x) {
+                    throw new ParserException("cannot parse xml: " + bodyPeek, x);
                 }
-            });
+            }
+        };
 
-            if ("notidentified".equals(nameState))
-                return new NearbyLocationsResult(header, NearbyLocationsResult.Status.INVALID_ID);
+        if (httpPost)
+            httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()), parameters.substring(1),
+                    "application/x-www-form-urlencoded", null, httpReferer);
+        else
+            httpClient.getInputStream(callback, HttpUrl.parse(uri.append(parameters).toString()), null, httpReferer);
 
-            if (ownStation.get() != null && !stations.contains(ownStation))
-                stations.add(ownStation.get());
-
-            if (maxLocations == 0 || maxLocations >= stations.size())
-                return new NearbyLocationsResult(header, stations);
-            else
-                return new NearbyLocationsResult(header, stations.subList(0, maxLocations));
-        } catch (final XmlPullParserException x) {
-            throw new ParserException("cannot parse xml: " + firstChars, x);
-        } finally {
-            if (is != null)
-                is.close();
-        }
+        return result.get();
     }
 
     private static final Pattern P_LINE_RE = Pattern.compile("RE ?\\d+");
@@ -1442,243 +1452,253 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             final int maxDepartures, final boolean equivs) throws IOException {
         final StringBuilder uri = new StringBuilder(departureMonitorEndpoint);
         final StringBuilder parameters = xsltDepartureMonitorRequestParameters(stationId, time, maxDepartures, equivs);
+        final AtomicReference<QueryDeparturesResult> result = new AtomicReference<QueryDeparturesResult>();
 
-        InputStream is = null;
-        String firstChars = null;
+        final HttpClient.Callback callback = new HttpClient.Callback() {
+            @Override
+            public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
+                try {
+                    final XmlPullParser pp = parserFactory.newPullParser();
+                    pp.setInput(body.byteStream(), null); // Read encoding from XML declaration
+                    final ResultHeader header = enterItdRequest(pp);
 
-        try {
-            if (httpPost)
-                is = httpClient.getInputStream(uri.toString(), parameters.substring(1),
-                        "application/x-www-form-urlencoded", null, httpReferer);
-            else
-                is = httpClient.getInputStream(uri.append(parameters).toString(), null, httpReferer);
-            firstChars = HttpClient.peekFirstChars(is);
+                    final QueryDeparturesResult r = new QueryDeparturesResult(header);
 
-            final XmlPullParser pp = parserFactory.newPullParser();
-            pp.setInput(is, null);
-            final ResultHeader header = enterItdRequest(pp);
+                    XmlPullUtil.enter(pp, "itdDepartureMonitorRequest");
 
-            final QueryDeparturesResult result = new QueryDeparturesResult(header);
+                    XmlPullUtil.optSkip(pp, "itdMessage");
 
-            XmlPullUtil.enter(pp, "itdDepartureMonitorRequest");
+                    final String nameState = processItdOdv(pp, "dm", new ProcessItdOdvCallback() {
+                        @Override
+                        public void location(final String nameState, final Location location, final int matchQuality) {
+                            if (location.type == LocationType.STATION)
+                                if (findStationDepartures(r.stationDepartures, location.id) == null)
+                                    r.stationDepartures.add(new StationDepartures(location, new LinkedList<Departure>(),
+                                            new LinkedList<LineDestination>()));
+                        }
+                    });
 
-            XmlPullUtil.optSkip(pp, "itdMessage");
-
-            final String nameState = processItdOdv(pp, "dm", new ProcessItdOdvCallback() {
-                @Override
-                public void location(final String nameState, final Location location, final int matchQuality) {
-                    if (location.type == LocationType.STATION)
-                        if (findStationDepartures(result.stationDepartures, location.id) == null)
-                            result.stationDepartures.add(new StationDepartures(location, new LinkedList<Departure>(),
-                                    new LinkedList<LineDestination>()));
-                }
-            });
-
-            if ("notidentified".equals(nameState) || "list".equals(nameState))
-                return new QueryDeparturesResult(header, QueryDeparturesResult.Status.INVALID_STATION);
-
-            XmlPullUtil.optSkip(pp, "itdDateTime");
-
-            XmlPullUtil.optSkip(pp, "itdDMDateTime");
-
-            XmlPullUtil.optSkip(pp, "itdDateRange");
-
-            XmlPullUtil.optSkip(pp, "itdTripOptions");
-
-            XmlPullUtil.optSkip(pp, "itdMessage");
-
-            final Calendar plannedDepartureTime = new GregorianCalendar(timeZone);
-            final Calendar predictedDepartureTime = new GregorianCalendar(timeZone);
-
-            XmlPullUtil.require(pp, "itdServingLines");
-            if (!pp.isEmptyElementTag()) {
-                XmlPullUtil.enter(pp, "itdServingLines");
-                while (XmlPullUtil.test(pp, "itdServingLine")) {
-                    final String assignedStopId = XmlPullUtil.optAttr(pp, "assignedStopID", null);
-                    final String destinationName = normalizeLocationName(XmlPullUtil.optAttr(pp, "direction", null));
-                    final String destinationIdStr = XmlPullUtil.optAttr(pp, "destID", null);
-                    final String destinationId = !"-1".equals(destinationIdStr) ? destinationIdStr : null;
-                    final Location destination;
-                    if (destinationId != null || destinationName != null)
-                        destination = new Location(destinationId != null ? LocationType.STATION : LocationType.ANY,
-                                destinationId, null, destinationName);
-                    else
-                        destination = null;
-
-                    final LineDestination line = new LineDestination(processItdServingLine(pp), destination);
-
-                    StationDepartures assignedStationDepartures;
-                    if (assignedStopId == null)
-                        assignedStationDepartures = result.stationDepartures.get(0);
-                    else
-                        assignedStationDepartures = findStationDepartures(result.stationDepartures, assignedStopId);
-
-                    if (assignedStationDepartures == null)
-                        assignedStationDepartures = new StationDepartures(
-                                new Location(LocationType.STATION, assignedStopId), new LinkedList<Departure>(),
-                                new LinkedList<LineDestination>());
-
-                    final List<LineDestination> assignedStationDeparturesLines = checkNotNull(
-                            assignedStationDepartures.lines);
-                    if (!assignedStationDeparturesLines.contains(line))
-                        assignedStationDeparturesLines.add(line);
-                }
-                XmlPullUtil.skipExit(pp, "itdServingLines");
-            } else {
-                XmlPullUtil.next(pp);
-            }
-
-            XmlPullUtil.require(pp, "itdDepartureList");
-            if (!pp.isEmptyElementTag()) {
-                XmlPullUtil.enter(pp, "itdDepartureList");
-                while (XmlPullUtil.test(pp, "itdDeparture")) {
-                    final String assignedStopId = XmlPullUtil.attr(pp, "stopID");
-
-                    StationDepartures assignedStationDepartures = findStationDepartures(result.stationDepartures,
-                            assignedStopId);
-                    if (assignedStationDepartures == null) {
-                        final Point coord = processCoordAttr(pp);
-
-                        // final String name = normalizeLocationName(XmlPullUtil.attr(pp, "nameWO"));
-
-                        assignedStationDepartures = new StationDepartures(
-                                new Location(LocationType.STATION, assignedStopId, coord), new LinkedList<Departure>(),
-                                new LinkedList<LineDestination>());
+                    if ("notidentified".equals(nameState) || "list".equals(nameState)) {
+                        result.set(new QueryDeparturesResult(header, QueryDeparturesResult.Status.INVALID_STATION));
+                        return;
                     }
 
-                    final Position position = parsePosition(XmlPullUtil.optAttr(pp, "platformName", null));
+                    XmlPullUtil.optSkip(pp, "itdDateTime");
 
-                    XmlPullUtil.enter(pp, "itdDeparture");
+                    XmlPullUtil.optSkip(pp, "itdDMDateTime");
 
-                    XmlPullUtil.require(pp, "itdDateTime");
-                    plannedDepartureTime.clear();
-                    processItdDateTime(pp, plannedDepartureTime);
+                    XmlPullUtil.optSkip(pp, "itdDateRange");
 
-                    predictedDepartureTime.clear();
-                    if (XmlPullUtil.test(pp, "itdRTDateTime"))
-                        processItdDateTime(pp, predictedDepartureTime);
+                    XmlPullUtil.optSkip(pp, "itdTripOptions");
 
-                    if (XmlPullUtil.test(pp, "itdFrequencyInfo"))
+                    XmlPullUtil.optSkip(pp, "itdMessage");
+
+                    final Calendar plannedDepartureTime = new GregorianCalendar(timeZone);
+                    final Calendar predictedDepartureTime = new GregorianCalendar(timeZone);
+
+                    XmlPullUtil.require(pp, "itdServingLines");
+                    if (!pp.isEmptyElementTag()) {
+                        XmlPullUtil.enter(pp, "itdServingLines");
+                        while (XmlPullUtil.test(pp, "itdServingLine")) {
+                            final String assignedStopId = XmlPullUtil.optAttr(pp, "assignedStopID", null);
+                            final String destinationName = normalizeLocationName(
+                                    XmlPullUtil.optAttr(pp, "direction", null));
+                            final String destinationIdStr = XmlPullUtil.optAttr(pp, "destID", null);
+                            final String destinationId = !"-1".equals(destinationIdStr) ? destinationIdStr : null;
+                            final Location destination;
+                            if (destinationId != null || destinationName != null)
+                                destination = new Location(
+                                        destinationId != null ? LocationType.STATION : LocationType.ANY, destinationId,
+                                        null, destinationName);
+                            else
+                                destination = null;
+
+                            final LineDestination line = new LineDestination(processItdServingLine(pp), destination);
+
+                            StationDepartures assignedStationDepartures;
+                            if (assignedStopId == null)
+                                assignedStationDepartures = r.stationDepartures.get(0);
+                            else
+                                assignedStationDepartures = findStationDepartures(r.stationDepartures, assignedStopId);
+
+                            if (assignedStationDepartures == null)
+                                assignedStationDepartures = new StationDepartures(
+                                        new Location(LocationType.STATION, assignedStopId), new LinkedList<Departure>(),
+                                        new LinkedList<LineDestination>());
+
+                            final List<LineDestination> assignedStationDeparturesLines = checkNotNull(
+                                    assignedStationDepartures.lines);
+                            if (!assignedStationDeparturesLines.contains(line))
+                                assignedStationDeparturesLines.add(line);
+                        }
+                        XmlPullUtil.skipExit(pp, "itdServingLines");
+                    } else {
                         XmlPullUtil.next(pp);
+                    }
 
-                    XmlPullUtil.require(pp, "itdServingLine");
-                    final boolean isRealtime = XmlPullUtil.attr(pp, "realtime").equals("1");
-                    final String destinationName = normalizeLocationName(XmlPullUtil.optAttr(pp, "direction", null));
-                    final String destinationIdStr = XmlPullUtil.optAttr(pp, "destID", null);
-                    final String destinationId = !"-1".equals(destinationIdStr) ? destinationIdStr : null;
-                    final Location destination;
-                    if (destinationId != null || destinationName != null)
-                        destination = new Location(destinationId != null ? LocationType.STATION : LocationType.ANY,
-                                destinationId, null, destinationName);
-                    else
-                        destination = null;
-                    final Line line = processItdServingLine(pp);
+                    XmlPullUtil.require(pp, "itdDepartureList");
+                    if (!pp.isEmptyElementTag()) {
+                        XmlPullUtil.enter(pp, "itdDepartureList");
+                        while (XmlPullUtil.test(pp, "itdDeparture")) {
+                            final String assignedStopId = XmlPullUtil.attr(pp, "stopID");
 
-                    if (isRealtime && !predictedDepartureTime.isSet(Calendar.HOUR_OF_DAY))
-                        predictedDepartureTime.setTimeInMillis(plannedDepartureTime.getTimeInMillis());
+                            StationDepartures assignedStationDepartures = findStationDepartures(r.stationDepartures,
+                                    assignedStopId);
+                            if (assignedStationDepartures == null) {
+                                final Point coord = processCoordAttr(pp);
 
-                    XmlPullUtil.skipExit(pp, "itdDeparture");
+                                // final String name = normalizeLocationName(XmlPullUtil.attr(pp, "nameWO"));
 
-                    final Departure departure = new Departure(plannedDepartureTime.getTime(),
-                            predictedDepartureTime.isSet(Calendar.HOUR_OF_DAY) ? predictedDepartureTime.getTime()
-                                    : null,
-                            line, position, destination, null, null);
-                    assignedStationDepartures.departures.add(departure);
+                                assignedStationDepartures = new StationDepartures(
+                                        new Location(LocationType.STATION, assignedStopId, coord),
+                                        new LinkedList<Departure>(), new LinkedList<LineDestination>());
+                            }
+
+                            final Position position = parsePosition(XmlPullUtil.optAttr(pp, "platformName", null));
+
+                            XmlPullUtil.enter(pp, "itdDeparture");
+
+                            XmlPullUtil.require(pp, "itdDateTime");
+                            plannedDepartureTime.clear();
+                            processItdDateTime(pp, plannedDepartureTime);
+
+                            predictedDepartureTime.clear();
+                            if (XmlPullUtil.test(pp, "itdRTDateTime"))
+                                processItdDateTime(pp, predictedDepartureTime);
+
+                            if (XmlPullUtil.test(pp, "itdFrequencyInfo"))
+                                XmlPullUtil.next(pp);
+
+                            XmlPullUtil.require(pp, "itdServingLine");
+                            final boolean isRealtime = XmlPullUtil.attr(pp, "realtime").equals("1");
+                            final String destinationName = normalizeLocationName(
+                                    XmlPullUtil.optAttr(pp, "direction", null));
+                            final String destinationIdStr = XmlPullUtil.optAttr(pp, "destID", null);
+                            final String destinationId = !"-1".equals(destinationIdStr) ? destinationIdStr : null;
+                            final Location destination;
+                            if (destinationId != null || destinationName != null)
+                                destination = new Location(
+                                        destinationId != null ? LocationType.STATION : LocationType.ANY, destinationId,
+                                        null, destinationName);
+                            else
+                                destination = null;
+                            final Line line = processItdServingLine(pp);
+
+                            if (isRealtime && !predictedDepartureTime.isSet(Calendar.HOUR_OF_DAY))
+                                predictedDepartureTime.setTimeInMillis(plannedDepartureTime.getTimeInMillis());
+
+                            XmlPullUtil.skipExit(pp, "itdDeparture");
+
+                            final Departure departure = new Departure(plannedDepartureTime.getTime(),
+                                    predictedDepartureTime.isSet(Calendar.HOUR_OF_DAY)
+                                            ? predictedDepartureTime.getTime() : null,
+                                    line, position, destination, null, null);
+                            assignedStationDepartures.departures.add(departure);
+                        }
+
+                        XmlPullUtil.skipExit(pp, "itdDepartureList");
+                    } else {
+                        XmlPullUtil.next(pp);
+                    }
+
+                    result.set(r);
+                } catch (final XmlPullParserException x) {
+                    throw new ParserException("cannot parse xml: " + bodyPeek, x);
                 }
-
-                XmlPullUtil.skipExit(pp, "itdDepartureList");
-            } else {
-                XmlPullUtil.next(pp);
             }
+        };
 
-            return result;
-        } catch (final XmlPullParserException x) {
-            throw new ParserException("cannot parse xml: " + firstChars, x);
-        } finally {
-            if (is != null)
-                is.close();
-        }
+        if (httpPost)
+            httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()), parameters.substring(1),
+                    "application/x-www-form-urlencoded", null, httpReferer);
+        else
+            httpClient.getInputStream(callback, HttpUrl.parse(uri.append(parameters).toString()), null, httpReferer);
+
+        return result.get();
     }
 
     protected QueryDeparturesResult queryDeparturesMobile(final String stationId, final @Nullable Date time,
             final int maxDepartures, final boolean equivs) throws IOException {
         final StringBuilder uri = new StringBuilder(departureMonitorEndpoint);
         final StringBuilder parameters = xsltDepartureMonitorRequestParameters(stationId, time, maxDepartures, equivs);
+        final AtomicReference<QueryDeparturesResult> result = new AtomicReference<QueryDeparturesResult>();
 
-        InputStream is = null;
-        String firstChars = null;
+        final HttpClient.Callback callback = new HttpClient.Callback() {
+            @Override
+            public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
+                try {
+                    final XmlPullParser pp = parserFactory.newPullParser();
+                    pp.setInput(body.byteStream(), null); // Read encoding from XML declaration
+                    final ResultHeader header = enterEfa(pp);
+                    final QueryDeparturesResult r = new QueryDeparturesResult(header);
 
-        try {
-            if (httpPost)
-                is = httpClient.getInputStream(uri.toString(), parameters.substring(1),
-                        "application/x-www-form-urlencoded", null, httpReferer);
-            else
-                is = httpClient.getInputStream(uri.append(parameters).toString(), null, httpReferer);
-            firstChars = HttpClient.peekFirstChars(is);
+                    XmlPullUtil.require(pp, "dps");
+                    if (!pp.isEmptyElementTag()) {
+                        XmlPullUtil.enter(pp, "dps");
 
-            final XmlPullParser pp = parserFactory.newPullParser();
-            pp.setInput(is, null);
-            final ResultHeader header = enterEfa(pp);
-            final QueryDeparturesResult result = new QueryDeparturesResult(header);
+                        final Calendar plannedDepartureTime = new GregorianCalendar(timeZone);
+                        final Calendar predictedDepartureTime = new GregorianCalendar(timeZone);
 
-            XmlPullUtil.require(pp, "dps");
-            if (!pp.isEmptyElementTag()) {
-                XmlPullUtil.enter(pp, "dps");
+                        while (XmlPullUtil.test(pp, "dp")) {
+                            XmlPullUtil.enter(pp, "dp");
 
-                final Calendar plannedDepartureTime = new GregorianCalendar(timeZone);
-                final Calendar predictedDepartureTime = new GregorianCalendar(timeZone);
+                            // misc
+                            /* final String stationName = */normalizeLocationName(XmlPullUtil.valueTag(pp, "n"));
+                            /* final boolean isRealtime = */XmlPullUtil.valueTag(pp, "realtime").equals("1");
 
-                while (XmlPullUtil.test(pp, "dp")) {
-                    XmlPullUtil.enter(pp, "dp");
+                            XmlPullUtil.optSkip(pp, "dt");
 
-                    // misc
-                    /* final String stationName = */normalizeLocationName(XmlPullUtil.valueTag(pp, "n"));
-                    /* final boolean isRealtime = */XmlPullUtil.valueTag(pp, "realtime").equals("1");
+                            // time
+                            parseMobileSt(pp, plannedDepartureTime, predictedDepartureTime);
 
-                    XmlPullUtil.optSkip(pp, "dt");
+                            final LineDestination lineDestination = parseMobileM(pp, true);
 
-                    // time
-                    parseMobileSt(pp, plannedDepartureTime, predictedDepartureTime);
+                            XmlPullUtil.enter(pp, "r");
+                            final String assignedId = XmlPullUtil.valueTag(pp, "id");
+                            XmlPullUtil.valueTag(pp, "a");
+                            final Position position = parsePosition(XmlPullUtil.optValueTag(pp, "pl", null));
+                            XmlPullUtil.skipExit(pp, "r");
 
-                    final LineDestination lineDestination = parseMobileM(pp, true);
+                            /* final Point positionCoordinate = */parseCoord(XmlPullUtil.optValueTag(pp, "c", null));
 
-                    XmlPullUtil.enter(pp, "r");
-                    final String assignedId = XmlPullUtil.valueTag(pp, "id");
-                    XmlPullUtil.valueTag(pp, "a");
-                    final Position position = parsePosition(XmlPullUtil.optValueTag(pp, "pl", null));
-                    XmlPullUtil.skipExit(pp, "r");
+                            // TODO messages
 
-                    /* final Point positionCoordinate = */parseCoord(XmlPullUtil.optValueTag(pp, "c", null));
+                            StationDepartures stationDepartures = findStationDepartures(r.stationDepartures,
+                                    assignedId);
+                            if (stationDepartures == null) {
+                                stationDepartures = new StationDepartures(
+                                        new Location(LocationType.STATION, assignedId),
+                                        new ArrayList<Departure>(maxDepartures), null);
+                                r.stationDepartures.add(stationDepartures);
+                            }
 
-                    // TODO messages
+                            stationDepartures.departures.add(new Departure(plannedDepartureTime.getTime(),
+                                    predictedDepartureTime.isSet(Calendar.HOUR_OF_DAY)
+                                            ? predictedDepartureTime.getTime() : null,
+                                    lineDestination.line, position, lineDestination.destination, null, null));
 
-                    StationDepartures stationDepartures = findStationDepartures(result.stationDepartures, assignedId);
-                    if (stationDepartures == null) {
-                        stationDepartures = new StationDepartures(new Location(LocationType.STATION, assignedId),
-                                new ArrayList<Departure>(maxDepartures), null);
-                        result.stationDepartures.add(stationDepartures);
+                            XmlPullUtil.skipExit(pp, "dp");
+                        }
+
+                        XmlPullUtil.skipExit(pp, "dps");
+
+                        result.set(r);
+                    } else {
+                        result.set(new QueryDeparturesResult(header, QueryDeparturesResult.Status.INVALID_STATION));
                     }
-
-                    stationDepartures.departures.add(new Departure(
-                            plannedDepartureTime.getTime(), predictedDepartureTime.isSet(Calendar.HOUR_OF_DAY)
-                                    ? predictedDepartureTime.getTime() : null,
-                            lineDestination.line, position, lineDestination.destination, null, null));
-
-                    XmlPullUtil.skipExit(pp, "dp");
+                } catch (final XmlPullParserException x) {
+                    throw new ParserException("cannot parse xml: " + bodyPeek, x);
                 }
-
-                XmlPullUtil.skipExit(pp, "dps");
-
-                return result;
-            } else {
-                return new QueryDeparturesResult(header, QueryDeparturesResult.Status.INVALID_STATION);
             }
-        } catch (final XmlPullParserException x) {
-            throw new ParserException("cannot parse xml: " + firstChars, x);
-        } finally {
-            if (is != null)
-                is.close();
-        }
+        };
+
+        if (httpPost)
+            httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()), parameters.substring(1),
+                    "application/x-www-form-urlencoded", null, httpReferer);
+        else
+            httpClient.getInputStream(callback, HttpUrl.parse(uri.append(parameters).toString()), null, httpReferer);
+
+        return result.get();
     }
 
     private static final Pattern P_MOBILE_M_SYMBOL = Pattern.compile("([^\\s]*)\\s+([^\\s]*)");
@@ -2032,27 +2052,29 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         final StringBuilder uri = new StringBuilder(tripEndpoint);
         final String parameters = xsltTripRequestParameters(from, via, to, date, dep, products, optimize, walkSpeed,
                 accessibility, options);
+        final AtomicReference<QueryTripsResult> result = new AtomicReference<QueryTripsResult>();
 
-        InputStream is = null;
-        String firstChars = null;
+        final HttpClient.Callback callback = new HttpClient.Callback() {
+            @Override
+            public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
+                try {
+                    result.set(queryTrips(uri.toString(), body.byteStream()));
+                } catch (final XmlPullParserException x) {
+                    throw new ParserException("cannot parse xml: " + bodyPeek, x);
+                } catch (final RuntimeException x) {
+                    throw new RuntimeException("uncategorized problem while processing " + uri, x);
+                }
+            }
+        };
 
-        try {
-            if (httpPost)
-                is = httpClient.getInputStream(uri.toString(), parameters.substring(1),
-                        "application/x-www-form-urlencoded", null, httpRefererTrip);
-            else
-                is = httpClient.getInputStream(uri.append(parameters).toString(), null, httpRefererTrip);
-            firstChars = HttpClient.peekFirstChars(is);
+        if (httpPost)
+            httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()), parameters.substring(1),
+                    "application/x-www-form-urlencoded", null, httpRefererTrip);
+        else
+            httpClient.getInputStream(callback, HttpUrl.parse(uri.append(parameters).toString()), null,
+                    httpRefererTrip);
 
-            return queryTrips(uri.toString(), is);
-        } catch (final XmlPullParserException x) {
-            throw new ParserException("cannot parse xml: " + firstChars, x);
-        } catch (final RuntimeException x) {
-            throw new RuntimeException("uncategorized problem while processing " + uri, x);
-        } finally {
-            if (is != null)
-                is.close();
-        }
+        return result.get();
     }
 
     protected QueryTripsResult queryTripsMobile(final Location from, final @Nullable Location via, final Location to,
@@ -2062,27 +2084,29 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         final StringBuilder uri = new StringBuilder(tripEndpoint);
         final String parameters = xsltTripRequestParameters(from, via, to, date, dep, products, optimize, walkSpeed,
                 accessibility, options);
+        final AtomicReference<QueryTripsResult> result = new AtomicReference<QueryTripsResult>();
 
-        InputStream is = null;
-        String firstChars = null;
+        final HttpClient.Callback callback = new HttpClient.Callback() {
+            @Override
+            public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
+                try {
+                    result.set(queryTripsMobile(uri.toString(), from, via, to, body.byteStream()));
+                } catch (final XmlPullParserException x) {
+                    throw new ParserException("cannot parse xml: " + bodyPeek, x);
+                } catch (final RuntimeException x) {
+                    throw new RuntimeException("uncategorized problem while processing " + uri, x);
+                }
+            }
+        };
 
-        try {
-            if (httpPost)
-                is = httpClient.getInputStream(uri.toString(), parameters.substring(1),
-                        "application/x-www-form-urlencoded", null, httpRefererTrip);
-            else
-                is = httpClient.getInputStream(uri.append(parameters).toString(), null, httpRefererTrip);
-            firstChars = HttpClient.peekFirstChars(is);
+        if (httpPost)
+            httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()), parameters.substring(1),
+                    "application/x-www-form-urlencoded", null, httpRefererTrip);
+        else
+            httpClient.getInputStream(callback, HttpUrl.parse(uri.append(parameters).toString()), null,
+                    httpRefererTrip);
 
-            return queryTripsMobile(uri.toString(), from, via, to, is);
-        } catch (final XmlPullParserException x) {
-            throw new ParserException("cannot parse xml: " + firstChars, x);
-        } catch (final RuntimeException x) {
-            throw new RuntimeException("uncategorized problem while processing " + uri, x);
-        } finally {
-            if (is != null)
-                is.close();
-        }
+        return result.get();
     }
 
     @Override
@@ -2091,23 +2115,24 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         final String commandUri = context.context;
         final StringBuilder uri = new StringBuilder(commandUri);
         uri.append("&command=").append(later ? "tripNext" : "tripPrev");
+        final AtomicReference<QueryTripsResult> result = new AtomicReference<QueryTripsResult>();
 
-        InputStream is = null;
-        String firstChars = null;
+        final HttpClient.Callback callback = new HttpClient.Callback() {
+            @Override
+            public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
+                try {
+                    result.set(queryTrips(uri.toString(), body.byteStream()));
+                } catch (final XmlPullParserException x) {
+                    throw new ParserException("cannot parse xml: " + bodyPeek, x);
+                } catch (final RuntimeException x) {
+                    throw new RuntimeException("uncategorized problem while processing " + uri, x);
+                }
+            }
+        };
 
-        try {
-            is = httpClient.getInputStream(uri.toString(), null, httpRefererTrip);
-            firstChars = HttpClient.peekFirstChars(is);
+        httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()), null, httpRefererTrip);
 
-            return queryTrips(uri.toString(), is);
-        } catch (final XmlPullParserException x) {
-            throw new ParserException("cannot parse xml: " + firstChars, x);
-        } catch (final RuntimeException x) {
-            throw new RuntimeException("uncategorized problem while processing " + uri, x);
-        } finally {
-            if (is != null)
-                is.close();
-        }
+        return result.get();
     }
 
     protected QueryTripsResult queryMoreTripsMobile(final QueryTripsContext contextObj, final boolean later)
@@ -2116,30 +2141,30 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         final String commandUri = context.context;
         final StringBuilder uri = new StringBuilder(commandUri);
         uri.append("&command=").append(later ? "tripNext" : "tripPrev");
+        final AtomicReference<QueryTripsResult> result = new AtomicReference<QueryTripsResult>();
 
-        InputStream is = null;
-        String firstChars = null;
+        final HttpClient.Callback callback = new HttpClient.Callback() {
+            @Override
+            public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
+                try {
+                    result.set(queryTripsMobile(uri.toString(), null, null, null, body.byteStream()));
+                } catch (final XmlPullParserException x) {
+                    throw new ParserException("cannot parse xml: " + bodyPeek, x);
+                } catch (final RuntimeException x) {
+                    throw new RuntimeException("uncategorized problem while processing " + uri, x);
+                }
+            }
+        };
 
-        try {
-            is = httpClient.getInputStream(uri.toString(), null, httpRefererTrip);
-            firstChars = HttpClient.peekFirstChars(is);
-            is.mark(512);
+        httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()), null, httpRefererTrip);
 
-            return queryTripsMobile(uri.toString(), null, null, null, is);
-        } catch (final XmlPullParserException x) {
-            throw new ParserException("cannot parse xml: " + firstChars, x);
-        } catch (final RuntimeException x) {
-            throw new RuntimeException("uncategorized problem while processing " + uri, x);
-        } finally {
-            if (is != null)
-                is.close();
-        }
+        return result.get();
     }
 
     private QueryTripsResult queryTrips(final String uri, final InputStream is)
             throws XmlPullParserException, IOException {
         final XmlPullParser pp = parserFactory.newPullParser();
-        pp.setInput(is, null);
+        pp.setInput(is, null); // Read encoding from XML declaration
         final ResultHeader header = enterItdRequest(pp);
         final Object context = header.context;
 
@@ -2659,7 +2684,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     private QueryTripsResult queryTripsMobile(final String uri, final Location from, final @Nullable Location via,
             final Location to, final InputStream is) throws XmlPullParserException, IOException {
         final XmlPullParser pp = parserFactory.newPullParser();
-        pp.setInput(is, null);
+        pp.setInput(is, null); // Read encoding from XML declaration
         final ResultHeader header = enterEfa(pp);
 
         final Calendar plannedTimeCal = new GregorianCalendar(timeZone);

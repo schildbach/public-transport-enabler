@@ -73,6 +73,8 @@ import de.schildbach.pte.dto.Trip;
 import de.schildbach.pte.dto.Trip.Leg;
 import de.schildbach.pte.util.ParserUtils;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Michael Dyrna
  */
@@ -370,7 +372,7 @@ public class VrsProvider extends AbstractNetworkProvider {
             uri.append("&s=").append(Math.min(16, maxLocations)); // artificial server limit
         }
 
-        final CharSequence page = httpClient.get(uri.toString(), Charsets.UTF_8);
+        final CharSequence page = httpClient.get(HttpUrl.parse(uri.toString()), Charsets.UTF_8);
 
         try {
             final List<Location> locations = new ArrayList<Location>();
@@ -427,7 +429,7 @@ public class VrsProvider extends AbstractNetworkProvider {
             uri.append("&t=");
             appendDate(uri, time);
         }
-        final CharSequence page = httpClient.get(uri.toString(), Charsets.UTF_8);
+        final CharSequence page = httpClient.get(HttpUrl.parse(uri.toString()), Charsets.UTF_8);
 
         try {
             final JSONObject head = new JSONObject(page.toString());
@@ -514,7 +516,7 @@ public class VrsProvider extends AbstractNetworkProvider {
         final StringBuilder uri = new StringBuilder(API_BASE);
         uri.append("?eID=tx_vrsinfo_his_info&i=").append(ParserUtils.urlEncode(stationId));
 
-        final CharSequence page = httpClient.get(uri.toString(), Charsets.UTF_8);
+        final CharSequence page = httpClient.get(HttpUrl.parse(uri.toString()), Charsets.UTF_8);
 
         try {
             final JSONObject head = new JSONObject(page.toString());
@@ -573,7 +575,7 @@ public class VrsProvider extends AbstractNetworkProvider {
         final String uri = API_BASE + "?eID=tx_vrsinfo_ass2_objects&sc=" + sc + "&ac=" + ac + "&pc=" + ac + "&t=sap&q="
                 + ParserUtils.urlEncode(new Location(LocationType.ANY, null, null, constraint.toString()).name);
 
-        final CharSequence page = httpClient.get(uri, Charsets.UTF_8);
+        final CharSequence page = httpClient.get(HttpUrl.parse(uri), Charsets.UTF_8);
 
         try {
             final List<SuggestedLocation> locations = new ArrayList<SuggestedLocation>();
@@ -691,7 +693,7 @@ public class VrsProvider extends AbstractNetworkProvider {
             uri.append("p");
         }
 
-        final CharSequence page = httpClient.get(uri.toString(), Charsets.UTF_8);
+        final CharSequence page = httpClient.get(HttpUrl.parse(uri.toString()), Charsets.UTF_8);
 
         try {
             final List<Trip> trips = new ArrayList<Trip>();

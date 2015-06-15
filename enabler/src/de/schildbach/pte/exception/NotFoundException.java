@@ -17,15 +17,14 @@
 
 package de.schildbach.pte.exception;
 
-import java.io.Reader;
-import java.net.URL;
+import okhttp3.HttpUrl;
 
 /**
  * @author Andreas Schildbach
  */
 @SuppressWarnings("serial")
 public class NotFoundException extends AbstractHttpException {
-    public NotFoundException(final URL url, final Reader errorReader) {
-        super(url, errorReader);
+    public NotFoundException(final HttpUrl url, final CharSequence bodyPeek) {
+        super(url, bodyPeek);
     }
 }
