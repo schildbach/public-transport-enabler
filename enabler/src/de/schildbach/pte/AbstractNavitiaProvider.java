@@ -66,6 +66,8 @@ import de.schildbach.pte.exception.NotFoundException;
 import de.schildbach.pte.exception.ParserException;
 import de.schildbach.pte.util.ParserUtils;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Antonio El Khoury
  * @author Andreas Schildbach
@@ -641,7 +643,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
 
     private String getStopAreaId(final String stopPointId) throws IOException {
         final String uri = uri() + "stop_points/" + ParserUtils.urlEncode(stopPointId) + "?depth=1";
-        final CharSequence page = httpClient.get(uri);
+        final CharSequence page = httpClient.get(HttpUrl.parse(uri));
 
         try {
             final JSONObject head = new JSONObject(page.toString());
@@ -698,7 +700,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
         if (maxLocations > 0)
             queryUri.append("&count=").append(maxLocations);
         queryUri.append("&depth=3");
-        final CharSequence page = httpClient.get(queryUri.toString());
+        final CharSequence page = httpClient.get(HttpUrl.parse(queryUri.toString()));
 
         try {
             final JSONObject head = new JSONObject(page.toString());
@@ -773,7 +775,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
             queryUri.append("&duration=86400");
             queryUri.append("&depth=0");
 
-            final CharSequence page = httpClient.get(queryUri.toString());
+            final CharSequence page = httpClient.get(HttpUrl.parse(queryUri.toString()));
 
             final JSONObject head = new JSONObject(page.toString());
 
@@ -821,7 +823,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
             throw new ParserException(parseExc);
         } catch (final NotFoundException fnfExc) {
             try {
-                final JSONObject head = new JSONObject(fnfExc.scrapeErrorStream().toString());
+                final JSONObject head = new JSONObject(fnfExc.getBodyPeek().toString());
                 final JSONObject error = head.getJSONObject("error");
                 final String id = error.getString("id");
 
@@ -841,7 +843,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
 
         final String queryUri = uri() + "places?q=" + ParserUtils.urlEncode(nameCstr)
                 + "&type[]=stop_area&type[]=address&type[]=poi&type[]=administrative_region" + "&depth=1";
-        final CharSequence page = httpClient.get(queryUri);
+        final CharSequence page = httpClient.get(HttpUrl.parse(queryUri));
 
         try {
             final List<SuggestedLocation> locations = new ArrayList<SuggestedLocation>();
@@ -945,7 +947,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
                     }
                 }
 
-                final CharSequence page = httpClient.get(queryUri.toString());
+                final CharSequence page = httpClient.get(HttpUrl.parse(queryUri.toString()));
 
                 try {
                     final JSONObject head = new JSONObject(page.toString());
@@ -1013,7 +1015,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
             return new QueryTripsResult(resultHeader, QueryTripsResult.Status.NO_TRIPS);
         } catch (final NotFoundException fnfExc) {
             try {
-                final JSONObject head = new JSONObject(fnfExc.scrapeErrorStream().toString());
+                final JSONObject head = new JSONObject(fnfExc.getBodyPeek().toString());
                 final JSONObject error = head.getJSONObject("error");
                 final String id = error.getString("id");
 
@@ -1046,7 +1048,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
         final Location from = context.from;
         final Location to = context.to;
         final String queryUri = later ? context.nextQueryUri : context.prevQueryUri;
-        final CharSequence page = httpClient.get(queryUri);
+        final CharSequence page = httpClient.get(HttpUrl.parse(queryUri));
 
         try {
             if (from.isIdentified() && to.isIdentified()) {
@@ -1076,7 +1078,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
     @Override
     public Point[] getArea() throws IOException {
         final String queryUri = uri();
-        final CharSequence page = httpClient.get(queryUri);
+        final CharSequence page = httpClient.get(HttpUrl.parse(queryUri));
 
         try {
             // Get shape string.

@@ -18,7 +18,6 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URLEncoder;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
@@ -33,6 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.annotation.Nullable;
 
@@ -62,6 +62,9 @@ import de.schildbach.pte.dto.Trip;
 import de.schildbach.pte.exception.ParserException;
 import de.schildbach.pte.util.HttpClient;
 import de.schildbach.pte.util.XmlPullUtil;
+
+import okhttp3.HttpUrl;
+import okhttp3.ResponseBody;
 
 /**
  * @author Mats Sjöberg <mats@sjoberg.fi>
@@ -137,34 +140,32 @@ public class HslProvider extends AbstractNetworkProvider {
 
     private Location queryStop(final String stationId) throws IOException {
         final StringBuilder uri = apiUri("stop");
-
         uri.append("&code=").append(stationId);
         uri.append(String.format("&dep_limit=1"));
+        final AtomicReference<Location> result = new AtomicReference<Location>();
 
-        InputStream is = null;
-        String firstChars = null;
+        final HttpClient.Callback callback = new HttpClient.Callback() {
+            @Override
+            public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
+                try {
+                    final XmlPullParser pp = parserFactory.newPullParser();
+                    pp.setInput(body.charStream());
 
-        try {
-            is = httpClient.getInputStream(uri.toString());
-            firstChars = HttpClient.peekFirstChars(is);
+                    XmlPullUtil.enter(pp, "response");
+                    XmlPullUtil.enter(pp, "node");
 
-            final XmlPullParser pp = parserFactory.newPullParser();
-            pp.setInput(is, null);
+                    final String id = xmlValueTag(pp, "code");
+                    final String name = xmlValueTag(pp, "name_fi");
+                    final Point pt = coordStrToPoint(xmlValueTag(pp, "coords"));
+                    result.set(new Location(LocationType.STATION, id, pt.lat, pt.lon, null, name));
+                } catch (final XmlPullParserException x) {
+                    throw new ParserException("cannot parse xml: " + bodyPeek, x);
+                }
+            }
+        };
 
-            XmlPullUtil.enter(pp, "response");
-            XmlPullUtil.enter(pp, "node");
-
-            final String id = xmlValueTag(pp, "code");
-            final String name = xmlValueTag(pp, "name_fi");
-            final Point pt = coordStrToPoint(xmlValueTag(pp, "coords"));
-
-            return new Location(LocationType.STATION, id, pt.lat, pt.lon, null, name);
-        } catch (final XmlPullParserException x) {
-            throw new ParserException("cannot parse xml: " + firstChars, x);
-        } finally {
-            if (is != null)
-                is.close();
-        }
+        httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()));
+        return result.get();
     }
 
     // Determine stations near to given location. At least one of
@@ -174,7 +175,6 @@ public class HslProvider extends AbstractNetworkProvider {
     public NearbyLocationsResult queryNearbyLocations(EnumSet<LocationType> types, Location location, int maxDistance,
             int maxStations) throws IOException {
         final StringBuilder uri = apiUri("stops_area");
-
         if (!location.hasLocation()) {
             if (location.type != LocationType.STATION)
                 throw new IllegalArgumentException("cannot handle: " + location.type);
@@ -185,42 +185,42 @@ public class HslProvider extends AbstractNetworkProvider {
         uri.append("&center_coordinate=").append(locationToCoords(location));
         uri.append(String.format("&limit=%d", maxStations));
         uri.append(String.format("&diameter=%d", maxDistance * 2));
+        final AtomicReference<NearbyLocationsResult> result = new AtomicReference<NearbyLocationsResult>();
 
-        InputStream is = null;
-        String firstChars = null;
+        final HttpClient.Callback callback = new HttpClient.Callback() {
+            @Override
+            public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
+                try {
+                    final XmlPullParser pp = parserFactory.newPullParser();
+                    pp.setInput(body.charStream());
 
-        try {
-            is = httpClient.getInputStream(uri.toString());
-            firstChars = HttpClient.peekFirstChars(is);
+                    final List<Location> stations = new ArrayList<Location>();
+                    final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
 
-            final XmlPullParser pp = parserFactory.newPullParser();
-            pp.setInput(is, null);
+                    XmlPullUtil.enter(pp, "response");
 
-            final List<Location> stations = new ArrayList<Location>();
-            final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
+                    while (XmlPullUtil.test(pp, "node")) {
+                        XmlPullUtil.enter(pp, "node");
 
-            XmlPullUtil.enter(pp, "response");
+                        final String id = xmlValueTag(pp, "code");
+                        final String name = xmlValueTag(pp, "name");
+                        final Point pt = coordStrToPoint(xmlValueTag(pp, "coords"));
+                        final String place = xmlValueTag(pp, "address");
 
-            while (XmlPullUtil.test(pp, "node")) {
-                XmlPullUtil.enter(pp, "node");
+                        XmlPullUtil.skipExit(pp, "node");
 
-                final String id = xmlValueTag(pp, "code");
-                final String name = xmlValueTag(pp, "name");
-                final Point pt = coordStrToPoint(xmlValueTag(pp, "coords"));
-                final String place = xmlValueTag(pp, "address");
+                        stations.add(new Location(LocationType.STATION, id, pt.lat, pt.lon, place, name));
+                    }
 
-                XmlPullUtil.skipExit(pp, "node");
-
-                stations.add(new Location(LocationType.STATION, id, pt.lat, pt.lon, place, name));
+                    result.set(new NearbyLocationsResult(header, stations));
+                } catch (final XmlPullParserException x) {
+                    throw new ParserException("cannot parse xml: " + bodyPeek, x);
+                }
             }
+        };
 
-            return new NearbyLocationsResult(header, stations);
-        } catch (final XmlPullParserException x) {
-            throw new ParserException("cannot parse xml: " + firstChars, x);
-        } finally {
-            if (is != null)
-                is.close();
-        }
+        httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()));
+        return result.get();
     }
 
     private Line newLine(String code, int type, String message) {
@@ -254,78 +254,75 @@ public class HslProvider extends AbstractNetworkProvider {
 
     // Get departures at a given station, probably live
     @Override
-    public QueryDeparturesResult queryDepartures(String stationId, @Nullable Date queryDate, int maxDepartures,
+    public QueryDeparturesResult queryDepartures(String stationId, @Nullable Date queryDate, final int maxDepartures,
             boolean equivs) throws IOException {
         final StringBuilder uri = apiUri("stop");
-
         uri.append("&code=").append(stationId);
         if (queryDate != null) {
             uri.append("&date=").append(new SimpleDateFormat("yyyyMMdd").format(queryDate));
             uri.append("&time=").append(new SimpleDateFormat("HHmm").format(queryDate));
         }
         uri.append(String.format("&dep_limit=%d", maxDepartures));
+        final AtomicReference<QueryDeparturesResult> result = new AtomicReference<QueryDeparturesResult>();
 
-        InputStream is = null;
-        String firstChars = null;
+        final HttpClient.Callback callback = new HttpClient.Callback() {
+            @Override
+            public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
+                try {
+                    final XmlPullParser pp = parserFactory.newPullParser();
+                    pp.setInput(body.charStream());
 
-        try {
-            is = httpClient.getInputStream(uri.toString());
-            firstChars = HttpClient.peekFirstChars(is);
+                    XmlPullUtil.enter(pp, "response");
+                    XmlPullUtil.enter(pp, "node");
 
-            final XmlPullParser pp = parserFactory.newPullParser();
-            pp.setInput(is, null);
+                    // FIXME: id is never used!?
+                    final String id = xmlValueTag(pp, "code");
+                    final String name = xmlValueTag(pp, "name_fi");
 
-            XmlPullUtil.enter(pp, "response");
-            XmlPullUtil.enter(pp, "node");
+                    final Map<String, Line> lines = new HashMap<String, Line>();
 
-            // FIXME: id is never used!?
-            final String id = xmlValueTag(pp, "code");
-            final String name = xmlValueTag(pp, "name_fi");
+                    XmlPullUtil.skipUntil(pp, "lines");
+                    XmlPullUtil.enter(pp, "lines");
+                    while (XmlPullUtil.test(pp, "node")) {
+                        final String[] parts = XmlPullUtil.valueTag(pp, "node").split(":");
+                        lines.put(parts[0], newLine(parts[0], 0, parts[1]));
+                    }
+                    XmlPullUtil.skipExit(pp, "lines");
 
-            final Map<String, Line> lines = new HashMap<String, Line>();
+                    final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
+                    final QueryDeparturesResult r = new QueryDeparturesResult(header);
 
-            XmlPullUtil.skipUntil(pp, "lines");
-            XmlPullUtil.enter(pp, "lines");
-            while (XmlPullUtil.test(pp, "node")) {
-                final String[] parts = XmlPullUtil.valueTag(pp, "node").split(":");
-                lines.put(parts[0], newLine(parts[0], 0, parts[1]));
+                    XmlPullUtil.skipUntil(pp, "departures");
+                    XmlPullUtil.enter(pp, "departures");
+
+                    final List<Departure> departures = new ArrayList<Departure>(maxDepartures);
+                    while (XmlPullUtil.test(pp, "node")) {
+                        XmlPullUtil.enter(pp, "node");
+                        final String code = xmlValueTag(pp, "code");
+                        final String time = xmlValueTag(pp, "time");
+                        final String date = xmlValueTag(pp, "date");
+                        XmlPullUtil.skipExit(pp, "node");
+
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
+                        Date depDate = sdf.parse(date + time, new ParsePosition(0));
+
+                        final Line line = lines.get(code);
+                        final Location destination = new Location(LocationType.ANY, line.message, null, null);
+                        final Departure departure = new Departure(depDate, null, line, null, destination, null, null);
+                        departures.add(departure);
+                    }
+
+                    Location station = new Location(LocationType.STATION, id, null, name);
+                    r.stationDepartures.add(new StationDepartures(station, departures, null));
+                    result.set(r);
+                } catch (final XmlPullParserException x) {
+                    throw new ParserException("cannot parse xml: " + bodyPeek, x);
+                }
             }
-            XmlPullUtil.skipExit(pp, "lines");
+        };
 
-            final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
-            final QueryDeparturesResult result = new QueryDeparturesResult(header);
-
-            XmlPullUtil.skipUntil(pp, "departures");
-            XmlPullUtil.enter(pp, "departures");
-
-            final List<Departure> departures = new ArrayList<Departure>(maxDepartures);
-            while (XmlPullUtil.test(pp, "node")) {
-                XmlPullUtil.enter(pp, "node");
-                final String code = xmlValueTag(pp, "code");
-                final String time = xmlValueTag(pp, "time");
-                final String date = xmlValueTag(pp, "date");
-                XmlPullUtil.skipExit(pp, "node");
-
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
-                Date depDate = sdf.parse(date + time, new ParsePosition(0));
-
-                final Line line = lines.get(code);
-                final Location destination = new Location(LocationType.ANY, line.message, null, null);
-                final Departure departure = new Departure(depDate, null, line, null, destination, null, null);
-                departures.add(departure);
-            }
-
-            Location station = new Location(LocationType.STATION, id, null, name);
-            result.stationDepartures.add(new StationDepartures(station, departures, null));
-
-            return result;
-
-        } catch (final XmlPullParserException x) {
-            throw new ParserException("cannot parse xml: " + firstChars, x);
-        } finally {
-            if (is != null)
-                is.close();
-        }
+        httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()));
+        return result.get();
     }
 
     /**
@@ -339,71 +336,68 @@ public class HslProvider extends AbstractNetworkProvider {
     @Override
     public SuggestLocationsResult suggestLocations(CharSequence constraint) throws IOException {
         final StringBuilder uri = apiUri("geocode");
-
         // Since HSL is picky about the input we clean out any
         // character that isn't alphabetic, numeral, -, ', /
         // or a space. Those should be all chars needed for a
         // name.
         String constraintStr = constraint.toString().replaceAll("[^\\p{Ll}\\p{Lu}\\p{Lt}\\p{Lo}\\p{Nd}\\d-'/ ]", "");
         uri.append("&key=").append(URLEncoder.encode(constraintStr, "utf-8"));
+        final AtomicReference<SuggestLocationsResult> result = new AtomicReference<SuggestLocationsResult>();
 
-        InputStream is = null;
-        String firstChars = null;
+        final HttpClient.Callback callback = new HttpClient.Callback() {
+            @Override
+            public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
+                try {
+                    final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
+                    final List<SuggestedLocation> locations = new ArrayList<SuggestedLocation>();
 
-        try {
-            is = httpClient.getInputStream(uri.toString());
-            firstChars = HttpClient.peekFirstChars(is);
+                    final XmlPullParser pp = parserFactory.newPullParser();
+                    pp.setInput(body.charStream());
 
-            final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
-            final List<SuggestedLocation> locations = new ArrayList<SuggestedLocation>();
+                    XmlPullUtil.enter(pp, "response");
 
-            if (firstChars.isEmpty())
-                return new SuggestLocationsResult(header, locations);
+                    int weight = 10000;
 
-            final XmlPullParser pp = parserFactory.newPullParser();
-            pp.setInput(is, null);
+                    while (XmlPullUtil.test(pp, "node")) {
+                        XmlPullUtil.enter(pp, "node");
+                        final String locType = xmlValueTag(pp, "locType");
+                        String name = xmlValueTag(pp, "name");
+                        final Point pt = coordStrToPoint(xmlValueTag(pp, "coords"));
 
-            XmlPullUtil.enter(pp, "response");
+                        LocationType type = LocationType.ANY;
+                        if (locType.equals("poi"))
+                            type = LocationType.POI;
+                        if (locType.equals("address"))
+                            type = LocationType.ADDRESS;
+                        if (locType.equals("stop"))
+                            type = LocationType.STATION;
 
-            int weight = 10000;
+                        XmlPullUtil.skipUntil(pp, "details");
+                        XmlPullUtil.enter(pp, "details");
+                        XmlPullUtil.optSkip(pp, "address");
+                        final String id = XmlPullUtil.optValueTag(pp, "code", null);
+                        final String shortCode = XmlPullUtil.optValueTag(pp, "shortCode", null);
+                        XmlPullUtil.skipExit(pp, "details");
 
-            while (XmlPullUtil.test(pp, "node")) {
-                XmlPullUtil.enter(pp, "node");
-                final String locType = xmlValueTag(pp, "locType");
-                String name = xmlValueTag(pp, "name");
-                final Point pt = coordStrToPoint(xmlValueTag(pp, "coords"));
+                        XmlPullUtil.skipExit(pp, "node");
 
-                LocationType type = LocationType.ANY;
-                if (locType.equals("poi"))
-                    type = LocationType.POI;
-                if (locType.equals("address"))
-                    type = LocationType.ADDRESS;
-                if (locType.equals("stop"))
-                    type = LocationType.STATION;
+                        if (shortCode != null)
+                            name = name + " (" + shortCode + ")";
 
-                XmlPullUtil.skipUntil(pp, "details");
-                XmlPullUtil.enter(pp, "details");
-                XmlPullUtil.optSkip(pp, "address");
-                final String id = XmlPullUtil.optValueTag(pp, "code", null);
-                final String shortCode = XmlPullUtil.optValueTag(pp, "shortCode", null);
-                XmlPullUtil.skipExit(pp, "details");
+                        locations
+                                .add(new SuggestedLocation(new Location(type, id, pt.lat, pt.lon, null, name), weight));
+                        weight -= 1;
+                    }
 
-                XmlPullUtil.skipExit(pp, "node");
-
-                if (shortCode != null)
-                    name = name + " (" + shortCode + ")";
-
-                locations.add(new SuggestedLocation(new Location(type, id, pt.lat, pt.lon, null, name), weight));
-                weight -= 1;
+                    result.set(new SuggestLocationsResult(header, locations));
+                } catch (final XmlPullParserException x) {
+                    throw new ParserException("cannot parse xml: " + bodyPeek, x);
+                }
             }
+        };
 
-            return new SuggestLocationsResult(header, locations);
-        } catch (final XmlPullParserException x) {
-            throw new ParserException("cannot parse xml: " + firstChars, x);
-        } finally {
-            if (is != null)
-                is.close();
-        }
+        httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()));
+        return result.get();
     }
 
     @SuppressWarnings("serial")
@@ -553,165 +547,166 @@ public class HslProvider extends AbstractNetworkProvider {
     }
 
     private QueryTripsResult queryHslTrips(final Location from, final Location via, final Location to,
-            QueryTripsHslContext context, Date date, boolean later) throws IOException {
+            final QueryTripsHslContext context, Date date, final boolean later) throws IOException {
         final StringBuilder uri = new StringBuilder(context.uri);
-
         uri.append("&date=").append(new SimpleDateFormat("yyyyMMdd").format(date));
         uri.append("&time=").append(new SimpleDateFormat("HHmm").format(date));
+        final AtomicReference<QueryTripsResult> result = new AtomicReference<QueryTripsResult>();
 
-        InputStream is = null;
-        String firstChars = null;
+        final HttpClient.Callback callback = new HttpClient.Callback() {
+            @Override
+            public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
+                try {
+                    final XmlPullParser pp = parserFactory.newPullParser();
+                    pp.setInput(body.charStream());
+
+                    XmlPullUtil.enter(pp, "response");
+
+                    final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
+
+                    final List<Trip> trips = new ArrayList<Trip>(context.trips);
+
+                    // we use this for quick checking if trip already exists
+                    Set<String> tripSet = new HashSet<String>();
+                    for (Trip t : trips)
+                        tripSet.add(t.getId());
+
+                    int insert = later ? trips.size() : 0;
+
+                    while (XmlPullUtil.test(pp, "node")) {
+                        XmlPullUtil.enter(pp, "node");
+
+                        XmlPullUtil.enter(pp, "node");
+
+                        List<Trip.Leg> legs = new ArrayList<Trip.Leg>();
+
+                        XmlPullUtil.skipUntil(pp, "legs");
+                        XmlPullUtil.enter(pp, "legs");
+                        int numTransfers = 0;
+
+                        while (XmlPullUtil.test(pp, "node")) {
+                            XmlPullUtil.enter(pp, "node");
+
+                            int distance = Integer.parseInt(xmlValueTag(pp, "length"));
+                            String legType = xmlValueTag(pp, "type");
+                            String lineCode = XmlPullUtil.optValueTag(pp, "code", null);
+
+                            List<Point> path = new ArrayList<Point>();
+
+                            Location departure = null;
+                            Date departureTime = null;
+                            Stop departureStop = null;
+
+                            Location arrival = null;
+                            Date arrivalTime = null;
+
+                            LinkedList<Stop> stops = new LinkedList<Stop>();
+
+                            XmlPullUtil.skipUntil(pp, "locs");
+                            XmlPullUtil.enter(pp, "locs");
+                            while (XmlPullUtil.test(pp, "node")) {
+                                XmlPullUtil.enter(pp, "node");
+                                Point pt = xmlCoordsToPoint(pp);
+
+                                String arrTime = xmlValueTag(pp, "arrTime");
+                                String depTime = xmlValueTag(pp, "depTime");
+                                String name = XmlPullUtil.optValueTag(pp, "name", null);
+                                String code = XmlPullUtil.optValueTag(pp, "code", null);
+                                String shortCode = XmlPullUtil.optValueTag(pp, "shortCode", null);
+                                String stopAddress = XmlPullUtil.optValueTag(pp, "stopAddress", null);
+
+                                if (name == null) {
+                                    name = (path.size() == 0 && from != null && from.name != null) ? from.name : null;
+                                }
+
+                                SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
+                                Date arrDate = sdf.parse(arrTime, new ParsePosition(0));
+                                Date depDate = sdf.parse(depTime, new ParsePosition(0));
+
+                                LocationType type = LocationType.ANY;
+                                if (code != null)
+                                    type = LocationType.STATION;
+                                Location loc = new Location(type, code, pt.lat, pt.lon, stopAddress, name);
+
+                                if (path.size() == 0) {
+                                    departure = loc;
+                                    departureTime = depDate;
+                                    if (type == LocationType.STATION)
+                                        departureStop = new Stop(loc, true, departureTime, null, null, null);
+
+                                } else {
+                                    arrival = loc;
+                                    arrivalTime = arrDate;
+                                    if (type == LocationType.STATION) {
+                                        stops.add(new Stop(loc, arrDate, null, depDate, null));
+                                    }
+                                }
+
+                                path.add(pt);
+                                XmlPullUtil.skipExit(pp, "node");
+                            }
+                            XmlPullUtil.skipExit(pp, "locs");
+                            XmlPullUtil.skipExit(pp, "node");
+
+                            if (legType.equals("walk")) {
+                                // ugly hack to set the name of the last arrival
+                                if (arrival != null && arrival.name == null) {
+                                    arrival = new Location(arrival.type, arrival.id, arrival.lat, arrival.lon,
+                                            arrival.place, to.name);
+                                }
+
+                                legs.add(new Trip.Individual(Trip.Individual.Type.WALK, departure, departureTime,
+                                        arrival, arrivalTime, path, distance));
+                            } else {
+                                Stop arrivalStop = null;
+                                if (stops.size() > 0) {
+                                    Stop last = stops.getLast();
+                                    arrivalStop = new Stop(last.location, false, last.plannedArrivalTime, null, null,
+                                            null);
+                                    stops.removeLast();
+                                }
+
+                                Line line = null;
+                                if (lineCode != null)
+                                    line = newLine(lineCode, Integer.parseInt(legType), null);
+
+                                legs.add(new Trip.Public(line, null, departureStop, arrivalStop, stops, path, null));
+                                numTransfers++;
+                            }
+                        }
+                        XmlPullUtil.skipExit(pp, "legs");
+                        XmlPullUtil.skipExit(pp, "node");
+                        XmlPullUtil.skipExit(pp, "node");
+
+                        Trip t = new Trip(null, from, to, legs, null, null, numTransfers - 1);
+                        if (!tripSet.contains(t.getId())) {
+                            Date thisTime = t.getFirstDepartureTime();
+                            while (insert < trips.size() && thisTime.after(trips.get(insert).getFirstDepartureTime()))
+                                insert++;
+
+                            trips.add(insert++, t);
+                            tripSet.add(t.getId());
+                        }
+                    }
+
+                    Date lastDate = trips.get(trips.size() - 1).getFirstDepartureTime();
+                    Date firstDate = trips.get(0).getFirstDepartureTime();
+                    if (context.nextDate == null || lastDate.after(context.nextDate))
+                        context.nextDate = lastDate;
+                    if (context.prevDate == null || firstDate.before(context.prevDate))
+                        context.prevDate = firstDate;
+                    context.trips = trips;
+
+                    result.set(new QueryTripsResult(header, uri.toString(), from, via, to, context, trips));
+                } catch (final XmlPullParserException x) {
+                    throw new ParserException("cannot parse xml: " + bodyPeek, x);
+                }
+            }
+        };
 
         context.date = date;
 
-        try {
-            is = httpClient.getInputStream(uri.toString());
-            firstChars = HttpClient.peekFirstChars(is);
-
-            final XmlPullParser pp = parserFactory.newPullParser();
-            pp.setInput(is, null);
-
-            XmlPullUtil.enter(pp, "response");
-
-            final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
-
-            final List<Trip> trips = new ArrayList<Trip>(context.trips);
-
-            // we use this for quick checking if trip already exists
-            Set<String> tripSet = new HashSet<String>();
-            for (Trip t : trips)
-                tripSet.add(t.getId());
-
-            int insert = later ? trips.size() : 0;
-
-            while (XmlPullUtil.test(pp, "node")) {
-                XmlPullUtil.enter(pp, "node");
-
-                XmlPullUtil.enter(pp, "node");
-
-                List<Trip.Leg> legs = new ArrayList<Trip.Leg>();
-
-                XmlPullUtil.skipUntil(pp, "legs");
-                XmlPullUtil.enter(pp, "legs");
-                int numTransfers = 0;
-
-                while (XmlPullUtil.test(pp, "node")) {
-                    XmlPullUtil.enter(pp, "node");
-
-                    int distance = Integer.parseInt(xmlValueTag(pp, "length"));
-                    String legType = xmlValueTag(pp, "type");
-                    String lineCode = XmlPullUtil.optValueTag(pp, "code", null);
-
-                    List<Point> path = new ArrayList<Point>();
-
-                    Location departure = null;
-                    Date departureTime = null;
-                    Stop departureStop = null;
-
-                    Location arrival = null;
-                    Date arrivalTime = null;
-
-                    LinkedList<Stop> stops = new LinkedList<Stop>();
-
-                    XmlPullUtil.skipUntil(pp, "locs");
-                    XmlPullUtil.enter(pp, "locs");
-                    while (XmlPullUtil.test(pp, "node")) {
-                        XmlPullUtil.enter(pp, "node");
-                        Point pt = xmlCoordsToPoint(pp);
-
-                        String arrTime = xmlValueTag(pp, "arrTime");
-                        String depTime = xmlValueTag(pp, "depTime");
-                        String name = XmlPullUtil.optValueTag(pp, "name", null);
-                        String code = XmlPullUtil.optValueTag(pp, "code", null);
-                        String shortCode = XmlPullUtil.optValueTag(pp, "shortCode", null);
-                        String stopAddress = XmlPullUtil.optValueTag(pp, "stopAddress", null);
-
-                        if (name == null) {
-                            name = (path.size() == 0 && from != null && from.name != null) ? from.name : null;
-                        }
-
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
-                        Date arrDate = sdf.parse(arrTime, new ParsePosition(0));
-                        Date depDate = sdf.parse(depTime, new ParsePosition(0));
-
-                        LocationType type = LocationType.ANY;
-                        if (code != null)
-                            type = LocationType.STATION;
-                        Location loc = new Location(type, code, pt.lat, pt.lon, stopAddress, name);
-
-                        if (path.size() == 0) {
-                            departure = loc;
-                            departureTime = depDate;
-                            if (type == LocationType.STATION)
-                                departureStop = new Stop(loc, true, departureTime, null, null, null);
-
-                        } else {
-                            arrival = loc;
-                            arrivalTime = arrDate;
-                            if (type == LocationType.STATION) {
-                                stops.add(new Stop(loc, arrDate, null, depDate, null));
-                            }
-                        }
-
-                        path.add(pt);
-                        XmlPullUtil.skipExit(pp, "node");
-                    }
-                    XmlPullUtil.skipExit(pp, "locs");
-                    XmlPullUtil.skipExit(pp, "node");
-
-                    if (legType.equals("walk")) {
-                        // ugly hack to set the name of the last arrival
-                        if (arrival != null && arrival.name == null) {
-                            arrival = new Location(arrival.type, arrival.id, arrival.lat, arrival.lon, arrival.place,
-                                    to.name);
-                        }
-
-                        legs.add(new Trip.Individual(Trip.Individual.Type.WALK, departure, departureTime, arrival,
-                                arrivalTime, path, distance));
-                    } else {
-                        Stop arrivalStop = null;
-                        if (stops.size() > 0) {
-                            Stop last = stops.getLast();
-                            arrivalStop = new Stop(last.location, false, last.plannedArrivalTime, null, null, null);
-                            stops.removeLast();
-                        }
-
-                        Line line = null;
-                        if (lineCode != null)
-                            line = newLine(lineCode, Integer.parseInt(legType), null);
-
-                        legs.add(new Trip.Public(line, null, departureStop, arrivalStop, stops, path, null));
-                        numTransfers++;
-                    }
-                }
-                XmlPullUtil.skipExit(pp, "legs");
-                XmlPullUtil.skipExit(pp, "node");
-                XmlPullUtil.skipExit(pp, "node");
-
-                Trip t = new Trip(null, from, to, legs, null, null, numTransfers - 1);
-                if (!tripSet.contains(t.getId())) {
-                    Date thisTime = t.getFirstDepartureTime();
-                    while (insert < trips.size() && thisTime.after(trips.get(insert).getFirstDepartureTime()))
-                        insert++;
-
-                    trips.add(insert++, t);
-                    tripSet.add(t.getId());
-                }
-            }
-
-            Date lastDate = trips.get(trips.size() - 1).getFirstDepartureTime();
-            Date firstDate = trips.get(0).getFirstDepartureTime();
-            if (context.nextDate == null || lastDate.after(context.nextDate))
-                context.nextDate = lastDate;
-            if (context.prevDate == null || firstDate.before(context.prevDate))
-                context.prevDate = firstDate;
-            context.trips = trips;
-            return new QueryTripsResult(header, uri.toString(), from, via, to, context, trips);
-        } catch (final XmlPullParserException x) {
-            throw new ParserException("cannot parse xml: " + firstChars, x);
-        } finally {
-            if (is != null)
-                is.close();
-        }
+        httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()));
+        return result.get();
     }
 }

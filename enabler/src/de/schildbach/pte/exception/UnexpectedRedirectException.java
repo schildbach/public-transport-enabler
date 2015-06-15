@@ -17,21 +17,21 @@
 
 package de.schildbach.pte.exception;
 
-import java.net.URL;
+import okhttp3.HttpUrl;
 
 /**
  * @author Andreas Schildbach
  */
 @SuppressWarnings("serial")
 public class UnexpectedRedirectException extends AbstractHttpException {
-    private final URL redirectedUrl;
+    private final HttpUrl redirectedUrl;
 
-    public UnexpectedRedirectException(final URL originalUrl, final URL redirectedUrl) {
+    public UnexpectedRedirectException(final HttpUrl originalUrl, final HttpUrl redirectedUrl) {
         super(originalUrl);
         this.redirectedUrl = redirectedUrl;
     }
 
-    public URL getRedirectedUrl() {
+    public HttpUrl getRedirectedUrl() {
         return redirectedUrl;
     }
 

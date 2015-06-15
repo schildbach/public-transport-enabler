@@ -51,6 +51,8 @@ import de.schildbach.pte.dto.ResultHeader;
 import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.util.ParserUtils;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Andreas Schildbach
  */
@@ -134,7 +136,7 @@ public class SeptaProvider extends AbstractHafasProvider {
         // scrape page
         final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
         appendXmlStationBoardParameters(uri, time, stationId, maxDepartures, false, null);
-        final CharSequence page = httpClient.get(uri.toString());
+        final CharSequence page = httpClient.get(HttpUrl.parse(uri.toString()));
 
         // parse page
         final Matcher mPageCoarse = P_DEPARTURES_PAGE_COARSE.matcher(page);

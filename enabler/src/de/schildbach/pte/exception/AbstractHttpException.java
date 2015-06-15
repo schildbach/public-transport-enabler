@@ -18,45 +18,32 @@
 package de.schildbach.pte.exception;
 
 import java.io.IOException;
-import java.io.Reader;
-import java.net.URL;
 
-import de.schildbach.pte.util.HttpClient;
+import okhttp3.HttpUrl;
 
 /**
  * @author Andreas Schildbach
  */
 @SuppressWarnings("serial")
 public abstract class AbstractHttpException extends IOException {
-    private final URL url;
-    private final Reader errorReader;
+    private final HttpUrl url;
+    private final CharSequence bodyPeek;
 
-    public AbstractHttpException(final URL url) {
+    public AbstractHttpException(final HttpUrl url) {
         this(url, null);
     }
 
-    public AbstractHttpException(final URL url, final Reader errorReader) {
+    public AbstractHttpException(final HttpUrl url, final CharSequence bodyPeek) {
         super(url.toString());
         this.url = url;
-        this.errorReader = errorReader;
+        this.bodyPeek = bodyPeek;
     }
 
-    public URL getUrl() {
+    public HttpUrl getUrl() {
         return url;
     }
 
-    public Reader getErrorReader() {
-        return errorReader;
-    }
-
-    public CharSequence scrapeErrorStream() throws IOException {
-        if (errorReader == null)
-            return null;
-
-        final StringBuilder error = new StringBuilder(HttpClient.SCRAPE_INITIAL_CAPACITY);
-        HttpClient.copy(errorReader, error);
-        errorReader.close();
-
-        return error;
+    public CharSequence getBodyPeek() {
+        return bodyPeek;
     }
 }

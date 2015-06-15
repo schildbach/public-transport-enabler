@@ -59,6 +59,8 @@ import de.schildbach.pte.dto.Trip;
 import de.schildbach.pte.exception.ParserException;
 import de.schildbach.pte.util.ParserUtils;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Kjell Braden <afflux@pentabarf.de>
  */
@@ -197,7 +199,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider {
         final StringBuilder uri = new StringBuilder(stopFinderEndpoint);
         uri.append(parameters);
 
-        final CharSequence page = httpClient.get(uri.toString(), Charsets.UTF_8);
+        final CharSequence page = httpClient.get(HttpUrl.parse(uri.toString()), Charsets.UTF_8);
         try {
             final List<SuggestedLocation> locations = new ArrayList<SuggestedLocation>();
             final JSONObject head = new JSONObject(page.toString());
@@ -277,7 +279,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider {
         final StringBuilder uri = new StringBuilder(stopFinderEndpoint);
         uri.append(parameters);
 
-        final CharSequence page = httpClient.get(uri.toString(), Charsets.UTF_8);
+        final CharSequence page = httpClient.get(HttpUrl.parse(uri.toString()), Charsets.UTF_8);
         try {
             final List<Location> stations = new ArrayList<Location>();
             final JSONObject head = new JSONObject(page.toString());
@@ -315,7 +317,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider {
         final StringBuilder uri = new StringBuilder(stopFinderEndpoint);
         uri.append(parameters);
 
-        final CharSequence page = httpClient.get(uri.toString(), Charsets.UTF_8);
+        final CharSequence page = httpClient.get(HttpUrl.parse(uri.toString()), Charsets.UTF_8);
         try {
             final JSONObject head = new JSONObject(page.toString());
 
@@ -674,7 +676,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider {
 
         final StringBuilder uri = new StringBuilder(tripEndpoint);
         uri.append(parameters);
-        final CharSequence page = httpClient.get(uri.toString(), Charsets.UTF_8);
+        final CharSequence page = httpClient.get(HttpUrl.parse(uri.toString()), Charsets.UTF_8);
         try {
             final JSONObject head = new JSONObject(page.toString());
 
