@@ -163,7 +163,7 @@ public final class BahnProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected Product normalizeType(String type)
+	protected Product normalizeType(final String type)
 	{
 		final String ucType = type.toUpperCase();
 

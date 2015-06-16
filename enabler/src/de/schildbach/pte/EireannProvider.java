@@ -120,6 +120,7 @@ public class EireannProvider extends AbstractHafasProvider
 		if ("CIT".equals(ucType))
 			return Product.BUS;
 
-		return null;
+		// skip parsing of "common" lines
+		throw new IllegalStateException("cannot normalize type '" + type + "'");
 	}
 }

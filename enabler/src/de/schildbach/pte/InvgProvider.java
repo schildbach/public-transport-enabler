@@ -364,7 +364,8 @@ public class InvgProvider extends AbstractHafasProvider
 		if ("1".equals(type))
 			return Product.BUS;
 
-		return null;
+		// skip parsing of "common" lines
+		throw new IllegalStateException("cannot normalize type '" + type + "'");
 	}
 
 	private static final Map<String, Style> STYLES = new HashMap<String, Style>();

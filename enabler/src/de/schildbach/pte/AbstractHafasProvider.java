@@ -3042,8 +3042,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 
 		final Product normalizedType = normalizeType(type);
-		if (normalizedType == null)
-			throw new IllegalStateException("cannot normalize type '" + type + "' line '" + normalizedName + "'");
 
 		final Line.Attr[] attrs;
 		if (wheelchairAccess)
@@ -3105,9 +3103,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						if (mTram.matches())
 							return newLine(Product.TRAM, mTram.group(1), null);
 					}
-
-					return newLine(normalizedType, number.replaceAll("\\s+", ""), null);
 				}
+
+				return newLine(normalizedType, number.replaceAll("\\s+", ""), null);
 			}
 
 			throw new IllegalStateException("cannot normalize type '" + type + "' number '" + number + "' line#type '" + lineAndType + "'");

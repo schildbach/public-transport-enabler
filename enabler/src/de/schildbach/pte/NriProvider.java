@@ -178,6 +178,7 @@ public class NriProvider extends AbstractHafasProvider
 		if ("SHI".equals(ucType))
 			return Product.FERRY;
 
-		return null;
+		// skip parsing of "common" lines
+		throw new IllegalStateException("cannot normalize type '" + type + "'");
 	}
 }

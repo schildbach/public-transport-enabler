@@ -195,7 +195,8 @@ public class StockholmProvider extends AbstractHafasProvider
 		if ("FÄRJA".equals(ucType))
 			return Product.FERRY;
 
-		return null;
+		// skip parsing of "common" lines
+		throw new IllegalStateException("cannot normalize type '" + type + "'");
 	}
 
 	private static final Map<String, Style> STYLES = new HashMap<String, Style>();

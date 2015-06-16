@@ -309,8 +309,6 @@ public class SeptaProvider extends AbstractHafasProvider
 	{
 		final String ucType = type.toUpperCase();
 
-		// skip parsing of "common" lines, because this is America
-
 		// Regional
 		if (ucType.equals("RAI"))
 			return Product.REGIONAL_TRAIN;
@@ -346,6 +344,7 @@ public class SeptaProvider extends AbstractHafasProvider
 		if (ucType.equals("TROLLEY"))
 			return Product.BUS;
 
-		return null;
+		// skip parsing of "common" lines, because this is America
+		throw new IllegalStateException("cannot normalize type '" + type + "'");
 	}
 }
