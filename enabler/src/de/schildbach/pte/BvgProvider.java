@@ -37,7 +37,7 @@ import de.schildbach.pte.geo.Berlin;
  */
 public final class BvgProvider extends AbstractHafasProvider
 {
-	private static final String API_BASE = "http://fahrinfo.bvg.de/Fahrinfo/bin/";
+	private static final String API_BASE = "https://fahrinfo.bvg.de/Fahrinfo/bin/";
 	private static final String API_BASE_STATION_BOARD = "http://bvg.hafas.de/bin/";
 
 	public BvgProvider()
