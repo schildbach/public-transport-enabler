@@ -26,9 +26,7 @@ import de.schildbach.pte.dto.Product;
  */
 public class VbnProvider extends AbstractHafasProvider
 {
-	private static final String API_BASE = "http://fahrplaner.vbn.de/bin/";
-
-	// http://fahrplaner.vbn.de/hafas/
+	private static final String API_BASE = "https://fahrplaner.vbn.de/hafas/";
 
 	public VbnProvider()
 	{
