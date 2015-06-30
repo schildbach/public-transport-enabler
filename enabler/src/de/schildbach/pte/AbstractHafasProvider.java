@@ -96,7 +96,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	protected final String queryEndpoint;
 	private final int numProductBits;
 	private @Nullable String accessId = null;
-	private @Nullable String clientType = null;
+	private @Nullable String clientType = "ANDROID";
 	private Charset jsonGetStopsEncoding;
 	private boolean jsonGetStopsUseWeight = true;
 	private Charset jsonNearbyLocationsEncoding;
