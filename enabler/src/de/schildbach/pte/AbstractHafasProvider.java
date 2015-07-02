@@ -648,6 +648,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				final String delayReason = XmlPullUtil.optAttr(pp, "delayReason", null);
 				// TODO is_reachable
 				// TODO disableTrainInfo
+				// TODO lineFG/lineBG (ZVV)
+				final String administration = normalizeLineAdministration(XmlPullUtil.optAttr(pp, "administration", null));
 
 				if (!"cancel".equals(eDelay))
 				{
@@ -725,13 +727,17 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						// could check for type consistency here
 						final Set<Attr> attrs = prodLine.attrs;
 						if (attrs != null)
-							line = newLine(product, prodLine.label, null, attrs.toArray(new Line.Attr[0]));
+							line = newLine(administration, product, prodLine.label, null, attrs.toArray(new Line.Attr[0]));
 						else
-							line = newLine(product, prodLine.label, null);
+							line = newLine(administration, product, prodLine.label, null);
 					}
 					else
 					{
-						line = prodLine;
+						final Set<Attr> attrs = prodLine.attrs;
+						if (attrs != null)
+							line = newLine(administration, prodLine.product, prodLine.label, null, attrs.toArray(new Line.Attr[0]));
+						else
+							line = newLine(administration, prodLine.product, prodLine.label, null);
 					}
 
 					final int[] capacity;
@@ -3077,6 +3083,20 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		return lineName;
 	}
 
+	private static final Pattern P_NORMALIZE_LINE_ADMINISTRATION = Pattern.compile("([^_]*)_*");
+
+	private final String normalizeLineAdministration(final String administration)
+	{
+		if (administration == null)
+			return null;
+
+		final Matcher m = P_NORMALIZE_LINE_ADMINISTRATION.matcher(administration);
+		if (m.find())
+			return m.group(1);
+		else
+			return administration;
+	}
+
 	private static final Pattern P_CATEGORY_FROM_NAME = Pattern.compile("([A-Za-zßÄÅäáàâåéèêíìîÖöóòôÜüúùûØ]+).*");
 
 	protected final String categoryFromName(final String lineName)
@@ -3179,16 +3199,21 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 	protected Line newLine(final Product product, final String normalizedName, final String comment, final Line.Attr... attrs)
 	{
+		return newLine(null, product, normalizedName, comment, attrs);
+	}
+
+	protected Line newLine(final String network, final Product product, final String normalizedName, final String comment, final Line.Attr... attrs)
+	{
 		if (attrs.length == 0)
 		{
-			return new Line(null, null, product, normalizedName, lineStyle(null, product, normalizedName), comment);
+			return new Line(null, network, product, normalizedName, lineStyle(network, product, normalizedName), comment);
 		}
 		else
 		{
 			final Set<Line.Attr> attrSet = new HashSet<Line.Attr>();
 			for (final Line.Attr attr : attrs)
 				attrSet.add(attr);
-			return new Line(null, null, product, normalizedName, lineStyle(null, product, normalizedName), attrSet, comment);
+			return new Line(null, network, product, normalizedName, lineStyle(network, product, normalizedName), attrSet, comment);
 		}
 	}
 }
