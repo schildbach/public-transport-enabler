@@ -592,10 +592,12 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				// TODO is_reachable
 				// TODO disableTrainInfo
 				String administration = XmlPullUtil.optAttr(pp, "administration", null);
-				Pattern pattern = Pattern.compile("([^_]*)_*");
-				Matcher matcher = pattern.matcher(administration);
-				if (matcher.find()) {
-					administration = matcher.group(1);
+				if (administration != null) {
+					Pattern pattern = Pattern.compile("([^_]*)_*");
+					Matcher matcher = pattern.matcher(administration);
+					if (matcher.find()) {
+						administration = matcher.group(1);
+					}
 				}
 
 				if (!"cancel".equals(eDelay))
