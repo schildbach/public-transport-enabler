@@ -173,7 +173,7 @@ public class SeptaProvider extends AbstractHafasProvider
 		// scrape page
 		final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
 		appendXmlStationBoardParameters(uri, time, stationId, maxDepartures, false, null);
-		final CharSequence page = ParserUtils.scrape(uri.toString());
+		final CharSequence page = httpClient.get(uri.toString());
 
 		// parse page
 		final Matcher mPageCoarse = P_DEPARTURES_PAGE_COARSE.matcher(page);

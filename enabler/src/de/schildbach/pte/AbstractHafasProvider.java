@@ -77,6 +77,7 @@ import de.schildbach.pte.dto.SuggestedLocation;
 import de.schildbach.pte.dto.Trip;
 import de.schildbach.pte.exception.ParserException;
 import de.schildbach.pte.exception.SessionExpiredException;
+import de.schildbach.pte.util.HttpClient;
 import de.schildbach.pte.util.LittleEndianDataInputStream;
 import de.schildbach.pte.util.ParserUtils;
 import de.schildbach.pte.util.StringReplaceReader;
@@ -371,7 +372,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 	protected final SuggestLocationsResult jsonGetStops(final String uri) throws IOException
 	{
-		final CharSequence page = ParserUtils.scrape(uri, null, jsonGetStopsEncoding);
+		final CharSequence page = httpClient.get(uri, null, jsonGetStopsEncoding);
 
 		final Matcher mJson = P_AJAX_GET_STOPS_JSON.matcher(page);
 		if (mJson.matches())
@@ -508,7 +509,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		try
 		{
 			// work around unparsable XML
-			reader = new StringReplaceReader(new InputStreamReader(ParserUtils.scrapeInputStream(uri), Charsets.ISO_8859_1), " & ", " &amp; ");
+			reader = new StringReplaceReader(new InputStreamReader(httpClient.getInputStream(uri), Charsets.ISO_8859_1), " & ", " &amp; ");
 			reader.replace("<b>", " ");
 			reader.replace("</b>", " ");
 			reader.replace("<u>", " ");
@@ -885,8 +886,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		try
 		{
 			final String endpoint = extXmlEndpoint != null ? extXmlEndpoint : queryEndpoint;
-			final InputStream is = ParserUtils.scrapeInputStream(endpoint, request, null, null, sessionCookieName);
-			firstChars = ParserUtils.peekFirstChars(is);
+			final InputStream is = httpClient.getInputStream(endpoint, request, null, null);
+			firstChars = HttpClient.peekFirstChars(is);
 			reader = new InputStreamReader(is, Charsets.ISO_8859_1);
 
 			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
@@ -1531,8 +1532,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 		try
 		{
-			final CustomBufferedInputStream bis = new CustomBufferedInputStream(ParserUtils.scrapeInputStream(uri, sessionCookieName));
-			final String firstChars = ParserUtils.peekFirstChars(bis);
+			final CustomBufferedInputStream bis = new CustomBufferedInputStream(httpClient.getInputStream(uri));
+			final String firstChars = HttpClient.peekFirstChars(bis);
 
 			// initialize input stream
 			is = new LittleEndianDataInputStream(bis);
@@ -2356,7 +2357,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	protected final NearbyLocationsResult xmlNearbyStations(final String uri) throws IOException
 	{
 		// scrape page
-		final CharSequence page = ParserUtils.scrape(uri);
+		final CharSequence page = httpClient.get(uri);
 
 		final List<Location> stations = new ArrayList<Location>();
 
@@ -2441,7 +2442,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 	protected final NearbyLocationsResult jsonNearbyLocations(final String uri) throws IOException
 	{
-		final CharSequence page = ParserUtils.scrape(uri, null, jsonNearbyLocationsEncoding);
+		final CharSequence page = httpClient.get(uri, null, jsonNearbyLocationsEncoding);
 
 		try
 		{
@@ -2526,7 +2527,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	{
 		final List<Location> stations = new ArrayList<Location>();
 
-		final CharSequence page = ParserUtils.scrape(uri);
+		final CharSequence page = httpClient.get(uri);
 		String oldZebra = null;
 
 		final Matcher mCoarse = htmlNearbyStationsPattern.matcher(page);

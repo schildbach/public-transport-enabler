@@ -33,6 +33,7 @@ import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.Position;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
+import de.schildbach.pte.util.HttpClient;
 
 /**
  * @author Andreas Schildbach
@@ -40,11 +41,11 @@ import de.schildbach.pte.dto.Style;
 public abstract class AbstractNetworkProvider implements NetworkProvider
 {
 	protected final NetworkId network;
+	protected final HttpClient httpClient = new HttpClient();
 
 	protected TimeZone timeZone = TimeZone.getTimeZone("CET");
 	protected int numTripsRequested = 6;
 	private @Nullable Map<String, Style> styles = null;
-	protected @Nullable String sessionCookieName = null;
 
 	protected static final Set<Product> ALL_EXCEPT_HIGHSPEED = EnumSet.complementOf(EnumSet.of(Product.HIGH_SPEED_TRAIN));
 
@@ -74,6 +75,11 @@ public abstract class AbstractNetworkProvider implements NetworkProvider
 		return ALL_EXCEPT_HIGHSPEED;
 	}
 
+	public void setUserAgent(final String userAgent)
+	{
+		httpClient.setUserAgent(userAgent);
+	}
+
 	protected void setTimeZone(final String timeZoneId)
 	{
 		this.timeZone = TimeZone.getTimeZone(timeZoneId);
@@ -91,7 +97,7 @@ public abstract class AbstractNetworkProvider implements NetworkProvider
 
 	protected void setSessionCookieName(final String sessionCookieName)
 	{
-		this.sessionCookieName = sessionCookieName;
+		httpClient.setSessionCookieName(sessionCookieName);
 	}
 
 	private static final char STYLES_SEP = '|';
