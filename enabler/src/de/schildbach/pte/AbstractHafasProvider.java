@@ -2055,8 +2055,14 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				// or with the selected means of transport on the required date/time.
 				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
 			else if (errorCode == 9260)
-				// Unknown departure station
+				// H9260: Unknown departure station
 				return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_FROM);
+			else if (errorCode == 9280)
+				// H9280: Unknown intermediate station
+				return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_VIA);
+			else if (errorCode == 9300)
+				// H9300: Unknown arrival station
+				return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_TO);
 			else if (errorCode == 9320)
 				// The input is incorrect or incomplete
 				return new QueryTripsResult(header, QueryTripsResult.Status.INVALID_DATE);
