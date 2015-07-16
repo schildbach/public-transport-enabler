@@ -38,7 +38,7 @@ import com.google.common.base.Objects;
 public final class Departure implements Serializable
 {
 	final public @Nullable Date plannedTime;
-	final public @Nullable Date predictedTime;
+	public @Nullable Date predictedTime;
 	final public Line line;
 	final public @Nullable Position position;
 	final public @Nullable Location destination;

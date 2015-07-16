@@ -91,11 +91,17 @@ public final class ParserUtils
 	private static final CharSequence scrape(final String urlStr, final String postRequest, Charset requestEncoding, final String sessionCookieName,
 			final String authorization) throws IOException
 	{
+		return scrape(urlStr, postRequest, requestEncoding, sessionCookieName, authorization, null);
+	}
+
+	public static final CharSequence scrape(final String urlStr, final String postRequest, Charset requestEncoding, final String sessionCookieName,
+			final String authorization, final Map<String, String> headers) throws IOException
+	{
 		if (requestEncoding == null)
 			requestEncoding = Charsets.ISO_8859_1;
 
 		final StringBuilder buffer = new StringBuilder(SCRAPE_INITIAL_CAPACITY);
-		final InputStream is = scrapeInputStream(urlStr, postRequest, requestEncoding, null, sessionCookieName, authorization);
+		final InputStream is = scrapeInputStream(urlStr, postRequest, requestEncoding, null, sessionCookieName, authorization, headers);
 		final Reader pageReader = new InputStreamReader(is, requestEncoding);
 		copy(pageReader, buffer);
 		pageReader.close();
@@ -128,11 +134,11 @@ public final class ParserUtils
 	public static final InputStream scrapeInputStream(final String urlStr, final String postRequest, final Charset requestEncoding,
 			final String referer, final String sessionCookieName) throws IOException
 	{
-		return scrapeInputStream(urlStr, postRequest, requestEncoding, referer, sessionCookieName, null);
+		return scrapeInputStream(urlStr, postRequest, requestEncoding, referer, sessionCookieName, null, null);
 	}
 
 	public static final InputStream scrapeInputStream(final String urlStr, final String postRequest, Charset requestEncoding, final String referer,
-			final String sessionCookieName, final String authorization) throws IOException
+			final String sessionCookieName, final String authorization, final Map<String, String> headers) throws IOException
 	{
 		log.debug("{}: {}", postRequest != null ? "POST" : "GET", urlStr);
 
@@ -166,12 +172,17 @@ public final class ParserUtils
 			if (authorization != null)
 				connection.addRequestProperty("Authorization", authorization);
 
+			if (headers != null)
+				for (String name : headers.keySet())
+					connection.addRequestProperty(name, headers.get(name));
+
 			if (postRequest != null)
 			{
 				final byte[] postRequestBytes = postRequest.getBytes(requestEncoding.name());
 
 				connection.setRequestMethod("POST");
-				connection.addRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+				if (headers == null || !headers.containsKey("Content-Type"))
+					connection.addRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 				connection.addRequestProperty("Content-Length", Integer.toString(postRequestBytes.length));
 
 				final OutputStream os = connection.getOutputStream();
