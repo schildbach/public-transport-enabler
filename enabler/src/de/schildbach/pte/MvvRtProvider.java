@@ -179,6 +179,9 @@ public class MvvRtProvider extends MvvProvider {
 			boolean equivs) throws IOException
 	{
 		final QueryDeparturesResult efaResult = super.queryDepartures(stationId, time, maxDepartures, equivs);
+		if (efaResult.stationDepartures.size() == 0) {
+			return efaResult;
+		}
 		final QueryDeparturesResult mvgResult = queryRealtimeDepartures(stationId, time, maxDepartures, equivs);
 		// System.out.println("efaResult: " + efaResult);
 		// System.out.println("mvgResult: " + mvgResult);
