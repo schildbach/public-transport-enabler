@@ -40,28 +40,19 @@ public final class BahnProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected Product intToProduct(final int value)
-	{
-		if (value == 1)
-			return Product.HIGH_SPEED_TRAIN;
-		if (value == 2)
-			return Product.HIGH_SPEED_TRAIN;
-		if (value == 4)
-			return Product.REGIONAL_TRAIN;
-		if (value == 8)
-			return Product.REGIONAL_TRAIN;
-		if (value == 16)
-			return Product.SUBURBAN_TRAIN;
-		if (value == 32)
-			return Product.BUS;
-		if (value == 64)
-			return Product.FERRY;
-		if (value == 128)
-			return Product.SUBWAY;
-		if (value == 256)
-			return Product.TRAM;
-		if (value == 512)
-			return Product.ON_DEMAND;
+	protected Product intToProduct(final int value) {
+		switch (value) {
+			case   1: return Product.HIGH_SPEED_TRAIN;
+			case   2: return Product.HIGH_SPEED_TRAIN;
+			case   4: return Product.REGIONAL_TRAIN;
+			case   8: return Product.REGIONAL_TRAIN;
+			case  16: return Product.SUBURBAN_TRAIN;
+			case  32: return Product.BUS;
+			case  64: return Product.FERRY;
+			case 128: return Product.SUBWAY;
+			case 256: return Product.TRAM;
+			case 512: return Product.ON_DEMAND;
+		}
 
 		throw new IllegalArgumentException("cannot handle: " + value);
 	}
