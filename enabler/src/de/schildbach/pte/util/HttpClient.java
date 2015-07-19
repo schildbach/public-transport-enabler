@@ -28,6 +28,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -54,6 +55,7 @@ public final class HttpClient
 {
 	@Nullable
 	private String userAgent = null;
+	private Map<String, String> headers = new HashMap<String, String>();
 	@Nullable
 	private String sessionCookieName = null;
 	@Nullable
@@ -71,6 +73,11 @@ public final class HttpClient
 	public void setUserAgent(final String userAgent)
 	{
 		this.userAgent = userAgent;
+	}
+
+	public void setHeader(final String headerName, final String headerValue)
+	{
+		this.headers.put(headerName, headerValue);
 	}
 
 	public void setSessionCookieName(final String sessionCookieName)
@@ -136,6 +143,8 @@ public final class HttpClient
 			connection.setDoOutput(postRequest != null);
 			connection.setConnectTimeout(SCRAPE_CONNECT_TIMEOUT);
 			connection.setReadTimeout(SCRAPE_READ_TIMEOUT);
+			for (final Map.Entry<String, String> entry : headers.entrySet())
+				connection.addRequestProperty(entry.getKey(), entry.getValue());
 			if (userAgent != null)
 				connection.addRequestProperty("User-Agent", userAgent);
 			connection.addRequestProperty("Accept", SCRAPE_ACCEPT);
