@@ -27,8 +27,7 @@ import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.ResultHeader;
 import de.schildbach.pte.dto.StationDepartures;
-import de.schildbach.pte.MvvProvider;
-import de.schildbach.pte.util.ParserUtils;
+import de.schildbach.pte.util.HttpClient;
 
 public class MvvRtProvider extends MvvProvider {
 
@@ -50,9 +49,19 @@ public class MvvRtProvider extends MvvProvider {
 		STATION_EQUIVALENTS.put("Flughafen München", "München Flughafen Terminal");
 	}
 
+	// we instantiate an own HttpClient with different request headers than the one used by MvvProvider 
+	protected final HttpClient myHttpClient = new HttpClient();
+
+	public MvvRtProvider()
+	{
+		super();
+		myHttpClient.setHeader("Content-Type", "text/x-gwt-rpc; charset=UTF-8");
+		myHttpClient.setHeader("X-GWT-Permutation", "A4EDAB9DFCA57EE028FD119902D8E469");
+	}
+
 
 	// maxDepartures and equivs are ignored
-	public static QueryDeparturesResult queryRealtimeDepartures(final String stationId, @Nullable final Date time,
+	public QueryDeparturesResult queryRealtimeDepartures(final String stationId, @Nullable final Date time,
 			int maxDepartures, boolean equivs) throws IOException {
 		checkNotNull(Strings.emptyToNull(stationId));
 		if (time != null) {
@@ -71,11 +80,7 @@ public class MvvRtProvider extends MvvProvider {
 		// |P__________|0|1|0|7|8|9|1|0|10|0|0|1|1|
 		body.append("|P__________|0|1|0|7|8|9|1|0|10|0|1|1|1|");
 
-		Map<String, String> headers = new TreeMap<String, String>();
-		headers.put("Content-Type", "text/x-gwt-rpc; charset=UTF-8");
-		headers.put("X-GWT-Permutation", "A4EDAB9DFCA57EE028FD119902D8E469");
-		final CharSequence page = ParserUtils.scrape(API_BASE + METHOD_QUERY_DEPARTURES, body.toString(),
-				Charsets.UTF_8, null, null, headers);
+		final CharSequence page = myHttpClient.get(API_BASE + METHOD_QUERY_DEPARTURES, body.toString(), Charsets.UTF_8);
 
 		// System.out.println(page);
 
@@ -214,7 +219,7 @@ public class MvvRtProvider extends MvvProvider {
 					bestDeltaPerEfaDeparture.put(bestEfaIndex, bestDelta);
 				}
 			} else {
-				System.out.println("No match found for " + mvgDeparture);
+				// System.out.println("No match found for " + mvgDeparture);
 				// TODO Should we insert those MVG Departures? E.g. Ausrueck- and Einrueckfahrten, some SEV departures are unknown to EFA. 
 			}
 		}
