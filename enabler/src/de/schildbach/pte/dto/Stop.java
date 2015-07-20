@@ -32,9 +32,10 @@ import com.google.common.base.Objects;
 /**
  * @author Andreas Schildbach
  */
-@SuppressWarnings("serial")
 public final class Stop implements Serializable
 {
+	private static final long serialVersionUID = 5034616799626145715L;
+
 	public final Location location;
 	public final @Nullable Date plannedArrivalTime;
 	public final @Nullable Date predictedArrivalTime;

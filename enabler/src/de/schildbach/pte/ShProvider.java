@@ -38,8 +38,6 @@ public class ShProvider extends AbstractHafasProvider
 	public ShProvider()
 	{
 		super(NetworkId.SH, API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 10, Charsets.UTF_8);
-
-		setStationBoardCanDoEquivs(false);
 	}
 
 	@Override

@@ -186,7 +186,7 @@ public class InvgProvider extends AbstractHafasProvider
 		// scrape page
 		final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
 		appendXmlStationBoardParameters(uri, time, stationId, maxDepartures, false, null);
-		final CharSequence page = ParserUtils.scrape(uri.toString());
+		final CharSequence page = httpClient.get(uri.toString());
 
 		// parse page
 		final Matcher mHeadCoarse = P_DEPARTURES_HEAD_COARSE.matcher(page);
@@ -304,8 +304,8 @@ public class InvgProvider extends AbstractHafasProvider
 
 	@Override
 	public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to, final Date date, final boolean dep,
-			final @Nullable Set<Product> products, final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
-			final @Nullable Set<Option> options) throws IOException
+			final @Nullable Set<Product> products, final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
+			final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) throws IOException
 	{
 		return queryTripsXml(from, via, to, date, dep, products, walkSpeed, accessibility, options);
 	}
@@ -364,7 +364,8 @@ public class InvgProvider extends AbstractHafasProvider
 		if ("1".equals(type))
 			return Product.BUS;
 
-		return null;
+		// skip parsing of "common" lines
+		throw new IllegalStateException("cannot normalize type '" + type + "'");
 	}
 
 	private static final Map<String, Style> STYLES = new HashMap<String, Style>();

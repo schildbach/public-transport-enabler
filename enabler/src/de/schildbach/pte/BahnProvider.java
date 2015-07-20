@@ -29,12 +29,12 @@ import de.schildbach.pte.dto.Product;
 public final class BahnProvider extends AbstractHafasProvider
 {
 	private static final String API_BASE = "http://reiseauskunft.bahn.de/bin/";
+	private static final String API_BASE_STATION_BOARD = "http://mobile.bahn.de/bin/mobil/";
 
 	public BahnProvider()
 	{
-		super(NetworkId.DB, API_BASE + "bhftafel.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 14);
+		super(NetworkId.DB, API_BASE_STATION_BOARD + "bhftafel.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", 14);
 
-		setClientType("ANDROID");
 		setStationBoardHasStationTable(false);
 		setJsonGetStopsUseWeight(false);
 	}
@@ -163,7 +163,7 @@ public final class BahnProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected Product normalizeType(String type)
+	protected Product normalizeType(final String type)
 	{
 		final String ucType = type.toUpperCase();
 

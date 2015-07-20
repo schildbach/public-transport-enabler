@@ -158,18 +158,10 @@ public class SncbProvider extends AbstractHafasProvider
 	{
 		final String ucType = type.toUpperCase();
 
-		if (ucType.startsWith("IC "))
-			return Product.HIGH_SPEED_TRAIN;
 		if ("THALYS".equals(ucType))
 			return Product.HIGH_SPEED_TRAIN;
 
-		if (ucType.startsWith("IR "))
-			return Product.REGIONAL_TRAIN;
 		if ("L".equals(ucType))
-			return Product.REGIONAL_TRAIN;
-		if ("CR".equals(ucType))
-			return Product.REGIONAL_TRAIN;
-		if ("TRN".equals(ucType))
 			return Product.REGIONAL_TRAIN;
 
 		if ("MÉTRO".equals(ucType))

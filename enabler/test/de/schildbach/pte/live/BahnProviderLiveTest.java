@@ -172,6 +172,24 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
+	public void tripsAcrossBorder() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8506131", null, "Kreuzlingen"), null, new Location(
+				LocationType.STATION, "8003400", null, "Konstanz"), new Date(), true, EnumSet.of(Product.BUS), WalkSpeed.NORMAL,
+				Accessibility.NEUTRAL);
+		print(result);
+		assertEquals(QueryTripsResult.Status.OK, result.status);
+	}
+
+	@Test
+	public void tripsByCoordinate() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(Location.coord(52535576, 13422171), null, Location.coord(52525589, 13369548), new Date(), true,
+				Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		print(result);
+	}
+
+	@Test
 	public void tripsTooClose() throws Exception
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf"), null, new Location(

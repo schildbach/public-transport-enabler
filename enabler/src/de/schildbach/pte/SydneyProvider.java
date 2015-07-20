@@ -50,11 +50,11 @@ public class SydneyProvider extends AbstractEfaProvider
 
 	@Override
 	protected String xsltTripRequestParameters(final Location from, final @Nullable Location via, final Location to, final Date time,
-			final boolean dep, final @Nullable Collection<Product> products, final @Nullable WalkSpeed walkSpeed,
+			final boolean dep, final @Nullable Collection<Product> products, final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
 			final @Nullable Accessibility accessibility, final @Nullable Set<Option> options)
 	{
-		final StringBuilder uri = new StringBuilder(super.xsltTripRequestParameters(from, via, to, time, dep, products, walkSpeed, accessibility,
-				options));
+		final StringBuilder uri = new StringBuilder(super.xsltTripRequestParameters(from, via, to, time, dep, products, optimize, walkSpeed,
+				accessibility, options));
 
 		if (products != null)
 		{
@@ -100,6 +100,8 @@ public class SydneyProvider extends AbstractEfaProvider
 				return new Line(id, network, Product.SUBURBAN_TRAIN, "SCO");
 			if ("HUN".equals(symbol) || "Hunter Line".equals(symbol))
 				return new Line(id, network, Product.SUBURBAN_TRAIN, "HUN");
+			if ("SWR".equals(symbol)) // South West Rail Link
+				return new Line(id, network, Product.SUBURBAN_TRAIN, "SWR");
 
 			if ("T1".equals(symbol) || "T1 North Shore & Northern Line".equals(symbol) || "T1 Northern Line".equals(symbol)
 					|| "T1 Western Line".equals(symbol))

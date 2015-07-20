@@ -28,9 +28,10 @@ import de.schildbach.pte.dto.Style.Shape;
  */
 public class VmvProvider extends AbstractEfaProvider
 {
-	private static final String API_BASE = "http://80.146.180.107/delfi/";
+	private static final String API_BASE = "http://80.146.180.107/vmv2/";
 
 	// http://80.146.180.107/vmv/
+	// http://80.146.180.107/delfi/
 
 	public VmvProvider()
 	{

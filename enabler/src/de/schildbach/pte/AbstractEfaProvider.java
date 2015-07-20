@@ -46,6 +46,8 @@ import javax.annotation.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -77,6 +79,7 @@ import de.schildbach.pte.dto.Trip;
 import de.schildbach.pte.dto.Trip.Leg;
 import de.schildbach.pte.exception.InvalidDataException;
 import de.schildbach.pte.exception.ParserException;
+import de.schildbach.pte.util.HttpClient;
 import de.schildbach.pte.util.ParserUtils;
 import de.schildbach.pte.util.XmlPullUtil;
 
@@ -113,6 +116,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private float fareCorrectionFactor = 1f;
 
 	private final XmlPullParserFactory parserFactory;
+
+	private static final Logger log = LoggerFactory.getLogger(AbstractEfaProvider.class);
 
 	@SuppressWarnings("serial")
 	private static class Context implements QueryTripsContext
@@ -270,7 +275,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		if (!httpPost)
 			uri.append(parameters);
 
-		final CharSequence page = ParserUtils.scrape(uri.toString(), httpPost ? parameters.substring(1) : null, Charsets.UTF_8);
+		final CharSequence page = httpClient.get(uri.toString(), httpPost ? parameters.substring(1) : null, Charsets.UTF_8);
 		final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
 
 		try
@@ -385,8 +390,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null);
-			firstChars = ParserUtils.peekFirstChars(is);
+			is = httpClient.getInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null);
+			firstChars = HttpClient.peekFirstChars(is);
 
 			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
@@ -432,8 +437,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null);
-			firstChars = ParserUtils.peekFirstChars(is);
+			is = httpClient.getInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null);
+			firstChars = HttpClient.peekFirstChars(is);
 
 			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
@@ -551,8 +556,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null);
-			firstChars = ParserUtils.peekFirstChars(is);
+			is = httpClient.getInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null);
+			firstChars = HttpClient.peekFirstChars(is);
 
 			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
@@ -630,8 +635,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null);
-			firstChars = ParserUtils.peekFirstChars(is);
+			is = httpClient.getInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null);
+			firstChars = HttpClient.peekFirstChars(is);
 
 			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
@@ -942,8 +947,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null);
-			firstChars = ParserUtils.peekFirstChars(is);
+			is = httpClient.getInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null);
+			firstChars = HttpClient.peekFirstChars(is);
 
 			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
@@ -1111,6 +1116,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
 			if ("RB-Bahn".equals(trainName))
 				return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
+			if (trainType == null && "RB67/71".equals(trainNum))
+				return new Line(id, network, Product.REGIONAL_TRAIN, trainNum);
 			if ("RE-Bahn".equals(trainName))
 				return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
 			if ("REX".equals(trainType)) // RegionalExpress, Österreich
@@ -1151,7 +1158,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return new Line(id, network, Product.REGIONAL_TRAIN, "EB");
 			if ("EBx".equals(trainType) || "Erfurter Bahn Express".equals(trainName))
 				return new Line(id, network, Product.REGIONAL_TRAIN, "EBx" + trainNum);
-			if ("Erfurter Bahn Express".equals(longName))
+			if ("Erfurter Bahn Express".equals(longName) && symbol == null)
 				return new Line(id, network, Product.REGIONAL_TRAIN, "EBx");
 			if ("MRB".equals(trainType) || "Mitteldeutsche Regiobahn".equals(trainName))
 				return new Line(id, network, Product.REGIONAL_TRAIN, "MRB" + trainNum);
@@ -1161,7 +1168,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return new Line(id, network, Product.REGIONAL_TRAIN, "NEB" + trainNum);
 			if ("OE".equals(trainType) || "Ostdeutsche Eisenbahn GmbH".equals(trainName))
 				return new Line(id, network, Product.REGIONAL_TRAIN, "OE" + trainNum);
-			if ("ODE".equals(trainType))
+			if ("Ostdeutsche Eisenbahn GmbH".equals(longName) && symbol == null)
+				return new Line(id, network, Product.REGIONAL_TRAIN, "OE");
+			if ("ODE".equals(trainType) && symbol != null)
 				return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
 			if ("OLA".equals(trainType) || "Ostseeland Verkehr GmbH".equals(trainName))
 				return new Line(id, network, Product.REGIONAL_TRAIN, "OLA" + trainNum);
@@ -1501,8 +1510,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null);
-			firstChars = ParserUtils.peekFirstChars(is);
+			is = httpClient.getInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null);
+			firstChars = HttpClient.peekFirstChars(is);
 
 			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
@@ -1663,8 +1672,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null);
-			firstChars = ParserUtils.peekFirstChars(is);
+			is = httpClient.getInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null);
+			firstChars = HttpClient.peekFirstChars(is);
 
 			final XmlPullParser pp = parserFactory.newPullParser();
 			pp.setInput(is, null);
@@ -1995,7 +2004,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	}
 
 	protected String xsltTripRequestParameters(final Location from, final @Nullable Location via, final Location to, final Date time,
-			final boolean dep, final @Nullable Collection<Product> products, final @Nullable WalkSpeed walkSpeed,
+			final boolean dep, final @Nullable Collection<Product> products, final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
 			final @Nullable Accessibility accessibility, final @Nullable Set<Option> options)
 	{
 		final StringBuilder uri = new StringBuilder();
@@ -2019,6 +2028,16 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		uri.append("&ptOptionsActive=1"); // enable public transport options
 		uri.append("&itOptionsActive=1"); // enable individual transport options
+
+		if (optimize == Optimize.LEAST_DURATION)
+			uri.append("&routeType=LEASTTIME");
+		else if (optimize == Optimize.LEAST_CHANGES)
+			uri.append("&routeType=LEASTINTERCHANGE");
+		else if (optimize == Optimize.LEAST_WALKING)
+			uri.append("&routeType=LEASTWALKING");
+		else if (optimize != null)
+			log.info("Cannot handle " + optimize + ", ignoring.");
+
 		uri.append("&changeSpeed=").append(WALKSPEED_MAP.get(walkSpeed));
 
 		if (accessibility == Accessibility.BARRIER_FREE)
@@ -2101,11 +2120,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	}
 
 	public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to, final Date date, final boolean dep,
-			final @Nullable Set<Product> products, final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
-			final @Nullable Set<Option> options) throws IOException
+			final @Nullable Set<Product> products, final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
+			final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) throws IOException
 	{
 
-		final String parameters = xsltTripRequestParameters(from, via, to, date, dep, products, walkSpeed, accessibility, options);
+		final String parameters = xsltTripRequestParameters(from, via, to, date, dep, products, optimize, walkSpeed, accessibility, options);
 
 		final StringBuilder uri = new StringBuilder(tripEndpoint);
 		if (!httpPost)
@@ -2116,8 +2135,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpRefererTrip, sessionCookieName);
-			firstChars = ParserUtils.peekFirstChars(is);
+			is = httpClient.getInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpRefererTrip);
+			firstChars = HttpClient.peekFirstChars(is);
 
 			return queryTrips(uri.toString(), is);
 		}
@@ -2137,11 +2156,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	}
 
 	protected QueryTripsResult queryTripsMobile(final Location from, final @Nullable Location via, final Location to, final Date date,
-			final boolean dep, final @Nullable Collection<Product> products, final @Nullable WalkSpeed walkSpeed,
+			final boolean dep, final @Nullable Collection<Product> products, final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
 			final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) throws IOException
 	{
 
-		final String parameters = xsltTripRequestParameters(from, via, to, date, dep, products, walkSpeed, accessibility, options);
+		final String parameters = xsltTripRequestParameters(from, via, to, date, dep, products, optimize, walkSpeed, accessibility, options);
 
 		final StringBuilder uri = new StringBuilder(tripEndpoint);
 		if (!httpPost)
@@ -2152,8 +2171,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpRefererTrip, sessionCookieName);
-			firstChars = ParserUtils.peekFirstChars(is);
+			is = httpClient.getInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpRefererTrip);
+			firstChars = HttpClient.peekFirstChars(is);
 
 			return queryTripsMobile(uri.toString(), from, via, to, is);
 		}
@@ -2184,8 +2203,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri.toString(), null, null, httpRefererTrip, sessionCookieName);
-			firstChars = ParserUtils.peekFirstChars(is);
+			is = httpClient.getInputStream(uri.toString(), null, null, httpRefererTrip);
+			firstChars = HttpClient.peekFirstChars(is);
 
 			return queryTrips(uri.toString(), is);
 		}
@@ -2216,8 +2235,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		try
 		{
-			is = ParserUtils.scrapeInputStream(uri.toString(), null, null, httpRefererTrip, sessionCookieName);
-			firstChars = ParserUtils.peekFirstChars(is);
+			is = httpClient.getInputStream(uri.toString(), null, null, httpRefererTrip);
+			firstChars = HttpClient.peekFirstChars(is);
 			is.mark(512);
 
 			return queryTripsMobile(uri.toString(), null, null, null, is);

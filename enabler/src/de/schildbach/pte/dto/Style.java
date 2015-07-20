@@ -29,7 +29,7 @@ public class Style implements Serializable
 	private static final long serialVersionUID = 7145603493425043304L;
 
 	public final Shape shape;
-	public final int backgroundColor;
+	public final int backgroundColor, backgroundColor2;
 	public final int foregroundColor;
 	public final int borderColor;
 
@@ -42,6 +42,7 @@ public class Style implements Serializable
 	{
 		this.shape = Shape.ROUNDED;
 		this.backgroundColor = backgroundColor;
+		this.backgroundColor2 = 0;
 		this.foregroundColor = foregroundColor;
 		this.borderColor = 0;
 	}
@@ -50,6 +51,7 @@ public class Style implements Serializable
 	{
 		this.shape = checkNotNull(shape);
 		this.backgroundColor = backgroundColor;
+		this.backgroundColor2 = 0;
 		this.foregroundColor = foregroundColor;
 		this.borderColor = 0;
 	}
@@ -58,6 +60,16 @@ public class Style implements Serializable
 	{
 		this.shape = checkNotNull(shape);
 		this.backgroundColor = backgroundColor;
+		this.backgroundColor2 = 0;
+		this.foregroundColor = foregroundColor;
+		this.borderColor = borderColor;
+	}
+
+	public Style(final Shape shape, final int backgroundColor, final int backgroundColor2, final int foregroundColor, final int borderColor)
+	{
+		this.shape = checkNotNull(shape);
+		this.backgroundColor = backgroundColor;
+		this.backgroundColor2 = backgroundColor2;
 		this.foregroundColor = foregroundColor;
 		this.borderColor = borderColor;
 	}
@@ -66,6 +78,16 @@ public class Style implements Serializable
 	{
 		this.shape = Shape.ROUNDED;
 		this.backgroundColor = backgroundColor;
+		this.backgroundColor2 = 0;
+		this.foregroundColor = foregroundColor;
+		this.borderColor = borderColor;
+	}
+
+	public Style(final int backgroundColor, final int backgroundColor2, final int foregroundColor, final int borderColor)
+	{
+		this.shape = Shape.ROUNDED;
+		this.backgroundColor = backgroundColor;
+		this.backgroundColor2 = backgroundColor2;
 		this.foregroundColor = foregroundColor;
 		this.borderColor = borderColor;
 	}

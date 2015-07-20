@@ -20,8 +20,12 @@ package de.schildbach.pte;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import com.google.common.base.Charsets;
 
+import de.schildbach.pte.dto.Line;
+import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
 
 /**
@@ -37,6 +41,20 @@ public class SvvProvider extends AbstractEfaProvider
 
 		setRequestUrlEncoding(Charsets.UTF_8);
 		setStyles(STYLES);
+	}
+
+	@Override
+	protected Line parseLine(final @Nullable String id, final @Nullable String network, final @Nullable String mot, final @Nullable String symbol,
+			final @Nullable String name, final @Nullable String longName, final @Nullable String trainType, final @Nullable String trainNum,
+			final @Nullable String trainName)
+	{
+		if ("1".equals(mot))
+		{
+			if ("S1/11".equals(symbol)) // Salzburger Lokalbahn
+				return new Line(id, network, Product.SUBURBAN_TRAIN, "S1/11");
+		}
+
+		return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
 	}
 
 	private static final Map<String, Style> STYLES = new HashMap<String, Style>();

@@ -88,4 +88,16 @@ public class ZvvProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		print(laterResult);
 	}
+
+	@Test
+	public void trip() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(
+				new Location(LocationType.STATION, "8503000", 47378491, 8537945, "Zürich", "Zürich, Hauptbahnhof"), null, new Location(
+						LocationType.STATION, "8530812", 47361762, 8560715, "Zürich", "Hegibachplatz"), new Date(), true, Product.ALL,
+				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		print(result);
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+		print(laterResult);
+	}
 }

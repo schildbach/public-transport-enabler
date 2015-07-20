@@ -30,13 +30,14 @@ import com.google.common.base.Objects;
 /**
  * @author Andreas Schildbach
  */
-@SuppressWarnings("serial")
 public final class Fare implements Serializable
 {
 	public enum Type
 	{
 		ADULT, CHILD, YOUTH, STUDENT, MILITARY, SENIOR, DISABLED
 	}
+
+	private static final long serialVersionUID = -6136489996930976421L;
 
 	public final String network;
 	public final Type type;

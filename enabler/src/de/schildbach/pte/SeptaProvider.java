@@ -173,7 +173,7 @@ public class SeptaProvider extends AbstractHafasProvider
 		// scrape page
 		final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
 		appendXmlStationBoardParameters(uri, time, stationId, maxDepartures, false, null);
-		final CharSequence page = ParserUtils.scrape(uri.toString());
+		final CharSequence page = httpClient.get(uri.toString());
 
 		// parse page
 		final Matcher mPageCoarse = P_DEPARTURES_PAGE_COARSE.matcher(page);
@@ -282,8 +282,8 @@ public class SeptaProvider extends AbstractHafasProvider
 
 	@Override
 	public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to, final Date date, final boolean dep,
-			final @Nullable Set<Product> products, final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
-			final @Nullable Set<Option> options) throws IOException
+			final @Nullable Set<Product> products, final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
+			final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) throws IOException
 	{
 		return queryTripsXml(from, via, to, date, dep, products, walkSpeed, accessibility, options);
 	}
@@ -308,8 +308,6 @@ public class SeptaProvider extends AbstractHafasProvider
 	protected Product normalizeType(final String type)
 	{
 		final String ucType = type.toUpperCase();
-
-		// skip parsing of "common" lines, because this is America
 
 		// Regional
 		if (ucType.equals("RAI"))
@@ -346,6 +344,7 @@ public class SeptaProvider extends AbstractHafasProvider
 		if (ucType.equals("TROLLEY"))
 			return Product.BUS;
 
-		return null;
+		// skip parsing of "common" lines, because this is America
+		throw new IllegalStateException("cannot normalize type '" + type + "'");
 	}
 }

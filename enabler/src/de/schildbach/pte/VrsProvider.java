@@ -156,7 +156,7 @@ public class VrsProvider extends AbstractNetworkProvider
 	// valid host names: www.vrsinfo.de, android.vrsinfo.de, ios.vrsinfo.de, ekap.vrsinfo.de (only SSL encrypted with
 	// client certificate)
 	// performance comparison March 2015 showed www.vrsinfo.de to be fastest for trips
-	protected static final String API_BASE = "https://www.vrsinfo.de/index.php";
+	protected static final String API_BASE = "http://android.vrsinfo.de/index.php";
 	protected static final String SERVER_PRODUCT = "vrs";
 
 	@SuppressWarnings("serial")
@@ -392,7 +392,7 @@ public class VrsProvider extends AbstractNetworkProvider
 			uri.append("&s=").append(Math.min(16, maxLocations)); // artificial server limit
 		}
 
-		final CharSequence page = ParserUtils.scrape(uri.toString(), null, Charsets.UTF_8);
+		final CharSequence page = httpClient.get(uri.toString(), null, Charsets.UTF_8);
 
 		try
 		{
@@ -456,7 +456,7 @@ public class VrsProvider extends AbstractNetworkProvider
 			uri.append("&t=");
 			appendDate(uri, time);
 		}
-		final CharSequence page = ParserUtils.scrape(uri.toString(), null, Charsets.UTF_8);
+		final CharSequence page = httpClient.get(uri.toString(), null, Charsets.UTF_8);
 
 		try
 		{
@@ -554,7 +554,7 @@ public class VrsProvider extends AbstractNetworkProvider
 		final StringBuilder uri = new StringBuilder(API_BASE);
 		uri.append("?eID=tx_vrsinfo_his_info&i=").append(ParserUtils.urlEncode(stationId));
 
-		final CharSequence page = ParserUtils.scrape(uri.toString(), null, Charsets.UTF_8);
+		final CharSequence page = httpClient.get(uri.toString(), null, Charsets.UTF_8);
 
 		try
 		{
@@ -623,7 +623,7 @@ public class VrsProvider extends AbstractNetworkProvider
 		final String uri = API_BASE + "?eID=tx_vrsinfo_ass2_objects&sc=" + sc + "&ac=" + ac + "&pc=" + ac + "&t=sap&q="
 				+ ParserUtils.urlEncode(new Location(LocationType.ANY, null, null, constraint.toString()).name);
 
-		final CharSequence page = ParserUtils.scrape(uri, null, Charsets.UTF_8);
+		final CharSequence page = httpClient.get(uri, null, Charsets.UTF_8);
 
 		try
 		{
@@ -694,8 +694,8 @@ public class VrsProvider extends AbstractNetworkProvider
 	// accessibility not supported.
 	// options not supported.
 	public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to, Date date, boolean dep,
-			final @Nullable Set<Product> products, final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
-			@Nullable Set<Option> options) throws IOException
+			final @Nullable Set<Product> products, final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
+			final @Nullable Accessibility accessibility, @Nullable Set<Option> options) throws IOException
 	{
 		// The EXACT_POINTS feature generates an about 50% bigger API response, probably well compressible.
 		final boolean EXACT_POINTS = true;
@@ -751,7 +751,7 @@ public class VrsProvider extends AbstractNetworkProvider
 			uri.append("p");
 		}
 
-		final CharSequence page = ParserUtils.scrape(uri.toString(), null, Charsets.UTF_8);
+		final CharSequence page = httpClient.get(uri.toString(), null, Charsets.UTF_8);
 
 		try
 		{
@@ -1021,11 +1021,11 @@ public class VrsProvider extends AbstractNetworkProvider
 		Context ctx = (Context) context;
 		if (later)
 		{
-			return queryTrips(ctx.from, ctx.via, ctx.to, ctx.getLastDeparture(), true, ctx.products, null, null, null);
+			return queryTrips(ctx.from, ctx.via, ctx.to, ctx.getLastDeparture(), true, ctx.products, null, null, null, null);
 		}
 		else
 		{
-			return queryTrips(ctx.from, ctx.via, ctx.to, ctx.getFirstArrival(), false, ctx.products, null, null, null);
+			return queryTrips(ctx.from, ctx.via, ctx.to, ctx.getFirstArrival(), false, ctx.products, null, null, null, null);
 		}
 	}
 

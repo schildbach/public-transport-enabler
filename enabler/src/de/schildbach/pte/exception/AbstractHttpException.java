@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.net.URL;
 
-import de.schildbach.pte.util.ParserUtils;
+import de.schildbach.pte.util.HttpClient;
 
 /**
  * @author Andreas Schildbach
@@ -61,8 +61,8 @@ public abstract class AbstractHttpException extends ParserException
 		if (errorReader == null)
 			return null;
 
-		final StringBuilder error = new StringBuilder(ParserUtils.SCRAPE_INITIAL_CAPACITY);
-		ParserUtils.copy(errorReader, error);
+		final StringBuilder error = new StringBuilder(HttpClient.SCRAPE_INITIAL_CAPACITY);
+		HttpClient.copy(errorReader, error);
 		errorReader.close();
 
 		return error;

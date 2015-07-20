@@ -40,7 +40,6 @@ public class SeProvider extends AbstractHafasProvider
 	{
 		super(NetworkId.SE, API_BASE + "stboard.exe/sn", API_BASE + "ajax-getstop.exe/sny", API_BASE + "query.exe/sn", 14, Charsets.UTF_8);
 
-		setClientType("ANDROID");
 		setUseIso8601(true);
 		setStationBoardHasStationTable(false);
 		setStationBoardCanDoEquivs(false);

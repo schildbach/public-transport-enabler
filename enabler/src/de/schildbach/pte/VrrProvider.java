@@ -55,11 +55,11 @@ public class VrrProvider extends AbstractEfaProvider
 
 	@Override
 	protected String xsltTripRequestParameters(final Location from, final @Nullable Location via, final Location to, final Date time,
-			final boolean dep, final @Nullable Collection<Product> products, final @Nullable WalkSpeed walkSpeed,
+			final boolean dep, final @Nullable Collection<Product> products, final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
 			final @Nullable Accessibility accessibility, final @Nullable Set<Option> options)
 	{
-		final StringBuilder uri = new StringBuilder(super.xsltTripRequestParameters(from, via, to, time, dep, products, walkSpeed, accessibility,
-				options));
+		final StringBuilder uri = new StringBuilder(super.xsltTripRequestParameters(from, via, to, time, dep, products, optimize, walkSpeed,
+				accessibility, options));
 
 		if (products != null)
 		{
@@ -80,8 +80,6 @@ public class VrrProvider extends AbstractEfaProvider
 	{
 		if ("0".equals(mot))
 		{
-			if (trainType == null && "RB67/71".equals(trainNum))
-				return new Line(id, network, Product.REGIONAL_TRAIN, trainNum);
 			if ("Regionalbahn".equals(trainName) && symbol != null)
 				return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
 			if ("NordWestBahn".equals(trainName) && symbol != null)

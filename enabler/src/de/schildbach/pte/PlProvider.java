@@ -147,6 +147,9 @@ public class PlProvider extends AbstractHafasProvider
 		if ("REG".equals(ucType))
 			return Product.REGIONAL_TRAIN;
 
+		if ("LKA".equals(ucType)) // Łódzka Kolej Aglomeracyjna
+			return Product.SUBURBAN_TRAIN;
+
 		if ("IRB".equals(ucType)) // interREGIO Bus
 			return Product.BUS;
 		if ("ZKA".equals(ucType)) // Zastępcza Komunikacja Autobusowa (Schienenersatzverkehr)

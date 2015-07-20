@@ -71,6 +71,11 @@ public class MvvProvider extends AbstractEfaProvider
 			if ("DB AG".equals(trainName))
 				return new Line(id, network, null, symbol);
 		}
+		else if ("1".equals(mot))
+		{
+			if ("S".equals(symbol) && "Pendelverkehr".equals(name))
+				return new Line(id, network, Product.SUBURBAN_TRAIN, "S⇆");
+		}
 
 		return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
 	}
@@ -135,6 +140,7 @@ public class MvvProvider extends AbstractEfaProvider
 		STYLES.put("UU4", new Style(Style.parseColor("#00ccaa"), Style.WHITE));
 		STYLES.put("UU5", new Style(Style.parseColor("#bb7700"), Style.WHITE));
 		STYLES.put("UU6", new Style(Style.parseColor("#0000cc"), Style.WHITE));
+		STYLES.put("UU7", new Style(Style.parseColor("#227700"), Style.parseColor("#bb0000"), Style.WHITE, 0));
 	}
 
 	@Override

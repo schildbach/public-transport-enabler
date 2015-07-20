@@ -20,6 +20,10 @@ package de.schildbach.pte;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
+import de.schildbach.pte.dto.Line;
+import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.dto.Style.Shape;
 
@@ -37,6 +41,22 @@ public class VagfrProvider extends AbstractEfaProvider
 		setUseRouteIndexAsTripId(false);
 		setStyles(STYLES);
 		setSessionCookieName("EFABWLB");
+	}
+
+	@Override
+	protected Line parseLine(final @Nullable String id, final @Nullable String network, final @Nullable String mot, final @Nullable String symbol,
+			final @Nullable String name, final @Nullable String longName, final @Nullable String trainType, final @Nullable String trainNum,
+			final @Nullable String trainName)
+	{
+		if ("0".equals(mot))
+		{
+			if (("N".equals(trainType) || "Nahverkehrszug".equals(trainName)) && trainNum != null)
+				return new Line(id, network, Product.REGIONAL_TRAIN, "N" + trainNum);
+			if (("VAE".equals(trainType) || "Voralpen-Express".equals(trainName)) && trainNum != null)
+				return new Line(id, network, Product.REGIONAL_TRAIN, "VAE" + trainNum);
+		}
+
+		return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
 	}
 
 	private static final Map<String, Style> STYLES = new HashMap<String, Style>();

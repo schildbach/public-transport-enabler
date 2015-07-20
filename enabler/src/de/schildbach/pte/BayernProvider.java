@@ -74,6 +74,11 @@ public class BayernProvider extends AbstractEfaProvider
 			if ("ZUG".equals(trainType) && trainNum != null)
 				return new Line(id, network, Product.REGIONAL_TRAIN, trainNum);
 		}
+		else if ("1".equals(mot))
+		{
+			if ("ABR".equals(trainType) || "ABELLIO Rail NRW GmbH".equals(trainName))
+				return new Line(id, network, Product.SUBURBAN_TRAIN, "ABR" + trainNum);
+		}
 		else if ("16".equals(mot))
 		{
 			if ("EC".equals(trainType) && trainNum != null)
@@ -134,11 +139,11 @@ public class BayernProvider extends AbstractEfaProvider
 
 	@Override
 	protected String xsltTripRequestParameters(final Location from, final @Nullable Location via, final Location to, final Date time,
-			final boolean dep, final @Nullable Collection<Product> products, final @Nullable WalkSpeed walkSpeed,
+			final boolean dep, final @Nullable Collection<Product> products, final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
 			final @Nullable Accessibility accessibility, final @Nullable Set<Option> options)
 	{
-		final StringBuilder uri = new StringBuilder(super.xsltTripRequestParameters(from, via, to, time, dep, products, walkSpeed, accessibility,
-				options));
+		final StringBuilder uri = new StringBuilder(super.xsltTripRequestParameters(from, via, to, time, dep, products, optimize, walkSpeed,
+				accessibility, options));
 
 		if (products != null)
 		{
@@ -160,10 +165,10 @@ public class BayernProvider extends AbstractEfaProvider
 
 	@Override
 	public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to, final Date date, final boolean dep,
-			final @Nullable Set<Product> products, final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
-			final @Nullable Set<Option> options) throws IOException
+			final @Nullable Set<Product> products, final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
+			final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) throws IOException
 	{
-		return queryTripsMobile(from, via, to, date, dep, products, walkSpeed, accessibility, options);
+		return queryTripsMobile(from, via, to, date, dep, products, optimize, walkSpeed, accessibility, options);
 	}
 
 	@Override

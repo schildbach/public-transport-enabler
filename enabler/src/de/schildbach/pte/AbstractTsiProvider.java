@@ -208,7 +208,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 		final StringBuilder uri = new StringBuilder(stopFinderEndpoint);
 		uri.append(parameters);
 
-		final CharSequence page = ParserUtils.scrape(uri.toString(), null, Charsets.UTF_8);
+		final CharSequence page = httpClient.get(uri.toString(), null, Charsets.UTF_8);
 		try
 		{
 			final List<SuggestedLocation> locations = new ArrayList<SuggestedLocation>();
@@ -299,7 +299,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 		final StringBuilder uri = new StringBuilder(stopFinderEndpoint);
 		uri.append(parameters);
 
-		final CharSequence page = ParserUtils.scrape(uri.toString(), null, Charsets.UTF_8);
+		final CharSequence page = httpClient.get(uri.toString(), null, Charsets.UTF_8);
 		try
 		{
 			final List<Location> stations = new ArrayList<Location>();
@@ -344,7 +344,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 		final StringBuilder uri = new StringBuilder(stopFinderEndpoint);
 		uri.append(parameters);
 
-		final CharSequence page = ParserUtils.scrape(uri.toString(), null, Charsets.UTF_8);
+		final CharSequence page = httpClient.get(uri.toString(), null, Charsets.UTF_8);
 		try
 		{
 			final JSONObject head = new JSONObject(page.toString());
@@ -640,8 +640,8 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 	}
 
 	public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to, final Date date, final boolean dep,
-			final @Nullable Set<Product> products, final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
-			final @Nullable Set<Option> options) throws IOException
+			final @Nullable Set<Product> products, final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
+			final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) throws IOException
 	{
 		final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
 		final List<Location> possibleFroms, possibleTos, possibleVias;
@@ -761,7 +761,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider
 
 		final StringBuilder uri = new StringBuilder(tripEndpoint);
 		uri.append(parameters);
-		final CharSequence page = ParserUtils.scrape(uri.toString(), null, Charsets.UTF_8, null);
+		final CharSequence page = httpClient.get(uri.toString(), null, Charsets.UTF_8);
 		try
 		{
 			final JSONObject head = new JSONObject(page.toString());

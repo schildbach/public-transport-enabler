@@ -132,7 +132,7 @@ public abstract class AbstractProviderLiveTest
 			final boolean dep, final @Nullable Set<Product> products, final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility)
 			throws IOException
 	{
-		return provider.queryTrips(from, via, to, date, dep, products, walkSpeed, accessibility, null);
+		return provider.queryTrips(from, via, to, date, dep, products, null, walkSpeed, accessibility, null);
 	}
 
 	protected final QueryTripsResult queryMoreTrips(final QueryTripsContext context, final boolean later) throws IOException

@@ -18,6 +18,7 @@
 package de.schildbach.pte;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -76,6 +77,7 @@ import de.schildbach.pte.dto.SuggestedLocation;
 import de.schildbach.pte.dto.Trip;
 import de.schildbach.pte.exception.ParserException;
 import de.schildbach.pte.exception.SessionExpiredException;
+import de.schildbach.pte.util.HttpClient;
 import de.schildbach.pte.util.LittleEndianDataInputStream;
 import de.schildbach.pte.util.ParserUtils;
 import de.schildbach.pte.util.StringReplaceReader;
@@ -95,7 +97,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	protected final String queryEndpoint;
 	private final int numProductBits;
 	private @Nullable String accessId = null;
-	private @Nullable String clientType = null;
+	private @Nullable String clientType = "ANDROID";
 	private Charset jsonGetStopsEncoding;
 	private boolean jsonGetStopsUseWeight = true;
 	private Charset jsonNearbyLocationsEncoding;
@@ -370,7 +372,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 	protected final SuggestLocationsResult jsonGetStops(final String uri) throws IOException
 	{
-		final CharSequence page = ParserUtils.scrape(uri, null, jsonGetStopsEncoding);
+		final CharSequence page = httpClient.get(uri, null, jsonGetStopsEncoding);
 
 		final Matcher mJson = P_AJAX_GET_STOPS_JSON.matcher(page);
 		if (mJson.matches())
@@ -507,7 +509,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		try
 		{
 			// work around unparsable XML
-			reader = new StringReplaceReader(new InputStreamReader(ParserUtils.scrapeInputStream(uri), Charsets.ISO_8859_1), " & ", " &amp; ");
+			reader = new StringReplaceReader(new InputStreamReader(httpClient.getInputStream(uri), Charsets.ISO_8859_1), " & ", " &amp; ");
 			reader.replace("<b>", " ");
 			reader.replace("</b>", " ");
 			reader.replace("<u>", " ");
@@ -547,6 +549,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 			if (stationBoardHasStationTable)
 				XmlPullUtil.enter(pp, "StationTable");
+			else
+				checkState(!XmlPullUtil.test(pp, "StationTable"));
 
 			if (stationBoardHasLocation)
 			{
@@ -563,6 +567,10 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						stationPlaceAndName = splitStationName(name.trim());
 				}
 				XmlPullUtil.requireSkip(pp, "St");
+			}
+			else
+			{
+				checkState(!XmlPullUtil.test(pp, "St"));
 			}
 
 			while (XmlPullUtil.test(pp, "Journey"))
@@ -756,8 +764,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	}
 
 	public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to, final Date date, final boolean dep,
-			final @Nullable Set<Product> products, final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
-			final @Nullable Set<Option> options) throws IOException
+			final @Nullable Set<Product> products, final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
+			final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) throws IOException
 	{
 		return queryTripsBinary(from, via, to, date, dep, products, walkSpeed, accessibility, options);
 	}
@@ -878,8 +886,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		try
 		{
 			final String endpoint = extXmlEndpoint != null ? extXmlEndpoint : queryEndpoint;
-			final InputStream is = ParserUtils.scrapeInputStream(endpoint, request, null, null, sessionCookieName);
-			firstChars = ParserUtils.peekFirstChars(is);
+			final InputStream is = httpClient.getInputStream(endpoint, request, null, null);
+			firstChars = HttpClient.peekFirstChars(is);
 			reader = new InputStreamReader(is, Charsets.ISO_8859_1);
 
 			final XmlPullParserFactory factory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
@@ -1524,8 +1532,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 		try
 		{
-			final CustomBufferedInputStream bis = new CustomBufferedInputStream(ParserUtils.scrapeInputStream(uri, sessionCookieName));
-			final String firstChars = ParserUtils.peekFirstChars(bis);
+			final CustomBufferedInputStream bis = new CustomBufferedInputStream(httpClient.getInputStream(uri));
+			final String firstChars = HttpClient.peekFirstChars(bis);
 
 			// initialize input stream
 			is = new LittleEndianDataInputStream(bis);
@@ -2018,6 +2026,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				throw new SessionExpiredException();
 			else if (errorCode == 8)
 				return new QueryTripsResult(header, QueryTripsResult.Status.AMBIGUOUS);
+			else if (errorCode == 207)
+				// H207: Unfortunately your connection request can currently not be processed.
+				return new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN);
 			else if (errorCode == 887)
 				// H887: Your inquiry was too complex. Please try entering less intermediate stations.
 				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
@@ -2045,8 +2056,14 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				// or with the selected means of transport on the required date/time.
 				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
 			else if (errorCode == 9260)
-				// Unknown departure station
+				// H9260: Unknown departure station
 				return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_FROM);
+			else if (errorCode == 9280)
+				// H9280: Unknown intermediate station
+				return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_VIA);
+			else if (errorCode == 9300)
+				// H9300: Unknown arrival station
+				return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_TO);
 			else if (errorCode == 9320)
 				// The input is incorrect or incomplete
 				return new QueryTripsResult(header, QueryTripsResult.Status.INVALID_DATE);
@@ -2340,7 +2357,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	protected final NearbyLocationsResult xmlNearbyStations(final String uri) throws IOException
 	{
 		// scrape page
-		final CharSequence page = ParserUtils.scrape(uri);
+		final CharSequence page = httpClient.get(uri);
 
 		final List<Location> stations = new ArrayList<Location>();
 
@@ -2425,7 +2442,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 	protected final NearbyLocationsResult jsonNearbyLocations(final String uri) throws IOException
 	{
-		final CharSequence page = ParserUtils.scrape(uri, null, jsonNearbyLocationsEncoding);
+		final CharSequence page = httpClient.get(uri, null, jsonNearbyLocationsEncoding);
 
 		try
 		{
@@ -2510,7 +2527,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	{
 		final List<Location> stations = new ArrayList<Location>();
 
-		final CharSequence page = ParserUtils.scrape(uri);
+		final CharSequence page = httpClient.get(uri);
 		String oldZebra = null;
 
 		final Matcher mCoarse = htmlNearbyStationsPattern.matcher(page);
@@ -3032,8 +3049,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 
 		final Product normalizedType = normalizeType(type);
-		if (normalizedType == null)
-			throw new IllegalStateException("cannot normalize type '" + type + "' line '" + normalizedName + "'");
 
 		final Line.Attr[] attrs;
 		if (wheelchairAccess)
@@ -3095,9 +3110,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						if (mTram.matches())
 							return newLine(Product.TRAM, mTram.group(1), null);
 					}
-
-					return newLine(normalizedType, number.replaceAll("\\s+", ""), null);
 				}
+
+				return newLine(normalizedType, number.replaceAll("\\s+", ""), null);
 			}
 
 			throw new IllegalStateException("cannot normalize type '" + type + "' number '" + number + "' line#type '" + lineAndType + "'");

@@ -18,6 +18,7 @@
 package de.schildbach.pte;
 
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import com.google.common.base.Charsets;
 
@@ -90,6 +91,8 @@ public class RtProvider extends AbstractHafasProvider
 		return Product.ALL;
 	}
 
+	private static final Pattern P_NUMBER = Pattern.compile("\\d{4,5}");
+
 	@Override
 	protected Product normalizeType(final String type)
 	{
@@ -105,6 +108,9 @@ public class RtProvider extends AbstractHafasProvider
 		if (ucType.equals("X70"))
 			return null;
 		if (ucType.equals("T84"))
+			return null;
+
+		if (P_NUMBER.matcher(type).matches())
 			return null;
 
 		return super.normalizeType(type);

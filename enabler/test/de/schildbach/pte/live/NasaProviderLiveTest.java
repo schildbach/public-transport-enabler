@@ -34,6 +34,7 @@ import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
+import de.schildbach.pte.util.Iso8601Format;
 
 /**
  * @author Andreas Schildbach
@@ -102,10 +103,12 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "11063", null, "Leipzig, Johannisplatz"), null, new Location(
 				LocationType.STATION, "8010205", null, "Leipzig Hbf"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		assertEquals(QueryTripsResult.Status.OK, result.status);
 		print(result);
 
 		if (!result.context.canQueryLater())
 			return;
+
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		print(laterResult);
 	}
@@ -116,10 +119,12 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8010205", 51346546, 12383333, null, "Leipzig Hbf"), null,
 				new Location(LocationType.STATION, "8012183", 51423340, 12223423, null, "Leipzig/Halle Flughafen"), new Date(), true, Product.ALL,
 				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		assertEquals(QueryTripsResult.Status.OK, result.status);
 		print(result);
 
 		if (!result.context.canQueryLater())
 			return;
+
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		print(laterResult);
 	}
@@ -128,14 +133,9 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest
 	public void outdatedTrip() throws Exception
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "13002", null, "Leipzig, Augustusplatz"), null, new Location(
-				LocationType.STATION, "8010205", null, "Leipzig Hbf"), new Date(2011, 1, 1), true, Product.ALL, WalkSpeed.NORMAL,
-				Accessibility.NEUTRAL);
-		print(result);
-
-		if (!result.context.canQueryLater())
-			return;
-		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		print(laterResult);
+				LocationType.STATION, "8010205", null, "Leipzig Hbf"), Iso8601Format.newDateFormat().parse("2011-01-01"), true, Product.ALL,
+				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		assertEquals(QueryTripsResult.Status.INVALID_DATE, result.status);
 	}
 
 	@Test
@@ -143,12 +143,8 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "Platz"), null, new Location(LocationType.STATION,
 				"8010205", null, "Leipzig Hbf"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		assertEquals(QueryTripsResult.Status.AMBIGUOUS, result.status);
 		print(result);
-
-		if (!result.context.canQueryLater())
-			return;
-		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		print(laterResult);
 	}
 
 	@Test
@@ -156,12 +152,7 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf"), null, new Location(
 				LocationType.STATION, "8010205", null, "Leipzig Hbf"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		print(result);
-
-		if (!result.context.canQueryLater())
-			return;
-		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		print(laterResult);
+		assertEquals(QueryTripsResult.Status.TOO_CLOSE, result.status);
 	}
 
 	@Test
@@ -170,10 +161,12 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 51334078, 12478331, "04319 Leipzig-Engelsdorf",
 				"August-Bebel-Platz"), null, new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf"), new Date(), true, Product.ALL,
 				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		assertEquals(QueryTripsResult.Status.OK, result.status);
 		print(result);
 
 		if (!result.context.canQueryLater())
 			return;
+
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		print(laterResult);
 	}
