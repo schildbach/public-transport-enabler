@@ -168,7 +168,8 @@ public final class HttpClient
 				final byte[] postRequestBytes = postRequest.getBytes(requestEncoding.name());
 
 				connection.setRequestMethod("POST");
-				connection.addRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+				if (!headers.containsKey("Content-Type"))
+					connection.addRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 				connection.addRequestProperty("Content-Length", Integer.toString(postRequestBytes.length));
 
 				final OutputStream os = connection.getOutputStream();
