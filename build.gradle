@@ -1,4 +1,8 @@
 allprojects {
+    apply plugin: 'java'
+    apply plugin: 'eclipse'
+    apply plugin: 'idea'
+
     repositories {
         jcenter()
     }
