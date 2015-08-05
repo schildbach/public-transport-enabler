@@ -73,8 +73,6 @@ public class NvbwProvider extends AbstractEfaProvider
 				return new Line(id, network, Product.REGIONAL_TRAIN, "IR");
 			if ("REGIOBAHN".equals(trainName) && trainNum == null)
 				return new Line(id, network, Product.REGIONAL_TRAIN, null);
-			if ("RR".equals(trainType) && trainNum == null)
-				return new Line(id, network, Product.REGIONAL_TRAIN, "RR");
 			if ("Meridian".equals(trainName) && symbol != null)
 				return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
 			if ("CityBahn".equals(trainName) && trainNum == null)

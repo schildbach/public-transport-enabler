@@ -78,6 +78,8 @@ public class BayernProvider extends AbstractEfaProvider
 		{
 			if ("ABR".equals(trainType) || "ABELLIO Rail NRW GmbH".equals(trainName))
 				return new Line(id, network, Product.SUBURBAN_TRAIN, "ABR" + trainNum);
+			if ("SBB".equals(trainType) || "SBB GmbH".equals(trainName))
+				return new Line(id, network, Product.REGIONAL_TRAIN, "SBB" + Strings.nullToEmpty(trainNum));
 		}
 		else if ("5".equals(mot))
 		{

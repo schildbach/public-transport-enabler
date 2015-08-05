@@ -80,6 +80,11 @@ public class VorProvider extends AbstractEfaProvider
 			if ("WLB".equals(trainNum) && trainType == null)
 				return new Line(id, network, Product.TRAM, "WLB");
 		}
+		else if ("1".equals(mot))
+		{
+			if ("LILO".equals(symbol) && "Lokalbahn".equals(trainName))
+				return new Line(id, network, Product.REGIONAL_TRAIN, "LILO");
+		}
 
 		return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
 	}

@@ -108,6 +108,8 @@ public class SydneyProvider extends AbstractEfaProvider
 				return new Line(id, network, Product.SUBURBAN_TRAIN, "WST");
 			if ("STH".equals(symbol)) // Southern NSW Line
 				return new Line(id, network, Product.SUBURBAN_TRAIN, "STH");
+			if ("NRW".equals(symbol)) // North Western NSW Line
+				return new Line(id, network, Product.SUBURBAN_TRAIN, "NRW");
 
 			if ("T1".equals(symbol) || "T1 North Shore & Northern Line".equals(symbol) || "T1 North Shore and Northern Line".equals(symbol)
 					|| "T1 Northern Line".equals(symbol) || "T1 Western Line".equals(symbol)
@@ -154,7 +156,7 @@ public class SydneyProvider extends AbstractEfaProvider
 				return new Line(id, network, Product.FERRY, "F6");
 			if ("F7".equals(symbol) || "F7 Eastern Suburbs".equals(symbol))
 				return new Line(id, network, Product.FERRY, "F7");
-			if ("Private ferry servic".equals(trainName) && symbol != null)
+			if (("Private ferry servic".equals(trainName) || "Private ferry and fa".equals(trainName)) && symbol != null)
 				return new Line(id, network, Product.FERRY, symbol);
 			if ("MFF".equals(symbol) || "Manly Fast Ferry".equals(name))
 				return new Line(id, network, Product.FERRY, "MFF");

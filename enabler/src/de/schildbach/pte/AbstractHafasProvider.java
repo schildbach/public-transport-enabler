@@ -3286,7 +3286,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			return Product.HIGH_SPEED_TRAIN;
 		if ("TGV".equals(ucType)) // Train à Grande Vitesse
 			return Product.HIGH_SPEED_TRAIN;
-		if ("DNZ".equals(ucType)) // Nachtzug Basel-Moskau
+		if ("DNZ".equals(ucType)) // Nacht-Schnellzug
 			return Product.HIGH_SPEED_TRAIN;
 		if ("AIR".equals(ucType)) // Generic Flight
 			return Product.HIGH_SPEED_TRAIN;
@@ -3553,6 +3553,12 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		if ("OPX".equals(ucType)) // oberpfalz-express
 			return Product.REGIONAL_TRAIN;
 		if ("TER".equals(ucType)) // Transport express régional
+			return Product.REGIONAL_TRAIN;
+		if ("ENO".equals(ucType))
+			return Product.REGIONAL_TRAIN;
+		if ("THU".equals(ucType)) // Thurbo AG
+			return Product.REGIONAL_TRAIN;
+		if ("GW".equals(ucType)) // gwtr.cz
 			return Product.REGIONAL_TRAIN;
 
 		// Suburban Trains

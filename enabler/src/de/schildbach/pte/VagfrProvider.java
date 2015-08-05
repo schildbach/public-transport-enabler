@@ -52,8 +52,6 @@ public class VagfrProvider extends AbstractEfaProvider
 		{
 			if (("N".equals(trainType) || "Nahverkehrszug".equals(trainName)) && trainNum != null)
 				return new Line(id, network, Product.REGIONAL_TRAIN, "N" + trainNum);
-			if (("VAE".equals(trainType) || "Voralpen-Express".equals(trainName)) && trainNum != null)
-				return new Line(id, network, Product.REGIONAL_TRAIN, "VAE" + trainNum);
 		}
 
 		return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);

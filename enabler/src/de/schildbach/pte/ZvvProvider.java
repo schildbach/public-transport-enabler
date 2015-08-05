@@ -120,6 +120,9 @@ public class ZvvProvider extends AbstractHafasProvider
 			if ("Trm-NF".equals(type))
 				return newLine(Product.TRAM, stripPrefix(number, "Trm", "Trm-NF"), null, Line.Attr.WHEEL_CHAIR_ACCESS);
 
+			if ("S18".equals(number))
+				return newLine(Product.SUBURBAN_TRAIN, "S18", null);
+
 			if (type.length() > 0)
 			{
 				final Product product = normalizeType(type);
