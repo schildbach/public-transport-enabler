@@ -146,16 +146,6 @@ public class ShProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location, final int maxDistance,
-			final int maxLocations) throws IOException
-	{
-		if (location.type == LocationType.STATION && location.hasId())
-			return nearbyStationsById(location.id, maxDistance);
-		else
-			throw new IllegalArgumentException("cannot handle: " + location);
-	}
-
-	@Override
 	protected NearbyLocationsResult nearbyStationsById(final String id, final int maxDistance) throws IOException
 	{
 		final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
