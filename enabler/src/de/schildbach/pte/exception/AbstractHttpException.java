@@ -27,7 +27,7 @@ import de.schildbach.pte.util.HttpClient;
  * @author Andreas Schildbach
  */
 @SuppressWarnings("serial")
-public abstract class AbstractHttpException extends ParserException
+public abstract class AbstractHttpException extends IOException
 {
 	private final URL url;
 	private final Reader errorReader;
