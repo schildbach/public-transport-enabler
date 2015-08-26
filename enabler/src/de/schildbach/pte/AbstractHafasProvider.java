@@ -2519,9 +2519,10 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 	private Pattern htmlNearbyStationsPattern = Pattern.compile("<tr class=\"(zebra[^\"]*)\">(.*?)</tr>", Pattern.DOTALL);
 
-	private final static Pattern P_NEARBY_FINE_COORDS = Pattern
+	private static final Pattern P_HTML_NEARBY_FINE_COORDS = Pattern
 			.compile("REQMapRoute0\\.Location0\\.X=(-?\\d+)&(?:amp;)?REQMapRoute0\\.Location0\\.Y=(-?\\d+)&");
-	private final static Pattern P_NEARBY_FINE_LOCATION = Pattern.compile("[\\?&;]input=(\\d+)&[^\"]*\">([^<]*)<");
+	private static final Pattern P_HTML_NEARBY_STATIONS_FINE_LOCATION = Pattern.compile("[\\?&;]input=(\\d+)&[^\"]*\">([^<]*)<");
+	private static final Pattern P_HTML_NEARBY_STATIONS_MESSAGES = Pattern.compile("(Ihre Eingabe kann nicht interpretiert werden)");
 
 	protected final NearbyLocationsResult htmlNearbyStations(final String uri) throws IOException
 	{
@@ -2532,6 +2533,13 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 		final Matcher mCoarse = htmlNearbyStationsPattern.matcher(page);
 
+		final Matcher mMessage = P_HTML_NEARBY_STATIONS_MESSAGES.matcher(page);
+		if (mMessage.find())
+		{
+			if (mMessage.group(1) != null)
+				return new NearbyLocationsResult(null, NearbyLocationsResult.Status.INVALID_ID);
+		}
+
 		while (mCoarse.find())
 		{
 			final String zebra = mCoarse.group(1);
@@ -2540,7 +2548,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			else
 				oldZebra = zebra;
 
-			final Matcher mFineLocation = P_NEARBY_FINE_LOCATION.matcher(mCoarse.group(2));
+			final Matcher mFineLocation = P_HTML_NEARBY_STATIONS_FINE_LOCATION.matcher(mCoarse.group(2));
 
 			if (mFineLocation.find())
 			{
@@ -2549,7 +2557,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				final String parsedId = mFineLocation.group(1);
 				final String parsedName = ParserUtils.resolveEntities(mFineLocation.group(2));
 
-				final Matcher mFineCoords = P_NEARBY_FINE_COORDS.matcher(mCoarse.group(2));
+				final Matcher mFineCoords = P_HTML_NEARBY_FINE_COORDS.matcher(mCoarse.group(2));
 
 				if (mFineCoords.find())
 				{
