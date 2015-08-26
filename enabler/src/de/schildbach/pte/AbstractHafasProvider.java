@@ -505,11 +505,14 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		final String normalizedStationId = normalizeStationId(stationId);
 
 		StringReplaceReader reader = null;
+		String firstChars = null;
 
 		try
 		{
 			// work around unparsable XML
-			reader = new StringReplaceReader(new InputStreamReader(httpClient.getInputStream(uri), Charsets.ISO_8859_1), " & ", " &amp; ");
+			final InputStream is = httpClient.getInputStream(uri);
+			firstChars = HttpClient.peekFirstChars(is);
+			reader = new StringReplaceReader(new InputStreamReader(is, Charsets.ISO_8859_1), " & ", " &amp; ");
 			reader.replace("<b>", " ");
 			reader.replace("</b>", " ");
 			reader.replace("<u>", " ");
@@ -741,7 +744,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 		catch (final XmlPullParserException x)
 		{
-			throw new RuntimeException(x);
+			throw new ParserException("cannot parse xml: " + firstChars, x);
 		}
 		finally
 		{
