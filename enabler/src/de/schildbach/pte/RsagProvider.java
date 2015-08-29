@@ -161,9 +161,9 @@ public class RsagProvider extends AbstractHafasProvider
 	static
 	{
 		// Rostock
-		STYLES.put("SS1", new Style(Shape.CIRCLE, Style.parseColor("#108449"), Style.WHITE));
-		STYLES.put("SS2", new Style(Shape.CIRCLE, Style.parseColor("#66a933"), Style.WHITE));
-		STYLES.put("SS3", new Style(Shape.CIRCLE, Style.parseColor("#00a063"), Style.WHITE));
+		STYLES.put("SS1", new Style(Shape.CIRCLE, Style.parseColor("#009037"), Style.WHITE));
+		STYLES.put("SS2", new Style(Shape.CIRCLE, Style.parseColor("#009037"), Style.WHITE));
+		STYLES.put("SS3", new Style(Shape.CIRCLE, Style.parseColor("#009037"), Style.WHITE));
 
 		STYLES.put("T1", new Style(Shape.RECT, Style.parseColor("#712090"), Style.WHITE));
 		STYLES.put("TTram1", new Style(Shape.RECT, Style.parseColor("#712090"), Style.WHITE));
@@ -206,6 +206,91 @@ public class RsagProvider extends AbstractHafasProvider
 		STYLES.put("PALTF1A", new Style(Style.WHITE, Style.parseColor("#656263")));
 		STYLES.put("BF2", new Style(Style.parseColor("#9c9a9b"), Style.WHITE));
 
-		STYLES.put("F", new Style(Shape.CIRCLE, Style.parseColor("#00adef"), Style.WHITE));
+		STYLES.put("B101", new Style(Style.parseColor("#e30513"), Style.WHITE));
+		STYLES.put("B102", new Style(Style.parseColor("#009ee3"), Style.WHITE));
+		STYLES.put("B103", new Style(Style.parseColor("#d18e00"), Style.WHITE));
+		STYLES.put("B104", new Style(Style.parseColor("#006f9d"), Style.WHITE));
+		STYLES.put("B105", new Style(Style.parseColor("#c2a712"), Style.WHITE));
+		STYLES.put("B106", new Style(Style.parseColor("#009640"), Style.WHITE));
+		STYLES.put("B107", new Style(Style.parseColor("#a52240"), Style.WHITE));
+		STYLES.put("B108", new Style(Style.parseColor("#009ee3"), Style.WHITE));
+		STYLES.put("B109", new Style(Style.parseColor("#a97ea6"), Style.WHITE));
+		STYLES.put("B110", new Style(Style.parseColor("#95c11e"), Style.WHITE));
+		STYLES.put("B111", new Style(Style.parseColor("#009640"), Style.WHITE));
+		STYLES.put("B112", new Style(Style.parseColor("#e50068"), Style.WHITE));
+		STYLES.put("B113", new Style(Style.parseColor("#009640"), Style.WHITE));
+		STYLES.put("B114", new Style(Style.parseColor("#925b00"), Style.WHITE));
+		STYLES.put("B115", new Style(Style.parseColor("#74b958"), Style.WHITE));
+		STYLES.put("B116", new Style(Style.parseColor("#0084ab"), Style.WHITE));
+		STYLES.put("B118", new Style(Style.parseColor("#4a96d1"), Style.WHITE));
+		STYLES.put("B119", new Style(Style.parseColor("#005ca9"), Style.WHITE));
+		STYLES.put("B120", new Style(Style.parseColor("#005ca9"), Style.WHITE));
+		STYLES.put("B121", new Style(Style.parseColor("#e30513"), Style.WHITE));
+		STYLES.put("B123", new Style(Style.parseColor("#f39200"), Style.WHITE));
+		STYLES.put("B124", new Style(Style.parseColor("#004f9e"), Style.WHITE));
+		STYLES.put("B125", new Style(Style.parseColor("#e7ac00"), Style.WHITE));
+		STYLES.put("B128", new Style(Style.parseColor("#e50068"), Style.WHITE));
+		STYLES.put("B129", new Style(Style.parseColor("#e5007d"), Style.WHITE));
+		STYLES.put("B131", new Style(Style.parseColor("#12a537"), Style.WHITE));
+		STYLES.put("B132", new Style(Style.parseColor("#ef7c00"), Style.WHITE));
+		STYLES.put("B134", new Style(Style.parseColor("#008e5c"), Style.WHITE));
+		STYLES.put("B135", new Style(Style.parseColor("#e30513"), Style.WHITE));
+		STYLES.put("B136", new Style(Style.parseColor("#009640"), Style.WHITE));
+		STYLES.put("B137", new Style(Style.parseColor("#ef7c00"), Style.WHITE));
+		STYLES.put("B138", new Style(Style.parseColor("#e30513"), Style.WHITE));
+		STYLES.put("B139", new Style(Style.parseColor("#f8ac00"), Style.WHITE));
+		STYLES.put("B140", new Style(Style.parseColor("#c2a712"), Style.WHITE));
+		STYLES.put("B200", new Style(Style.parseColor("#e5007d"), Style.WHITE));
+		STYLES.put("B201", new Style(Style.parseColor("#009440"), Style.WHITE));
+		STYLES.put("B203", new Style(Style.parseColor("#f49a00"), Style.WHITE));
+		STYLES.put("B204", new Style(Style.parseColor("#9fc41c"), Style.WHITE));
+		STYLES.put("B205", new Style(Style.parseColor("#dc6ba5"), Style.WHITE));
+		STYLES.put("B208", new Style(Style.parseColor("#004f94"), Style.WHITE));
+		STYLES.put("B210", new Style(Style.parseColor("#e30513"), Style.WHITE));
+		STYLES.put("B211", new Style(Style.parseColor("#95c11e"), Style.WHITE));
+		STYLES.put("B213", new Style(Style.parseColor("#a777b2"), Style.WHITE));
+		STYLES.put("B215", new Style(Style.parseColor("#009ee3"), Style.WHITE));
+		STYLES.put("B216", new Style(Style.parseColor("#fabd5d"), Style.WHITE));
+		STYLES.put("B220", new Style(Style.parseColor("#0090d6"), Style.WHITE));
+		STYLES.put("B221", new Style(Style.parseColor("#009640"), Style.WHITE));
+		STYLES.put("B222", new Style(Style.parseColor("#ef87b5"), Style.WHITE));
+		STYLES.put("B223", new Style(Style.parseColor("#f7a600"), Style.WHITE));
+		STYLES.put("B224", new Style(Style.parseColor("#004f9e"), Style.WHITE));
+		STYLES.put("B228", new Style(Style.parseColor("#003d7c"), Style.WHITE));
+		STYLES.put("B229", new Style(Style.parseColor("#e30513"), Style.WHITE));
+		STYLES.put("B230", new Style(Style.parseColor("#005ca9"), Style.WHITE));
+		STYLES.put("B231", new Style(Style.parseColor("#00843d"), Style.WHITE));
+		STYLES.put("B232", new Style(Style.parseColor("#e30513"), Style.WHITE));
+		STYLES.put("B233", new Style(Style.parseColor("#113274"), Style.WHITE));
+		STYLES.put("B234", new Style(Style.parseColor("#ea5197"), Style.WHITE));
+		STYLES.put("B235", new Style(Style.parseColor("#ba0066"), Style.WHITE));
+		STYLES.put("B240", new Style(Style.parseColor("#942642"), Style.WHITE));
+		STYLES.put("B241", new Style(Style.parseColor("#ea5197"), Style.WHITE));
+		STYLES.put("B242", new Style(Style.parseColor("#f39200"), Style.WHITE));
+		STYLES.put("B243", new Style(Style.parseColor("#fbb900"), Style.WHITE));
+		STYLES.put("B244", new Style(Style.parseColor("#f7aa59"), Style.WHITE));
+		STYLES.put("B245", new Style(Style.parseColor("#76b72a"), Style.WHITE));
+		STYLES.put("B246", new Style(Style.parseColor("#f39a8b"), Style.WHITE));
+		STYLES.put("B247", new Style(Style.parseColor("#009ee3"), Style.WHITE));
+		STYLES.put("B250", new Style(Style.parseColor("#0080c8"), Style.WHITE));
+		STYLES.put("B251", new Style(Style.parseColor("#009640"), Style.WHITE));
+		STYLES.put("B252", new Style(Style.parseColor("#e41a18"), Style.WHITE));
+		STYLES.put("B260", new Style(Style.parseColor("#e5007d"), Style.WHITE));
+		STYLES.put("B270", new Style(Style.parseColor("#fabd5d"), Style.WHITE));
+		STYLES.put("B271", new Style(Style.parseColor("#e30513"), Style.WHITE));
+		STYLES.put("B272", new Style(Style.parseColor("#009ee3"), Style.WHITE));
+		STYLES.put("B273", new Style(Style.parseColor("#004899"), Style.WHITE));
+		STYLES.put("B280", new Style(Style.parseColor("#e41a18"), Style.WHITE));
+		STYLES.put("B281", new Style(Style.parseColor("#f8ac00"), Style.WHITE));
+		STYLES.put("B282", new Style(Style.parseColor("#005ca9"), Style.WHITE));
+		STYLES.put("B283", new Style(Style.parseColor("#eb609f"), Style.WHITE));
+		STYLES.put("B284", new Style(Style.parseColor("#951b81"), Style.WHITE));
+		STYLES.put("B285", new Style(Style.parseColor("#a42422"), Style.WHITE));
+		STYLES.put("B286", new Style(Style.parseColor("#e5007d"), Style.WHITE));
+		STYLES.put("B290", new Style(Style.parseColor("#302683"), Style.WHITE));
+		STYLES.put("B291", new Style(Style.parseColor("#a61680"), Style.WHITE));
+		STYLES.put("B292", new Style(Style.parseColor("#c9be46"), Style.WHITE));
+
+		STYLES.put("F", new Style(Shape.CIRCLE, Style.parseColor("#17a4da"), Style.WHITE));
 	}
 }
