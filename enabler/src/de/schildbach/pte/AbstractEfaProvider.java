@@ -269,13 +269,13 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	protected SuggestLocationsResult jsonStopfinderRequest(final Location constraint) throws IOException
 	{
-		final StringBuilder parameters = stopfinderRequestParameters(constraint, "JSON");
-
 		final StringBuilder uri = new StringBuilder(stopFinderEndpoint);
-		if (!httpPost)
-			uri.append(parameters);
-
-		final CharSequence page = httpClient.get(uri.toString(), httpPost ? parameters.substring(1) : null, Charsets.UTF_8);
+		final StringBuilder parameters = stopfinderRequestParameters(constraint, "JSON");
+		final CharSequence page;
+		if (httpPost)
+			page = httpClient.get(uri.toString(), parameters.substring(1), "application/x-www-form-urlencoded", Charsets.UTF_8);
+		else
+			page = httpClient.get(uri.append(parameters).toString(), Charsets.UTF_8);
 		final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
 
 		try
@@ -379,18 +379,18 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	protected SuggestLocationsResult xmlStopfinderRequest(final Location constraint) throws IOException
 	{
-		final StringBuilder parameters = stopfinderRequestParameters(constraint, "XML");
-
 		final StringBuilder uri = new StringBuilder(stopFinderEndpoint);
-		if (!httpPost)
-			uri.append(parameters);
+		final StringBuilder parameters = stopfinderRequestParameters(constraint, "XML");
 
 		InputStream is = null;
 		String firstChars = null;
 
 		try
 		{
-			is = httpClient.getInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null);
+			if (httpPost)
+				is = httpClient.getInputStream(uri.toString(), parameters.substring(1), "application/x-www-form-urlencoded", null, httpReferer);
+			else
+				is = httpClient.getInputStream(uri.append(parameters).toString(), null, httpReferer);
 			firstChars = HttpClient.peekFirstChars(is);
 
 			final XmlPullParser pp = parserFactory.newPullParser();
@@ -426,18 +426,18 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	protected SuggestLocationsResult mobileStopfinderRequest(final Location constraint) throws IOException
 	{
-		final StringBuilder parameters = stopfinderRequestParameters(constraint, "XML");
-
 		final StringBuilder uri = new StringBuilder(stopFinderEndpoint);
-		if (!httpPost)
-			uri.append(parameters);
+		final StringBuilder parameters = stopfinderRequestParameters(constraint, "XML");
 
 		InputStream is = null;
 		String firstChars = null;
 
 		try
 		{
-			is = httpClient.getInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null);
+			if (httpPost)
+				is = httpClient.getInputStream(uri.toString(), parameters.substring(1), "application/x-www-form-urlencoded", null, httpReferer);
+			else
+				is = httpClient.getInputStream(uri.append(parameters).toString(), null, httpReferer);
 			firstChars = HttpClient.peekFirstChars(is);
 
 			final XmlPullParser pp = parserFactory.newPullParser();
@@ -545,18 +545,18 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	protected NearbyLocationsResult xmlCoordRequest(final EnumSet<LocationType> types, final int lat, final int lon, final int maxDistance,
 			final int maxStations) throws IOException
 	{
-		final StringBuilder parameters = xmlCoordRequestParameters(types, lat, lon, maxDistance, maxStations);
-
 		final StringBuilder uri = new StringBuilder(coordEndpoint);
-		if (!httpPost)
-			uri.append(parameters);
+		final StringBuilder parameters = xmlCoordRequestParameters(types, lat, lon, maxDistance, maxStations);
 
 		InputStream is = null;
 		String firstChars = null;
 
 		try
 		{
-			is = httpClient.getInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null);
+			if (httpPost)
+				is = httpClient.getInputStream(uri.toString(), parameters.substring(1), "application/x-www-form-urlencoded", null, httpReferer);
+			else
+				is = httpClient.getInputStream(uri.append(parameters).toString(), null, httpReferer);
 			firstChars = HttpClient.peekFirstChars(is);
 
 			final XmlPullParser pp = parserFactory.newPullParser();
@@ -624,18 +624,18 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	protected NearbyLocationsResult mobileCoordRequest(final EnumSet<LocationType> types, final int lat, final int lon, final int maxDistance,
 			final int maxStations) throws IOException
 	{
-		final StringBuilder parameters = xmlCoordRequestParameters(types, lat, lon, maxDistance, maxStations);
-
 		final StringBuilder uri = new StringBuilder(coordEndpoint);
-		if (!httpPost)
-			uri.append(parameters);
+		final StringBuilder parameters = xmlCoordRequestParameters(types, lat, lon, maxDistance, maxStations);
 
 		InputStream is = null;
 		String firstChars = null;
 
 		try
 		{
-			is = httpClient.getInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null);
+			if (httpPost)
+				is = httpClient.getInputStream(uri.toString(), parameters.substring(1), "application/x-www-form-urlencoded", null, httpReferer);
+			else
+				is = httpClient.getInputStream(uri.append(parameters).toString(), null, httpReferer);
 			firstChars = HttpClient.peekFirstChars(is);
 
 			final XmlPullParser pp = parserFactory.newPullParser();
@@ -927,6 +927,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 	private NearbyLocationsResult nearbyStationsRequest(final String stationId, final int maxLocations) throws IOException
 	{
+		final StringBuilder uri = new StringBuilder(departureMonitorEndpoint);
 		final StringBuilder parameters = new StringBuilder();
 		appendCommonRequestParams(parameters, "XML");
 		parameters.append("&type_dm=stop&name_dm=").append(normalizeStationId(stationId));
@@ -938,16 +939,15 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		parameters.append("&useAllStops=1");
 		parameters.append("&mode=direct");
 
-		final StringBuilder uri = new StringBuilder(departureMonitorEndpoint);
-		if (!httpPost)
-			uri.append(parameters);
-
 		InputStream is = null;
 		String firstChars = null;
 
 		try
 		{
-			is = httpClient.getInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null);
+			if (httpPost)
+				is = httpClient.getInputStream(uri.toString(), parameters.substring(1), "application/x-www-form-urlencoded", null, httpReferer);
+			else
+				is = httpClient.getInputStream(uri.append(parameters).toString(), null, httpReferer);
 			firstChars = HttpClient.peekFirstChars(is);
 
 			final XmlPullParser pp = parserFactory.newPullParser();
@@ -1501,18 +1501,18 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	private QueryDeparturesResult xsltDepartureMonitorRequest(final String stationId, final @Nullable Date time, final int maxDepartures,
 			final boolean equivs) throws IOException
 	{
-		final StringBuilder parameters = xsltDepartureMonitorRequestParameters(stationId, time, maxDepartures, equivs);
-
 		final StringBuilder uri = new StringBuilder(departureMonitorEndpoint);
-		if (!httpPost)
-			uri.append(parameters);
+		final StringBuilder parameters = xsltDepartureMonitorRequestParameters(stationId, time, maxDepartures, equivs);
 
 		InputStream is = null;
 		String firstChars = null;
 
 		try
 		{
-			is = httpClient.getInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null);
+			if (httpPost)
+				is = httpClient.getInputStream(uri.toString(), parameters.substring(1), "application/x-www-form-urlencoded", null, httpReferer);
+			else
+				is = httpClient.getInputStream(uri.append(parameters).toString(), null, httpReferer);
 			firstChars = HttpClient.peekFirstChars(is);
 
 			final XmlPullParser pp = parserFactory.newPullParser();
@@ -1663,18 +1663,18 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 	protected QueryDeparturesResult queryDeparturesMobile(final String stationId, final @Nullable Date time, final int maxDepartures,
 			final boolean equivs) throws IOException
 	{
-		final StringBuilder parameters = xsltDepartureMonitorRequestParameters(stationId, time, maxDepartures, equivs);
-
 		final StringBuilder uri = new StringBuilder(departureMonitorEndpoint);
-		if (!httpPost)
-			uri.append(parameters);
+		final StringBuilder parameters = xsltDepartureMonitorRequestParameters(stationId, time, maxDepartures, equivs);
 
 		InputStream is = null;
 		String firstChars = null;
 
 		try
 		{
-			is = httpClient.getInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpReferer, null);
+			if (httpPost)
+				is = httpClient.getInputStream(uri.toString(), parameters.substring(1), "application/x-www-form-urlencoded", null, httpReferer);
+			else
+				is = httpClient.getInputStream(uri.append(parameters).toString(), null, httpReferer);
 			firstChars = HttpClient.peekFirstChars(is);
 
 			final XmlPullParser pp = parserFactory.newPullParser();
@@ -2125,19 +2125,18 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			final @Nullable Set<Product> products, final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
 			final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) throws IOException
 	{
-
-		final String parameters = xsltTripRequestParameters(from, via, to, date, dep, products, optimize, walkSpeed, accessibility, options);
-
 		final StringBuilder uri = new StringBuilder(tripEndpoint);
-		if (!httpPost)
-			uri.append(parameters);
+		final String parameters = xsltTripRequestParameters(from, via, to, date, dep, products, optimize, walkSpeed, accessibility, options);
 
 		InputStream is = null;
 		String firstChars = null;
 
 		try
 		{
-			is = httpClient.getInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpRefererTrip);
+			if (httpPost)
+				is = httpClient.getInputStream(uri.toString(), parameters.substring(1), "application/x-www-form-urlencoded", null, httpRefererTrip);
+			else
+				is = httpClient.getInputStream(uri.append(parameters).toString(), null, httpRefererTrip);
 			firstChars = HttpClient.peekFirstChars(is);
 
 			return queryTrips(uri.toString(), is);
@@ -2161,19 +2160,18 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			final boolean dep, final @Nullable Collection<Product> products, final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
 			final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) throws IOException
 	{
-
-		final String parameters = xsltTripRequestParameters(from, via, to, date, dep, products, optimize, walkSpeed, accessibility, options);
-
 		final StringBuilder uri = new StringBuilder(tripEndpoint);
-		if (!httpPost)
-			uri.append(parameters);
+		final String parameters = xsltTripRequestParameters(from, via, to, date, dep, products, optimize, walkSpeed, accessibility, options);
 
 		InputStream is = null;
 		String firstChars = null;
 
 		try
 		{
-			is = httpClient.getInputStream(uri.toString(), httpPost ? parameters.substring(1) : null, null, httpRefererTrip);
+			if (httpPost)
+				is = httpClient.getInputStream(uri.toString(), parameters.substring(1), "application/x-www-form-urlencoded", null, httpRefererTrip);
+			else
+				is = httpClient.getInputStream(uri.append(parameters).toString(), null, httpRefererTrip);
 			firstChars = HttpClient.peekFirstChars(is);
 
 			return queryTripsMobile(uri.toString(), from, via, to, is);
@@ -2205,7 +2203,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		try
 		{
-			is = httpClient.getInputStream(uri.toString(), null, null, httpRefererTrip);
+			is = httpClient.getInputStream(uri.toString(), null, httpRefererTrip);
 			firstChars = HttpClient.peekFirstChars(is);
 
 			return queryTrips(uri.toString(), is);
@@ -2237,7 +2235,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 		try
 		{
-			is = httpClient.getInputStream(uri.toString(), null, null, httpRefererTrip);
+			is = httpClient.getInputStream(uri.toString(), null, httpRefererTrip);
 			firstChars = HttpClient.peekFirstChars(is);
 			is.mark(512);
 

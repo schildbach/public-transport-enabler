@@ -87,26 +87,33 @@ public final class HttpClient
 
 	public CharSequence get(final String url) throws IOException
 	{
-		return get(url, null);
+		return get(url, (String) null);
 	}
 
 	public CharSequence get(final String url, final String authorization) throws IOException
 	{
-		return get(url, null, null, authorization);
+		return get(url, null, null, null, authorization);
 	}
 
-	public CharSequence get(final String urlStr, final String postRequest, final Charset requestEncoding) throws IOException
+	public CharSequence get(final String urlStr, final Charset requestEncoding) throws IOException
 	{
-		return get(urlStr, postRequest, requestEncoding, null);
+		return get(urlStr, null, null, requestEncoding);
 	}
 
-	private CharSequence get(final String urlStr, final String postRequest, Charset requestEncoding, final String authorization) throws IOException
+	public CharSequence get(final String urlStr, final String postRequest, final String requestContentType, final Charset requestEncoding)
+			throws IOException
+	{
+		return get(urlStr, postRequest, requestContentType, requestEncoding, null);
+	}
+
+	private CharSequence get(final String urlStr, final String postRequest, final String requestContentType, Charset requestEncoding,
+			final String authorization) throws IOException
 	{
 		if (requestEncoding == null)
 			requestEncoding = Charsets.ISO_8859_1;
 
 		final StringBuilder buffer = new StringBuilder(SCRAPE_INITIAL_CAPACITY);
-		final InputStream is = getInputStream(urlStr, postRequest, requestEncoding, null, authorization);
+		final InputStream is = getInputStream(urlStr, postRequest, requestContentType, requestEncoding, null, authorization);
 		final Reader pageReader = new InputStreamReader(is, requestEncoding);
 		copy(pageReader, buffer);
 		pageReader.close();
@@ -115,17 +122,22 @@ public final class HttpClient
 
 	public InputStream getInputStream(final String url) throws IOException
 	{
-		return getInputStream(url, null, null, null);
+		return getInputStream(url, null, null);
 	}
 
-	public InputStream getInputStream(final String urlStr, final String postRequest, final Charset requestEncoding, final String referer)
-			throws IOException
+	public InputStream getInputStream(final String urlStr, final Charset requestEncoding, final String referer) throws IOException
 	{
-		return getInputStream(urlStr, postRequest, requestEncoding, referer, null);
+		return getInputStream(urlStr, null, null, requestEncoding, referer);
 	}
 
-	public InputStream getInputStream(final String urlStr, final String postRequest, Charset requestEncoding, final String referer,
-			final String authorization) throws IOException
+	public InputStream getInputStream(final String urlStr, final String postRequest, final String requestContentType, final Charset requestEncoding,
+			final String referer) throws IOException
+	{
+		return getInputStream(urlStr, postRequest, requestContentType, requestEncoding, referer, null);
+	}
+
+	public InputStream getInputStream(final String urlStr, final String postRequest, final String requestContentType, Charset requestEncoding,
+			final String referer, final String authorization) throws IOException
 	{
 		log.debug("{}: {}", postRequest != null ? "POST" : "GET", urlStr);
 
@@ -168,7 +180,7 @@ public final class HttpClient
 				final byte[] postRequestBytes = postRequest.getBytes(requestEncoding.name());
 
 				connection.setRequestMethod("POST");
-				connection.addRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+				connection.addRequestProperty("Content-Type", requestContentType);
 				connection.addRequestProperty("Content-Length", Integer.toString(postRequestBytes.length));
 
 				final OutputStream os = connection.getOutputStream();

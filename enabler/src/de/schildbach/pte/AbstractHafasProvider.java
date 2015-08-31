@@ -426,7 +426,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 	protected final SuggestLocationsResult jsonGetStops(final String uri) throws IOException
 	{
-		final CharSequence page = httpClient.get(uri, null, jsonGetStopsEncoding);
+		final CharSequence page = httpClient.get(uri, jsonGetStopsEncoding);
 
 		final Matcher mJson = P_AJAX_GET_STOPS_JSON.matcher(page);
 		if (mJson.matches())
@@ -942,7 +942,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		try
 		{
 			final String endpoint = extXmlEndpoint != null ? extXmlEndpoint : queryEndpoint;
-			final InputStream is = httpClient.getInputStream(endpoint, request, null, null);
+			final InputStream is = httpClient.getInputStream(endpoint, request, "application/xml", null, null);
 			firstChars = HttpClient.peekFirstChars(is);
 			reader = new InputStreamReader(is, Charsets.ISO_8859_1);
 
@@ -2498,7 +2498,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 	protected final NearbyLocationsResult jsonNearbyLocations(final String uri) throws IOException
 	{
-		final CharSequence page = httpClient.get(uri, null, jsonNearbyLocationsEncoding);
+		final CharSequence page = httpClient.get(uri, jsonNearbyLocationsEncoding);
 
 		try
 		{

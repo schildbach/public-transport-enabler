@@ -392,7 +392,7 @@ public class VrsProvider extends AbstractNetworkProvider
 			uri.append("&s=").append(Math.min(16, maxLocations)); // artificial server limit
 		}
 
-		final CharSequence page = httpClient.get(uri.toString(), null, Charsets.UTF_8);
+		final CharSequence page = httpClient.get(uri.toString(), Charsets.UTF_8);
 
 		try
 		{
@@ -456,7 +456,7 @@ public class VrsProvider extends AbstractNetworkProvider
 			uri.append("&t=");
 			appendDate(uri, time);
 		}
-		final CharSequence page = httpClient.get(uri.toString(), null, Charsets.UTF_8);
+		final CharSequence page = httpClient.get(uri.toString(), Charsets.UTF_8);
 
 		try
 		{
@@ -554,7 +554,7 @@ public class VrsProvider extends AbstractNetworkProvider
 		final StringBuilder uri = new StringBuilder(API_BASE);
 		uri.append("?eID=tx_vrsinfo_his_info&i=").append(ParserUtils.urlEncode(stationId));
 
-		final CharSequence page = httpClient.get(uri.toString(), null, Charsets.UTF_8);
+		final CharSequence page = httpClient.get(uri.toString(), Charsets.UTF_8);
 
 		try
 		{
@@ -623,7 +623,7 @@ public class VrsProvider extends AbstractNetworkProvider
 		final String uri = API_BASE + "?eID=tx_vrsinfo_ass2_objects&sc=" + sc + "&ac=" + ac + "&pc=" + ac + "&t=sap&q="
 				+ ParserUtils.urlEncode(new Location(LocationType.ANY, null, null, constraint.toString()).name);
 
-		final CharSequence page = httpClient.get(uri, null, Charsets.UTF_8);
+		final CharSequence page = httpClient.get(uri, Charsets.UTF_8);
 
 		try
 		{
@@ -751,7 +751,7 @@ public class VrsProvider extends AbstractNetworkProvider
 			uri.append("p");
 		}
 
-		final CharSequence page = httpClient.get(uri.toString(), null, Charsets.UTF_8);
+		final CharSequence page = httpClient.get(uri.toString(), Charsets.UTF_8);
 
 		try
 		{
