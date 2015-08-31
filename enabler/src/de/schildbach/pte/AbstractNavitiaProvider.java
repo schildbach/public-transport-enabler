@@ -132,13 +132,11 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 		}
 	}
 
-	private final String authorization;
-
 	public AbstractNavitiaProvider(final NetworkId network, final String authorization)
 	{
 		super(network);
 
-		this.authorization = authorization;
+		httpClient.setHeader("Authorization", authorization);
 	}
 
 	protected abstract String region();
@@ -661,7 +659,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 	private JSONObject getLinePhysicalMode(final String lineId) throws IOException
 	{
 		final String uri = uri() + "lines/" + ParserUtils.urlEncode(lineId) + "/physical_modes";
-		final CharSequence page = httpClient.get(uri, authorization);
+		final CharSequence page = httpClient.get(uri);
 
 		try
 		{
@@ -700,7 +698,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 	private List<LineDestination> getStationLines(final String stopPointId) throws IOException
 	{
 		final String uri = uri() + "stop_points/" + ParserUtils.urlEncode(stopPointId) + "/routes?depth=2";
-		final CharSequence page = httpClient.get(uri, authorization);
+		final CharSequence page = httpClient.get(uri);
 
 		try
 		{
@@ -727,7 +725,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 	private String getStopAreaId(final String stopPointId) throws IOException
 	{
 		final String uri = uri() + "stop_points/" + ParserUtils.urlEncode(stopPointId) + "?depth=1";
-		final CharSequence page = httpClient.get(uri, authorization);
+		final CharSequence page = httpClient.get(uri);
 
 		try
 		{
@@ -794,7 +792,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 
 		final String queryUri = uri() + queryUriType + "places_nearby?type[]=stop_point" + "&distance=" + maxDistance + "&count=" + maxLocations
 				+ "&depth=0";
-		final CharSequence page = httpClient.get(queryUri, authorization);
+		final CharSequence page = httpClient.get(queryUri);
 
 		try
 		{
@@ -871,7 +869,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 			}
 			queryUri.append("departures?from_datetime=" + dateTime + "&count=" + maxDepartures + "&duration=3600" + "&depth=0");
 
-			final CharSequence page = httpClient.get(queryUri.toString(), authorization);
+			final CharSequence page = httpClient.get(queryUri.toString());
 
 			final JSONObject head = new JSONObject(page.toString());
 
@@ -960,7 +958,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 		final String nameCstr = constraint.toString();
 
 		final String queryUri = uri() + "places?q=" + ParserUtils.urlEncode(nameCstr) + "&type[]=stop_area&type[]=address" + "&depth=1";
-		final CharSequence page = httpClient.get(queryUri, authorization);
+		final CharSequence page = httpClient.get(queryUri);
 
 		try
 		{
@@ -1081,7 +1079,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 					}
 				}
 
-				final CharSequence page = httpClient.get(queryUri.toString(), authorization);
+				final CharSequence page = httpClient.get(queryUri.toString());
 
 				try
 				{
@@ -1177,7 +1175,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 		final Location from = context.from;
 		final Location to = context.to;
 		final String queryUri = later ? context.nextQueryUri : context.prevQueryUri;
-		final CharSequence page = httpClient.get(queryUri, authorization);
+		final CharSequence page = httpClient.get(queryUri);
 
 		try
 		{
@@ -1214,7 +1212,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 	public Point[] getArea() throws IOException
 	{
 		final String queryUri = uri();
-		final CharSequence page = httpClient.get(queryUri, authorization);
+		final CharSequence page = httpClient.get(queryUri);
 
 		try
 		{

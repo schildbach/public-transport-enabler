@@ -87,12 +87,7 @@ public final class HttpClient
 
 	public CharSequence get(final String url) throws IOException
 	{
-		return get(url, (String) null);
-	}
-
-	public CharSequence get(final String url, final String authorization) throws IOException
-	{
-		return get(url, null, null, null, authorization);
+		return get(url, null);
 	}
 
 	public CharSequence get(final String urlStr, final Charset requestEncoding) throws IOException
@@ -100,20 +95,14 @@ public final class HttpClient
 		return get(urlStr, null, null, requestEncoding);
 	}
 
-	public CharSequence get(final String urlStr, final String postRequest, final String requestContentType, final Charset requestEncoding)
+	public CharSequence get(final String urlStr, final String postRequest, final String requestContentType, Charset requestEncoding)
 			throws IOException
-	{
-		return get(urlStr, postRequest, requestContentType, requestEncoding, null);
-	}
-
-	private CharSequence get(final String urlStr, final String postRequest, final String requestContentType, Charset requestEncoding,
-			final String authorization) throws IOException
 	{
 		if (requestEncoding == null)
 			requestEncoding = Charsets.ISO_8859_1;
 
 		final StringBuilder buffer = new StringBuilder(SCRAPE_INITIAL_CAPACITY);
-		final InputStream is = getInputStream(urlStr, postRequest, requestContentType, requestEncoding, null, authorization);
+		final InputStream is = getInputStream(urlStr, postRequest, requestContentType, requestEncoding, null);
 		final Reader pageReader = new InputStreamReader(is, requestEncoding);
 		copy(pageReader, buffer);
 		pageReader.close();
@@ -130,14 +119,8 @@ public final class HttpClient
 		return getInputStream(urlStr, null, null, requestEncoding, referer);
 	}
 
-	public InputStream getInputStream(final String urlStr, final String postRequest, final String requestContentType, final Charset requestEncoding,
-			final String referer) throws IOException
-	{
-		return getInputStream(urlStr, postRequest, requestContentType, requestEncoding, referer, null);
-	}
-
 	public InputStream getInputStream(final String urlStr, final String postRequest, final String requestContentType, Charset requestEncoding,
-			final String referer, final String authorization) throws IOException
+			final String referer) throws IOException
 	{
 		log.debug("{}: {}", postRequest != null ? "POST" : "GET", urlStr);
 
@@ -170,10 +153,6 @@ public final class HttpClient
 			final HttpCookie sessionCookie = this.sessionCookie;
 			if (sessionCookie != null && sessionCookie.getName().equals(sessionCookieName))
 				connection.addRequestProperty("Cookie", sessionCookie.toString());
-
-			// Set authorization.
-			if (authorization != null)
-				connection.addRequestProperty("Authorization", authorization);
 
 			if (postRequest != null)
 			{
