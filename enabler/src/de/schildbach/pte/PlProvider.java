@@ -35,7 +35,7 @@ public class PlProvider extends AbstractHafasProvider
 
 	public PlProvider()
 	{
-		super(NetworkId.PL, API_BASE + "stboard.exe/pn", API_BASE + "ajax-getstop.exe/pn", API_BASE + "query.exe/pn", PRODUCTS_MAP);
+		super(NetworkId.PL, API_BASE, "pn", PRODUCTS_MAP);
 
 		setJsonGetStopsEncoding(Charsets.UTF_8);
 		setJsonNearbyLocationsEncoding(Charsets.UTF_8);

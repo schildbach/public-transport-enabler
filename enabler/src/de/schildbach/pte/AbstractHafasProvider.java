@@ -92,9 +92,10 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	private static final String REQC_PROD = "hafas";
 	protected static final int DEFAULT_MAX_DEPARTURES = 100;
 
-	protected final String stationBoardEndpoint;
-	protected final String getStopEndpoint;
-	protected final String queryEndpoint;
+	protected String stationBoardEndpoint;
+	protected String getStopEndpoint;
+	protected String queryEndpoint;
+	private @Nullable String extXmlEndpoint = null;
 	private Product[] productsMap;
 	private @Nullable String accessId = null;
 	private @Nullable String clientType = "ANDROID";
@@ -103,7 +104,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	private Charset jsonNearbyLocationsEncoding = Charsets.ISO_8859_1;
 	private boolean dominantPlanStopTime = false;
 	private boolean useIso8601 = false;
-	private @Nullable String extXmlEndpoint = null;
 	private boolean stationBoardHasStationTable = true;
 	private boolean stationBoardHasLocation = false;
 	private boolean stationBoardCanDoEquivs = true;
@@ -162,15 +162,34 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 	}
 
-	public AbstractHafasProvider(final NetworkId network, final String stationBoardEndpoint, final String getStopEndpoint, final String queryEndpoint,
-			final Product[] productsMap)
+	public AbstractHafasProvider(final NetworkId network, final String apiBase, final String apiLanguage, final Product[] productsMap)
 	{
 		super(network);
 
-		this.stationBoardEndpoint = stationBoardEndpoint;
-		this.getStopEndpoint = getStopEndpoint;
-		this.queryEndpoint = queryEndpoint;
+		this.stationBoardEndpoint = apiBase + "stboard.exe/" + apiLanguage;
+		this.getStopEndpoint = apiBase + "ajax-getstop.exe/" + apiLanguage;
+		this.queryEndpoint = apiBase + "query.exe/" + apiLanguage;
 		this.productsMap = productsMap;
+	}
+
+	protected void setStationBoardEndpoint(final String stationBoardEndpoint)
+	{
+		this.stationBoardEndpoint = stationBoardEndpoint;
+	}
+
+	protected void setGetStopEndpoint(final String getStopEndpoint)
+	{
+		this.getStopEndpoint = getStopEndpoint;
+	}
+
+	protected void setQueryEndpoint(final String queryEndpoint)
+	{
+		this.queryEndpoint = queryEndpoint;
+	}
+
+	protected void setExtXmlEndpoint(final String extXmlEndpoint)
+	{
+		this.extXmlEndpoint = extXmlEndpoint;
 	}
 
 	protected void setClientType(final String clientType)
@@ -206,11 +225,6 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	protected void setUseIso8601(final boolean useIso8601)
 	{
 		this.useIso8601 = useIso8601;
-	}
-
-	protected void setExtXmlEndpoint(final String extXmlEndpoint)
-	{
-		this.extXmlEndpoint = extXmlEndpoint;
 	}
 
 	protected void setStationBoardHasStationTable(final boolean stationBoardHasStationTable)

@@ -40,7 +40,7 @@ public class SeProvider extends AbstractHafasProvider
 
 	public SeProvider()
 	{
-		super(NetworkId.SE, API_BASE + "stboard.exe/sn", API_BASE + "ajax-getstop.exe/sny", API_BASE + "query.exe/sn", PRODUCTS_MAP);
+		super(NetworkId.SE, API_BASE, "sn", PRODUCTS_MAP);
 
 		setJsonGetStopsEncoding(Charsets.UTF_8);
 		setJsonNearbyLocationsEncoding(Charsets.UTF_8);

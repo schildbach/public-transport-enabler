@@ -29,15 +29,15 @@ import de.schildbach.pte.dto.Product;
 public final class BahnProvider extends AbstractHafasProvider
 {
 	private static final String API_BASE = "http://reiseauskunft.bahn.de/bin/";
-	private static final String API_BASE_STATION_BOARD = "http://mobile.bahn.de/bin/mobil/";
 	private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN,
 			Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.BUS, Product.FERRY, Product.SUBWAY, Product.TRAM, Product.ON_DEMAND, null, null,
 			null, null };
 
 	public BahnProvider()
 	{
-		super(NetworkId.DB, API_BASE_STATION_BOARD + "bhftafel.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", PRODUCTS_MAP);
+		super(NetworkId.DB, API_BASE, "dn", PRODUCTS_MAP);
 
+		setStationBoardEndpoint("http://mobile.bahn.de/bin/mobil/bhftafel.exe/dn");
 		setStationBoardHasStationTable(false);
 		setJsonGetStopsUseWeight(false);
 	}

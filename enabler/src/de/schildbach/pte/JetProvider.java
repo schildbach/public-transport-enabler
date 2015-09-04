@@ -42,7 +42,7 @@ public class JetProvider extends AbstractHafasProvider
 
 	public JetProvider()
 	{
-		super(NetworkId.JET, API_BASE + "stboard.bin/yn", API_BASE + "ajax-getstop.bin/yn", API_BASE + "query.bin/yn", PRODUCTS_MAP);
+		super(NetworkId.JET, API_BASE, "yn", PRODUCTS_MAP);
 
 		setJsonGetStopsEncoding(Charsets.UTF_8);
 		setJsonNearbyLocationsEncoding(Charsets.UTF_8);

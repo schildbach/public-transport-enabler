@@ -39,7 +39,7 @@ public class NsProvider extends AbstractHafasProvider
 
 	public NsProvider()
 	{
-		super(NetworkId.NS, API_BASE + "stboard.exe/nn", API_BASE + "ajax-getstop.exe/nny", API_BASE + "query.exe/nn", PRODUCTS_MAP);
+		super(NetworkId.NS, API_BASE, "nn", PRODUCTS_MAP);
 
 		setHtmlNearbyStationsPattern(HTML_NEARBY_STATIONS_PATTERN);
 		setStationBoardHasLocation(true);

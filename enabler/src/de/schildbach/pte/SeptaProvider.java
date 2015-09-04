@@ -62,7 +62,7 @@ public class SeptaProvider extends AbstractHafasProvider
 
 	public SeptaProvider()
 	{
-		super(NetworkId.SEPTA, API_BASE + "stboard.exe/en", API_BASE + "ajax-getstop.exe/dny", API_BASE + "query.exe/en", PRODUCTS_MAP);
+		super(NetworkId.SEPTA, API_BASE, "en", PRODUCTS_MAP);
 
 		setStationBoardCanDoEquivs(false);
 		setTimeZone("EST");

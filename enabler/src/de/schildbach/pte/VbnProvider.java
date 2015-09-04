@@ -32,7 +32,7 @@ public class VbnProvider extends AbstractHafasProvider
 
 	public VbnProvider()
 	{
-		super(NetworkId.VBN, API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dny", API_BASE + "query.exe/dn", PRODUCTS_MAP);
+		super(NetworkId.VBN, API_BASE, "dn", PRODUCTS_MAP);
 
 		setJsonGetStopsEncoding(Charsets.UTF_8);
 		setJsonNearbyLocationsEncoding(Charsets.UTF_8);

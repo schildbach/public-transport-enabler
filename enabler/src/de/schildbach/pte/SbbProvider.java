@@ -33,7 +33,7 @@ public class SbbProvider extends AbstractHafasProvider
 
 	public SbbProvider()
 	{
-		super(NetworkId.SBB, API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", PRODUCTS_MAP);
+		super(NetworkId.SBB, API_BASE, "dn", PRODUCTS_MAP);
 
 		setStationBoardHasStationTable(false);
 	}

@@ -38,14 +38,16 @@ import de.schildbach.pte.geo.Berlin;
 public final class BvgProvider extends AbstractHafasProvider
 {
 	private static final String API_BASE = "https://fahrinfo.bvg.de/Fahrinfo/bin/";
-	private static final String API_BASE_STATION_BOARD = "http://bvg.hafas.de/bin/";
 	private static final Product[] PRODUCTS_MAP = { Product.SUBURBAN_TRAIN, Product.SUBWAY, Product.TRAM, Product.BUS, Product.FERRY,
 			Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, Product.ON_DEMAND };
 
 	public BvgProvider()
 	{
-		super(NetworkId.BVG, API_BASE_STATION_BOARD + "stboard.exe/dn", API_BASE + "ajax-getstop.bin/dny", API_BASE + "query.bin/dn", PRODUCTS_MAP);
+		super(NetworkId.BVG, API_BASE, "dn", PRODUCTS_MAP);
 
+		setStationBoardEndpoint("http://bvg.hafas.de/bin/stboard.exe/dn");
+		setGetStopEndpoint(API_BASE + "ajax-getstop.bin/dn");
+		setQueryEndpoint(API_BASE + "query.bin/dn");
 		setJsonGetStopsUseWeight(false);
 		setJsonGetStopsEncoding(Charsets.UTF_8);
 		setJsonNearbyLocationsEncoding(Charsets.UTF_8);

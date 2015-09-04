@@ -36,7 +36,7 @@ public class DsbProvider extends AbstractHafasProvider
 
 	public DsbProvider()
 	{
-		super(NetworkId.DSB, API_BASE + "stboard.exe/mn", API_BASE + "ajax-getstop.exe/mn", API_BASE + "query.exe/dn", PRODUCTS_MAP);
+		super(NetworkId.DSB, API_BASE, "mn", PRODUCTS_MAP);
 
 		setStationBoardHasStationTable(false);
 	}
