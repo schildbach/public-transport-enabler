@@ -22,6 +22,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 
@@ -42,8 +43,10 @@ public final class Location implements Serializable
 	public final int lat, lon;
 	public final @Nullable String place;
 	public final @Nullable String name;
+	public final @Nullable Set<Product> products;
 
-	public Location(final LocationType type, final String id, final int lat, final int lon, final String place, final String name)
+	public Location(final LocationType type, final String id, final int lat, final int lon, final String place, final String name,
+			final Set<Product> products)
 	{
 		this.type = checkNotNull(type);
 		this.id = id;
@@ -51,6 +54,7 @@ public final class Location implements Serializable
 		this.lon = lon;
 		this.place = place;
 		this.name = name;
+		this.products = products;
 
 		checkArgument(id == null || id.length() > 0, "ID cannot be the empty string");
 		checkArgument(place == null || name != null, "place '%s' without name cannot exist", place);
@@ -59,6 +63,11 @@ public final class Location implements Serializable
 			checkArgument(hasLocation(), "coordinates missing");
 			checkArgument(place == null && name == null, "coordinates cannot have place or name");
 		}
+	}
+
+	public Location(final LocationType type, final String id, final int lat, final int lon, final String place, final String name)
+	{
+		this(type, id, lat, lon, place, name, null);
 	}
 
 	public Location(final LocationType type, final String id, final Point coord, final String place, final String name)
@@ -182,6 +191,6 @@ public final class Location implements Serializable
 		final ToStringHelper helper = MoreObjects.toStringHelper(this).addValue(type).addValue(id);
 		if (hasLocation())
 			helper.addValue(lat + "/" + lon);
-		return helper.add("place", place).add("name", name).omitNullValues().toString();
+		return helper.add("place", place).add("name", name).add("products", products).omitNullValues().toString();
 	}
 }

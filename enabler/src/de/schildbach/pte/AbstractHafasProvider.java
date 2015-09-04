@@ -289,6 +289,26 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		return product;
 	}
 
+	protected final Set<Product> intToProducts(int value)
+	{
+		final int allProductsInt = allProductsInt();
+		checkArgument(value <= allProductsInt, "value " + value + " cannot be greater than " + allProductsInt);
+
+		final Set<Product> products = EnumSet.noneOf(Product.class);
+		for (int i = productsMap.length - 1; i >= 0; i--)
+		{
+			final int v = 1 << i;
+			if (value >= v)
+			{
+				final Product product = checkNotNull(productsMap[i], "unknown product " + i);
+				products.add(product);
+				value -= v;
+			}
+		}
+		checkState(value == 0);
+		return products;
+	}
+
 	protected static final Pattern P_SPLIT_NAME_FIRST_COMMA = Pattern.compile("([^,]*), (.*)");
 	protected static final Pattern P_SPLIT_NAME_LAST_COMMA = Pattern.compile("(.*), ([^,]*)");
 	protected static final Pattern P_SPLIT_NAME_PAREN = Pattern.compile("(.*) \\((.{3,}?)\\)");
@@ -2481,12 +2501,14 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						final String urlname = ParserUtils.urlDecode(stop.getString("urlname"), jsonNearbyLocationsEncoding);
 						final int lat = stop.getInt("y");
 						final int lon = stop.getInt("x");
+						final int prodclass = stop.optInt("prodclass", -1);
 						final int stopWeight = stop.optInt("stopweight", -1);
 
 						if (stopWeight != 0)
 						{
 							final String[] placeAndName = splitStationName(urlname);
-							locations.add(new Location(LocationType.STATION, id, lat, lon, placeAndName[0], placeAndName[1]));
+							final Set<Product> products = prodclass != -1 ? intToProducts(prodclass) : null;
+							locations.add(new Location(LocationType.STATION, id, lat, lon, placeAndName[0], placeAndName[1], products));
 						}
 					}
 				}
