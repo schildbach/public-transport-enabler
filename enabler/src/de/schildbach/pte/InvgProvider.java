@@ -66,9 +66,11 @@ public class InvgProvider extends AbstractHafasProvider
 
 	public InvgProvider()
 	{
-		super(NetworkId.INVG, API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", PRODUCTS_MAP, Charsets.UTF_8);
+		super(NetworkId.INVG, API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", PRODUCTS_MAP);
 
 		setStationBoardCanDoEquivs(false);
+		setJsonGetStopsEncoding(Charsets.UTF_8);
+		setJsonNearbyLocationsEncoding(Charsets.UTF_8);
 		setStyles(STYLES);
 		setExtXmlEndpoint(API_BASE + "extxml.exe");
 	}

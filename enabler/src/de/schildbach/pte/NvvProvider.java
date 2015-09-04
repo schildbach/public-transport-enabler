@@ -41,7 +41,10 @@ public class NvvProvider extends AbstractHafasProvider
 
 	public NvvProvider()
 	{
-		super(NetworkId.NVV, API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", PRODUCTS_MAP, Charsets.UTF_8);
+		super(NetworkId.NVV, API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", PRODUCTS_MAP);
+
+		setJsonGetStopsEncoding(Charsets.UTF_8);
+		setJsonNearbyLocationsEncoding(Charsets.UTF_8);
 	}
 
 	private static final String[] PLACES = { "Frankfurt (Main)", "Offenbach (Main)", "Mainz", "Wiesbaden", "Marburg", "Kassel", "Hanau", "Göttingen",

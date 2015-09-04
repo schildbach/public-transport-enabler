@@ -35,8 +35,9 @@ public class RtProvider extends AbstractHafasProvider
 
 	public RtProvider()
 	{
-		super(NetworkId.RT, API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", PRODUCTS_MAP, Charsets.UTF_8);
+		super(NetworkId.RT, API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", PRODUCTS_MAP);
 
+		setJsonGetStopsEncoding(Charsets.UTF_8);
 		setJsonNearbyLocationsEncoding(Charsets.ISO_8859_1);
 		setStationBoardHasStationTable(false);
 	}

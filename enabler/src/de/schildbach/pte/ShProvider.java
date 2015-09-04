@@ -36,7 +36,10 @@ public class ShProvider extends AbstractHafasProvider
 
 	public ShProvider()
 	{
-		super(NetworkId.SH, API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", PRODUCTS_MAP, Charsets.UTF_8);
+		super(NetworkId.SH, API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", PRODUCTS_MAP);
+
+		setJsonGetStopsEncoding(Charsets.UTF_8);
+		setJsonNearbyLocationsEncoding(Charsets.UTF_8);
 	}
 
 	private static final String[] PLACES = { "Hamburg", "Kiel", "Lübeck", "Flensburg", "Neumünster" };

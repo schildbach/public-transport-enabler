@@ -40,8 +40,10 @@ public class NasaProvider extends AbstractHafasProvider
 
 	public NasaProvider()
 	{
-		super(NetworkId.NASA, API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", PRODUCTS_MAP, Charsets.UTF_8);
+		super(NetworkId.NASA, API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dn", API_BASE + "query.exe/dn", PRODUCTS_MAP);
 
+		setJsonGetStopsEncoding(Charsets.UTF_8);
+		setJsonNearbyLocationsEncoding(Charsets.UTF_8);
 		setStationBoardHasLocation(true);
 	}
 

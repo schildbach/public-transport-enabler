@@ -32,7 +32,10 @@ public class VbnProvider extends AbstractHafasProvider
 
 	public VbnProvider()
 	{
-		super(NetworkId.VBN, API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dny", API_BASE + "query.exe/dn", PRODUCTS_MAP, Charsets.UTF_8);
+		super(NetworkId.VBN, API_BASE + "stboard.exe/dn", API_BASE + "ajax-getstop.exe/dny", API_BASE + "query.exe/dn", PRODUCTS_MAP);
+
+		setJsonGetStopsEncoding(Charsets.UTF_8);
+		setJsonNearbyLocationsEncoding(Charsets.UTF_8);
 	}
 
 	private static final String[] PLACES = { "Bremen", "Bremerhaven", "Oldenburg(Oldb)", "Osnabrück", "Göttingen" };

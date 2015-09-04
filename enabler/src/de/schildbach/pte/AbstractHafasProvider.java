@@ -98,9 +98,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	private Product[] productsMap;
 	private @Nullable String accessId = null;
 	private @Nullable String clientType = "ANDROID";
-	private Charset jsonGetStopsEncoding;
+	private Charset jsonGetStopsEncoding = Charsets.ISO_8859_1;
 	private boolean jsonGetStopsUseWeight = true;
-	private Charset jsonNearbyLocationsEncoding;
+	private Charset jsonNearbyLocationsEncoding = Charsets.ISO_8859_1;
 	private boolean dominantPlanStopTime = false;
 	private boolean useIso8601 = false;
 	private @Nullable String extXmlEndpoint = null;
@@ -165,20 +165,12 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	public AbstractHafasProvider(final NetworkId network, final String stationBoardEndpoint, final String getStopEndpoint, final String queryEndpoint,
 			final Product[] productsMap)
 	{
-		this(network, stationBoardEndpoint, getStopEndpoint, queryEndpoint, productsMap, Charsets.ISO_8859_1);
-	}
-
-	public AbstractHafasProvider(final NetworkId network, final String stationBoardEndpoint, final String getStopEndpoint, final String queryEndpoint,
-			final Product[] productsMap, final Charset jsonEncoding)
-	{
 		super(network);
 
 		this.stationBoardEndpoint = stationBoardEndpoint;
 		this.getStopEndpoint = getStopEndpoint;
 		this.queryEndpoint = queryEndpoint;
 		this.productsMap = productsMap;
-		this.jsonGetStopsEncoding = jsonEncoding;
-		this.jsonNearbyLocationsEncoding = jsonEncoding;
 	}
 
 	protected void setClientType(final String clientType)

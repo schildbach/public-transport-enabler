@@ -44,10 +44,11 @@ public final class BvgProvider extends AbstractHafasProvider
 
 	public BvgProvider()
 	{
-		super(NetworkId.BVG, API_BASE_STATION_BOARD + "stboard.exe/dn", API_BASE + "ajax-getstop.bin/dny", API_BASE + "query.bin/dn", PRODUCTS_MAP,
-				Charsets.UTF_8);
+		super(NetworkId.BVG, API_BASE_STATION_BOARD + "stboard.exe/dn", API_BASE + "ajax-getstop.bin/dny", API_BASE + "query.bin/dn", PRODUCTS_MAP);
 
 		setJsonGetStopsUseWeight(false);
+		setJsonGetStopsEncoding(Charsets.UTF_8);
+		setJsonNearbyLocationsEncoding(Charsets.UTF_8);
 		setStyles(STYLES);
 	}
 
