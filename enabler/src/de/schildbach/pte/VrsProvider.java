@@ -924,13 +924,10 @@ public class VrsProvider extends AbstractNetworkProvider
 					if (type.equals("walk"))
 					{
 						if (departurePlanned == null)
-						{
-							departurePlanned = legs.get(iSegment - 1).getArrivalTime();
-						}
+							departurePlanned = legs.get(legs.size() - 1).getArrivalTime();
 						if (arrivalPlanned == null)
-						{
-							arrivalPlanned = new Date(legs.get(iSegment - 1).getArrivalTime().getTime() + traveltime * 1000);
-						}
+							arrivalPlanned = new Date(departurePlanned.getTime() + traveltime * 1000);
+
 						legs.add(new Trip.Individual(Trip.Individual.Type.WALK, segmentOrigin, departurePlanned, segmentDestination, arrivalPlanned,
 								points, (int) distance));
 					}
