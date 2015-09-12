@@ -22,8 +22,6 @@ import java.util.EnumSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 
-import com.google.common.base.Charsets;
-
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
@@ -44,7 +42,6 @@ public class OebbProvider extends AbstractHafasProvider
 		super(NetworkId.OEBB, API_BASE, "dn", PRODUCTS_MAP);
 
 		setDominantPlanStopTime(true);
-		setJsonGetStopsEncoding(Charsets.UTF_8);
 	}
 
 	@Override
