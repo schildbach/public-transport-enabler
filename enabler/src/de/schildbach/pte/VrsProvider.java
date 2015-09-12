@@ -481,17 +481,17 @@ public class VrsProvider extends AbstractNetworkProvider
 			{
 				return new QueryDeparturesResult(header, QueryDeparturesResult.Status.INVALID_STATION);
 			}
-			for (int i = 0; i < timetable.length(); i++)
+			for (int iStation = 0; iStation < timetable.length(); iStation++)
 			{
 				final List<Departure> departures = new ArrayList<Departure>();
-				JSONObject station = timetable.getJSONObject(i);
+				final JSONObject station = timetable.getJSONObject(iStation);
 				final Location location = parseLocationAndPosition(station.getJSONObject("stop")).location;
 				final JSONArray events = station.getJSONArray("events");
 				final List<LineDestination> lines = new ArrayList<LineDestination>();
 				// for all departures
-				for (int j = 0; j < events.length(); j++)
+				for (int iEvent = 0; iEvent < events.length(); iEvent++)
 				{
-					JSONObject event = events.getJSONObject(j);
+					final JSONObject event = events.getJSONObject(iEvent);
 					Date plannedTime = null;
 					Date predictedTime = null;
 					if (event.has("departureScheduled"))
@@ -565,9 +565,9 @@ public class VrsProvider extends AbstractNetworkProvider
 				final JSONArray lines = his.optJSONArray("lines");
 				if (lines != null)
 				{
-					for (int i = 0; i < lines.length(); i++)
+					for (int iLine = 0; iLine < lines.length(); iLine++)
 					{
-						final JSONObject line = lines.getJSONObject(i);
+						final JSONObject line = lines.getJSONObject(iLine);
 						final String number = processLineNumber(line.getString("number"));
 						if (lineNumbersAlreadyKnown.contains(number))
 						{
@@ -578,9 +578,9 @@ public class VrsProvider extends AbstractNetworkProvider
 						final JSONArray postings = line.optJSONArray("postings");
 						if (postings != null)
 						{
-							for (int j = 0; j < postings.length(); j++)
+							for (int iPosting = 0; iPosting < postings.length(); iPosting++)
 							{
-								JSONObject posting = (JSONObject) postings.get(j);
+								final JSONObject posting = (JSONObject) postings.get(iPosting);
 								direction = posting.getString("direction");
 								lineDestinations.add(new LineDestination(new Line(null /* id */, NetworkId.VRS.toString(), product, number,
 										lineStyle("vrs", product, number)), new Location(LocationType.STATION, null /* id */, null /* place */,
@@ -645,27 +645,27 @@ public class VrsProvider extends AbstractNetworkProvider
 			final JSONArray pois = head.optJSONArray("pois");
 
 			final int nStops = stops.length();
-			for (int i = 0; i < nStops; i++)
+			for (int iStop = 0; iStop < nStops; iStop++)
 			{
-				final JSONObject stop = stops.optJSONObject(i);
+				final JSONObject stop = stops.optJSONObject(iStop);
 				final Location location = parseLocationAndPosition(stop).location;
-				locations.add(new SuggestedLocation(location, sc + ac + pc - i));
+				locations.add(new SuggestedLocation(location, sc + ac + pc - iStop));
 			}
 
 			final int nAddresses = addresses.length();
-			for (int i = 0; i < nAddresses; i++)
+			for (int iAddress = 0; iAddress < nAddresses; iAddress++)
 			{
-				final JSONObject address = addresses.optJSONObject(i);
+				final JSONObject address = addresses.optJSONObject(iAddress);
 				final Location location = parseLocationAndPosition(address).location;
-				locations.add(new SuggestedLocation(location, ac + pc - i));
+				locations.add(new SuggestedLocation(location, ac + pc - iAddress));
 			}
 
 			final int nPois = pois.length();
-			for (int i = 0; i < nPois; i++)
+			for (int iPoi = 0; iPoi < nPois; iPoi++)
 			{
-				final JSONObject poi = pois.optJSONObject(i);
+				final JSONObject poi = pois.optJSONObject(iPoi);
 				final Location location = parseLocationAndPosition(poi).location;
-				locations.add(new SuggestedLocation(location, pc - i));
+				locations.add(new SuggestedLocation(location, pc - iPoi));
 			}
 
 			final ResultHeader header = new ResultHeader(NetworkId.VRS, SERVER_PRODUCT);
@@ -780,23 +780,23 @@ public class VrsProvider extends AbstractNetworkProvider
 			final JSONArray routes = head.getJSONArray("routes");
 			final Context context = new Context();
 			// for all routes
-			for (int i = 0; i < routes.length(); i++)
+			for (int iRoute = 0; iRoute < routes.length(); iRoute++)
 			{
-				final JSONObject route = routes.getJSONObject(i);
+				final JSONObject route = routes.getJSONObject(iRoute);
 				final JSONArray segments = route.getJSONArray("segments");
 				List<Leg> legs = new ArrayList<Leg>();
 				Location tripOrigin = null;
 				Location tripDestination = null;
 				// for all segments
-				for (int j = 0; j < segments.length(); j++)
+				for (int iSegment = 0; iSegment < segments.length(); iSegment++)
 				{
-					final JSONObject segment = segments.getJSONObject(j);
+					final JSONObject segment = segments.getJSONObject(iSegment);
 					final String type = segment.getString("type");
 					final JSONObject origin = segment.getJSONObject("origin");
 					final LocationWithPosition segmentOriginLocationWithPosition = parseLocationAndPosition(origin);
 					Location segmentOrigin = segmentOriginLocationWithPosition.location;
 					final Position segmentOriginPosition = segmentOriginLocationWithPosition.position;
-					if (j == 0)
+					if (iSegment == 0)
 					{
 						// special case: first origin is an address
 						if (from.type == LocationType.ADDRESS)
@@ -809,7 +809,7 @@ public class VrsProvider extends AbstractNetworkProvider
 					final LocationWithPosition segmentDestinationLocationWithPosition = parseLocationAndPosition(destination);
 					Location segmentDestination = segmentDestinationLocationWithPosition.location;
 					final Position segmentDestinationPosition = segmentDestinationLocationWithPosition.position;
-					if (j == segments.length() - 1)
+					if (iSegment == segments.length() - 1)
 					{
 						// special case: last destination is an address
 						if (to.type == LocationType.ADDRESS)
@@ -822,9 +822,9 @@ public class VrsProvider extends AbstractNetworkProvider
 					final JSONArray vias = segment.optJSONArray("vias");
 					if (vias != null)
 					{
-						for (int k = 0; k < vias.length(); k++)
+						for (int iVia = 0; iVia < vias.length(); iVia++)
 						{
-							final JSONObject viaJsonObject = vias.getJSONObject(k);
+							final JSONObject viaJsonObject = vias.getJSONObject(iVia);
 							final LocationWithPosition viaLocationWithPosition = parseLocationAndPosition(viaJsonObject);
 							final Location viaLocation = viaLocationWithPosition.location;
 							final Position viaPosition = viaLocationWithPosition.position;
@@ -850,7 +850,7 @@ public class VrsProvider extends AbstractNetworkProvider
 					{
 						departurePlanned = parseDateTime(segment.getString("departureScheduled"));
 						departurePredicted = (segment.has("departure")) ? parseDateTime(segment.getString("departure")) : null;
-						if (j == 0)
+						if (iSegment == 0)
 						{
 							context.departure(departurePredicted);
 						}
@@ -858,7 +858,7 @@ public class VrsProvider extends AbstractNetworkProvider
 					else if (segment.has("departure"))
 					{
 						departurePlanned = parseDateTime(segment.getString("departure"));
-						if (j == 0)
+						if (iSegment == 0)
 						{
 							context.departure(departurePlanned);
 						}
@@ -869,7 +869,7 @@ public class VrsProvider extends AbstractNetworkProvider
 					{
 						arrivalPlanned = parseDateTime(segment.getString("arrivalScheduled"));
 						arrivalPredicted = (segment.has("arrival")) ? parseDateTime(segment.getString("arrival")) : null;
-						if (j == segments.length() - 1)
+						if (iSegment == segments.length() - 1)
 						{
 							context.arrival(arrivalPredicted);
 						}
@@ -877,7 +877,7 @@ public class VrsProvider extends AbstractNetworkProvider
 					else if (segment.has("arrival"))
 					{
 						arrivalPlanned = parseDateTime(segment.getString("arrival"));
-						if (j == segments.length() - 1)
+						if (iSegment == segments.length() - 1)
 						{
 							context.arrival(arrivalPlanned);
 						}
@@ -925,11 +925,11 @@ public class VrsProvider extends AbstractNetworkProvider
 					{
 						if (departurePlanned == null)
 						{
-							departurePlanned = legs.get(j - 1).getArrivalTime();
+							departurePlanned = legs.get(iSegment - 1).getArrivalTime();
 						}
 						if (arrivalPlanned == null)
 						{
-							arrivalPlanned = new Date(legs.get(j - 1).getArrivalTime().getTime() + traveltime * 1000);
+							arrivalPlanned = new Date(legs.get(iSegment - 1).getArrivalTime().getTime() + traveltime * 1000);
 						}
 						legs.add(new Trip.Individual(Trip.Individual.Type.WALK, segmentOrigin, departurePlanned, segmentDestination, arrivalPlanned,
 								points, (int) distance));
