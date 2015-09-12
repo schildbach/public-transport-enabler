@@ -942,6 +942,10 @@ public class VrsProvider extends AbstractNetworkProvider
 								arrivalPredicted, segmentDestinationPosition, segmentDestinationPosition), intermediateStops, points, Strings
 								.emptyToNull(message.toString())));
 					}
+					else
+					{
+						throw new IllegalStateException("unhandled type: " + type);
+					}
 				}
 				int changes = route.getInt("changes");
 				List<Fare> fares = parseFare(route.optJSONObject("costs"));
