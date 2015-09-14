@@ -651,7 +651,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				// TODO lineFG/lineBG (ZVV)
 				final String administration = normalizeLineAdministration(XmlPullUtil.optAttr(pp, "administration", null));
 
-				if (!"cancel".equals(eDelay))
+				if (!"cancel".equals(delay) && !"cancel".equals(eDelay))
 				{
 					final Calendar plannedTime = new GregorianCalendar(timeZone);
 					plannedTime.clear();
