@@ -1837,6 +1837,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 						int lineClass = 0;
 						String lineCategory = null;
 						String routingType = null;
+						String lineNetwork = null;
 						while (true)
 						{
 							final String key = strings.read(is);
@@ -1852,6 +1853,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 							// lineOperator = strings.read(is);
 							else if (key.equals("GisRoutingType"))
 								routingType = strings.read(is);
+							else if (key.equals("AdminCode"))
+								lineNetwork = normalizeLineAdministration(strings.read(is));
 							else
 								is.skipBytes(2);
 						}
@@ -2026,7 +2029,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 							else
 								lineProduct = normalizeType(lineCategory);
 
-							final Line line = newLine(lineProduct, normalizeLineName(lineName), lineComment, lineAttrs.toArray(new Line.Attr[0]));
+							final Line line = newLine(lineNetwork, lineProduct, normalizeLineName(lineName), lineComment,
+									lineAttrs.toArray(new Line.Attr[0]));
 
 							final Location direction;
 							if (directionStr != null)
