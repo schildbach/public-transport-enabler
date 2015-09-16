@@ -41,6 +41,16 @@ public final class Point implements Serializable
 		return new Point((int) Math.round(lat * 1E6), (int) Math.round(lon * 1E6));
 	}
 
+	public double getLatAsDouble()
+	{
+		return lat / 1E6;
+	}
+
+	public double getLonAsDouble()
+	{
+		return lon / 1E6;
+	}
+
 	@Override
 	public boolean equals(final Object o)
 	{

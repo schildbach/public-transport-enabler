@@ -115,6 +115,16 @@ public final class Location implements Serializable
 		return lat != 0 || lon != 0;
 	}
 
+	public double getLatAsDouble()
+	{
+		return lat / 1E6;
+	}
+
+	public double getLonAsDouble()
+	{
+		return lon / 1E6;
+	}
+
 	public final boolean hasName()
 	{
 		return name != null;
