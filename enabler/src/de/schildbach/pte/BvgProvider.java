@@ -30,7 +30,6 @@ import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.dto.Style.Shape;
-import de.schildbach.pte.geo.Berlin;
 
 /**
  * @author Andreas Schildbach
@@ -286,6 +285,6 @@ public final class BvgProvider extends AbstractHafasProvider
 	@Override
 	public Point[] getArea()
 	{
-		return Berlin.BOUNDARY;
+		return new Point[] { Point.fromDouble(52.674189, 13.074604), Point.fromDouble(52.341100, 13.757130) };
 	}
 }
