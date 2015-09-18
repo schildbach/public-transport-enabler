@@ -274,11 +274,12 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		return (1 << productsMap.length) - 1;
 	}
 
-	protected final Product intToProduct(int value)
+	protected final Product intToProduct(final int productInt)
 	{
 		final int allProductsInt = allProductsInt();
-		checkArgument(value < allProductsInt, "value " + value + " must be smaller than " + allProductsInt);
+		checkArgument(productInt < allProductsInt, "value " + productInt + " must be smaller than " + allProductsInt);
 
+		int value = productInt;
 		Product product = null;
 		for (int i = productsMap.length - 1; i >= 0; i--)
 		{
@@ -286,7 +287,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			if (value >= v)
 			{
 				if (product != null)
-					throw new IllegalArgumentException("ambigous value: " + value);
+					throw new IllegalArgumentException("ambigous value: " + productInt);
 				product = productsMap[i];
 				value -= v;
 			}
