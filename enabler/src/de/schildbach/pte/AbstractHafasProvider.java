@@ -2079,6 +2079,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				throw new SessionExpiredException();
 			else if (errorCode == 8)
 				return new QueryTripsResult(header, QueryTripsResult.Status.AMBIGUOUS);
+			else if (errorCode == 13)
+				// IN13: Our booking system is currently being used by too many users at the same time.
+				return new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN);
 			else if (errorCode == 207)
 				// H207: Unfortunately your connection request can currently not be processed.
 				return new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN);
