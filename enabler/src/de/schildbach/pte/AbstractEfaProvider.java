@@ -2999,7 +2999,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 											ParserUtils.parseIsoDate(predictedTimeCal, intermediateParts[2]);
 											ParserUtils.parseIsoTime(predictedTimeCal, intermediateParts[3]);
 
-											if (intermediateParts.length > 5)
+											if (intermediateParts.length > 5 && intermediateParts[5].length() > 0)
 											{
 												final int delay = Integer.parseInt(intermediateParts[5]);
 												predictedTimeCal.add(Calendar.MINUTE, delay);
