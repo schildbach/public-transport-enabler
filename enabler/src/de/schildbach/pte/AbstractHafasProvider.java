@@ -1428,7 +1428,16 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			final int cls = prod.optInt("cls", -1);
 			final Product product = cls != -1 ? intToProduct(cls) : null;
 			final String name = prod.getString("name");
-			final Line line = new Line(null, operator, product, name, lineStyle(operator, product, name));
+			final String normalizedName;
+			if (product == Product.BUS && name.startsWith("Bus "))
+				normalizedName = name.substring(4);
+			else if (product == Product.TRAM && name.startsWith("Tram "))
+				normalizedName = name.substring(5);
+			else if (product == Product.SUBURBAN_TRAIN && name.startsWith("S "))
+				normalizedName = "S" + name.substring(2);
+			else
+				normalizedName = name;
+			final Line line = new Line(null, operator, product, normalizedName, lineStyle(operator, product, normalizedName));
 			lines.add(line);
 		}
 
