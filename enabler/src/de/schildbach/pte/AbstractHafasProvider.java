@@ -989,6 +989,11 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				else
 					throw new RuntimeException(err + ": " + errTxt);
 			}
+			else if ("1.10".equals(jsonApiVersion) && svcRes.toString().length() == 170)
+			{
+				// horrible hack, because API version 1.10 doesn't signal invalid stations via error
+				return new QueryDeparturesResult(header, QueryDeparturesResult.Status.INVALID_STATION);
+			}
 			final JSONObject res = svcRes.getJSONObject("res");
 
 			final JSONObject common = res.getJSONObject("common");
@@ -1139,6 +1144,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		c.setTime(time);
 		final CharSequence outDate = jsonDate(c);
 		final CharSequence outTime = jsonTime(c);
+		final CharSequence outFrwdKey = "1.11".equals(jsonApiVersion) ? "outFrwd" : "frwd";
 		final CharSequence outFrwd = Boolean.toString(dep);
 		final CharSequence jnyFltr = productsString(products);
 		final CharSequence jsonContext = moreContext != null ? "\"ctxScr\":" + JSONObject.quote(moreContext) + "," : "";
@@ -1148,10 +1154,10 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				+ "\"arrLocL\":[" + jsonLocation(to) + "]," //
 				+ "\"outDate\":\"" + outDate + "\"," //
 				+ "\"outTime\":\"" + outTime + "\"," //
-				+ "\"outFrwd\":" + outFrwd + "," //
+				+ "\"" + outFrwdKey + "\":" + outFrwd + "," //
 				+ "\"jnyFltrL\":[{\"value\":\"" + jnyFltr + "\",\"mode\":\"BIT\",\"type\":\"PROD\"}]," //
 				+ "\"gisFltrL\":[{\"mode\":\"FB\",\"profile\":{\"type\":\"F\",\"linDistRouting\":false,\"maxdist\":2000},\"type\":\"P\"}]," //
-				+ "\"getPolyline\":false,\"getPasslist\":true,\"liveSearch\":false,\"getIST\":false,\"getEco\":false,\"extChgTime\":-1,\"economic\":false}", //
+				+ "\"getPolyline\":false,\"getPasslist\":true,\"getIST\":false,\"getEco\":false,\"extChgTime\":-1}", //
 				false);
 
 		final String uri = checkNotNull(mgateEndpoint);
