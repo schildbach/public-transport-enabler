@@ -57,6 +57,7 @@ import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 
 import de.schildbach.pte.dto.Departure;
@@ -1107,9 +1108,33 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		}
 	}
 
-	protected final QueryTripsResult jsonTripSearch(final Location from, final Location to, final Date time, final boolean dep,
+	private static final Joiner JOINER = Joiner.on(' ').skipNulls();
+
+	protected final QueryTripsResult jsonTripSearch(Location from, Location to, final Date time, final boolean dep,
 			final @Nullable Set<Product> products, final String moreContext) throws IOException
 	{
+		if (!from.hasId() && from.hasName())
+		{
+			final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
+			final List<Location> locations = suggestLocations(JOINER.join(from.place, from.name)).getLocations();
+			if (locations.isEmpty())
+				return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_FROM);
+			if (locations.size() > 1)
+				return new QueryTripsResult(header, locations, null, null);
+			from = locations.get(0);
+		}
+
+		if (!to.hasId() && to.hasName())
+		{
+			final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
+			final List<Location> locations = suggestLocations(JOINER.join(to.place, to.name)).getLocations();
+			if (locations.isEmpty())
+				return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_TO);
+			if (locations.size() > 1)
+				return new QueryTripsResult(header, null, null, locations);
+			to = locations.get(0);
+		}
+
 		final Calendar c = new GregorianCalendar(timeZone);
 		c.setTime(time);
 		final CharSequence outDate = jsonDate(c);
