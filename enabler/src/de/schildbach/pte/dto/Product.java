@@ -60,4 +60,27 @@ public enum Product
 		else
 			throw new IllegalArgumentException("unknown code: '" + code + "'");
 	}
+
+	public static Set<Product> fromCodes(final char[] codes)
+	{
+		if (codes == null)
+			return null;
+
+		final Set<Product> products = EnumSet.noneOf(Product.class);
+		for (int i = 0; i < codes.length; i++)
+			products.add(Product.fromCode(codes[i]));
+		return products;
+	}
+
+	public static char[] toCodes(final Set<Product> products)
+	{
+		if (products == null)
+			return null;
+
+		final char[] codes = new char[products.size()];
+		int i = 0;
+		for (final Product product : products)
+			codes[i++] = product.code;
+		return codes;
+	}
 }
