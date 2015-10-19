@@ -325,12 +325,17 @@ public final class Trip implements Serializable
 		@Override
 		public Date getDepartureTime()
 		{
-			return departureStop.getDepartureTime();
+			return departureStop.getDepartureTime(false);
+		}
+
+		public Date getDepartureTime(final boolean preferPlanTime)
+		{
+			return departureStop.getDepartureTime(preferPlanTime);
 		}
 
 		public boolean isDepartureTimePredicted()
 		{
-			return departureStop.isDepartureTimePredicted();
+			return departureStop.isDepartureTimePredicted(false);
 		}
 
 		public Long getDepartureDelay()
@@ -351,12 +356,17 @@ public final class Trip implements Serializable
 		@Override
 		public Date getArrivalTime()
 		{
-			return arrivalStop.getArrivalTime();
+			return arrivalStop.getArrivalTime(false);
+		}
+
+		public Date getArrivalTime(final boolean preferPlanTime)
+		{
+			return arrivalStop.getArrivalTime(preferPlanTime);
 		}
 
 		public boolean isArrivalTimePredicted()
 		{
-			return arrivalStop.isArrivalTimePredicted();
+			return arrivalStop.isArrivalTimePredicted(false);
 		}
 
 		public Long getArrivalDelay()

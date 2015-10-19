@@ -114,7 +114,14 @@ public final class Stop implements Serializable
 
 	public Date getArrivalTime()
 	{
-		if (predictedArrivalTime != null)
+		return getArrivalTime(false);
+	}
+
+	public Date getArrivalTime(final boolean preferPlanTime)
+	{
+		if (preferPlanTime && plannedArrivalTime != null)
+			return plannedArrivalTime;
+		else if (predictedArrivalTime != null)
 			return predictedArrivalTime;
 		else if (plannedArrivalTime != null)
 			return plannedArrivalTime;
@@ -124,7 +131,15 @@ public final class Stop implements Serializable
 
 	public boolean isArrivalTimePredicted()
 	{
-		return predictedArrivalTime != null;
+		return isArrivalTimePredicted(false);
+	}
+
+	public boolean isArrivalTimePredicted(final boolean preferPlanTime)
+	{
+		if (preferPlanTime && plannedArrivalTime != null)
+			return false;
+		else
+			return predictedArrivalTime != null;
 	}
 
 	public Long getArrivalDelay()
@@ -154,7 +169,14 @@ public final class Stop implements Serializable
 
 	public Date getDepartureTime()
 	{
-		if (predictedDepartureTime != null)
+		return getDepartureTime(false);
+	}
+
+	public Date getDepartureTime(final boolean preferPlanTime)
+	{
+		if (preferPlanTime && plannedDepartureTime != null)
+			return plannedDepartureTime;
+		else if (predictedDepartureTime != null)
 			return predictedDepartureTime;
 		else if (plannedDepartureTime != null)
 			return plannedDepartureTime;
@@ -164,7 +186,15 @@ public final class Stop implements Serializable
 
 	public boolean isDepartureTimePredicted()
 	{
-		return predictedDepartureTime != null;
+		return isDepartureTimePredicted(false);
+	}
+
+	public boolean isDepartureTimePredicted(final boolean preferPlanTime)
+	{
+		if (preferPlanTime && plannedDepartureTime != null)
+			return false;
+		else
+			return predictedDepartureTime != null;
 	}
 
 	public Long getDepartureDelay()
