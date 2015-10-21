@@ -627,6 +627,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			reader.replace("</b>", " ");
 			reader.replace("<u>", " ");
 			reader.replace("</u>", " ");
+			reader.replace("<i>", " ");
+			reader.replace("</i>", " ");
 			reader.replace("<br />", " ");
 			reader.replace(" ->", " &#x2192;"); // right arrow
 			reader.replace(" <-", " &#x2190;"); // left arrow
