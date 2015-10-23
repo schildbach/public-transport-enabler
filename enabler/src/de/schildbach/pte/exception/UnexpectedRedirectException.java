@@ -29,12 +29,18 @@ public class UnexpectedRedirectException extends AbstractHttpException
 
 	public UnexpectedRedirectException(final URL originalUrl, final URL redirectedUrl)
 	{
-		super(originalUrl, originalUrl + " -> " + redirectedUrl);
+		super(originalUrl);
 		this.redirectedUrl = redirectedUrl;
 	}
 
 	public URL getRedirectedUrl()
 	{
 		return redirectedUrl;
+	}
+
+	@Override
+	public String toString()
+	{
+		return getClass().getName() + ": " + getUrl() + " -> " + redirectedUrl;
 	}
 }

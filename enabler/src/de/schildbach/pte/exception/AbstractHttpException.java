@@ -32,18 +32,16 @@ public abstract class AbstractHttpException extends IOException
 	private final URL url;
 	private final Reader errorReader;
 
-	public AbstractHttpException(final URL url, final Reader errorReader)
+	public AbstractHttpException(final URL url)
 	{
-		super();
-		this.url = url;
-		this.errorReader = errorReader;
+		this(url, null);
 	}
 
-	public AbstractHttpException(final URL url, final String message)
+	public AbstractHttpException(final URL url, final Reader errorReader)
 	{
-		super(message);
+		super(url.toString());
 		this.url = url;
-		this.errorReader = null;
+		this.errorReader = errorReader;
 	}
 
 	public URL getUrl()
