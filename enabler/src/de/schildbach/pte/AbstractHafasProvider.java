@@ -1149,6 +1149,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			{
 				if ("H890".equals(err)) // No connections found.
 					return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
+				if ("H891".equals(err)) // No route found (try entering an intermediate station).
+					return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
 				if ("H895".equals(err)) // Departure/Arrival are too near.
 					return new QueryTripsResult(header, QueryTripsResult.Status.TOO_CLOSE);
 				if ("H9220".equals(err)) // Nearby to the given address stations could not be found.
