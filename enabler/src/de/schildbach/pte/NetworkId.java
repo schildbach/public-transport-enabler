@@ -52,6 +52,9 @@ public enum NetworkId
 	// Norway
 	NRI,
 
+	// Finland
+	HSL,
+
 	// Luxembourg
 	LU,
 
