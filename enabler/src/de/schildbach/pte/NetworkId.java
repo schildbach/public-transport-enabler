@@ -77,5 +77,8 @@ public enum NetworkId
 	SF, SEPTA,
 
 	// Australia
-	SYDNEY, MET
+	SYDNEY, MET,
+
+	// Finland
+	HSL
 }
