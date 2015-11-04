@@ -42,7 +42,7 @@ public class GvhProviderLiveTest extends AbstractProviderLiveTest
 {
 	public GvhProviderLiveTest()
 	{
-		super(new GvhProvider(null));
+		super(new GvhProvider());
 	}
 
 	@Test

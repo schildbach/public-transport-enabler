@@ -37,11 +37,15 @@ public class GvhProvider extends AbstractEfaProvider
 	// http://bhb.efa.de/bhb/
 	// http://mobil.efa.de/mobile3/
 
-	public GvhProvider(final String additionalQueryParameter)
+	public GvhProvider()
 	{
-		super(NetworkId.GVH, API_BASE);
+		this(API_BASE);
+	}
 
-		setAdditionalQueryParameter(additionalQueryParameter);
+	public GvhProvider(final String apiBase)
+	{
+		super(NetworkId.GVH, apiBase);
+
 		setStyles(STYLES);
 		setSessionCookieName("HASESSIONID");
 	}
