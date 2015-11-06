@@ -1721,7 +1721,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					XmlPullUtil.enter(pp, "r");
 					final String assignedId = XmlPullUtil.valueTag(pp, "id");
 					XmlPullUtil.valueTag(pp, "a");
-					final Position position = super.parsePosition(XmlPullUtil.optValueTag(pp, "pl", null));
+					final Position position = parsePosition(XmlPullUtil.optValueTag(pp, "pl", null));
 					XmlPullUtil.skipExit(pp, "r");
 
 					/* final Point positionCoordinate = */parseCoord(XmlPullUtil.optValueTag(pp, "c", null));
@@ -2911,7 +2911,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 							XmlPullUtil.enter(pp, "r");
 							final String id = XmlPullUtil.valueTag(pp, "id");
 							XmlPullUtil.optValueTag(pp, "a", null);
-							final Position position = super.parsePosition(XmlPullUtil.optValueTag(pp, "pl", null));
+							final Position position = parsePosition(XmlPullUtil.optValueTag(pp, "pl", null));
 							final String place = normalizeLocationName(XmlPullUtil.optValueTag(pp, "pc", null));
 							final Point coord = parseCoord(XmlPullUtil.optValueTag(pp, "c", null));
 							XmlPullUtil.skipExit(pp, "r");
