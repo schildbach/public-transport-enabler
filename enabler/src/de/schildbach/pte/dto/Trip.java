@@ -184,6 +184,27 @@ public final class Trip implements Serializable
 		return true;
 	}
 
+	/** If an individual leg overlaps, try to adjust so that it doesn't. */
+	public void adjustUntravelableIndividualLegs()
+	{
+		final int numLegs = legs.size();
+		if (numLegs < 1)
+			return;
+
+		for (int i = 1; i < numLegs; i++)
+		{
+			final Trip.Leg leg = legs.get(i);
+
+			if (leg instanceof Trip.Individual)
+			{
+				final Trip.Leg previous = legs.get(i - 1);
+
+				if (leg.getDepartureTime().before(previous.getArrivalTime()))
+					legs.set(i, ((Trip.Individual) leg).movedClone(previous.getArrivalTime()));
+			}
+		}
+	}
+
 	public Set<Product> products()
 	{
 		final Set<Product> products = EnumSet.noneOf(Product.class);
@@ -429,6 +450,12 @@ public final class Trip implements Serializable
 			this.arrivalTime = checkNotNull(arrivalTime);
 			this.min = (int) ((arrivalTime.getTime() - departureTime.getTime()) / 1000 / 60);
 			this.distance = distance;
+		}
+
+		public Individual movedClone(final Date departureTime)
+		{
+			final Date arrivalTime = new Date(departureTime.getTime() + this.arrivalTime.getTime() - this.departureTime.getTime());
+			return new Trip.Individual(this.type, this.departure, departureTime, this.arrival, arrivalTime, this.path, this.distance);
 		}
 
 		@Override
