@@ -37,13 +37,18 @@ import de.schildbach.pte.dto.Style;
  */
 public class VrrProvider extends AbstractEfaProvider
 {
-	private static final String API_BASE = "http://app.vrr.de/standard/";
+	private static final String API_BASE = "http://efa.vrr.de/standard/";
 
 	// http://app.vrr.de/companion-vrr/
 
 	public VrrProvider()
 	{
-		super(NetworkId.VRR, API_BASE);
+		this(API_BASE);
+	}
+
+	public VrrProvider(final String apiBase)
+	{
+		super(NetworkId.VRR, apiBase);
 
 		setIncludeRegionId(false);
 		setUseProxFootSearch(false);
@@ -51,6 +56,7 @@ public class VrrProvider extends AbstractEfaProvider
 		setUseRouteIndexAsTripId(false);
 		setStyles(STYLES);
 		setRequestUrlEncoding(Charsets.ISO_8859_1);
+		setSessionCookieName("vrr-efa-lb");
 	}
 
 	@Override
