@@ -17,7 +17,9 @@
 
 package de.schildbach.pte.live;
 
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
@@ -76,8 +78,9 @@ public class VvmProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsWithUmlaut() throws Exception
 	{
-		final SuggestLocationsResult result = suggestLocations("grün");
+		final SuggestLocationsResult result = suggestLocations("Kloster Südstraße");
 		print(result);
+		assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "2007534")));
 	}
 
 	@Test

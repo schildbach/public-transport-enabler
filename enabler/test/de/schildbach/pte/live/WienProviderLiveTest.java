@@ -88,8 +88,9 @@ public class WienProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsWithUmlaut() throws Exception
 	{
-		final SuggestLocationsResult result = suggestLocations("grün");
+		final SuggestLocationsResult result = suggestLocations("Längenfeld");
 		print(result);
+		assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "60200820")));
 	}
 
 	@Test

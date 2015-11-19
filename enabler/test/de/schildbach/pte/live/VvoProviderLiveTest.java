@@ -80,6 +80,7 @@ public class VvoProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final SuggestLocationsResult result = suggestLocations("Hülßestraße");
 		print(result);
+		assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "33000123")));
 	}
 
 	@Test

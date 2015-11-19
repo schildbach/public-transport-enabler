@@ -104,8 +104,9 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsWithUmlaut() throws Exception
 	{
-		final SuggestLocationsResult result = suggestLocations("grün");
+		final SuggestLocationsResult result = suggestLocations("Grüntal");
 		print(result);
+		assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "1000619")));
 	}
 
 	@Test

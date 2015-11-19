@@ -76,7 +76,7 @@ public class BvbProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void suggestLocationsWithUmlaut() throws Exception
 	{
-		final SuggestLocationsResult result = suggestLocations("grün");
+		final SuggestLocationsResult result = suggestLocations("Käferholz");
 		print(result);
 	}
 
