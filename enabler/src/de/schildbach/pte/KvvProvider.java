@@ -74,18 +74,24 @@ public class KvvProvider extends AbstractEfaProvider
 		STYLES.put("SS1", new Style(Style.parseColor("#00a76c"), Style.WHITE));
 		STYLES.put("SS11", new Style(Style.parseColor("#00a76c"), Style.WHITE));
 		STYLES.put("SS2", new Style(Style.parseColor("#9f68ab"), Style.WHITE));
-		STYLES.put("SS3", new Style(Style.parseColor("#ffdc02"), Style.BLACK));
+		STYLES.put("SS3", new Style(Style.parseColor("#00a99d"), Style.BLACK));
 		STYLES.put("SS31", new Style(Style.parseColor("#00a99d"), Style.WHITE));
 		STYLES.put("SS32", new Style(Style.parseColor("#00a99d"), Style.WHITE));
-		STYLES.put("SS33", new Style(Style.parseColor("#8c5ca9"), Style.WHITE));
-		STYLES.put("SS4", new Style(Style.parseColor("#a2144e"), Style.WHITE));
-		STYLES.put("SS41", new Style(Style.parseColor("#a2144e"), Style.WHITE));
-		STYLES.put("SS5", new Style(Style.parseColor("#f7931b"), Style.BLACK));
-		STYLES.put("SS51", new Style(Style.parseColor("#f99693"), Style.BLACK));
-		STYLES.put("SS52", new Style(Style.parseColor("#f99693"), Style.BLACK));
+		STYLES.put("SS33", new Style(Style.parseColor("#00a99d"), Style.WHITE));
+		STYLES.put("SS4", new Style(Style.parseColor("#9f184c"), Style.WHITE));
+		STYLES.put("SS41", new Style(Style.parseColor("#9f184c"), Style.WHITE));
+		STYLES.put("SS5", new Style(Style.parseColor("#f69795"), Style.BLACK));
+		STYLES.put("SS51", new Style(Style.parseColor("#f69795"), Style.BLACK));
+		STYLES.put("SS52", new Style(Style.parseColor("#f69795"), Style.BLACK));
 		STYLES.put("SS6", new Style(Style.parseColor("#292369"), Style.WHITE));
 		STYLES.put("SS7", new Style(Style.parseColor("#fff200"), Style.BLACK));
 		STYLES.put("SS9", new Style(Style.parseColor("#fab499"), Style.BLACK));
+
+		// S-Bahn RheinNeckar
+		STYLES.put("ddb|SS3", new Style(Style.parseColor("#ffdd00"), Style.BLACK));
+		STYLES.put("ddb|SS33", new Style(Style.parseColor("#8d5ca6"), Style.WHITE));
+		STYLES.put("ddb|SS4", new Style(Style.parseColor("#00a650"), Style.WHITE));
+		STYLES.put("ddb|SS5", new Style(Style.parseColor("#f89835"), Style.WHITE));
 
 		// Tram
 		STYLES.put("T1", new Style(Shape.RECT, Style.parseColor("#ed1c24"), Style.WHITE));
