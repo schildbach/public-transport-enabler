@@ -177,14 +177,14 @@ public final class BvgProvider extends AbstractHafasProvider
 		STYLES.put("SS3", new Style(Style.rgb(22, 106, 184), Style.WHITE));
 		STYLES.put("SS41", new Style(Style.rgb(162, 63, 48), Style.WHITE));
 		STYLES.put("SS42", new Style(Style.rgb(191, 90, 42), Style.WHITE));
-		STYLES.put("SS45", new Style(Style.WHITE, Style.rgb(191, 128, 55)));
+		STYLES.put("SS45", new Style(Style.WHITE, Style.rgb(191, 128, 55), Style.rgb(191, 128, 55)));
 		STYLES.put("SS46", new Style(Style.rgb(191, 128, 55), Style.WHITE));
 		STYLES.put("SS47", new Style(Style.rgb(191, 128, 55), Style.WHITE));
 		STYLES.put("SS5", new Style(Style.rgb(243, 103, 23), Style.WHITE));
 		STYLES.put("SS7", new Style(Style.rgb(119, 96, 176), Style.WHITE));
 		STYLES.put("SS75", new Style(Style.rgb(119, 96, 176), Style.WHITE));
 		STYLES.put("SS8", new Style(Style.rgb(85, 184, 49), Style.WHITE));
-		STYLES.put("SS85", new Style(Style.WHITE, Style.rgb(85, 184, 49)));
+		STYLES.put("SS85", new Style(Style.WHITE, Style.rgb(85, 184, 49), Style.rgb(85, 184, 49)));
 		STYLES.put("SS9", new Style(Style.rgb(148, 36, 64), Style.WHITE));
 
 		STYLES.put("UU1", new Style(Shape.RECT, Style.rgb(84, 131, 47), Style.WHITE));
