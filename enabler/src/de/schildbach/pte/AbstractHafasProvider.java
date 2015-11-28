@@ -3410,6 +3410,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			return Product.REGIONAL_TRAIN;
 		if ("RE".equals(ucType)) // RegionalExpress
 			return Product.REGIONAL_TRAIN;
+		if ("DB".equals(ucType))
+			return Product.REGIONAL_TRAIN;
 		if ("IR".equals(ucType)) // Interregio
 			return Product.REGIONAL_TRAIN;
 		if ("IRE".equals(ucType)) // Interregio Express

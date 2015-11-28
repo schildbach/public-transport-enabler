@@ -162,6 +162,8 @@ public class SydneyProvider extends AbstractEfaProvider
 				return new Line(id, network, Product.FERRY, "MFF");
 			if ("LneCv".equals(symbol) || "Lane Cove Ferry".equals(name))
 				return new Line(id, network, Product.FERRY, "LneCv");
+			if ("EmpBa".equals(symbol) || "Woy Woy to Empire Bay Ferry".equals(name))
+				return new Line(id, network, Product.FERRY, "EmpBa");
 
 			throw new IllegalStateException("cannot normalize mot='" + mot + "' symbol='" + symbol + "' name='" + name + "' long='" + longName
 					+ "' trainType='" + trainType + "' trainNum='" + trainNum + "' trainName='" + trainName + "'");

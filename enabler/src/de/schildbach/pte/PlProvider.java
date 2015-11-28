@@ -87,8 +87,6 @@ public class PlProvider extends AbstractHafasProvider
 			return Product.REGIONAL_TRAIN;
 		if ("KS".equals(ucType)) // Koleje Śląskie
 			return Product.REGIONAL_TRAIN;
-		if ("DB".equals(ucType))
-			return Product.REGIONAL_TRAIN;
 		if ("REG".equals(ucType))
 			return Product.REGIONAL_TRAIN;
 
