@@ -285,6 +285,16 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			}
 			else
 			{
+				final JSONArray messages = stopFinder.getJSONArray("message");
+				for (int i = 0; i < messages.length(); i++)
+				{
+					final JSONObject message = messages.optJSONObject(i);
+					final String messageName = message.getString("name");
+					final String messageValue = Strings.emptyToNull(message.getString("value"));
+					if ("code".equals(messageName) && !"-8011".equals(messageValue))
+						return new SuggestLocationsResult(header, SuggestLocationsResult.Status.SERVICE_DOWN);
+				}
+
 				final JSONObject points = stopFinder.optJSONObject("points");
 				if (points != null)
 				{

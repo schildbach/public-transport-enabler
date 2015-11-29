@@ -84,6 +84,13 @@ public class SvvProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
+	public void suggestLocationsAddress() throws Exception
+	{
+		final SuggestLocationsResult result = suggestLocations("Kaigasse 10");
+		print(result);
+	}
+
+	@Test
 	public void suggestLocationsCoverage() throws Exception
 	{
 		final SuggestLocationsResult salzburgResult = suggestLocations("Salzburg Süd");
