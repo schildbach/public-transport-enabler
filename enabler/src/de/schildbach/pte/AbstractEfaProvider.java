@@ -2370,6 +2370,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		XmlPullUtil.skipExit(pp, "itdTripDateTime");
 
 		XmlPullUtil.requireSkip(pp, "itdTripOptions");
+		XmlPullUtil.optSkip(pp, "omcTaxi");
 
 		final List<Trip> trips = new ArrayList<Trip>();
 
