@@ -782,16 +782,23 @@ public class HslProvider extends AbstractNetworkProvider
 
 				Trip t = new Trip(null, from, to, legs, null, null, numTransfers-1);
 				if (!tripSet.contains(t.getId())) {
+					Date thisTime = t.getFirstDepartureTime();
+					while (insert < trips.size() &&
+					       thisTime.after(trips.get(insert).
+							      getFirstDepartureTime())) {
+						insert++;
+					}
 					trips.add(insert++, t);
 					tripSet.add(t.getId());
 				}
 			}
 
-			Date lastDate = trips.get(trips.size()-1).legs.get(0).getDepartureTime();
+			Date lastDate = trips.get(trips.size()-1).getFirstDepartureTime();
+			Date firstDate = trips.get(0).getFirstDepartureTime();
 			if (context.nextDate == null || lastDate.after(context.nextDate))
 				context.nextDate = lastDate;
-			if (context.prevDate == null || date.before(context.prevDate))
-				context.prevDate = date;
+			if (context.prevDate == null || firstDate.before(context.prevDate))
+				context.prevDate = firstDate;
 			context.trips = trips;
 			return new QueryTripsResult(header, uri.toString(), from, via, to, context, trips);
 		}

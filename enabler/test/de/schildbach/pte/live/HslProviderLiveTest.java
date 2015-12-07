@@ -20,13 +20,14 @@ package de.schildbach.pte.live;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Date;
-
 import org.junit.Test;
 
+import java.util.Date;
+import java.util.List; 
+
+import de.schildbach.pte.HslProvider;
 import de.schildbach.pte.NetworkProvider.Accessibility;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
-import de.schildbach.pte.HslProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
@@ -34,6 +35,7 @@ import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
+import de.schildbach.pte.dto.Trip;
 
 /**
  * @author Mats Sjöberg <mats@sjoberg.fi>
@@ -101,36 +103,58 @@ public class HslProviderLiveTest extends AbstractProviderLiveTest
 		assertTrue(result.getLocations().size() > 0);
 	}
 
+	private void assertTimesInSequence(List<Trip> trips) {
+		for (int i=1; i<trips.size(); i++) {
+			Date start1 = trips.get(i-1).getFirstDepartureTime();
+			Date start2 = trips.get(i).getFirstDepartureTime();
+			assertTrue(i + ": " + start1 + " vs " + start2,
+				   start1.compareTo(start2) <= 0);
+		}
+	}
+
+
 	@Test
 	public void shortTrip() throws Exception
 	{
 		final QueryTripsResult result =
 			queryTrips(new Location(LocationType.STATION, null, "", "Gustaf Hällströmin katu 1"), null,
-				   new Location(LocationType.STATION, null, "", "Tyynenmerenkatu 11"), new Date(),
+				   new Location(LocationType.STATION, null, "", "Tyynenmerenkatu 11"), new Date(2015, 12, 7, 21, 59, 0),
 				   true, Product.ALL,
 				   WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
+		assertTimesInSequence(result.trips);
 
-		// FIXME handle AMBIGUOUS
 		assertEquals(QueryTripsResult.Status.OK, result.status);
 		assertTrue(result.trips.size() > 0);
 
-		if (!result.context.canQueryLater())
-			return;
+		assertTrue(result.context.canQueryLater());
 
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		print(laterResult);
+		print(laterResult);	
+		assertEquals(QueryTripsResult.Status.OK, laterResult.status);
+		assertTrue(laterResult.trips.size() > result.trips.size());
+		assertTimesInSequence(laterResult.trips);
 
-		if (!laterResult.context.canQueryLater())
-			return;
+		assertTrue(laterResult.context.canQueryLater());
 
 		final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
-		print(later2Result);
+		print(later2Result);	
+		for (Trip trip : later2Result.trips) {
+			System.out.println("LATER2 " + trip.getFirstDepartureTime() + " " + trip.getId());
+		}
+		assertEquals(QueryTripsResult.Status.OK, later2Result.status);
+		assertTrue(later2Result.trips.size() > laterResult.trips.size());
+		assertTimesInSequence(later2Result.trips);
 
-		if (!later2Result.context.canQueryEarlier())
-			return;
+		assertTrue(later2Result.context.canQueryEarlier());
 
 		final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
 		print(earlierResult);
+		for (Trip trip : earlierResult.trips) {
+			System.out.println("EARLIER " + trip.getFirstDepartureTime() + " " + trip.getId());
+		}
+		assertEquals(QueryTripsResult.Status.OK, earlierResult.status);
+		assertTrue(earlierResult.trips.size() > later2Result.trips.size());
+		assertTimesInSequence(earlierResult.trips);
 	}
 }
