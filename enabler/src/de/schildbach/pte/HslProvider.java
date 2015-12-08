@@ -71,21 +71,21 @@ public class HslProvider extends AbstractNetworkProvider
 	private static final int COORD_MUL = 1000000;
 	private static final String SERVER_PRODUCT = "hsl";
 	private static final String SERVER_VERSION = "1_2_0";
-	private static String API_BASE;
-	private static final int EARLIER_TRIPS_MINUTE_OFFSET = 10;
+	private static final int EARLIER_TRIPS_MINUTE_OFFSET = 5;
 	private static final int EARLIER_TRIPS_MINIMUM = 3;
+
+	private String apiBase;
 
 	private final XmlPullParserFactory parserFactory;
 
 	public HslProvider(String user, String pass)
 	{
 		super(NetworkId.HSL);
-		API_BASE = String.format("http://api.reittiopas.fi/hsl/%s/?user=%s&pass=%s",
+		apiBase = String.format("http://api.reittiopas.fi/hsl/%s/?user=%s&pass=%s",
 					 SERVER_VERSION, user, pass);
 		try
 		{
-			parserFactory = XmlPullParserFactory.
-				newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
+			parserFactory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
 		}
 		catch (final XmlPullParserException x)
 		{
@@ -99,8 +99,9 @@ public class HslProvider extends AbstractNetworkProvider
 		return true;
 	}
 
-	private StringBuilder apiUri(final String request) {
-		StringBuilder ret = new StringBuilder(API_BASE);
+	private StringBuilder apiUri(final String request)
+	{
+		StringBuilder ret = new StringBuilder(apiBase);
 		ret.append("&request=").append(request);
 		ret.append("&epsg_out=wgs84");
 		ret.append("&epsg_in=wgs84");
@@ -137,16 +138,15 @@ public class HslProvider extends AbstractNetworkProvider
 	private void xmlSkipUntil(final XmlPullParser pp, final String tagName)
 		throws XmlPullParserException, IOException
 	{
-		while (!XmlPullUtil.test(pp, tagName)) 
-		{
+		while (!XmlPullUtil.test(pp, tagName)) {
 			if (!pp.isEmptyElementTag())
 			{
-					XmlPullUtil.enter(pp);
-					XmlPullUtil.skipExit(pp);
+				XmlPullUtil.enter(pp);
+				XmlPullUtil.skipExit(pp);
 			}
 			else
 			{
-					XmlPullUtil.next(pp);
+				XmlPullUtil.next(pp);
 		        }
 		}
 	}
@@ -266,7 +266,8 @@ public class HslProvider extends AbstractNetworkProvider
 		}
 	}
 
-	private Line newLine(String code, int type, String message) {
+	private Line newLine(String code, int type, String message)
+	{
 		String label = code.substring(1, 5).trim().replaceAll("^0+",""); 
 		Product product = Product.BUS;
 		char acode = code.substring(0, 1).charAt(0);
@@ -305,7 +306,8 @@ public class HslProvider extends AbstractNetworkProvider
 		final StringBuilder uri = apiUri("stop");
 
 		uri.append("&code=").append(stationId);
-		if (queryDate != null) {
+		if (queryDate != null)
+		{
 		    uri.append("&date=").append(new SimpleDateFormat("yyyyMMdd").format(queryDate));
 		    uri.append("&time=").append(new SimpleDateFormat("HHmm").format(queryDate));
 		}
@@ -599,30 +601,39 @@ public class HslProvider extends AbstractNetworkProvider
 	public QueryTripsResult queryMoreTrips(QueryTripsContext contextObj, boolean later) throws IOException 
 	{
 		final QueryTripsHslContext context = (QueryTripsHslContext)contextObj;
-		Date date = context.nextDate;
-		int context_trips = context.trips.size();
 
-		int tries = 0;
 		QueryTripsResult result;
-		do {
+
+		if (later)
+		{
+				result = queryHslTrips(context.from, context.via, context.to, 
+						       context, context.nextDate, later);
+		}
+		else
+		{
 			// if we are fetching earlier trips, we have
-			// to do a hack to search backwards in small 5
-			// minute steps
-			if (!later) {
-				final Calendar cal = new GregorianCalendar(timeZone);
-				cal.setTime(context.prevDate);
-				cal.add(Calendar.MINUTE, -EARLIER_TRIPS_MINUTE_OFFSET);
-				date = cal.getTime();
-			}
-
-			result = queryHslTrips(context.from, context.via, context.to, context, date, later);
-
-			tries += 1;
+			// to do a hack to search backwards in small
+			// steps
 			
-			// keep trying if we are fetching earlier
-			// trips and the list of trips hasn't grown enough
-		} while (!later && (result.trips.size() - context_trips < EARLIER_TRIPS_MINIMUM) && tries < 10);
+			int tries = 0;
+			int context_trips = context.trips.size();
 
+			final Calendar cal = new GregorianCalendar(timeZone);
+			cal.setTime(context.prevDate);
+
+			do {
+				cal.add(Calendar.MINUTE, -EARLIER_TRIPS_MINUTE_OFFSET);
+				result = queryHslTrips(context.from, context.via, context.to, 
+						       context, cal.getTime(), later);
+				
+				tries += 1;
+			
+				// keep trying if we are fetching earlier
+				// trips and the list of trips hasn't grown enough
+			} while ((result.trips.size() - context_trips < EARLIER_TRIPS_MINIMUM)
+				 && tries < 10);
+		}
+		
 		return result;
 	}
 
@@ -672,7 +683,8 @@ public class HslProvider extends AbstractNetworkProvider
 				XmlPullUtil.enter(pp, "legs");
 				int numTransfers = 0;
 
-				while (XmlPullUtil.test(pp, "node")) {
+				while (XmlPullUtil.test(pp, "node"))
+				{
 					XmlPullUtil.enter(pp, "node");
 
 					int distance = Integer.parseInt(xmlValueTag(pp, "length"));
@@ -692,7 +704,8 @@ public class HslProvider extends AbstractNetworkProvider
 					
 					xmlSkipUntil(pp, "locs");
 					XmlPullUtil.enter(pp, "locs");
-					while (XmlPullUtil.test(pp, "node")) {
+					while (XmlPullUtil.test(pp, "node"))
+					{
 						XmlPullUtil.enter(pp, "node");
 						Point pt = xmlCoordsToPoint(pp);
 						
@@ -700,20 +713,19 @@ public class HslProvider extends AbstractNetworkProvider
 						String depTime = xmlValueTag(pp, "depTime");
 						String name = XmlPullUtil.optValueTag(pp, "name", null);
 						String code = XmlPullUtil.optValueTag(pp, "code", null);
-						// FIXME: shortCode is never used
 						String shortCode = XmlPullUtil.optValueTag(pp, "shortCode", null);
 						String stopAddress = 
 						    XmlPullUtil.optValueTag(pp, "stopAddress", null);
 
-						if (name == null) {
+						if (name == null)
+						{
 							name = (path.size() == 0 && from != null &&
 								from.name != null) ? from.name : "";
 						}
 							
 						SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
 						Date arrDate = sdf.parse(arrTime, new ParsePosition(0));
-						Date depDate = //arrTime.equals(depTime) ? null :
-						    sdf.parse(depTime, new ParsePosition(0));
+						Date depDate = sdf.parse(depTime, new ParsePosition(0));
 
 						LocationType type = LocationType.ANY;
 						if (code != null)
@@ -721,7 +733,8 @@ public class HslProvider extends AbstractNetworkProvider
 						Location loc = new Location(type, code, pt.lat, pt.lon,
 									    stopAddress, name);
 
-						if (path.size() == 0) {
+						if (path.size() == 0)
+						{
 							departure = loc;
 							departureTime = depDate;
 							if (type == LocationType.STATION)
@@ -731,7 +744,8 @@ public class HslProvider extends AbstractNetworkProvider
 						} else {
 							arrival = loc;
 							arrivalTime = arrDate;
-							if (type == LocationType.STATION) {
+							if (type == LocationType.STATION)
+							{
 								stops.add(new Stop(loc, arrDate, null,
 										   depDate, null));
 							}
@@ -743,9 +757,11 @@ public class HslProvider extends AbstractNetworkProvider
 					XmlPullUtil.skipExit(pp, "locs");
 					XmlPullUtil.skipExit(pp, "node");
 
-					if (legType.equals("walk")) {
+					if (legType.equals("walk"))
+					{
 						// ugly hack to set the name of the last arrival
-						if (arrival.name.isEmpty()) {
+						if (arrival.name.isEmpty())
+						{
 							arrival = new Location(arrival.type, arrival.id, 
 									       arrival.lat, arrival.lon,
 									       arrival.place, to.name);
@@ -755,9 +771,12 @@ public class HslProvider extends AbstractNetworkProvider
 									     departure, departureTime,
 									     arrival, arrivalTime, path,
 									     distance));
-					} else {
+					}
+					else
+					{
 						Stop arrivalStop = null;
-						if (stops.size() > 0) {
+						if (stops.size() > 0)
+						{
 							Stop last = stops.getLast();
 							arrivalStop = new Stop(last.location, false, 
 									       last.plannedArrivalTime,
@@ -766,9 +785,8 @@ public class HslProvider extends AbstractNetworkProvider
 						}
 
 						Line line = null;
-						if (lineCode != null) {
+						if (lineCode != null)
 							line = newLine(lineCode, Integer.parseInt(legType), null);
-						}
 						
 						legs.add(new Trip.Public(line, null, departureStop,
 									 arrivalStop, stops,
@@ -781,13 +799,12 @@ public class HslProvider extends AbstractNetworkProvider
 				XmlPullUtil.skipExit(pp, "node");
 
 				Trip t = new Trip(null, from, to, legs, null, null, numTransfers-1);
-				if (!tripSet.contains(t.getId())) {
+				if (!tripSet.contains(t.getId()))
+				{
 					Date thisTime = t.getFirstDepartureTime();
-					while (insert < trips.size() &&
-					       thisTime.after(trips.get(insert).
-							      getFirstDepartureTime())) {
+					while (insert < trips.size() && thisTime.after(trips.get(insert).getFirstDepartureTime()))
 						insert++;
-					}
+
 					trips.add(insert++, t);
 					tripSet.add(t.getId());
 				}

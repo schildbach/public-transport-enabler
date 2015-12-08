@@ -118,7 +118,7 @@ public class HslProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final QueryTripsResult result =
 			queryTrips(new Location(LocationType.STATION, null, "", "Gustaf Hällströmin katu 1"), null,
-				   new Location(LocationType.STATION, null, "", "Tyynenmerenkatu 11"), new Date(2015, 12, 7, 21, 59, 0),
+				   new Location(LocationType.STATION, null, "", "Tyynenmerenkatu 11"), new Date(),
 				   true, Product.ALL,
 				   WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
