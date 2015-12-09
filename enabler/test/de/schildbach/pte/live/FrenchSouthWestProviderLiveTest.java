@@ -31,7 +31,7 @@ public class FrenchSouthWestProviderLiveTest extends AbstractNavitiaProviderLive
 {
 	public FrenchSouthWestProviderLiveTest()
 	{
-		super(new ParisProvider(Secrets.NAVITIA_AUTHORIZATION));
+		super(new FrenchSouthWestProvider(Secrets.NAVITIA_AUTHORIZATION));
 	}
 
 	@Test
