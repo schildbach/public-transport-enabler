@@ -30,7 +30,7 @@ public class FrenchSouthWestProvider extends AbstractNavitiaProvider
 
 	public FrenchSouthWestProvider(final String authorization)
 	{
-		super(NetworkId.ALPC, authorization);
+		super(NetworkId.FRENCHSOUTHWEST, authorization);
 
 		setTimeZone("Europe/Paris");
 	}
