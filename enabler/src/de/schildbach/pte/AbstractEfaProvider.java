@@ -1104,7 +1104,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return new Line(id, network, Product.HIGH_SPEED_TRAIN, "MT" + trainNum);
 			if (("TLK".equals(trainType) || "Tanie Linie Kolejowe".equals(trainName)) && trainNum != null)
 				return new Line(id, network, Product.HIGH_SPEED_TRAIN, "TLK" + trainNum);
-			if ("DNZ".equals(trainType) && "Nacht-Schnellzug".equals(trainName) && trainNum != null)
+			if ("DNZ".equals(trainType) && trainNum != null) // Nacht-Schnellzug
 				return new Line(id, network, Product.HIGH_SPEED_TRAIN, "DNZ" + trainNum);
 			if ("AVE".equals(trainType) && trainNum != null) // klimatisierter Hochgeschwindigkeitszug
 				return new Line(id, network, Product.HIGH_SPEED_TRAIN, "DNZ" + trainNum);
@@ -1294,6 +1294,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return new Line(id, network, Product.REGIONAL_TRAIN, "BE" + trainNum);
 			if ("erx".equals(trainType) || "erixx - Der Heidesprinter".equals(trainName))
 				return new Line(id, network, Product.REGIONAL_TRAIN, "erx" + trainNum);
+			if (("ERX".equals(trainType) || "Erixx".equals(trainName)) && trainNum != null)
+				return new Line(id, network, Product.REGIONAL_TRAIN, "ERX" + trainNum);
 			if ("SWEG-Zug".equals(trainName)) // Südwestdeutschen Verkehrs-Aktiengesellschaft
 				return new Line(id, network, Product.REGIONAL_TRAIN, "SWEG" + trainNum);
 			if ("SWEG-Zug".equals(longName))
@@ -1380,6 +1382,16 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return new Line(id, network, Product.REGIONAL_TRAIN, "RR" + Strings.nullToEmpty(trainNum));
 			if (("TER".equals(trainType) || "Train Express Regional".equals(trainName)) && trainNum != null)
 				return new Line(id, network, Product.REGIONAL_TRAIN, "TER" + trainNum);
+			if (("ENO".equals(trainType) || "enno".equals(trainName)) && trainNum != null)
+				return new Line(id, network, Product.REGIONAL_TRAIN, "ENO" + trainNum);
+			if ("enno".equals(longName) && symbol == null)
+				return new Line(id, network, Product.REGIONAL_TRAIN, "enno");
+			if (("PLB".equals(trainType) || "Pinzgauer Lokalbahn".equals(trainName)) && trainNum != null)
+				return new Line(id, network, Product.REGIONAL_TRAIN, "PLB" + trainNum);
+			if (("NX".equals(trainType) || "National Express".equals(trainName)) && trainNum != null)
+				return new Line(id, network, Product.REGIONAL_TRAIN, "NX" + trainNum);
+			if (("SE".equals(trainType) || "ABELLIO Rail Mitteldeutschland GmbH".equals(trainName)) && trainNum != null)
+				return new Line(id, network, Product.REGIONAL_TRAIN, "SE" + trainNum);
 
 			if ("BSB-Zug".equals(trainName) && trainNum != null) // Breisgau-S-Bahn
 				return new Line(id, network, Product.SUBURBAN_TRAIN, trainNum);
@@ -1409,6 +1421,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				return new Line(id, network, Product.BUS, "BR");
 			if ("BR".equals(trainType) && trainName != null && trainName.startsWith("Bus")) // GB
 				return new Line(id, network, Product.BUS, "BR" + trainNum);
+			if ("EXB".equals(trainType) && trainNum != null)
+				return new Line(id, network, Product.BUS, "EXB" + trainNum);
 
 			if ("GB".equals(trainType)) // Gondelbahn
 				return new Line(id, network, Product.CABLECAR, "GB" + trainNum);

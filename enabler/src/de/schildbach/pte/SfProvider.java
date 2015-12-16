@@ -78,25 +78,29 @@ public class SfProvider extends AbstractEfaProvider
 	{
 		if ("0".equals(mot))
 		{
-			if (("XAA".equals(symbol) || "Daly City / Fremont".equals(symbol)) && "Daly City / Fremont".equals(name))
+			if (("XAA".equals(symbol) || "Daly City / Fremont".equals(symbol)) && ("DALY/FREMONT".equals(name) || "Daly City / Fremont".equals(name)))
 				return new Line(id, network, Product.REGIONAL_TRAIN, "DALY/FRMT");
-			if (("FRE".equals(symbol) || "Fremont / Daly City".equals(symbol)) && "Fremont / Daly City".equals(name))
+			if (("FRE".equals(symbol) || "Fremont / Daly City".equals(symbol)) && ("FREMONT/DALY".equals(name) || "Fremont / Daly City".equals(name)))
 				return new Line(id, network, Product.REGIONAL_TRAIN, "FRMT/DALY");
 			if (("XAC".equals(symbol) || "Fremont / Richmond".equals(symbol)) && "Fremont / Richmond".equals(name))
 				return new Line(id, network, Product.REGIONAL_TRAIN, "FRMT/RICH");
 			if (("XAD".equals(symbol) || "Richmond / Fremont".equals(symbol)) && "Richmond / Fremont".equals(name))
 				return new Line(id, network, Product.REGIONAL_TRAIN, "RICH/FRMT");
-			if (("XAE".equals(symbol) || "Pittsburg Bay Point / SFO".equals(symbol)) && "Pittsburg Bay Point / SFO".equals(name))
+			if (("XAE".equals(symbol) || "Pittsburg Bay Point / SFO".equals(symbol))
+					&& ("BAY PT/SFIA".equals(name) || "Pittsburg Bay Point / SFO".equals(name)))
 				return new Line(id, network, Product.REGIONAL_TRAIN, "PITT/SFIA");
-			if (("SFI".equals(symbol) || "SFO / Pittsburg Bay Point".equals(symbol)) && "SFO / Pittsburg Bay Point".equals(name))
+			if (("SFI".equals(symbol) || "SFO / Pittsburg Bay Point".equals(symbol))
+					&& ("SFIA/BAY PT".equals(name) || "SFO / Pittsburg Bay Point".equals(name)))
 				return new Line(id, network, Product.REGIONAL_TRAIN, "SFIA/PITT");
-			if (("XAF".equals(symbol) || "Millbrae / Richmond".equals(symbol)) && "Millbrae / Richmond".equals(name))
+			if (("XAF".equals(symbol) || "Millbrae / Richmond".equals(symbol)) && ("MILL/RICH".equals(name) || "Millbrae / Richmond".equals(name)))
 				return new Line(id, network, Product.REGIONAL_TRAIN, "MLBR/RICH");
-			if (("XAG".equals(symbol) || "Richmond / Millbrae".equals(symbol)) && "Richmond / Millbrae".equals(name))
+			if (("XAG".equals(symbol) || "Richmond / Millbrae".equals(symbol)) && ("RICH/MILL".equals(name) || "Richmond / Millbrae".equals(name)))
 				return new Line(id, network, Product.REGIONAL_TRAIN, "RICH/MLBR");
-			if (("XAH".equals(symbol) || "Daly City / Dublin Pleasanton".equals(symbol)) && "Daly City / Dublin Pleasanton".equals(name))
+			if (("XAH".equals(symbol) || "Daly City / Dublin Pleasanton".equals(symbol))
+					&& ("DALY/DUBLIN".equals(name) || "Daly City / Dublin Pleasanton".equals(name)))
 				return new Line(id, network, Product.REGIONAL_TRAIN, "DALY/DUBL");
-			if (("XAI".equals(symbol) || "Dublin Pleasanton / Daly City".equals(symbol)) && "Dublin Pleasanton / Daly City".equals(name))
+			if (("XAI".equals(symbol) || "Dublin Pleasanton / Daly City".equals(symbol))
+					&& ("DUBLIN/DALY".equals(name) || "Dublin Pleasanton / Daly City".equals(name)))
 				return new Line(id, network, Product.REGIONAL_TRAIN, "DUBL/DALY");
 
 			if ("LOC".equals(symbol) && "LOCAL".equals(name))
@@ -108,6 +112,8 @@ public class SfProvider extends AbstractEfaProvider
 
 			if ("Muni Rail".equals(trainName) && symbol != null) // Muni
 				return new Line(id, network, Product.TRAM, symbol);
+			if (trainType == null && "E".equals(trainNum)) // Muni Rail E
+				return new Line(id, network, Product.TRAM, "E");
 			if (trainType == null && "F".equals(trainNum)) // Muni Historic Streetcar
 				return new Line(id, network, Product.TRAM, "F");
 			if (trainType == null && "J".equals(trainNum)) // Muni Metro

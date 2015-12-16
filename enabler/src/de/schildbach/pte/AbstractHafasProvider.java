@@ -3457,6 +3457,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			return Product.REGIONAL_TRAIN;
 		if ("SP".equals(ucType)) // Spěšný vlak, Czech Republic
 			return Product.REGIONAL_TRAIN;
+		if ("RX".equals(ucType)) // Express, Czech Republic
+			return Product.REGIONAL_TRAIN;
 		if ("EZ".equals(ucType)) // ÖBB ErlebnisBahn
 			return Product.REGIONAL_TRAIN;
 		if ("ARZ".equals(ucType)) // Auto-Reisezug Brig - Iselle di Trasquera
@@ -3639,6 +3641,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			return Product.REGIONAL_TRAIN;
 		if ("GW".equals(ucType)) // gwtr.cz
 			return Product.REGIONAL_TRAIN;
+		if ("SE".equals(ucType)) // ABELLIO Rail Mitteldeutschland GmbH
+			return Product.REGIONAL_TRAIN;
 
 		// Suburban Trains
 		if (P_LINE_SBAHN.matcher(ucType).matches()) // Generic (Night) S-Bahn
@@ -3735,7 +3739,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			return Product.FERRY;
 		if ("SCH".equals(ucType)) // Schiff
 			return Product.FERRY;
-		if ("AS".equals(ucType)) // SyltShuttle, eigentlich Autoreisezug
+		if ("AS".equals(ucType)) // SyltShuttle
+			return Product.FERRY;
+		if ("AZS".equals(ucType)) // Autozug Sylt Shuttle
 			return Product.FERRY;
 		if ("KAT".equals(ucType)) // Katamaran, e.g. Friedrichshafen - Konstanz
 			return Product.FERRY;
