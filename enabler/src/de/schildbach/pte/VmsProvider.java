@@ -17,9 +17,14 @@
 
 package de.schildbach.pte;
 
+import java.util.Collection;
+import java.util.Date;
+import java.util.Set;
+
 import javax.annotation.Nullable;
 
 import de.schildbach.pte.dto.Line;
+import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.Product;
 
 /**
@@ -32,6 +37,26 @@ public class VmsProvider extends AbstractEfaProvider
 	public VmsProvider()
 	{
 		super(NetworkId.VMS, API_BASE);
+
+		setUseLineRestriction(false);
+	}
+
+	@Override
+	protected String xsltTripRequestParameters(final Location from, final @Nullable Location via, final Location to, final Date time,
+			final boolean dep, final @Nullable Collection<Product> products, final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
+			final @Nullable Accessibility accessibility, final @Nullable Set<Option> options)
+	{
+		final StringBuilder uri = new StringBuilder(
+				super.xsltTripRequestParameters(from, via, to, time, dep, products, optimize, walkSpeed, accessibility, options));
+
+		uri.append("&inclMOT_11=on");
+		uri.append("&inclMOT_13=on");
+		uri.append("&inclMOT_14=on");
+		uri.append("&inclMOT_15=on");
+		uri.append("&inclMOT_16=on");
+		uri.append("&inclMOT_17=on");
+
+		return uri.toString();
 	}
 
 	@Override
