@@ -37,13 +37,13 @@ public class FrenchSouthWestProviderLiveTest extends AbstractNavitiaProviderLive
 	@Test
 	public void nearbyStationsAddress() throws Exception
 	{
-		nearbyStationsAddress(44826434, -0557312);
+		nearbyStationsAddress(44826434, -557312);
 	}
 
 	@Test
 	public void nearbyStationsAddress2() throws Exception
 	{
-		nearbyStationsAddress(44841225, -0580036);
+		nearbyStationsAddress(44841225, -580036);
 	}
 
 	@Test
@@ -61,7 +61,7 @@ public class FrenchSouthWestProviderLiveTest extends AbstractNavitiaProviderLive
 	@Test
 	public void nearbyStationsAny() throws Exception
 	{
-		nearbyStationsAny(44826434, -0557312);
+		nearbyStationsAny(44826434, -557312);
 	}
 
 	@Test
