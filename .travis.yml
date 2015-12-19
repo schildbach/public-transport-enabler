@@ -1,0 +1,3 @@
+# configuration for https://travis-ci.org/schildbach/public-transport-enabler
+language: java
+jdk: openjdk6
