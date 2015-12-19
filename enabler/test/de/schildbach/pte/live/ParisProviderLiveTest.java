@@ -31,7 +31,7 @@ public class ParisProviderLiveTest extends AbstractNavitiaProviderLiveTest
 {
 	public ParisProviderLiveTest()
 	{
-		super(new ParisProvider(Secrets.NAVITIA_AUTHORIZATION));
+		super(new ParisProvider(secretProperty("navitia.authorization")));
 	}
 
 	@Test

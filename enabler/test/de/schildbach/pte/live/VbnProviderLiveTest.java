@@ -44,7 +44,7 @@ public class VbnProviderLiveTest extends AbstractProviderLiveTest
 {
 	public VbnProviderLiveTest()
 	{
-		super(new VbnProvider(Secrets.VBN_JSON_API_AUTHORIZATION));
+		super(new VbnProvider(secretProperty("vbn.json_api_authorization")));
 	}
 
 	@Test

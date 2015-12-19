@@ -20,8 +20,10 @@ package de.schildbach.pte.live;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -138,5 +140,26 @@ public abstract class AbstractProviderLiveTest
 	protected final QueryTripsResult queryMoreTrips(final QueryTripsContext context, final boolean later) throws IOException
 	{
 		return provider.queryMoreTrips(context, later);
+	}
+
+	protected final static String secretProperty(final String key)
+	{
+		try
+		{
+			final Properties properties = new Properties();
+			final String secretPropertiesFilename = "secrets.properties";
+			final InputStream is = AbstractProviderLiveTest.class.getResourceAsStream(secretPropertiesFilename);
+			if (is == null)
+				throw new IllegalStateException("Could not find secret property file " + secretPropertiesFilename + " in classpath.");
+			properties.load(is);
+			final String secret = properties.getProperty(key);
+			if (secret == null)
+				throw new IllegalStateException("Could not find secret value for '" + key + "' in " + secretPropertiesFilename + ".");
+			return secret;
+		}
+		catch (final IOException x)
+		{
+			throw new RuntimeException(x);
+		}
 	}
 }

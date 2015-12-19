@@ -41,7 +41,7 @@ public class VaoProviderLiveTest extends AbstractProviderLiveTest
 {
 	public VaoProviderLiveTest()
 	{
-		super(new VaoProvider(Secrets.VAO_JSON_API_AUTHORIZATION));
+		super(new VaoProvider(secretProperty("vao.json_api_authorization")));
 	}
 
 	@Test

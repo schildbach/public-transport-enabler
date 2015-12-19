@@ -42,7 +42,7 @@ public class VgnProviderLiveTest extends AbstractProviderLiveTest
 {
 	public VgnProviderLiveTest()
 	{
-		super(new VgnProvider(Secrets.VGN_API_BASE));
+		super(new VgnProvider(secretProperty("vgn.api_base")));
 	}
 
 	@Test
