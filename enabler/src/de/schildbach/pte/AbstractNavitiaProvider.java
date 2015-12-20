@@ -775,7 +775,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 			{
 				throw new IllegalArgumentException();
 			}
-			queryUriType = "stop_point/" + location.id + "/";
+			queryUriType = "stop_points/" + location.id + "/";
 		}
 		else if (location.type == LocationType.POI)
 		{
@@ -783,7 +783,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 			{
 				throw new IllegalArgumentException();
 			}
-			queryUriType = "poi/" + location.id + "/";
+			queryUriType = "pois/" + location.id + "/";
 		}
 		else
 		{
