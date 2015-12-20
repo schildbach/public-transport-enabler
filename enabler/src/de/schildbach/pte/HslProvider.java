@@ -71,18 +71,20 @@ public class HslProvider extends AbstractNetworkProvider
 	private static final int COORD_MUL = 1000000;
 	private static final String SERVER_PRODUCT = "hsl";
 	private static final String SERVER_VERSION = "1_2_0";
+        private static final String API_BASE = "http://api.reittiopas.fi/hsl/";
 	private static final int EARLIER_TRIPS_MINUTE_OFFSET = 5;
 	private static final int EARLIER_TRIPS_MINIMUM = 3;
 
-	private String apiBase;
-
 	private final XmlPullParserFactory parserFactory;
+
+        private String user;
+        private String pass;
 
 	public HslProvider(String user, String pass)
 	{
 		super(NetworkId.HSL);
-		apiBase = String.format("http://api.reittiopas.fi/hsl/%s/?user=%s&pass=%s",
-					 SERVER_VERSION, user, pass);
+                this.user = user;
+                this.pass = pass;
 		try
 		{
 			parserFactory = XmlPullParserFactory.newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
@@ -101,7 +103,10 @@ public class HslProvider extends AbstractNetworkProvider
 
 	private StringBuilder apiUri(final String request)
 	{
-		StringBuilder ret = new StringBuilder(apiBase);
+		StringBuilder ret = new StringBuilder(API_BASE);
+                ret.append(SERVER_VERSION + "/");
+                ret.append("?user=" + user);
+                ret.append("&pass=" + pass);
 		ret.append("&request=").append(request);
 		ret.append("&epsg_out=wgs84");
 		ret.append("&epsg_in=wgs84");
