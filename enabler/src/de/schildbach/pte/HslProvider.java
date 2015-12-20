@@ -129,7 +129,7 @@ public class HslProvider extends AbstractNetworkProvider
 				 Math.round(Float.parseFloat(parts[0]) * COORD_MUL));
 	}
 
-	private Point xmlCoordsToPoint(final XmlPullParser pp) 
+ 	private Point xmlCoordsToPoint(final XmlPullParser pp) 
 		throws XmlPullParserException, IOException
 	{
 		XmlPullUtil.enter(pp, "coord");
@@ -140,26 +140,10 @@ public class HslProvider extends AbstractNetworkProvider
 				 Math.round(Float.parseFloat(x) * COORD_MUL));
 	}
 
-	private void xmlSkipUntil(final XmlPullParser pp, final String tagName)
-		throws XmlPullParserException, IOException
-	{
-		while (!XmlPullUtil.test(pp, tagName)) {
-			if (!pp.isEmptyElementTag())
-			{
-				XmlPullUtil.enter(pp);
-				XmlPullUtil.skipExit(pp);
-			}
-			else
-			{
-				XmlPullUtil.next(pp);
-		        }
-		}
-	}
-
 	private String xmlValueTag(final XmlPullParser pp, final String tagName)
 		throws XmlPullParserException, IOException
 	{
-		xmlSkipUntil(pp, tagName);
+		XmlPullUtil.skipUntil(pp, tagName);
 		return XmlPullUtil.valueTag(pp, tagName);
 	}
 
@@ -338,7 +322,7 @@ public class HslProvider extends AbstractNetworkProvider
 
 			final Map<String, Line> lines = new HashMap<String, Line>();
 
-			xmlSkipUntil(pp, "lines");
+			XmlPullUtil.skipUntil(pp, "lines");
 			XmlPullUtil.enter(pp, "lines");
 			while (XmlPullUtil.test(pp, "node")) 
 			{
@@ -350,7 +334,7 @@ public class HslProvider extends AbstractNetworkProvider
 			final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
 			final QueryDeparturesResult result = new QueryDeparturesResult(header);
 
-			xmlSkipUntil(pp, "departures");
+			XmlPullUtil.skipUntil(pp, "departures");
 			XmlPullUtil.enter(pp, "departures");
 
 			final List<Departure> departures = 
@@ -450,7 +434,7 @@ public class HslProvider extends AbstractNetworkProvider
 				if (locType.equals("stop"))
 					type = LocationType.STATION;
 
-				xmlSkipUntil(pp, "details");
+				XmlPullUtil.skipUntil(pp, "details");
 				XmlPullUtil.enter(pp, "details");
 				XmlPullUtil.optSkip(pp, "address");
 				final String id = XmlPullUtil.optValueTag(pp, "code", null);
@@ -684,7 +668,7 @@ public class HslProvider extends AbstractNetworkProvider
 
 				List<Trip.Leg> legs = new ArrayList<Trip.Leg>();
 
-				xmlSkipUntil(pp, "legs");
+				XmlPullUtil.skipUntil(pp, "legs");
 				XmlPullUtil.enter(pp, "legs");
 				int numTransfers = 0;
 
@@ -707,7 +691,7 @@ public class HslProvider extends AbstractNetworkProvider
 
 					LinkedList<Stop> stops = new LinkedList<Stop>();
 					
-					xmlSkipUntil(pp, "locs");
+					XmlPullUtil.skipUntil(pp, "locs");
 					XmlPullUtil.enter(pp, "locs");
 					while (XmlPullUtil.test(pp, "node"))
 					{
