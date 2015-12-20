@@ -61,6 +61,11 @@ public class FrenchSouthWestProvider extends AbstractNavitiaProvider
 				// Batcub
 				return new Style(Shape.ROUNDED, Style.parseColor(color), computeForegroundColor(color));
 			}
+			case SUBWAY:
+			{
+				// Toulouse subway (from Tisseo network)
+				return new Style(Shape.ROUNDED, Style.parseColor(color), computeForegroundColor(color));
+			}
 			default:
 				throw new IllegalArgumentException("Unhandled product: " + product);
 		}
