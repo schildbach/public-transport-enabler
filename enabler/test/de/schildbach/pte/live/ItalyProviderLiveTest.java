@@ -30,7 +30,7 @@ public class ItalyProviderLiveTest extends AbstractNavitiaProviderLiveTest
 {
 	public ItalyProviderLiveTest()
 	{
-		super(new ItalyProvider(secretProperty("navitia.authorization")));
+		super(new ItalyProvider("http://api.navitia.io/v1/", secretProperty("navitia.authorization")));
 	}
 
 	@Test
