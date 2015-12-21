@@ -24,6 +24,13 @@ public class ItalyProvider extends AbstractNavitiaProvider
 {
 	private static String API_REGION = "it";
 
+	public ItalyProvider(final String apiBase, final String authorization)
+	{
+		super(NetworkId.IT, apiBase, authorization);
+
+		setTimeZone("Europe/Rome");
+	}
+
 	public ItalyProvider(final String authorization)
 	{
 		super(NetworkId.IT, authorization);

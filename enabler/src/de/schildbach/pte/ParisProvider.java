@@ -28,6 +28,13 @@ public class ParisProvider extends AbstractNavitiaProvider
 {
 	private static String API_REGION = "fr-idf";
 
+	public ParisProvider(final String apiBase, final String authorization)
+	{
+		super(NetworkId.PARIS, apiBase, authorization);
+
+		setTimeZone("Europe/Paris");
+	}
+
 	public ParisProvider(final String authorization)
 	{
 		super(NetworkId.PARIS, authorization);

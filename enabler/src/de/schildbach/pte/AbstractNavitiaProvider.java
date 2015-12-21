@@ -77,7 +77,8 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 {
 	protected final static String SERVER_PRODUCT = "navitia";
 	protected final static String SERVER_VERSION = "v1";
-	protected static final String API_BASE = "http://api.navitia.io/" + SERVER_VERSION + "/";
+
+	protected String apiBase = "http://api.navitia.io/" + SERVER_VERSION + "/";
 
 	private enum PlaceType
 	{
@@ -132,6 +133,13 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 		}
 	}
 
+	public AbstractNavitiaProvider(final NetworkId network, final String apiBase, final String authorization)
+	{
+		this(network, authorization);
+
+		this.apiBase = apiBase;
+	}
+
 	public AbstractNavitiaProvider(final NetworkId network, final String authorization)
 	{
 		super(network);
@@ -154,12 +162,12 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 
 	private String uri()
 	{
-		return API_BASE + "coverage/" + region() + "/";
+		return apiBase + "coverage/" + region() + "/";
 	}
 
 	private String tripUri()
 	{
-		return API_BASE;
+		return apiBase;
 	}
 
 	private Point parseCoord(final JSONObject coord) throws IOException
