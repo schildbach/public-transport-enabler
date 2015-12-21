@@ -28,6 +28,13 @@ public class FrenchSouthWestProvider extends AbstractNavitiaProvider
 {
 	private static String API_REGION = "fr-sw";
 
+	public FrenchSouthWestProvider(final String apiBase, final String authorization)
+	{
+		super(NetworkId.FRENCHSOUTHWEST, apiBase, authorization);
+
+		setTimeZone("Europe/Paris");
+	}
+
 	public FrenchSouthWestProvider(final String authorization)
 	{
 		super(NetworkId.FRENCHSOUTHWEST, authorization);
