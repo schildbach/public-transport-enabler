@@ -35,7 +35,7 @@ import de.schildbach.pte.dto.Style;
  */
 public class AvvProvider extends AbstractEfaProvider
 {
-	private final static String API_BASE = "http://efa.avv-augsburg.de/avv/";
+	private final static String API_BASE = "https://efa.avv-augsburg.de/avv2/";
 
 	public AvvProvider()
 	{
