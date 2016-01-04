@@ -2730,6 +2730,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			}
 			else if (errorCode == 1)
 				throw new SessionExpiredException();
+			else if (errorCode == 2)
+				// F2: Your search results could not be stored internally.
+				throw new SessionExpiredException();
 			else if (errorCode == 8)
 				return new QueryTripsResult(header, QueryTripsResult.Status.AMBIGUOUS);
 			else if (errorCode == 13)
