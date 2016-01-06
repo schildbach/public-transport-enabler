@@ -52,6 +52,8 @@ import javax.annotation.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -116,6 +118,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	private boolean stationBoardHasStationTable = true;
 	private boolean stationBoardHasLocation = false;
 	private boolean stationBoardCanDoEquivs = true;
+
+	private static final Logger log = LoggerFactory.getLogger(AbstractHafasProvider.class);
 
 	@SuppressWarnings("serial")
 	private static class Context implements QueryTripsContext
@@ -1178,6 +1182,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			final String err = svcRes.getString("err");
 			if (!"OK".equals(err))
 			{
+				log.debug("Hafas error: {}", err);
 				if ("H890".equals(err)) // No connections found.
 					return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
 				if ("H891".equals(err)) // No route found (try entering an intermediate station).
@@ -1623,6 +1628,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			if (XmlPullUtil.test(pp, "Err"))
 			{
 				final String code = XmlPullUtil.attr(pp, "code");
+				log.debug("Hafas error: {}", code);
 				if (code.equals("K9260")) // Unknown departure station
 					return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_FROM);
 				if (code.equals("K9280")) // Unknown intermediate station
@@ -2728,70 +2734,76 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 				return result;
 			}
-			else if (errorCode == 1)
-				throw new SessionExpiredException();
-			else if (errorCode == 2)
-				// F2: Your search results could not be stored internally.
-				throw new SessionExpiredException();
-			else if (errorCode == 8)
-				return new QueryTripsResult(header, QueryTripsResult.Status.AMBIGUOUS);
-			else if (errorCode == 13)
-				// IN13: Our booking system is currently being used by too many users at the same time.
-				return new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN);
-			else if (errorCode == 19)
-				return new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN);
-			else if (errorCode == 207)
-				// H207: Unfortunately your connection request can currently not be processed.
-				return new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN);
-			else if (errorCode == 887)
-				// H887: Your inquiry was too complex. Please try entering less intermediate stations.
-				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
-			else if (errorCode == 890)
-				// H890: No connections have been found that correspond to your request. It is possible that the
-				// requested service does not operate from or to the places you stated on the requested date of travel.
-				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
-			else if (errorCode == 891)
-				// H891: Unfortunately there was no route found. Missing timetable data could be the reason.
-				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
-			else if (errorCode == 892)
-				// H892: Your inquiry was too complex. Please try entering less intermediate stations.
-				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
-			else if (errorCode == 899)
-				// H899: there was an unsuccessful or incomplete search due to a timetable change.
-				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
-			else if (errorCode == 900)
-				// Unsuccessful or incomplete search (timetable change)
-				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
-			else if (errorCode == 9220)
-				// H9220: Nearby to the given address stations could not be found.
-				return new QueryTripsResult(header, QueryTripsResult.Status.UNRESOLVABLE_ADDRESS);
-			else if (errorCode == 9240)
-				// H9240: Unfortunately there was no route found. Perhaps your start or destination is not served at all
-				// or with the selected means of transport on the required date/time.
-				return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
-			else if (errorCode == 9260)
-				// H9260: Unknown departure station
-				return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_FROM);
-			else if (errorCode == 9280)
-				// H9280: Unknown intermediate station
-				return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_VIA);
-			else if (errorCode == 9300)
-				// H9300: Unknown arrival station
-				return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_TO);
-			else if (errorCode == 9320)
-				// The input is incorrect or incomplete
-				return new QueryTripsResult(header, QueryTripsResult.Status.INVALID_DATE);
-			else if (errorCode == 9360)
-				// H9360: Unfortunately your connection request can currently not be processed.
-				return new QueryTripsResult(header, QueryTripsResult.Status.INVALID_DATE);
-			else if (errorCode == 9380)
-				// H9380: Dep./Arr./Intermed. or equivalent station defined more than once
-				return new QueryTripsResult(header, QueryTripsResult.Status.TOO_CLOSE);
-			else if (errorCode == 895)
-				// H895: Departure/Arrival are too near
-				return new QueryTripsResult(header, QueryTripsResult.Status.TOO_CLOSE);
 			else
-				throw new IllegalStateException("error " + errorCode + " on " + uri);
+			{
+				log.debug("Hafas error: {}", errorCode);
+				if (errorCode == 1)
+					throw new SessionExpiredException();
+				else if (errorCode == 2)
+					// F2: Your search results could not be stored internally.
+					throw new SessionExpiredException();
+				else if (errorCode == 8)
+					return new QueryTripsResult(header, QueryTripsResult.Status.AMBIGUOUS);
+				else if (errorCode == 13)
+					// IN13: Our booking system is currently being used by too many users at the same time.
+					return new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN);
+				else if (errorCode == 19)
+					return new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN);
+				else if (errorCode == 207)
+					// H207: Unfortunately your connection request can currently not be processed.
+					return new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN);
+				else if (errorCode == 887)
+					// H887: Your inquiry was too complex. Please try entering less intermediate stations.
+					return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
+				else if (errorCode == 890)
+					// H890: No connections have been found that correspond to your request. It is possible that the
+					// requested service does not operate from or to the places you stated on the requested date of
+					// travel.
+					return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
+				else if (errorCode == 891)
+					// H891: Unfortunately there was no route found. Missing timetable data could be the reason.
+					return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
+				else if (errorCode == 892)
+					// H892: Your inquiry was too complex. Please try entering less intermediate stations.
+					return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
+				else if (errorCode == 899)
+					// H899: there was an unsuccessful or incomplete search due to a timetable change.
+					return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
+				else if (errorCode == 900)
+					// Unsuccessful or incomplete search (timetable change)
+					return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
+				else if (errorCode == 9220)
+					// H9220: Nearby to the given address stations could not be found.
+					return new QueryTripsResult(header, QueryTripsResult.Status.UNRESOLVABLE_ADDRESS);
+				else if (errorCode == 9240)
+					// H9240: Unfortunately there was no route found. Perhaps your start or destination is not served at
+					// all
+					// or with the selected means of transport on the required date/time.
+					return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
+				else if (errorCode == 9260)
+					// H9260: Unknown departure station
+					return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_FROM);
+				else if (errorCode == 9280)
+					// H9280: Unknown intermediate station
+					return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_VIA);
+				else if (errorCode == 9300)
+					// H9300: Unknown arrival station
+					return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_TO);
+				else if (errorCode == 9320)
+					// The input is incorrect or incomplete
+					return new QueryTripsResult(header, QueryTripsResult.Status.INVALID_DATE);
+				else if (errorCode == 9360)
+					// H9360: Unfortunately your connection request can currently not be processed.
+					return new QueryTripsResult(header, QueryTripsResult.Status.INVALID_DATE);
+				else if (errorCode == 9380)
+					// H9380: Dep./Arr./Intermed. or equivalent station defined more than once
+					return new QueryTripsResult(header, QueryTripsResult.Status.TOO_CLOSE);
+				else if (errorCode == 895)
+					// H895: Departure/Arrival are too near
+					return new QueryTripsResult(header, QueryTripsResult.Status.TOO_CLOSE);
+				else
+					throw new IllegalStateException("error " + errorCode + " on " + uri);
+			}
 		}
 		finally
 		{
@@ -3212,13 +3224,13 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 				return new NearbyLocationsResult(null, locations);
 			}
-			else if (error == 2)
-			{
-				return new NearbyLocationsResult(null, NearbyLocationsResult.Status.SERVICE_DOWN);
-			}
 			else
 			{
-				throw new RuntimeException("unknown error: " + error);
+				log.debug("Hafas error: {}", error);
+				if (error == 2)
+					return new NearbyLocationsResult(null, NearbyLocationsResult.Status.SERVICE_DOWN);
+				else
+					throw new RuntimeException("unknown error: " + error);
 			}
 		}
 		catch (final JSONException x)
