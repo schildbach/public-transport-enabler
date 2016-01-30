@@ -876,7 +876,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 			{
 				queryUri.append("stop_points/" + stationId + "/");
 			}
-			queryUri.append("departures?from_datetime=" + dateTime + "&count=" + maxDepartures + "&duration=3600" + "&depth=0");
+			queryUri.append("departures?from_datetime=" + dateTime + "&count=" + maxDepartures + "&duration=86400" + "&depth=0");
 
 			final CharSequence page = httpClient.get(queryUri.toString());
 
