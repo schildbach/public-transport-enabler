@@ -49,7 +49,7 @@ public class ParisProviderLiveTest extends AbstractNavitiaProviderLiveTest
 	@Test
 	public void nearbyStationsStation() throws Exception
 	{
-		nearbyStationsStation("stop_point:RTP:SP:3926410");
+		nearbyStationsStation("stop_point:OIF:SP:59:5657291");
 	}
 
 	@Test
@@ -79,19 +79,19 @@ public class ParisProviderLiveTest extends AbstractNavitiaProviderLiveTest
 	@Test
 	public void queryDeparturesEquivsFalse() throws Exception
 	{
-		queryDeparturesEquivsFalse("stop_point:RTP:SP:3926410");
+		queryDeparturesEquivsFalse("stop_point:OIF:SP:59:5657291");
 	}
 
 	@Test
 	public void queryDeparturesStopArea() throws Exception
 	{
-		queryDeparturesStopArea("stop_area:RTP:SA:1958");
+		queryDeparturesStopArea("stop_area:OIF:SA:59864");
 	}
 
 	@Test
 	public void queryDeparturesEquivsTrue() throws Exception
 	{
-		queryDeparturesEquivsTrue("stop_point:RTP:SP:3926410");
+		queryDeparturesEquivsTrue("stop_point:OIF:SP:59:5657291");
 	}
 
 	@Test
