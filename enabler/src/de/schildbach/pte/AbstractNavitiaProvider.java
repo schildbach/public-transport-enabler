@@ -144,7 +144,8 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 	{
 		super(network);
 
-		httpClient.setHeader("Authorization", authorization);
+		if (authorization != null)
+			httpClient.setHeader("Authorization", authorization);
 	}
 
 	protected abstract String region();
