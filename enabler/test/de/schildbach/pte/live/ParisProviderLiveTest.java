@@ -65,6 +65,12 @@ public class ParisProviderLiveTest extends AbstractNavitiaProviderLiveTest
 	}
 
 	@Test
+	public void nearbyStationsDistance() throws Exception
+	{
+		nearbyStationsStationDistance("stop_point:OIF:SP:80:137");
+	}
+
+	@Test
 	public void nearbyStationsInvalidStation() throws Exception
 	{
 		nearbyStationsInvalidStation("stop_point:RTP:SP:392");
