@@ -53,6 +53,11 @@ public class FrenchSouthWestProvider extends AbstractNavitiaProvider
 	{
 		switch (product)
 		{
+			case REGIONAL_TRAIN:
+			{
+				// TER + Intercités
+				return new Style(Style.parseColor(color), computeForegroundColor(color));
+			}
 			case TRAM:
 			{
 				// Tram

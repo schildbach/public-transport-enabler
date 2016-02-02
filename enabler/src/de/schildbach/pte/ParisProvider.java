@@ -66,6 +66,11 @@ public class ParisProvider extends AbstractNavitiaProvider
 					return new Style(Shape.ROUNDED, Style.TRANSPARENT, Style.parseColor(color), Style.parseColor(color));
 				}
 			}
+			case REGIONAL_TRAIN:
+			{
+				// TER + Intercités
+				return new Style(Style.parseColor(color), computeForegroundColor(color));
+			}
 			case SUBWAY:
 			{
 				// Metro
