@@ -144,7 +144,8 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 	{
 		super(network);
 
-		httpClient.setHeader("Authorization", authorization);
+		if (authorization != null)
+			httpClient.setHeader("Authorization", authorization);
 	}
 
 	protected abstract String region();
@@ -759,7 +760,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 			return false;
 	}
 
-	public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location, final int maxDistance,
+	public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location, int maxDistance,
 			final int maxLocations) throws IOException
 	{
 		final ResultHeader resultHeader = new ResultHeader(network, SERVER_PRODUCT, SERVER_VERSION, 0, null);
@@ -797,6 +798,9 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 		{
 			throw new IllegalArgumentException("Unhandled location type: " + location.type);
 		}
+
+		if (maxDistance == 0)
+			maxDistance = 50000;
 
 		final String queryUri = uri() + queryUriType + "places_nearby?type[]=stop_point" + "&distance=" + maxDistance + "&count=" + maxLocations
 				+ "&depth=0";
@@ -875,7 +879,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 			{
 				queryUri.append("stop_points/" + stationId + "/");
 			}
-			queryUri.append("departures?from_datetime=" + dateTime + "&count=" + maxDepartures + "&duration=3600" + "&depth=0");
+			queryUri.append("departures?from_datetime=" + dateTime + "&count=" + maxDepartures + "&duration=86400" + "&depth=0");
 
 			final CharSequence page = httpClient.get(queryUri.toString());
 

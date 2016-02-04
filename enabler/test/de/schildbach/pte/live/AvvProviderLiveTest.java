@@ -80,11 +80,11 @@ public class AvvProviderLiveTest extends AbstractProviderLiveTest
 	{
 		final SuggestLocationsResult result1 = suggestLocations("Barfüßerbrücke");
 		print(result1);
-		assertThat(result1.getLocations(), hasItem(new Location(LocationType.STATION, "131")));
+		assertThat(result1.getLocations(), hasItem(new Location(LocationType.STATION, "2000131")));
 
 		final SuggestLocationsResult result2 = suggestLocations("Gärtnerstraße");
 		print(result2);
-		assertThat(result2.getLocations(), hasItem(new Location(LocationType.STATION, "557")));
+		assertThat(result2.getLocations(), hasItem(new Location(LocationType.STATION, "2000557")));
 	}
 
 	@Test

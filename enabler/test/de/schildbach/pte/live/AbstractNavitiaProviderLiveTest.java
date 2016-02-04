@@ -79,6 +79,15 @@ public abstract class AbstractNavitiaProviderLiveTest extends AbstractProviderLi
 		print(result);
 	}
 
+	protected final void nearbyStationsStationDistance(final String stationId) throws IOException
+	{
+		final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION), new Location(LocationType.STATION, stationId), 0,
+				10);
+		assertEquals(NearbyLocationsResult.Status.OK, result.status);
+		assertTrue(result.locations.size() > 1);
+		print(result);
+	}
+
 	protected final void nearbyStationsInvalidStation(final String stationId) throws IOException
 	{
 		final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION), new Location(LocationType.STATION, stationId),
