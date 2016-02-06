@@ -862,24 +862,35 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 			// to stop_point and query departures.
 			final StringBuilder queryUri = new StringBuilder();
 			queryUri.append(uri());
-			if (equivs)
+			final String header = stationId.substring(0, stationId.indexOf(":"));
+			if (equivs && header.equals("stop_point"))
 			{
-				final String header = stationId.substring(0, stationId.indexOf(":"));
-				if (header.equals("stop_point"))
-				{
-					final String stopAreaId = getStopAreaId(stationId);
-					queryUri.append("stop_areas/" + stopAreaId + "/");
-				}
-				else if (header.equals("stop_area"))
-				{
-					queryUri.append("stop_areas/" + stationId + "/");
-				}
+				final String stopAreaId = getStopAreaId(stationId);
+				queryUri.append("stop_areas/");
+				queryUri.append(stopAreaId);
+				queryUri.append("/");
 			}
 			else
 			{
-				queryUri.append("stop_points/" + stationId + "/");
+				if (header.equals("stop_area"))
+				{
+					queryUri.append("stop_areas/");
+					queryUri.append(stationId);
+					queryUri.append("/");
+				}
+				else
+				{
+					queryUri.append("stop_points/");
+					queryUri.append(stationId);
+					queryUri.append("/");
+				}
 			}
-			queryUri.append("departures?from_datetime=" + dateTime + "&count=" + maxDepartures + "&duration=86400" + "&depth=0");
+			queryUri.append("departures?from_datetime=");
+			queryUri.append(dateTime);
+			queryUri.append("&count=");
+			queryUri.append(maxDepartures);
+			queryUri.append("&duration=86400");
+			queryUri.append("&depth=0");
 
 			final CharSequence page = httpClient.get(queryUri.toString());
 
