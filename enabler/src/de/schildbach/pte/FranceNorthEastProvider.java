@@ -56,7 +56,7 @@ public class FranceNorthEastProvider extends AbstractNavitiaProvider
 			case REGIONAL_TRAIN:
 			{
 				// Rail (route_type = 2) for Transilien, TER and Corail Intercité/Lunéa (all SNCF)
-				return new super.getLineStyle;
+				return new Style(Style.parseColor(color), computeForegroundColor(color));
 			}
 			
 			case TRAM:
