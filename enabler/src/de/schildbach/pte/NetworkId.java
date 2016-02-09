@@ -76,6 +76,9 @@ public enum NetworkId
 	// United States
 	SF, SEPTA,
 
+	// Canada
+	ONTARIO,
+
 	// Australia
 	SYDNEY, MET
 }
