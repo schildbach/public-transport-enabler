@@ -766,45 +766,42 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 		final ResultHeader resultHeader = new ResultHeader(network, SERVER_PRODUCT, SERVER_VERSION, 0, null);
 
 		// Build query uri depending of location type.
-		final String queryUriType;
+		final StringBuilder queryUri = new StringBuilder(uri());
 		if (location.type == LocationType.COORD || location.type == LocationType.ADDRESS || location.type == LocationType.ANY)
 		{
 			if (!location.hasLocation())
-			{
 				throw new IllegalArgumentException();
-			}
 			final double lon = location.lon / 1E6;
 			final double lat = location.lat / 1E6;
-
-			queryUriType = "coords/" + lon + ";" + lat + "/";
+			queryUri.append("coords/").append(lon).append(';').append(lat);
 		}
 		else if (location.type == LocationType.STATION)
 		{
 			if (!location.isIdentified())
-			{
 				throw new IllegalArgumentException();
-			}
-			queryUriType = "stop_points/" + location.id + "/";
+			queryUri.append("stop_points/").append(location.id);
 		}
 		else if (location.type == LocationType.POI)
 		{
 			if (!location.isIdentified())
-			{
 				throw new IllegalArgumentException();
-			}
-			queryUriType = "pois/" + location.id + "/";
+			queryUri.append("pois/").append(location.id);
 		}
 		else
 		{
 			throw new IllegalArgumentException("Unhandled location type: " + location.type);
 		}
+		queryUri.append('/');
 
 		if (maxDistance == 0)
 			maxDistance = 50000;
 
-		final String queryUri = uri() + queryUriType + "places_nearby?type[]=stop_point" + "&distance=" + maxDistance + "&count=" + maxLocations
-				+ "&depth=0";
-		final CharSequence page = httpClient.get(queryUri);
+		queryUri.append("places_nearby?type[]=stop_point");
+		queryUri.append("&distance=").append(maxDistance);
+		if (maxLocations > 0)
+			queryUri.append("&count=").append(maxLocations);
+		queryUri.append("&depth=0");
+		final CharSequence page = httpClient.get(queryUri.toString());
 
 		try
 		{
