@@ -80,5 +80,8 @@ public enum NetworkId
 	ONTARIO,
 
 	// Australia
-	SYDNEY, MET
+	SYDNEY, MET,
+
+	// Finland
+	HSL
 }
