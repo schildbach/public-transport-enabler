@@ -18,15 +18,26 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
+import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
+
+import javax.annotation.Nullable;
 
 import com.google.common.base.Charsets;
 
+import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Product;
+import de.schildbach.pte.dto.QueryDeparturesResult;
+import de.schildbach.pte.dto.QueryTripsContext;
+import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.Style;
+import de.schildbach.pte.dto.SuggestLocationsResult;
 
 /**
  * @author Andreas Schildbach
@@ -37,10 +48,13 @@ public class ShProvider extends AbstractHafasProvider
 	private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
 			Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.BUS, Product.FERRY, Product.SUBWAY, Product.TRAM, Product.ON_DEMAND };
 
-	public ShProvider()
+	public ShProvider(final String jsonApiAuthorization)
 	{
 		super(NetworkId.SH, API_BASE, "dn", PRODUCTS_MAP);
 
+		setJsonApiVersion("1.10");
+		setJsonApiClient("{\"id\":\"NAHSH\"}");
+		setJsonApiAuthorization(jsonApiAuthorization);
 		setJsonGetStopsEncoding(Charsets.UTF_8);
 		setJsonNearbyLocationsEncoding(Charsets.UTF_8);
 		setStyles(STYLES);
@@ -79,13 +93,42 @@ public class ShProvider extends AbstractHafasProvider
 	}
 
 	@Override
-	protected NearbyLocationsResult nearbyStationsById(final String id, final int maxDistance) throws IOException
+	public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location, final int maxDistance,
+			final int maxLocations) throws IOException
 	{
-		final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
-		uri.append("?near=Anzeigen");
-		uri.append("&distance=").append(maxDistance != 0 ? maxDistance / 1000 : 50);
-		uri.append("&input=").append(normalizeStationId(id));
-		return htmlNearbyStations(uri.toString());
+		if (location.hasLocation())
+			return jsonLocGeoPos(types, location.lat, location.lon);
+		else
+			throw new IllegalArgumentException("cannot handle: " + location);
+	}
+
+	@Override
+	public QueryDeparturesResult queryDepartures(final String stationId, final @Nullable Date time, final int maxDepartures, final boolean equivs)
+			throws IOException
+	{
+		return jsonStationBoard(stationId, time, maxDepartures, equivs);
+	}
+
+	@Override
+	public SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException
+	{
+		return jsonLocMatch(constraint);
+	}
+
+	@Override
+	public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to, final Date date, final boolean dep,
+			final @Nullable Set<Product> products, final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
+			final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) throws IOException
+	{
+		return jsonTripSearch(from, to, date, dep, products, null);
+	}
+
+	@Override
+	public QueryTripsResult queryMoreTrips(final QueryTripsContext context, final boolean later) throws IOException
+	{
+		final JsonContext jsonContext = (JsonContext) context;
+		return jsonTripSearch(jsonContext.from, jsonContext.to, jsonContext.date, jsonContext.dep, jsonContext.products,
+				later ? jsonContext.laterContext : jsonContext.earlierContext);
 	}
 
 	protected static final Map<String, Style> STYLES = new HashMap<String, Style>();
@@ -132,7 +175,7 @@ public class ShProvider extends AbstractHafasProvider
 
 	private static void putKielBusStyle(final String name, final Style style)
 	{
-		STYLES.put("AK|B" + name, style);
-		STYLES.put("KIEL|B" + name, style);
+		STYLES.put("Autokraft Kiel GmbH|B" + name, style);
+		STYLES.put("Kieler Verkehrsgesellschaft mbH|B" + name, style);
 	}
 }

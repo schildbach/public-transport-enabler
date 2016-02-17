@@ -42,7 +42,7 @@ public class ShProviderLiveTest extends AbstractProviderLiveTest
 {
 	public ShProviderLiveTest()
 	{
-		super(new ShProvider());
+		super(new ShProvider(secretProperty("sh.json_api_authorization")));
 	}
 
 	@Test
