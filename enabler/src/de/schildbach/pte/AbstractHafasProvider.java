@@ -1272,24 +1272,20 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					for (int iFareSet = 0; iFareSet < fareSetList.length(); iFareSet++)
 					{
 						final JSONObject fareSet = fareSetList.getJSONObject(iFareSet);
-						final String network = fareSet.optString("name", null);
-						if (network != null)
+						final String fareSetName = fareSet.optString("name", null);
+						final String fareSetDescription = fareSet.optString("desc", null);
+						if (fareSetName != null || fareSetDescription != null)
 						{
 							final JSONArray fareList = fareSet.getJSONArray("fareL");
 							for (int iFare = 0; iFare < fareList.length(); iFare++)
 							{
 								final JSONObject jsonFare = fareList.getJSONObject(iFare);
 								final String name = jsonFare.getString("name");
-								if (name.endsWith("- Jahreskarte") || name.endsWith("- Monatskarte"))
-									continue;
-
 								final Currency currency = Currency.getInstance(jsonFare.getString("cur"));
 								final float price = jsonFare.getInt("prc") / 100f;
-
-								if (name.startsWith("Vollpreis - "))
-									fares.add(new Fare(network, Fare.Type.ADULT, currency, price, name.substring(12), null));
-								else if (name.startsWith("Kind - "))
-									fares.add(new Fare(network, Fare.Type.CHILD, currency, price, name.substring(7), null));
+								final Fare fare = parseJsonTripFare(fareSetName, fareSetDescription, name, currency, price);
+								if (fare != null)
+									fares.add(fare);
 							}
 						}
 					}
@@ -1306,6 +1302,18 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		{
 			throw new ParserException("cannot parse json: '" + page + "' on " + uri, x);
 		}
+	}
+
+	protected Fare parseJsonTripFare(final @Nullable String fareSetName, final @Nullable String fareSetDescription, final String name,
+			final Currency currency, final float price)
+	{
+		if (name.endsWith("- Jahreskarte") || name.endsWith("- Monatskarte"))
+			return null;
+		if (name.startsWith("Vollpreis - "))
+			return new Fare(fareSetName, Fare.Type.ADULT, currency, price, name.substring(12), null);
+		if (name.startsWith("Kind - "))
+			return new Fare(fareSetName, Fare.Type.CHILD, currency, price, name.substring(7), null);
+		return null;
 	}
 
 	private String wrapJsonApiRequest(final String meth, final String req, final boolean formatted)

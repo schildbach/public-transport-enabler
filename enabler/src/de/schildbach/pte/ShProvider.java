@@ -18,6 +18,7 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
+import java.util.Currency;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -29,6 +30,8 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.Charsets;
 
+import de.schildbach.pte.dto.Fare;
+import de.schildbach.pte.dto.Fare.Type;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
@@ -129,6 +132,21 @@ public class ShProvider extends AbstractHafasProvider
 		final JsonContext jsonContext = (JsonContext) context;
 		return jsonTripSearch(jsonContext.from, jsonContext.to, jsonContext.date, jsonContext.dep, jsonContext.products,
 				later ? jsonContext.laterContext : jsonContext.earlierContext);
+	}
+
+	@Override
+	protected Fare parseJsonTripFare(final @Nullable String fareSetName, final @Nullable String fareSetDescription, String name,
+			final Currency currency, final float price)
+	{
+		if (!"Normalpreis".equals(fareSetDescription) || !name.startsWith("Einzelfahrkarte "))
+			return null;
+		name = name.substring(16);
+		if (name.startsWith("Übergang"))
+			return null;
+		if (name.startsWith("Kind "))
+			return new Fare("SH-Tarif", Type.CHILD, currency, price, name.substring(5), null);
+		else
+			return new Fare("SH-Tarif", Type.ADULT, currency, price, name, null);
 	}
 
 	protected static final Map<String, Style> STYLES = new HashMap<String, Style>();

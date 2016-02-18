@@ -115,4 +115,12 @@ public class ShProviderLiveTest extends AbstractProviderLiveTest
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		print(laterResult);
 	}
+
+	@Test
+	public void tripKiel() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "3490015"), null, new Location(LocationType.STATION, "706923"),
+				new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		print(result);
+	}
 }
