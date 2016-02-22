@@ -37,65 +37,72 @@ public class FranceNorthEastProviderLiveTest extends AbstractNavitiaProviderLive
 
 	@Test
 	public void nearbyStationsAddress() throws Exception
-	// check how to convert coordinates
+	// stations close to those coordinates (lat, lon)
+	// no decimal point, has to include 6 decimal places
 	{
-		nearbyStationsAddress(44826434, -557312);
+		nearbyStationsAddress(48573410, 7752110);
 	}
 
 	@Test
 	public void nearbyStationsAddress2() throws Exception
-	// what's the difference with the first one?
+	// different test case for stations close to coordinates (lat, lon)
+	// no decimal point, has to include 6 decimal places
 	{
-		nearbyStationsAddress(44841225, -580036);
+		nearbyStationsAddress(48598480, 7761790);
 	}
 
 	@Test
 	public void nearbyStationsStation() throws Exception
 	// station to find other stations around
+	// look in NTFS file for a stop_id (that contains "SP") and apend to "stop_point:"
 	{
-		nearbyStationsStation("stop_point:STE:SP:OCETrainTER-87581538");
+		nearbyStationsStation("stop_point:OST:SP:HOFER_11");
 	}
 
 	@Test
 	public void nearbyStationsPoi() throws Exception
 	// POI to find stations around
+	// search OSM for a node, use identifier after
+	// "https://www.openstreetmap.org/node/" and apend it to "poi:n"
 	{
-		nearbyStationsPoi("poi:n849494949");
+		nearbyStationsPoi("poi:n39224822");
 	}
 
 	@Test
 	public void nearbyStationsAny() throws Exception
 	// coordinates to find stations around
 	{
-		nearbyStationsAny(44826434, -557312);
+		nearbyStationsAny(48573410, 7752110);
 	}
-
+	
 	@Test
 	public void nearbyStationsInvalidStation() throws Exception
-	// station that does not exist
+	// station that does not exist?
 	{
-		nearbyStationsInvalidStation("stop_point:OBO:SP:7");
+		nearbyStationsInvalidStation("stop_point:OBO:SP:999999");
 	}
 
 	@Test
 	public void queryDeparturesEquivsFalse() throws Exception
-	// ??
+	// what is it for??
 	{
-		queryDeparturesEquivsFalse("stop_point:OBO:SP:732");
+		queryDeparturesEquivsFalse("stop_point:OST:SP:HOFER_11");
 	}
 
 	@Test
 	public void queryDeparturesStopArea() throws Exception
-	// ??
+	// what is it for??
+	// has to be an existing stop area (i.e. ID contains "SA")
 	{
-		queryDeparturesStopArea("stop_area:OBO:SA:AEROG");
+		queryDeparturesStopArea("stop_area:OST:SA:CTPHOFER_04");
 	}
 
 	@Test
 	public void queryDeparturesEquivsTrue() throws Exception
-	// ??
+	// what is it for??
+	// can be the same to queryDeparturesEquivsFalse
 	{
-		queryDeparturesEquivsTrue("stop_point:OBO:SP:732");
+		queryDeparturesEquivsTrue("stop_point:OST:SP:HOFER_11");
 	}
 
 	@Test
@@ -109,14 +116,14 @@ public class FranceNorthEastProviderLiveTest extends AbstractNavitiaProviderLive
 	public void suggestLocations() throws Exception
 	// start of a place name that should return something
 	{
-		suggestLocationsFromName("quinco");
+		suggestLocationsFromName("Observat");
 	}
 
 	@Test
 	public void suggestLocationsFromAddress() throws Exception
 	// start of an address that should return something
 	{
-		suggestLocationsFromAddress("78 rue cam");
+		suggestLocationsFromAddress("16 quai Saint");
 	}
 
 	@Test
@@ -130,84 +137,84 @@ public class FranceNorthEastProviderLiveTest extends AbstractNavitiaProviderLive
 	public void queryTripAddresses() throws Exception
 	// two existing addresses to define a trip
 	{
-		queryTrip("98 rue Jean-Renaud Dandicolle Bordeaux", "78 rue Camena d'Almeida Bordeaux");
+		queryTrip("16 quai Saint-Nicolas Strasbourg", "6 quai Kléber Strasbourg");
 	}
 
 	@Test
 	public void queryTripAddressStation() throws Exception
 	// one existing address and one existing station to define a trip
 	{
-		queryTrip("98, rue Jean-Renaud Dandicolle Bordeaux", "Saint-Augustin");
+		queryTrip("16 quai Saint-Nicolas Strasbourg", "Illkirch Lixenbuhl");
 	}
 
 	@Test
 	public void queryTripStations() throws Exception
 	// two existing stops to define a trip
 	{
-		queryTrip("Hôpital Pellegrin", "Avenue de l'Université");
+		queryTrip("Mathieu Zell", "Illkirch Lixenbuhl");
 	}
 
 	@Test
 	public void queryTripStations2() throws Exception
 	// two existing stations for a trip, second test case
 	{
-		queryTrip("Pelletan", "Barrière de Pessac");
+		queryTrip("Homme de Fer", "Général Lejeune");
 	}
 
 	@Test
 	public void queryTripStations3() throws Exception
 	// two existing stations for a trip, third test case
 	{
-		queryTrip("Barrière de Pessac", "Hôpital Pellegrin");
+		queryTrip("Eurofret", "Gare aux Marchandises");
 	}
 
 	@Test
 	public void queryTripStationsRapidTransit() throws Exception
 	// two existing stations for "rapid transit"... ?
 	{
-		queryTrip("Gaviniès Bordeaux", "Saint-Augustin Bordeaux");
+		queryTrip("Observatoire Strasbourg", "Porte de l'Hôpital Strasbourg");
 	}
 
 	@Test
 	public void queryTripNoSolution() throws Exception
 	// two existing stations that are not connected
 	{
-		queryTripNoSolution("Patinoire Mériadeck Bordeaux", "Mérignac Centre");
+		queryTripNoSolution("Homme de Fer Strasbourg", "Villers Mairie Villers-Les-Nancy");
 	}
 
 	@Test
 	public void queryTripUnknownFrom() throws Exception
 	// existing station for end of trip, don't know where from
 	{
-		queryTripUnknownFrom("Patinoire Mériadeck Bordeaux");
+		queryTripUnknownFrom("Homme de Fer Strasbourg");
 	}
 
 	@Test
 	public void queryTripUnknownTo() throws Exception
 	// existing station to start from, don't know where to
 	{
-		queryTripUnknownTo("Patinoire Mériadeck Bordeaux");
+		queryTripUnknownTo("Homme de Fer Strasbourg");
 	}
 
 	@Test
 	public void queryTripSlowWalk() throws Exception
 	// two addresses for a "slow walk"
 	{
-		queryTripSlowWalk("98 rue Jean-Renaud Dandicolle Bordeaux", "78 rue Camena d'Almeida Bordeaux");
+		queryTripSlowWalk("16 quai Saint-Nicolas Strasbourg", "5 rue du Travail Strasbourg");
 	}
 
 	@Test
 	public void queryTripFastWalk() throws Exception
 	// two addresses for a "fast walk", can be same as above
 	{
-		queryTripFastWalk("98 rue Jean-Renaud Dandicolle Bordeaux", "78 rue Camena d'Almeida Bordeaux");
+		queryTripFastWalk("16 quai Saint-Nicolas Strasbourg", "5 rue du Travail Strasbourg");
 	}
 
 	@Test
 	public void queryMoreTrips() throws Exception
 	// two addresses to show more trip options, can be same as above
 	{
-		queryMoreTrips("98 rue Jean-Renaud Dandicolle Bordeaux", "78 rue Camena d'Almeida Bordeaux");
+		queryMoreTrips("16 quai Saint-Nicolas Strasbourg", "5 rue du Travail Strasbourg");
 	}
 
 	@Test
