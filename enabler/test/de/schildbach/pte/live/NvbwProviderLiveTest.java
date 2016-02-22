@@ -78,6 +78,13 @@ public class NvbwProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
+	public void queryDeparturesMesseKarlsruhe() throws Exception
+	{
+		final QueryDeparturesResult result = queryDepartures("7000211", false);
+		print(result);
+	}
+
+	@Test
 	public void queryDeparturesInvalidStation() throws Exception
 	{
 		final QueryDeparturesResult result = queryDepartures("999999", false);
