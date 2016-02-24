@@ -766,45 +766,42 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 		final ResultHeader resultHeader = new ResultHeader(network, SERVER_PRODUCT, SERVER_VERSION, 0, null);
 
 		// Build query uri depending of location type.
-		final String queryUriType;
+		final StringBuilder queryUri = new StringBuilder(uri());
 		if (location.type == LocationType.COORD || location.type == LocationType.ADDRESS || location.type == LocationType.ANY)
 		{
 			if (!location.hasLocation())
-			{
 				throw new IllegalArgumentException();
-			}
 			final double lon = location.lon / 1E6;
 			final double lat = location.lat / 1E6;
-
-			queryUriType = "coords/" + lon + ";" + lat + "/";
+			queryUri.append("coords/").append(lon).append(';').append(lat);
 		}
 		else if (location.type == LocationType.STATION)
 		{
 			if (!location.isIdentified())
-			{
 				throw new IllegalArgumentException();
-			}
-			queryUriType = "stop_points/" + location.id + "/";
+			queryUri.append("stop_points/").append(location.id);
 		}
 		else if (location.type == LocationType.POI)
 		{
 			if (!location.isIdentified())
-			{
 				throw new IllegalArgumentException();
-			}
-			queryUriType = "pois/" + location.id + "/";
+			queryUri.append("pois/").append(location.id);
 		}
 		else
 		{
 			throw new IllegalArgumentException("Unhandled location type: " + location.type);
 		}
+		queryUri.append('/');
 
 		if (maxDistance == 0)
 			maxDistance = 50000;
 
-		final String queryUri = uri() + queryUriType + "places_nearby?type[]=stop_point" + "&distance=" + maxDistance + "&count=" + maxLocations
-				+ "&depth=0";
-		final CharSequence page = httpClient.get(queryUri);
+		queryUri.append("places_nearby?type[]=stop_point");
+		queryUri.append("&distance=").append(maxDistance);
+		if (maxLocations > 0)
+			queryUri.append("&count=").append(maxLocations);
+		queryUri.append("&depth=0");
+		final CharSequence page = httpClient.get(queryUri.toString());
 
 		try
 		{
@@ -862,24 +859,35 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 			// to stop_point and query departures.
 			final StringBuilder queryUri = new StringBuilder();
 			queryUri.append(uri());
-			if (equivs)
+			final String header = stationId.substring(0, stationId.indexOf(":"));
+			if (equivs && header.equals("stop_point"))
 			{
-				final String header = stationId.substring(0, stationId.indexOf(":"));
-				if (header.equals("stop_point"))
-				{
-					final String stopAreaId = getStopAreaId(stationId);
-					queryUri.append("stop_areas/" + stopAreaId + "/");
-				}
-				else if (header.equals("stop_area"))
-				{
-					queryUri.append("stop_areas/" + stationId + "/");
-				}
+				final String stopAreaId = getStopAreaId(stationId);
+				queryUri.append("stop_areas/");
+				queryUri.append(stopAreaId);
+				queryUri.append("/");
 			}
 			else
 			{
-				queryUri.append("stop_points/" + stationId + "/");
+				if (header.equals("stop_area"))
+				{
+					queryUri.append("stop_areas/");
+					queryUri.append(stationId);
+					queryUri.append("/");
+				}
+				else
+				{
+					queryUri.append("stop_points/");
+					queryUri.append(stationId);
+					queryUri.append("/");
+				}
 			}
-			queryUri.append("departures?from_datetime=" + dateTime + "&count=" + maxDepartures + "&duration=86400" + "&depth=0");
+			queryUri.append("departures?from_datetime=");
+			queryUri.append(dateTime);
+			queryUri.append("&count=");
+			queryUri.append(maxDepartures);
+			queryUri.append("&duration=86400");
+			queryUri.append("&depth=0");
 
 			final CharSequence page = httpClient.get(queryUri.toString());
 

@@ -231,6 +231,22 @@ public final class XmlPullUtil
 		}
 	}
 
+	public static void skipUntil(final XmlPullParser pp, final String tagName) throws XmlPullParserException, IOException
+	{
+		while (!XmlPullUtil.test(pp, tagName))
+		{
+			if (!pp.isEmptyElementTag())
+			{
+				XmlPullUtil.enter(pp);
+				XmlPullUtil.skipExit(pp);
+			}
+			else
+			{
+				XmlPullUtil.next(pp);
+			}
+		}
+	}
+
 	/**
 	 * Read text content of element ith given namespace and name (use null namespace do indicate that nemspace should
 	 * not be checked)

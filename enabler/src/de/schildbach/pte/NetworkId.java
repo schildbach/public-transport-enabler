@@ -52,6 +52,9 @@ public enum NetworkId
 	// Norway
 	NRI,
 
+	// Finland
+	HSL,
+
 	// Luxembourg
 	LU,
 
@@ -75,6 +78,9 @@ public enum NetworkId
 
 	// United States
 	SF, SEPTA,
+
+	// Canada
+	ONTARIO,
 
 	// Australia
 	SYDNEY, MET

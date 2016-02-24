@@ -20,8 +20,6 @@ package de.schildbach.pte;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import com.google.common.base.Charsets;
-
 import de.schildbach.pte.dto.Product;
 
 /**
@@ -37,8 +35,6 @@ public class RtProvider extends AbstractHafasProvider
 	{
 		super(NetworkId.RT, API_BASE, "dn", PRODUCTS_MAP);
 
-		setJsonGetStopsEncoding(Charsets.UTF_8);
-		setJsonNearbyLocationsEncoding(Charsets.ISO_8859_1);
 		setStationBoardHasStationTable(false);
 	}
 

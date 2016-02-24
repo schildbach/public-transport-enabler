@@ -1299,7 +1299,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 				trips.add(trip);
 			}
 
-			final JsonContext context = new JsonContext(from, to, time, dep, products, res.getString("outCtxScrF"), res.getString("outCtxScrB"));
+			final JsonContext context = new JsonContext(from, to, time, dep, products, res.optString("outCtxScrF"), res.optString("outCtxScrB"));
 			return new QueryTripsResult(header, null, from, null, to, context, trips);
 		}
 		catch (final JSONException x)
