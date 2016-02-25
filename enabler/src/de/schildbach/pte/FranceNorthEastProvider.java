@@ -22,6 +22,7 @@ import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.dto.Style.Shape;
 
 /**
+ * @author Nicolas Derive
  * @author Stéphane Guillou
  */
 public class FranceNorthEastProvider extends AbstractNavitiaProvider
