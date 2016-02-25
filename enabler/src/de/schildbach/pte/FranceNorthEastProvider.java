@@ -27,6 +27,7 @@ import de.schildbach.pte.dto.Style.Shape;
 public class FranceNorthEastProvider extends AbstractNavitiaProvider
 {
 	private static String API_REGION = "fr-ne";
+	// dataset available at: https://navitia.opendatasoft.com/explore/dataset/fr-ne/
 
 	public FranceNorthEastProvider(final String apiBase, final String authorization)
 	{
