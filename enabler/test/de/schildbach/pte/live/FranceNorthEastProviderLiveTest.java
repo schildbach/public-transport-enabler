@@ -79,7 +79,7 @@ public class FranceNorthEastProviderLiveTest extends AbstractNavitiaProviderLive
 	public void nearbyStationsInvalidStation() throws Exception
 	// station that does not exist?
 	{
-		nearbyStationsInvalidStation("stop_point:OBO:SP:999999");
+		nearbyStationsInvalidStation("stop_point:RTP:SP:392");
 	}
 
 	@Test
@@ -137,7 +137,7 @@ public class FranceNorthEastProviderLiveTest extends AbstractNavitiaProviderLive
 	public void queryTripAddresses() throws Exception
 	// two existing addresses to define a trip
 	{
-		queryTrip("16 quai Saint-Nicolas Strasbourg", "6 quai Kléber Strasbourg");
+		queryTrip("16 quai Saint-Nicolas Strasbourg", "37 rue Voltaire Vendenheim");
 	}
 
 	@Test
