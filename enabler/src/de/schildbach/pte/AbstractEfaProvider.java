@@ -1654,11 +1654,15 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 
 					XmlPullUtil.require(pp, "itdServingLine");
 					final boolean isRealtime = XmlPullUtil.attr(pp, "realtime").equals("1");
-					final String destinationName = normalizeLocationName(XmlPullUtil.attr(pp, "direction"));
+					final String destinationName = normalizeLocationName(XmlPullUtil.optAttr(pp, "direction", null));
 					final String destinationIdStr = XmlPullUtil.optAttr(pp, "destID", null);
 					final String destinationId = !"-1".equals(destinationIdStr) ? destinationIdStr : null;
-					final Location destination = new Location(destinationId != null ? LocationType.STATION : LocationType.ANY, destinationId, null,
-							destinationName);
+					final Location destination;
+					if (destinationId != null || destinationName != null)
+						destination = new Location(destinationId != null ? LocationType.STATION : LocationType.ANY, destinationId, null,
+								destinationName);
+					else
+						destination = null;
 					final Line line = processItdServingLine(pp);
 
 					if (isRealtime && !predictedDepartureTime.isSet(Calendar.HOUR_OF_DAY))
