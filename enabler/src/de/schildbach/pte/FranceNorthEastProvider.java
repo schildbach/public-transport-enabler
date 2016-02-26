@@ -53,32 +53,40 @@ public class FranceNorthEastProvider extends AbstractNavitiaProvider
 	@Override
 	protected Style getLineStyle(final Product product, final String code, final String color)
 	{
+		// set defaults in case "color" is empty string, to avoid NumberFormatException error
+		int bg = Style.RED;
+		int fg = Style.WHITE;
+		if(!color.equals(""))
+		{
+			bg = Style.parseColor(color);
+			fg = computeForegroundColor(color);
+		}
 		switch (product)
 		{
 			case REGIONAL_TRAIN:
 			{
 				// Rail (route_type = 2) for TER and Corail Intercité/Lunéa (all SNCF)
-				return new Style(Style.parseColor(color), computeForegroundColor(color));
+				return new Style(bg, fg);
 			}
 			case SUBURBAN_TRAIN:
 			{
 				// Rail (route_type = 2) for Transilien (SNCF)
-				return new Style(Style.parseColor(color), computeForegroundColor(color));
+				return new Style(bg, fg);
 			}
 			case TRAM:
 			{
 				// Tram (route_type = 0) for Strasboug (CTS) and Nancy (Stan)
-				return new Style(Shape.RECT, Style.parseColor(color), computeForegroundColor(color));
+				return new Style(Shape.RECT, bg, fg);
 			}
 			case BUS:
 			{
 				// Bus  (route_type = 3)
-				return new Style(Shape.ROUNDED, Style.parseColor(color), computeForegroundColor(color));
+				return new Style(Shape.ROUNDED, bg, fg);
 			}
 			case SUBWAY:
 			{
 				// Subway (route_type = 1) for Lille (Transpole)
-				return new Style(Shape.CIRCLE, Style.TRANSPARENT, Style.parseColor(color), Style.parseColor(color));
+				return new Style(Shape.CIRCLE, Style.TRANSPARENT, bg, bg);
 			}
 			default:
 				throw new IllegalArgumentException("Unhandled product: " + product);
