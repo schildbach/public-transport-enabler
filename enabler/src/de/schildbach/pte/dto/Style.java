@@ -120,12 +120,16 @@ public class Style implements Serializable
 			{
 				// Set the alpha value
 				color |= 0x00000000ff000000;
+				return (int) color;
 			}
-			else if (colorString.length() != 9)
+			else if (colorString.length() == 9)
+			{
+				return (int) color;
+			}
+			else
 			{
 				throw new IllegalArgumentException("Unknown color");
 			}
-			return (int) color;
 		}
 		throw new IllegalArgumentException("Unknown color");
 	}
