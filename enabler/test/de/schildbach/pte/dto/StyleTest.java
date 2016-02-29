@@ -34,6 +34,36 @@ public class StyleTest
 	}
 
 	@Test
+	public void parseColor()
+	{
+		assertEquals(0x11223344, Style.parseColor("#11223344"));
+	}
+
+	@Test
+	public void parseColor_noOverflow()
+	{
+		assertEquals(0xffffffff, Style.parseColor("#ffffffff"));
+	}
+
+	@Test
+	public void parseColor_amendAlpha()
+	{
+		assertEquals(0xff000000, Style.parseColor("#000000"));
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void parseColor_failTooShort()
+	{
+		Style.parseColor("#");
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void parseColor_failNotANumber()
+	{
+		Style.parseColor("#11111z");
+	}
+
+	@Test
 	public void deriveForegroundColorForLightBackground()
 	{
 		final int acacia = Style.rgb(205, 200, 63);

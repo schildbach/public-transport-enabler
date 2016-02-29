@@ -17,6 +17,7 @@
 
 package de.schildbach.pte.dto;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.Serializable;
@@ -110,24 +111,22 @@ public class Style implements Serializable
 	public static final int MAGENTA = 0xFFFF00FF;
 	public static final int TRANSPARENT = 0;
 
-	public static int parseColor(final String colorString)
+	public static int parseColor(final String colorStr)
 	{
-		if (colorString.charAt(0) == '#')
+		checkNotNull(colorStr);
+		checkArgument((colorStr.length() == 7 || colorStr.length() == 9) && colorStr.charAt(0) == '#', "Unknown color: %s", colorStr);
+		try
 		{
 			// Use a long to avoid rollovers on #ffXXXXXX
-			long color = Long.parseLong(colorString.substring(1), 16);
-			if (colorString.length() == 7)
-			{
-				// Set the alpha value
-				color |= 0x00000000ff000000;
-			}
-			else if (colorString.length() != 9)
-			{
-				throw new IllegalArgumentException("Unknown color");
-			}
+			long color = Long.parseLong(colorStr.substring(1), 16);
+			if (colorStr.length() == 7)
+				color |= 0xff000000; // Amend the alpha value
 			return (int) color;
 		}
-		throw new IllegalArgumentException("Unknown color");
+		catch (final NumberFormatException x)
+		{
+			throw new IllegalArgumentException("Not a number: " + colorStr);
+		}
 	}
 
 	public static int rgb(final int red, final int green, final int blue)

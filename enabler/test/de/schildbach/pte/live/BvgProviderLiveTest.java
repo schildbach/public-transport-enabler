@@ -159,6 +159,15 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
+	public void tripBetweenStations() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "9055101", 52496176, 13343273, null, "U Viktoria-Luise-Platz"),
+				null, new Location(LocationType.STATION, "9089303", 52588810, 13288699, null, "S Tegel"), new Date(), true, Product.ALL,
+				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		print(result);
+	}
+
+	@Test
 	public void shortViaTrip() throws Exception
 	{
 		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "9056102", "Berlin", "Nollendorfplatz"), new Location(
