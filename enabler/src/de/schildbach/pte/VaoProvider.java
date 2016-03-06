@@ -20,6 +20,8 @@ package de.schildbach.pte;
 import java.io.IOException;
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,6 +37,7 @@ import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsContext;
 import de.schildbach.pte.dto.QueryTripsResult;
+import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.dto.SuggestLocationsResult;
 
 /**
@@ -55,6 +58,7 @@ public class VaoProvider extends AbstractHafasProvider
 		setJsonApiClient("{\"id\":\"VAO\",\"l\":\"vs_vvv\"}");
 		setJsonApiAuthorization(jsonApiAuthorization);
 		setJsonNearbyLocationsEncoding(Charsets.UTF_8);
+		setStyles(STYLES);
 	}
 
 	@Override
@@ -132,5 +136,30 @@ public class VaoProvider extends AbstractHafasProvider
 		final JsonContext jsonContext = (JsonContext) context;
 		return jsonTripSearch(jsonContext.from, jsonContext.to, jsonContext.date, jsonContext.dep, jsonContext.products,
 				later ? jsonContext.laterContext : jsonContext.earlierContext);
+	}
+
+	private static final Map<String, Style> STYLES = new HashMap<String, Style>();
+
+	static
+	{
+		// Salzburg S-Bahn
+		STYLES.put("Salzburg AG|SS1", new Style(Style.parseColor("#b61d33"), Style.WHITE));
+		STYLES.put("Salzburg AG|SS11", new Style(Style.parseColor("#b61d33"), Style.WHITE));
+		STYLES.put("OEBB|SS2", new Style(Style.parseColor("#0069b4"), Style.WHITE));
+		STYLES.put("OEBB|SS3", new Style(Style.parseColor("#0aa537"), Style.WHITE));
+		STYLES.put("BLB|SS4", new Style(Style.parseColor("#a862a4"), Style.WHITE));
+
+		// Salzburg Bus
+		STYLES.put("Salzburg AG|B1", new Style(Style.parseColor("#e3000f"), Style.WHITE));
+		STYLES.put("Salzburg AG|B2", new Style(Style.parseColor("#0069b4"), Style.WHITE));
+		STYLES.put("Salzburg AG|B3", new Style(Style.parseColor("#956b27"), Style.WHITE));
+		STYLES.put("Salzburg AG|B4", new Style(Style.parseColor("#ffcc00"), Style.WHITE));
+		STYLES.put("Salzburg AG|B5", new Style(Style.parseColor("#04bbee"), Style.WHITE));
+		STYLES.put("Salzburg AG|B6", new Style(Style.parseColor("#85bc22"), Style.WHITE));
+		STYLES.put("Salzburg AG|B7", new Style(Style.parseColor("#009a9b"), Style.WHITE));
+		STYLES.put("Salzburg AG|B8", new Style(Style.parseColor("#f39100"), Style.WHITE));
+		STYLES.put("Salzburg AG|B10", new Style(Style.parseColor("#f8baa2"), Style.BLACK));
+		STYLES.put("Salzburg AG|B12", new Style(Style.parseColor("#b9dfde"), Style.WHITE));
+		STYLES.put("Salzburg AG|B14", new Style(Style.parseColor("#cfe09a"), Style.WHITE));
 	}
 }
