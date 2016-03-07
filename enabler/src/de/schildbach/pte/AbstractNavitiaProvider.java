@@ -993,10 +993,11 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 				for (int i = 0; i < places.length(); ++i)
 				{
 					final JSONObject place = places.getJSONObject(i);
+					final int priority = place.optInt("quality", 0);
 
 					// Add location to station list.
 					final Location location = parseLocation(place);
-					locations.add(new SuggestedLocation(location));
+					locations.add(new SuggestedLocation(location, priority));
 				}
 			}
 
