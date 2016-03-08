@@ -647,11 +647,22 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 		try
 		{
 			final String lineId = line.getString("id");
-			final Product cachedProduct = lineProductCache.get(lineId);
-			if (cachedProduct != null)
-				return cachedProduct;
+			final JSONObject mode;
 
-			final JSONObject mode = getLinePhysicalMode(lineId);
+			if (line.has("physical_modes"))
+			{
+				mode = line.getJSONArray("physical_modes").getJSONObject(0);
+			}
+			else
+			{
+				final Product cachedProduct = lineProductCache.get(lineId);
+				if (cachedProduct != null)
+					return cachedProduct;
+
+				// this makes a network request and is sometimes necessary
+				mode = getLinePhysicalMode(lineId);
+			}
+
 			final String modeId = mode.getString("id");
 			final Product product = parseLineProductFromMode(modeId);
 
@@ -927,7 +938,10 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 				final JSONObject route = jsonDeparture.getJSONObject("route");
 				final JSONObject jsonLine = route.getJSONObject("line");
 				final Line line = parseLine(jsonLine);
-				final Location destination = findLineDestination(stationDepartures.lines, line).destination;
+				final LineDestination lineDestination = findLineDestination(stationDepartures.lines, line);
+				Location destination = null;
+				if (lineDestination != null)
+					destination = lineDestination.destination;
 
 				// Add departure to list.
 				final Departure departure = new Departure(plannedTime, null, line, null, destination, null, null);
