@@ -158,7 +158,16 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 
 	protected Style getLineStyle(final Product product, final String code, final String color)
 	{
-		return new Style(Shape.RECT, Style.parseColor(color), computeForegroundColor(color));
+		if (color != null)
+		{
+			return new Style(Shape.RECT, Style.parseColor(color), computeForegroundColor(color));
+		}
+		else
+		{
+			final Style defaultStyle = Standard.STYLES.get(product);
+			return new Style(Shape.RECT, defaultStyle.backgroundColor, defaultStyle.backgroundColor2, defaultStyle.foregroundColor,
+					defaultStyle.borderColor);
+		}
 	}
 
 	private String uri()
@@ -411,9 +420,8 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 			final Product product = parseLineProductFromMode(modeId);
 			final JSONObject displayInfo = section.getJSONObject("display_informations");
 			final String code = displayInfo.getString("code");
-			final String colorHex = displayInfo.getString("color");
-			final String color = colorHex.equals("000000") ? "#FFFFFF" : "#" + colorHex;
-			final Style lineStyle = getLineStyle(product, code, color);
+			final String color = Strings.emptyToNull(displayInfo.getString("color"));
+			final Style lineStyle = getLineStyle(product, code, color != null ? "#" + color : null);
 
 			return new Line(lineId, null, product, code, lineStyle);
 		}
@@ -598,8 +606,8 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 			final String lineId = jsonLine.getString("id");
 			final Product product = parseLineProduct(jsonLine);
 			final String code = jsonLine.getString("code");
-			final String color = "#" + jsonLine.getString("color");
-			final Style lineStyle = getLineStyle(product, code, color);
+			final String color = Strings.emptyToNull(jsonLine.getString("color"));
+			final Style lineStyle = getLineStyle(product, code, color != null ? "#" + color : null);
 			return new Line(lineId, null, product, code, lineStyle);
 		}
 		catch (final JSONException jsonExc)
