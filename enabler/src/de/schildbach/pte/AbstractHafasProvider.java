@@ -347,9 +347,13 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			final int v = 1 << i;
 			if (value >= v)
 			{
-				if (product != null)
+				final Product p = productsMap[i];
+				if (product == Product.ON_DEMAND && p == Product.BUS)
+					; // just ON_DEMAND
+				else if (product != null)
 					throw new IllegalArgumentException("ambigous value: " + productInt);
-				product = productsMap[i];
+				else
+					product = p;
 				value -= v;
 			}
 		}
