@@ -959,7 +959,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 			}
 			catch (final JSONException jsonExc)
 			{
-				throw new ParserException(jsonExc);
+				throw new ParserException("Cannot parse error content, original exception linked", fnfExc);
 			}
 		}
 	}
@@ -1183,7 +1183,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 			}
 			catch (final JSONException jsonExc)
 			{
-				throw new ParserException(jsonExc);
+				throw new ParserException("Cannot parse error content, original exception linked", fnfExc);
 			}
 		}
 	}
