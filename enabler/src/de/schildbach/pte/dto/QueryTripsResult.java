@@ -120,10 +120,6 @@ public final class QueryTripsResult implements Serializable
 			if (ambiguousTo != null)
 				helper.add("size", ambiguousTo.size()).add("ambiguousTo", ambiguousTo);
 		}
-		else
-		{
-			helper.addValue(status);
-		}
 		return helper.toString();
 	}
 }
