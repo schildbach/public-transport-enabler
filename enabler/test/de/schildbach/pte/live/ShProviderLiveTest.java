@@ -123,4 +123,12 @@ public class ShProviderLiveTest extends AbstractProviderLiveTest
 				new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
 		print(result);
 	}
+
+	@Test
+	public void trip_errorTooClose() throws Exception
+	{
+		final Location station = new Location(LocationType.STATION, "003665026");
+		final QueryTripsResult result = queryTrips(station, null, station, new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		assertEquals(QueryTripsResult.Status.TOO_CLOSE, result.status);
+	}
 }

@@ -1197,6 +1197,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					return new QueryTripsResult(header, QueryTripsResult.Status.UNRESOLVABLE_ADDRESS);
 				if ("H9360".equals(err)) // Date outside of the timetable period.
 					return new QueryTripsResult(header, QueryTripsResult.Status.INVALID_DATE);
+				if ("H9380".equals(err)) // Departure/Arrival/Intermediate or equivalent stations def'd more than once.
+					return new QueryTripsResult(header, QueryTripsResult.Status.TOO_CLOSE);
 				final String errTxt = svcRes.getString("errTxt");
 				throw new RuntimeException(err + ": " + errTxt);
 			}
