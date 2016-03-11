@@ -43,6 +43,7 @@ public final class Line implements Serializable, Comparable<Line>
 	public final @Nullable String network;
 	public final @Nullable Product product;
 	public final @Nullable String label;
+	public final @Nullable String name;
 	public final @Nullable Style style;
 	public final @Nullable Set<Attr> attrs;
 	public final @Nullable String message;
@@ -54,31 +55,43 @@ public final class Line implements Serializable, Comparable<Line>
 
 	public Line(final String id, final String network, final Product product, final String label)
 	{
-		this(id, network, product, label, null, null, null);
+		this(id, network, product, label, null, null, null, null);
 	}
 
 	public Line(final String id, final String network, final Product product, final String label, final Style style)
 	{
-		this(id, network, product, label, style, null, null);
+		this(id, network, product, label, null, style, null, null);
+	}
+
+	public Line(final String id, final String network, final Product product, final String label, final String name, final Style style)
+	{
+		this(id, network, product, label, name, style, null, null);
 	}
 
 	public Line(final String id, final String network, final Product product, final String label, final Style style, final String message)
 	{
-		this(id, network, product, label, style, null, message);
+		this(id, network, product, label, null, style, null, message);
 	}
 
 	public Line(final String id, final String network, final Product product, final String label, final Style style, final Set<Attr> attrs)
 	{
-		this(id, network, product, label, style, attrs, null);
+		this(id, network, product, label, null, style, attrs, null);
 	}
 
 	public Line(final String id, final String network, final Product product, final String label, final Style style, final Set<Attr> attrs,
 			final String message)
 	{
+		this(id, network, product, label, null, style, attrs, message);
+	}
+
+	public Line(final String id, final String network, final Product product, final String label, final String name, final Style style,
+			final Set<Attr> attrs, final String message)
+	{
 		this.id = id;
 		this.network = network;
 		this.product = product;
 		this.label = label;
+		this.name = name;
 		this.style = style;
 		this.attrs = attrs;
 		this.message = message;
@@ -126,6 +139,7 @@ public final class Line implements Serializable, Comparable<Line>
 				.addValue(network) //
 				.addValue(product) //
 				.addValue(label) //
+				.addValue(name) //
 				.toString();
 	}
 

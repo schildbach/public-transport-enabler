@@ -71,6 +71,7 @@ import de.schildbach.pte.util.ParserUtils;
 /**
  * @author Antonio El Khoury
  * @author Andreas Schildbach
+ * @author Torsten Grote
  */
 public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 {
@@ -157,9 +158,16 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 
 	protected Style getLineStyle(final Product product, final String code, final String color)
 	{
-		if (color != null)
+		return getLineStyle(product, code, color, null);
+	}
+
+	protected Style getLineStyle(final Product product, final String code, final String backgroundColor, final String foregroundColor)
+	{
+		if (backgroundColor != null)
 		{
-			return new Style(Shape.RECT, Style.parseColor(color), computeForegroundColor(color));
+			if (foregroundColor == null)
+				return new Style(Shape.RECT, Style.parseColor(backgroundColor), computeForegroundColor(backgroundColor));
+			return new Style(Shape.RECT, Style.parseColor(backgroundColor), Style.parseColor(foregroundColor));
 		}
 		else
 		{
@@ -468,11 +476,13 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 
 			final Product product = parseLineProductFromMode(modeId);
 			final JSONObject displayInfo = section.getJSONObject("display_informations");
+			final String network = Strings.emptyToNull(displayInfo.optString("network"));
 			final String code = displayInfo.getString("code");
 			final String color = Strings.emptyToNull(displayInfo.getString("color"));
+			final String name = Strings.emptyToNull(displayInfo.optString("headsign"));
 			final Style lineStyle = getLineStyle(product, code, color != null ? "#" + color : null);
 
-			return new Line(lineId, null, product, code, lineStyle);
+			return new Line(lineId, network, product, code, name, lineStyle);
 		}
 		catch (final JSONException jsonExc)
 		{
@@ -653,11 +663,17 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 		try
 		{
 			final String lineId = jsonLine.getString("id");
+			String network = null;
+			if (jsonLine.has("network"))
+				network = Strings.emptyToNull(jsonLine.getJSONObject("network").optString("name"));
 			final Product product = parseLineProduct(jsonLine);
 			final String code = jsonLine.getString("code");
+			final String name = Strings.emptyToNull(jsonLine.optString("name"));
 			final String color = Strings.emptyToNull(jsonLine.getString("color"));
-			final Style lineStyle = getLineStyle(product, code, color != null ? "#" + color : null);
-			return new Line(lineId, null, product, code, lineStyle);
+			final String textColor = Strings.emptyToNull(jsonLine.optString("text_color"));
+			final Style lineStyle = getLineStyle(product, code, color != null ? "#" + color : null, textColor != null ? "#" + textColor : null);
+
+			return new Line(lineId, network, product, code, name, lineStyle);
 		}
 		catch (final JSONException jsonExc)
 		{
@@ -752,46 +768,15 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 		}
 	}
 
-	private LineDestination parseLineDestination(final JSONObject route) throws IOException
+	private LineDestination getStationLine(final Line line, final JSONObject jsonDeparture) throws IOException
 	{
 		try
 		{
-			// Build line.
-			final JSONObject jsonLine = route.getJSONObject("line");
-			final Line line = parseLine(jsonLine);
-
-			// Build line destination.
+			final JSONObject route = jsonDeparture.getJSONObject("route");
 			final JSONObject direction = route.getJSONObject("direction");
-			Location destination = parseLocation(direction);
+			final Location destination = parseLocation(direction);
 
 			return new LineDestination(line, destination);
-		}
-		catch (final JSONException jsonExc)
-		{
-			throw new ParserException(jsonExc);
-		}
-	}
-
-	private List<LineDestination> getStationLines(final String stopPointId) throws IOException
-	{
-		final String uri = uri() + "stop_points/" + ParserUtils.urlEncode(stopPointId) + "/routes?depth=2";
-		final CharSequence page = httpClient.get(uri);
-
-		try
-		{
-			final JSONObject head = new JSONObject(page.toString());
-			final JSONArray routes = head.getJSONArray("routes");
-
-			final List<LineDestination> lineDestinations = new LinkedList<LineDestination>();
-
-			for (int i = 0; i < routes.length(); ++i)
-			{
-				final JSONObject route = routes.getJSONObject(i);
-				final LineDestination lineDestination = parseLineDestination(route);
-				lineDestinations.add(lineDestination);
-			}
-
-			return lineDestinations;
 		}
 		catch (final JSONException jsonExc)
 		{
@@ -968,24 +953,6 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 			{
 				final JSONObject jsonDeparture = departures.getJSONObject(i);
 
-				final JSONObject stopPoint = jsonDeparture.getJSONObject("stop_point");
-				final Location location = parsePlace(stopPoint, PlaceType.STOP_POINT);
-
-				// If stop point has already been added, retrieve it
-				// from result, otherwise add it and add station
-				// lines.
-				StationDepartures stationDepartures = result.findStationDepartures(location.id);
-				if (stationDepartures == null)
-				{
-					stationDepartures = new StationDepartures(location, new LinkedList<Departure>(), new LinkedList<LineDestination>());
-					result.stationDepartures.add(stationDepartures);
-
-					final List<LineDestination> lineDestinations = getStationLines(location.id);
-
-					for (LineDestination lineDestination : lineDestinations)
-						checkNotNull(stationDepartures.lines).add(lineDestination);
-				}
-
 				// Build departure date.
 				final JSONObject stopDateTime = jsonDeparture.getJSONObject("stop_date_time");
 				final String departureDateTime = stopDateTime.getString("departure_date_time");
@@ -995,10 +962,23 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 				final JSONObject route = jsonDeparture.getJSONObject("route");
 				final JSONObject jsonLine = route.getJSONObject("line");
 				final Line line = parseLine(jsonLine);
-				final LineDestination lineDestination = findLineDestination(stationDepartures.lines, line);
-				Location destination = null;
-				if (lineDestination != null)
-					destination = lineDestination.destination;
+
+				final JSONObject stopPoint = jsonDeparture.getJSONObject("stop_point");
+				final Location location = parsePlace(stopPoint, PlaceType.STOP_POINT);
+
+				// If stop point has already been added, retrieve it from result,
+				// otherwise add it and add station lines.
+				StationDepartures stationDepartures = result.findStationDepartures(location.id);
+				if (stationDepartures == null)
+				{
+					stationDepartures = new StationDepartures(location, new LinkedList<Departure>(), new LinkedList<LineDestination>());
+					result.stationDepartures.add(stationDepartures);
+				}
+				final LineDestination lineDestination = getStationLine(line, jsonDeparture);
+				final List<LineDestination> lines = stationDepartures.lines;
+				if (lines != null && !lines.contains(lineDestination))
+					lines.add(lineDestination);
+				final Location destination = lineDestination.destination;
 
 				// Add departure to list.
 				final Departure departure = new Departure(plannedTime, null, line, null, destination, null, null);
@@ -1033,15 +1013,6 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 				throw new ParserException("Cannot parse error content, original exception linked", fnfExc);
 			}
 		}
-	}
-
-	private LineDestination findLineDestination(final List<LineDestination> lineDestinations, final Line line)
-	{
-		for (final LineDestination lineDestination : lineDestinations)
-			if (lineDestination.line.equals(line))
-				return lineDestination;
-
-		return null;
 	}
 
 	public SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException
