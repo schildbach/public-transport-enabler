@@ -20,6 +20,7 @@ package de.schildbach.pte;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.dto.Style.Shape;
+import de.schildbach.pte.util.WordUtils;
 
 /**
  * @author Antonio El Khoury
@@ -89,5 +90,11 @@ public class ParisProvider extends AbstractNavitiaProvider
 			default:
 				throw new IllegalArgumentException("Unhandled product: " + product);
 		}
+	}
+
+	@Override
+	protected String getLocationName(String name)
+	{
+		return WordUtils.capitalizeFully(name);
 	}
 }

@@ -67,7 +67,6 @@ import de.schildbach.pte.dto.Trip.Public;
 import de.schildbach.pte.exception.NotFoundException;
 import de.schildbach.pte.exception.ParserException;
 import de.schildbach.pte.util.ParserUtils;
-import de.schildbach.pte.util.WordUtils;
 
 /**
  * @author Antonio El Khoury
@@ -194,18 +193,63 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 		}
 	}
 
-	private Location parseStopPoint(final JSONObject stopPoint) throws IOException
+	private LocationType getLocationType(PlaceType placeType)
+	{
+		switch (placeType)
+		{
+			case STOP_POINT:
+			{
+				return LocationType.STATION;
+			}
+			case STOP_AREA:
+			{
+				return LocationType.STATION;
+			}
+			case ADDRESS:
+			{
+				return LocationType.ADDRESS;
+			}
+			case POI:
+			{
+				return LocationType.ANY;
+			}
+			default:
+				throw new IllegalArgumentException("Unhandled place type: " + placeType);
+		}
+	}
+
+	/**
+	 * Some Navitia providers return location names with wrong case. This method can be used to fix the name when
+	 * locations are parsed.
+	 * 
+	 * @param name
+	 *            The name of the location
+	 * @return the fixed name of the location
+	 */
+	protected String getLocationName(String name)
+	{
+		return name;
+	}
+
+	private Location parsePlace(JSONObject location, PlaceType placeType) throws IOException
 	{
 		try
 		{
-			final String id = stopPoint.getString("id");
-
-			final JSONObject coord = stopPoint.getJSONObject("coord");
+			final LocationType type = getLocationType(placeType);
+			String id = null;
+			if (placeType != PlaceType.ADDRESS && placeType != PlaceType.POI)
+				id = location.getString("id");
+			final JSONObject coord = location.getJSONObject("coord");
 			final Point point = parseCoord(coord);
-
-			final String name = WordUtils.capitalizeFully(stopPoint.getString("name"));
-
-			return new Location(LocationType.STATION, id, point, null, name);
+			final String name = getLocationName(location.getString("name"));
+			String place = null;
+			if (location.has("administrative_regions"))
+			{
+				JSONArray admin = location.getJSONArray("administrative_regions");
+				if (admin.length() > 0)
+					place = Strings.emptyToNull(admin.getJSONObject(0).optString("name"));
+			}
+			return new Location(type, id, point, place, name);
 		}
 		catch (final JSONException jsonExc)
 		{
@@ -213,54 +257,40 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 		}
 	}
 
-	private Location parseLocation(final JSONObject place) throws IOException
+	private Location parseLocation(final JSONObject j) throws IOException
 	{
 		try
 		{
-			final String type = place.getString("embedded_type");
+			final String type = j.getString("embedded_type");
 			final PlaceType placeType = PlaceType.valueOf(type.toUpperCase());
+			JSONObject location;
 
 			switch (placeType)
 			{
 				case STOP_POINT:
 				{
-					final JSONObject stopPoint = place.getJSONObject("stop_point");
-					return parseStopPoint(stopPoint);
+					location = j.getJSONObject("stop_point");
+					break;
 				}
 				case STOP_AREA:
 				{
-					final JSONObject stopArea = place.getJSONObject("stop_area");
-					return parseStopPoint(stopArea);
+					location = j.getJSONObject("stop_area");
+					break;
 				}
 				case ADDRESS:
 				{
-					final JSONObject address = place.getJSONObject("address");
-
-					final String id = address.getString("id");
-
-					final JSONObject coord = address.getJSONObject("coord");
-					final Point point = parseCoord(coord);
-
-					final String name = WordUtils.capitalizeFully(place.getString("name"));
-
-					return new Location(LocationType.ADDRESS, id, point, null, name);
+					location = j.getJSONObject("address");
+					break;
 				}
 				case POI:
 				{
-					final JSONObject poi = place.getJSONObject("poi");
-
-					final String id = poi.getString("id");
-
-					final JSONObject coord = poi.getJSONObject("coord");
-					final Point point = parseCoord(coord);
-
-					final String name = WordUtils.capitalizeFully(poi.getString("name"));
-
-					return new Location(LocationType.ADDRESS, id, point.lat, point.lon, null, name);
+					location = j.getJSONObject("poi");
+					break;
 				}
 				default:
 					throw new IllegalArgumentException("Unhandled place type: " + type);
 			}
+			return parsePlace(location, placeType);
 		}
 		catch (final JSONException jsonExc)
 		{
@@ -437,7 +467,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 		{
 			// Build location.
 			final JSONObject stopPoint = stopDateTime.getJSONObject("stop_point");
-			final Location location = parseStopPoint(stopPoint);
+			final Location location = parsePlace(stopPoint, PlaceType.STOP_POINT);
 
 			// Build planned arrival time.
 			final Date plannedArrivalTime = parseDate(stopDateTime.getString("arrival_date_time"));
@@ -497,7 +527,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 					// Build destination.
 					final JSONObject displayInfo = section.getJSONObject("display_informations");
 					final String direction = displayInfo.getString("direction");
-					final Location destination = new Location(LocationType.STATION, direction, direction, direction);
+					final Location destination = new Location(LocationType.ANY, null, null, getLocationName(direction));
 
 					final JSONArray stopDateTimes = section.getJSONArray("stop_date_times");
 					final int nbStopDateTime = stopDateTimes.length();
@@ -920,7 +950,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 				final JSONObject jsonDeparture = departures.getJSONObject(i);
 
 				final JSONObject stopPoint = jsonDeparture.getJSONObject("stop_point");
-				final Location location = parseStopPoint(stopPoint);
+				final Location location = parsePlace(stopPoint, PlaceType.STOP_POINT);
 
 				// If stop point has already been added, retrieve it
 				// from result, otherwise add it and add station

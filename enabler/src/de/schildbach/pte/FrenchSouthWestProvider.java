@@ -58,6 +58,10 @@ public class FrenchSouthWestProvider extends AbstractNavitiaProvider
 				// TER + Intercités
 				return new Style(Style.parseColor(color), computeForegroundColor(color));
 			}
+			case SUBURBAN_TRAIN:
+			{
+				return new Style(Style.parseColor(color), computeForegroundColor(color));
+			}
 			case TRAM:
 			{
 				// Tram

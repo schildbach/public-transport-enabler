@@ -17,6 +17,8 @@
 
 package de.schildbach.pte;
 
+import de.schildbach.pte.util.WordUtils;
+
 /**
  * @author Antonio El Khoury
  */
@@ -42,5 +44,11 @@ public class ItalyProvider extends AbstractNavitiaProvider
 	public String region()
 	{
 		return API_REGION;
+	}
+
+	@Override
+	protected String getLocationName(String name)
+	{
+		return WordUtils.capitalizeFully(name);
 	}
 }
