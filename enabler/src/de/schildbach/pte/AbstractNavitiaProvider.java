@@ -211,7 +211,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 			}
 			case POI:
 			{
-				return LocationType.ANY;
+				return LocationType.POI;
 			}
 			default:
 				throw new IllegalArgumentException("Unhandled place type: " + placeType);
@@ -257,6 +257,21 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 		}
 	}
 
+	private Location parseAdministrativeRegion(final JSONObject j) throws IOException
+	{
+		try
+		{
+			final JSONObject coord = j.getJSONObject("coord");
+			final Point point = parseCoord(coord);
+			final String name = j.getString("name");
+			return new Location(LocationType.POI, null, point, null, name);
+		}
+		catch (final JSONException jsonExc)
+		{
+			throw new ParserException(jsonExc);
+		}
+	}
+
 	private Location parseLocation(final JSONObject j) throws IOException
 	{
 		try
@@ -286,6 +301,10 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 				{
 					location = j.getJSONObject("poi");
 					break;
+				}
+				case ADMINISTRATIVE_REGION:
+				{
+					return parseAdministrativeRegion(j.getJSONObject("administrative_region"));
 				}
 				default:
 					throw new IllegalArgumentException("Unhandled place type: " + type);
@@ -1029,7 +1048,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 	{
 		final String nameCstr = constraint.toString();
 
-		final String queryUri = uri() + "places?q=" + ParserUtils.urlEncode(nameCstr) + "&type[]=stop_area&type[]=address" + "&depth=1";
+		final String queryUri = uri() + "places?q=" + ParserUtils.urlEncode(nameCstr) + "&type[]=stop_area&type[]=address&type[]=poi&type[]=administrative_region" + "&depth=1";
 		final CharSequence page = httpClient.get(queryUri);
 
 		try

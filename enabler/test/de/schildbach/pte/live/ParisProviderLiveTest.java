@@ -155,6 +155,12 @@ public class ParisProviderLiveTest extends AbstractNavitiaProviderLiveTest
 	}
 
 	@Test
+	public void queryTripFromAdministrativeRegionToPoi() throws Exception
+	{
+		queryTripFromAdminToPoi("Paris 10e Arrondissement", "Paris Tour Eiffel");
+	}
+
+	@Test
 	public void queryTripNoSolution() throws Exception
 	{
 		queryTripNoSolution("secretan buttes chaumont paris", "Antony Antony");
