@@ -250,6 +250,26 @@ public abstract class AbstractNavitiaProviderLiveTest extends AbstractProviderLi
 		print(result);
 	}
 
+	protected final void queryTripFromAdminToPoi(final CharSequence from, final CharSequence to) throws IOException
+	{
+		final SuggestLocationsResult fromResult = suggestLocations(from);
+		assertTrue(fromResult.getLocations().size() > 0);
+		Location fromLocation = fromResult.getLocations().get(0);
+		assertEquals(fromLocation.type, LocationType.POI);
+		print(fromResult);
+
+		final SuggestLocationsResult toResult = suggestLocations(to);
+		assertTrue(toResult.getLocations().size() > 0);
+		Location toLocation = toResult.getLocations().get(0);
+		assertEquals(toLocation.type, LocationType.POI);
+		print(toResult);
+
+		final QueryTripsResult tripsResult = queryTrips(fromLocation, null, toLocation, new Date(), true,
+				Product.ALL, NetworkProvider.WalkSpeed.NORMAL, NetworkProvider.Accessibility.NEUTRAL);
+		assertEquals(QueryTripsResult.Status.OK, tripsResult.status);
+		print(tripsResult);
+	}
+
 	protected final void queryMoreTrips(final CharSequence from, final CharSequence to) throws IOException
 	{
 		final SuggestLocationsResult fromResult = suggestLocations(from);
