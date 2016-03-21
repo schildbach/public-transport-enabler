@@ -682,6 +682,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					XmlPullUtil.valueTag(pp, "layer");
 					XmlPullUtil.valueTag(pp, "gisID");
 					XmlPullUtil.valueTag(pp, "ds");
+					XmlPullUtil.valueTag(pp, "stateless");
 					final Point coord = parseCoord(XmlPullUtil.valueTag(pp, "c"));
 
 					stations.add(new Location(locationType, id, coord, place, name));
@@ -1827,6 +1828,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 			XmlPullUtil.optValueTag(pp, "dy", null);
 			final String de = XmlPullUtil.optValueTag(pp, "de", null);
 			final String productName = n != null ? n : de;
+			XmlPullUtil.optValueTag(pp, "tco", null);
 			final String lineId = parseMobileDv(pp);
 
 			final String symbol;
@@ -2903,6 +2905,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					XmlPullUtil.valueTag(pp, "d"); // duration
 					final int numChanges = Integer.parseInt(XmlPullUtil.valueTag(pp, "ic"));
 					final String tripId = XmlPullUtil.valueTag(pp, "de");
+					XmlPullUtil.optValueTag(pp, "alt", null);
 
 					XmlPullUtil.enter(pp, "ls");
 
