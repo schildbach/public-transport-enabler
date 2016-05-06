@@ -149,6 +149,31 @@ public class VrrProvider extends AbstractEfaProvider
 		STYLES.put("vrr|T708", new Style(Style.parseColor("#f680b4"), Style.WHITE));
 		STYLES.put("vrr|T709", new Style(Style.parseColor("#ef269d"), Style.WHITE));
 		
+		// Krefeld
+		STYLES.put("vrr|T041", new Style(Style.parseColor("#ee4036"), Style.WHITE));
+		STYLES.put("vrr|T042", new Style(Style.parseColor("#f49392"), Style.WHITE));
+		STYLES.put("vrr|T043", new Style(Style.parseColor("#bc6ead"), Style.WHITE));
+		STYLES.put("vrr|T044", new Style(Style.parseColor("#f36c21"), Style.WHITE));
+		STYLES.put("vrr|B045", new Style(Style.parseColor("#00b5e6"), Style.WHITE));
+		STYLES.put("vrr|B046", new Style(Style.parseColor("#695073"), Style.WHITE));
+		STYLES.put("vrr|B047", new Style(Style.parseColor("#fbce99"), Style.WHITE));
+		STYLES.put("vrr|B051", new Style(Style.parseColor("#a1cf73"), Style.WHITE));
+		STYLES.put("vrr|B052", new Style(Style.parseColor("#f68f2a"), Style.WHITE));
+		STYLES.put("vrr|B054", new Style(Style.parseColor("#048546"), Style.WHITE));
+		STYLES.put("vrr|B055", new Style(Style.parseColor("#00b2b7"), Style.WHITE));
+		STYLES.put("vrr|B056", new Style(Style.parseColor("#a2689d"), Style.WHITE));
+		STYLES.put("vrr|B057", new Style(Style.parseColor("#3bc4e6"), Style.WHITE));
+		STYLES.put("vrr|B058", new Style(Style.parseColor("#0081c6"), Style.WHITE));
+		STYLES.put("vrr|B059", new Style(Style.parseColor("#9ad099"), Style.WHITE));
+		STYLES.put("vrr|B060", new Style(Style.parseColor("#aac3bf"), Style.WHITE));
+		STYLES.put("vrr|B061", new Style(Style.parseColor("#ce8d29"), Style.WHITE));
+		STYLES.put("vrr|B062", new Style(Style.parseColor("#ae7544"), Style.WHITE));
+		STYLES.put("vrr|B068", new Style(Style.parseColor("#1857a7"), Style.WHITE));
+		STYLES.put("vrr|B069", new Style(Style.parseColor("#cd7762"), Style.WHITE));
+		STYLES.put("vrr|B076", new Style(Style.parseColor("#56a44d"), Style.WHITE));
+		STYLES.put("vrr|B077", new Style(Style.parseColor("#fcef08"), Style.WHITE));
+		STYLES.put("vrr|B079", new Style(Style.parseColor("#98a3a4"), Style.WHITE));
+		
 		// H-Bahn Dortmund
 		STYLES.put("vrr|CHB1", new Style(Style.parseColor("#e5007c"), Style.WHITE));
 		STYLES.put("vrr|CHB2", new Style(Style.parseColor("#e5007c"), Style.WHITE));
