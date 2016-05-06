@@ -128,6 +128,27 @@ public class VrrProvider extends AbstractEfaProvider
 		STYLES.put("vrr|UU47", new Style(Style.parseColor("#8dc63e"), Style.WHITE));
 		STYLES.put("vrr|UU49", new Style(Style.parseColor("#f7acbc"), Style.WHITE));
 
+
+		// Düsseldorf
+		STYLES.put("vrr|UU70", new Style(Style.parseColor("#69b0cd"), Style.WHITE));
+		STYLES.put("vrr|UU71", new Style(Style.parseColor("#66cef6"), Style.WHITE));
+		STYLES.put("vrr|UU72", new Style(Style.parseColor("#4cc4c5"), Style.WHITE));
+		STYLES.put("vrr|UU73", new Style(Style.parseColor("#4763b8"), Style.WHITE));
+		STYLES.put("vrr|UU74", new Style(Style.parseColor("#27297c"), Style.WHITE));
+		STYLES.put("vrr|UU75", new Style(Style.parseColor("#079acb"), Style.WHITE));
+		STYLES.put("vrr|UU76", new Style(Style.parseColor("#1969bc"), Style.WHITE));
+		STYLES.put("vrr|UU77", new Style(Style.parseColor("#6d90d2"), Style.WHITE));
+		STYLES.put("vrr|UU78", new Style(Style.parseColor("#02a7eb"), Style.WHITE));
+		STYLES.put("vrr|UU79", new Style(Style.parseColor("#00aaa0"), Style.WHITE));
+		STYLES.put("vrr|UU83", new Style(Style.parseColor("#2743a0"), Style.WHITE));
+		STYLES.put("vrr|T701", new Style(Style.parseColor("#f57215"), Style.WHITE));
+		STYLES.put("vrr|T704", new Style(Style.parseColor("#c01c23"), Style.WHITE));
+		STYLES.put("vrr|T705", new Style(Style.parseColor("#bd0c8e"), Style.WHITE));
+		STYLES.put("vrr|T706", new Style(Style.parseColor("#ed1c24"), Style.WHITE));
+		STYLES.put("vrr|T707", new Style(Style.parseColor("#72177a"), Style.WHITE));
+		STYLES.put("vrr|T708", new Style(Style.parseColor("#f680b4"), Style.WHITE));
+		STYLES.put("vrr|T709", new Style(Style.parseColor("#ef269d"), Style.WHITE));
+		
 		// H-Bahn Dortmund
 		STYLES.put("vrr|CHB1", new Style(Style.parseColor("#e5007c"), Style.WHITE));
 		STYLES.put("vrr|CHB2", new Style(Style.parseColor("#e5007c"), Style.WHITE));
