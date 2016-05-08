@@ -398,7 +398,7 @@ public class VrsProvider extends AbstractNetworkProvider
 		{
 			final List<Location> locations = new ArrayList<Location>();
 			final JSONObject head = new JSONObject(page.toString());
-			final String error = head.optString("error", null);
+			final String error = Strings.emptyToNull(head.optString("error", "").trim());
 			if (error != null)
 			{
 				if (error.equals("Leere Koordinate.") || error.equals("Leere ASS-ID und leere Koordinate"))
@@ -461,7 +461,7 @@ public class VrsProvider extends AbstractNetworkProvider
 		try
 		{
 			final JSONObject head = new JSONObject(page.toString());
-			final String error = head.optString("error", null);
+			final String error = Strings.emptyToNull(head.optString("error", "").trim());
 			if (error != null)
 			{
 				if (error.equals("ASS2-Server lieferte leere Antwort."))
@@ -630,7 +630,7 @@ public class VrsProvider extends AbstractNetworkProvider
 			final List<SuggestedLocation> locations = new ArrayList<SuggestedLocation>();
 
 			final JSONObject head = new JSONObject(page.toString());
-			final String error = head.optString("error", null);
+			final String error = Strings.emptyToNull(head.optString("error", "").trim());
 			if (error != null)
 			{
 				if (error.equals("ASS2-Server lieferte leere Antwort."))
@@ -757,7 +757,7 @@ public class VrsProvider extends AbstractNetworkProvider
 		{
 			final List<Trip> trips = new ArrayList<Trip>();
 			final JSONObject head = new JSONObject(page.toString());
-			final String error = head.optString("error", null);
+			final String error = Strings.emptyToNull(head.optString("error", "").trim());
 			if (error != null)
 			{
 				if (error.equals("ASS2-Server lieferte leere Antwort."))
