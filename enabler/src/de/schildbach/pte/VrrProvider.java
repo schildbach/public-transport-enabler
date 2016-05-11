@@ -173,6 +173,12 @@ public class VrrProvider extends AbstractEfaProvider
 		STYLES.put("vrr|B076", new Style(Style.parseColor("#56a44d"), Style.WHITE));
 		STYLES.put("vrr|B077", new Style(Style.parseColor("#fcef08"), Style.WHITE));
 		STYLES.put("vrr|B079", new Style(Style.parseColor("#98a3a4"), Style.WHITE));
+		STYLES.put("vrr|BNE5", new Style(Style.parseColor("#a1cf63"), Style.WHITE));
+		STYLES.put("vrr|BNE8", new Style(Style.parseColor("#0081c6"), Style.WHITE));
+		STYLES.put("vrr|BNE27", new Style(Style.parseColor("#048546"), Style.WHITE));
+		STYLES.put("vrr|BNE6", new Style(Style.parseColor("#f68f2a"), Style.WHITE));
+		STYLES.put("vrr|BNE7", new Style(Style.parseColor("#3bc4e6"), Style.WHITE));
+		STYLES.put("vrr|BNE10", new Style(Style.parseColor("#a52b43"), Style.WHITE));
 		
 		// H-Bahn Dortmund
 		STYLES.put("vrr|CHB1", new Style(Style.parseColor("#e5007c"), Style.WHITE));
