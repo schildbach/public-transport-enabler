@@ -174,6 +174,134 @@ public class VrrProvider extends AbstractEfaProvider
 		STYLES.put("vrr|B077", new Style(Style.parseColor("#fcef08"), Style.WHITE));
 		STYLES.put("vrr|B079", new Style(Style.parseColor("#98a3a4"), Style.WHITE));
 		
+		
+		// Essen
+		STYLES.put("vrr|UU17", new Style(Style.parseColor("#68b6e3"), Style.WHITE));
+		STYLES.put("vrr|T101", new Style(Style.parseColor("#986b17"), Style.WHITE));
+		STYLES.put("vrr|T103", new Style(Style.parseColor("#ffcc00"), Style.WHITE));
+		STYLES.put("vrr|T105", new Style(Style.parseColor("#b6cd00"), Style.WHITE));
+		STYLES.put("vrr|T106", new Style(Style.parseColor("#a695ba"), Style.WHITE));
+		STYLES.put("vrr|T108", new Style(Style.parseColor("#eca900"), Style.WHITE));
+		STYLES.put("vrr|T109", new Style(Style.parseColor("#00933a"), Style.WHITE));
+
+		// Duisburg
+		STYLES.put("vrr|B905", new Style(Style.parseColor("#c8242b"), Style.WHITE));
+		STYLES.put("vrr|B906", new Style(Style.parseColor("#b5ab3a"), Style.WHITE));
+		STYLES.put("vrr|B907", new Style(Style.parseColor("#6891c3"), Style.WHITE));
+		STYLES.put("vrr|B909", new Style(Style.parseColor("#217e5b"), Style.WHITE));
+		STYLES.put("vrr|B910", new Style(Style.parseColor("#d48018"), Style.WHITE));
+		STYLES.put("vrr|B917", new Style(Style.parseColor("#23b14b"), Style.WHITE));
+		STYLES.put("vrr|B919", new Style(Style.parseColor("#078b4a"), Style.WHITE));
+		STYLES.put("vrr|B922", new Style(Style.parseColor("#0072bb"), Style.WHITE));
+		STYLES.put("vrr|B923", new Style(Style.parseColor("#00b1c4"), Style.WHITE));
+		STYLES.put("vrr|B924", new Style(Style.parseColor("#f37921"), Style.WHITE));
+		STYLES.put("vrr|B925", new Style(Style.parseColor("#4876b8"), Style.WHITE));
+		STYLES.put("vrr|B926", new Style(Style.parseColor("#649b43"), Style.WHITE));
+		STYLES.put("vrr|B928", new Style(Style.parseColor("#c4428c"), Style.WHITE));
+		STYLES.put("vrr|B933", new Style(Style.parseColor("#975615"), Style.WHITE));
+		STYLES.put("vrr|B934", new Style(Style.parseColor("#009074"), Style.WHITE));
+		STYLES.put("vrr|B937", new Style(Style.parseColor("#6f78b5"), Style.WHITE));
+		STYLES.put("vrr|B940", new Style(Style.parseColor("#bbbb30"), Style.WHITE));
+		STYLES.put("vrr|B942", new Style(Style.parseColor("#930408"), Style.WHITE));
+		STYLES.put("vrr|B944", new Style(Style.parseColor("#c52157"), Style.WHITE));
+		STYLES.put("vrr|B946", new Style(Style.parseColor("#1cbddc"), Style.WHITE));
+
+		// Oberhausen
+		STYLES.put("vrr|B952", new Style(Style.parseColor("#f59598"), Style.WHITE));
+		STYLES.put("vrr|B953", new Style(Style.parseColor("#5eb6d9"), Style.WHITE));
+		STYLES.put("vrr|B954", new Style(Style.parseColor("#f89d3d"), Style.WHITE));
+		STYLES.put("vrr|B955", new Style(Style.parseColor("#8879b8"), Style.WHITE));
+		STYLES.put("vrr|B956", new Style(Style.parseColor("#23b24b"), Style.WHITE));
+		STYLES.put("vrr|B957", new Style(Style.parseColor("#ebc531"), Style.WHITE));
+		STYLES.put("vrr|B960", new Style(Style.parseColor("#aed57f"), Style.WHITE));
+		STYLES.put("vrr|B961", new Style(Style.parseColor("#a46f73"), Style.WHITE));
+		STYLES.put("vrr|B962", new Style(Style.parseColor("#ae5823"), Style.WHITE));
+		STYLES.put("vrr|B966", new Style(Style.parseColor("#c8b3d6"), Style.WHITE));
+		STYLES.put("vrr|B976", new Style(Style.parseColor("#d063a5"), Style.WHITE));
+		
+		// Mülheim an der Ruhr
+		STYLES.put("vrr|T102", new Style(Style.parseColor("#756fb3"), Style.WHITE));
+		STYLES.put("vrr|B132", new Style(Style.parseColor("#a3c3d1"), Style.BLACK));
+		STYLES.put("vrr|B133", new Style(Style.parseColor("#a9a575"), Style.BLACK));
+		STYLES.put("vrr|B134", new Style(Style.parseColor("#806a63"), Style.WHITE));
+		STYLES.put("vrr|B135", new Style(Style.parseColor("#425159"), Style.WHITE));
+
+		// Neuss
+		STYLES.put("vrr|B842", new Style(Style.parseColor("#fdcc10"), Style.WHITE));
+		STYLES.put("vrr|B843", new Style(Style.parseColor("#808180"), Style.WHITE));
+		STYLES.put("vrr|B844", new Style(Style.parseColor("#cb1f25"), Style.WHITE));
+		STYLES.put("vrr|B848", new Style(Style.parseColor("#be4e26"), Style.WHITE));
+		STYLES.put("vrr|B849", new Style(Style.parseColor("#c878b1"), Style.WHITE));
+		STYLES.put("vrr|B854", new Style(Style.parseColor("#35bb93"), Style.WHITE));
+
+		// Remscheid
+		STYLES.put("vrr|B655", new Style(Style.parseColor("#dbcd00"), Style.WHITE));
+		STYLES.put("vrr|B657", new Style(Style.parseColor("#deb993"), Style.WHITE));
+		STYLES.put("vrr|B659", new Style(Style.parseColor("#f59b00"), Style.WHITE));
+		STYLES.put("vrr|B660", new Style(Style.parseColor("#f5a387"), Style.WHITE));
+		STYLES.put("vrr|B664", new Style(Style.parseColor("#b1a8d3"), Style.WHITE));
+		STYLES.put("vrr|B666", new Style(Style.parseColor("#0074be"), Style.WHITE));
+		STYLES.put("vrr|B673", new Style(Style.parseColor("#ee7555"), Style.WHITE));
+		STYLES.put("vrr|B675", new Style(Style.parseColor("#004e9e"), Style.WHITE));
+		STYLES.put("vrr|B680", new Style(Style.parseColor("#c78711"), Style.WHITE));
+
+		// Solingen
+		STYLES.put("vrr|B681", new Style(Style.parseColor("#016f42"), Style.WHITE));
+		STYLES.put("vrr|B682", new Style(Style.parseColor("#009b78"), Style.WHITE));
+		STYLES.put("vrr|B684", new Style(Style.parseColor("#009247"), Style.WHITE));
+		STYLES.put("vrr|B685", new Style(Style.parseColor("#539138"), Style.WHITE));
+		STYLES.put("vrr|B686", new Style(Style.parseColor("#a6c539"), Style.WHITE));
+		STYLES.put("vrr|B687", new Style(Style.parseColor("#406ab4"), Style.WHITE));
+		STYLES.put("vrr|B689", new Style(Style.parseColor("#8d5e48"), Style.WHITE));
+		STYLES.put("vrr|B690", new Style(Style.parseColor("#0099cd"), Style.WHITE));
+		STYLES.put("vrr|B691", new Style(Style.parseColor("#963838"), Style.WHITE));
+		STYLES.put("vrr|B693", new Style(Style.parseColor("#9a776f"), Style.WHITE));
+		STYLES.put("vrr|B695", new Style(Style.parseColor("#bf4b75"), Style.WHITE));
+		STYLES.put("vrr|B696", new Style(Style.parseColor("#6c77b4"), Style.WHITE));
+		STYLES.put("vrr|B697", new Style(Style.parseColor("#00baf1"), Style.WHITE));
+		STYLES.put("vrr|B698", new Style(Style.parseColor("#444fa1"), Style.WHITE));
+		STYLES.put("vrr|B699", new Style(Style.parseColor("#c4812f"), Style.WHITE));
+
+
+		// Busse Wuppertal
+		STYLES.put("vrr|B600", new Style(Style.parseColor("#cc4e97"), Style.WHITE));
+		STYLES.put("vrr|B603", new Style(Style.parseColor("#a77251"), Style.WHITE));
+		STYLES.put("vrr|B604", new Style(Style.parseColor("#f39100"), Style.WHITE));
+		STYLES.put("vrr|B606", new Style(Style.parseColor("#88301b"), Style.WHITE));
+		STYLES.put("vrr|B607", new Style(Style.parseColor("#629e38"), Style.WHITE));
+		STYLES.put("vrr|B609", new Style(Style.parseColor("#53ae2e"), Style.WHITE));
+		STYLES.put("vrr|B610", new Style(Style.parseColor("#eb5575"), Style.WHITE));
+		STYLES.put("vrr|B611", new Style(Style.parseColor("#896a9a"), Style.WHITE));
+		STYLES.put("vrr|B612", new Style(Style.parseColor("#cd7c00"), Style.WHITE));
+		STYLES.put("vrr|B613", new Style(Style.parseColor("#491d5c"), Style.WHITE));
+		STYLES.put("vrr|B614", new Style(Style.parseColor("#00a7c1"), Style.WHITE));
+		STYLES.put("vrr|B616", new Style(Style.parseColor("#e4003a"), Style.WHITE));
+		STYLES.put("vrr|B617", new Style(Style.parseColor("#95114d"), Style.WHITE));
+		STYLES.put("vrr|B618", new Style(Style.parseColor("#cf8360"), Style.WHITE));
+		STYLES.put("vrr|B619", new Style(Style.parseColor("#304c9d"), Style.WHITE));
+		STYLES.put("vrr|B622", new Style(Style.parseColor("#aabd81"), Style.WHITE));
+		STYLES.put("vrr|B623", new Style(Style.parseColor("#e04a23"), Style.WHITE));
+		STYLES.put("vrr|B624", new Style(Style.parseColor("#0e9580"), Style.WHITE));
+		STYLES.put("vrr|B625", new Style(Style.parseColor("#7aad3b"), Style.WHITE));
+		STYLES.put("vrr|B628", new Style(Style.parseColor("#80753b"), Style.WHITE));
+		STYLES.put("vrr|B629", new Style(Style.parseColor("#dd72a1"), Style.WHITE));
+		STYLES.put("vrr|B630", new Style(Style.parseColor("#0074be"), Style.WHITE));
+		STYLES.put("vrr|B631", new Style(Style.parseColor("#5a8858"), Style.WHITE));
+		STYLES.put("vrr|B632", new Style(Style.parseColor("#ebac3d"), Style.WHITE));
+		STYLES.put("vrr|B633", new Style(Style.parseColor("#4c2182"), Style.WHITE));
+		STYLES.put("vrr|B635", new Style(Style.parseColor("#cb6c2b"), Style.WHITE));
+		STYLES.put("vrr|B638", new Style(Style.parseColor("#588d58"), Style.WHITE));
+		STYLES.put("vrr|B639", new Style(Style.parseColor("#0097c1"), Style.WHITE));
+		STYLES.put("vrr|B640", new Style(Style.parseColor("#89ba7a"), Style.WHITE));
+		STYLES.put("vrr|B642", new Style(Style.parseColor("#4b72aa"), Style.WHITE));
+		STYLES.put("vrr|B643", new Style(Style.parseColor("#009867"), Style.WHITE));
+		STYLES.put("vrr|B644", new Style(Style.parseColor("#a57400"), Style.WHITE));
+		STYLES.put("vrr|B645", new Style(Style.parseColor("#aeba0e"), Style.WHITE));
+		STYLES.put("vrr|B646", new Style(Style.parseColor("#008db5"), Style.WHITE));
+		STYLES.put("vrr|B650", new Style(Style.parseColor("#f5bd00"), Style.WHITE));
+
+
+		
 		// H-Bahn Dortmund
 		STYLES.put("vrr|CHB1", new Style(Style.parseColor("#e5007c"), Style.WHITE));
 		STYLES.put("vrr|CHB2", new Style(Style.parseColor("#e5007c"), Style.WHITE));
