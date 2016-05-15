@@ -22,6 +22,8 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import de.schildbach.pte.ParisProvider;
+import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.Point;
 
 /**
@@ -176,6 +178,18 @@ public class ParisProviderLiveTest extends AbstractNavitiaProviderLiveTest
 	public void queryTripUnknownTo() throws Exception
 	{
 		queryTripUnknownTo("secretan buttes chaumont paris");
+	}
+
+	@Test
+	public void queryTripAmbiguousFrom() throws Exception
+	{
+		queryTripAmbiguousFrom(new Location(LocationType.ANY, "ambiguous", null, "Eiffel"), "Gare St-Lazare");
+	}
+
+	@Test
+	public void queryTripAmbiguousTo() throws Exception
+	{
+		queryTripAmbiguousTo("Gare St-Lazare", new Location(LocationType.ANY, "ambiguous", null, "Eiffel"));
 	}
 
 	@Test

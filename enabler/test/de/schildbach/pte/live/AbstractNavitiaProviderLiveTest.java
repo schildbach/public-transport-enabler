@@ -224,6 +224,32 @@ public abstract class AbstractNavitiaProviderLiveTest extends AbstractProviderLi
 		print(result);
 	}
 
+	protected final void queryTripAmbiguousFrom(final Location from, final CharSequence to) throws IOException
+	{
+		final SuggestLocationsResult toResult = suggestLocations(to);
+		assertTrue(toResult.getLocations().size() > 0);
+
+		final QueryTripsResult result = queryTrips(from, null, toResult.getLocations().get(0), new Date(), true,
+				Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		assertEquals(QueryTripsResult.Status.AMBIGUOUS, result.status);
+		assertTrue(result.ambiguousFrom != null);
+		assertTrue(result.ambiguousFrom.size() > 0);
+		print(result);
+	}
+
+	protected final void queryTripAmbiguousTo(final CharSequence from, final Location to) throws IOException
+	{
+		final SuggestLocationsResult fromResult = suggestLocations(from);
+		assertTrue(fromResult.getLocations().size() > 0);
+
+		final QueryTripsResult result = queryTrips(fromResult.getLocations().get(0), null, to, new Date(), true,
+				Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		assertEquals(QueryTripsResult.Status.AMBIGUOUS, result.status);
+		assertTrue(result.ambiguousTo != null);
+		assertTrue(result.ambiguousTo.size() > 0);
+		print(result);
+	}
+
 	protected final void queryTripSlowWalk(final CharSequence from, final CharSequence to) throws IOException
 	{
 		final SuggestLocationsResult fromResult = suggestLocations(from);

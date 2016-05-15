@@ -1191,10 +1191,36 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 					throw new ParserException(jsonExc);
 				}
 			}
-			else
+			else if (from != null && to != null)
 			{
-				return new QueryTripsResult(resultHeader, QueryTripsResult.Status.NO_TRIPS);
+				List<Location> ambiguousFrom = null, ambiguousTo = null;
+				Location newFrom = null, newTo = null;
+
+				if (!from.isIdentified() && from.hasName())
+				{
+					ambiguousFrom = suggestLocations(from.name).getLocations();
+					if (ambiguousFrom.isEmpty())
+						return new QueryTripsResult(resultHeader, QueryTripsResult.Status.UNKNOWN_FROM);
+					if (ambiguousFrom.size() == 1 && ambiguousFrom.get(0).isIdentified())
+						newFrom = ambiguousFrom.get(0);
+				}
+
+				if (!to.isIdentified() && to.hasName())
+				{
+					ambiguousTo = suggestLocations(to.name).getLocations();
+					if (ambiguousTo.isEmpty())
+						return new QueryTripsResult(resultHeader, QueryTripsResult.Status.UNKNOWN_TO);
+					if (ambiguousTo.size() == 1 && ambiguousTo.get(0).isIdentified())
+						newTo = ambiguousTo.get(0);
+				}
+
+				if (newTo != null && newFrom != null)
+					return queryTrips(newFrom, via, newTo, date, dep, products, optimize, walkSpeed, accessibility, options);
+
+				if (ambiguousFrom != null || ambiguousTo != null)
+					return new QueryTripsResult(resultHeader, ambiguousFrom, null, ambiguousTo);
 			}
+			return new QueryTripsResult(resultHeader, QueryTripsResult.Status.NO_TRIPS);
 		}
 		catch (final NotFoundException fnfExc)
 		{
