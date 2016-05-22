@@ -139,6 +139,12 @@ public class ParisProviderLiveTest extends AbstractNavitiaProviderLiveTest
 	}
 
 	@Test
+	public void queryTripCablecar() throws Exception
+	{
+		queryTrip("Campo Formio", "Aéroport Orly Sud");
+	}
+
+	@Test
 	public void queryTripStations2() throws Exception
 	{
 		queryTrip("Tour Eiffel", "Orsay Ville");
