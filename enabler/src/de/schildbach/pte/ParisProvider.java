@@ -87,8 +87,13 @@ public class ParisProvider extends AbstractNavitiaProvider
 				// Bus + Noctilien
 				return new Style(Shape.RECT, Style.parseColor(color), computeForegroundColor(color));
 			}
+			case CABLECAR:
+			{
+				// Orlyval
+				return new Style(Shape.ROUNDED, Style.parseColor(color), computeForegroundColor(color));
+			}
 			default:
-				throw new IllegalArgumentException("Unhandled product: " + product);
+				return super.getLineStyle(product, code, color);
 		}
 	}
 
