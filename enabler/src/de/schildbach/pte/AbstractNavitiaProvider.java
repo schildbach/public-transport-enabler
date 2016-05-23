@@ -257,7 +257,18 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 				if (admin.length() > 0)
 					place = Strings.emptyToNull(admin.getJSONObject(0).optString("name"));
 			}
-			return new Location(type, id, point, place, name);
+			Set<Product> products = null;
+			if (location.has("stop_area") && location.getJSONObject("stop_area").has("physical_modes"))
+			{
+				products = EnumSet.noneOf(Product.class);
+				JSONArray physicalModes = location.getJSONObject("stop_area").getJSONArray("physical_modes");
+				for (int i = 0; i < physicalModes.length(); i++) {
+					JSONObject mode = physicalModes.getJSONObject(i);
+					Product product = parseLineProductFromMode(mode.getString("id"));
+					if (product != null) products.add(product);
+				}
+			}
+			return new Location(type, id, point, place, name, products);
 		}
 		catch (final JSONException jsonExc)
 		{
@@ -853,7 +864,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 		queryUri.append("&distance=").append(maxDistance);
 		if (maxLocations > 0)
 			queryUri.append("&count=").append(maxLocations);
-		queryUri.append("&depth=0");
+		queryUri.append("&depth=3");
 		final CharSequence page = httpClient.get(queryUri.toString());
 
 		try

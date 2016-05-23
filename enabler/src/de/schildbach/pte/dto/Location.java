@@ -70,6 +70,11 @@ public final class Location implements Serializable
 		this(type, id, lat, lon, place, name, null);
 	}
 
+	public Location(final LocationType type, final String id, final Point coord, final String place, final String name, final Set<Product> products)
+	{
+		this(type, id, coord != null ? coord.lat : 0, coord != null ? coord.lon : 0, place, name, products);
+	}
+
 	public Location(final LocationType type, final String id, final Point coord, final String place, final String name)
 	{
 		this(type, id, coord != null ? coord.lat : 0, coord != null ? coord.lon : 0, place, name);
