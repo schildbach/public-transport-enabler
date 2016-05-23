@@ -257,7 +257,18 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 				if (admin.length() > 0)
 					place = Strings.emptyToNull(admin.getJSONObject(0).optString("name"));
 			}
-			return new Location(type, id, point, place, name);
+			Set<Product> products = null;
+			if (location.has("stop_area") && location.getJSONObject("stop_area").has("physical_modes"))
+			{
+				products = EnumSet.noneOf(Product.class);
+				JSONArray physicalModes = location.getJSONObject("stop_area").getJSONArray("physical_modes");
+				for (int i = 0; i < physicalModes.length(); i++) {
+					JSONObject mode = physicalModes.getJSONObject(i);
+					Product product = parseLineProductFromMode(mode.getString("id"));
+					if (product != null) products.add(product);
+				}
+			}
+			return new Location(type, id, point, place, name, products);
 		}
 		catch (final JSONException jsonExc)
 		{
@@ -853,7 +864,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 		queryUri.append("&distance=").append(maxDistance);
 		if (maxLocations > 0)
 			queryUri.append("&count=").append(maxLocations);
-		queryUri.append("&depth=0");
+		queryUri.append("&depth=3");
 		final CharSequence page = httpClient.get(queryUri.toString());
 
 		try
@@ -1191,10 +1202,36 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 					throw new ParserException(jsonExc);
 				}
 			}
-			else
+			else if (from != null && to != null)
 			{
-				return new QueryTripsResult(resultHeader, QueryTripsResult.Status.NO_TRIPS);
+				List<Location> ambiguousFrom = null, ambiguousTo = null;
+				Location newFrom = null, newTo = null;
+
+				if (!from.isIdentified() && from.hasName())
+				{
+					ambiguousFrom = suggestLocations(from.name).getLocations();
+					if (ambiguousFrom.isEmpty())
+						return new QueryTripsResult(resultHeader, QueryTripsResult.Status.UNKNOWN_FROM);
+					if (ambiguousFrom.size() == 1 && ambiguousFrom.get(0).isIdentified())
+						newFrom = ambiguousFrom.get(0);
+				}
+
+				if (!to.isIdentified() && to.hasName())
+				{
+					ambiguousTo = suggestLocations(to.name).getLocations();
+					if (ambiguousTo.isEmpty())
+						return new QueryTripsResult(resultHeader, QueryTripsResult.Status.UNKNOWN_TO);
+					if (ambiguousTo.size() == 1 && ambiguousTo.get(0).isIdentified())
+						newTo = ambiguousTo.get(0);
+				}
+
+				if (newTo != null && newFrom != null)
+					return queryTrips(newFrom, via, newTo, date, dep, products, optimize, walkSpeed, accessibility, options);
+
+				if (ambiguousFrom != null || ambiguousTo != null)
+					return new QueryTripsResult(resultHeader, ambiguousFrom, null, ambiguousTo);
 			}
+			return new QueryTripsResult(resultHeader, QueryTripsResult.Status.NO_TRIPS);
 		}
 		catch (final NotFoundException fnfExc)
 		{
