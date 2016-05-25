@@ -1258,7 +1258,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 					else if ("WALK".equals(secType) || "TRSF".equals(secType))
 					{
 						final JSONObject gis = sec.getJSONObject("gis");
-						final int distance = gis.getInt("dist");
+						final int distance = gis.optInt("dist", 0);
 						leg = new Trip.Individual(Trip.Individual.Type.WALK, departureStop.location, departureStop.getDepartureTime(),
 								arrivalStop.location, arrivalStop.getArrivalTime(), null, distance);
 					}
