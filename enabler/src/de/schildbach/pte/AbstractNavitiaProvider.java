@@ -669,15 +669,18 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 		}
 	}
 
-	private Line parseLine(final JSONObject jsonLine) throws IOException
+	private Line parseLine(final JSONObject jsonRoute) throws IOException
 	{
 		try
 		{
+			final JSONObject jsonLine = jsonRoute.getJSONObject("line");
 			final String lineId = jsonLine.getString("id");
 			String network = null;
 			if (jsonLine.has("network"))
 				network = Strings.emptyToNull(jsonLine.getJSONObject("network").optString("name"));
-			final Product product = parseLineProduct(jsonLine);
+			final JSONObject mode = jsonRoute.getJSONArray("physical_modes").getJSONObject(0);
+			final String modeId = mode.getString("id");
+			final Product product = parseLineProductFromMode(modeId);
 			final String code = jsonLine.getString("code");
 			final String name = Strings.emptyToNull(jsonLine.optString("name"));
 			final String color = Strings.emptyToNull(jsonLine.getString("color"));
@@ -691,8 +694,6 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 			throw new ParserException(jsonExc);
 		}
 	}
-
-	private Map<String, Product> lineProductCache = new WeakHashMap<String, Product>();
 
 	private Product parseLineProductFromMode(final String modeId)
 	{
@@ -723,59 +724,6 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 				return Product.ON_DEMAND;
 			default:
 				throw new IllegalArgumentException("Unhandled place type: " + modeId);
-		}
-	}
-
-	private Product parseLineProduct(final JSONObject line) throws IOException
-	{
-		try
-		{
-			final String lineId = line.getString("id");
-			final JSONObject mode;
-
-			if (line.has("physical_modes"))
-			{
-				mode = line.getJSONArray("physical_modes").getJSONObject(0);
-			}
-			else
-			{
-				final Product cachedProduct = lineProductCache.get(lineId);
-				if (cachedProduct != null)
-					return cachedProduct;
-
-				// this makes a network request and is sometimes necessary
-				mode = getLinePhysicalMode(lineId);
-			}
-
-			final String modeId = mode.getString("id");
-			final Product product = parseLineProductFromMode(modeId);
-
-			lineProductCache.put(lineId, product);
-
-			return product;
-		}
-		catch (final JSONException jsonExc)
-		{
-			throw new ParserException(jsonExc);
-		}
-	}
-
-	private JSONObject getLinePhysicalMode(final String lineId) throws IOException
-	{
-		final String uri = uri() + "lines/" + ParserUtils.urlEncode(lineId) + "/physical_modes";
-		final CharSequence page = httpClient.get(uri);
-
-		try
-		{
-			final JSONObject head = new JSONObject(page.toString());
-			final JSONArray physicalModes = head.getJSONArray("physical_modes");
-			final JSONObject physicalMode = physicalModes.getJSONObject(0);
-
-			return physicalMode;
-		}
-		catch (final JSONException jsonExc)
-		{
-			throw new ParserException(jsonExc);
 		}
 	}
 
@@ -971,8 +919,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 
 				// Build line.
 				final JSONObject route = jsonDeparture.getJSONObject("route");
-				final JSONObject jsonLine = route.getJSONObject("line");
-				final Line line = parseLine(jsonLine);
+				final Line line = parseLine(route);
 
 				final JSONObject stopPoint = jsonDeparture.getJSONObject("stop_point");
 				final Location location = parsePlace(stopPoint, PlaceType.STOP_POINT);
