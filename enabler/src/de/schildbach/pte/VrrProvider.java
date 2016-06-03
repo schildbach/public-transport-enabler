@@ -91,14 +91,9 @@ public class VrrProvider extends AbstractEfaProvider
 				return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
 			if ("NordWestBahn".equals(trainName) && symbol != null)
 				return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
-			if ("RE6a".equals(trainNum) && trainType == null && trainName == null)
-				return new Line(id, network, Product.REGIONAL_TRAIN, trainNum);
 
 			if (trainType == null && "SEV7".equals(trainNum))
 				return new Line(id, network, Product.BUS, trainNum);
-
-			if ("Zug".equals(longName))
-				return new Line(id, network, null, "Zug");
 		}
 		else if ("11".equals(mot))
 		{

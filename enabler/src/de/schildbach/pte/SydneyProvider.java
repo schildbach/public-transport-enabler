@@ -102,13 +102,13 @@ public class SydneyProvider extends AbstractEfaProvider
 				return new Line(id, network, Product.SUBURBAN_TRAIN, "HUN");
 			if ("SWR".equals(symbol)) // South West Rail Link
 				return new Line(id, network, Product.SUBURBAN_TRAIN, "SWR");
-			if ("NRC".equals(symbol)) // North Coast NSW Line
+			if ("NRC".equals(symbol)  || (symbol != null && symbol.startsWith("North Coast NSW Line")))
 				return new Line(id, network, Product.SUBURBAN_TRAIN, "NRC");
-			if ("WST".equals(symbol)) // Western NSW Line
+			if ("WST".equals(symbol) || (symbol != null && symbol.startsWith("Western NSW Line")))
 				return new Line(id, network, Product.SUBURBAN_TRAIN, "WST");
-			if ("STH".equals(symbol)) // Southern NSW Line
+			if ("STH".equals(symbol) || (symbol != null && symbol.startsWith("Southern NSW Line")))
 				return new Line(id, network, Product.SUBURBAN_TRAIN, "STH");
-			if ("NRW".equals(symbol)) // North Western NSW Line
+			if ("NRW".equals(symbol) || (symbol != null && symbol.startsWith("North Western NSW Line")))
 				return new Line(id, network, Product.SUBURBAN_TRAIN, "NRW");
 
 			if ("T1".equals(symbol) || "T1 North Shore & Northern Line".equals(symbol) || "T1 North Shore and Northern Line".equals(symbol)
@@ -164,6 +164,8 @@ public class SydneyProvider extends AbstractEfaProvider
 				return new Line(id, network, Product.FERRY, "LneCv");
 			if ("EmpBa".equals(symbol) || "Woy Woy to Empire Bay Ferry".equals(name))
 				return new Line(id, network, Product.FERRY, "EmpBa");
+			if ("Stkn".equals(symbol) || "Stockton Ferry".equals(name))
+				return new Line(id, network, Product.FERRY, "Stkn");
 
 			throw new IllegalStateException("cannot normalize mot='" + mot + "' symbol='" + symbol + "' name='" + name + "' long='" + longName
 					+ "' trainType='" + trainType + "' trainNum='" + trainNum + "' trainName='" + trainName + "'");

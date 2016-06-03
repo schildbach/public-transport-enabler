@@ -59,8 +59,6 @@ public class GvhProvider extends AbstractEfaProvider
 		{
 			if ("S4".equals(trainNum))
 				return new Line(id, network, Product.SUBURBAN_TRAIN, "S4");
-			if ("Bus".equals(longName) && symbol == null)
-				return new Line(id, network, Product.BUS, longName);
 			if (longName != null && longName.startsWith("Bus ") && name != null)
 				return new Line(id, network, Product.BUS, name);
 		}

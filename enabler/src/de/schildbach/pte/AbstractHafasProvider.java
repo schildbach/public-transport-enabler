@@ -3422,6 +3422,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			return Product.HIGH_SPEED_TRAIN;
 		if ("TLK".equals(ucType)) // Tanie Linie Kolejowe, Polen
 			return Product.HIGH_SPEED_TRAIN;
+		if ("PKP".equals(ucType)) // Polskie Koleje Państwowe (Polnische Staatsbahnen)
+			return Product.HIGH_SPEED_TRAIN;
 		if ("EIP".equals(ucType)) // Express Intercity Premium
 			return Product.HIGH_SPEED_TRAIN;
 		if ("INT".equals(ucType)) // Zürich-Brüssel - Budapest-Istanbul
@@ -3439,6 +3441,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		if ("RB".equals(ucType)) // RegionalBahn
 			return Product.REGIONAL_TRAIN;
 		if ("RE".equals(ucType)) // RegionalExpress
+			return Product.REGIONAL_TRAIN;
+		if ("ER".equals(ucType))
 			return Product.REGIONAL_TRAIN;
 		if ("DB".equals(ucType))
 			return Product.REGIONAL_TRAIN;
@@ -3720,6 +3724,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 			return Product.BUS;
 
 		// Phone
+		if ("RUFBUS".equals(ucType))
+			return Product.ON_DEMAND;
 		if (ucType.startsWith("AST")) // Anruf-Sammel-Taxi
 			return Product.ON_DEMAND;
 		if (ucType.startsWith("ALT")) // Anruf-Linien-Taxi

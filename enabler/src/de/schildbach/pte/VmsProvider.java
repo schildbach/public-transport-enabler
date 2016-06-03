@@ -74,8 +74,6 @@ public class VmsProvider extends AbstractEfaProvider
 				return new Line(id, network, Product.REGIONAL_TRAIN, "CB");
 			if ("CityBahn".equals(longName) && "C11".equals(symbol))
 				return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
-			if (trainType == null && ("C11".equals(trainNum) || "C13".equals(trainNum) || "C14".equals(trainNum) || "C15".equals(trainNum)))
-				return new Line(id, network, Product.REGIONAL_TRAIN, trainNum);
 			if ("Zug".equals(longName) && ("C11".equals(symbol) || "C13".equals(symbol) || "C14".equals(symbol) || "C15".equals(symbol)))
 				return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
 

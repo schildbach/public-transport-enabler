@@ -103,6 +103,9 @@ public class SfProvider extends AbstractEfaProvider
 					&& ("DUBLIN/DALY".equals(name) || "Dublin Pleasanton / Daly City".equals(name)))
 				return new Line(id, network, Product.REGIONAL_TRAIN, "DUBL/DALY");
 
+			if ("BAB".equals(symbol) && "BABY BULLET".equals(trainNum)) // Caltrain Baby Bullet
+				return new Line(id, network, Product.REGIONAL_TRAIN, "BAB");
+
 			if ("LOC".equals(symbol) && "LOCAL".equals(name))
 				return new Line(id, network, Product.REGIONAL_TRAIN, "Local");
 			if ("CAP".equals(symbol) && "CAPITOL".equals(name))

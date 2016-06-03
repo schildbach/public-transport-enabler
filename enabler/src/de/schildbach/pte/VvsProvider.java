@@ -17,7 +17,11 @@
 
 package de.schildbach.pte;
 
+import javax.annotation.Nullable;
+
+import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Point;
+import de.schildbach.pte.dto.Product;
 
 /**
  * @author Andreas Schildbach
@@ -43,5 +47,19 @@ public class VvsProvider extends AbstractEfaProvider
 	public Point[] getArea()
 	{
 		return new Point[] { Point.fromDouble(48.784068, 9.181713) };
+	}
+
+	@Override
+	protected Line parseLine(final @Nullable String id, final @Nullable String network, final @Nullable String mot, final @Nullable String symbol,
+			final @Nullable String name, final @Nullable String longName, final @Nullable String trainType, final @Nullable String trainNum,
+			final @Nullable String trainName)
+	{
+		if ("0".equals(mot))
+		{
+			if ("IC".equals(trainNum))
+				return new Line(id, network, Product.HIGH_SPEED_TRAIN, trainNum);
+		}
+
+		return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
 	}
 }
