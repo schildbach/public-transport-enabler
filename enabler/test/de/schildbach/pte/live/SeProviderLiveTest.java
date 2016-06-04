@@ -17,7 +17,9 @@
 
 package de.schildbach.pte.live;
 
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import java.util.Date;
 
@@ -87,11 +89,39 @@ public class SeProviderLiveTest extends AbstractProviderLiveTest
 	}
 
 	@Test
+	public void suggestLocationsCoverage() throws Exception
+	{
+		final SuggestLocationsResult salzburgResult = suggestLocations("Stockholm");
+		print(salzburgResult);
+		assertThat(salzburgResult.getLocations(), hasItem(new Location(LocationType.STATION, "740098000")));
+	}
+
+	@Test
 	public void shortTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "7414867", null, "Luleå Airport"), null, new Location(
-				LocationType.STATION, "7498000", null, "STOCKHOLM"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "740014867", null, "Luleå Airport"), null,
+				new Location(LocationType.STATION, "740098000", null, "STOCKHOLM"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
+				Accessibility.NEUTRAL);
 		print(result);
+
+		if (!result.context.canQueryLater())
+			return;
+
+		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+		print(laterResult);
+	}
+
+	@Test
+	public void shortStockholmTrip() throws Exception
+	{
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "740098000", null, "STOCKHOLM"), null,
+				new Location(LocationType.STATION, "740020101", "Stockholm", "Slussen T-bana"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
+				Accessibility.NEUTRAL);
+		print(result);
+
+		if (!result.context.canQueryLater())
+			return;
+
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		print(laterResult);
 	}
@@ -99,10 +129,14 @@ public class SeProviderLiveTest extends AbstractProviderLiveTest
 	@Test
 	public void longTrip() throws Exception
 	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "7498086", 67859847, 20212802, null, "KIRUNA"), null,
-				new Location(LocationType.STATION, "7498000", null, "STOCKHOLM"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
+		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "740098086", 67859847, 20212802, null, "KIRUNA"), null,
+				new Location(LocationType.STATION, "740098000", null, "STOCKHOLM"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
 				Accessibility.NEUTRAL);
 		print(result);
+
+		if (!result.context.canQueryLater())
+			return;
+
 		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
 		print(laterResult);
 	}
