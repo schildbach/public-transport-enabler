@@ -71,95 +71,103 @@ public class VrnProvider extends AbstractEfaProvider
 	static
 	{
 		// Straßen- und Stadtbahn Mannheim-Ludwigshafen rnv
-		STYLES.put("T1", new Style(Shape.RECT, Style.parseColor("#F59795"), Style.WHITE));
-		STYLES.put("T2", new Style(Shape.RECT, Style.parseColor("#B00249"), Style.WHITE));
-		STYLES.put("T3", new Style(Shape.RECT, Style.parseColor("#D1AB2A"), Style.WHITE));
-		STYLES.put("T4", new Style(Shape.RECT, Style.parseColor("#EE1D23"), Style.WHITE));
-		STYLES.put("T4X", new Style(Shape.RECT, Style.parseColor("#EE1D23"), Style.WHITE));
-		STYLES.put("T5", new Style(Shape.RECT, Style.parseColor("#00A66E"), Style.WHITE));
-		STYLES.put("T5X", new Style(Shape.RECT, Style.parseColor("#00A66E"), Style.WHITE));
-		STYLES.put("T6", new Style(Shape.RECT, Style.parseColor("#937138"), Style.WHITE));
-		STYLES.put("T6A", new Style(Shape.RECT, Style.parseColor("#937138"), Style.WHITE));
-		STYLES.put("T7", new Style(Shape.RECT, Style.parseColor("#FECA0A"), Style.BLACK));
-		STYLES.put("T8", new Style(Shape.RECT, Style.parseColor("#E3791C"), Style.WHITE));
-		STYLES.put("T9", new Style(Shape.RECT, Style.parseColor("#F59795"), Style.WHITE));
-		STYLES.put("T10", new Style(Shape.RECT, Style.parseColor("#A2238E"), Style.WHITE));
-		STYLES.put("TX", new Style(Shape.RECT, Style.parseColor("#838383"), Style.WHITE));
+		STYLES.put("T1", new Style(Shape.RECT, Style.parseColor("#f39b9a"), Style.WHITE));
+		STYLES.put("T2", new Style(Shape.RECT, Style.parseColor("#b00346"), Style.WHITE));
+		STYLES.put("T3", new Style(Shape.RECT, Style.parseColor("#d6ad00"), Style.WHITE));
+		STYLES.put("T4", new Style(Shape.RECT, Style.parseColor("#e30613"), Style.WHITE));
+		STYLES.put("T4X", new Style(Shape.RECT, Style.parseColor("#e30613"), Style.WHITE));
+		STYLES.put("T4A", new Style(Shape.RECT, Style.parseColor("#e30613"), Style.WHITE));
+		STYLES.put("T5", new Style(Shape.RECT, Style.parseColor("#00975f"), Style.WHITE));
+		STYLES.put("T5A", new Style(Shape.RECT, Style.parseColor("#00975f"), Style.WHITE));
+		STYLES.put("T5X", new Style(Shape.RECT, Style.parseColor("#00975f"), Style.WHITE));
+		STYLES.put("T6", new Style(Shape.RECT, Style.parseColor("#956c29"), Style.WHITE));
+		STYLES.put("T6A", new Style(Shape.RECT, Style.parseColor("#956c29"), Style.WHITE));
+		STYLES.put("T7", new Style(Shape.RECT, Style.parseColor("#ffcc00"), Style.BLACK));
+		STYLES.put("T8", new Style(Shape.RECT, Style.parseColor("#e17600"), Style.WHITE));
+		STYLES.put("T9", new Style(Shape.RECT, Style.parseColor("#e6007e"), Style.WHITE));
+		STYLES.put("T10", new Style(Shape.RECT, Style.parseColor("#a71680"), Style.WHITE));
+		// STYLES.put("T15", new Style(Shape.RECT, Style.parseColor("#7c7c7b"), Style.WHITE));
+		STYLES.put("TX", new Style(Shape.RECT, Style.parseColor("#7c7c7b"), Style.WHITE));
 
 		// Busse Mannheim
-		STYLES.put("B2", new Style(Shape.CIRCLE, Style.parseColor("#B00249"), Style.WHITE));
-		STYLES.put("B7", new Style(Shape.CIRCLE, Style.parseColor("#FFF100"), Style.BLACK));
-		STYLES.put("B40", new Style(Shape.CIRCLE, Style.parseColor("#4C2E92"), Style.WHITE));
-		STYLES.put("B41", new Style(Shape.CIRCLE, Style.parseColor("#6BCFF6"), Style.WHITE));
-		STYLES.put("B42", new Style(Shape.CIRCLE, Style.parseColor("#8EBBD0"), Style.WHITE));
-		STYLES.put("B43", new Style(Shape.CIRCLE, Style.parseColor("#4194D0"), Style.WHITE));
-		STYLES.put("B44", new Style(Shape.CIRCLE, Style.parseColor("#4C2E92"), Style.WHITE));
-		STYLES.put("B45", new Style(Shape.CIRCLE, Style.parseColor("#0071BB"), Style.WHITE));
-		STYLES.put("B46", new Style(Shape.CIRCLE, Style.parseColor("#A095AC"), Style.WHITE));
-		STYLES.put("B47", new Style(Shape.CIRCLE, Style.parseColor("#6FD0F6"), Style.WHITE));
-		STYLES.put("B48", new Style(Shape.CIRCLE, Style.parseColor("#00ADEE"), Style.WHITE));
-		STYLES.put("B49", new Style(Shape.CIRCLE, Style.parseColor("#00A651"), Style.WHITE));
-		STYLES.put("B50", new Style(Shape.CIRCLE, Style.parseColor("#87C878"), Style.WHITE));
-		STYLES.put("B51", new Style(Shape.CIRCLE, Style.parseColor("#0071BB"), Style.WHITE));
-		STYLES.put("B52", new Style(Shape.CIRCLE, Style.parseColor("#A095AC"), Style.WHITE));
-		STYLES.put("B53", new Style(Shape.CIRCLE, Style.parseColor("#15C0F3"), Style.WHITE));
-		STYLES.put("B54", new Style(Shape.CIRCLE, Style.parseColor("#A697C8"), Style.WHITE));
-		STYLES.put("B55", new Style(Shape.CIRCLE, Style.parseColor("#4F2E92"), Style.WHITE));
-		STYLES.put("B56", new Style(Shape.CIRCLE, Style.parseColor("#15C0F3"), Style.WHITE));
-		STYLES.put("B57", new Style(Shape.CIRCLE, Style.parseColor("#41C8F4"), Style.WHITE));
-		STYLES.put("B58", new Style(Shape.CIRCLE, Style.parseColor("#8EBBD1"), Style.WHITE));
-		STYLES.put("B59", new Style(Shape.CIRCLE, Style.parseColor("#A697C8"), Style.WHITE));
-		STYLES.put("B60", new Style(Shape.CIRCLE, Style.parseColor("#4F2E92"), Style.WHITE));
-		STYLES.put("B61", new Style(Shape.CIRCLE, Style.parseColor("#3E95D1"), Style.WHITE));
-		STYLES.put("B62", new Style(Shape.CIRCLE, Style.parseColor("#A095AC"), Style.WHITE));
-		STYLES.put("B63", new Style(Shape.CIRCLE, Style.parseColor("#8EBBD1"), Style.WHITE));
-		STYLES.put("B64", new Style(Shape.CIRCLE, Style.parseColor("#009DAC"), Style.WHITE));
+		STYLES.put("B2", new Style(Shape.CIRCLE, Style.parseColor("#b00346"), Style.WHITE));
+		STYLES.put("B4", new Style(Shape.CIRCLE, Style.parseColor("#e30613"), Style.WHITE));
+		STYLES.put("B5", new Style(Shape.CIRCLE, Style.parseColor("#00975f"), Style.BLACK));
+		STYLES.put("B7", new Style(Shape.CIRCLE, Style.parseColor("#ffcc00"), Style.BLACK));
+		STYLES.put("B40", new Style(Shape.CIRCLE, Style.parseColor("#4e2583"), Style.WHITE));
+		STYLES.put("B41", new Style(Shape.CIRCLE, Style.parseColor("#82d0f5"), Style.WHITE));
+		STYLES.put("B42", new Style(Shape.CIRCLE, Style.parseColor("#a1c3d6"), Style.WHITE));
+		STYLES.put("B43", new Style(Shape.CIRCLE, Style.parseColor("#589bd4"), Style.WHITE));
+		STYLES.put("B44", new Style(Shape.CIRCLE, Style.parseColor("#009a93"), Style.WHITE));
+		STYLES.put("B45", new Style(Shape.CIRCLE, Style.parseColor("#0069b4"), Style.WHITE));
+		STYLES.put("B46", new Style(Shape.CIRCLE, Style.parseColor("#a89bb1"), Style.WHITE));
+		STYLES.put("B47", new Style(Shape.CIRCLE, Style.parseColor("#82d0f5"), Style.WHITE));
+		STYLES.put("B48", new Style(Shape.CIRCLE, Style.parseColor("#009fe3"), Style.WHITE));
+		STYLES.put("B49", new Style(Shape.CIRCLE, Style.parseColor("#009640"), Style.WHITE));
+		STYLES.put("B50", new Style(Shape.CIRCLE, Style.parseColor("#a1c3d6"), Style.WHITE));
+		STYLES.put("B51", new Style(Shape.CIRCLE, Style.parseColor("#0069b4"), Style.WHITE));
+		STYLES.put("B52", new Style(Shape.CIRCLE, Style.parseColor("#a89bb1"), Style.WHITE));
+		STYLES.put("B53", new Style(Shape.CIRCLE, Style.parseColor("#10bbef"), Style.WHITE));
+		STYLES.put("B54", new Style(Shape.CIRCLE, Style.parseColor("#b2a0cd"), Style.WHITE));
+		STYLES.put("B55", new Style(Shape.CIRCLE, Style.parseColor("#4e2583"), Style.WHITE));
+		STYLES.put("B56", new Style(Shape.CIRCLE, Style.parseColor("#10bbef"), Style.WHITE));
+		STYLES.put("B57", new Style(Shape.CIRCLE, Style.parseColor("#5bc5f2"), Style.WHITE));
+		STYLES.put("B57E", new Style(Shape.CIRCLE, Style.parseColor("#5bc5f2"), Style.WHITE));
+		STYLES.put("B58", new Style(Shape.CIRCLE, Style.parseColor("#a1c3d6"), Style.WHITE));
+		STYLES.put("B59", new Style(Shape.CIRCLE, Style.parseColor("#a89bb1"), Style.WHITE));
+		STYLES.put("B60", new Style(Shape.CIRCLE, Style.parseColor("#4e2583"), Style.WHITE));
+		STYLES.put("B61", new Style(Shape.CIRCLE, Style.parseColor("#4b96d2"), Style.WHITE));
+		STYLES.put("B62", new Style(Shape.CIRCLE, Style.parseColor("#a89bb1"), Style.WHITE));
+		STYLES.put("B63", new Style(Shape.CIRCLE, Style.parseColor("#a1c3d6"), Style.WHITE));
+		STYLES.put("B64", new Style(Shape.CIRCLE, Style.parseColor("#0091a6"), Style.WHITE));
 
-		// Busse Ludwigshafen
-		STYLES.put("B70", new Style(Shape.CIRCLE, Style.parseColor("#3E95D1"), Style.WHITE));
-		STYLES.put("B71", new Style(Shape.CIRCLE, Style.parseColor("#A095AC"), Style.WHITE));
-		STYLES.put("B72", new Style(Shape.CIRCLE, Style.parseColor("#0071BB"), Style.WHITE));
-		STYLES.put("B73", new Style(Shape.CIRCLE, Style.parseColor("#80C4BB"), Style.WHITE));
-		STYLES.put("B74", new Style(Shape.CIRCLE, Style.parseColor("#6FD0F6"), Style.WHITE));
-		STYLES.put("B75", new Style(Shape.CIRCLE, Style.parseColor("#009A8F"), Style.WHITE));
-		STYLES.put("B76", new Style(Shape.CIRCLE, Style.parseColor("#4F2E92"), Style.WHITE));
-		STYLES.put("B77", new Style(Shape.CIRCLE, Style.parseColor("#B98BB4"), Style.WHITE));
-		STYLES.put("B78", new Style(Shape.CIRCLE, Style.parseColor("#3E95D1"), Style.WHITE));
+		// Stadtbus Ludwigshafen
+		STYLES.put("B70", new Style(Shape.CIRCLE, Style.parseColor("#4b96d2"), Style.WHITE));
+		STYLES.put("B71", new Style(Shape.CIRCLE, Style.parseColor("#a89bb1"), Style.WHITE));
+		STYLES.put("B72", new Style(Shape.CIRCLE, Style.parseColor("#0069b4"), Style.WHITE));
+		STYLES.put("B73", new Style(Shape.CIRCLE, Style.parseColor("#8bc5bd"), Style.WHITE));
+		STYLES.put("B74", new Style(Shape.CIRCLE, Style.parseColor("#82d0f5"), Style.WHITE));
+		STYLES.put("B75", new Style(Shape.CIRCLE, Style.parseColor("#008f88"), Style.WHITE));
+		STYLES.put("B76", new Style(Shape.CIRCLE, Style.parseColor("#4e2583"), Style.WHITE));
+		STYLES.put("B77", new Style(Shape.CIRCLE, Style.parseColor("#c290b8"), Style.WHITE));
+		STYLES.put("B78", new Style(Shape.CIRCLE, Style.parseColor("#4b96d2"), Style.WHITE));
 		STYLES.put("B79E", new Style(Shape.CIRCLE, Standard.COLOR_BACKGROUND_BUS, Style.WHITE));
-		STYLES.put("B85", new Style(Shape.CIRCLE, Style.parseColor("#0071BB"), Style.WHITE));
-		STYLES.put("B86", new Style(Shape.CIRCLE, Style.parseColor("#6FD0F6"), Style.WHITE));
-		STYLES.put("B87", new Style(Shape.CIRCLE, Style.parseColor("#676093"), Style.WHITE));
-		STYLES.put("B88", new Style(Shape.CIRCLE, Style.parseColor("#80C4BB"), Style.WHITE));
+		STYLES.put("B84", new Style(Shape.CIRCLE, Style.parseColor("#8d2176"), Style.WHITE));
+		STYLES.put("B85", new Style(Shape.CIRCLE, Style.parseColor("#0069b4"), Style.WHITE));
+		STYLES.put("B86", new Style(Shape.CIRCLE, Style.parseColor("#82d0f5"), Style.WHITE));
+		STYLES.put("B87", new Style(Shape.CIRCLE, Style.parseColor("#69598f"), Style.WHITE));
+		STYLES.put("B88", new Style(Shape.CIRCLE, Style.parseColor("#8bc5bd"), Style.WHITE));
 
 		// Nachtbus Ludwigshafen
-		STYLES.put("B90", new Style(Shape.CIRCLE, Style.parseColor("#7FC241"), Style.WHITE));
-		STYLES.put("B91", new Style(Shape.CIRCLE, Style.parseColor("#898F93"), Style.WHITE));
-		STYLES.put("B94", new Style(Shape.CIRCLE, Style.parseColor("#6DD0F6"), Style.WHITE));
-		STYLES.put("B96", new Style(Shape.CIRCLE, Style.parseColor("#BD6228"), Style.WHITE));
-		STYLES.put("B97", new Style(Shape.CIRCLE, Style.parseColor("#FFF100"), Style.BLACK));
-		STYLES.put("B6", new Style(Shape.CIRCLE, Style.parseColor("#947138"), Style.WHITE));
+		STYLES.put("B90", new Style(Shape.CIRCLE, Style.parseColor("#86bc25"), Style.WHITE));
+		// STYLES.put("B91", new Style(Shape.CIRCLE, Style.parseColor("#898F93"), Style.WHITE));
+		STYLES.put("B94", new Style(Shape.CIRCLE, Style.parseColor("#83d0f5"), Style.WHITE));
+		STYLES.put("B96", new Style(Shape.CIRCLE, Style.parseColor("#c05d18"), Style.WHITE));
+		STYLES.put("B97", new Style(Shape.CIRCLE, Style.parseColor("#ffed00"), Style.BLACK));
+		// Nachtbus Ludwigshafen-Mannheim
+		STYLES.put("B6", new Style(Shape.CIRCLE, Style.parseColor("#956c29"), Style.WHITE));
 
 		// Straßenbahn Heidelberg
-		STYLES.put("T21", new Style(Shape.RECT, Style.parseColor("#EE1C25"), Style.WHITE));
-		STYLES.put("T22", new Style(Shape.RECT, Style.parseColor("#FFC20A"), Style.BLACK));
-		STYLES.put("T23", new Style(Shape.RECT, Style.parseColor("#E58D1A"), Style.WHITE));
-		STYLES.put("T24", new Style(Shape.RECT, Style.parseColor("#8C2880"), Style.WHITE));
-		STYLES.put("T26", new Style(Shape.RECT, Style.parseColor("#F69897"), Style.WHITE));
+		STYLES.put("T21", new Style(Shape.RECT, Style.parseColor("#e30613"), Style.WHITE));
+		STYLES.put("T22", new Style(Shape.RECT, Style.parseColor("#fdc300"), Style.BLACK));
+		STYLES.put("T23", new Style(Shape.RECT, Style.parseColor("#e48f00"), Style.WHITE));
+		STYLES.put("T24", new Style(Shape.RECT, Style.parseColor("#8d2176"), Style.WHITE));
+		STYLES.put("T26", new Style(Shape.RECT, Style.parseColor("#f39b9a"), Style.WHITE));
 
 		// Stadtbus Heidelberg rnv
-		STYLES.put("B27", new Style(Shape.CIRCLE, Style.parseColor("#4F2E92"), Style.WHITE));
-		STYLES.put("B28", new Style(Shape.CIRCLE, Style.parseColor("#A697C8"), Style.WHITE));
-		STYLES.put("B29", new Style(Shape.CIRCLE, Style.parseColor("#41C8F4"), Style.WHITE));
-		STYLES.put("B30", new Style(Shape.CIRCLE, Style.parseColor("#8370A0"), Style.WHITE));
-		STYLES.put("B31", new Style(Shape.CIRCLE, Style.parseColor("#3E95D1"), Style.WHITE));
-		STYLES.put("B32", new Style(Shape.CIRCLE, Style.parseColor("#8EBBD1"), Style.WHITE));
-		STYLES.put("B33", new Style(Shape.CIRCLE, Style.parseColor("#007196"), Style.WHITE));
-		STYLES.put("B34", new Style(Shape.CIRCLE, Style.parseColor("#00ADEE"), Style.WHITE));
-		STYLES.put("B35", new Style(Shape.CIRCLE, Style.parseColor("#007196"), Style.WHITE));
-		STYLES.put("B36", new Style(Shape.CIRCLE, Style.parseColor("#A697C8"), Style.WHITE));
-		STYLES.put("B37", new Style(Shape.CIRCLE, Style.parseColor("#41C8F4"), Style.WHITE));
-		STYLES.put("B38", new Style(Shape.CIRCLE, Style.parseColor("#00A4BC"), Style.WHITE));
-		STYLES.put("B39", new Style(Shape.CIRCLE, Style.parseColor("#4F2E92"), Style.WHITE));
+		STYLES.put("B27", new Style(Shape.CIRCLE, Style.parseColor("#4e2583"), Style.WHITE));
+		STYLES.put("B28", new Style(Shape.CIRCLE, Style.parseColor("#b2a0cd"), Style.WHITE));
+		STYLES.put("B29", new Style(Shape.CIRCLE, Style.parseColor("#10bbef"), Style.WHITE));
+		STYLES.put("B30", new Style(Shape.CIRCLE, Style.parseColor("#baabd4"), Style.WHITE));
+		STYLES.put("B31", new Style(Shape.CIRCLE, Style.parseColor("#4b96d2"), Style.WHITE));
+		STYLES.put("B32", new Style(Shape.CIRCLE, Style.parseColor("#a1c3d6"), Style.WHITE));
+		STYLES.put("B33", new Style(Shape.CIRCLE, Style.parseColor("#0069b4"), Style.WHITE));
+		STYLES.put("B34", new Style(Shape.CIRCLE, Style.parseColor("#009fe3"), Style.WHITE));
+		STYLES.put("B35", new Style(Shape.CIRCLE, Style.parseColor("#4e2583"), Style.WHITE));
+		STYLES.put("B36", new Style(Shape.CIRCLE, Style.parseColor("#b2a0cd"), Style.WHITE));
+		STYLES.put("B37", new Style(Shape.CIRCLE, Style.parseColor("#10bbef"), Style.WHITE));
+		STYLES.put("B38", new Style(Shape.CIRCLE, Style.parseColor("#0097b5"), Style.WHITE));
+		STYLES.put("B39", new Style(Shape.CIRCLE, Style.parseColor("#512985"), Style.WHITE));
 
 		// Moonliner Heidelberg
 		STYLES.put("BM1", new Style(Style.parseColor("#FFCB06"), Style.parseColor("#0A3F88")));
