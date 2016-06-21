@@ -36,6 +36,9 @@ import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
 import javax.annotation.Nullable;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +63,7 @@ public final class HttpClient
 	private String sessionCookieName = null;
 	@Nullable
 	private HttpCookie sessionCookie = null;
+	private boolean sslAcceptAllHostnames = false;
 
 	private static final String SCRAPE_ACCEPT = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
 	public static final int SCRAPE_INITIAL_CAPACITY = 4096;
@@ -83,6 +87,11 @@ public final class HttpClient
 	public void setSessionCookieName(final String sessionCookieName)
 	{
 		this.sessionCookieName = sessionCookieName;
+	}
+
+	public void setSslAcceptAllHostnames(final boolean sslAcceptAllHostnames)
+	{
+		this.sslAcceptAllHostnames = sslAcceptAllHostnames;
 	}
 
 	public CharSequence get(final String url) throws IOException
@@ -133,6 +142,9 @@ public final class HttpClient
 		{
 			final URL url = new URL(urlStr);
 			final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+			if (connection instanceof HttpsURLConnection && sslAcceptAllHostnames)
+				((HttpsURLConnection) connection).setHostnameVerifier(SSL_ACCEPT_ALL_HOSTNAMES);
 
 			connection.setDoInput(true);
 			connection.setDoOutput(postRequest != null);
@@ -352,4 +364,12 @@ public final class HttpClient
 
 		return false;
 	}
+
+	private static final HostnameVerifier SSL_ACCEPT_ALL_HOSTNAMES = new HostnameVerifier()
+	{
+		public boolean verify(final String hostname, final SSLSession session)
+		{
+			return true;
+		}
+	};
 }

@@ -45,6 +45,7 @@ public class NvvProvider extends AbstractHafasProvider
 
 		setJsonGetStopsEncoding(Charsets.UTF_8);
 		setJsonNearbyLocationsEncoding(Charsets.UTF_8);
+		httpClient.setSslAcceptAllHostnames(true);
 	}
 
 	private static final String[] PLACES = { "Frankfurt (Main)", "Offenbach (Main)", "Mainz", "Wiesbaden", "Marburg", "Kassel", "Hanau", "Göttingen",
