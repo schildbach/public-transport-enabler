@@ -21,19 +21,12 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.Properties;
 import java.util.Set;
 
 import javax.annotation.Nullable;
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import de.schildbach.pte.NetworkProvider;
 import de.schildbach.pte.NetworkProvider.Accessibility;
@@ -56,8 +49,6 @@ public abstract class AbstractProviderLiveTest
 
 	public AbstractProviderLiveTest(final NetworkProvider provider)
 	{
-		disableSslCertificateValidation();
-
 		this.provider = provider;
 	}
 
@@ -171,43 +162,4 @@ public abstract class AbstractProviderLiveTest
 			throw new RuntimeException(x);
 		}
 	}
-
-	private static void disableSslCertificateValidation()
-	{
-		try
-		{
-			final SSLContext sslContext = SSLContext.getInstance("SSL");
-			sslContext.init(null, TRUST_ALL_CERTS, null);
-			HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.getSocketFactory());
-			HttpsURLConnection.setDefaultHostnameVerifier(ACCEPT_ALL_HOSTNAMES);
-		}
-		catch (final Exception x)
-		{
-			throw new RuntimeException(x);
-		}
-	}
-
-	private static final TrustManager[] TRUST_ALL_CERTS = new TrustManager[] { new X509TrustManager()
-	{
-		public X509Certificate[] getAcceptedIssuers()
-		{
-			return null;
-		}
-
-		public void checkClientTrusted(final X509Certificate[] certs, final String authType)
-		{
-		}
-
-		public void checkServerTrusted(final X509Certificate[] certs, final String authType)
-		{
-		}
-	} };
-
-	private static final HostnameVerifier ACCEPT_ALL_HOSTNAMES = new HostnameVerifier()
-	{
-		public boolean verify(final String hostname, final SSLSession session)
-		{
-			return true;
-		}
-	};
 }
