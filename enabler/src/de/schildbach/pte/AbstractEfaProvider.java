@@ -1606,10 +1606,16 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				while (XmlPullUtil.test(pp, "itdServingLine"))
 				{
 					final String assignedStopId = XmlPullUtil.optAttr(pp, "assignedStopID", null);
-					final String destinationName = normalizeLocationName(XmlPullUtil.attr(pp, "direction"));
-					final String destinationId = XmlPullUtil.optAttr(pp, "destID", null);
-					final Location destination = new Location(destinationId != null ? LocationType.STATION : LocationType.ANY, destinationId, null,
-							destinationName);
+					final String destinationName = normalizeLocationName(XmlPullUtil.optAttr(pp, "direction", null));
+					final String destinationIdStr = XmlPullUtil.optAttr(pp, "destID", null);
+					final String destinationId = !"-1".equals(destinationIdStr) ? destinationIdStr : null;
+					final Location destination;
+					if (destinationId != null || destinationName != null)
+						destination = new Location(destinationId != null ? LocationType.STATION : LocationType.ANY, destinationId, null,
+								destinationName);
+					else
+						destination = null;
+
 					final LineDestination line = new LineDestination(processItdServingLine(pp), destination);
 
 					StationDepartures assignedStationDepartures;
