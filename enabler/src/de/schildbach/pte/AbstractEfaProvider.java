@@ -2384,6 +2384,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		if (ambiguousFrom != null || ambiguousTo != null || ambiguousVia != null)
 			return new QueryTripsResult(header, ambiguousFrom, ambiguousVia, ambiguousTo);
 
+		XmlPullUtil.optSkip(pp, "itdAddOdvSeq");
 		XmlPullUtil.enter(pp, "itdTripDateTime");
 		XmlPullUtil.enter(pp, "itdDateTime");
 		XmlPullUtil.require(pp, "itdDate");
