@@ -35,7 +35,7 @@ import de.schildbach.pte.dto.Style;
  */
 public class SydneyProvider extends AbstractEfaProvider
 {
-	private final static String API_BASE = "http://tp.transportnsw.info/nsw/";
+	private final static String API_BASE = "https://tp.transportnsw.info/nsw/";
 
 	public SydneyProvider()
 	{
