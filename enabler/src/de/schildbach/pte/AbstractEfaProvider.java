@@ -2782,6 +2782,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				final Position stopPosition = parsePosition(XmlPullUtil.optAttr(pp, "platformName", null));
 
 				XmlPullUtil.enter(pp, "itdPoint");
+				XmlPullUtil.optSkip(pp, "genAttrList");
 				XmlPullUtil.require(pp, "itdDateTime");
 
 				final Date plannedStopArrivalTime;
