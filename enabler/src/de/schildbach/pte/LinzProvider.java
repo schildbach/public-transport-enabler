@@ -27,7 +27,7 @@ import de.schildbach.pte.dto.Style;
  */
 public class LinzProvider extends AbstractEfaProvider
 {
-	public static final String API_BASE = "http://www.linzag.at/linz2/";
+	public static final String API_BASE = "https://www.linzag.at/linz2/";
 
 	// http://www.linzag.at/static/
 
