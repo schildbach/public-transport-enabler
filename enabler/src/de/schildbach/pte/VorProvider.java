@@ -37,7 +37,7 @@ import de.schildbach.pte.dto.Style;
  */
 public class VorProvider extends AbstractEfaProvider
 {
-	private final static String API_BASE = "http://efa.vor.at/vor/";
+	private final static String API_BASE = "https://efa.vor.at/vor/";
 
 	public VorProvider()
 	{
