@@ -33,7 +33,7 @@ import de.schildbach.pte.dto.Style.Shape;
  */
 public class ZvvProvider extends AbstractHafasProvider
 {
-	private static final String API_BASE = "http://online.fahrplan.zvv.ch/bin/";
+	private static final String API_BASE = "https://online.fahrplan.zvv.ch/bin/";
 	private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN,
 			Product.REGIONAL_TRAIN, Product.FERRY, Product.SUBURBAN_TRAIN, Product.BUS, Product.CABLECAR, Product.SUBWAY, Product.TRAM };
 
