@@ -1843,6 +1843,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 		{
 			final String co = XmlPullUtil.valueTag(pp, "co");
 			final String productType = tyOrCo ? ty : co;
+			XmlPullUtil.optValueTag(pp, "prid", null);
 			final String destinationName = normalizeLocationName(XmlPullUtil.valueTag(pp, "des"));
 			destination = new Location(LocationType.ANY, null, null, destinationName);
 			XmlPullUtil.optValueTag(pp, "dy", null);
@@ -2927,7 +2928,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					XmlPullUtil.valueTag(pp, "d"); // duration
 					final int numChanges = Integer.parseInt(XmlPullUtil.valueTag(pp, "ic"));
 					final String tripId = XmlPullUtil.valueTag(pp, "de");
+					XmlPullUtil.optValueTag(pp, "optval", null);
 					XmlPullUtil.optValueTag(pp, "alt", null);
+					XmlPullUtil.optValueTag(pp, "gix", null);
 
 					XmlPullUtil.enter(pp, "ls");
 
