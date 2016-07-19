@@ -665,7 +665,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 				{
 					XmlPullUtil.enter(pp, "pi");
 
-					final String name = normalizeLocationName(XmlPullUtil.valueTag(pp, "de"));
+					final String name = normalizeLocationName(XmlPullUtil.optValueTag(pp, "de", null));
 					final String type = XmlPullUtil.valueTag(pp, "ty");
 					final LocationType locationType;
 					if ("STOP".equals(type))
@@ -685,7 +685,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider
 					XmlPullUtil.valueTag(pp, "stateless");
 					final Point coord = parseCoord(XmlPullUtil.valueTag(pp, "c"));
 
-					stations.add(new Location(locationType, id, coord, place, name));
+					final Location location;
+					if (name != null)
+						location = new Location(locationType, id, coord, place, name);
+					else
+						location = new Location(locationType, id, coord, null, place);
+					stations.add(location);
 
 					XmlPullUtil.skipExit(pp, "pi");
 				}
