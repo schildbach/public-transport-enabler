@@ -97,7 +97,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 
 	private enum PhysicalMode
 	{
-		AIR, BOAT, BUS, BUSRAPIDTRANSIT, COACH, FERRY, FUNICULAR, LOCALTRAIN, LONGDISTANCETRAIN, METRO, RAPIDTRANSIT, SHUTTLE, TAXI, TRAIN, TRAMWAY
+		AIR, BOAT, BUS, BUSRAPIDTRANSIT, COACH, FERRY, FUNICULAR, LOCALTRAIN, LONGDISTANCETRAIN, METRO, RAPIDTRANSIT, SHUTTLE, TAXI, TRAIN, TRAMWAY, OTHER
 	}
 
 	@SuppressWarnings("serial")
@@ -695,7 +695,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 		}
 	}
 
-	private Product parseLineProductFromMode(final String modeId)
+	private @Nullable Product parseLineProductFromMode(final String modeId)
 	{
 		final String modeType = modeId.replace("physical_mode:", "");
 		final PhysicalMode physicalMode = PhysicalMode.valueOf(modeType.toUpperCase());
@@ -722,6 +722,8 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider
 				return Product.CABLECAR;
 			case TAXI:
 				return Product.ON_DEMAND;
+			case OTHER:
+				return null;
 			default:
 				throw new IllegalArgumentException("Unhandled place type: " + modeId);
 		}
