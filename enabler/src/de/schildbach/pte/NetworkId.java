@@ -77,7 +77,7 @@ public enum NetworkId
 	JET,
 
 	// United States
-	SF, SEPTA,
+	SF, SEPTA, RTACHICAGO,
 
 	// Canada
 	ONTARIO, QUEBEC,
