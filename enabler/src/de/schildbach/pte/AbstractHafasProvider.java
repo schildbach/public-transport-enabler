@@ -617,7 +617,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		uri.append(ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%02d:%02d", hour, minute)));
 	}
 
-	private static final Pattern P_XML_STATION_BOARD_DELAY = Pattern.compile("(?:-|k\\.A\\.?|cancel|\\+?\\s*(\\d+))");
+	private static final Pattern P_XML_STATION_BOARD_DELAY = Pattern.compile("(?:-|k\\.A\\.?|cancel|([+-]?\\s*\\d+))");
 
 	protected final QueryDeparturesResult xmlStationBoard(final String uri, final String stationId) throws IOException
 	{
