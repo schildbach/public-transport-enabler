@@ -45,6 +45,7 @@ public class VbbProvider extends AbstractHafasProvider
 		setJsonGetStopsUseWeight(false);
 		setJsonGetStopsEncoding(Charsets.UTF_8);
 		setJsonNearbyLocationsEncoding(Charsets.UTF_8);
+		setClientType(null);
 	}
 
 	private static final Pattern P_SPLIT_NAME_SU = Pattern.compile("(.*?)(?:\\s+\\((S|U|S\\+U)\\))?");
