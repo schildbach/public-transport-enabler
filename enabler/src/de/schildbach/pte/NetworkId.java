@@ -35,7 +35,7 @@ public enum NetworkId
 	SBB, BVB, VBL, ZVV,
 
 	// France
-	PACA, PARIS, FRENCHSOUTHWEST,
+	PACA, PARIS, FRENCHSOUTHWEST, FRANCENORTHEAST,
 
 	// Belgium
 	SNCB,
