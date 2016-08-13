@@ -34,7 +34,7 @@ public class BsAsProvider extends AbstractNavitiaProvider {
 
 	public BsAsProvider(final String authorization)
 	{
-		super(NetworkId.ONTARIO, authorization);
+		super(NetworkId.BSAS, authorization);
 
 		setTimeZone("America/Argentina/Buenos Aires");
 	}
