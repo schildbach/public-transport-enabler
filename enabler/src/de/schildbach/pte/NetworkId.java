@@ -22,6 +22,9 @@ package de.schildbach.pte;
  */
 public enum NetworkId
 {
+	
+	//Argentina 
+	BSAS,
 	// Europe
 	RT,
 
