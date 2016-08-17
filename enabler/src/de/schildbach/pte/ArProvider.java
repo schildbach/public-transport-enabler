@@ -22,7 +22,8 @@ package de.schildbach.pte;
  * Ignacio Caamaño <ignacio167@gmail.com>
  * */
 
-public class ArProvider extends AbstractNavitiaProvider {
+public class ArProvider extends AbstractNavitiaProvider 
+{
 	private static String API_REGION = "ar";
 
 	public ArProvider(final String apiBase, final String authorization)
@@ -40,7 +41,8 @@ public class ArProvider extends AbstractNavitiaProvider {
 	}
 
 	@Override
-	public String region() {
+	public String region() 
+	{
 		return API_REGION;
 	}
 

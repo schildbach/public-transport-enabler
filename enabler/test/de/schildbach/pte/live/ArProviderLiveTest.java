@@ -24,20 +24,24 @@ import de.schildbach.pte.ArProvider;
  * @author Ignacio Caamaño <ignacio167@gmail.com>
  */
 
-public class ArProviderLiveTest extends AbstractNavitiaProviderLiveTest {
+public class ArProviderLiveTest extends AbstractNavitiaProviderLiveTest 
+{
 
-	public ArProviderLiveTest() {
+	public ArProviderLiveTest() 
+	{
 		super(new ArProvider(secretProperty("navitia.authorization")));
 	}
 
 	@Test
-	public void nearbyStationsAddress() throws Exception {
+	public void nearbyStationsAddress() throws Exception 
+	{
 		nearbyStationsAddress(-34618072, -58436443);
 		System.out.println("\n");
 	}
 
 	@Test
-	public void suggestLocations() throws Exception {
+	public void suggestLocations() throws Exception 
+	{
 		suggestLocationsFromName("plaza de mayo");
 	}
 }
