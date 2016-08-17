@@ -24,7 +24,7 @@ public enum NetworkId
 {
 	
 	//Argentina 
-	BSAS,
+	AR,
 	// Europe
 	RT,
 

@@ -22,19 +22,19 @@ package de.schildbach.pte;
  * Ignacio Caamaño <ignacio167@gmail.com>
  * */
 
-public class BsAsProvider extends AbstractNavitiaProvider {
+public class ArProvider extends AbstractNavitiaProvider {
 	private static String API_REGION = "ar";
 
-	public BsAsProvider(final String apiBase, final String authorization)
+	public ArProvider(final String apiBase, final String authorization)
 	{
-		super(NetworkId.BSAS, apiBase, authorization);
+		super(NetworkId.AR, apiBase, authorization);
 
 		setTimeZone("America/Argentina/Buenos Aires");
 	}
 
-	public BsAsProvider(final String authorization)
+	public ArProvider(final String authorization)
 	{
-		super(NetworkId.BSAS, authorization);
+		super(NetworkId.AR, authorization);
 
 		setTimeZone("America/Argentina/Buenos Aires");
 	}

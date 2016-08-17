@@ -40,9 +40,4 @@ public class ArProviderLiveTest extends AbstractNavitiaProviderLiveTest {
 	public void suggestLocations() throws Exception {
 		suggestLocationsFromName("plaza de mayo");
 	}
-	
-	@Test
-	public void nearbyStationsAddress2() throws Exception {
-		nearbyStationsAddress(-31408721, -64170323);
-	}
 }
