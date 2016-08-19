@@ -17,10 +17,9 @@
 
 package de.schildbach.pte;
 
-/* 
- * @author 
- * Ignacio Caamaño <ignacio167@gmail.com>
- * */
+/** 
+ * @author Ignacio Caamaño <ignacio167@gmail.com>
+ */
 
 public class ArProvider extends AbstractNavitiaProvider 
 {
