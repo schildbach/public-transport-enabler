@@ -36,7 +36,6 @@ public class ArProviderLiveTest extends AbstractNavitiaProviderLiveTest
 	public void nearbyStationsAddress() throws Exception 
 	{
 		nearbyStationsAddress(-34618072, -58436443);
-		System.out.println("\n");
 	}
 
 	@Test
