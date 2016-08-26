@@ -24,20 +24,20 @@ import de.schildbach.pte.dto.Style.Shape;
 /**
  * @author Anthony Chaput
  */
-public class FrenchSouthEastProvider extends AbstractNavitiaProvider
+public class FranceSouthEastProvider extends AbstractNavitiaProvider
 {
 	private static String API_REGION = "fr-se";
 
-	public FrenchSouthEastProvider(final String apiBase, final String authorization)
+	public FranceSouthEastProvider(final String apiBase, final String authorization)
 	{
-		super(NetworkId.FRENCHSOUTHEAST, apiBase, authorization);
+		super(NetworkId.FRANCESOUTHEAST, apiBase, authorization);
 
 		setTimeZone("Europe/Paris");
 	}
 
-	public FrenchSouthEastProvider(final String authorization)
+	public FranceSouthEastProvider(final String authorization)
 	{
-		super(NetworkId.FRENCHSOUTHEAST, authorization);
+		super(NetworkId.FRANCESOUTHEAST, authorization);
 
 		setTimeZone("Europe/Paris");
 	}
