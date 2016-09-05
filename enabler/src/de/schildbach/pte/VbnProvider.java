@@ -164,6 +164,7 @@ public class VbnProvider extends AbstractHafasProvider
 		STYLES.put("Rostocker Straßenbahn AG|B28", new Style(Style.parseColor("#4fc6f4"), Style.WHITE));
 		STYLES.put("Rostocker Straßenbahn AG|PRFT 30A", new Style(Style.WHITE, Style.parseColor("#1082ce")));
 		STYLES.put("Rostocker Straßenbahn AG|B31", new Style(Style.parseColor("#3a9fdf"), Style.WHITE));
+		STYLES.put("Rostocker Straßenbahn AG|B34", new Style(Style.parseColor("#1c63b7"), Style.WHITE));
 		STYLES.put("Rostocker Straßenbahn AG|B35", new Style(Style.parseColor("#1969bc"), Style.WHITE));
 		STYLES.put("Rostocker Straßenbahn AG|PRFT 35A", new Style(Style.WHITE, Style.parseColor("#1969bc")));
 		STYLES.put("Rostocker Straßenbahn AG|B36", new Style(Style.parseColor("#1c63b7"), Style.WHITE));
