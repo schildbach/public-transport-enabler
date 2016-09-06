@@ -1499,15 +1499,27 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	}
 
 	public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to, final Date date, final boolean dep,
-			final @Nullable Set<Product> products, final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
-			final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) throws IOException
+									   final @Nullable Set<Product> products, final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
+									   final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) throws IOException
 	{
-		return queryTripsBinary(from, via, to, date, dep, products, walkSpeed, accessibility, options);
+		return queryTripsBinary(from, via, to, date, dep, products, walkSpeed, accessibility, options, false);
+	}
+
+	public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to, final Date date, final boolean dep,
+									   final @Nullable Set<Product> products, final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
+									   final @Nullable Accessibility accessibility, final @Nullable Set<Option> options, boolean includeTripsWithCancelledLegs) throws IOException
+	{
+		return queryTripsBinary(from, via, to, date, dep, products, walkSpeed, accessibility, options, includeTripsWithCancelledLegs);
 	}
 
 	public QueryTripsResult queryMoreTrips(final QueryTripsContext context, final boolean later) throws IOException
 	{
-		return queryMoreTripsBinary(context, later);
+		return queryMoreTripsBinary(context, later, false);
+	}
+
+	public QueryTripsResult queryMoreTrips(final QueryTripsContext context, final boolean later, boolean includeTripsWithCancelledLegs) throws IOException
+	{
+		return queryMoreTripsBinary(context, later, includeTripsWithCancelledLegs);
 	}
 
 	protected final QueryTripsResult queryTripsXml(Location from, @Nullable Location via, Location to, final Date date, final boolean dep,
@@ -2169,7 +2181,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 	protected final QueryTripsResult queryTripsBinary(Location from, @Nullable Location via, Location to, final Date date, final boolean dep,
 			final @Nullable Set<Product> products, final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
-			final @Nullable Set<Option> options) throws IOException
+			final @Nullable Set<Option> options, boolean includeTripsWithCancelledLegs) throws IOException
 	{
 		final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
 
@@ -2206,7 +2218,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		final StringBuilder uri = new StringBuilder(queryEndpoint);
 		appendQueryTripsBinaryParameters(uri, from, via, to, date, dep, products, accessibility, options);
 
-		return queryTripsBinary(uri.toString(), from, via, to, QUERY_TRIPS_BINARY_BUFFER_SIZE);
+		return queryTripsBinary(uri.toString(), from, via, to, QUERY_TRIPS_BINARY_BUFFER_SIZE, includeTripsWithCancelledLegs);
 	}
 
 	protected void appendQueryMoreTripsBinaryParameters(final StringBuilder uri, final QueryTripsBinaryContext context, final boolean later)
@@ -2220,14 +2232,14 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 		appendCommonQueryTripsBinaryParameters(uri);
 	}
 
-	protected QueryTripsResult queryMoreTripsBinary(final QueryTripsContext contextObj, final boolean later) throws IOException
+	protected QueryTripsResult queryMoreTripsBinary(final QueryTripsContext contextObj, final boolean later, boolean includeTripsWithCancelledLegs) throws IOException
 	{
 		final QueryTripsBinaryContext context = (QueryTripsBinaryContext) contextObj;
 
 		final StringBuilder uri = new StringBuilder(queryEndpoint);
 		appendQueryMoreTripsBinaryParameters(uri, context, later);
 
-		return queryTripsBinary(uri.toString(), null, null, null, QUERY_TRIPS_BINARY_BUFFER_SIZE + context.usedBufferSize);
+		return queryTripsBinary(uri.toString(), null, null, null, QUERY_TRIPS_BINARY_BUFFER_SIZE + context.usedBufferSize, includeTripsWithCancelledLegs);
 	}
 
 	private class CustomBufferedInputStream extends BufferedInputStream
@@ -2244,7 +2256,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 	}
 
 	private QueryTripsResult queryTripsBinary(final String uri, final Location from, final @Nullable Location via, final Location to,
-			final int expectedBufferSize) throws IOException
+			final int expectedBufferSize, boolean includeTripsWithCancelledLegs) throws IOException
 	{
 		/*
 		 * Many thanks to Malte Starostik and Robert, who helped a lot with analyzing this API!
@@ -2736,7 +2748,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider
 
 					final Trip trip = new Trip(connectionId, resDeparture, resArrival, legs, null, null, (int) numChanges);
 
-					if (realtimeStatus != 2) // Verbindung fällt aus
+					if (realtimeStatus != 2 || includeTripsWithCancelledLegs) // Verbindung fällt aus
 						trips.add(trip);
 				}
 
