@@ -27,80 +27,73 @@ import de.schildbach.pte.util.StringReplaceReader;
 /**
  * @author Andreas Schildbach
  */
-public class PlProvider extends AbstractHafasProvider
-{
-	private static final String API_BASE = "http://rozklad.bilkom.pl/bin/";
-	private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN,
-			Product.SUBURBAN_TRAIN, Product.BUS, Product.BUS, Product.FERRY };
+public class PlProvider extends AbstractHafasProvider {
+    private static final String API_BASE = "http://rozklad.bilkom.pl/bin/";
+    private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
+            Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.BUS, Product.BUS, Product.FERRY };
 
-	public PlProvider()
-	{
-		super(NetworkId.PL, API_BASE, "pn", PRODUCTS_MAP);
+    public PlProvider() {
+        super(NetworkId.PL, API_BASE, "pn", PRODUCTS_MAP);
 
-		setJsonGetStopsEncoding(Charsets.UTF_8);
-		setJsonNearbyLocationsEncoding(Charsets.UTF_8);
-	}
+        setJsonGetStopsEncoding(Charsets.UTF_8);
+        setJsonNearbyLocationsEncoding(Charsets.UTF_8);
+    }
 
-	private static final String[] PLACES = { "Warszawa", "Kraków" };
+    private static final String[] PLACES = { "Warszawa", "Kraków" };
 
-	@Override
-	protected String[] splitStationName(final String name)
-	{
-		for (final String place : PLACES)
-		{
-			if (name.endsWith(", " + place))
-				return new String[] { place, name.substring(0, name.length() - place.length() - 2) };
-			if (name.startsWith(place + " ") || name.startsWith(place + "-"))
-				return new String[] { place, name.substring(place.length() + 1) };
-		}
+    @Override
+    protected String[] splitStationName(final String name) {
+        for (final String place : PLACES) {
+            if (name.endsWith(", " + place))
+                return new String[] { place, name.substring(0, name.length() - place.length() - 2) };
+            if (name.startsWith(place + " ") || name.startsWith(place + "-"))
+                return new String[] { place, name.substring(place.length() + 1) };
+        }
 
-		return super.splitStationName(name);
-	}
+        return super.splitStationName(name);
+    }
 
-	@Override
-	protected void addCustomReplaces(final StringReplaceReader reader)
-	{
-		reader.replace("dir=\"Sp ", " "); // Poland
-		reader.replace("dir=\"B ", " "); // Poland
-		reader.replace("dir=\"K ", " "); // Poland
-		reader.replace("dir=\"Eutingen i. G ", "dir=\"Eutingen\" "); // Poland
-		reader.replace("StargetLoc", "Süd\" targetLoc"); // Poland
-		reader.replace("platform=\"K ", " "); // Poland
-	}
+    @Override
+    protected void addCustomReplaces(final StringReplaceReader reader) {
+        reader.replace("dir=\"Sp ", " "); // Poland
+        reader.replace("dir=\"B ", " "); // Poland
+        reader.replace("dir=\"K ", " "); // Poland
+        reader.replace("dir=\"Eutingen i. G ", "dir=\"Eutingen\" "); // Poland
+        reader.replace("StargetLoc", "Süd\" targetLoc"); // Poland
+        reader.replace("platform=\"K ", " "); // Poland
+    }
 
-	@Override
-	public Set<Product> defaultProducts()
-	{
-		return Product.ALL;
-	}
+    @Override
+    public Set<Product> defaultProducts() {
+        return Product.ALL;
+    }
 
-	@Override
-	protected Product normalizeType(final String type)
-	{
-		final String ucType = type.toUpperCase();
+    @Override
+    protected Product normalizeType(final String type) {
+        final String ucType = type.toUpperCase();
 
-		if ("AR".equals(ucType)) // Arriva Polaczen
-			return Product.REGIONAL_TRAIN;
-		if ("N".equals(ucType))
-			return Product.REGIONAL_TRAIN;
-		if ("KW".equals(ucType)) // Koleje Wielkopolskie
-			return Product.REGIONAL_TRAIN;
-		if ("KS".equals(ucType)) // Koleje Śląskie
-			return Product.REGIONAL_TRAIN;
-		if ("REG".equals(ucType))
-			return Product.REGIONAL_TRAIN;
+        if ("AR".equals(ucType)) // Arriva Polaczen
+            return Product.REGIONAL_TRAIN;
+        if ("N".equals(ucType))
+            return Product.REGIONAL_TRAIN;
+        if ("KW".equals(ucType)) // Koleje Wielkopolskie
+            return Product.REGIONAL_TRAIN;
+        if ("KS".equals(ucType)) // Koleje Śląskie
+            return Product.REGIONAL_TRAIN;
+        if ("REG".equals(ucType))
+            return Product.REGIONAL_TRAIN;
 
-		if ("LKA".equals(ucType)) // Łódzka Kolej Aglomeracyjna
-			return Product.SUBURBAN_TRAIN;
+        if ("LKA".equals(ucType)) // Łódzka Kolej Aglomeracyjna
+            return Product.SUBURBAN_TRAIN;
 
-		if ("IRB".equals(ucType)) // interREGIO Bus
-			return Product.BUS;
-		if ("ZKA".equals(ucType)) // Zastępcza Komunikacja Autobusowa (Schienenersatzverkehr)
-			return Product.BUS;
+        if ("IRB".equals(ucType)) // interREGIO Bus
+            return Product.BUS;
+        if ("ZKA".equals(ucType)) // Zastępcza Komunikacja Autobusowa (Schienenersatzverkehr)
+            return Product.BUS;
 
-		if ("FRE".equals(ucType))
-			return Product.FERRY;
+        if ("FRE".equals(ucType))
+            return Product.FERRY;
 
-		return super.normalizeType(type);
-	}
+        return super.normalizeType(type);
+    }
 }

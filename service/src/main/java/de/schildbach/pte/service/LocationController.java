@@ -36,22 +36,20 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
  * @author Andreas Schildbach
  */
 @Controller
-public class LocationController
-{
-	private final RtProvider provider = new RtProvider();
+public class LocationController {
+    private final RtProvider provider = new RtProvider();
 
-	@RequestMapping(value = "/location/suggest", method = RequestMethod.GET)
-	@ResponseBody
-	public SuggestLocationsResult suggest(@RequestParam("q") final String query) throws IOException
-	{
-		return provider.suggestLocations(query);
-	}
+    @RequestMapping(value = "/location/suggest", method = RequestMethod.GET)
+    @ResponseBody
+    public SuggestLocationsResult suggest(@RequestParam("q") final String query) throws IOException {
+        return provider.suggestLocations(query);
+    }
 
-	@RequestMapping(value = "/location/nearby", method = RequestMethod.GET)
-	@ResponseBody
-	public NearbyLocationsResult nearby(@RequestParam("lat") final int lat, @RequestParam("lon") final int lon) throws IOException
-	{
-		final Location coord = Location.coord(lat, lon);
-		return provider.queryNearbyLocations(EnumSet.of(LocationType.STATION, LocationType.POI), coord, 5000, 100);
-	}
+    @RequestMapping(value = "/location/nearby", method = RequestMethod.GET)
+    @ResponseBody
+    public NearbyLocationsResult nearby(@RequestParam("lat") final int lat, @RequestParam("lon") final int lon)
+            throws IOException {
+        final Location coord = Location.coord(lat, lon);
+        return provider.queryNearbyLocations(EnumSet.of(LocationType.STATION, LocationType.POI), coord, 5000, 100);
+    }
 }

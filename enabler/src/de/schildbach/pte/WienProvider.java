@@ -34,58 +34,53 @@ import de.schildbach.pte.dto.Style;
 /**
  * @author Andreas Schildbach
  */
-public class WienProvider extends AbstractEfaProvider
-{
-	private final static String API_BASE = "http://www.wienerlinien.at/ogd_routing/";
+public class WienProvider extends AbstractEfaProvider {
+    private final static String API_BASE = "http://www.wienerlinien.at/ogd_routing/";
 
-	public WienProvider()
-	{
-		super(NetworkId.WIEN, API_BASE);
+    public WienProvider() {
+        super(NetworkId.WIEN, API_BASE);
 
-		setIncludeRegionId(false);
-		setStyles(STYLES);
-		setRequestUrlEncoding(Charsets.UTF_8);
-	}
+        setIncludeRegionId(false);
+        setStyles(STYLES);
+        setRequestUrlEncoding(Charsets.UTF_8);
+    }
 
-	@Override
-	protected String xsltTripRequestParameters(final Location from, final @Nullable Location via, final Location to, final Date time,
-			final boolean dep, final @Nullable Collection<Product> products, final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
-			final @Nullable Accessibility accessibility, final @Nullable Set<Option> options)
-	{
-		final StringBuilder uri = new StringBuilder(super.xsltTripRequestParameters(from, via, to, time, dep, products, optimize, walkSpeed,
-				accessibility, options));
+    @Override
+    protected String xsltTripRequestParameters(final Location from, final @Nullable Location via, final Location to,
+            final Date time, final boolean dep, final @Nullable Collection<Product> products,
+            final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
+            final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) {
+        final StringBuilder uri = new StringBuilder(super.xsltTripRequestParameters(from, via, to, time, dep, products,
+                optimize, walkSpeed, accessibility, options));
 
-		if (products != null)
-		{
-			for (final Product p : products)
-			{
-				if (p == Product.BUS)
-					uri.append("&inclMOT_11=on"); // night bus
-			}
-		}
+        if (products != null) {
+            for (final Product p : products) {
+                if (p == Product.BUS)
+                    uri.append("&inclMOT_11=on"); // night bus
+            }
+        }
 
-		return uri.toString();
-	}
+        return uri.toString();
+    }
 
-	private static final Map<String, Style> STYLES = new HashMap<String, Style>();
+    private static final Map<String, Style> STYLES = new HashMap<String, Style>();
 
-	static
-	{
-		// Wien
-		STYLES.put("SS1", new Style(Style.Shape.ROUNDED, Style.parseColor("#1e5cb3"), Style.WHITE));
-		STYLES.put("SS2", new Style(Style.Shape.ROUNDED, Style.parseColor("#59c594"), Style.WHITE));
-		STYLES.put("SS3", new Style(Style.Shape.ROUNDED, Style.parseColor("#c8154c"), Style.WHITE));
-		STYLES.put("SS7", new Style(Style.Shape.ROUNDED, Style.parseColor("#dc35a3"), Style.WHITE));
-		STYLES.put("SS40", new Style(Style.Shape.ROUNDED, Style.parseColor("#f24d3e"), Style.WHITE));
-		STYLES.put("SS45", new Style(Style.Shape.ROUNDED, Style.parseColor("#0f8572"), Style.WHITE));
-		STYLES.put("SS50", new Style(Style.Shape.ROUNDED, Style.parseColor("#34b6e5"), Style.WHITE));
-		STYLES.put("SS60", new Style(Style.Shape.ROUNDED, Style.parseColor("#82b429"), Style.WHITE));
-		STYLES.put("SS80", new Style(Style.Shape.ROUNDED, Style.parseColor("#e96619"), Style.WHITE));
+    static {
+        // Wien
+        STYLES.put("SS1", new Style(Style.Shape.ROUNDED, Style.parseColor("#1e5cb3"), Style.WHITE));
+        STYLES.put("SS2", new Style(Style.Shape.ROUNDED, Style.parseColor("#59c594"), Style.WHITE));
+        STYLES.put("SS3", new Style(Style.Shape.ROUNDED, Style.parseColor("#c8154c"), Style.WHITE));
+        STYLES.put("SS7", new Style(Style.Shape.ROUNDED, Style.parseColor("#dc35a3"), Style.WHITE));
+        STYLES.put("SS40", new Style(Style.Shape.ROUNDED, Style.parseColor("#f24d3e"), Style.WHITE));
+        STYLES.put("SS45", new Style(Style.Shape.ROUNDED, Style.parseColor("#0f8572"), Style.WHITE));
+        STYLES.put("SS50", new Style(Style.Shape.ROUNDED, Style.parseColor("#34b6e5"), Style.WHITE));
+        STYLES.put("SS60", new Style(Style.Shape.ROUNDED, Style.parseColor("#82b429"), Style.WHITE));
+        STYLES.put("SS80", new Style(Style.Shape.ROUNDED, Style.parseColor("#e96619"), Style.WHITE));
 
-		STYLES.put("UU1", new Style(Style.Shape.RECT, Style.parseColor("#c6292a"), Style.WHITE));
-		STYLES.put("UU2", new Style(Style.Shape.RECT, Style.parseColor("#a82783"), Style.WHITE));
-		STYLES.put("UU3", new Style(Style.Shape.RECT, Style.parseColor("#f39315"), Style.WHITE));
-		STYLES.put("UU4", new Style(Style.Shape.RECT, Style.parseColor("#23a740"), Style.WHITE));
-		STYLES.put("UU6", new Style(Style.Shape.RECT, Style.parseColor("#be762c"), Style.WHITE));
-	}
+        STYLES.put("UU1", new Style(Style.Shape.RECT, Style.parseColor("#c6292a"), Style.WHITE));
+        STYLES.put("UU2", new Style(Style.Shape.RECT, Style.parseColor("#a82783"), Style.WHITE));
+        STYLES.put("UU3", new Style(Style.Shape.RECT, Style.parseColor("#f39315"), Style.WHITE));
+        STYLES.put("UU4", new Style(Style.Shape.RECT, Style.parseColor("#23a740"), Style.WHITE));
+        STYLES.put("UU6", new Style(Style.Shape.RECT, Style.parseColor("#be762c"), Style.WHITE));
+    }
 }

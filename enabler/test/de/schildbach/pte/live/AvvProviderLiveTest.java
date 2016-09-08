@@ -40,78 +40,71 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
 /**
  * @author Andreas Schildbach
  */
-public class AvvProviderLiveTest extends AbstractProviderLiveTest
-{
-	public AvvProviderLiveTest()
-	{
-		super(new AvvProvider());
-	}
+public class AvvProviderLiveTest extends AbstractProviderLiveTest {
+    public AvvProviderLiveTest() {
+        super(new AvvProvider());
+    }
 
-	@Test
-	public void nearbyStations() throws Exception
-	{
-		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "100"));
-		print(result);
-	}
+    @Test
+    public void nearbyStations() throws Exception {
+        final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "100"));
+        print(result);
+    }
 
-	@Test
-	public void nearbyStationsByCoordinate() throws Exception
-	{
-		final NearbyLocationsResult result = queryNearbyStations(Location.coord(48367233, 10894976));
-		print(result);
-	}
+    @Test
+    public void nearbyStationsByCoordinate() throws Exception {
+        final NearbyLocationsResult result = queryNearbyStations(Location.coord(48367233, 10894976));
+        print(result);
+    }
 
-	@Test
-	public void queryDepartures() throws Exception
-	{
-		final QueryDeparturesResult result = queryDepartures("100", false);
-		print(result);
-	}
+    @Test
+    public void queryDepartures() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("100", false);
+        print(result);
+    }
 
-	@Test
-	public void suggestLocationsIncomplete() throws Exception
-	{
-		final SuggestLocationsResult result = suggestLocations("Kur");
-		print(result);
-	}
+    @Test
+    public void suggestLocationsIncomplete() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Kur");
+        print(result);
+    }
 
-	@Test
-	public void suggestLocationsWithUmlaut() throws Exception
-	{
-		final SuggestLocationsResult result1 = suggestLocations("Barfüßerbrücke");
-		print(result1);
-		assertThat(result1.getLocations(), hasItem(new Location(LocationType.STATION, "2000131")));
+    @Test
+    public void suggestLocationsWithUmlaut() throws Exception {
+        final SuggestLocationsResult result1 = suggestLocations("Barfüßerbrücke");
+        print(result1);
+        assertThat(result1.getLocations(), hasItem(new Location(LocationType.STATION, "2000131")));
 
-		final SuggestLocationsResult result2 = suggestLocations("Gärtnerstraße");
-		print(result2);
-		assertThat(result2.getLocations(), hasItem(new Location(LocationType.STATION, "2000557")));
-	}
+        final SuggestLocationsResult result2 = suggestLocations("Gärtnerstraße");
+        print(result2);
+        assertThat(result2.getLocations(), hasItem(new Location(LocationType.STATION, "2000557")));
+    }
 
-	@Test
-	public void shortTrip() throws Exception
-	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "101", null, "Königsplatz"), null, new Location(
-				LocationType.STATION, "100", null, "Hauptbahnhof"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		print(result);
-		assertEquals(QueryTripsResult.Status.OK, result.status);
-		assertTrue(result.trips.size() > 0);
+    @Test
+    public void shortTrip() throws Exception {
+        final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "101", null, "Königsplatz"), null,
+                new Location(LocationType.STATION, "100", null, "Hauptbahnhof"), new Date(), true, Product.ALL,
+                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+        print(result);
+        assertEquals(QueryTripsResult.Status.OK, result.status);
+        assertTrue(result.trips.size() > 0);
 
-		if (!result.context.canQueryLater())
-			return;
+        if (!result.context.canQueryLater())
+            return;
 
-		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		print(laterResult);
+        final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+        print(laterResult);
 
-		if (!laterResult.context.canQueryLater())
-			return;
+        if (!laterResult.context.canQueryLater())
+            return;
 
-		final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
-		print(later2Result);
+        final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
+        print(later2Result);
 
-		if (!later2Result.context.canQueryEarlier())
-			return;
+        if (!later2Result.context.canQueryEarlier())
+            return;
 
-		final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
-		print(earlierResult);
-	}
+        final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
+        print(earlierResult);
+    }
 }

@@ -36,55 +36,50 @@ import de.schildbach.pte.dto.QueryTripsResult;
  * 
  * @author Andreas Schildbach
  */
-public class EireannProvider extends AbstractHafasProvider
-{
-	private static final String API_BASE = "http://journeyplanner.buseireann.ie/jp/bin/";
-	private static final Product[] PRODUCTS_MAP = { null, null, null, Product.BUS };
+public class EireannProvider extends AbstractHafasProvider {
+    private static final String API_BASE = "http://journeyplanner.buseireann.ie/jp/bin/";
+    private static final Product[] PRODUCTS_MAP = { null, null, null, Product.BUS };
 
-	public EireannProvider()
-	{
-		super(NetworkId.EIREANN, API_BASE, "en", PRODUCTS_MAP);
+    public EireannProvider() {
+        super(NetworkId.EIREANN, API_BASE, "en", PRODUCTS_MAP);
 
-		setStationBoardHasStationTable(false);
-	}
+        setStationBoardHasStationTable(false);
+    }
 
-	@Override
-	public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to, final Date date, final boolean dep,
-			final @Nullable Set<Product> products, final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
-			final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) throws IOException
-	{
-		return queryTripsXml(from, via, to, date, dep, products, walkSpeed, accessibility, options);
-	}
+    @Override
+    public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to,
+            final Date date, final boolean dep, final @Nullable Set<Product> products,
+            final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
+            final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) throws IOException {
+        return queryTripsXml(from, via, to, date, dep, products, walkSpeed, accessibility, options);
+    }
 
-	@Override
-	public QueryTripsResult queryMoreTrips(final QueryTripsContext context, final boolean later) throws IOException
-	{
-		return queryMoreTripsXml(context, later);
-	}
+    @Override
+    public QueryTripsResult queryMoreTrips(final QueryTripsContext context, final boolean later) throws IOException {
+        return queryMoreTripsXml(context, later);
+    }
 
-	private static final Pattern P_NORMALIZE_LINE = Pattern.compile("([^#]+)#");
+    private static final Pattern P_NORMALIZE_LINE = Pattern.compile("([^#]+)#");
 
-	@Override
-	protected Line parseLineAndType(final String lineAndType)
-	{
-		final Matcher mLine = P_NORMALIZE_LINE.matcher(lineAndType);
-		if (mLine.matches())
-			return newLine(Product.BUS, mLine.group(1), null);
+    @Override
+    protected Line parseLineAndType(final String lineAndType) {
+        final Matcher mLine = P_NORMALIZE_LINE.matcher(lineAndType);
+        if (mLine.matches())
+            return newLine(Product.BUS, mLine.group(1), null);
 
-		return super.parseLineAndType(lineAndType);
-	}
+        return super.parseLineAndType(lineAndType);
+    }
 
-	@Override
-	protected Product normalizeType(final String type)
-	{
-		final String ucType = type.toUpperCase();
+    @Override
+    protected Product normalizeType(final String type) {
+        final String ucType = type.toUpperCase();
 
-		if ("COA".equals(ucType))
-			return Product.BUS;
-		if ("CIT".equals(ucType))
-			return Product.BUS;
+        if ("COA".equals(ucType))
+            return Product.BUS;
+        if ("CIT".equals(ucType))
+            return Product.BUS;
 
-		// skip parsing of "common" lines
-		throw new IllegalStateException("cannot normalize type '" + type + "'");
-	}
+        // skip parsing of "common" lines
+        throw new IllegalStateException("cannot normalize type '" + type + "'");
+    }
 }

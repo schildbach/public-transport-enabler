@@ -20,14 +20,12 @@ package de.schildbach.pte;
 /**
  * @author Andreas Schildbach
  */
-public class IvbProvider extends AbstractEfaProvider
-{
-	private final static String API_BASE = "http://efa.ivb.at/ivb/";
+public class IvbProvider extends AbstractEfaProvider {
+    private final static String API_BASE = "http://efa.ivb.at/ivb/";
 
-	public IvbProvider()
-	{
-		super(NetworkId.IVB, API_BASE);
+    public IvbProvider() {
+        super(NetworkId.IVB, API_BASE);
 
-		setUseRouteIndexAsTripId(false);
-	}
+        setUseRouteIndexAsTripId(false);
+    }
 }

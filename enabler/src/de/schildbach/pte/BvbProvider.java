@@ -26,18 +26,15 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
 /**
  * @author Andreas Schildbach
  */
-public class BvbProvider extends AbstractEfaProvider
-{
-	private final static String API_BASE = "http://www.efa-bvb.ch/bvb/";
+public class BvbProvider extends AbstractEfaProvider {
+    private final static String API_BASE = "http://www.efa-bvb.ch/bvb/";
 
-	public BvbProvider()
-	{
-		super(NetworkId.BVB, API_BASE);
-	}
+    public BvbProvider() {
+        super(NetworkId.BVB, API_BASE);
+    }
 
-	@Override
-	public SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException
-	{
-		return xmlStopfinderRequest(new Location(LocationType.STATION, null, null, constraint.toString()));
-	}
+    @Override
+    public SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException {
+        return xmlStopfinderRequest(new Location(LocationType.STATION, null, null, constraint.toString()));
+    }
 }

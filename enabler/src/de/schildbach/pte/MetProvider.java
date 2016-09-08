@@ -33,55 +33,48 @@ import de.schildbach.pte.dto.Style;
  * 
  * @author Andreas Schildbach
  */
-public class MetProvider extends AbstractEfaProvider
-{
-	private final static String API_BASE = "http://jp.ptv.vic.gov.au/ptv/";
+public class MetProvider extends AbstractEfaProvider {
+    private final static String API_BASE = "http://jp.ptv.vic.gov.au/ptv/";
 
-	public MetProvider()
-	{
-		super(NetworkId.MET, API_BASE);
+    public MetProvider() {
+        super(NetworkId.MET, API_BASE);
 
-		setLanguage("en");
-		setTimeZone("Australia/Melbourne");
-		setUseRouteIndexAsTripId(false);
-		setStyles(STYLES);
-		setSessionCookieName("BIGipServerpl_ptv_jp_lbvsvr");
-	}
+        setLanguage("en");
+        setTimeZone("Australia/Melbourne");
+        setUseRouteIndexAsTripId(false);
+        setStyles(STYLES);
+        setSessionCookieName("BIGipServerpl_ptv_jp_lbvsvr");
+    }
 
-	@Override
-	protected Line parseLine(final @Nullable String id, final @Nullable String network, final @Nullable String mot, final @Nullable String symbol,
-			final @Nullable String name, final @Nullable String longName, final @Nullable String trainType, final @Nullable String trainNum,
-			final @Nullable String trainName)
-	{
-		if ("0".equals(mot))
-		{
-			if ("Regional Train :".equals(longName))
-				return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
-			if ("Regional Train".equals(trainName))
-				return new Line(id, network, Product.REGIONAL_TRAIN, null);
-			if ("vPK".equals(symbol) && "Regional Train Pakenham".equals(longName))
-				return new Line(id, network, Product.REGIONAL_TRAIN, "V/Line");
-		}
-		else if ("1".equals(mot))
-		{
-			if (trainType == null && trainNum != null)
-				return new Line(id, network, Product.SUBURBAN_TRAIN, trainNum);
-			if ("Metropolitan Train".equals(trainName) && trainNum == null)
-				return new Line(id, network, Product.SUBURBAN_TRAIN, Strings.nullToEmpty(name));
-		}
+    @Override
+    protected Line parseLine(final @Nullable String id, final @Nullable String network, final @Nullable String mot,
+            final @Nullable String symbol, final @Nullable String name, final @Nullable String longName,
+            final @Nullable String trainType, final @Nullable String trainNum, final @Nullable String trainName) {
+        if ("0".equals(mot)) {
+            if ("Regional Train :".equals(longName))
+                return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
+            if ("Regional Train".equals(trainName))
+                return new Line(id, network, Product.REGIONAL_TRAIN, null);
+            if ("vPK".equals(symbol) && "Regional Train Pakenham".equals(longName))
+                return new Line(id, network, Product.REGIONAL_TRAIN, "V/Line");
+        } else if ("1".equals(mot)) {
+            if (trainType == null && trainNum != null)
+                return new Line(id, network, Product.SUBURBAN_TRAIN, trainNum);
+            if ("Metropolitan Train".equals(trainName) && trainNum == null)
+                return new Line(id, network, Product.SUBURBAN_TRAIN, Strings.nullToEmpty(name));
+        }
 
-		return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
-	}
+        return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
+    }
 
-	private static final Map<String, Style> STYLES = new HashMap<String, Style>();
+    private static final Map<String, Style> STYLES = new HashMap<String, Style>();
 
-	static
-	{
-		STYLES.put("R", new Style(Style.parseColor("#a24ba3"), Style.WHITE));
-		STYLES.put("S", new Style(Style.parseColor("#3a75c4"), Style.WHITE));
-		STYLES.put("T", new Style(Style.parseColor("#5bbf21"), Style.WHITE));
-		STYLES.put("B", new Style(Style.parseColor("#f77f00"), Style.WHITE));
+    static {
+        STYLES.put("R", new Style(Style.parseColor("#a24ba3"), Style.WHITE));
+        STYLES.put("S", new Style(Style.parseColor("#3a75c4"), Style.WHITE));
+        STYLES.put("T", new Style(Style.parseColor("#5bbf21"), Style.WHITE));
+        STYLES.put("B", new Style(Style.parseColor("#f77f00"), Style.WHITE));
 
-		// TODO NightRider buses (buses with numbers > 940): #f26522
-	}
+        // TODO NightRider buses (buses with numbers > 940): #f26522
+    }
 }

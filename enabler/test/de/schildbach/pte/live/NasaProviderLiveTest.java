@@ -39,135 +39,129 @@ import de.schildbach.pte.util.Iso8601Format;
 /**
  * @author Andreas Schildbach
  */
-public class NasaProviderLiveTest extends AbstractProviderLiveTest
-{
-	public NasaProviderLiveTest()
-	{
-		super(new NasaProvider());
-	}
+public class NasaProviderLiveTest extends AbstractProviderLiveTest {
+    public NasaProviderLiveTest() {
+        super(new NasaProvider());
+    }
 
-	@Test
-	public void nearbyStations() throws Exception
-	{
-		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "13000"));
-		print(result);
-	}
+    @Test
+    public void nearbyStations() throws Exception {
+        final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "13000"));
+        print(result);
+    }
 
-	@Test
-	public void nearbyStationsByCoordinate() throws Exception
-	{
-		final NearbyLocationsResult result = queryNearbyStations(Location.coord(51346546, 12383333));
+    @Test
+    public void nearbyStationsByCoordinate() throws Exception {
+        final NearbyLocationsResult result = queryNearbyStations(Location.coord(51346546, 12383333));
 
-		print(result);
-		assertEquals(NearbyLocationsResult.Status.OK, result.status);
-		assertTrue(result.locations.size() > 0);
-	}
+        print(result);
+        assertEquals(NearbyLocationsResult.Status.OK, result.status);
+        assertTrue(result.locations.size() > 0);
+    }
 
-	@Test
-	public void queryDepartures() throws Exception
-	{
-		final QueryDeparturesResult result = queryDepartures("13000", false);
-		print(result);
-	}
+    @Test
+    public void queryDepartures() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("13000", false);
+        print(result);
+    }
 
-	@Test
-	public void queryDeparturesEquivs() throws Exception
-	{
-		final QueryDeparturesResult result = queryDepartures("13000", true);
-		print(result);
-	}
+    @Test
+    public void queryDeparturesEquivs() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("13000", true);
+        print(result);
+    }
 
-	@Test
-	public void queryDeparturesInvalidStation() throws Exception
-	{
-		final QueryDeparturesResult result = queryDepartures("999999", false);
-		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
-	}
+    @Test
+    public void queryDeparturesInvalidStation() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("999999", false);
+        assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
+    }
 
-	@Test
-	public void suggestLocations() throws Exception
-	{
-		final SuggestLocationsResult result = suggestLocations("Flughafen");
-		print(result);
-	}
+    @Test
+    public void suggestLocations() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Flughafen");
+        print(result);
+    }
 
-	@Test
-	public void suggestLocationsUmlaut() throws Exception
-	{
-		final SuggestLocationsResult result = suggestLocations("Höhle");
-		print(result);
-	}
+    @Test
+    public void suggestLocationsUmlaut() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Höhle");
+        print(result);
+    }
 
-	@Test
-	public void shortTrip() throws Exception
-	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "11063", null, "Leipzig, Johannisplatz"), null, new Location(
-				LocationType.STATION, "8010205", null, "Leipzig Hbf"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		assertEquals(QueryTripsResult.Status.OK, result.status);
-		print(result);
+    @Test
+    public void shortTrip() throws Exception {
+        final QueryTripsResult result = queryTrips(
+                new Location(LocationType.STATION, "11063", null, "Leipzig, Johannisplatz"), null,
+                new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf"), new Date(), true, Product.ALL,
+                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+        assertEquals(QueryTripsResult.Status.OK, result.status);
+        print(result);
 
-		if (!result.context.canQueryLater())
-			return;
+        if (!result.context.canQueryLater())
+            return;
 
-		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		print(laterResult);
-	}
+        final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+        print(laterResult);
+    }
 
-	@Test
-	public void anotherShortTrip() throws Exception
-	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8010205", 51346546, 12383333, null, "Leipzig Hbf"), null,
-				new Location(LocationType.STATION, "8012183", 51423340, 12223423, null, "Leipzig/Halle Flughafen"), new Date(), true, Product.ALL,
-				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		assertEquals(QueryTripsResult.Status.OK, result.status);
-		print(result);
+    @Test
+    public void anotherShortTrip() throws Exception {
+        final QueryTripsResult result = queryTrips(
+                new Location(LocationType.STATION, "8010205", 51346546, 12383333, null, "Leipzig Hbf"), null,
+                new Location(LocationType.STATION, "8012183", 51423340, 12223423, null, "Leipzig/Halle Flughafen"),
+                new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+        assertEquals(QueryTripsResult.Status.OK, result.status);
+        print(result);
 
-		if (!result.context.canQueryLater())
-			return;
+        if (!result.context.canQueryLater())
+            return;
 
-		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		print(laterResult);
-	}
+        final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+        print(laterResult);
+    }
 
-	@Test
-	public void outdatedTrip() throws Exception
-	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "13002", null, "Leipzig, Augustusplatz"), null, new Location(
-				LocationType.STATION, "8010205", null, "Leipzig Hbf"), Iso8601Format.newDateFormat().parse("2011-01-01"), true, Product.ALL,
-				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		assertEquals(QueryTripsResult.Status.INVALID_DATE, result.status);
-	}
+    @Test
+    public void outdatedTrip() throws Exception {
+        final QueryTripsResult result = queryTrips(
+                new Location(LocationType.STATION, "13002", null, "Leipzig, Augustusplatz"), null,
+                new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf"),
+                Iso8601Format.newDateFormat().parse("2011-01-01"), true, Product.ALL, WalkSpeed.NORMAL,
+                Accessibility.NEUTRAL);
+        assertEquals(QueryTripsResult.Status.INVALID_DATE, result.status);
+    }
 
-	@Test
-	public void ambiguousTrip() throws Exception
-	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "Platz"), null, new Location(LocationType.STATION,
-				"8010205", null, "Leipzig Hbf"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		assertEquals(QueryTripsResult.Status.AMBIGUOUS, result.status);
-		print(result);
-	}
+    @Test
+    public void ambiguousTrip() throws Exception {
+        final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "Platz"), null,
+                new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf"), new Date(), true, Product.ALL,
+                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+        assertEquals(QueryTripsResult.Status.AMBIGUOUS, result.status);
+        print(result);
+    }
 
-	@Test
-	public void sameStationTrip() throws Exception
-	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf"), null, new Location(
-				LocationType.STATION, "8010205", null, "Leipzig Hbf"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		assertEquals(QueryTripsResult.Status.TOO_CLOSE, result.status);
-	}
+    @Test
+    public void sameStationTrip() throws Exception {
+        final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf"),
+                null, new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf"), new Date(), true, Product.ALL,
+                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+        assertEquals(QueryTripsResult.Status.TOO_CLOSE, result.status);
+    }
 
-	@Test
-	public void addressTrip() throws Exception
-	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 51334078, 12478331, "04319 Leipzig-Engelsdorf",
-				"August-Bebel-Platz"), null, new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf"), new Date(), true, Product.ALL,
-				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		assertEquals(QueryTripsResult.Status.OK, result.status);
-		print(result);
+    @Test
+    public void addressTrip() throws Exception {
+        final QueryTripsResult result = queryTrips(
+                new Location(LocationType.ADDRESS, null, 51334078, 12478331, "04319 Leipzig-Engelsdorf",
+                        "August-Bebel-Platz"),
+                null, new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf"), new Date(), true, Product.ALL,
+                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+        assertEquals(QueryTripsResult.Status.OK, result.status);
+        print(result);
 
-		if (!result.context.canQueryLater())
-			return;
+        if (!result.context.canQueryLater())
+            return;
 
-		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		print(laterResult);
-	}
+        final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+        print(laterResult);
+    }
 }

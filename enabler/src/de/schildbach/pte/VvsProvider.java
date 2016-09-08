@@ -26,40 +26,34 @@ import de.schildbach.pte.dto.Product;
 /**
  * @author Andreas Schildbach
  */
-public class VvsProvider extends AbstractEfaProvider
-{
-	private static final String API_BASE = "http://www2.vvs.de/vvs/";
+public class VvsProvider extends AbstractEfaProvider {
+    private static final String API_BASE = "http://www2.vvs.de/vvs/";
 
-	public VvsProvider()
-	{
-		this(API_BASE);
-	}
+    public VvsProvider() {
+        this(API_BASE);
+    }
 
-	public VvsProvider(final String apiBase)
-	{
-		super(NetworkId.VVS, apiBase);
+    public VvsProvider(final String apiBase) {
+        super(NetworkId.VVS, apiBase);
 
-		setIncludeRegionId(false);
-		setNumTripsRequested(4);
-	}
+        setIncludeRegionId(false);
+        setNumTripsRequested(4);
+    }
 
-	@Override
-	public Point[] getArea()
-	{
-		return new Point[] { Point.fromDouble(48.784068, 9.181713) };
-	}
+    @Override
+    public Point[] getArea() {
+        return new Point[] { Point.fromDouble(48.784068, 9.181713) };
+    }
 
-	@Override
-	protected Line parseLine(final @Nullable String id, final @Nullable String network, final @Nullable String mot, final @Nullable String symbol,
-			final @Nullable String name, final @Nullable String longName, final @Nullable String trainType, final @Nullable String trainNum,
-			final @Nullable String trainName)
-	{
-		if ("0".equals(mot))
-		{
-			if ("IC".equals(trainNum))
-				return new Line(id, network, Product.HIGH_SPEED_TRAIN, trainNum);
-		}
+    @Override
+    protected Line parseLine(final @Nullable String id, final @Nullable String network, final @Nullable String mot,
+            final @Nullable String symbol, final @Nullable String name, final @Nullable String longName,
+            final @Nullable String trainType, final @Nullable String trainNum, final @Nullable String trainName) {
+        if ("0".equals(mot)) {
+            if ("IC".equals(trainNum))
+                return new Line(id, network, Product.HIGH_SPEED_TRAIN, trainNum);
+        }
 
-		return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
-	}
+        return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
+    }
 }

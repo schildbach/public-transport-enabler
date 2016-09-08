@@ -32,90 +32,79 @@ import de.schildbach.pte.dto.Product;
 /**
  * @author Andreas Schildbach
  */
-public class SncbProvider extends AbstractHafasProvider
-{
-	private static final String API_BASE = "http://www.belgianrail.be/jp/sncb-nmbs-routeplanner/";
-	// http://hari.b-rail.be/hafas/bin/
-	private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, null, Product.HIGH_SPEED_TRAIN, null, null, Product.BUS,
-			Product.REGIONAL_TRAIN, null, Product.SUBWAY, Product.BUS, Product.TRAM, null, null, null, null, null };
+public class SncbProvider extends AbstractHafasProvider {
+    private static final String API_BASE = "http://www.belgianrail.be/jp/sncb-nmbs-routeplanner/";
+    // http://hari.b-rail.be/hafas/bin/
+    private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, null, Product.HIGH_SPEED_TRAIN, null,
+            null, Product.BUS, Product.REGIONAL_TRAIN, null, Product.SUBWAY, Product.BUS, Product.TRAM, null, null,
+            null, null, null };
 
-	public SncbProvider()
-	{
-		super(NetworkId.SNCB, API_BASE, "nn", PRODUCTS_MAP);
+    public SncbProvider() {
+        super(NetworkId.SNCB, API_BASE, "nn", PRODUCTS_MAP);
 
-		setJsonGetStopsEncoding(Charsets.UTF_8);
-		setJsonNearbyLocationsEncoding(Charsets.UTF_8);
-		setStationBoardHasLocation(true);
-	}
+        setJsonGetStopsEncoding(Charsets.UTF_8);
+        setJsonNearbyLocationsEncoding(Charsets.UTF_8);
+        setStationBoardHasLocation(true);
+    }
 
-	private static final String[] PLACES = { "Antwerpen", "Gent", "Charleroi", "Liege", "Liège", "Brussel" };
+    private static final String[] PLACES = { "Antwerpen", "Gent", "Charleroi", "Liege", "Liège", "Brussel" };
 
-	@Override
-	protected String[] splitStationName(final String name)
-	{
-		for (final String place : PLACES)
-			if (name.startsWith(place + " ") || name.startsWith(place + "-"))
-				return new String[] { place, name.substring(place.length() + 1) };
+    @Override
+    protected String[] splitStationName(final String name) {
+        for (final String place : PLACES)
+            if (name.startsWith(place + " ") || name.startsWith(place + "-"))
+                return new String[] { place, name.substring(place.length() + 1) };
 
-		return super.splitStationName(name);
-	}
+        return super.splitStationName(name);
+    }
 
-	@Override
-	protected String[] splitAddress(final String address)
-	{
-		final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(address);
-		if (m.matches())
-			return new String[] { m.group(1), m.group(2) };
+    @Override
+    protected String[] splitAddress(final String address) {
+        final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(address);
+        if (m.matches())
+            return new String[] { m.group(1), m.group(2) };
 
-		return super.splitStationName(address);
-	}
+        return super.splitStationName(address);
+    }
 
-	@Override
-	public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location, final int maxDistance,
-			final int maxLocations) throws IOException
-	{
-		if (location.hasLocation())
-		{
-			return nearbyLocationsByCoordinate(types, location.lat, location.lon, maxDistance, maxLocations);
-		}
-		else if (location.type == LocationType.STATION && location.hasId())
-		{
-			final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
-			uri.append("?near=Zoek");
-			uri.append("&distance=").append(maxDistance != 0 ? maxDistance / 1000 : 50);
-			uri.append("&input=").append(normalizeStationId(location.id));
+    @Override
+    public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location,
+            final int maxDistance, final int maxLocations) throws IOException {
+        if (location.hasLocation()) {
+            return nearbyLocationsByCoordinate(types, location.lat, location.lon, maxDistance, maxLocations);
+        } else if (location.type == LocationType.STATION && location.hasId()) {
+            final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
+            uri.append("?near=Zoek");
+            uri.append("&distance=").append(maxDistance != 0 ? maxDistance / 1000 : 50);
+            uri.append("&input=").append(normalizeStationId(location.id));
 
-			return htmlNearbyStations(uri.toString());
-		}
-		else
-		{
-			throw new IllegalArgumentException("cannot handle: " + location);
-		}
-	}
+            return htmlNearbyStations(uri.toString());
+        } else {
+            throw new IllegalArgumentException("cannot handle: " + location);
+        }
+    }
 
-	@Override
-	public Set<Product> defaultProducts()
-	{
-		return Product.ALL;
-	}
+    @Override
+    public Set<Product> defaultProducts() {
+        return Product.ALL;
+    }
 
-	@Override
-	protected Product normalizeType(final String type)
-	{
-		final String ucType = type.toUpperCase();
+    @Override
+    protected Product normalizeType(final String type) {
+        final String ucType = type.toUpperCase();
 
-		if ("THALYS".equals(ucType))
-			return Product.HIGH_SPEED_TRAIN;
+        if ("THALYS".equals(ucType))
+            return Product.HIGH_SPEED_TRAIN;
 
-		if ("L".equals(ucType))
-			return Product.REGIONAL_TRAIN;
+        if ("L".equals(ucType))
+            return Product.REGIONAL_TRAIN;
 
-		if ("MÉTRO".equals(ucType))
-			return Product.SUBWAY;
+        if ("MÉTRO".equals(ucType))
+            return Product.SUBWAY;
 
-		if ("TRAMWAY".equals(ucType))
-			return Product.TRAM;
+        if ("TRAMWAY".equals(ucType))
+            return Product.TRAM;
 
-		return super.normalizeType(type);
-	}
+        return super.normalizeType(type);
+    }
 }

@@ -27,51 +27,46 @@ import de.schildbach.pte.dto.Product;
 /**
  * @author Andreas Schildbach
  */
-public class VvoProvider extends AbstractEfaProvider
-{
-	private final static String API_BASE = "http://efa.vvo-online.de:8080/dvb/";
+public class VvoProvider extends AbstractEfaProvider {
+    private final static String API_BASE = "http://efa.vvo-online.de:8080/dvb/";
 
-	public VvoProvider()
-	{
-		this(API_BASE);
-	}
+    public VvoProvider() {
+        this(API_BASE);
+    }
 
-	public VvoProvider(final String apiBase)
-	{
-		super(NetworkId.VVO, apiBase);
+    public VvoProvider(final String apiBase) {
+        super(NetworkId.VVO, apiBase);
 
-		setRequestUrlEncoding(Charsets.UTF_8);
-	}
+        setRequestUrlEncoding(Charsets.UTF_8);
+    }
 
-	@Override
-	protected Line parseLine(final @Nullable String id, final @Nullable String network, final @Nullable String mot, final @Nullable String symbol,
-			final @Nullable String name, final @Nullable String longName, final @Nullable String trainType, final @Nullable String trainNum,
-			final @Nullable String trainName)
-	{
-		if ("0".equals(mot))
-		{
-			if ("Twoje Linie Kolejowe".equals(trainName) && symbol != null)
-				return new Line(id, network, Product.HIGH_SPEED_TRAIN, "TLK" + symbol);
+    @Override
+    protected Line parseLine(final @Nullable String id, final @Nullable String network, final @Nullable String mot,
+            final @Nullable String symbol, final @Nullable String name, final @Nullable String longName,
+            final @Nullable String trainType, final @Nullable String trainNum, final @Nullable String trainName) {
+        if ("0".equals(mot)) {
+            if ("Twoje Linie Kolejowe".equals(trainName) && symbol != null)
+                return new Line(id, network, Product.HIGH_SPEED_TRAIN, "TLK" + symbol);
 
-			if ("Regionalbahn".equals(trainName) && trainNum == null)
-				return new Line(id, network, Product.REGIONAL_TRAIN, null);
-			if ("Ostdeutsche Eisenbahn GmbH".equals(longName))
-				return new Line(id, network, Product.REGIONAL_TRAIN, "OE");
-			if ("Meridian".equals(longName))
-				return new Line(id, network, Product.REGIONAL_TRAIN, "M");
-			if ("trilex".equals(longName))
-				return new Line(id, network, Product.REGIONAL_TRAIN, "TLX");
-			if ("Trilex".equals(trainName) && trainNum == null)
-				return new Line(id, network, Product.REGIONAL_TRAIN, "TLX");
-			if ("U 28".equals(symbol)) // Nationalparkbahn
-				return new Line(id, network, Product.REGIONAL_TRAIN, "U28");
-			if ("SB 71".equals(symbol)) // Städtebahn Sachsen
-				return new Line(id, network, Product.REGIONAL_TRAIN, "SB71");
+            if ("Regionalbahn".equals(trainName) && trainNum == null)
+                return new Line(id, network, Product.REGIONAL_TRAIN, null);
+            if ("Ostdeutsche Eisenbahn GmbH".equals(longName))
+                return new Line(id, network, Product.REGIONAL_TRAIN, "OE");
+            if ("Meridian".equals(longName))
+                return new Line(id, network, Product.REGIONAL_TRAIN, "M");
+            if ("trilex".equals(longName))
+                return new Line(id, network, Product.REGIONAL_TRAIN, "TLX");
+            if ("Trilex".equals(trainName) && trainNum == null)
+                return new Line(id, network, Product.REGIONAL_TRAIN, "TLX");
+            if ("U 28".equals(symbol)) // Nationalparkbahn
+                return new Line(id, network, Product.REGIONAL_TRAIN, "U28");
+            if ("SB 71".equals(symbol)) // Städtebahn Sachsen
+                return new Line(id, network, Product.REGIONAL_TRAIN, "SB71");
 
-			if ("Fernbus".equals(trainName) && trainNum == null)
-				return new Line(id, network, Product.BUS, trainName);
-		}
+            if ("Fernbus".equals(trainName) && trainNum == null)
+                return new Line(id, network, Product.BUS, trainName);
+        }
 
-		return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
-	}
+        return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
+    }
 }

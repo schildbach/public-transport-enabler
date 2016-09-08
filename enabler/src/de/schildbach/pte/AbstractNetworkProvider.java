@@ -38,165 +38,148 @@ import de.schildbach.pte.util.HttpClient;
 /**
  * @author Andreas Schildbach
  */
-public abstract class AbstractNetworkProvider implements NetworkProvider
-{
-	protected final NetworkId network;
-	protected final HttpClient httpClient = new HttpClient();
+public abstract class AbstractNetworkProvider implements NetworkProvider {
+    protected final NetworkId network;
+    protected final HttpClient httpClient = new HttpClient();
 
-	protected TimeZone timeZone = TimeZone.getTimeZone("CET");
-	protected int numTripsRequested = 6;
-	private @Nullable Map<String, Style> styles = null;
+    protected TimeZone timeZone = TimeZone.getTimeZone("CET");
+    protected int numTripsRequested = 6;
+    private @Nullable Map<String, Style> styles = null;
 
-	protected static final Set<Product> ALL_EXCEPT_HIGHSPEED = EnumSet.complementOf(EnumSet.of(Product.HIGH_SPEED_TRAIN));
+    protected static final Set<Product> ALL_EXCEPT_HIGHSPEED = EnumSet
+            .complementOf(EnumSet.of(Product.HIGH_SPEED_TRAIN));
 
-	protected AbstractNetworkProvider(final NetworkId network)
-	{
-		this.network = network;
-	}
+    protected AbstractNetworkProvider(final NetworkId network) {
+        this.network = network;
+    }
 
-	public final NetworkId id()
-	{
-		return network;
-	}
+    public final NetworkId id() {
+        return network;
+    }
 
-	public final boolean hasCapabilities(final Capability... capabilities)
-	{
-		for (final Capability capability : capabilities)
-			if (!hasCapability(capability))
-				return false;
+    public final boolean hasCapabilities(final Capability... capabilities) {
+        for (final Capability capability : capabilities)
+            if (!hasCapability(capability))
+                return false;
 
-		return true;
-	}
+        return true;
+    }
 
-	protected abstract boolean hasCapability(Capability capability);
+    protected abstract boolean hasCapability(Capability capability);
 
-	public Set<Product> defaultProducts()
-	{
-		return ALL_EXCEPT_HIGHSPEED;
-	}
+    public Set<Product> defaultProducts() {
+        return ALL_EXCEPT_HIGHSPEED;
+    }
 
-	public void setUserAgent(final String userAgent)
-	{
-		httpClient.setUserAgent(userAgent);
-	}
+    public void setUserAgent(final String userAgent) {
+        httpClient.setUserAgent(userAgent);
+    }
 
-	protected void setTimeZone(final String timeZoneId)
-	{
-		this.timeZone = TimeZone.getTimeZone(timeZoneId);
-	}
+    protected void setTimeZone(final String timeZoneId) {
+        this.timeZone = TimeZone.getTimeZone(timeZoneId);
+    }
 
-	protected void setNumTripsRequested(final int numTripsRequested)
-	{
-		this.numTripsRequested = numTripsRequested;
-	}
+    protected void setNumTripsRequested(final int numTripsRequested) {
+        this.numTripsRequested = numTripsRequested;
+    }
 
-	protected void setStyles(final Map<String, Style> styles)
-	{
-		this.styles = styles;
-	}
+    protected void setStyles(final Map<String, Style> styles) {
+        this.styles = styles;
+    }
 
-	protected void setSessionCookieName(final String sessionCookieName)
-	{
-		httpClient.setSessionCookieName(sessionCookieName);
-	}
+    protected void setSessionCookieName(final String sessionCookieName) {
+        httpClient.setSessionCookieName(sessionCookieName);
+    }
 
-	private static final char STYLES_SEP = '|';
+    private static final char STYLES_SEP = '|';
 
-	public Style lineStyle(final @Nullable String network, final @Nullable Product product, final @Nullable String label)
-	{
-		final Map<String, Style> styles = this.styles;
-		if (styles != null && product != null)
-		{
-			if (network != null)
-			{
-				// check for line match
-				final Style lineStyle = styles.get(network + STYLES_SEP + product.code + Strings.nullToEmpty(label));
-				if (lineStyle != null)
-					return lineStyle;
+    public Style lineStyle(final @Nullable String network, final @Nullable Product product,
+            final @Nullable String label) {
+        final Map<String, Style> styles = this.styles;
+        if (styles != null && product != null) {
+            if (network != null) {
+                // check for line match
+                final Style lineStyle = styles.get(network + STYLES_SEP + product.code + Strings.nullToEmpty(label));
+                if (lineStyle != null)
+                    return lineStyle;
 
-				// check for product match
-				final Style productStyle = styles.get(network + STYLES_SEP + product.code);
-				if (productStyle != null)
-					return productStyle;
+                // check for product match
+                final Style productStyle = styles.get(network + STYLES_SEP + product.code);
+                if (productStyle != null)
+                    return productStyle;
 
-				// check for night bus, as that's a common special case
-				if (product == Product.BUS && label != null && label.startsWith("N"))
-				{
-					final Style nightStyle = styles.get(network + STYLES_SEP + "BN");
-					if (nightStyle != null)
-						return nightStyle;
-				}
-			}
+                // check for night bus, as that's a common special case
+                if (product == Product.BUS && label != null && label.startsWith("N")) {
+                    final Style nightStyle = styles.get(network + STYLES_SEP + "BN");
+                    if (nightStyle != null)
+                        return nightStyle;
+                }
+            }
 
-			// check for line match
-			final String string = product.code + Strings.nullToEmpty(label);
-			final Style lineStyle = styles.get(string);
-			if (lineStyle != null)
-				return lineStyle;
+            // check for line match
+            final String string = product.code + Strings.nullToEmpty(label);
+            final Style lineStyle = styles.get(string);
+            if (lineStyle != null)
+                return lineStyle;
 
-			// check for product match
-			final Style productStyle = styles.get(Character.toString(product.code));
-			if (productStyle != null)
-				return productStyle;
+            // check for product match
+            final Style productStyle = styles.get(Character.toString(product.code));
+            if (productStyle != null)
+                return productStyle;
 
-			// check for night bus, as that's a common special case
-			if (product == Product.BUS && label != null && label.startsWith("N"))
-			{
-				final Style nightStyle = styles.get("BN");
-				if (nightStyle != null)
-					return nightStyle;
-			}
-		}
+            // check for night bus, as that's a common special case
+            if (product == Product.BUS && label != null && label.startsWith("N")) {
+                final Style nightStyle = styles.get("BN");
+                if (nightStyle != null)
+                    return nightStyle;
+            }
+        }
 
-		// standard colors
-		return Standard.STYLES.get(product);
-	}
+        // standard colors
+        return Standard.STYLES.get(product);
+    }
 
-	public Point[] getArea() throws IOException
-	{
-		return null;
-	}
+    public Point[] getArea() throws IOException {
+        return null;
+    }
 
-	protected static String normalizeStationId(final String stationId)
-	{
-		if (stationId == null || stationId.length() == 0)
-			return null;
+    protected static String normalizeStationId(final String stationId) {
+        if (stationId == null || stationId.length() == 0)
+            return null;
 
-		if (stationId.charAt(0) != '0')
-			return stationId;
+        if (stationId.charAt(0) != '0')
+            return stationId;
 
-		final StringBuilder normalized = new StringBuilder(stationId);
-		while (normalized.length() > 0 && normalized.charAt(0) == '0')
-			normalized.deleteCharAt(0);
+        final StringBuilder normalized = new StringBuilder(stationId);
+        while (normalized.length() > 0 && normalized.charAt(0) == '0')
+            normalized.deleteCharAt(0);
 
-		return normalized.toString();
-	}
+        return normalized.toString();
+    }
 
-	private static final Pattern P_NAME_SECTION = Pattern.compile("(\\d{1,5})\\s*" + //
-			"([A-Z](?:\\s*-?\\s*[A-Z])?)?", Pattern.CASE_INSENSITIVE);
+    private static final Pattern P_NAME_SECTION = Pattern.compile("(\\d{1,5})\\s*" + //
+            "([A-Z](?:\\s*-?\\s*[A-Z])?)?", Pattern.CASE_INSENSITIVE);
 
-	private static final Pattern P_NAME_NOSW = Pattern.compile("(\\d{1,5})\\s*" + //
-			"(Nord|Süd|Ost|West)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern P_NAME_NOSW = Pattern.compile("(\\d{1,5})\\s*" + //
+            "(Nord|Süd|Ost|West)", Pattern.CASE_INSENSITIVE);
 
-	protected Position parsePosition(final String position)
-	{
-		if (position == null)
-			return null;
+    protected Position parsePosition(final String position) {
+        if (position == null)
+            return null;
 
-		final Matcher mSection = P_NAME_SECTION.matcher(position);
-		if (mSection.matches())
-		{
-			final String name = Integer.toString(Integer.parseInt(mSection.group(1)));
-			if (mSection.group(2) != null)
-				return new Position(name, mSection.group(2).replaceAll("\\s+", ""));
-			else
-				return new Position(name);
-		}
+        final Matcher mSection = P_NAME_SECTION.matcher(position);
+        if (mSection.matches()) {
+            final String name = Integer.toString(Integer.parseInt(mSection.group(1)));
+            if (mSection.group(2) != null)
+                return new Position(name, mSection.group(2).replaceAll("\\s+", ""));
+            else
+                return new Position(name);
+        }
 
-		final Matcher mNosw = P_NAME_NOSW.matcher(position);
-		if (mNosw.matches())
-			return new Position(Integer.toString(Integer.parseInt(mNosw.group(1))), mNosw.group(2).substring(0, 1));
+        final Matcher mNosw = P_NAME_NOSW.matcher(position);
+        if (mNosw.matches())
+            return new Position(Integer.toString(Integer.parseInt(mNosw.group(1))), mNosw.group(2).substring(0, 1));
 
-		return new Position(position);
-	}
+        return new Position(position);
+    }
 }

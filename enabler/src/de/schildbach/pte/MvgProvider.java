@@ -22,24 +22,21 @@ import de.schildbach.pte.dto.Position;
 /**
  * @author Andreas Schildbach
  */
-public class MvgProvider extends AbstractEfaProvider
-{
-	private static final String API_BASE = "http://mobil.mvg-online.de/mvgMobil/";
+public class MvgProvider extends AbstractEfaProvider {
+    private static final String API_BASE = "http://mobil.mvg-online.de/mvgMobil/";
 
-	public MvgProvider()
-	{
-		super(NetworkId.MVG, API_BASE);
-	}
+    public MvgProvider() {
+        super(NetworkId.MVG, API_BASE);
+    }
 
-	@Override
-	protected Position parsePosition(final String position)
-	{
-		if (position == null)
-			return null;
+    @Override
+    protected Position parsePosition(final String position) {
+        if (position == null)
+            return null;
 
-		if (position.startsWith(" - "))
-			return super.parsePosition(position.substring(3));
+        if (position.startsWith(" - "))
+            return super.parsePosition(position.substring(3));
 
-		return super.parsePosition(position);
-	}
+        return super.parsePosition(position);
+    }
 }

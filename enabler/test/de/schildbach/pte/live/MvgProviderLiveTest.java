@@ -40,94 +40,86 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
 /**
  * @author Andreas Schildbach
  */
-public class MvgProviderLiveTest extends AbstractProviderLiveTest
-{
-	public MvgProviderLiveTest()
-	{
-		super(new MvgProvider());
-	}
+public class MvgProviderLiveTest extends AbstractProviderLiveTest {
+    public MvgProviderLiveTest() {
+        super(new MvgProvider());
+    }
 
-	@Test
-	public void nearbyStations() throws Exception
-	{
-		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "24200006"));
-		print(result);
-	}
+    @Test
+    public void nearbyStations() throws Exception {
+        final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "24200006"));
+        print(result);
+    }
 
-	@Test
-	public void nearbyStationsByCoordinate() throws Exception
-	{
-		final NearbyLocationsResult result = queryNearbyStations(Location.coord(51219852, 7639217));
-		print(result);
-	}
+    @Test
+    public void nearbyStationsByCoordinate() throws Exception {
+        final NearbyLocationsResult result = queryNearbyStations(Location.coord(51219852, 7639217));
+        print(result);
+    }
 
-	@Test
-	public void queryDepartures() throws Exception
-	{
-		final QueryDeparturesResult result = queryDepartures("3", false);
-		print(result);
-	}
+    @Test
+    public void queryDepartures() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("3", false);
+        print(result);
+    }
 
-	@Test
-	public void suggestLocationsIncomplete() throws Exception
-	{
-		final SuggestLocationsResult result = suggestLocations("Schützenhalle");
-		print(result);
-	}
+    @Test
+    public void suggestLocationsIncomplete() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Schützenhalle");
+        print(result);
+    }
 
-	@Test
-	public void suggestLocationsWithUmlaut() throws Exception
-	{
-		final SuggestLocationsResult result = suggestLocations("grün");
-		print(result);
-	}
+    @Test
+    public void suggestLocationsWithUmlaut() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("grün");
+        print(result);
+    }
 
-	@Test
-	public void suggestLocationsCoverage() throws Exception
-	{
-		final SuggestLocationsResult luedenscheidResult = suggestLocations("Lüdenscheid Freibad");
-		print(luedenscheidResult);
-		assertThat(luedenscheidResult.getLocations(), hasItem(new Location(LocationType.STATION, "24200153")));
+    @Test
+    public void suggestLocationsCoverage() throws Exception {
+        final SuggestLocationsResult luedenscheidResult = suggestLocations("Lüdenscheid Freibad");
+        print(luedenscheidResult);
+        assertThat(luedenscheidResult.getLocations(), hasItem(new Location(LocationType.STATION, "24200153")));
 
-		final SuggestLocationsResult iserlohnResult = suggestLocations("Iserlohn Rathaus");
-		print(iserlohnResult);
-		assertThat(iserlohnResult.getLocations(), hasItem(new Location(LocationType.STATION, "24200764")));
+        final SuggestLocationsResult iserlohnResult = suggestLocations("Iserlohn Rathaus");
+        print(iserlohnResult);
+        assertThat(iserlohnResult.getLocations(), hasItem(new Location(LocationType.STATION, "24200764")));
 
-		final SuggestLocationsResult plettenbergResult = suggestLocations("Plettenberg Friedhof");
-		print(plettenbergResult);
-		assertThat(plettenbergResult.getLocations(), hasItem(new Location(LocationType.STATION, "24202864")));
+        final SuggestLocationsResult plettenbergResult = suggestLocations("Plettenberg Friedhof");
+        print(plettenbergResult);
+        assertThat(plettenbergResult.getLocations(), hasItem(new Location(LocationType.STATION, "24202864")));
 
-		final SuggestLocationsResult mendenResult = suggestLocations("Menden Am Gillfeld");
-		print(mendenResult);
-		assertThat(mendenResult.getLocations(), hasItem(new Location(LocationType.STATION, "24202193")));
-	}
+        final SuggestLocationsResult mendenResult = suggestLocations("Menden Am Gillfeld");
+        print(mendenResult);
+        assertThat(mendenResult.getLocations(), hasItem(new Location(LocationType.STATION, "24202193")));
+    }
 
-	@Test
-	public void shortTrip() throws Exception
-	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "24200200", null, "Lüd., Christuskirche"), null, new Location(
-				LocationType.STATION, "24200032", null, "Lüd., Friedrichstr."), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-				Accessibility.NEUTRAL);
-		print(result);
-		assertEquals(QueryTripsResult.Status.OK, result.status);
-		assertTrue(result.trips.size() > 0);
+    @Test
+    public void shortTrip() throws Exception {
+        final QueryTripsResult result = queryTrips(
+                new Location(LocationType.STATION, "24200200", null, "Lüd., Christuskirche"), null,
+                new Location(LocationType.STATION, "24200032", null, "Lüd., Friedrichstr."), new Date(), true,
+                Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+        print(result);
+        assertEquals(QueryTripsResult.Status.OK, result.status);
+        assertTrue(result.trips.size() > 0);
 
-		if (!result.context.canQueryLater())
-			return;
+        if (!result.context.canQueryLater())
+            return;
 
-		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		print(laterResult);
+        final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+        print(laterResult);
 
-		if (!laterResult.context.canQueryLater())
-			return;
+        if (!laterResult.context.canQueryLater())
+            return;
 
-		final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
-		print(later2Result);
+        final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
+        print(later2Result);
 
-		if (!later2Result.context.canQueryEarlier())
-			return;
+        if (!later2Result.context.canQueryEarlier())
+            return;
 
-		final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
-		print(earlierResult);
-	}
+        final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
+        print(earlierResult);
+    }
 }

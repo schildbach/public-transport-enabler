@@ -20,14 +20,12 @@ package de.schildbach.pte;
 /**
  * @author Andreas Schildbach
  */
-public class VvtProvider extends AbstractEfaProvider
-{
-	private final static String API_BASE = "http://efa.vvt.at/vvtadr/";
+public class VvtProvider extends AbstractEfaProvider {
+    private final static String API_BASE = "http://efa.vvt.at/vvtadr/";
 
-	public VvtProvider()
-	{
-		super(NetworkId.VVT, API_BASE);
+    public VvtProvider() {
+        super(NetworkId.VVT, API_BASE);
 
-		setUseRouteIndexAsTripId(false);
-	}
+        setUseRouteIndexAsTripId(false);
+    }
 }

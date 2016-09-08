@@ -43,276 +43,254 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
 /**
  * @author Antonio El Khoury
  */
-public abstract class AbstractNavitiaProviderLiveTest extends AbstractProviderLiveTest
-{
-	public AbstractNavitiaProviderLiveTest(final NetworkProvider provider)
-	{
-		super(provider);
-	}
+public abstract class AbstractNavitiaProviderLiveTest extends AbstractProviderLiveTest {
+    public AbstractNavitiaProviderLiveTest(final NetworkProvider provider) {
+        super(provider);
+    }
 
-	protected final void nearbyStationsAddress(final int lat, final int lon) throws IOException
-	{
-		final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION), Location.coord(lat, lon), 700, 10);
-		assertEquals(NearbyLocationsResult.Status.OK, result.status);
-		print(result);
-	}
+    protected final void nearbyStationsAddress(final int lat, final int lon) throws IOException {
+        final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION),
+                Location.coord(lat, lon), 700, 10);
+        assertEquals(NearbyLocationsResult.Status.OK, result.status);
+        print(result);
+    }
 
-	protected final void nearbyStationsStation(final String stationId) throws IOException
-	{
-		final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION), new Location(LocationType.STATION, stationId),
-				700, 10);
-		assertEquals(NearbyLocationsResult.Status.OK, result.status);
-		print(result);
-	}
+    protected final void nearbyStationsStation(final String stationId) throws IOException {
+        final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION),
+                new Location(LocationType.STATION, stationId), 700, 10);
+        assertEquals(NearbyLocationsResult.Status.OK, result.status);
+        print(result);
+    }
 
-	protected final void nearbyStationsPoi(final String poiId) throws IOException
-	{
-		final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION), new Location(LocationType.POI, poiId), 700, 10);
-		assertEquals(NearbyLocationsResult.Status.OK, result.status);
-		print(result);
-	}
+    protected final void nearbyStationsPoi(final String poiId) throws IOException {
+        final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION),
+                new Location(LocationType.POI, poiId), 700, 10);
+        assertEquals(NearbyLocationsResult.Status.OK, result.status);
+        print(result);
+    }
 
-	protected final void nearbyStationsAny(final int lat, final int lon) throws IOException
-	{
-		final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION), Location.coord(lat, lon), 700, 10);
-		assertEquals(NearbyLocationsResult.Status.OK, result.status);
-		print(result);
-	}
+    protected final void nearbyStationsAny(final int lat, final int lon) throws IOException {
+        final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION),
+                Location.coord(lat, lon), 700, 10);
+        assertEquals(NearbyLocationsResult.Status.OK, result.status);
+        print(result);
+    }
 
-	protected final void nearbyStationsStationDistance(final String stationId) throws IOException
-	{
-		final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION), new Location(LocationType.STATION, stationId), 0,
-				10);
-		assertEquals(NearbyLocationsResult.Status.OK, result.status);
-		assertTrue(result.locations.size() > 1);
-		print(result);
-	}
+    protected final void nearbyStationsStationDistance(final String stationId) throws IOException {
+        final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION),
+                new Location(LocationType.STATION, stationId), 0, 10);
+        assertEquals(NearbyLocationsResult.Status.OK, result.status);
+        assertTrue(result.locations.size() > 1);
+        print(result);
+    }
 
-	protected final void nearbyStationsInvalidStation(final String stationId) throws IOException
-	{
-		final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION), new Location(LocationType.STATION, stationId),
-				700, 10);
-		assertEquals(NearbyLocationsResult.Status.INVALID_ID, result.status);
-		print(result);
-	}
+    protected final void nearbyStationsInvalidStation(final String stationId) throws IOException {
+        final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION),
+                new Location(LocationType.STATION, stationId), 700, 10);
+        assertEquals(NearbyLocationsResult.Status.INVALID_ID, result.status);
+        print(result);
+    }
 
-	protected final void queryDeparturesEquivsFalse(final String stationId) throws IOException
-	{
-		final int maxDepartures = 5;
-		final QueryDeparturesResult result = queryDepartures(stationId, maxDepartures, false);
-		assertEquals(QueryDeparturesResult.Status.OK, result.status);
-		assertEquals(1, result.stationDepartures.size());
-		assertTrue(result.stationDepartures.get(0).departures.size() <= maxDepartures);
-		final List<LineDestination> lines = result.stationDepartures.get(0).lines;
-		assertNotNull(lines);
-		assertTrue(lines.size() >= 1);
-		print(result);
-	}
+    protected final void queryDeparturesEquivsFalse(final String stationId) throws IOException {
+        final int maxDepartures = 5;
+        final QueryDeparturesResult result = queryDepartures(stationId, maxDepartures, false);
+        assertEquals(QueryDeparturesResult.Status.OK, result.status);
+        assertEquals(1, result.stationDepartures.size());
+        assertTrue(result.stationDepartures.get(0).departures.size() <= maxDepartures);
+        final List<LineDestination> lines = result.stationDepartures.get(0).lines;
+        assertNotNull(lines);
+        assertTrue(lines.size() >= 1);
+        print(result);
+    }
 
-	protected final void queryDeparturesStopArea(final String stationId) throws IOException
-	{
-		final int maxDepartures = 5;
-		final QueryDeparturesResult result = queryDepartures(stationId, maxDepartures, true);
-		assertEquals(QueryDeparturesResult.Status.OK, result.status);
-		assertTrue(result.stationDepartures.size() > 1);
-		int nbDepartures = 0;
-		int nbLines = 0;
-		for (final StationDepartures stationDepartures : result.stationDepartures)
-		{
-			nbDepartures += stationDepartures.departures.size();
-			final List<LineDestination> lines = stationDepartures.lines;
-			if (lines != null)
-				nbLines += lines.size();
-		}
-		assertTrue(nbDepartures <= maxDepartures);
-		assertTrue(nbLines >= 2);
-		print(result);
-	}
+    protected final void queryDeparturesStopArea(final String stationId) throws IOException {
+        final int maxDepartures = 5;
+        final QueryDeparturesResult result = queryDepartures(stationId, maxDepartures, true);
+        assertEquals(QueryDeparturesResult.Status.OK, result.status);
+        assertTrue(result.stationDepartures.size() > 1);
+        int nbDepartures = 0;
+        int nbLines = 0;
+        for (final StationDepartures stationDepartures : result.stationDepartures) {
+            nbDepartures += stationDepartures.departures.size();
+            final List<LineDestination> lines = stationDepartures.lines;
+            if (lines != null)
+                nbLines += lines.size();
+        }
+        assertTrue(nbDepartures <= maxDepartures);
+        assertTrue(nbLines >= 2);
+        print(result);
+    }
 
-	protected final void queryDeparturesEquivsTrue(final String stationId) throws IOException
-	{
-		final int maxDepartures = 5;
-		final QueryDeparturesResult result = queryDepartures(stationId, maxDepartures, true);
-		assertEquals(QueryDeparturesResult.Status.OK, result.status);
-		assertTrue(result.stationDepartures.size() > 1);
-		int nbDepartures = 0;
-		int nbLines = 0;
-		for (StationDepartures stationDepartures : result.stationDepartures)
-		{
-			nbDepartures += stationDepartures.departures.size();
-			final List<LineDestination> lines = stationDepartures.lines;
-			assertNotNull(lines);
-			nbLines += lines.size();
-		}
-		assertTrue(nbDepartures <= maxDepartures);
-		assertTrue(nbLines >= 2);
-		print(result);
-	}
+    protected final void queryDeparturesEquivsTrue(final String stationId) throws IOException {
+        final int maxDepartures = 5;
+        final QueryDeparturesResult result = queryDepartures(stationId, maxDepartures, true);
+        assertEquals(QueryDeparturesResult.Status.OK, result.status);
+        assertTrue(result.stationDepartures.size() > 1);
+        int nbDepartures = 0;
+        int nbLines = 0;
+        for (StationDepartures stationDepartures : result.stationDepartures) {
+            nbDepartures += stationDepartures.departures.size();
+            final List<LineDestination> lines = stationDepartures.lines;
+            assertNotNull(lines);
+            nbLines += lines.size();
+        }
+        assertTrue(nbDepartures <= maxDepartures);
+        assertTrue(nbLines >= 2);
+        print(result);
+    }
 
-	protected final void queryDeparturesInvalidStation(final String stationId) throws IOException
-	{
-		final QueryDeparturesResult result = queryDepartures(stationId, false);
-		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
-	}
+    protected final void queryDeparturesInvalidStation(final String stationId) throws IOException {
+        final QueryDeparturesResult result = queryDepartures(stationId, false);
+        assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
+    }
 
-	protected final void suggestLocationsFromName(final CharSequence constraint) throws IOException
-	{
-		final SuggestLocationsResult result = suggestLocations(constraint);
-		assertTrue(result.getLocations().size() > 0);
-		print(result);
-	}
+    protected final void suggestLocationsFromName(final CharSequence constraint) throws IOException {
+        final SuggestLocationsResult result = suggestLocations(constraint);
+        assertTrue(result.getLocations().size() > 0);
+        print(result);
+    }
 
-	protected final void suggestLocationsFromAddress(final CharSequence constraint) throws IOException
-	{
-		final SuggestLocationsResult result = suggestLocations(constraint);
-		assertTrue(result.getLocations().size() > 0);
-		print(result);
-	}
+    protected final void suggestLocationsFromAddress(final CharSequence constraint) throws IOException {
+        final SuggestLocationsResult result = suggestLocations(constraint);
+        assertTrue(result.getLocations().size() > 0);
+        print(result);
+    }
 
-	protected final void suggestLocationsNoLocation(final CharSequence constraint) throws IOException
-	{
-		final SuggestLocationsResult result = suggestLocations(constraint);
-		assertEquals(result.getLocations().size(), 0);
-		print(result);
-	}
+    protected final void suggestLocationsNoLocation(final CharSequence constraint) throws IOException {
+        final SuggestLocationsResult result = suggestLocations(constraint);
+        assertEquals(result.getLocations().size(), 0);
+        print(result);
+    }
 
-	protected final void queryTrip(final CharSequence from, final CharSequence to) throws IOException
-	{
-		final SuggestLocationsResult fromResult = suggestLocations(from);
-		assertTrue(fromResult.getLocations().size() > 0);
-		final SuggestLocationsResult toResult = suggestLocations(to);
-		assertTrue(toResult.getLocations().size() > 0);
+    protected final void queryTrip(final CharSequence from, final CharSequence to) throws IOException {
+        final SuggestLocationsResult fromResult = suggestLocations(from);
+        assertTrue(fromResult.getLocations().size() > 0);
+        final SuggestLocationsResult toResult = suggestLocations(to);
+        assertTrue(toResult.getLocations().size() > 0);
 
-		final QueryTripsResult result = queryTrips(fromResult.getLocations().get(0), null, toResult.getLocations().get(0), new Date(), true,
-				Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		assertEquals(QueryTripsResult.Status.OK, result.status);
-		print(result);
-	}
+        final QueryTripsResult result = queryTrips(fromResult.getLocations().get(0), null,
+                toResult.getLocations().get(0), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+        assertEquals(QueryTripsResult.Status.OK, result.status);
+        print(result);
+    }
 
-	protected final void queryTripNoSolution(final CharSequence from, final CharSequence to) throws IOException
-	{
-		final SuggestLocationsResult fromResult = suggestLocations(from);
-		assertTrue(fromResult.getLocations().size() > 0);
-		final SuggestLocationsResult toResult = suggestLocations(to);
-		assertTrue(toResult.getLocations().size() > 0);
+    protected final void queryTripNoSolution(final CharSequence from, final CharSequence to) throws IOException {
+        final SuggestLocationsResult fromResult = suggestLocations(from);
+        assertTrue(fromResult.getLocations().size() > 0);
+        final SuggestLocationsResult toResult = suggestLocations(to);
+        assertTrue(toResult.getLocations().size() > 0);
 
-		final QueryTripsResult result = queryTrips(fromResult.getLocations().get(0), null, toResult.getLocations().get(0), new Date(), true,
-				EnumSet.noneOf(Product.class), WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		assertEquals(QueryTripsResult.Status.NO_TRIPS, result.status);
-		print(result);
-	}
+        final QueryTripsResult result = queryTrips(fromResult.getLocations().get(0), null,
+                toResult.getLocations().get(0), new Date(), true, EnumSet.noneOf(Product.class), WalkSpeed.NORMAL,
+                Accessibility.NEUTRAL);
+        assertEquals(QueryTripsResult.Status.NO_TRIPS, result.status);
+        print(result);
+    }
 
-	protected final void queryTripUnknownFrom(final CharSequence to) throws IOException
-	{
-		final SuggestLocationsResult toResult = suggestLocations(to);
-		assertTrue(toResult.getLocations().size() > 0);
+    protected final void queryTripUnknownFrom(final CharSequence to) throws IOException {
+        final SuggestLocationsResult toResult = suggestLocations(to);
+        assertTrue(toResult.getLocations().size() > 0);
 
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "stop_area:RTP:SA:999999"), null, toResult.getLocations()
-				.get(0), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		assertEquals(QueryTripsResult.Status.UNKNOWN_FROM, result.status);
-		print(result);
-	}
+        final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "stop_area:RTP:SA:999999"), null,
+                toResult.getLocations().get(0), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+        assertEquals(QueryTripsResult.Status.UNKNOWN_FROM, result.status);
+        print(result);
+    }
 
-	protected final void queryTripUnknownTo(final CharSequence from) throws IOException
-	{
-		final SuggestLocationsResult fromResult = suggestLocations(from);
-		assertTrue(fromResult.getLocations().size() > 0);
+    protected final void queryTripUnknownTo(final CharSequence from) throws IOException {
+        final SuggestLocationsResult fromResult = suggestLocations(from);
+        assertTrue(fromResult.getLocations().size() > 0);
 
-		final QueryTripsResult result = queryTrips(fromResult.getLocations().get(0), null, new Location(LocationType.STATION,
-				"stop_area:RTP:SA:999999"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		assertEquals(QueryTripsResult.Status.UNKNOWN_TO, result.status);
-		print(result);
-	}
+        final QueryTripsResult result = queryTrips(fromResult.getLocations().get(0), null,
+                new Location(LocationType.STATION, "stop_area:RTP:SA:999999"), new Date(), true, Product.ALL,
+                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+        assertEquals(QueryTripsResult.Status.UNKNOWN_TO, result.status);
+        print(result);
+    }
 
-	protected final void queryTripAmbiguousFrom(final Location from, final CharSequence to) throws IOException
-	{
-		final SuggestLocationsResult toResult = suggestLocations(to);
-		assertTrue(toResult.getLocations().size() > 0);
+    protected final void queryTripAmbiguousFrom(final Location from, final CharSequence to) throws IOException {
+        final SuggestLocationsResult toResult = suggestLocations(to);
+        assertTrue(toResult.getLocations().size() > 0);
 
-		final QueryTripsResult result = queryTrips(from, null, toResult.getLocations().get(0), new Date(), true,
-				Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		assertEquals(QueryTripsResult.Status.AMBIGUOUS, result.status);
-		assertTrue(result.ambiguousFrom != null);
-		assertTrue(result.ambiguousFrom.size() > 0);
-		print(result);
-	}
+        final QueryTripsResult result = queryTrips(from, null, toResult.getLocations().get(0), new Date(), true,
+                Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+        assertEquals(QueryTripsResult.Status.AMBIGUOUS, result.status);
+        assertTrue(result.ambiguousFrom != null);
+        assertTrue(result.ambiguousFrom.size() > 0);
+        print(result);
+    }
 
-	protected final void queryTripAmbiguousTo(final CharSequence from, final Location to) throws IOException
-	{
-		final SuggestLocationsResult fromResult = suggestLocations(from);
-		assertTrue(fromResult.getLocations().size() > 0);
+    protected final void queryTripAmbiguousTo(final CharSequence from, final Location to) throws IOException {
+        final SuggestLocationsResult fromResult = suggestLocations(from);
+        assertTrue(fromResult.getLocations().size() > 0);
 
-		final QueryTripsResult result = queryTrips(fromResult.getLocations().get(0), null, to, new Date(), true,
-				Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		assertEquals(QueryTripsResult.Status.AMBIGUOUS, result.status);
-		assertTrue(result.ambiguousTo != null);
-		assertTrue(result.ambiguousTo.size() > 0);
-		print(result);
-	}
+        final QueryTripsResult result = queryTrips(fromResult.getLocations().get(0), null, to, new Date(), true,
+                Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+        assertEquals(QueryTripsResult.Status.AMBIGUOUS, result.status);
+        assertTrue(result.ambiguousTo != null);
+        assertTrue(result.ambiguousTo.size() > 0);
+        print(result);
+    }
 
-	protected final void queryTripSlowWalk(final CharSequence from, final CharSequence to) throws IOException
-	{
-		final SuggestLocationsResult fromResult = suggestLocations(from);
-		assertTrue(fromResult.getLocations().size() > 0);
-		final SuggestLocationsResult toResult = suggestLocations(to);
-		assertTrue(toResult.getLocations().size() > 0);
+    protected final void queryTripSlowWalk(final CharSequence from, final CharSequence to) throws IOException {
+        final SuggestLocationsResult fromResult = suggestLocations(from);
+        assertTrue(fromResult.getLocations().size() > 0);
+        final SuggestLocationsResult toResult = suggestLocations(to);
+        assertTrue(toResult.getLocations().size() > 0);
 
-		final QueryTripsResult result = queryTrips(fromResult.getLocations().get(0), null, toResult.getLocations().get(0), new Date(), true,
-				Product.ALL, WalkSpeed.SLOW, Accessibility.NEUTRAL);
-		assertEquals(QueryTripsResult.Status.OK, result.status);
-		print(result);
-	}
+        final QueryTripsResult result = queryTrips(fromResult.getLocations().get(0), null,
+                toResult.getLocations().get(0), new Date(), true, Product.ALL, WalkSpeed.SLOW, Accessibility.NEUTRAL);
+        assertEquals(QueryTripsResult.Status.OK, result.status);
+        print(result);
+    }
 
-	protected final void queryTripFastWalk(final CharSequence from, final CharSequence to) throws IOException
-	{
-		final SuggestLocationsResult fromResult = suggestLocations(from);
-		assertTrue(fromResult.getLocations().size() > 0);
-		final SuggestLocationsResult toResult = suggestLocations(to);
-		assertTrue(toResult.getLocations().size() > 0);
+    protected final void queryTripFastWalk(final CharSequence from, final CharSequence to) throws IOException {
+        final SuggestLocationsResult fromResult = suggestLocations(from);
+        assertTrue(fromResult.getLocations().size() > 0);
+        final SuggestLocationsResult toResult = suggestLocations(to);
+        assertTrue(toResult.getLocations().size() > 0);
 
-		final QueryTripsResult result = queryTrips(fromResult.getLocations().get(0), null, toResult.getLocations().get(0), new Date(), true,
-				Product.ALL, WalkSpeed.FAST, Accessibility.NEUTRAL);
-		assertEquals(QueryTripsResult.Status.OK, result.status);
-		print(result);
-	}
+        final QueryTripsResult result = queryTrips(fromResult.getLocations().get(0), null,
+                toResult.getLocations().get(0), new Date(), true, Product.ALL, WalkSpeed.FAST, Accessibility.NEUTRAL);
+        assertEquals(QueryTripsResult.Status.OK, result.status);
+        print(result);
+    }
 
-	protected final void queryTripFromAdminToPoi(final CharSequence from, final CharSequence to) throws IOException
-	{
-		final SuggestLocationsResult fromResult = suggestLocations(from);
-		assertTrue(fromResult.getLocations().size() > 0);
-		Location fromLocation = fromResult.getLocations().get(0);
-		assertEquals(fromLocation.type, LocationType.POI);
-		print(fromResult);
+    protected final void queryTripFromAdminToPoi(final CharSequence from, final CharSequence to) throws IOException {
+        final SuggestLocationsResult fromResult = suggestLocations(from);
+        assertTrue(fromResult.getLocations().size() > 0);
+        Location fromLocation = fromResult.getLocations().get(0);
+        assertEquals(fromLocation.type, LocationType.POI);
+        print(fromResult);
 
-		final SuggestLocationsResult toResult = suggestLocations(to);
-		assertTrue(toResult.getLocations().size() > 0);
-		Location toLocation = toResult.getLocations().get(0);
-		assertEquals(toLocation.type, LocationType.POI);
-		print(toResult);
+        final SuggestLocationsResult toResult = suggestLocations(to);
+        assertTrue(toResult.getLocations().size() > 0);
+        Location toLocation = toResult.getLocations().get(0);
+        assertEquals(toLocation.type, LocationType.POI);
+        print(toResult);
 
-		final QueryTripsResult tripsResult = queryTrips(fromLocation, null, toLocation, new Date(), true,
-				Product.ALL, NetworkProvider.WalkSpeed.NORMAL, NetworkProvider.Accessibility.NEUTRAL);
-		assertEquals(QueryTripsResult.Status.OK, tripsResult.status);
-		print(tripsResult);
-	}
+        final QueryTripsResult tripsResult = queryTrips(fromLocation, null, toLocation, new Date(), true, Product.ALL,
+                NetworkProvider.WalkSpeed.NORMAL, NetworkProvider.Accessibility.NEUTRAL);
+        assertEquals(QueryTripsResult.Status.OK, tripsResult.status);
+        print(tripsResult);
+    }
 
-	protected final void queryMoreTrips(final CharSequence from, final CharSequence to) throws IOException
-	{
-		final SuggestLocationsResult fromResult = suggestLocations(from);
-		assertTrue(fromResult.getLocations().size() > 0);
-		final SuggestLocationsResult toResult = suggestLocations(to);
-		assertTrue(toResult.getLocations().size() > 0);
+    protected final void queryMoreTrips(final CharSequence from, final CharSequence to) throws IOException {
+        final SuggestLocationsResult fromResult = suggestLocations(from);
+        assertTrue(fromResult.getLocations().size() > 0);
+        final SuggestLocationsResult toResult = suggestLocations(to);
+        assertTrue(toResult.getLocations().size() > 0);
 
-		final QueryTripsResult result = queryTrips(fromResult.getLocations().get(0), null, toResult.getLocations().get(0), new Date(), true,
-				Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		final QueryTripsContext context = result.context;
+        final QueryTripsResult result = queryTrips(fromResult.getLocations().get(0), null,
+                toResult.getLocations().get(0), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+        final QueryTripsContext context = result.context;
 
-		final QueryTripsResult nextResult = queryMoreTrips(context, true);
-		assertEquals(QueryTripsResult.Status.OK, nextResult.status);
-		print(nextResult);
+        final QueryTripsResult nextResult = queryMoreTrips(context, true);
+        assertEquals(QueryTripsResult.Status.OK, nextResult.status);
+        print(nextResult);
 
-		final QueryTripsResult prevResult = queryMoreTrips(context, false);
-		assertEquals(QueryTripsResult.Status.OK, prevResult.status);
-		print(prevResult);
-	}
+        final QueryTripsResult prevResult = queryMoreTrips(context, false);
+        assertEquals(QueryTripsResult.Status.OK, prevResult.status);
+        print(prevResult);
+    }
 }

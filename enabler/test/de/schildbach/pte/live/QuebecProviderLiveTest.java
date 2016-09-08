@@ -24,34 +24,28 @@ import de.schildbach.pte.QuebecProvider;
 /**
  * @author Stephane Berube
  */
-public class QuebecProviderLiveTest extends AbstractNavitiaProviderLiveTest
-{
-	public QuebecProviderLiveTest()
-	{
-		super(new QuebecProvider(secretProperty("navitia.authorization")));
-	}
+public class QuebecProviderLiveTest extends AbstractNavitiaProviderLiveTest {
+    public QuebecProviderLiveTest() {
+        super(new QuebecProvider(secretProperty("navitia.authorization")));
+    }
 
-	@Test
-	public void nearbyStationsStation() throws Exception
-	{
-		nearbyStationsStation("stop_area:OML:SA:CTP3102842");
-	}
+    @Test
+    public void nearbyStationsStation() throws Exception {
+        nearbyStationsStation("stop_area:OML:SA:CTP3102842");
+    }
 
-	@Test
-	public void nearbyStationsInvalidStation() throws Exception
-	{
-		nearbyStationsInvalidStation("stop_area:OML:SA:CTPxxxxxxx");
-	}
+    @Test
+    public void nearbyStationsInvalidStation() throws Exception {
+        nearbyStationsInvalidStation("stop_area:OML:SA:CTPxxxxxxx");
+    }
 
-	@Test
-	public void queryDeparturesStopArea() throws Exception
-	{
-		queryDeparturesStopArea("stop_area:OML:SA:CTP3102842");
-	}
+    @Test
+    public void queryDeparturesStopArea() throws Exception {
+        queryDeparturesStopArea("stop_area:OML:SA:CTP3102842");
+    }
 
-	@Test
-	public void suggestLocations() throws Exception
-	{
-		suggestLocations("Airport");
-	}
+    @Test
+    public void suggestLocations() throws Exception {
+        suggestLocations("Airport");
+    }
 }

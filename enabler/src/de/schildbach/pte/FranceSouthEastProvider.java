@@ -24,66 +24,54 @@ import de.schildbach.pte.dto.Style.Shape;
 /**
  * @author Anthony Chaput
  */
-public class FranceSouthEastProvider extends AbstractNavitiaProvider
-{
-	private static String API_REGION = "fr-se";
+public class FranceSouthEastProvider extends AbstractNavitiaProvider {
+    private static String API_REGION = "fr-se";
 
-	public FranceSouthEastProvider(final String apiBase, final String authorization)
-	{
-		super(NetworkId.FRANCESOUTHEAST, apiBase, authorization);
+    public FranceSouthEastProvider(final String apiBase, final String authorization) {
+        super(NetworkId.FRANCESOUTHEAST, apiBase, authorization);
 
-		setTimeZone("Europe/Paris");
-	}
+        setTimeZone("Europe/Paris");
+    }
 
-	public FranceSouthEastProvider(final String authorization)
-	{
-		super(NetworkId.FRANCESOUTHEAST, authorization);
+    public FranceSouthEastProvider(final String authorization) {
+        super(NetworkId.FRANCESOUTHEAST, authorization);
 
-		setTimeZone("Europe/Paris");
-	}
+        setTimeZone("Europe/Paris");
+    }
 
-	@Override
-	public String region()
-	{
-		return API_REGION;
-	}
+    @Override
+    public String region() {
+        return API_REGION;
+    }
 
-	@Override
-	protected Style getLineStyle(final Product product, final String code, final String color)
-	{
-		switch (product)
-		{
-			case REGIONAL_TRAIN:
-			{
-				// TER + Intercités
-				return new Style(Style.parseColor(color), computeForegroundColor(color));
-			}
-			case SUBURBAN_TRAIN:
-			{
-				return new Style(Style.parseColor(color), computeForegroundColor(color));
-			}
-			case TRAM:
-			{
-				// Tram
-				return new Style(Shape.CIRCLE, Style.TRANSPARENT, Style.parseColor(color), Style.parseColor(color));
-			}
-			case BUS:
-			{
-				// Bus + Transgironde
-				return new Style(Shape.ROUNDED, Style.parseColor(color), computeForegroundColor(color));
-			}
-			case FERRY:
-			{
-				// Batcub
-				return new Style(Shape.ROUNDED, Style.parseColor(color), computeForegroundColor(color));
-			}
-			case SUBWAY:
-			{
-				// Toulouse subway (from Tisseo network)
-				return new Style(Shape.ROUNDED, Style.parseColor(color), computeForegroundColor(color));
-			}
-			default:
-				return super.getLineStyle(product, code, color);
-		}
-	}
+    @Override
+    protected Style getLineStyle(final Product product, final String code, final String color) {
+        switch (product) {
+        case REGIONAL_TRAIN: {
+            // TER + Intercités
+            return new Style(Style.parseColor(color), computeForegroundColor(color));
+        }
+        case SUBURBAN_TRAIN: {
+            return new Style(Style.parseColor(color), computeForegroundColor(color));
+        }
+        case TRAM: {
+            // Tram
+            return new Style(Shape.CIRCLE, Style.TRANSPARENT, Style.parseColor(color), Style.parseColor(color));
+        }
+        case BUS: {
+            // Bus + Transgironde
+            return new Style(Shape.ROUNDED, Style.parseColor(color), computeForegroundColor(color));
+        }
+        case FERRY: {
+            // Batcub
+            return new Style(Shape.ROUNDED, Style.parseColor(color), computeForegroundColor(color));
+        }
+        case SUBWAY: {
+            // Toulouse subway (from Tisseo network)
+            return new Style(Shape.ROUNDED, Style.parseColor(color), computeForegroundColor(color));
+        }
+        default:
+            return super.getLineStyle(product, code, color);
+        }
+    }
 }

@@ -25,77 +25,71 @@ import de.schildbach.pte.dto.Product;
 /**
  * @author Andreas Schildbach
  */
-public class SbbProvider extends AbstractHafasProvider
-{
-	private static final String API_BASE = "http://fahrplan.sbb.ch/bin/";
-	private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
-			Product.REGIONAL_TRAIN, Product.FERRY, Product.SUBURBAN_TRAIN, Product.BUS, Product.CABLECAR, Product.REGIONAL_TRAIN, Product.TRAM };
+public class SbbProvider extends AbstractHafasProvider {
+    private static final String API_BASE = "http://fahrplan.sbb.ch/bin/";
+    private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
+            Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, Product.FERRY, Product.SUBURBAN_TRAIN, Product.BUS,
+            Product.CABLECAR, Product.REGIONAL_TRAIN, Product.TRAM };
 
-	public SbbProvider()
-	{
-		super(NetworkId.SBB, API_BASE, "dn", PRODUCTS_MAP);
+    public SbbProvider() {
+        super(NetworkId.SBB, API_BASE, "dn", PRODUCTS_MAP);
 
-		setStationBoardHasStationTable(false);
-	}
+        setStationBoardHasStationTable(false);
+    }
 
-	@Override
-	public Set<Product> defaultProducts()
-	{
-		return Product.ALL;
-	}
+    @Override
+    public Set<Product> defaultProducts() {
+        return Product.ALL;
+    }
 
-	@Override
-	protected String[] splitStationName(final String name)
-	{
-		final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(name);
-		if (m.matches())
-			return new String[] { m.group(1), m.group(2) };
+    @Override
+    protected String[] splitStationName(final String name) {
+        final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(name);
+        if (m.matches())
+            return new String[] { m.group(1), m.group(2) };
 
-		return super.splitStationName(name);
-	}
+        return super.splitStationName(name);
+    }
 
-	@Override
-	protected String[] splitPOI(final String poi)
-	{
-		final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(poi);
-		if (m.matches())
-			return new String[] { m.group(1), m.group(2) };
+    @Override
+    protected String[] splitPOI(final String poi) {
+        final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(poi);
+        if (m.matches())
+            return new String[] { m.group(1), m.group(2) };
 
-		return super.splitStationName(poi);
-	}
+        return super.splitStationName(poi);
+    }
 
-	@Override
-	protected String[] splitAddress(final String address)
-	{
-		final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(address);
-		if (m.matches())
-			return new String[] { m.group(1), m.group(2) };
+    @Override
+    protected String[] splitAddress(final String address) {
+        final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(address);
+        if (m.matches())
+            return new String[] { m.group(1), m.group(2) };
 
-		return super.splitStationName(address);
-	}
+        return super.splitStationName(address);
+    }
 
-	@Override
-	protected Product normalizeType(final String type)
-	{
-		final String ucType = type.toUpperCase();
+    @Override
+    protected Product normalizeType(final String type) {
+        final String ucType = type.toUpperCase();
 
-		if ("IN".equals(ucType)) // Italien Roma-Lecce
-			return Product.HIGH_SPEED_TRAIN;
-		if ("IT".equals(ucType)) // Italien Roma-Venezia
-			return Product.HIGH_SPEED_TRAIN;
+        if ("IN".equals(ucType)) // Italien Roma-Lecce
+            return Product.HIGH_SPEED_TRAIN;
+        if ("IT".equals(ucType)) // Italien Roma-Venezia
+            return Product.HIGH_SPEED_TRAIN;
 
-		if ("T".equals(ucType))
-			return Product.REGIONAL_TRAIN;
-		if ("TE2".equals(ucType)) // Basel - Strasbourg
-			return Product.REGIONAL_TRAIN;
+        if ("T".equals(ucType))
+            return Product.REGIONAL_TRAIN;
+        if ("TE2".equals(ucType)) // Basel - Strasbourg
+            return Product.REGIONAL_TRAIN;
 
-		if ("TX".equals(ucType))
-			return Product.BUS;
-		if ("NFO".equals(ucType))
-			return Product.BUS;
-		if ("KB".equals(ucType)) // Kleinbus?
-			return Product.BUS;
+        if ("TX".equals(ucType))
+            return Product.BUS;
+        if ("NFO".equals(ucType))
+            return Product.BUS;
+        if ("KB".equals(ucType)) // Kleinbus?
+            return Product.BUS;
 
-		return super.normalizeType(type);
-	}
+        return super.normalizeType(type);
+    }
 }

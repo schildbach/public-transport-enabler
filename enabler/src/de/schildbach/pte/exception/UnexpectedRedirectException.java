@@ -23,24 +23,20 @@ import java.net.URL;
  * @author Andreas Schildbach
  */
 @SuppressWarnings("serial")
-public class UnexpectedRedirectException extends AbstractHttpException
-{
-	private final URL redirectedUrl;
+public class UnexpectedRedirectException extends AbstractHttpException {
+    private final URL redirectedUrl;
 
-	public UnexpectedRedirectException(final URL originalUrl, final URL redirectedUrl)
-	{
-		super(originalUrl);
-		this.redirectedUrl = redirectedUrl;
-	}
+    public UnexpectedRedirectException(final URL originalUrl, final URL redirectedUrl) {
+        super(originalUrl);
+        this.redirectedUrl = redirectedUrl;
+    }
 
-	public URL getRedirectedUrl()
-	{
-		return redirectedUrl;
-	}
+    public URL getRedirectedUrl() {
+        return redirectedUrl;
+    }
 
-	@Override
-	public String toString()
-	{
-		return getClass().getName() + ": " + getUrl() + " -> " + redirectedUrl;
-	}
+    @Override
+    public String toString() {
+        return getClass().getName() + ": " + getUrl() + " -> " + redirectedUrl;
+    }
 }

@@ -20,14 +20,12 @@ package de.schildbach.pte;
 /**
  * @author Andreas Schildbach
  */
-public class VvmProvider extends AbstractEfaProvider
-{
-	private final static String API_BASE = "http://efa.mobilitaetsverbund.de/web/";
+public class VvmProvider extends AbstractEfaProvider {
+    private final static String API_BASE = "http://efa.mobilitaetsverbund.de/web/";
 
-	public VvmProvider()
-	{
-		super(NetworkId.VVM, API_BASE);
+    public VvmProvider() {
+        super(NetworkId.VVM, API_BASE);
 
-		setNeedsSpEncId(true);
-	}
+        setNeedsSpEncId(true);
+    }
 }

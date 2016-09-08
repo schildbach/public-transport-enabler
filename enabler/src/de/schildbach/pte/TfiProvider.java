@@ -27,41 +27,36 @@ import de.schildbach.pte.dto.Product;
 /**
  * @author Andreas Schildbach
  */
-public class TfiProvider extends AbstractEfaProvider
-{
-	private static final String API_BASE = "http://www.journeyplanner.transportforireland.ie/nta/";
+public class TfiProvider extends AbstractEfaProvider {
+    private static final String API_BASE = "http://www.journeyplanner.transportforireland.ie/nta/";
 
-	// http://www.journeyplanner.transportforireland.ie/ultraLite/
+    // http://www.journeyplanner.transportforireland.ie/ultraLite/
 
-	public TfiProvider()
-	{
-		super(NetworkId.TFI, API_BASE);
+    public TfiProvider() {
+        super(NetworkId.TFI, API_BASE);
 
-		setLanguage("en");
-		setTimeZone("Europe/London");
-	}
+        setLanguage("en");
+        setTimeZone("Europe/London");
+    }
 
-	@Override
-	public Set<Product> defaultProducts()
-	{
-		return Product.ALL;
-	}
+    @Override
+    public Set<Product> defaultProducts() {
+        return Product.ALL;
+    }
 
-	@Override
-	protected Line parseLine(final @Nullable String id, final @Nullable String network, final @Nullable String mot, final @Nullable String symbol,
-			final @Nullable String name, final @Nullable String longName, final @Nullable String trainType, final @Nullable String trainNum,
-			final @Nullable String trainName)
-	{
-		if ("0".equals(mot))
-		{
-			if ("DART".equals(name))
-				return new Line(id, network, Product.SUBURBAN_TRAIN, "DART");
-			if ("Rail".equals(trainName) && trainNum == null)
-				return new Line(id, network, null, "Rail");
-			if ("Train".equals(name) && "Train".equals(symbol))
-				return new Line(id, network, null, "Train");
-		}
+    @Override
+    protected Line parseLine(final @Nullable String id, final @Nullable String network, final @Nullable String mot,
+            final @Nullable String symbol, final @Nullable String name, final @Nullable String longName,
+            final @Nullable String trainType, final @Nullable String trainNum, final @Nullable String trainName) {
+        if ("0".equals(mot)) {
+            if ("DART".equals(name))
+                return new Line(id, network, Product.SUBURBAN_TRAIN, "DART");
+            if ("Rail".equals(trainName) && trainNum == null)
+                return new Line(id, network, null, "Rail");
+            if ("Train".equals(name) && "Train".equals(symbol))
+                return new Line(id, network, null, "Train");
+        }
 
-		return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
-	}
+        return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
+    }
 }

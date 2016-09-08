@@ -35,78 +35,70 @@ import com.google.common.base.Objects;
  * @author Andreas Schildbach
  */
 @SuppressWarnings("serial")
-public final class Departure implements Serializable
-{
-	final public @Nullable Date plannedTime;
-	final public @Nullable Date predictedTime;
-	final public Line line;
-	final public @Nullable Position position;
-	final public @Nullable Location destination;
-	final public @Nullable int[] capacity;
-	final public @Nullable String message;
+public final class Departure implements Serializable {
+    final public @Nullable Date plannedTime;
+    final public @Nullable Date predictedTime;
+    final public Line line;
+    final public @Nullable Position position;
+    final public @Nullable Location destination;
+    final public @Nullable int[] capacity;
+    final public @Nullable String message;
 
-	public Departure(final Date plannedTime, final Date predictedTime, final Line line, final Position position, final Location destination,
-			final int[] capacity, final String message)
-	{
-		this.plannedTime = plannedTime;
-		this.predictedTime = predictedTime;
-		checkArgument(plannedTime != null || predictedTime != null);
-		this.line = checkNotNull(line);
-		this.position = position;
-		this.destination = destination;
-		this.capacity = capacity;
-		this.message = message;
-	}
+    public Departure(final Date plannedTime, final Date predictedTime, final Line line, final Position position,
+            final Location destination, final int[] capacity, final String message) {
+        this.plannedTime = plannedTime;
+        this.predictedTime = predictedTime;
+        checkArgument(plannedTime != null || predictedTime != null);
+        this.line = checkNotNull(line);
+        this.position = position;
+        this.destination = destination;
+        this.capacity = capacity;
+        this.message = message;
+    }
 
-	public Date getTime()
-	{
-		if (predictedTime != null)
-			return predictedTime;
-		else
-			return plannedTime;
-	}
+    public Date getTime() {
+        if (predictedTime != null)
+            return predictedTime;
+        else
+            return plannedTime;
+    }
 
-	@Override
-	public String toString()
-	{
-		final ToStringHelper helper = MoreObjects.toStringHelper(this);
-		if (plannedTime != null)
-			helper.add("planned", String.format(Locale.US, "%ta %<tR", plannedTime));
-		if (predictedTime != null)
-			helper.add("predicted", String.format(Locale.US, "%ta %<tR", predictedTime));
-		return helper.addValue(line).addValue(position).add("destination", destination).omitNullValues().toString();
-	}
+    @Override
+    public String toString() {
+        final ToStringHelper helper = MoreObjects.toStringHelper(this);
+        if (plannedTime != null)
+            helper.add("planned", String.format(Locale.US, "%ta %<tR", plannedTime));
+        if (predictedTime != null)
+            helper.add("predicted", String.format(Locale.US, "%ta %<tR", predictedTime));
+        return helper.addValue(line).addValue(position).add("destination", destination).omitNullValues().toString();
+    }
 
-	@Override
-	public boolean equals(final Object o)
-	{
-		if (o == this)
-			return true;
-		if (!(o instanceof Departure))
-			return false;
-		final Departure other = (Departure) o;
-		if (!Objects.equal(this.plannedTime, other.plannedTime))
-			return false;
-		if (!Objects.equal(this.predictedTime, other.predictedTime))
-			return false;
-		if (!Objects.equal(this.line, other.line))
-			return false;
-		if (!Objects.equal(this.destination, other.destination))
-			return false;
-		return true;
-	}
+    @Override
+    public boolean equals(final Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof Departure))
+            return false;
+        final Departure other = (Departure) o;
+        if (!Objects.equal(this.plannedTime, other.plannedTime))
+            return false;
+        if (!Objects.equal(this.predictedTime, other.predictedTime))
+            return false;
+        if (!Objects.equal(this.line, other.line))
+            return false;
+        if (!Objects.equal(this.destination, other.destination))
+            return false;
+        return true;
+    }
 
-	@Override
-	public int hashCode()
-	{
-		return Objects.hashCode(plannedTime, predictedTime, line, destination);
-	}
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(plannedTime, predictedTime, line, destination);
+    }
 
-	public static final Comparator<Departure> TIME_COMPARATOR = new Comparator<Departure>()
-	{
-		public int compare(final Departure departure0, final Departure departure1)
-		{
-			return departure0.getTime().compareTo(departure1.getTime());
-		}
-	};
+    public static final Comparator<Departure> TIME_COMPARATOR = new Comparator<Departure>() {
+        public int compare(final Departure departure0, final Departure departure1) {
+            return departure0.getTime().compareTo(departure1.getTime());
+        }
+    };
 }

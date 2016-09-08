@@ -22,33 +22,28 @@ import de.schildbach.pte.util.WordUtils;
 /**
  * @author Antonio El Khoury
  */
-public class ItalyProvider extends AbstractNavitiaProvider
-{
-	private static String API_REGION = "it";
+public class ItalyProvider extends AbstractNavitiaProvider {
+    private static String API_REGION = "it";
 
-	public ItalyProvider(final String apiBase, final String authorization)
-	{
-		super(NetworkId.IT, apiBase, authorization);
+    public ItalyProvider(final String apiBase, final String authorization) {
+        super(NetworkId.IT, apiBase, authorization);
 
-		setTimeZone("Europe/Rome");
-	}
+        setTimeZone("Europe/Rome");
+    }
 
-	public ItalyProvider(final String authorization)
-	{
-		super(NetworkId.IT, authorization);
+    public ItalyProvider(final String authorization) {
+        super(NetworkId.IT, authorization);
 
-		setTimeZone("Europe/Rome");
-	}
+        setTimeZone("Europe/Rome");
+    }
 
-	@Override
-	public String region()
-	{
-		return API_REGION;
-	}
+    @Override
+    public String region() {
+        return API_REGION;
+    }
 
-	@Override
-	protected String getLocationName(String name)
-	{
-		return WordUtils.capitalizeFully(name);
-	}
+    @Override
+    protected String getLocationName(String name) {
+        return WordUtils.capitalizeFully(name);
+    }
 }

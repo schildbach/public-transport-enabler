@@ -39,105 +39,95 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
 /**
  * @author Andreas Schildbach
  */
-public class SeProviderLiveTest extends AbstractProviderLiveTest
-{
-	public SeProviderLiveTest()
-	{
-		super(new SeProvider());
-	}
+public class SeProviderLiveTest extends AbstractProviderLiveTest {
+    public SeProviderLiveTest() {
+        super(new SeProvider());
+    }
 
-	@Test
-	public void nearbyStations() throws Exception
-	{
-		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "7414867"));
-		print(result);
-	}
+    @Test
+    public void nearbyStations() throws Exception {
+        final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "7414867"));
+        print(result);
+    }
 
-	@Test
-	public void nearbyStationsByCoordinate() throws Exception
-	{
-		final NearbyLocationsResult result = queryNearbyStations(Location.coord(57709311, 11988459));
-		print(result);
-	}
+    @Test
+    public void nearbyStationsByCoordinate() throws Exception {
+        final NearbyLocationsResult result = queryNearbyStations(Location.coord(57709311, 11988459));
+        print(result);
+    }
 
-	@Test
-	public void queryDepartures() throws Exception
-	{
-		final QueryDeparturesResult result = queryDepartures("7414867", false);
-		print(result);
-	}
+    @Test
+    public void queryDepartures() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("7414867", false);
+        print(result);
+    }
 
-	@Test
-	public void queryDeparturesInvalidStation() throws Exception
-	{
-		final QueryDeparturesResult result = queryDepartures("999999", false);
-		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
-	}
+    @Test
+    public void queryDeparturesInvalidStation() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("999999", false);
+        assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
+    }
 
-	@Test
-	public void suggestLocations() throws Exception
-	{
-		final SuggestLocationsResult result = suggestLocations("Airport");
-		print(result);
-	}
+    @Test
+    public void suggestLocations() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Airport");
+        print(result);
+    }
 
-	@Test
-	public void suggestLocationsUmlaut() throws Exception
-	{
-		final SuggestLocationsResult result = suggestLocations("Luleå");
-		print(result);
-	}
+    @Test
+    public void suggestLocationsUmlaut() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Luleå");
+        print(result);
+    }
 
-	@Test
-	public void suggestLocationsCoverage() throws Exception
-	{
-		final SuggestLocationsResult salzburgResult = suggestLocations("Stockholm");
-		print(salzburgResult);
-		assertThat(salzburgResult.getLocations(), hasItem(new Location(LocationType.STATION, "740098000")));
-	}
+    @Test
+    public void suggestLocationsCoverage() throws Exception {
+        final SuggestLocationsResult salzburgResult = suggestLocations("Stockholm");
+        print(salzburgResult);
+        assertThat(salzburgResult.getLocations(), hasItem(new Location(LocationType.STATION, "740098000")));
+    }
 
-	@Test
-	public void shortTrip() throws Exception
-	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "740014867", null, "Luleå Airport"), null,
-				new Location(LocationType.STATION, "740098000", null, "STOCKHOLM"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-				Accessibility.NEUTRAL);
-		print(result);
+    @Test
+    public void shortTrip() throws Exception {
+        final QueryTripsResult result = queryTrips(
+                new Location(LocationType.STATION, "740014867", null, "Luleå Airport"), null,
+                new Location(LocationType.STATION, "740098000", null, "STOCKHOLM"), new Date(), true, Product.ALL,
+                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+        print(result);
 
-		if (!result.context.canQueryLater())
-			return;
+        if (!result.context.canQueryLater())
+            return;
 
-		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		print(laterResult);
-	}
+        final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+        print(laterResult);
+    }
 
-	@Test
-	public void shortStockholmTrip() throws Exception
-	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "740098000", null, "STOCKHOLM"), null,
-				new Location(LocationType.STATION, "740020101", "Stockholm", "Slussen T-bana"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-				Accessibility.NEUTRAL);
-		print(result);
+    @Test
+    public void shortStockholmTrip() throws Exception {
+        final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "740098000", null, "STOCKHOLM"),
+                null, new Location(LocationType.STATION, "740020101", "Stockholm", "Slussen T-bana"), new Date(), true,
+                Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+        print(result);
 
-		if (!result.context.canQueryLater())
-			return;
+        if (!result.context.canQueryLater())
+            return;
 
-		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		print(laterResult);
-	}
+        final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+        print(laterResult);
+    }
 
-	@Test
-	public void longTrip() throws Exception
-	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "740098086", 67859847, 20212802, null, "KIRUNA"), null,
-				new Location(LocationType.STATION, "740098000", null, "STOCKHOLM"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-				Accessibility.NEUTRAL);
-		print(result);
+    @Test
+    public void longTrip() throws Exception {
+        final QueryTripsResult result = queryTrips(
+                new Location(LocationType.STATION, "740098086", 67859847, 20212802, null, "KIRUNA"), null,
+                new Location(LocationType.STATION, "740098000", null, "STOCKHOLM"), new Date(), true, Product.ALL,
+                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+        print(result);
 
-		if (!result.context.canQueryLater())
-			return;
+        if (!result.context.canQueryLater())
+            return;
 
-		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		print(laterResult);
-	}
+        final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+        print(laterResult);
+    }
 }

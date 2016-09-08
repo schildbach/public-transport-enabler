@@ -20,16 +20,14 @@ package de.schildbach.pte;
 /**
  * @author Andreas Schildbach
  */
-public class DubProvider extends AbstractEfaProvider
-{
-	private final static String API_BASE = "http://wojhati.rta.ae/dub/";
+public class DubProvider extends AbstractEfaProvider {
+    private final static String API_BASE = "http://wojhati.rta.ae/dub/";
 
-	public DubProvider()
-	{
-		super(NetworkId.DUB, API_BASE);
+    public DubProvider() {
+        super(NetworkId.DUB, API_BASE);
 
-		setTimeZone("Asia/Dubai");
-		setUseRouteIndexAsTripId(false);
-		setFareCorrectionFactor(0.01f);
-	}
+        setTimeZone("Asia/Dubai");
+        setUseRouteIndexAsTripId(false);
+        setFareCorrectionFactor(0.01f);
+    }
 }

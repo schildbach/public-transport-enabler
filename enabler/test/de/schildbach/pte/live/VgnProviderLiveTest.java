@@ -38,84 +38,78 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
 /**
  * @author Andreas Schildbach
  */
-public class VgnProviderLiveTest extends AbstractProviderLiveTest
-{
-	public VgnProviderLiveTest()
-	{
-		super(new VgnProvider(secretProperty("vgn.api_base")));
-	}
+public class VgnProviderLiveTest extends AbstractProviderLiveTest {
+    public VgnProviderLiveTest() {
+        super(new VgnProvider(secretProperty("vgn.api_base")));
+    }
 
-	@Test
-	public void nearbyStations() throws Exception
-	{
-		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "3000510"));
-		print(result);
-	}
+    @Test
+    public void nearbyStations() throws Exception {
+        final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "3000510"));
+        print(result);
+    }
 
-	@Test
-	public void nearbyStationsByCoordinate() throws Exception
-	{
-		final NearbyLocationsResult result = queryNearbyStations(Location.coord(49455472, 11079655));
-		print(result);
-	}
+    @Test
+    public void nearbyStationsByCoordinate() throws Exception {
+        final NearbyLocationsResult result = queryNearbyStations(Location.coord(49455472, 11079655));
+        print(result);
+    }
 
-	@Test
-	public void queryDepartures() throws Exception
-	{
-		final QueryDeparturesResult result = queryDepartures("3000510", false);
-		print(result);
-	}
+    @Test
+    public void queryDepartures() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("3000510", false);
+        print(result);
+    }
 
-	@Test
-	public void suggestLocationsIncomplete() throws Exception
-	{
-		final SuggestLocationsResult result = suggestLocations("Kur");
-		print(result);
-	}
+    @Test
+    public void suggestLocationsIncomplete() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Kur");
+        print(result);
+    }
 
-	@Test
-	public void suggestLocationsWithUmlaut() throws Exception
-	{
-		final SuggestLocationsResult result1 = suggestLocations("Dürrenhof");
-		print(result1);
-		assertThat(result1.getLocations(), hasItem(new Location(LocationType.STATION, "3000427")));
+    @Test
+    public void suggestLocationsWithUmlaut() throws Exception {
+        final SuggestLocationsResult result1 = suggestLocations("Dürrenhof");
+        print(result1);
+        assertThat(result1.getLocations(), hasItem(new Location(LocationType.STATION, "3000427")));
 
-		final SuggestLocationsResult result2 = suggestLocations("Röthenbach");
-		print(result2);
-		assertThat(result2.getLocations(), hasItem(new Location(LocationType.STATION, "3001970")));
-	}
+        final SuggestLocationsResult result2 = suggestLocations("Röthenbach");
+        print(result2);
+        assertThat(result2.getLocations(), hasItem(new Location(LocationType.STATION, "3001970")));
+    }
 
-	@Test
-	public void shortTrip() throws Exception
-	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "451", "Nürnberg", "Ostring"), null, new Location(
-				LocationType.STATION, "510", "Nürnberg", "Hauptbahnhof"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		print(result);
-		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		print(laterResult);
-	}
+    @Test
+    public void shortTrip() throws Exception {
+        final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "451", "Nürnberg", "Ostring"),
+                null, new Location(LocationType.STATION, "510", "Nürnberg", "Hauptbahnhof"), new Date(), true,
+                Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+        print(result);
+        final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+        print(laterResult);
+    }
 
-	@Test
-	public void tripToPOI() throws Exception
-	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 49527298, 10836204), null, new Location(LocationType.POI,
-				"poiID:246:9564000:1:Grundschule Grimmstr.:Nürnberg:Grundschule Grimmstr.:ANY:POI:4436708:678322:NAV4:VGN", 49468692, 11125334,
-				"Nürnberg", "Grundschule Grimmstr."), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		print(result);
+    @Test
+    public void tripToPOI() throws Exception {
+        final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 49527298, 10836204), null,
+                new Location(LocationType.POI,
+                        "poiID:246:9564000:1:Grundschule Grimmstr.:Nürnberg:Grundschule Grimmstr.:ANY:POI:4436708:678322:NAV4:VGN",
+                        49468692, 11125334, "Nürnberg", "Grundschule Grimmstr."),
+                new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+        print(result);
 
-		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		print(laterResult);
-	}
+        final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+        print(laterResult);
+    }
 
-	@Test
-	public void tripToAddress() throws Exception
-	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "1756", "Nürnberg", "Saarbrückener Str."), null, new Location(
-				LocationType.ADDRESS, null, 49437392, 11094524, "Nürnberg", "Wodanstraße 25"), new Date(), false, Product.ALL, WalkSpeed.FAST,
-				Accessibility.NEUTRAL);
-		print(result);
+    @Test
+    public void tripToAddress() throws Exception {
+        final QueryTripsResult result = queryTrips(
+                new Location(LocationType.STATION, "1756", "Nürnberg", "Saarbrückener Str."), null,
+                new Location(LocationType.ADDRESS, null, 49437392, 11094524, "Nürnberg", "Wodanstraße 25"), new Date(),
+                false, Product.ALL, WalkSpeed.FAST, Accessibility.NEUTRAL);
+        print(result);
 
-		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		print(laterResult);
-	}
+        final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+        print(laterResult);
+    }
 }

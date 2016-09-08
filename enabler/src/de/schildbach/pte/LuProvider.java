@@ -26,57 +26,53 @@ import de.schildbach.pte.dto.Product;
 /**
  * @author Andreas Schildbach
  */
-public class LuProvider extends AbstractHafasProvider
-{
-	private static final String API_BASE = "http://mobiliteitszentral.hafas.de/hafas/";
-	private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
-			Product.REGIONAL_TRAIN, Product.REGIONAL_TRAIN, Product.BUS, Product.BUS, Product.BUS, Product.BUS };
+public class LuProvider extends AbstractHafasProvider {
+    private static final String API_BASE = "http://mobiliteitszentral.hafas.de/hafas/";
+    private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
+            Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, Product.REGIONAL_TRAIN, Product.BUS, Product.BUS,
+            Product.BUS, Product.BUS };
 
-	public LuProvider()
-	{
-		super(NetworkId.LU, API_BASE, "fn", PRODUCTS_MAP);
+    public LuProvider() {
+        super(NetworkId.LU, API_BASE, "fn", PRODUCTS_MAP);
 
-		setJsonGetStopsEncoding(Charsets.UTF_8);
-		setJsonNearbyLocationsEncoding(Charsets.UTF_8);
-	}
+        setJsonGetStopsEncoding(Charsets.UTF_8);
+        setJsonNearbyLocationsEncoding(Charsets.UTF_8);
+    }
 
-	@Override
-	protected String[] splitStationName(final String name)
-	{
-		final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(name);
-		if (m.matches())
-			return new String[] { m.group(1), m.group(2) };
+    @Override
+    protected String[] splitStationName(final String name) {
+        final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(name);
+        if (m.matches())
+            return new String[] { m.group(1), m.group(2) };
 
-		return super.splitStationName(name);
-	}
+        return super.splitStationName(name);
+    }
 
-	@Override
-	protected String[] splitAddress(final String address)
-	{
-		final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(address);
-		if (m.matches())
-			return new String[] { m.group(1), m.group(2) };
+    @Override
+    protected String[] splitAddress(final String address) {
+        final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(address);
+        if (m.matches())
+            return new String[] { m.group(1), m.group(2) };
 
-		return super.splitStationName(address);
-	}
+        return super.splitStationName(address);
+    }
 
-	@Override
-	protected Product normalizeType(final String type)
-	{
-		final String ucType = type.toUpperCase();
+    @Override
+    protected Product normalizeType(final String type) {
+        final String ucType = type.toUpperCase();
 
-		if ("CRE".equals(ucType))
-			return Product.REGIONAL_TRAIN;
+        if ("CRE".equals(ucType))
+            return Product.REGIONAL_TRAIN;
 
-		if ("CITYBUS".equals(ucType))
-			return Product.BUS;
-		if ("NIGHTBUS".equals(ucType))
-			return Product.BUS;
-		if ("DIFFBUS".equals(ucType))
-			return Product.BUS;
-		if ("NAVETTE".equals(ucType))
-			return Product.BUS;
+        if ("CITYBUS".equals(ucType))
+            return Product.BUS;
+        if ("NIGHTBUS".equals(ucType))
+            return Product.BUS;
+        if ("DIFFBUS".equals(ucType))
+            return Product.BUS;
+        if ("NAVETTE".equals(ucType))
+            return Product.BUS;
 
-		return super.normalizeType(type);
-	}
+        return super.normalizeType(type);
+    }
 }

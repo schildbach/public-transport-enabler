@@ -24,57 +24,49 @@ import com.google.common.base.Objects;
 /**
  * @author Andreas Schildbach
  */
-public final class Point implements Serializable
-{
-	private static final long serialVersionUID = -256077054671402897L;
+public final class Point implements Serializable {
+    private static final long serialVersionUID = -256077054671402897L;
 
-	public final int lat, lon;
+    public final int lat, lon;
 
-	public Point(final int lat, final int lon)
-	{
-		this.lat = lat;
-		this.lon = lon;
-	}
+    public Point(final int lat, final int lon) {
+        this.lat = lat;
+        this.lon = lon;
+    }
 
-	public static Point fromDouble(final double lat, final double lon)
-	{
-		return new Point((int) Math.round(lat * 1E6), (int) Math.round(lon * 1E6));
-	}
+    public static Point fromDouble(final double lat, final double lon) {
+        return new Point((int) Math.round(lat * 1E6), (int) Math.round(lon * 1E6));
+    }
 
-	public double getLatAsDouble()
-	{
-		return lat / 1E6;
-	}
+    public double getLatAsDouble() {
+        return lat / 1E6;
+    }
 
-	public double getLonAsDouble()
-	{
-		return lon / 1E6;
-	}
+    public double getLonAsDouble() {
+        return lon / 1E6;
+    }
 
-	@Override
-	public boolean equals(final Object o)
-	{
-		if (o == this)
-			return true;
-		if (!(o instanceof Point))
-			return false;
-		final Point other = (Point) o;
-		if (this.lat != other.lat)
-			return false;
-		if (this.lon != other.lon)
-			return false;
-		return true;
-	}
+    @Override
+    public boolean equals(final Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof Point))
+            return false;
+        final Point other = (Point) o;
+        if (this.lat != other.lat)
+            return false;
+        if (this.lon != other.lon)
+            return false;
+        return true;
+    }
 
-	@Override
-	public int hashCode()
-	{
-		return Objects.hashCode(lat, lon);
-	}
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(lat, lon);
+    }
 
-	@Override
-	public String toString()
-	{
-		return lat + "/" + lon;
-	}
+    @Override
+    public String toString() {
+        return lat + "/" + lon;
+    }
 }

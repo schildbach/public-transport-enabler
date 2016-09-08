@@ -25,81 +25,66 @@ import de.schildbach.pte.util.WordUtils;
 /**
  * @author Antonio El Khoury
  */
-public class ParisProvider extends AbstractNavitiaProvider
-{
-	private static String API_REGION = "fr-idf";
+public class ParisProvider extends AbstractNavitiaProvider {
+    private static String API_REGION = "fr-idf";
 
-	public ParisProvider(final String apiBase, final String authorization)
-	{
-		super(NetworkId.PARIS, apiBase, authorization);
+    public ParisProvider(final String apiBase, final String authorization) {
+        super(NetworkId.PARIS, apiBase, authorization);
 
-		setTimeZone("Europe/Paris");
-	}
+        setTimeZone("Europe/Paris");
+    }
 
-	public ParisProvider(final String authorization)
-	{
-		super(NetworkId.PARIS, authorization);
+    public ParisProvider(final String authorization) {
+        super(NetworkId.PARIS, authorization);
 
-		setTimeZone("Europe/Paris");
-	}
+        setTimeZone("Europe/Paris");
+    }
 
-	@Override
-	public String region()
-	{
-		return API_REGION;
-	}
+    @Override
+    public String region() {
+        return API_REGION;
+    }
 
-	@Override
-	protected Style getLineStyle(final Product product, final String code, final String color)
-	{
-		switch (product)
-		{
-			case SUBURBAN_TRAIN:
-			{
-				// RER
-				if (code.compareTo("F") < 0)
-				{
-					return new Style(Shape.CIRCLE, Style.TRANSPARENT, Style.parseColor(color), Style.parseColor(color));
-				}
-				// Transilien
-				else
-				{
-					return new Style(Shape.ROUNDED, Style.TRANSPARENT, Style.parseColor(color), Style.parseColor(color));
-				}
-			}
-			case REGIONAL_TRAIN:
-			{
-				// TER + Intercités
-				return new Style(Style.parseColor(color), computeForegroundColor(color));
-			}
-			case SUBWAY:
-			{
-				// Metro
-				return new Style(Shape.CIRCLE, Style.parseColor(color), computeForegroundColor(color));
-			}
-			case TRAM:
-			{
-				// Tram
-				return new Style(Shape.RECT, Style.parseColor(color), computeForegroundColor(color));
-			}
-			case BUS:
-			{
-				// Bus + Noctilien
-				return new Style(Shape.RECT, Style.parseColor(color), computeForegroundColor(color));
-			}
-			case CABLECAR:
-			{
-				// Orlyval
-				return new Style(Shape.ROUNDED, Style.parseColor(color), computeForegroundColor(color));
-			}
-			default:
-				return super.getLineStyle(product, code, color);
-		}
-	}
+    @Override
+    protected Style getLineStyle(final Product product, final String code, final String color) {
+        switch (product) {
+        case SUBURBAN_TRAIN: {
+            // RER
+            if (code.compareTo("F") < 0) {
+                return new Style(Shape.CIRCLE, Style.TRANSPARENT, Style.parseColor(color), Style.parseColor(color));
+            }
+            // Transilien
+            else {
+                return new Style(Shape.ROUNDED, Style.TRANSPARENT, Style.parseColor(color), Style.parseColor(color));
+            }
+        }
+        case REGIONAL_TRAIN: {
+            // TER + Intercités
+            return new Style(Style.parseColor(color), computeForegroundColor(color));
+        }
+        case SUBWAY: {
+            // Metro
+            return new Style(Shape.CIRCLE, Style.parseColor(color), computeForegroundColor(color));
+        }
+        case TRAM: {
+            // Tram
+            return new Style(Shape.RECT, Style.parseColor(color), computeForegroundColor(color));
+        }
+        case BUS: {
+            // Bus + Noctilien
+            return new Style(Shape.RECT, Style.parseColor(color), computeForegroundColor(color));
+        }
+        case CABLECAR: {
+            // Orlyval
+            return new Style(Shape.ROUNDED, Style.parseColor(color), computeForegroundColor(color));
+        }
+        default:
+            return super.getLineStyle(product, code, color);
+        }
+    }
 
-	@Override
-	protected String getLocationName(String name)
-	{
-		return WordUtils.capitalizeFully(name);
-	}
+    @Override
+    protected String getLocationName(String name) {
+        return WordUtils.capitalizeFully(name);
+    }
 }

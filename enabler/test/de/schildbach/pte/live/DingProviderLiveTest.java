@@ -40,93 +40,86 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
 /**
  * @author Andreas Schildbach
  */
-public class DingProviderLiveTest extends AbstractProviderLiveTest
-{
-	public DingProviderLiveTest()
-	{
-		super(new DingProvider());
-	}
+public class DingProviderLiveTest extends AbstractProviderLiveTest {
+    public DingProviderLiveTest() {
+        super(new DingProvider());
+    }
 
-	@Test
-	public void nearbyStations() throws Exception
-	{
-		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "90001611"));
-		print(result);
-	}
+    @Test
+    public void nearbyStations() throws Exception {
+        final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "90001611"));
+        print(result);
+    }
 
-	@Test
-	public void nearbyStationsByCoordinate() throws Exception
-	{
-		final NearbyLocationsResult result = queryNearbyStations(Location.coord(48401092, 9992037));
-		print(result);
-	}
+    @Test
+    public void nearbyStationsByCoordinate() throws Exception {
+        final NearbyLocationsResult result = queryNearbyStations(Location.coord(48401092, 9992037));
+        print(result);
+    }
 
-	@Test
-	public void queryDepartures() throws Exception
-	{
-		final QueryDeparturesResult result = queryDepartures("90001611", false);
-		print(result);
-	}
+    @Test
+    public void queryDepartures() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("90001611", false);
+        print(result);
+    }
 
-	@Test
-	public void suggestLocationsIdentified() throws Exception
-	{
-		final SuggestLocationsResult result = suggestLocations("Ulm, Justizgebäude");
-		print(result);
-	}
+    @Test
+    public void suggestLocationsIdentified() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Ulm, Justizgebäude");
+        print(result);
+    }
 
-	@Test
-	public void suggestLocationsIncomplete() throws Exception
-	{
-		final SuggestLocationsResult result = suggestLocations("Kur");
-		print(result);
-	}
+    @Test
+    public void suggestLocationsIncomplete() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Kur");
+        print(result);
+    }
 
-	@Test
-	public void suggestLocationsWithUmlaut() throws Exception
-	{
-		final SuggestLocationsResult result1 = suggestLocations("Schießstände");
-		print(result1);
-		assertThat(result1.getLocations(), hasItem(new Location(LocationType.STATION, "9001233")));
+    @Test
+    public void suggestLocationsWithUmlaut() throws Exception {
+        final SuggestLocationsResult result1 = suggestLocations("Schießstände");
+        print(result1);
+        assertThat(result1.getLocations(), hasItem(new Location(LocationType.STATION, "9001233")));
 
-		final SuggestLocationsResult result2 = suggestLocations("Blücherstraße");
-		print(result2);
-		assertThat(result2.getLocations(), hasItem(new Location(LocationType.STATION, "9001351")));
-	}
+        final SuggestLocationsResult result2 = suggestLocations("Blücherstraße");
+        print(result2);
+        assertThat(result2.getLocations(), hasItem(new Location(LocationType.STATION, "9001351")));
+    }
 
-	@Test
-	public void shortTrip() throws Exception
-	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "9001011", "Ulm", "Justizgebäude"), null, new Location(
-				LocationType.STATION, "9001010", "Ulm", "Theater"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		print(result);
-		assertEquals(QueryTripsResult.Status.OK, result.status);
-		assertTrue(result.trips.size() > 0);
+    @Test
+    public void shortTrip() throws Exception {
+        final QueryTripsResult result = queryTrips(
+                new Location(LocationType.STATION, "9001011", "Ulm", "Justizgebäude"), null,
+                new Location(LocationType.STATION, "9001010", "Ulm", "Theater"), new Date(), true, Product.ALL,
+                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+        print(result);
+        assertEquals(QueryTripsResult.Status.OK, result.status);
+        assertTrue(result.trips.size() > 0);
 
-		if (!result.context.canQueryLater())
-			return;
+        if (!result.context.canQueryLater())
+            return;
 
-		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		print(laterResult);
+        final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+        print(laterResult);
 
-		if (!laterResult.context.canQueryLater())
-			return;
+        if (!laterResult.context.canQueryLater())
+            return;
 
-		final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
-		print(later2Result);
+        final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
+        print(later2Result);
 
-		if (!later2Result.context.canQueryEarlier())
-			return;
+        if (!later2Result.context.canQueryEarlier())
+            return;
 
-		final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
-		print(earlierResult);
-	}
+        final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
+        print(earlierResult);
+    }
 
-	@Test
-	public void tripAnyToAny() throws Exception
-	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "Hermaringen"), null, new Location(LocationType.ANY,
-				null, null, "Heidenheim"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		print(result);
-	}
+    @Test
+    public void tripAnyToAny() throws Exception {
+        final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "Hermaringen"), null,
+                new Location(LocationType.ANY, null, null, "Heidenheim"), new Date(), true, Product.ALL,
+                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+        print(result);
+    }
 }

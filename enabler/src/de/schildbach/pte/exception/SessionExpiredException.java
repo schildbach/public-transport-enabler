@@ -23,6 +23,5 @@ import java.io.IOException;
  * @author Andreas Schildbach
  */
 @SuppressWarnings("serial")
-public class SessionExpiredException extends IOException
-{
+public class SessionExpiredException extends IOException {
 }

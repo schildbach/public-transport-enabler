@@ -37,67 +37,59 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
 /**
  * @author Andreas Schildbach
  */
-public class ZvvProviderLiveTest extends AbstractProviderLiveTest
-{
-	public ZvvProviderLiveTest()
-	{
-		super(new ZvvProvider());
-	}
+public class ZvvProviderLiveTest extends AbstractProviderLiveTest {
+    public ZvvProviderLiveTest() {
+        super(new ZvvProvider());
+    }
 
-	@Test
-	public void nearbyStationsByStation() throws Exception
-	{
-		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "8503000"));
-		print(result);
-	}
+    @Test
+    public void nearbyStationsByStation() throws Exception {
+        final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "8503000"));
+        print(result);
+    }
 
-	@Test
-	public void nearbyStationsByCoordinate() throws Exception
-	{
-		final NearbyLocationsResult result = queryNearbyStations(Location.coord(47378968, 8540534));
-		print(result);
-	}
+    @Test
+    public void nearbyStationsByCoordinate() throws Exception {
+        final NearbyLocationsResult result = queryNearbyStations(Location.coord(47378968, 8540534));
+        print(result);
+    }
 
-	@Test
-	public void queryDepartures() throws Exception
-	{
-		final QueryDeparturesResult result = queryDepartures("8503000", false);
-		print(result);
-	}
+    @Test
+    public void queryDepartures() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("8503000", false);
+        print(result);
+    }
 
-	@Test
-	public void queryDeparturesInvalidStation() throws Exception
-	{
-		final QueryDeparturesResult result = queryDepartures("999999", false);
-		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
-	}
+    @Test
+    public void queryDeparturesInvalidStation() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("999999", false);
+        assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
+    }
 
-	@Test
-	public void suggestLocations() throws Exception
-	{
-		final SuggestLocationsResult result = suggestLocations("Flughafen");
-		print(result);
-	}
+    @Test
+    public void suggestLocations() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Flughafen");
+        print(result);
+    }
 
-	@Test
-	public void shortTrip() throws Exception
-	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8503000", null, "Zürich HB"), null, new Location(
-				LocationType.STATION, "8507785", null, "Bern, Hauptbahnhof"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		print(result);
-		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		print(laterResult);
-	}
+    @Test
+    public void shortTrip() throws Exception {
+        final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8503000", null, "Zürich HB"),
+                null, new Location(LocationType.STATION, "8507785", null, "Bern, Hauptbahnhof"), new Date(), true,
+                Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+        print(result);
+        final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+        print(laterResult);
+    }
 
-	@Test
-	public void trip() throws Exception
-	{
-		final QueryTripsResult result = queryTrips(
-				new Location(LocationType.STATION, "8503000", 47378491, 8537945, "Zürich", "Zürich, Hauptbahnhof"), null, new Location(
-						LocationType.STATION, "8530812", 47361762, 8560715, "Zürich", "Hegibachplatz"), new Date(), true, Product.ALL,
-				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		print(result);
-		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		print(laterResult);
-	}
+    @Test
+    public void trip() throws Exception {
+        final QueryTripsResult result = queryTrips(
+                new Location(LocationType.STATION, "8503000", 47378491, 8537945, "Zürich", "Zürich, Hauptbahnhof"),
+                null, new Location(LocationType.STATION, "8530812", 47361762, 8560715, "Zürich", "Hegibachplatz"),
+                new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+        print(result);
+        final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+        print(laterResult);
+    }
 }

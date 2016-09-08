@@ -23,27 +23,22 @@ import java.io.IOException;
  * @author Andreas Schildbach
  */
 @SuppressWarnings("serial")
-public class ParserException extends IOException
-{
-	public ParserException()
-	{
-		super();
-	}
+public class ParserException extends IOException {
+    public ParserException() {
+        super();
+    }
 
-	public ParserException(final String message)
-	{
-		super(message);
-	}
+    public ParserException(final String message) {
+        super(message);
+    }
 
-	public ParserException(final String message, final Throwable cause)
-	{
-		super(message);
-		super.initCause(cause);
-	}
+    public ParserException(final String message, final Throwable cause) {
+        super(message);
+        super.initCause(cause);
+    }
 
-	public ParserException(final Throwable cause)
-	{
-		super(cause == null ? null : cause.toString());
-		super.initCause(cause);
-	}
+    public ParserException(final Throwable cause) {
+        super(cause == null ? null : cause.toString());
+        super.initCause(cause);
+    }
 }

@@ -32,48 +32,44 @@ import com.google.common.base.Objects;
  * @author Andreas Schildbach
  */
 @SuppressWarnings("serial")
-public final class StationDepartures implements Serializable
-{
-	public final Location location;
-	public final List<Departure> departures;
-	public final @Nullable List<LineDestination> lines;
+public final class StationDepartures implements Serializable {
+    public final Location location;
+    public final List<Departure> departures;
+    public final @Nullable List<LineDestination> lines;
 
-	public StationDepartures(final Location location, final List<Departure> departures, final List<LineDestination> lines)
-	{
-		this.location = checkNotNull(location);
-		this.departures = checkNotNull(departures);
-		this.lines = lines;
-	}
+    public StationDepartures(final Location location, final List<Departure> departures,
+            final List<LineDestination> lines) {
+        this.location = checkNotNull(location);
+        this.departures = checkNotNull(departures);
+        this.lines = lines;
+    }
 
-	@Override
-	public boolean equals(final Object o)
-	{
-		if (o == this)
-			return true;
-		if (!(o instanceof StationDepartures))
-			return false;
-		final StationDepartures other = (StationDepartures) o;
-		if (!Objects.equal(this.location, other.location))
-			return false;
-		if (!Objects.equal(this.departures, other.departures))
-			return false;
-		if (!Objects.equal(this.lines, other.lines))
-			return false;
-		return true;
-	}
+    @Override
+    public boolean equals(final Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof StationDepartures))
+            return false;
+        final StationDepartures other = (StationDepartures) o;
+        if (!Objects.equal(this.location, other.location))
+            return false;
+        if (!Objects.equal(this.departures, other.departures))
+            return false;
+        if (!Objects.equal(this.lines, other.lines))
+            return false;
+        return true;
+    }
 
-	@Override
-	public int hashCode()
-	{
-		return Objects.hashCode(location, departures, lines);
-	}
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(location, departures, lines);
+    }
 
-	@Override
-	public String toString()
-	{
-		final ToStringHelper helper = MoreObjects.toStringHelper(this).addValue(location);
-		if (departures != null)
-			helper.add("size", departures.size()).add("departures", departures);
-		return helper.toString();
-	}
+    @Override
+    public String toString() {
+        final ToStringHelper helper = MoreObjects.toStringHelper(this).addValue(location);
+        if (departures != null)
+            helper.add("size", departures.size()).add("departures", departures);
+        return helper.toString();
+    }
 }

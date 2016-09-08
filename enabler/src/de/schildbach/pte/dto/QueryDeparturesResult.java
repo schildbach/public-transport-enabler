@@ -32,47 +32,40 @@ import com.google.common.base.MoreObjects.ToStringHelper;
  * @author Andreas Schildbach
  */
 @SuppressWarnings("serial")
-public final class QueryDeparturesResult implements Serializable
-{
-	public enum Status
-	{
-		OK, INVALID_STATION, SERVICE_DOWN
-	}
+public final class QueryDeparturesResult implements Serializable {
+    public enum Status {
+        OK, INVALID_STATION, SERVICE_DOWN
+    }
 
-	public final @Nullable ResultHeader header;
-	public final Status status;
-	public final List<StationDepartures> stationDepartures = new LinkedList<StationDepartures>();
+    public final @Nullable ResultHeader header;
+    public final Status status;
+    public final List<StationDepartures> stationDepartures = new LinkedList<StationDepartures>();
 
-	public QueryDeparturesResult(final ResultHeader header)
-	{
-		this.header = header;
-		this.status = Status.OK;
-	}
+    public QueryDeparturesResult(final ResultHeader header) {
+        this.header = header;
+        this.status = Status.OK;
+    }
 
-	public QueryDeparturesResult(final ResultHeader header, final Status status)
-	{
-		this.header = header;
-		this.status = checkNotNull(status);
-	}
+    public QueryDeparturesResult(final ResultHeader header, final Status status) {
+        this.header = header;
+        this.status = checkNotNull(status);
+    }
 
-	public StationDepartures findStationDepartures(final String stationId)
-	{
-		for (final StationDepartures departures : stationDepartures)
-		{
-			final Location location = departures.location;
-			if (location != null && stationId.equals(location.id))
-				return departures;
-		}
+    public StationDepartures findStationDepartures(final String stationId) {
+        for (final StationDepartures departures : stationDepartures) {
+            final Location location = departures.location;
+            if (location != null && stationId.equals(location.id))
+                return departures;
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	@Override
-	public String toString()
-	{
-		final ToStringHelper helper = MoreObjects.toStringHelper(this).addValue(status);
-		if (stationDepartures != null)
-			helper.add("size", stationDepartures.size()).add("stationDepartures", stationDepartures);
-		return helper.toString();
-	}
+    @Override
+    public String toString() {
+        final ToStringHelper helper = MoreObjects.toStringHelper(this).addValue(status);
+        if (stationDepartures != null)
+            helper.add("size", stationDepartures.size()).add("stationDepartures", stationDepartures);
+        return helper.toString();
+    }
 }

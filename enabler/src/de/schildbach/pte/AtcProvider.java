@@ -20,14 +20,12 @@ package de.schildbach.pte;
 /**
  * @author Andreas Schildbach
  */
-public class AtcProvider extends AbstractEfaProvider
-{
-	private final static String API_BASE = "http://82.187.83.50/TravelPlanner/";
+public class AtcProvider extends AbstractEfaProvider {
+    private final static String API_BASE = "http://82.187.83.50/TravelPlanner/";
 
-	// http://cisium.webhop.net/TravelPlanner/
+    // http://cisium.webhop.net/TravelPlanner/
 
-	public AtcProvider()
-	{
-		super(NetworkId.ATC, API_BASE);
-	}
+    public AtcProvider() {
+        super(NetworkId.ATC, API_BASE);
+    }
 }

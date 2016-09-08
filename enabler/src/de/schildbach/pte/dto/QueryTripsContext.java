@@ -22,9 +22,8 @@ import java.io.Serializable;
 /**
  * @author Andreas Schildbach
  */
-public interface QueryTripsContext extends Serializable
-{
-	boolean canQueryLater();
+public interface QueryTripsContext extends Serializable {
+    boolean canQueryLater();
 
-	boolean canQueryEarlier();
+    boolean canQueryEarlier();
 }

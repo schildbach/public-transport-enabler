@@ -21,27 +21,22 @@ package de.schildbach.pte.exception;
  * @author Andreas Schildbach
  */
 @SuppressWarnings("serial")
-public class InvalidDataException extends ParserException
-{
-	public InvalidDataException()
-	{
-		super();
-	}
+public class InvalidDataException extends ParserException {
+    public InvalidDataException() {
+        super();
+    }
 
-	public InvalidDataException(final String message)
-	{
-		super(message);
-	}
+    public InvalidDataException(final String message) {
+        super(message);
+    }
 
-	public InvalidDataException(final String message, final Throwable cause)
-	{
-		super(message);
-		super.initCause(cause);
-	}
+    public InvalidDataException(final String message, final Throwable cause) {
+        super(message);
+        super.initCause(cause);
+    }
 
-	public InvalidDataException(final Throwable cause)
-	{
-		super(cause == null ? null : cause.toString());
-		super.initCause(cause);
-	}
+    public InvalidDataException(final Throwable cause) {
+        super(cause == null ? null : cause.toString());
+        super.initCause(cause);
+    }
 }

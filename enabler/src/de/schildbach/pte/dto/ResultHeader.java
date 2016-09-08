@@ -31,32 +31,29 @@ import de.schildbach.pte.NetworkId;
  * @author Andreas Schildbach
  */
 @SuppressWarnings("serial")
-public final class ResultHeader implements Serializable
-{
-	public final NetworkId network;
-	public final String serverProduct;
-	public final @Nullable String serverVersion;
-	public final long serverTime;
-	public final Object context;
+public final class ResultHeader implements Serializable {
+    public final NetworkId network;
+    public final String serverProduct;
+    public final @Nullable String serverVersion;
+    public final long serverTime;
+    public final Object context;
 
-	public ResultHeader(final NetworkId network, final String serverProduct)
-	{
-		this(network, serverProduct, null, 0, null);
-	}
+    public ResultHeader(final NetworkId network, final String serverProduct) {
+        this(network, serverProduct, null, 0, null);
+    }
 
-	public ResultHeader(final NetworkId network, final String serverProduct, final String serverVersion, final long serverTime, final Object context)
-	{
-		this.network = checkNotNull(network);
-		this.serverProduct = checkNotNull(serverProduct);
-		this.serverVersion = serverVersion;
-		this.serverTime = serverTime;
-		this.context = context;
-	}
+    public ResultHeader(final NetworkId network, final String serverProduct, final String serverVersion,
+            final long serverTime, final Object context) {
+        this.network = checkNotNull(network);
+        this.serverProduct = checkNotNull(serverProduct);
+        this.serverVersion = serverVersion;
+        this.serverTime = serverTime;
+        this.context = context;
+    }
 
-	@Override
-	public String toString()
-	{
-		return MoreObjects.toStringHelper(this).add("serverProduct", serverProduct).add("serverVersion", serverVersion).add("serverTime", serverTime)
-				.add("context", context).omitNullValues().toString();
-	}
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this).add("serverProduct", serverProduct).add("serverVersion", serverVersion)
+                .add("serverTime", serverTime).add("context", context).omitNullValues().toString();
+    }
 }

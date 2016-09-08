@@ -40,102 +40,94 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
 /**
  * @author Andreas Schildbach
  */
-public class VvoProviderLiveTest extends AbstractProviderLiveTest
-{
-	public VvoProviderLiveTest()
-	{
-		super(new VvoProvider());
-	}
+public class VvoProviderLiveTest extends AbstractProviderLiveTest {
+    public VvoProviderLiveTest() {
+        super(new VvoProvider());
+    }
 
-	@Test
-	public void nearbyStations() throws Exception
-	{
-		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "33000013"));
-		print(result);
-	}
+    @Test
+    public void nearbyStations() throws Exception {
+        final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "33000013"));
+        print(result);
+    }
 
-	@Test
-	public void nearbyStationsByCoordinate() throws Exception
-	{
-		final NearbyLocationsResult result = queryNearbyStations(Location.coord(51052467, 13733196));
-		print(result);
-	}
+    @Test
+    public void nearbyStationsByCoordinate() throws Exception {
+        final NearbyLocationsResult result = queryNearbyStations(Location.coord(51052467, 13733196));
+        print(result);
+    }
 
-	@Test
-	public void queryDepartures() throws Exception
-	{
-		final QueryDeparturesResult result = queryDepartures("100", false);
-		print(result);
-	}
+    @Test
+    public void queryDepartures() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("100", false);
+        print(result);
+    }
 
-	@Test
-	public void suggestLocationsIncomplete() throws Exception
-	{
-		final SuggestLocationsResult result = suggestLocations("Kur");
-		print(result);
-	}
+    @Test
+    public void suggestLocationsIncomplete() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Kur");
+        print(result);
+    }
 
-	@Test
-	public void suggestLocationsWithUmlaut() throws Exception
-	{
-		final SuggestLocationsResult result = suggestLocations("Hülßestraße");
-		print(result);
-		assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "33000123")));
-	}
+    @Test
+    public void suggestLocationsWithUmlaut() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Hülßestraße");
+        print(result);
+        assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "33000123")));
+    }
 
-	@Test
-	public void suggestLocationsCoverage() throws Exception
-	{
-		final SuggestLocationsResult dresdenResult = suggestLocations("Dresden Postplatz");
-		print(dresdenResult);
-		assertThat(dresdenResult.getLocations(), hasItem(new Location(LocationType.STATION, "33000037")));
-	}
+    @Test
+    public void suggestLocationsCoverage() throws Exception {
+        final SuggestLocationsResult dresdenResult = suggestLocations("Dresden Postplatz");
+        print(dresdenResult);
+        assertThat(dresdenResult.getLocations(), hasItem(new Location(LocationType.STATION, "33000037")));
+    }
 
-	@Test
-	public void suggestAddressLocation() throws Exception
-	{
-		final SuggestLocationsResult result = suggestLocations("Dresden, Töpferstr. 10");
-		print(result);
-	}
+    @Test
+    public void suggestAddressLocation() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Dresden, Töpferstr. 10");
+        print(result);
+    }
 
-	@Test
-	public void shortTrip() throws Exception
-	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "33000013", null, "Dresden Albertplatz"), null, new Location(
-				LocationType.STATION, "33000262", null, "Dresden Bischofsweg"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-				Accessibility.NEUTRAL);
-		print(result);
-		assertEquals(QueryTripsResult.Status.OK, result.status);
-		assertTrue(result.trips.size() > 0);
+    @Test
+    public void shortTrip() throws Exception {
+        final QueryTripsResult result = queryTrips(
+                new Location(LocationType.STATION, "33000013", null, "Dresden Albertplatz"), null,
+                new Location(LocationType.STATION, "33000262", null, "Dresden Bischofsweg"), new Date(), true,
+                Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+        print(result);
+        assertEquals(QueryTripsResult.Status.OK, result.status);
+        assertTrue(result.trips.size() > 0);
 
-		if (!result.context.canQueryLater())
-			return;
+        if (!result.context.canQueryLater())
+            return;
 
-		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		print(laterResult);
+        final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+        print(laterResult);
 
-		if (!laterResult.context.canQueryLater())
-			return;
+        if (!laterResult.context.canQueryLater())
+            return;
 
-		final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
-		print(later2Result);
+        final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
+        print(later2Result);
 
-		if (!later2Result.context.canQueryEarlier())
-			return;
+        if (!later2Result.context.canQueryEarlier())
+            return;
 
-		final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
-		print(earlierResult);
-	}
+        final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
+        print(earlierResult);
+    }
 
-	@Test
-	public void tripFromAddressToAddress() throws Exception
-	{
-		final QueryTripsResult result = queryTrips(
-				new Location(LocationType.ADDRESS, null, 51052260, 13740998, "Dresden", "Dresden, Töpferstraße 10"), null, new Location(
-						LocationType.ADDRESS, null, 51029752, 13700666, "Dresden", "Dresden, Tharandter Straße 88"), new Date(), true, Product.ALL,
-				WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		print(result);
-		assertEquals(QueryTripsResult.Status.OK, result.status);
-		assertTrue(result.trips.size() > 0);
-	}
+    @Test
+    public void tripFromAddressToAddress() throws Exception {
+        final QueryTripsResult result = queryTrips(
+                new Location(LocationType.ADDRESS, null, 51052260, 13740998, "Dresden", "Dresden, Töpferstraße 10"),
+                null,
+                new Location(LocationType.ADDRESS, null, 51029752, 13700666, "Dresden",
+                        "Dresden, Tharandter Straße 88"),
+                new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+        print(result);
+        assertEquals(QueryTripsResult.Status.OK, result.status);
+        assertTrue(result.trips.size() > 0);
+    }
 }

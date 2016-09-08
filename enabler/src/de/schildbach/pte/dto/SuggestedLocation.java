@@ -27,58 +27,51 @@ import com.google.common.base.Objects;
  * @author Andreas Schildbach
  */
 @SuppressWarnings("serial")
-public final class SuggestedLocation implements Serializable, Comparable<SuggestedLocation>
-{
-	public final Location location;
-	public final int priority;
+public final class SuggestedLocation implements Serializable, Comparable<SuggestedLocation> {
+    public final Location location;
+    public final int priority;
 
-	public SuggestedLocation(final Location location, final int priority)
-	{
-		this.location = checkNotNull(location);
-		this.priority = priority;
-	}
+    public SuggestedLocation(final Location location, final int priority) {
+        this.location = checkNotNull(location);
+        this.priority = priority;
+    }
 
-	public SuggestedLocation(final Location location)
-	{
-		this(location, 0);
-	}
+    public SuggestedLocation(final Location location) {
+        this(location, 0);
+    }
 
-	public int compareTo(final SuggestedLocation other)
-	{
-		// prefer quality
-		if (this.priority > other.priority)
-			return -1;
-		else if (this.priority < other.priority)
-			return 1;
+    public int compareTo(final SuggestedLocation other) {
+        // prefer quality
+        if (this.priority > other.priority)
+            return -1;
+        else if (this.priority < other.priority)
+            return 1;
 
-		// prefer stations
-		final int compareLocationType = this.location.type.compareTo(other.location.type);
-		if (compareLocationType != 0)
-			return compareLocationType;
+        // prefer stations
+        final int compareLocationType = this.location.type.compareTo(other.location.type);
+        if (compareLocationType != 0)
+            return compareLocationType;
 
-		return 0;
-	}
+        return 0;
+    }
 
-	@Override
-	public boolean equals(final Object o)
-	{
-		if (o == this)
-			return true;
-		if (!(o instanceof SuggestedLocation))
-			return false;
-		final SuggestedLocation other = (SuggestedLocation) o;
-		return Objects.equal(this.location, other.location);
-	}
+    @Override
+    public boolean equals(final Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof SuggestedLocation))
+            return false;
+        final SuggestedLocation other = (SuggestedLocation) o;
+        return Objects.equal(this.location, other.location);
+    }
 
-	@Override
-	public int hashCode()
-	{
-		return Objects.hashCode(location);
-	}
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(location);
+    }
 
-	@Override
-	public String toString()
-	{
-		return priority + ":" + location;
-	}
+    @Override
+    public String toString() {
+        return priority + ":" + location;
+    }
 }

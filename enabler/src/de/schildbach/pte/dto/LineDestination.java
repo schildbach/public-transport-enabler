@@ -30,41 +30,37 @@ import com.google.common.base.Objects;
  * @author Andreas Schildbach
  */
 @SuppressWarnings("serial")
-public final class LineDestination implements Serializable
-{
-	final public Line line;
-	final public @Nullable Location destination;
+public final class LineDestination implements Serializable {
+    final public Line line;
+    final public @Nullable Location destination;
 
-	public LineDestination(final Line line, final Location destination)
-	{
-		this.line = checkNotNull(line);
-		this.destination = destination;
-	}
+    public LineDestination(final Line line, final Location destination) {
+        this.line = checkNotNull(line);
+        this.destination = destination;
+    }
 
-	@Override
-	public boolean equals(final Object o)
-	{
-		if (o == this)
-			return true;
-		if (!(o instanceof LineDestination))
-			return false;
-		final LineDestination other = (LineDestination) o;
-		if (!Objects.equal(this.line, other.line))
-			return false;
-		if (!Objects.equal(this.destination, other.destination))
-			return false;
-		return true;
-	}
+    @Override
+    public boolean equals(final Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof LineDestination))
+            return false;
+        final LineDestination other = (LineDestination) o;
+        if (!Objects.equal(this.line, other.line))
+            return false;
+        if (!Objects.equal(this.destination, other.destination))
+            return false;
+        return true;
+    }
 
-	@Override
-	public int hashCode()
-	{
-		return Objects.hashCode(line, destination);
-	}
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(line, destination);
+    }
 
-	@Override
-	public String toString()
-	{
-		return MoreObjects.toStringHelper(this).add("line", line).add("destination", destination).omitNullValues().toString();
-	}
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this).add("line", line).add("destination", destination).omitNullValues()
+                .toString();
+    }
 }

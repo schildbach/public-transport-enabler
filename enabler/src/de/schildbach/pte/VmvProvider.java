@@ -20,17 +20,15 @@ package de.schildbach.pte;
 /**
  * @author Andreas Schildbach
  */
-public class VmvProvider extends AbstractEfaProvider
-{
-	private static final String API_BASE = "http://80.146.180.107/vmv2/";
+public class VmvProvider extends AbstractEfaProvider {
+    private static final String API_BASE = "http://80.146.180.107/vmv2/";
 
-	// http://80.146.180.107/vmv/
-	// http://80.146.180.107/delfi/
+    // http://80.146.180.107/vmv/
+    // http://80.146.180.107/delfi/
 
-	public VmvProvider()
-	{
-		super(NetworkId.VMV, API_BASE);
+    public VmvProvider() {
+        super(NetworkId.VMV, API_BASE);
 
-		setUseRouteIndexAsTripId(false);
-	}
+        setUseRouteIndexAsTripId(false);
+    }
 }

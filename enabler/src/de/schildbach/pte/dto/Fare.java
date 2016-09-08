@@ -30,65 +30,60 @@ import com.google.common.base.Objects;
 /**
  * @author Andreas Schildbach
  */
-public final class Fare implements Serializable
-{
-	public enum Type
-	{
-		ADULT, CHILD, YOUTH, STUDENT, MILITARY, SENIOR, DISABLED
-	}
+public final class Fare implements Serializable {
+    public enum Type {
+        ADULT, CHILD, YOUTH, STUDENT, MILITARY, SENIOR, DISABLED
+    }
 
-	private static final long serialVersionUID = -6136489996930976421L;
+    private static final long serialVersionUID = -6136489996930976421L;
 
-	public final String network;
-	public final Type type;
-	public final Currency currency;
-	public final float fare;
-	public final @Nullable String unitName;
-	public final @Nullable String units;
+    public final String network;
+    public final Type type;
+    public final Currency currency;
+    public final float fare;
+    public final @Nullable String unitName;
+    public final @Nullable String units;
 
-	public Fare(final String network, final Type type, final Currency currency, final float fare, final String unitName, final String units)
-	{
-		this.network = checkNotNull(network);
-		this.type = checkNotNull(type);
-		this.currency = checkNotNull(currency);
-		this.fare = fare;
-		this.unitName = unitName;
-		this.units = units;
-	}
+    public Fare(final String network, final Type type, final Currency currency, final float fare, final String unitName,
+            final String units) {
+        this.network = checkNotNull(network);
+        this.type = checkNotNull(type);
+        this.currency = checkNotNull(currency);
+        this.fare = fare;
+        this.unitName = unitName;
+        this.units = units;
+    }
 
-	@Override
-	public boolean equals(final Object o)
-	{
-		if (o == this)
-			return true;
-		if (!(o instanceof Fare))
-			return false;
-		final Fare other = (Fare) o;
-		if (!Objects.equal(this.network, other.network))
-			return false;
-		if (!Objects.equal(this.type, other.type))
-			return false;
-		if (!Objects.equal(this.currency, other.currency))
-			return false;
-		if (this.fare != other.fare)
-			return false;
-		if (!Objects.equal(this.unitName, other.unitName))
-			return false;
-		if (!Objects.equal(this.units, other.units))
-			return false;
-		return true;
-	}
+    @Override
+    public boolean equals(final Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof Fare))
+            return false;
+        final Fare other = (Fare) o;
+        if (!Objects.equal(this.network, other.network))
+            return false;
+        if (!Objects.equal(this.type, other.type))
+            return false;
+        if (!Objects.equal(this.currency, other.currency))
+            return false;
+        if (this.fare != other.fare)
+            return false;
+        if (!Objects.equal(this.unitName, other.unitName))
+            return false;
+        if (!Objects.equal(this.units, other.units))
+            return false;
+        return true;
+    }
 
-	@Override
-	public int hashCode()
-	{
-		return Objects.hashCode(network, type, currency, fare, unitName, units);
-	}
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(network, type, currency, fare, unitName, units);
+    }
 
-	@Override
-	public String toString()
-	{
-		return MoreObjects.toStringHelper(this).addValue(network).addValue(type).addValue(currency).addValue(fare).addValue(unitName).addValue(units)
-				.toString();
-	}
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this).addValue(network).addValue(type).addValue(currency).addValue(fare)
+                .addValue(unitName).addValue(units).toString();
+    }
 }

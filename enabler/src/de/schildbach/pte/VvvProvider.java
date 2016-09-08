@@ -22,12 +22,10 @@ package de.schildbach.pte;
  * 
  * @author Andreas Schildbach
  */
-public class VvvProvider extends AbstractEfaProvider
-{
-	private final static String API_BASE = "http://195.30.98.162:8081/vvv2/";
+public class VvvProvider extends AbstractEfaProvider {
+    private final static String API_BASE = "http://195.30.98.162:8081/vvv2/";
 
-	public VvvProvider()
-	{
-		super(NetworkId.VVV, API_BASE);
-	}
+    public VvvProvider() {
+        super(NetworkId.VVV, API_BASE);
+    }
 }

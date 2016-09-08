@@ -31,37 +31,32 @@ import com.google.common.base.MoreObjects.ToStringHelper;
  * @author Andreas Schildbach
  */
 @SuppressWarnings("serial")
-public final class NearbyLocationsResult implements Serializable
-{
-	public enum Status
-	{
-		OK, INVALID_ID, SERVICE_DOWN
-	}
+public final class NearbyLocationsResult implements Serializable {
+    public enum Status {
+        OK, INVALID_ID, SERVICE_DOWN
+    }
 
-	public final @Nullable ResultHeader header;
-	public final Status status;
-	public final List<Location> locations;
+    public final @Nullable ResultHeader header;
+    public final Status status;
+    public final List<Location> locations;
 
-	public NearbyLocationsResult(final ResultHeader header, final List<Location> locations)
-	{
-		this.header = header;
-		this.status = Status.OK;
-		this.locations = checkNotNull(locations);
-	}
+    public NearbyLocationsResult(final ResultHeader header, final List<Location> locations) {
+        this.header = header;
+        this.status = Status.OK;
+        this.locations = checkNotNull(locations);
+    }
 
-	public NearbyLocationsResult(final ResultHeader header, final Status status)
-	{
-		this.header = header;
-		this.status = checkNotNull(status);
-		this.locations = null;
-	}
+    public NearbyLocationsResult(final ResultHeader header, final Status status) {
+        this.header = header;
+        this.status = checkNotNull(status);
+        this.locations = null;
+    }
 
-	@Override
-	public String toString()
-	{
-		final ToStringHelper helper = MoreObjects.toStringHelper(this).addValue(status);
-		if (locations != null)
-			helper.add("size", locations.size()).add("locations", locations);
-		return helper.toString();
-	}
+    @Override
+    public String toString() {
+        final ToStringHelper helper = MoreObjects.toStringHelper(this).addValue(status);
+        if (locations != null)
+            helper.add("size", locations.size()).add("locations", locations);
+        return helper.toString();
+    }
 }

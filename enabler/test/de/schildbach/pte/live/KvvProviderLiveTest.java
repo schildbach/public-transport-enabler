@@ -40,97 +40,93 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
 /**
  * @author Andreas Schildbach
  */
-public class KvvProviderLiveTest extends AbstractProviderLiveTest
-{
-	public KvvProviderLiveTest()
-	{
-		super(new KvvProvider());
-	}
+public class KvvProviderLiveTest extends AbstractProviderLiveTest {
+    public KvvProviderLiveTest() {
+        super(new KvvProvider());
+    }
 
-	@Test
-	public void nearbyStations() throws Exception
-	{
-		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "7000090"));
-		print(result);
-	}
+    @Test
+    public void nearbyStations() throws Exception {
+        final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "7000090"));
+        print(result);
+    }
 
-	@Test
-	public void nearbyStationsByCoordinate() throws Exception
-	{
-		final NearbyLocationsResult result = queryNearbyStations(Location.coord(49008184, 8400736));
-		print(result);
-	}
+    @Test
+    public void nearbyStationsByCoordinate() throws Exception {
+        final NearbyLocationsResult result = queryNearbyStations(Location.coord(49008184, 8400736));
+        print(result);
+    }
 
-	@Test
-	public void queryDepartures() throws Exception
-	{
-		final QueryDeparturesResult result = queryDepartures("7000090", false);
-		print(result);
-	}
+    @Test
+    public void queryDepartures() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("7000090", false);
+        print(result);
+    }
 
-	@Test
-	public void queryDeparturesMesseKarlsruhe() throws Exception
-	{
-		final QueryDeparturesResult result = queryDepartures("7000211", false);
-		print(result);
-	}
+    @Test
+    public void queryDeparturesMesseKarlsruhe() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("7000211", false);
+        print(result);
+    }
 
-	@Test
-	public void suggestLocationsIncomplete() throws Exception
-	{
-		final SuggestLocationsResult result = suggestLocations("Kur");
-		print(result);
-	}
+    @Test
+    public void suggestLocationsIncomplete() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Kur");
+        print(result);
+    }
 
-	@Test
-	public void suggestLocationsWithUmlaut() throws Exception
-	{
-		final SuggestLocationsResult result = suggestLocations("Händelstraße");
-		print(result);
-		assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "7000044")));
-	}
+    @Test
+    public void suggestLocationsWithUmlaut() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Händelstraße");
+        print(result);
+        assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "7000044")));
+    }
 
-	@Test
-	public void shortTrip() throws Exception
-	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "7000001", 49009526, 8404914, "Karlsruhe", "Marktplatz"), null,
-				new Location(LocationType.STATION, "7000002", 49009393, 8408866, "Karlsruhe", "Kronenplatz (Kaiserstr.)"), new Date(), true,
-				Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		print(result);
-		assertEquals(QueryTripsResult.Status.OK, result.status);
-		assertTrue(result.trips.size() > 0);
+    @Test
+    public void shortTrip() throws Exception {
+        final QueryTripsResult result = queryTrips(
+                new Location(LocationType.STATION, "7000001", 49009526, 8404914, "Karlsruhe", "Marktplatz"), null,
+                new Location(LocationType.STATION, "7000002", 49009393, 8408866, "Karlsruhe",
+                        "Kronenplatz (Kaiserstr.)"),
+                new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+        print(result);
+        assertEquals(QueryTripsResult.Status.OK, result.status);
+        assertTrue(result.trips.size() > 0);
 
-		if (!result.context.canQueryLater())
-			return;
+        if (!result.context.canQueryLater())
+            return;
 
-		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		print(laterResult);
+        final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+        print(laterResult);
 
-		if (!laterResult.context.canQueryLater())
-			return;
+        if (!laterResult.context.canQueryLater())
+            return;
 
-		final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
-		print(later2Result);
+        final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
+        print(later2Result);
 
-		if (!later2Result.context.canQueryEarlier())
-			return;
+        if (!later2Result.context.canQueryEarlier())
+            return;
 
-		final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
-		print(earlierResult);
-	}
+        final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
+        print(earlierResult);
+    }
 
-	@Test
-	public void tripBetweenAddresses() throws Exception
-	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 48985089, 8402709, null,
-				"Konstanzer Straße 17, 76199 Karlsruhe, Deutschland"), null, new Location(LocationType.ADDRESS, null, 49007706, 8356358, null,
-				"Durmersheimer Straße 6, 76185 Karlsruhe, Deutschland"), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		print(result);
+    @Test
+    public void tripBetweenAddresses() throws Exception {
+        final QueryTripsResult result = queryTrips(
+                new Location(LocationType.ADDRESS, null, 48985089, 8402709, null,
+                        "Konstanzer Straße 17, 76199 Karlsruhe, Deutschland"),
+                null,
+                new Location(LocationType.ADDRESS, null, 49007706, 8356358, null,
+                        "Durmersheimer Straße 6, 76185 Karlsruhe, Deutschland"),
+                new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+        print(result);
 
-		if (!result.context.canQueryLater())
-			return;
+        if (!result.context.canQueryLater())
+            return;
 
-		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		print(laterResult);
-	}
+        final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+        print(laterResult);
+    }
 }

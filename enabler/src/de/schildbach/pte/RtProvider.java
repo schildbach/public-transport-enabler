@@ -25,45 +25,42 @@ import de.schildbach.pte.dto.Product;
 /**
  * @author Andreas Schildbach
  */
-public class RtProvider extends AbstractHafasProvider
-{
-	private static final String API_BASE = "http://railteam.hafas.de/bin/";
-	private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
-			Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.BUS, Product.FERRY, Product.SUBWAY, Product.TRAM, Product.ON_DEMAND };
+public class RtProvider extends AbstractHafasProvider {
+    private static final String API_BASE = "http://railteam.hafas.de/bin/";
+    private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
+            Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.BUS, Product.FERRY,
+            Product.SUBWAY, Product.TRAM, Product.ON_DEMAND };
 
-	public RtProvider()
-	{
-		super(NetworkId.RT, API_BASE, "dn", PRODUCTS_MAP);
+    public RtProvider() {
+        super(NetworkId.RT, API_BASE, "dn", PRODUCTS_MAP);
 
-		setStationBoardHasStationTable(false);
-	}
+        setStationBoardHasStationTable(false);
+    }
 
-	@Override
-	public Set<Product> defaultProducts()
-	{
-		return Product.ALL;
-	}
+    @Override
+    public Set<Product> defaultProducts() {
+        return Product.ALL;
+    }
 
-	private static final Pattern P_NUMBER = Pattern.compile("\\d{4,5}");
+    private static final Pattern P_NUMBER = Pattern.compile("\\d{4,5}");
 
-	@Override
-	protected Product normalizeType(final String type)
-	{
-		final String ucType = type.toUpperCase();
+    @Override
+    protected Product normalizeType(final String type) {
+        final String ucType = type.toUpperCase();
 
-		if ("N".equals(ucType)) // Frankreich, Tours
-			return Product.REGIONAL_TRAIN;
+        if ("N".equals(ucType)) // Frankreich, Tours
+            return Product.REGIONAL_TRAIN;
 
-		if (ucType.equals("U70"))
-			return null;
-		if (ucType.equals("X70"))
-			return null;
-		if (ucType.equals("T84"))
-			return null;
+        if (ucType.equals("U70"))
+            return null;
+        if (ucType.equals("X70"))
+            return null;
+        if (ucType.equals("T84"))
+            return null;
 
-		if (P_NUMBER.matcher(type).matches())
-			return null;
+        if (P_NUMBER.matcher(type).matches())
+            return null;
 
-		return super.normalizeType(type);
-	}
+        return super.normalizeType(type);
+    }
 }

@@ -35,67 +35,57 @@ import de.schildbach.pte.dto.Product;
  * 
  * @author Andreas Schildbach
  */
-public class JetProvider extends AbstractHafasProvider
-{
-	private static final String API_BASE = "http://planner.jet.org.il/bin/";
-	private static final Product[] PRODUCTS_MAP = { null, null, Product.TRAM, Product.BUS };
+public class JetProvider extends AbstractHafasProvider {
+    private static final String API_BASE = "http://planner.jet.org.il/bin/";
+    private static final Product[] PRODUCTS_MAP = { null, null, Product.TRAM, Product.BUS };
 
-	public JetProvider()
-	{
-		super(NetworkId.JET, API_BASE, "yn", PRODUCTS_MAP);
+    public JetProvider() {
+        super(NetworkId.JET, API_BASE, "yn", PRODUCTS_MAP);
 
-		setJsonGetStopsEncoding(Charsets.UTF_8);
-		setJsonNearbyLocationsEncoding(Charsets.UTF_8);
-	}
+        setJsonGetStopsEncoding(Charsets.UTF_8);
+        setJsonNearbyLocationsEncoding(Charsets.UTF_8);
+    }
 
-	@Override
-	public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location, final int maxDistance,
-			final int maxLocations) throws IOException
-	{
-		if (location.hasLocation())
-		{
-			return nearbyLocationsByCoordinate(types, location.lat, location.lon, maxDistance, maxLocations);
-		}
-		else if (location.type == LocationType.STATION && location.hasId())
-		{
-			final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
-			uri.append("?near=Anzeigen");
-			uri.append("&distance=").append(maxDistance != 0 ? maxDistance / 1000 : 50);
-			uri.append("&input=").append(normalizeStationId(location.id));
+    @Override
+    public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location,
+            final int maxDistance, final int maxLocations) throws IOException {
+        if (location.hasLocation()) {
+            return nearbyLocationsByCoordinate(types, location.lat, location.lon, maxDistance, maxLocations);
+        } else if (location.type == LocationType.STATION && location.hasId()) {
+            final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
+            uri.append("?near=Anzeigen");
+            uri.append("&distance=").append(maxDistance != 0 ? maxDistance / 1000 : 50);
+            uri.append("&input=").append(normalizeStationId(location.id));
 
-			return htmlNearbyStations(uri.toString());
-		}
-		else
-		{
-			throw new IllegalArgumentException("cannot handle: " + location);
-		}
-	}
+            return htmlNearbyStations(uri.toString());
+        } else {
+            throw new IllegalArgumentException("cannot handle: " + location);
+        }
+    }
 
-	@Override
-	protected String[] splitAddress(final String address)
-	{
-		final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(address);
-		if (m.matches())
-			return new String[] { m.group(1), m.group(2) };
+    @Override
+    protected String[] splitAddress(final String address) {
+        final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(address);
+        if (m.matches())
+            return new String[] { m.group(1), m.group(2) };
 
-		return super.splitStationName(address);
-	}
+        return super.splitStationName(address);
+    }
 
-	private static final Pattern P_NORMALIZE_BUS = Pattern.compile("([א]?\\d{1,3})#");
+    private static final Pattern P_NORMALIZE_BUS = Pattern.compile("([א]?\\d{1,3})#");
 
-	@Override
-	protected Line parseLineAndType(final String lineAndType)
-	{
-		if ("רק1#".equals(lineAndType))
-			return newLine(Product.TRAM, "רק1", null);
+    @Override
+    protected Line parseLineAndType(final String lineAndType) {
+        if ("רק1#".equals(lineAndType))
+            return newLine(Product.TRAM, "רק1", null);
 
-		if ("א 11#".equals(lineAndType) || "11א#".equals(lineAndType))
-			return newLine(Product.BUS, "א11", null);
+        if ("א 11#".equals(lineAndType) || "11א#".equals(lineAndType))
+            return newLine(Product.BUS, "א11", null);
 
-		final Matcher mBus = P_NORMALIZE_BUS.matcher(lineAndType);
-		if (mBus.matches())
-			return newLine(Product.BUS, mBus.group(1), null);
+        final Matcher mBus = P_NORMALIZE_BUS.matcher(lineAndType);
+        if (mBus.matches())
+            return newLine(Product.BUS, mBus.group(1), null);
 
-		throw new IllegalStateException("cannot normalize line#type '" + lineAndType + "'");
-	}
+        throw new IllegalStateException("cannot normalize line#type '" + lineAndType + "'");
+    }
 }

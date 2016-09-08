@@ -24,20 +24,16 @@ import java.io.InputStream;
 /**
  * @author Andreas Schildbach
  */
-public class LittleEndianDataInputStream extends DataInputStream
-{
-	public LittleEndianDataInputStream(final InputStream is)
-	{
-		super(is);
-	}
+public class LittleEndianDataInputStream extends DataInputStream {
+    public LittleEndianDataInputStream(final InputStream is) {
+        super(is);
+    }
 
-	public int readShortReverse() throws IOException
-	{
-		return read() + read() * 0x100;
-	}
+    public int readShortReverse() throws IOException {
+        return read() + read() * 0x100;
+    }
 
-	public int readIntReverse() throws IOException
-	{
-		return read() + read() * 0x100 + read() * 0x10000 + read() * 0x1000000;
-	}
+    public int readIntReverse() throws IOException {
+        return read() + read() * 0x100 + read() * 0x10000 + read() * 0x1000000;
+    }
 }

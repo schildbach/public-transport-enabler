@@ -43,123 +43,110 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
 /**
  * @author Andreas Schildbach
  */
-public abstract class AbstractProviderLiveTest
-{
-	protected final NetworkProvider provider;
+public abstract class AbstractProviderLiveTest {
+    protected final NetworkProvider provider;
 
-	public AbstractProviderLiveTest(final NetworkProvider provider)
-	{
-		this.provider = provider;
-	}
+    public AbstractProviderLiveTest(final NetworkProvider provider) {
+        this.provider = provider;
+    }
 
-	protected final void print(final NearbyLocationsResult result)
-	{
-		System.out.println(result);
+    protected final void print(final NearbyLocationsResult result) {
+        System.out.println(result);
 
-		// for (final Location location : result.locations)
-		// System.out.println(location);
-	}
+        // for (final Location location : result.locations)
+        // System.out.println(location);
+    }
 
-	protected final void print(final QueryDeparturesResult result)
-	{
-		System.out.println(result);
+    protected final void print(final QueryDeparturesResult result) {
+        System.out.println(result);
 
-		// for (final StationDepartures stationDepartures : result.stationDepartures)
-		// for (final Departure departure : stationDepartures.departures)
-		// System.out.println(departure);
-	}
+        // for (final StationDepartures stationDepartures : result.stationDepartures)
+        // for (final Departure departure : stationDepartures.departures)
+        // System.out.println(departure);
+    }
 
-	protected final void print(final SuggestLocationsResult result)
-	{
-		System.out.println(result);
+    protected final void print(final SuggestLocationsResult result) {
+        System.out.println(result);
 
-		// for (final Location location : result.getLocations())
-		// System.out.println(location);
-	}
+        // for (final Location location : result.getLocations())
+        // System.out.println(location);
+    }
 
-	protected final void print(final QueryTripsResult result)
-	{
-		System.out.println(result);
+    protected final void print(final QueryTripsResult result) {
+        System.out.println(result);
 
-		// for (final Trip trip : result.trips)
-		// {
-		// System.out.println(trip);
-		// for (final Leg leg : trip.legs)
-		// System.out.println("- " + leg);
-		// }
-	}
+        // for (final Trip trip : result.trips)
+        // {
+        // System.out.println(trip);
+        // for (final Leg leg : trip.legs)
+        // System.out.println("- " + leg);
+        // }
+    }
 
-	protected final NearbyLocationsResult queryNearbyStations(final Location location) throws IOException
-	{
-		return queryNearbyLocations(EnumSet.of(LocationType.STATION), location, 0, 0);
-	}
+    protected final NearbyLocationsResult queryNearbyStations(final Location location) throws IOException {
+        return queryNearbyLocations(EnumSet.of(LocationType.STATION), location, 0, 0);
+    }
 
-	protected final NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location) throws IOException
-	{
-		return queryNearbyLocations(types, location, 0, 0);
-	}
+    protected final NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types,
+            final Location location) throws IOException {
+        return queryNearbyLocations(types, location, 0, 0);
+    }
 
-	protected final NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location, final int maxDistance,
-			final int maxStations) throws IOException
-	{
-		return provider.queryNearbyLocations(types, location, maxDistance, maxStations);
-	}
+    protected final NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types,
+            final Location location, final int maxDistance, final int maxStations) throws IOException {
+        return provider.queryNearbyLocations(types, location, maxDistance, maxStations);
+    }
 
-	protected final QueryDeparturesResult queryDepartures(final String stationId, final boolean equivs) throws IOException
-	{
-		return queryDepartures(stationId, 0, equivs);
-	}
+    protected final QueryDeparturesResult queryDepartures(final String stationId, final boolean equivs)
+            throws IOException {
+        return queryDepartures(stationId, 0, equivs);
+    }
 
-	protected final QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures, final boolean equivs) throws IOException
-	{
-		final QueryDeparturesResult result = provider.queryDepartures(stationId, new Date(), maxDepartures, equivs);
+    protected final QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures,
+            final boolean equivs) throws IOException {
+        final QueryDeparturesResult result = provider.queryDepartures(stationId, new Date(), maxDepartures, equivs);
 
-		if (result.status == QueryDeparturesResult.Status.OK)
-		{
-			if (equivs)
-				assertTrue(result.stationDepartures.size() > 1);
-			else
-				assertTrue(result.stationDepartures.size() == 1);
-		}
+        if (result.status == QueryDeparturesResult.Status.OK) {
+            if (equivs)
+                assertTrue(result.stationDepartures.size() > 1);
+            else
+                assertTrue(result.stationDepartures.size() == 1);
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	protected final SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException
-	{
-		return provider.suggestLocations(constraint);
-	}
+    protected final SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException {
+        return provider.suggestLocations(constraint);
+    }
 
-	protected final QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to, final Date date,
-			final boolean dep, final @Nullable Set<Product> products, final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility)
-			throws IOException
-	{
-		return provider.queryTrips(from, via, to, date, dep, products, null, walkSpeed, accessibility, null);
-	}
+    protected final QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to,
+            final Date date, final boolean dep, final @Nullable Set<Product> products,
+            final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility) throws IOException {
+        return provider.queryTrips(from, via, to, date, dep, products, null, walkSpeed, accessibility, null);
+    }
 
-	protected final QueryTripsResult queryMoreTrips(final QueryTripsContext context, final boolean later) throws IOException
-	{
-		return provider.queryMoreTrips(context, later);
-	}
+    protected final QueryTripsResult queryMoreTrips(final QueryTripsContext context, final boolean later)
+            throws IOException {
+        return provider.queryMoreTrips(context, later);
+    }
 
-	protected final static String secretProperty(final String key)
-	{
-		try
-		{
-			final Properties properties = new Properties();
-			final String secretPropertiesFilename = "secrets.properties";
-			final InputStream is = AbstractProviderLiveTest.class.getResourceAsStream(secretPropertiesFilename);
-			if (is == null)
-				throw new IllegalStateException("Could not find secret property file " + secretPropertiesFilename + " in classpath.");
-			properties.load(is);
-			final String secret = properties.getProperty(key);
-			if (secret == null)
-				throw new IllegalStateException("Could not find secret value for '" + key + "' in " + secretPropertiesFilename + ".");
-			return secret;
-		}
-		catch (final IOException x)
-		{
-			throw new RuntimeException(x);
-		}
-	}
+    protected final static String secretProperty(final String key) {
+        try {
+            final Properties properties = new Properties();
+            final String secretPropertiesFilename = "secrets.properties";
+            final InputStream is = AbstractProviderLiveTest.class.getResourceAsStream(secretPropertiesFilename);
+            if (is == null)
+                throw new IllegalStateException(
+                        "Could not find secret property file " + secretPropertiesFilename + " in classpath.");
+            properties.load(is);
+            final String secret = properties.getProperty(key);
+            if (secret == null)
+                throw new IllegalStateException(
+                        "Could not find secret value for '" + key + "' in " + secretPropertiesFilename + ".");
+            return secret;
+        } catch (final IOException x) {
+            throw new RuntimeException(x);
+        }
+    }
 }

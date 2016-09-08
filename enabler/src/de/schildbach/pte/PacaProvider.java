@@ -22,37 +22,33 @@ import de.schildbach.pte.dto.Product;
 /**
  * @author Kjell Braden <afflux@pentabarf.de>
  */
-public class PacaProvider extends AbstractTsiProvider
-{
-	public PacaProvider()
-	{
-		super(NetworkId.PACA, "PACA", "http://www.pacamobilite.fr/WebServices/TransinfoService/api");
-	}
+public class PacaProvider extends AbstractTsiProvider {
+    public PacaProvider() {
+        super(NetworkId.PACA, "PACA", "http://www.pacamobilite.fr/WebServices/TransinfoService/api");
+    }
 
-	@Override
-	protected String translateToLocalProduct(final Product p)
-	{
-		switch (p)
-		{
-			case HIGH_SPEED_TRAIN:
-				return "RAPID_TRANSIT";
-			case REGIONAL_TRAIN:
-				return "TRAIN|LONG_DISTANCE_TRAIN";
-			case SUBURBAN_TRAIN:
-				return "LOCAL_TRAIN";
-			case SUBWAY:
-				return "METRO";
-			case TRAM:
-				return "TRAMWAY";
-			case BUS:
-				return "BUS|COACH";
-			case ON_DEMAND:
-				return "TOD";
-			case FERRY:
-				return "FERRY";
-			case CABLECAR:
-			default:
-				return null;
-		}
-	}
+    @Override
+    protected String translateToLocalProduct(final Product p) {
+        switch (p) {
+        case HIGH_SPEED_TRAIN:
+            return "RAPID_TRANSIT";
+        case REGIONAL_TRAIN:
+            return "TRAIN|LONG_DISTANCE_TRAIN";
+        case SUBURBAN_TRAIN:
+            return "LOCAL_TRAIN";
+        case SUBWAY:
+            return "METRO";
+        case TRAM:
+            return "TRAMWAY";
+        case BUS:
+            return "BUS|COACH";
+        case ON_DEMAND:
+            return "TOD";
+        case FERRY:
+            return "FERRY";
+        case CABLECAR:
+        default:
+            return null;
+        }
+    }
 }

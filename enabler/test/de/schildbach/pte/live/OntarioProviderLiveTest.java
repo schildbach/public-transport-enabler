@@ -31,45 +31,38 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
 /**
  * @author Stephane Berube
  */
-public class OntarioProviderLiveTest extends AbstractNavitiaProviderLiveTest
-{
-	public OntarioProviderLiveTest()
-	{
-		super(new OntarioProvider(secretProperty("navitia.authorization")));
-	}
+public class OntarioProviderLiveTest extends AbstractNavitiaProviderLiveTest {
+    public OntarioProviderLiveTest() {
+        super(new OntarioProvider(secretProperty("navitia.authorization")));
+    }
 
-	@Test
-	public void nearbyStations() throws Exception
-	{
-		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "OAW:SP:CH240"));
-		print(result);
-	}
+    @Test
+    public void nearbyStations() throws Exception {
+        final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "OAW:SP:CH240"));
+        print(result);
+    }
 
-	@Test
-	public void nearbyStationsByCoordinate() throws Exception
-	{
-		final NearbyLocationsResult result = queryNearbyStations(Location.coord(45416667, -75683333));
-		print(result);
-	}
+    @Test
+    public void nearbyStationsByCoordinate() throws Exception {
+        final NearbyLocationsResult result = queryNearbyStations(Location.coord(45416667, -75683333));
+        print(result);
+    }
 
-	@Test
-	public void queryDepartures() throws Exception
-	{
-		final QueryDeparturesResult result = queryDepartures("OAW:SP:CH240", false);
-		print(result);
-	}
+    @Test
+    public void queryDepartures() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("OAW:SP:CH240", false);
+        print(result);
+    }
 
-	@Test
-	public void queryDeparturesInvalidStation() throws Exception
-	{
-		final QueryDeparturesResult result = queryDepartures("OAW:SP:CHxxx", false);
-		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
-	}
+    @Test
+    public void queryDeparturesInvalidStation() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("OAW:SP:CHxxx", false);
+        assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
+    }
 
-	@Test
-	public void suggestLocations() throws Exception
-	{
-		final SuggestLocationsResult result = suggestLocations("Airport");
-		print(result);
-	}
+    @Test
+    public void suggestLocations() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Airport");
+        print(result);
+    }
 }

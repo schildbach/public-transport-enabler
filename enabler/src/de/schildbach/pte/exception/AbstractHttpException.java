@@ -27,42 +27,36 @@ import de.schildbach.pte.util.HttpClient;
  * @author Andreas Schildbach
  */
 @SuppressWarnings("serial")
-public abstract class AbstractHttpException extends IOException
-{
-	private final URL url;
-	private final Reader errorReader;
+public abstract class AbstractHttpException extends IOException {
+    private final URL url;
+    private final Reader errorReader;
 
-	public AbstractHttpException(final URL url)
-	{
-		this(url, null);
-	}
+    public AbstractHttpException(final URL url) {
+        this(url, null);
+    }
 
-	public AbstractHttpException(final URL url, final Reader errorReader)
-	{
-		super(url.toString());
-		this.url = url;
-		this.errorReader = errorReader;
-	}
+    public AbstractHttpException(final URL url, final Reader errorReader) {
+        super(url.toString());
+        this.url = url;
+        this.errorReader = errorReader;
+    }
 
-	public URL getUrl()
-	{
-		return url;
-	}
+    public URL getUrl() {
+        return url;
+    }
 
-	public Reader getErrorReader()
-	{
-		return errorReader;
-	}
+    public Reader getErrorReader() {
+        return errorReader;
+    }
 
-	public CharSequence scrapeErrorStream() throws IOException
-	{
-		if (errorReader == null)
-			return null;
+    public CharSequence scrapeErrorStream() throws IOException {
+        if (errorReader == null)
+            return null;
 
-		final StringBuilder error = new StringBuilder(HttpClient.SCRAPE_INITIAL_CAPACITY);
-		HttpClient.copy(errorReader, error);
-		errorReader.close();
+        final StringBuilder error = new StringBuilder(HttpClient.SCRAPE_INITIAL_CAPACITY);
+        HttpClient.copy(errorReader, error);
+        errorReader.close();
 
-		return error;
-	}
+        return error;
+    }
 }

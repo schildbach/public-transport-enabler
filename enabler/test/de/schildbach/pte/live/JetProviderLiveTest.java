@@ -37,61 +37,54 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
 /**
  * @author Andreas Schildbach
  */
-public class JetProviderLiveTest extends AbstractProviderLiveTest
-{
-	public JetProviderLiveTest()
-	{
-		super(new JetProvider());
-	}
+public class JetProviderLiveTest extends AbstractProviderLiveTest {
+    public JetProviderLiveTest() {
+        super(new JetProvider());
+    }
 
-	@Test
-	public void nearbyStations() throws Exception
-	{
-		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "1055"));
-		print(result);
-	}
+    @Test
+    public void nearbyStations() throws Exception {
+        final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "1055"));
+        print(result);
+    }
 
-	@Test
-	public void nearbyStationsByCoordinate() throws Exception
-	{
-		final NearbyLocationsResult result = queryNearbyStations(Location.coord(31769757, 35213506));
-		print(result);
-	}
+    @Test
+    public void nearbyStationsByCoordinate() throws Exception {
+        final NearbyLocationsResult result = queryNearbyStations(Location.coord(31769757, 35213506));
+        print(result);
+    }
 
-	@Test
-	public void queryDepartures() throws Exception
-	{
-		final QueryDeparturesResult result1 = queryDepartures("568", false);
-		print(result1);
+    @Test
+    public void queryDepartures() throws Exception {
+        final QueryDeparturesResult result1 = queryDepartures("568", false);
+        print(result1);
 
-		final QueryDeparturesResult result2 = queryDepartures("1055", false);
-		print(result2);
+        final QueryDeparturesResult result2 = queryDepartures("1055", false);
+        print(result2);
 
-		final QueryDeparturesResult result3 = queryDepartures("90010", false);
-		print(result3);
-	}
+        final QueryDeparturesResult result3 = queryDepartures("90010", false);
+        print(result3);
+    }
 
-	@Test
-	public void queryDeparturesInvalidStation() throws Exception
-	{
-		final QueryDeparturesResult result = queryDepartures("999999", false);
-		assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
-	}
+    @Test
+    public void queryDeparturesInvalidStation() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("999999", false);
+        assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
+    }
 
-	@Test
-	public void suggestLocations() throws Exception
-	{
-		final SuggestLocationsResult result = suggestLocations("הנשיא - מוזיאון האיסלם, ירושלים");
-		print(result);
-	}
+    @Test
+    public void suggestLocations() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("הנשיא - מוזיאון האיסלם, ירושלים");
+        print(result);
+    }
 
-	@Test
-	public void shortConnection() throws Exception
-	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "1055", null, null), null, new Location(LocationType.STATION,
-				"90010", null, null), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-		print(result);
-		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		print(laterResult);
-	}
+    @Test
+    public void shortConnection() throws Exception {
+        final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "1055", null, null), null,
+                new Location(LocationType.STATION, "90010", null, null), new Date(), true, Product.ALL,
+                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+        print(result);
+        final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+        print(laterResult);
+    }
 }

@@ -20,14 +20,12 @@ package de.schildbach.pte;
 /**
  * @author Andreas Schildbach
  */
-public class DingProvider extends AbstractEfaProvider
-{
-	private final static String API_BASE = "http://www.ding-ulm.de/ding2/";
+public class DingProvider extends AbstractEfaProvider {
+    private final static String API_BASE = "http://www.ding-ulm.de/ding2/";
 
-	// http://www.ding.eu/swu
+    // http://www.ding.eu/swu
 
-	public DingProvider()
-	{
-		super(NetworkId.DING, API_BASE);
-	}
+    public DingProvider() {
+        super(NetworkId.DING, API_BASE);
+    }
 }

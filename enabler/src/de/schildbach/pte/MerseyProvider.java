@@ -27,36 +27,32 @@ import de.schildbach.pte.dto.Product;
 /**
  * @author Andreas Schildbach
  */
-public class MerseyProvider extends AbstractEfaProvider
-{
-	private final static String API_BASE = "http://jp.merseytravel.gov.uk/nwm/";
+public class MerseyProvider extends AbstractEfaProvider {
+    private final static String API_BASE = "http://jp.merseytravel.gov.uk/nwm/";
 
-	public MerseyProvider()
-	{
-		super(NetworkId.MERSEY, API_BASE);
+    public MerseyProvider() {
+        super(NetworkId.MERSEY, API_BASE);
 
-		setLanguage("en");
-		setTimeZone("Europe/London");
-	}
+        setLanguage("en");
+        setTimeZone("Europe/London");
+    }
 
-	@Override
-	public Set<Product> defaultProducts()
-	{
-		return Product.ALL;
-	}
+    @Override
+    public Set<Product> defaultProducts() {
+        return Product.ALL;
+    }
 
-	private static final Pattern P_POSITION_BOUND = Pattern.compile("([NESW]+)-bound", Pattern.CASE_INSENSITIVE);
+    private static final Pattern P_POSITION_BOUND = Pattern.compile("([NESW]+)-bound", Pattern.CASE_INSENSITIVE);
 
-	@Override
-	protected Position parsePosition(final String position)
-	{
-		if (position == null)
-			return null;
+    @Override
+    protected Position parsePosition(final String position) {
+        if (position == null)
+            return null;
 
-		final Matcher m = P_POSITION_BOUND.matcher(position);
-		if (m.matches())
-			return new Position(m.group(1));
+        final Matcher m = P_POSITION_BOUND.matcher(position);
+        if (m.matches())
+            return new Position(m.group(1));
 
-		return super.parsePosition(position);
-	}
+        return super.parsePosition(position);
+    }
 }

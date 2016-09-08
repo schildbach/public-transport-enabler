@@ -34,47 +34,41 @@ import com.google.common.base.MoreObjects.ToStringHelper;
  * @author Andreas Schildbach
  */
 @SuppressWarnings("serial")
-public final class SuggestLocationsResult implements Serializable
-{
-	public enum Status
-	{
-		OK, SERVICE_DOWN
-	}
+public final class SuggestLocationsResult implements Serializable {
+    public enum Status {
+        OK, SERVICE_DOWN
+    }
 
-	public final @Nullable ResultHeader header;
-	public final Status status;
-	private final List<SuggestedLocation> suggestedLocations;
+    public final @Nullable ResultHeader header;
+    public final Status status;
+    private final List<SuggestedLocation> suggestedLocations;
 
-	public SuggestLocationsResult(final ResultHeader header, final List<SuggestedLocation> suggestedLocations)
-	{
-		this.header = header;
-		this.status = Status.OK;
-		this.suggestedLocations = new LinkedList<SuggestedLocation>(suggestedLocations);
-		Collections.sort(this.suggestedLocations);
-	}
+    public SuggestLocationsResult(final ResultHeader header, final List<SuggestedLocation> suggestedLocations) {
+        this.header = header;
+        this.status = Status.OK;
+        this.suggestedLocations = new LinkedList<SuggestedLocation>(suggestedLocations);
+        Collections.sort(this.suggestedLocations);
+    }
 
-	public SuggestLocationsResult(final ResultHeader header, final Status status)
-	{
-		this.header = header;
-		this.status = checkNotNull(status);
-		this.suggestedLocations = null;
-	}
+    public SuggestLocationsResult(final ResultHeader header, final Status status) {
+        this.header = header;
+        this.status = checkNotNull(status);
+        this.suggestedLocations = null;
+    }
 
-	public List<Location> getLocations()
-	{
-		final List<Location> locations = new ArrayList<Location>(suggestedLocations.size());
-		for (final SuggestedLocation location : suggestedLocations)
-			locations.add(location.location);
+    public List<Location> getLocations() {
+        final List<Location> locations = new ArrayList<Location>(suggestedLocations.size());
+        for (final SuggestedLocation location : suggestedLocations)
+            locations.add(location.location);
 
-		return locations;
-	}
+        return locations;
+    }
 
-	@Override
-	public String toString()
-	{
-		final ToStringHelper helper = MoreObjects.toStringHelper(this).addValue(status);
-		if (suggestedLocations != null)
-			helper.add("size", suggestedLocations.size()).add("suggestedLocations", suggestedLocations);
-		return helper.toString();
-	}
+    @Override
+    public String toString() {
+        final ToStringHelper helper = MoreObjects.toStringHelper(this).addValue(status);
+        if (suggestedLocations != null)
+            helper.add("size", suggestedLocations.size()).add("suggestedLocations", suggestedLocations);
+        return helper.toString();
+    }
 }

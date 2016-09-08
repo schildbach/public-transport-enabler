@@ -24,10 +24,8 @@ import java.net.URL;
  * @author Andreas Schildbach
  */
 @SuppressWarnings("serial")
-public class NotFoundException extends AbstractHttpException
-{
-	public NotFoundException(final URL url, final Reader errorReader)
-	{
-		super(url, errorReader);
-	}
+public class NotFoundException extends AbstractHttpException {
+    public NotFoundException(final URL url, final Reader errorReader) {
+        super(url, errorReader);
+    }
 }

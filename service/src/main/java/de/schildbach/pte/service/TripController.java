@@ -38,21 +38,21 @@ import de.schildbach.pte.dto.QueryTripsResult;
  * @author Andreas Schildbach
  */
 @Controller
-public class TripController
-{
-	private final RtProvider provider = new RtProvider();
+public class TripController {
+    private final RtProvider provider = new RtProvider();
 
-	@RequestMapping(value = "/trip", method = RequestMethod.GET)
-	@ResponseBody
-	public QueryTripsResult trip(@RequestParam(value = "fromType", required = false, defaultValue = "ANY") final LocationType fromType,
-			@RequestParam(value = "from", required = false) final String from,
-			@RequestParam(value = "fromId", required = false) final String fromId,
-			@RequestParam(value = "toType", required = false, defaultValue = "ANY") final LocationType toType,
-			@RequestParam(value = "to", required = false) final String to,
-			@RequestParam(value = "toId", required = false) final String toId) throws IOException
-	{
-		final Location fromLocation = new Location(fromType, fromId, null, from);
-		final Location toLocation = new Location(toType, toId, null, to);
-		return provider.queryTrips(fromLocation, null, toLocation, new Date(), true, Product.ALL, null, WalkSpeed.NORMAL, Accessibility.NEUTRAL, null);
-	}
+    @RequestMapping(value = "/trip", method = RequestMethod.GET)
+    @ResponseBody
+    public QueryTripsResult trip(
+            @RequestParam(value = "fromType", required = false, defaultValue = "ANY") final LocationType fromType,
+            @RequestParam(value = "from", required = false) final String from,
+            @RequestParam(value = "fromId", required = false) final String fromId,
+            @RequestParam(value = "toType", required = false, defaultValue = "ANY") final LocationType toType,
+            @RequestParam(value = "to", required = false) final String to,
+            @RequestParam(value = "toId", required = false) final String toId) throws IOException {
+        final Location fromLocation = new Location(fromType, fromId, null, from);
+        final Location toLocation = new Location(toType, toId, null, to);
+        return provider.queryTrips(fromLocation, null, toLocation, new Date(), true, Product.ALL, null,
+                WalkSpeed.NORMAL, Accessibility.NEUTRAL, null);
+    }
 }

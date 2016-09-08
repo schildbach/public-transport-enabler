@@ -27,35 +27,28 @@ import java.util.Locale;
  * @author Andreas Schildbach
  */
 @SuppressWarnings("serial")
-public class Iso8601Format extends SimpleDateFormat
-{
-	private Iso8601Format(final String formatString)
-	{
-		super(formatString, Locale.US);
-	}
+public class Iso8601Format extends SimpleDateFormat {
+    private Iso8601Format(final String formatString) {
+        super(formatString, Locale.US);
+    }
 
-	public static DateFormat newTimeFormat()
-	{
-		return new Iso8601Format("HH:mm:ss");
-	}
+    public static DateFormat newTimeFormat() {
+        return new Iso8601Format("HH:mm:ss");
+    }
 
-	public static DateFormat newDateFormat()
-	{
-		return new Iso8601Format("yyyy-MM-dd");
-	}
+    public static DateFormat newDateFormat() {
+        return new Iso8601Format("yyyy-MM-dd");
+    }
 
-	public static DateFormat newDateTimeFormat()
-	{
-		return new Iso8601Format("yyyy-MM-dd HH:mm:ss");
-	}
+    public static DateFormat newDateTimeFormat() {
+        return new Iso8601Format("yyyy-MM-dd HH:mm:ss");
+    }
 
-	public static String formatDateTime(final Date date)
-	{
-		return newDateTimeFormat().format(date);
-	}
+    public static String formatDateTime(final Date date) {
+        return newDateTimeFormat().format(date);
+    }
 
-	public static Date parseDateTime(final String date) throws ParseException
-	{
-		return newDateTimeFormat().parse(date);
-	}
+    public static Date parseDateTime(final String date) throws ParseException {
+        return newDateTimeFormat().parse(date);
+    }
 }

@@ -20,27 +20,23 @@ package de.schildbach.pte;
 /**
  * @author Stephane Berube
  */
-public class OntarioProvider extends AbstractNavitiaProvider
-{
-	private static String API_REGION = "ca-on";
+public class OntarioProvider extends AbstractNavitiaProvider {
+    private static String API_REGION = "ca-on";
 
-	public OntarioProvider(final String apiBase, final String authorization)
-	{
-		super(NetworkId.ONTARIO, apiBase, authorization);
+    public OntarioProvider(final String apiBase, final String authorization) {
+        super(NetworkId.ONTARIO, apiBase, authorization);
 
-		setTimeZone("America/Toronto");
-	}
+        setTimeZone("America/Toronto");
+    }
 
-	public OntarioProvider(final String authorization)
-	{
-		super(NetworkId.ONTARIO, authorization);
+    public OntarioProvider(final String authorization) {
+        super(NetworkId.ONTARIO, authorization);
 
-		setTimeZone("America/Toronto");
-	}
+        setTimeZone("America/Toronto");
+    }
 
-	@Override
-	public String region()
-	{
-		return API_REGION;
-	}
+    @Override
+    public String region() {
+        return API_REGION;
+    }
 }

@@ -38,105 +38,96 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
 /**
  * @author Andreas Schildbach
  */
-public class LinzProviderLiveTest extends AbstractProviderLiveTest
-{
-	public LinzProviderLiveTest()
-	{
-		super(new LinzProvider());
-	}
+public class LinzProviderLiveTest extends AbstractProviderLiveTest {
+    public LinzProviderLiveTest() {
+        super(new LinzProvider());
+    }
 
-	@Test
-	public void nearbyStations() throws Exception
-	{
-		final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "60500090"));
-		print(result);
-	}
+    @Test
+    public void nearbyStations() throws Exception {
+        final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "60500090"));
+        print(result);
+    }
 
-	@Test
-	public void nearbyStationsByCoordinate() throws Exception
-	{
-		final NearbyLocationsResult result = queryNearbyStations(Location.coord(48305726, 14287863));
-		print(result);
-	}
+    @Test
+    public void nearbyStationsByCoordinate() throws Exception {
+        final NearbyLocationsResult result = queryNearbyStations(Location.coord(48305726, 14287863));
+        print(result);
+    }
 
-	@Test
-	public void queryDepartures() throws Exception
-	{
-		final QueryDeparturesResult result = queryDepartures("60501720", false);
-		print(result);
-	}
+    @Test
+    public void queryDepartures() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("60501720", false);
+        print(result);
+    }
 
-	@Test
-	public void suggestLocationsIncomplete() throws Exception
-	{
-		final SuggestLocationsResult result = suggestLocations("Friedhof");
-		print(result);
-	}
+    @Test
+    public void suggestLocationsIncomplete() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Friedhof");
+        print(result);
+    }
 
-	@Test
-	public void suggestLocationsWithUmlaut() throws Exception
-	{
-		final SuggestLocationsResult result = suggestLocations("grün");
-		print(result);
-	}
+    @Test
+    public void suggestLocationsWithUmlaut() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("grün");
+        print(result);
+    }
 
-	@Test
-	public void suggestLocationsIdentified() throws Exception
-	{
-		final SuggestLocationsResult result = suggestLocations("Leonding, Haag");
-		print(result);
-	}
+    @Test
+    public void suggestLocationsIdentified() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Leonding, Haag");
+        print(result);
+    }
 
-	@Test
-	public void suggestLocationsCity() throws Exception
-	{
-		final SuggestLocationsResult result = suggestLocations("Leonding");
-		print(result);
-	}
+    @Test
+    public void suggestLocationsCity() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Leonding");
+        print(result);
+    }
 
-	@Test
-	public void incompleteTrip() throws Exception
-	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "linz"), null, new Location(LocationType.ANY, null,
-				null, "gel"), new Date(), true, Product.ALL, WalkSpeed.FAST, Accessibility.NEUTRAL);
-		print(result);
-	}
+    @Test
+    public void incompleteTrip() throws Exception {
+        final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "linz"), null,
+                new Location(LocationType.ANY, null, null, "gel"), new Date(), true, Product.ALL, WalkSpeed.FAST,
+                Accessibility.NEUTRAL);
+        print(result);
+    }
 
-	@Test
-	public void shortTrip() throws Exception
-	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, null, null, "Linz Hauptbahnhof"), null, new Location(
-				LocationType.STATION, null, null, "Linz Auwiesen"), new Date(), true, Product.ALL, WalkSpeed.FAST, Accessibility.NEUTRAL);
-		print(result);
-		assertEquals(QueryTripsResult.Status.OK, result.status);
-		assertTrue(result.trips.size() > 0);
+    @Test
+    public void shortTrip() throws Exception {
+        final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, null, null, "Linz Hauptbahnhof"),
+                null, new Location(LocationType.STATION, null, null, "Linz Auwiesen"), new Date(), true, Product.ALL,
+                WalkSpeed.FAST, Accessibility.NEUTRAL);
+        print(result);
+        assertEquals(QueryTripsResult.Status.OK, result.status);
+        assertTrue(result.trips.size() > 0);
 
-		if (!result.context.canQueryLater())
-			return;
+        if (!result.context.canQueryLater())
+            return;
 
-		final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-		print(laterResult);
+        final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+        print(laterResult);
 
-		if (!laterResult.context.canQueryLater())
-			return;
+        if (!laterResult.context.canQueryLater())
+            return;
 
-		final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
-		print(later2Result);
+        final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
+        print(later2Result);
 
-		if (!later2Result.context.canQueryEarlier())
-			return;
+        if (!later2Result.context.canQueryEarlier())
+            return;
 
-		final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
-		print(earlierResult);
-	}
+        final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
+        print(earlierResult);
+    }
 
-	@Test
-	public void longTrip() throws Exception
-	{
-		final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, null, null, "Linz Auwiesen"), null, new Location(
-				LocationType.STATION, null, null, "Linz Hafen"), new Date(), true, Product.ALL, WalkSpeed.SLOW, Accessibility.NEUTRAL);
-		print(result);
-		// final QueryTripsResult laterResult = queryMoreTrips(provider, result.context, true);
-		// print(laterResult);
-	}
+    @Test
+    public void longTrip() throws Exception {
+        final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, null, null, "Linz Auwiesen"),
+                null, new Location(LocationType.STATION, null, null, "Linz Hafen"), new Date(), true, Product.ALL,
+                WalkSpeed.SLOW, Accessibility.NEUTRAL);
+        print(result);
+        // final QueryTripsResult laterResult = queryMoreTrips(provider, result.context, true);
+        // print(laterResult);
+    }
 }

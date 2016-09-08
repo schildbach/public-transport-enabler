@@ -20,68 +20,67 @@ package de.schildbach.pte;
 /**
  * @author Andreas Schildbach
  */
-public enum NetworkId
-{
-	// Europe
-	RT,
+public enum NetworkId {
+    // Europe
+    RT,
 
-	// Germany
-	DB, BVG, VBB, NVV, BAYERN, MVV, INVG, AVV, VGN, VVM, VMV, HVV, SH, GVH, BSVAG, VBN, NASA, VVO, VMS, VGS, VRR, VRS, MVG, NPH, VRN, VVS, DING, KVV, VAGFR, NVBW, VVV,
+    // Germany
+    DB, BVG, VBB, NVV, BAYERN, MVV, INVG, AVV, VGN, VVM, VMV, HVV, SH, GVH, BSVAG, VBN, NASA, VVO, VMS, VGS, VRR, VRS, MVG, NPH, VRN, VVS, DING, KVV, VAGFR, NVBW, VVV,
 
-	// Austria
-	OEBB, VAO, VOR, WIEN, LINZ, VVT, IVB, STV,
+    // Austria
+    OEBB, VAO, VOR, WIEN, LINZ, VVT, IVB, STV,
 
-	// Switzerland
-	SBB, BVB, VBL, ZVV,
+    // Switzerland
+    SBB, BVB, VBL, ZVV,
 
-	// France
-	PACA, PARIS, FRENCHSOUTHWEST, FRANCESOUTHEAST, FRANCENORTHEAST,
+    // France
+    PACA, PARIS, FRENCHSOUTHWEST, FRANCESOUTHEAST, FRANCENORTHEAST,
 
-	// Belgium
-	SNCB,
+    // Belgium
+    SNCB,
 
-	// Netherlands
-	NS,
+    // Netherlands
+    NS,
 
-	// Denmark
-	DSB,
+    // Denmark
+    DSB,
 
-	// Sweden
-	SE,
+    // Sweden
+    SE,
 
-	// Norway
-	NRI,
+    // Norway
+    NRI,
 
-	// Finland
-	HSL,
+    // Finland
+    HSL,
 
-	// Luxembourg
-	LU,
+    // Luxembourg
+    LU,
 
-	// United Kingdom
-	TLEM, MERSEY,
+    // United Kingdom
+    TLEM, MERSEY,
 
-	// Ireland
-	TFI, EIREANN,
+    // Ireland
+    TFI, EIREANN,
 
-	// Poland
-	PL,
+    // Poland
+    PL,
 
-	// Italy
-	ATC, IT,
+    // Italy
+    ATC, IT,
 
-	// United Arab Emirates
-	DUB,
+    // United Arab Emirates
+    DUB,
 
-	// Israel
-	JET,
+    // Israel
+    JET,
 
-	// United States
-	SF, SEPTA, RTACHICAGO,
+    // United States
+    SF, SEPTA, RTACHICAGO,
 
-	// Canada
-	ONTARIO, QUEBEC,
+    // Canada
+    ONTARIO, QUEBEC,
 
-	// Australia
-	SYDNEY, MET
+    // Australia
+    SYDNEY, MET
 }

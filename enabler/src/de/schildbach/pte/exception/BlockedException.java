@@ -24,10 +24,8 @@ import java.net.URL;
  * @author Andreas Schildbach
  */
 @SuppressWarnings("serial")
-public class BlockedException extends AbstractHttpException
-{
-	public BlockedException(final URL url, final Reader errorReader)
-	{
-		super(url, errorReader);
-	}
+public class BlockedException extends AbstractHttpException {
+    public BlockedException(final URL url, final Reader errorReader) {
+        super(url, errorReader);
+    }
 }

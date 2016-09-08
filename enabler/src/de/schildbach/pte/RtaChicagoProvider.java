@@ -25,34 +25,30 @@ import de.schildbach.pte.dto.Product;
 /**
  * @author Andreas Schildbach
  */
-public class RtaChicagoProvider extends AbstractEfaProvider
-{
-	private final static String API_BASE = "http://tripplanner.rtachicago.com/ccg3/";
-	// "http://elb-jpinstances-1463028547.us-east-1.elb.amazonaws.com/ccg3/";
+public class RtaChicagoProvider extends AbstractEfaProvider {
+    private final static String API_BASE = "http://tripplanner.rtachicago.com/ccg3/";
+    // "http://elb-jpinstances-1463028547.us-east-1.elb.amazonaws.com/ccg3/";
 
-	public RtaChicagoProvider()
-	{
-		super(NetworkId.RTACHICAGO, API_BASE);
+    public RtaChicagoProvider() {
+        super(NetworkId.RTACHICAGO, API_BASE);
 
-		setLanguage("en");
-		setTimeZone("America/Chicago");
-	}
+        setLanguage("en");
+        setTimeZone("America/Chicago");
+    }
 
-	@Override
-	protected Line parseLine(final @Nullable String id, final @Nullable String network, final @Nullable String mot, final @Nullable String symbol,
-			final @Nullable String name, final @Nullable String longName, final @Nullable String trainType, final @Nullable String trainNum,
-			final @Nullable String trainName)
-	{
-		if ("0".equals(mot))
-		{
-			if ("UP-N".equals(symbol)) // Union Pacific North Line
-				return new Line(id, network, Product.SUBURBAN_TRAIN, "UP-N");
-			if ("UP-NW".equals(symbol)) // Union Pacific Northwest Line
-				return new Line(id, network, Product.SUBURBAN_TRAIN, "UP-N");
-			if ("UP-W".equals(symbol)) // Union Pacific West Line
-				return new Line(id, network, Product.SUBURBAN_TRAIN, "UP-NW");
-		}
+    @Override
+    protected Line parseLine(final @Nullable String id, final @Nullable String network, final @Nullable String mot,
+            final @Nullable String symbol, final @Nullable String name, final @Nullable String longName,
+            final @Nullable String trainType, final @Nullable String trainNum, final @Nullable String trainName) {
+        if ("0".equals(mot)) {
+            if ("UP-N".equals(symbol)) // Union Pacific North Line
+                return new Line(id, network, Product.SUBURBAN_TRAIN, "UP-N");
+            if ("UP-NW".equals(symbol)) // Union Pacific Northwest Line
+                return new Line(id, network, Product.SUBURBAN_TRAIN, "UP-N");
+            if ("UP-W".equals(symbol)) // Union Pacific West Line
+                return new Line(id, network, Product.SUBURBAN_TRAIN, "UP-NW");
+        }
 
-		return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
-	}
+        return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
+    }
 }

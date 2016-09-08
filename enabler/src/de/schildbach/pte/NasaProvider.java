@@ -32,115 +32,103 @@ import de.schildbach.pte.util.StringReplaceReader;
 /**
  * @author Andreas Schildbach
  */
-public class NasaProvider extends AbstractHafasProvider
-{
-	private static final String API_BASE = "http://reiseauskunft.insa.de/bin/";
-	private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN,
-			Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.TRAM, Product.BUS, Product.ON_DEMAND };
+public class NasaProvider extends AbstractHafasProvider {
+    private static final String API_BASE = "http://reiseauskunft.insa.de/bin/";
+    private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
+            Product.REGIONAL_TRAIN, Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.TRAM, Product.BUS,
+            Product.ON_DEMAND };
 
-	public NasaProvider()
-	{
-		super(NetworkId.NASA, API_BASE, "dn", PRODUCTS_MAP);
+    public NasaProvider() {
+        super(NetworkId.NASA, API_BASE, "dn", PRODUCTS_MAP);
 
-		setJsonGetStopsEncoding(Charsets.UTF_8);
-		setJsonNearbyLocationsEncoding(Charsets.UTF_8);
-		setStationBoardHasLocation(true);
-	}
+        setJsonGetStopsEncoding(Charsets.UTF_8);
+        setJsonNearbyLocationsEncoding(Charsets.UTF_8);
+        setStationBoardHasLocation(true);
+    }
 
-	@Override
-	protected String[] splitStationName(final String name)
-	{
-		final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(name);
-		if (m.matches())
-			return new String[] { m.group(1), m.group(2) };
+    @Override
+    protected String[] splitStationName(final String name) {
+        final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(name);
+        if (m.matches())
+            return new String[] { m.group(1), m.group(2) };
 
-		return super.splitStationName(name);
-	}
+        return super.splitStationName(name);
+    }
 
-	@Override
-	protected String[] splitPOI(final String poi)
-	{
-		final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(poi);
-		if (m.matches())
-			return new String[] { m.group(1), m.group(2) };
+    @Override
+    protected String[] splitPOI(final String poi) {
+        final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(poi);
+        if (m.matches())
+            return new String[] { m.group(1), m.group(2) };
 
-		return super.splitStationName(poi);
-	}
+        return super.splitStationName(poi);
+    }
 
-	@Override
-	protected String[] splitAddress(final String address)
-	{
-		final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(address);
-		if (m.matches())
-			return new String[] { m.group(1), m.group(2) };
+    @Override
+    protected String[] splitAddress(final String address) {
+        final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(address);
+        if (m.matches())
+            return new String[] { m.group(1), m.group(2) };
 
-		return super.splitStationName(address);
-	}
+        return super.splitStationName(address);
+    }
 
-	@Override
-	public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location, final int maxDistance,
-			final int maxLocations) throws IOException
-	{
-		if (location.hasLocation())
-		{
-			return nearbyLocationsByCoordinate(types, location.lat, location.lon, maxDistance, maxLocations);
-		}
-		else if (location.type == LocationType.STATION && location.hasId())
-		{
-			final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
-			uri.append("?near=Anzeigen");
-			uri.append("&distance=").append(maxDistance != 0 ? maxDistance / 1000 : 50);
-			uri.append("&input=").append(normalizeStationId(location.id));
+    @Override
+    public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location,
+            final int maxDistance, final int maxLocations) throws IOException {
+        if (location.hasLocation()) {
+            return nearbyLocationsByCoordinate(types, location.lat, location.lon, maxDistance, maxLocations);
+        } else if (location.type == LocationType.STATION && location.hasId()) {
+            final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
+            uri.append("?near=Anzeigen");
+            uri.append("&distance=").append(maxDistance != 0 ? maxDistance / 1000 : 50);
+            uri.append("&input=").append(normalizeStationId(location.id));
 
-			return htmlNearbyStations(uri.toString());
-		}
-		else
-		{
-			throw new IllegalArgumentException("cannot handle: " + location);
-		}
-	}
+            return htmlNearbyStations(uri.toString());
+        } else {
+            throw new IllegalArgumentException("cannot handle: " + location);
+        }
+    }
 
-	@Override
-	protected void addCustomReplaces(final StringReplaceReader reader)
-	{
-		reader.replace("\"Florian Geyer\"", "Florian Geyer");
-	}
+    @Override
+    protected void addCustomReplaces(final StringReplaceReader reader) {
+        reader.replace("\"Florian Geyer\"", "Florian Geyer");
+    }
 
-	@Override
-	protected Product normalizeType(String type)
-	{
-		final String ucType = type.toUpperCase();
+    @Override
+    protected Product normalizeType(String type) {
+        final String ucType = type.toUpperCase();
 
-		if ("ECW".equals(ucType))
-			return Product.HIGH_SPEED_TRAIN;
-		if ("IXB".equals(ucType)) // ICE International
-			return Product.HIGH_SPEED_TRAIN;
-		if ("RRT".equals(ucType))
-			return Product.HIGH_SPEED_TRAIN;
+        if ("ECW".equals(ucType))
+            return Product.HIGH_SPEED_TRAIN;
+        if ("IXB".equals(ucType)) // ICE International
+            return Product.HIGH_SPEED_TRAIN;
+        if ("RRT".equals(ucType))
+            return Product.HIGH_SPEED_TRAIN;
 
-		if ("DPF".equals(ucType)) // mit Dampflok bespannter Zug
-			return Product.REGIONAL_TRAIN;
-		if ("DAM".equals(ucType)) // Harzer Schmalspurbahnen: mit Dampflok bespannter Zug
-			return Product.REGIONAL_TRAIN;
-		if ("TW".equals(ucType)) // Harzer Schmalspurbahnen: Triebwagen
-			return Product.REGIONAL_TRAIN;
-		if ("RR".equals(ucType)) // Polen
-			return Product.REGIONAL_TRAIN;
-		if ("BAHN".equals(ucType))
-			return Product.REGIONAL_TRAIN;
-		if ("ZUGBAHN".equals(ucType))
-			return Product.REGIONAL_TRAIN;
-		if ("DAMPFZUG".equals(ucType))
-			return Product.REGIONAL_TRAIN;
+        if ("DPF".equals(ucType)) // mit Dampflok bespannter Zug
+            return Product.REGIONAL_TRAIN;
+        if ("DAM".equals(ucType)) // Harzer Schmalspurbahnen: mit Dampflok bespannter Zug
+            return Product.REGIONAL_TRAIN;
+        if ("TW".equals(ucType)) // Harzer Schmalspurbahnen: Triebwagen
+            return Product.REGIONAL_TRAIN;
+        if ("RR".equals(ucType)) // Polen
+            return Product.REGIONAL_TRAIN;
+        if ("BAHN".equals(ucType))
+            return Product.REGIONAL_TRAIN;
+        if ("ZUGBAHN".equals(ucType))
+            return Product.REGIONAL_TRAIN;
+        if ("DAMPFZUG".equals(ucType))
+            return Product.REGIONAL_TRAIN;
 
-		if ("DPS".equals(ucType))
-			return Product.SUBURBAN_TRAIN;
+        if ("DPS".equals(ucType))
+            return Product.SUBURBAN_TRAIN;
 
-		if ("RUFBUS".equals(ucType)) // Rufbus
-			return Product.BUS;
-		if ("RBS".equals(ucType)) // Rufbus
-			return Product.BUS;
+        if ("RUFBUS".equals(ucType)) // Rufbus
+            return Product.BUS;
+        if ("RBS".equals(ucType)) // Rufbus
+            return Product.BUS;
 
-		return super.normalizeType(type);
-	}
+        return super.normalizeType(type);
+    }
 }
