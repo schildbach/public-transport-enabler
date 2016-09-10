@@ -20,8 +20,10 @@ package de.schildbach.pte;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Strings;
 
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Product;
@@ -91,12 +93,14 @@ public class ZvvProvider extends AbstractHafasProvider {
         return super.splitStationName(address);
     }
 
+    private static final Pattern P_NUMBER = Pattern.compile("\\d{2,5}");
+
     @Override
     protected Line parseLineAndType(final String lineAndType) {
         final Matcher m = P_NORMALIZE_LINE_AND_TYPE.matcher(lineAndType);
         if (m.matches()) {
-            final String number = m.group(1).replaceAll("\\s+", "");
-            final String type = m.group(2);
+            final String number = Strings.emptyToNull(m.group(1).replaceAll("\\s+", ""));
+            final String type = Strings.emptyToNull(m.group(2));
 
             if ("Bus".equals(type))
                 return newLine(Product.BUS, stripPrefix(number, "Bus"), null);
@@ -114,7 +118,10 @@ public class ZvvProvider extends AbstractHafasProvider {
             if ("S18".equals(number))
                 return newLine(Product.SUBURBAN_TRAIN, "S18", null);
 
-            if (type.length() > 0) {
+            if (number != null && P_NUMBER.matcher(number).matches())
+                return newLine(null, number, null);
+
+            if (type != null) {
                 final Product product = normalizeType(type);
                 if (product != null)
                     return newLine(product, number, null);
@@ -145,6 +152,9 @@ public class ZvvProvider extends AbstractHafasProvider {
             return Product.BUS;
         if ("KB".equals(ucType)) // Kleinbus?
             return Product.BUS;
+
+        if ("TE2".equals(ucType)) // Basel - Strasbourg
+            return Product.REGIONAL_TRAIN;
 
         if ("D-SCHIFF".equals(ucType))
             return Product.FERRY;

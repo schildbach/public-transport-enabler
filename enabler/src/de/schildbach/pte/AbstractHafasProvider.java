@@ -3152,6 +3152,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
             return Product.HIGH_SPEED_TRAIN;
         if ("HKX".equals(ucType)) // Hamburg-Koeln-Express
             return Product.HIGH_SPEED_TRAIN;
+        if ("UEX".equals(ucType)) // Slovenia
+            return Product.REGIONAL_TRAIN;
 
         // Regional
         if ("ZUG".equals(ucType)) // Generic Train
