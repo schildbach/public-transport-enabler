@@ -35,7 +35,7 @@ import de.schildbach.pte.dto.Style;
  * @author Andreas Schildbach
  */
 public class WienProvider extends AbstractEfaProvider {
-    private final static String API_BASE = "http://www.wienerlinien.at/ogd_routing/";
+    private final static String API_BASE = "https://www.wienerlinien.at/ogd_routing/";
 
     public WienProvider() {
         super(NetworkId.WIEN, API_BASE);
