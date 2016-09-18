@@ -30,7 +30,8 @@ import de.schildbach.pte.dto.Product;
  * @author Andreas Schildbach
  */
 public class SeProvider extends AbstractHafasProvider {
-    private static final String API_BASE = "http://samtrafiken.hafas.de/bin/";
+    private static final String API_BASE = "https://reseplanerare.resrobot.se/bin/";
+    // http://samtrafiken.hafas.de/bin/
     // http://reseplanerare.resrobot.se/bin/
     // http://api.vasttrafik.se/bin/
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
