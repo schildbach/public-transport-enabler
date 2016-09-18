@@ -75,7 +75,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
     protected final static String SERVER_PRODUCT = "navitia";
     protected final static String SERVER_VERSION = "v1";
 
-    protected String apiBase = "http://api.navitia.io/" + SERVER_VERSION + "/";
+    protected String apiBase = "https://api.navitia.io/" + SERVER_VERSION + "/";
 
     private enum PlaceType {
         ADDRESS, ADMINISTRATIVE_REGION, POI, STOP_POINT, STOP_AREA
