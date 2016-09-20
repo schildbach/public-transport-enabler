@@ -53,10 +53,12 @@ public abstract class AbstractNetworkProvider implements NetworkProvider {
         this.network = network;
     }
 
+    @Override
     public final NetworkId id() {
         return network;
     }
 
+    @Override
     public final boolean hasCapabilities(final Capability... capabilities) {
         for (final Capability capability : capabilities)
             if (!hasCapability(capability))
@@ -67,6 +69,7 @@ public abstract class AbstractNetworkProvider implements NetworkProvider {
 
     protected abstract boolean hasCapability(Capability capability);
 
+    @Override
     public Set<Product> defaultProducts() {
         return ALL_EXCEPT_HIGHSPEED;
     }
@@ -93,6 +96,7 @@ public abstract class AbstractNetworkProvider implements NetworkProvider {
 
     private static final char STYLES_SEP = '|';
 
+    @Override
     public Style lineStyle(final @Nullable String network, final @Nullable Product product,
             final @Nullable String label) {
         final Map<String, Style> styles = this.styles;
@@ -139,6 +143,7 @@ public abstract class AbstractNetworkProvider implements NetworkProvider {
         return Standard.STYLES.get(product);
     }
 
+    @Override
     public Point[] getArea() throws IOException {
         return null;
     }

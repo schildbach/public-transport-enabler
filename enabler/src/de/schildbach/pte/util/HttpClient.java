@@ -330,6 +330,7 @@ public final class HttpClient {
     }
 
     private static final HostnameVerifier SSL_ACCEPT_ALL_HOSTNAMES = new HostnameVerifier() {
+        @Override
         public boolean verify(final String hostname, final SSLSession session) {
             return true;
         }

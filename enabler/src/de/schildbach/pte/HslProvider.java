@@ -170,6 +170,7 @@ public class HslProvider extends AbstractNetworkProvider {
     // Determine stations near to given location. At least one of
     // stationId or lat/lon pair must be present.
     // NOTE: HSL returns only stops, not other locations, so "types" is not honoured.
+    @Override
     public NearbyLocationsResult queryNearbyLocations(EnumSet<LocationType> types, Location location, int maxDistance,
             int maxStations) throws IOException {
         final StringBuilder uri = apiUri("stops_area");
@@ -252,6 +253,7 @@ public class HslProvider extends AbstractNetworkProvider {
     }
 
     // Get departures at a given station, probably live
+    @Override
     public QueryDeparturesResult queryDepartures(String stationId, @Nullable Date queryDate, int maxDepartures,
             boolean equivs) throws IOException {
         final StringBuilder uri = apiUri("stop");
@@ -334,6 +336,7 @@ public class HslProvider extends AbstractNetworkProvider {
      * @return location suggestions
      * @throws IOException
      */
+    @Override
     public SuggestLocationsResult suggestLocations(CharSequence constraint) throws IOException {
         final StringBuilder uri = apiUri("geocode");
 
@@ -424,10 +427,12 @@ public class HslProvider extends AbstractNetworkProvider {
             this.trips = new ArrayList<Trip>();
         }
 
+        @Override
         public boolean canQueryLater() {
             return true;
         }
 
+        @Override
         public boolean canQueryEarlier() {
             return true;
         }
@@ -435,6 +440,7 @@ public class HslProvider extends AbstractNetworkProvider {
 
     // Query trips, asking for any ambiguousnesses
     // NOTE: HSL ignores accessibility
+    @Override
     public QueryTripsResult queryTrips(Location from, @Nullable Location via, Location to, Date date, boolean dep,
             @Nullable Set<Product> products, @Nullable Optimize optimize, @Nullable WalkSpeed walkSpeed,
             @Nullable Accessibility accessibility, @Nullable Set<Option> options) throws IOException {
@@ -513,6 +519,7 @@ public class HslProvider extends AbstractNetworkProvider {
      * @return result object that contains possible trips
      * @throws IOException
      */
+    @Override
     public QueryTripsResult queryMoreTrips(QueryTripsContext contextObj, boolean later) throws IOException {
         final QueryTripsHslContext context = (QueryTripsHslContext) contextObj;
 

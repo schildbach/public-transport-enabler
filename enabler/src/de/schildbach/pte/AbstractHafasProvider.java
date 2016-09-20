@@ -132,10 +132,12 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
             this.sequence = sequence;
         }
 
+        @Override
         public boolean canQueryLater() {
             return laterContext != null;
         }
 
+        @Override
         public boolean canQueryEarlier() {
             return earlierContext != null;
         }
@@ -160,10 +162,12 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
             this.earlierContext = earlierContext;
         }
 
+        @Override
         public boolean canQueryLater() {
             return laterContext != null;
         }
 
+        @Override
         public boolean canQueryEarlier() {
             return earlierContext != null;
         }
@@ -186,10 +190,12 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
             this.canQueryMore = canQueryMore;
         }
 
+        @Override
         public boolean canQueryLater() {
             return canQueryMore;
         }
 
+        @Override
         public boolean canQueryEarlier() {
             return canQueryMore;
         }
@@ -418,6 +424,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
             return parsePosition(platformText);
     }
 
+    @Override
     public SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException {
         final StringBuilder uri = new StringBuilder(getStopEndpoint);
         appendJsonGetStopsParameters(uri, checkNotNull(constraint), 0);
@@ -510,6 +517,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
         }
     }
 
+    @Override
     public QueryDeparturesResult queryDepartures(final String stationId, final @Nullable Date time,
             final int maxDepartures, final boolean equivs) throws IOException {
         checkNotNull(Strings.emptyToNull(stationId));
@@ -1352,6 +1360,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
         return lines;
     }
 
+    @Override
     public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to,
             final Date date, final boolean dep, final @Nullable Set<Product> products,
             final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
@@ -1359,6 +1368,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
         return queryTripsBinary(from, via, to, date, dep, products, walkSpeed, accessibility, options);
     }
 
+    @Override
     public QueryTripsResult queryMoreTrips(final QueryTripsContext context, final boolean later) throws IOException {
         return queryMoreTripsBinary(context, later);
     }
@@ -2785,6 +2795,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
         return parsePosition(m.group(1));
     }
 
+    @Override
     public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location,
             final int maxDistance, final int maxLocations) throws IOException {
         if (location.hasLocation())

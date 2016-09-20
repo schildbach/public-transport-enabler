@@ -511,6 +511,7 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
     }
 
     private static class LocationComparator implements Comparator<Location> {
+        @Override
         public int compare(Location o1, Location o2) {
             return ComparisonChain.start().compare(o1.name, o2.name).result();
         }

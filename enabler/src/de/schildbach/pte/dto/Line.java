@@ -132,6 +132,7 @@ public final class Line implements Serializable, Comparable<Line> {
                 .toString();
     }
 
+    @Override
     public int compareTo(final Line other) {
         return ComparisonChain.start() //
                 .compare(this.network, other.network, Ordering.natural().nullsLast()) //

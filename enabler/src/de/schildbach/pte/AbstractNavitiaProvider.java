@@ -107,10 +107,12 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
             this.nextQueryUri = nextQueryUri;
         }
 
+        @Override
         public boolean canQueryLater() {
             return (from != null && to != null && nextQueryUri != null);
         }
 
+        @Override
         public boolean canQueryEarlier() {
             return (from != null && to != null && prevQueryUri != null);
         }
@@ -661,6 +663,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
             return false;
     }
 
+    @Override
     public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location,
             int maxDistance, final int maxLocations) throws IOException {
         final ResultHeader resultHeader = new ResultHeader(network, SERVER_PRODUCT, SERVER_VERSION, 0, null);
@@ -729,6 +732,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
         }
     }
 
+    @Override
     public QueryDeparturesResult queryDepartures(final String stationId, final @Nullable Date time,
             final int maxDepartures, final boolean equivs) throws IOException {
         checkNotNull(Strings.emptyToNull(stationId));
@@ -831,6 +835,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
         }
     }
 
+    @Override
     public SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException {
         final String nameCstr = constraint.toString();
 
@@ -863,6 +868,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
         }
     }
 
+    @Override
     public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to,
             final Date date, final boolean dep, final @Nullable Set<Product> products,
             final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
@@ -1032,6 +1038,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
         }
     }
 
+    @Override
     public QueryTripsResult queryMoreTrips(final QueryTripsContext contextObj, final boolean later) throws IOException {
         final ResultHeader resultHeader = new ResultHeader(network, SERVER_PRODUCT, SERVER_VERSION, 0, null);
 
