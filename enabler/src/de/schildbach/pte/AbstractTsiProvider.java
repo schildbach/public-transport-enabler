@@ -84,10 +84,12 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider {
             this.walkSpeed = walkSpeed;
         }
 
+        @Override
         public boolean canQueryEarlier() {
             return true;
         }
 
+        @Override
         public boolean canQueryLater() {
             return true;
         }
@@ -186,6 +188,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider {
             return true;
     }
 
+    @Override
     public SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException {
         final StringBuilder parameters = buildCommonRequestParams("SearchTripPoint", "json");
         parameters.append("&MaxItems=").append(50); // XXX good value?
@@ -541,15 +544,18 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider {
         return new Location(locType, id, Point.fromDouble(lat, lon), place, name);
     }
 
+    @Override
     public QueryDeparturesResult queryDepartures(final String stationId, final @Nullable Date time,
             final int maxDepartures, final boolean equivs) throws IOException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public QueryTripsResult queryMoreTrips(final QueryTripsContext context, final boolean later) throws IOException {
         return ((Context) context).queryMore(this, later);
     }
 
+    @Override
     public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location,
             final int maxDistance, final int maxLocations) throws IOException {
         Location queryLocation = location;
@@ -565,6 +571,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider {
         return jsonCoordRequest(location.lat, location.lon, maxDistance, maxLocations);
     }
 
+    @Override
     public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to,
             final Date date, final boolean dep, final @Nullable Set<Product> products,
             final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,

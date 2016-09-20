@@ -91,10 +91,12 @@ public class VrsProvider extends AbstractNetworkProvider {
         private Context() {
         }
 
+        @Override
         public boolean canQueryLater() {
             return this.canQueryLater;
         }
 
+        @Override
         public boolean canQueryEarlier() {
             return this.canQueryEarlier;
         }
@@ -347,6 +349,7 @@ public class VrsProvider extends AbstractNetworkProvider {
     }
 
     // only stations supported
+    @Override
     public NearbyLocationsResult queryNearbyLocations(EnumSet<LocationType> types /* only STATION supported */,
             Location location, int maxDistance, int maxLocations) throws IOException {
         // g=p means group by product; not used here
@@ -410,6 +413,7 @@ public class VrsProvider extends AbstractNetworkProvider {
     // VRS does not show LongDistanceTrains departures. Parameter p for product
     // filter is supported, but LongDistanceTrains filter seems to be ignored.
     // TODO equivs not supported; JSON result would support multiple timetables
+    @Override
     public QueryDeparturesResult queryDepartures(final String stationId, @Nullable Date time, int maxDepartures,
             boolean equivs) throws IOException {
         checkNotNull(Strings.emptyToNull(stationId));
@@ -551,11 +555,13 @@ public class VrsProvider extends AbstractNetworkProvider {
     }
 
     private static class LineDestinationComparator implements Comparator<LineDestination> {
+        @Override
         public int compare(LineDestination o1, LineDestination o2) {
             return o1.line.compareTo(o2.line);
         }
     }
 
+    @Override
     public SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException {
         // sc = station count
         final int sc = 10;
@@ -631,6 +637,7 @@ public class VrsProvider extends AbstractNetworkProvider {
     // walkSpeed not supported.
     // accessibility not supported.
     // options not supported.
+    @Override
     public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to, Date date,
             boolean dep, final @Nullable Set<Product> products, final @Nullable Optimize optimize,
             final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
@@ -916,6 +923,7 @@ public class VrsProvider extends AbstractNetworkProvider {
         }
     }
 
+    @Override
     public QueryTripsResult queryMoreTrips(QueryTripsContext context, boolean later) throws IOException {
         Context ctx = (Context) context;
         if (later) {

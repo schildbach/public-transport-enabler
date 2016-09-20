@@ -97,6 +97,7 @@ public final class Departure implements Serializable {
     }
 
     public static final Comparator<Departure> TIME_COMPARATOR = new Comparator<Departure>() {
+        @Override
         public int compare(final Departure departure0, final Departure departure1) {
             return departure0.getTime().compareTo(departure1.getTime());
         }

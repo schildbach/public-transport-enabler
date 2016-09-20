@@ -125,10 +125,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             this.context = context;
         }
 
+        @Override
         public boolean canQueryLater() {
             return context != null;
         }
 
+        @Override
         public boolean canQueryEarlier() {
             return false; // TODO enable earlier querying
         }
@@ -373,6 +375,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             XmlPullUtil.enter(pp, "itdStopFinderRequest");
 
             processItdOdv(pp, "sf", new ProcessItdOdvCallback() {
+                @Override
                 public void location(final String nameState, final Location location, final int matchQuality) {
                     locations.add(new SuggestedLocation(location, matchQuality));
                 }
@@ -649,6 +652,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         }
     }
 
+    @Override
     public SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException {
         return jsonStopfinderRequest(new Location(LocationType.ANY, null, null, constraint.toString()));
     }
@@ -824,6 +828,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             return null;
     }
 
+    @Override
     public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location,
             final int maxDistance, final int maxLocations) throws IOException {
         if (location.hasLocation())
@@ -873,6 +878,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             final List<Location> stations = new ArrayList<Location>();
 
             final String nameState = processItdOdv(pp, "dm", new ProcessItdOdvCallback() {
+                @Override
                 public void location(final String nameState, final Location location, final int matchQuality) {
                     if (location.type == LocationType.STATION) {
                         if ("identified".equals(nameState))
@@ -1391,6 +1397,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                         + "' trainType='" + trainType + "' trainNum='" + trainNum + "' trainName='" + trainName + "'");
     }
 
+    @Override
     public QueryDeparturesResult queryDepartures(final String stationId, final @Nullable Date time,
             final int maxDepartures, final boolean equivs) throws IOException {
         checkNotNull(Strings.emptyToNull(stationId));
@@ -1458,6 +1465,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             XmlPullUtil.optSkip(pp, "itdMessage");
 
             final String nameState = processItdOdv(pp, "dm", new ProcessItdOdvCallback() {
+                @Override
                 public void location(final String nameState, final Location location, final int matchQuality) {
                     if (location.type == LocationType.STATION)
                         if (findStationDepartures(result.stationDepartures, location.id) == null)
@@ -2016,6 +2024,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             uri.append("&coordListOutputFormat=STRING");
     }
 
+    @Override
     public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to,
             final Date date, final boolean dep, final @Nullable Set<Product> products,
             final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
@@ -2076,6 +2085,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         }
     }
 
+    @Override
     public QueryTripsResult queryMoreTrips(final QueryTripsContext contextObj, final boolean later) throws IOException {
         final Context context = (Context) contextObj;
         final String commandUri = context.context;
@@ -2156,6 +2166,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
             final List<Location> locations = new ArrayList<Location>();
             final String nameState = processItdOdv(pp, usage, new ProcessItdOdvCallback() {
+                @Override
                 public void location(final String nameState, final Location location, final int matchQuality) {
                     locations.add(location);
                 }

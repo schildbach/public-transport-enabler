@@ -40,6 +40,7 @@ public final class SuggestedLocation implements Serializable, Comparable<Suggest
         this(location, 0);
     }
 
+    @Override
     public int compareTo(final SuggestedLocation other) {
         // prefer quality
         if (this.priority > other.priority)
