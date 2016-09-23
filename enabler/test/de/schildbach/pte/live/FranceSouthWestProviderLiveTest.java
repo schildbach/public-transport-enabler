@@ -21,15 +21,15 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import de.schildbach.pte.FrenchSouthWestProvider;
+import de.schildbach.pte.FranceSouthWestProvider;
 import de.schildbach.pte.dto.Point;
 
 /**
  * @author Nicolas Derive
  */
-public class FrenchSouthWestProviderLiveTest extends AbstractNavitiaProviderLiveTest {
-    public FrenchSouthWestProviderLiveTest() {
-        super(new FrenchSouthWestProvider(secretProperty("navitia.authorization")));
+public class FranceSouthWestProviderLiveTest extends AbstractNavitiaProviderLiveTest {
+    public FranceSouthWestProviderLiveTest() {
+        super(new FranceSouthWestProvider(secretProperty("navitia.authorization")));
     }
 
     @Test

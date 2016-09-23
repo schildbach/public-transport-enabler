@@ -24,17 +24,17 @@ import de.schildbach.pte.dto.Style.Shape;
 /**
  * @author Nicolas Derive
  */
-public class FrenchSouthWestProvider extends AbstractNavitiaProvider {
+public class FranceSouthWestProvider extends AbstractNavitiaProvider {
     private static String API_REGION = "fr-sw";
 
-    public FrenchSouthWestProvider(final String apiBase, final String authorization) {
-        super(NetworkId.FRENCHSOUTHWEST, apiBase, authorization);
+    public FranceSouthWestProvider(final String apiBase, final String authorization) {
+        super(NetworkId.FRANCESOUTHWEST, apiBase, authorization);
 
         setTimeZone("Europe/Paris");
     }
 
-    public FrenchSouthWestProvider(final String authorization) {
-        super(NetworkId.FRENCHSOUTHWEST, authorization);
+    public FranceSouthWestProvider(final String authorization) {
+        super(NetworkId.FRANCESOUTHWEST, authorization);
 
         setTimeZone("Europe/Paris");
     }
