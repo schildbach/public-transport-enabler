@@ -2706,6 +2706,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
                         // H895: Departure/Arrival are too near
                         result.set(new QueryTripsResult(header, QueryTripsResult.Status.TOO_CLOSE));
                         return;
+                    } else if (errorCode == 65535) {
+                        result.set(new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN));
+                        return;
                     } else {
                         throw new IllegalStateException("error " + errorCode + " on " + uri);
                     }
