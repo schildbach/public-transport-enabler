@@ -49,6 +49,14 @@ public class VorProvider extends AbstractEfaProvider {
     }
 
     @Override
+    protected boolean hasCapability(final Capability capability) {
+        if (capability == Capability.TRIPS)
+            return false;
+        else
+            return super.hasCapability(capability);
+    }
+
+    @Override
     protected String xsltTripRequestParameters(final Location from, final @Nullable Location via, final Location to,
             final Date time, final boolean dep, final @Nullable Collection<Product> products,
             final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
