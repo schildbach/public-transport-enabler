@@ -53,7 +53,7 @@ public class VaoProvider extends AbstractHafasProvider {
         super(NetworkId.VAO, API_BASE, "dn", PRODUCTS_MAP);
 
         setJsonApiVersion("1.11");
-        setJsonApiClient("{\"id\":\"VAO\",\"l\":\"vs_vvv\"}");
+        setJsonApiClient("{\"id\":\"VAO\",\"l\":\"vs_vvv\",\"type\":\"AND\"}");
         setJsonApiAuthorization(jsonApiAuthorization);
         setJsonNearbyLocationsEncoding(Charsets.UTF_8);
         setStyles(STYLES);
