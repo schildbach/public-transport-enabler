@@ -17,6 +17,8 @@
 
 package de.schildbach.pte.util;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.nio.charset.Charset;
@@ -150,6 +152,9 @@ public final class HttpClient {
 
     public void getInputStream(final Callback callback, final HttpUrl url, final String postRequest,
             final String requestContentType, Charset requestEncoding, final String referer) throws IOException {
+        checkNotNull(callback);
+        checkNotNull(url);
+
         if (requestEncoding == null)
             requestEncoding = Charsets.ISO_8859_1;
 
