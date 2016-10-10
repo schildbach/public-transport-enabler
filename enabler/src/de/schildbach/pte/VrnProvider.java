@@ -33,10 +33,7 @@ import de.schildbach.pte.dto.Style.Shape;
  * @author Andreas Schildbach
  */
 public class VrnProvider extends AbstractEfaProvider {
-    private static final String API_BASE = "http://fahrplanauskunft.vrn.de/vrn/";
-
-    // http://fahrplanauskunft.vrn.de/vrn_mobile/
-    // http://efa9.vrn.de/vrt/
+    private static final String API_BASE = "https://www.vrn.de/mngvrn/";
 
     public VrnProvider() {
         super(NetworkId.VRN, API_BASE);
