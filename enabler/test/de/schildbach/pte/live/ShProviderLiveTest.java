@@ -124,6 +124,15 @@ public class ShProviderLiveTest extends AbstractProviderLiveTest {
     }
 
     @Test
+    public void tripKielPoi() throws Exception {
+        final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "3490015"), null,
+                new Location(LocationType.POI,
+                        "A=4@O=Kiel, Hiroshimapark@X=10131697@Y=54324466@U=104@L=970001375@B=1@V=14.9,@p=1397713274@"),
+                new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+        print(result);
+    }
+
+    @Test
     public void trip_errorTooClose() throws Exception {
         final Location station = new Location(LocationType.STATION, "003665026");
         final QueryTripsResult result = queryTrips(station, null, station, new Date(), true, Product.ALL,

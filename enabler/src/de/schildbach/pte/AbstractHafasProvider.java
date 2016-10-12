@@ -1241,6 +1241,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
             return "{\"type\":\"S\",\"extId\":" + JSONObject.quote(location.id) + "}";
         else if (location.type == LocationType.ADDRESS && location.hasId())
             return "{\"type\":\"A\",\"lid\":" + JSONObject.quote(location.id) + "}";
+        else if (location.type == LocationType.POI && location.hasId())
+            return "{\"type\":\"P\",\"lid\":" + JSONObject.quote(location.id) + "}";
         else
             throw new IllegalArgumentException("cannot handle: " + location);
     }
@@ -1332,7 +1334,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
                         placeAndName[1], products));
             } else if ("P".equals(type)) {
                 final String[] placeAndName = splitPOI(loc.getString("name"));
-                final String id = normalizeStationId(loc.getString("extId"));
+                final String id = loc.getString("lid");
                 locations.add(new Location(LocationType.POI, id, crd.getInt("y"), crd.getInt("x"), placeAndName[0],
                         placeAndName[1]));
             } else if ("A".equals(type)) {
