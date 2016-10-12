@@ -149,15 +149,17 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
 
     @SuppressWarnings("serial")
     public static class JsonContext implements QueryTripsContext {
-        public final Location from, to;
+        public final Location from, via, to;
         public final Date date;
         public final boolean dep;
         public final Set<Product> products;
         public final String laterContext, earlierContext;
 
-        public JsonContext(final Location from, final Location to, final Date date, final boolean dep,
-                final Set<Product> products, final String laterContext, final String earlierContext) {
+        public JsonContext(final Location from, final @Nullable Location via, final Location to, final Date date,
+                final boolean dep, final Set<Product> products, final String laterContext,
+                final String earlierContext) {
             this.from = from;
+            this.via = via;
             this.to = to;
             this.date = date;
             this.dep = dep;
@@ -1029,8 +1031,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
 
     private static final Joiner JOINER = Joiner.on(' ').skipNulls();
 
-    protected final QueryTripsResult jsonTripSearch(Location from, Location to, final Date time, final boolean dep,
-            final @Nullable Set<Product> products, final String moreContext) throws IOException {
+    protected final QueryTripsResult jsonTripSearch(Location from, @Nullable Location via, Location to, final Date time,
+            final boolean dep, final @Nullable Set<Product> products, final String moreContext) throws IOException {
         if (!from.hasId() && from.hasName()) {
             final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
             final List<Location> locations = suggestLocations(JOINER.join(from.place, from.name)).getLocations();
@@ -1039,6 +1041,16 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
             if (locations.size() > 1)
                 return new QueryTripsResult(header, locations, null, null);
             from = locations.get(0);
+        }
+
+        if (via != null && !via.hasId() && via.hasName()) {
+            final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
+            final List<Location> locations = suggestLocations(JOINER.join(via.place, via.name)).getLocations();
+            if (locations.isEmpty())
+                return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_VIA);
+            if (locations.size() > 1)
+                return new QueryTripsResult(header, locations, null, null);
+            via = locations.get(0);
         }
 
         if (!to.hasId() && to.hasName()) {
@@ -1063,6 +1075,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
                 + jsonContext //
                 + "\"depLocL\":[" + jsonLocation(from) + "]," //
                 + "\"arrLocL\":[" + jsonLocation(to) + "]," //
+                + (via != null ? "\"viaLocL\":[{\"loc\":" + jsonLocation(via) + "}]," : "") //
                 + "\"outDate\":\"" + outDate + "\"," //
                 + "\"outTime\":\"" + outTime + "\"," //
                 + "\"" + outFrwdKey + "\":" + outFrwd + "," //
@@ -1195,7 +1208,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
                 trips.add(trip);
             }
 
-            final JsonContext context = new JsonContext(from, to, time, dep, products, res.optString("outCtxScrF"),
+            final JsonContext context = new JsonContext(from, via, to, time, dep, products, res.optString("outCtxScrF"),
                     res.optString("outCtxScrB"));
             return new QueryTripsResult(header, null, from, null, to, context, trips);
         } catch (final JSONException x) {

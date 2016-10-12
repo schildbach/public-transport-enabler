@@ -115,14 +115,14 @@ public class VbnProvider extends AbstractHafasProvider {
             final Date date, final boolean dep, final @Nullable Set<Product> products,
             final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
             final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) throws IOException {
-        return jsonTripSearch(from, to, date, dep, products, null);
+        return jsonTripSearch(from, via, to, date, dep, products, null);
     }
 
     @Override
     public QueryTripsResult queryMoreTrips(final QueryTripsContext context, final boolean later) throws IOException {
         final JsonContext jsonContext = (JsonContext) context;
-        return jsonTripSearch(jsonContext.from, jsonContext.to, jsonContext.date, jsonContext.dep, jsonContext.products,
-                later ? jsonContext.laterContext : jsonContext.earlierContext);
+        return jsonTripSearch(jsonContext.from, jsonContext.via, jsonContext.to, jsonContext.date, jsonContext.dep,
+                jsonContext.products, later ? jsonContext.laterContext : jsonContext.earlierContext);
     }
 
     private static final Map<String, Style> STYLES = new HashMap<String, Style>();
