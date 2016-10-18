@@ -42,12 +42,12 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
  */
 public class VorProviderLiveTest extends AbstractProviderLiveTest {
     public VorProviderLiveTest() {
-        super(new VorProvider());
+        super(new VorProvider(secretProperty("vor.json_api_authorization")));
     }
 
     @Test
     public void nearbyStations() throws Exception {
-        final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "60203090"));
+        final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "490134900"));
         print(result);
     }
 
@@ -59,7 +59,19 @@ public class VorProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void queryDepartures() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("60203090", false);
+        final QueryDeparturesResult result = queryDepartures("490134900", false);
+        print(result);
+    }
+
+    @Test
+    public void queryDeparturesInvalidStation() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("999999", 0, false);
+        assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
+    }
+
+    @Test
+    public void suggestLocations() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Wien Hauptbahnhof");
         print(result);
     }
 
@@ -73,25 +85,25 @@ public class VorProviderLiveTest extends AbstractProviderLiveTest {
     public void suggestLocationsWithUmlaut() throws Exception {
         final SuggestLocationsResult result = suggestLocations("Längenfeld");
         print(result);
-        assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "60200820")));
+        assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "900018107")));
     }
 
     @Test
     public void suggestLocationsCoverage() throws Exception {
-        final SuggestLocationsResult huetteldorfResult = suggestLocations("Hütteldorf");
+        final SuggestLocationsResult huetteldorfResult = suggestLocations("Wien Hütteldorf");
         print(huetteldorfResult);
-        assertThat(huetteldorfResult.getLocations(), hasItem(new Location(LocationType.STATION, "60200560")));
+        assertThat(huetteldorfResult.getLocations(), hasItem(new Location(LocationType.STATION, "490056000")));
 
         final SuggestLocationsResult wienerNeustadtResult = suggestLocations("Wiener Neustadt Nord");
         print(wienerNeustadtResult);
-        assertThat(wienerNeustadtResult.getLocations(), hasItem(new Location(LocationType.STATION, "60205223")));
+        assertThat(wienerNeustadtResult.getLocations(), hasItem(new Location(LocationType.STATION, "430522300")));
     }
 
     @Test
     public void shortTrip() throws Exception {
         final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "60200657", 48200756, 16369001, "Wien", "Karlsplatz"), null,
-                new Location(LocationType.STATION, "60201094", 48198612, 16367719, "Wien", "Resselgasse"), new Date(),
+                new Location(LocationType.STATION, "490065700", 48200852, 16368880, "Wien", "Karlsplatz"), null,
+                new Location(LocationType.STATION, "490109400", 48198362, 16367667, "Wien", "Resselgasse"), new Date(),
                 true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
@@ -118,9 +130,11 @@ public class VorProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void tripToPOI() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.ADDRESS, null, 48221088, 16342658, "Wien", "Antonigasse 4"), null,
-                new Location(LocationType.POI, "poiID:1005:49000000:-1", 48199844, 16365834, "Wien", "Naschmarkt"),
+        final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "490134900", 48185184, 16376413),
+                null,
+                new Location(LocationType.POI,
+                        "A=4@O=Naschmarkt, Wien@X=16362903@Y=48198290@U=130@L=960068499@B=1@p=1476842541@", 48198290,
+                        16362903, "Wien", "Naschmarkt"),
                 new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
