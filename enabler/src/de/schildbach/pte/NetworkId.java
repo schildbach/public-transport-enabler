@@ -28,7 +28,7 @@ public enum NetworkId {
     DB, BVG, VBB, NVV, BAYERN, MVV, INVG, AVV, VGN, VVM, VMV, HVV, SH, GVH, BSVAG, VBN, NASA, VVO, VMS, VGS, VRR, VRS, MVG, NPH, VRN, VVS, DING, KVV, VAGFR, NVBW, VVV,
 
     // Austria
-    OEBB, VAO, VOR, WIEN, OOEVV, LINZ, VVT, IVB, STV, VMOBIL,
+    OEBB, VAO, VOR, WIEN, OOEVV, LINZ, SVV, VVT, IVB, STV, VMOBIL,
 
     // Switzerland
     SBB, BVB, VBL, ZVV,
