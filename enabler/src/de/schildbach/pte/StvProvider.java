@@ -17,16 +17,31 @@
 
 package de.schildbach.pte;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import java.io.IOException;
+import java.util.Date;
+import java.util.EnumSet;
+import java.util.Set;
+
 import javax.annotation.Nullable;
 
-import de.schildbach.pte.dto.Line;
+import com.google.common.base.Strings;
+
+import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.dto.LocationType;
+import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Product;
+import de.schildbach.pte.dto.QueryDeparturesResult;
+import de.schildbach.pte.dto.QueryTripsContext;
+import de.schildbach.pte.dto.QueryTripsResult;
+import de.schildbach.pte.dto.SuggestLocationsResult;
 
 /**
  * @author Andreas Schildbach
  */
 public class StvProvider extends AbstractEfaProvider {
-    private final static String API_BASE = "http://fahrplan.verbundlinie.at/stv/";
+    private final static String API_BASE = "http://appefa10.verbundlinie.at/android/";
 
     public StvProvider() {
         super(NetworkId.STV, API_BASE);
@@ -35,14 +50,40 @@ public class StvProvider extends AbstractEfaProvider {
     }
 
     @Override
-    protected Line parseLine(final @Nullable String id, final @Nullable String network, final @Nullable String mot,
-            final @Nullable String symbol, final @Nullable String name, final @Nullable String longName,
-            final @Nullable String trainType, final @Nullable String trainNum, final @Nullable String trainName) {
-        if ("0".equals(mot)) {
-            if ("M".equals(trainType) && trainNum != null)
-                return new Line(id, network, Product.REGIONAL_TRAIN, "M" + trainNum);
-        }
+    public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location,
+            final int maxDistance, final int maxLocations) throws IOException {
+        if (location.hasLocation())
+            return mobileCoordRequest(types, location.lat, location.lon, maxDistance, maxLocations);
 
-        return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
+        if (location.type != LocationType.STATION)
+            throw new IllegalArgumentException("cannot handle: " + location.type);
+
+        throw new IllegalArgumentException("station"); // TODO
+    }
+
+    @Override
+    public QueryDeparturesResult queryDepartures(final String stationId, final @Nullable Date time,
+            final int maxDepartures, final boolean equivs) throws IOException {
+        checkNotNull(Strings.emptyToNull(stationId));
+
+        return queryDeparturesMobile(stationId, time, maxDepartures, equivs);
+    }
+
+    @Override
+    public SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException {
+        return mobileStopfinderRequest(new Location(LocationType.ANY, null, null, constraint.toString()));
+    }
+
+    @Override
+    public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to,
+            final Date date, final boolean dep, final @Nullable Set<Product> products,
+            final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
+            final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) throws IOException {
+        return queryTripsMobile(from, via, to, date, dep, products, optimize, walkSpeed, accessibility, options);
+    }
+
+    @Override
+    public QueryTripsResult queryMoreTrips(final QueryTripsContext contextObj, final boolean later) throws IOException {
+        return queryMoreTripsMobile(contextObj, later);
     }
 }
