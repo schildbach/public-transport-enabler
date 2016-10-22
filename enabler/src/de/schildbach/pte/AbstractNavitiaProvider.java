@@ -1031,6 +1031,8 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
                         return new QueryTripsResult(resultHeader, QueryTripsResult.Status.UNKNOWN_TO);
                     else
                         throw new IllegalArgumentException("Unhandled error message: " + message);
+                } else if (id.equals("date_out_of_bounds")) {
+                    return new QueryTripsResult(resultHeader, QueryTripsResult.Status.INVALID_DATE);
                 } else {
                     throw new IllegalArgumentException("Unhandled error id: " + id);
                 }
