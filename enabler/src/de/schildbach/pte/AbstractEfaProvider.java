@@ -1506,10 +1506,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                             final String destinationIdStr = XmlPullUtil.optAttr(pp, "destID", null);
                             final String destinationId = !"-1".equals(destinationIdStr) ? destinationIdStr : null;
                             final Location destination;
-                            if (destinationId != null || destinationName != null)
-                                destination = new Location(
-                                        destinationId != null ? LocationType.STATION : LocationType.ANY, destinationId,
-                                        null, destinationName);
+                            if (destinationId != null)
+                                destination = new Location(LocationType.STATION, destinationId, null, destinationName);
+                            else if (destinationId == null && destinationName != null)
+                                destination = new Location(LocationType.ANY, null, null, destinationName);
                             else
                                 destination = null;
 
@@ -1576,10 +1576,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                             final String destinationIdStr = XmlPullUtil.optAttr(pp, "destID", null);
                             final String destinationId = !"-1".equals(destinationIdStr) ? destinationIdStr : null;
                             final Location destination;
-                            if (destinationId != null || destinationName != null)
-                                destination = new Location(
-                                        destinationId != null ? LocationType.STATION : LocationType.ANY, destinationId,
-                                        null, destinationName);
+                            if (destinationId != null)
+                                destination = new Location(LocationType.STATION, destinationId, null, destinationName);
+                            else if (destinationId == null && destinationName != null)
+                                destination = new Location(LocationType.ANY, null, null, destinationName);
                             else
                                 destination = null;
                             final Line line = processItdServingLine(pp);
