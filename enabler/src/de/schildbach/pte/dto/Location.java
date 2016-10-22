@@ -56,7 +56,9 @@ public final class Location implements Serializable {
 
         checkArgument(id == null || id.length() > 0, "ID cannot be the empty string");
         checkArgument(place == null || name != null, "place '%s' without name cannot exist", place);
-        if (type == LocationType.COORD) {
+        if (type == LocationType.ANY) {
+            checkArgument(id == null, "type ANY cannot have ID");
+        } else if (type == LocationType.COORD) {
             checkArgument(hasLocation(), "coordinates missing");
             checkArgument(place == null && name == null, "coordinates cannot have place or name");
         }
