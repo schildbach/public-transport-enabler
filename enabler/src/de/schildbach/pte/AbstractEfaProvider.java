@@ -2545,7 +2545,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                     final String text = XmlPullUtil.valueTag(pp, "infoTextListElem");
                     if (text != null) {
                         final String lcText = text.toLowerCase();
-                        if ("niederflurwagen soweit verfügbar".equals(lcText)) // KVV
+                        if (lcText.startsWith("niederflurwagen")) // KVV
                             lowFloorVehicle = true;
                         else if (lcText.contains("ruf") || lcText.contains("anmeld")) // Bedarfsverkehr
                             message = text;
