@@ -17,7 +17,9 @@
 
 package de.schildbach.pte.live;
 
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
@@ -40,12 +42,12 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
  */
 public class VvtProviderLiveTest extends AbstractProviderLiveTest {
     public VvtProviderLiveTest() {
-        super(new VvtProvider());
+        super(new VvtProvider(secretProperty("vvt.json_api_authorization")));
     }
 
     @Test
     public void nearbyStations() throws Exception {
-        final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "60101187"));
+        final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "470118700"));
         print(result);
     }
 
@@ -57,8 +59,21 @@ public class VvtProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void queryDepartures() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("60101187", false);
+        final QueryDeparturesResult result = queryDepartures("470118700", false);
         print(result);
+    }
+
+    @Test
+    public void queryDeparturesInvalidStation() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("999999", 0, false);
+        assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
+    }
+
+    @Test
+    public void suggestLocations() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Innsbruck Hauptbahnhof");
+        print(result);
+        assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "470118700")));
     }
 
     @Test
@@ -76,8 +91,8 @@ public class VvtProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void shortTrip() throws Exception {
         final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "60161512", 47268336, 11355532, "Innsbruck", "Allerheiligen"), null,
-                new Location(LocationType.STATION, "60161510", 47267272, 11350938, "Innsbruck", "Tschiggfreystraße"),
+                new Location(LocationType.STATION, "476151200", 47268248, 11355560, "Innsbruck", "Allerheiligen"), null,
+                new Location(LocationType.STATION, "476151000", 47267241, 11351003, "Innsbruck", "Tschiggfreystraße"),
                 new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
