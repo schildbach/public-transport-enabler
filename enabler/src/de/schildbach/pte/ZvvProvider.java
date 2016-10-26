@@ -19,6 +19,7 @@ package de.schildbach.pte;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,6 +46,11 @@ public class ZvvProvider extends AbstractHafasProvider {
         setJsonGetStopsEncoding(Charsets.UTF_8);
         setJsonNearbyLocationsEncoding(Charsets.UTF_8);
         setStyles(STYLES);
+    }
+
+    @Override
+    public Set<Product> defaultProducts() {
+        return Product.ALL;
     }
 
     private static final String[] OPERATORS = { "SBB", "SZU" };
