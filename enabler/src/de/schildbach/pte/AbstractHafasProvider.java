@@ -1323,28 +1323,36 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
             final JSONObject loc = locList.getJSONObject(iLoc);
             final String type = loc.getString("type");
 
-            final JSONObject crd = loc.getJSONObject("crd");
-
+            final LocationType locationType;
+            final String id;
+            final String[] placeAndName;
+            final Set<Product> products;
             if ("S".equals(type)) {
-                final String[] placeAndName = splitStationName(loc.getString("name"));
+                locationType = LocationType.STATION;
+                id = normalizeStationId(loc.getString("extId"));
+                placeAndName = splitStationName(loc.getString("name"));
                 final int pCls = loc.optInt("pCls", -1);
-                final Set<Product> products = pCls != -1 ? intToProducts(pCls) : null;
-                final String id = normalizeStationId(loc.getString("extId"));
-                locations.add(new Location(LocationType.STATION, id, crd.getInt("y"), crd.getInt("x"), placeAndName[0],
-                        placeAndName[1], products));
+                products = pCls != -1 ? intToProducts(pCls) : null;
             } else if ("P".equals(type)) {
-                final String[] placeAndName = splitPOI(loc.getString("name"));
-                final String id = loc.getString("lid");
-                locations.add(new Location(LocationType.POI, id, crd.getInt("y"), crd.getInt("x"), placeAndName[0],
-                        placeAndName[1]));
+                locationType = LocationType.POI;
+                id = loc.getString("lid");
+                placeAndName = splitPOI(loc.getString("name"));
+                products = null;
             } else if ("A".equals(type)) {
-                final String[] placeAndName = splitAddress(loc.getString("name"));
-                final String id = loc.getString("lid");
-                locations.add(new Location(LocationType.ADDRESS, id, crd.getInt("y"), crd.getInt("x"), placeAndName[0],
-                        placeAndName[1]));
+                locationType = LocationType.ADDRESS;
+                id = loc.getString("lid");
+                placeAndName = splitAddress(loc.getString("name"));
+                products = null;
             } else {
                 throw new RuntimeException("Unknown type " + type + ": " + loc);
             }
+
+            final JSONObject crd = loc.optJSONObject("crd");
+            if (crd != null)
+                locations.add(new Location(locationType, id, crd.getInt("y"), crd.getInt("x"), placeAndName[0],
+                        placeAndName[1], products));
+            else
+                locations.add(new Location(LocationType.STATION, id, null, placeAndName[0], placeAndName[1], products));
         }
 
         return locations;
