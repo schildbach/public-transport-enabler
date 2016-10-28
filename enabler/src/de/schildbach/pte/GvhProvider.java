@@ -52,6 +52,8 @@ public class GvhProvider extends AbstractEfaProvider {
             final @Nullable String symbol, final @Nullable String name, final @Nullable String longName,
             final @Nullable String trainType, final @Nullable String trainNum, final @Nullable String trainName) {
         if ("0".equals(mot)) {
+            if ("RX".equals(trainType) && trainNum != null) // Express, Czech Republic
+                return new Line(id, network, Product.REGIONAL_TRAIN, "RX" + trainNum);
             if ("S4".equals(trainNum))
                 return new Line(id, network, Product.SUBURBAN_TRAIN, "S4");
             if (longName != null && longName.startsWith("Bus ") && name != null)
