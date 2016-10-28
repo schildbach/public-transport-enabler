@@ -554,7 +554,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                             XmlPullUtil.enter(pp, "coordInfoItem");
 
                             // FIXME this is always only one coordinate
-                            final Point coord = processItdPathCoordinates(pp).get(0);
+                            final List<Point> path = processItdPathCoordinates(pp);
+                            final Point coord = path != null ? path.get(0) : null;
 
                             XmlPullUtil.skipExit(pp, "coordInfoItem");
 
@@ -2828,20 +2829,23 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                                             }
                                         }
                                     }
-                                    final String coord = intermediateParts[4];
+                                    final String coordPart = intermediateParts[4];
 
-                                    final Location location;
-                                    if (!"::".equals(coord)) {
-                                        final String[] coordParts = coord.split(":");
-                                        if (!"WGS84".equals(coordParts[2]))
-                                            throw new IllegalStateException("unknown map name: " + coordParts[2]);
-                                        final double lat = Double.parseDouble(coordParts[1]);
-                                        final double lon = Double.parseDouble(coordParts[0]);
-                                        location = new Location(LocationType.STATION, id, Point.fromDouble(lat, lon),
-                                                null, name);
+                                    final Point coords;
+                                    if (!"::".equals(coordPart)) {
+                                        final String[] coordParts = coordPart.split(":");
+                                        if ("WGS84".equals(coordParts[2])) {
+                                            final double lat = Double.parseDouble(coordParts[1]);
+                                            final double lon = Double.parseDouble(coordParts[0]);
+                                            coords = Point.fromDouble(lat, lon);
+                                        } else {
+                                            coords = null;
+                                        }
                                     } else {
-                                        location = new Location(LocationType.STATION, id, null, name);
+                                        coords = null;
                                     }
+                                    final Location location = new Location(LocationType.STATION, id, coords, null,
+                                            name);
 
                                     final Date plannedTime = plannedTimeCal.isSet(Calendar.HOUR_OF_DAY)
                                             ? plannedTimeCal.getTime() : null;
@@ -2933,26 +2937,25 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
     private List<Point> processItdPathCoordinates(final XmlPullParser pp) throws XmlPullParserException, IOException {
         XmlPullUtil.enter(pp, "itdPathCoordinates");
+        final List<Point> path;
 
         final String ellipsoid = XmlPullUtil.valueTag(pp, "coordEllipsoid");
-        if (!"WGS84".equals(ellipsoid))
-            throw new IllegalStateException("unknown ellipsoid: " + ellipsoid);
-
-        final String type = XmlPullUtil.valueTag(pp, "coordType");
-        if (!"GEO_DECIMAL".equals(type))
-            throw new IllegalStateException("unknown type: " + type);
-
-        final List<Point> path;
-        if (XmlPullUtil.test(pp, "itdCoordinateString")) {
-            path = processCoordinateStrings(pp, "itdCoordinateString");
-        } else if (XmlPullUtil.test(pp, "itdCoordinateBaseElemList")) {
-            path = processCoordinateBaseElems(pp);
+        if ("WGS84".equals(ellipsoid)) {
+            final String type = XmlPullUtil.valueTag(pp, "coordType");
+            if (!"GEO_DECIMAL".equals(type))
+                throw new IllegalStateException("unknown type: " + type);
+            if (XmlPullUtil.test(pp, "itdCoordinateString")) {
+                path = processCoordinateStrings(pp, "itdCoordinateString");
+            } else if (XmlPullUtil.test(pp, "itdCoordinateBaseElemList")) {
+                path = processCoordinateBaseElems(pp);
+            } else {
+                throw new IllegalStateException(pp.getPositionDescription());
+            }
         } else {
-            throw new IllegalStateException(pp.getPositionDescription());
+            return null;
         }
 
         XmlPullUtil.skipExit(pp, "itdPathCoordinates");
-
         return path;
     }
 
@@ -3006,7 +3009,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             return null;
 
         if (!"WGS84".equals(mapName))
-            throw new IllegalStateException("unknown mapName=" + mapName);
+            return null;
 
         return new Point(y, x);
     }
