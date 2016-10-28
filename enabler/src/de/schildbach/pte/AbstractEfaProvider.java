@@ -1497,52 +1497,59 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
                     XmlPullUtil.optSkip(pp, "itdMessage");
 
-                    final Calendar plannedDepartureTime = new GregorianCalendar(timeZone);
-                    final Calendar predictedDepartureTime = new GregorianCalendar(timeZone);
+                    if (XmlPullUtil.test(pp, "itdServingLines")) {
+                        if (!pp.isEmptyElementTag()) {
+                            XmlPullUtil.enter(pp, "itdServingLines");
+                            while (XmlPullUtil.test(pp, "itdServingLine")) {
+                                final String assignedStopId = XmlPullUtil.optAttr(pp, "assignedStopID", null);
+                                final String destinationName = normalizeLocationName(
+                                        XmlPullUtil.optAttr(pp, "direction", null));
+                                final String destinationIdStr = XmlPullUtil.optAttr(pp, "destID", null);
+                                final String destinationId = !"-1".equals(destinationIdStr) ? destinationIdStr : null;
+                                final Location destination;
+                                if (destinationId != null)
+                                    destination = new Location(LocationType.STATION, destinationId, null,
+                                            destinationName);
+                                else if (destinationId == null && destinationName != null)
+                                    destination = new Location(LocationType.ANY, null, null, destinationName);
+                                else
+                                    destination = null;
 
-                    XmlPullUtil.require(pp, "itdServingLines");
-                    if (!pp.isEmptyElementTag()) {
-                        XmlPullUtil.enter(pp, "itdServingLines");
-                        while (XmlPullUtil.test(pp, "itdServingLine")) {
-                            final String assignedStopId = XmlPullUtil.optAttr(pp, "assignedStopID", null);
-                            final String destinationName = normalizeLocationName(
-                                    XmlPullUtil.optAttr(pp, "direction", null));
-                            final String destinationIdStr = XmlPullUtil.optAttr(pp, "destID", null);
-                            final String destinationId = !"-1".equals(destinationIdStr) ? destinationIdStr : null;
-                            final Location destination;
-                            if (destinationId != null)
-                                destination = new Location(LocationType.STATION, destinationId, null, destinationName);
-                            else if (destinationId == null && destinationName != null)
-                                destination = new Location(LocationType.ANY, null, null, destinationName);
-                            else
-                                destination = null;
+                                final LineDestination line = new LineDestination(processItdServingLine(pp),
+                                        destination);
 
-                            final LineDestination line = new LineDestination(processItdServingLine(pp), destination);
+                                StationDepartures assignedStationDepartures;
+                                if (assignedStopId == null)
+                                    assignedStationDepartures = r.stationDepartures.get(0);
+                                else
+                                    assignedStationDepartures = findStationDepartures(r.stationDepartures,
+                                            assignedStopId);
 
-                            StationDepartures assignedStationDepartures;
-                            if (assignedStopId == null)
-                                assignedStationDepartures = r.stationDepartures.get(0);
-                            else
-                                assignedStationDepartures = findStationDepartures(r.stationDepartures, assignedStopId);
+                                if (assignedStationDepartures == null)
+                                    assignedStationDepartures = new StationDepartures(
+                                            new Location(LocationType.STATION, assignedStopId),
+                                            new LinkedList<Departure>(), new LinkedList<LineDestination>());
 
-                            if (assignedStationDepartures == null)
-                                assignedStationDepartures = new StationDepartures(
-                                        new Location(LocationType.STATION, assignedStopId), new LinkedList<Departure>(),
-                                        new LinkedList<LineDestination>());
-
-                            final List<LineDestination> assignedStationDeparturesLines = checkNotNull(
-                                    assignedStationDepartures.lines);
-                            if (!assignedStationDeparturesLines.contains(line))
-                                assignedStationDeparturesLines.add(line);
+                                final List<LineDestination> assignedStationDeparturesLines = checkNotNull(
+                                        assignedStationDepartures.lines);
+                                if (!assignedStationDeparturesLines.contains(line))
+                                    assignedStationDeparturesLines.add(line);
+                            }
+                            XmlPullUtil.skipExit(pp, "itdServingLines");
+                        } else {
+                            XmlPullUtil.next(pp);
                         }
-                        XmlPullUtil.skipExit(pp, "itdServingLines");
                     } else {
-                        XmlPullUtil.next(pp);
+                        result.set(new QueryDeparturesResult(header, QueryDeparturesResult.Status.INVALID_STATION));
+                        return;
                     }
 
                     XmlPullUtil.require(pp, "itdDepartureList");
                     if (!pp.isEmptyElementTag()) {
                         XmlPullUtil.enter(pp, "itdDepartureList");
+                        final Calendar plannedDepartureTime = new GregorianCalendar(timeZone);
+                        final Calendar predictedDepartureTime = new GregorianCalendar(timeZone);
+
                         while (XmlPullUtil.test(pp, "itdDeparture")) {
                             final String assignedStopId = XmlPullUtil.attr(pp, "stopID");
 
