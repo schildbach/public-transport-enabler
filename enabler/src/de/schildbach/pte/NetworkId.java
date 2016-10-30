@@ -79,7 +79,7 @@ public enum NetworkId {
     SF, SEPTA, RTACHICAGO,
 
     // Canada
-    ONTARIO, QUEBEC,
+    ONTARIO, QUEBEC, BRITISHCOLUMBIA,
 
     // Australia
     SYDNEY, MET
