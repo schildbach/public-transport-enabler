@@ -79,7 +79,7 @@ public enum NetworkId {
     RTACHICAGO, OREGON,
 
     // Canada
-    ONTARIO, QUEBEC,
+    ONTARIO, QUEBEC, BRITISHCOLUMBIA,
 
     // Australia
     SYDNEY, AUSTRALIA,
