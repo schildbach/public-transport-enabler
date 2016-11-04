@@ -93,7 +93,7 @@ public final class HttpClient {
 
     private static final String SCRAPE_ACCEPT = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
     public static final int SCRAPE_INITIAL_CAPACITY = 4096;
-    private static final int SCRAPE_PEEK_SIZE = 4096;
+    private static final int SCRAPE_PEEK_SIZE = 8192;
 
     private static final Logger log = LoggerFactory.getLogger(HttpClient.class);
 
