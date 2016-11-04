@@ -92,7 +92,6 @@ public final class HttpClient {
     }
 
     private static final String SCRAPE_ACCEPT = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
-    public static final int SCRAPE_INITIAL_CAPACITY = 4096;
     private static final int SCRAPE_PEEK_SIZE = 8192;
 
     private static final Logger log = LoggerFactory.getLogger(HttpClient.class);
@@ -126,7 +125,7 @@ public final class HttpClient {
         if (requestEncoding == null)
             requestEncoding = Charsets.ISO_8859_1;
 
-        final StringBuilder buffer = new StringBuilder(SCRAPE_INITIAL_CAPACITY);
+        final StringBuilder buffer = new StringBuilder();
         final Callback callback = new Callback() {
             @Override
             public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
