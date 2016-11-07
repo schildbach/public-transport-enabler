@@ -380,8 +380,7 @@ public class VrsProvider extends AbstractNetworkProvider {
             final String error = Strings.emptyToNull(head.optString("error", "").trim());
             if (error != null) {
                 if (error.equals("Leere Koordinate.") || error.equals("Leere ASS-ID und leere Koordinate"))
-                    return new NearbyLocationsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT, null, 0, null),
-                            locations);
+                    return new NearbyLocationsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT), locations);
                 else if (error.equals("ASS2-Server lieferte leere Antwort."))
                     return new NearbyLocationsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT),
                             NearbyLocationsResult.Status.SERVICE_DOWN);
@@ -403,7 +402,7 @@ public class VrsProvider extends AbstractNetworkProvider {
                 }
                 serverTime = parseDateTime(timetable.getJSONObject(i).getString("generated")).getTime();
             }
-            final ResultHeader header = new ResultHeader(NetworkId.VRS, SERVER_PRODUCT, null, serverTime, null);
+            final ResultHeader header = new ResultHeader(NetworkId.VRS, SERVER_PRODUCT, null, null, serverTime, null);
             return new NearbyLocationsResult(header, locations);
         } catch (final JSONException x) {
             throw new RuntimeException("cannot parse: '" + page + "' on " + uri, x);
@@ -871,7 +870,7 @@ public class VrsProvider extends AbstractNetworkProvider {
                         changes));
             }
             long serverTime = parseDateTime(head.getString("generated")).getTime();
-            final ResultHeader header = new ResultHeader(NetworkId.VRS, SERVER_PRODUCT, null, serverTime, null);
+            final ResultHeader header = new ResultHeader(NetworkId.VRS, SERVER_PRODUCT, null, null, serverTime, null);
             context.from = from;
             context.to = to;
             context.via = via;

@@ -35,18 +35,20 @@ public final class ResultHeader implements Serializable {
     public final NetworkId network;
     public final String serverProduct;
     public final @Nullable String serverVersion;
+    public final @Nullable String serverName;
     public final long serverTime;
     public final Object context;
 
     public ResultHeader(final NetworkId network, final String serverProduct) {
-        this(network, serverProduct, null, 0, null);
+        this(network, serverProduct, null, null, 0, null);
     }
 
     public ResultHeader(final NetworkId network, final String serverProduct, final String serverVersion,
-            final long serverTime, final Object context) {
+            final String serverName, final long serverTime, final Object context) {
         this.network = checkNotNull(network);
         this.serverProduct = checkNotNull(serverProduct);
         this.serverVersion = serverVersion;
+        this.serverName = serverName;
         this.serverTime = serverTime;
         this.context = context;
     }
@@ -54,6 +56,7 @@ public final class ResultHeader implements Serializable {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this).add("serverProduct", serverProduct).add("serverVersion", serverVersion)
-                .add("serverTime", serverTime).add("context", context).omitNullValues().toString();
+                .add("serverName", serverName).add("serverTime", serverTime).add("context", context).omitNullValues()
+                .toString();
     }
 }

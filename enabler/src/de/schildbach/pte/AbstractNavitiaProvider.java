@@ -668,7 +668,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
     @Override
     public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location,
             int maxDistance, final int maxLocations) throws IOException {
-        final ResultHeader resultHeader = new ResultHeader(network, SERVER_PRODUCT, SERVER_VERSION, 0, null);
+        final ResultHeader resultHeader = new ResultHeader(network, SERVER_PRODUCT, SERVER_VERSION, null, 0, null);
 
         // Build query uri depending of location type.
         final StringBuilder queryUri = new StringBuilder(uri());
@@ -739,7 +739,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
             final int maxDepartures, final boolean equivs) throws IOException {
         checkNotNull(Strings.emptyToNull(stationId));
 
-        final ResultHeader resultHeader = new ResultHeader(network, SERVER_PRODUCT, SERVER_VERSION, 0, null);
+        final ResultHeader resultHeader = new ResultHeader(network, SERVER_PRODUCT, SERVER_VERSION, null, 0, null);
 
         try {
             final QueryDeparturesResult result = new QueryDeparturesResult(resultHeader,
@@ -863,7 +863,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
                 }
             }
 
-            final ResultHeader resultHeader = new ResultHeader(network, SERVER_PRODUCT, SERVER_VERSION, 0, null);
+            final ResultHeader resultHeader = new ResultHeader(network, SERVER_PRODUCT, SERVER_VERSION, null, 0, null);
             return new SuggestLocationsResult(resultHeader, locations);
         } catch (final JSONException jsonExc) {
             throw new ParserException(jsonExc);
@@ -875,7 +875,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
             final Date date, final boolean dep, final @Nullable Set<Product> products,
             final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
             final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) throws IOException {
-        final ResultHeader resultHeader = new ResultHeader(network, SERVER_PRODUCT, SERVER_VERSION, 0, null);
+        final ResultHeader resultHeader = new ResultHeader(network, SERVER_PRODUCT, SERVER_VERSION, null, 0, null);
 
         try {
             if (from != null && from.isIdentified() && to != null && to.isIdentified()) {
@@ -1044,7 +1044,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
 
     @Override
     public QueryTripsResult queryMoreTrips(final QueryTripsContext contextObj, final boolean later) throws IOException {
-        final ResultHeader resultHeader = new ResultHeader(network, SERVER_PRODUCT, SERVER_VERSION, 0, null);
+        final ResultHeader resultHeader = new ResultHeader(network, SERVER_PRODUCT, SERVER_VERSION, null, 0, null);
 
         final Context context = (Context) contextObj;
         final Location from = context.from;

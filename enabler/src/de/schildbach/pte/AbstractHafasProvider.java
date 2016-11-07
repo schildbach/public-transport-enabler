@@ -836,7 +836,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
             final String headErr = head.optString("err", null);
             if (headErr != null)
                 throw new RuntimeException(headErr);
-            final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, head.getString("ver"), 0, null);
+            final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, head.getString("ver"), null, 0, null);
 
             final JSONArray svcResList = head.getJSONArray("svcResL");
             checkState(svcResList.length() == 1);
@@ -901,7 +901,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
             final String headErr = head.optString("err", null);
             if (headErr != null)
                 throw new RuntimeException(headErr);
-            final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, head.getString("ver"), 0, null);
+            final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, head.getString("ver"), null, 0, null);
             final QueryDeparturesResult result = new QueryDeparturesResult(header);
 
             final JSONArray svcResList = head.getJSONArray("svcResL");
@@ -1000,7 +1000,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
             final String headErr = head.optString("err", null);
             if (headErr != null)
                 throw new RuntimeException(headErr);
-            final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, head.getString("ver"), 0, null);
+            final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, head.getString("ver"), null, 0, null);
 
             final JSONArray svcResList = head.getJSONArray("svcResL");
             checkState(svcResList.length() == 1);
@@ -1092,7 +1092,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
             final String headErr = head.optString("err", null);
             if (headErr != null)
                 throw new RuntimeException(headErr);
-            final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, head.getString("ver"), 0, null);
+            final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, head.getString("ver"), null, 0, null);
 
             final JSONArray svcResList = head.getJSONArray("svcResL");
             checkState(svcResList.length() == 1);
@@ -1516,7 +1516,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
 
                     XmlPullUtil.require(pp, "ResC");
                     final String product = XmlPullUtil.attr(pp, "prod").split(" ")[0];
-                    final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, product, 0, null);
+                    final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, product, null, 0, null);
                     XmlPullUtil.enter(pp, "ResC");
 
                     if (XmlPullUtil.test(pp, "Err")) {
@@ -2168,8 +2168,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
                 final int version = is.readShortReverse();
                 if (version != 6 && version != 5)
                     throw new IllegalStateException("unknown version: " + version + ", first chars: " + bodyPeek);
-                final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, Integer.toString(version), 0,
-                        null);
+                final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, Integer.toString(version), null,
+                        0, null);
 
                 // quick seek for pointers
                 is.reset();

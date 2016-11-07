@@ -3141,6 +3141,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         final String serverVersion = XmlPullUtil.attr(pp, "version");
         final String now = XmlPullUtil.optAttr(pp, "now", null);
         final String sessionId = XmlPullUtil.attr(pp, "sessionID");
+        final String serverId = XmlPullUtil.attr(pp, "serverID");
 
         final long serverTime;
         if (now != null) {
@@ -3152,7 +3153,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             serverTime = 0;
         }
 
-        final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, serverVersion, serverTime, sessionId);
+        final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, serverVersion, serverId, serverTime,
+                sessionId);
 
         XmlPullUtil.enter(pp, "itdRequest");
 
@@ -3183,11 +3185,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         ParserUtils.parseEuropeanTime(serverTime, now.substring(11));
 
         final Map<String, String> params = processPas(pp);
-        final String sessionId = params.get("sessionID");
         final String requestId = params.get("requestID");
+        final String sessionId = params.get("sessionID");
+        final String serverId = params.get("serverID");
 
-        final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, null, serverTime.getTimeInMillis(),
-                new String[] { sessionId, requestId });
+        final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, null, serverId,
+                serverTime.getTimeInMillis(), new String[] { sessionId, requestId });
 
         return header;
     }
