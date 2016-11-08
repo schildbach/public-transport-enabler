@@ -46,6 +46,8 @@ import javax.annotation.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
@@ -79,6 +81,9 @@ import okhttp3.HttpUrl;
  * @author Michael Dyrna
  */
 public class VrsProvider extends AbstractNetworkProvider {
+
+    private static final Logger log = LoggerFactory.getLogger(VrsProvider.class);
+
     @SuppressWarnings("serial")
     private static class Context implements QueryTripsContext {
         private boolean canQueryLater = true;
@@ -150,17 +155,19 @@ public class VrsProvider extends AbstractNetworkProvider {
     protected static final String SERVER_PRODUCT = "vrs";
 
     @SuppressWarnings("serial")
-    protected static final List<Pattern> nameWithPositionPatterns = new ArrayList<Pattern>() {
+    protected static final List<Pattern> NAME_WITH_POSITION_PATTERNS = new ArrayList<Pattern>() {
         {
             // Bonn Hauptbahnhof (ZOB) - Bussteig F2
             // Beuel Bf - D
             add(Pattern.compile("(.*) - (.*)"));
             // Breslauer Platz/Hbf (U) Gleis 2
             add(Pattern.compile("(.*) Gleis (.*)"));
+            // Bonn Hauptbahnhof (Stadtbahn) (Bahnsteig H)
+            add(Pattern.compile("(.*) \\(Bahnsteig ([^)]*)\\)"));
             // Düren Bf (Bussteig D/E)
-            add(Pattern.compile("(.*) \\(Bussteig (.*)\\)"));
+            add(Pattern.compile("(.*) \\(Bussteig ([^)]*)\\)"));
             // Venloer Str./Gürtel (Gleis 1)
-            add(Pattern.compile("(.*) \\(Gleis (.*)\\)"));
+            add(Pattern.compile("(?:(.*) )?\\(Gleis ([^)]*)\\)"));
             // Aachen alle Buslinien
             add(Pattern.compile("(.*) \\(H\\.(\\d+).*\\)"));
             // Neumarkt Bussteig B
@@ -475,12 +482,16 @@ public class VrsProvider extends AbstractNetworkProvider {
                     Position position = null;
                     final JSONObject post = event.optJSONObject("post");
                     if (post != null) {
-                        final String positionStr = post.getString("name");
-                        // examples for post:
-                        // (U) Gleis 2
-                        // Bonn Hauptbahnhof (ZOB) - Bussteig C4
-                        // A
-                        position = new Position(positionStr.substring(positionStr.lastIndexOf(' ') + 1));
+                        final String postName = post.getString("name");
+                        for (Pattern pattern : NAME_WITH_POSITION_PATTERNS) {
+                            Matcher matcher = pattern.matcher(postName);
+                            if (matcher.matches()) {
+                                position = new Position(matcher.group(2));
+                                break;
+                            }
+                        }
+                        if (position == null)
+                            log.info("Could not extract position from '{}'", postName);
                     }
                     final Location destination = new Location(LocationType.STATION, null /* id */, null /* place */,
                             lineObj.getString("direction"));
@@ -1065,7 +1076,7 @@ public class VrsProvider extends AbstractNetworkProvider {
             locationType = LocationType.STATION;
             id = location.getString("id");
             name = location.getString("name");
-            for (Pattern pattern : nameWithPositionPatterns) {
+            for (Pattern pattern : NAME_WITH_POSITION_PATTERNS) {
                 Matcher matcher = pattern.matcher(name);
                 if (matcher.matches()) {
                     name = matcher.group(1);
