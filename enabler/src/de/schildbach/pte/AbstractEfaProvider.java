@@ -1741,8 +1741,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             final String co = XmlPullUtil.valueTag(pp, "co");
             final String productType = tyOrCo ? ty : co;
             XmlPullUtil.optValueTag(pp, "prid", null);
-            final String destinationName = normalizeLocationName(XmlPullUtil.valueTag(pp, "des"));
-            destination = new Location(LocationType.ANY, null, null, destinationName);
+            final String destinationName = normalizeLocationName(XmlPullUtil.optValueTag(pp, "des", null));
+            destination = destinationName != null ? new Location(LocationType.ANY, null, null, destinationName) : null;
             XmlPullUtil.optValueTag(pp, "dy", null);
             final String de = XmlPullUtil.optValueTag(pp, "de", null);
             final String productName = n != null ? n : de;
