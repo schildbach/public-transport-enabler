@@ -122,6 +122,12 @@ public class SydneyProvider extends AbstractEfaProvider {
             if ("T7".equals(symbol) || "T7 Olympic Park Line".equals(symbol))
                 return new Line(id, network, Product.SUBURBAN_TRAIN, "T7");
 
+            if (("31".equals(symbol) || "36".equals(symbol) || "621".equals(symbol) || "622".equals(symbol)
+                    || "635".equals(symbol))
+                    && ((trainName != null && trainName.startsWith("Regional Trains"))
+                            || (longName != null && longName.startsWith("Regional Trains"))))
+                return new Line(id, network, null, symbol);
+
             throw new IllegalStateException("cannot normalize mot='" + mot + "' symbol='" + symbol + "' name='" + name
                     + "' long='" + longName + "' trainType='" + trainType + "' trainNum='" + trainNum + "' trainName='"
                     + trainName + "'");
@@ -158,6 +164,8 @@ public class SydneyProvider extends AbstractEfaProvider {
                 return new Line(id, network, Product.FERRY, "EmpBa");
             if ("Stkn".equals(symbol) || "Stockton Ferry".equals(name))
                 return new Line(id, network, Product.FERRY, "Stkn");
+            if ("CCWB".equals(symbol) || "Circular Quay to Watsons Bay".equals(name))
+                return new Line(id, network, Product.FERRY, "CCWB");
 
             throw new IllegalStateException("cannot normalize mot='" + mot + "' symbol='" + symbol + "' name='" + name
                     + "' long='" + longName + "' trainType='" + trainType + "' trainNum='" + trainNum + "' trainName='"
