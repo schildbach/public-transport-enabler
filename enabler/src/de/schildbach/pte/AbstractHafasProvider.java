@@ -845,7 +845,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
             final String err = svcRes.getString("err");
             if (!"OK".equals(err)) {
                 final String errTxt = svcRes.getString("errTxt");
-                throw new RuntimeException(err + ": " + errTxt);
+                throw new RuntimeException(err + " " + errTxt);
             }
             final JSONObject res = svcRes.getJSONObject("res");
 
@@ -911,10 +911,12 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
             final String err = svcRes.getString("err");
             if (!"OK".equals(err)) {
                 final String errTxt = svcRes.getString("errTxt");
+                log.debug("Hafas error: {} {}", err, errTxt);
                 if ("LOCATION".equals(err) && "HCI Service: location missing or invalid".equals(errTxt))
                     return new QueryDeparturesResult(header, QueryDeparturesResult.Status.INVALID_STATION);
-                else
-                    throw new RuntimeException(err + ": " + errTxt);
+                if ("FAIL".equals(err) && "HCI Service: request failed".equals(errTxt))
+                    return new QueryDeparturesResult(header, QueryDeparturesResult.Status.SERVICE_DOWN);
+                throw new RuntimeException(err + " " + errTxt);
             } else if ("1.10".equals(jsonApiVersion) && svcRes.toString().length() == 170) {
                 // horrible hack, because API version 1.10 doesn't signal invalid stations via error
                 return new QueryDeparturesResult(header, QueryDeparturesResult.Status.INVALID_STATION);
@@ -1009,7 +1011,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
             final String err = svcRes.getString("err");
             if (!"OK".equals(err)) {
                 final String errTxt = svcRes.getString("errTxt");
-                throw new RuntimeException(err + ": " + errTxt);
+                throw new RuntimeException(err + " " + errTxt);
             }
             final JSONObject res = svcRes.getJSONObject("res");
 
@@ -1100,7 +1102,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
             checkState("TripSearch".equals(svcRes.getString("meth")));
             final String err = svcRes.getString("err");
             if (!"OK".equals(err)) {
-                log.debug("Hafas error: {}", err);
+                final String errTxt = svcRes.getString("errTxt");
+                log.debug("Hafas error: {} {}", err, errTxt);
                 if ("H890".equals(err)) // No connections found.
                     return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
                 if ("H891".equals(err)) // No route found (try entering an intermediate station).
@@ -1114,8 +1117,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
                 if ("H9380".equals(err)) // Departure/Arrival/Intermediate or equivalent stations def'd more
                                          // than once.
                     return new QueryTripsResult(header, QueryTripsResult.Status.TOO_CLOSE);
-                final String errTxt = svcRes.getString("errTxt");
-                throw new RuntimeException(err + ": " + errTxt);
+                if ("FAIL".equals(err) && "HCI Service: request failed".equals(errTxt))
+                    return new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN);
+                throw new RuntimeException(err + " " + errTxt);
             }
             final JSONObject res = svcRes.getJSONObject("res");
 
