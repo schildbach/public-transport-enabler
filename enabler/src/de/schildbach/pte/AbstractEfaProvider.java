@@ -1468,8 +1468,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                     final QueryDeparturesResult r = new QueryDeparturesResult(header);
 
                     XmlPullUtil.enter(pp, "itdDepartureMonitorRequest");
-
-                    XmlPullUtil.optSkip(pp, "itdMessage");
+                    XmlPullUtil.optSkipMultiple(pp, "itdMessage");
 
                     final String nameState = processItdOdv(pp, "dm", new ProcessItdOdvCallback() {
                         @Override
@@ -2181,7 +2180,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         final String requestId = XmlPullUtil.attr(pp, "requestID");
         XmlPullUtil.enter(pp, "itdTripRequest");
 
-        if (XmlPullUtil.test(pp, "itdMessage")) {
+        while (XmlPullUtil.test(pp, "itdMessage")) {
             final int code = XmlPullUtil.intAttr(pp, "code");
             if (code == -4000) // no trips
                 return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
