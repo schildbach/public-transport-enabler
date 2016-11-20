@@ -106,6 +106,12 @@ public final class XmlPullUtil {
             requireSkip(pp, tagName);
     }
 
+    public static void optSkipMultiple(final XmlPullParser pp, final String tagName)
+            throws XmlPullParserException, IOException {
+        while (test(pp, tagName))
+            requireSkip(pp, tagName);
+    }
+
     public static void next(final XmlPullParser pp) throws XmlPullParserException, IOException {
         skipSubTree(pp);
         pp.next();

@@ -707,9 +707,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             throw new RuntimeException("cannot handle nameState '" + nameState + "'");
         }
 
-        while (XmlPullUtil.test(pp, "infoLink"))
-            XmlPullUtil.requireSkip(pp, "infoLink");
-
+        XmlPullUtil.optSkipMultiple(pp, "infoLink");
         XmlPullUtil.optSkip(pp, "odvNameInput");
 
         XmlPullUtil.exit(pp, "itdOdvName");
@@ -2261,8 +2259,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         XmlPullUtil.skipExit(pp, "itdTripDateTime");
 
         XmlPullUtil.requireSkip(pp, "itdTripOptions");
-        while (XmlPullUtil.test(pp, "omcTaxi"))
-            XmlPullUtil.requireSkip(pp, "omcTaxi");
+        XmlPullUtil.optSkipMultiple(pp, "omcTaxi");
 
         final List<Trip> trips = new ArrayList<Trip>();
 
@@ -2292,8 +2289,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                     final int numChanges = XmlPullUtil.intAttr(pp, "changes");
                     XmlPullUtil.enter(pp, "itdRoute");
 
-                    while (XmlPullUtil.test(pp, "itdDateTime"))
-                        XmlPullUtil.next(pp);
+                    XmlPullUtil.optSkipMultiple(pp, "itdDateTime");
                     XmlPullUtil.optSkip(pp, "itdMapItemList");
 
                     XmlPullUtil.enter(pp, "itdPartialRouteList");
@@ -2887,13 +2883,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                             XmlPullUtil.enter(pp, "tcs");
 
                             fares = new ArrayList<Fare>(2);
-
-                            while (XmlPullUtil.test(pp, "tc")) {
-                                XmlPullUtil.enter(pp, "tc");
-                                // TODO fares
-                                XmlPullUtil.skipExit(pp, "tc");
-                            }
-
+                            XmlPullUtil.optSkipMultiple(pp, "tc"); // TODO fares
                             XmlPullUtil.skipExit(pp, "tcs");
                         } else {
                             fares = null;
