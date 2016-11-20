@@ -1578,8 +1578,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                             if (XmlPullUtil.test(pp, "itdRTDateTime"))
                                 processItdDateTime(pp, predictedDepartureTime);
 
-                            if (XmlPullUtil.test(pp, "itdFrequencyInfo"))
-                                XmlPullUtil.next(pp);
+                            XmlPullUtil.optSkip(pp, "itdFrequencyInfo");
 
                             XmlPullUtil.require(pp, "itdServingLine");
                             final boolean isRealtime = XmlPullUtil.attr(pp, "realtime").equals("1");
@@ -2190,10 +2189,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                 return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
             XmlPullUtil.next(pp);
         }
-        if (XmlPullUtil.test(pp, "itdPrintConfiguration"))
-            XmlPullUtil.next(pp);
-        if (XmlPullUtil.test(pp, "itdAddress"))
-            XmlPullUtil.next(pp);
+        XmlPullUtil.optSkip(pp, "itdPrintConfiguration");
+        XmlPullUtil.optSkip(pp, "itdAddress");
 
         List<Location> ambiguousFrom = null, ambiguousTo = null, ambiguousVia = null;
         Location from = null, via = null, to = null;
@@ -2297,8 +2294,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
                     while (XmlPullUtil.test(pp, "itdDateTime"))
                         XmlPullUtil.next(pp);
-                    if (XmlPullUtil.test(pp, "itdMapItemList"))
-                        XmlPullUtil.next(pp);
+                    XmlPullUtil.optSkip(pp, "itdMapItemList");
 
                     XmlPullUtil.enter(pp, "itdPartialRouteList");
                     final List<Trip.Leg> legs = new LinkedList<Trip.Leg>();
@@ -2320,8 +2316,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                             firstDepartureLocation = departureLocation;
                         final Position departurePosition = parsePosition(XmlPullUtil.optAttr(pp, "platformName", null));
                         XmlPullUtil.enter(pp, "itdPoint");
-                        if (XmlPullUtil.test(pp, "itdMapItemList"))
-                            XmlPullUtil.next(pp);
+                        XmlPullUtil.optSkip(pp, "itdMapItemList");
                         XmlPullUtil.require(pp, "itdDateTime");
                         processItdDateTime(pp, calendar);
                         final Date departureTime = calendar.getTime();
@@ -2341,8 +2336,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                         lastArrivalLocation = arrivalLocation;
                         final Position arrivalPosition = parsePosition(XmlPullUtil.optAttr(pp, "platformName", null));
                         XmlPullUtil.enter(pp, "itdPoint");
-                        if (XmlPullUtil.test(pp, "itdMapItemList"))
-                            XmlPullUtil.next(pp);
+                        XmlPullUtil.optSkip(pp, "itdMapItemList");
                         XmlPullUtil.require(pp, "itdDateTime");
                         processItdDateTime(pp, calendar);
                         final Date arrivalTime = calendar.getTime();
@@ -2470,11 +2464,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         XmlPullUtil.enter(pp, "itdMeansOfTransport");
         XmlPullUtil.skipExit(pp, "itdMeansOfTransport");
 
-        if (XmlPullUtil.test(pp, "itdStopSeq"))
-            XmlPullUtil.next(pp);
-
-        if (XmlPullUtil.test(pp, "itdFootPathInfo"))
-            XmlPullUtil.next(pp);
+        XmlPullUtil.optSkip(pp, "itdStopSeq");
+        XmlPullUtil.optSkip(pp, "itdFootPathInfo");
 
         List<Point> path = null;
         if (XmlPullUtil.test(pp, "itdPathCoordinates"))

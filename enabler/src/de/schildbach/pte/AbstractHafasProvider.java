@@ -1665,10 +1665,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
                         final int[] capacity;
                         if (XmlPullUtil.test(pp, "StopPrognosis")) {
                             XmlPullUtil.enter(pp, "StopPrognosis");
-                            if (XmlPullUtil.test(pp, "Arr"))
-                                XmlPullUtil.next(pp);
-                            if (XmlPullUtil.test(pp, "Dep"))
-                                XmlPullUtil.next(pp);
+                            XmlPullUtil.optSkip(pp, "Arr");
+                            XmlPullUtil.optSkip(pp, "Dep");
                             XmlPullUtil.enter(pp, "Status");
                             XmlPullUtil.skipExit(pp, "Status");
                             final int capacity1st = Integer.parseInt(XmlPullUtil.optValueTag(pp, "Capacity1st", "0"));
@@ -1712,10 +1710,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
                                 XmlPullUtil.next(pp);
                             final Location sectionDepartureLocation = parseLocation(pp);
 
-                            if (XmlPullUtil.test(pp, "Arr")) {
-                                XmlPullUtil.enter(pp, "Arr");
-                                XmlPullUtil.skipExit(pp, "Arr");
-                            }
+                            XmlPullUtil.optSkip(pp, "Arr");
                             XmlPullUtil.enter(pp, "Dep");
                             time.setTimeInMillis(currentDate.getTimeInMillis());
                             parseTime(time, XmlPullUtil.valueTag(pp, "Time"));
