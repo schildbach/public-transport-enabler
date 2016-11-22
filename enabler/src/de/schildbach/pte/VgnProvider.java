@@ -59,7 +59,7 @@ public class VgnProvider extends AbstractEfaProvider {
 
     @Override
     public SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException {
-        return xmlStopfinderRequest(new Location(LocationType.STATION, null, null, constraint.toString()));
+        return xmlStopfinderRequest(new Location(LocationType.ANY, null, null, constraint.toString()));
     }
 
     @Override
