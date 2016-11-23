@@ -3589,6 +3589,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
             return Product.BUS;
         if ("NB".equals(ucType)) // Nachtbus Zürich
             return Product.BUS;
+        if ("POSTBUS".equals(ucType))
+            return Product.BUS;
 
         // Phone
         if ("RUFBUS".equals(ucType))

@@ -119,6 +119,11 @@ public class NvvProvider extends AbstractHafasProvider {
         if ("MOFA".equals(ucType)) // Mobilfalt-Fahrt
             return Product.ON_DEMAND;
 
+        if ("64".equals(ucType))
+            return null;
+        if ("65".equals(ucType))
+            return null;
+
         return super.normalizeType(type);
     }
 }

@@ -123,7 +123,7 @@ public class SydneyProvider extends AbstractEfaProvider {
                 return new Line(id, network, Product.SUBURBAN_TRAIN, "T7");
 
             if (("31".equals(symbol) || "36".equals(symbol) || "621".equals(symbol) || "622".equals(symbol)
-                    || "635".equals(symbol))
+                    || "635".equals(symbol) || "636".equals(symbol))
                     && ((trainName != null && trainName.startsWith("Regional Trains"))
                             || (longName != null && longName.startsWith("Regional Trains"))))
                 return new Line(id, network, null, symbol);
