@@ -22,6 +22,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.nio.charset.Charset;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -32,7 +34,11 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,6 +75,7 @@ public final class HttpClient {
     private String sessionCookieName = null;
     @Nullable
     private Cookie sessionCookie = null;
+    private boolean trustAllCertificates = false;
     @Nullable
     private CertificatePinner certificatePinner = null;
     private boolean sslAcceptAllHostnames = false;
@@ -109,6 +116,10 @@ public final class HttpClient {
 
     public void setSessionCookieName(final String sessionCookieName) {
         this.sessionCookieName = sessionCookieName;
+    }
+
+    public void setTrustAllCertificates(final boolean trustAllCertificates) {
+        this.trustAllCertificates = trustAllCertificates;
     }
 
     public void setCertificatePin(final String host, final String... hashes) {
@@ -182,8 +193,10 @@ public final class HttpClient {
                 request.header("Cookie", sessionCookie.toString());
 
             final OkHttpClient okHttpClient;
-            if (certificatePinner != null || sslAcceptAllHostnames) {
+            if (trustAllCertificates || certificatePinner != null || sslAcceptAllHostnames) {
                 final OkHttpClient.Builder builder = OKHTTP_CLIENT.newBuilder();
+                if (trustAllCertificates)
+                    trustAllCertificates(builder);
                 if (certificatePinner != null)
                     builder.certificatePinner(certificatePinner);
                 if (sslAcceptAllHostnames)
@@ -295,6 +308,34 @@ public final class HttpClient {
 
         return false;
     }
+
+    private void trustAllCertificates(final OkHttpClient.Builder okHttpClientBuilder) {
+        try {
+            final SSLContext sslContext = SSLContext.getInstance("SSL");
+            sslContext.init(null, new TrustManager[] { TRUST_ALL_CERTIFICATES }, null);
+            final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+            okHttpClientBuilder.sslSocketFactory(sslSocketFactory, TRUST_ALL_CERTIFICATES);
+        } catch (final Exception x) {
+            throw new RuntimeException(x);
+        }
+    }
+
+    private static final X509TrustManager TRUST_ALL_CERTIFICATES = new X509TrustManager() {
+        @Override
+        public void checkClientTrusted(final X509Certificate[] chain, final String authType)
+                throws CertificateException {
+        }
+
+        @Override
+        public void checkServerTrusted(final X509Certificate[] chain, final String authType)
+                throws CertificateException {
+        }
+
+        @Override
+        public X509Certificate[] getAcceptedIssuers() {
+            return new X509Certificate[0];
+        }
+    };
 
     private static final HostnameVerifier SSL_ACCEPT_ALL_HOSTNAMES = new HostnameVerifier() {
         @Override
