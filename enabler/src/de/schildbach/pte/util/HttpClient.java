@@ -46,6 +46,7 @@ import de.schildbach.pte.exception.SessionExpiredException;
 import de.schildbach.pte.exception.UnexpectedRedirectException;
 
 import okhttp3.Call;
+import okhttp3.CertificatePinner;
 import okhttp3.Cookie;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
@@ -68,6 +69,8 @@ public final class HttpClient {
     private String sessionCookieName = null;
     @Nullable
     private Cookie sessionCookie = null;
+    @Nullable
+    private CertificatePinner certificatePinner = null;
     private boolean sslAcceptAllHostnames = false;
 
     private static final OkHttpClient OKHTTP_CLIENT;
@@ -106,6 +109,10 @@ public final class HttpClient {
 
     public void setSessionCookieName(final String sessionCookieName) {
         this.sessionCookieName = sessionCookieName;
+    }
+
+    public void setCertificatePin(final String host, final String... hashes) {
+        this.certificatePinner = new CertificatePinner.Builder().add(host, hashes).build();
     }
 
     public void setSslAcceptAllHostnames(final boolean sslAcceptAllHostnames) {
@@ -175,10 +182,16 @@ public final class HttpClient {
                 request.header("Cookie", sessionCookie.toString());
 
             final OkHttpClient okHttpClient;
-            if (sslAcceptAllHostnames)
-                okHttpClient = OKHTTP_CLIENT.newBuilder().hostnameVerifier(SSL_ACCEPT_ALL_HOSTNAMES).build();
-            else
+            if (certificatePinner != null || sslAcceptAllHostnames) {
+                final OkHttpClient.Builder builder = OKHTTP_CLIENT.newBuilder();
+                if (certificatePinner != null)
+                    builder.certificatePinner(certificatePinner);
+                if (sslAcceptAllHostnames)
+                    builder.hostnameVerifier(SSL_ACCEPT_ALL_HOSTNAMES);
+                okHttpClient = builder.build();
+            } else {
                 okHttpClient = OKHTTP_CLIENT;
+            }
 
             final Call call = okHttpClient.newCall(request.build());
             Response response = null;
