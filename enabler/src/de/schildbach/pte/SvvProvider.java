@@ -57,6 +57,7 @@ public class SvvProvider extends AbstractHafasProvider {
         setJsonApiAuthorization(jsonApiAuthorization);
         setJsonNearbyLocationsEncoding(Charsets.UTF_8);
         setStyles(STYLES);
+        httpClient.setTrustAllCertificates(true);
     }
 
     @Override
