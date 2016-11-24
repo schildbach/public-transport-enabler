@@ -50,6 +50,9 @@ public final class LineDestination implements Serializable {
             return false;
         if (!Objects.equal(this.destination, other.destination))
             return false;
+        // This workaround is necessary because in rare cases destinations have IDs of other locations.
+        if (this.destination != null && !this.destination.equalsAllFields(other.destination))
+            return false;
         return true;
     }
 

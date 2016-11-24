@@ -169,9 +169,29 @@ public final class Location implements Serializable {
             return this.lat == other.lat && this.lon == other.lon;
 
         // only discriminate by name/place if no ids are given
+        if (!Objects.equal(this.place, other.place))
+            return false;
         if (!Objects.equal(this.name, other.name))
             return false;
+        return true;
+    }
+
+    public boolean equalsAllFields(final Location other) {
+        if (other == this)
+            return true;
+        if (other == null)
+            return false;
+        if (!Objects.equal(this.type, other.type))
+            return false;
+        if (!Objects.equal(this.id, other.id))
+            return false;
+        if (this.lat != other.lat && this.lon != other.lon)
+            return false;
         if (!Objects.equal(this.place, other.place))
+            return false;
+        if (!Objects.equal(this.name, other.name))
+            return false;
+        if (!Objects.equal(this.products, other.products))
             return false;
         return true;
     }
