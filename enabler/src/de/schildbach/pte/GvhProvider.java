@@ -43,6 +43,7 @@ public class GvhProvider extends AbstractEfaProvider {
     public GvhProvider(final String apiBase) {
         super(NetworkId.GVH, apiBase);
 
+        setIncludeRegionId(false);
         setStyles(STYLES);
         setSessionCookieName("HASESSIONID");
     }

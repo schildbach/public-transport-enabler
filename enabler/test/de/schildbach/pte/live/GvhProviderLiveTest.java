@@ -95,6 +95,13 @@ public class GvhProviderLiveTest extends AbstractProviderLiveTest {
     }
 
     @Test
+    public void suggestLocationsCoverage() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Sarstedt");
+        print(result);
+        assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "25001731")));
+    }
+
+    @Test
     public void incompleteTrip() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "hann"), null,
                 new Location(LocationType.ANY, null, null, "laat"), new Date(), true, Product.ALL, WalkSpeed.FAST,
