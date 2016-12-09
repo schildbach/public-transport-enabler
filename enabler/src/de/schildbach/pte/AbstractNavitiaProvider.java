@@ -400,7 +400,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
         }
     }
 
-    private Line parseLineFromSection(final JSONObject section) throws IOException {
+    private Line parseLineFromSection(final JSONObject section, final SectionType type) throws IOException {
         try {
             final JSONArray links = section.getJSONArray("links");
             String lineId = null;
@@ -414,7 +414,8 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
                     modeId = link.getString("id");
             }
 
-            final Product product = parseLineProductFromMode(modeId);
+            final Product product = type == SectionType.ON_DEMAND_TRANSPORT ? Product.ON_DEMAND
+                    : parseLineProductFromMode(modeId);
             final JSONObject displayInfo = section.getJSONObject("display_informations");
             final String network = Strings.emptyToNull(displayInfo.optString("network"));
             final String code = displayInfo.getString("code");
@@ -477,9 +478,10 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
                 return new Individual(individualType, legInfo.departure, legInfo.departureTime, legInfo.arrival,
                         legInfo.arrivalTime, legInfo.path, legInfo.distance);
             }
+            case ON_DEMAND_TRANSPORT:
             case PUBLIC_TRANSPORT: {
                 // Build line.
-                final Line line = parseLineFromSection(section);
+                final Line line = parseLineFromSection(section, sectionType);
 
                 // Build destination.
                 final JSONObject displayInfo = section.getJSONObject("display_informations");
