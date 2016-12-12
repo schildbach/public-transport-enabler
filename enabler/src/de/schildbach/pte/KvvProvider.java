@@ -89,7 +89,10 @@ public class KvvProvider extends AbstractEfaProvider {
         STYLES.put("SS51", new Style(Style.parseColor("#f69795"), Style.BLACK));
         STYLES.put("SS52", new Style(Style.parseColor("#f69795"), Style.BLACK));
         STYLES.put("SS6", new Style(Style.parseColor("#292369"), Style.WHITE));
-        STYLES.put("SS7", new Style(Style.parseColor("#fff200"), Style.BLACK));
+        STYLES.put("SS7", new Style(Style.parseColor("#fef200"), Style.BLACK));
+        STYLES.put("SS71", new Style(Style.parseColor("#fef200"), Style.BLACK));
+        STYLES.put("SS8", new Style(Style.parseColor("#6e6928"), Style.WHITE));
+        STYLES.put("SS81", new Style(Style.parseColor("#6e6928"), Style.WHITE));
         STYLES.put("SS9", new Style(Style.parseColor("#fab499"), Style.BLACK));
 
         // S-Bahn RheinNeckar
