@@ -542,7 +542,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
                 // Do not add leg in case of waiting on the peer.
             }
             default:
-                throw new IllegalArgumentException("Unhandled place type: " + type);
+                throw new IllegalArgumentException("Unhandled leg type: " + type);
             }
         } catch (final JSONException jsonExc) {
             throw new ParserException(jsonExc);
@@ -627,7 +627,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
         case OTHER:
             return null;
         default:
-            throw new IllegalArgumentException("Unhandled place type: " + modeId);
+            throw new IllegalArgumentException("Unhandled physical mode: " + modeId);
         }
     }
 
