@@ -35,9 +35,7 @@ import de.schildbach.pte.dto.Style;
  * @author Andreas Schildbach
  */
 public class BsvagProvider extends AbstractEfaProvider {
-    private final static String API_BASE = "http://bsvg.efa.de/bsvagstd/";
-
-    // http://212.68.73.240/vrbstd/
+    private final static String API_BASE = "https://bsvg.efa.de/bsvagstd/";
 
     public BsvagProvider() {
         super(NetworkId.BSVAG, API_BASE);
