@@ -189,7 +189,7 @@ public final class BvgProvider extends AbstractHafasProvider {
         STYLES.put("UU8", new Style(Shape.RECT, Style.rgb(24, 25, 83), Style.WHITE));
         STYLES.put("UU9", new Style(Shape.RECT, Style.rgb(255, 90, 34), Style.WHITE));
 
-        STYLES.put("TM1", new Style(Shape.RECT, Style.parseColor("#eb8614"), Style.WHITE));
+        STYLES.put("TM1", new Style(Shape.RECT, Style.parseColor("#64bae8"), Style.WHITE));
         STYLES.put("TM2", new Style(Shape.RECT, Style.parseColor("#68c52f"), Style.WHITE));
         STYLES.put("TM4", new Style(Shape.RECT, Style.parseColor("#cf1b22"), Style.WHITE));
         STYLES.put("TM5", new Style(Shape.RECT, Style.parseColor("#bf8037"), Style.WHITE));
@@ -199,13 +199,13 @@ public final class BvgProvider extends AbstractHafasProvider {
         STYLES.put("TM13", new Style(Shape.RECT, Style.parseColor("#36ab94"), Style.WHITE));
         STYLES.put("TM17", new Style(Shape.RECT, Style.parseColor("#a23f30"), Style.WHITE));
 
-        STYLES.put("T12", new Style(Shape.RECT, Style.parseColor("#7d64b2"), Style.WHITE));
-        STYLES.put("T16", new Style(Shape.RECT, Style.parseColor("#1e5ca2"), Style.WHITE));
-        STYLES.put("T18", new Style(Shape.RECT, Style.parseColor("#f46717"), Style.WHITE));
+        STYLES.put("T12", new Style(Shape.RECT, Style.parseColor("#8970aa"), Style.WHITE));
+        STYLES.put("T16", new Style(Shape.RECT, Style.parseColor("#0e80ab"), Style.WHITE));
+        STYLES.put("T18", new Style(Shape.RECT, Style.parseColor("#d5ad00"), Style.WHITE));
         STYLES.put("T21", new Style(Shape.RECT, Style.parseColor("#7d64b2"), Style.WHITE));
         STYLES.put("T27", new Style(Shape.RECT, Style.parseColor("#a23f30"), Style.WHITE));
         STYLES.put("T37", new Style(Shape.RECT, Style.parseColor("#a23f30"), Style.WHITE));
-        STYLES.put("T50", new Style(Shape.RECT, Style.parseColor("#36ab94"), Style.WHITE));
+        STYLES.put("T50", new Style(Shape.RECT, Style.parseColor("#ee8f00"), Style.WHITE));
         STYLES.put("T60", new Style(Shape.RECT, Style.parseColor("#108449"), Style.WHITE));
         STYLES.put("T61", new Style(Shape.RECT, Style.parseColor("#108449"), Style.WHITE));
         STYLES.put("T62", new Style(Shape.RECT, Style.parseColor("#125030"), Style.WHITE));
