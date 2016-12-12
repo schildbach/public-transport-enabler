@@ -48,17 +48,19 @@ public final class LineDestination implements Serializable {
         final LineDestination other = (LineDestination) o;
         if (!Objects.equal(this.line, other.line))
             return false;
-        if (!Objects.equal(this.destination, other.destination))
-            return false;
         // This workaround is necessary because in rare cases destinations have IDs of other locations.
-        if (this.destination != null && !this.destination.equalsAllFields(other.destination))
+        final String thisDestinationName = this.destination != null ? this.destination.uniqueShortName() : null;
+        final String otherDestinationName = other.destination != null ? other.destination.uniqueShortName() : null;
+        if (!Objects.equal(thisDestinationName, otherDestinationName))
             return false;
         return true;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(line, destination);
+        // This workaround is necessary because in rare cases destinations have IDs of other locations.
+        final String destinationName = destination != null ? destination.uniqueShortName() : null;
+        return Objects.hashCode(line, destinationName);
     }
 
     @Override
