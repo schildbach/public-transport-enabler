@@ -41,7 +41,7 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
  * @author Andreas Schildbach
  */
 public class VvtProvider extends AbstractHafasProvider {
-    private static final String API_BASE = "http://fahrplan.vvt.at/bin/";
+    private static final String API_BASE = "https://fahrplan.vvt.at/bin/";
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.SUBURBAN_TRAIN, Product.SUBWAY,
             null, Product.TRAM, Product.REGIONAL_TRAIN, Product.BUS, Product.BUS, Product.TRAM, Product.FERRY,
             Product.ON_DEMAND, Product.BUS, Product.REGIONAL_TRAIN, null, null, null };
@@ -53,6 +53,7 @@ public class VvtProvider extends AbstractHafasProvider {
         setJsonApiClient("{\"id\":\"VAO\",\"l\":\"vs_vvt\",\"type\":\"AND\"}");
         setJsonApiAuthorization(jsonApiAuthorization);
         setJsonNearbyLocationsEncoding(Charsets.UTF_8);
+        httpClient.setSslAcceptAllHostnames(true);
     }
 
     @Override
