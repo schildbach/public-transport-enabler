@@ -18,6 +18,7 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
+import java.net.Proxy;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
@@ -76,6 +77,10 @@ public abstract class AbstractNetworkProvider implements NetworkProvider {
 
     public void setUserAgent(final String userAgent) {
         httpClient.setUserAgent(userAgent);
+    }
+
+    public void setProxy(final Proxy proxy) {
+        httpClient.setProxy(proxy);
     }
 
     protected void setTimeZone(final String timeZoneId) {

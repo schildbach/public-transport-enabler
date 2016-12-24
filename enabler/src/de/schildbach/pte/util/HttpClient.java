@@ -21,6 +21,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.Proxy;
 import java.nio.charset.Charset;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -75,6 +76,8 @@ public final class HttpClient {
     private String sessionCookieName = null;
     @Nullable
     private Cookie sessionCookie = null;
+    @Nullable
+    private Proxy proxy = null;
     private boolean trustAllCertificates = false;
     @Nullable
     private CertificatePinner certificatePinner = null;
@@ -116,6 +119,10 @@ public final class HttpClient {
 
     public void setSessionCookieName(final String sessionCookieName) {
         this.sessionCookieName = sessionCookieName;
+    }
+
+    public void setProxy(final Proxy proxy) {
+        this.proxy = proxy;
     }
 
     public void setTrustAllCertificates(final boolean trustAllCertificates) {
@@ -193,8 +200,10 @@ public final class HttpClient {
                 request.header("Cookie", sessionCookie.toString());
 
             final OkHttpClient okHttpClient;
-            if (trustAllCertificates || certificatePinner != null || sslAcceptAllHostnames) {
+            if (proxy != null || trustAllCertificates || certificatePinner != null || sslAcceptAllHostnames) {
                 final OkHttpClient.Builder builder = OKHTTP_CLIENT.newBuilder();
+                if (proxy != null)
+                    builder.proxy(proxy);
                 if (trustAllCertificates)
                     trustAllCertificates(builder);
                 if (certificatePinner != null)
