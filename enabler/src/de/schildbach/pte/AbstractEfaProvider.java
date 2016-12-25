@@ -175,57 +175,70 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         this.coordEndpoint = coordEndpoint;
     }
 
-    protected void setLanguage(final String language) {
+    protected AbstractEfaProvider setLanguage(final String language) {
         this.language = language;
+        return this;
     }
 
-    protected void setAdditionalQueryParameter(final String additionalQueryParameter) {
+    protected AbstractEfaProvider setAdditionalQueryParameter(final String additionalQueryParameter) {
         this.additionalQueryParameter = additionalQueryParameter;
+        return this;
     }
 
-    protected void setRequestUrlEncoding(final Charset requestUrlEncoding) {
+    protected AbstractEfaProvider setRequestUrlEncoding(final Charset requestUrlEncoding) {
         this.requestUrlEncoding = requestUrlEncoding;
+        return this;
     }
 
-    protected void setHttpReferer(final String httpReferer) {
+    protected AbstractEfaProvider setHttpReferer(final String httpReferer) {
         this.httpReferer = httpReferer;
         this.httpRefererTrip = httpReferer;
+        return this;
     }
 
-    public void setHttpRefererTrip(final String httpRefererTrip) {
+    public AbstractEfaProvider setHttpRefererTrip(final String httpRefererTrip) {
         this.httpRefererTrip = httpRefererTrip;
+        return this;
     }
 
-    protected void setHttpPost(final boolean httpPost) {
+    protected AbstractEfaProvider setHttpPost(final boolean httpPost) {
         this.httpPost = httpPost;
+        return this;
     }
 
-    protected void setIncludeRegionId(final boolean includeRegionId) {
+    protected AbstractEfaProvider setIncludeRegionId(final boolean includeRegionId) {
         this.includeRegionId = includeRegionId;
+        return this;
     }
 
-    protected void setUseProxFootSearch(final boolean useProxFootSearch) {
+    protected AbstractEfaProvider setUseProxFootSearch(final boolean useProxFootSearch) {
         this.useProxFootSearch = useProxFootSearch;
+        return this;
     }
 
-    protected void setUseRouteIndexAsTripId(final boolean useRouteIndexAsTripId) {
+    protected AbstractEfaProvider setUseRouteIndexAsTripId(final boolean useRouteIndexAsTripId) {
         this.useRouteIndexAsTripId = useRouteIndexAsTripId;
+        return this;
     }
 
-    protected void setUseLineRestriction(final boolean useLineRestriction) {
+    protected AbstractEfaProvider setUseLineRestriction(final boolean useLineRestriction) {
         this.useLineRestriction = useLineRestriction;
+        return this;
     }
 
-    protected void setUseStringCoordListOutputFormat(final boolean useStringCoordListOutputFormat) {
+    protected AbstractEfaProvider setUseStringCoordListOutputFormat(final boolean useStringCoordListOutputFormat) {
         this.useStringCoordListOutputFormat = useStringCoordListOutputFormat;
+        return this;
     }
 
-    protected void setNeedsSpEncId(final boolean needsSpEncId) {
+    protected AbstractEfaProvider setNeedsSpEncId(final boolean needsSpEncId) {
         this.needsSpEncId = needsSpEncId;
+        return this;
     }
 
-    protected void setFareCorrectionFactor(final float fareCorrectionFactor) {
+    protected AbstractEfaProvider setFareCorrectionFactor(final float fareCorrectionFactor) {
         this.fareCorrectionFactor = fareCorrectionFactor;
+        return this;
     }
 
     @Override

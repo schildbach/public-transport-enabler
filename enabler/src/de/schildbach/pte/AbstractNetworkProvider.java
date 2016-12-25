@@ -75,28 +75,34 @@ public abstract class AbstractNetworkProvider implements NetworkProvider {
         return ALL_EXCEPT_HIGHSPEED;
     }
 
-    public void setUserAgent(final String userAgent) {
+    public AbstractNetworkProvider setUserAgent(final String userAgent) {
         httpClient.setUserAgent(userAgent);
+        return this;
     }
 
-    public void setProxy(final Proxy proxy) {
+    public AbstractNetworkProvider setProxy(final Proxy proxy) {
         httpClient.setProxy(proxy);
+        return this;
     }
 
-    protected void setTimeZone(final String timeZoneId) {
+    protected AbstractNetworkProvider setTimeZone(final String timeZoneId) {
         this.timeZone = TimeZone.getTimeZone(timeZoneId);
+        return this;
     }
 
-    protected void setNumTripsRequested(final int numTripsRequested) {
+    protected AbstractNetworkProvider setNumTripsRequested(final int numTripsRequested) {
         this.numTripsRequested = numTripsRequested;
+        return this;
     }
 
-    protected void setStyles(final Map<String, Style> styles) {
+    protected AbstractNetworkProvider setStyles(final Map<String, Style> styles) {
         this.styles = styles;
+        return this;
     }
 
-    protected void setSessionCookieName(final String sessionCookieName) {
+    protected AbstractNetworkProvider setSessionCookieName(final String sessionCookieName) {
         httpClient.setSessionCookieName(sessionCookieName);
+        return this;
     }
 
     private static final char STYLES_SEP = '|';

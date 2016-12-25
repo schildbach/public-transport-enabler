@@ -218,72 +218,89 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
         this.productsMap = productsMap;
     }
 
-    protected void setStationBoardEndpoint(final String stationBoardEndpoint) {
+    protected AbstractHafasProvider setStationBoardEndpoint(final String stationBoardEndpoint) {
         this.stationBoardEndpoint = stationBoardEndpoint;
+        return this;
     }
 
-    protected void setGetStopEndpoint(final String getStopEndpoint) {
+    protected AbstractHafasProvider setGetStopEndpoint(final String getStopEndpoint) {
         this.getStopEndpoint = getStopEndpoint;
+        return this;
     }
 
-    protected void setQueryEndpoint(final String queryEndpoint) {
+    protected AbstractHafasProvider setQueryEndpoint(final String queryEndpoint) {
         this.queryEndpoint = queryEndpoint;
+        return this;
     }
 
-    protected void setExtXmlEndpoint(final String extXmlEndpoint) {
+    protected AbstractHafasProvider setExtXmlEndpoint(final String extXmlEndpoint) {
         this.extXmlEndpoint = extXmlEndpoint;
+        return this;
     }
 
-    protected void setAccessId(final String accessId) {
+    protected AbstractHafasProvider setAccessId(final String accessId) {
         this.accessId = accessId;
+        return this;
     }
 
-    protected void setClientType(final String clientType) {
+    protected AbstractHafasProvider setClientType(final String clientType) {
         this.clientType = clientType;
+        return this;
     }
 
-    protected void setJsonApiVersion(final String jsonApiVersion) {
+    protected AbstractHafasProvider setJsonApiVersion(final String jsonApiVersion) {
         this.jsonApiVersion = jsonApiVersion;
+        return this;
     }
 
-    protected void setJsonApiAuthorization(final String jsonApiAuthorization) {
+    protected AbstractHafasProvider setJsonApiAuthorization(final String jsonApiAuthorization) {
         this.jsonApiAuthorization = jsonApiAuthorization;
+        return this;
     }
 
-    protected void setJsonApiClient(final String jsonApiClient) {
+    protected AbstractHafasProvider setJsonApiClient(final String jsonApiClient) {
         this.jsonApiClient = jsonApiClient;
+        return this;
     }
 
-    protected void setDominantPlanStopTime(final boolean dominantPlanStopTime) {
+    protected AbstractHafasProvider setDominantPlanStopTime(final boolean dominantPlanStopTime) {
         this.dominantPlanStopTime = dominantPlanStopTime;
+        return this;
     }
 
-    protected void setJsonGetStopsEncoding(final Charset jsonGetStopsEncoding) {
+    protected AbstractHafasProvider setJsonGetStopsEncoding(final Charset jsonGetStopsEncoding) {
         this.jsonGetStopsEncoding = jsonGetStopsEncoding;
+        return this;
     }
 
-    protected void setJsonGetStopsUseWeight(final boolean jsonGetStopsUseWeight) {
+    protected AbstractHafasProvider setJsonGetStopsUseWeight(final boolean jsonGetStopsUseWeight) {
         this.jsonGetStopsUseWeight = jsonGetStopsUseWeight;
+        return this;
     }
 
-    protected void setJsonNearbyLocationsEncoding(final Charset jsonNearbyLocationsEncoding) {
+    protected AbstractHafasProvider setJsonNearbyLocationsEncoding(final Charset jsonNearbyLocationsEncoding) {
         this.jsonNearbyLocationsEncoding = jsonNearbyLocationsEncoding;
+        return this;
     }
 
-    protected void setUseIso8601(final boolean useIso8601) {
+    protected AbstractHafasProvider setUseIso8601(final boolean useIso8601) {
         this.useIso8601 = useIso8601;
+        return this;
     }
 
-    protected void setStationBoardHasStationTable(final boolean stationBoardHasStationTable) {
+    protected AbstractHafasProvider setStationBoardHasStationTable(final boolean stationBoardHasStationTable) {
         this.stationBoardHasStationTable = stationBoardHasStationTable;
+        return this;
     }
 
-    protected void setStationBoardHasLocation(final boolean stationBoardHasLocation) {
+    protected AbstractHafasProvider setStationBoardHasLocation(final boolean stationBoardHasLocation) {
         this.stationBoardHasLocation = stationBoardHasLocation;
+        return this;
     }
 
-    protected void setStationBoardCanDoEquivs(final boolean canDoEquivs) {
+    protected AbstractHafasProvider setStationBoardCanDoEquivs(final boolean canDoEquivs) {
         this.stationBoardCanDoEquivs = canDoEquivs;
+        return this;
     }
 
     @Override
@@ -3125,8 +3142,9 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
         }
     }
 
-    protected void setHtmlNearbyStationsPattern(final Pattern htmlNearbyStationsPattern) {
+    protected AbstractHafasProvider setHtmlNearbyStationsPattern(final Pattern htmlNearbyStationsPattern) {
         this.htmlNearbyStationsPattern = htmlNearbyStationsPattern;
+        return this;
     }
 
     private Pattern htmlNearbyStationsPattern = Pattern.compile("<tr class=\"(zebra[^\"]*)\">(.*?)</tr>",
