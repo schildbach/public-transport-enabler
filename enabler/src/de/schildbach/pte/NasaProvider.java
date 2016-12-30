@@ -35,7 +35,7 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class NasaProvider extends AbstractHafasProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("http://reiseauskunft.insa.de/bin/");
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://reiseauskunft.insa.de/bin/");
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.REGIONAL_TRAIN, Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.TRAM, Product.BUS,
             Product.ON_DEMAND };

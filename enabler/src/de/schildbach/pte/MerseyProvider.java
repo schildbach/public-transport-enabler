@@ -35,7 +35,7 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class MerseyProvider extends AbstractEfaProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("http://jp.merseytravel.gov.uk/nwm/");
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://jp.merseytravel.gov.uk/nwm/");
 
     public MerseyProvider() {
         super(NetworkId.MERSEY, API_BASE);

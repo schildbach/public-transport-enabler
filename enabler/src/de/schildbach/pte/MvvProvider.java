@@ -36,7 +36,7 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class MvvProvider extends AbstractEfaProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("http://efa.mvv-muenchen.de/mobile/");
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://efa.mvv-muenchen.de/mobile/");
 
     public MvvProvider() {
         this(API_BASE);

@@ -39,7 +39,7 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class VrrProvider extends AbstractEfaProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("http://efa.vrr.de/standard/");
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://efa.vrr.de/standard/");
     // http://app.vrr.de/companion-vrr/
 
     public VrrProvider() {

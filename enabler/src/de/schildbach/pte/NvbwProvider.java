@@ -38,8 +38,8 @@ import okhttp3.HttpUrl;
  */
 public class NvbwProvider extends AbstractEfaProvider {
     // no intermeditate stops
-    private final static HttpUrl API_BASE = HttpUrl.parse("http://www.efa-bw.de/nvbw/");
-    private final static HttpUrl API_BASE_MOBILE = HttpUrl.parse("http://www.efa-bw.de/android/");
+    private final static HttpUrl API_BASE = HttpUrl.parse("https://www.efa-bw.de/nvbw/");
+    private final static HttpUrl API_BASE_MOBILE = HttpUrl.parse("https://www.efa-bw.de/android/");
     // http://efa2.naldo.de/naldo/
 
     public NvbwProvider() {
