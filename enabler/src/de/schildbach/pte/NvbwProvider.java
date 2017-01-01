@@ -35,8 +35,8 @@ import de.schildbach.pte.dto.QueryTripsResult;
  * @author Andreas Schildbach
  */
 public class NvbwProvider extends AbstractEfaProvider {
-    private final static String API_BASE = "http://www.efa-bw.de/nvbw/"; // no intermeditate stops
-    private final static String API_BASE_MOBILE = "http://www.efa-bw.de/android/";
+    private final static String API_BASE = "https://www.efa-bw.de/nvbw/"; // no intermeditate stops
+    private final static String API_BASE_MOBILE = "https://www.efa-bw.de/android/";
 
     // http://efa2.naldo.de/naldo/
 

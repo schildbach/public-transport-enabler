@@ -37,7 +37,7 @@ import de.schildbach.pte.dto.Style.Shape;
  * @author Andreas Schildbach
  */
 public class VrrProvider extends AbstractEfaProvider {
-    private static final String API_BASE = "http://efa.vrr.de/standard/";
+    private static final String API_BASE = "https://efa.vrr.de/standard/";
 
     // http://app.vrr.de/companion-vrr/
 

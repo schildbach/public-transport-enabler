@@ -3036,7 +3036,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
         uri.append('y');
         uri.append("?performLocating=2&tpl=stop2json");
         uri.append("&look_stopclass=").append(allProductsInt());
-        uri.append("&look_nv=get_stopweight|yes");
+        // The | character needs to be urlencoded otherwise SNCB fails
+        uri.append("&look_nv=get_stopweight%7Cyes");
         // get_shortjson|yes
         // get_lines|yes
         // combinemode|2

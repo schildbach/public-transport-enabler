@@ -28,7 +28,7 @@ import de.schildbach.pte.dto.Product;
  * @author Andreas Schildbach
  */
 public class MerseyProvider extends AbstractEfaProvider {
-    private final static String API_BASE = "http://jp.merseytravel.gov.uk/nwm/";
+    private final static String API_BASE = "https://jp.merseytravel.gov.uk/nwm/";
 
     public MerseyProvider() {
         super(NetworkId.MERSEY, API_BASE);

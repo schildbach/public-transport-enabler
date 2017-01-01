@@ -33,7 +33,7 @@ import de.schildbach.pte.util.StringReplaceReader;
  * @author Andreas Schildbach
  */
 public class NasaProvider extends AbstractHafasProvider {
-    private static final String API_BASE = "http://reiseauskunft.insa.de/bin/";
+    private static final String API_BASE = "https://reiseauskunft.insa.de/bin/";
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.REGIONAL_TRAIN, Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.TRAM, Product.BUS,
             Product.ON_DEMAND };

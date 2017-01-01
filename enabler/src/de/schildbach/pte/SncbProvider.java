@@ -33,7 +33,7 @@ import de.schildbach.pte.dto.Product;
  * @author Andreas Schildbach
  */
 public class SncbProvider extends AbstractHafasProvider {
-    private static final String API_BASE = "http://www.belgianrail.be/jp/sncb-nmbs-routeplanner/";
+    private static final String API_BASE = "https://www.belgianrail.be/jp/sncb-nmbs-routeplanner/";
     // http://hari.b-rail.be/hafas/bin/
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, null, Product.HIGH_SPEED_TRAIN, null,
             null, Product.BUS, Product.REGIONAL_TRAIN, null, Product.SUBWAY, Product.BUS, Product.TRAM, null, null,

@@ -31,7 +31,7 @@ import de.schildbach.pte.dto.Product;
  * @author Andreas Schildbach
  */
 public class NsProvider extends AbstractHafasProvider {
-    private static final String API_BASE = "http://hafas.bene-system.com/bin/";
+    private static final String API_BASE = "https://hafas.bene-system.com/bin/";
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.BUS, Product.FERRY,
             Product.SUBWAY, Product.TRAM, Product.ON_DEMAND };

@@ -34,7 +34,7 @@ import de.schildbach.pte.dto.Style;
  * @author Andreas Schildbach
  */
 public class MvvProvider extends AbstractEfaProvider {
-    private static final String API_BASE = "http://efa.mvv-muenchen.de/mobile/";
+    private static final String API_BASE = "https://efa.mvv-muenchen.de/mobile/";
 
     public MvvProvider() {
         this(API_BASE);
