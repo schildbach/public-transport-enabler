@@ -49,7 +49,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 
 import de.schildbach.pte.dto.Departure;
@@ -379,7 +378,7 @@ public class VrsProvider extends AbstractNetworkProvider {
             uri.append("&s=").append(Math.min(16, maxLocations)); // artificial server limit
         }
 
-        final CharSequence page = httpClient.get(HttpUrl.parse(uri.toString()), Charsets.UTF_8);
+        final CharSequence page = httpClient.get(HttpUrl.parse(uri.toString()));
 
         try {
             final List<Location> locations = new ArrayList<Location>();
@@ -435,7 +434,7 @@ public class VrsProvider extends AbstractNetworkProvider {
             uri.append("&t=");
             appendDate(uri, time);
         }
-        final CharSequence page = httpClient.get(HttpUrl.parse(uri.toString()), Charsets.UTF_8);
+        final CharSequence page = httpClient.get(HttpUrl.parse(uri.toString()));
 
         try {
             final JSONObject head = new JSONObject(page.toString());
@@ -526,7 +525,7 @@ public class VrsProvider extends AbstractNetworkProvider {
         final StringBuilder uri = new StringBuilder(API_BASE);
         uri.append("?eID=tx_vrsinfo_his_info&i=").append(ParserUtils.urlEncode(stationId));
 
-        final CharSequence page = httpClient.get(HttpUrl.parse(uri.toString()), Charsets.UTF_8);
+        final CharSequence page = httpClient.get(HttpUrl.parse(uri.toString()));
 
         try {
             final JSONObject head = new JSONObject(page.toString());
@@ -585,7 +584,7 @@ public class VrsProvider extends AbstractNetworkProvider {
         final String uri = API_BASE + "?eID=tx_vrsinfo_ass2_objects&sc=" + sc + "&ac=" + ac + "&pc=" + ac + "&t=sap&q="
                 + ParserUtils.urlEncode(new Location(LocationType.ANY, null, null, constraint.toString()).name);
 
-        final CharSequence page = httpClient.get(HttpUrl.parse(uri), Charsets.UTF_8);
+        final CharSequence page = httpClient.get(HttpUrl.parse(uri));
 
         try {
             final List<SuggestedLocation> locations = new ArrayList<SuggestedLocation>();
@@ -703,7 +702,7 @@ public class VrsProvider extends AbstractNetworkProvider {
             uri.append("p");
         }
 
-        final CharSequence page = httpClient.get(HttpUrl.parse(uri.toString()), Charsets.UTF_8);
+        final CharSequence page = httpClient.get(HttpUrl.parse(uri.toString()));
 
         try {
             final List<Trip> trips = new ArrayList<Trip>();

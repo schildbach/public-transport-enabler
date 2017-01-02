@@ -471,7 +471,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
     private static final Pattern P_AJAX_GET_STOPS_ID = Pattern.compile(".*?@L=0*(\\d+)@.*?");
 
     protected final SuggestLocationsResult jsonGetStops(final String uri) throws IOException {
-        final CharSequence page = httpClient.get(HttpUrl.parse(uri), jsonGetStopsEncoding);
+        final CharSequence page = httpClient.get(HttpUrl.parse(uri));
 
         final Matcher mJson = P_AJAX_GET_STOPS_JSON.matcher(page);
         if (mJson.matches()) {
@@ -846,7 +846,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
                 false);
 
         final String uri = checkNotNull(mgateEndpoint);
-        final CharSequence page = httpClient.get(HttpUrl.parse(uri), request, "application/json", Charsets.UTF_8);
+        final CharSequence page = httpClient.get(HttpUrl.parse(uri), request, "application/json");
 
         try {
             final JSONObject head = new JSONObject(page.toString());
@@ -911,7 +911,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
                 false);
 
         final String uri = checkNotNull(mgateEndpoint);
-        final CharSequence page = httpClient.get(HttpUrl.parse(uri), request, "application/json", Charsets.UTF_8);
+        final CharSequence page = httpClient.get(HttpUrl.parse(uri), request, "application/json");
 
         try {
             final JSONObject head = new JSONObject(page.toString());
@@ -1012,7 +1012,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
                 true);
 
         final String uri = checkNotNull(mgateEndpoint);
-        final CharSequence page = httpClient.get(HttpUrl.parse(uri), request, "application/json", Charsets.UTF_8);
+        final CharSequence page = httpClient.get(HttpUrl.parse(uri), request, "application/json");
 
         try {
             final JSONObject head = new JSONObject(page.toString());
@@ -1104,7 +1104,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
                 false);
 
         final String uri = checkNotNull(mgateEndpoint);
-        final CharSequence page = httpClient.get(HttpUrl.parse(uri), request, "application/json", Charsets.UTF_8);
+        final CharSequence page = httpClient.get(HttpUrl.parse(uri), request, "application/json");
 
         try {
             final JSONObject head = new JSONObject(page.toString());
@@ -1917,7 +1917,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
                     throw new ParserException("cannot parse xml: " + bodyPeek, x);
                 }
             }
-        }, HttpUrl.parse(endpoint), request, "application/xml", null, null);
+        }, HttpUrl.parse(endpoint), request, "application/xml", null);
 
         return result.get();
     }
@@ -3078,7 +3078,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
     }
 
     protected final NearbyLocationsResult jsonNearbyLocations(final String uri) throws IOException {
-        final CharSequence page = httpClient.get(HttpUrl.parse(uri), jsonNearbyLocationsEncoding);
+        final CharSequence page = httpClient.get(HttpUrl.parse(uri));
 
         try {
             final JSONObject head = new JSONObject(page.toString());

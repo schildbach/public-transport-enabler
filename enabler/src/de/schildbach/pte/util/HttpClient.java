@@ -22,7 +22,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
-import java.nio.charset.Charset;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
@@ -43,8 +42,6 @@ import javax.net.ssl.X509TrustManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Charsets;
 
 import de.schildbach.pte.exception.BlockedException;
 import de.schildbach.pte.exception.InternalErrorException;
@@ -138,18 +135,11 @@ public final class HttpClient {
     }
 
     public CharSequence get(final HttpUrl url) throws IOException {
-        return get(url, null);
+        return get(url, null, null);
     }
 
-    public CharSequence get(final HttpUrl url, final Charset requestEncoding) throws IOException {
-        return get(url, null, null, requestEncoding);
-    }
-
-    public CharSequence get(final HttpUrl url, final String postRequest, final String requestContentType,
-            Charset requestEncoding) throws IOException {
-        if (requestEncoding == null)
-            requestEncoding = Charsets.ISO_8859_1;
-
+    public CharSequence get(final HttpUrl url, final String postRequest, final String requestContentType)
+            throws IOException {
         final StringBuilder buffer = new StringBuilder();
         final Callback callback = new Callback() {
             @Override
@@ -157,7 +147,7 @@ public final class HttpClient {
                 buffer.append(body.string());
             }
         };
-        getInputStream(callback, url, postRequest, requestContentType, requestEncoding, null);
+        getInputStream(callback, url, postRequest, requestContentType, null);
         return buffer;
     }
 
@@ -166,21 +156,17 @@ public final class HttpClient {
     }
 
     public void getInputStream(final Callback callback, final HttpUrl url) throws IOException {
-        getInputStream(callback, url, null, null);
+        getInputStream(callback, url, null);
     }
 
-    public void getInputStream(final Callback callback, final HttpUrl url, final Charset requestEncoding,
-            final String referer) throws IOException {
-        getInputStream(callback, url, null, null, requestEncoding, referer);
+    public void getInputStream(final Callback callback, final HttpUrl url, final String referer) throws IOException {
+        getInputStream(callback, url, null, null, referer);
     }
 
     public void getInputStream(final Callback callback, final HttpUrl url, final String postRequest,
-            final String requestContentType, Charset requestEncoding, final String referer) throws IOException {
+            final String requestContentType, final String referer) throws IOException {
         checkNotNull(callback);
         checkNotNull(url);
-
-        if (requestEncoding == null)
-            requestEncoding = Charsets.ISO_8859_1;
 
         int tries = 3;
 

@@ -261,9 +261,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         final CharSequence page;
         if (httpPost)
             page = httpClient.get(HttpUrl.parse(uri.toString()), parameters.substring(1),
-                    "application/x-www-form-urlencoded", Charsets.UTF_8);
+                    "application/x-www-form-urlencoded");
         else
-            page = httpClient.get(HttpUrl.parse(uri.append(parameters).toString()), Charsets.UTF_8);
+            page = httpClient.get(HttpUrl.parse(uri.append(parameters).toString()));
         final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
 
         try {
@@ -402,9 +402,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
         if (httpPost)
             httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()), parameters.substring(1),
-                    "application/x-www-form-urlencoded", null, httpReferer);
+                    "application/x-www-form-urlencoded", httpReferer);
         else
-            httpClient.getInputStream(callback, HttpUrl.parse(uri.append(parameters).toString()), null, httpReferer);
+            httpClient.getInputStream(callback, HttpUrl.parse(uri.append(parameters).toString()), httpReferer);
 
         return result.get();
     }
@@ -487,9 +487,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
         if (httpPost)
             httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()), parameters.substring(1),
-                    "application/x-www-form-urlencoded", null, httpReferer);
+                    "application/x-www-form-urlencoded", httpReferer);
         else
-            httpClient.getInputStream(callback, HttpUrl.parse(uri.append(parameters).toString()), null, httpReferer);
+            httpClient.getInputStream(callback, HttpUrl.parse(uri.append(parameters).toString()), httpReferer);
 
         return result.get();
     }
@@ -588,9 +588,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
         if (httpPost)
             httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()), parameters.substring(1),
-                    "application/x-www-form-urlencoded", null, httpReferer);
+                    "application/x-www-form-urlencoded", httpReferer);
         else
-            httpClient.getInputStream(callback, HttpUrl.parse(uri.append(parameters).toString()), null, httpReferer);
+            httpClient.getInputStream(callback, HttpUrl.parse(uri.append(parameters).toString()), httpReferer);
 
         return result.get();
     }
@@ -666,9 +666,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
         if (httpPost)
             httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()), parameters.substring(1),
-                    "application/x-www-form-urlencoded", null, httpReferer);
+                    "application/x-www-form-urlencoded", httpReferer);
         else
-            httpClient.getInputStream(callback, HttpUrl.parse(uri.append(parameters).toString()), null, httpReferer);
+            httpClient.getInputStream(callback, HttpUrl.parse(uri.append(parameters).toString()), httpReferer);
 
         return result.get();
     }
@@ -924,9 +924,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
         if (httpPost)
             httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()), parameters.substring(1),
-                    "application/x-www-form-urlencoded", null, httpReferer);
+                    "application/x-www-form-urlencoded", httpReferer);
         else
-            httpClient.getInputStream(callback, HttpUrl.parse(uri.append(parameters).toString()), null, httpReferer);
+            httpClient.getInputStream(callback, HttpUrl.parse(uri.append(parameters).toString()), httpReferer);
 
         return result.get();
     }
@@ -1633,9 +1633,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
         if (httpPost)
             httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()), parameters.substring(1),
-                    "application/x-www-form-urlencoded", null, httpReferer);
+                    "application/x-www-form-urlencoded", httpReferer);
         else
-            httpClient.getInputStream(callback, HttpUrl.parse(uri.append(parameters).toString()), null, httpReferer);
+            httpClient.getInputStream(callback, HttpUrl.parse(uri.append(parameters).toString()), httpReferer);
 
         return result.get();
     }
@@ -1717,9 +1717,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
         if (httpPost)
             httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()), parameters.substring(1),
-                    "application/x-www-form-urlencoded", null, httpReferer);
+                    "application/x-www-form-urlencoded", httpReferer);
         else
-            httpClient.getInputStream(callback, HttpUrl.parse(uri.append(parameters).toString()), null, httpReferer);
+            httpClient.getInputStream(callback, HttpUrl.parse(uri.append(parameters).toString()), httpReferer);
 
         return result.get();
     }
@@ -2092,10 +2092,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
         if (httpPost)
             httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()), parameters.substring(1),
-                    "application/x-www-form-urlencoded", null, httpRefererTrip);
+                    "application/x-www-form-urlencoded", httpRefererTrip);
         else
-            httpClient.getInputStream(callback, HttpUrl.parse(uri.append(parameters).toString()), null,
-                    httpRefererTrip);
+            httpClient.getInputStream(callback, HttpUrl.parse(uri.append(parameters).toString()), httpRefererTrip);
 
         return result.get();
     }
@@ -2124,10 +2123,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
         if (httpPost)
             httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()), parameters.substring(1),
-                    "application/x-www-form-urlencoded", null, httpRefererTrip);
+                    "application/x-www-form-urlencoded", httpRefererTrip);
         else
-            httpClient.getInputStream(callback, HttpUrl.parse(uri.append(parameters).toString()), null,
-                    httpRefererTrip);
+            httpClient.getInputStream(callback, HttpUrl.parse(uri.append(parameters).toString()), httpRefererTrip);
 
         return result.get();
     }
@@ -2153,7 +2151,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             }
         };
 
-        httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()), null, httpRefererTrip);
+        httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()), httpRefererTrip);
 
         return result.get();
     }
@@ -2179,7 +2177,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             }
         };
 
-        httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()), null, httpRefererTrip);
+        httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()), httpRefererTrip);
 
         return result.get();
     }
