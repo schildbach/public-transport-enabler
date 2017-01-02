@@ -37,11 +37,13 @@ import de.schildbach.pte.dto.QueryTripsContext;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Andreas Schildbach
  */
 public class StvProvider extends AbstractEfaProvider {
-    private final static String API_BASE = "http://appefa10.verbundlinie.at/android/";
+    private static final HttpUrl API_BASE = HttpUrl.parse("http://appefa10.verbundlinie.at/android/");
 
     public StvProvider() {
         super(NetworkId.STV, API_BASE);

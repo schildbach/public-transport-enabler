@@ -30,18 +30,20 @@ import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryTripsContext;
 import de.schildbach.pte.dto.QueryTripsResult;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Andreas Schildbach
  */
 public class NriProvider extends AbstractHafasProvider {
-    private static final String API_BASE = "http://hafas.websrv05.reiseinfo.no/bin/dev/nri/";
+    private static final HttpUrl API_BASE = HttpUrl.parse("http://hafas.websrv05.reiseinfo.no/bin/dev/nri/");
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, Product.BUS,
             Product.TRAM, Product.SUBWAY, Product.FERRY, Product.FERRY, Product.FERRY };
 
     public NriProvider() {
         super(NetworkId.NRI, API_BASE, "on", PRODUCTS_MAP);
 
-        setJsonGetStopsEncoding(Charsets.UTF_8);
+        setRequestUrlEncoding(Charsets.UTF_8);
     }
 
     private static final String[] PLACES = { "Oslo", "Bergen" };

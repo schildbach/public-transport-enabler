@@ -26,11 +26,13 @@ import com.google.common.base.Charsets;
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Product;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Andreas Schildbach
  */
 public class SeProvider extends AbstractHafasProvider {
-    private static final String API_BASE = "https://reseplanerare.resrobot.se/bin/";
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://reseplanerare.resrobot.se/bin/");
     // http://samtrafiken.hafas.de/bin/
     // http://reseplanerare.resrobot.se/bin/
     // http://api.vasttrafik.se/bin/
@@ -41,7 +43,7 @@ public class SeProvider extends AbstractHafasProvider {
     public SeProvider() {
         super(NetworkId.SE, API_BASE, "sn", PRODUCTS_MAP);
 
-        setJsonGetStopsEncoding(Charsets.UTF_8);
+        setRequestUrlEncoding(Charsets.UTF_8);
         setJsonNearbyLocationsEncoding(Charsets.UTF_8);
         setUseIso8601(true);
         setStationBoardHasStationTable(false);

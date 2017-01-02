@@ -28,13 +28,15 @@ import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
 
+import okhttp3.HttpUrl;
+
 /**
  * Has been renamed to PTV (Public Transport Vicoria).
  * 
  * @author Andreas Schildbach
  */
 public class MetProvider extends AbstractEfaProvider {
-    private final static String API_BASE = "http://jp.ptv.vic.gov.au/ptv/";
+    private static final HttpUrl API_BASE = HttpUrl.parse("http://jp.ptv.vic.gov.au/ptv/");
 
     public MetProvider() {
         super(NetworkId.MET, API_BASE);

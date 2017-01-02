@@ -23,11 +23,13 @@ import com.google.common.base.Charsets;
 
 import de.schildbach.pte.dto.Product;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Andreas Schildbach
  */
 public class LuProvider extends AbstractHafasProvider {
-    private static final String API_BASE = "http://mobiliteitszentral.hafas.de/hafas/";
+    private static final HttpUrl API_BASE = HttpUrl.parse("http://mobiliteitszentral.hafas.de/hafas/");
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, Product.REGIONAL_TRAIN, Product.BUS, Product.BUS,
             Product.BUS, Product.BUS };
@@ -35,7 +37,7 @@ public class LuProvider extends AbstractHafasProvider {
     public LuProvider() {
         super(NetworkId.LU, API_BASE, "fn", PRODUCTS_MAP);
 
-        setJsonGetStopsEncoding(Charsets.UTF_8);
+        setRequestUrlEncoding(Charsets.UTF_8);
         setJsonNearbyLocationsEncoding(Charsets.UTF_8);
     }
 

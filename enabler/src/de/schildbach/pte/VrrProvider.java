@@ -33,19 +33,20 @@ import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.dto.Style.Shape;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Andreas Schildbach
  */
 public class VrrProvider extends AbstractEfaProvider {
-    private static final String API_BASE = "http://efa.vrr.de/standard/";
-
+    private static final HttpUrl API_BASE = HttpUrl.parse("http://efa.vrr.de/standard/");
     // http://app.vrr.de/companion-vrr/
 
     public VrrProvider() {
         this(API_BASE);
     }
 
-    public VrrProvider(final String apiBase) {
+    public VrrProvider(final HttpUrl apiBase) {
         super(NetworkId.VRR, apiBase);
 
         setIncludeRegionId(false);
@@ -58,21 +59,19 @@ public class VrrProvider extends AbstractEfaProvider {
     }
 
     @Override
-    protected String xsltTripRequestParameters(final Location from, final @Nullable Location via, final Location to,
-            final Date time, final boolean dep, final @Nullable Collection<Product> products,
-            final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
-            final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) {
-        final StringBuilder uri = new StringBuilder(super.xsltTripRequestParameters(from, via, to, time, dep, products,
-                optimize, walkSpeed, accessibility, options));
-
+    protected void appendXsltTripRequestParameters(final HttpUrl.Builder url, final Location from,
+            final @Nullable Location via, final Location to, final Date time, final boolean dep,
+            final @Nullable Collection<Product> products, final @Nullable Optimize optimize,
+            final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
+            final @Nullable Set<Option> options) {
+        super.appendXsltTripRequestParameters(url, from, via, to, time, dep, products, optimize, walkSpeed,
+                accessibility, options);
         if (products != null) {
             for (final Product p : products) {
                 if (p == Product.CABLECAR)
-                    uri.append("&inclMOT_11=on"); // Schwebebahn
+                    url.addEncodedQueryParameter("inclMOT_11", "on"); // Schwebebahn
             }
         }
-
-        return uri.toString();
     }
 
     @Override

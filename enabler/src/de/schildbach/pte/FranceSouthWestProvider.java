@@ -21,13 +21,15 @@ import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.dto.Style.Shape;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Nicolas Derive
  */
 public class FranceSouthWestProvider extends AbstractNavitiaProvider {
     private static String API_REGION = "fr-sw";
 
-    public FranceSouthWestProvider(final String apiBase, final String authorization) {
+    public FranceSouthWestProvider(final HttpUrl apiBase, final String authorization) {
         super(NetworkId.FRANCESOUTHWEST, apiBase, authorization);
 
         setTimeZone("Europe/Paris");

@@ -28,17 +28,19 @@ import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.dto.Style.Shape;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Andreas Schildbach
  */
 public class KvvProvider extends AbstractEfaProvider {
-    private final static String API_BASE = "http://213.144.24.66/kvv2/";
+    private static final HttpUrl API_BASE = HttpUrl.parse("http://213.144.24.66/kvv2/");
 
     public KvvProvider() {
         this(API_BASE);
     }
 
-    public KvvProvider(final String apiBase) {
+    public KvvProvider(final HttpUrl apiBase) {
         super(NetworkId.KVV, apiBase);
 
         setStyles(STYLES);

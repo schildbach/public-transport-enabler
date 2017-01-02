@@ -22,11 +22,13 @@ import java.util.regex.Matcher;
 
 import de.schildbach.pte.dto.Product;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Andreas Schildbach
  */
 public class DsbProvider extends AbstractHafasProvider {
-    private static final String API_BASE = "http://mobil.rejseplanen.dk/mobil-bin/";
+    private static final HttpUrl API_BASE = HttpUrl.parse("http://mobil.rejseplanen.dk/mobil-bin/");
     // http://dk.hafas.de/bin/fat/
     // http://mobil.rejseplanen.dk/mobil-bin/
     // http://www.dsb.dk/Rejseplan/bin/

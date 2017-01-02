@@ -19,13 +19,15 @@ package de.schildbach.pte;
 
 import de.schildbach.pte.util.WordUtils;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Antonio El Khoury
  */
 public class ItalyProvider extends AbstractNavitiaProvider {
     private static String API_REGION = "it";
 
-    public ItalyProvider(final String apiBase, final String authorization) {
+    public ItalyProvider(final HttpUrl apiBase, final String authorization) {
         super(NetworkId.IT, apiBase, authorization);
 
         setTimeZone("Europe/Rome");

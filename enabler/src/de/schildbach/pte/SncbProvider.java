@@ -29,11 +29,13 @@ import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Product;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Andreas Schildbach
  */
 public class SncbProvider extends AbstractHafasProvider {
-    private static final String API_BASE = "http://www.belgianrail.be/jp/sncb-nmbs-routeplanner/";
+    private static final HttpUrl API_BASE = HttpUrl.parse("http://www.belgianrail.be/jp/sncb-nmbs-routeplanner/");
     // http://hari.b-rail.be/hafas/bin/
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, null, Product.HIGH_SPEED_TRAIN, null,
             null, Product.BUS, Product.REGIONAL_TRAIN, null, Product.SUBWAY, Product.BUS, Product.TRAM, null, null,
@@ -42,7 +44,7 @@ public class SncbProvider extends AbstractHafasProvider {
     public SncbProvider() {
         super(NetworkId.SNCB, API_BASE, "nn", PRODUCTS_MAP);
 
-        setJsonGetStopsEncoding(Charsets.UTF_8);
+        setRequestUrlEncoding(Charsets.UTF_8);
         setJsonNearbyLocationsEncoding(Charsets.UTF_8);
         setStationBoardHasLocation(true);
     }
@@ -73,12 +75,11 @@ public class SncbProvider extends AbstractHafasProvider {
         if (location.hasLocation()) {
             return nearbyLocationsByCoordinate(types, location.lat, location.lon, maxDistance, maxLocations);
         } else if (location.type == LocationType.STATION && location.hasId()) {
-            final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
-            uri.append("?near=Zoek");
-            uri.append("&distance=").append(maxDistance != 0 ? maxDistance / 1000 : 50);
-            uri.append("&input=").append(normalizeStationId(location.id));
-
-            return htmlNearbyStations(uri.toString());
+            final HttpUrl.Builder url = stationBoardEndpoint.newBuilder().addPathSegment(apiLanguage);
+            url.addQueryParameter("near", "Zoek");
+            url.addQueryParameter("distance", Integer.toString(maxDistance != 0 ? maxDistance / 1000 : 50));
+            url.addQueryParameter("input", normalizeStationId(location.id));
+            return htmlNearbyStations(url.build());
         } else {
             throw new IllegalArgumentException("cannot handle: " + location);
         }

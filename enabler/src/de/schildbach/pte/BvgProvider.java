@@ -31,19 +31,21 @@ import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.dto.Style.Shape;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Andreas Schildbach
  */
 public final class BvgProvider extends AbstractHafasProvider {
-    private static final String API_BASE = "http://bvg-apps.hafas.de/bin/";
+    private static final HttpUrl API_BASE = HttpUrl.parse("http://bvg-apps.hafas.de/bin/");
     private static final Product[] PRODUCTS_MAP = { Product.SUBURBAN_TRAIN, Product.SUBWAY, Product.TRAM, Product.BUS,
             Product.FERRY, Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, Product.ON_DEMAND };
 
     public BvgProvider() {
         super(NetworkId.BVG, API_BASE, "dn", PRODUCTS_MAP);
 
+        setRequestUrlEncoding(Charsets.UTF_8);
         setJsonGetStopsUseWeight(false);
-        setJsonGetStopsEncoding(Charsets.UTF_8);
         setJsonNearbyLocationsEncoding(Charsets.UTF_8);
         setStyles(STYLES);
     }

@@ -17,11 +17,13 @@
 
 package de.schildbach.pte;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Andreas Schildbach
  */
 public class VvmProvider extends AbstractEfaProvider {
-    private final static String API_BASE = "http://efa.mobilitaetsverbund.de/web/";
+    private static final HttpUrl API_BASE = HttpUrl.parse("http://efa.mobilitaetsverbund.de/web/");
 
     public VvmProvider() {
         super(NetworkId.VVM, API_BASE);

@@ -31,11 +31,13 @@ import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.dto.Style.Shape;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Andreas Schildbach
  */
 public class ZvvProvider extends AbstractHafasProvider {
-    private static final String API_BASE = "https://online.fahrplan.zvv.ch/bin/";
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://online.fahrplan.zvv.ch/bin/");
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.REGIONAL_TRAIN, Product.REGIONAL_TRAIN, Product.FERRY, Product.SUBURBAN_TRAIN, Product.BUS,
             Product.CABLECAR, Product.SUBWAY, Product.TRAM };
@@ -43,7 +45,7 @@ public class ZvvProvider extends AbstractHafasProvider {
     public ZvvProvider() {
         super(NetworkId.ZVV, API_BASE, "dn", PRODUCTS_MAP);
 
-        setJsonGetStopsEncoding(Charsets.UTF_8);
+        setRequestUrlEncoding(Charsets.UTF_8);
         setJsonNearbyLocationsEncoding(Charsets.UTF_8);
         setStyles(STYLES);
     }

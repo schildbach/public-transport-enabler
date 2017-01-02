@@ -22,11 +22,13 @@ import java.util.regex.Matcher;
 
 import de.schildbach.pte.dto.Product;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Andreas Schildbach
  */
 public class SbbProvider extends AbstractHafasProvider {
-    private static final String API_BASE = "http://fahrplan.sbb.ch/bin/";
+    private static final HttpUrl API_BASE = HttpUrl.parse("http://fahrplan.sbb.ch/bin/");
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, Product.FERRY, Product.SUBURBAN_TRAIN, Product.BUS,
             Product.CABLECAR, Product.REGIONAL_TRAIN, Product.TRAM };

@@ -18,7 +18,6 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -70,7 +69,7 @@ import okhttp3.ResponseBody;
  * @author Mats Sjöberg <mats@sjoberg.fi>
  */
 public class HslProvider extends AbstractNetworkProvider {
-    private static final String API_BASE = "http://api.reittiopas.fi/hsl/";
+    private static final HttpUrl API_BASE = HttpUrl.parse("http://api.reittiopas.fi/hsl/");
     private static final String SERVER_PRODUCT = "hsl";
     private static final String SERVER_VERSION = "1_2_0";
     private static final int EARLIER_TRIPS_MINUTE_OFFSET = 5;
@@ -100,16 +99,16 @@ public class HslProvider extends AbstractNetworkProvider {
         return true;
     }
 
-    private StringBuilder apiUri(final String request) {
-        StringBuilder uri = new StringBuilder(API_BASE);
-        uri.append(SERVER_VERSION + "/");
-        uri.append("?user=" + user);
-        uri.append("&pass=" + pass);
-        uri.append("&request=").append(request);
-        uri.append("&epsg_out=wgs84");
-        uri.append("&epsg_in=wgs84");
-        uri.append("&format=xml");
-        return uri;
+    private HttpUrl.Builder apiUrl(final String request) {
+        final HttpUrl.Builder url = API_BASE.newBuilder();
+        url.addPathSegment(SERVER_VERSION);
+        url.addQueryParameter("user", user);
+        url.addQueryParameter("pass", pass);
+        url.addQueryParameter("request", request);
+        url.addQueryParameter("epsg_out", "wgs84");
+        url.addQueryParameter("epsg_in", "wgs84");
+        url.addQueryParameter("format", "xml");
+        return url;
     }
 
     private Point coordStrToPoint(final String coordStr) {
@@ -139,9 +138,9 @@ public class HslProvider extends AbstractNetworkProvider {
     }
 
     private Location queryStop(final String stationId) throws IOException {
-        final StringBuilder uri = apiUri("stop");
-        uri.append("&code=").append(stationId);
-        uri.append(String.format("&dep_limit=1"));
+        final HttpUrl.Builder url = apiUrl("stop");
+        url.addQueryParameter("code", stationId);
+        url.addQueryParameter("dep_limit", "1");
         final AtomicReference<Location> result = new AtomicReference<Location>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
@@ -164,7 +163,7 @@ public class HslProvider extends AbstractNetworkProvider {
             }
         };
 
-        httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()));
+        httpClient.getInputStream(callback, url.build());
         return result.get();
     }
 
@@ -174,7 +173,7 @@ public class HslProvider extends AbstractNetworkProvider {
     @Override
     public NearbyLocationsResult queryNearbyLocations(EnumSet<LocationType> types, Location location, int maxDistance,
             int maxStations) throws IOException {
-        final StringBuilder uri = apiUri("stops_area");
+        final HttpUrl.Builder url = apiUrl("stops_area");
         if (!location.hasLocation()) {
             if (location.type != LocationType.STATION)
                 throw new IllegalArgumentException("cannot handle: " + location.type);
@@ -182,9 +181,9 @@ public class HslProvider extends AbstractNetworkProvider {
                 throw new IllegalArgumentException("at least one of stationId or lat/lon " + "must be given");
             location = queryStop(location.id);
         }
-        uri.append("&center_coordinate=").append(locationToCoords(location));
-        uri.append(String.format("&limit=%d", maxStations));
-        uri.append(String.format("&diameter=%d", maxDistance * 2));
+        url.addQueryParameter("center_coordinate", locationToCoords(location));
+        url.addQueryParameter("limit", Integer.toString(maxStations));
+        url.addQueryParameter("diameter", Integer.toString(maxDistance * 2));
         final AtomicReference<NearbyLocationsResult> result = new AtomicReference<NearbyLocationsResult>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
@@ -219,7 +218,7 @@ public class HslProvider extends AbstractNetworkProvider {
             }
         };
 
-        httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()));
+        httpClient.getInputStream(callback, url.build());
         return result.get();
     }
 
@@ -256,13 +255,13 @@ public class HslProvider extends AbstractNetworkProvider {
     @Override
     public QueryDeparturesResult queryDepartures(String stationId, @Nullable Date queryDate, final int maxDepartures,
             boolean equivs) throws IOException {
-        final StringBuilder uri = apiUri("stop");
-        uri.append("&code=").append(stationId);
+        final HttpUrl.Builder url = apiUrl("stop");
+        url.addQueryParameter("code", stationId);
         if (queryDate != null) {
-            uri.append("&date=").append(new SimpleDateFormat("yyyyMMdd").format(queryDate));
-            uri.append("&time=").append(new SimpleDateFormat("HHmm").format(queryDate));
+            url.addQueryParameter("date", new SimpleDateFormat("yyyyMMdd").format(queryDate));
+            url.addQueryParameter("time", new SimpleDateFormat("HHmm").format(queryDate));
         }
-        uri.append(String.format("&dep_limit=%d", maxDepartures));
+        url.addQueryParameter("dep_limit", Integer.toString(maxDepartures));
         final AtomicReference<QueryDeparturesResult> result = new AtomicReference<QueryDeparturesResult>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
@@ -321,7 +320,7 @@ public class HslProvider extends AbstractNetworkProvider {
             }
         };
 
-        httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()));
+        httpClient.getInputStream(callback, url.build());
         return result.get();
     }
 
@@ -335,13 +334,13 @@ public class HslProvider extends AbstractNetworkProvider {
      */
     @Override
     public SuggestLocationsResult suggestLocations(CharSequence constraint) throws IOException {
-        final StringBuilder uri = apiUri("geocode");
+        final HttpUrl.Builder url = apiUrl("geocode");
         // Since HSL is picky about the input we clean out any
         // character that isn't alphabetic, numeral, -, ', /
         // or a space. Those should be all chars needed for a
         // name.
         String constraintStr = constraint.toString().replaceAll("[^\\p{Ll}\\p{Lu}\\p{Lt}\\p{Lo}\\p{Nd}\\d-'/ ]", "");
-        uri.append("&key=").append(URLEncoder.encode(constraintStr, "utf-8"));
+        url.addQueryParameter("key", constraintStr);
         final AtomicReference<SuggestLocationsResult> result = new AtomicReference<SuggestLocationsResult>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
@@ -396,7 +395,7 @@ public class HslProvider extends AbstractNetworkProvider {
             }
         };
 
-        httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()));
+        httpClient.getInputStream(callback, url.build());
         return result.get();
     }
 
@@ -467,18 +466,18 @@ public class HslProvider extends AbstractNetworkProvider {
             to = locations.get(0);
         }
 
-        final StringBuilder uri = apiUri("route");
+        final HttpUrl.Builder url = apiUrl("route");
 
-        uri.append("&from=").append(locationToCoords(from));
+        url.addQueryParameter("from", locationToCoords(from));
         if (via != null)
-            uri.append("&via=").append(locationToCoords(via));
-        uri.append("&to=").append(locationToCoords(to));
+            url.addQueryParameter("via", locationToCoords(via));
+        url.addQueryParameter("to", locationToCoords(to));
 
-        uri.append("&timetype=").append(dep ? "departure" : "arrival");
+        url.addQueryParameter("timetype", dep ? "departure" : "arrival");
 
         if (walkSpeed != WalkSpeed.NORMAL)
-            uri.append(String.format("&walk_speed=%d", walkSpeed == WalkSpeed.SLOW ? 30 : 100));
-        uri.append("&show=5");
+            url.addQueryParameter("walk_speed", Integer.toString(walkSpeed == WalkSpeed.SLOW ? 30 : 100));
+        url.addQueryParameter("show", "5");
 
         if (products != null && products.size() > 0) {
             List<String> tt = new ArrayList<String>();
@@ -495,10 +494,10 @@ public class HslProvider extends AbstractNetworkProvider {
                 tt.add("ferry");
 
             if (tt.size() > 0)
-                uri.append("&transport_types=").append(Joiner.on("|").join(tt));
+                url.addQueryParameter("transport_types", Joiner.on("|").join(tt));
         }
 
-        QueryTripsHslContext context = new QueryTripsHslContext(uri.toString(), from, via, to, date);
+        QueryTripsHslContext context = new QueryTripsHslContext(url.build().toString(), from, via, to, date);
 
         return queryHslTrips(from, via, to, context, date, true);
     }
@@ -548,9 +547,9 @@ public class HslProvider extends AbstractNetworkProvider {
 
     private QueryTripsResult queryHslTrips(final Location from, final Location via, final Location to,
             final QueryTripsHslContext context, Date date, final boolean later) throws IOException {
-        final StringBuilder uri = new StringBuilder(context.uri);
-        uri.append("&date=").append(new SimpleDateFormat("yyyyMMdd").format(date));
-        uri.append("&time=").append(new SimpleDateFormat("HHmm").format(date));
+        final HttpUrl.Builder url = HttpUrl.parse(context.uri).newBuilder();
+        url.addQueryParameter("date", new SimpleDateFormat("yyyyMMdd").format(date));
+        url.addQueryParameter("time", new SimpleDateFormat("HHmm").format(date));
         final AtomicReference<QueryTripsResult> result = new AtomicReference<QueryTripsResult>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
@@ -697,7 +696,7 @@ public class HslProvider extends AbstractNetworkProvider {
                         context.prevDate = firstDate;
                     context.trips = trips;
 
-                    result.set(new QueryTripsResult(header, uri.toString(), from, via, to, context, trips));
+                    result.set(new QueryTripsResult(header, url.build().toString(), from, via, to, context, trips));
                 } catch (final XmlPullParserException x) {
                     throw new ParserException("cannot parse xml: " + bodyPeek, x);
                 }
@@ -706,7 +705,7 @@ public class HslProvider extends AbstractNetworkProvider {
 
         context.date = date;
 
-        httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()));
+        httpClient.getInputStream(callback, url.build());
         return result.get();
     }
 }

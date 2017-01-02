@@ -24,18 +24,20 @@ import com.google.common.base.Charsets;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.util.StringReplaceReader;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Andreas Schildbach
  */
 public class PlProvider extends AbstractHafasProvider {
-    private static final String API_BASE = "http://rozklad.bilkom.pl/bin/";
+    private static final HttpUrl API_BASE = HttpUrl.parse("http://rozklad.bilkom.pl/bin/");
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.BUS, Product.BUS, Product.FERRY };
 
     public PlProvider() {
         super(NetworkId.PL, API_BASE, "pn", PRODUCTS_MAP);
 
-        setJsonGetStopsEncoding(Charsets.UTF_8);
+        setRequestUrlEncoding(Charsets.UTF_8);
         setJsonNearbyLocationsEncoding(Charsets.UTF_8);
     }
 

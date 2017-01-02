@@ -31,18 +31,22 @@ import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryTripsContext;
 import de.schildbach.pte.dto.QueryTripsResult;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Andreas Schildbach
  */
 public class NvbwProvider extends AbstractEfaProvider {
-    private final static String API_BASE = "http://www.efa-bw.de/nvbw/"; // no intermeditate stops
-    private final static String API_BASE_MOBILE = "http://www.efa-bw.de/android/";
-
+    // no intermeditate stops
+    private final static HttpUrl API_BASE = HttpUrl.parse("http://www.efa-bw.de/nvbw/");
+    private final static HttpUrl API_BASE_MOBILE = HttpUrl.parse("http://www.efa-bw.de/android/");
     // http://efa2.naldo.de/naldo/
 
     public NvbwProvider() {
-        super(NetworkId.NVBW, API_BASE + DEFAULT_DEPARTURE_MONITOR_ENDPOINT, API_BASE_MOBILE + DEFAULT_TRIP_ENDPOINT,
-                API_BASE + DEFAULT_STOPFINDER_ENDPOINT, API_BASE + DEFAULT_COORD_ENDPOINT);
+        super(NetworkId.NVBW, API_BASE.newBuilder().addPathSegment(DEFAULT_DEPARTURE_MONITOR_ENDPOINT).build(),
+                API_BASE_MOBILE.newBuilder().addPathSegment(DEFAULT_TRIP_ENDPOINT).build(),
+                API_BASE.newBuilder().addPathSegment(DEFAULT_STOPFINDER_ENDPOINT).build(),
+                API_BASE.newBuilder().addPathSegment(DEFAULT_COORD_ENDPOINT).build());
 
         setIncludeRegionId(false);
         setUseRouteIndexAsTripId(false);

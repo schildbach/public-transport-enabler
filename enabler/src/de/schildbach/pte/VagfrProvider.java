@@ -27,11 +27,13 @@ import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.dto.Style.Shape;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Andreas Schildbach
  */
 public class VagfrProvider extends AbstractEfaProvider {
-    private final static String API_BASE = "https://efaserver.vag-freiburg.de/vagfr/";
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://efaserver.vag-freiburg.de/vagfr/");
 
     public VagfrProvider() {
         super(NetworkId.VAGFR, API_BASE);

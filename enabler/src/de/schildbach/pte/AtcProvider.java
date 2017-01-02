@@ -17,12 +17,13 @@
 
 package de.schildbach.pte;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Andreas Schildbach
  */
 public class AtcProvider extends AbstractEfaProvider {
-    private final static String API_BASE = "http://82.187.83.50/TravelPlanner/";
-
+    private static final HttpUrl API_BASE = HttpUrl.parse("http://82.187.83.50/TravelPlanner/");
     // http://cisium.webhop.net/TravelPlanner/
 
     public AtcProvider() {

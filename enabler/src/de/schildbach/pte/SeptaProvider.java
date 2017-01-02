@@ -57,7 +57,7 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class SeptaProvider extends AbstractHafasProvider {
-    private static final String API_BASE = "http://airs1.septa.org/bin/";
+    private static final HttpUrl API_BASE = HttpUrl.parse("http://airs1.septa.org/bin/");
     private static final Product[] PRODUCTS_MAP = { Product.SUBWAY, Product.TRAM, Product.BUS, Product.SUBURBAN_TRAIN };
     private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
 
@@ -72,19 +72,18 @@ public class SeptaProvider extends AbstractHafasProvider {
     public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location,
             final int maxDistance, final int maxLocations) throws IOException {
         if (location.type == LocationType.STATION && location.hasId()) {
-            final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
-            uri.append("?near=Anzeigen");
-            uri.append("&distance=").append(maxDistance != 0 ? maxDistance / 1000 : 50);
-            uri.append("&input=").append(normalizeStationId(location.id));
-
-            return htmlNearbyStations(uri.toString());
+            final HttpUrl.Builder url = stationBoardEndpoint.newBuilder().addPathSegment(apiLanguage);
+            url.addQueryParameter("near", "Anzeigen");
+            url.addQueryParameter("distance", Integer.toString(maxDistance != 0 ? maxDistance / 1000 : 50));
+            url.addQueryParameter("input", normalizeStationId(location.id));
+            return htmlNearbyStations(url.build());
         } else {
             throw new IllegalArgumentException("cannot handle: " + location);
         }
     }
 
     @Override
-    protected void appendDateTimeParameters(final StringBuilder uri, final Date time, final String dateParamName,
+    protected void appendDateTimeParameters(final HttpUrl.Builder url, final Date time, final String dateParamName,
             final String timeParamName) {
         final Calendar c = new GregorianCalendar(timeZone);
         c.setTime(time);
@@ -94,10 +93,8 @@ public class SeptaProvider extends AbstractHafasProvider {
         final int hour = c.get(Calendar.HOUR);
         final int minute = c.get(Calendar.MINUTE);
         final String amPm = c.get(Calendar.AM_PM) == Calendar.AM ? "am" : "pm";
-        uri.append('&').append(dateParamName).append('=');
-        uri.append(ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%02d%02d%04d", month, day, year)));
-        uri.append('&').append(timeParamName).append('=');
-        uri.append(ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%02d:%02d %s", hour, minute, amPm)));
+        url.addQueryParameter(dateParamName, String.format(Locale.ENGLISH, "%02d%02d%04d", month, day, year));
+        url.addQueryParameter(timeParamName, String.format(Locale.ENGLISH, "%02d:%02d %s", hour, minute, amPm));
     }
 
     private static final Pattern P_DEPARTURES_PAGE_COARSE = Pattern.compile(".*?" //
@@ -134,9 +131,9 @@ public class SeptaProvider extends AbstractHafasProvider {
         final QueryDeparturesResult result = new QueryDeparturesResult(header);
 
         // scrape page
-        final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
-        appendXmlStationBoardParameters(uri, time, stationId, maxDepartures, false, null);
-        final CharSequence page = httpClient.get(HttpUrl.parse(uri.toString()));
+        final HttpUrl.Builder url = stationBoardEndpoint.newBuilder().addPathSegment(apiLanguage);
+        appendXmlStationBoardParameters(url, time, stationId, maxDepartures, false, null);
+        final CharSequence page = httpClient.get(url.build());
 
         // parse page
         final Matcher mPageCoarse = P_DEPARTURES_PAGE_COARSE.matcher(page);

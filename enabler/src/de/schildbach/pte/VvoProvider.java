@@ -24,17 +24,19 @@ import com.google.common.base.Charsets;
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Product;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Andreas Schildbach
  */
 public class VvoProvider extends AbstractEfaProvider {
-    private final static String API_BASE = "http://efa.vvo-online.de:8080/dvb/";
+    private static final HttpUrl API_BASE = HttpUrl.parse("http://efa.vvo-online.de:8080/dvb/");
 
     public VvoProvider() {
         this(API_BASE);
     }
 
-    public VvoProvider(final String apiBase) {
+    public VvoProvider(final HttpUrl apiBase) {
         super(NetworkId.VVO, apiBase);
 
         setRequestUrlEncoding(Charsets.UTF_8);

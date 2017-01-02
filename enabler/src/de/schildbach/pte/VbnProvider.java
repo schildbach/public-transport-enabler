@@ -40,11 +40,13 @@ import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.dto.Style.Shape;
 import de.schildbach.pte.dto.SuggestLocationsResult;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Andreas Schildbach
  */
 public class VbnProvider extends AbstractHafasProvider {
-    private static final String API_BASE = "https://fahrplaner.vbn.de/hafas/";
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://fahrplaner.vbn.de/hafas/");
     // http://fahrplaner.vsninfo.de/hafas/
     // http://fahrplan.rsag-online.de/hafas/
     // http://fahrplanauskunft.verkehrsverbund-warnow.de/bin/

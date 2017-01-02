@@ -17,13 +17,15 @@
 
 package de.schildbach.pte;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Stephane Berube
  */
 public class OntarioProvider extends AbstractNavitiaProvider {
     private static String API_REGION = "ca-on";
 
-    public OntarioProvider(final String apiBase, final String authorization) {
+    public OntarioProvider(final HttpUrl apiBase, final String authorization) {
         super(NetworkId.ONTARIO, apiBase, authorization);
 
         setTimeZone("America/Toronto");

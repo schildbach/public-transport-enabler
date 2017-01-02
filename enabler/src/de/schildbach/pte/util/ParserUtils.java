@@ -254,14 +254,6 @@ public final class ParserUtils {
         }
     }
 
-    public static String urlEncode(final String str) {
-        try {
-            return URLEncoder.encode(str, "utf-8");
-        } catch (final UnsupportedEncodingException x) {
-            throw new RuntimeException(x);
-        }
-    }
-
     public static String urlEncode(final String str, final Charset encoding) {
         try {
             return URLEncoder.encode(str, encoding.name());

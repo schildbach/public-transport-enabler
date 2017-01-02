@@ -23,17 +23,19 @@ import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.Product;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Andreas Schildbach
  */
 public class VvsProvider extends AbstractEfaProvider {
-    private static final String API_BASE = "http://www2.vvs.de/vvs/";
+    private static final HttpUrl API_BASE = HttpUrl.parse("http://www2.vvs.de/vvs/");
 
     public VvsProvider() {
         this(API_BASE);
     }
 
-    public VvsProvider(final String apiBase) {
+    public VvsProvider(final HttpUrl apiBase) {
         super(NetworkId.VVS, apiBase);
 
         setIncludeRegionId(false);

@@ -40,11 +40,13 @@ import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.dto.SuggestLocationsResult;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Andreas Schildbach
  */
 public class SvvProvider extends AbstractHafasProvider {
-    private static final String API_BASE = "https://fahrplan.salzburg-verkehr.at/bin/";
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://fahrplan.salzburg-verkehr.at/bin/");
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.SUBURBAN_TRAIN, Product.SUBWAY,
             null, Product.TRAM, Product.REGIONAL_TRAIN, Product.BUS, Product.BUS, Product.TRAM, Product.FERRY,
             Product.ON_DEMAND, Product.BUS, Product.REGIONAL_TRAIN, null, null, null };

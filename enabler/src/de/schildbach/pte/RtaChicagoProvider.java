@@ -22,12 +22,14 @@ import javax.annotation.Nullable;
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Product;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Andreas Schildbach
  */
 public class RtaChicagoProvider extends AbstractEfaProvider {
-    private final static String API_BASE = "http://tripplanner.rtachicago.com/ccg3/";
-    // "http://elb-jpinstances-1463028547.us-east-1.elb.amazonaws.com/ccg3/";
+    private static final HttpUrl API_BASE = HttpUrl.parse("http://tripplanner.rtachicago.com/ccg3/");
+    // http://elb-jpinstances-1463028547.us-east-1.elb.amazonaws.com/ccg3/
 
     public RtaChicagoProvider() {
         super(NetworkId.RTACHICAGO, API_BASE);

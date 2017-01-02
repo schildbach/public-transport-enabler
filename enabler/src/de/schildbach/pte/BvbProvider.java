@@ -23,11 +23,13 @@ import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.SuggestLocationsResult;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Andreas Schildbach
  */
 public class BvbProvider extends AbstractEfaProvider {
-    private final static String API_BASE = "http://www.efa-bvb.ch/bvb/";
+    private static final HttpUrl API_BASE = HttpUrl.parse("http://www.efa-bvb.ch/bvb/");
 
     public BvbProvider() {
         super(NetworkId.BVB, API_BASE);

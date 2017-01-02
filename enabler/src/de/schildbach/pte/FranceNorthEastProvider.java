@@ -21,6 +21,8 @@ import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.dto.Style.Shape;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Nicolas Derive
  * @author Stéphane Guillou
@@ -29,7 +31,7 @@ public class FranceNorthEastProvider extends AbstractNavitiaProvider {
     private static String API_REGION = "fr-ne";
     // dataset available at: https://navitia.opendatasoft.com/explore/dataset/fr-ne/
 
-    public FranceNorthEastProvider(final String apiBase, final String authorization) {
+    public FranceNorthEastProvider(final HttpUrl apiBase, final String authorization) {
         super(NetworkId.FRANCENORTHEAST, apiBase, authorization);
 
         setTimeZone("Europe/Paris");

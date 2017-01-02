@@ -40,8 +40,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.google.common.base.Charsets;
-
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
@@ -57,7 +55,6 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
 import de.schildbach.pte.dto.SuggestedLocation;
 import de.schildbach.pte.dto.Trip;
 import de.schildbach.pte.exception.ParserException;
-import de.schildbach.pte.util.ParserUtils;
 
 import okhttp3.HttpUrl;
 
@@ -122,8 +119,8 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider {
         }
     }
 
-    private static final String DEFAULT_STOPFINDER_ENDPOINT = "/Transport/v2/";
-    private static final String DEFAULT_TRIP_ENDPOINT = "/journeyplanner/v2/";
+    private static final String DEFAULT_STOPFINDER_ENDPOINT = "Transport/v2";
+    private static final String DEFAULT_TRIP_ENDPOINT = "journeyplanner/v2";
     private static final String SERVER_PRODUCT = "tsi";
 
     private static Map<String, Product> TRANSPORT_MODES = new HashMap<String, Product>();
@@ -160,15 +157,15 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider {
     }
 
     private final @Nullable String apiKey;
-    private final String stopFinderEndpoint;
-    private final String tripEndpoint;
+    private final HttpUrl stopFinderEndpoint;
+    private final HttpUrl tripEndpoint;
 
-    public AbstractTsiProvider(final NetworkId network, final String apiKey, final String apiBase) {
+    public AbstractTsiProvider(final NetworkId network, final String apiKey, final HttpUrl apiBase) {
         this(network, apiKey, apiBase, null, null);
     }
 
-    public AbstractTsiProvider(final NetworkId network, final String apiKey, final String tripEndpoint,
-            final String stopFinderEndpoint) {
+    public AbstractTsiProvider(final NetworkId network, final String apiKey, final HttpUrl tripEndpoint,
+            final HttpUrl stopFinderEndpoint) {
         super(network);
 
         this.apiKey = apiKey;
@@ -176,10 +173,14 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider {
         this.stopFinderEndpoint = stopFinderEndpoint;
     }
 
-    public AbstractTsiProvider(final NetworkId network, final String apiKey, final String apiBase,
+    public AbstractTsiProvider(final NetworkId network, final String apiKey, final HttpUrl apiBase,
             final String tripEndpoint, final String stopFinderEndpoint) {
-        this(network, apiKey, apiBase + (tripEndpoint != null ? tripEndpoint : DEFAULT_TRIP_ENDPOINT), //
-                apiBase + (stopFinderEndpoint != null ? stopFinderEndpoint : DEFAULT_STOPFINDER_ENDPOINT));
+        this(network, apiKey,
+                apiBase.newBuilder().addPathSegments(tripEndpoint != null ? tripEndpoint : DEFAULT_TRIP_ENDPOINT)
+                        .build(),
+                apiBase.newBuilder()
+                        .addPathSegments(stopFinderEndpoint != null ? stopFinderEndpoint : DEFAULT_STOPFINDER_ENDPOINT)
+                        .build());
     }
 
     @Override
@@ -192,14 +193,12 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider {
 
     @Override
     public SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException {
-        final StringBuilder parameters = buildCommonRequestParams("SearchTripPoint", "json");
-        parameters.append("&MaxItems=").append(50); // XXX good value?
-        parameters.append("&Keywords=").append(ParserUtils.urlEncode(constraint.toString(), Charsets.UTF_8));
+        final HttpUrl.Builder url = stopFinderEndpoint.newBuilder().addPathSegments("SearchTripPoint/json");
+        appendCommonRequestParams(url);
+        url.addQueryParameter("MaxItems", "50"); // XXX good value?
+        url.addQueryParameter("Keywords", constraint.toString());
 
-        final StringBuilder uri = new StringBuilder(stopFinderEndpoint);
-        uri.append(parameters);
-
-        final CharSequence page = httpClient.get(HttpUrl.parse(uri.toString()));
+        final CharSequence page = httpClient.get(url.build());
         try {
             final List<SuggestedLocation> locations = new ArrayList<SuggestedLocation>();
             final JSONObject head = new JSONObject(page.toString());
@@ -227,11 +226,8 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider {
         }
     }
 
-    private final StringBuilder buildCommonRequestParams(final String method, final String outputFormat) {
-        final StringBuilder uri = new StringBuilder(method);
-        uri.append('/').append(outputFormat);
-        uri.append("?Key=").append(apiKey);
-        return uri;
+    private final void appendCommonRequestParams(final HttpUrl.Builder url) {
+        url.addQueryParameter("Key", apiKey);
     }
 
     private Line createLine(final String id, final String mode, final String number, final String name,
@@ -269,17 +265,15 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider {
 
     private NearbyLocationsResult jsonCoordRequest(final int lat, final int lon, final int maxDistance,
             final int maxStations) throws IOException {
-        final StringBuilder parameters = buildCommonRequestParams("SearchTripPoint", "json");
-        parameters.append(String.format(Locale.FRENCH, "&Latitude=%2.6f&Longitude=%2.6f", latLonToDouble(lat),
-                latLonToDouble(lon)));
-        parameters.append("&MaxItems=").append(maxStations != 0 ? maxStations : 50);
-        parameters.append("&Perimeter=").append(maxDistance != 0 ? maxDistance : 1320);
-        parameters.append("&PointTypes=Stop_Place");
+        final HttpUrl.Builder url = stopFinderEndpoint.newBuilder().addPathSegments("SearchTripPoint/json");
+        appendCommonRequestParams(url);
+        url.addQueryParameter("Latitude", String.format(Locale.FRENCH, "%2.6f", latLonToDouble(lat)));
+        url.addQueryParameter("Longitude", String.format(Locale.FRENCH, "%2.6f", latLonToDouble(lon)));
+        url.addQueryParameter("MaxItems", Integer.toString(maxStations != 0 ? maxStations : 50));
+        url.addQueryParameter("Perimeter", Integer.toString(maxDistance != 0 ? maxDistance : 1320));
+        url.addQueryParameter("PointTypes", "Stop_Place");
 
-        final StringBuilder uri = new StringBuilder(stopFinderEndpoint);
-        uri.append(parameters);
-
-        final CharSequence page = httpClient.get(HttpUrl.parse(uri.toString()));
+        final CharSequence page = httpClient.get(url.build());
         try {
             final List<Location> stations = new ArrayList<Location>();
             final JSONObject head = new JSONObject(page.toString());
@@ -310,14 +304,12 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider {
     }
 
     private Location jsonStationRequestCoord(final String id) throws IOException {
-        final StringBuilder parameters = buildCommonRequestParams("GetTripPoint", "json");
-        parameters.append("&TripPointId=").append(id);
-        parameters.append("&PointType=Stop_Place");
+        final HttpUrl.Builder url = stopFinderEndpoint.newBuilder().addPathSegments("GetTripPoint/json");
+        appendCommonRequestParams(url);
+        url.addQueryParameter("TripPointId", id);
+        url.addQueryParameter("PointType", "Stop_Place");
 
-        final StringBuilder uri = new StringBuilder(stopFinderEndpoint);
-        uri.append(parameters);
-
-        final CharSequence page = httpClient.get(HttpUrl.parse(uri.toString()));
+        final CharSequence page = httpClient.get(url.build());
         try {
             final JSONObject head = new JSONObject(page.toString());
 
@@ -621,62 +613,59 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider {
             mode = null;
         }
 
-        final String walkSpeedStr = translateWalkSpeed(context.walkSpeed);
-
-        final StringBuilder parameters = buildCommonRequestParams("PlanTrip", "json");
-        parameters.append("&Disruptions=").append(0); // XXX what does this even mean?
-        parameters.append("&Algorithm=FASTEST");
-        parameters.append("&MaxWalkDist=1000"); // XXX good value? (in meters)
+        final HttpUrl.Builder url = tripEndpoint.newBuilder().addPathSegments("PlanTrip/json");
+        appendCommonRequestParams(url);
+        url.addQueryParameter("Disruptions", "0"); // XXX what does this even mean?
+        url.addQueryParameter("Algorithm", "FASTEST");
+        url.addQueryParameter("MaxWalkDist", "1000"); // XXX good value? (in meters)
 
         if (context.from.type == LocationType.STATION) {
-            parameters.append("&DepType=STOP_PLACE&DepId=").append(context.from.id);
-            parameters.append("%240"); // "$0"
+            url.addQueryParameter("DepType", "STOP_PLACE");
+            url.addQueryParameter("DepId", context.from.id + "$0");
         } else if (context.from.type == LocationType.POI) {
-            parameters.append("&DepType=POI&DepId=").append(context.from.id);
-            parameters.append("%240"); // "$0"
+            url.addQueryParameter("DepType", "POI");
+            url.addQueryParameter("DepId", context.from.id + "$0");
         } else {
-            parameters.append("&DepLat=").append(latLonToDouble(context.from.lat));
-            parameters.append("&DepLon=").append(latLonToDouble(context.from.lon));
+            url.addQueryParameter("DepLat", Double.toString(latLonToDouble(context.from.lat)));
+            url.addQueryParameter("DepLon", Double.toString(latLonToDouble(context.from.lon)));
         }
 
         if (context.to.type == LocationType.STATION) {
-            parameters.append("&ArrType=STOP_PLACE&ArrId=").append(context.to.id);
-            parameters.append("%240"); // "$0"
+            url.addQueryParameter("ArrType", "STOP_PLACE");
+            url.addQueryParameter("ArrId", context.to.id + "$0");
         } else if (context.to.type == LocationType.POI) {
-            parameters.append("&ArrType=POI&ArrId=").append(context.to.id);
-            parameters.append("%240"); // "$0"
+            url.addQueryParameter("ArrType", "POI");
+            url.addQueryParameter("ArrId", context.to.id + "$0");
         } else {
-            parameters.append("&ArrLat=").append(latLonToDouble(context.to.lat));
-            parameters.append("&ArrLon=").append(latLonToDouble(context.to.lon));
+            url.addQueryParameter("ArrLat", Double.toString(latLonToDouble(context.to.lat)));
+            url.addQueryParameter("ArrLon", Double.toString(latLonToDouble(context.to.lon)));
         }
 
         if (context.via != null) {
             if (context.via.type == LocationType.STATION) {
-                parameters.append("&ViaType=STOP_PLACE&ViaId=").append(context.via.id);
-                parameters.append("%240"); // "$0"
+                url.addQueryParameter("ViaType", "STOP_PLACE");
+                url.addQueryParameter("ViaId", context.via.id + "$0");
             } else if (context.via.type == LocationType.POI) {
-                parameters.append("&ViaType=POI&ViaId=").append(context.via.id);
-                parameters.append("%240"); // "$0"
+                url.addQueryParameter("ViaType", "POI");
+                url.addQueryParameter("ViaId", context.via.id + "$0");
             } else {
-                parameters.append("&ViaLat=").append(latLonToDouble(context.via.lat));
-                parameters.append("&ViaLon=").append(latLonToDouble(context.via.lon));
+                url.addQueryParameter("ViaLat", Double.toString(latLonToDouble(context.via.lat)));
+                url.addQueryParameter("ViaLon", Double.toString(latLonToDouble(context.via.lon)));
             }
         }
 
         final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-        parameters.append("&date=").append(dateFormat.format(date));
+        url.addQueryParameter("date", dateFormat.format(date));
 
         final DateFormat timeFormat = new SimpleDateFormat("HH-mm", Locale.US);
-        parameters.append(dep ? "&DepartureTime=" : "&ArrivalTime=").append(timeFormat.format(date));
+        url.addQueryParameter(dep ? "DepartureTime" : "ArrivalTime", timeFormat.format(date));
 
-        parameters.append("&WalkSpeed=").append(walkSpeedStr);
+        url.addQueryParameter("WalkSpeed", translateWalkSpeed(context.walkSpeed));
 
         if (mode != null)
-            parameters.append("&Modes=").append(ParserUtils.urlEncode(mode.toString(), Charsets.UTF_8));
+            url.addQueryParameter("Modes", mode);
 
-        final StringBuilder uri = new StringBuilder(tripEndpoint);
-        uri.append(parameters);
-        final CharSequence page = httpClient.get(HttpUrl.parse(uri.toString()));
+        final CharSequence page = httpClient.get(url.build());
         try {
             final JSONObject head = new JSONObject(page.toString());
 
@@ -711,7 +700,8 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider {
                 context.updateLatestDeparture(trips.get(trips.size() - 1).getFirstDepartureTime());
             }
 
-            return new QueryTripsResult(header, uri.toString(), context.from, context.via, context.to, context, trips);
+            return new QueryTripsResult(header, url.build().toString(), context.from, context.via, context.to, context,
+                    trips);
         } catch (final JSONException x) {
             throw new ParserException(x);
         }

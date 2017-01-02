@@ -19,12 +19,14 @@ package de.schildbach.pte;
 
 import de.schildbach.pte.dto.Product;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Kjell Braden <afflux@pentabarf.de>
  */
 public class PacaProvider extends AbstractTsiProvider {
     public PacaProvider() {
-        super(NetworkId.PACA, "PACA", "http://www.pacamobilite.fr/WebServices/TransinfoService/api");
+        super(NetworkId.PACA, "PACA", HttpUrl.parse("http://www.pacamobilite.fr/WebServices/TransinfoService/api"));
     }
 
     @Override

@@ -22,11 +22,13 @@ import java.util.regex.Pattern;
 
 import de.schildbach.pte.dto.Product;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Andreas Schildbach
  */
 public class RtProvider extends AbstractHafasProvider {
-    private static final String API_BASE = "http://railteam.hafas.de/bin/";
+    private static final HttpUrl API_BASE = HttpUrl.parse("http://railteam.hafas.de/bin/");
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.BUS, Product.FERRY,
             Product.SUBWAY, Product.TRAM, Product.ON_DEMAND };

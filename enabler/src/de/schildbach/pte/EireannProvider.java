@@ -31,13 +31,15 @@ import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryTripsContext;
 import de.schildbach.pte.dto.QueryTripsResult;
 
+import okhttp3.HttpUrl;
+
 /**
  * Ireland, Dublin
  * 
  * @author Andreas Schildbach
  */
 public class EireannProvider extends AbstractHafasProvider {
-    private static final String API_BASE = "http://journeyplanner.buseireann.ie/jp/bin/";
+    private static final HttpUrl API_BASE = HttpUrl.parse("http://journeyplanner.buseireann.ie/jp/bin/");
     private static final Product[] PRODUCTS_MAP = { null, null, null, Product.BUS };
 
     public EireannProvider() {

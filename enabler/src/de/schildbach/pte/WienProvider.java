@@ -31,11 +31,13 @@ import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Andreas Schildbach
  */
 public class WienProvider extends AbstractEfaProvider {
-    private final static String API_BASE = "https://www.wienerlinien.at/ogd_routing/";
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://www.wienerlinien.at/ogd_routing/");
 
     public WienProvider() {
         super(NetworkId.WIEN, API_BASE);
@@ -46,21 +48,19 @@ public class WienProvider extends AbstractEfaProvider {
     }
 
     @Override
-    protected String xsltTripRequestParameters(final Location from, final @Nullable Location via, final Location to,
-            final Date time, final boolean dep, final @Nullable Collection<Product> products,
-            final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
-            final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) {
-        final StringBuilder uri = new StringBuilder(super.xsltTripRequestParameters(from, via, to, time, dep, products,
-                optimize, walkSpeed, accessibility, options));
-
+    protected void appendXsltTripRequestParameters(final HttpUrl.Builder url, final Location from,
+            final @Nullable Location via, final Location to, final Date time, final boolean dep,
+            final @Nullable Collection<Product> products, final @Nullable Optimize optimize,
+            final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
+            final @Nullable Set<Option> options) {
+        super.appendXsltTripRequestParameters(url, from, via, to, time, dep, products, optimize, walkSpeed,
+                accessibility, options);
         if (products != null) {
             for (final Product p : products) {
                 if (p == Product.BUS)
-                    uri.append("&inclMOT_11=on"); // night bus
+                    url.addEncodedQueryParameter("inclMOT_11", "on"); // night bus
             }
         }
-
-        return uri.toString();
     }
 
     private static final Map<String, Style> STYLES = new HashMap<String, Style>();

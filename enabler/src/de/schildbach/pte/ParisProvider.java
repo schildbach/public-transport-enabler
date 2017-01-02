@@ -22,13 +22,15 @@ import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.dto.Style.Shape;
 import de.schildbach.pte.util.WordUtils;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Antonio El Khoury
  */
 public class ParisProvider extends AbstractNavitiaProvider {
     private static String API_REGION = "fr-idf";
 
-    public ParisProvider(final String apiBase, final String authorization) {
+    public ParisProvider(final HttpUrl apiBase, final String authorization) {
         super(NetworkId.PARIS, apiBase, authorization);
 
         setTimeZone("Europe/Paris");

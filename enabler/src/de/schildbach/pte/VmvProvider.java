@@ -17,11 +17,13 @@
 
 package de.schildbach.pte;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Andreas Schildbach
  */
 public class VmvProvider extends AbstractEfaProvider {
-    private static final String API_BASE = "http://80.146.180.107/vmv2/";
+    private static final HttpUrl API_BASE = HttpUrl.parse("http://80.146.180.107/vmv2/");
 
     // http://80.146.180.107/vmv/
     // http://80.146.180.107/delfi/

@@ -29,11 +29,13 @@ import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.util.StringReplaceReader;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Andreas Schildbach
  */
 public class NvvProvider extends AbstractHafasProvider {
-    private static final String API_BASE = "https://auskunft.nvv.de/auskunft/bin/jp/";
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://auskunft.nvv.de/auskunft/bin/jp/");
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.SUBWAY, Product.TRAM, Product.BUS, Product.BUS,
             Product.FERRY, Product.ON_DEMAND, Product.REGIONAL_TRAIN, Product.REGIONAL_TRAIN };
@@ -41,7 +43,7 @@ public class NvvProvider extends AbstractHafasProvider {
     public NvvProvider() {
         super(NetworkId.NVV, API_BASE, "dn", PRODUCTS_MAP);
 
-        setJsonGetStopsEncoding(Charsets.UTF_8);
+        setRequestUrlEncoding(Charsets.UTF_8);
         setJsonNearbyLocationsEncoding(Charsets.UTF_8);
         httpClient.setSslAcceptAllHostnames(true);
     }
@@ -83,12 +85,12 @@ public class NvvProvider extends AbstractHafasProvider {
         if (location.hasLocation()) {
             return nearbyLocationsByCoordinate(types, location.lat, location.lon, maxDistance, maxLocations);
         } else if (location.type == LocationType.STATION && location.hasId()) {
-            final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
-            uri.append("?L=vs_rmv&near=Anzeigen");
-            uri.append("&distance=").append(maxDistance != 0 ? maxDistance / 1000 : 50);
-            uri.append("&input=").append(normalizeStationId(location.id));
-
-            return htmlNearbyStations(uri.toString());
+            final HttpUrl.Builder url = stationBoardEndpoint.newBuilder().addPathSegment(apiLanguage);
+            url.addQueryParameter("near", "Anzeigen");
+            url.addQueryParameter("distance", Integer.toString(maxDistance != 0 ? maxDistance / 1000 : 50));
+            url.addQueryParameter("input", normalizeStationId(location.id));
+            url.addQueryParameter("L", "vs_rmv");
+            return htmlNearbyStations(url.build());
         } else {
             throw new IllegalArgumentException("cannot handle: " + location);
         }

@@ -17,11 +17,13 @@
 
 package de.schildbach.pte;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Andreas Schildbach
  */
 public class IvbProvider extends AbstractEfaProvider {
-    private final static String API_BASE = "http://efa.ivb.at/ivb/";
+    private static final HttpUrl API_BASE = HttpUrl.parse("http://efa.ivb.at/ivb/");
 
     public IvbProvider() {
         super(NetworkId.IVB, API_BASE);

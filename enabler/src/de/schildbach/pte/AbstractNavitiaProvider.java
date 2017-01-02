@@ -64,7 +64,6 @@ import de.schildbach.pte.dto.Trip.Leg;
 import de.schildbach.pte.dto.Trip.Public;
 import de.schildbach.pte.exception.NotFoundException;
 import de.schildbach.pte.exception.ParserException;
-import de.schildbach.pte.util.ParserUtils;
 
 import okhttp3.HttpUrl;
 
@@ -77,7 +76,8 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
     protected final static String SERVER_PRODUCT = "navitia";
     protected final static String SERVER_VERSION = "v1";
 
-    protected String apiBase = "https://api.navitia.io/" + SERVER_VERSION + "/";
+    protected HttpUrl apiBase = HttpUrl.parse("https://api.navitia.io/").newBuilder().addPathSegment(SERVER_VERSION)
+            .build();
 
     private enum PlaceType {
         ADDRESS, ADMINISTRATIVE_REGION, POI, STOP_POINT, STOP_AREA
@@ -125,7 +125,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
         }
     }
 
-    public AbstractNavitiaProvider(final NetworkId network, final String apiBase, final String authorization) {
+    public AbstractNavitiaProvider(final NetworkId network, final HttpUrl apiBase, final String authorization) {
         this(network, authorization);
 
         this.apiBase = apiBase;
@@ -163,12 +163,8 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
         }
     }
 
-    private String uri() {
-        return apiBase + "coverage/" + region() + "/";
-    }
-
-    private String tripUri() {
-        return apiBase;
+    private HttpUrl.Builder url() {
+        return apiBase.newBuilder().addPathSegment("coverage").addPathSegment(region());
     }
 
     private Point parseCoord(final JSONObject coord) throws IOException {
@@ -644,8 +640,9 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
     }
 
     private String getStopAreaId(final String stopPointId) throws IOException {
-        final String uri = uri() + "stop_points/" + ParserUtils.urlEncode(stopPointId) + "?depth=1";
-        final CharSequence page = httpClient.get(HttpUrl.parse(uri));
+        final HttpUrl.Builder url = url().addPathSegment("stop_points").addPathSegment(stopPointId);
+        url.addQueryParameter("depth", "1");
+        final CharSequence page = httpClient.get(url.build());
 
         try {
             final JSONObject head = new JSONObject(page.toString());
@@ -672,37 +669,33 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
             int maxDistance, final int maxLocations) throws IOException {
         final ResultHeader resultHeader = new ResultHeader(network, SERVER_PRODUCT, SERVER_VERSION, null, 0, null);
 
-        // Build query uri depending of location type.
-        final StringBuilder queryUri = new StringBuilder(uri());
+        // Build url depending of location type.
+        final HttpUrl.Builder url = url();
         if (location.type == LocationType.COORD || location.type == LocationType.ADDRESS
                 || location.type == LocationType.ANY) {
             if (!location.hasLocation())
                 throw new IllegalArgumentException();
             final double lon = location.lon / 1E6;
             final double lat = location.lat / 1E6;
-            queryUri.append("coords/").append(lon).append(';').append(lat);
+            url.addPathSegment("coords").addPathSegment(lon + ";" + lat);
         } else if (location.type == LocationType.STATION) {
             if (!location.isIdentified())
                 throw new IllegalArgumentException();
-            queryUri.append("stop_points/").append(location.id);
+            url.addPathSegment("stop_points").addPathSegment(location.id);
         } else if (location.type == LocationType.POI) {
             if (!location.isIdentified())
                 throw new IllegalArgumentException();
-            queryUri.append("pois/").append(location.id);
+            url.addPathSegment("pois").addPathSegment(location.id);
         } else {
             throw new IllegalArgumentException("Unhandled location type: " + location.type);
         }
-        queryUri.append('/');
-
-        if (maxDistance == 0)
-            maxDistance = 50000;
-
-        queryUri.append("places_nearby?type[]=stop_point");
-        queryUri.append("&distance=").append(maxDistance);
+        url.addPathSegment("places_nearby");
+        url.addQueryParameter("type[]", "stop_point");
+        url.addQueryParameter("distance", Integer.toString(maxDistance == 0 ? 50000 : maxDistance));
         if (maxLocations > 0)
-            queryUri.append("&count=").append(maxLocations);
-        queryUri.append("&depth=3");
-        final CharSequence page = httpClient.get(HttpUrl.parse(queryUri.toString()));
+            url.addQueryParameter("count", Integer.toString(maxLocations));
+        url.addQueryParameter("depth", "3");
+        final CharSequence page = httpClient.get(url.build());
 
         try {
             final JSONObject head = new JSONObject(page.toString());
@@ -747,37 +740,28 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
             final QueryDeparturesResult result = new QueryDeparturesResult(resultHeader,
                     QueryDeparturesResult.Status.OK);
 
-            final String dateTime = printDate(time);
-
             // If equivs is equal to true, get stop_area corresponding
             // to stop_point and query departures.
-            final StringBuilder queryUri = new StringBuilder();
-            queryUri.append(uri());
+            final HttpUrl.Builder url = url();
             final String header = stationId.substring(0, stationId.indexOf(":"));
             if (equivs && header.equals("stop_point")) {
                 final String stopAreaId = getStopAreaId(stationId);
-                queryUri.append("stop_areas/");
-                queryUri.append(stopAreaId);
-                queryUri.append("/");
+                url.addPathSegment("stop_areas");
+                url.addPathSegment(stopAreaId);
+            } else if (header.equals("stop_area")) {
+                url.addPathSegment("stop_areas");
+                url.addPathSegment(stationId);
             } else {
-                if (header.equals("stop_area")) {
-                    queryUri.append("stop_areas/");
-                    queryUri.append(stationId);
-                    queryUri.append("/");
-                } else {
-                    queryUri.append("stop_points/");
-                    queryUri.append(stationId);
-                    queryUri.append("/");
-                }
+                url.addPathSegment("stop_points");
+                url.addPathSegment(stationId);
             }
-            queryUri.append("departures?from_datetime=");
-            queryUri.append(dateTime);
-            queryUri.append("&count=");
-            queryUri.append(maxDepartures);
-            queryUri.append("&duration=86400");
-            queryUri.append("&depth=0");
+            url.addPathSegment("departures");
+            url.addQueryParameter("from_datetime", printDate(time));
+            url.addQueryParameter("count", Integer.toString(maxDepartures));
+            url.addQueryParameter("duration", "86400");
+            url.addQueryParameter("depth", "0");
 
-            final CharSequence page = httpClient.get(HttpUrl.parse(queryUri.toString()));
+            final CharSequence page = httpClient.get(url.build());
 
             final JSONObject head = new JSONObject(page.toString());
 
@@ -843,9 +827,14 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
     public SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException {
         final String nameCstr = constraint.toString();
 
-        final String queryUri = uri() + "places?q=" + ParserUtils.urlEncode(nameCstr)
-                + "&type[]=stop_area&type[]=address&type[]=poi&type[]=administrative_region" + "&depth=1";
-        final CharSequence page = httpClient.get(HttpUrl.parse(queryUri));
+        final HttpUrl.Builder url = url().addPathSegment("places");
+        url.addQueryParameter("q", nameCstr);
+        url.addQueryParameter("type[]", "stop_area");
+        url.addQueryParameter("type[]", "address");
+        url.addQueryParameter("type[]", "poi");
+        url.addQueryParameter("type[]", "administrative_region");
+        url.addQueryParameter("depth", "1");
+        final CharSequence page = httpClient.get(url.build());
 
         try {
             final List<SuggestedLocation> locations = new ArrayList<SuggestedLocation>();
@@ -881,13 +870,13 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
 
         try {
             if (from != null && from.isIdentified() && to != null && to.isIdentified()) {
-                final StringBuilder queryUri = new StringBuilder(tripUri()).append("journeys");
-                queryUri.append("?from=").append(ParserUtils.urlEncode(printLocation(from)));
-                queryUri.append("&to=").append(ParserUtils.urlEncode(printLocation(to)));
-                queryUri.append("&datetime=").append(printDate(date));
-                queryUri.append("&datetime_represents=").append(dep ? "departure" : "arrival");
-                queryUri.append("&count=").append(this.numTripsRequested);
-                queryUri.append("&depth=0");
+                final HttpUrl.Builder url = apiBase.newBuilder().addPathSegment("journeys");
+                url.addQueryParameter("from", printLocation(from));
+                url.addQueryParameter("to", printLocation(to));
+                url.addQueryParameter("datetime", printDate(date));
+                url.addQueryParameter("datetime_represents", dep ? "departure" : "arrival");
+                url.addQueryParameter("count", Integer.toString(this.numTripsRequested));
+                url.addQueryParameter("depth", "0");
 
                 // Set walking speed.
                 if (walkSpeed != null) {
@@ -905,51 +894,51 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
                         break;
                     }
 
-                    queryUri.append("&walking_speed=").append(walkingSpeed);
+                    url.addQueryParameter("walking_speed", Double.toString(walkingSpeed));
                 }
 
                 if (options != null && options.contains(Option.BIKE)) {
-                    queryUri.append("&first_section_mode=bike");
-                    queryUri.append("&last_section_mode=bike");
+                    url.addQueryParameter("first_section_mode", "bike");
+                    url.addQueryParameter("last_section_mode", "bike");
                 }
 
                 // Set forbidden physical modes.
                 if (products != null && !products.equals(Product.ALL)) {
-                    queryUri.append("&forbidden_uris[]=physical_mode:Air");
-                    queryUri.append("&forbidden_uris[]=physical_mode:Boat");
+                    url.addQueryParameter("forbidden_uris[]", "physical_mode:Air");
+                    url.addQueryParameter("forbidden_uris[]", "physical_mode:Boat");
                     if (!products.contains(Product.REGIONAL_TRAIN)) {
-                        queryUri.append("&forbidden_uris[]=physical_mode:Localdistancetrain");
-                        queryUri.append("&forbidden_uris[]=physical_mode:Train");
+                        url.addQueryParameter("forbidden_uris[]", "physical_mode:Localdistancetrain");
+                        url.addQueryParameter("forbidden_uris[]", "physical_mode:Train");
                     }
                     if (!products.contains(Product.SUBURBAN_TRAIN)) {
-                        queryUri.append("&forbidden_uris[]=physical_mode:Localtrain");
-                        queryUri.append("&forbidden_uris[]=physical_mode:Train");
-                        queryUri.append("&forbidden_uris[]=physical_mode:Rapidtransit");
+                        url.addQueryParameter("forbidden_uris[]", "physical_mode:Localtrain");
+                        url.addQueryParameter("forbidden_uris[]", "physical_mode:Train");
+                        url.addQueryParameter("forbidden_uris[]", "physical_mode:Rapidtransit");
                     }
                     if (!products.contains(Product.SUBWAY)) {
-                        queryUri.append("&forbidden_uris[]=physical_mode:Metro");
+                        url.addQueryParameter("forbidden_uris[]", "physical_mode:Metro");
                     }
                     if (!products.contains(Product.TRAM)) {
-                        queryUri.append("&forbidden_uris[]=physical_mode:Tramway");
+                        url.addQueryParameter("forbidden_uris[]", "physical_mode:Tramway");
                     }
                     if (!products.contains(Product.BUS)) {
-                        queryUri.append("&forbidden_uris[]=physical_mode:Bus");
-                        queryUri.append("&forbidden_uris[]=physical_mode:Busrapidtransit");
-                        queryUri.append("&forbidden_uris[]=physical_mode:Coach");
-                        queryUri.append("&forbidden_uris[]=physical_mode:Shuttle");
+                        url.addQueryParameter("forbidden_uris[]", "physical_mode:Bus");
+                        url.addQueryParameter("forbidden_uris[]", "physical_mode:Busrapidtransit");
+                        url.addQueryParameter("forbidden_uris[]", "physical_mode:Coach");
+                        url.addQueryParameter("forbidden_uris[]", "physical_mode:Shuttle");
                     }
                     if (!products.contains(Product.FERRY)) {
-                        queryUri.append("&forbidden_uris[]=physical_mode:Ferry");
+                        url.addQueryParameter("forbidden_uris[]", "physical_mode:Ferry");
                     }
                     if (!products.contains(Product.CABLECAR)) {
-                        queryUri.append("&forbidden_uris[]=physical_mode:Funicular");
+                        url.addQueryParameter("forbidden_uris[]", "physical_mode:Funicular");
                     }
                     if (!products.contains(Product.ON_DEMAND)) {
-                        queryUri.append("&forbidden_uris[]=physical_mode:Taxi");
+                        url.addQueryParameter("forbidden_uris[]", "physical_mode:Taxi");
                     }
                 }
 
-                final CharSequence page = httpClient.get(HttpUrl.parse(queryUri.toString()));
+                final CharSequence page = httpClient.get(url.build());
 
                 try {
                     final JSONObject head = new JSONObject(page.toString());
@@ -964,21 +953,22 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
                             throw new IllegalArgumentException("Unhandled error id: " + id);
                     } else {
                         // Fill context.
-                        String prevQueryUri = null;
-                        String nextQueryUri = null;
+                        HttpUrl prevQueryUrl = null;
+                        HttpUrl nextQueryUrl = null;
                         final JSONArray links = head.getJSONArray("links");
                         for (int i = 0; i < links.length(); ++i) {
                             final JSONObject link = links.getJSONObject(i);
                             final String type = link.getString("type");
                             if (type.equals("prev")) {
-                                prevQueryUri = link.getString("href");
+                                prevQueryUrl = HttpUrl.parse(link.getString("href"));
                             } else if (type.equals("next")) {
-                                nextQueryUri = link.getString("href");
+                                nextQueryUrl = HttpUrl.parse(link.getString("href"));
                             }
                         }
 
-                        final QueryTripsResult result = new QueryTripsResult(resultHeader, queryUri.toString(), from,
-                                null, to, new Context(from, to, prevQueryUri, nextQueryUri), new LinkedList<Trip>());
+                        final QueryTripsResult result = new QueryTripsResult(resultHeader, url.build().toString(), from,
+                                null, to, new Context(from, to, prevQueryUrl.toString(), nextQueryUrl.toString()),
+                                new LinkedList<Trip>());
 
                         parseQueryTripsResult(head, from, to, result);
 
@@ -1051,8 +1041,8 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
         final Context context = (Context) contextObj;
         final Location from = context.from;
         final Location to = context.to;
-        final String queryUri = later ? context.nextQueryUri : context.prevQueryUri;
-        final CharSequence page = httpClient.get(HttpUrl.parse(queryUri));
+        final HttpUrl queryUrl = HttpUrl.parse(later ? context.nextQueryUri : context.prevQueryUri);
+        final CharSequence page = httpClient.get(queryUrl);
 
         try {
             if (from.isIdentified() && to.isIdentified()) {
@@ -1061,12 +1051,13 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
                 // Fill context.
                 final JSONArray links = head.getJSONArray("links");
                 final JSONObject prev = links.getJSONObject(0);
-                final String prevQueryUri = prev.getString("href");
+                final HttpUrl prevQueryUrl = HttpUrl.parse(prev.getString("href"));
                 final JSONObject next = links.getJSONObject(1);
-                final String nextQueryUri = next.getString("href");
+                final HttpUrl nextQueryUrl = HttpUrl.parse(next.getString("href"));
 
-                final QueryTripsResult result = new QueryTripsResult(resultHeader, queryUri, from, null, to,
-                        new Context(from, to, prevQueryUri, nextQueryUri), new LinkedList<Trip>());
+                final QueryTripsResult result = new QueryTripsResult(resultHeader, queryUrl.toString(), from, null, to,
+                        new Context(from, to, prevQueryUrl.toString(), nextQueryUrl.toString()),
+                        new LinkedList<Trip>());
 
                 parseQueryTripsResult(head, from, to, result);
 
@@ -1081,8 +1072,8 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
 
     @Override
     public Point[] getArea() throws IOException {
-        final String queryUri = uri();
-        final CharSequence page = httpClient.get(HttpUrl.parse(queryUri));
+        final HttpUrl.Builder url = url();
+        final CharSequence page = httpClient.get(url.build());
 
         try {
             // Get shape string.

@@ -60,7 +60,7 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class InvgProvider extends AbstractHafasProvider {
-    private static final String API_BASE = "http://fpa.invg.de/bin/";
+    private static final HttpUrl API_BASE = HttpUrl.parse("http://fpa.invg.de/bin/");
     // http://invg.hafas.de/bin/
     private static final Product[] PRODUCTS_MAP = { null, null, null, null, null, null, null, null, null, null };
     private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
@@ -68,11 +68,11 @@ public class InvgProvider extends AbstractHafasProvider {
     public InvgProvider() {
         super(NetworkId.INVG, API_BASE, "dn", PRODUCTS_MAP);
 
+        setRequestUrlEncoding(Charsets.UTF_8);
         setStationBoardCanDoEquivs(false);
-        setJsonGetStopsEncoding(Charsets.UTF_8);
         setJsonNearbyLocationsEncoding(Charsets.UTF_8);
         setStyles(STYLES);
-        setExtXmlEndpoint(API_BASE + "extxml.exe");
+        setExtXmlEndpoint(API_BASE.newBuilder().addPathSegment("extxml.exe").build());
     }
 
     @Override
@@ -120,12 +120,11 @@ public class InvgProvider extends AbstractHafasProvider {
     public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location,
             final int maxDistance, final int maxStations) throws IOException {
         if (location.type == LocationType.STATION && location.hasId()) {
-            final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
-            uri.append("?near=Anzeigen");
-            uri.append("&distance=").append(maxDistance != 0 ? maxDistance / 1000 : 50);
-            uri.append("&input=").append(normalizeStationId(location.id));
-
-            return htmlNearbyStations(uri.toString());
+            final HttpUrl.Builder url = stationBoardEndpoint.newBuilder().addPathSegment(apiLanguage);
+            url.addQueryParameter("near", "Anzeigen");
+            url.addQueryParameter("distance", Integer.toString(maxDistance != 0 ? maxDistance / 1000 : 50));
+            url.addQueryParameter("input", normalizeStationId(location.id));
+            return htmlNearbyStations(url.build());
         } else {
             throw new IllegalArgumentException("cannot handle: " + location);
         }
@@ -171,9 +170,9 @@ public class InvgProvider extends AbstractHafasProvider {
         final QueryDeparturesResult result = new QueryDeparturesResult(header);
 
         // scrape page
-        final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
-        appendXmlStationBoardParameters(uri, time, stationId, maxDepartures, false, null);
-        final CharSequence page = httpClient.get(HttpUrl.parse(uri.toString()));
+        final HttpUrl.Builder url = stationBoardEndpoint.newBuilder().addPathSegment(apiLanguage);
+        appendXmlStationBoardParameters(url, time, stationId, maxDepartures, false, null);
+        final CharSequence page = httpClient.get(url.build());
 
         // parse page
         final Matcher mHeadCoarse = P_DEPARTURES_HEAD_COARSE.matcher(page);

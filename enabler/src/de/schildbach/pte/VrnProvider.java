@@ -29,11 +29,13 @@ import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.dto.Style.Shape;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Andreas Schildbach
  */
 public class VrnProvider extends AbstractEfaProvider {
-    private static final String API_BASE = "https://www.vrn.de/mngvrn/";
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://www.vrn.de/mngvrn/");
 
     public VrnProvider() {
         super(NetworkId.VRN, API_BASE);

@@ -17,13 +17,15 @@
 
 package de.schildbach.pte;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Patrick Kanzler
  */
 public class FranceNorthWestProvider extends AbstractNavitiaProvider {
     private static String API_REGION = "fr-nw";
 
-    public FranceNorthWestProvider(final String apiBase, final String authorization) {
+    public FranceNorthWestProvider(final HttpUrl apiBase, final String authorization) {
         super(NetworkId.FRANCENORTHWEST, apiBase, authorization);
 
         setTimeZone("Europe/Paris");

@@ -19,6 +19,7 @@ package de.schildbach.pte;
 
 import java.io.IOException;
 import java.net.Proxy;
+import java.nio.charset.Charset;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
@@ -28,6 +29,7 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 
 import de.schildbach.pte.dto.Point;
@@ -43,6 +45,7 @@ public abstract class AbstractNetworkProvider implements NetworkProvider {
     protected final NetworkId network;
     protected final HttpClient httpClient = new HttpClient();
 
+    protected Charset requestUrlEncoding = Charsets.ISO_8859_1;
     protected TimeZone timeZone = TimeZone.getTimeZone("CET");
     protected int numTripsRequested = 6;
     private @Nullable Map<String, Style> styles = null;
@@ -82,6 +85,11 @@ public abstract class AbstractNetworkProvider implements NetworkProvider {
 
     public AbstractNetworkProvider setProxy(final Proxy proxy) {
         httpClient.setProxy(proxy);
+        return this;
+    }
+
+    protected AbstractNetworkProvider setRequestUrlEncoding(final Charset requestUrlEncoding) {
+        this.requestUrlEncoding = requestUrlEncoding;
         return this;
     }
 

@@ -40,12 +40,13 @@ import de.schildbach.pte.dto.QueryTripsContext;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Andreas Schildbach
  */
 public class BayernProvider extends AbstractEfaProvider {
-    private final static String API_BASE = "http://mobile.defas-fgi.de/beg/";
-
+    private static final HttpUrl API_BASE = HttpUrl.parse("http://mobile.defas-fgi.de/beg/");
     // http://mobile.defas-fgi.de/xml/
 
     private static final String DEPARTURE_MONITOR_ENDPOINT = "XML_DM_REQUEST";
@@ -135,29 +136,24 @@ public class BayernProvider extends AbstractEfaProvider {
     }
 
     @Override
-    protected String xsltTripRequestParameters(final Location from, final @Nullable Location via, final Location to,
-            final Date time, final boolean dep, final @Nullable Collection<Product> products,
-            final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
-            final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) {
-        final StringBuilder uri = new StringBuilder(super.xsltTripRequestParameters(from, via, to, time, dep, products,
-                optimize, walkSpeed, accessibility, options));
-
+    protected void appendXsltTripRequestParameters(final HttpUrl.Builder url, final Location from,
+            final @Nullable Location via, final Location to, final Date time, final boolean dep,
+            final @Nullable Collection<Product> products, final @Nullable Optimize optimize,
+            final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
+            final @Nullable Set<Option> options) {
+        super.appendXsltTripRequestParameters(url, from, via, to, time, dep, products, optimize, walkSpeed,
+                accessibility, options);
         if (products != null) {
             for (final Product p : products) {
                 if (p == Product.HIGH_SPEED_TRAIN)
-                    uri.append("&inclMOT_15=on&inclMOT_16=on");
-
+                    url.addEncodedQueryParameter("inclMOT_15", "on").addEncodedQueryParameter("inclMOT_16", "on");
                 if (p == Product.REGIONAL_TRAIN)
-                    uri.append("&inclMOT_13=on");
+                    url.addEncodedQueryParameter("inclMOT_13", "on");
             }
         }
-
-        uri.append("&inclMOT_11=on");
-        uri.append("&inclMOT_14=on");
-
-        uri.append("&calcOneDirection=1");
-
-        return uri.toString();
+        url.addEncodedQueryParameter("inclMOT_11", "on");
+        url.addEncodedQueryParameter("inclMOT_14", "on");
+        url.addEncodedQueryParameter("calcOneDirection", "1");
     }
 
     @Override

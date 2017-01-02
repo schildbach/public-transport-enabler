@@ -72,7 +72,6 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
 import de.schildbach.pte.dto.SuggestedLocation;
 import de.schildbach.pte.dto.Trip;
 import de.schildbach.pte.dto.Trip.Leg;
-import de.schildbach.pte.util.ParserUtils;
 
 import okhttp3.HttpUrl;
 
@@ -150,7 +149,7 @@ public class VrsProvider extends AbstractNetworkProvider {
     // encrypted with
     // client certificate)
     // performance comparison March 2015 showed www.vrsinfo.de to be fastest for trips
-    protected static final String API_BASE = "http://android.vrsinfo.de/index.php";
+    protected static final HttpUrl API_BASE = HttpUrl.parse("http://android.vrsinfo.de/index.php");
     protected static final String SERVER_PRODUCT = "vrs";
 
     @SuppressWarnings("serial")
@@ -361,24 +360,24 @@ public class VrsProvider extends AbstractNetworkProvider {
     public NearbyLocationsResult queryNearbyLocations(EnumSet<LocationType> types /* only STATION supported */,
             Location location, int maxDistance, int maxLocations) throws IOException {
         // g=p means group by product; not used here
-        final StringBuilder uri = new StringBuilder(API_BASE);
-        uri.append("?eID=tx_vrsinfo_ass2_timetable");
+        final HttpUrl.Builder url = API_BASE.newBuilder();
+        url.addQueryParameter("eID", "tx_vrsinfo_ass2_timetable");
         if (location.hasLocation()) {
-            uri.append("&r=")
-                    .append(String.format(Locale.ENGLISH, "%.6f,%.6f", location.lat / 1E6, location.lon / 1E6));
+            url.addQueryParameter("r",
+                    String.format(Locale.ENGLISH, "%.6f,%.6f", location.lat / 1E6, location.lon / 1E6));
         } else if (location.type == LocationType.STATION && location.hasId()) {
-            uri.append("&i=").append(ParserUtils.urlEncode(location.id));
+            url.addQueryParameter("i", location.id);
         } else {
             throw new IllegalArgumentException("at least one of stationId or lat/lon must be given");
         }
         // c=1 limits the departures at each stop to 1 - actually we don't need any at this point
-        uri.append("&c=1");
+        url.addQueryParameter("c", "1");
         if (maxLocations > 0) {
-            // s=number of stops
-            uri.append("&s=").append(Math.min(16, maxLocations)); // artificial server limit
+            // s=number of stops, artificially limited by server
+            url.addQueryParameter("s", Integer.toString(Math.min(16, maxLocations)));
         }
 
-        final CharSequence page = httpClient.get(HttpUrl.parse(uri.toString()));
+        final CharSequence page = httpClient.get(url.build());
 
         try {
             final List<Location> locations = new ArrayList<Location>();
@@ -411,9 +410,9 @@ public class VrsProvider extends AbstractNetworkProvider {
             final ResultHeader header = new ResultHeader(NetworkId.VRS, SERVER_PRODUCT, null, null, serverTime, null);
             return new NearbyLocationsResult(header, locations);
         } catch (final JSONException x) {
-            throw new RuntimeException("cannot parse: '" + page + "' on " + uri, x);
+            throw new RuntimeException("cannot parse: '" + page + "' on " + url, x);
         } catch (final ParseException e) {
-            throw new RuntimeException("cannot parse: '" + page + "' on " + uri, e);
+            throw new RuntimeException("cannot parse: '" + page + "' on " + url, e);
         }
     }
 
@@ -427,14 +426,14 @@ public class VrsProvider extends AbstractNetworkProvider {
 
         // g=p means group by product; not used here
         // d=minutes overwrites c=count and returns departures for the next d minutes
-        final StringBuilder uri = new StringBuilder(API_BASE);
-        uri.append("?eID=tx_vrsinfo_ass2_timetable&i=").append(ParserUtils.urlEncode(stationId));
-        uri.append("&c=").append(maxDepartures);
+        final HttpUrl.Builder url = API_BASE.newBuilder();
+        url.addQueryParameter("eID", "tx_vrsinfo_ass2_timetable");
+        url.addQueryParameter("i", stationId);
+        url.addQueryParameter("c", Integer.toString(maxDepartures));
         if (time != null) {
-            uri.append("&t=");
-            appendDate(uri, time);
+            url.addQueryParameter("t", formatDate(time));
         }
-        final CharSequence page = httpClient.get(HttpUrl.parse(uri.toString()));
+        final CharSequence page = httpClient.get(url.build());
 
         try {
             final JSONObject head = new JSONObject(page.toString());
@@ -511,9 +510,9 @@ public class VrsProvider extends AbstractNetworkProvider {
 
             return result;
         } catch (final JSONException x) {
-            throw new RuntimeException("cannot parse: '" + page + "' on " + uri, x);
+            throw new RuntimeException("cannot parse: '" + page + "' on " + url, x);
         } catch (final ParseException e) {
-            throw new RuntimeException("cannot parse: '" + page + "' on " + uri, e);
+            throw new RuntimeException("cannot parse: '" + page + "' on " + url, e);
         }
     }
 
@@ -522,10 +521,11 @@ public class VrsProvider extends AbstractNetworkProvider {
         for (LineDestination lineDestionation : lineDestinations) {
             lineNumbersAlreadyKnown.add(lineDestionation.line.label);
         }
-        final StringBuilder uri = new StringBuilder(API_BASE);
-        uri.append("?eID=tx_vrsinfo_his_info&i=").append(ParserUtils.urlEncode(stationId));
+        final HttpUrl.Builder url = API_BASE.newBuilder();
+        url.addQueryParameter("eID", "tx_vrsinfo_his_info");
+        url.addQueryParameter("i", stationId);
 
-        final CharSequence page = httpClient.get(HttpUrl.parse(uri.toString()));
+        final CharSequence page = httpClient.get(url.build());
 
         try {
             final JSONObject head = new JSONObject(page.toString());
@@ -560,7 +560,7 @@ public class VrsProvider extends AbstractNetworkProvider {
                 }
             }
         } catch (final JSONException x) {
-            throw new RuntimeException("cannot parse: '" + page + "' on " + uri, x);
+            throw new RuntimeException("cannot parse: '" + page + "' on " + url, x);
         }
         Collections.sort(lineDestinations, new LineDestinationComparator());
     }
@@ -581,10 +581,15 @@ public class VrsProvider extends AbstractNetworkProvider {
         // pc = points of interest count
         final int pc = 5;
         // t = sap (stops and/or addresses and/or pois)
-        final String uri = API_BASE + "?eID=tx_vrsinfo_ass2_objects&sc=" + sc + "&ac=" + ac + "&pc=" + ac + "&t=sap&q="
-                + ParserUtils.urlEncode(new Location(LocationType.ANY, null, null, constraint.toString()).name);
+        final HttpUrl.Builder url = API_BASE.newBuilder();
+        url.addQueryParameter("eID", "tx_vrsinfo_ass2_objects");
+        url.addQueryParameter("sc", Integer.toString(sc));
+        url.addQueryParameter("ac", Integer.toString(ac));
+        url.addQueryParameter("pc", Integer.toString(pc));
+        url.addQueryParameter("t", "sap");
+        url.addQueryParameter("q", constraint.toString());
 
-        final CharSequence page = httpClient.get(HttpUrl.parse(uri));
+        final CharSequence page = httpClient.get(url.build());
 
         try {
             final List<SuggestedLocation> locations = new ArrayList<SuggestedLocation>();
@@ -628,7 +633,7 @@ public class VrsProvider extends AbstractNetworkProvider {
             final ResultHeader header = new ResultHeader(NetworkId.VRS, SERVER_PRODUCT);
             return new SuggestLocationsResult(header, locations);
         } catch (final JSONException x) {
-            throw new RuntimeException("cannot parse: '" + page + "' on " + uri, x);
+            throw new RuntimeException("cannot parse: '" + page + "' on " + url, x);
         }
     }
 
@@ -683,26 +688,22 @@ public class VrsProvider extends AbstractNetworkProvider {
                     QueryTripsResult.Status.UNKNOWN_TO);
         }
 
-        final StringBuilder uri = new StringBuilder(API_BASE);
-        uri.append("?eID=tx_vrsinfo_ass2_router&f=").append(fromString).append("&t=").append(toString);
+        final HttpUrl.Builder url = API_BASE.newBuilder();
+        url.addQueryParameter("eID", "tx_vrsinfo_ass2_router");
+        url.addQueryParameter("f", fromString);
+        url.addQueryParameter("t", toString);
         if (via != null) {
-            uri.append("&v=").append(via.id);
+            url.addQueryParameter("v", via.id);
         }
-        if (dep) {
-            uri.append("&d=");
-        } else {
-            uri.append("&a=");
-        }
-        appendDate(uri, date);
-        uri.append("&s=t");
-        uri.append("&p=");
-        uri.append(generateProducts(products));
-        uri.append("&o=v");
+        url.addQueryParameter(dep ? "d" : "a", formatDate(date));
+        url.addQueryParameter("s", "t");
+        url.addQueryParameter("p", generateProducts(products));
+        url.addQueryParameter("o", "v");
         if (EXACT_POINTS) {
-            uri.append("p");
+            url.addQueryParameter("p", "");
         }
 
-        final CharSequence page = httpClient.get(HttpUrl.parse(uri.toString()));
+        final CharSequence page = httpClient.get(url.build());
 
         try {
             final List<Trip> trips = new ArrayList<Trip>();
@@ -891,11 +892,11 @@ public class VrsProvider extends AbstractNetworkProvider {
                 else
                     context.disableEarlier();
             }
-            return new QueryTripsResult(header, uri.toString(), from, via, to, context, trips);
+            return new QueryTripsResult(header, url.build().toString(), from, via, to, context, trips);
         } catch (final JSONException x) {
-            throw new RuntimeException("cannot parse: '" + page + "' on " + uri, x);
+            throw new RuntimeException("cannot parse: '" + page + "' on " + url, x);
         } catch (final ParseException e) {
-            throw new RuntimeException("cannot parse: '" + page + "' on " + uri, e);
+            throw new RuntimeException("cannot parse: '" + page + "' on " + url, e);
         }
     }
 
@@ -1126,7 +1127,7 @@ public class VrsProvider extends AbstractNetworkProvider {
         }
     }
 
-    private final static void appendDate(final StringBuilder uri, final Date time) {
+    private final static String formatDate(final Date time) {
         final Calendar c = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
         c.setTime(time);
         final int year = c.get(Calendar.YEAR);
@@ -1135,8 +1136,7 @@ public class VrsProvider extends AbstractNetworkProvider {
         final int hour = c.get(Calendar.HOUR_OF_DAY);
         final int minute = c.get(Calendar.MINUTE);
         final int second = c.get(Calendar.SECOND);
-        uri.append(ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%04d-%02d-%02dT%02d:%02d:%02dZ", year, month,
-                day, hour, minute, second)));
+        return String.format(Locale.ENGLISH, "%04d-%02d-%02dT%02d:%02d:%02dZ", year, month, day, hour, minute, second);
     }
 
     private final static Date parseDateTime(final String dateTimeStr) throws ParseException {

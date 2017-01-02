@@ -29,11 +29,13 @@ import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Position;
 import de.schildbach.pte.dto.Product;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Andreas Schildbach
  */
 public class MerseyProvider extends AbstractEfaProvider {
-    private final static String API_BASE = "http://jp.merseytravel.gov.uk/nwm/";
+    private static final HttpUrl API_BASE = HttpUrl.parse("http://jp.merseytravel.gov.uk/nwm/");
 
     public MerseyProvider() {
         super(NetworkId.MERSEY, API_BASE);

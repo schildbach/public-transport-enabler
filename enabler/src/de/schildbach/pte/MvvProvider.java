@@ -30,17 +30,19 @@ import de.schildbach.pte.dto.Position;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Andreas Schildbach
  */
 public class MvvProvider extends AbstractEfaProvider {
-    private static final String API_BASE = "http://efa.mvv-muenchen.de/mobile/";
+    private static final HttpUrl API_BASE = HttpUrl.parse("http://efa.mvv-muenchen.de/mobile/");
 
     public MvvProvider() {
         this(API_BASE);
     }
 
-    public MvvProvider(final String apiBase) {
+    public MvvProvider(final HttpUrl apiBase) {
         super(NetworkId.MVV, apiBase);
 
         setIncludeRegionId(false);

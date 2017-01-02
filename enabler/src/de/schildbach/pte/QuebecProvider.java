@@ -17,13 +17,15 @@
 
 package de.schildbach.pte;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Stephane Berube
  */
 public class QuebecProvider extends AbstractNavitiaProvider {
     private static String API_REGION = "ca-qc";
 
-    public QuebecProvider(final String apiBase, final String authorization) {
+    public QuebecProvider(final HttpUrl apiBase, final String authorization) {
         super(NetworkId.QUEBEC, apiBase, authorization);
 
         setTimeZone("America/Montreal");

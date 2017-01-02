@@ -26,12 +26,13 @@ import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Andreas Schildbach
  */
 public class GvhProvider extends AbstractEfaProvider {
-    private static final String API_BASE = "http://bhb.efa.de/bhb/";
-
+    private static final HttpUrl API_BASE = HttpUrl.parse("http://bhb.efa.de/bhb/");
     // http://www.efa.de/efaws2/cmsembedded_gvh/
     // http://bhb.efa.de/bhb/
     // http://mobil.efa.de/mobile3/
@@ -40,7 +41,7 @@ public class GvhProvider extends AbstractEfaProvider {
         this(API_BASE);
     }
 
-    public GvhProvider(final String apiBase) {
+    public GvhProvider(final HttpUrl apiBase) {
         super(NetworkId.GVH, apiBase);
 
         setIncludeRegionId(false);

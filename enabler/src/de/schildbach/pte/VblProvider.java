@@ -22,11 +22,13 @@ import javax.annotation.Nullable;
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Product;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Andreas Schildbach
  */
 public class VblProvider extends AbstractEfaProvider {
-    private final static String API_BASE = "http://mobil.vbl.ch/vblmobil/";
+    private static final HttpUrl API_BASE = HttpUrl.parse("http://mobil.vbl.ch/vblmobil/");
 
     public VblProvider() {
         super(NetworkId.VBL, API_BASE);

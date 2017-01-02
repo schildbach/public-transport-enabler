@@ -27,11 +27,13 @@ import com.google.common.base.Charsets;
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Product;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Andreas Schildbach
  */
 public class VbbProvider extends AbstractHafasProvider {
-    private static final String API_BASE = "http://fahrinfo.vbb.de/bin/";
+    private static final HttpUrl API_BASE = HttpUrl.parse("http://fahrinfo.vbb.de/bin/");
     private static final Product[] PRODUCTS_MAP = { Product.SUBURBAN_TRAIN, Product.SUBWAY, Product.TRAM, Product.BUS,
             Product.FERRY, Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN };
     private static final Set<Product> ALL_EXCEPT_HIGHSPEED_AND_ONDEMAND = EnumSet
@@ -40,8 +42,8 @@ public class VbbProvider extends AbstractHafasProvider {
     public VbbProvider() {
         super(NetworkId.VBB, API_BASE, "dn", PRODUCTS_MAP);
 
+        setRequestUrlEncoding(Charsets.UTF_8);
         setJsonGetStopsUseWeight(false);
-        setJsonGetStopsEncoding(Charsets.UTF_8);
         setJsonNearbyLocationsEncoding(Charsets.UTF_8);
         setClientType(null);
     }

@@ -17,13 +17,15 @@
 
 package de.schildbach.pte;
 
+import okhttp3.HttpUrl;
+
 /**
  * Verkehrsverbund Vogtland
  * 
  * @author Andreas Schildbach
  */
 public class VvvProvider extends AbstractEfaProvider {
-    private final static String API_BASE = "http://195.30.98.162:8081/vvv2/";
+    private static final HttpUrl API_BASE = HttpUrl.parse("http://195.30.98.162:8081/vvv2/");
 
     public VvvProvider() {
         super(NetworkId.VVV, API_BASE);

@@ -30,6 +30,8 @@ import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.SuggestLocationsResult;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Andreas Schildbach
  */
@@ -37,7 +39,7 @@ public class VgnProvider extends AbstractEfaProvider {
     private static final String DEPARTURE_MONITOR_ENDPOINT = "XML_DM_REQUEST";
     private static final String TRIP_ENDPOINT = "XML_TRIP_REQUEST2";
 
-    public VgnProvider(final String apiBase) {
+    public VgnProvider(final HttpUrl apiBase) {
         super(NetworkId.VGN, apiBase, DEPARTURE_MONITOR_ENDPOINT, TRIP_ENDPOINT, null, null);
     }
 
@@ -63,11 +65,13 @@ public class VgnProvider extends AbstractEfaProvider {
     }
 
     @Override
-    protected String xsltTripRequestParameters(final Location from, final @Nullable Location via, final Location to,
-            final Date date, final boolean dep, final @Nullable Collection<Product> products,
-            final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
-            final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) {
-        return super.xsltTripRequestParameters(from, via, to, date, dep, products, optimize, walkSpeed, accessibility,
-                options) + "&itdLPxx_showTariffLevel=1";
+    protected void appendXsltTripRequestParameters(final HttpUrl.Builder url, final Location from,
+            final @Nullable Location via, final Location to, final Date date, final boolean dep,
+            final @Nullable Collection<Product> products, final @Nullable Optimize optimize,
+            final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
+            final @Nullable Set<Option> options) {
+        super.appendXsltTripRequestParameters(url, from, via, to, date, dep, products, optimize, walkSpeed,
+                accessibility, options);
+        url.addEncodedQueryParameter("itdLPxx_showTariffLevel", "1");
     }
 }

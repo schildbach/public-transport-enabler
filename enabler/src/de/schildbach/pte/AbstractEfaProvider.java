@@ -22,7 +22,6 @@ import static com.google.common.base.Preconditions.checkState;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -52,7 +51,6 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 
@@ -97,17 +95,15 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
     protected static final String SERVER_PRODUCT = "efa";
 
-    private final String departureMonitorEndpoint;
-    private final String tripEndpoint;
-    private final String stopFinderEndpoint;
-    private final String coordEndpoint;
+    private final HttpUrl departureMonitorEndpoint;
+    private final HttpUrl tripEndpoint;
+    private final HttpUrl stopFinderEndpoint;
+    private final HttpUrl coordEndpoint;
 
     private String language = "de";
-    private @Nullable String additionalQueryParameter = null;
     private boolean needsSpEncId = false;
     private boolean includeRegionId = true;
     private boolean useProxFootSearch = true;
-    private Charset requestUrlEncoding = Charsets.ISO_8859_1;
     private @Nullable String httpReferer = null;
     private @Nullable String httpRefererTrip = null;
     private boolean httpPost = false;
@@ -144,22 +140,28 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         }
     }
 
-    public AbstractEfaProvider(final NetworkId network, final String apiBase) {
+    public AbstractEfaProvider(final NetworkId network, final HttpUrl apiBase) {
         this(network, apiBase, null, null, null, null);
     }
 
-    public AbstractEfaProvider(final NetworkId network, final String apiBase, final String departureMonitorEndpoint,
+    public AbstractEfaProvider(final NetworkId network, final HttpUrl apiBase, final String departureMonitorEndpoint,
             final String tripEndpoint, final String stopFinderEndpoint, final String coordEndpoint) {
         this(network,
-                apiBase + (departureMonitorEndpoint != null ? departureMonitorEndpoint
-                        : DEFAULT_DEPARTURE_MONITOR_ENDPOINT), //
-                apiBase + (tripEndpoint != null ? tripEndpoint : DEFAULT_TRIP_ENDPOINT), //
-                apiBase + (stopFinderEndpoint != null ? stopFinderEndpoint : DEFAULT_STOPFINDER_ENDPOINT), //
-                apiBase + (coordEndpoint != null ? coordEndpoint : DEFAULT_COORD_ENDPOINT));
+                apiBase.newBuilder()
+                        .addPathSegment(departureMonitorEndpoint != null ? departureMonitorEndpoint
+                                : DEFAULT_DEPARTURE_MONITOR_ENDPOINT)
+                        .build(),
+                apiBase.newBuilder().addPathSegment(tripEndpoint != null ? tripEndpoint : DEFAULT_TRIP_ENDPOINT)
+                        .build(),
+                apiBase.newBuilder()
+                        .addPathSegment(stopFinderEndpoint != null ? stopFinderEndpoint : DEFAULT_STOPFINDER_ENDPOINT)
+                        .build(),
+                apiBase.newBuilder().addPathSegment(coordEndpoint != null ? coordEndpoint : DEFAULT_COORD_ENDPOINT)
+                        .build());
     }
 
-    public AbstractEfaProvider(final NetworkId network, final String departureMonitorEndpoint,
-            final String tripEndpoint, final String stopFinderEndpoint, final String coordEndpoint) {
+    public AbstractEfaProvider(final NetworkId network, final HttpUrl departureMonitorEndpoint,
+            final HttpUrl tripEndpoint, final HttpUrl stopFinderEndpoint, final HttpUrl coordEndpoint) {
         super(network);
 
         try {
@@ -177,16 +179,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
     protected AbstractEfaProvider setLanguage(final String language) {
         this.language = language;
-        return this;
-    }
-
-    protected AbstractEfaProvider setAdditionalQueryParameter(final String additionalQueryParameter) {
-        this.additionalQueryParameter = additionalQueryParameter;
-        return this;
-    }
-
-    protected AbstractEfaProvider setRequestUrlEncoding(final Charset requestUrlEncoding) {
-        this.requestUrlEncoding = requestUrlEncoding;
         return this;
     }
 
@@ -246,24 +238,21 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         return true;
     }
 
-    private final void appendCommonRequestParams(final StringBuilder uri, final String outputFormat) {
-        uri.append("?outputFormat=").append(outputFormat);
-        uri.append("&language=").append(language);
-        uri.append("&stateless=1");
-        uri.append("&coordOutputFormat=WGS84");
-        if (additionalQueryParameter != null)
-            uri.append('&').append(additionalQueryParameter);
+    private final void appendCommonRequestParams(final HttpUrl.Builder url, final String outputFormat) {
+        url.addEncodedQueryParameter("outputFormat", outputFormat);
+        url.addEncodedQueryParameter("language", language);
+        url.addEncodedQueryParameter("stateless", "1");
+        url.addEncodedQueryParameter("coordOutputFormat", "WGS84");
     }
 
     protected SuggestLocationsResult jsonStopfinderRequest(final Location constraint) throws IOException {
-        final StringBuilder uri = new StringBuilder(stopFinderEndpoint);
-        final StringBuilder parameters = stopfinderRequestParameters(constraint, "JSON");
+        final HttpUrl.Builder url = stopFinderEndpoint.newBuilder();
+        appendStopfinderRequestParameters(url, constraint, "JSON");
         final CharSequence page;
         if (httpPost)
-            page = httpClient.get(HttpUrl.parse(uri.toString()), parameters.substring(1),
-                    "application/x-www-form-urlencoded");
+            page = httpClient.get(url.build(), url.build().encodedQuery(), "application/x-www-form-urlencoded");
         else
-            page = httpClient.get(HttpUrl.parse(uri.append(parameters).toString()));
+            page = httpClient.get(url.build());
         final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
 
         try {
@@ -310,7 +299,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
             return new SuggestLocationsResult(header, locations);
         } catch (final JSONException x) {
-            throw new RuntimeException("cannot parse: '" + page + "' on " + uri, x);
+            throw new RuntimeException("cannot parse: '" + page + "' on " + url, x);
         }
     }
 
@@ -347,29 +336,28 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         return new SuggestedLocation(location, quality);
     }
 
-    private StringBuilder stopfinderRequestParameters(final Location constraint, final String outputFormat) {
-        final StringBuilder parameters = new StringBuilder();
-        appendCommonRequestParams(parameters, outputFormat);
-        parameters.append("&locationServerActive=1");
+    private void appendStopfinderRequestParameters(final HttpUrl.Builder url, final Location constraint,
+            final String outputFormat) {
+        appendCommonRequestParams(url, outputFormat);
+        url.addEncodedQueryParameter("locationServerActive", "1");
         if (includeRegionId)
-            parameters.append("&regionID_sf=1"); // prefer own region
-        appendLocation(parameters, constraint, "sf");
+            url.addEncodedQueryParameter("regionID_sf", "1"); // prefer own region
+        appendLocationParams(url, constraint, "sf");
         if (constraint.type == LocationType.ANY) {
             if (needsSpEncId)
-                parameters.append("&SpEncId=0");
+                url.addEncodedQueryParameter("SpEncId", "0");
             // 1=place 2=stop 4=street 8=address 16=crossing 32=poi 64=postcode
-            parameters.append("&anyObjFilter_sf=").append(2 + 4 + 8 + 16 + 32 + 64);
-            parameters.append("&reducedAnyPostcodeObjFilter_sf=64&reducedAnyTooManyObjFilter_sf=2");
-            parameters.append("&useHouseNumberList=true");
-            parameters.append("&anyMaxSizeHitList=500");
+            url.addEncodedQueryParameter("anyObjFilter_sf", Integer.toString(2 + 4 + 8 + 16 + 32 + 64));
+            url.addEncodedQueryParameter("reducedAnyPostcodeObjFilter_sf", "64");
+            url.addEncodedQueryParameter("reducedAnyTooManyObjFilter_sf", "2");
+            url.addEncodedQueryParameter("useHouseNumberList", "true");
+            url.addEncodedQueryParameter("anyMaxSizeHitList", "500");
         }
-
-        return parameters;
     }
 
     protected SuggestLocationsResult xmlStopfinderRequest(final Location constraint) throws IOException {
-        final StringBuilder uri = new StringBuilder(stopFinderEndpoint);
-        final StringBuilder parameters = stopfinderRequestParameters(constraint, "XML");
+        final HttpUrl.Builder url = stopFinderEndpoint.newBuilder();
+        appendStopfinderRequestParameters(url, constraint, "XML");
         final AtomicReference<SuggestLocationsResult> result = new AtomicReference<SuggestLocationsResult>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
@@ -401,17 +389,17 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         };
 
         if (httpPost)
-            httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()), parameters.substring(1),
+            httpClient.getInputStream(callback, url.build(), url.build().encodedQuery(),
                     "application/x-www-form-urlencoded", httpReferer);
         else
-            httpClient.getInputStream(callback, HttpUrl.parse(uri.append(parameters).toString()), httpReferer);
+            httpClient.getInputStream(callback, url.build(), httpReferer);
 
         return result.get();
     }
 
     protected SuggestLocationsResult mobileStopfinderRequest(final Location constraint) throws IOException {
-        final StringBuilder uri = new StringBuilder(stopFinderEndpoint);
-        final StringBuilder parameters = stopfinderRequestParameters(constraint, "XML");
+        final HttpUrl.Builder url = stopFinderEndpoint.newBuilder();
+        appendStopfinderRequestParameters(url, constraint, "XML");
         final AtomicReference<SuggestLocationsResult> result = new AtomicReference<SuggestLocationsResult>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
@@ -486,45 +474,42 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         };
 
         if (httpPost)
-            httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()), parameters.substring(1),
+            httpClient.getInputStream(callback, url.build(), url.build().encodedQuery(),
                     "application/x-www-form-urlencoded", httpReferer);
         else
-            httpClient.getInputStream(callback, HttpUrl.parse(uri.append(parameters).toString()), httpReferer);
+            httpClient.getInputStream(callback, url.build(), httpReferer);
 
         return result.get();
     }
 
-    private StringBuilder xmlCoordRequestParameters(final EnumSet<LocationType> types, final int lat, final int lon,
-            final int maxDistance, final int maxLocations) {
-        final StringBuilder parameters = new StringBuilder();
-        appendCommonRequestParams(parameters, "XML");
-        parameters.append("&coord=")
-                .append(String.format(Locale.ENGLISH, "%2.6f:%2.6f:WGS84", latLonToDouble(lon), latLonToDouble(lat)));
+    private void appendXmlCoordRequestParameters(final HttpUrl.Builder url, final EnumSet<LocationType> types,
+            final int lat, final int lon, final int maxDistance, final int maxLocations) {
+        appendCommonRequestParams(url, "XML");
+        url.addEncodedQueryParameter("coord",
+                ParserUtils.urlEncode(
+                        String.format(Locale.ENGLISH, "%2.6f:%2.6f:WGS84", latLonToDouble(lon), latLonToDouble(lat)),
+                        requestUrlEncoding));
         if (useStringCoordListOutputFormat)
-            parameters.append("&coordListOutputFormat=STRING");
-        parameters.append("&max=").append(maxLocations != 0 ? maxLocations : 50);
-        parameters.append("&inclFilter=1");
+            url.addEncodedQueryParameter("coordListOutputFormat", "STRING");
+        url.addEncodedQueryParameter("max", Integer.toString(maxLocations != 0 ? maxLocations : 50));
+        url.addEncodedQueryParameter("inclFilter", "1");
         int i = 1;
         for (final LocationType type : types) {
-            parameters.append("&radius_").append(i).append('=').append(maxDistance != 0 ? maxDistance : 1320);
-            parameters.append("&type_").append(i).append('=');
+            url.addEncodedQueryParameter("radius_" + i, Integer.toString(maxDistance != 0 ? maxDistance : 1320));
             if (type == LocationType.STATION)
-                parameters.append("STOP");
+                url.addEncodedQueryParameter("type_" + i, "STOP");
             else if (type == LocationType.POI)
-                parameters.append("POI_POINT");
+                url.addEncodedQueryParameter("type_" + i, "POI_POINT");
             else
-                throw new IllegalArgumentException("cannot handle location type: " + type); // ENTRANCE,
-                                                                                            // BUS_POINT
+                throw new IllegalArgumentException("cannot handle location type: " + type);
             i++;
         }
-
-        return parameters;
     }
 
     protected NearbyLocationsResult xmlCoordRequest(final EnumSet<LocationType> types, final int lat, final int lon,
             final int maxDistance, final int maxStations) throws IOException {
-        final StringBuilder uri = new StringBuilder(coordEndpoint);
-        final StringBuilder parameters = xmlCoordRequestParameters(types, lat, lon, maxDistance, maxStations);
+        final HttpUrl.Builder url = coordEndpoint.newBuilder();
+        appendXmlCoordRequestParameters(url, types, lat, lon, maxDistance, maxStations);
         final AtomicReference<NearbyLocationsResult> result = new AtomicReference<NearbyLocationsResult>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
@@ -587,18 +572,18 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         };
 
         if (httpPost)
-            httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()), parameters.substring(1),
+            httpClient.getInputStream(callback, url.build(), url.build().encodedQuery(),
                     "application/x-www-form-urlencoded", httpReferer);
         else
-            httpClient.getInputStream(callback, HttpUrl.parse(uri.append(parameters).toString()), httpReferer);
+            httpClient.getInputStream(callback, url.build(), httpReferer);
 
         return result.get();
     }
 
     protected NearbyLocationsResult mobileCoordRequest(final EnumSet<LocationType> types, final int lat, final int lon,
             final int maxDistance, final int maxStations) throws IOException {
-        final StringBuilder uri = new StringBuilder(coordEndpoint);
-        final StringBuilder parameters = xmlCoordRequestParameters(types, lat, lon, maxDistance, maxStations);
+        final HttpUrl.Builder url = coordEndpoint.newBuilder();
+        appendXmlCoordRequestParameters(url, types, lat, lon, maxDistance, maxStations);
         final AtomicReference<NearbyLocationsResult> result = new AtomicReference<NearbyLocationsResult>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
@@ -665,10 +650,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         };
 
         if (httpPost)
-            httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()), parameters.substring(1),
+            httpClient.getInputStream(callback, url.build(), url.build().encodedQuery(),
                     "application/x-www-form-urlencoded", httpReferer);
         else
-            httpClient.getInputStream(callback, HttpUrl.parse(uri.append(parameters).toString()), httpReferer);
+            httpClient.getInputStream(callback, url.build(), httpReferer);
 
         return result.get();
     }
@@ -864,17 +849,18 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
     private NearbyLocationsResult nearbyStationsRequest(final String stationId, final int maxLocations)
             throws IOException {
-        final StringBuilder uri = new StringBuilder(departureMonitorEndpoint);
-        final StringBuilder parameters = new StringBuilder();
-        appendCommonRequestParams(parameters, "XML");
-        parameters.append("&type_dm=stop&name_dm=").append(normalizeStationId(stationId));
-        parameters.append("&itOptionsActive=1");
-        parameters.append("&ptOptionsActive=1");
+        final HttpUrl.Builder url = departureMonitorEndpoint.newBuilder();
+        appendCommonRequestParams(url, "XML");
+        url.addEncodedQueryParameter("type_dm", "stop");
+        url.addEncodedQueryParameter("name_dm",
+                ParserUtils.urlEncode(normalizeStationId(stationId), requestUrlEncoding));
+        url.addEncodedQueryParameter("itOptionsActive", "1");
+        url.addEncodedQueryParameter("ptOptionsActive", "1");
         if (useProxFootSearch)
-            parameters.append("&useProxFootSearch=1");
-        parameters.append("&mergeDep=1");
-        parameters.append("&useAllStops=1");
-        parameters.append("&mode=direct");
+            url.addEncodedQueryParameter("useProxFootSearch", "1");
+        url.addEncodedQueryParameter("mergeDep", "1");
+        url.addEncodedQueryParameter("useAllStops", "1");
+        url.addEncodedQueryParameter("mode", "direct");
         final AtomicReference<NearbyLocationsResult> result = new AtomicReference<NearbyLocationsResult>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
@@ -923,10 +909,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         };
 
         if (httpPost)
-            httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()), parameters.substring(1),
+            httpClient.getInputStream(callback, url.build(), url.build().encodedQuery(),
                     "application/x-www-form-urlencoded", httpReferer);
         else
-            httpClient.getInputStream(callback, HttpUrl.parse(uri.append(parameters).toString()), httpReferer);
+            httpClient.getInputStream(callback, url.build(), httpReferer);
 
         return result.get();
     }
@@ -1433,28 +1419,26 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         return xsltDepartureMonitorRequest(stationId, time, maxDepartures, equivs);
     }
 
-    protected StringBuilder xsltDepartureMonitorRequestParameters(final String stationId, final @Nullable Date time,
-            final int maxDepartures, final boolean equivs) {
-        final StringBuilder parameters = new StringBuilder();
-        appendCommonRequestParams(parameters, "XML");
-        parameters.append("&type_dm=stop");
-        parameters.append("&name_dm=").append(normalizeStationId(stationId));
+    protected void appendXsltDepartureMonitorRequestParameters(final HttpUrl.Builder url, final String stationId,
+            final @Nullable Date time, final int maxDepartures, final boolean equivs) {
+        appendCommonRequestParams(url, "XML");
+        url.addEncodedQueryParameter("type_dm", "stop");
+        url.addEncodedQueryParameter("name_dm",
+                ParserUtils.urlEncode(normalizeStationId(stationId), requestUrlEncoding));
         if (time != null)
-            appendItdDateTimeParameters(parameters, time);
-        parameters.append("&useRealtime=1");
-        parameters.append("&mode=direct");
-        parameters.append("&ptOptionsActive=1");
-        parameters.append("&deleteAssignedStops_dm=").append(equivs ? '0' : '1');
+            appendItdDateTimeParameters(url, time);
+        url.addEncodedQueryParameter("useRealtime", "1");
+        url.addEncodedQueryParameter("mode", "direct");
+        url.addEncodedQueryParameter("ptOptionsActive", "1");
+        url.addEncodedQueryParameter("deleteAssignedStops_dm", equivs ? "0" : "1");
         if (useProxFootSearch)
-            parameters.append("&useProxFootSearch=").append(equivs ? '1' : '0');
-        parameters.append("&mergeDep=1"); // merge departures
+            url.addEncodedQueryParameter("useProxFootSearch", equivs ? "1" : "0");
+        url.addEncodedQueryParameter("mergeDep", "1"); // merge departures
         if (maxDepartures > 0)
-            parameters.append("&limit=").append(maxDepartures);
-
-        return parameters;
+            url.addEncodedQueryParameter("limit", Integer.toString(maxDepartures));
     }
 
-    private final void appendItdDateTimeParameters(final StringBuilder uri, final Date time) {
+    private final void appendItdDateTimeParameters(final HttpUrl.Builder url, final Date time) {
         final Calendar c = new GregorianCalendar(timeZone);
         c.setTime(time);
         final int year = c.get(Calendar.YEAR);
@@ -1462,14 +1446,14 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         final int day = c.get(Calendar.DAY_OF_MONTH);
         final int hour = c.get(Calendar.HOUR_OF_DAY);
         final int minute = c.get(Calendar.MINUTE);
-        uri.append("&itdDate=").append(String.format(Locale.ENGLISH, "%04d%02d%02d", year, month, day));
-        uri.append("&itdTime=").append(String.format(Locale.ENGLISH, "%02d%02d", hour, minute));
+        url.addEncodedQueryParameter("itdDate", String.format(Locale.ENGLISH, "%04d%02d%02d", year, month, day));
+        url.addEncodedQueryParameter("itdTime", String.format(Locale.ENGLISH, "%02d%02d", hour, minute));
     }
 
     private QueryDeparturesResult xsltDepartureMonitorRequest(final String stationId, final @Nullable Date time,
             final int maxDepartures, final boolean equivs) throws IOException {
-        final StringBuilder uri = new StringBuilder(departureMonitorEndpoint);
-        final StringBuilder parameters = xsltDepartureMonitorRequestParameters(stationId, time, maxDepartures, equivs);
+        final HttpUrl.Builder url = departureMonitorEndpoint.newBuilder();
+        appendXsltDepartureMonitorRequestParameters(url, stationId, time, maxDepartures, equivs);
         final AtomicReference<QueryDeparturesResult> result = new AtomicReference<QueryDeparturesResult>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
@@ -1632,18 +1616,18 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         };
 
         if (httpPost)
-            httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()), parameters.substring(1),
+            httpClient.getInputStream(callback, url.build(), url.build().encodedQuery(),
                     "application/x-www-form-urlencoded", httpReferer);
         else
-            httpClient.getInputStream(callback, HttpUrl.parse(uri.append(parameters).toString()), httpReferer);
+            httpClient.getInputStream(callback, url.build(), httpReferer);
 
         return result.get();
     }
 
     protected QueryDeparturesResult queryDeparturesMobile(final String stationId, final @Nullable Date time,
             final int maxDepartures, final boolean equivs) throws IOException {
-        final StringBuilder uri = new StringBuilder(departureMonitorEndpoint);
-        final StringBuilder parameters = xsltDepartureMonitorRequestParameters(stationId, time, maxDepartures, equivs);
+        final HttpUrl.Builder url = departureMonitorEndpoint.newBuilder();
+        appendXsltDepartureMonitorRequestParameters(url, stationId, time, maxDepartures, equivs);
         final AtomicReference<QueryDeparturesResult> result = new AtomicReference<QueryDeparturesResult>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
@@ -1716,10 +1700,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         };
 
         if (httpPost)
-            httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()), parameters.substring(1),
+            httpClient.getInputStream(callback, url.build(), url.build().encodedQuery(),
                     "application/x-www-form-urlencoded", httpReferer);
         else
-            httpClient.getInputStream(callback, HttpUrl.parse(uri.append(parameters).toString()), httpReferer);
+            httpClient.getInputStream(callback, url.build(), httpReferer);
 
         return result.get();
     }
@@ -1956,115 +1940,114 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         return (double) value / 1000000;
     }
 
-    protected String xsltTripRequestParameters(final Location from, final @Nullable Location via, final Location to,
-            final Date time, final boolean dep, final @Nullable Collection<Product> products,
-            final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
-            final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) {
-        final StringBuilder uri = new StringBuilder();
-        appendCommonRequestParams(uri, "XML");
+    protected void appendXsltTripRequestParameters(final HttpUrl.Builder url, final Location from,
+            final @Nullable Location via, final Location to, final Date time, final boolean dep,
+            final @Nullable Collection<Product> products, final @Nullable Optimize optimize,
+            final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
+            final @Nullable Set<Option> options) {
+        appendCommonRequestParams(url, "XML");
 
-        uri.append("&sessionID=0");
-        uri.append("&requestID=0");
+        url.addEncodedQueryParameter("sessionID", "0");
+        url.addEncodedQueryParameter("requestID", "0");
 
-        appendCommonXsltTripRequest2Params(uri);
+        appendCommonXsltTripRequest2Params(url);
 
-        appendLocation(uri, from, "origin");
-        appendLocation(uri, to, "destination");
+        appendLocationParams(url, from, "origin");
+        appendLocationParams(url, to, "destination");
         if (via != null)
-            appendLocation(uri, via, "via");
+            appendLocationParams(url, via, "via");
 
-        appendItdDateTimeParameters(uri, time);
+        appendItdDateTimeParameters(url, time);
 
-        uri.append("&itdTripDateTimeDepArr=").append(dep ? "dep" : "arr");
+        url.addEncodedQueryParameter("itdTripDateTimeDepArr", dep ? "dep" : "arr");
 
-        uri.append("&calcNumberOfTrips=").append(numTripsRequested);
+        url.addEncodedQueryParameter("calcNumberOfTrips", Integer.toString(numTripsRequested));
 
-        uri.append("&ptOptionsActive=1"); // enable public transport options
-        uri.append("&itOptionsActive=1"); // enable individual transport options
+        url.addEncodedQueryParameter("ptOptionsActive", "1"); // enable public transport options
+        url.addEncodedQueryParameter("itOptionsActive", "1"); // enable individual transport options
 
         if (optimize == Optimize.LEAST_DURATION)
-            uri.append("&routeType=LEASTTIME");
+            url.addEncodedQueryParameter("routeType", "LEASTTIME");
         else if (optimize == Optimize.LEAST_CHANGES)
-            uri.append("&routeType=LEASTINTERCHANGE");
+            url.addEncodedQueryParameter("routeType", "LEASTINTERCHANGE");
         else if (optimize == Optimize.LEAST_WALKING)
-            uri.append("&routeType=LEASTWALKING");
+            url.addEncodedQueryParameter("routeType", "LEASTWALKING");
         else if (optimize != null)
             log.info("Cannot handle " + optimize + ", ignoring.");
 
-        uri.append("&changeSpeed=").append(WALKSPEED_MAP.get(walkSpeed));
+        url.addEncodedQueryParameter("changeSpeed", WALKSPEED_MAP.get(walkSpeed));
 
         if (accessibility == Accessibility.BARRIER_FREE)
-            uri.append("&imparedOptionsActive=1").append("&wheelchair=on").append("&noSolidStairs=on");
+            url.addEncodedQueryParameter("imparedOptionsActive", "1").addEncodedQueryParameter("wheelchair", "on")
+                    .addEncodedQueryParameter("noSolidStairs", "on");
         else if (accessibility == Accessibility.LIMITED)
-            uri.append("&imparedOptionsActive=1").append("&wheelchair=on").append("&lowPlatformVhcl=on")
-                    .append("&noSolidStairs=on");
+            url.addEncodedQueryParameter("imparedOptionsActive", "1").addEncodedQueryParameter("wheelchair", "on")
+                    .addEncodedQueryParameter("lowPlatformVhcl", "on").addEncodedQueryParameter("noSolidStairs", "on");
 
         if (products != null) {
-            uri.append("&includedMeans=checkbox");
+            url.addEncodedQueryParameter("includedMeans", "checkbox");
 
             boolean hasI = false;
             for (final Product p : products) {
                 if (p == Product.HIGH_SPEED_TRAIN || p == Product.REGIONAL_TRAIN) {
-                    uri.append("&inclMOT_0=on");
+                    url.addEncodedQueryParameter("inclMOT_0", "on");
                     if (p == Product.HIGH_SPEED_TRAIN)
                         hasI = true;
                 }
 
                 if (p == Product.SUBURBAN_TRAIN)
-                    uri.append("&inclMOT_1=on");
+                    url.addEncodedQueryParameter("inclMOT_1", "on");
 
                 if (p == Product.SUBWAY)
-                    uri.append("&inclMOT_2=on");
+                    url.addEncodedQueryParameter("inclMOT_2", "on");
 
                 if (p == Product.TRAM)
-                    uri.append("&inclMOT_3=on&inclMOT_4=on");
+                    url.addEncodedQueryParameter("inclMOT_3", "on").addEncodedQueryParameter("inclMOT_4", "on");
 
                 if (p == Product.BUS)
-                    uri.append("&inclMOT_5=on&inclMOT_6=on&inclMOT_7=on");
+                    url.addEncodedQueryParameter("inclMOT_5", "on").addEncodedQueryParameter("inclMOT_6", "on")
+                            .addEncodedQueryParameter("inclMOT_7", "on");
 
                 if (p == Product.ON_DEMAND)
-                    uri.append("&inclMOT_10=on");
+                    url.addEncodedQueryParameter("inclMOT_10", "on");
 
                 if (p == Product.FERRY)
-                    uri.append("&inclMOT_9=on");
+                    url.addEncodedQueryParameter("inclMOT_9", "on");
 
                 if (p == Product.CABLECAR)
-                    uri.append("&inclMOT_8=on");
+                    url.addEncodedQueryParameter("inclMOT_8", "on");
             }
 
             // workaround for highspeed trains: fails when you want highspeed, but not regional
             if (useLineRestriction && !hasI)
-                uri.append("&lineRestriction=403"); // means: all but ice
+                url.addEncodedQueryParameter("lineRestriction", "403"); // means: all but ice
         }
 
         if (useProxFootSearch)
-            uri.append("&useProxFootSearch=1"); // walk if it makes journeys quicker
-        uri.append("&trITMOTvalue100=10"); // maximum time to walk to first or from last stop
+            url.addEncodedQueryParameter("useProxFootSearch", "1"); // walk if it makes journeys quicker
+        url.addEncodedQueryParameter("trITMOTvalue100", "10"); // maximum time to walk to first or from last
+                                                               // stop
 
         if (options != null && options.contains(Option.BIKE))
-            uri.append("&bikeTakeAlong=1");
+            url.addEncodedQueryParameter("bikeTakeAlong", "1");
 
-        uri.append("&locationServerActive=1");
-        uri.append("&useRealtime=1");
-        uri.append("&nextDepsPerLeg=1"); // next departure in case previous was missed
-
-        return uri.toString();
+        url.addEncodedQueryParameter("locationServerActive", "1");
+        url.addEncodedQueryParameter("useRealtime", "1");
+        url.addEncodedQueryParameter("nextDepsPerLeg", "1"); // next departure in case previous was missed
     }
 
-    private String commandLink(final String sessionId, final String requestId) {
-        final StringBuilder uri = new StringBuilder(tripEndpoint);
-
-        uri.append("?sessionID=").append(sessionId);
-        uri.append("&requestID=").append(requestId);
-        uri.append("&calcNumberOfTrips=").append(numTripsRequested);
-        appendCommonXsltTripRequest2Params(uri);
-
-        return uri.toString();
+    private HttpUrl commandLink(final String sessionId, final String requestId) {
+        final HttpUrl.Builder url = tripEndpoint.newBuilder();
+        url.addEncodedQueryParameter("sessionID", sessionId);
+        url.addEncodedQueryParameter("requestID", requestId);
+        url.addEncodedQueryParameter("calcNumberOfTrips", Integer.toString(numTripsRequested));
+        appendCommonXsltTripRequest2Params(url);
+        return url.build();
     }
 
-    private final void appendCommonXsltTripRequest2Params(final StringBuilder uri) {
+    private final void appendCommonXsltTripRequest2Params(final HttpUrl.Builder url) {
         if (useStringCoordListOutputFormat)
-            uri.append("&coordListOutputFormat=STRING");
+            url.addEncodedQueryParameter("coordListOutputFormat", "STRING");
     }
 
     @Override
@@ -2072,29 +2055,29 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             final Date date, final boolean dep, final @Nullable Set<Product> products,
             final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
             final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) throws IOException {
-        final StringBuilder uri = new StringBuilder(tripEndpoint);
-        final String parameters = xsltTripRequestParameters(from, via, to, date, dep, products, optimize, walkSpeed,
-                accessibility, options);
+        final HttpUrl.Builder url = tripEndpoint.newBuilder();
+        appendXsltTripRequestParameters(url, from, via, to, date, dep, products, optimize, walkSpeed, accessibility,
+                options);
         final AtomicReference<QueryTripsResult> result = new AtomicReference<QueryTripsResult>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
             @Override
             public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
                 try {
-                    result.set(queryTrips(uri.toString(), body.byteStream()));
+                    result.set(queryTrips(url.build(), body.byteStream()));
                 } catch (final XmlPullParserException x) {
                     throw new ParserException("cannot parse xml: " + bodyPeek, x);
                 } catch (final RuntimeException x) {
-                    throw new RuntimeException("uncategorized problem while processing " + uri, x);
+                    throw new RuntimeException("uncategorized problem while processing " + url, x);
                 }
             }
         };
 
         if (httpPost)
-            httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()), parameters.substring(1),
+            httpClient.getInputStream(callback, url.build(), url.build().encodedQuery(),
                     "application/x-www-form-urlencoded", httpRefererTrip);
         else
-            httpClient.getInputStream(callback, HttpUrl.parse(uri.append(parameters).toString()), httpRefererTrip);
+            httpClient.getInputStream(callback, url.build(), httpRefererTrip);
 
         return result.get();
     }
@@ -2103,29 +2086,29 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             final Date date, final boolean dep, final @Nullable Collection<Product> products,
             final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
             final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) throws IOException {
-        final StringBuilder uri = new StringBuilder(tripEndpoint);
-        final String parameters = xsltTripRequestParameters(from, via, to, date, dep, products, optimize, walkSpeed,
-                accessibility, options);
+        final HttpUrl.Builder url = tripEndpoint.newBuilder();
+        appendXsltTripRequestParameters(url, from, via, to, date, dep, products, optimize, walkSpeed, accessibility,
+                options);
         final AtomicReference<QueryTripsResult> result = new AtomicReference<QueryTripsResult>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
             @Override
             public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
                 try {
-                    result.set(queryTripsMobile(uri.toString(), from, via, to, body.byteStream()));
+                    result.set(queryTripsMobile(url.build(), from, via, to, body.byteStream()));
                 } catch (final XmlPullParserException x) {
                     throw new ParserException("cannot parse xml: " + bodyPeek, x);
                 } catch (final RuntimeException x) {
-                    throw new RuntimeException("uncategorized problem while processing " + uri, x);
+                    throw new RuntimeException("uncategorized problem while processing " + url, x);
                 }
             }
         };
 
         if (httpPost)
-            httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()), parameters.substring(1),
+            httpClient.getInputStream(callback, url.build(), url.build().encodedQuery(),
                     "application/x-www-form-urlencoded", httpRefererTrip);
         else
-            httpClient.getInputStream(callback, HttpUrl.parse(uri.append(parameters).toString()), httpRefererTrip);
+            httpClient.getInputStream(callback, url.build(), httpRefererTrip);
 
         return result.get();
     }
@@ -2133,25 +2116,25 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     @Override
     public QueryTripsResult queryMoreTrips(final QueryTripsContext contextObj, final boolean later) throws IOException {
         final Context context = (Context) contextObj;
-        final String commandUri = context.context;
-        final StringBuilder uri = new StringBuilder(commandUri);
-        uri.append("&command=").append(later ? "tripNext" : "tripPrev");
+        final HttpUrl commandUrl = HttpUrl.parse(context.context);
+        final HttpUrl.Builder url = commandUrl.newBuilder();
+        url.addEncodedQueryParameter("command", later ? "tripNext" : "tripPrev");
         final AtomicReference<QueryTripsResult> result = new AtomicReference<QueryTripsResult>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
             @Override
             public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
                 try {
-                    result.set(queryTrips(uri.toString(), body.byteStream()));
+                    result.set(queryTrips(url.build(), body.byteStream()));
                 } catch (final XmlPullParserException x) {
                     throw new ParserException("cannot parse xml: " + bodyPeek, x);
                 } catch (final RuntimeException x) {
-                    throw new RuntimeException("uncategorized problem while processing " + uri, x);
+                    throw new RuntimeException("uncategorized problem while processing " + url, x);
                 }
             }
         };
 
-        httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()), httpRefererTrip);
+        httpClient.getInputStream(callback, url.build(), httpRefererTrip);
 
         return result.get();
     }
@@ -2159,30 +2142,30 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     protected QueryTripsResult queryMoreTripsMobile(final QueryTripsContext contextObj, final boolean later)
             throws IOException {
         final Context context = (Context) contextObj;
-        final String commandUri = context.context;
-        final StringBuilder uri = new StringBuilder(commandUri);
-        uri.append("&command=").append(later ? "tripNext" : "tripPrev");
+        final HttpUrl commandUrl = HttpUrl.parse(context.context);
+        final HttpUrl.Builder url = commandUrl.newBuilder();
+        url.addEncodedQueryParameter("command", later ? "tripNext" : "tripPrev");
         final AtomicReference<QueryTripsResult> result = new AtomicReference<QueryTripsResult>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
             @Override
             public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
                 try {
-                    result.set(queryTripsMobile(uri.toString(), null, null, null, body.byteStream()));
+                    result.set(queryTripsMobile(url.build(), null, null, null, body.byteStream()));
                 } catch (final XmlPullParserException x) {
                     throw new ParserException("cannot parse xml: " + bodyPeek, x);
                 } catch (final RuntimeException x) {
-                    throw new RuntimeException("uncategorized problem while processing " + uri, x);
+                    throw new RuntimeException("uncategorized problem while processing " + url, x);
                 }
             }
         };
 
-        httpClient.getInputStream(callback, HttpUrl.parse(uri.toString()), httpRefererTrip);
+        httpClient.getInputStream(callback, url.build(), httpRefererTrip);
 
         return result.get();
     }
 
-    private QueryTripsResult queryTrips(final String uri, final InputStream is)
+    private QueryTripsResult queryTrips(final HttpUrl url, final InputStream is)
             throws XmlPullParserException, IOException {
         final XmlPullParser pp = parserFactory.newPullParser();
         pp.setInput(is, null); // Read encoding from XML declaration
@@ -2461,8 +2444,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             XmlPullUtil.next(pp);
         }
 
-        return new QueryTripsResult(header, uri, from, via, to, new Context(commandLink((String) context, requestId)),
-                trips);
+        return new QueryTripsResult(header, url.toString(), from, via, to,
+                new Context(commandLink((String) context, requestId).toString()), trips);
     }
 
     private void processIndividualLeg(final XmlPullParser pp, final List<Leg> legs,
@@ -2692,7 +2675,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         return cancelled;
     }
 
-    private QueryTripsResult queryTripsMobile(final String uri, final Location from, final @Nullable Location via,
+    private QueryTripsResult queryTripsMobile(final HttpUrl url, final Location from, final @Nullable Location via,
             final Location to, final InputStream is) throws XmlPullParserException, IOException {
         final XmlPullParser pp = parserFactory.newPullParser();
         pp.setInput(is, null); // Read encoding from XML declaration
@@ -2921,8 +2904,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
         if (trips.size() > 0) {
             final String[] context = (String[]) header.context;
-            return new QueryTripsResult(header, uri, from, via, to, new Context(commandLink(context[0], context[1])),
-                    trips);
+            return new QueryTripsResult(header, url.toString(), from, via, to,
+                    new Context(commandLink(context[0], context[1]).toString()), trips);
         } else {
             return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
         }
@@ -3068,18 +3051,16 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         return super.parsePosition(position);
     }
 
-    private void appendLocation(final StringBuilder uri, final Location location, final String paramSuffix) {
+    private void appendLocationParams(final HttpUrl.Builder url, final Location location, final String paramSuffix) {
         final String name = locationValue(location);
-
         if ((location.type == LocationType.ADDRESS || location.type == LocationType.COORD) && location.hasLocation()) {
-            uri.append("&type_").append(paramSuffix).append("=coord");
-            uri.append("&name_").append(paramSuffix).append("=")
-                    .append(String.format(Locale.ENGLISH, "%.6f:%.6f", location.lon / 1E6, location.lat / 1E6))
-                    .append(":WGS84");
+            url.addEncodedQueryParameter("type_" + paramSuffix, "coord");
+            url.addEncodedQueryParameter("name_" + paramSuffix, ParserUtils.urlEncode(
+                    String.format(Locale.ENGLISH, "%.6f:%.6f", location.lon / 1E6, location.lat / 1E6) + ":WGS84",
+                    requestUrlEncoding));
         } else if (name != null) {
-            uri.append("&type_").append(paramSuffix).append("=").append(locationTypeValue(location));
-            uri.append("&name_").append(paramSuffix).append("=")
-                    .append(ParserUtils.urlEncode(name, requestUrlEncoding));
+            url.addEncodedQueryParameter("type_" + paramSuffix, locationTypeValue(location));
+            url.addEncodedQueryParameter("name_" + paramSuffix, ParserUtils.urlEncode(name, requestUrlEncoding));
         } else {
             throw new IllegalArgumentException("cannot append location: " + location);
         }

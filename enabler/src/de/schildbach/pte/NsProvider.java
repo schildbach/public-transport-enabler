@@ -27,11 +27,13 @@ import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Product;
 
+import okhttp3.HttpUrl;
+
 /**
  * @author Andreas Schildbach
  */
 public class NsProvider extends AbstractHafasProvider {
-    private static final String API_BASE = "http://hafas.bene-system.com/bin/";
+    private static final HttpUrl API_BASE = HttpUrl.parse("http://hafas.bene-system.com/bin/");
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.BUS, Product.FERRY,
             Product.SUBWAY, Product.TRAM, Product.ON_DEMAND };
@@ -49,13 +51,12 @@ public class NsProvider extends AbstractHafasProvider {
     public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location,
             final int maxDistance, final int maxLocations) throws IOException {
         if (location.type == LocationType.STATION && location.hasId()) {
-            final StringBuilder uri = new StringBuilder(stationBoardEndpoint);
-            uri.append("?near=Anzeigen");
-            uri.append("&distance=").append(maxDistance != 0 ? maxDistance / 1000 : 50);
-            uri.append("&input=").append(normalizeStationId(location.id));
-            uri.append("&L=profi");
-
-            return htmlNearbyStations(uri.toString());
+            final HttpUrl.Builder url = stationBoardEndpoint.newBuilder().addPathSegment(apiLanguage);
+            url.addQueryParameter("near", "Anzeigen");
+            url.addQueryParameter("distance", Integer.toString(maxDistance != 0 ? maxDistance / 1000 : 50));
+            url.addQueryParameter("input", normalizeStationId(location.id));
+            url.addQueryParameter("L", "profi");
+            return htmlNearbyStations(url.build());
         } else {
             throw new IllegalArgumentException("cannot handle: " + location);
         }
