@@ -213,6 +213,11 @@ public final class ParserUtils {
         calendar.set(Calendar.AM_PM, m.group(4).equals("AM") ? Calendar.AM : Calendar.PM);
     }
 
+    public static int parseMinutesFromTimeString(final String duration) {
+        final String[] durationElem = duration.split(":");
+        return (Integer.parseInt(durationElem[0]) * 60) + Integer.parseInt(durationElem[1]);
+    }
+
     public static long timeDiff(final Date d1, final Date d2) {
         final long t1 = d1.getTime();
         final long t2 = d2.getTime();
@@ -223,6 +228,13 @@ public final class ParserUtils {
         final Calendar c = new GregorianCalendar();
         c.setTime(time);
         c.add(Calendar.DAY_OF_YEAR, days);
+        return c.getTime();
+    }
+
+    public static Date addMinutes(final Date time, final int minutes) {
+        final Calendar c = new GregorianCalendar();
+        c.setTime(time);
+        c.add(Calendar.MINUTE, minutes);
         return c.getTime();
     }
 
