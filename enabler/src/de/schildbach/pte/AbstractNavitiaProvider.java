@@ -966,8 +966,11 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
                             }
                         }
 
+                        String prevQueryUrlString = prevQueryUrl != null ? prevQueryUrl.toString() : null;
+                        String nextQueryUrlString = nextQueryUrl != null ? nextQueryUrl.toString() : null;
+
                         final QueryTripsResult result = new QueryTripsResult(resultHeader, url.build().toString(), from,
-                                null, to, new Context(from, to, prevQueryUrl.toString(), nextQueryUrl.toString()),
+                                null, to, new Context(from, to, prevQueryUrlString, nextQueryUrlString),
                                 new LinkedList<Trip>());
 
                         parseQueryTripsResult(head, from, to, result);
