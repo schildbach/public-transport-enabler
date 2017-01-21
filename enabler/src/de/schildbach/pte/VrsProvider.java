@@ -711,6 +711,12 @@ public class VrsProvider extends AbstractNetworkProvider {
                 if (error.equals("ASS2-Server lieferte leere Antwort."))
                     return new QueryTripsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT),
                             QueryTripsResult.Status.SERVICE_DOWN);
+                else if (error.equals("Zeitüberschreitung bei der Verbindung zum ASS2-Server"))
+                    return new QueryTripsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT),
+                            QueryTripsResult.Status.SERVICE_DOWN);
+                else if (error.equals("Server Error"))
+                    return new QueryTripsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT),
+                            QueryTripsResult.Status.SERVICE_DOWN);
                 else if (error.equals("Keine Verbindungen gefunden."))
                     return new QueryTripsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT),
                             QueryTripsResult.Status.NO_TRIPS);
@@ -726,7 +732,13 @@ public class VrsProvider extends AbstractNetworkProvider {
                 else if (error.equals("Destination invalid."))
                     return new QueryTripsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT),
                             QueryTripsResult.Status.UNKNOWN_TO);
+                else if (error.equals("Fehlerhaftes Ziel"))
+                    return new QueryTripsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT),
+                            QueryTripsResult.Status.UNKNOWN_TO);
                 else if (error.equals("Produkt ungültig."))
+                    return new QueryTripsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT),
+                            QueryTripsResult.Status.NO_TRIPS);
+                else if (error.equals("Keine Route."))
                     return new QueryTripsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT),
                             QueryTripsResult.Status.NO_TRIPS);
                 else
