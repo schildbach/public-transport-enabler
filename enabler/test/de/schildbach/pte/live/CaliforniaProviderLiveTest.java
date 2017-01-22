@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Tod Fitch.
+ * Copyright 2017 Tod Fitch.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
 
 /**
- * @author Stephane Berube
+ * @author Tod Fitch
  */
 public class CaliforniaProviderLiveTest extends AbstractNavitiaProviderLiveTest {
     public CaliforniaProviderLiveTest() {
