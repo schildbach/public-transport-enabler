@@ -22,13 +22,13 @@ import okhttp3.HttpUrl;
 public class OctaProvider extends AbstractNavitiaProvider {
     private static String API_REGION = "us-ca";
 
-    public OregonProvider(final HttpUrl apiBase, final String authorization) {
+    public OctaProvider(final HttpUrl apiBase, final String authorization) {
         super(NetworkId.OCTA, apiBase, authorization);
 
         setTimeZone("America/Los_Angeles");
     }
 
-    public OregonProvider(final String authorization) {
+    public OctaProvider(final String authorization) {
         super(NetworkId.OCTA, authorization);
 
         setTimeZone("America/Los_Angeles");
