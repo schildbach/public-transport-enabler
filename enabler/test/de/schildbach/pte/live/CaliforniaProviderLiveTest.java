@@ -21,7 +21,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import de.schildbach.pte.OctaProvider;
+import de.schildbach.pte.CaliforniaProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
@@ -31,9 +31,9 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
 /**
  * @author Stephane Berube
  */
-public class OctaProviderLiveTest extends AbstractNavitiaProviderLiveTest {
-    public OctaProviderLiveTest() {
-        super(new OctaProvider(secretProperty("navitia.authorization")));
+public class CaliforniaProviderLiveTest extends AbstractNavitiaProviderLiveTest {
+    public CaliforniaProviderLiveTest() {
+        super(new CaliforniaProvider(secretProperty("navitia.authorization")));
     }
 
     @Test

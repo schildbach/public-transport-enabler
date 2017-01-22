@@ -19,17 +19,17 @@ package de.schildbach.pte;
 
 import okhttp3.HttpUrl;
 
-public class OctaProvider extends AbstractNavitiaProvider {
+public class CaliforniaProvider extends AbstractNavitiaProvider {
     private static String API_REGION = "us-ca";
 
-    public OctaProvider(final HttpUrl apiBase, final String authorization) {
-        super(NetworkId.OCTA, apiBase, authorization);
+    public CaliforniaProvider(final HttpUrl apiBase, final String authorization) {
+        super(NetworkId.CALIFORNIA, apiBase, authorization);
 
         setTimeZone("America/Los_Angeles");
     }
 
-    public OctaProvider(final String authorization) {
-        super(NetworkId.OCTA, authorization);
+    public CaliforniaProvider(final String authorization) {
+        super(NetworkId.CALIFORNIA, authorization);
 
         setTimeZone("America/Los_Angeles");
     }
