@@ -43,7 +43,10 @@ public class VmtProvider extends AbstractHafasMobileProvider {
     private static final String[] PLACES = { "Erfurt", "Jena", "Gera", "Weimar", "Gotha" };
 
     @Override
-    protected String[] splitStationName(final String name) {
+    protected String[] splitStationName(String name) {
+        if (name.endsWith(" [Zug]"))
+            name = name.substring(0, name.length() - 6);
+
         for (final String place : PLACES) {
             if (name.startsWith(place + ", "))
                 return new String[] { place, name.substring(place.length() + 2) };
