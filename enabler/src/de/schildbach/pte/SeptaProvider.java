@@ -56,7 +56,7 @@ import okhttp3.HttpUrl;
 /**
  * @author Andreas Schildbach
  */
-public class SeptaProvider extends AbstractHafasProvider {
+public class SeptaProvider extends AbstractHafasLegacyProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("http://airs1.septa.org/bin/");
     private static final Product[] PRODUCTS_MAP = { Product.SUBWAY, Product.TRAM, Product.BUS, Product.SUBURBAN_TRAIN };
     private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;

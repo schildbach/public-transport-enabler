@@ -40,7 +40,7 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
  */
 public class ShProviderLiveTest extends AbstractProviderLiveTest {
     public ShProviderLiveTest() {
-        super(new ShProvider(secretProperty("sh.json_api_authorization")));
+        super(new ShProvider(secretProperty("sh.api_authorization")));
     }
 
     @Test

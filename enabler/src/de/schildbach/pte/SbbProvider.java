@@ -27,7 +27,7 @@ import okhttp3.HttpUrl;
 /**
  * @author Andreas Schildbach
  */
-public class SbbProvider extends AbstractHafasProvider {
+public class SbbProvider extends AbstractHafasLegacyProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("http://fahrplan.sbb.ch/bin/");
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, Product.FERRY, Product.SUBURBAN_TRAIN, Product.BUS,

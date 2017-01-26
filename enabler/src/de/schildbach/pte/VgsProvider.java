@@ -31,7 +31,7 @@ import okhttp3.HttpUrl;
 /**
  * @author Andreas Schildbach
  */
-public class VgsProvider extends AbstractHafasProvider {
+public class VgsProvider extends AbstractHafasLegacyProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("http://www.saarfahrplan.de/cgi-bin/");
     // http://www.vgs-online.de/cgi-bin/
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,

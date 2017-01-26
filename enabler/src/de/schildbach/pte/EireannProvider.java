@@ -38,7 +38,7 @@ import okhttp3.HttpUrl;
  * 
  * @author Andreas Schildbach
  */
-public class EireannProvider extends AbstractHafasProvider {
+public class EireannProvider extends AbstractHafasLegacyProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("http://journeyplanner.buseireann.ie/jp/bin/");
     private static final Product[] PRODUCTS_MAP = { null, null, null, Product.BUS };
 

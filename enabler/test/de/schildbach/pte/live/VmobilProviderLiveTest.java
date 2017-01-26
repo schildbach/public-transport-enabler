@@ -42,7 +42,7 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
  */
 public class VmobilProviderLiveTest extends AbstractProviderLiveTest {
     public VmobilProviderLiveTest() {
-        super(new VmobilProvider(secretProperty("vmobil.json_api_authorization")));
+        super(new VmobilProvider(secretProperty("vmobil.api_authorization")));
     }
 
     @Test

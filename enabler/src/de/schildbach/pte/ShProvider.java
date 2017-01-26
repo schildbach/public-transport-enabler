@@ -17,49 +17,34 @@
 
 package de.schildbach.pte;
 
-import java.io.IOException;
 import java.util.Currency;
-import java.util.Date;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 
 import javax.annotation.Nullable;
 
-import com.google.common.base.Charsets;
-
 import de.schildbach.pte.dto.Fare;
 import de.schildbach.pte.dto.Fare.Type;
-import de.schildbach.pte.dto.Location;
-import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Product;
-import de.schildbach.pte.dto.QueryDeparturesResult;
-import de.schildbach.pte.dto.QueryTripsContext;
-import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.Style;
-import de.schildbach.pte.dto.SuggestLocationsResult;
 
 import okhttp3.HttpUrl;
 
 /**
  * @author Andreas Schildbach
  */
-public class ShProvider extends AbstractHafasProvider {
+public class ShProvider extends AbstractHafasMobileProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("http://nah.sh.hafas.de/bin/");
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.BUS, Product.FERRY,
             Product.SUBWAY, Product.TRAM, Product.ON_DEMAND };
 
-    public ShProvider(final String jsonApiAuthorization) {
-        super(NetworkId.SH, API_BASE, "dn", PRODUCTS_MAP);
-
-        setJsonApiVersion("1.10");
-        setJsonApiClient("{\"id\":\"NAHSH\"}");
-        setJsonApiAuthorization(jsonApiAuthorization);
-        setJsonNearbyLocationsEncoding(Charsets.UTF_8);
+    public ShProvider(final String apiAuthorization) {
+        super(NetworkId.SH, API_BASE, PRODUCTS_MAP);
+        setApiVersion("1.10");
+        setApiClient("{\"id\":\"NAHSH\"}");
+        setApiAuthorization(apiAuthorization);
         setStyles(STYLES);
     }
 
@@ -90,41 +75,6 @@ public class ShProvider extends AbstractHafasProvider {
             return new String[] { m.group(1), m.group(2) };
 
         return super.splitStationName(address);
-    }
-
-    @Override
-    public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location,
-            final int maxDistance, final int maxLocations) throws IOException {
-        if (location.hasLocation())
-            return jsonLocGeoPos(types, location.lat, location.lon);
-        else
-            throw new IllegalArgumentException("cannot handle: " + location);
-    }
-
-    @Override
-    public QueryDeparturesResult queryDepartures(final String stationId, final @Nullable Date time,
-            final int maxDepartures, final boolean equivs) throws IOException {
-        return jsonStationBoard(stationId, time, maxDepartures, equivs);
-    }
-
-    @Override
-    public SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException {
-        return jsonLocMatch(constraint);
-    }
-
-    @Override
-    public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to,
-            final Date date, final boolean dep, final @Nullable Set<Product> products,
-            final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
-            final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) throws IOException {
-        return jsonTripSearch(from, via, to, date, dep, products, null);
-    }
-
-    @Override
-    public QueryTripsResult queryMoreTrips(final QueryTripsContext context, final boolean later) throws IOException {
-        final JsonContext jsonContext = (JsonContext) context;
-        return jsonTripSearch(jsonContext.from, jsonContext.via, jsonContext.to, jsonContext.date, jsonContext.dep,
-                jsonContext.products, later ? jsonContext.laterContext : jsonContext.earlierContext);
     }
 
     @Override

@@ -42,7 +42,7 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
  */
 public class VbnProviderLiveTest extends AbstractProviderLiveTest {
     public VbnProviderLiveTest() {
-        super(new VbnProvider(secretProperty("vbn.json_api_authorization")));
+        super(new VbnProvider(secretProperty("vbn.api_authorization")));
     }
 
     @Test

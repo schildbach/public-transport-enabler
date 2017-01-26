@@ -42,7 +42,7 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
  */
 public class OoevvProviderLiveTest extends AbstractProviderLiveTest {
     public OoevvProviderLiveTest() {
-        super(new OoevvProvider(secretProperty("ooevv.json_api_authorization")));
+        super(new OoevvProvider(secretProperty("ooevv.api_authorization")));
     }
 
     @Test

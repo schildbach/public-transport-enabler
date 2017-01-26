@@ -42,7 +42,7 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
  */
 public class VaoProviderLiveTest extends AbstractProviderLiveTest {
     public VaoProviderLiveTest() {
-        super(new VaoProvider(secretProperty("vao.json_api_authorization")));
+        super(new VaoProvider(secretProperty("vao.api_authorization")));
     }
 
     @Test

@@ -42,7 +42,7 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
  */
 public class VorProviderLiveTest extends AbstractProviderLiveTest {
     public VorProviderLiveTest() {
-        super(new VorProvider(secretProperty("vor.json_api_authorization")));
+        super(new VorProvider(secretProperty("vor.api_authorization")));
     }
 
     @Test

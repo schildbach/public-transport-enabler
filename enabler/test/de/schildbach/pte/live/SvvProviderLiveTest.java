@@ -42,7 +42,7 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
  */
 public class SvvProviderLiveTest extends AbstractProviderLiveTest {
     public SvvProviderLiveTest() {
-        super(new SvvProvider(secretProperty("svv.json_api_authorization")));
+        super(new SvvProvider(secretProperty("svv.api_authorization")));
     }
 
     @Test

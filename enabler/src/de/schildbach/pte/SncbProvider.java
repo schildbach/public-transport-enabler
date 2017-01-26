@@ -34,7 +34,7 @@ import okhttp3.HttpUrl;
 /**
  * @author Andreas Schildbach
  */
-public class SncbProvider extends AbstractHafasProvider {
+public class SncbProvider extends AbstractHafasLegacyProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("https://www.belgianrail.be/jp/sncb-nmbs-routeplanner/");
     // http://hari.b-rail.be/hafas/bin/
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, null, Product.HIGH_SPEED_TRAIN, null,
