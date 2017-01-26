@@ -511,12 +511,26 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
                             for (int iFare = 0; iFare < fareList.length(); iFare++) {
                                 final JSONObject jsonFare = fareList.getJSONObject(iFare);
                                 final String name = jsonFare.getString("name");
-                                final Currency currency = Currency.getInstance(jsonFare.getString("cur"));
-                                final float price = jsonFare.getInt("prc") / 100f;
-                                final Fare fare = parseJsonTripFare(fareSetName, fareSetDescription, name, currency,
-                                        price);
-                                if (fare != null)
-                                    fares.add(fare);
+                                final JSONArray ticketList = jsonFare.getJSONArray("ticketL");
+                                if (ticketList != null) {
+                                    for (int iTicket = 0; iTicket < ticketList.length(); iTicket++) {
+                                        final JSONObject jsonTicket = ticketList.getJSONObject(iTicket);
+                                        final String ticketName = jsonTicket.getString("name");
+                                        final Currency currency = Currency.getInstance(jsonTicket.getString("cur"));
+                                        final float price = jsonTicket.getInt("prc") / 100f;
+                                        final Fare fare = parseJsonTripFare(name, fareSetDescription, ticketName,
+                                                currency, price);
+                                        if (fare != null)
+                                            fares.add(fare);
+                                    }
+                                } else {
+                                    final Currency currency = Currency.getInstance(jsonFare.getString("cur"));
+                                    final float price = jsonFare.getInt("prc") / 100f;
+                                    final Fare fare = parseJsonTripFare(fareSetName, fareSetDescription, name, currency,
+                                            price);
+                                    if (fare != null)
+                                        fares.add(fare);
+                                }
                             }
                         }
                     }
