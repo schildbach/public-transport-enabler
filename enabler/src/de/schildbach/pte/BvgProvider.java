@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright 2010-2017 the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,13 +17,15 @@
 
 package de.schildbach.pte;
 
+import java.util.Currency;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.google.common.base.Charsets;
+import com.google.common.collect.Sets;
 
+import de.schildbach.pte.dto.Fare;
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Line.Attr;
 import de.schildbach.pte.dto.Point;
@@ -36,17 +38,16 @@ import okhttp3.HttpUrl;
 /**
  * @author Andreas Schildbach
  */
-public final class BvgProvider extends AbstractHafasLegacyProvider {
+public final class BvgProvider extends AbstractHafasMobileProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("http://bvg-apps.hafas.de/bin/");
     private static final Product[] PRODUCTS_MAP = { Product.SUBURBAN_TRAIN, Product.SUBWAY, Product.TRAM, Product.BUS,
             Product.FERRY, Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, Product.ON_DEMAND };
 
-    public BvgProvider() {
-        super(NetworkId.BVG, API_BASE, "dn", PRODUCTS_MAP);
-
-        setRequestUrlEncoding(Charsets.UTF_8);
-        setJsonGetStopsUseWeight(false);
-        setJsonNearbyLocationsEncoding(Charsets.UTF_8);
+    public BvgProvider(final String jsonApiAuthorization) {
+        super(NetworkId.BVG, API_BASE, PRODUCTS_MAP);
+        setApiVersion("1.11");
+        setApiClient("{\"id\":\"BVG\"}");
+        setApiAuthorization(jsonApiAuthorization);
         setStyles(STYLES);
     }
 
@@ -102,62 +103,49 @@ public final class BvgProvider extends AbstractHafasLegacyProvider {
         return super.splitStationName(address);
     }
 
-    private static final Pattern P_NORMALIZE_LINE_NAME_TRAM = Pattern.compile("(?:tra|tram)\\s+(.*)",
-            Pattern.CASE_INSENSITIVE);
-
     @Override
-    protected String normalizeLineName(final String lineName) {
-        final Matcher mTram = P_NORMALIZE_LINE_NAME_TRAM.matcher(lineName);
-        if (mTram.matches())
-            return mTram.group(1);
+    protected Line newLine(final String operator, final Product product, final String name) {
+        if (product == Product.SUBURBAN_TRAIN && "S41".equals(name))
+            return new Line(null, operator, product, name, lineStyle(operator, product, name),
+                    Sets.newHashSet(Attr.CIRCLE_CLOCKWISE));
+        if (product == Product.SUBURBAN_TRAIN && "S42".equals(name))
+            return new Line(null, operator, product, name, lineStyle(operator, product, name),
+                    Sets.newHashSet(Attr.CIRCLE_ANTICLOCKWISE));
 
-        return super.normalizeLineName(lineName);
+        if (product == Product.BUS && "S41".equals(name))
+            return new Line(null, operator, product, name, lineStyle(operator, product, name),
+                    Sets.newHashSet(Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_CLOCKWISE));
+        if (product == Product.BUS && "S42".equals(name))
+            return new Line(null, operator, product, name, lineStyle(operator, product, name),
+                    Sets.newHashSet(Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_ANTICLOCKWISE));
+
+        if (product == Product.BUS && "TXL".equals(name))
+            return new Line(null, operator, product, name, lineStyle(operator, product, name),
+                    Sets.newHashSet(Attr.LINE_AIRPORT));
+        if (product == Product.SUBURBAN_TRAIN && "S9".equals(name))
+            return new Line(null, operator, product, name, lineStyle(operator, product, name),
+                    Sets.newHashSet(Attr.LINE_AIRPORT));
+        if (product == Product.SUBURBAN_TRAIN && "S45".equals(name))
+            return new Line(null, operator, product, name, lineStyle(operator, product, name),
+                    Sets.newHashSet(Attr.LINE_AIRPORT));
+
+        return super.newLine(operator, product, name);
     }
 
     @Override
-    protected Line parseLineAndType(final String lineAndType) {
-        if ("X#".equals(lineAndType))
-            return newLine(Product.HIGH_SPEED_TRAIN, "X", null); // InterConnex
-        else
-            return super.parseLineAndType(lineAndType);
-    }
+    protected Fare parseJsonTripFare(String fareSetName, final String fareSetDescription, final String name,
+            final Currency currency, final float price) {
+        if (!fareSetName.startsWith("Berlin Tarifgebiet ") || !fareSetName.endsWith(" Einzelfahrausweis"))
+            return null;
+        fareSetName = "Berlin " + fareSetName.substring(19, fareSetName.length() - 19);
 
-    @Override
-    protected Line newLine(final Product product, final String normalizedName, final String comment,
-            final Attr... attrs) {
-        if (product == Product.SUBURBAN_TRAIN && "S41".equals(normalizedName))
-            return super.newLine(product, normalizedName, comment, concatAttrs(attrs, Attr.CIRCLE_CLOCKWISE));
-        if (product == Product.SUBURBAN_TRAIN && "S42".equals(normalizedName))
-            return super.newLine(product, normalizedName, comment, concatAttrs(attrs, Attr.CIRCLE_ANTICLOCKWISE));
-
-        if (product == Product.BUS && "S41".equals(normalizedName))
-            return super.newLine(product, normalizedName, comment,
-                    concatAttrs(attrs, Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_CLOCKWISE));
-        if (product == Product.BUS && "S42".equals(normalizedName))
-            return super.newLine(product, normalizedName, comment,
-                    concatAttrs(attrs, Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_ANTICLOCKWISE));
-
-        if (product == Product.BUS && "TXL".equals(normalizedName))
-            return super.newLine(product, normalizedName, comment, concatAttrs(attrs, Attr.LINE_AIRPORT));
-        if (product == Product.SUBURBAN_TRAIN && "S9".equals(normalizedName))
-            return super.newLine(product, normalizedName, comment, concatAttrs(attrs, Attr.LINE_AIRPORT));
-        if (product == Product.SUBURBAN_TRAIN && "S45".equals(normalizedName))
-            return super.newLine(product, normalizedName, comment, concatAttrs(attrs, Attr.LINE_AIRPORT));
-
-        return super.newLine(product, normalizedName, comment, attrs);
-    }
-
-    private Attr[] concatAttrs(final Attr[] attrs1, final Attr... attrs2) {
-        final int attrs1length = attrs1.length;
-        final int attrs2length = attrs2.length;
-
-        final Attr[] newAttrs = new Attr[attrs1length + attrs2length];
-        for (int i = 0; i < attrs1length; i++)
-            newAttrs[i] = attrs1[i];
-        for (int i = 0; i < attrs2length; i++)
-            newAttrs[attrs1length + i] = attrs2[i];
-
-        return newAttrs;
+        if (name.equals("Regeltarif"))
+            return new Fare(fareSetName, Fare.Type.ADULT, currency, price, name, null);
+        if (name.equals("Ermäßigungstarif"))
+            return new Fare(fareSetName, Fare.Type.CHILD, currency, price, name, null);
+        if (name.equals("Fahrrad"))
+            return new Fare(fareSetName, Fare.Type.BIKE, currency, price, name, null);
+        return null;
     }
 
     private static final Map<String, Style> STYLES = new HashMap<String, Style>();
