@@ -511,7 +511,7 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
                             for (int iFare = 0; iFare < fareList.length(); iFare++) {
                                 final JSONObject jsonFare = fareList.getJSONObject(iFare);
                                 final String name = jsonFare.getString("name");
-                                final JSONArray ticketList = jsonFare.getJSONArray("ticketL");
+                                final JSONArray ticketList = jsonFare.optJSONArray("ticketL");
                                 if (ticketList != null) {
                                     for (int iTicket = 0; iTicket < ticketList.length(); iTicket++) {
                                         final JSONObject jsonTicket = ticketList.getJSONObject(iTicket);
