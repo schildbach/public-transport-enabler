@@ -18,7 +18,6 @@
 package de.schildbach.pte;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import java.util.EnumSet;
@@ -110,8 +109,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
         for (int i = productsMap.length - 1; i >= 0; i--) {
             final int v = 1 << i;
             if (value >= v) {
-                final Product product = checkNotNull(productsMap[i], "unknown product " + i);
-                products.add(product);
+                if (productsMap[i] != null)
+                    products.add(productsMap[i]);
                 value -= v;
             }
         }
