@@ -76,7 +76,7 @@ public class VbnProvider extends AbstractHafasMobileProvider {
         return Product.ALL;
     }
 
-    private static final Map<String, Style> STYLES = new HashMap<String, Style>();
+    private static final Map<String, Style> STYLES = new HashMap<>();
 
     static {
         // Rostock

@@ -46,7 +46,7 @@ public final class SuggestLocationsResult implements Serializable {
     public SuggestLocationsResult(final ResultHeader header, final List<SuggestedLocation> suggestedLocations) {
         this.header = header;
         this.status = Status.OK;
-        this.suggestedLocations = new LinkedList<SuggestedLocation>(suggestedLocations);
+        this.suggestedLocations = new LinkedList<>(suggestedLocations);
         Collections.sort(this.suggestedLocations);
     }
 
@@ -57,7 +57,7 @@ public final class SuggestLocationsResult implements Serializable {
     }
 
     public List<Location> getLocations() {
-        final List<Location> locations = new ArrayList<Location>(suggestedLocations.size());
+        final List<Location> locations = new ArrayList<>(suggestedLocations.size());
         for (final SuggestedLocation location : suggestedLocations)
             locations.add(location.location);
 

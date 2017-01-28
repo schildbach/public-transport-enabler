@@ -38,7 +38,7 @@ public class LinzProvider extends AbstractEfaProvider {
         setStyles(STYLES);
     }
 
-    private static final Map<String, Style> STYLES = new HashMap<String, Style>();
+    private static final Map<String, Style> STYLES = new HashMap<>();
 
     static {
         STYLES.put("B11", new Style(Style.Shape.RECT, Style.parseColor("#f27b02"), Style.WHITE));

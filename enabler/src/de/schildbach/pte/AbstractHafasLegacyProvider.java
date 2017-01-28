@@ -321,7 +321,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
         final Matcher mJson = P_AJAX_GET_STOPS_JSON.matcher(page);
         if (mJson.matches()) {
             final String json = mJson.group(1);
-            final List<SuggestedLocation> locations = new ArrayList<SuggestedLocation>();
+            final List<SuggestedLocation> locations = new ArrayList<>();
 
             try {
                 final JSONObject head = new JSONObject(json);
@@ -436,7 +436,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
     protected final QueryDeparturesResult xmlStationBoard(final HttpUrl url, final String stationId)
             throws IOException {
         final String normalizedStationId = normalizeStationId(stationId);
-        final AtomicReference<QueryDeparturesResult> result = new AtomicReference<QueryDeparturesResult>();
+        final AtomicReference<QueryDeparturesResult> result = new AtomicReference<>();
 
         httpClient.getInputStream(new HttpClient.Callback() {
 
@@ -783,7 +783,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
         final String request = wrapReqC(conReq, null);
         final HttpUrl endpoint = extXmlEndpoint != null ? extXmlEndpoint
                 : queryEndpoint.newBuilder().addPathSegment(apiLanguage).build();
-        final AtomicReference<QueryTripsResult> result = new AtomicReference<QueryTripsResult>();
+        final AtomicReference<QueryTripsResult> result = new AtomicReference<>();
         httpClient.getInputStream(new HttpClient.Callback() {
             @Override
             public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
@@ -917,7 +917,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
 
                     XmlPullUtil.enter(pp, "ConnectionList");
 
-                    final List<Trip> trips = new ArrayList<Trip>();
+                    final List<Trip> trips = new ArrayList<>();
 
                     while (XmlPullUtil.test(pp, "Connection")) {
                         final String id = context.sequence + "/" + XmlPullUtil.attr(pp, "id");
@@ -969,7 +969,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
 
                         XmlPullUtil.skipExit(pp, "Overview");
 
-                        final List<Trip.Leg> legs = new ArrayList<Trip.Leg>(4);
+                        final List<Trip.Leg> legs = new ArrayList<>(4);
 
                         XmlPullUtil.enter(pp, "ConSectionList");
 
@@ -1040,7 +1040,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
                                 XmlPullUtil.skipExit(pp, "JourneyAttributeList");
 
                                 if (XmlPullUtil.test(pp, "PassList")) {
-                                    intermediateStops = new LinkedList<Stop>();
+                                    intermediateStops = new LinkedList<>();
 
                                     XmlPullUtil.enter(pp, "PassList");
                                     while (XmlPullUtil.test(pp, "BasicStop")) {
@@ -1101,7 +1101,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
                             // polyline
                             final List<Point> path;
                             if (XmlPullUtil.test(pp, "Polyline")) {
-                                path = new LinkedList<Point>();
+                                path = new LinkedList<>();
                                 XmlPullUtil.enter(pp, "Polyline");
                                 while (XmlPullUtil.test(pp, "Point")) {
                                     final int x = XmlPullUtil.intAttr(pp, "x");
@@ -1196,7 +1196,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
 
     private final Map<String, String> parseAttributeVariants(final XmlPullParser pp)
             throws XmlPullParserException, IOException {
-        final Map<String, String> attributeVariants = new HashMap<String, String>();
+        final Map<String, String> attributeVariants = new HashMap<>();
 
         while (XmlPullUtil.test(pp, "AttributeVariant")) {
             final String type = XmlPullUtil.attr(pp, "type");
@@ -1418,7 +1418,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
          * Many thanks to Malte Starostik and Robert, who helped a lot with analyzing this API!
          */
 
-        final AtomicReference<QueryTripsResult> result = new AtomicReference<QueryTripsResult>();
+        final AtomicReference<QueryTripsResult> result = new AtomicReference<>();
 
         httpClient.getInputStream(new HttpClient.Callback() {
             @Override
@@ -1552,7 +1552,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
                     final CommentTable comments = new CommentTable(is, commentTablePtr,
                             tripDetailsPtr - commentTablePtr, strings);
 
-                    final List<Trip> trips = new ArrayList<Trip>(numTrips);
+                    final List<Trip> trips = new ArrayList<>(numTrips);
 
                     // read trips
                     for (int iTrip = 0; iTrip < numTrips; iTrip++) {
@@ -1628,7 +1628,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
                             }
                         }
 
-                        final List<Trip.Leg> legs = new ArrayList<Trip.Leg>(numLegs);
+                        final List<Trip.Leg> legs = new ArrayList<>(numLegs);
 
                         for (int iLegs = 0; iLegs < numLegs; iLegs++) {
                             is.reset();
@@ -1649,7 +1649,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
 
                             final int legAttrIndex = is.readShortReverse();
 
-                            final List<Line.Attr> lineAttrs = new ArrayList<Line.Attr>();
+                            final List<Line.Attr> lineAttrs = new ArrayList<>();
                             String lineComment = null;
                             boolean lineOnDemand = false;
                             for (final String comment : comments.read(is)) {
@@ -1780,7 +1780,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
                                 if (stopsSize != 26)
                                     throw new IllegalStateException("unhandled stops size: " + stopsSize);
 
-                                intermediateStops = new ArrayList<Stop>(numStops);
+                                intermediateStops = new ArrayList<>(numStops);
 
                                 for (int iStop = 0; iStop < numStops; iStop++) {
                                     final long plannedStopDepartureTime = time(is, resDate, tripDayOffset);
@@ -2242,7 +2242,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
         // scrape page
         final CharSequence page = httpClient.get(url);
 
-        final List<Location> stations = new ArrayList<Location>();
+        final List<Location> stations = new ArrayList<>();
 
         // parse page
         final Matcher mMessage = P_XML_NEARBY_STATIONS_MESSAGES.matcher(page);
@@ -2322,7 +2322,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
             final JSONObject head = new JSONObject(page.toString());
             final int error = head.getInt("error");
             if (error == 0) {
-                final List<Location> locations = new LinkedList<Location>();
+                final List<Location> locations = new LinkedList<>();
 
                 final JSONArray aStops = head.optJSONArray("stops");
                 if (aStops != null) {
@@ -2396,7 +2396,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
             .compile("(Ihre Eingabe kann nicht interpretiert werden)");
 
     protected final NearbyLocationsResult htmlNearbyStations(final HttpUrl url) throws IOException {
-        final List<Location> stations = new ArrayList<Location>();
+        final List<Location> stations = new ArrayList<>();
 
         final CharSequence page = httpClient.get(url);
         String oldZebra = null;
@@ -3034,7 +3034,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
             return new Line(null, network, product, normalizedName, lineStyle(network, product, normalizedName),
                     comment);
         } else {
-            final Set<Line.Attr> attrSet = new HashSet<Line.Attr>();
+            final Set<Line.Attr> attrSet = new HashSet<>();
             for (final Line.Attr attr : attrs)
                 attrSet.add(attr);
             return new Line(null, network, product, normalizedName, lineStyle(network, product, normalizedName),

@@ -256,7 +256,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
 
         try {
-            final List<SuggestedLocation> locations = new ArrayList<SuggestedLocation>();
+            final List<SuggestedLocation> locations = new ArrayList<>();
 
             final JSONObject head = new JSONObject(page.toString());
             final JSONObject stopFinder = head.optJSONObject("stopFinder");
@@ -358,7 +358,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     protected SuggestLocationsResult xmlStopfinderRequest(final Location constraint) throws IOException {
         final HttpUrl.Builder url = stopFinderEndpoint.newBuilder();
         appendStopfinderRequestParameters(url, constraint, "XML");
-        final AtomicReference<SuggestLocationsResult> result = new AtomicReference<SuggestLocationsResult>();
+        final AtomicReference<SuggestLocationsResult> result = new AtomicReference<>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
             @Override
@@ -368,7 +368,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                     pp.setInput(body.byteStream(), null); // Read encoding from XML declaration
                     final ResultHeader header = enterItdRequest(pp);
 
-                    final List<SuggestedLocation> locations = new ArrayList<SuggestedLocation>();
+                    final List<SuggestedLocation> locations = new ArrayList<>();
 
                     XmlPullUtil.enter(pp, "itdStopFinderRequest");
 
@@ -400,7 +400,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     protected SuggestLocationsResult mobileStopfinderRequest(final Location constraint) throws IOException {
         final HttpUrl.Builder url = stopFinderEndpoint.newBuilder();
         appendStopfinderRequestParameters(url, constraint, "XML");
-        final AtomicReference<SuggestLocationsResult> result = new AtomicReference<SuggestLocationsResult>();
+        final AtomicReference<SuggestLocationsResult> result = new AtomicReference<>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
             @Override
@@ -410,7 +410,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                     pp.setInput(body.byteStream(), null); // Read encoding from XML declaration
                     final ResultHeader header = enterEfa(pp);
 
-                    final List<SuggestedLocation> locations = new ArrayList<SuggestedLocation>();
+                    final List<SuggestedLocation> locations = new ArrayList<>();
 
                     XmlPullUtil.require(pp, "sf");
                     if (!pp.isEmptyElementTag()) {
@@ -510,7 +510,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             final int maxDistance, final int maxStations) throws IOException {
         final HttpUrl.Builder url = coordEndpoint.newBuilder();
         appendXmlCoordRequestParameters(url, types, lat, lon, maxDistance, maxStations);
-        final AtomicReference<NearbyLocationsResult> result = new AtomicReference<NearbyLocationsResult>();
+        final AtomicReference<NearbyLocationsResult> result = new AtomicReference<>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
             @Override
@@ -527,7 +527,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                     XmlPullUtil.enter(pp, "coordInfoRequest");
                     XmlPullUtil.skipExit(pp, "coordInfoRequest");
 
-                    final List<Location> locations = new ArrayList<Location>();
+                    final List<Location> locations = new ArrayList<>();
 
                     if (XmlPullUtil.test(pp, "coordInfoItemList")) {
                         XmlPullUtil.enter(pp, "coordInfoItemList");
@@ -584,7 +584,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             final int maxDistance, final int maxStations) throws IOException {
         final HttpUrl.Builder url = coordEndpoint.newBuilder();
         appendXmlCoordRequestParameters(url, types, lat, lon, maxDistance, maxStations);
-        final AtomicReference<NearbyLocationsResult> result = new AtomicReference<NearbyLocationsResult>();
+        final AtomicReference<NearbyLocationsResult> result = new AtomicReference<>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
             @Override
@@ -599,7 +599,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                     XmlPullUtil.enter(pp, "request");
                     XmlPullUtil.skipExit(pp, "request");
 
-                    final List<Location> stations = new ArrayList<Location>();
+                    final List<Location> stations = new ArrayList<>();
 
                     if (XmlPullUtil.test(pp, "pis")) {
                         XmlPullUtil.enter(pp, "pis");
@@ -861,7 +861,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         url.addEncodedQueryParameter("mergeDep", "1");
         url.addEncodedQueryParameter("useAllStops", "1");
         url.addEncodedQueryParameter("mode", "direct");
-        final AtomicReference<NearbyLocationsResult> result = new AtomicReference<NearbyLocationsResult>();
+        final AtomicReference<NearbyLocationsResult> result = new AtomicReference<>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
             @Override
@@ -873,8 +873,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
                     XmlPullUtil.enter(pp, "itdDepartureMonitorRequest");
 
-                    final AtomicReference<Location> ownStation = new AtomicReference<Location>();
-                    final List<Location> stations = new ArrayList<Location>();
+                    final AtomicReference<Location> ownStation = new AtomicReference<>();
+                    final List<Location> stations = new ArrayList<>();
 
                     final String nameState = processItdOdv(pp, "dm", new ProcessItdOdvCallback() {
                         @Override
@@ -1454,7 +1454,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             final int maxDepartures, final boolean equivs) throws IOException {
         final HttpUrl.Builder url = departureMonitorEndpoint.newBuilder();
         appendXsltDepartureMonitorRequestParameters(url, stationId, time, maxDepartures, equivs);
-        final AtomicReference<QueryDeparturesResult> result = new AtomicReference<QueryDeparturesResult>();
+        final AtomicReference<QueryDeparturesResult> result = new AtomicReference<>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
             @Override
@@ -1628,7 +1628,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             final int maxDepartures, final boolean equivs) throws IOException {
         final HttpUrl.Builder url = departureMonitorEndpoint.newBuilder();
         appendXsltDepartureMonitorRequestParameters(url, stationId, time, maxDepartures, equivs);
-        final AtomicReference<QueryDeparturesResult> result = new AtomicReference<QueryDeparturesResult>();
+        final AtomicReference<QueryDeparturesResult> result = new AtomicReference<>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
             @Override
@@ -2058,7 +2058,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         final HttpUrl.Builder url = tripEndpoint.newBuilder();
         appendXsltTripRequestParameters(url, from, via, to, date, dep, products, optimize, walkSpeed, accessibility,
                 options);
-        final AtomicReference<QueryTripsResult> result = new AtomicReference<QueryTripsResult>();
+        final AtomicReference<QueryTripsResult> result = new AtomicReference<>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
             @Override
@@ -2089,7 +2089,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         final HttpUrl.Builder url = tripEndpoint.newBuilder();
         appendXsltTripRequestParameters(url, from, via, to, date, dep, products, optimize, walkSpeed, accessibility,
                 options);
-        final AtomicReference<QueryTripsResult> result = new AtomicReference<QueryTripsResult>();
+        final AtomicReference<QueryTripsResult> result = new AtomicReference<>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
             @Override
@@ -2119,7 +2119,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         final HttpUrl commandUrl = HttpUrl.parse(context.context);
         final HttpUrl.Builder url = commandUrl.newBuilder();
         url.addEncodedQueryParameter("command", later ? "tripNext" : "tripPrev");
-        final AtomicReference<QueryTripsResult> result = new AtomicReference<QueryTripsResult>();
+        final AtomicReference<QueryTripsResult> result = new AtomicReference<>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
             @Override
@@ -2145,7 +2145,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         final HttpUrl commandUrl = HttpUrl.parse(context.context);
         final HttpUrl.Builder url = commandUrl.newBuilder();
         url.addEncodedQueryParameter("command", later ? "tripNext" : "tripPrev");
-        final AtomicReference<QueryTripsResult> result = new AtomicReference<QueryTripsResult>();
+        final AtomicReference<QueryTripsResult> result = new AtomicReference<>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
             @Override
@@ -2191,7 +2191,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         while (XmlPullUtil.test(pp, "itdOdv")) {
             final String usage = XmlPullUtil.attr(pp, "usage");
 
-            final List<Location> locations = new ArrayList<Location>();
+            final List<Location> locations = new ArrayList<>();
             final String nameState = processItdOdv(pp, usage, new ProcessItdOdvCallback() {
                 @Override
                 public void location(final String nameState, final Location location, final int matchQuality) {
@@ -2256,7 +2256,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         XmlPullUtil.requireSkip(pp, "itdTripOptions");
         XmlPullUtil.optSkipMultiple(pp, "omcTaxi");
 
-        final List<Trip> trips = new ArrayList<Trip>();
+        final List<Trip> trips = new ArrayList<>();
 
         XmlPullUtil.require(pp, "itdItinerary");
         if (!pp.isEmptyElementTag()) {
@@ -2288,7 +2288,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                     XmlPullUtil.optSkip(pp, "itdMapItemList");
 
                     XmlPullUtil.enter(pp, "itdPartialRouteList");
-                    final List<Trip.Leg> legs = new LinkedList<Trip.Leg>();
+                    final List<Trip.Leg> legs = new LinkedList<>();
                     Location firstDepartureLocation = null;
                     Location lastArrivalLocation = null;
 
@@ -2381,7 +2381,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
                     XmlPullUtil.skipExit(pp, "itdPartialRouteList");
 
-                    final List<Fare> fares = new ArrayList<Fare>(2);
+                    final List<Fare> fares = new ArrayList<>(2);
                     if (XmlPullUtil.test(pp, "itdFare")) {
                         if (!pp.isEmptyElementTag()) {
                             XmlPullUtil.enter(pp, "itdFare");
@@ -2565,7 +2565,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         List<Stop> intermediateStops = null;
         if (XmlPullUtil.test(pp, "itdStopSeq")) {
             XmlPullUtil.enter(pp, "itdStopSeq");
-            intermediateStops = new LinkedList<Stop>();
+            intermediateStops = new LinkedList<>();
             while (XmlPullUtil.test(pp, "itdPoint")) {
                 final Location stopLocation = processItdPointAttributes(pp);
 
@@ -2657,7 +2657,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             XmlPullUtil.skipExit(pp, "nextDeps");
         }
 
-        final Set<Line.Attr> lineAttrs = new HashSet<Line.Attr>();
+        final Set<Line.Attr> lineAttrs = new HashSet<>();
         if (wheelChairAccess || lowFloorVehicle)
             lineAttrs.add(Line.Attr.WHEEL_CHAIR_ACCESS);
         final Line styledLine = new Line(line.id, line.network, line.product, line.label,
@@ -2684,7 +2684,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         final Calendar plannedTimeCal = new GregorianCalendar(timeZone);
         final Calendar predictedTimeCal = new GregorianCalendar(timeZone);
 
-        final List<Trip> trips = new ArrayList<Trip>();
+        final List<Trip> trips = new ArrayList<>();
 
         if (XmlPullUtil.test(pp, "ts")) {
             if (!pp.isEmptyElementTag()) {
@@ -2704,7 +2704,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
                     XmlPullUtil.enter(pp, "ls");
 
-                    final List<Trip.Leg> legs = new LinkedList<Trip.Leg>();
+                    final List<Trip.Leg> legs = new LinkedList<>();
                     Location firstDepartureLocation = null;
                     Location lastArrivalLocation = null;
 
@@ -2784,7 +2784,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                         if (!pp.isEmptyElementTag()) {
                             XmlPullUtil.enter(pp, "pss");
 
-                            intermediateStops = new LinkedList<Stop>();
+                            intermediateStops = new LinkedList<>();
 
                             while (XmlPullUtil.test(pp, "s")) {
                                 plannedTimeCal.clear();
@@ -2877,7 +2877,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                         if (!pp.isEmptyElementTag()) {
                             XmlPullUtil.enter(pp, "tcs");
 
-                            fares = new ArrayList<Fare>(2);
+                            fares = new ArrayList<>(2);
                             XmlPullUtil.optSkipMultiple(pp, "tc"); // TODO fares
                             XmlPullUtil.skipExit(pp, "tcs");
                         } else {
@@ -2937,7 +2937,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
     private List<Point> processCoordinateStrings(final XmlPullParser pp, final String tag)
             throws XmlPullParserException, IOException {
-        final List<Point> path = new LinkedList<Point>();
+        final List<Point> path = new LinkedList<>();
 
         final String value = XmlPullUtil.valueTag(pp, tag);
         for (final String coordStr : value.split(" +"))
@@ -2947,7 +2947,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     }
 
     private List<Point> processCoordinateBaseElems(final XmlPullParser pp) throws XmlPullParserException, IOException {
-        final List<Point> path = new LinkedList<Point>();
+        final List<Point> path = new LinkedList<>();
 
         XmlPullUtil.enter(pp, "itdCoordinateBaseElemList");
 
@@ -3090,7 +3090,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             return location.name;
     }
 
-    private static final Map<WalkSpeed, String> WALKSPEED_MAP = new HashMap<WalkSpeed, String>();
+    private static final Map<WalkSpeed, String> WALKSPEED_MAP = new HashMap<>();
 
     static {
         WALKSPEED_MAP.put(WalkSpeed.SLOW, "slow");
@@ -3170,7 +3170,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     }
 
     private Map<String, String> processPas(final XmlPullParser pp) throws XmlPullParserException, IOException {
-        final Map<String, String> params = new HashMap<String, String>();
+        final Map<String, String> params = new HashMap<>();
 
         XmlPullUtil.enter(pp, "pas");
 

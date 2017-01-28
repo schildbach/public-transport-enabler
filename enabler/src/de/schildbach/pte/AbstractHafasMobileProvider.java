@@ -334,7 +334,7 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
 
             final JSONObject match = res.getJSONObject("match");
             final List<Location> locations = parseLocList(match.optJSONArray("locL"));
-            final List<SuggestedLocation> suggestedLocations = new ArrayList<SuggestedLocation>(locations.size());
+            final List<SuggestedLocation> suggestedLocations = new ArrayList<>(locations.size());
             for (final Location location : locations)
                 suggestedLocations.add(new SuggestedLocation(location));
             // TODO weight
@@ -444,7 +444,7 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
             final List<Line> lines = parseProdList(common.getJSONArray("prodL"), operators);
 
             final JSONArray outConList = res.optJSONArray("outConL");
-            final List<Trip> trips = new ArrayList<Trip>(outConList.length());
+            final List<Trip> trips = new ArrayList<>(outConList.length());
             for (int iOutCon = 0; iOutCon < outConList.length(); iOutCon++) {
                 final JSONObject outCon = outConList.getJSONObject(iOutCon);
                 final Location tripFrom = locations.get(outCon.getJSONObject("dep").getInt("locX"));
@@ -455,7 +455,7 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
                 final Date baseDate = c.getTime();
 
                 final JSONArray secList = outCon.optJSONArray("secL");
-                final List<Trip.Leg> legs = new ArrayList<Trip.Leg>(secList.length());
+                final List<Trip.Leg> legs = new ArrayList<>(secList.length());
                 for (int iSec = 0; iSec < secList.length(); iSec++) {
                     final JSONObject sec = secList.getJSONObject(iSec);
                     final String secType = sec.getString("type");
@@ -476,7 +476,7 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
 
                         final JSONArray stopList = jny.getJSONArray("stopL");
                         checkState(stopList.length() >= 2);
-                        final List<Stop> intermediateStops = new ArrayList<Stop>(stopList.length());
+                        final List<Stop> intermediateStops = new ArrayList<>(stopList.length());
                         for (int iStop = 1; iStop < stopList.length() - 1; iStop++) {
                             final JSONObject stop = stopList.getJSONObject(iStop);
                             final Stop intermediateStop = parseJsonStop(stop, locations, c, baseDate);
@@ -499,7 +499,7 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
                 }
 
                 final JSONObject trfRes = outCon.optJSONObject("trfRes");
-                final List<Fare> fares = new LinkedList<Fare>();
+                final List<Fare> fares = new LinkedList<>();
                 if (trfRes != null) {
                     final JSONArray fareSetList = trfRes.getJSONArray("fareSetL");
                     for (int iFareSet = 0; iFareSet < fareSetList.length(); iFareSet++) {
@@ -636,7 +636,7 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
     }
 
     private List<String[]> parseRemList(final JSONArray remList) throws JSONException {
-        final List<String[]> remarks = new ArrayList<String[]>(remList.length());
+        final List<String[]> remarks = new ArrayList<>(remList.length());
 
         for (int i = 0; i < remList.length(); i++) {
             final JSONObject rem = remList.getJSONObject(i);
@@ -649,7 +649,7 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
     }
 
     private List<Location> parseLocList(final JSONArray locList) throws JSONException {
-        final List<Location> locations = new ArrayList<Location>(locList.length());
+        final List<Location> locations = new ArrayList<>(locList.length());
 
         for (int iLoc = 0; iLoc < locList.length(); iLoc++) {
             final JSONObject loc = locList.getJSONObject(iLoc);
@@ -691,7 +691,7 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
     }
 
     private List<String> parseOpList(final JSONArray opList) throws JSONException {
-        final List<String> operators = new ArrayList<String>(opList.length());
+        final List<String> operators = new ArrayList<>(opList.length());
 
         for (int i = 0; i < opList.length(); i++) {
             final JSONObject op = opList.getJSONObject(i);
@@ -703,7 +703,7 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
     }
 
     private List<Line> parseProdList(final JSONArray prodList, final List<String> operators) throws JSONException {
-        final List<Line> lines = new ArrayList<Line>(prodList.length());
+        final List<Line> lines = new ArrayList<>(prodList.length());
 
         for (int iProd = 0; iProd < prodList.length(); iProd++) {
             final JSONObject prod = prodList.getJSONObject(iProd);

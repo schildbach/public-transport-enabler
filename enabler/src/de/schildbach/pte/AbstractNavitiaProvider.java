@@ -304,7 +304,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
     }
 
     private LinkedList<Point> parsePath(final JSONArray coordinates) throws IOException {
-        LinkedList<Point> path = new LinkedList<Point>();
+        LinkedList<Point> path = new LinkedList<>();
 
         for (int i = 0; i < coordinates.length(); ++i) {
             try {
@@ -494,7 +494,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
                 final Stop arrivalStop = parseStop(stopDateTimes.getJSONObject(nbStopDateTime - 1));
 
                 // Build intermediate stops.
-                final LinkedList<Stop> intermediateStops = new LinkedList<Stop>();
+                final LinkedList<Stop> intermediateStops = new LinkedList<>();
                 for (int i = 1; i < nbStopDateTime - 1; ++i) {
                     final Stop intermediateStop = parseStop(stopDateTimes.getJSONObject(i));
                     intermediateStops.add(intermediateStop);
@@ -555,7 +555,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
                 final int changeCount = journey.getInt("nb_transfers");
 
                 // Build leg list.
-                final List<Leg> legs = new LinkedList<Leg>();
+                final List<Leg> legs = new LinkedList<>();
                 final JSONArray sections = journey.getJSONArray("sections");
 
                 for (int j = 0; j < sections.length(); ++j) {
@@ -707,7 +707,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
             if (nbResults == 0) {
                 return new NearbyLocationsResult(resultHeader, Status.INVALID_ID);
             } else {
-                final List<Location> stations = new ArrayList<Location>();
+                final List<Location> stations = new ArrayList<>();
 
                 final JSONArray places = head.getJSONArray("places_nearby");
 
@@ -837,7 +837,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
         final CharSequence page = httpClient.get(url.build());
 
         try {
-            final List<SuggestedLocation> locations = new ArrayList<SuggestedLocation>();
+            final List<SuggestedLocation> locations = new ArrayList<>();
 
             final JSONObject head = new JSONObject(page.toString());
 
@@ -1086,7 +1086,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
             final String shape = regionInfo.getString("shape");
 
             // Parse string using JSON tokenizer for coordinates.
-            List<Point> pointList = new ArrayList<Point>();
+            List<Point> pointList = new ArrayList<>();
             final JSONTokener shapeTokener = new JSONTokener(shape);
             shapeTokener.skipTo('(');
             shapeTokener.next();

@@ -154,7 +154,7 @@ public class SeptaProvider extends AbstractHafasLegacyProvider {
             ParserUtils.parseAmericanDate(currentTime, mPageCoarse.group(2));
             ParserUtils.parseAmericanTime(currentTime, mPageCoarse.group(3));
 
-            final List<Departure> departures = new ArrayList<Departure>(8);
+            final List<Departure> departures = new ArrayList<>(8);
             String oldZebra = null;
 
             final Matcher mDepCoarse = P_DEPARTURES_COARSE.matcher(mPageCoarse.group(4));

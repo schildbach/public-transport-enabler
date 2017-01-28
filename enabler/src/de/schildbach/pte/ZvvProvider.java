@@ -179,7 +179,7 @@ public class ZvvProvider extends AbstractHafasLegacyProvider {
         return super.normalizeType(type);
     }
 
-    private static final Map<String, Style> STYLES = new HashMap<String, Style>();
+    private static final Map<String, Style> STYLES = new HashMap<>();
 
     static {
         // S-Bahn

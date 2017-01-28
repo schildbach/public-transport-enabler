@@ -91,7 +91,7 @@ public class ShProvider extends AbstractHafasMobileProvider {
             return new Fare("SH-Tarif", Type.ADULT, currency, price, name, null);
     }
 
-    protected static final Map<String, Style> STYLES = new HashMap<String, Style>();
+    protected static final Map<String, Style> STYLES = new HashMap<>();
 
     static {
         // Busse Kiel

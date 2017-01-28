@@ -74,7 +74,7 @@ public class KvvProvider extends AbstractEfaProvider {
         return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
     }
 
-    private static final Map<String, Style> STYLES = new HashMap<String, Style>();
+    private static final Map<String, Style> STYLES = new HashMap<>();
 
     static {
         // S-Bahn

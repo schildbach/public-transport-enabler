@@ -148,7 +148,7 @@ public final class BvgProvider extends AbstractHafasMobileProvider {
         return null;
     }
 
-    private static final Map<String, Style> STYLES = new HashMap<String, Style>();
+    private static final Map<String, Style> STYLES = new HashMap<>();
 
     static {
         STYLES.put("SS1", new Style(Style.rgb(221, 77, 174), Style.WHITE));

@@ -59,7 +59,7 @@ public class BsvagProvider extends AbstractEfaProvider {
         url.addEncodedQueryParameter("inclMOT_11", "on");
     }
 
-    private static final Map<String, Style> STYLES = new HashMap<String, Style>();
+    private static final Map<String, Style> STYLES = new HashMap<>();
 
     static {
         // Braunschweig

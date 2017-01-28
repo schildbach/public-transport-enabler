@@ -80,7 +80,7 @@ public class SvvProvider extends AbstractHafasMobileProvider {
         return super.splitAddress(address);
     }
 
-    private static final Map<String, Style> STYLES = new HashMap<String, Style>();
+    private static final Map<String, Style> STYLES = new HashMap<>();
 
     static {
         STYLES.put("svv|SS1", new Style(Style.parseColor("#b61d33"), Style.WHITE));

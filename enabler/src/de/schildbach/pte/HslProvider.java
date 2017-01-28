@@ -141,7 +141,7 @@ public class HslProvider extends AbstractNetworkProvider {
         final HttpUrl.Builder url = apiUrl("stop");
         url.addQueryParameter("code", stationId);
         url.addQueryParameter("dep_limit", "1");
-        final AtomicReference<Location> result = new AtomicReference<Location>();
+        final AtomicReference<Location> result = new AtomicReference<>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
             @Override
@@ -184,7 +184,7 @@ public class HslProvider extends AbstractNetworkProvider {
         url.addQueryParameter("center_coordinate", locationToCoords(location));
         url.addQueryParameter("limit", Integer.toString(maxStations));
         url.addQueryParameter("diameter", Integer.toString(maxDistance * 2));
-        final AtomicReference<NearbyLocationsResult> result = new AtomicReference<NearbyLocationsResult>();
+        final AtomicReference<NearbyLocationsResult> result = new AtomicReference<>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
             @Override
@@ -193,7 +193,7 @@ public class HslProvider extends AbstractNetworkProvider {
                     final XmlPullParser pp = parserFactory.newPullParser();
                     pp.setInput(body.charStream());
 
-                    final List<Location> stations = new ArrayList<Location>();
+                    final List<Location> stations = new ArrayList<>();
                     final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
 
                     XmlPullUtil.enter(pp, "response");
@@ -262,7 +262,7 @@ public class HslProvider extends AbstractNetworkProvider {
             url.addQueryParameter("time", new SimpleDateFormat("HHmm").format(queryDate));
         }
         url.addQueryParameter("dep_limit", Integer.toString(maxDepartures));
-        final AtomicReference<QueryDeparturesResult> result = new AtomicReference<QueryDeparturesResult>();
+        final AtomicReference<QueryDeparturesResult> result = new AtomicReference<>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
             @Override
@@ -278,7 +278,7 @@ public class HslProvider extends AbstractNetworkProvider {
                     final String id = xmlValueTag(pp, "code");
                     final String name = xmlValueTag(pp, "name_fi");
 
-                    final Map<String, Line> lines = new HashMap<String, Line>();
+                    final Map<String, Line> lines = new HashMap<>();
 
                     XmlPullUtil.skipUntil(pp, "lines");
                     XmlPullUtil.enter(pp, "lines");
@@ -294,7 +294,7 @@ public class HslProvider extends AbstractNetworkProvider {
                     XmlPullUtil.skipUntil(pp, "departures");
                     XmlPullUtil.enter(pp, "departures");
 
-                    final List<Departure> departures = new ArrayList<Departure>(maxDepartures);
+                    final List<Departure> departures = new ArrayList<>(maxDepartures);
                     while (XmlPullUtil.test(pp, "node")) {
                         XmlPullUtil.enter(pp, "node");
                         final String code = xmlValueTag(pp, "code");
@@ -341,14 +341,14 @@ public class HslProvider extends AbstractNetworkProvider {
         // name.
         String constraintStr = constraint.toString().replaceAll("[^\\p{Ll}\\p{Lu}\\p{Lt}\\p{Lo}\\p{Nd}\\d-'/ ]", "");
         url.addQueryParameter("key", constraintStr);
-        final AtomicReference<SuggestLocationsResult> result = new AtomicReference<SuggestLocationsResult>();
+        final AtomicReference<SuggestLocationsResult> result = new AtomicReference<>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
             @Override
             public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
                 try {
                     final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
-                    final List<SuggestedLocation> locations = new ArrayList<SuggestedLocation>();
+                    final List<SuggestedLocation> locations = new ArrayList<>();
 
                     final XmlPullParser pp = parserFactory.newPullParser();
                     pp.setInput(body.charStream());
@@ -417,7 +417,7 @@ public class HslProvider extends AbstractNetworkProvider {
             this.via = via;
             this.to = to;
             this.date = date;
-            this.trips = new ArrayList<Trip>();
+            this.trips = new ArrayList<>();
         }
 
         @Override
@@ -480,7 +480,7 @@ public class HslProvider extends AbstractNetworkProvider {
         url.addQueryParameter("show", "5");
 
         if (products != null && products.size() > 0) {
-            List<String> tt = new ArrayList<String>();
+            List<String> tt = new ArrayList<>();
             if (products.contains(Product.HIGH_SPEED_TRAIN) || products.contains(Product.REGIONAL_TRAIN)
                     || products.contains(Product.SUBURBAN_TRAIN))
                 tt.add("train");
@@ -550,7 +550,7 @@ public class HslProvider extends AbstractNetworkProvider {
         final HttpUrl.Builder url = HttpUrl.parse(context.uri).newBuilder();
         url.addQueryParameter("date", new SimpleDateFormat("yyyyMMdd").format(date));
         url.addQueryParameter("time", new SimpleDateFormat("HHmm").format(date));
-        final AtomicReference<QueryTripsResult> result = new AtomicReference<QueryTripsResult>();
+        final AtomicReference<QueryTripsResult> result = new AtomicReference<>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
             @Override
@@ -563,10 +563,10 @@ public class HslProvider extends AbstractNetworkProvider {
 
                     final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
 
-                    final List<Trip> trips = new ArrayList<Trip>(context.trips);
+                    final List<Trip> trips = new ArrayList<>(context.trips);
 
                     // we use this for quick checking if trip already exists
-                    Set<String> tripSet = new HashSet<String>();
+                    Set<String> tripSet = new HashSet<>();
                     for (Trip t : trips)
                         tripSet.add(t.getId());
 
@@ -577,7 +577,7 @@ public class HslProvider extends AbstractNetworkProvider {
 
                         XmlPullUtil.enter(pp, "node");
 
-                        List<Trip.Leg> legs = new ArrayList<Trip.Leg>();
+                        List<Trip.Leg> legs = new ArrayList<>();
 
                         XmlPullUtil.skipUntil(pp, "legs");
                         XmlPullUtil.enter(pp, "legs");
@@ -590,7 +590,7 @@ public class HslProvider extends AbstractNetworkProvider {
                             String legType = xmlValueTag(pp, "type");
                             String lineCode = XmlPullUtil.optValueTag(pp, "code", null);
 
-                            List<Point> path = new ArrayList<Point>();
+                            List<Point> path = new ArrayList<>();
 
                             Location departure = null;
                             Date departureTime = null;
@@ -599,7 +599,7 @@ public class HslProvider extends AbstractNetworkProvider {
                             Location arrival = null;
                             Date arrivalTime = null;
 
-                            LinkedList<Stop> stops = new LinkedList<Stop>();
+                            LinkedList<Stop> stops = new LinkedList<>();
 
                             XmlPullUtil.skipUntil(pp, "locs");
                             XmlPullUtil.enter(pp, "locs");

@@ -196,7 +196,7 @@ public class InvgProvider extends AbstractHafasLegacyProvider {
                 currentTime.clear();
                 ParserUtils.parseGermanDate(currentTime, mHeadFine.group(2));
                 ParserUtils.parseEuropeanTime(currentTime, mHeadFine.group(3));
-                final List<Departure> departures = new ArrayList<Departure>(8);
+                final List<Departure> departures = new ArrayList<>(8);
                 String oldZebra = null;
 
                 final Matcher mDepCoarse = P_DEPARTURES_COARSE.matcher(mHeadCoarse.group(3));
@@ -330,7 +330,7 @@ public class InvgProvider extends AbstractHafasLegacyProvider {
         throw new IllegalStateException("cannot normalize type '" + type + "'");
     }
 
-    private static final Map<String, Style> STYLES = new HashMap<String, Style>();
+    private static final Map<String, Style> STYLES = new HashMap<>();
 
     static {
         STYLES.put("B10", new Style(Style.parseColor("#DA2510"), Style.WHITE));

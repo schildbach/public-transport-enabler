@@ -79,7 +79,7 @@ public class VorProvider extends AbstractHafasMobileProvider {
         return super.splitAddress(address);
     }
 
-    private static final Map<String, Style> STYLES = new HashMap<String, Style>();
+    private static final Map<String, Style> STYLES = new HashMap<>();
 
     static {
         // Wien
