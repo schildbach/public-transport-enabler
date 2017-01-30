@@ -2817,9 +2817,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                                     if (!"::".equals(coordPart)) {
                                         final String[] coordParts = coordPart.split(":");
                                         if ("WGS84".equals(coordParts[2])) {
-                                            final double lat = Double.parseDouble(coordParts[1]);
-                                            final double lon = Double.parseDouble(coordParts[0]);
-                                            coords = Point.fromDouble(lat, lon);
+                                            final int lat = (int) Math.round(Double.parseDouble(coordParts[1]));
+                                            final int lon = (int) Math.round(Double.parseDouble(coordParts[0]));
+                                            coords = new Point(lat, lon);
                                         } else {
                                             coords = null;
                                         }
