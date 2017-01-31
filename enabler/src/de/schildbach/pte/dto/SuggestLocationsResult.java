@@ -41,7 +41,7 @@ public final class SuggestLocationsResult implements Serializable {
 
     public final @Nullable ResultHeader header;
     public final Status status;
-    private final List<SuggestedLocation> suggestedLocations;
+    public final List<SuggestedLocation> suggestedLocations;
 
     public SuggestLocationsResult(final ResultHeader header, final List<SuggestedLocation> suggestedLocations) {
         this.header = header;
