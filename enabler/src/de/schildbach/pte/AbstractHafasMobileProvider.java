@@ -426,6 +426,8 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
                     return new QueryTripsResult(header, QueryTripsResult.Status.TOO_CLOSE);
                 if ("H9220".equals(err)) // Nearby to the given address stations could not be found.
                     return new QueryTripsResult(header, QueryTripsResult.Status.UNRESOLVABLE_ADDRESS);
+                if ("H9240".equals(err)) // HAFAS Kernel: Internal error.
+                    return new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN);
                 if ("H9360".equals(err)) // Date outside of the timetable period.
                     return new QueryTripsResult(header, QueryTripsResult.Status.INVALID_DATE);
                 if ("H9380".equals(err)) // Departure/Arrival/Intermediate or equivalent stations def'd more
