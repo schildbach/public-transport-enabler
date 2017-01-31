@@ -74,6 +74,14 @@ public class WordUtils {
         return cs == null || cs.length() == 0;
     }
 
+    public static String capitalizeFirst(final String str) {
+        if (str == null || str.length() <= 0)
+            return str;
+        if (str.length() == 1)
+            return str.toUpperCase();
+        return str.substring(0, 1).toUpperCase() + str.substring(1);
+    }
+
     // stripped:
     // public static String wrap(final String str, final int wrapLength)
     // public static String wrap(final String str, int wrapLength, String newLineStr, final boolean
