@@ -538,13 +538,8 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
                         if (!"cancel".equals(delay) && !"cancel".equals(eDelay)) {
                             final Calendar plannedTime = new GregorianCalendar(timeZone);
                             plannedTime.clear();
-                            ParserUtils.parseEuropeanTime(plannedTime, fpTime);
-                            if (fpDate.length() == 8)
-                                ParserUtils.parseGermanDate(plannedTime, fpDate);
-                            else if (fpDate.length() == 10)
-                                ParserUtils.parseIsoDate(plannedTime, fpDate);
-                            else
-                                throw new IllegalStateException("cannot parse: '" + fpDate + "'");
+                            parseXmlStationBoardDate(plannedTime, fpDate);
+                            parseXmlStationBoardTime(plannedTime, fpTime);
 
                             final Calendar predictedTime;
                             if (eDelay != null) {
@@ -670,6 +665,19 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
         }, url);
 
         return result.get();
+    }
+
+    protected void parseXmlStationBoardDate(final Calendar calendar, final String dateStr) {
+        if (dateStr.length() == 8)
+            ParserUtils.parseGermanDate(calendar, dateStr);
+        else if (dateStr.length() == 10)
+            ParserUtils.parseIsoDate(calendar, dateStr);
+        else
+            throw new IllegalStateException("cannot parse: '" + dateStr + "'");
+    }
+
+    protected void parseXmlStationBoardTime(final Calendar calendar, final String timeStr) {
+        ParserUtils.parseEuropeanTime(calendar, timeStr);
     }
 
     protected void addCustomReplaces(final StringReplaceReader reader) {

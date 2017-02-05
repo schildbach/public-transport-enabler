@@ -18,6 +18,7 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -28,6 +29,7 @@ import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Product;
+import de.schildbach.pte.util.ParserUtils;
 
 import okhttp3.HttpUrl;
 
@@ -107,5 +109,10 @@ public class SncbProvider extends AbstractHafasLegacyProvider {
             return Product.TRAM;
 
         return super.normalizeType(type);
+    }
+
+    @Override
+    protected void parseXmlStationBoardDate(final Calendar calendar, final String dateStr) {
+        ParserUtils.parseGermanDate(calendar, dateStr);
     }
 }
