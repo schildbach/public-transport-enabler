@@ -2386,40 +2386,43 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                         if (!pp.isEmptyElementTag()) {
                             XmlPullUtil.enter(pp, "itdFare");
                             if (XmlPullUtil.test(pp, "itdSingleTicket")) {
-                                final String net = XmlPullUtil.attr(pp, "net").toUpperCase();
-                                final Currency currency = parseCurrency(XmlPullUtil.attr(pp, "currency"));
-                                final String fareAdult = XmlPullUtil.optAttr(pp, "fareAdult", null);
-                                final String fareChild = XmlPullUtil.optAttr(pp, "fareChild", null);
-                                final String unitName = XmlPullUtil.optAttr(pp, "unitName", null);
-                                final String unitsAdult = XmlPullUtil.optAttr(pp, "unitsAdult", null);
-                                final String unitsChild = XmlPullUtil.optAttr(pp, "unitsChild", null);
-                                final String levelAdult = XmlPullUtil.optAttr(pp, "levelAdult", null);
-                                final String levelChild = XmlPullUtil.optAttr(pp, "levelChild", null);
-                                if (fareAdult != null)
-                                    fares.add(new Fare(net, Type.ADULT, currency,
-                                            Float.parseFloat(fareAdult) * fareCorrectionFactor,
-                                            levelAdult != null ? null : unitName,
-                                            levelAdult != null ? levelAdult : unitsAdult));
-                                if (fareChild != null)
-                                    fares.add(new Fare(net, Type.CHILD, currency,
-                                            Float.parseFloat(fareChild) * fareCorrectionFactor,
-                                            levelChild != null ? null : unitName,
-                                            levelChild != null ? levelChild : unitsChild));
+                                final String net = XmlPullUtil.optAttr(pp, "net", null);
+                                if (net != null) {
+                                    final Currency currency = parseCurrency(XmlPullUtil.attr(pp, "currency"));
+                                    final String fareAdult = XmlPullUtil.optAttr(pp, "fareAdult", null);
+                                    final String fareChild = XmlPullUtil.optAttr(pp, "fareChild", null);
+                                    final String unitName = XmlPullUtil.optAttr(pp, "unitName", null);
+                                    final String unitsAdult = XmlPullUtil.optAttr(pp, "unitsAdult", null);
+                                    final String unitsChild = XmlPullUtil.optAttr(pp, "unitsChild", null);
+                                    final String levelAdult = XmlPullUtil.optAttr(pp, "levelAdult", null);
+                                    final String levelChild = XmlPullUtil.optAttr(pp, "levelChild", null);
+                                    if (fareAdult != null)
+                                        fares.add(new Fare(net.toUpperCase(), Type.ADULT, currency,
+                                                Float.parseFloat(fareAdult) * fareCorrectionFactor,
+                                                levelAdult != null ? null : unitName,
+                                                levelAdult != null ? levelAdult : unitsAdult));
+                                    if (fareChild != null)
+                                        fares.add(new Fare(net.toUpperCase(), Type.CHILD, currency,
+                                                Float.parseFloat(fareChild) * fareCorrectionFactor,
+                                                levelChild != null ? null : unitName,
+                                                levelChild != null ? levelChild : unitsChild));
 
-                                if (!pp.isEmptyElementTag()) {
-                                    XmlPullUtil.enter(pp, "itdSingleTicket");
-                                    if (XmlPullUtil.test(pp, "itdGenericTicketList")) {
-                                        XmlPullUtil.enter(pp, "itdGenericTicketList");
-                                        while (XmlPullUtil.test(pp, "itdGenericTicketGroup")) {
-                                            final Fare fare = processItdGenericTicketGroup(pp, net, currency);
-                                            if (fare != null)
-                                                fares.add(fare);
+                                    if (!pp.isEmptyElementTag()) {
+                                        XmlPullUtil.enter(pp, "itdSingleTicket");
+                                        if (XmlPullUtil.test(pp, "itdGenericTicketList")) {
+                                            XmlPullUtil.enter(pp, "itdGenericTicketList");
+                                            while (XmlPullUtil.test(pp, "itdGenericTicketGroup")) {
+                                                final Fare fare = processItdGenericTicketGroup(pp, net.toUpperCase(),
+                                                        currency);
+                                                if (fare != null)
+                                                    fares.add(fare);
+                                            }
+                                            XmlPullUtil.skipExit(pp, "itdGenericTicketList");
                                         }
-                                        XmlPullUtil.skipExit(pp, "itdGenericTicketList");
+                                        XmlPullUtil.skipExit(pp, "itdSingleTicket");
+                                    } else {
+                                        XmlPullUtil.next(pp);
                                     }
-                                    XmlPullUtil.skipExit(pp, "itdSingleTicket");
-                                } else {
-                                    XmlPullUtil.next(pp);
                                 }
                             }
                             XmlPullUtil.skipExit(pp, "itdFare");
