@@ -101,7 +101,7 @@ public class HslProvider extends AbstractNetworkProvider {
 
     private HttpUrl.Builder apiUrl(final String request) {
         final HttpUrl.Builder url = API_BASE.newBuilder();
-        url.addPathSegment(SERVER_VERSION);
+        url.addPathSegment(SERVER_VERSION).addPathSegment("");
         url.addQueryParameter("user", user);
         url.addQueryParameter("pass", pass);
         url.addQueryParameter("request", request);
