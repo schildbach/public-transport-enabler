@@ -69,7 +69,7 @@ import okhttp3.ResponseBody;
  * @author Mats Sjöberg <mats@sjoberg.fi>
  */
 public class HslProvider extends AbstractNetworkProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("http://api.reittiopas.fi/hsl/");
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://api.reittiopas.fi/hsl/");
     private static final String SERVER_PRODUCT = "hsl";
     private static final String SERVER_VERSION = "1_2_0";
     private static final int EARLIER_TRIPS_MINUTE_OFFSET = 5;
