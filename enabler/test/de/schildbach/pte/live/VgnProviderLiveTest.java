@@ -35,14 +35,12 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
 
-import okhttp3.HttpUrl;
-
 /**
  * @author Andreas Schildbach
  */
 public class VgnProviderLiveTest extends AbstractProviderLiveTest {
     public VgnProviderLiveTest() {
-        super(new VgnProvider(HttpUrl.parse(secretProperty("vgn.api_base"))));
+        super(new VgnProvider());
     }
 
     @Test
