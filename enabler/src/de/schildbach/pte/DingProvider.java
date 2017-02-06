@@ -23,9 +23,8 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class DingProvider extends AbstractEfaProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("http://www.ding-ulm.de/ding2/");
-
-    // http://www.ding.eu/swu
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://www.ding.eu/ding3/");
+    // https://www.ding.eu/swu/
 
     public DingProvider() {
         super(NetworkId.DING, API_BASE);
