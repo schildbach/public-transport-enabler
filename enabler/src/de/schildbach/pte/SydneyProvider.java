@@ -165,6 +165,12 @@ public class SydneyProvider extends AbstractEfaProvider {
                 return new Line(id, network, Product.FERRY, "Stkn");
             if ("CCWB".equals(symbol) || "Circular Quay to Watsons Bay".equals(name))
                 return new Line(id, network, Product.FERRY, "CCWB");
+            if ("CCZC".equals(symbol) || "City to Taronga Zoo".equals(name))
+                return new Line(id, network, Product.FERRY, "CCZC");
+            if ("CCGD".equals(symbol) || "City to Garden Island and Manly".equals(name))
+                return new Line(id, network, Product.FERRY, "CCGD");
+            if ("CCWM".equals(symbol) || "Manly to Watsons Bay".equals(name))
+                return new Line(id, network, Product.FERRY, "CCWM");
 
             throw new IllegalStateException("cannot normalize mot='" + mot + "' symbol='" + symbol + "' name='" + name
                     + "' long='" + longName + "' trainType='" + trainType + "' trainNum='" + trainNum + "' trainName='"
@@ -174,7 +180,7 @@ public class SydneyProvider extends AbstractEfaProvider {
         return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
     }
 
-    private static final Map<String, Style> STYLES = new HashMap<String, Style>();
+    private static final Map<String, Style> STYLES = new HashMap<>();
 
     static {
         STYLES.put("SBMT", new Style(Style.parseColor("#f5a81d"), Style.WHITE));

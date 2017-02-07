@@ -36,7 +36,7 @@ public class Standard {
     public static final int COLOR_BACKGROUND_BUS = Style.parseColor("#993399");
     public static final int COLOR_BACKGROUND_FERRY = Style.BLUE;
 
-    public static final Map<Product, Style> STYLES = new HashMap<Product, Style>();
+    public static final Map<Product, Style> STYLES = new HashMap<>();
 
     static {
         STYLES.put(Product.HIGH_SPEED_TRAIN,

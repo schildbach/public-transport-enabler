@@ -56,7 +56,7 @@ import okhttp3.HttpUrl;
 /**
  * @author Andreas Schildbach
  */
-public class SeptaProvider extends AbstractHafasProvider {
+public class SeptaProvider extends AbstractHafasLegacyProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("http://airs1.septa.org/bin/");
     private static final Product[] PRODUCTS_MAP = { Product.SUBWAY, Product.TRAM, Product.BUS, Product.SUBURBAN_TRAIN };
     private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
@@ -154,7 +154,7 @@ public class SeptaProvider extends AbstractHafasProvider {
             ParserUtils.parseAmericanDate(currentTime, mPageCoarse.group(2));
             ParserUtils.parseAmericanTime(currentTime, mPageCoarse.group(3));
 
-            final List<Departure> departures = new ArrayList<Departure>(8);
+            final List<Departure> departures = new ArrayList<>(8);
             String oldZebra = null;
 
             final Matcher mDepCoarse = P_DEPARTURES_COARSE.matcher(mPageCoarse.group(4));

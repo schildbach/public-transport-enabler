@@ -59,7 +59,7 @@ import okhttp3.HttpUrl;
 /**
  * @author Andreas Schildbach
  */
-public class InvgProvider extends AbstractHafasProvider {
+public class InvgProvider extends AbstractHafasLegacyProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("http://fpa.invg.de/bin/");
     // http://invg.hafas.de/bin/
     private static final Product[] PRODUCTS_MAP = { null, null, null, null, null, null, null, null, null, null };
@@ -196,7 +196,7 @@ public class InvgProvider extends AbstractHafasProvider {
                 currentTime.clear();
                 ParserUtils.parseGermanDate(currentTime, mHeadFine.group(2));
                 ParserUtils.parseEuropeanTime(currentTime, mHeadFine.group(3));
-                final List<Departure> departures = new ArrayList<Departure>(8);
+                final List<Departure> departures = new ArrayList<>(8);
                 String oldZebra = null;
 
                 final Matcher mDepCoarse = P_DEPARTURES_COARSE.matcher(mHeadCoarse.group(3));
@@ -330,7 +330,7 @@ public class InvgProvider extends AbstractHafasProvider {
         throw new IllegalStateException("cannot normalize type '" + type + "'");
     }
 
-    private static final Map<String, Style> STYLES = new HashMap<String, Style>();
+    private static final Map<String, Style> STYLES = new HashMap<>();
 
     static {
         STYLES.put("B10", new Style(Style.parseColor("#DA2510"), Style.WHITE));

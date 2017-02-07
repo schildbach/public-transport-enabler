@@ -68,7 +68,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
 public final class HttpClient {
     @Nullable
     private String userAgent = null;
-    private Map<String, String> headers = new HashMap<String, String>();
+    private Map<String, String> headers = new HashMap<>();
     @Nullable
     private String sessionCookieName = null;
     @Nullable

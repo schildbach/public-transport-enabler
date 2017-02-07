@@ -518,7 +518,7 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
     }
 
     private void crawlStationsAndLines(int latFrom, int latTo, int lonFrom, int lonTo) throws Exception {
-        Set<Location> stations = new TreeSet<Location>(new LocationComparator());
+        Set<Location> stations = new TreeSet<>(new LocationComparator());
         Random rand = new Random(new Date().getTime());
         for (int i = 0; i < 5; i++) {
             int lat = latFrom + rand.nextInt(latTo - latFrom);
@@ -530,7 +530,7 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
                 stations.addAll(result.locations);
             }
         }
-        Set<Line> lines = new TreeSet<Line>();
+        Set<Line> lines = new TreeSet<>();
         for (Location station : stations) {
             QueryDeparturesResult qdr = provider.queryDepartures(station.id,
                     Iso8601Format.parseDateTime("2015-03-16 02:00:00"), 100, false);

@@ -28,7 +28,7 @@ import okhttp3.HttpUrl;
 /**
  * @author Andreas Schildbach
  */
-public final class BahnProvider extends AbstractHafasProvider {
+public final class BahnProvider extends AbstractHafasLegacyProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("https://reiseauskunft.bahn.de/bin/");
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.REGIONAL_TRAIN, Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.BUS, Product.FERRY,

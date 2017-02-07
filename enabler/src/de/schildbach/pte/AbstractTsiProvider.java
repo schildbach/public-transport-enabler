@@ -123,7 +123,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider {
     private static final String DEFAULT_TRIP_ENDPOINT = "journeyplanner/v2";
     private static final String SERVER_PRODUCT = "tsi";
 
-    private static Map<String, Product> TRANSPORT_MODES = new HashMap<String, Product>();
+    private static Map<String, Product> TRANSPORT_MODES = new HashMap<>();
     static {
         // HIGH_SPEED_TRAIN
         TRANSPORT_MODES.put("TGV", Product.HIGH_SPEED_TRAIN);
@@ -200,7 +200,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider {
 
         final CharSequence page = httpClient.get(url.build());
         try {
-            final List<SuggestedLocation> locations = new ArrayList<SuggestedLocation>();
+            final List<SuggestedLocation> locations = new ArrayList<>();
             final JSONObject head = new JSONObject(page.toString());
 
             final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
@@ -258,7 +258,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider {
 
         final List<Location> locations = suggestLocations(location.uniqueShortName()).getLocations();
         if (locations == null)
-            return new ArrayList<Location>(0);
+            return new ArrayList<>(0);
 
         return locations;
     }
@@ -275,7 +275,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider {
 
         final CharSequence page = httpClient.get(url.build());
         try {
-            final List<Location> stations = new ArrayList<Location>();
+            final List<Location> stations = new ArrayList<>();
             final JSONObject head = new JSONObject(page.toString());
 
             final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
@@ -352,7 +352,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider {
         }
 
         final JSONArray pathLinks = legInfo.getJSONObject("pathLinks").getJSONArray("PathLink");
-        final List<Point> path = new ArrayList<Point>(pathLinks.length() + 1);
+        final List<Point> path = new ArrayList<>(pathLinks.length() + 1);
 
         int distance = 0;
         path.add(new Point(departure.lat, departure.lon));
@@ -440,7 +440,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider {
         }
 
         final JSONArray stepArray = ptrInfo.getJSONObject("steps").getJSONArray("Step");
-        List<Stop> intermediateStops = new ArrayList<Stop>(stepArray.length() - 1);
+        List<Stop> intermediateStops = new ArrayList<>(stepArray.length() - 1);
         for (int i = 0; i < stepArray.length() - 1; i++) {
             final JSONObject enterStop = stepArray.getJSONObject(i).getJSONObject("Arrival");
             final JSONObject leaveStop = stepArray.getJSONObject(i + 1).getJSONObject("Departure");
@@ -469,7 +469,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider {
         final Location to = parseJsonJourneyplannerLocation(arrivalInfo.getJSONObject("Site"));
 
         final JSONArray legArray = tripObject.getJSONObject("sections").getJSONArray("Section");
-        final List<Trip.Leg> legs = new ArrayList<Trip.Leg>(legArray.length());
+        final List<Trip.Leg> legs = new ArrayList<>(legArray.length());
 
         for (int i = 0; i < legArray.length(); i++) {
             legs.add(parseJsonJourneyplannerLeg(legArray.getJSONObject(i)));
@@ -688,7 +688,7 @@ public abstract class AbstractTsiProvider extends AbstractNetworkProvider {
             }
 
             final JSONArray tripArray = head.getJSONObject("trips").getJSONArray("Trip");
-            final List<Trip> trips = new ArrayList<Trip>(tripArray.length());
+            final List<Trip> trips = new ArrayList<>(tripArray.length());
 
             for (int i = 0; i < tripArray.length(); i++) {
                 final JSONObject tripObject = tripArray.getJSONObject(i);

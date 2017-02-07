@@ -18,6 +18,7 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -28,13 +29,14 @@ import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Product;
+import de.schildbach.pte.util.ParserUtils;
 
 import okhttp3.HttpUrl;
 
 /**
  * @author Andreas Schildbach
  */
-public class SncbProvider extends AbstractHafasProvider {
+public class SncbProvider extends AbstractHafasLegacyProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("https://www.belgianrail.be/jp/sncb-nmbs-routeplanner/");
     // http://hari.b-rail.be/hafas/bin/
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, null, Product.HIGH_SPEED_TRAIN, null,
@@ -107,5 +109,10 @@ public class SncbProvider extends AbstractHafasProvider {
             return Product.TRAM;
 
         return super.normalizeType(type);
+    }
+
+    @Override
+    protected void parseXmlStationBoardDate(final Calendar calendar, final String dateStr) {
+        ParserUtils.parseGermanDate(calendar, dateStr);
     }
 }

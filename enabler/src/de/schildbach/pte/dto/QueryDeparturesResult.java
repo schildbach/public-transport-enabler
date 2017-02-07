@@ -39,7 +39,7 @@ public final class QueryDeparturesResult implements Serializable {
 
     public final @Nullable ResultHeader header;
     public final Status status;
-    public final List<StationDepartures> stationDepartures = new LinkedList<StationDepartures>();
+    public final List<StationDepartures> stationDepartures = new LinkedList<>();
 
     public QueryDeparturesResult(final ResultHeader header) {
         this.header = header;

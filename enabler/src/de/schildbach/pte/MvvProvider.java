@@ -95,7 +95,7 @@ public class MvvProvider extends AbstractEfaProvider {
         return super.parsePosition(position);
     }
 
-    private static final Map<String, Style> STYLES = new HashMap<String, Style>();
+    private static final Map<String, Style> STYLES = new HashMap<>();
 
     static {
         STYLES.put("SS1", new Style(Style.parseColor("#00ccff"), Style.WHITE));

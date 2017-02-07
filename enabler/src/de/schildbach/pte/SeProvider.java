@@ -31,7 +31,7 @@ import okhttp3.HttpUrl;
 /**
  * @author Andreas Schildbach
  */
-public class SeProvider extends AbstractHafasProvider {
+public class SeProvider extends AbstractHafasLegacyProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("https://reseplanerare.resrobot.se/bin/");
     // http://samtrafiken.hafas.de/bin/
     // http://reseplanerare.resrobot.se/bin/

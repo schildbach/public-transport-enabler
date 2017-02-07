@@ -41,7 +41,7 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
  */
 public class BvgProviderLiveTest extends AbstractProviderLiveTest {
     public BvgProviderLiveTest() {
-        super(new BvgProvider());
+        super(new BvgProvider(secretProperty("bvg.api_authorization")));
     }
 
     @Test
@@ -114,7 +114,8 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest {
     public void suggestLocationsPOI() throws Exception {
         final SuggestLocationsResult result = suggestLocations("schwules museum");
         print(result);
-        assertThat(result.getLocations(), hasItem(new Location(LocationType.POI, "9980141")));
+        assertThat(result.getLocations(), hasItem(new Location(LocationType.POI,
+                "A=4@O=Berlin, Schwules Museum@X=13357979@Y=52504519@U=104@L=9980141@B=1@p=1417107246@")));
     }
 
     @Test

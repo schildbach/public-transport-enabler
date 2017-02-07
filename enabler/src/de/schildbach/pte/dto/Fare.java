@@ -32,7 +32,7 @@ import com.google.common.base.Objects;
  */
 public final class Fare implements Serializable {
     public enum Type {
-        ADULT, CHILD, YOUTH, STUDENT, MILITARY, SENIOR, DISABLED
+        ADULT, CHILD, YOUTH, STUDENT, MILITARY, SENIOR, DISABLED, BIKE
     }
 
     private static final long serialVersionUID = -6136489996930976421L;

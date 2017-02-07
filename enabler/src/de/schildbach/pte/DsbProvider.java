@@ -27,7 +27,7 @@ import okhttp3.HttpUrl;
 /**
  * @author Andreas Schildbach
  */
-public class DsbProvider extends AbstractHafasProvider {
+public class DsbProvider extends AbstractHafasLegacyProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("http://mobil.rejseplanen.dk/mobil-bin/");
     // http://dk.hafas.de/bin/fat/
     // http://mobil.rejseplanen.dk/mobil-bin/

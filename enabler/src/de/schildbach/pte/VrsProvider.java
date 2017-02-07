@@ -174,7 +174,7 @@ public class VrsProvider extends AbstractNetworkProvider {
     };
     protected static final Pattern nrwTarifPattern = Pattern.compile("([\\d]+,\\d\\d)");
 
-    protected static final Map<String, Style> STYLES = new HashMap<String, Style>();
+    protected static final Map<String, Style> STYLES = new HashMap<>();
 
     static {
         // Stadtbahn Köln-Bonn
@@ -380,7 +380,7 @@ public class VrsProvider extends AbstractNetworkProvider {
         final CharSequence page = httpClient.get(url.build());
 
         try {
-            final List<Location> locations = new ArrayList<Location>();
+            final List<Location> locations = new ArrayList<>();
             final JSONObject head = new JSONObject(page.toString());
             final String error = Strings.emptyToNull(head.optString("error", "").trim());
             if (error != null) {
@@ -592,7 +592,7 @@ public class VrsProvider extends AbstractNetworkProvider {
         final CharSequence page = httpClient.get(url.build());
 
         try {
-            final List<SuggestedLocation> locations = new ArrayList<SuggestedLocation>();
+            final List<SuggestedLocation> locations = new ArrayList<>();
 
             final JSONObject head = new JSONObject(page.toString());
             final String error = Strings.emptyToNull(head.optString("error", "").trim());
@@ -660,13 +660,13 @@ public class VrsProvider extends AbstractNetworkProvider {
             @Nullable Set<Option> options) throws IOException {
         // The EXACT_POINTS feature generates an about 50% bigger API response, probably well compressible.
         final boolean EXACT_POINTS = true;
-        final List<Location> ambiguousFrom = new ArrayList<Location>();
+        final List<Location> ambiguousFrom = new ArrayList<>();
         String fromString = generateLocation(from, ambiguousFrom);
 
-        final List<Location> ambiguousVia = new ArrayList<Location>();
+        final List<Location> ambiguousVia = new ArrayList<>();
         String viaString = generateLocation(via, ambiguousVia);
 
-        final List<Location> ambiguousTo = new ArrayList<Location>();
+        final List<Location> ambiguousTo = new ArrayList<>();
         String toString = generateLocation(to, ambiguousTo);
 
         if (!ambiguousFrom.isEmpty() || !ambiguousVia.isEmpty() || !ambiguousTo.isEmpty()) {
@@ -704,7 +704,7 @@ public class VrsProvider extends AbstractNetworkProvider {
         final CharSequence page = httpClient.get(url.build());
 
         try {
-            final List<Trip> trips = new ArrayList<Trip>();
+            final List<Trip> trips = new ArrayList<>();
             final JSONObject head = new JSONObject(page.toString());
             final String error = Strings.emptyToNull(head.optString("error", "").trim());
             if (error != null) {
@@ -750,7 +750,7 @@ public class VrsProvider extends AbstractNetworkProvider {
             for (int iRoute = 0; iRoute < routes.length(); iRoute++) {
                 final JSONObject route = routes.getJSONObject(iRoute);
                 final JSONArray segments = route.getJSONArray("segments");
-                List<Leg> legs = new ArrayList<Leg>();
+                List<Leg> legs = new ArrayList<>();
                 Location tripOrigin = null;
                 Location tripDestination = null;
                 // for all segments
@@ -780,7 +780,7 @@ public class VrsProvider extends AbstractNetworkProvider {
                         }
                         tripDestination = segmentDestination;
                     }
-                    List<Stop> intermediateStops = new ArrayList<Stop>();
+                    List<Stop> intermediateStops = new ArrayList<>();
                     final JSONArray vias = segment.optJSONArray("vias");
                     if (vias != null) {
                         for (int iVia = 0; iVia < vias.length(); iVia++) {
@@ -854,7 +854,7 @@ public class VrsProvider extends AbstractNetworkProvider {
                         }
                     }
 
-                    List<Point> points = new ArrayList<Point>();
+                    List<Point> points = new ArrayList<>();
                     points.add(new Point(segmentOrigin.lat, segmentOrigin.lon));
                     if (EXACT_POINTS && segment.has("polygon")) {
                         parsePolygon(segment.getString("polygon"), points);
@@ -911,7 +911,7 @@ public class VrsProvider extends AbstractNetworkProvider {
     }
 
     private static List<Fare> parseFare(final JSONObject costs) throws JSONException {
-        List<Fare> fares = new ArrayList<Fare>();
+        List<Fare> fares = new ArrayList<>();
         if (costs != null) {
             final String name = costs.optString("name", null); // e.g. "VRS-Tarif", "NRW-Tarif"
             final String text = costs.optString("text", null); // e.g. "Preisstufe 4 [RegioTicket] 7,70 €",
