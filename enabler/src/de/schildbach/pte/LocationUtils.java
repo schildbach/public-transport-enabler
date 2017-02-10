@@ -25,7 +25,7 @@ public final class LocationUtils {
      * @param lat1
      *            latitude of origin point in decimal degrees
      * @param lon1
-     *            longitude of origin point in deceimal degrees
+     *            longitude of origin point in decimal degrees
      * @param lat2
      *            latitude of destination point in decimal degrees
      * @param lon2

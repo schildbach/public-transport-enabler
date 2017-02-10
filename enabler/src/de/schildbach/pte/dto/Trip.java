@@ -128,7 +128,7 @@ public final class Trip implements Serializable {
             return null;
     }
 
-    /** Minimum time occuring in this trip. */
+    /** Minimum time occurring in this trip. */
     public Date getMinTime() {
         Date minTime = null;
 
@@ -139,7 +139,7 @@ public final class Trip implements Serializable {
         return minTime;
     }
 
-    /** Maximum time occuring in this trip. */
+    /** Maximum time occurring in this trip. */
     public Date getMaxTime() {
         Date maxTime = null;
 
@@ -282,10 +282,10 @@ public final class Trip implements Serializable {
         /** Coarse arrival time. */
         public abstract Date getArrivalTime();
 
-        /** Minimum time occuring in this leg. */
+        /** Minimum time occurring in this leg. */
         public abstract Date getMinTime();
 
-        /** Maximum time occuring in this leg. */
+        /** Maximum time occurring in this leg. */
         public abstract Date getMaxTime();
     }
 
