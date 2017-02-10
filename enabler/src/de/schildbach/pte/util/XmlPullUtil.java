@@ -192,8 +192,8 @@ public final class XmlPullUtil {
     }
 
     /**
-     * Skip sub tree that is currently porser positioned on. <br>
-     * NOTE: parser must be on START_TAG and when funtion returns parser will be positioned on corresponding
+     * Skip sub tree that is currently parser positioned on. <br>
+     * NOTE: parser must be on START_TAG and when function returns parser will be positioned on corresponding
      * END_TAG
      */
     public static void skipSubTree(final XmlPullParser pp) throws XmlPullParserException, IOException {
@@ -222,7 +222,7 @@ public final class XmlPullUtil {
     }
 
     /**
-     * Read text content of element ith given namespace and name (use null namespace do indicate that nemspace
+     * Read text content of element ith given namespace and name (use null namespace do indicate that namespace
      * should not be checked)
      */
 

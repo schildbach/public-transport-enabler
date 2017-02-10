@@ -21,7 +21,7 @@ package de.schildbach.pte.util;
  */
 
 /**
- * This class implements a characater queue. Yes the JKD does contain a general queue. However that queue
+ * This class implements a character queue. Yes the JDK does contain a general queue. However that queue
  * operates on objects. This queue just handles char elements. Use in IO operations where converting chars to
  * objects will be too expensive.
  *
@@ -133,7 +133,7 @@ final public class CharQueue {
 
     /**
      * Places chars from queue in charsRemoved starting at charsRemoved[offset]. Will place numCharsRequested
-     * into charsRemoved if queue has enougth chars.
+     * into charsRemoved if queue has enough chars.
      * 
      * @return actual number of chars put in charsRemoved
      */
