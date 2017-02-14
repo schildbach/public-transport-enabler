@@ -30,13 +30,13 @@ import java.io.StringReader;
 
 /**
  * Given a string <b>pattern</b>, a string <b>replacementPattern</b> and an input stream, this class will
- * replace all occurances of <b>pattern</b> with <b>replacementPattern</b> in the inputstream. You can give
+ * replace all occurrences of <b>pattern</b> with <b>replacementPattern</b> in the inputstream. You can give
  * multiple pattern-replacementPattern pairs. Multiple pairs are done in order they are given. If first pair
- * is "cat"-"dog" and second pair is "dog"-"house", then the result will be all occurences of "cat" or "dog"
+ * is "cat"-"dog" and second pair is "dog"-"house", then the result will be all occurrences of "cat" or "dog"
  * will be replaced with "house".
  *
  * @version 0.6 21 August 1997
- * @since version 0.5, Fixed error that occured when input was shorter than the pattern
+ * @since version 0.5, Fixed error that occurred when input was shorter than the pattern
  * @author Roger Whitney (<a href=mailto:whitney@cs.sdsu.edu>whitney@cs.sdsu.edu</a>)
  */
 
@@ -54,7 +54,7 @@ public class StringReplaceReader extends FilterReader implements Cloneable {
     protected static int DEFAULT_BUFFER_SIZE = 1024;
 
     /**
-     * Create an StringReplaceReader object that will replace all occurrences ofpattern with
+     * Create an StringReplaceReader object that will replace all occurrences of pattern with
      * replacementPattern in the Reader in.
      */
     public StringReplaceReader(Reader in, String pattern, String replacementPattern) {
@@ -132,7 +132,7 @@ public class StringReplaceReader extends FilterReader implements Cloneable {
      * @parm buffer Destination buffer
      * @parm offset location in buffer to start storing characters
      * @parm charsToRead maximum characters to read
-     * @return number of characters actually read, -1 if reah EOF on reading first character
+     * @return number of characters actually read, -1 if reach EOF on reading first character
      * @exception IOException
      *                if an I/O error occurs
      */
@@ -203,10 +203,10 @@ public class StringReplaceReader extends FilterReader implements Cloneable {
     }
 
     /**
-     * Read inpout to see if we have found the pattern. <B>Requires:</B> When this is called we have already
+     * Read input to see if we have found the pattern. <B>Requires:</B> When this is called we have already
      * have read first character in pattern.<BR>
      * <B>Side Effects: </B> After attempt to find pattern, output buffer contains either the replacement
-     * pattern or all characters we konw are not part of pattern.
+     * pattern or all characters we know are not part of pattern.
      */
     protected void filterInput() throws IOException {
         // Use quick-search to find pattern. Fill inputBuffer with text.
