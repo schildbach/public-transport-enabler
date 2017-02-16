@@ -347,36 +347,36 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
 
     private static final Joiner JOINER = Joiner.on(' ').skipNulls();
 
+    private Location jsonTripSearchIdentify(final Location location) throws IOException {
+        if (location.hasName()) {
+            final List<Location> locations = jsonLocMatch(JOINER.join(location.place, location.name)).getLocations();
+            if (!locations.isEmpty())
+                return locations.get(0);
+        }
+        return null;
+    }
+
     protected final QueryTripsResult jsonTripSearch(Location from, @Nullable Location via, Location to, final Date time,
             final boolean dep, final @Nullable Set<Product> products, final String moreContext) throws IOException {
-        if (!from.hasId() && from.hasName()) {
-            final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
-            final List<Location> locations = suggestLocations(JOINER.join(from.place, from.name)).getLocations();
-            if (locations.isEmpty())
-                return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_FROM);
-            if (locations.size() > 1)
-                return new QueryTripsResult(header, locations, null, null);
-            from = locations.get(0);
+        if (!from.hasId()) {
+            from = jsonTripSearchIdentify(from);
+            if (from == null)
+                return new QueryTripsResult(new ResultHeader(network, SERVER_PRODUCT),
+                        QueryTripsResult.Status.UNKNOWN_FROM);
         }
 
-        if (via != null && !via.hasId() && via.hasName()) {
-            final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
-            final List<Location> locations = suggestLocations(JOINER.join(via.place, via.name)).getLocations();
-            if (locations.isEmpty())
-                return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_VIA);
-            if (locations.size() > 1)
-                return new QueryTripsResult(header, locations, null, null);
-            via = locations.get(0);
+        if (via != null && !via.hasId()) {
+            via = jsonTripSearchIdentify(via);
+            if (via == null)
+                return new QueryTripsResult(new ResultHeader(network, SERVER_PRODUCT),
+                        QueryTripsResult.Status.UNKNOWN_VIA);
         }
 
-        if (!to.hasId() && to.hasName()) {
-            final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
-            final List<Location> locations = suggestLocations(JOINER.join(to.place, to.name)).getLocations();
-            if (locations.isEmpty())
-                return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_TO);
-            if (locations.size() > 1)
-                return new QueryTripsResult(header, null, null, locations);
-            to = locations.get(0);
+        if (!to.hasId()) {
+            to = jsonTripSearchIdentify(to);
+            if (to == null)
+                return new QueryTripsResult(new ResultHeader(network, SERVER_PRODUCT),
+                        QueryTripsResult.Status.UNKNOWN_TO);
         }
 
         final Calendar c = new GregorianCalendar(timeZone);
