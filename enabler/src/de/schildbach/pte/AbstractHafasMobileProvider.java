@@ -353,6 +353,12 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
             if (!locations.isEmpty())
                 return locations.get(0);
         }
+        if (location.hasLocation()) {
+            final List<Location> locations = jsonLocGeoPos(EnumSet.allOf(LocationType.class), location.lat,
+                    location.lon).locations;
+            if (!locations.isEmpty())
+                return locations.get(0);
+        }
         return null;
     }
 
