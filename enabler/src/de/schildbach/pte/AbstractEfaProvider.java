@@ -769,7 +769,16 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         final String streetName = XmlPullUtil.optAttr(pp, "streetName", null);
         final Point coord = processCoordAttr(pp);
 
-        final String nameElem = normalizeLocationName(XmlPullUtil.valueTag(pp, "odvNameElem"));
+        XmlPullUtil.enter(pp, "odvNameElem");
+        XmlPullUtil.optSkip(pp, "itdMapItemList");
+        final String nameElem;
+        if (pp.getEventType() == XmlPullParser.TEXT) {
+            nameElem = normalizeLocationName(pp.getText());
+            pp.next();
+        } else {
+            nameElem = null;
+        }
+        XmlPullUtil.exit(pp, "odvNameElem");
 
         final LocationType locationType;
         final String place;
