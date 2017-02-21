@@ -1499,21 +1499,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                             XmlPullUtil.enter(pp, "itdServingLines");
                             while (XmlPullUtil.test(pp, "itdServingLine")) {
                                 final String assignedStopId = XmlPullUtil.optAttr(pp, "assignedStopID", null);
-                                final String destinationName = normalizeLocationName(
-                                        XmlPullUtil.optAttr(pp, "direction", null));
-                                final String destinationIdStr = XmlPullUtil.optAttr(pp, "destID", null);
-                                final String destinationId = !"-1".equals(destinationIdStr) ? destinationIdStr : null;
-                                final Location destination;
-                                if (destinationId != null)
-                                    destination = new Location(LocationType.STATION, destinationId, null,
-                                            destinationName);
-                                else if (destinationId == null && destinationName != null)
-                                    destination = new Location(LocationType.ANY, null, null, destinationName);
-                                else
-                                    destination = null;
-
-                                final LineDestination line = new LineDestination(processItdServingLine(pp),
-                                        destination);
+                                final LineDestinationAndCancelled lineDestinationAndCancelled = processItdServingLine(
+                                        pp);
+                                final LineDestination lineDestination = new LineDestination(
+                                        lineDestinationAndCancelled.line, lineDestinationAndCancelled.destination);
 
                                 StationDepartures assignedStationDepartures;
                                 if (assignedStopId == null)
@@ -1529,8 +1518,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
                                 final List<LineDestination> assignedStationDeparturesLines = checkNotNull(
                                         assignedStationDepartures.lines);
-                                if (!assignedStationDeparturesLines.contains(line))
-                                    assignedStationDeparturesLines.add(line);
+                                if (!assignedStationDeparturesLines.contains(lineDestination))
+                                    assignedStationDeparturesLines.add(lineDestination);
                             }
                             XmlPullUtil.skipExit(pp, "itdServingLines");
                         } else {
@@ -1578,29 +1567,21 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
                             XmlPullUtil.require(pp, "itdServingLine");
                             final boolean isRealtime = XmlPullUtil.attr(pp, "realtime").equals("1");
-                            final String destinationName = normalizeLocationName(
-                                    XmlPullUtil.optAttr(pp, "direction", null));
-                            final String destinationIdStr = XmlPullUtil.optAttr(pp, "destID", null);
-                            final String destinationId = !"-1".equals(destinationIdStr) ? destinationIdStr : null;
-                            final Location destination;
-                            if (destinationId != null)
-                                destination = new Location(LocationType.STATION, destinationId, null, destinationName);
-                            else if (destinationId == null && destinationName != null)
-                                destination = new Location(LocationType.ANY, null, null, destinationName);
-                            else
-                                destination = null;
-                            final Line line = processItdServingLine(pp);
+                            final LineDestinationAndCancelled lineDestinationAndCancelled = processItdServingLine(pp);
 
                             if (isRealtime && !predictedDepartureTime.isSet(Calendar.HOUR_OF_DAY))
                                 predictedDepartureTime.setTimeInMillis(plannedDepartureTime.getTimeInMillis());
 
                             XmlPullUtil.skipExit(pp, "itdDeparture");
 
-                            final Departure departure = new Departure(plannedDepartureTime.getTime(),
-                                    predictedDepartureTime.isSet(Calendar.HOUR_OF_DAY)
-                                            ? predictedDepartureTime.getTime() : null,
-                                    line, position, destination, null, null);
-                            assignedStationDepartures.departures.add(departure);
+                            if (!lineDestinationAndCancelled.cancelled) {
+                                final Departure departure = new Departure(plannedDepartureTime.getTime(),
+                                        predictedDepartureTime.isSet(Calendar.HOUR_OF_DAY)
+                                                ? predictedDepartureTime.getTime() : null,
+                                        lineDestinationAndCancelled.line, position,
+                                        lineDestinationAndCancelled.destination, null, null);
+                                assignedStationDepartures.departures.add(departure);
+                            }
                         }
 
                         XmlPullUtil.skipExit(pp, "itdDepartureList");
@@ -1875,8 +1856,33 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         XmlPullUtil.next(pp);
     }
 
-    private Line processItdServingLine(final XmlPullParser pp) throws XmlPullParserException, IOException {
+    private static class LineDestinationAndCancelled {
+        public final Line line;
+        public final Location destination;
+        public final boolean cancelled;
+
+        public LineDestinationAndCancelled(final Line line, final Location destination, final boolean cancelled) {
+            this.line = line;
+            this.destination = destination;
+            this.cancelled = cancelled;
+        }
+    }
+
+    private LineDestinationAndCancelled processItdServingLine(final XmlPullParser pp)
+            throws XmlPullParserException, IOException {
         XmlPullUtil.require(pp, "itdServingLine");
+
+        final String destinationName = normalizeLocationName(XmlPullUtil.optAttr(pp, "direction", null));
+        final String destinationIdStr = XmlPullUtil.optAttr(pp, "destID", null);
+        final String destinationId = !"-1".equals(destinationIdStr) ? destinationIdStr : null;
+        final Location destination;
+        if (destinationId != null)
+            destination = new Location(LocationType.STATION, destinationId, null, destinationName);
+        else if (destinationId == null && destinationName != null)
+            destination = new Location(LocationType.ANY, null, null, destinationName);
+        else
+            destination = null;
+
         final String slMotType = XmlPullUtil.attr(pp, "motType");
         final String slSymbol = XmlPullUtil.optAttr(pp, "symbol", null);
         final String slNumber = XmlPullUtil.optAttr(pp, "number", null);
@@ -1889,19 +1895,17 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         String itdTrainName = null;
         String itdTrainType = null;
         String itdMessage = null;
+        String itdDelay = null;
         if (XmlPullUtil.test(pp, "itdTrain")) {
             itdTrainName = XmlPullUtil.optAttr(pp, "name", null);
             itdTrainType = XmlPullUtil.attr(pp, "type");
-            if (!pp.isEmptyElementTag()) {
-                XmlPullUtil.enter(pp, "itdTrain");
-                XmlPullUtil.skipExit(pp, "itdTrain");
-            } else {
-                XmlPullUtil.next(pp);
-            }
+            itdDelay = XmlPullUtil.optAttr(pp, "delay", null);
+            XmlPullUtil.requireSkip(pp, "itdTrain");
         }
         if (XmlPullUtil.test(pp, "itdNoTrain")) {
             itdTrainName = XmlPullUtil.optAttr(pp, "name", null);
             itdTrainType = XmlPullUtil.optAttr(pp, "type", null);
+            itdDelay = XmlPullUtil.optAttr(pp, "delay", null);
             if (!pp.isEmptyElementTag()) {
                 final String text = XmlPullUtil.valueTag(pp, "itdNoTrain");
                 if (itdTrainName != null && itdTrainName.toLowerCase().contains("ruf"))
@@ -1920,11 +1924,13 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
         final String trainType = ParserUtils.firstNotEmpty(slTrainType, itdTrainType);
         final String trainName = ParserUtils.firstNotEmpty(slTrainName, itdTrainName);
-
-        final Line line = parseLine(slStateless, divaNetwork, slMotType, slSymbol, slNumber, slNumber, trainType,
+        final Line slLine = parseLine(slStateless, divaNetwork, slMotType, slSymbol, slNumber, slNumber, trainType,
                 slTrainNum, trainName);
-        return new Line(line.id, line.network, line.product, line.label,
-                lineStyle(line.network, line.product, line.label), itdMessage);
+
+        final Line line = new Line(slLine.id, slLine.network, slLine.product, slLine.label,
+                lineStyle(slLine.network, slLine.product, slLine.label), itdMessage);
+        final boolean cancelled = "-9999".equals(itdDelay);
+        return new LineDestinationAndCancelled(line, destination, cancelled);
     }
 
     private static final Pattern P_STATION_NAME_WHITESPACE = Pattern.compile("\\s+");
