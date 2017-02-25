@@ -622,8 +622,10 @@ public class NegentweeProvider extends AbstractNetworkProvider {
             for (int i = 0; i < trips.length(); i++) {
                 JSONObject trip = trips.getJSONObject(i);
 
-                // Skip impossible trips
-                if (trip.getJSONObject("realtimeInfo").getString("delays").equals("fatal"))
+                // Skip impossible or cancelled trips
+                JSONObject realtimeInfo = trip.optJSONObject("realtimeInfo");
+                if (realtimeInfo != null && ("fatal".equals(realtimeInfo.optString("delays"))
+                        || "cancellations".equals(realtimeInfo.optString("cancellations"))))
                     continue;
 
                 foundTrips.add(tripFromJSONObject(trip, from, to, disturbancesMap));
