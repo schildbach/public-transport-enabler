@@ -213,7 +213,7 @@ public final class Trip implements Serializable {
             builder.append(leg.arrival.hasId() ? leg.arrival.id : leg.arrival.lat + '/' + leg.arrival.lon).append('-');
 
             if (leg instanceof Individual) {
-                builder.append(((Individual) leg).min);
+                builder.append("individual");
             } else if (leg instanceof Public) {
                 final Public publicLeg = (Public) leg;
                 final Date plannedDepartureTime = publicLeg.departureStop.plannedDepartureTime;
