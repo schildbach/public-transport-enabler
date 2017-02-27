@@ -84,6 +84,8 @@ public class PlProvider extends AbstractHafasLegacyProvider {
             return Product.REGIONAL_TRAIN;
         if ("REG".equals(ucType))
             return Product.REGIONAL_TRAIN;
+        if ("L".equals(ucType) || "LS".equals(ucType)) // Łódzka Kolej Aglomeracyjna
+            return Product.REGIONAL_TRAIN;
 
         if ("LKA".equals(ucType)) // Łódzka Kolej Aglomeracyjna
             return Product.SUBURBAN_TRAIN;
