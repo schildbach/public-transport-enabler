@@ -38,7 +38,8 @@ public class OntarioProviderLiveTest extends AbstractNavitiaProviderLiveTest {
 
     @Test
     public void nearbyStations() throws Exception {
-        final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "OAW:SP:CH240"));
+        final NearbyLocationsResult result = queryNearbyStations(
+                new Location(LocationType.STATION, "stop_point:OAW:SP:CH240"));
         print(result);
     }
 
