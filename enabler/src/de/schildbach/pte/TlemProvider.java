@@ -35,7 +35,7 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class TlemProvider extends AbstractEfaProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("http://www.travelineeastmidlands.co.uk/em/");
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://www.travelinesw.com/em/");
     // http://www.travelineeastmidlands.co.uk/em/
     // http://www.travelinesw.com/swe/
     // http://www.travelinesoutheast.org.uk/se/
@@ -45,11 +45,11 @@ public class TlemProvider extends AbstractEfaProvider {
 
     public TlemProvider() {
         super(NetworkId.TLEM, API_BASE);
-
         setLanguage("en");
         setTimeZone("Europe/London");
         setUseProxFootSearch(false);
         setStyles(STYLES);
+        httpClient.setTrustAllCertificates(true);
     }
 
     @Override

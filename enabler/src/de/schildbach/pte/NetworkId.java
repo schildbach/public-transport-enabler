@@ -34,7 +34,7 @@ public enum NetworkId {
     SBB, BVB, VBL, ZVV,
 
     // France
-    PACA, PARIS, FRANCESOUTHWEST, FRANCESOUTHEAST, FRANCENORTHWEST, FRANCENORTHEAST,
+    PARIS, FRANCESOUTHWEST, FRANCESOUTHEAST, FRANCENORTHWEST, FRANCENORTHEAST,
 
     // Belgium
     SNCB,
@@ -67,13 +67,13 @@ public enum NetworkId {
     PL,
 
     // Italy
-    ATC, IT,
+    IT,
 
     // United Arab Emirates
     DUB,
 
     // United States
-    SEPTA, RTACHICAGO, OREGON, CALIFORNIA,
+    RTACHICAGO, OREGON, CALIFORNIA,
 
     // Canada
     ONTARIO, QUEBEC,

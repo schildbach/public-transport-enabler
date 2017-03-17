@@ -229,4 +229,14 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest {
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
     }
+
+    @Test
+    public void tripAddressWithoutId() throws Exception {
+        final QueryTripsResult result = queryTrips(
+                new Location(LocationType.ADDRESS, null, 52481922, 13388383, null,
+                        "Bayernring, 12101 Berlin, Deutschland"),
+                null, new Location(LocationType.STATION, "9064301", 52429099, 13328081, null, "S Lichterfelde Ost Bhf"),
+                new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+        print(result);
+    }
 }

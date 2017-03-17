@@ -36,8 +36,13 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class VgnProvider extends AbstractEfaProvider {
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://efa.vgn.de/vgn/");
     private static final String DEPARTURE_MONITOR_ENDPOINT = "XML_DM_REQUEST";
     private static final String TRIP_ENDPOINT = "XML_TRIP_REQUEST2";
+
+    public VgnProvider() {
+        this(API_BASE);
+    }
 
     public VgnProvider(final HttpUrl apiBase) {
         super(NetworkId.VGN, apiBase, DEPARTURE_MONITOR_ENDPOINT, TRIP_ENDPOINT, null, null);
