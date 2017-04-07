@@ -876,7 +876,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
                 url.addQueryParameter("to", printLocation(to));
                 url.addQueryParameter("datetime", printDate(date));
                 url.addQueryParameter("datetime_represents", dep ? "departure" : "arrival");
-                url.addQueryParameter("count", Integer.toString(this.numTripsRequested));
+                url.addQueryParameter("min_nb_journeys", Integer.toString(this.numTripsRequested));
                 url.addQueryParameter("depth", "0");
 
                 // Set walking speed.

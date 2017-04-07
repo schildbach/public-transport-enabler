@@ -35,9 +35,8 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class TlemProvider extends AbstractEfaProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("https://www.travelinesw.com/em/");
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://nationaljourneyplanner.travelinesw.com/swe/");
     // http://www.travelineeastmidlands.co.uk/em/
-    // http://www.travelinesw.com/swe/
     // http://www.travelinesoutheast.org.uk/se/
     // http://www.travelineeastanglia.org.uk/ea/
     // http://www.travelinemidlands.co.uk/wmtis/

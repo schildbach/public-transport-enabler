@@ -150,6 +150,38 @@ public final class Trip implements Serializable {
         return maxTime;
     }
 
+    /**
+     * <p>
+     * Number of changes on the trip.
+     * </p>
+     * 
+     * <p>
+     * Returns {@link #numChanges} if it isn't null. Otherwise, it tries to compute the number by counting
+     * public legs of the trip. The number of changes for a Trip consisting of only individual Legs is null.
+     * </p>
+     *
+     * @return number of changes on the trip, or null if no public legs are involved
+     */
+    @Nullable
+    public Integer getNumChanges() {
+        if (numChanges == null) {
+            Integer numCount = null;
+
+            for (final Leg leg : legs) {
+                if (leg instanceof Public) {
+                    if (numCount == null) {
+                        numCount = 0;
+                    } else {
+                        numCount++;
+                    }
+                }
+            }
+            return numCount;
+        } else {
+            return numChanges;
+        }
+    }
+
     /** Returns true if no legs overlap, false otherwise. */
     public boolean isTravelable() {
         Date time = null;
@@ -213,7 +245,7 @@ public final class Trip implements Serializable {
             builder.append(leg.arrival.hasId() ? leg.arrival.id : leg.arrival.lat + '/' + leg.arrival.lon).append('-');
 
             if (leg instanceof Individual) {
-                builder.append(((Individual) leg).min);
+                builder.append("individual");
             } else if (leg instanceof Public) {
                 final Public publicLeg = (Public) leg;
                 final Date plannedDepartureTime = publicLeg.departureStop.plannedDepartureTime;

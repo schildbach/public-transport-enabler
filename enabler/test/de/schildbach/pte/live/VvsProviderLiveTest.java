@@ -71,8 +71,9 @@ public class VvsProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void suggestLocationsWithUmlaut() throws Exception {
-        final SuggestLocationsResult result = suggestLocations("grün");
+        final SuggestLocationsResult result = suggestLocations("Nürtingen");
         print(result);
+        assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "5002931")));
     }
 
     @Test

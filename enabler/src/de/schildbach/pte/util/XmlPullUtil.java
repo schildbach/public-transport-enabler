@@ -48,6 +48,20 @@ public final class XmlPullUtil {
         enter(pp);
     }
 
+    public static boolean optEnter(final XmlPullParser pp, final String tagName)
+            throws XmlPullParserException, IOException {
+        if (!test(pp, tagName))
+            return false;
+        final boolean isEmpty = pp.isEmptyElementTag();
+        pp.next(); // Skip start tag
+        if (isEmpty) {
+            pp.next(); // Skip (virtual) end tag
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     public static void skipExit(final XmlPullParser pp) throws XmlPullParserException, IOException {
         skipToEnd(pp);
 
