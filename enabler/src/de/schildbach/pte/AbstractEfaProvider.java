@@ -805,9 +805,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             place = locality != null ? locality : defaultPlace;
             name = buildingName != null ? buildingName : streetName;
         } else if ("coord".equals(type)) {
-            locationType = LocationType.ADDRESS;
-            place = defaultPlace;
-            name = nameElem;
+            locationType = LocationType.COORD;
+            place = null;
+            name = null;
         } else {
             throw new IllegalArgumentException("unknown type/anyType: " + type);
         }
