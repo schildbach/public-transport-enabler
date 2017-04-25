@@ -31,13 +31,15 @@ import okhttp3.HttpUrl;
  */
 public class VvoProvider extends AbstractEfaProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("http://efa.vvo-online.de:8080/dvb/");
+    private static final String STOP_FINDER_ENDPOINT = "XSLT_STOPFINDER_REQUEST";
+    private static final String COORD_ENDPOINT = "XSLT_COORD_REQUEST";
 
     public VvoProvider() {
         this(API_BASE);
     }
 
     public VvoProvider(final HttpUrl apiBase) {
-        super(NetworkId.VVO, apiBase);
+        super(NetworkId.VVO, apiBase, null, null, STOP_FINDER_ENDPOINT, COORD_ENDPOINT);
 
         setRequestUrlEncoding(Charsets.UTF_8);
     }
