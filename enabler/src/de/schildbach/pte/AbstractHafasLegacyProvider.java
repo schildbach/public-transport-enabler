@@ -2987,9 +2987,9 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
     }
 
     protected static final Pattern P_NORMALIZE_LINE_AND_TYPE = Pattern.compile("([^#]*)#(.*)");
-    private static final Pattern P_NORMALIZE_LINE_NUMBER = Pattern.compile("\\d{2,5}");
-
-    protected static final Pattern P_LINE_RUSSIA = Pattern.compile(
+    private static final Pattern P_LINE_NUMBER = Pattern.compile("\\d{2,5}");
+    private static final Pattern P_LINE_SUBWAY = Pattern.compile("U\\d{1,2}");
+    private static final Pattern P_LINE_RUSSIA = Pattern.compile(
             "\\d{3}(?:AJ|BJ|CJ|DJ|EJ|FJ|GJ|IJ|KJ|LJ|NJ|MJ|OJ|RJ|SJ|TJ|UJ|VJ|ZJ|CH|KH|ZH|EI|JA|JI|MZ|SH|SZ|PC|Y)");
 
     protected Line parseLineAndType(final String lineAndType) {
@@ -3001,8 +3001,10 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
             if (type.length() == 0) {
                 if (number.length() == 0)
                     return newLine(null, null, null);
-                if (P_NORMALIZE_LINE_NUMBER.matcher(number).matches())
+                if (P_LINE_NUMBER.matcher(number).matches())
                     return newLine(null, number, null);
+                if (P_LINE_SUBWAY.matcher(number).matches())
+                    return newLine(Product.SUBWAY, number, null);
                 if (P_LINE_RUSSIA.matcher(number).matches())
                     return newLine(Product.REGIONAL_TRAIN, number, null);
             } else {
