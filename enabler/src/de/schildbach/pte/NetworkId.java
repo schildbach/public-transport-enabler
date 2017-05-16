@@ -79,5 +79,5 @@ public enum NetworkId {
     ONTARIO, QUEBEC,
 
     // Australia
-    SYDNEY
+    SYDNEY, AUSTRALIA
 }
