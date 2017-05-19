@@ -36,7 +36,7 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class NriProvider extends AbstractHafasLegacyProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("http://hafas.websrv05.reiseinfo.no/bin/dev/nri/");
+    private static final HttpUrl API_BASE = HttpUrl.parse("http://apiprod.reiseinfo.no/bin/");
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, Product.BUS,
             Product.TRAM, Product.SUBWAY, Product.FERRY, Product.FERRY, Product.FERRY };
 
