@@ -29,7 +29,11 @@ import javax.annotation.Nullable;
 public class AustraliaProvider extends AbstractNavitiaProvider {
 
     public static final String NETWORK_PTV = "PTV - Public Transport Victoria";
-    
+    public static final String NETWORK_TAS = "Metro Tasmania";
+    public static final String NETWORK_QLD = "TransLink";
+    public static final String NETWORK_SA = "Adelaide Metro";
+    public static final String NETWORK_WA = "Transperth";
+
     private static final Map<String, Style> STYLES = new HashMap<>();
 
     static {
