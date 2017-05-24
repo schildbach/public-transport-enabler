@@ -140,6 +140,17 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
 
     protected abstract String region();
 
+    private boolean preferNonNavitiaLineStyles = false;
+
+    /**
+     * Navitia is capable of returning "display_informations" which includes style related information. Depending on the
+     * coverage though, this may not be complete. Prefering non-Navitia line styles means we first delegate to
+     * {@link #lineStyle(String, Product, String)} before then falling back to {@link #getLineStyle(Product, String, String)}.
+     */
+    protected void setPreferNonNavitiaLineStyles(boolean preferNonNavitiaLineStyles) {
+        this.preferNonNavitiaLineStyles = preferNonNavitiaLineStyles;
+    }
+
     protected int computeForegroundColor(final String lineColor) {
         int bgColor = Style.parseColor(lineColor);
         return Style.deriveForegroundColor(bgColor);
@@ -417,12 +428,26 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
             final String code = displayInfo.getString("code");
             final String color = Strings.emptyToNull(displayInfo.getString("color"));
             final String name = Strings.emptyToNull(displayInfo.optString("headsign"));
-            final Style lineStyle = getLineStyle(product, code, color != null ? "#" + color : null);
+
+            final Style customLineStyle = getNonNavitiaLineStyle(network, product, code);
+            final Style lineStyle = customLineStyle != null ? customLineStyle : getLineStyle(product, code, color != null ? "#" + color : null);
 
             return new Line(lineId, network, product, code, name, lineStyle);
         } catch (final JSONException jsonExc) {
             throw new ParserException(jsonExc);
         }
+    }
+
+    /**
+     * @see #setPreferNonNavitiaLineStyles(boolean)
+     */
+    private Style getNonNavitiaLineStyle(String network, Product product, String code) {
+        if (preferNonNavitiaLineStyles) {
+            final Style style = lineStyle(network, product, code);
+            return style == Standard.STYLES.get(product) ? null : style;
+        }
+
+        return null;
     }
 
     private Stop parseStop(final JSONObject stopDateTime) throws IOException {
