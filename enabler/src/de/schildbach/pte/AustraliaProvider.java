@@ -24,8 +24,6 @@ import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
 import okhttp3.HttpUrl;
 
-import javax.annotation.Nullable;
-
 public class AustraliaProvider extends AbstractNavitiaProvider {
 
     public static final String NETWORK_PTV = "PTV - Public Transport Victoria";
@@ -129,7 +127,6 @@ public class AustraliaProvider extends AbstractNavitiaProvider {
         super(NetworkId.AUSTRALIA, apiBase, authorization);
 
         setTimeZone("Australia/Melbourne");
-        setPreferNonNavitiaLineStyles(true);
         setStyles(STYLES);
     }
 
@@ -137,12 +134,21 @@ public class AustraliaProvider extends AbstractNavitiaProvider {
         super(NetworkId.AUSTRALIA, authorization);
 
         setTimeZone("Australia/Melbourne");
-        setPreferNonNavitiaLineStyles(true);
         setStyles(STYLES);
     }
 
     @Override
     public String region() {
         return "au";
+    }
+
+    @Override
+    protected Style getLineStyle(String network, Product product, String code, String backgroundColor, String foregroundColor) {
+        final Style overridenStyle = lineStyle(network, product, code);
+        if (overridenStyle != Standard.STYLES.get(product)) {
+            return overridenStyle;
+        } else {
+            return super.getLineStyle(network, product, code, backgroundColor, foregroundColor);
+        }
     }
 }
