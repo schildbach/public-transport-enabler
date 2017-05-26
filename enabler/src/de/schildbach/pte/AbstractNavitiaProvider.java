@@ -145,12 +145,12 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
         return Style.deriveForegroundColor(bgColor);
     }
 
-    protected Style getLineStyle(final Product product, final String code, final String color) {
-        return getLineStyle(product, code, color, null);
+    protected Style getLineStyle(final String network, final Product product, final String code, final String color) {
+        return getLineStyle(network, product, code, color, null);
     }
 
-    protected Style getLineStyle(final Product product, final String code, final String backgroundColor,
-            final String foregroundColor) {
+    protected Style getLineStyle(final String network, final Product product, final String code,
+            final String backgroundColor, final String foregroundColor) {
         if (backgroundColor != null) {
             if (foregroundColor == null)
                 return new Style(Shape.RECT, Style.parseColor(backgroundColor),
@@ -417,7 +417,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
             final String code = displayInfo.getString("code");
             final String color = Strings.emptyToNull(displayInfo.getString("color"));
             final String name = Strings.emptyToNull(displayInfo.optString("headsign"));
-            final Style lineStyle = getLineStyle(product, code, color != null ? "#" + color : null);
+            final Style lineStyle = getLineStyle(network, product, code, color != null ? "#" + color : null);
 
             return new Line(lineId, network, product, code, name, lineStyle);
         } catch (final JSONException jsonExc) {
@@ -586,7 +586,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
             final String name = Strings.emptyToNull(jsonLine.optString("name"));
             final String color = Strings.emptyToNull(jsonLine.getString("color"));
             final String textColor = Strings.emptyToNull(jsonLine.optString("text_color"));
-            final Style lineStyle = getLineStyle(product, code, color != null ? "#" + color : null,
+            final Style lineStyle = getLineStyle(network, product, code, color != null ? "#" + color : null,
                     textColor != null ? "#" + textColor : null);
 
             return new Line(lineId, network, product, code, name, lineStyle);

@@ -49,7 +49,7 @@ public class FranceNorthEastProvider extends AbstractNavitiaProvider {
     }
 
     @Override
-    protected Style getLineStyle(final Product product, final String code, final String color) {
+    protected Style getLineStyle(final String network, final Product product, final String code, final String color) {
         switch (product) {
         case REGIONAL_TRAIN: {
             // Rail (route_type = 2) for TER and Corail Intercité/Lunéa (all SNCF)
