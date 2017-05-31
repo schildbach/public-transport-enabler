@@ -5,12 +5,12 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.8.0'
     compile 'com.squareup.okhttp3:logging-interceptor:3.8.0'
     compile 'com.google.guava:guava:22.0-android'
-    compile 'org.slf4j:slf4j-api:1.7.21'
+    compile 'org.slf4j:slf4j-api:1.7.25'
     compile 'com.google.code.findbugs:jsr305:3.0.0'
     compile 'org.json:json:20090211' // provided by Android
     compile 'net.sf.kxml:kxml2:2.3.0' // provided by Android
     testCompile 'junit:junit:4.12'
-    testRuntime 'org.slf4j:slf4j-jdk14:1.7.21'
+    testRuntime 'org.slf4j:slf4j-jdk14:1.7.25'
 }
 
 sourceSets {
