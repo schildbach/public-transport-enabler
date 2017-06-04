@@ -57,6 +57,8 @@ public final class SuggestLocationsResult implements Serializable {
     }
 
     public List<Location> getLocations() {
+        if(suggestedLocations == null)
+            return new ArrayList<>();
         final List<Location> locations = new ArrayList<>(suggestedLocations.size());
         for (final SuggestedLocation location : suggestedLocations)
             locations.add(location.location);
