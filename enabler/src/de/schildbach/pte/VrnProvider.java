@@ -40,6 +40,7 @@ public class VrnProvider extends AbstractEfaProvider {
     public VrnProvider() {
         super(NetworkId.VRN, API_BASE);
 
+        setIncludeRegionId(false);
         setRequestUrlEncoding(Charsets.UTF_8);
         setStyles(STYLES);
     }
