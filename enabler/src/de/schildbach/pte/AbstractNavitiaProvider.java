@@ -417,7 +417,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
             final String code = displayInfo.getString("code");
             final String color = Strings.emptyToNull(displayInfo.getString("color"));
             final String name = Strings.emptyToNull(displayInfo.optString("headsign"));
-            final Style lineStyle = getLineStyle(product, code, color != null ? "#" + color : null);
+            final Style lineStyle = getLineStyle(product, code, color != null ? "#" + color : "#8a000000");
 
             return new Line(lineId, network, product, code, name, lineStyle);
         } catch (final JSONException jsonExc) {
