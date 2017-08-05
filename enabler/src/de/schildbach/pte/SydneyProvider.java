@@ -36,7 +36,7 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class SydneyProvider extends AbstractEfaProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("https://tp.transportnsw.info/nsw/");
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://transportnsw.info/web/");
 
     public SydneyProvider() {
         super(NetworkId.SYDNEY, API_BASE);

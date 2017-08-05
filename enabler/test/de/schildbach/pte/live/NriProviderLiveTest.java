@@ -79,10 +79,10 @@ public class NriProviderLiveTest extends AbstractProviderLiveTest {
     }
 
     @Test
-    public void shortTrip() throws Exception {
-        final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8059", null, "Oslo"), null,
-                new Location(LocationType.STATION, "6642", null, "Bergen BGO"), new Date(), true, Product.ALL,
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+    public void trip() throws Exception {
+        final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "760000645", "Oslo", "sentrum"),
+                null, new Location(LocationType.STATION, "760009404", "Bergen", "sentrum"), new Date(), true,
+                Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);

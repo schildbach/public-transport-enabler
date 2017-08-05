@@ -17,18 +17,11 @@
 
 package de.schildbach.pte;
 
-import java.io.IOException;
-import java.util.Date;
 import java.util.Set;
-
-import javax.annotation.Nullable;
 
 import com.google.common.base.Charsets;
 
-import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.Product;
-import de.schildbach.pte.dto.QueryTripsContext;
-import de.schildbach.pte.dto.QueryTripsResult;
 
 import okhttp3.HttpUrl;
 
@@ -36,7 +29,7 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class NriProvider extends AbstractHafasLegacyProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("http://hafas.websrv05.reiseinfo.no/bin/dev/nri/");
+    private static final HttpUrl API_BASE = HttpUrl.parse("http://apiprod.reiseinfo.no/bin/");
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, Product.BUS,
             Product.TRAM, Product.SUBWAY, Product.FERRY, Product.FERRY, Product.FERRY };
 
@@ -60,19 +53,6 @@ public class NriProvider extends AbstractHafasLegacyProvider {
     @Override
     public Set<Product> defaultProducts() {
         return Product.ALL;
-    }
-
-    @Override
-    public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to,
-            final Date date, final boolean dep, final @Nullable Set<Product> products,
-            final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
-            final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) throws IOException {
-        return queryTripsXml(from, via, to, date, dep, products, walkSpeed, accessibility, options);
-    }
-
-    @Override
-    public QueryTripsResult queryMoreTrips(final QueryTripsContext context, final boolean later) throws IOException {
-        return queryMoreTripsXml(context, later);
     }
 
     @Override

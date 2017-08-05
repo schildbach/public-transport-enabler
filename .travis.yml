@@ -1,4 +1,5 @@
 # configuration for https://travis-ci.org/schildbach/public-transport-enabler
 sudo: false
+dist: trusty
 language: java
 jdk: openjdk7
