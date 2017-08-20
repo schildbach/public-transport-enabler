@@ -48,7 +48,7 @@ public class ParisProvider extends AbstractNavitiaProvider {
     }
 
     @Override
-    protected Style getLineStyle(final Product product, final String code, final String color) {
+    protected Style getLineStyle(final String network, final Product product, final String code, final String color) {
         switch (product) {
         case SUBURBAN_TRAIN: {
             // RER
@@ -81,7 +81,7 @@ public class ParisProvider extends AbstractNavitiaProvider {
             return new Style(Shape.ROUNDED, Style.parseColor(color), computeForegroundColor(color));
         }
         default:
-            return super.getLineStyle(product, code, color);
+            return super.getLineStyle(network, product, code, color);
         }
     }
 
