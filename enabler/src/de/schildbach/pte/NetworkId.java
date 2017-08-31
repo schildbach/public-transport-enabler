@@ -31,7 +31,7 @@ public enum NetworkId {
     OEBB, VAO, VOR, WIEN, OOEVV, LINZ, SVV, VVT, IVB, STV, VMOBIL,
 
     // Switzerland
-    SBB, BVB, VBL, ZVV,
+    SBB, VBL, ZVV,
 
     // France
     PARIS, FRANCESOUTHWEST, FRANCESOUTHEAST, FRANCENORTHWEST, FRANCENORTHEAST,
