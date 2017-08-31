@@ -60,7 +60,7 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class InvgProvider extends AbstractHafasLegacyProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("http://fpa.invg.de/bin/");
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://fpa.invg.de/bin/");
     // http://invg.hafas.de/bin/
     private static final Product[] PRODUCTS_MAP = { null, null, null, null, null, null, null, null, null, null };
     private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
