@@ -32,7 +32,7 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class VgsProvider extends AbstractHafasLegacyProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("http://www.saarfahrplan.de/cgi-bin/");
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://www.saarfahrplan.de/cgi-bin/");
     // http://www.vgs-online.de/cgi-bin/
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.SUBWAY, Product.TRAM,
@@ -42,6 +42,7 @@ public class VgsProvider extends AbstractHafasLegacyProvider {
         super(NetworkId.VGS, API_BASE, "dn", PRODUCTS_MAP);
 
         setStationBoardHasStationTable(false);
+        httpClient.setTrustAllCertificates(true);
     }
 
     @Override
