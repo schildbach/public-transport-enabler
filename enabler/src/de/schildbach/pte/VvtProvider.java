@@ -39,7 +39,6 @@ public class VvtProvider extends AbstractHafasMobileProvider {
         setApiVersion("1.11");
         setApiClient("{\"id\":\"VAO\",\"l\":\"vs_vvt\",\"type\":\"AND\"}");
         setApiAuthorization(apiAuthorization);
-        httpClient.setSslAcceptAllHostnames(true);
     }
 
     @Override
