@@ -39,7 +39,6 @@ public class VmobilProvider extends AbstractHafasMobileProvider {
         setApiVersion("1.11");
         setApiClient("{\"id\":\"VAO\",\"l\":\"vs_vvv\",\"type\":\"AND\"}");
         setApiAuthorization(apiAuthorization);
-        httpClient.setSslAcceptAllHostnames(true);
     }
 
     @Override
