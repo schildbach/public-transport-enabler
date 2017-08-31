@@ -59,4 +59,11 @@ public final class NearbyLocationsResult implements Serializable {
             helper.add("size", locations.size()).add("locations", locations);
         return helper.toString();
     }
+
+    public String toShortString() {
+        if (status == Status.OK)
+            return locations.size() + " locations";
+        else
+            return status.toString();
+    }
 }

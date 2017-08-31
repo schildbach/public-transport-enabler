@@ -71,4 +71,11 @@ public final class SuggestLocationsResult implements Serializable {
             helper.add("size", suggestedLocations.size()).add("suggestedLocations", suggestedLocations);
         return helper.toString();
     }
+
+    public String toShortString() {
+        if (status == Status.OK)
+            return suggestedLocations.size() + " locations";
+        else
+            return status.toString();
+    }
 }

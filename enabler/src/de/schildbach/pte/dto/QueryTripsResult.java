@@ -113,4 +113,12 @@ public final class QueryTripsResult implements Serializable {
         }
         return helper.toString();
     }
+
+    public String toShortString() {
+        if (status == Status.OK)
+            return trips.size() + " trips" + (from != null ? " from " + from : "") + (via != null ? " via " + via : "")
+                    + (to != null ? " to " + to : "");
+        else
+            return status.toString();
+    }
 }

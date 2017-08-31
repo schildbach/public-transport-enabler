@@ -68,4 +68,11 @@ public final class QueryDeparturesResult implements Serializable {
             helper.add("size", stationDepartures.size()).add("stationDepartures", stationDepartures);
         return helper.toString();
     }
+
+    public String toShortString() {
+        if (status == Status.OK)
+            return stationDepartures.size() + " stationDepartures";
+        else
+            return status.toString();
+    }
 }
