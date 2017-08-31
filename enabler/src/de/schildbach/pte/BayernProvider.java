@@ -46,7 +46,7 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class BayernProvider extends AbstractEfaProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("http://mobile.defas-fgi.de/beg/");
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://mobile.defas-fgi.de/beg/");
     // http://mobile.defas-fgi.de/xml/
 
     private static final String DEPARTURE_MONITOR_ENDPOINT = "XML_DM_REQUEST";
