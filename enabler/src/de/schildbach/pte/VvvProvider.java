@@ -25,7 +25,7 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class VvvProvider extends AbstractEfaProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("http://195.30.98.162:8081/vvv2/");
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://vogtlandauskunft.de/vvv2/");
 
     public VvvProvider() {
         super(NetworkId.VVV, API_BASE);
