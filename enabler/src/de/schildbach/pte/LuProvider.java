@@ -29,7 +29,8 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class LuProvider extends AbstractHafasLegacyProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("http://mobiliteitszentral.hafas.de/hafas/");
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://travelplanner.mobiliteit.lu/hafas/");
+    // https://mobiliteitszentral.hafas.de/hafas/
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, Product.REGIONAL_TRAIN, Product.BUS, Product.BUS,
             Product.BUS, Product.BUS };
