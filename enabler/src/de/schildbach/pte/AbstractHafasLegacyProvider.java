@@ -2781,6 +2781,12 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
             return Product.REGIONAL_TRAIN;
         if ("UEX".equals(ucType)) // Slovenia
             return Product.REGIONAL_TRAIN;
+        if ("KW".equals(ucType)) // Koleje Wielkopolskie
+            return Product.REGIONAL_TRAIN;
+        if ("KS".equals(ucType)) // Koleje Śląskie
+            return Product.REGIONAL_TRAIN;
+        if ("KML".equals(ucType)) // Koleje Malopolskie
+            return Product.REGIONAL_TRAIN;
 
         // Suburban Trains
         if (P_LINE_SBAHN.matcher(ucType).matches()) // Generic (Night) S-Bahn
@@ -2798,6 +2804,8 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
         if ("SKM".equals(ucType)) // Szybka Kolej Miejska Tricity
             return Product.SUBURBAN_TRAIN;
         if ("SKW".equals(ucType)) // Szybka Kolej Miejska Warschau
+            return Product.SUBURBAN_TRAIN;
+        if ("LKA".equals(ucType)) // Łódzka Kolej Aglomeracyjna
             return Product.SUBURBAN_TRAIN;
 
         // Subway
