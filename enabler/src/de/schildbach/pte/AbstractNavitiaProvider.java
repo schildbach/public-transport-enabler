@@ -92,7 +92,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
     }
 
     private enum PhysicalMode {
-        AIR, BOAT, BUS, BUSRAPIDTRANSIT, COACH, FERRY, FUNICULAR, LOCALTRAIN, LONGDISTANCETRAIN, METRO, RAPIDTRANSIT, SHUTTLE, TAXI, TRAIN, TRAMWAY, TRAM, OTHER
+        AIR, BOAT, BUS, BUSRAPIDTRANSIT, COACH, FERRY, FUNICULAR, LOCALTRAIN, LONGDISTANCETRAIN, METRO, RAPIDTRANSIT, SHUTTLE, TAXI, TRAIN, TRAMWAY, TRAM, VAL, OTHER
     }
 
     @SuppressWarnings("serial")
@@ -609,6 +609,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
         case TRAIN:
         case LOCALTRAIN:
         case LONGDISTANCETRAIN:
+        case VAL:
             return Product.SUBURBAN_TRAIN;
         case TRAMWAY:
         case TRAM:
