@@ -135,6 +135,11 @@ public class ParisProviderLiveTest extends AbstractNavitiaProviderLiveTest {
     }
 
     @Test
+    public void queryTripStationsOrlyval() throws Exception {
+        queryTrip("Orly Sud", "Gare De Lyon");
+    }
+
+    @Test
     public void queryTripStationsRapidTransit() throws Exception {
         queryTrip("Luxembourg Paris", "Antony Antony");
     }
