@@ -2879,15 +2879,18 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         return path;
     }
 
-    private List<Point> processCoordinateStrings(final XmlPullParser pp, final String tag)
+    private @Nullable List<Point> processCoordinateStrings(final XmlPullParser pp, final String tag)
             throws XmlPullParserException, IOException {
         final List<Point> path = new LinkedList<>();
 
-        final String value = XmlPullUtil.valueTag(pp, tag);
-        for (final String coordStr : value.split(" +"))
-            path.add(parseCoord(coordStr));
-
-        return path;
+        final String value = XmlPullUtil.optValueTag(pp, tag, null);
+        if (value != null) {
+            for (final String coordStr : value.split(" +"))
+                path.add(parseCoord(coordStr));
+            return path;
+        } else {
+            return null;
+        }
     }
 
     private List<Point> processCoordinateBaseElems(final XmlPullParser pp) throws XmlPullParserException, IOException {
