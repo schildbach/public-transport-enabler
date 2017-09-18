@@ -54,7 +54,7 @@ public class VmsProvider extends AbstractEfaProvider {
         url.addEncodedQueryParameter("inclMOT_14", "on");
         url.addEncodedQueryParameter("inclMOT_15", "on");
         url.addEncodedQueryParameter("inclMOT_16", "on");
-        url.addEncodedQueryParameter("inclMOT_17", "Fon");
+        url.addEncodedQueryParameter("inclMOT_17", "on");
     }
 
     @Override
