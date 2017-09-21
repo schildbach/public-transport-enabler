@@ -441,6 +441,8 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
                     return new QueryTripsResult(header, QueryTripsResult.Status.TOO_CLOSE);
                 if ("FAIL".equals(err) && "HCI Service: request failed".equals(errTxt))
                     return new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN);
+                if ("LOCATION".equals(err) && "HCI Service: location missing or invalid".equals(errTxt))
+                    return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_LOCATION);
                 throw new RuntimeException(err + " " + errTxt);
             }
             final JSONObject res = svcRes.getJSONObject("res");
