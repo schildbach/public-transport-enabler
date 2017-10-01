@@ -51,10 +51,20 @@ public class FranceSouthWestProvider extends AbstractNavitiaProvider {
         switch (product) {
         case REGIONAL_TRAIN: {
             // TER + Intercités
-            return new Style(Style.parseColor(color), computeForegroundColor(color));
+            Style s;
+            if(network.equals("SNCF")) // SNCF data have no color
+                s =  new Style(Style.parseColor("#D90283"), computeForegroundColor("#D90283"));
+            else
+                s =  new Style(Style.parseColor(color), computeForegroundColor(color));
+            return s;
         }
         case SUBURBAN_TRAIN: {
-            return new Style(Style.parseColor(color), computeForegroundColor(color));
+            Style s;
+            if(network.equals("SNCF")) // SNCF data have no color
+                s =  new Style(Style.parseColor("#D90283"), computeForegroundColor("#D90283"));
+            else
+                s =  new Style(Style.parseColor(color), computeForegroundColor(color));
+            return s;
         }
         case TRAM: {
             // Tram

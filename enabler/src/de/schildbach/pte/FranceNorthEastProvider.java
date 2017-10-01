@@ -53,11 +53,21 @@ public class FranceNorthEastProvider extends AbstractNavitiaProvider {
         switch (product) {
         case REGIONAL_TRAIN: {
             // Rail (route_type = 2) for TER and Corail Intercité/Lunéa (all SNCF)
-            return new Style(Style.parseColor(color), computeForegroundColor(color));
+            Style s;
+            if(network.equals("SNCF")) // SNCF data have no color
+                s =  new Style(Style.parseColor("#D90283"), computeForegroundColor("#D90283"));
+            else
+                s =  new Style(Style.parseColor(color), computeForegroundColor(color));
+            return s;
         }
         case SUBURBAN_TRAIN: {
             // Rail (route_type = 2) for Transilien (SNCF)
-            return new Style(Style.parseColor(color), computeForegroundColor(color));
+            Style s;
+            if(network.equals("SNCF")) // SNCF data have no color
+                s =  new Style(Style.parseColor("#D90283"), computeForegroundColor("#D90283"));
+            else
+                s =  new Style(Style.parseColor(color), computeForegroundColor(color));
+            return s;
         }
         case TRAM: {
             // Tram (route_type = 0) for Strasboug (CTS) and Nancy (Stan)
