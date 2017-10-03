@@ -1013,6 +1013,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                 return new Line(id, network, Product.HIGH_SPEED_TRAIN, "ARC" + trainNum);
             if ("HOT".equals(trainType) && trainNum != null) // Spanien, Nacht
                 return new Line(id, network, Product.HIGH_SPEED_TRAIN, "HOT" + trainNum);
+            if ("LCM".equals(trainType) && "Locomore".equals(trainName) && trainNum != null)
+                return new Line(id, network, Product.HIGH_SPEED_TRAIN, "LCM" + trainNum);
             if ("Locomore".equals(longName))
                 return new Line(id, network, Product.HIGH_SPEED_TRAIN, "LOC" + Strings.nullToEmpty(trainNum));
 
