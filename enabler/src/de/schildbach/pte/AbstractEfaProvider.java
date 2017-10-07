@@ -1272,6 +1272,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                 return new Line(id, network, Product.REGIONAL_TRAIN, "DPF" + trainNum);
             if ("WBA".equals(trainType) || "Waldbahn".equals(trainName))
                 return new Line(id, network, Product.REGIONAL_TRAIN, "WBA" + trainNum);
+            if ("ÖB".equals(trainType) && "Öchsle-Bahn-Betriebsgesellschaft mbH".equals(trainName) && trainNum != null)
+                return new Line(id, network, Product.REGIONAL_TRAIN, "ÖB" + trainNum);
             if ("ÖBA".equals(trainType) && trainNum != null) // Eisenbahn-Betriebsgesellschaft Ochsenhausen
                 return new Line(id, network, Product.REGIONAL_TRAIN, "ÖBA" + trainNum);
             if (("UEF".equals(trainType) || "Ulmer Eisenbahnfreunde".equals(trainName)) && trainNum != null)
