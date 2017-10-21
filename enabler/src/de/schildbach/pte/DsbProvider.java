@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright 2010-2017 the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@ package de.schildbach.pte;
 
 import java.util.Set;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.schildbach.pte.dto.Product;
 
@@ -98,5 +99,18 @@ public class DsbProvider extends AbstractHafasLegacyProvider {
             return Product.FERRY;
 
         return super.normalizeType(type);
+    }
+
+    // Busses line name is formatted as "42#Bus 42" but we just want "42"
+    private static final Pattern P_NORMALIZE_LINE_NAME_BUS_DSB = Pattern.compile(".*?#Bus (.*)",
+            Pattern.CASE_INSENSITIVE);
+
+    @Override
+    protected String normalizeLineName(final String lineName) {
+        final Matcher mBus = P_NORMALIZE_LINE_NAME_BUS_DSB.matcher(lineName);
+        if (mBus.matches())
+            return mBus.group(1);
+
+        return super.normalizeLineName(lineName);
     }
 }
