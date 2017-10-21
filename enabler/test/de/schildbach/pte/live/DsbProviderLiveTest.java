@@ -76,7 +76,7 @@ public class DsbProviderLiveTest extends AbstractProviderLiveTest {
     public void shortTrip() throws Exception {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.STATION, "900000011", null, "Copenhagen Airport"), null,
-                new Location(LocationType.STATION, "551922500", null, "Billund Airport"), new Date(), true, Product.ALL,
+                new Location(LocationType.POI, "551922500", null, "Billund Airport"), new Date(), true, Product.ALL,
                 WalkSpeed.NORMAL, Accessibility.NEUTRAL);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
