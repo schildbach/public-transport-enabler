@@ -22,6 +22,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 
+import com.google.common.collect.Sets;
+
+import de.schildbach.pte.dto.Line;
+import de.schildbach.pte.dto.Line.Attr;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.dto.Style.Shape;
@@ -76,9 +80,96 @@ public class VbnProvider extends AbstractHafasMobileProvider {
         return Product.ALL;
     }
 
+    @Override
+    protected Line newLine(final String operator, final Product product, final String name) {
+        final Line line = super.newLine(operator, product, name);
+
+        if (line.product == Product.BUS && "57".equals(line.label))
+            return new Line(null, line.network, line.product, line.label, line.name, line.style,
+                    Sets.newHashSet(Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_CLOCKWISE), line.message);
+        if (line.product == Product.BUS && "58".equals(line.label))
+            return new Line(null, line.network, line.product, line.label, line.name, line.style,
+                    Sets.newHashSet(Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_ANTICLOCKWISE), line.message);
+        return line;
+    }
+
     private static final Map<String, Style> STYLES = new HashMap<>();
 
     static {
+        // Bremen
+        STYLES.put("Bremer Straßenbahn AG|T1", new Style(Shape.RECT, Style.parseColor("#129640"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|T1S", new Style(Shape.RECT, Style.WHITE, Style.parseColor("#129640")));
+        STYLES.put("Bremer Straßenbahn AG|T2", new Style(Shape.RECT, Style.parseColor("#115CA8"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|T3", new Style(Shape.RECT, Style.parseColor("#2A9AD6"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|T4", new Style(Shape.RECT, Style.parseColor("#E30C15"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|T4S", new Style(Shape.RECT, Style.WHITE, Style.parseColor("#E30C15")));
+        STYLES.put("Bremer Straßenbahn AG|T6", new Style(Shape.RECT, Style.parseColor("#FFCC00"), Style.BLACK));
+        STYLES.put("Bremer Straßenbahn AG|T8", new Style(Shape.RECT, Style.parseColor("#98C21E"), Style.WHITE));
+
+        STYLES.put("Bremer Straßenbahn AG|B20", new Style(Shape.CIRCLE, Style.parseColor("#95C11F"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|B21", new Style(Shape.CIRCLE, Style.parseColor("#009FE3"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|B22", new Style(Shape.CIRCLE, Style.parseColor("#A69DCD"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|B24", new Style(Shape.CIRCLE, Style.parseColor("#951B81"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|B25", new Style(Shape.CIRCLE, Style.parseColor("#009640"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|B26", new Style(Shape.CIRCLE, Style.parseColor("#E30613"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|B27", new Style(Shape.CIRCLE, Style.parseColor("#E30613"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|B28", new Style(Shape.CIRCLE, Style.parseColor("#FFCC00"), Style.BLACK));
+        STYLES.put("Bremer Straßenbahn AG|B29", new Style(Shape.CIRCLE, Style.parseColor("#95C11F"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|B31", new Style(Shape.CIRCLE, Style.parseColor("#95C11F"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|B33", new Style(Shape.CIRCLE, Style.parseColor("#FFCC00"), Style.BLACK));
+        STYLES.put("Bremer Straßenbahn AG|B34", new Style(Shape.CIRCLE, Style.parseColor("#FFCC00"), Style.BLACK));
+        STYLES.put("Bremer Straßenbahn AG|B37", new Style(Shape.CIRCLE, Style.parseColor("#951B81"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|B38", new Style(Shape.CIRCLE, Style.parseColor("#FFCC00"), Style.BLACK));
+        STYLES.put("Bremer Straßenbahn AG|B39", new Style(Shape.CIRCLE, Style.parseColor("#FFCC00"), Style.BLACK));
+        STYLES.put("Bremer Straßenbahn AG|B40", new Style(Shape.CIRCLE, Style.parseColor("#E30613"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|B41", new Style(Shape.CIRCLE, Style.parseColor("#E30613"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|B41S", new Style(Shape.CIRCLE, Style.WHITE, Style.parseColor("#E30613")));
+        STYLES.put("Bremer Straßenbahn AG|B42", new Style(Shape.CIRCLE, Style.parseColor("#FFCC00"), Style.BLACK));
+        STYLES.put("Bremer Straßenbahn AG|B44", new Style(Shape.CIRCLE, Style.parseColor("#EF7D00"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|B51", new Style(Shape.CIRCLE, Style.parseColor("#FFCC00"), Style.BLACK));
+        STYLES.put("Bremer Straßenbahn AG|B52", new Style(Shape.CIRCLE, Style.parseColor("#95C11F"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|B53", new Style(Shape.CIRCLE, Style.parseColor("#009640"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|B55", new Style(Shape.CIRCLE, Style.parseColor("#FFCC00"), Style.BLACK));
+        STYLES.put("Bremer Straßenbahn AG|B57", new Style(Shape.CIRCLE, Style.parseColor("#EF7D00"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|B58", new Style(Shape.CIRCLE, Style.parseColor("#EF7D00"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|B61", new Style(Shape.CIRCLE, Style.parseColor("#95C11F"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|B62", new Style(Shape.CIRCLE, Style.parseColor("#009640"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|B63", new Style(Shape.CIRCLE, Style.parseColor("#FFCC00"), Style.BLACK));
+        STYLES.put("Bremer Straßenbahn AG|B65", new Style(Shape.CIRCLE, Style.parseColor("#A8D3AF"), Style.BLACK));
+        STYLES.put("Bremer Straßenbahn AG|B66", new Style(Shape.CIRCLE, Style.parseColor("#A8D3AF"), Style.BLACK));
+        STYLES.put("Bremer Straßenbahn AG|B77", new Style(Shape.CIRCLE, Style.parseColor("#808080"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|B80", new Style(Shape.CIRCLE, Style.parseColor("#A8D3AF"), Style.BLACK));
+        STYLES.put("Bremer Straßenbahn AG|B81", new Style(Shape.CIRCLE, Style.parseColor("#009640"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|B82", new Style(Shape.CIRCLE, Style.parseColor("#EF7D00"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|B83", new Style(Shape.CIRCLE, Style.parseColor("#FFCC00"), Style.BLACK));
+        STYLES.put("Bremer Straßenbahn AG|B87", new Style(Shape.CIRCLE, Style.parseColor("#FFCC00"), Style.BLACK));
+        STYLES.put("Bremer Straßenbahn AG|B90", new Style(Shape.CIRCLE, Style.parseColor("#312783"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|B91", new Style(Shape.CIRCLE, Style.parseColor("#009FE3"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|B92", new Style(Shape.CIRCLE, Style.parseColor("#009FE3"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|B93", new Style(Shape.CIRCLE, Style.parseColor("#FFCC00"), Style.BLACK));
+        STYLES.put("Bremer Straßenbahn AG|B94", new Style(Shape.CIRCLE, Style.parseColor("#E30613"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|B95", new Style(Shape.CIRCLE, Style.parseColor("#EF7D00"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|B96", new Style(Shape.CIRCLE, Style.parseColor("#951B81"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|B97", new Style(Shape.CIRCLE, Style.parseColor("#A6DCDD"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|B98", new Style(Shape.CIRCLE, Style.parseColor("#009640"), Style.WHITE));
+
+        // Bremen Nachtverkehr
+        STYLES.put("Bremer Straßenbahn AG|TN1", new Style(Shape.RECT, Style.parseColor("#009640"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|TN3", new Style(Shape.RECT, Style.parseColor("#FB3099"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|TN4", new Style(Shape.RECT, Style.parseColor("#E30613"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|BN5", new Style(Shape.CIRCLE, Style.parseColor("#EF7D00"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|BN6", new Style(Shape.CIRCLE, Style.parseColor("#009FE3"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|BN7", new Style(Shape.CIRCLE, Style.parseColor("#95C11F"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|BN9", new Style(Shape.CIRCLE, Style.parseColor("#FFCC00"), Style.BLACK));
+        STYLES.put("Bremer Straßenbahn AG|TN10", new Style(Shape.RECT, Style.parseColor("#0075BF"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|BN94", new Style(Shape.CIRCLE, Style.parseColor("#A69DCD"), Style.WHITE));
+
+        // NordWestBahn - Regio-S-Bahn
+        STYLES.put("NordWestBahn|SRS1", new Style(Style.parseColor("#214889"), Style.WHITE));
+        STYLES.put("NordWestBahn|SRS2", new Style(Style.parseColor("#DB8F2D"), Style.WHITE));
+        STYLES.put("NordWestBahn|SRS3", new Style(Style.parseColor("#A5C242"), Style.WHITE));
+        STYLES.put("NordWestBahn|SRS4", new Style(Style.parseColor("#C4031E"), Style.WHITE));
+
         // Rostock
         STYLES.put("DB Regio AG|SS1", new Style(Shape.CIRCLE, Style.parseColor("#009037"), Style.WHITE));
         STYLES.put("DB Regio AG|SS2", new Style(Shape.CIRCLE, Style.parseColor("#009037"), Style.WHITE));
