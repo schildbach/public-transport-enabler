@@ -238,7 +238,7 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
             final JSONObject res = svcRes.getJSONObject("res");
 
             final JSONObject common = res.getJSONObject("common");
-            /* final List<String[]> remarks = */ parseRemList(common.getJSONArray("remL"));
+            final List<String[]> remarks = parseRemList(common.getJSONArray("remL"));
             final List<String> operators = parseOpList(common.getJSONArray("opL"));
             final List<Line> lines = parseProdList(common.getJSONArray("prodL"), operators);
             final JSONArray locList = common.getJSONArray("locL");
@@ -279,8 +279,19 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
                         destination = new Location(LocationType.ANY, null, null, jnyDirTxt);
                     }
 
+                    final JSONArray remList = jny.optJSONArray("remL");
+                    String message = null;
+                    if (remList != null) {
+                        for (int iRem = 0; iRem < remList.length(); iRem++) {
+                            final JSONObject rem = remList.getJSONObject(iRem);
+                            final String[] remark = remarks.get(rem.getInt("remX"));
+                            if ("l?".equals(remark[0]))
+                                message = remark[1];
+                        }
+                    }
+
                     final Departure departure = new Departure(plannedTime, predictedTime, line, position, destination,
-                            null, null);
+                            null, message);
 
                     StationDepartures stationDepartures = findStationDepartures(result.stationDepartures, location);
                     if (stationDepartures == null) {
@@ -448,7 +459,7 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
             final JSONObject res = svcRes.getJSONObject("res");
 
             final JSONObject common = res.getJSONObject("common");
-            /* final List<String[]> remarks = */ parseRemList(common.getJSONArray("remL"));
+            final List<String[]> remarks = parseRemList(common.getJSONArray("remL"));
             final List<Location> locations = parseLocList(common.getJSONArray("locL"));
             final List<String> operators = parseOpList(common.getJSONArray("opL"));
             final List<Line> lines = parseProdList(common.getJSONArray("prodL"), operators);
@@ -493,8 +504,19 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
                             intermediateStops.add(intermediateStop);
                         }
 
+                        final JSONArray remList = jny.optJSONArray("remL");
+                        String message = null;
+                        if (remList != null) {
+                            for (int iRem = 0; iRem < remList.length(); iRem++) {
+                                final JSONObject rem = remList.getJSONObject(iRem);
+                                final String[] remark = remarks.get(rem.getInt("remX"));
+                                if ("l?".equals(remark[0]))
+                                    message = remark[1];
+                            }
+                        }
+
                         leg = new Trip.Public(line, destination, departureStop, arrivalStop, intermediateStops, null,
-                                null);
+                                message);
                     } else if ("WALK".equals(secType) || "TRSF".equals(secType)) {
                         final JSONObject gis = sec.getJSONObject("gis");
                         final int distance = gis.optInt("dist", 0);
