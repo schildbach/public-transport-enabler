@@ -89,4 +89,10 @@ public class ParisProvider extends AbstractNavitiaProvider {
     protected String getLocationName(String name) {
         return WordUtils.capitalizeFully(name);
     }
+
+    @Override
+    protected String getAddressName(final String name, final String houseNumber) {
+        return houseNumber + " " + name;
+    }
+
 }

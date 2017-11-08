@@ -75,4 +75,9 @@ public class FranceNorthEastProvider extends AbstractNavitiaProvider {
             throw new IllegalArgumentException("Unhandled product: " + product);
         }
     }
+
+    @Override
+    protected String getAddressName(final String name, final String houseNumber) {
+        return houseNumber + " " + name;
+    }
 }

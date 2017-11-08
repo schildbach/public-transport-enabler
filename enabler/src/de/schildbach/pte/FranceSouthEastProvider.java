@@ -76,4 +76,9 @@ public class FranceSouthEastProvider extends AbstractNavitiaProvider {
             return super.getLineStyle(network, product, code, color);
         }
     }
+
+    @Override
+    protected String getAddressName(final String name, final String houseNumber) {
+        return houseNumber + " " + name;
+    }
 }
