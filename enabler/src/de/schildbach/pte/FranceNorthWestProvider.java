@@ -41,4 +41,10 @@ public class FranceNorthWestProvider extends AbstractNavitiaProvider {
     public String region() {
         return API_REGION;
     }
+
+    @Override
+    protected String getAddressName(final String name, final String houseNumber) {
+        return houseNumber + " " + name;
+    }
+
 }
