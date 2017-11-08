@@ -865,10 +865,11 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
 
             if (head.has("places")) {
                 final JSONArray places = head.getJSONArray("places");
+                final int numPlaces = places.length();
 
-                for (int i = 0; i < places.length(); ++i) {
+                for (int i = 0; i < numPlaces; ++i) {
                     final JSONObject place = places.getJSONObject(i);
-                    final int priority = place.optInt("quality", 0);
+                    final int priority = numPlaces - i; // "quality" found in JSON is deprecated, only sort order matters
 
                     // Add location to station list.
                     final Location location = parseLocation(place);
