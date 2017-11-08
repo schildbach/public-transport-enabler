@@ -208,6 +208,19 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
         return name;
     }
 
+    /**
+     * Navitia always formats the address label in the French way.
+     * This method can be used to display addresses in a localized way.
+     * It defaults to putting the house number behind the street name.
+     *
+     * @param name The name of the address. Usually a street name.
+     * @param houseNumber The house number of the address.
+     * @return the localized name of the address location
+     */
+    protected String getAddressName(final String name, final String houseNumber) {
+        return name + " " + houseNumber;
+    }
+
     private Location parsePlace(JSONObject location, PlaceType placeType) throws IOException {
         try {
             final LocationType type = getLocationType(placeType);
@@ -216,7 +229,14 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
                 id = location.getString("id");
             final JSONObject coord = location.getJSONObject("coord");
             final Point point = parseCoord(coord);
-            final String name = getLocationName(location.getString("name"));
+            final String placeName = location.getString("name");
+            String name;
+            if (placeType == PlaceType.ADDRESS) {
+                final String houseNumber = location.optString("house_number", "0");
+                name = houseNumber.equals("0") ? getAddressName(placeName, houseNumber) : placeName;
+            } else {
+                name = getLocationName(placeName);
+            }
             String place = null;
             if (location.has("administrative_regions")) {
                 JSONArray admin = location.getJSONArray("administrative_regions");
