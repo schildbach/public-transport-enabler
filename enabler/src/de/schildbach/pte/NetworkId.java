@@ -89,4 +89,7 @@ public enum NetworkId {
 
     // Africa
     GHANA,
+
+    // Nicaragua
+    NICARAGUA,
 }
