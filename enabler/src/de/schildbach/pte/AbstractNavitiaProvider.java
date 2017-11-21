@@ -233,7 +233,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
             String name;
             if (placeType == PlaceType.ADDRESS) {
                 final String houseNumber = location.optString("house_number", "0");
-                name = houseNumber.equals("0") ? getAddressName(placeName, houseNumber) : placeName;
+                name = houseNumber.equals("0") ? placeName : getAddressName(placeName, houseNumber);
             } else {
                 name = getLocationName(placeName);
             }
