@@ -101,7 +101,7 @@ public class DsbProvider extends AbstractHafasLegacyProvider {
         return super.normalizeType(type);
     }
 
-    // Busses line name is formattedas "42#Bus 42" but we just want "42"
+    // Busses line name is formatted as "42#Bus 42" but we just want "42"
     private static final Pattern P_NORMALIZE_LINE_NAME_BUS_DSB = Pattern.compile(".*?#Bus (.*)", Pattern.CASE_INSENSITIVE);
 
     @Override
