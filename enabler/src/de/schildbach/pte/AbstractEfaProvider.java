@@ -1717,6 +1717,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             XmlPullUtil.optValueTag(pp, "dy", null);
             final String de = XmlPullUtil.optValueTag(pp, "de", null);
             final String productName = n != null ? n : de;
+            XmlPullUtil.optValueTag(pp, "routeDesc", null);
             XmlPullUtil.optValueTag(pp, "tco", null);
             final String lineId = parseMobileDv(pp);
 
