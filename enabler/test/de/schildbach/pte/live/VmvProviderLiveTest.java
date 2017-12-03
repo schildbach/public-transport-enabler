@@ -62,6 +62,14 @@ public class VmvProviderLiveTest extends AbstractProviderLiveTest {
     }
 
     @Test
+    public void suggestLocationsSchwerin() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Schwerin Hauptbahnhof");
+        print(result);
+        assertEquals("Schwerin", result.getLocations().get(0).place);
+        assertEquals("Hauptbahnhof", result.getLocations().get(0).name);
+    }
+
+    @Test
     public void suggestLocationsIncomplete() throws Exception {
         final SuggestLocationsResult result = suggestLocations("Kur");
         print(result);

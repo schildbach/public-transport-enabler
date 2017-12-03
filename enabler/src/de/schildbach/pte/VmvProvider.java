@@ -37,6 +37,7 @@ public class VmvProvider extends AbstractEfaProvider {
 
     public VmvProvider() {
         super(NetworkId.VMV, API_BASE);
+        setIncludeRegionId(false);
         setUseRouteIndexAsTripId(false);
         httpClient.setSslAcceptAllHostnames(true);
     }
