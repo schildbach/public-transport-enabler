@@ -1618,8 +1618,16 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                     final ResultHeader header = enterEfa(pp);
                     final QueryDeparturesResult r = new QueryDeparturesResult(header);
 
-                    XmlPullUtil.require(pp, "dps");
-                    if (XmlPullUtil.optEnter(pp, "dps")) {
+                    if (XmlPullUtil.optEnter(pp, "ers")) {
+                        XmlPullUtil.enter(pp, "err");
+                        final String mod = XmlPullUtil.valueTag(pp, "mod");
+                        final String co = XmlPullUtil.valueTag(pp, "co");
+                        XmlPullUtil.optValueTag(pp, "u", null);
+                        XmlPullUtil.exit(pp, "err");
+                        XmlPullUtil.exit(pp, "ers");
+                        log.debug("EFA error: {} {}", co, mod);
+                        result.set(new QueryDeparturesResult(header, QueryDeparturesResult.Status.SERVICE_DOWN));
+                    } else if (XmlPullUtil.optEnter(pp, "dps")) {
                         final Calendar plannedDepartureTime = new GregorianCalendar(timeZone);
                         final Calendar predictedDepartureTime = new GregorianCalendar(timeZone);
 
