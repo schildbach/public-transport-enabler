@@ -36,6 +36,9 @@ public enum NetworkId {
     // France
     PARIS, FRANCESOUTHWEST, FRANCESOUTHEAST, FRANCENORTHWEST, FRANCENORTHEAST,
 
+    // Spain
+    SPAIN,
+
     // Belgium
     SNCB,
 
