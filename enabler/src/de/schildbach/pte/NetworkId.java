@@ -81,6 +81,9 @@ public enum NetworkId {
     // Australia
     SYDNEY, AUSTRALIA,
 
+    // New Zealand
+    NZ,
+
     // Africa
     GHANA,
 }
