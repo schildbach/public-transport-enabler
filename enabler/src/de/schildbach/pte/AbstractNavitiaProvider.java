@@ -721,6 +721,9 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
 
         try {
             final JSONObject head = new JSONObject(page.toString());
+            if (head.has("error")) {
+                return new NearbyLocationsResult(resultHeader, Status.INVALID_ID);
+            }
 
             final JSONObject pagination = head.getJSONObject("pagination");
             final int nbResults = pagination.getInt("total_result");
