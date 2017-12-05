@@ -83,4 +83,8 @@ public enum NetworkId {
 
     // Africa
     GHANA,
+
+    // Spain
+    SPAIN,
+
 }
