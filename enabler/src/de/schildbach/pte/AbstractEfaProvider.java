@@ -1625,6 +1625,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                         XmlPullUtil.optValueTag(pp, "u", null);
                         if ("-2000".equals(co)) { // STOP_INVALID
                             result.set(new QueryDeparturesResult(header, QueryDeparturesResult.Status.INVALID_STATION));
+                        } else if ("-4050".equals(co)) { // NO_SERVINGLINES
+                            result.set(r);
                         } else {
                             log.debug("EFA error: {} {}", co, mod);
                             result.set(new QueryDeparturesResult(header, QueryDeparturesResult.Status.SERVICE_DOWN));
