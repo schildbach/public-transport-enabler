@@ -17,17 +17,23 @@
 
 package de.schildbach.pte;
 
+import de.schildbach.pte.dto.Product;
 import okhttp3.HttpUrl;
 
 /**
  * @author Andreas Schildbach
  */
-public class IvbProvider extends AbstractEfaProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("http://efa.ivb.at/ivb/");
+public class IvbProvider extends AbstractHafasMobileProvider {
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://fahrplan.ivb.at/bin/");
+    // TODO review
+    private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.SUBURBAN_TRAIN, Product.SUBWAY,
+            null, Product.TRAM, Product.REGIONAL_TRAIN, Product.BUS, Product.BUS, Product.TRAM, Product.FERRY,
+            Product.ON_DEMAND, Product.BUS, Product.REGIONAL_TRAIN, null, null, null };
 
-    public IvbProvider() {
-        super(NetworkId.IVB, API_BASE);
-
-        setUseRouteIndexAsTripId(false);
+    public IvbProvider(final String apiAuthorization) {
+        super(NetworkId.IVB, API_BASE, PRODUCTS_MAP);
+        setApiVersion("1.20");
+        setApiAuthorization(apiAuthorization);
+        setApiClient("{\"id\":\"VAO\",\"l\":\"vs_ivb\",\"type\":\"AND\"}");
     }
 }

@@ -17,11 +17,15 @@
 
 package de.schildbach.pte.live;
 
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
+import java.util.EnumSet;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import de.schildbach.pte.IvbProvider;
@@ -40,10 +44,11 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
  */
 public class IvbProviderLiveTest extends AbstractProviderLiveTest {
     public IvbProviderLiveTest() {
-        super(new IvbProvider());
+        super(new IvbProvider(secretProperty("ivb.api_authorization")));
     }
 
     @Test
+    @Ignore(value = "does not work")
     public void nearbyStations() throws Exception {
         final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "60401187"));
         print(result);
@@ -51,14 +56,22 @@ public class IvbProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void nearbyStationsByCoordinate() throws Exception {
-        final NearbyLocationsResult result = queryNearbyStations(Location.coord(47271228, 11402063));
+        final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.STATION), Location.coord(47271228, 11402063), 10000, 7);
         print(result);
+        assertEquals(result.locations.size(), 7);
     }
 
     @Test
     public void queryDepartures() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("60401187", false);
+        final QueryDeparturesResult result = queryDepartures("476640200", false);
         print(result);
+    }
+
+    @Test
+    public void suggestLocations() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Innsbruck Hauptbahnhof");
+        print(result);
+        assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "470118700")));
     }
 
     @Test
@@ -75,8 +88,8 @@ public class IvbProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void shortTrip() throws Exception {
-        final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "60466402", null, "Kochstraße"),
-                null, new Location(LocationType.STATION, "60461679", null, "Messe/Zeughaus"), new Date(), true,
+        final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "476640200", null, "Kochstraße"),
+                null, new Location(LocationType.STATION, "476167900", null, "Messe/Zeughaus"), new Date(), true,
                 Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
