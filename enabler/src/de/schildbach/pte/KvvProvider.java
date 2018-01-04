@@ -34,14 +34,17 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class KvvProvider extends AbstractEfaProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("http://213.144.24.66/kvv2/");
+	private static final HttpUrl API_BASE = HttpUrl.parse("https://www.kvv.de/tunnelEfaDirect.php");
 
     public KvvProvider() {
         this(API_BASE);
     }
 
     public KvvProvider(final HttpUrl apiBase) {
-        super(NetworkId.KVV, apiBase);
+        super(NetworkId.KVV, apiBase.newBuilder().addQueryParameter("action", DEFAULT_DEPARTURE_MONITOR_ENDPOINT).build(),
+                apiBase.newBuilder().addQueryParameter("action", DEFAULT_TRIP_ENDPOINT).build(),
+                apiBase.newBuilder().addQueryParameter("action", DEFAULT_STOPFINDER_ENDPOINT).build(),
+                apiBase.newBuilder().addQueryParameter("action", DEFAULT_COORD_ENDPOINT).build());
 
         setStyles(STYLES);
         setSessionCookieName("HASESSIONID");
