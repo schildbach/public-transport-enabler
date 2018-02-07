@@ -91,5 +91,5 @@ public enum NetworkId {
     GHANA,
 
     // Nicaragua
-    ESTELI, MANAGUA,
+    NICARAGUA,
 }
