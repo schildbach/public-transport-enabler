@@ -2561,6 +2561,8 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
             return Product.HIGH_SPEED_TRAIN;
         if ("LOC".equals(ucType)) // Locomore
             return Product.HIGH_SPEED_TRAIN;
+        if ("NJ".equals(ucType)) // NightJet
+            return Product.HIGH_SPEED_TRAIN;
 
         // Regional
         if ("ZUG".equals(ucType)) // Generic Train
