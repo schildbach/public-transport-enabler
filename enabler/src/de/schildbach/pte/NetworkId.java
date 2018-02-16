@@ -70,7 +70,7 @@ public enum NetworkId {
     PL,
 
     // Italy
-    IT,
+    IT, STA,
 
     // United Arab Emirates
     DUB,
