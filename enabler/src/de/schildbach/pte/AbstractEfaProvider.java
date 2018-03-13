@@ -409,9 +409,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                     final XmlPullParser pp = parserFactory.newPullParser();
                     pp.setInput(body.byteStream(), null); // Read encoding from XML declaration
                     final ResultHeader header = enterEfa(pp);
+                    XmlPullUtil.optSkip(pp, "ers");
 
                     final List<SuggestedLocation> locations = new ArrayList<>();
-
                     XmlPullUtil.require(pp, "sf");
                     if (XmlPullUtil.optEnter(pp, "sf")) {
                         while (XmlPullUtil.optEnter(pp, "p")) {
