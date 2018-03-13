@@ -2713,7 +2713,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
                         parseMobileSt(pp, plannedTimeCal, predictedTimeCal);
 
-                        XmlPullUtil.requireSkip(pp, "lis");
+                        XmlPullUtil.optSkip(pp, "lis"); // links
 
                         XmlPullUtil.enter(pp, "r");
                         final String id = XmlPullUtil.valueTag(pp, "id");
