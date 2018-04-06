@@ -29,6 +29,7 @@ import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.Position;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
+import de.schildbach.pte.dto.Style.Shape;
 
 import okhttp3.HttpUrl;
 
