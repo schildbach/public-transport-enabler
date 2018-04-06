@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@ import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.Position;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
+import de.schildbach.pte.dto.Style.Shape;
 
 import okhttp3.HttpUrl;
 
@@ -98,41 +99,53 @@ public class MvvProvider extends AbstractEfaProvider {
     private static final Map<String, Style> STYLES = new HashMap<>();
 
     static {
-        STYLES.put("SS1", new Style(Style.parseColor("#00ccff"), Style.WHITE));
-        STYLES.put("SS2", new Style(Style.parseColor("#66cc00"), Style.WHITE));
-        STYLES.put("SS3", new Style(Style.parseColor("#880099"), Style.WHITE));
-        STYLES.put("SS4", new Style(Style.parseColor("#ff0033"), Style.WHITE));
-        STYLES.put("SS6", new Style(Style.parseColor("#00aa66"), Style.WHITE));
-        STYLES.put("SS7", new Style(Style.parseColor("#993333"), Style.WHITE));
-        STYLES.put("SS8", new Style(Style.BLACK, Style.parseColor("#ffcc00")));
-        STYLES.put("SS20", new Style(Style.BLACK, Style.parseColor("#ffaaaa")));
-        STYLES.put("SS27", new Style(Style.parseColor("#ffaaaa"), Style.WHITE));
-        STYLES.put("SA", new Style(Style.parseColor("#231f20"), Style.WHITE));
+        STYLES.put("R", new Style(Shape.RECT, Style.parseColor("#36397f"), Style.WHITE));
 
-        STYLES.put("T12", new Style(Style.parseColor("#883388"), Style.WHITE));
-        STYLES.put("T15", new Style(Style.parseColor("#3366CC"), Style.WHITE));
-        STYLES.put("T16", new Style(Style.parseColor("#CC8833"), Style.WHITE));
-        STYLES.put("T17", new Style(Style.parseColor("#993333"), Style.WHITE));
-        STYLES.put("T18", new Style(Style.parseColor("#66bb33"), Style.WHITE));
-        STYLES.put("T19", new Style(Style.parseColor("#cc0000"), Style.WHITE));
-        STYLES.put("T20", new Style(Style.parseColor("#00bbee"), Style.WHITE));
-        STYLES.put("T21", new Style(Style.parseColor("#33aa99"), Style.WHITE));
-        STYLES.put("T23", new Style(Style.parseColor("#fff000"), Style.WHITE));
-        STYLES.put("T25", new Style(Style.parseColor("#ff9999"), Style.WHITE));
-        STYLES.put("T27", new Style(Style.parseColor("#ff6600"), Style.WHITE));
-        STYLES.put("TN17", new Style(Style.parseColor("#999999"), Style.parseColor("#ffff00")));
-        STYLES.put("TN19", new Style(Style.parseColor("#999999"), Style.parseColor("#ffff00")));
-        STYLES.put("TN20", new Style(Style.parseColor("#999999"), Style.parseColor("#ffff00")));
-        STYLES.put("TN27", new Style(Style.parseColor("#999999"), Style.parseColor("#ffff00")));
+        STYLES.put("SS1", new Style(Shape.CIRCLE, Style.parseColor("#16bae7"), Style.WHITE));
+        STYLES.put("SS2", new Style(Shape.CIRCLE, Style.parseColor("#76b82a"), Style.WHITE));
+        STYLES.put("SS3", new Style(Shape.CIRCLE, Style.parseColor("#951b81"), Style.WHITE));
+        STYLES.put("SS4", new Style(Shape.CIRCLE, Style.parseColor("#e30613"), Style.WHITE));
+        STYLES.put("SS6", new Style(Shape.CIRCLE, Style.parseColor("#00975f"), Style.WHITE));
+        STYLES.put("SS7", new Style(Shape.CIRCLE, Style.parseColor("#943126"), Style.WHITE));
+        STYLES.put("SS8", new Style(Shape.CIRCLE, Style.BLACK, Style.parseColor("#ffcc00")));
+        STYLES.put("SS18",
+                new Style(Shape.CIRCLE, Style.parseColor("#16bae7"), Style.parseColor("#f0aa00"), Style.WHITE, 0));
+        STYLES.put("SS20", new Style(Shape.CIRCLE, Style.parseColor("#ea516d"), Style.WHITE));
 
-        STYLES.put("UU1", new Style(Style.parseColor("#227700"), Style.WHITE));
-        STYLES.put("UU2", new Style(Style.parseColor("#bb0000"), Style.WHITE));
-        STYLES.put("UU2E", new Style(Style.parseColor("#bb0000"), Style.WHITE));
-        STYLES.put("UU3", new Style(Style.parseColor("#ee8800"), Style.WHITE));
-        STYLES.put("UU4", new Style(Style.parseColor("#00ccaa"), Style.WHITE));
-        STYLES.put("UU5", new Style(Style.parseColor("#bb7700"), Style.WHITE));
-        STYLES.put("UU6", new Style(Style.parseColor("#0000cc"), Style.WHITE));
-        STYLES.put("UU7", new Style(Style.parseColor("#227700"), Style.parseColor("#bb0000"), Style.WHITE, 0));
+        STYLES.put("T12", new Style(Shape.RECT, Style.parseColor("#96368b"), Style.WHITE));
+        STYLES.put("T15", new Style(Shape.RECT, Style.WHITE, Style.parseColor("#f1919c"), Style.parseColor("#f1919c")));
+        STYLES.put("T16", new Style(Shape.RECT, Style.parseColor("#0065ae"), Style.WHITE));
+        STYLES.put("T17", new Style(Shape.RECT, Style.parseColor("#8b563e"), Style.WHITE));
+        STYLES.put("T18", new Style(Shape.RECT, Style.parseColor("#13a538"), Style.WHITE));
+        STYLES.put("T19", new Style(Shape.RECT, Style.parseColor("#e30613"), Style.WHITE));
+        STYLES.put("T20", new Style(Shape.RECT, Style.parseColor("#16bae7"), Style.WHITE));
+        STYLES.put("T21", new Style(Shape.RECT, Style.WHITE, Style.parseColor("#16bae7"), Style.parseColor("#16bae7")));
+        STYLES.put("T22", new Style(Shape.RECT, Style.WHITE, Style.parseColor("#16bae7"), Style.parseColor("#16bae7")));
+        STYLES.put("T23", new Style(Shape.RECT, Style.parseColor("#bccf00"), Style.WHITE));
+        STYLES.put("T25", new Style(Shape.RECT, Style.parseColor("#f1919c"), Style.WHITE));
+        STYLES.put("T27", new Style(Shape.RECT, Style.parseColor("#f7a600"), Style.WHITE));
+        STYLES.put("T28", new Style(Shape.RECT, Style.WHITE, Style.parseColor("#00a984"), Style.parseColor("#00a984")));
+        STYLES.put("T38",
+                new Style(Shape.RECT, Style.parseColor("#1fa22e"), Style.parseColor("#23bae2"), Style.WHITE, 0));
+        STYLES.put("TN17", new Style(Shape.RECT, Style.parseColor("#999999"), Style.parseColor("#ffff00")));
+        STYLES.put("TN19", new Style(Shape.RECT, Style.parseColor("#999999"), Style.parseColor("#ffff00")));
+        STYLES.put("TN20", new Style(Shape.RECT, Style.parseColor("#999999"), Style.parseColor("#ffff00")));
+        STYLES.put("TN27", new Style(Shape.RECT, Style.parseColor("#999999"), Style.parseColor("#ffff00")));
+
+        STYLES.put("UU1", new Style(Shape.RECT, Style.parseColor("#52822f"), Style.WHITE));
+        STYLES.put("UU2", new Style(Shape.RECT, Style.parseColor("#c20831"), Style.WHITE));
+        STYLES.put("UU2E", new Style(Shape.RECT, Style.parseColor("#c20831"), Style.WHITE));
+        STYLES.put("UU3", new Style(Shape.RECT, Style.parseColor("#ec6726"), Style.WHITE));
+        STYLES.put("UU4", new Style(Shape.RECT, Style.parseColor("#00a984"), Style.WHITE));
+        STYLES.put("UU5", new Style(Shape.RECT, Style.parseColor("#bc7a00"), Style.WHITE));
+        STYLES.put("UU6", new Style(Shape.RECT, Style.parseColor("#0065ae"), Style.WHITE));
+        STYLES.put("UU7",
+                new Style(Shape.RECT, Style.parseColor("#52822f"), Style.parseColor("#c20831"), Style.WHITE, 0));
+        STYLES.put("UU8",
+                new Style(Shape.RECT, Style.parseColor("#c20831"), Style.parseColor("#ec6726"), Style.WHITE, 0));
+
+        STYLES.put("B", new Style(Shape.RECT, Style.parseColor("#005262"), Style.WHITE));
+        STYLES.put("BX", new Style(Shape.RECT, Style.parseColor("#4e917a"), Style.WHITE));
     }
 
     @Override
