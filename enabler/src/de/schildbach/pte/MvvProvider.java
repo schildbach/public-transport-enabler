@@ -99,8 +99,7 @@ public class MvvProvider extends AbstractEfaProvider {
     private static final Map<String, Style> STYLES = new HashMap<>();
 
     static {
-        STYLES.put(Product.REGIONAL_TRAIN, new Style(Shape.RECT, Style.parseColor("#36397f"), Style.WHITE));
-        STYLES.put(Product.BUS, new Style(Shape.RECT, Style.parseColor("#005262"), Style.WHITE));
+        STYLES.put("R", new Style(Shape.RECT, Style.parseColor("#36397f"), Style.WHITE));
         
         STYLES.put("SS1", new Style(Shape.CIRCLE, Style.parseColor("#16bae7"), Style.WHITE));
         STYLES.put("SS2", new Style(Shape.CIRCLE, Style.parseColor("#76b82a"), Style.WHITE));
@@ -140,6 +139,9 @@ public class MvvProvider extends AbstractEfaProvider {
         STYLES.put("UU6", new Style(Shape.RECT, Style.parseColor("#0065ae"), Style.WHITE));
         STYLES.put("UU7", new Style(Shape.RECT, Style.parseColor("#52822f"), Style.parseColor("#c20831"), Style.WHITE, 0));
         STYLES.put("UU8", new Style(Shape.RECT, Style.parseColor("#c20831"), Style.parseColor("#ec6726"), Style.WHITE, 0));
+        
+        STYLES.put("B", new Style(Shape.RECT, Style.parseColor("#005262"), Style.WHITE));
+        STYLES.put("BX", new Style(Shape.RECT, Style.parseColor("#4e917a"), Style.WHITE));
     }
 
     @Override
