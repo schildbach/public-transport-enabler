@@ -34,7 +34,7 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class KvvProvider extends AbstractEfaProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("http://213.144.24.66/sl3/");
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://projekte.kvv-efa.de/sl3/");
 
     public KvvProvider() {
         this(API_BASE);
