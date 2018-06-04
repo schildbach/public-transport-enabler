@@ -98,6 +98,10 @@ public abstract class AbstractNetworkProvider implements NetworkProvider {
         return this;
     }
 
+    public TimeZone getTimeZone() {
+        return this.timeZone;
+    }
+
     protected AbstractNetworkProvider setNumTripsRequested(final int numTripsRequested) {
         this.numTripsRequested = numTripsRequested;
         return this;
