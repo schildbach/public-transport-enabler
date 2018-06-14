@@ -102,7 +102,7 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
     public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location,
             final int maxDistance, final int maxLocations) throws IOException {
         if (location.hasLocation())
-            return jsonLocGeoPos(types, location.lat, location.lon);
+            return jsonLocGeoPos(types, location.lat, location.lon, maxDistance, maxLocations);
         else
             throw new IllegalArgumentException("cannot handle: " + location);
     }
@@ -133,12 +133,13 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
                 jsonContext.products, later ? jsonContext.laterContext : jsonContext.earlierContext);
     }
 
-    protected final NearbyLocationsResult jsonLocGeoPos(final EnumSet<LocationType> types, final int lat, final int lon)
+    protected final NearbyLocationsResult jsonLocGeoPos(final EnumSet<LocationType> types, final int lat, final int lon, int maxDistance, int maxLocations)
             throws IOException {
         final boolean getPOIs = types.contains(LocationType.POI);
         final String request = wrapJsonApiRequest("LocGeoPos",
                 "{\"ring\":" //
-                        + "{\"cCrd\":{\"x\":" + lon + ",\"y\":" + lat + "}}," //
+                        + "{\"cCrd\":{\"x\":" + lon + ",\"y\":" + lat + "}" + (maxDistance > 0 ? ",\"maxDist\":" + maxDistance : "") + "}," //
+                        + (maxLocations > 0 ? "\"maxLoc\":" + maxLocations + "," : "") //
                         + "\"getPOIs\":" + getPOIs + "}", //
                 false);
 
@@ -146,10 +147,7 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
         final CharSequence page = httpClient.get(url, request, "application/json");
 
         try {
-            final JSONObject head = new JSONObject(page.toString());
-            final String headErr = head.optString("err", null);
-            if (headErr != null)
-                throw new RuntimeException(headErr);
+            final JSONObject head = parseJsonPage(page);
             final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, head.getString("ver"), null, 0, null);
 
             final JSONArray svcResList = head.getJSONArray("svcResL");
@@ -203,18 +201,15 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
                         + "\"time\":\"" + jsonTime + "\"," //
                         + "\"stbLoc\":{\"type\":\"S\"," + "\"state\":\"F\"," // F/M
                         + "\"extId\":" + JSONObject.quote(normalizedStationId.toString()) + "}," //
-                        + "\"stbFltrEquiv\":" + stbFltrEquiv + ",\"maxJny\":" + maxJny + ",\"getPasslist\":"
-                        + getPasslist + "}",
+                        + ("1.20".equals(apiVersion) ? "" : "\"stbFltrEquiv\":" + stbFltrEquiv + ",\"getPasslist\":" + getPasslist + ",") //
+                        + "\"maxJny\":" + maxJny + "}",
                 false);
 
         final HttpUrl url = checkNotNull(mgateEndpoint);
         final CharSequence page = httpClient.get(url, request, "application/json");
 
         try {
-            final JSONObject head = new JSONObject(page.toString());
-            final String headErr = head.optString("err", null);
-            if (headErr != null)
-                throw new RuntimeException(headErr);
+            final JSONObject head = parseJsonPage(page);
             final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, head.getString("ver"), null, 0, null);
             final QueryDeparturesResult result = new QueryDeparturesResult(header);
 
@@ -323,10 +318,7 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
         final CharSequence page = httpClient.get(url, request, "application/json");
 
         try {
-            final JSONObject head = new JSONObject(page.toString());
-            final String headErr = head.optString("err", null);
-            if (headErr != null)
-                throw new RuntimeException(headErr);
+            final JSONObject head = parseJsonPage(page);
             final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, head.getString("ver"), null, 0, null);
 
             final JSONArray svcResList = head.getJSONArray("svcResL");
@@ -358,6 +350,20 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
 
     private static final Joiner JOINER = Joiner.on(' ').skipNulls();
 
+    private static JSONObject parseJsonPage(CharSequence page) throws JSONException {
+        final JSONObject head = new JSONObject(page.toString());
+        final String headErr = head.optString("err", null);
+        final String headErrText = head.optString("errTxt", null);
+        if ("OK".equals(headErr))
+            return head;
+        if (headErr != null && headErrText != null)
+            throw new RuntimeException(headErr + ": " + headErrText);
+        else if (headErr != null)
+            throw new RuntimeException(headErr);
+        else
+            return head;
+    }
+
     private Location jsonTripSearchIdentify(final Location location) throws IOException {
         if (location.hasName()) {
             final List<Location> locations = jsonLocMatch(JOINER.join(location.place, location.name)).getLocations();
@@ -366,7 +372,7 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
         }
         if (location.hasLocation()) {
             final List<Location> locations = jsonLocGeoPos(EnumSet.allOf(LocationType.class), location.lat,
-                    location.lon).locations;
+                    location.lon, 0, 0).locations;
             if (!locations.isEmpty())
                 return locations.get(0);
         }
@@ -400,7 +406,7 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
         c.setTime(time);
         final CharSequence outDate = jsonDate(c);
         final CharSequence outTime = jsonTime(c);
-        final CharSequence outFrwdKey = "1.11".equals(apiVersion) ? "outFrwd" : "frwd";
+        final CharSequence outFrwdKey = "1.10".equals(apiVersion) ? "frwd" : "outFrwd";
         final CharSequence outFrwd = Boolean.toString(dep);
         final CharSequence jnyFltr = productsString(products);
         final CharSequence jsonContext = moreContext != null ? "\"ctxScr\":" + JSONObject.quote(moreContext) + "," : "";
@@ -421,10 +427,7 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
         final CharSequence page = httpClient.get(url, request, "application/json");
 
         try {
-            final JSONObject head = new JSONObject(page.toString());
-            final String headErr = head.optString("err", null);
-            if (headErr != null)
-                throw new RuntimeException(headErr);
+            final JSONObject head = parseJsonPage(page);
             final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, head.getString("ver"), null, 0, null);
 
             final JSONArray svcResList = head.getJSONArray("svcResL");
