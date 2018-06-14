@@ -125,6 +125,13 @@ public class NasaProvider extends AbstractHafasLegacyProvider {
         if ("DPS".equals(ucType))
             return Product.SUBURBAN_TRAIN;
 
+        if ("STR 10".equals(ucType))
+            return Product.TRAM;
+
+        if ("BUS (LT)".equals(ucType))
+            return Product.BUS;
+        if ("RUF (ST)".equals(ucType)) // Rufbus
+            return Product.BUS;
         if ("RUFBUS".equals(ucType)) // Rufbus
             return Product.BUS;
         if ("RBS".equals(ucType)) // Rufbus
