@@ -103,7 +103,12 @@ public class FranceSouthEastProviderLiveTest extends AbstractNavitiaProviderLive
 
     @Test
     public void queryTripAddressStation() throws Exception {
-        queryTrip("14 rue Barnave", "Louise Michel");
+        queryTrip("78 Quai Pierre Scize", "Bellecour");
+    }
+
+    @Test
+    public void queryTripTowns() throws Exception {
+        queryTrip("Annecy", "Lyon");
     }
 
     @Test
