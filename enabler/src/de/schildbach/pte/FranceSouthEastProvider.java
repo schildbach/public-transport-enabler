@@ -45,45 +45,4 @@ public class FranceSouthEastProvider extends AbstractNavitiaProvider {
     public String region() {
         return API_REGION;
     }
-
-    @Override
-    protected Style getLineStyle(final String network, final Product product, final String code, final String color) {
-        switch (product) {
-        case REGIONAL_TRAIN: {
-            // TER
-            Style s;
-            if(network.equals("SNCF")) // SNCF data have no color
-                s =  new Style(Style.parseColor("#D90283"), computeForegroundColor("#D90283"));
-            else
-            s =  new Style(Style.parseColor(color), computeForegroundColor(color));
-            return s;
-        }
-        case SUBURBAN_TRAIN: {
-            Style s;
-            if(network.equals("SNCF")) // SNCF data have no color
-                s =  new Style(Style.parseColor("#D90283"), computeForegroundColor("#D90283"));
-            else
-                s =  new Style(Style.parseColor(color), computeForegroundColor(color));
-            return s;
-        }
-        case TRAM: {
-            // Tram
-            return new Style(Shape.CIRCLE, Style.TRANSPARENT, Style.parseColor(color), Style.parseColor(color));
-        }
-        case BUS: {
-            // Bus
-            return new Style(Shape.ROUNDED, Style.parseColor(color), computeForegroundColor(color));
-        }
-        case FERRY: {
-            // Batcub
-            return new Style(Shape.ROUNDED, Style.parseColor(color), computeForegroundColor(color));
-        }
-        case SUBWAY: {
-            // Toulouse subway (from Tisseo network)
-            return new Style(Shape.ROUNDED, Style.parseColor(color), computeForegroundColor(color));
-        }
-        default:
-            return super.getLineStyle(network, product, code, color);
-        }
-    }
 }
