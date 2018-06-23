@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/enabler/enabler.iml" filepath="$PROJECT_DIR$/.idea/modules/enabler/enabler.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/public-transport-enabler.iml" filepath="$PROJECT_DIR$/.idea/modules/public-transport-enabler.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/service/service.iml" filepath="$PROJECT_DIR$/.idea/modules/service/service.iml" />
+    </modules>
+  </component>
+</project>

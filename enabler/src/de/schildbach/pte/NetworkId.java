@@ -82,7 +82,7 @@ public enum NetworkId {
     ONTARIO, QUEBEC, BRITISHCOLUMBIA,
 
     // Australia
-    SYDNEY, AUSTRALIA,
+    SYDNEY, CANBERRA, AUSTRALIA,
 
     // New Zealand
     NZ,

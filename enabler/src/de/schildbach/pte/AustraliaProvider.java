@@ -32,6 +32,7 @@ public class AustraliaProvider extends AbstractNavitiaProvider {
     public static final String NETWORK_QLD = "TransLink";
     public static final String NETWORK_SA = "Adelaide Metro";
     public static final String NETWORK_WA = "Transperth";
+    public static final String NETWORK_ACT = "ACTION";
 
     private static final Map<String, Style> STYLES = new HashMap<>();
 
