@@ -26,13 +26,13 @@ import okhttp3.HttpUrl;
 public class CanberraProvider extends AbstractNavitiaProvider {
     private static String API_REGION = "au";
 
-    public TexasProvider(final HttpUrl apiBase, final String authorization) {
-        super(NetworkId.TEXAS, apiBase, authorization);
+    public CanberraProvider(final HttpUrl apiBase, final String authorization) {
+        super(NetworkId.CANBERRA, apiBase, authorization);
         setTimeZone("Australia/Canberra");
     }
 
     public CanberraProvider(final String authorization) {
-        super(NetworkId.TEXAS, authorization);
+        super(NetworkId.CANBERRA, authorization);
         setTimeZone("Australia/Canberra");
     }
 
