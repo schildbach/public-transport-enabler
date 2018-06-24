@@ -433,7 +433,7 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
             checkState("TripSearch".equals(svcRes.getString("meth")));
             final String err = svcRes.getString("err");
             if (!"OK".equals(err)) {
-                final String errTxt = svcRes.getString("errTxt");
+                final String errTxt = svcRes.optString("errTxt");
                 log.debug("Hafas error: {} {}", err, errTxt);
                 if ("H890".equals(err)) // No connections found.
                     return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
@@ -454,7 +454,7 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
                     return new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN);
                 if ("LOCATION".equals(err) && "HCI Service: location missing or invalid".equals(errTxt))
                     return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_LOCATION);
-                throw new RuntimeException(err + " " + errTxt);
+                throw new RuntimeException(err + (errTxt != null ? " " + errTxt : ""));
             }
             final JSONObject res = svcRes.getJSONObject("res");
 
