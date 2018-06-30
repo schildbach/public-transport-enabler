@@ -43,6 +43,7 @@ public class VgsProvider extends AbstractHafasLegacyProvider {
 
         setStationBoardHasStationTable(false);
         httpClient.setTrustAllCertificates(true);
+        httpClient.setSslAcceptAllHostnames(true);
     }
 
     @Override
