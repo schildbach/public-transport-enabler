@@ -279,19 +279,20 @@ public class VrnProvider extends AbstractEfaProvider {
         STYLES.put("B409", new Style(Style.parseColor("#8691B3"), Style.WHITE));
 
         // Bus Kaiserslautern
-        STYLES.put("B101", new Style(Style.parseColor("#F36F23"), Style.WHITE));
-        STYLES.put("B102", new Style(Style.parseColor("#B64A9B"), Style.WHITE));
-        STYLES.put("B103", new Style(Style.parseColor("#FFF100"), Style.BLACK));
-        STYLES.put("B104", new Style(Style.parseColor("#71BF44"), Style.WHITE));
-        STYLES.put("B105", new Style(Style.parseColor("#007F3E"), Style.WHITE));
-        STYLES.put("B106", new Style(Style.parseColor("#FBA61C"), Style.BLACK));
-        STYLES.put("B107", new Style(Style.parseColor("#A05A35"), Style.WHITE));
-        STYLES.put("B108", new Style(Style.parseColor("#A05A35"), Style.BLACK));
-        STYLES.put("B111", new Style(Style.parseColor("#0B4EA2"), Style.WHITE));
-        STYLES.put("B112", new Style(Style.parseColor("#00A5E3"), Style.WHITE));
-        STYLES.put("B114", new Style(Style.parseColor("#E10086"), Style.WHITE));
-        STYLES.put("B115", new Style(Style.parseColor("#E71B24"), Style.WHITE));
-        STYLES.put("B117", new Style(Style.parseColor("#E71B24"), Style.WHITE));
+        STYLES.put("B101", new Style(Style.parseColor("#EB690B"), Style.WHITE));
+        STYLES.put("B102", new Style(Style.parseColor("#B9418E"), Style.WHITE));
+        STYLES.put("B103", new Style(Style.parseColor("#FFED00"), Style.BLACK));
+        STYLES.put("B104", new Style(Style.parseColor("#7AB51D"), Style.WHITE));
+        STYLES.put("B105", new Style(Style.parseColor("#00712C"), Style.WHITE));
+        STYLES.put("B106", new Style(Style.parseColor("#F7AA00"), Style.BLACK));
+        STYLES.put("B107", new Style(Style.parseColor("#A05322"), Style.WHITE));
+        STYLES.put("B108", new Style(Style.parseColor("#FFE081"), Style.BLACK));
+        STYLES.put("B111", new Style(Style.parseColor("#004494"), Style.WHITE));
+        STYLES.put("B112", new Style(Style.parseColor("#009EE0"), Style.WHITE));
+        STYLES.put("B114", new Style(Style.parseColor("#C33F52"), Style.WHITE));
+        STYLES.put("B115", new Style(Style.parseColor("#E2001A"), Style.WHITE));
+        STYLES.put("B116", new Style(Style.parseColor("#007385"), Style.WHITE));
+        STYLES.put("B117", new Style(Style.parseColor("#622379"), Style.WHITE));
 
         // Bus Weinheim
         STYLES.put("B631", new Style(Style.parseColor("#949599"), Style.WHITE));
