@@ -157,7 +157,10 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
                         computeForegroundColor(backgroundColor));
             return new Style(Shape.RECT, Style.parseColor(backgroundColor), Style.parseColor(foregroundColor));
         } else {
-            final Style defaultStyle = Standard.STYLES.get(product);
+            Style defaultStyle = Standard.STYLES.get(product);
+            if (defaultStyle == null) {
+                defaultStyle = Standard.STYLES.get(null);
+            }
             return new Style(Shape.RECT, defaultStyle.backgroundColor, defaultStyle.backgroundColor2,
                     defaultStyle.foregroundColor, defaultStyle.borderColor);
         }
