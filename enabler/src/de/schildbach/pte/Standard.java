@@ -34,6 +34,7 @@ public class Standard {
     public static final int COLOR_BACKGROUND_SUBWAY = Style.parseColor("#003090");
     public static final int COLOR_BACKGROUND_TRAM = Style.parseColor("#cc0000");
     public static final int COLOR_BACKGROUND_BUS = Style.parseColor("#993399");
+    public static final int COLOR_BACKGROUND_ON_DEMAND = Style.parseColor("#00695c");
     public static final int COLOR_BACKGROUND_FERRY = Style.BLUE;
 
     public static final Map<Product, Style> STYLES = new HashMap<>();
@@ -46,6 +47,7 @@ public class Standard {
         STYLES.put(Product.SUBWAY, new Style(Shape.RECT, COLOR_BACKGROUND_SUBWAY, Style.WHITE));
         STYLES.put(Product.TRAM, new Style(Shape.RECT, COLOR_BACKGROUND_TRAM, Style.WHITE));
         STYLES.put(Product.BUS, new Style(COLOR_BACKGROUND_BUS, Style.WHITE));
+        STYLES.put(Product.ON_DEMAND, new Style(COLOR_BACKGROUND_ON_DEMAND, Style.WHITE));
         STYLES.put(Product.FERRY, new Style(Shape.CIRCLE, COLOR_BACKGROUND_FERRY, Style.WHITE));
         STYLES.put(null, new Style(Style.DKGRAY, Style.WHITE));
     }
