@@ -17,130 +17,129 @@
 
 package de.schildbach.pte.live;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-
-import java.util.Date;
-import java.util.List;
 
 import org.junit.Test;
 
 import de.schildbach.pte.HslProvider;
-import de.schildbach.pte.NetworkProvider.Accessibility;
-import de.schildbach.pte.NetworkProvider.WalkSpeed;
-import de.schildbach.pte.dto.Location;
-import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyLocationsResult;
-import de.schildbach.pte.dto.Product;
-import de.schildbach.pte.dto.QueryDeparturesResult;
-import de.schildbach.pte.dto.QueryTripsResult;
-import de.schildbach.pte.dto.SuggestLocationsResult;
-import de.schildbach.pte.dto.Trip;
+import de.schildbach.pte.dto.Point;
 
 /**
- * @author Mats Sjöberg <mats@sjoberg.fi>
+ * @author Adrian Perez de Castro <aperez@igalia.com>
  */
-public class HslProviderLiveTest extends AbstractProviderLiveTest {
+public class HslProviderLiveTest extends AbstractNavitiaProviderLiveTest {
     public HslProviderLiveTest() {
-        super(new HslProvider(secretProperty("hsl.usertoken"), secretProperty("hsl.passphrase")));
+        super(new HslProvider(secretProperty("navitia.authorization")));
     }
+
+	@Test
+	public void nearbyStationsAddress() throws Exception {
+		nearbyStationsAddress(60160920, 24941870);
+	}
+
+	@Test
+	public void nearbyStationsStation() throws Exception {
+		nearbyStationsStation("stop_point:OFI:SP:1050412");
+	}
+
+	@Test
+	public void nearbyStationsPoi() throws Exception {
+		nearbyStationsPoi("poi:osm:way:29071686");
+	}
 
     @Test
-    public void nearbyLocations() throws Exception {
-        final NearbyLocationsResult result = queryNearbyLocations(null, Location.coord(60174022, 24939222));
-        print(result);
-        assertEquals(NearbyLocationsResult.Status.OK, result.status);
-        assertTrue(result.locations.size() > 0);
+    public void nearbyStationsAny() throws Exception {
+        nearbyStationsAny(60160920, 24941870);
     }
+
+	@Test
+	public void nearbyStationsInvalidStation() throws Exception {
+		nearbyStationsInvalidStation("stop_point:9999999999");
+	}
+
+	@Test
+	public void queryDeparturesStopArea() throws Exception {
+		queryDeparturesStopArea("stop_area:OFI:SA:1000201");
+	}
 
     @Test
-    public void nearbyStationsByCoordinate() throws Exception {
-        final NearbyLocationsResult result = queryNearbyStations(Location.coord(60174022, 24939222));
-        print(result);
-        assertEquals(NearbyLocationsResult.Status.OK, result.status);
-        assertTrue(result.locations.size() > 0);
+    public void queryDeparturesEquivsFalse() throws Exception {
+        queryDeparturesEquivsFalse("stop_point:OFI:SP:1050412");
     }
+
+	@Test
+	public void queryDeparturesEquivsTrue() throws Exception {
+		queryDeparturesEquivsTrue("stop_area:OFI:SA:1000201");
+	}
 
     @Test
-    public void queryDepartures() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("1030424", false);
-        print(result);
-        assertEquals(QueryDeparturesResult.Status.OK, result.status);
-        assertTrue(result.stationDepartures.size() > 0);
+    public void queryDeparturesInvalidStation() throws Exception {
+        queryDeparturesInvalidStation("stop_point:OFI:SP:999999");
     }
 
-    @Test
-    public void suggestLocationsIdentified() throws Exception {
-        final SuggestLocationsResult result = suggestLocations("3029");
-        print(result);
-        assertEquals(SuggestLocationsResult.Status.OK, result.status);
-        assertTrue(result.getLocations().size() == 1);
-    }
+	@Test
+	public void suggestLocations() throws Exception {
+		suggestLocationsFromName("postitalo");
+	}
 
-    @Test
-    public void suggestLocationsIncomplete() throws Exception {
-        final SuggestLocationsResult result = suggestLocations("Kum");
-        print(result);
-        assertEquals(SuggestLocationsResult.Status.OK, result.status);
-        assertTrue(result.getLocations().size() > 0);
-    }
+	@Test
+	public void suggestLocationsFromAddress() throws Exception {
+		suggestLocationsFromAddress("10 yrjönkatu");
+	}
 
-    @Test
-    public void suggestLocationsWithUmlaut() throws Exception {
-        final SuggestLocationsResult result = suggestLocations("Jät");
-        print(result);
-        assertEquals(SuggestLocationsResult.Status.OK, result.status);
-        assertTrue(result.getLocations().size() > 0);
-    }
+	@Test
+	public void suggestLocationsNoLocation() throws Exception {
+		suggestLocationsNoLocation("fontana di trevi blah blah");
+	}
 
-    private void assertTimesInSequence(List<Trip> trips) {
-        for (int i = 1; i < trips.size(); i++) {
-            Date start1 = trips.get(i - 1).getFirstDepartureTime();
-            Date start2 = trips.get(i).getFirstDepartureTime();
-            assertTrue(i + ": " + start1 + " vs " + start2, start1.compareTo(start2) <= 0);
-        }
-    }
+	@Test
+	public void queryTripAddresses() throws Exception {
+		queryTrip("Yrjönkatu, 10, Helsinki", "Kolmas Linja, 5, Helsinki");
+	}
 
-    @Test
-    public void shortTrip() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, null, "", "Gustaf Hällströmin katu 1"), null,
-                new Location(LocationType.STATION, null, "", "Tyynenmerenkatu 11"), new Date(), true, Product.ALL,
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
-        print(result);
-        assertTimesInSequence(result.trips);
+	@Test
+	public void queryTripAddressStation() throws Exception {
+		queryTrip("Viides Linja, 3, Helsinki", "Kapylän asema");
+	}
 
-        assertEquals(QueryTripsResult.Status.OK, result.status);
-        assertTrue(result.trips.size() > 0);
+	@Test
+	public void queryTripStations() throws Exception {
+		queryTrip("Kapylän asema", "Päärautatieasema");
+	}
 
-        assertTrue(result.context.canQueryLater());
+	@Test
+	public void queryTripNoSolution() throws Exception {
+		queryTripNoSolution("Steissi, Helsinki", "Keskuskatu 1, Kuopio");
+	}
 
-        final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-        print(laterResult);
-        assertEquals(QueryTripsResult.Status.OK, laterResult.status);
-        assertTrue(laterResult.trips.size() > result.trips.size());
-        assertTimesInSequence(laterResult.trips);
+	@Test
+	public void queryTripUnknownFrom() throws Exception {
+		queryTripUnknownFrom("Rautatieasema");
+	}
 
-        assertTrue(laterResult.context.canQueryLater());
+	@Test
+	public void queryTripUnknownTo() throws Exception {
+		queryTripUnknownTo("Rautatieasema");
+	}
 
-        final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
-        print(later2Result);
-        for (Trip trip : later2Result.trips) {
-            System.out.println("LATER2 " + trip.getFirstDepartureTime() + " " + trip.getId());
-        }
-        assertEquals(QueryTripsResult.Status.OK, later2Result.status);
-        assertTrue(later2Result.trips.size() > laterResult.trips.size());
-        assertTimesInSequence(later2Result.trips);
+	@Test
+	public void queryTripSlowWalk() throws Exception {
+		queryTripSlowWalk("Rautatieasema", "Postitalo");
+	}
 
-        assertTrue(later2Result.context.canQueryEarlier());
+	@Test
+	public void queryTripFastWalk() throws Exception {
+		queryTripFastWalk("Rautatieasema", "Postitalo");
+	}
 
-        final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
-        print(earlierResult);
-        for (Trip trip : earlierResult.trips) {
-            System.out.println("EARLIER " + trip.getFirstDepartureTime() + " " + trip.getId());
-        }
-        assertEquals(QueryTripsResult.Status.OK, earlierResult.status);
-        assertTrue(earlierResult.trips.size() > later2Result.trips.size());
-        assertTimesInSequence(earlierResult.trips);
-    }
+	@Test
+	public void queryMoreTrips() throws Exception {
+		queryMoreTrips("Steissi", "Töölöntori");
+	}
+
+	@Test
+	public void getArea() throws Exception {
+		final Point[] polygon = provider.getArea();
+		assertTrue(polygon.length > 0);
+	}
 }

@@ -55,7 +55,7 @@ public enum NetworkId {
     NRI,
 
     // Finland
-    HSL,
+    FI,
 
     // Luxembourg
     LU,
