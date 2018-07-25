@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,10 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.common.base.Charsets;
+import com.google.common.base.Strings;
+
+import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Product;
 
 import okhttp3.HttpUrl;
@@ -28,18 +32,18 @@ import okhttp3.HttpUrl;
 /**
  * @author Andreas Schildbach
  */
-public final class BahnProvider extends AbstractHafasLegacyProvider {
+public final class BahnProvider extends AbstractHafasClientInterfaceProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("https://reiseauskunft.bahn.de/bin/");
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.REGIONAL_TRAIN, Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.BUS, Product.FERRY,
             Product.SUBWAY, Product.TRAM, Product.ON_DEMAND, null, null, null, null };
 
-    public BahnProvider() {
-        super(NetworkId.DB, API_BASE, "dn", PRODUCTS_MAP);
-
-        setStationBoardEndpoint(HttpUrl.parse("https://mobile.bahn.de/bin/mobil/bhftafel.exe"));
-        setStationBoardHasStationTable(false);
-        setJsonGetStopsUseWeight(false);
+    public BahnProvider(final String apiAuthorization) {
+        super(NetworkId.DB, API_BASE, PRODUCTS_MAP);
+        setApiVersion("1.14");
+        setApiClient("{\"id\":\"DB\",\"v\":\"16040000\",\"type\":\"AND\",\"name\":\"DB Navigator\"}");
+        setApiAuthorization(apiAuthorization);
+        setRequestChecksumSalt("bdI8UVj40K5fvxwf".getBytes(Charsets.UTF_8));
     }
 
     @Override
@@ -54,7 +58,6 @@ public final class BahnProvider extends AbstractHafasLegacyProvider {
         final Matcher m = P_SPLIT_NAME_ONE_COMMA.matcher(name);
         if (m.matches())
             return new String[] { m.group(2), m.group(1) };
-
         return super.splitStationName(name);
     }
 
@@ -63,7 +66,6 @@ public final class BahnProvider extends AbstractHafasLegacyProvider {
         final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(poi);
         if (m.matches())
             return new String[] { m.group(1), m.group(2) };
-
         return super.splitStationName(poi);
     }
 
@@ -72,28 +74,17 @@ public final class BahnProvider extends AbstractHafasLegacyProvider {
         final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(address);
         if (m.matches())
             return new String[] { m.group(1), m.group(2) };
-
         return super.splitStationName(address);
     }
 
-    private static final Pattern P_NORMALIZE_LINE_NAME_TRAM = Pattern.compile("str\\s+(.*)", Pattern.CASE_INSENSITIVE);
-
     @Override
-    protected String normalizeLineName(final String lineName) {
-        final Matcher mTram = P_NORMALIZE_LINE_NAME_TRAM.matcher(lineName);
-        if (mTram.matches())
-            return mTram.group(1);
-
-        return super.normalizeLineName(lineName);
-    }
-
-    @Override
-    protected Product normalizeType(final String type) {
-        final String ucType = type.toUpperCase();
-
-        if ("N".equals(ucType))
-            return null;
-
-        return super.normalizeType(type);
+    protected Line newLine(final String operator, final Product product, final String name, final String number) {
+        if (product == Product.SUBURBAN_TRAIN && name != null && name.startsWith("S")
+                && !(number != null && number.startsWith("S")))
+            return super.newLine(operator, product, name, "S" + Strings.nullToEmpty(number));
+        if (product == Product.SUBWAY && name != null && name.startsWith("U")
+                && !(number != null && number.startsWith("U")))
+            return super.newLine(operator, product, name, "U" + Strings.nullToEmpty(number));
+        return super.newLine(operator, product, name, number);
     }
 }

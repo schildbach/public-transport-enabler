@@ -44,13 +44,7 @@ import de.schildbach.pte.dto.TripOptions;
  */
 public class BahnProviderLiveTest extends AbstractProviderLiveTest {
     public BahnProviderLiveTest() {
-        super(new BahnProvider());
-    }
-
-    @Test
-    public void nearbyStations() throws Exception {
-        final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "692991"));
-        print(result);
+        super(new BahnProvider(secretProperty("db.api_authorization")));
     }
 
     @Test
@@ -62,10 +56,11 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void nearbyPOIsByCoordinate() throws Exception {
         final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.POI),
-                Location.coord(52525589, 13369548));
+                Location.coord(Point.fromDouble(52.5304903, 13.3791152)));
         print(result);
-        assertThat(result.locations,
-                hasItem(new Location(LocationType.POI, "990416076", "Berlin", "Museum für Naturkunde")));
+        assertThat(result.locations, hasItem(new Location(LocationType.POI,
+                "A=4@O=Berlin, Museum für Naturkunde (Kultur und Unterhal@X=13380003@Y=52529724@u=0@U=104@L=991597061@",
+                "Berlin", "Museum für Naturkunde")));
     }
 
     @Test
@@ -84,14 +79,16 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest {
     public void suggestLocationsUmlaut() throws Exception {
         final SuggestLocationsResult result = suggestLocations("Güntzelstr. (U)");
         print(result);
-        assertEquals("Güntzelstr. (U)", result.getLocations().get(0).name);
+        assertThat(result.getLocations(),
+                hasItem(new Location(LocationType.STATION, "731371", "Berlin", "Güntzelstr. (U)")));
     }
 
     @Test
     public void suggestLocationsIncomplete() throws Exception {
         final SuggestLocationsResult result = suggestLocations("Dammt");
         print(result);
-        assertEquals("Hamburg Dammtor", result.getLocations().get(0).name);
+        assertThat(result.getLocations(),
+                hasItem(new Location(LocationType.STATION, "8002548", null, "Hamburg Dammtor")));
     }
 
     @Test
@@ -104,14 +101,16 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest {
     public void suggestLocationsAddress() throws Exception {
         final SuggestLocationsResult result = suggestLocations("München, Friedenstraße 2");
         print(result);
-        assertEquals(LocationType.ADDRESS, result.getLocations().get(0).type);
-        assertEquals("Friedenstraße 2", result.getLocations().get(0).name);
+        assertThat(result.getLocations(), hasItem(new Location(LocationType.ADDRESS,
+                "A=2@O=München - Berg am Laim, Friedenstraße 2@X=11602251@Y=48123949@U=103@L=980857648@B=1@p=1378873973@",
+                "München - Berg am Laim", "Friedenstraße 2")));
     }
 
     @Test
     public void shortTrip() throws Exception {
-        final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8011160", null, "Berlin Hbf"),
-                null, new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf"), new Date(), true, null);
+        final Location from = new Location(LocationType.STATION, "8011160", null, "Berlin Hbf");
+        final Location to = new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
@@ -131,19 +130,15 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest {
                 "Tutzinger-Hof-Platz, Starnberg");
         final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
-
-        if (!result.context.canQueryLater())
-            return;
-
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
     }
 
     @Test
     public void noTrips() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "513729", null, "Schillerplatz, Kaiserslautern"), null,
-                new Location(LocationType.STATION, "403631", null, "Trippstadt Grundschule"), new Date(), true, null);
+        final Location from = new Location(LocationType.STATION, "513729", null, "Schillerplatz, Kaiserslautern");
+        final Location to = new Location(LocationType.STATION, "403631", null, "Trippstadt Grundschule");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
     }
 
@@ -155,10 +150,6 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest {
                 "Starnberg, Possenhofener Straße 13");
         final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
-
-        if (!result.context.canQueryLater())
-            return;
-
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
     }
@@ -167,31 +158,35 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest {
     public void tripsAcrossBorder() throws Exception {
         final TripOptions options = new TripOptions(EnumSet.of(Product.BUS), null, WalkSpeed.NORMAL,
                 Accessibility.NEUTRAL, null);
-        final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8506131", null, "Kreuzlingen"),
-                null, new Location(LocationType.STATION, "8003400", null, "Konstanz"), new Date(), true, options);
+        final Location from = new Location(LocationType.STATION, "8506131", null, "Kreuzlingen");
+        final Location to = new Location(LocationType.STATION, "8003400", null, "Konstanz");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, options);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
     }
 
     @Test
-    public void tripsByCoordinate() throws Exception {
-        final QueryTripsResult result = queryTrips(Location.coord(52535576, 13422171), null,
-                Location.coord(52525589, 13369548), new Date(), true, null);
+    public void tripBetweenCoordinates() throws Exception {
+        final Location from = Location.coord(52535576, 13422171); // Berlin Marienburger Str.
+        final Location to = Location.coord(52525589, 13369548); // Berlin Hbf
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
     }
 
     @Test
     public void tripsTooClose() throws Exception {
-        final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf"),
-                null, new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf"), new Date(), true, null);
+        final Location location = new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf");
+        final QueryTripsResult result = queryTrips(location, null, location, new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.TOO_CLOSE, result.status);
     }
 
     @Test
     public void tripsInvalidDate() throws Exception {
-        final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8011160", null, "Berlin Hbf"),
-                null, new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf"), new Date(0), true, null);
+        final Location from = new Location(LocationType.STATION, "8011160", null, "Berlin Hbf");
+        final Location to = new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf");
+        final Date date = new Date(System.currentTimeMillis() - 2 * 365 * 24 * 3600 * 1000l); // 2 years ago
+        final QueryTripsResult result = queryTrips(from, null, to, date, true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.INVALID_DATE, result.status);
     }
