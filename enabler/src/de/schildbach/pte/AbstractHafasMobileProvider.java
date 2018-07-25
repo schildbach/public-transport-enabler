@@ -43,7 +43,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
+import com.google.common.hash.HashCode;
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hashing;
 
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.Fare;
@@ -78,6 +82,10 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
     public String apiAuthorization;
     @Nullable
     public String apiClient;
+    @Nullable
+    public String requestChecksumSalt;
+
+    private static final HashFunction MD5 = Hashing.md5();
 
     public AbstractHafasMobileProvider(final NetworkId network, final HttpUrl apiBase, final Product[] productsMap) {
         super(network, productsMap);
@@ -97,6 +105,11 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
 
     protected AbstractHafasMobileProvider setApiClient(final String apiClient) {
         this.apiClient = apiClient;
+        return this;
+    }
+
+    protected AbstractHafasMobileProvider setRequestChecksumSalt(final String requestChecksumSalt) {
+        this.requestChecksumSalt = requestChecksumSalt;
         return this;
     }
 
@@ -144,7 +157,7 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
                         + "\"getPOIs\":" + getPOIs + "}", //
                 false);
 
-        final HttpUrl url = checkNotNull(mgateEndpoint);
+        final HttpUrl url = requestUrl(request);
         final CharSequence page = httpClient.get(url, request, "application/json");
 
         try {
@@ -209,7 +222,7 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
                         + getPasslist + "}",
                 false);
 
-        final HttpUrl url = checkNotNull(mgateEndpoint);
+        final HttpUrl url = requestUrl(request);
         final CharSequence page = httpClient.get(url, request, "application/json");
 
         try {
@@ -317,7 +330,7 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
                         + ",\"meta\":false},\"maxLoc\":" + DEFAULT_MAX_LOCATIONS + "}}",
                 false);
 
-        final HttpUrl url = checkNotNull(mgateEndpoint);
+        final HttpUrl url = requestUrl(request);
         final CharSequence page = httpClient.get(url, request, "application/json");
 
         try {
@@ -414,7 +427,7 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
                 + "\"getPolyline\":false,\"getPasslist\":true,\"getIST\":false,\"getEco\":false,\"extChgTime\":-1}", //
                 false);
 
-        final HttpUrl url = checkNotNull(mgateEndpoint);
+        final HttpUrl url = requestUrl(request);
         final CharSequence page = httpClient.get(url, request, "application/json");
 
         try {
@@ -595,6 +608,16 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
                 + "\"ver\":\"" + checkNotNull(apiVersion) + "\",\"lang\":\"eng\"," //
                 + "\"svcReqL\":[{\"cfg\":{\"polyEnc\":\"GPA\"},\"meth\":\"" + meth + "\",\"req\":" + req + "}]," //
                 + "\"formatted\":" + formatted + "}";
+    }
+
+    private HttpUrl requestUrl(final String body) {
+        final HttpUrl.Builder url = checkNotNull(mgateEndpoint).newBuilder();
+        if (requestChecksumSalt != null) {
+            final HashCode checksum = MD5.newHasher().putString(body, Charsets.UTF_8)
+                    .putString(requestChecksumSalt, Charsets.UTF_8).hash();
+            url.addQueryParameter("checksum", checksum.toString());
+        }
+        return url.build();
     }
 
     private String jsonLocation(final Location location) {
