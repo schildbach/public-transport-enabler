@@ -241,7 +241,6 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
             final List<String> operators = parseOpList(common.getJSONArray("opL"));
             final List<Line> lines = parseProdList(common.getJSONArray("prodL"), operators);
             final JSONArray locList = common.getJSONArray("locL");
-            final List<Location> locations = parseLocList(locList);
 
             final JSONArray jnyList = res.optJSONArray("jnyL");
             if (jnyList != null) {
@@ -260,7 +259,7 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
 
                     final Line line = lines.get(stbStop.getInt("dProdX"));
 
-                    final Location location = equivs ? locations.get(stbStop.getInt("locX"))
+                    final Location location = equivs ? parseLoc(locList, stbStop.getInt("locX"))
                             : new Location(LocationType.STATION, stationId);
                     final Position position = normalizePosition(stbStopPlatformS);
 
@@ -271,7 +270,7 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
                         final int lastStopIdx = stopList.getJSONObject(stopList.length() - 1).getInt("locX");
                         final String lastStopName = locList.getJSONObject(lastStopIdx).getString("name");
                         if (jnyDirTxt.equals(lastStopName))
-                            destination = locations.get(lastStopIdx);
+                            destination = parseLoc(locList, lastStopIdx);
                         else
                             destination = new Location(LocationType.ANY, null, null, jnyDirTxt);
                     } else {
@@ -458,7 +457,7 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
 
             final JSONObject common = res.getJSONObject("common");
             final List<String[]> remarks = parseRemList(common.getJSONArray("remL"));
-            final List<Location> locations = parseLocList(common.getJSONArray("locL"));
+            final JSONArray locList = common.getJSONArray("locL");
             final List<String> operators = parseOpList(common.getJSONArray("opL"));
             final List<Line> lines = parseProdList(common.getJSONArray("prodL"), operators);
 
@@ -466,8 +465,8 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
             final List<Trip> trips = new ArrayList<>(outConList.length());
             for (int iOutCon = 0; iOutCon < outConList.length(); iOutCon++) {
                 final JSONObject outCon = outConList.getJSONObject(iOutCon);
-                final Location tripFrom = locations.get(outCon.getJSONObject("dep").getInt("locX"));
-                final Location tripTo = locations.get(outCon.getJSONObject("arr").getInt("locX"));
+                final Location tripFrom = parseLoc(locList, outCon.getJSONObject("dep").getInt("locX"));
+                final Location tripTo = parseLoc(locList, outCon.getJSONObject("arr").getInt("locX"));
 
                 c.clear();
                 ParserUtils.parseIsoDate(c, outCon.getString("date"));
@@ -480,10 +479,10 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
                     final String secType = sec.getString("type");
 
                     final JSONObject secDep = sec.getJSONObject("dep");
-                    final Stop departureStop = parseJsonStop(secDep, locations, c, baseDate);
+                    final Stop departureStop = parseJsonStop(secDep, locList, c, baseDate);
 
                     final JSONObject secArr = sec.getJSONObject("arr");
-                    final Stop arrivalStop = parseJsonStop(secArr, locations, c, baseDate);
+                    final Stop arrivalStop = parseJsonStop(secArr, locList, c, baseDate);
 
                     final Trip.Leg leg;
                     if ("JNY".equals(secType)) {
@@ -498,7 +497,7 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
                         final List<Stop> intermediateStops = new ArrayList<>(stopList.length());
                         for (int iStop = 1; iStop < stopList.length() - 1; iStop++) {
                             final JSONObject stop = stopList.getJSONObject(iStop);
-                            final Stop intermediateStop = parseJsonStop(stop, locations, c, baseDate);
+                            final Stop intermediateStop = parseJsonStop(stop, locList, c, baseDate);
                             intermediateStops.add(intermediateStop);
                         }
 
@@ -644,9 +643,9 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
         throw new RuntimeException("cannot parse: '" + str + "'");
     }
 
-    private Stop parseJsonStop(final JSONObject json, final List<Location> locations, final Calendar c,
+    private Stop parseJsonStop(final JSONObject json, final JSONArray locList, final Calendar c,
             final Date baseDate) throws JSONException {
-        final Location location = locations.get(json.getInt("locX"));
+        final Location location = parseLoc(locList, json.getInt("locX"));
 
         final boolean arrivalCancelled = json.optBoolean("aCncl", false);
         final Date plannedArrivalTime = parseJsonTime(c, baseDate, json.optString("aTimeS", null));
@@ -680,44 +679,45 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
 
     private List<Location> parseLocList(final JSONArray locList) throws JSONException {
         final List<Location> locations = new ArrayList<>(locList.length());
+        for (int iLoc = 0; iLoc < locList.length(); iLoc++)
+            locations.add(parseLoc(locList, iLoc));
+        return locations;
+    }
 
-        for (int iLoc = 0; iLoc < locList.length(); iLoc++) {
-            final JSONObject loc = locList.getJSONObject(iLoc);
-            final String type = loc.getString("type");
+    private Location parseLoc(final JSONArray locList, final int locListIndex) throws JSONException {
+        final JSONObject loc = locList.getJSONObject(locListIndex);
+        final String type = loc.getString("type");
 
-            final LocationType locationType;
-            final String id;
-            final String[] placeAndName;
-            final Set<Product> products;
-            if ("S".equals(type)) {
-                locationType = LocationType.STATION;
-                id = normalizeStationId(loc.getString("extId"));
-                placeAndName = splitStationName(loc.getString("name"));
-                final int pCls = loc.optInt("pCls", -1);
-                products = pCls != -1 ? intToProducts(pCls) : null;
-            } else if ("P".equals(type)) {
-                locationType = LocationType.POI;
-                id = loc.getString("lid");
-                placeAndName = splitPOI(loc.getString("name"));
-                products = null;
-            } else if ("A".equals(type)) {
-                locationType = LocationType.ADDRESS;
-                id = loc.getString("lid");
-                placeAndName = splitAddress(loc.getString("name"));
-                products = null;
-            } else {
-                throw new RuntimeException("Unknown type " + type + ": " + loc);
-            }
-
-            final JSONObject crd = loc.optJSONObject("crd");
-            if (crd != null)
-                locations.add(new Location(locationType, id, crd.getInt("y"), crd.getInt("x"), placeAndName[0],
-                        placeAndName[1], products));
-            else
-                locations.add(new Location(LocationType.STATION, id, null, placeAndName[0], placeAndName[1], products));
+        final LocationType locationType;
+        final String id;
+        final String[] placeAndName;
+        final Set<Product> products;
+        if ("S".equals(type)) {
+            locationType = LocationType.STATION;
+            id = normalizeStationId(loc.getString("extId"));
+            placeAndName = splitStationName(loc.getString("name"));
+            final int pCls = loc.optInt("pCls", -1);
+            products = pCls != -1 ? intToProducts(pCls) : null;
+        } else if ("P".equals(type)) {
+            locationType = LocationType.POI;
+            id = loc.getString("lid");
+            placeAndName = splitPOI(loc.getString("name"));
+            products = null;
+        } else if ("A".equals(type)) {
+            locationType = LocationType.ADDRESS;
+            id = loc.getString("lid");
+            placeAndName = splitAddress(loc.getString("name"));
+            products = null;
+        } else {
+            throw new RuntimeException("Unknown type " + type + ": " + loc);
         }
 
-        return locations;
+        final JSONObject crd = loc.optJSONObject("crd");
+        if (crd != null)
+            return new Location(locationType, id, crd.getInt("y"), crd.getInt("x"), placeAndName[0], placeAndName[1],
+                    products);
+        else
+            return new Location(LocationType.STATION, id, null, placeAndName[0], placeAndName[1], products);
     }
 
     private List<String> parseOpList(final JSONArray opList) throws JSONException {
