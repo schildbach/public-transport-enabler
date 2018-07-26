@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,9 +22,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.google.common.base.Charsets;
+import com.google.common.io.BaseEncoding;
 
-import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Product;
 
 import okhttp3.HttpUrl;
@@ -32,20 +31,23 @@ import okhttp3.HttpUrl;
 /**
  * @author Andreas Schildbach
  */
-public class VbbProvider extends AbstractHafasLegacyProvider {
+public class VbbProvider extends AbstractHafasClientInterfaceProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("https://fahrinfo.vbb.de/bin/");
     private static final Product[] PRODUCTS_MAP = { Product.SUBURBAN_TRAIN, Product.SUBWAY, Product.TRAM, Product.BUS,
-            Product.FERRY, Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, null, null, Product.BUS /* SEV */ };
+            Product.FERRY, Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, null, null, Product.BUS /* BEV */ };
     private static final Set<Product> ALL_EXCEPT_HIGHSPEED_AND_ONDEMAND = EnumSet
             .complementOf(EnumSet.of(Product.HIGH_SPEED_TRAIN, Product.ON_DEMAND));
 
     public VbbProvider() {
-        super(NetworkId.VBB, API_BASE, "dn", PRODUCTS_MAP);
+        this("{\"type\":\"AID\",\"aid\":\"hafas-vbb-apps\"}");
+    }
 
-        setRequestUrlEncoding(Charsets.UTF_8);
-        setJsonGetStopsUseWeight(false);
-        setJsonNearbyLocationsEncoding(Charsets.UTF_8);
-        setClientType(null);
+    public VbbProvider(final String apiAuthorization) {
+        super(NetworkId.VBB, API_BASE, PRODUCTS_MAP);
+        setApiVersion("1.14");
+        setApiClient("{\"id\":\"VBB\",\"type\":\"AND\"}");
+        setApiAuthorization(apiAuthorization);
+        setRequestMicMacSalt(BaseEncoding.base16().lowerCase().decode("5243544a4d3266467846667878516649"));
         httpClient.setTrustAllCertificates(true);
     }
 
@@ -88,7 +90,6 @@ public class VbbProvider extends AbstractHafasLegacyProvider {
         final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(poi);
         if (m.matches())
             return new String[] { m.group(1), m.group(2) };
-
         return super.splitStationName(poi);
     }
 
@@ -97,20 +98,11 @@ public class VbbProvider extends AbstractHafasLegacyProvider {
         final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(address);
         if (m.matches())
             return new String[] { m.group(1), m.group(2) };
-
         return super.splitStationName(address);
     }
 
     @Override
     public Set<Product> defaultProducts() {
         return ALL_EXCEPT_HIGHSPEED_AND_ONDEMAND;
-    }
-
-    @Override
-    protected Line parseLineAndType(final String lineAndType) {
-        if ("X#".equals(lineAndType))
-            return newLine(Product.HIGH_SPEED_TRAIN, "X", null); // InterConnex
-        else
-            return super.parseLineAndType(lineAndType);
     }
 }
