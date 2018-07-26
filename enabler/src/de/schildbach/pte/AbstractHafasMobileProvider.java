@@ -317,7 +317,7 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
         final String request = wrapJsonApiRequest("LocMatch",
                 "{\"input\":{\"field\":\"S\",\"loc\":{\"name\":" + JSONObject.quote(checkNotNull(constraint).toString())
                         + ",\"meta\":false},\"maxLoc\":" + DEFAULT_MAX_LOCATIONS + "}}",
-                true);
+                false);
 
         final HttpUrl url = checkNotNull(mgateEndpoint);
         final CharSequence page = httpClient.get(url, request, "application/json");
