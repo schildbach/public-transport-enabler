@@ -17,6 +17,7 @@
 
 package de.schildbach.pte;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
@@ -84,6 +85,7 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
     }
 
     protected AbstractHafasMobileProvider setApiVersion(final String apiVersion) {
+        checkArgument(apiVersion.compareToIgnoreCase("1.11") >= 0, "apiVersion must be 1.11 or higher");
         this.apiVersion = apiVersion;
         return this;
     }
@@ -231,9 +233,6 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
                 if ("FAIL".equals(err) && "HCI Service: request failed".equals(errTxt))
                     return new QueryDeparturesResult(header, QueryDeparturesResult.Status.SERVICE_DOWN);
                 throw new RuntimeException(err + " " + errTxt);
-            } else if ("1.10".equals(apiVersion) && svcRes.toString().length() == 170) {
-                // horrible hack, because API version 1.10 doesn't signal invalid stations via error
-                return new QueryDeparturesResult(header, QueryDeparturesResult.Status.INVALID_STATION);
             }
             final JSONObject res = svcRes.getJSONObject("res");
 
@@ -400,7 +399,6 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
         c.setTime(time);
         final CharSequence outDate = jsonDate(c);
         final CharSequence outTime = jsonTime(c);
-        final CharSequence outFrwdKey = "1.11".equals(apiVersion) ? "outFrwd" : "frwd";
         final CharSequence outFrwd = Boolean.toString(dep);
         final CharSequence jnyFltr = productsString(products);
         final CharSequence jsonContext = moreContext != null ? "\"ctxScr\":" + JSONObject.quote(moreContext) + "," : "";
@@ -411,7 +409,7 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
                 + (via != null ? "\"viaLocL\":[{\"loc\":" + jsonLocation(via) + "}]," : "") //
                 + "\"outDate\":\"" + outDate + "\"," //
                 + "\"outTime\":\"" + outTime + "\"," //
-                + "\"" + outFrwdKey + "\":" + outFrwd + "," //
+                + "\"outFrwd\":" + outFrwd + "," //
                 + "\"jnyFltrL\":[{\"value\":\"" + jnyFltr + "\",\"mode\":\"BIT\",\"type\":\"PROD\"}]," //
                 + "\"gisFltrL\":[{\"mode\":\"FB\",\"profile\":{\"type\":\"F\",\"linDistRouting\":false,\"maxdist\":2000},\"type\":\"P\"}]," //
                 + "\"getPolyline\":false,\"getPasslist\":true,\"getIST\":false,\"getEco\":false,\"extChgTime\":-1}", //

@@ -36,7 +36,7 @@ public class VmobilProvider extends AbstractHafasMobileProvider {
 
     public VmobilProvider(final String apiAuthorization) {
         super(NetworkId.VMOBIL, API_BASE, PRODUCTS_MAP);
-        setApiVersion("1.11");
+        setApiVersion("1.13");
         setApiClient("{\"id\":\"VAO\",\"l\":\"vs_vvv\",\"type\":\"AND\"}");
         setApiAuthorization(apiAuthorization);
     }

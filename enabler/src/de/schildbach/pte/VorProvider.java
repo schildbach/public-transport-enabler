@@ -39,7 +39,7 @@ public class VorProvider extends AbstractHafasMobileProvider {
 
     public VorProvider(final String apiAuthorization) {
         super(NetworkId.VOR, API_BASE, PRODUCTS_MAP);
-        setApiVersion("1.11");
+        setApiVersion("1.13");
         setApiClient("{\"id\":\"VAO\",\"l\":\"vs_anachb\",\"type\":\"AND\"}");
         setApiAuthorization(apiAuthorization);
         setStyles(STYLES);

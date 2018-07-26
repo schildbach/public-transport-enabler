@@ -45,7 +45,7 @@ public final class BvgProvider extends AbstractHafasMobileProvider {
 
     public BvgProvider(final String jsonApiAuthorization) {
         super(NetworkId.BVG, API_BASE, PRODUCTS_MAP);
-        setApiVersion("1.11");
+        setApiVersion("1.13");
         setApiClient("{\"id\":\"BVG\"}");
         setApiAuthorization(jsonApiAuthorization);
         setStyles(STYLES);

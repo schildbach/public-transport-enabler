@@ -47,7 +47,7 @@ public class VbnProvider extends AbstractHafasMobileProvider {
 
     public VbnProvider(final String apiAuthorization) {
         super(NetworkId.VBN, API_BASE, PRODUCTS_MAP);
-        setApiVersion("1.10");
+        setApiVersion("1.13");
         setApiClient("{\"id\":\"VBN\"}");
         setApiAuthorization(apiAuthorization);
         setStyles(STYLES);

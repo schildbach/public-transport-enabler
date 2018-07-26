@@ -36,7 +36,7 @@ public class OoevvProvider extends AbstractHafasMobileProvider {
 
     public OoevvProvider(final String apiAuthorization) {
         super(NetworkId.OOEVV, API_BASE, PRODUCTS_MAP);
-        setApiVersion("1.11");
+        setApiVersion("1.13");
         setApiClient("{\"id\":\"VAO\",\"l\":\"vs_ooevv\",\"type\":\"AND\"}");
         setApiAuthorization(apiAuthorization);
         httpClient.setSslAcceptAllHostnames(true);
