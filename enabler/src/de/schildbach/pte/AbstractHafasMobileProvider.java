@@ -693,6 +693,9 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
         final String[] placeAndName;
         final Set<Product> products;
         if ("S".equals(type)) {
+            final int mMastLocX = loc.optInt("mMastLocX", -1);
+            if (mMastLocX != -1 && mMastLocX != locListIndex)
+                return parseLoc(locList, mMastLocX);
             locationType = LocationType.STATION;
             id = normalizeStationId(loc.getString("extId"));
             placeAndName = splitStationName(loc.getString("name"));
