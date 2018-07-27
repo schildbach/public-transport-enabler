@@ -49,6 +49,15 @@ public class EireannProvider extends AbstractHafasLegacyProvider {
     }
 
     @Override
+    protected boolean hasCapability(final Capability capability) {
+        // as this provider is using the XML endpoint, it does not have real-time information on trips
+        if (capability == Capability.TRIPS_REALTIME)
+            return false;
+        else
+            return super.hasCapability(capability);
+    }
+
+    @Override
     public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to,
             final Date date, final boolean dep, final @Nullable TripOptions options) throws IOException {
         return queryTripsXml(from, via, to, date, dep, options);
