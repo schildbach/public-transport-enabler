@@ -80,6 +80,14 @@ public class NegentweeProvider extends AbstractNetworkProvider {
     private static final TimeZone API_TIMEZONE = TimeZone.getTimeZone("Europe/Amsterdam");
     private static final int DEFAULT_MAX_LOCATIONS = 50;
 
+    private final List CAPABILITIES = Arrays.asList(
+            Capability.SUGGEST_LOCATIONS,
+            Capability.NEARBY_LOCATIONS,
+            Capability.DEPARTURES,
+            Capability.TRIPS,
+            Capability.TRIPS_VIA
+    );
+
     private static final EnumSet<Product> trainProducts = EnumSet.of(Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN,
             Product.SUBURBAN_TRAIN);
 
@@ -698,15 +706,7 @@ public class NegentweeProvider extends AbstractNetworkProvider {
 
     @Override
     protected boolean hasCapability(Capability capability) {
-        switch (capability) {
-        case SUGGEST_LOCATIONS:
-        case NEARBY_LOCATIONS:
-        case DEPARTURES:
-        case TRIPS:
-            return true;
-        default:
-            return false;
-        }
+        return CAPABILITIES.contains(capability);
     }
 
     @Override

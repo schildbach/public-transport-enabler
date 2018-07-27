@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -80,6 +81,14 @@ import okhttp3.HttpUrl;
  * @author Michael Dyrna
  */
 public class VrsProvider extends AbstractNetworkProvider {
+
+    private final List CAPABILITIES = Arrays.asList(
+            Capability.SUGGEST_LOCATIONS,
+            Capability.NEARBY_LOCATIONS,
+            Capability.DEPARTURES,
+            Capability.TRIPS,
+            Capability.TRIPS_VIA
+    );
 
     private static final Logger log = LoggerFactory.getLogger(VrsProvider.class);
 
@@ -342,18 +351,7 @@ public class VrsProvider extends AbstractNetworkProvider {
 
     @Override
     protected boolean hasCapability(Capability capability) {
-        switch (capability) {
-        case DEPARTURES:
-            return true;
-        case NEARBY_LOCATIONS:
-            return true;
-        case SUGGEST_LOCATIONS:
-            return true;
-        case TRIPS:
-            return true;
-        default:
-            return false;
-        }
+        return CAPABILITIES.contains(capability);
     }
 
     // only stations supported
