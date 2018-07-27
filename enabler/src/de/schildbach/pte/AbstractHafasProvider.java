@@ -20,6 +20,7 @@ package de.schildbach.pte;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -43,6 +44,14 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
     protected static final int DEFAULT_MAX_LOCATIONS = 50;
     protected static final int DEFAULT_MAX_DISTANCE = 20000;
 
+    private final List CAPABILITIES = Arrays.asList(
+            Capability.SUGGEST_LOCATIONS,
+            Capability.NEARBY_LOCATIONS,
+            Capability.DEPARTURES,
+            Capability.TRIPS,
+            Capability.TRIPS_VIA
+    );
+
     protected static final Logger log = LoggerFactory.getLogger(AbstractHafasProvider.class);
 
     private Product[] productsMap;
@@ -52,9 +61,10 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
         this.productsMap = productsMap;
     }
 
+    // this should be overridden by networks not providing one of the default capabilities
     @Override
     protected boolean hasCapability(final Capability capability) {
-        return true;
+        return CAPABILITIES.contains(capability);
     }
 
     protected final CharSequence productsString(final Set<Product> products) {

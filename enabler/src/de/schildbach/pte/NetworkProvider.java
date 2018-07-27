@@ -49,7 +49,9 @@ public interface NetworkProvider {
         /* can query for departures */
         DEPARTURES,
         /* can query trips */
-        TRIPS
+        TRIPS,
+        /* supports trip queries passing by a specific location */
+        TRIPS_VIA
     }
 
     public enum Optimize {
