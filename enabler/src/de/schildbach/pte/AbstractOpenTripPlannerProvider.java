@@ -20,6 +20,7 @@ package de.schildbach.pte;
 import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -110,9 +111,10 @@ class AbstractOpenTripPlannerProvider extends AbstractNetworkProvider {
     protected final static String SERVER_VERSION = "v1.2";
     private final String router;
     private final Multimap<Product, String> productsToModeMap ;
+    private final Multimap<String, Product> modeToProductMap = ArrayListMultimap.create();
     private Locale locale = Locale.ENGLISH;
 
-    enum OTPMode {
+    protected enum OTPMode {
         WALK, BIKE, CAR, RAIL, SUBWAY, TRAM, BUS, CABLE_CAR, FERRY, GONDOLA, FUNICULAR, AIRPLANE,
         TRANSIT
     }
@@ -144,8 +146,16 @@ class AbstractOpenTripPlannerProvider extends AbstractNetworkProvider {
         } else {
             this.productsToModeMap = productsToMode;
         }
+        Multimaps.invertFrom(this.productsToModeMap , this.modeToProductMap);
         this.router = router;
         this.httpClient.setHeader("Accept", "application/json");
+    }
+
+    private void buildInverseMap() {
+        for (Product product: productsToModeMap.keys()){
+            Collection<String> modes = productsToModeMap.get(product);
+            modeToProductMap.put(modes.iterator().next(), product);
+        }
     }
 
     private HttpUrl.Builder url() {
@@ -175,17 +185,21 @@ class AbstractOpenTripPlannerProvider extends AbstractNetworkProvider {
 
     protected Multimap<Product, String> defaultProductToOTPModeMapping() {
         Multimap<Product, String> productsToModeMap = ArrayListMultimap.create();
+        // OTP does not distinguish between high speed/long distance
+        // regional or suburban trains. For requests, we map all to rail.
+        // When parsing responses, we rely on OTP's routeType, where available
         productsToModeMap.put(Product.HIGH_SPEED_TRAIN, OTPMode.RAIL.toString());
         productsToModeMap.put(Product.REGIONAL_TRAIN, OTPMode.RAIL.toString());
         productsToModeMap.put(Product.SUBURBAN_TRAIN, OTPMode.RAIL.toString());
         productsToModeMap.put(Product.SUBWAY, OTPMode.SUBWAY.toString());
         productsToModeMap.put(Product.TRAM, OTPMode.TRAM.toString());
-        // GONDOLA and FUNICULAR are no PTE Products, but OTP modes. Associate them with TRAM (?)
-        productsToModeMap.put(Product.TRAM, OTPMode.GONDOLA.toString());
-        productsToModeMap.put(Product.TRAM, OTPMode.FUNICULAR.toString());
         productsToModeMap.put(Product.BUS, OTPMode.BUS.toString());
         productsToModeMap.put(Product.FERRY, OTPMode.FERRY.toString());
         productsToModeMap.put(Product.CABLECAR, OTPMode.CABLE_CAR.toString());
+        // GONDOLA and FUNICULAR are no PTE products, but OTP modes.
+        // Associate them with CABLE_CAR, when performing requests
+        productsToModeMap.put(Product.CABLECAR, OTPMode.GONDOLA.toString());
+        productsToModeMap.put(Product.CABLECAR, OTPMode.FUNICULAR.toString());
         // Product.ON_DEMAND is not supported by OTP yet
         // OTPMode.AIRPLANE is not supported by PTE yet
         return productsToModeMap;
@@ -374,9 +388,21 @@ class AbstractOpenTripPlannerProvider extends AbstractNetworkProvider {
     }
 
 
+    /**
+     * Converts OTP's mode and optional route type into the corresponding PTE product.
+     * If the routeType is given, the conversion is uses this value,
+     * otherwise the productsToMode mapping is used if unique.
+     * As OTP's mode RAIL is to generic to deduce the correct product
+     * (highspeed, regional or suburban train), this implementation returns regional train.
+     * If not appropriate, subclasses would need to implement their own method.
+     *
+     * @param mode
+     * @param routeType
+     * @return
+     */
     protected Product parseProduct(String mode, int routeType) {
         if (routeType == 707 || routeType == 715 || routeType == 1700 ) {
-            // For now, we map Bürgerbus, AST and ridesharing to ON_DEMAND
+            // For now, we map Bürgerbus, AST and Mitfahren-BW's ridesharing to ON_DEMAND
             return Product.ON_DEMAND;
         } else if (routeType >= 100 && routeType <= 106) {
             return Product.HIGH_SPEED_TRAIN;
@@ -401,20 +427,17 @@ class AbstractOpenTripPlannerProvider extends AbstractNetworkProvider {
                 routeType >= 1200 && routeType <= 1300 ) {
             return Product.FERRY;
         } else if (routeType >= 1300 && routeType <= 1500) {
-            // TODO is it ok to map Funicular and Gondola to TRAM?
-            return Product.TRAM;
+            // Mapping Funicular and Gondola (telecabin) to cablecar, as other providers do likewise
+            // e.g. ZvvProvider
+            return Product.CABLECAR;
         }
 
-        if ("BUS".equalsIgnoreCase(mode)) {
-            return Product.BUS;
-        } else if ("SUBWAY".equalsIgnoreCase(mode)) {
-            return Product.SUBWAY;
-        } else if ("TRAM".equalsIgnoreCase(mode)) {
-            return Product.TRAM;
-        } else if ("FERRY".equalsIgnoreCase(mode)) {
-            return Product.FERRY;
-        } else if ("CABLE_CAR".equalsIgnoreCase(mode)) {
-            return Product.CABLECAR;
+        Collection<Product> products = modeToProductMap.get(mode);
+        if (products.size()==1) {
+            return products.iterator().next();
+        } else if (OTPMode.RAIL.name().equalsIgnoreCase(mode)) {
+            // subclasses will need to infer proper type on their own...
+            return Product.REGIONAL_TRAIN;
         } else {
             return null;
         }

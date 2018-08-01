@@ -236,5 +236,12 @@ public class AbstractOpenTripPlannerProviderTest {
         assertThat(otpModes, containsString("RAIL"));
         assertThat(otpModes, containsString("BUS"));
     }
+
+    @Test
+    public void convertProductsToOTPModes_cablecar(){
+        String otpModes = otpProvider.convertProductsToOTPModes(Product.fromCodes(new char[]{'C'}));
+        assertThat(otpModes, containsString("CABLE_CAR"));
+        assertThat(otpModes, containsString("GONDOLA"));
+        assertThat(otpModes, containsString("FUNICULAR"));
     }
 }
