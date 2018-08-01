@@ -15,10 +15,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 package de.schildbach.pte;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
-
 import org.hamcrest.CoreMatchers;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -26,8 +22,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import java.util.Collections;
 
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
@@ -37,6 +31,14 @@ import de.schildbach.pte.dto.Trip;
 import de.schildbach.pte.dto.Trip.Leg;
 import de.schildbach.pte.dto.Trip.Public;
 import okhttp3.HttpUrl;
+
+import static junit.framework.TestCase.assertTrue;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AbstractOpenTripPlannerProviderTest {
@@ -49,10 +51,10 @@ public class AbstractOpenTripPlannerProviderTest {
     	String coordJson = "{\"lat\":49,\"lon\":9})";
 		Location location = otpProvider.parseLocationFromTo(new JSONObject(coordJson));
     	
-		assertThat(location, CoreMatchers.notNullValue());
-    	assertThat(location.type, CoreMatchers.equalTo(LocationType.COORD));
-    	assertThat(location.lat, CoreMatchers.equalTo((int)(49*1E6)));
-    	assertThat(location.lon, CoreMatchers.equalTo((int)(9*1E6)));
+		assertNotNull(location);
+    	assertEquals(LocationType.COORD, location.type);
+    	assertEquals((int)(49*1E6), location.lat);
+    	assertEquals((int)(9*1E6), location.lon);
     }
 
     @Test
@@ -217,20 +219,22 @@ public class AbstractOpenTripPlannerProviderTest {
     			"                        \"steps\": []" + 
     			"                    }"));
     	
-    	assertThat(legWithIntermediateStops, notNullValue());
+    	assertNotNull(legWithIntermediateStops);
     }
        
     @Test
     public void suggestLocations_noResults() throws Exception {
     	String suggestLocationsResponse = "[]";
-		Mockito.doReturn(suggestLocationsResponse ).when(otpProvider).request(Mockito.any(HttpUrl.class));
-    	SuggestLocationsResult suggestLocations = otpProvider.suggestLocations("Weinsberg");
-    	assertThat(suggestLocations.suggestedLocations.isEmpty(), equalTo(true));
+		Mockito.doReturn(suggestLocationsResponse).when(otpProvider).request(Mockito.any(HttpUrl.class));
+    	SuggestLocationsResult suggestLocations = otpProvider.suggestLocations("Non existing location");
+    	assertTrue(suggestLocations.suggestedLocations.isEmpty());
     }
 
     @Test
     public void convertProductsToOTPModes(){
-        String expectedModes = "WALK,RAIL,BUS";
-        assertThat(otpProvider.convertProductsToOTPModes(Product.fromCodes(new char[]{'R','B'})), equalTo(expectedModes));
+        String otpModes = otpProvider.convertProductsToOTPModes(Product.fromCodes(new char[]{'R','B'}));
+        assertThat(otpModes, containsString("RAIL"));
+        assertThat(otpModes, containsString("BUS"));
+    }
     }
 }

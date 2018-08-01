@@ -17,9 +17,11 @@
 package de.schildbach.pte.live;
 
 import static junit.framework.TestCase.assertTrue;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
@@ -63,56 +65,55 @@ public class MitfahrenBWProviderLiveTest extends AbstractProviderLiveTest {
     public void suggestLocationsWithUmlaut() throws Exception {
         final SuggestLocationsResult result = suggestLocations("Güttingen");
         print(result);
-        assertThat(result.getLocations(), CoreMatchers.hasItem(new Location(LocationType.STATION, "nvbv:ch:23021:19520:90")));
+        assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "nvbv:ch:23021:19520:90")));
     }
 
     @Test
     public void suggestLocationsCoverage() throws Exception {
         final SuggestLocationsResult result = suggestLocations("backnang");
         print(result);
-        assertThat(result.getLocations(), CoreMatchers.hasItem(new Location(LocationType.STATION, "nvbv:de:08119:7600:2:2", 48942720, 9425946)));
+        assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "nvbv:de:08119:7600:2:2", 48942720, 9425946)));
     }
 
     @Test
     public void suggestLocations() throws IOException {
         SuggestLocationsResult suggestLocationResult = suggestLocations("Weinsberg");
-        assertThat(suggestLocationResult.status, CoreMatchers.equalTo(SuggestLocationsResult.Status.OK));
-        assertThat(suggestLocationResult.suggestedLocations.size(), is(not(0)));
+        assertEquals(SuggestLocationsResult.Status.OK, suggestLocationResult.status);
+        assertFalse(suggestLocationResult.suggestedLocations.isEmpty());
     }
 
     @Test
     public void nearbyStationsByCoordinate() throws Exception {
         final NearbyLocationsResult result = queryNearbyStations(Location.coord(49146838, 9278756));
-        assertThat(result.locations.size(), is(not(0)));
+        assertFalse(result.locations.isEmpty());
     }
-
 
     @Test
     public void nearByLocations() throws IOException {
         NearbyLocationsResult nearbyLocationsResult = queryNearbyLocations(null, new Location(LocationType.COORD, null, 49146838, 9278756), 500, 5);
-        assertThat(nearbyLocationsResult.status, CoreMatchers.equalTo(NearbyLocationsResult.Status.OK));
-        assertThat(nearbyLocationsResult.locations.size(), is(not(0)));
+        assertEquals(NearbyLocationsResult.Status.OK, nearbyLocationsResult.status);
+        assertFalse(nearbyLocationsResult.locations.isEmpty());
     }
 
     @Test @Ignore("nearbyStations request with station without coords not yet supported")
     public void nearbyStations() throws Exception {
         final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "nvbv:de:08125:2003:3:1"));
-        assertThat(result.locations.size(), is(not(0)));
+        assertFalse(result.locations.isEmpty());
     }
 
     @Test
     public void queryDepartures() throws IOException {
     	QueryDeparturesResult queryDeparturesResult = queryDepartures("nvbv:de:08125:4344:1:1", 1, false);
-    	assertThat(queryDeparturesResult.status, CoreMatchers.equalTo(QueryDeparturesResult.Status.OK));
-        assertThat(queryDeparturesResult.stationDepartures.size(), is(not(0)));
+    	assertEquals(QueryDeparturesResult.Status.OK, queryDeparturesResult.status);
+        assertFalse(queryDeparturesResult.stationDepartures.isEmpty());
     }
 
     @Test
     public void queryTrips() throws IOException {
         QueryTripsResult queryTripsResult = queryTrips( new Location(LocationType.COORD, null, 49146838,9278756), null, new Location(LocationType.COORD, null, 49149566,9353452),
                 new Date(), false, null, NetworkProvider.WalkSpeed.FAST, null);
-    	assertThat(queryTripsResult.status, CoreMatchers.equalTo(QueryTripsResult.Status.OK));
-        assertThat(queryTripsResult.trips.size(), is(not(0)));
+    	assertEquals(QueryTripsResult.Status.OK, queryTripsResult.status);
+        assertFalse(queryTripsResult.trips.isEmpty());
     }
 
     @Test
@@ -171,7 +172,7 @@ public class MitfahrenBWProviderLiveTest extends AbstractProviderLiveTest {
         List<Trip.Leg> legs = result.trips.get(0).legs;
         for (Trip.Leg leg:legs) {
             if (leg instanceof Trip.Public) {
-                assertThat(((Trip.Public) leg).line.product, CoreMatchers.equalTo(Product.SUBWAY));
+                assertEquals(Product.SUBWAY, ((Trip.Public) leg).line.product);
             }
         }
 
