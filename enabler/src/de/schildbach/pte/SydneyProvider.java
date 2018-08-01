@@ -51,13 +51,10 @@ public class SydneyProvider extends AbstractEfaProvider {
     @Override
     protected void appendXsltTripRequestParameters(final HttpUrl.Builder url, final Location from,
             final @Nullable Location via, final Location to, final Date time, final boolean dep,
-            final @Nullable Collection<Product> products, final @Nullable Optimize optimize,
-            final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
-            final @Nullable Set<Option> options) {
-        super.appendXsltTripRequestParameters(url, from, via, to, time, dep, products, optimize, walkSpeed,
-                accessibility, options);
-        if (products != null) {
-            for (final Product p : products) {
+            final @Nullable TripOptions options) {
+        super.appendXsltTripRequestParameters(url, from, via, to, time, dep, options);
+        if (options != null && options.products != null) {
+            for (final Product p : options.products) {
                 if (p == Product.BUS)
                     url.addEncodedQueryParameter("inclMOT_11", "on"); // school bus
             }

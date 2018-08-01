@@ -78,10 +78,8 @@ public class StvProvider extends AbstractEfaProvider {
 
     @Override
     public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to,
-            final Date date, final boolean dep, final @Nullable Set<Product> products,
-            final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
-            final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) throws IOException {
-        return queryTripsMobile(from, via, to, date, dep, products, optimize, walkSpeed, accessibility, options);
+            final Date date, final boolean dep, final @Nullable TripOptions options) throws IOException {
+        return queryTripsMobile(from, via, to, date, dep, options);
     }
 
     @Override

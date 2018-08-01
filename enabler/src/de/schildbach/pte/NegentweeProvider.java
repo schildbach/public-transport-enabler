@@ -816,8 +816,7 @@ public class NegentweeProvider extends AbstractNetworkProvider {
 
     @Override
     public QueryTripsResult queryTrips(Location from, @Nullable Location via, Location to, Date date, boolean dep,
-            @Nullable Set<Product> products, @Nullable Optimize optimize, @Nullable WalkSpeed walkSpeed,
-            @Nullable Accessibility accessibility, @Nullable Set<Option> options) throws IOException {
+            @Nullable TripOptions options) throws IOException {
         if (!from.hasId())
             return ambiguousQueryTrips(from, via, to);
 
@@ -838,13 +837,17 @@ public class NegentweeProvider extends AbstractNetworkProvider {
             queryParameters.add(new QueryParameter("via", via.id));
         }
 
-        if (walkSpeed != null && walkSpeed == WalkSpeed.SLOW) {
+        if (options == null)
+            options = new TripOptions();
+
+        if (options.walkSpeed != null && options.walkSpeed == WalkSpeed.SLOW) {
             queryParameters.add(new QueryParameter("interchangeTime", InterchangeTime.EXTRA.toString()));
         } else {
             queryParameters.add(new QueryParameter("interchangeTime", InterchangeTime.STANDARD.toString()));
         }
 
         // Add trip product options to query
+        Set<Product> products = options.products;
         if (products == null || products.size() == 0) {
             products = defaultProducts();
         }

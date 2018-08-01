@@ -144,10 +144,10 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
 
     @Override
     public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to,
-            final Date date, final boolean dep, final @Nullable Set<Product> products,
-            final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
-            final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) throws IOException {
-        return jsonTripSearch(from, via, to, date, dep, products, null);
+            final Date date, final boolean dep, @Nullable TripOptions options) throws IOException {
+        if (options == null)
+            options = new TripOptions();
+        return jsonTripSearch(from, via, to, date, dep, options.products, null);
     }
 
     @Override

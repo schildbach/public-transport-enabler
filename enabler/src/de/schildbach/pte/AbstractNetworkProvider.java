@@ -20,6 +20,7 @@ package de.schildbach.pte;
 import java.io.IOException;
 import java.net.Proxy;
 import java.nio.charset.Charset;
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
@@ -32,9 +33,11 @@ import javax.annotation.Nullable;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 
+import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.Position;
 import de.schildbach.pte.dto.Product;
+import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.util.HttpClient;
 
@@ -72,6 +75,14 @@ public abstract class AbstractNetworkProvider implements NetworkProvider {
     }
 
     protected abstract boolean hasCapability(Capability capability);
+
+    @Deprecated
+    @Override
+    public QueryTripsResult queryTrips(Location from, @Nullable Location via, Location to, Date date, boolean dep,
+            @Nullable Set<Product> products, @Nullable Optimize optimize, @Nullable WalkSpeed walkSpeed,
+            @Nullable Accessibility accessibility, @Nullable Set<Option> options) throws IOException {
+        return queryTrips(from, via, to, date, dep, new TripOptions(products, optimize, walkSpeed, accessibility, options));
+    }
 
     @Override
     public Set<Product> defaultProducts() {
