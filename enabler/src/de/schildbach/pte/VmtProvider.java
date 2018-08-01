@@ -31,7 +31,7 @@ public class VmtProvider extends AbstractHafasMobileProvider {
     // http://www.routenplaner.nahverkehr-jena.de/bin/
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.TRAM, Product.FERRY,
-            Product.BUS /* guessing */, Product.BUS };
+            Product.BUS /* guessing */, Product.BUS, null };
 
     public VmtProvider(final String jsonApiAuthorization) {
         super(NetworkId.VMT, API_BASE, PRODUCTS_MAP);
