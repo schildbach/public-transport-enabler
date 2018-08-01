@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright the original author or authors.
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -26,12 +26,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import de.schildbach.pte.NetworkProvider.Accessibility;
-import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.RtProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryTripsResult;
 
 /**
@@ -52,7 +49,6 @@ public class TripController {
             @RequestParam(value = "toId", required = false) final String toId) throws IOException {
         final Location fromLocation = new Location(fromType, fromId, null, from);
         final Location toLocation = new Location(toType, toId, null, to);
-        return provider.queryTrips(fromLocation, null, toLocation, new Date(), true, Product.ALL, null,
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL, null);
+        return provider.queryTrips(fromLocation, null, toLocation, new Date(), true, null);
     }
 }

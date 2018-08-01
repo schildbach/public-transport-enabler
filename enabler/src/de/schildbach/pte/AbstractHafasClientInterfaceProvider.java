@@ -67,6 +67,7 @@ import de.schildbach.pte.dto.Stop;
 import de.schildbach.pte.dto.SuggestLocationsResult;
 import de.schildbach.pte.dto.SuggestedLocation;
 import de.schildbach.pte.dto.Trip;
+import de.schildbach.pte.dto.TripOptions;
 import de.schildbach.pte.exception.ParserException;
 import de.schildbach.pte.util.ParserUtils;
 
@@ -148,10 +149,9 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
 
     @Override
     public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to,
-            final Date date, final boolean dep, final @Nullable Set<Product> products,
-            final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
-            final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) throws IOException {
-        return jsonTripSearch(from, via, to, date, dep, products, walkSpeed, null);
+            final Date date, final boolean dep, final @Nullable TripOptions options) throws IOException {
+        return jsonTripSearch(from, via, to, date, dep, options != null ? options.products : null,
+                options != null ? options.walkSpeed : null, null);
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2017 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,6 +75,7 @@ import de.schildbach.pte.dto.Stop;
 import de.schildbach.pte.dto.SuggestLocationsResult;
 import de.schildbach.pte.dto.SuggestedLocation;
 import de.schildbach.pte.dto.Trip;
+import de.schildbach.pte.dto.TripOptions;
 import de.schildbach.pte.exception.ParserException;
 import de.schildbach.pte.exception.SessionExpiredException;
 import de.schildbach.pte.util.HttpClient;
@@ -685,10 +686,8 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
 
     @Override
     public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to,
-            final Date date, final boolean dep, final @Nullable Set<Product> products,
-            final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
-            final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) throws IOException {
-        return queryTripsBinary(from, via, to, date, dep, products, walkSpeed, accessibility, options);
+            final Date date, final boolean dep, final @Nullable TripOptions options) throws IOException {
+        return queryTripsBinary(from, via, to, date, dep, options);
     }
 
     @Override
@@ -697,8 +696,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
     }
 
     protected final QueryTripsResult queryTripsXml(Location from, @Nullable Location via, Location to, final Date date,
-            final boolean dep, final @Nullable Set<Product> products, final @Nullable WalkSpeed walkSpeed,
-            final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) throws IOException {
+            final boolean dep, @Nullable TripOptions options) throws IOException {
         final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
 
         if (!from.isIdentified()) {
@@ -731,13 +729,16 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
         final Calendar c = new GregorianCalendar(timeZone);
         c.setTime(date);
 
+        if (options == null)
+            options = new TripOptions();
+
         final CharSequence productsStr;
-        if (products != null)
-            productsStr = productsString(products);
+        if (options.products != null)
+            productsStr = productsString(options.products);
         else
             productsStr = allProductsString();
 
-        final char bikeChar = (options != null && options.contains(Option.BIKE)) ? '1' : '0';
+        final char bikeChar = (options.options != null && options.options.contains(Option.BIKE)) ? '1' : '0';
 
         final StringBuilder conReq = new StringBuilder("<ConReq deliverPolyline=\"1\">");
         conReq.append("<Start>").append(locationXml(from));
@@ -764,7 +765,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
         // number of trips forwards
         conReq.append(" f=\"").append(numTripsRequested).append("\"");
         // percentual extension of change time
-        conReq.append(" chExtension=\"").append(walkSpeed == WalkSpeed.SLOW ? 50 : 0).append("\"");
+        conReq.append(" chExtension=\"").append(options.walkSpeed == WalkSpeed.SLOW ? 50 : 0).append("\"");
         // TODO nrChanges: max number of changes
         conReq.append(" sMode=\"N\"/>");
         conReq.append("</ConReq>");
@@ -1354,9 +1355,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
     private final static int QUERY_TRIPS_BINARY_BUFFER_SIZE = 384 * 1024;
 
     protected final QueryTripsResult queryTripsBinary(Location from, @Nullable Location via, Location to,
-            final Date date, final boolean dep, final @Nullable Set<Product> products,
-            final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
-            final @Nullable Set<Option> options) throws IOException {
+            final Date date, final boolean dep, @Nullable TripOptions options) throws IOException {
         final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
 
         if (!from.isIdentified()) {
@@ -1386,8 +1385,12 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
             to = locations.get(0);
         }
 
+        if (options == null)
+            options = new TripOptions();
+
         final HttpUrl.Builder url = queryEndpoint.newBuilder().addPathSegment(apiLanguage);
-        appendQueryTripsBinaryParameters(url, from, via, to, date, dep, products, accessibility, options);
+        appendQueryTripsBinaryParameters(url, from, via, to, date, dep, options.products, options.accessibility,
+                options.options);
         return queryTripsBinary(url.build(), from, via, to, QUERY_TRIPS_BINARY_BUFFER_SIZE);
     }
 

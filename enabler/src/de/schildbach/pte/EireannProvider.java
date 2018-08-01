@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,6 @@ package de.schildbach.pte;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,6 +29,7 @@ import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryTripsContext;
 import de.schildbach.pte.dto.QueryTripsResult;
+import de.schildbach.pte.dto.TripOptions;
 
 import okhttp3.HttpUrl;
 
@@ -50,10 +50,8 @@ public class EireannProvider extends AbstractHafasLegacyProvider {
 
     @Override
     public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to,
-            final Date date, final boolean dep, final @Nullable Set<Product> products,
-            final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
-            final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) throws IOException {
-        return queryTripsXml(from, via, to, date, dep, products, walkSpeed, accessibility, options);
+            final Date date, final boolean dep, final @Nullable TripOptions options) throws IOException {
+        return queryTripsXml(from, via, to, date, dep, options);
     }
 
     @Override

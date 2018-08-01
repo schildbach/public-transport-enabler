@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,6 +60,7 @@ import de.schildbach.pte.dto.Stop;
 import de.schildbach.pte.dto.SuggestLocationsResult;
 import de.schildbach.pte.dto.SuggestedLocation;
 import de.schildbach.pte.dto.Trip;
+import de.schildbach.pte.dto.TripOptions;
 import de.schildbach.pte.exception.InternalErrorException;
 import de.schildbach.pte.exception.NotFoundException;
 import de.schildbach.pte.util.ParserUtils;
@@ -862,8 +863,7 @@ public class NegentweeProvider extends AbstractNetworkProvider {
 
     @Override
     public QueryTripsResult queryTrips(Location from, @Nullable Location via, Location to, Date date, boolean dep,
-            @Nullable Set<Product> products, @Nullable Optimize optimize, @Nullable WalkSpeed walkSpeed,
-            @Nullable Accessibility accessibility, @Nullable Set<Option> options) throws IOException {
+            @Nullable TripOptions options) throws IOException {
         if (!(from.hasId() || from.hasLocation()))
             return ambiguousQueryTrips(from, via, to);
 
@@ -886,13 +886,17 @@ public class NegentweeProvider extends AbstractNetworkProvider {
             queryParameters.add(new QueryParameter("via", locationToQueryParameterString(via)));
         }
 
-        if (walkSpeed != null && walkSpeed == WalkSpeed.SLOW) {
+        if (options == null)
+            options = new TripOptions();
+
+        if (options.walkSpeed != null && options.walkSpeed == WalkSpeed.SLOW) {
             queryParameters.add(new QueryParameter("interchangeTime", InterchangeTime.EXTRA.toString()));
         } else {
             queryParameters.add(new QueryParameter("interchangeTime", InterchangeTime.STANDARD.toString()));
         }
 
         // Add trip product options to query
+        Set<Product> products = options.products;
         if (products == null || products.size() == 0) {
             products = defaultProducts();
         }

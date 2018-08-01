@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,6 +62,7 @@ import de.schildbach.pte.dto.Trip;
 import de.schildbach.pte.dto.Trip.Individual;
 import de.schildbach.pte.dto.Trip.Leg;
 import de.schildbach.pte.dto.Trip.Public;
+import de.schildbach.pte.dto.TripOptions;
 import de.schildbach.pte.exception.NotFoundException;
 import de.schildbach.pte.exception.ParserException;
 
@@ -884,9 +885,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
 
     @Override
     public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to,
-            final Date date, final boolean dep, final @Nullable Set<Product> products,
-            final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
-            final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) throws IOException {
+            final Date date, final boolean dep, @Nullable TripOptions options) throws IOException {
         final ResultHeader resultHeader = new ResultHeader(network, SERVER_PRODUCT, SERVER_VERSION, null, 0, null);
 
         try {
@@ -899,10 +898,13 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
                 url.addQueryParameter("min_nb_journeys", Integer.toString(this.numTripsRequested));
                 url.addQueryParameter("depth", "0");
 
+                if (options == null)
+                    options = new TripOptions();
+
                 // Set walking speed.
-                if (walkSpeed != null) {
+                if (options.walkSpeed != null) {
                     final double walkingSpeed;
-                    switch (walkSpeed) {
+                    switch (options.walkSpeed) {
                     case SLOW:
                         walkingSpeed = 1.12 * 0.8;
                         break;
@@ -918,43 +920,43 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
                     url.addQueryParameter("walking_speed", Double.toString(walkingSpeed));
                 }
 
-                if (options != null && options.contains(Option.BIKE)) {
+                if (options.options != null && options.options.contains(Option.BIKE)) {
                     url.addQueryParameter("first_section_mode", "bike");
                     url.addQueryParameter("last_section_mode", "bike");
                 }
 
                 // Set forbidden physical modes.
-                if (products != null && !products.equals(Product.ALL)) {
+                if (options.products != null && !options.products.equals(Product.ALL)) {
                     url.addQueryParameter("forbidden_uris[]", "physical_mode:Air");
                     url.addQueryParameter("forbidden_uris[]", "physical_mode:Boat");
-                    if (!products.contains(Product.REGIONAL_TRAIN)) {
+                    if (!options.products.contains(Product.REGIONAL_TRAIN)) {
                         url.addQueryParameter("forbidden_uris[]", "physical_mode:Localdistancetrain");
                         url.addQueryParameter("forbidden_uris[]", "physical_mode:Train");
                     }
-                    if (!products.contains(Product.SUBURBAN_TRAIN)) {
+                    if (!options.products.contains(Product.SUBURBAN_TRAIN)) {
                         url.addQueryParameter("forbidden_uris[]", "physical_mode:Localtrain");
                         url.addQueryParameter("forbidden_uris[]", "physical_mode:Train");
                         url.addQueryParameter("forbidden_uris[]", "physical_mode:Rapidtransit");
                     }
-                    if (!products.contains(Product.SUBWAY)) {
+                    if (!options.products.contains(Product.SUBWAY)) {
                         url.addQueryParameter("forbidden_uris[]", "physical_mode:Metro");
                     }
-                    if (!products.contains(Product.TRAM)) {
+                    if (!options.products.contains(Product.TRAM)) {
                         url.addQueryParameter("forbidden_uris[]", "physical_mode:Tramway");
                     }
-                    if (!products.contains(Product.BUS)) {
+                    if (!options.products.contains(Product.BUS)) {
                         url.addQueryParameter("forbidden_uris[]", "physical_mode:Bus");
                         url.addQueryParameter("forbidden_uris[]", "physical_mode:Busrapidtransit");
                         url.addQueryParameter("forbidden_uris[]", "physical_mode:Coach");
                         url.addQueryParameter("forbidden_uris[]", "physical_mode:Shuttle");
                     }
-                    if (!products.contains(Product.FERRY)) {
+                    if (!options.products.contains(Product.FERRY)) {
                         url.addQueryParameter("forbidden_uris[]", "physical_mode:Ferry");
                     }
-                    if (!products.contains(Product.CABLECAR)) {
+                    if (!options.products.contains(Product.CABLECAR)) {
                         url.addQueryParameter("forbidden_uris[]", "physical_mode:Funicular");
                     }
-                    if (!products.contains(Product.ON_DEMAND)) {
+                    if (!options.products.contains(Product.ON_DEMAND)) {
                         url.addQueryParameter("forbidden_uris[]", "physical_mode:Taxi");
                     }
                 }
@@ -1022,8 +1024,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
                 }
 
                 if (newTo != null && newFrom != null)
-                    return queryTrips(newFrom, via, newTo, date, dep, products, optimize, walkSpeed, accessibility,
-                            options);
+                    return queryTrips(newFrom, via, newTo, date, dep, options);
 
                 if (ambiguousFrom != null || ambiguousTo != null)
                     return new QueryTripsResult(resultHeader, ambiguousFrom, null, ambiguousTo);

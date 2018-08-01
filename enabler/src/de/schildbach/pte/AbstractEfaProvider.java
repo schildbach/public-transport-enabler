@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Currency;
 import java.util.Date;
 import java.util.EnumSet;
@@ -75,6 +74,7 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
 import de.schildbach.pte.dto.SuggestedLocation;
 import de.schildbach.pte.dto.Trip;
 import de.schildbach.pte.dto.Trip.Leg;
+import de.schildbach.pte.dto.TripOptions;
 import de.schildbach.pte.exception.InvalidDataException;
 import de.schildbach.pte.exception.ParserException;
 import de.schildbach.pte.util.HttpClient;
@@ -1970,9 +1970,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
     protected void appendXsltTripRequestParameters(final HttpUrl.Builder url, final Location from,
             final @Nullable Location via, final Location to, final Date time, final boolean dep,
-            final @Nullable Collection<Product> products, final @Nullable Optimize optimize,
-            final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
-            final @Nullable Set<Option> options) {
+            @Nullable TripOptions options) {
         appendCommonRequestParams(url, "XML");
 
         url.addEncodedQueryParameter("sessionID", "0");
@@ -1994,29 +1992,32 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         url.addEncodedQueryParameter("ptOptionsActive", "1"); // enable public transport options
         url.addEncodedQueryParameter("itOptionsActive", "1"); // enable individual transport options
 
-        if (optimize == Optimize.LEAST_DURATION)
+        if (options == null)
+            options = new TripOptions();
+
+        if (options.optimize == Optimize.LEAST_DURATION)
             url.addEncodedQueryParameter("routeType", "LEASTTIME");
-        else if (optimize == Optimize.LEAST_CHANGES)
+        else if (options.optimize == Optimize.LEAST_CHANGES)
             url.addEncodedQueryParameter("routeType", "LEASTINTERCHANGE");
-        else if (optimize == Optimize.LEAST_WALKING)
+        else if (options.optimize == Optimize.LEAST_WALKING)
             url.addEncodedQueryParameter("routeType", "LEASTWALKING");
-        else if (optimize != null)
-            log.info("Cannot handle " + optimize + ", ignoring.");
+        else if (options.optimize != null)
+            log.info("Cannot handle " + options.optimize + ", ignoring.");
 
-        url.addEncodedQueryParameter("changeSpeed", WALKSPEED_MAP.get(walkSpeed));
+        url.addEncodedQueryParameter("changeSpeed", WALKSPEED_MAP.get(options.walkSpeed));
 
-        if (accessibility == Accessibility.BARRIER_FREE)
+        if (options.accessibility == Accessibility.BARRIER_FREE)
             url.addEncodedQueryParameter("imparedOptionsActive", "1").addEncodedQueryParameter("wheelchair", "on")
                     .addEncodedQueryParameter("noSolidStairs", "on");
-        else if (accessibility == Accessibility.LIMITED)
+        else if (options.accessibility == Accessibility.LIMITED)
             url.addEncodedQueryParameter("imparedOptionsActive", "1").addEncodedQueryParameter("wheelchair", "on")
                     .addEncodedQueryParameter("lowPlatformVhcl", "on").addEncodedQueryParameter("noSolidStairs", "on");
 
-        if (products != null) {
+        if (options.products != null) {
             url.addEncodedQueryParameter("includedMeans", "checkbox");
 
             boolean hasI = false;
-            for (final Product p : products) {
+            for (final Product p : options.products) {
                 if (p == Product.HIGH_SPEED_TRAIN || p == Product.REGIONAL_TRAIN) {
                     url.addEncodedQueryParameter("inclMOT_0", "on");
                     if (p == Product.HIGH_SPEED_TRAIN)
@@ -2056,7 +2057,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         url.addEncodedQueryParameter("trITMOTvalue100", "10"); // maximum time to walk to first or from last
                                                                // stop
 
-        if (options != null && options.contains(Option.BIKE))
+        if (options.options != null && options.options.contains(Option.BIKE))
             url.addEncodedQueryParameter("bikeTakeAlong", "1");
 
         url.addEncodedQueryParameter("locationServerActive", "1");
@@ -2080,12 +2081,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
     @Override
     public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to,
-            final Date date, final boolean dep, final @Nullable Set<Product> products,
-            final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
-            final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) throws IOException {
+            final Date date, final boolean dep, final @Nullable TripOptions options) throws IOException {
         final HttpUrl.Builder url = tripEndpoint.newBuilder();
-        appendXsltTripRequestParameters(url, from, via, to, date, dep, products, optimize, walkSpeed, accessibility,
-                options);
+        appendXsltTripRequestParameters(url, from, via, to, date, dep, options);
         final AtomicReference<QueryTripsResult> result = new AtomicReference<>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
@@ -2111,12 +2109,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     }
 
     protected QueryTripsResult queryTripsMobile(final Location from, final @Nullable Location via, final Location to,
-            final Date date, final boolean dep, final @Nullable Collection<Product> products,
-            final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
-            final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) throws IOException {
+            final Date date, final boolean dep, final @Nullable TripOptions options) throws IOException {
         final HttpUrl.Builder url = tripEndpoint.newBuilder();
-        appendXsltTripRequestParameters(url, from, via, to, date, dep, products, optimize, walkSpeed, accessibility,
-                options);
+        appendXsltTripRequestParameters(url, from, via, to, date, dep, options);
         final AtomicReference<QueryTripsResult> result = new AtomicReference<>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {

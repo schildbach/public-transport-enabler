@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,6 +72,7 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
 import de.schildbach.pte.dto.SuggestedLocation;
 import de.schildbach.pte.dto.Trip;
 import de.schildbach.pte.dto.Trip.Leg;
+import de.schildbach.pte.dto.TripOptions;
 
 import okhttp3.HttpUrl;
 
@@ -655,9 +656,7 @@ public class VrsProvider extends AbstractNetworkProvider {
     // options not supported.
     @Override
     public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to, Date date,
-            boolean dep, final @Nullable Set<Product> products, final @Nullable Optimize optimize,
-            final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility,
-            @Nullable Set<Option> options) throws IOException {
+            boolean dep, @Nullable TripOptions options) throws IOException {
         // The EXACT_POINTS feature generates an about 50% bigger API response, probably well compressible.
         final boolean EXACT_POINTS = true;
         final List<Location> ambiguousFrom = new ArrayList<>();
@@ -688,6 +687,9 @@ public class VrsProvider extends AbstractNetworkProvider {
                     QueryTripsResult.Status.UNKNOWN_TO);
         }
 
+        if (options == null)
+            options = new TripOptions();
+
         final HttpUrl.Builder url = API_BASE.newBuilder();
         url.addQueryParameter("eID", "tx_vrsinfo_ass2_router");
         url.addQueryParameter("f", fromString);
@@ -697,8 +699,8 @@ public class VrsProvider extends AbstractNetworkProvider {
         }
         url.addQueryParameter(dep ? "d" : "a", formatDate(date));
         url.addQueryParameter("s", "t");
-        if (products != null && !products.equals(Product.ALL))
-            url.addQueryParameter("p", generateProducts(products));
+        if (options.products != null && !options.products.equals(Product.ALL))
+            url.addQueryParameter("p", generateProducts(options.products));
         url.addQueryParameter("o", "v" + (EXACT_POINTS ? "p" : ""));
 
         final CharSequence page = httpClient.get(url.build());
@@ -895,7 +897,7 @@ public class VrsProvider extends AbstractNetworkProvider {
             context.from = from;
             context.to = to;
             context.via = via;
-            context.products = products;
+            context.products = options.products;
             if (trips.size() == 1) {
                 if (dep)
                     context.disableLater();
@@ -948,12 +950,11 @@ public class VrsProvider extends AbstractNetworkProvider {
     @Override
     public QueryTripsResult queryMoreTrips(QueryTripsContext context, boolean later) throws IOException {
         Context ctx = (Context) context;
+        TripOptions options = new TripOptions(ctx.products, null, null, null, null);
         if (later) {
-            return queryTrips(ctx.from, ctx.via, ctx.to, ctx.getLastDeparture(), true, ctx.products, null, null, null,
-                    null);
+            return queryTrips(ctx.from, ctx.via, ctx.to, ctx.getLastDeparture(), true, options);
         } else {
-            return queryTrips(ctx.from, ctx.via, ctx.to, ctx.getFirstArrival(), false, ctx.products, null, null, null,
-                    null);
+            return queryTrips(ctx.from, ctx.via, ctx.to, ctx.getFirstArrival(), false, options);
         }
     }
 

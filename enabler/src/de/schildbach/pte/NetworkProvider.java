@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@ import de.schildbach.pte.dto.QueryTripsContext;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.dto.SuggestLocationsResult;
+import de.schildbach.pte.dto.TripOptions;
 
 /**
  * Interface to be implemented by providers of transportation networks.
@@ -137,20 +138,17 @@ public interface NetworkProvider {
      *            desired date for departing, mandatory
      * @param dep
      *            date is departure date? {@code true} for departure, {@code false} for arrival
-     * @param products
-     *            products to take into account, or {@code null} for the provider default
-     * @param optimize
-     *            optimize trip for one aspect, e.g. duration
-     * @param walkSpeed
-     *            walking ability, or {@code null} for the provider default
-     * @param accessibility
-     *            route accessibility, or {@code null} for the provider default
      * @param options
-     *            additional options, or {@code null} for the provider default
+     *            additional trip options such as products, optimize, walkSpeed and accessibility, or
+     *            {@code null} for the provider default
      * @return result object that can contain alternatives to clear up ambiguousnesses, or contains possible
      *         trips
      * @throws IOException
      */
+    QueryTripsResult queryTrips(Location from, @Nullable Location via, Location to, Date date, boolean dep,
+            @Nullable TripOptions options) throws IOException;
+
+    @Deprecated
     QueryTripsResult queryTrips(Location from, @Nullable Location via, Location to, Date date, boolean dep,
             @Nullable Set<Product> products, @Nullable Optimize optimize, @Nullable WalkSpeed walkSpeed,
             @Nullable Accessibility accessibility, @Nullable Set<Option> options) throws IOException;

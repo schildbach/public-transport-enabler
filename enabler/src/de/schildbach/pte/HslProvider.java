@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,6 +58,7 @@ import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.dto.SuggestLocationsResult;
 import de.schildbach.pte.dto.SuggestedLocation;
 import de.schildbach.pte.dto.Trip;
+import de.schildbach.pte.dto.TripOptions;
 import de.schildbach.pte.exception.ParserException;
 import de.schildbach.pte.util.HttpClient;
 import de.schildbach.pte.util.XmlPullUtil;
@@ -435,8 +436,7 @@ public class HslProvider extends AbstractNetworkProvider {
     // NOTE: HSL ignores accessibility
     @Override
     public QueryTripsResult queryTrips(Location from, @Nullable Location via, Location to, Date date, boolean dep,
-            @Nullable Set<Product> products, @Nullable Optimize optimize, @Nullable WalkSpeed walkSpeed,
-            @Nullable Accessibility accessibility, @Nullable Set<Option> options) throws IOException {
+            @Nullable TripOptions options) throws IOException {
         final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
 
         if (!from.isIdentified()) {
@@ -475,22 +475,25 @@ public class HslProvider extends AbstractNetworkProvider {
 
         url.addQueryParameter("timetype", dep ? "departure" : "arrival");
 
-        if (walkSpeed != WalkSpeed.NORMAL)
-            url.addQueryParameter("walk_speed", Integer.toString(walkSpeed == WalkSpeed.SLOW ? 30 : 100));
+        if (options == null)
+            options = new TripOptions();
+
+        if (options.walkSpeed != WalkSpeed.NORMAL)
+            url.addQueryParameter("walk_speed", Integer.toString(options.walkSpeed == WalkSpeed.SLOW ? 30 : 100));
         url.addQueryParameter("show", "5");
 
-        if (products != null && products.size() > 0) {
+        if (options.products != null && options.products.size() > 0) {
             List<String> tt = new ArrayList<>();
-            if (products.contains(Product.HIGH_SPEED_TRAIN) || products.contains(Product.REGIONAL_TRAIN)
-                    || products.contains(Product.SUBURBAN_TRAIN))
+            if (options.products.contains(Product.HIGH_SPEED_TRAIN) || options.products.contains(Product.REGIONAL_TRAIN)
+                    || options.products.contains(Product.SUBURBAN_TRAIN))
                 tt.add("train");
-            if (products.contains(Product.SUBWAY))
+            if (options.products.contains(Product.SUBWAY))
                 tt.add("metro");
-            if (products.contains(Product.TRAM))
+            if (options.products.contains(Product.TRAM))
                 tt.add("tram");
-            if (products.contains(Product.BUS))
+            if (options.products.contains(Product.BUS))
                 tt.add("bus");
-            if (products.contains(Product.FERRY))
+            if (options.products.contains(Product.FERRY))
                 tt.add("ferry");
 
             if (tt.size() > 0)

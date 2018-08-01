@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@ import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsContext;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
+import de.schildbach.pte.dto.TripOptions;
 
 /**
  * @author Andreas Schildbach
@@ -123,7 +124,8 @@ public abstract class AbstractProviderLiveTest {
     protected final QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to,
             final Date date, final boolean dep, final @Nullable Set<Product> products,
             final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility) throws IOException {
-        return provider.queryTrips(from, via, to, date, dep, products, null, walkSpeed, accessibility, null);
+        return provider.queryTrips(from, via, to, date, dep,
+                new TripOptions(products, null, walkSpeed, accessibility, null));
     }
 
     protected final QueryTripsResult queryMoreTrips(final QueryTripsContext context, final boolean later)
