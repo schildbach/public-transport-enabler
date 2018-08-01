@@ -76,7 +76,7 @@ public enum NetworkId {
     DUB,
 
     // United States
-    RTACHICAGO, OREGON,
+    RTACHICAGO, OREGON, NEWYORK,
 
     // Canada
     ONTARIO, QUEBEC, BRITISHCOLUMBIA,
