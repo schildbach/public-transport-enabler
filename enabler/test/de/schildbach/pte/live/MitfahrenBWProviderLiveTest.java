@@ -147,7 +147,7 @@ public class MitfahrenBWProviderLiveTest extends AbstractProviderLiveTest {
     }
 
     @Test
-    public void shortTrip_onlyBike() throws Exception {
+    public void shortTrip_productAll_usesBus() throws Exception {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.STATION, "5006118", 48782984, 9179846, "Stuttgart",
                         "Stuttgart, Hauptbahnhof"),
@@ -156,6 +156,12 @@ public class MitfahrenBWProviderLiveTest extends AbstractProviderLiveTest {
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
+        List<Trip.Leg> legs = result.trips.get(0).legs;
+        for (Trip.Leg leg:legs) {
+            if (leg instanceof Trip.Public) {
+                assertEquals(Product.BUS, ((Trip.Public) leg).line.product);
+            }
+        }
     }
 
     @Test
