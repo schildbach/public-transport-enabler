@@ -2,8 +2,8 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 
 dependencies {
-    compile 'com.squareup.okhttp3:okhttp:3.10.0'
-    compile 'com.squareup.okhttp3:logging-interceptor:3.10.0'
+    compile 'com.squareup.okhttp3:okhttp:3.11.0'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.11.0'
     compile 'com.google.guava:guava:25.1-android'
     compile 'org.slf4j:slf4j-api:1.7.25'
     compile 'com.google.code.findbugs:jsr305:3.0.0'
