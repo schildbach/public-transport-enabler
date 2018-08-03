@@ -95,12 +95,16 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *     <li>realtime support is limited</li>
  *     <li>fares support is not implemented yet</li>
  *     <li>OTP and PTE modes do not match perfectly.</li>
- *     <li>PTE option BIKE is not supported. What is the intention requesting a route with <code>Option</code> BIKE?
- *     That transit legs should support taking bike along (what seems to be AbstractEfaProvider usage) or
- *     instead of walking use biking as mode for first/last mile, as AbstractNavitionProvider seems to do?
- *     And I guess for a line with bikes allowed attribute BICYCLE_CARRIAGE should be set, correct?
- *     We'd like to introduce bike/park & ride into the PTE API. What would you recommend how to do this?
- *     </li>
+ *     <ul>
+ *         <li>PTE option BIKE is interpreted as OTP'sindividual leg mode "BICYCLE"</li>
+ *      </ul>
+ *     <li>Still open TODOs
+ *     <ul>
+ *         <li>parse OTProutes bikeAllowed to bike_carriage</li>
+ *         <li>for nearbyStops requested by station without coords: request stop coords first</li>
+ *         <li>for equiv stops, all operations for an individual stop should work for clusters as well</li>
+ *         <li>Support querying earlier or later trip</li>
+ *     </ul></li>
  * </ul>
  * @author Holger Bruch
  * @author Kavitha Ravi
@@ -328,7 +332,7 @@ class AbstractOpenTripPlannerProvider extends AbstractNetworkProvider {
         String network = route.getString("agencyName");
         String mode = route.getString("mode");
         // TODO fix OTP to return routeType, as OTP mode RAIL does not discriminate
-        // highspeed, regional, suburban
+        // highspeed, regional, suburban (or perhaps better: switch to graphql query)
         int routeType = route.optInt("routeType");
         Product product = parseProduct(mode, routeType);
         String label = route.optString("shortName");
@@ -573,7 +577,7 @@ class AbstractOpenTripPlannerProvider extends AbstractNetworkProvider {
         // Note: we start with from, to, date, dep parameters. Others will be added stepby step
         final ResultHeader resultHeader = new ResultHeader(network, SERVER_PRODUCT, SERVER_VERSION, null, 0, null);
 		if(from != null && from.isIdentified() && to != null && to.isIdentified()) {
-    		Builder queryTripsURL = buildQueryTrips(from, to, date, dep, products, walkSpeed);
+    		Builder queryTripsURL = buildQueryTrips(from, via, to, date, dep, products, walkSpeed, accessibility, options);
     		final CharSequence page = httpClient.get(queryTripsURL.build());
     		try {
     			final JSONObject head = new JSONObject(page.toString());
@@ -716,12 +720,20 @@ class AbstractOpenTripPlannerProvider extends AbstractNetworkProvider {
         }
     }
 
-    public String convertProductsToOTPModes(Set<Product> products){
+    public String convertProductsToOTPModes(Set<Product> products, @Nullable Set<Option> options){
         defaultProductToOTPModeMapping();
 
         // PTE currently has no support for requesting different individual modes, so start by WALK
-        StringBuilder modes = new StringBuilder(OTPMode.WALK.toString());
-        if (products.equals(Product.ALL)) {
+        StringBuilder modes = new StringBuilder();
+        if (options != null && options.contains(Option.BIKE)) {
+            // Note: OTP currently has no explicit param for bikeAllowed
+            // However, it allows BICYCLE as individual mode.
+            // (which should imply bike allowed(?))
+            modes.append(OTPMode.BIKE.toString());
+        } else {
+            modes.append(OTPMode.WALK.toString());
+        }
+        if (Product.ALL.equals(products)) {
             modes.append(',');
             modes.append(OTPMode.TRANSIT);
         } else {
@@ -740,7 +752,7 @@ class AbstractOpenTripPlannerProvider extends AbstractNetworkProvider {
 		Type type = null;
 		if ("WALK".equalsIgnoreCase(mode)) {
 			type = Type.WALK;
-		} else if ("BIKE".equalsIgnoreCase(mode)) {
+		} else if ("BICYCLE".equalsIgnoreCase(mode)) {
 			type = Type.BIKE;
 		} else if ("CAR".equalsIgnoreCase(mode)) {
 			type = Type.CAR;
@@ -750,10 +762,13 @@ class AbstractOpenTripPlannerProvider extends AbstractNetworkProvider {
 		return type;
 	}
 
-	protected Builder buildQueryTrips(Location from, Location to, Date date, boolean dep, Set<Product> products, @Nullable WalkSpeed walkSpeed) {
+	protected Builder buildQueryTrips(Location from, @Nullable Location via, Location to, Date date, boolean dep, Set<Product> products, @Nullable WalkSpeed walkSpeed, @Nullable Accessibility accessibility, @Nullable Set<Option> options) {
 		final HttpUrl.Builder url = url().addPathSegment("plan");
 		url.addQueryParameter("fromPlace", printLocation(from));
-		url.addQueryParameter("toPlace", printLocation(to));
+		if (via!=null) {
+		    url.addQueryParameter("intermediatePlaces", printLocation(via));
+        }
+        url.addQueryParameter("toPlace", printLocation(to));
         url.addQueryParameter("date", new SimpleDateFormat("yyyyMMdd").format(date));
 		url.addQueryParameter("time", new SimpleDateFormat("HHmmss").format(date));
 		url.addQueryParameter("arriveBy", Boolean.toString(dep));
@@ -764,10 +779,13 @@ class AbstractOpenTripPlannerProvider extends AbstractNetworkProvider {
             double walkSpeedMeterPerSecond = walkSpeedInMeterPerSecond(walkSpeed);
             url.addQueryParameter("walkSpeed", Double.toString(walkSpeedMeterPerSecond));
         }
-        if (products != null) {
-            url.addQueryParameter("mode", convertProductsToOTPModes(products));
+        if (Accessibility.BARRIER_FREE.equals(accessibility)) {
+            url.addQueryParameter("wheelchair", "true");
         }
-        // TODO add via locations as intermediatePlaces=...
+        if (products != null) {
+            url.addQueryParameter("mode", convertProductsToOTPModes(products, options));
+        }
+
         return url;
 	}
 
