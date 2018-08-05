@@ -779,14 +779,20 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             place = locality != null ? locality : defaultPlace;
             name = objectName != null ? objectName : nameElem;
         } else if ("loc".equals(type)) {
-            if (coord != null) {
+            if (locality != null) {
+                locationType = LocationType.ADDRESS;
+                place = null;
+                name = locality;
+            } else if (nameElem != null) {
+                locationType = LocationType.ADDRESS;
+                place = null;
+                name = nameElem;
+            } else if (coord != null) {
                 locationType = LocationType.COORD;
                 place = null;
                 name = null;
             } else {
-                locationType = LocationType.ADDRESS;
-                place = null;
-                name = locality;
+                throw new IllegalArgumentException("not enough data for type/anyType: " + type);
             }
         } else if ("address".equals(type) || "singlehouse".equals(type)) {
             locationType = LocationType.ADDRESS;
