@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,35 +17,30 @@
 
 package de.schildbach.pte;
 
-import java.io.IOException;
-import java.util.EnumSet;
 import java.util.regex.Matcher;
 
-import com.google.common.base.Charsets;
-
-import de.schildbach.pte.dto.Location;
-import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Product;
-import de.schildbach.pte.util.StringReplaceReader;
 
 import okhttp3.HttpUrl;
 
 /**
  * @author Andreas Schildbach
  */
-public class NasaProvider extends AbstractHafasLegacyProvider {
+public class NasaProvider extends AbstractHafasMobileProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("https://reiseauskunft.insa.de/bin/");
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.REGIONAL_TRAIN, Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.TRAM, Product.BUS,
-            Product.ON_DEMAND };
+            Product.ON_DEMAND, Product.REGIONAL_TRAIN, Product.REGIONAL_TRAIN };
 
     public NasaProvider() {
-        super(NetworkId.NASA, API_BASE, "dn", PRODUCTS_MAP);
+        this("{\"aid\":\"nasa-apps\"}");
+    }
 
-        setRequestUrlEncoding(Charsets.UTF_8);
-        setJsonNearbyLocationsEncoding(Charsets.UTF_8);
-        setStationBoardHasLocation(true);
+    public NasaProvider(final String apiAuthorization) {
+        super(NetworkId.NASA, API_BASE, PRODUCTS_MAP);
+        setApiVersion("1.13");
+        setApiClient("{\"id\":\"NASA\"}");
+        setApiAuthorization(apiAuthorization);
     }
 
     @Override
@@ -73,70 +68,5 @@ public class NasaProvider extends AbstractHafasLegacyProvider {
             return new String[] { m.group(1), m.group(2) };
 
         return super.splitStationName(address);
-    }
-
-    @Override
-    public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location,
-            final int maxDistance, final int maxLocations) throws IOException {
-        if (location.hasLocation()) {
-            return nearbyLocationsByCoordinate(types, location.lat, location.lon, maxDistance, maxLocations);
-        } else if (location.type == LocationType.STATION && location.hasId()) {
-            final HttpUrl.Builder url = stationBoardEndpoint.newBuilder().addPathSegment(apiLanguage);
-            url.addQueryParameter("near", "Anzeigen");
-            url.addQueryParameter("distance", Integer.toString(maxDistance != 0 ? maxDistance / 1000 : 50));
-            url.addQueryParameter("input", normalizeStationId(location.id));
-            return htmlNearbyStations(url.build());
-        } else {
-            throw new IllegalArgumentException("cannot handle: " + location);
-        }
-    }
-
-    @Override
-    protected void addCustomReplaces(final StringReplaceReader reader) {
-        reader.replace("\"Florian Geyer\"", "Florian Geyer");
-    }
-
-    @Override
-    protected Product normalizeType(String type) {
-        final String ucType = type.toUpperCase();
-
-        if ("ECW".equals(ucType))
-            return Product.HIGH_SPEED_TRAIN;
-        if ("IXB".equals(ucType)) // ICE International
-            return Product.HIGH_SPEED_TRAIN;
-        if ("RRT".equals(ucType))
-            return Product.HIGH_SPEED_TRAIN;
-
-        if ("DPF".equals(ucType)) // mit Dampflok bespannter Zug
-            return Product.REGIONAL_TRAIN;
-        if ("DAM".equals(ucType)) // Harzer Schmalspurbahnen: mit Dampflok bespannter Zug
-            return Product.REGIONAL_TRAIN;
-        if ("TW".equals(ucType)) // Harzer Schmalspurbahnen: Triebwagen
-            return Product.REGIONAL_TRAIN;
-        if ("RR".equals(ucType)) // Polen
-            return Product.REGIONAL_TRAIN;
-        if ("BAHN".equals(ucType))
-            return Product.REGIONAL_TRAIN;
-        if ("ZUGBAHN".equals(ucType))
-            return Product.REGIONAL_TRAIN;
-        if ("DAMPFZUG".equals(ucType))
-            return Product.REGIONAL_TRAIN;
-
-        if ("DPS".equals(ucType))
-            return Product.SUBURBAN_TRAIN;
-
-        if ("STR 10".equals(ucType))
-            return Product.TRAM;
-
-        if ("BUS (LT)".equals(ucType))
-            return Product.BUS;
-        if ("RUF (ST)".equals(ucType)) // Rufbus
-            return Product.BUS;
-        if ("RUFBUS".equals(ucType)) // Rufbus
-            return Product.BUS;
-        if ("RBS".equals(ucType)) // Rufbus
-            return Product.BUS;
-
-        return super.normalizeType(type);
     }
 }
