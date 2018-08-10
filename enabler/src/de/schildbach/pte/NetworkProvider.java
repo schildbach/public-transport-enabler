@@ -160,8 +160,8 @@ public interface NetworkProvider {
      * 
      * @param context
      *            context to query more trips from
-     * @param next
-     *            {@code true} for get next trips, {@code false} for get previous trips
+     * @param later
+     *            {@code true} to get later trips, {@code false} to get earlier trips
      * @return result object that contains possible trips
      * @throws IOException
      */
