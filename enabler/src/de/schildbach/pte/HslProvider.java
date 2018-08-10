@@ -508,7 +508,7 @@ public class HslProvider extends AbstractNetworkProvider {
      * @param contextObj
      *            context to query more trips from
      * @param later
-     *            {@code true} for get next trips, {@code false} for get previous trips
+     *            {@code true} to get later trips, {@code false} to get earlier trips
      * @return result object that contains possible trips
      * @throws IOException
      */
