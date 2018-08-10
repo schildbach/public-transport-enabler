@@ -697,7 +697,7 @@ public class VrsProvider extends AbstractNetworkProvider {
         }
         url.addQueryParameter(dep ? "d" : "a", formatDate(date));
         url.addQueryParameter("s", "t");
-        if (!products.equals(Product.ALL))
+        if (products != null && !products.equals(Product.ALL))
             url.addQueryParameter("p", generateProducts(products));
         url.addQueryParameter("o", "v" + (EXACT_POINTS ? "p" : ""));
 
