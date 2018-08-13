@@ -66,6 +66,8 @@ public class VvoProvider extends AbstractEfaProvider {
                 return new Line(id, network, Product.REGIONAL_TRAIN, "U28");
             if ("SB 71".equals(symbol)) // Städtebahn Sachsen
                 return new Line(id, network, Product.REGIONAL_TRAIN, "SB71");
+            if ("RB 71".equals(symbol))
+                return new Line(id, network, Product.REGIONAL_TRAIN, "RB71");
 
             if ("Fernbus".equals(trainName) && trainNum == null)
                 return new Line(id, network, Product.BUS, trainName);
