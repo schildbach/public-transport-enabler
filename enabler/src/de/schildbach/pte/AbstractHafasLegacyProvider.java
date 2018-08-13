@@ -2679,6 +2679,8 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
             return Product.REGIONAL_TRAIN;
         if ("STB".equals(ucType)) // Süd-Thüringen-Bahn
             return Product.REGIONAL_TRAIN;
+        if ("STX".equals(ucType)) // Süd-Thüringen-Bahn
+            return Product.REGIONAL_TRAIN;
         if ("AG".equals(ucType)) // Ingolstadt-Landshut
             return Product.REGIONAL_TRAIN;
         if ("PRE".equals(ucType)) // Pressnitztalbahn
