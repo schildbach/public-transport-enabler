@@ -88,6 +88,11 @@ public abstract class AbstractNetworkProvider implements NetworkProvider {
         return this;
     }
 
+    public AbstractNetworkProvider setTrustAllCertificates(final boolean trustAllCertificates) {
+        httpClient.setTrustAllCertificates(trustAllCertificates);
+        return this;
+    }
+
     protected AbstractNetworkProvider setRequestUrlEncoding(final Charset requestUrlEncoding) {
         this.requestUrlEncoding = requestUrlEncoding;
         return this;
