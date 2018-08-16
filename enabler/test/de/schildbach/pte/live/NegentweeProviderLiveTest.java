@@ -100,6 +100,13 @@ public class NegentweeProviderLiveTest extends AbstractProviderLiveTest {
     }
 
     @Test
+    public void suggestLocationsAddress() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Isolatorweg 32");
+        print(result);
+        assertEquals(SuggestLocationsResult.Status.OK, result.status);
+    }
+
+    @Test
     public void suggestLocationsIncomplete() throws Exception {
         final SuggestLocationsResult result = suggestLocations("Amsterdam");
         print(result);

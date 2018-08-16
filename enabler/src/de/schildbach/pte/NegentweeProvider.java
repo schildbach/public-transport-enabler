@@ -518,6 +518,14 @@ public class NegentweeProvider extends AbstractNetworkProvider {
 
         String locationType = location.getString("type");
         String locationName = location.getString("name");
+
+        if (locationType.equals("address")) {
+            String houseNumber = location.optString("houseNr");
+            if (!houseNumber.isEmpty()) {
+                locationName = locationName + " " + houseNumber;
+            }
+        }
+
         if (addTypePrefix && !location.isNull(locationType + "Type") && !locationType.equals("poi")) {
             locationName = location.getString(locationType + "Type") + " " + locationName;
         }
