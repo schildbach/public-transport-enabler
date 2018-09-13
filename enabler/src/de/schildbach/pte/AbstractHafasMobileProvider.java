@@ -183,6 +183,9 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
             final String err = svcRes.getString("err");
             if (!"OK".equals(err)) {
                 final String errTxt = svcRes.getString("errTxt");
+                log.debug("Hafas error: {} {}", err, errTxt);
+                if ("FAIL".equals(err) && "HCI Service: request failed".equals(errTxt))
+                    return new NearbyLocationsResult(header, NearbyLocationsResult.Status.SERVICE_DOWN);
                 throw new RuntimeException(err + " " + errTxt);
             }
             final JSONObject res = svcRes.getJSONObject("res");
@@ -356,6 +359,9 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
             final String err = svcRes.getString("err");
             if (!"OK".equals(err)) {
                 final String errTxt = svcRes.getString("errTxt");
+                log.debug("Hafas error: {} {}", err, errTxt);
+                if ("FAIL".equals(err) && "HCI Service: request failed".equals(errTxt))
+                    return new SuggestLocationsResult(header, SuggestLocationsResult.Status.SERVICE_DOWN);
                 throw new RuntimeException(err + " " + errTxt);
             }
             final JSONObject res = svcRes.getJSONObject("res");
