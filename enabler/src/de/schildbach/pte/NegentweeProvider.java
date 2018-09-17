@@ -38,6 +38,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.google.common.collect.ImmutableSet;
+
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.Fare;
 import de.schildbach.pte.dto.Line;
@@ -207,17 +209,10 @@ public class NegentweeProvider extends AbstractNetworkProvider {
         List<QueryParameter> queryParameters = new ArrayList<>();
         queryParameters.add(new QueryParameter("q", locationName));
 
-        if (!types.contains(LocationType.ANY) && types.size() > 0) {
-            StringBuilder typeValue = new StringBuilder();
-            for (LocationType type : types) {
-                for (String addition : locationStringsFromLocationType(type)) {
-                    if (typeValue.length() > 0)
-                        typeValue.append(",");
-                    typeValue.append(addition);
-                }
-            }
-            queryParameters.add(new QueryParameter("type", typeValue.toString()));
-        }
+        // Add types if specified
+        String locationTypes = locationTypesToQueryParameterString(types);
+        if (locationTypes.length() > 0)
+            queryParameters.add(new QueryParameter("types", locationTypes));
 
         HttpUrl url = buildApiUrl("locations", queryParameters);
         final CharSequence page = httpClient.get(url);
@@ -322,6 +317,27 @@ public class NegentweeProvider extends AbstractNetworkProvider {
         }
 
         return null;
+    }
+
+    // Including these type names will cause the locations API to fail, skip them
+    private static final ImmutableSet<String> DISALLOWED_TYPE_NAMES = ImmutableSet.of("latlong", "streetrange");
+
+    private String locationTypesToQueryParameterString(EnumSet<LocationType> types) {
+        StringBuilder typeValue = new StringBuilder();
+        if (!types.contains(LocationType.ANY) && types.size() > 0) {
+            for (LocationType type : types) {
+                for (String addition : locationStringsFromLocationType(type)) {
+                    if (DISALLOWED_TYPE_NAMES.contains(addition))
+                        continue;
+
+                    if (typeValue.length() > 0)
+                        typeValue.append(",");
+                    typeValue.append(addition);
+                }
+            }
+        }
+
+        return typeValue.toString();
     }
 
     private Date dateFromJSONObject(JSONObject obj, String key) throws JSONException {
@@ -695,18 +711,11 @@ public class NegentweeProvider extends AbstractNetworkProvider {
         queryParameters.add(new QueryParameter("rows",
                 String.valueOf(Math.min((maxLocations <= 0) ? DEFAULT_MAX_LOCATIONS : maxLocations, 100))));
 
-        // Add type if specified
-        if (!types.contains(LocationType.ANY) && types.size() > 0) {
-            StringBuilder typeValue = new StringBuilder();
-            for (LocationType type : types) {
-                for (String addition : locationStringsFromLocationType(type)) {
-                    if (typeValue.length() > 0)
-                        typeValue.append(",");
-                    typeValue.append(addition);
-                }
-            }
-            queryParameters.add(new QueryParameter("type", typeValue.toString()));
-        }
+        // Add types if specified
+        String locationTypes = locationTypesToQueryParameterString(types);
+        if (locationTypes.length() > 0)
+            queryParameters.add(new QueryParameter("types", locationTypes));
+
         HttpUrl url = buildApiUrl("locations", queryParameters);
 
         CharSequence page;
