@@ -517,23 +517,25 @@ public class NegentweeProvider extends AbstractNetworkProvider {
         JSONObject place = location.optJSONObject("place");
 
         String locationType = location.getString("type");
-        String locationName = location.getString("name");
+        String locationName = location.optString("name", null);
 
-        if (locationType.equals("address")) {
-            String houseNumber = location.optString("houseNr");
-            if (!houseNumber.isEmpty()) {
-                locationName = locationName + " " + houseNumber;
+        if (locationName != null) {
+            if (addTypePrefix && !location.isNull(locationType + "Type") && !locationType.equals("poi")) {
+                locationName = location.getString(locationType + "Type") + " " + locationName;
             }
-        }
 
-        if (addTypePrefix && !location.isNull(locationType + "Type") && !locationType.equals("poi")) {
-            locationName = location.getString(locationType + "Type") + " " + locationName;
+            if (locationType.equals("address")) {
+                String houseNumber = location.optString("houseNr");
+                if (!houseNumber.isEmpty()) {
+                    locationName = locationName + " " + houseNumber;
+                }
+            }
         }
 
         Point locationPoint = Point.fromDouble(latlon.getDouble("lat"), latlon.getDouble("long"));
 
         return new Location(locationTypeFromTypeString(locationType), location.getString("id"), locationPoint.lat,
-                locationPoint.lon, !(place == null) ? place.getString("name") : null, locationName, null);
+                locationPoint.lon, !(place == null) ? place.optString("name", null) : null, locationName, null);
     }
 
     private List<Location> solveAmbiguousLocation(Location location) throws IOException {
