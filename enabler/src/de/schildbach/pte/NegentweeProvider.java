@@ -319,6 +319,16 @@ public class NegentweeProvider extends AbstractNetworkProvider {
         return null;
     }
 
+    private String locationToQueryParameterString(Location loc) {
+        if (loc.hasId()) {
+            return loc.id;
+        } else if (loc.hasLocation()) {
+            return loc.getLatAsDouble() + "," + loc.getLonAsDouble();
+        } else {
+            return null;
+        }
+    }
+
     // Including these type names will cause the locations API to fail, skip them
     private static final ImmutableSet<String> DISALLOWED_TYPE_NAMES = ImmutableSet.of("latlong", "streetrange");
 
@@ -837,24 +847,27 @@ public class NegentweeProvider extends AbstractNetworkProvider {
     public QueryTripsResult queryTrips(Location from, @Nullable Location via, Location to, Date date, boolean dep,
             @Nullable Set<Product> products, @Nullable Optimize optimize, @Nullable WalkSpeed walkSpeed,
             @Nullable Accessibility accessibility, @Nullable Set<Option> options) throws IOException {
-        if (!from.hasId())
+        if (!(from.hasId() || from.hasLocation()))
             return ambiguousQueryTrips(from, via, to);
 
-        if (!to.hasId())
+        if (!(to.hasId() || to.hasLocation()))
             return ambiguousQueryTrips(from, via, to);
 
         // Default query options
-        List<QueryParameter> queryParameters = new ArrayList<>(Arrays.asList(new QueryParameter("from", from.id),
-                new QueryParameter("to", to.id), new QueryParameter("searchType", dep ? "departure" : "arrival"),
-                new QueryParameter("dateTime", new SimpleDateFormat("yyyy-MM-dd'T'HHmm").format(date.getTime())),
-                new QueryParameter("sequence", "1"), new QueryParameter("realtime", "true"),
-                new QueryParameter("before", "1"), new QueryParameter("after", "5")));
+        List<QueryParameter> queryParameters = new ArrayList<>(
+                Arrays.asList(new QueryParameter("from", locationToQueryParameterString(from)),
+                        new QueryParameter("to", locationToQueryParameterString(to)),
+                        new QueryParameter("searchType", dep ? "departure" : "arrival"),
+                        new QueryParameter("dateTime",
+                                new SimpleDateFormat("yyyy-MM-dd'T'HHmm").format(date.getTime())),
+                        new QueryParameter("sequence", "1"), new QueryParameter("realtime", "true"),
+                        new QueryParameter("before", "1"), new QueryParameter("after", "5")));
 
         if (via != null) {
-            if (!via.hasId())
+            if (!(via.hasId() || via.hasLocation()))
                 return ambiguousQueryTrips(from, via, to);
 
-            queryParameters.add(new QueryParameter("via", via.id));
+            queryParameters.add(new QueryParameter("via", locationToQueryParameterString(via)));
         }
 
         if (walkSpeed != null && walkSpeed == WalkSpeed.SLOW) {

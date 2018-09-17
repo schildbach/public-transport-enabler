@@ -30,6 +30,7 @@ import de.schildbach.pte.NetworkProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
+import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -164,6 +165,16 @@ public class NegentweeProviderLiveTest extends AbstractProviderLiveTest {
                 new Location(LocationType.STATION, "breda/bushalte-cornelis-florisstraat", null,
                         "Cornelis Florisstraat"),
                 new Date(), true, null, NetworkProvider.WalkSpeed.FAST, NetworkProvider.Accessibility.NEUTRAL);
+        print(result);
+        assertEquals(QueryTripsResult.Status.OK, result.status);
+    }
+
+    @Test
+    public void coordinatesTrip() throws Exception {
+        final QueryTripsResult result = queryTrips(new Location(LocationType.COORD, null, new Point(51677273, 4437548)),
+                new Location(LocationType.COORD, null, new Point(52162772, 4583171)),
+                new Location(LocationType.COORD, null, new Point(53347140, 6720583)), new Date(), true, null,
+                NetworkProvider.WalkSpeed.FAST, NetworkProvider.Accessibility.NEUTRAL);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
     }
