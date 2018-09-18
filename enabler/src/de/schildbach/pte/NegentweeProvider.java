@@ -207,17 +207,10 @@ public class NegentweeProvider extends AbstractNetworkProvider {
         List<QueryParameter> queryParameters = new ArrayList<>();
         queryParameters.add(new QueryParameter("q", locationName));
 
-        if (!types.contains(LocationType.ANY) && types.size() > 0) {
-            StringBuilder typeValue = new StringBuilder();
-            for (LocationType type : types) {
-                for (String addition : locationStringsFromLocationType(type)) {
-                    if (typeValue.length() > 0)
-                        typeValue.append(",");
-                    typeValue.append(addition);
-                }
-            }
-            queryParameters.add(new QueryParameter("type", typeValue.toString()));
-        }
+        // Add types if specified
+        String locationTypes = locationTypesToQueryParameterString(types);
+        if (locationTypes.length() > 0)
+            queryParameters.add(new QueryParameter("types", locationTypes));
 
         HttpUrl url = buildApiUrl("locations", queryParameters);
         final CharSequence page = httpClient.get(url);
@@ -322,6 +315,37 @@ public class NegentweeProvider extends AbstractNetworkProvider {
         }
 
         return null;
+    }
+
+    private String locationToQueryParameterString(Location loc) {
+        if (loc.hasId()) {
+            return loc.id;
+        } else if (loc.hasLocation()) {
+            return loc.getLatAsDouble() + "," + loc.getLonAsDouble();
+        } else {
+            return null;
+        }
+    }
+
+    private String locationTypesToQueryParameterString(EnumSet<LocationType> types) {
+        // Including these type names will cause the locations API to fail, skip them
+        List<String> disallowedTypeNames = Arrays.asList("latlong", "streetrange");
+
+        StringBuilder typeValue = new StringBuilder();
+        if (!types.contains(LocationType.ANY) && types.size() > 0) {
+            for (LocationType type : types) {
+                for (String addition : locationStringsFromLocationType(type)) {
+                    if (disallowedTypeNames.contains(addition))
+                        continue;
+
+                    if (typeValue.length() > 0)
+                        typeValue.append(",");
+                    typeValue.append(addition);
+                }
+            }
+        }
+
+        return typeValue.toString();
     }
 
     private Date dateFromJSONObject(JSONObject obj, String key) throws JSONException {
@@ -517,23 +541,25 @@ public class NegentweeProvider extends AbstractNetworkProvider {
         JSONObject place = location.optJSONObject("place");
 
         String locationType = location.getString("type");
-        String locationName = location.getString("name");
+        String locationName = location.optString("name", null);
 
-        if (locationType.equals("address")) {
-            String houseNumber = location.optString("houseNr");
-            if (!houseNumber.isEmpty()) {
-                locationName = locationName + " " + houseNumber;
+        if (locationName != null) {
+            if (addTypePrefix && !location.isNull(locationType + "Type") && !locationType.equals("poi")) {
+                locationName = location.getString(locationType + "Type") + " " + locationName;
             }
-        }
 
-        if (addTypePrefix && !location.isNull(locationType + "Type") && !locationType.equals("poi")) {
-            locationName = location.getString(locationType + "Type") + " " + locationName;
+            if (locationType.equals("address")) {
+                String houseNumber = location.optString("houseNr");
+                if (!houseNumber.isEmpty()) {
+                    locationName = locationName + " " + houseNumber;
+                }
+            }
         }
 
         Point locationPoint = Point.fromDouble(latlon.getDouble("lat"), latlon.getDouble("long"));
 
         return new Location(locationTypeFromTypeString(locationType), location.getString("id"), locationPoint.lat,
-                locationPoint.lon, !(place == null) ? place.getString("name") : null, locationName, null);
+                locationPoint.lon, !(place == null) ? place.optString("name", null) : null, locationName, null);
     }
 
     private List<Location> solveAmbiguousLocation(Location location) throws IOException {
@@ -693,18 +719,11 @@ public class NegentweeProvider extends AbstractNetworkProvider {
         queryParameters.add(new QueryParameter("rows",
                 String.valueOf(Math.min((maxLocations <= 0) ? DEFAULT_MAX_LOCATIONS : maxLocations, 100))));
 
-        // Add type if specified
-        if (!types.contains(LocationType.ANY) && types.size() > 0) {
-            StringBuilder typeValue = new StringBuilder();
-            for (LocationType type : types) {
-                for (String addition : locationStringsFromLocationType(type)) {
-                    if (typeValue.length() > 0)
-                        typeValue.append(",");
-                    typeValue.append(addition);
-                }
-            }
-            queryParameters.add(new QueryParameter("type", typeValue.toString()));
-        }
+        // Add types if specified
+        String locationTypes = locationTypesToQueryParameterString(types);
+        if (locationTypes.length() > 0)
+            queryParameters.add(new QueryParameter("types", locationTypes));
+
         HttpUrl url = buildApiUrl("locations", queryParameters);
 
         CharSequence page;
@@ -826,24 +845,24 @@ public class NegentweeProvider extends AbstractNetworkProvider {
     public QueryTripsResult queryTrips(Location from, @Nullable Location via, Location to, Date date, boolean dep,
             @Nullable Set<Product> products, @Nullable Optimize optimize, @Nullable WalkSpeed walkSpeed,
             @Nullable Accessibility accessibility, @Nullable Set<Option> options) throws IOException {
-        if (!from.hasId())
+        if (!(from.hasId() || from.hasLocation()))
             return ambiguousQueryTrips(from, via, to);
 
-        if (!to.hasId())
+        if (!(to.hasId() || to.hasLocation()))
             return ambiguousQueryTrips(from, via, to);
 
         // Default query options
-        List<QueryParameter> queryParameters = new ArrayList<>(Arrays.asList(new QueryParameter("from", from.id),
-                new QueryParameter("to", to.id), new QueryParameter("searchType", dep ? "departure" : "arrival"),
+        List<QueryParameter> queryParameters = new ArrayList<>(Arrays.asList(new QueryParameter("from", locationToQueryParameterString(from)),
+                new QueryParameter("to", locationToQueryParameterString(to)), new QueryParameter("searchType", dep ? "departure" : "arrival"),
                 new QueryParameter("dateTime", new SimpleDateFormat("yyyy-MM-dd'T'HHmm").format(date.getTime())),
                 new QueryParameter("sequence", "1"), new QueryParameter("realtime", "true"),
                 new QueryParameter("before", "1"), new QueryParameter("after", "5")));
 
         if (via != null) {
-            if (!via.hasId())
+            if (!(via.hasId() || via.hasLocation()))
                 return ambiguousQueryTrips(from, via, to);
 
-            queryParameters.add(new QueryParameter("via", via.id));
+            queryParameters.add(new QueryParameter("via", locationToQueryParameterString(via)));
         }
 
         if (walkSpeed != null && walkSpeed == WalkSpeed.SLOW) {
