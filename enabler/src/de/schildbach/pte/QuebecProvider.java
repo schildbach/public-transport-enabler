@@ -23,7 +23,7 @@ import okhttp3.HttpUrl;
  * @author Stephane Berube
  */
 public class QuebecProvider extends AbstractNavitiaProvider {
-    private static String API_REGION = "ca-qc";
+    private static final String API_REGION = "ca-qc";
 
     public QuebecProvider(final HttpUrl apiBase, final String authorization) {
         super(NetworkId.QUEBEC, apiBase, authorization);

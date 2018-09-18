@@ -20,7 +20,7 @@ package de.schildbach.pte;
 import okhttp3.HttpUrl;
 
 public class GhanaProvider extends AbstractNavitiaProvider {
-    private static String API_REGION = "gh";
+    private static final String API_REGION = "gh";
 
     public GhanaProvider(final HttpUrl apiBase, final String authorization) {
         super(NetworkId.GHANA, apiBase, authorization);

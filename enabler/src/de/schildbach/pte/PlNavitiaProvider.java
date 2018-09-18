@@ -23,7 +23,7 @@ import okhttp3.HttpUrl;
  * @author Michel Le Bihan
  */
 public class PlNavitiaProvider extends AbstractNavitiaProvider {
-    private static String API_REGION = "pl";
+    private static final String API_REGION = "pl";
 
     public PlNavitiaProvider(final HttpUrl apiBase, final String authorization) {
         super(NetworkId.PLNAVITIA, apiBase, authorization);

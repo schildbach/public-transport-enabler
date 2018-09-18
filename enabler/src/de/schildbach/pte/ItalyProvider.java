@@ -25,7 +25,7 @@ import okhttp3.HttpUrl;
  * @author Antonio El Khoury
  */
 public class ItalyProvider extends AbstractNavitiaProvider {
-    private static String API_REGION = "it";
+    private static final String API_REGION = "it";
 
     public ItalyProvider(final HttpUrl apiBase, final String authorization) {
         super(NetworkId.IT, apiBase, authorization);

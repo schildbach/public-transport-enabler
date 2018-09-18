@@ -27,7 +27,7 @@ import okhttp3.HttpUrl;
  * @author Anthony Chaput
  */
 public class FranceSouthEastProvider extends AbstractNavitiaProvider {
-    private static String API_REGION = "fr-se";
+    private static final String API_REGION = "fr-se";
 
     public FranceSouthEastProvider(final HttpUrl apiBase, final String authorization) {
         super(NetworkId.FRANCESOUTHEAST, apiBase, authorization);

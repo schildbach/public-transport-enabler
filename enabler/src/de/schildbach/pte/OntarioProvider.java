@@ -23,7 +23,7 @@ import okhttp3.HttpUrl;
  * @author Stephane Berube
  */
 public class OntarioProvider extends AbstractNavitiaProvider {
-    private static String API_REGION = "ca-on";
+    private static final String API_REGION = "ca-on";
 
     public OntarioProvider(final HttpUrl apiBase, final String authorization) {
         super(NetworkId.ONTARIO, apiBase, authorization);

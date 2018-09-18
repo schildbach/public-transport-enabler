@@ -28,7 +28,7 @@ import okhttp3.HttpUrl;
  * @author Stéphane Guillou
  */
 public class FranceNorthEastProvider extends AbstractNavitiaProvider {
-    private static String API_REGION = "fr-ne";
+    private static final String API_REGION = "fr-ne";
     // dataset available at: https://navitia.opendatasoft.com/explore/dataset/fr-ne/
 
     public FranceNorthEastProvider(final HttpUrl apiBase, final String authorization) {
