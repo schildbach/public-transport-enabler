@@ -20,7 +20,7 @@ package de.schildbach.pte;
 import okhttp3.HttpUrl;
 
 public class OregonProvider extends AbstractNavitiaProvider {
-    private static String API_REGION = "us-or";
+    private static final String API_REGION = "us-or";
 
     public OregonProvider(final HttpUrl apiBase, final String authorization) {
         super(NetworkId.OREGON, apiBase, authorization);

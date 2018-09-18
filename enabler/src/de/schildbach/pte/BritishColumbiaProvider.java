@@ -23,7 +23,7 @@ import okhttp3.HttpUrl;
  * @author Stephane Berube
  */
 public class BritishColumbiaProvider extends AbstractNavitiaProvider {
-    private static String API_REGION = "ca-bc";
+    private static final String API_REGION = "ca-bc";
 
     public BritishColumbiaProvider(final HttpUrl apiBase, final String authorization) {
         super(NetworkId.BRITISHCOLUMBIA, apiBase, authorization);

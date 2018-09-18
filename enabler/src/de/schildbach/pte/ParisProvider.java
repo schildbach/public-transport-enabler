@@ -28,7 +28,7 @@ import okhttp3.HttpUrl;
  * @author Antonio El Khoury
  */
 public class ParisProvider extends AbstractNavitiaProvider {
-    private static String API_REGION = "fr-idf";
+    private static final String API_REGION = "fr-idf";
 
     public ParisProvider(final HttpUrl apiBase, final String authorization) {
         super(NetworkId.PARIS, apiBase, authorization);
