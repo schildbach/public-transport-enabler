@@ -25,7 +25,7 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class MvgProvider extends AbstractEfaProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("http://mobil.mvg-online.de/mvgMobil/");
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://westfalenfahrplan.de/std3/");
 
     public MvgProvider() {
         super(NetworkId.MVG, API_BASE);
