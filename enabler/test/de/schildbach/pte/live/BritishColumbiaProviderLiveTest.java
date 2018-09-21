@@ -54,4 +54,10 @@ public class BritishColumbiaProviderLiveTest extends AbstractNavitiaProviderLive
     public void suggestLocations() throws Exception {
         suggestLocations("Airport");
     }
+
+    @Test
+    public void queryTripStationsRapidTransit() throws Exception {
+        queryTrip("Simon Fraser University (Surrey)", "Simon Fraser University (Burnaby)");
+    }
+
 }
