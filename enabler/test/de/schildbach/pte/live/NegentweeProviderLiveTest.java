@@ -18,6 +18,7 @@
 package de.schildbach.pte.live;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
@@ -49,6 +50,13 @@ public class NegentweeProviderLiveTest extends AbstractProviderLiveTest {
                 new Location(LocationType.STATION, "station-amsterdam-centraal"));
         print(result);
         assertEquals(NearbyLocationsResult.Status.OK, result.status);
+
+        // Assert that queryNearbyStations only returns STATION locations
+        assertNotNull(result.locations);
+        assertTrue(result.locations.size() > 0);
+        for (Location location : result.locations) {
+            assertEquals(location.type, LocationType.STATION);
+        }
     }
 
     @Test

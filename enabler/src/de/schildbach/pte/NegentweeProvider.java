@@ -212,7 +212,7 @@ public class NegentweeProvider extends AbstractNetworkProvider {
         // Add types if specified
         String locationTypes = locationTypesToQueryParameterString(types);
         if (locationTypes.length() > 0)
-            queryParameters.add(new QueryParameter("types", locationTypes));
+            queryParameters.add(new QueryParameter("type", locationTypes));
 
         HttpUrl url = buildApiUrl("locations", queryParameters);
         final CharSequence page = httpClient.get(url);
@@ -724,7 +724,7 @@ public class NegentweeProvider extends AbstractNetworkProvider {
         // Add types if specified
         String locationTypes = locationTypesToQueryParameterString(types);
         if (locationTypes.length() > 0)
-            queryParameters.add(new QueryParameter("types", locationTypes));
+            queryParameters.add(new QueryParameter("type", locationTypes));
 
         HttpUrl url = buildApiUrl("locations", queryParameters);
 
