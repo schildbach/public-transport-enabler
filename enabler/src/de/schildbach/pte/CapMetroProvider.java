@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 the original author or authors.
+ * Copyright 2018 the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ public class CapMetroProvider extends AbstractHafasMobileProvider {
     };
 
     public CapMetroProvider() {
-        super(NetworkId.CAPMETRO, API_BASE, PRODUCTS_MAP);
+        super(NetworkId.CMTA, API_BASE, PRODUCTS_MAP);
         setApiVersion("1.13");
         setApiClient("{\"id\":\"CMTA\"}");
         // doesn't appear to need an auth token
