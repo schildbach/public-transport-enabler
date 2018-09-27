@@ -618,7 +618,7 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
 
     private String wrapJsonApiRequest(final String meth, final String req, final boolean formatted) {
         return "{" //
-                + "\"auth\":" + checkNotNull(apiAuthorization) + "," //
+                + (apiAuthorization != null ? "\"auth\":" + apiAuthorization + "," : "") //
                 + "\"client\":" + checkNotNull(apiClient) + "," //
                 + "\"ver\":\"" + checkNotNull(apiVersion) + "\",\"lang\":\"eng\"," //
                 + "\"svcReqL\":[{\"cfg\":{\"polyEnc\":\"GPA\"},\"meth\":\"" + meth + "\",\"req\":" + req + "}]," //
