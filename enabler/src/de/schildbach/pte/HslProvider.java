@@ -71,7 +71,7 @@ import okhttp3.ResponseBody;
 public class HslProvider extends AbstractNetworkProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("https://api.reittiopas.fi/hsl/");
     private static final String SERVER_PRODUCT = "hsl";
-    private static final String SERVER_VERSION = "1_2_0";
+    private static final String SERVER_VERSION = "1_2_0/";
     private static final int EARLIER_TRIPS_MINUTE_OFFSET = 5;
     private static final int EARLIER_TRIPS_MINIMUM = 3;
 
@@ -306,7 +306,7 @@ public class HslProvider extends AbstractNetworkProvider {
                         Date depDate = sdf.parse(date + time, new ParsePosition(0));
 
                         final Line line = lines.get(code);
-                        final Location destination = new Location(LocationType.ANY, line.message, null, null);
+                        final Location destination = new Location(LocationType.STATION, line.message, null, null);
                         final Departure departure = new Departure(depDate, null, line, null, destination, null, null);
                         departures.add(departure);
                     }
