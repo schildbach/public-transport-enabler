@@ -2146,6 +2146,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         final Context context = (Context) contextObj;
         final HttpUrl commandUrl = HttpUrl.parse(context.context);
         final HttpUrl.Builder url = commandUrl.newBuilder();
+        appendCommonRequestParams(url, "XML");
         url.addEncodedQueryParameter("command", later ? "tripNext" : "tripPrev");
         final AtomicReference<QueryTripsResult> result = new AtomicReference<>();
 
@@ -2172,6 +2173,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         final Context context = (Context) contextObj;
         final HttpUrl commandUrl = HttpUrl.parse(context.context);
         final HttpUrl.Builder url = commandUrl.newBuilder();
+        appendCommonRequestParams(url, "XML");
         url.addEncodedQueryParameter("command", later ? "tripNext" : "tripPrev");
         final AtomicReference<QueryTripsResult> result = new AtomicReference<>();
 
