@@ -2637,6 +2637,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         if (XmlPullUtil.test(pp, "itdPathCoordinates"))
             path = processItdPathCoordinates(pp);
 
+        XmlPullUtil.optSkip(pp, "itdITPathDescription");
+        XmlPullUtil.optSkip(pp, "itdInterchangePathCoordinates");
+
         boolean wheelChairAccess = false;
         if (XmlPullUtil.optEnter(pp, "genAttrList")) {
             while (XmlPullUtil.optEnter(pp, "genAttrElem")) {
