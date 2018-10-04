@@ -2905,7 +2905,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                 throw new IllegalStateException(pp.getPositionDescription());
             }
         } else {
-            return null;
+            path = null;
         }
 
         XmlPullUtil.skipExit(pp, "itdPathCoordinates");
