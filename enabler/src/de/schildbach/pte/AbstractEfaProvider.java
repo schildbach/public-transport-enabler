@@ -326,7 +326,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         else if ("crossing".equals(type))
             location = new Location(LocationType.ADDRESS, id, coord, place, object);
         else if ("street".equals(type) || "address".equals(type) || "singlehouse".equals(type)
-                || "buildingname".equals(type))
+                || "buildingname".equals(type) || "loc".equals(type))
             location = new Location(LocationType.ADDRESS, id, coord, place, name);
         else if ("postcode".equals(type))
             location = new Location(LocationType.ADDRESS, id, coord, place, postcode);
