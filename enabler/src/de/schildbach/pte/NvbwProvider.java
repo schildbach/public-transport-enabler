@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,19 +17,13 @@
 
 package de.schildbach.pte;
 
-import java.io.IOException;
-import java.util.Date;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
 import de.schildbach.pte.dto.Line;
-import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.Product;
-import de.schildbach.pte.dto.QueryTripsContext;
-import de.schildbach.pte.dto.QueryTripsResult;
 
 import okhttp3.HttpUrl;
 
@@ -38,20 +32,12 @@ import okhttp3.HttpUrl;
  */
 public class NvbwProvider extends AbstractEfaProvider {
     // no intermeditate stops
-    private final static HttpUrl API_BASE = HttpUrl.parse("https://www.efa-bw.de/nvbw/");
-    private final static HttpUrl API_BASE_MOBILE = HttpUrl.parse("https://www.efa-bw.de/android/");
+    private final static HttpUrl API_BASE = HttpUrl.parse("https://www.efa-bw.de/nvbw3L/");
     // http://efa2.naldo.de/naldo/
 
     public NvbwProvider() {
-        super(NetworkId.NVBW, API_BASE.newBuilder().addPathSegment(DEFAULT_DEPARTURE_MONITOR_ENDPOINT).build(),
-                API_BASE_MOBILE.newBuilder().addPathSegment(DEFAULT_TRIP_ENDPOINT).build(),
-                API_BASE.newBuilder().addPathSegment(DEFAULT_STOPFINDER_ENDPOINT).build(),
-                API_BASE.newBuilder().addPathSegment(DEFAULT_COORD_ENDPOINT).build());
-
+        super(NetworkId.NVBW, API_BASE);
         setIncludeRegionId(false);
-        setUseRouteIndexAsTripId(false);
-        setNumTripsRequested(12);
-        setSessionCookieName("EFABWLB");
     }
 
     private static final Pattern P_LINE_S_AVG_VBK = Pattern.compile("(S\\d+) \\((?:AVG|VBK)\\)");
@@ -94,18 +80,5 @@ public class NvbwProvider extends AbstractEfaProvider {
         }
 
         return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
-    }
-
-    @Override
-    public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to,
-            final Date date, final boolean dep, final @Nullable Set<Product> products,
-            final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
-            final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) throws IOException {
-        return queryTripsMobile(from, via, to, date, dep, products, optimize, walkSpeed, accessibility, options);
-    }
-
-    @Override
-    public QueryTripsResult queryMoreTrips(final QueryTripsContext contextObj, final boolean later) throws IOException {
-        return queryMoreTripsMobile(contextObj, later);
     }
 }
