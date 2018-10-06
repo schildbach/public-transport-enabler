@@ -693,10 +693,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
 
         // Build url depending of location type.
         final HttpUrl.Builder url = url();
-        if (location.type == LocationType.COORD || location.type == LocationType.ADDRESS
-                || location.type == LocationType.ANY) {
-            if (!location.hasLocation())
-                throw new IllegalArgumentException();
+        if (location.hasLocation()) {
             final double lon = location.lon / 1E6;
             final double lat = location.lat / 1E6;
             url.addPathSegment("coords").addPathSegment(lon + ";" + lat);
