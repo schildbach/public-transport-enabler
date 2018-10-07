@@ -149,17 +149,28 @@ public final class ParserUtils {
         throw new RuntimeException("cannot parse: '" + str + "'");
     }
 
-    private static final Pattern P_ISO_TIME = Pattern.compile("(\\d{2})-?(\\d{2})");
+    private static final Pattern P_ISO_TIME = Pattern.compile("(\\d{2})[-:]?(\\d{2})([-:]?(\\d{2}))?");
 
     public static final void parseIsoTime(final Calendar calendar, final CharSequence str) {
         final Matcher mIso = P_ISO_TIME.matcher(str);
         if (mIso.matches()) {
             calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(mIso.group(1)));
             calendar.set(Calendar.MINUTE, Integer.parseInt(mIso.group(2)));
+            calendar.set(Calendar.SECOND, mIso.group(4) != null ? Integer.parseInt(mIso.group(4)) : 0);
+            calendar.set(Calendar.MILLISECOND, 0);
             return;
         }
 
         throw new RuntimeException("cannot parse: '" + str + "'");
+    }
+
+    public static final void parseIsoDateTime(final Calendar calendar, final CharSequence str) {
+        final String[] timeParts = str.toString().split("T");
+        if (timeParts.length != 2)
+            throw new RuntimeException("cannot parse :'" + str + "'");
+
+        parseIsoDate(calendar, timeParts[0]);
+        parseIsoTime(calendar, timeParts[1]);
     }
 
     private static final Pattern P_GERMAN_DATE = Pattern.compile("(\\d{2})[\\./-](\\d{2})[\\./-](\\d{2,4})");

@@ -19,10 +19,10 @@ package de.schildbach.pte;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Currency;
 import java.util.Date;
 import java.util.EnumSet;
@@ -31,6 +31,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 
 import javax.annotation.Nullable;
 
@@ -75,10 +76,8 @@ public class NegentweeProvider extends AbstractNetworkProvider {
     private static final String SERVER_PRODUCT = "negentwee";
 
     private static final Language DEFAULT_API_LANG = Language.NL_NL;
+    private static final TimeZone API_TIMEZONE = TimeZone.getTimeZone("Europe/Amsterdam");
     private static final int DEFAULT_MAX_LOCATIONS = 50;
-
-    private static final SimpleDateFormat dateTimeParser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
-    private static final SimpleDateFormat timeParser = new SimpleDateFormat("HH:mm");
 
     private static final EnumSet<Product> trainProducts = EnumSet.of(Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN,
             Product.SUBURBAN_TRAIN);
@@ -350,18 +349,36 @@ public class NegentweeProvider extends AbstractNetworkProvider {
         return typeValue.toString();
     }
 
+    private String formatApiDateTime(Date date) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HHmm");
+        formatter.setTimeZone(API_TIMEZONE);
+        return formatter.format(date.getTime());
+    }
+
     private Date dateFromJSONObject(JSONObject obj, String key) throws JSONException {
         try {
-            return dateTimeParser.parse(obj.getString(key));
-        } catch (ParseException e) {
+            Calendar cal = Calendar.getInstance(API_TIMEZONE);
+            ParserUtils.parseIsoDateTime(cal, obj.getString(key));
+            return cal.getTime();
+        } catch (RuntimeException e) {
             return null;
         }
     }
 
     private Date timeFromJSONObject(JSONObject obj, String key) throws JSONException {
         try {
-            return timeParser.parse(obj.getString(key));
-        } catch (ParseException e) {
+            Calendar calParsed = Calendar.getInstance(API_TIMEZONE);
+            ParserUtils.parseIsoTime(calParsed, obj.getString(key));
+
+            // Assume this time is always between NOW-00:05 and NOW+23:55, allowing for a 5 minute delay.
+            Calendar calNow = Calendar.getInstance();
+            calNow.add(Calendar.MINUTE, -5);
+            if (calParsed.before(calNow)) {
+                calNow.add(Calendar.HOUR, 24);
+            }
+
+            return calParsed.getTime();
+        } catch (RuntimeException e) {
             return null;
         }
     }
@@ -858,8 +875,7 @@ public class NegentweeProvider extends AbstractNetworkProvider {
                 Arrays.asList(new QueryParameter("from", locationToQueryParameterString(from)),
                         new QueryParameter("to", locationToQueryParameterString(to)),
                         new QueryParameter("searchType", dep ? "departure" : "arrival"),
-                        new QueryParameter("dateTime",
-                                new SimpleDateFormat("yyyy-MM-dd'T'HHmm").format(date.getTime())),
+                        new QueryParameter("dateTime", formatApiDateTime(date)),
                         new QueryParameter("sequence", "1"), new QueryParameter("realtime", "true"),
                         new QueryParameter("before", "1"), new QueryParameter("after", "5")));
 
