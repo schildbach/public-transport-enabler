@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,14 +28,14 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class RtProvider extends AbstractHafasLegacyProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("http://railteam.hafas.de/bin/");
+    private static final HttpUrl API_BASE = HttpUrl.parse("http://railteam.hafas.eu/bin/");
+    // http://railteam.hafas.de/bin/
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.BUS, Product.FERRY,
             Product.SUBWAY, Product.TRAM, Product.ON_DEMAND };
 
     public RtProvider() {
         super(NetworkId.RT, API_BASE, "dn", PRODUCTS_MAP);
-
         setStationBoardHasStationTable(false);
     }
 
