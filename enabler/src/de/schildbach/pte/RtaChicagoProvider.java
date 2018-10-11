@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,12 +28,10 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class RtaChicagoProvider extends AbstractEfaProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("http://tripplanner.rtachicago.com/ccg3/");
-    // http://elb-jpinstances-1463028547.us-east-1.elb.amazonaws.com/ccg3/
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://tripplanner.rtachicago.com/ccg3/");
 
     public RtaChicagoProvider() {
         super(NetworkId.RTACHICAGO, API_BASE);
-
         setLanguage("en");
         setTimeZone("America/Chicago");
     }
