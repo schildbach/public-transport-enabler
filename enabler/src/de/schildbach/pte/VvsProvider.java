@@ -31,7 +31,7 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class VvsProvider extends AbstractEfaProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("http://www2.vvs.de/vvs/");
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://www2.vvs.de/vvs/");
 
     public VvsProvider() {
         this(API_BASE);
