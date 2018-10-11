@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,13 +30,11 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class TfiProvider extends AbstractEfaProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("http://www.journeyplanner.transportforireland.ie/nta/");
-
-    // http://www.journeyplanner.transportforireland.ie/ultraLite/
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://www.journeyplanner.transportforireland.ie/nta/");
+    // https://www.journeyplanner.transportforireland.ie/ultraLite/
 
     public TfiProvider() {
         super(NetworkId.TFI, API_BASE);
-
         setLanguage("en");
         setTimeZone("Europe/London");
     }
