@@ -621,8 +621,6 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
 
         switch (physicalMode) {
         case BUS:
-        case NA:
-            return Product.SUBWAY;
         case BUSRAPIDTRANSIT:
         case COACH:
         case SHUTTLE:
@@ -645,6 +643,8 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
         case TAXI:
             return Product.ON_DEMAND;
         case OTHER:
+            return null;
+        case NA:
             return null;
         default:
             throw new IllegalArgumentException("Unhandled physical mode: " + modeId);
