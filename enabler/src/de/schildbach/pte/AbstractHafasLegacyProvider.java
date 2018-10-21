@@ -2513,6 +2513,8 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
             return Product.HIGH_SPEED_TRAIN;
         if ("IRX".equals(ucType)) // IC
             return Product.HIGH_SPEED_TRAIN;
+        if ("EUR".equals(ucType)) // Eurostar
+            return Product.HIGH_SPEED_TRAIN;
         if ("ES".equals(ucType)) // Eurostar Italia
             return Product.HIGH_SPEED_TRAIN;
         if ("EST".equals(ucType)) // Eurostar Frankreich
