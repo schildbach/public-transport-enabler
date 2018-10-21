@@ -88,6 +88,8 @@ public class VrrProvider extends AbstractEfaProvider {
 
             if (trainType == null && "SEV7".equals(trainNum))
                 return new Line(id, network, Product.BUS, trainNum);
+            if (trainType == null && "3SEV".equals(trainNum))
+                return new Line(id, network, Product.BUS, trainNum);
         } else if ("11".equals(mot)) {
             // Wuppertaler Schwebebahn & SkyTrain D'dorf
             if ("Schwebebahn".equals(trainName) || (longName != null && longName.startsWith("Schwebebahn")))
