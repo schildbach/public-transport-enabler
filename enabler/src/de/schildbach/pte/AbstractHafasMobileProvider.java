@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2017 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,6 +73,8 @@ import de.schildbach.pte.util.ParserUtils;
 import okhttp3.HttpUrl;
 
 /**
+ * This is an implementation of the HCI (HAFAS Client Interface).
+ * 
  * @author Andreas Schildbach
  */
 public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider {
