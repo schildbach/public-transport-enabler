@@ -147,14 +147,14 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
             final Date date, final boolean dep, final @Nullable Set<Product> products,
             final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
             final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) throws IOException {
-        return jsonTripSearch(from, via, to, date, dep, products, null);
+        return jsonTripSearch(from, via, to, date, dep, products, walkSpeed, null);
     }
 
     @Override
     public QueryTripsResult queryMoreTrips(final QueryTripsContext context, final boolean later) throws IOException {
         final JsonContext jsonContext = (JsonContext) context;
         return jsonTripSearch(jsonContext.from, jsonContext.via, jsonContext.to, jsonContext.date, jsonContext.dep,
-                jsonContext.products, later ? jsonContext.laterContext : jsonContext.earlierContext);
+                jsonContext.products, jsonContext.walkSpeed, later ? jsonContext.laterContext : jsonContext.earlierContext);
     }
 
     protected final NearbyLocationsResult jsonLocGeoPos(final EnumSet<LocationType> types, final int lat, final int lon)
@@ -400,7 +400,8 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
     }
 
     protected final QueryTripsResult jsonTripSearch(Location from, @Nullable Location via, Location to, final Date time,
-            final boolean dep, final @Nullable Set<Product> products, final String moreContext) throws IOException {
+            final boolean dep, final @Nullable Set<Product> products, final WalkSpeed walkSpeed,
+            final String moreContext) throws IOException {
         if (!from.hasId()) {
             from = jsonTripSearchIdentify(from);
             if (from == null)
@@ -428,6 +429,7 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
         final CharSequence outTime = jsonTime(c);
         final CharSequence outFrwd = Boolean.toString(dep);
         final CharSequence jnyFltr = productsString(products);
+        final String meta = "foot_speed_" + walkSpeed.name().toLowerCase();
         final CharSequence jsonContext = moreContext != null ? "\"ctxScr\":" + JSONObject.quote(moreContext) + "," : "";
         final String request = wrapJsonApiRequest("TripSearch", "{" //
                 + jsonContext //
@@ -438,7 +440,8 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
                 + "\"outTime\":\"" + outTime + "\"," //
                 + "\"outFrwd\":" + outFrwd + "," //
                 + "\"jnyFltrL\":[{\"value\":\"" + jnyFltr + "\",\"mode\":\"BIT\",\"type\":\"PROD\"}]," //
-                + "\"gisFltrL\":[{\"mode\":\"FB\",\"profile\":{\"type\":\"F\",\"linDistRouting\":false,\"maxdist\":2000},\"type\":\"P\"}]," //
+                + "\"gisFltrL\":[{\"mode\":\"FB\",\"profile\":{\"type\":\"F\",\"linDistRouting\":false,\"maxdist\":2000},\"type\":\"M\",\"meta\":\""
+                + meta + "\"}]," //
                 + "\"getPolyline\":false,\"getPasslist\":true,\"getIST\":false,\"getEco\":false,\"extChgTime\":-1}", //
                 false);
 
@@ -597,8 +600,8 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
                 trips.add(trip);
             }
 
-            final JsonContext context = new JsonContext(from, via, to, time, dep, products, res.optString("outCtxScrF"),
-                    res.optString("outCtxScrB"));
+            final JsonContext context = new JsonContext(from, via, to, time, dep, products, walkSpeed,
+                    res.optString("outCtxScrF"), res.optString("outCtxScrB"));
             return new QueryTripsResult(header, null, from, null, to, context, trips);
         } catch (final JSONException x) {
             throw new ParserException("cannot parse json: '" + page + "' on " + url, x);
@@ -815,10 +818,11 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
         public final Date date;
         public final boolean dep;
         public final Set<Product> products;
+        public final WalkSpeed walkSpeed;
         public final String laterContext, earlierContext;
 
         public JsonContext(final Location from, final @Nullable Location via, final Location to, final Date date,
-                final boolean dep, final Set<Product> products, final String laterContext,
+                final boolean dep, final Set<Product> products, final WalkSpeed walkSpeed, final String laterContext,
                 final String earlierContext) {
             this.from = from;
             this.via = via;
@@ -826,6 +830,7 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
             this.date = date;
             this.dep = dep;
             this.products = products;
+            this.walkSpeed = walkSpeed;
             this.laterContext = laterContext;
             this.earlierContext = earlierContext;
         }
