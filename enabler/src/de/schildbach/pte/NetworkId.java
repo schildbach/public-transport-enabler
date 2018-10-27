@@ -67,7 +67,7 @@ public enum NetworkId {
     TFI, EIREANN,
 
     // Poland
-    PLNAVITIA,
+    PL, PLNAVITIA,
 
     // Italy
     IT,
