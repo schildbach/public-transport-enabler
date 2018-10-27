@@ -35,7 +35,7 @@ import okhttp3.HttpUrl;
 /**
  * @author Andreas Schildbach
  */
-public class VbnProvider extends AbstractHafasMobileProvider {
+public class VbnProvider extends AbstractHafasClientInterfaceProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("https://fahrplaner.vbn.de/hafas/");
     // http://fahrplaner.vsninfo.de/hafas/
     // http://fahrplan.rsag-online.de/hafas/

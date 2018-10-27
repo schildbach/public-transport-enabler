@@ -31,7 +31,7 @@ import okhttp3.HttpUrl;
 /**
  * @author Andreas Schildbach
  */
-public class SvvProvider extends AbstractHafasMobileProvider {
+public class SvvProvider extends AbstractHafasClientInterfaceProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("https://fahrplan.salzburg-verkehr.at/bin/");
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.SUBURBAN_TRAIN, Product.SUBWAY,
             null, Product.TRAM, Product.REGIONAL_TRAIN, Product.BUS, Product.BUS, Product.TRAM, Product.FERRY,

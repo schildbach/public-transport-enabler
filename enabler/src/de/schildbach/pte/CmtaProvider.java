@@ -24,7 +24,7 @@ import okhttp3.HttpUrl;
 /**
  * @author Colin Murphy
  */
-public class CmtaProvider extends AbstractHafasMobileProvider {
+public class CmtaProvider extends AbstractHafasClientInterfaceProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("https://capmetro.hafas.cloud/bin/");
     // MetroRail: 8, MetroBus: 32, MetroRapid: 4096
     private static final Product[] PRODUCTS_MAP = { null, null, null, Product.REGIONAL_TRAIN, null, Product.BUS, null,

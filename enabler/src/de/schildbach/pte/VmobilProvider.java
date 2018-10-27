@@ -28,7 +28,7 @@ import okhttp3.HttpUrl;
 /**
  * @author Andreas Schildbach
  */
-public class VmobilProvider extends AbstractHafasMobileProvider {
+public class VmobilProvider extends AbstractHafasClientInterfaceProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("https://fahrplan.vmobil.at/bin/");
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.SUBURBAN_TRAIN, Product.SUBWAY,
             null, Product.TRAM, Product.REGIONAL_TRAIN, Product.BUS, Product.BUS, Product.TRAM, Product.FERRY,

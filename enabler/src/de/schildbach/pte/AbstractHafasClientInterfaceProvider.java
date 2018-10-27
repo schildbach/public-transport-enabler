@@ -77,7 +77,7 @@ import okhttp3.HttpUrl;
  * 
  * @author Andreas Schildbach
  */
-public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider {
+public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafasProvider {
     public HttpUrl mgateEndpoint;
     @Nullable
     public String apiVersion;
@@ -93,33 +93,34 @@ public abstract class AbstractHafasMobileProvider extends AbstractHafasProvider 
     private static final HashFunction MD5 = Hashing.md5();
     private static final BaseEncoding HEX = BaseEncoding.base16().lowerCase();
 
-    public AbstractHafasMobileProvider(final NetworkId network, final HttpUrl apiBase, final Product[] productsMap) {
+    public AbstractHafasClientInterfaceProvider(final NetworkId network, final HttpUrl apiBase,
+            final Product[] productsMap) {
         super(network, productsMap);
         this.mgateEndpoint = apiBase.newBuilder().addPathSegment("mgate.exe").build();
     }
 
-    protected AbstractHafasMobileProvider setApiVersion(final String apiVersion) {
+    protected AbstractHafasClientInterfaceProvider setApiVersion(final String apiVersion) {
         checkArgument(apiVersion.compareToIgnoreCase("1.11") >= 0, "apiVersion must be 1.11 or higher");
         this.apiVersion = apiVersion;
         return this;
     }
 
-    protected AbstractHafasMobileProvider setApiAuthorization(final String apiAuthorization) {
+    protected AbstractHafasClientInterfaceProvider setApiAuthorization(final String apiAuthorization) {
         this.apiAuthorization = apiAuthorization;
         return this;
     }
 
-    protected AbstractHafasMobileProvider setApiClient(final String apiClient) {
+    protected AbstractHafasClientInterfaceProvider setApiClient(final String apiClient) {
         this.apiClient = apiClient;
         return this;
     }
 
-    protected AbstractHafasMobileProvider setRequestChecksumSalt(final String requestChecksumSalt) {
+    protected AbstractHafasClientInterfaceProvider setRequestChecksumSalt(final String requestChecksumSalt) {
         this.requestChecksumSalt = requestChecksumSalt;
         return this;
     }
 
-    protected AbstractHafasMobileProvider setRequestMicMacSalt(final String requestMicMacSalt) {
+    protected AbstractHafasClientInterfaceProvider setRequestMicMacSalt(final String requestMicMacSalt) {
         this.requestMicMacSalt = requestMicMacSalt;
         return this;
     }
