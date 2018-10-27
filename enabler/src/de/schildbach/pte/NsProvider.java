@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,14 +17,10 @@
 
 package de.schildbach.pte;
 
-import java.io.IOException;
-import java.util.EnumSet;
 import java.util.Set;
-import java.util.regex.Pattern;
 
-import de.schildbach.pte.dto.Location;
-import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyLocationsResult;
+import com.google.common.base.Charsets;
+
 import de.schildbach.pte.dto.Product;
 
 import okhttp3.HttpUrl;
@@ -37,29 +33,11 @@ public class NsProvider extends AbstractHafasLegacyProvider {
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.BUS, Product.FERRY,
             Product.SUBWAY, Product.TRAM, Product.ON_DEMAND };
-    private static final Pattern HTML_NEARBY_STATIONS_PATTERN = Pattern
-            .compile("<tr bgcolor=\"#(E7EEF9|99BAE4)\">(.*?)</tr>", Pattern.DOTALL);
 
     public NsProvider() {
         super(NetworkId.NS, API_BASE, "nn", PRODUCTS_MAP);
-
-        setHtmlNearbyStationsPattern(HTML_NEARBY_STATIONS_PATTERN);
+        setJsonNearbyLocationsEncoding(Charsets.UTF_8);
         setStationBoardHasLocation(true);
-    }
-
-    @Override
-    public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location,
-            final int maxDistance, final int maxLocations) throws IOException {
-        if (location.type == LocationType.STATION && location.hasId()) {
-            final HttpUrl.Builder url = stationBoardEndpoint.newBuilder().addPathSegment(apiLanguage);
-            url.addQueryParameter("near", "Anzeigen");
-            url.addQueryParameter("distance", Integer.toString(maxDistance != 0 ? maxDistance / 1000 : 50));
-            url.addQueryParameter("input", normalizeStationId(location.id));
-            url.addQueryParameter("L", "profi");
-            return htmlNearbyStations(url.build());
-        } else {
-            throw new IllegalArgumentException("cannot handle: " + location);
-        }
     }
 
     @Override

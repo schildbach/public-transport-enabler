@@ -2388,68 +2388,6 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
         }
     }
 
-    protected AbstractHafasProvider setHtmlNearbyStationsPattern(final Pattern htmlNearbyStationsPattern) {
-        this.htmlNearbyStationsPattern = htmlNearbyStationsPattern;
-        return this;
-    }
-
-    private Pattern htmlNearbyStationsPattern = Pattern.compile("<tr class=\"(zebra[^\"]*)\">(.*?)</tr>",
-            Pattern.DOTALL);
-
-    private static final Pattern P_HTML_NEARBY_FINE_COORDS = Pattern
-            .compile("REQMapRoute0\\.Location0\\.X=(-?\\d+)&(?:amp;)?REQMapRoute0\\.Location0\\.Y=(-?\\d+)&");
-    private static final Pattern P_HTML_NEARBY_STATIONS_FINE_LOCATION = Pattern
-            .compile("[\\?&;]input=(\\d+)&[^\"]*\">([^<]*)<");
-    private static final Pattern P_HTML_NEARBY_STATIONS_MESSAGES = Pattern
-            .compile("(Ihre Eingabe kann nicht interpretiert werden)");
-
-    protected final NearbyLocationsResult htmlNearbyStations(final HttpUrl url) throws IOException {
-        final List<Location> stations = new ArrayList<>();
-
-        final CharSequence page = httpClient.get(url);
-        String oldZebra = null;
-
-        final Matcher mCoarse = htmlNearbyStationsPattern.matcher(page);
-
-        final Matcher mMessage = P_HTML_NEARBY_STATIONS_MESSAGES.matcher(page);
-        if (mMessage.find()) {
-            if (mMessage.group(1) != null)
-                return new NearbyLocationsResult(null, NearbyLocationsResult.Status.INVALID_ID);
-        }
-
-        while (mCoarse.find()) {
-            final String zebra = mCoarse.group(1);
-            if (oldZebra != null && zebra.equals(oldZebra))
-                throw new IllegalArgumentException("missed row? last:" + zebra);
-            else
-                oldZebra = zebra;
-
-            final Matcher mFineLocation = P_HTML_NEARBY_STATIONS_FINE_LOCATION.matcher(mCoarse.group(2));
-
-            if (mFineLocation.find()) {
-                int parsedLon = 0;
-                int parsedLat = 0;
-                final String parsedId = mFineLocation.group(1);
-                final String parsedName = ParserUtils.resolveEntities(mFineLocation.group(2));
-
-                final Matcher mFineCoords = P_HTML_NEARBY_FINE_COORDS.matcher(mCoarse.group(2));
-
-                if (mFineCoords.find()) {
-                    parsedLon = Integer.parseInt(mFineCoords.group(1));
-                    parsedLat = Integer.parseInt(mFineCoords.group(2));
-                }
-
-                final String[] placeAndName = splitStationName(parsedName);
-                stations.add(new Location(LocationType.STATION, parsedId, parsedLat, parsedLon, placeAndName[0],
-                        placeAndName[1]));
-            } else {
-                throw new IllegalArgumentException("cannot parse '" + mCoarse.group(2) + "' on " + url);
-            }
-        }
-
-        return new NearbyLocationsResult(null, stations);
-    }
-
     private static final Pattern P_LINE_SBAHN = Pattern.compile("SN?\\d*");
     private static final Pattern P_LINE_TRAM = Pattern.compile("STR\\w{0,5}");
     private static final Pattern P_LINE_BUS = Pattern.compile("BUS\\w{0,5}");

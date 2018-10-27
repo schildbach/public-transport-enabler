@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,14 +17,9 @@
 
 package de.schildbach.pte;
 
-import java.io.IOException;
-import java.util.EnumSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 
-import de.schildbach.pte.dto.Location;
-import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Product;
 
 import okhttp3.HttpUrl;
@@ -41,24 +36,7 @@ public class OebbProvider extends AbstractHafasLegacyProvider {
 
     public OebbProvider() {
         super(NetworkId.OEBB, API_BASE, "dn", PRODUCTS_MAP);
-
         setDominantPlanStopTime(true);
-    }
-
-    @Override
-    public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location,
-            final int maxDistance, final int maxLocations) throws IOException {
-        if (location.hasLocation()) {
-            return nearbyLocationsByCoordinate(types, location.lat, location.lon, maxDistance, maxLocations);
-        } else if (location.type == LocationType.STATION && location.hasId()) {
-            final HttpUrl.Builder url = stationBoardEndpoint.newBuilder().addPathSegment(apiLanguage);
-            url.addQueryParameter("near", "Suchen");
-            url.addQueryParameter("distance", Integer.toString(maxDistance != 0 ? maxDistance / 1000 : 50));
-            url.addQueryParameter("input", normalizeStationId(location.id));
-            return htmlNearbyStations(url.build());
-        } else {
-            throw new IllegalArgumentException("cannot handle: " + location);
-        }
     }
 
     @Override

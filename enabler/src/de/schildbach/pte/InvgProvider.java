@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.EnumSet;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
@@ -42,7 +41,6 @@ import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Position;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
@@ -67,7 +65,6 @@ public class InvgProvider extends AbstractHafasLegacyProvider {
 
     public InvgProvider() {
         super(NetworkId.INVG, API_BASE, "dn", PRODUCTS_MAP);
-
         setRequestUrlEncoding(Charsets.UTF_8);
         setStationBoardCanDoEquivs(false);
         setJsonNearbyLocationsEncoding(Charsets.UTF_8);
@@ -114,20 +111,6 @@ public class InvgProvider extends AbstractHafasLegacyProvider {
             return new String[] { m.group(1), m.group(2) };
 
         return super.splitStationName(address);
-    }
-
-    @Override
-    public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location,
-            final int maxDistance, final int maxStations) throws IOException {
-        if (location.type == LocationType.STATION && location.hasId()) {
-            final HttpUrl.Builder url = stationBoardEndpoint.newBuilder().addPathSegment(apiLanguage);
-            url.addQueryParameter("near", "Anzeigen");
-            url.addQueryParameter("distance", Integer.toString(maxDistance != 0 ? maxDistance / 1000 : 50));
-            url.addQueryParameter("input", normalizeStationId(location.id));
-            return htmlNearbyStations(url.build());
-        } else {
-            throw new IllegalArgumentException("cannot handle: " + location);
-        }
     }
 
     private static final Pattern P_DEPARTURES_HEAD_COARSE = Pattern.compile(".*?" //
