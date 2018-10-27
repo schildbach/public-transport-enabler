@@ -41,6 +41,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
     protected static final String SERVER_PRODUCT = "hafas";
     protected static final int DEFAULT_MAX_DEPARTURES = 100;
     protected static final int DEFAULT_MAX_LOCATIONS = 50;
+    protected static final int DEFAULT_MAX_DISTANCE = 20000;
 
     protected static final Logger log = LoggerFactory.getLogger(AbstractHafasProvider.class);
 

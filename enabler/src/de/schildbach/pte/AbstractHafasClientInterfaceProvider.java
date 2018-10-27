@@ -129,7 +129,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
     public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location,
             final int maxDistance, final int maxLocations) throws IOException {
         if (location.hasLocation())
-            return jsonLocGeoPos(types, location.lat, location.lon);
+            return jsonLocGeoPos(types, location.lat, location.lon, maxDistance);
         else
             throw new IllegalArgumentException("cannot handle: " + location);
     }
@@ -160,13 +160,14 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                 jsonContext.products, jsonContext.walkSpeed, later ? jsonContext.laterContext : jsonContext.earlierContext);
     }
 
-    protected final NearbyLocationsResult jsonLocGeoPos(final EnumSet<LocationType> types, final int lat, final int lon)
-            throws IOException {
+    protected final NearbyLocationsResult jsonLocGeoPos(final EnumSet<LocationType> types, final int lat, final int lon,
+            int maxDistance) throws IOException {
+        if (maxDistance == 0)
+            maxDistance = DEFAULT_MAX_DISTANCE;
         final boolean getPOIs = types.contains(LocationType.POI);
-        final String request = wrapJsonApiRequest("LocGeoPos",
-                "{\"ring\":" //
-                        + "{\"cCrd\":{\"x\":" + lon + ",\"y\":" + lat + "}}," //
-                        + "\"getPOIs\":" + getPOIs + "}", //
+        final String request = wrapJsonApiRequest("LocGeoPos", "{\"ring\":" //
+                + "{\"cCrd\":{\"x\":" + lon + ",\"y\":" + lat + "},\"maxDist\":" + maxDistance + "}," //
+                + "\"getPOIs\":" + getPOIs + "}", //
                 false);
 
         final HttpUrl url = requestUrl(request);
@@ -401,7 +402,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
         }
         if (location.hasLocation()) {
             final List<Location> locations = jsonLocGeoPos(EnumSet.allOf(LocationType.class), location.lat,
-                    location.lon).locations;
+                    location.lon, 0).locations;
             if (!locations.isEmpty())
                 return locations.get(0);
         }
