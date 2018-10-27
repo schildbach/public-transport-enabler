@@ -46,7 +46,7 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void nearbyStations() throws Exception {
-        final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "9220302"));
+        final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "900220302"));
         assertEquals(NearbyLocationsResult.Status.OK, result.status);
         print(result);
     }
@@ -65,28 +65,13 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void queryDepartures() throws Exception {
-        final QueryDeparturesResult result1 = queryDepartures("9016254", false);
+        final QueryDeparturesResult result1 = queryDepartures("900016254", false);
         assertEquals(QueryDeparturesResult.Status.OK, result1.status);
         print(result1);
 
-        final QueryDeparturesResult result2 = queryDepartures("9100003", false);
+        final QueryDeparturesResult result2 = queryDepartures("900100003", false);
         assertEquals(QueryDeparturesResult.Status.OK, result2.status);
         print(result2);
-    }
-
-    @Test
-    public void queryDeparturesMast() throws Exception {
-        final QueryDeparturesResult result1 = queryDepartures("~308864", false);
-        assertEquals(QueryDeparturesResult.Status.OK, result1.status);
-        print(result1);
-
-        final QueryDeparturesResult result2 = queryDepartures("~309306", false);
-        assertEquals(QueryDeparturesResult.Status.OK, result2.status);
-        print(result2);
-
-        final QueryDeparturesResult result3 = queryDepartures("~105837", false);
-        assertEquals(QueryDeparturesResult.Status.OK, result3.status);
-        print(result3);
     }
 
     @Test
@@ -100,7 +85,7 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest {
         final SuggestLocationsResult result = suggestLocations("Güntzelstr.");
         print(result);
         assertThat(result.getLocations(),
-                hasItem(new Location(LocationType.STATION, "9043201", "Berlin", "U Güntzelstr.")));
+                hasItem(new Location(LocationType.STATION, "900043201", "Berlin", "U Güntzelstr.")));
     }
 
     @Test
@@ -115,7 +100,7 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest {
         final SuggestLocationsResult result = suggestLocations("schwules museum");
         print(result);
         assertThat(result.getLocations(), hasItem(new Location(LocationType.POI,
-                "A=4@O=Berlin, Schwules Museum@X=13357979@Y=52504519@U=104@L=9980141@B=1@p=1417107246@")));
+                "A=4@O=Berlin, Schwules Museum@X=13357979@Y=52504519@U=104@L=900980141@B=1@p=1540465509@")));
     }
 
     @Test
@@ -134,9 +119,9 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void shortTrip() throws Exception {
         final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "9056102", "Berlin", "Nollendorfplatz"), null,
-                new Location(LocationType.STATION, "9013103", "Berlin", "Prinzenstraße"), new Date(), true, Product.ALL,
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "900056102", "Berlin", "Nollendorfplatz"), null,
+                new Location(LocationType.STATION, "900013103", "Berlin", "Prinzenstraße"), new Date(), true,
+                Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
@@ -151,19 +136,19 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void tripBetweenStations() throws Exception {
         final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "9055101", 52496176, 13343273, null, "U Viktoria-Luise-Platz"), null,
-                new Location(LocationType.STATION, "9089303", 52588810, 13288699, null, "S Tegel"), new Date(), true,
-                Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "900055101", 52496176, 13343273, null, "U Viktoria-Luise-Platz"),
+                null, new Location(LocationType.STATION, "900089303", 52588810, 13288699, null, "S Tegel"), new Date(),
+                true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
         print(result);
     }
 
     @Test
     public void shortViaTrip() throws Exception {
         final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "9056102", "Berlin", "Nollendorfplatz"),
-                new Location(LocationType.STATION, "9044202", "Berlin", "Bundesplatz"),
-                new Location(LocationType.STATION, "9013103", "Berlin", "Prinzenstraße"), new Date(), true, Product.ALL,
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "900056102", "Berlin", "Nollendorfplatz"),
+                new Location(LocationType.STATION, "900044202", "Berlin", "Bundesplatz"),
+                new Location(LocationType.STATION, "900013103", "Berlin", "Prinzenstraße"), new Date(), true,
+                Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
@@ -235,7 +220,8 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.ADDRESS, null, 52481922, 13388383, null,
                         "Bayernring, 12101 Berlin, Deutschland"),
-                null, new Location(LocationType.STATION, "9064301", 52429099, 13328081, null, "S Lichterfelde Ost Bhf"),
+                null,
+                new Location(LocationType.STATION, "900064301", 52429099, 13328081, null, "S Lichterfelde Ost Bhf"),
                 new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
         print(result);
     }

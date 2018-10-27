@@ -66,7 +66,7 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void queryDepartures() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("9007102", false);
+        final QueryDeparturesResult result = queryDepartures("900007102", false);
         print(result);
     }
 
@@ -97,7 +97,7 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest {
     public void suggestLocationsPOI() throws Exception {
         final SuggestLocationsResult result = suggestLocations("schwules museum");
         print(result);
-        Assert.assertThat(result.getLocations(), hasItem(new Location(LocationType.POI, "9980141")));
+        Assert.assertThat(result.getLocations(), hasItem(new Location(LocationType.POI, "900980141")));
     }
 
     @Test
@@ -116,9 +116,9 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void shortTrip() throws Exception {
         final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "9056102", "Berlin", "Nollendorfplatz"), null,
-                new Location(LocationType.STATION, "9013103", "Berlin", "Prinzenstraße"), new Date(), true, Product.ALL,
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "900056102", "Berlin", "Nollendorfplatz"), null,
+                new Location(LocationType.STATION, "900013103", "Berlin", "Prinzenstraße"), new Date(), true,
+                Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
         print(result);
 
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
@@ -147,10 +147,10 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void shortViaTrip() throws Exception {
         final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "9056102", "Berlin", "Nollendorfplatz"),
-                new Location(LocationType.STATION, "9044202", "Berlin", "Bundesplatz"),
-                new Location(LocationType.STATION, "9013103", "Berlin", "Prinzenstraße"), new Date(), true, Product.ALL,
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "900056102", "Berlin", "Nollendorfplatz"),
+                new Location(LocationType.STATION, "900044202", "Berlin", "Bundesplatz"),
+                new Location(LocationType.STATION, "900013103", "Berlin", "Prinzenstraße"), new Date(), true,
+                Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
         print(result);
 
         if (!result.context.canQueryLater())
