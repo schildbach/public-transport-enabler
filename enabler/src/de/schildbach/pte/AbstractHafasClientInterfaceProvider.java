@@ -175,8 +175,10 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
         try {
             final JSONObject head = new JSONObject(page.toString());
             final String headErr = head.optString("err", null);
-            if (headErr != null)
-                throw new RuntimeException(headErr);
+            if (headErr != null && !"OK".equals(headErr)) {
+                final String headErrTxt = head.getString("errTxt");
+                throw new RuntimeException(headErr + " " + headErrTxt);
+            }
             final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, head.getString("ver"), null, 0, null);
 
             final JSONArray svcResList = head.getJSONArray("svcResL");
@@ -243,8 +245,10 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
         try {
             final JSONObject head = new JSONObject(page.toString());
             final String headErr = head.optString("err", null);
-            if (headErr != null)
-                throw new RuntimeException(headErr);
+            if (headErr != null && !"OK".equals(headErr)) {
+                final String headErrTxt = head.getString("errTxt");
+                throw new RuntimeException(headErr + " " + headErrTxt);
+            }
             final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, head.getString("ver"), null, 0, null);
             final QueryDeparturesResult result = new QueryDeparturesResult(header);
 
@@ -351,8 +355,10 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
         try {
             final JSONObject head = new JSONObject(page.toString());
             final String headErr = head.optString("err", null);
-            if (headErr != null)
-                throw new RuntimeException(headErr);
+            if (headErr != null && !"OK".equals(headErr)) {
+                final String headErrTxt = head.getString("errTxt");
+                throw new RuntimeException(headErr + " " + headErrTxt);
+            }
             final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, head.getString("ver"), null, 0, null);
 
             final JSONArray svcResList = head.getJSONArray("svcResL");
@@ -454,8 +460,10 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
         try {
             final JSONObject head = new JSONObject(page.toString());
             final String headErr = head.optString("err", null);
-            if (headErr != null)
-                throw new RuntimeException(headErr);
+            if (headErr != null && !"OK".equals(headErr)) {
+                final String headErrTxt = head.getString("errTxt");
+                throw new RuntimeException(headErr + " " + headErrTxt);
+            }
             final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, head.getString("ver"), null, 0, null);
 
             final JSONArray svcResList = head.getJSONArray("svcResL");
