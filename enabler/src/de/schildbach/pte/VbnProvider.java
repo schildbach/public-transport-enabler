@@ -48,7 +48,7 @@ public class VbnProvider extends AbstractHafasClientInterfaceProvider {
     public VbnProvider(final String apiAuthorization) {
         super(NetworkId.VBN, API_BASE, PRODUCTS_MAP);
         setApiVersion("1.13");
-        setApiClient("{\"id\":\"VBN\"}");
+        setApiClient("{\"id\":\"VBN\",\"type\":\"AND\"}");
         setApiAuthorization(apiAuthorization);
         setStyles(STYLES);
     }
