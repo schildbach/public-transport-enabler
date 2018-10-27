@@ -229,16 +229,12 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
         final CharSequence normalizedStationId = normalizeStationId(stationId);
         final CharSequence stbFltrEquiv = Boolean.toString(!equivs);
         final CharSequence maxJny = Integer.toString(maxDepartures != 0 ? maxDepartures : DEFAULT_MAX_DEPARTURES);
-        final CharSequence getPasslist = Boolean.toString(true); // traffic expensive
-        final String request = wrapJsonApiRequest("StationBoard",
-                "{\"type\":\"DEP\"," //
-                        + "\"date\":\"" + jsonDate + "\"," //
-                        + "\"time\":\"" + jsonTime + "\"," //
-                        + "\"stbLoc\":{\"type\":\"S\"," + "\"state\":\"F\"," // F/M
-                        + "\"extId\":" + JSONObject.quote(normalizedStationId.toString()) + "}," //
-                        + "\"stbFltrEquiv\":" + stbFltrEquiv + ",\"maxJny\":" + maxJny + ",\"getPasslist\":"
-                        + getPasslist + "}",
-                false);
+        final String request = wrapJsonApiRequest("StationBoard", "{\"type\":\"DEP\"," //
+                + "\"date\":\"" + jsonDate + "\"," //
+                + "\"time\":\"" + jsonTime + "\"," //
+                + "\"stbLoc\":{\"type\":\"S\"," + "\"state\":\"F\"," // F/M
+                + "\"extId\":" + JSONObject.quote(normalizedStationId.toString()) + "}," //
+                + "\"stbFltrEquiv\":" + stbFltrEquiv + ",\"maxJny\":" + maxJny + "}", false);
 
         final HttpUrl url = requestUrl(request);
         final CharSequence page = httpClient.get(url, request, "application/json");
@@ -452,7 +448,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                 + "\"jnyFltrL\":[{\"value\":\"" + jnyFltr + "\",\"mode\":\"BIT\",\"type\":\"PROD\"}]," //
                 + "\"gisFltrL\":[{\"mode\":\"FB\",\"profile\":{\"type\":\"F\",\"linDistRouting\":false,\"maxdist\":2000},\"type\":\"M\",\"meta\":\""
                 + meta + "\"}]," //
-                + "\"getPolyline\":false,\"getPasslist\":true,\"getIST\":false,\"getEco\":false,\"extChgTime\":-1}", //
+                + "\"getPolyline\":false,\"getIST\":false,\"getEco\":false,\"extChgTime\":-1}", //
                 false);
 
         final HttpUrl url = requestUrl(request);
