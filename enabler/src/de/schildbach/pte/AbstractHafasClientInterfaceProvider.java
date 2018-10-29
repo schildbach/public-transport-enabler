@@ -164,9 +164,11 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
             int maxDistance) throws IOException {
         if (maxDistance == 0)
             maxDistance = DEFAULT_MAX_DISTANCE;
+        final boolean getStations = types.contains(LocationType.STATION);
         final boolean getPOIs = types.contains(LocationType.POI);
         final String request = wrapJsonApiRequest("LocGeoPos", "{\"ring\":" //
                 + "{\"cCrd\":{\"x\":" + lon + ",\"y\":" + lat + "},\"maxDist\":" + maxDistance + "}," //
+                + "\"getStops\":" + getStations + "," //
                 + "\"getPOIs\":" + getPOIs + "}", //
                 false);
 
