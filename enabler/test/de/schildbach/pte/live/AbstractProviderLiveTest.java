@@ -84,12 +84,12 @@ public abstract class AbstractProviderLiveTest {
     }
 
     protected final NearbyLocationsResult queryNearbyStations(final Location location) throws IOException {
-        return queryNearbyLocations(EnumSet.of(LocationType.STATION), location, 0, 0);
+        return queryNearbyLocations(EnumSet.of(LocationType.STATION), location, 0, 5);
     }
 
     protected final NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types,
             final Location location) throws IOException {
-        return queryNearbyLocations(types, location, 0, 0);
+        return queryNearbyLocations(types, location, 0, 5);
     }
 
     protected final NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types,
@@ -99,7 +99,7 @@ public abstract class AbstractProviderLiveTest {
 
     protected final QueryDeparturesResult queryDepartures(final String stationId, final boolean equivs)
             throws IOException {
-        return queryDepartures(stationId, 0, equivs);
+        return queryDepartures(stationId, 5, equivs);
     }
 
     protected final QueryDeparturesResult queryDepartures(final String stationId, final int maxDepartures,
