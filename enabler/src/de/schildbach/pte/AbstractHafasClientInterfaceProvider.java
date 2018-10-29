@@ -129,7 +129,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
     public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location,
             final int maxDistance, final int maxLocations) throws IOException {
         if (location.hasLocation())
-            return jsonLocGeoPos(types, location.lat, location.lon, maxDistance);
+            return jsonLocGeoPos(types, location.lat, location.lon, maxDistance, maxLocations);
         else
             throw new IllegalArgumentException("cannot handle: " + location);
     }
@@ -161,15 +161,18 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
     }
 
     protected final NearbyLocationsResult jsonLocGeoPos(final EnumSet<LocationType> types, final int lat, final int lon,
-            int maxDistance) throws IOException {
+            int maxDistance, int maxLocations) throws IOException {
         if (maxDistance == 0)
             maxDistance = DEFAULT_MAX_DISTANCE;
+        if (maxLocations == 0)
+            maxLocations = DEFAULT_MAX_LOCATIONS;
         final boolean getStations = types.contains(LocationType.STATION);
         final boolean getPOIs = types.contains(LocationType.POI);
         final String request = wrapJsonApiRequest("LocGeoPos", "{\"ring\":" //
                 + "{\"cCrd\":{\"x\":" + lon + ",\"y\":" + lat + "},\"maxDist\":" + maxDistance + "}," //
                 + "\"getStops\":" + getStations + "," //
-                + "\"getPOIs\":" + getPOIs + "}", //
+                + "\"getPOIs\":" + getPOIs + "," //
+                + "\"maxLoc\":" + maxLocations + "}", //
                 false);
 
         final HttpUrl url = requestUrl(request);
@@ -400,7 +403,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
         }
         if (location.hasLocation()) {
             final List<Location> locations = jsonLocGeoPos(EnumSet.allOf(LocationType.class), location.lat,
-                    location.lon, 0).locations;
+                    location.lon, 0, 0).locations;
             if (!locations.isEmpty())
                 return locations.get(0);
         }

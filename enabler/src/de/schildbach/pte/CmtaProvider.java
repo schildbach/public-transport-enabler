@@ -33,7 +33,7 @@ public class CmtaProvider extends AbstractHafasClientInterfaceProvider {
     public CmtaProvider() {
         super(NetworkId.CMTA, API_BASE, PRODUCTS_MAP);
         setTimeZone("America/Chicago");
-        setApiVersion("1.13");
+        setApiVersion("1.14");
         setApiClient("{\"id\":\"CMTA\",\"type\":\"AND\"}");
     }
 }
