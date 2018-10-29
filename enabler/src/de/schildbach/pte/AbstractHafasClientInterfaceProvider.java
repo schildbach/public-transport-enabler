@@ -177,7 +177,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
             final JSONObject head = new JSONObject(page.toString());
             final String headErr = head.optString("err", null);
             if (headErr != null && !"OK".equals(headErr)) {
-                final String headErrTxt = head.getString("errTxt");
+                final String headErrTxt = head.optString("errTxt");
                 throw new RuntimeException(headErr + " " + headErrTxt);
             }
             final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, head.getString("ver"), null, 0, null);
@@ -243,7 +243,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
             final JSONObject head = new JSONObject(page.toString());
             final String headErr = head.optString("err", null);
             if (headErr != null && !"OK".equals(headErr)) {
-                final String headErrTxt = head.getString("errTxt");
+                final String headErrTxt = head.optString("errTxt");
                 throw new RuntimeException(headErr + " " + headErrTxt);
             }
             final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, head.getString("ver"), null, 0, null);
@@ -353,7 +353,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
             final JSONObject head = new JSONObject(page.toString());
             final String headErr = head.optString("err", null);
             if (headErr != null && !"OK".equals(headErr)) {
-                final String headErrTxt = head.getString("errTxt");
+                final String headErrTxt = head.optString("errTxt");
                 throw new RuntimeException(headErr + " " + headErrTxt);
             }
             final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, head.getString("ver"), null, 0, null);
@@ -458,7 +458,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
             final JSONObject head = new JSONObject(page.toString());
             final String headErr = head.optString("err", null);
             if (headErr != null && !"OK".equals(headErr)) {
-                final String headErrTxt = head.getString("errTxt");
+                final String headErrTxt = head.optString("errTxt");
                 throw new RuntimeException(headErr + " " + headErrTxt);
             }
             final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, head.getString("ver"), null, 0, null);
