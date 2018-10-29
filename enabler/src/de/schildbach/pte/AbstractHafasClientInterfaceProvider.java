@@ -186,11 +186,12 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                 final String headErrTxt = head.optString("errTxt");
                 throw new RuntimeException(headErr + " " + headErrTxt);
             }
-            final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, head.getString("ver"), null, 0, null);
 
             final JSONArray svcResList = head.getJSONArray("svcResL");
-            checkState(svcResList.length() == 1);
-            final JSONObject svcRes = svcResList.optJSONObject(0);
+            checkState(svcResList.length() == 2);
+            final ResultHeader header = parseServerInfo(svcResList.getJSONObject(0), head.getString("ver"));
+
+            final JSONObject svcRes = svcResList.getJSONObject(1);
             checkState("LocGeoPos".equals(svcRes.getString("meth")));
             final String err = svcRes.getString("err");
             if (!"OK".equals(err)) {
@@ -252,12 +253,13 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                 final String headErrTxt = head.optString("errTxt");
                 throw new RuntimeException(headErr + " " + headErrTxt);
             }
-            final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, head.getString("ver"), null, 0, null);
-            final QueryDeparturesResult result = new QueryDeparturesResult(header);
 
             final JSONArray svcResList = head.getJSONArray("svcResL");
-            checkState(svcResList.length() == 1);
-            final JSONObject svcRes = svcResList.optJSONObject(0);
+            checkState(svcResList.length() == 2);
+            final ResultHeader header = parseServerInfo(svcResList.getJSONObject(0), head.getString("ver"));
+            final QueryDeparturesResult result = new QueryDeparturesResult(header);
+
+            final JSONObject svcRes = svcResList.optJSONObject(1);
             checkState("StationBoard".equals(svcRes.getString("meth")));
             final String err = svcRes.getString("err");
             if (!"OK".equals(err)) {
@@ -362,11 +364,12 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                 final String headErrTxt = head.optString("errTxt");
                 throw new RuntimeException(headErr + " " + headErrTxt);
             }
-            final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, head.getString("ver"), null, 0, null);
 
             final JSONArray svcResList = head.getJSONArray("svcResL");
-            checkState(svcResList.length() == 1);
-            final JSONObject svcRes = svcResList.optJSONObject(0);
+            checkState(svcResList.length() == 2);
+            final ResultHeader header = parseServerInfo(svcResList.getJSONObject(0), head.getString("ver"));
+
+            final JSONObject svcRes = svcResList.optJSONObject(1);
             checkState("LocMatch".equals(svcRes.getString("meth")));
             final String err = svcRes.getString("err");
             if (!"OK".equals(err)) {
@@ -467,11 +470,12 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                 final String headErrTxt = head.optString("errTxt");
                 throw new RuntimeException(headErr + " " + headErrTxt);
             }
-            final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, head.getString("ver"), null, 0, null);
 
             final JSONArray svcResList = head.getJSONArray("svcResL");
-            checkState(svcResList.length() == 1);
-            final JSONObject svcRes = svcResList.optJSONObject(0);
+            checkState(svcResList.length() == 2);
+            final ResultHeader header = parseServerInfo(svcResList.getJSONObject(0), head.getString("ver"));
+
+            final JSONObject svcRes = svcResList.optJSONObject(1);
             checkState("TripSearch".equals(svcRes.getString("meth")));
             final String err = svcRes.getString("err");
             if (!"OK".equals(err)) {
@@ -643,7 +647,10 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                 + (apiAuthorization != null ? "\"auth\":" + apiAuthorization + "," : "") //
                 + "\"client\":" + checkNotNull(apiClient) + "," //
                 + "\"ver\":\"" + checkNotNull(apiVersion) + "\",\"lang\":\"eng\"," //
-                + "\"svcReqL\":[{\"cfg\":{\"polyEnc\":\"GPA\"},\"meth\":\"" + meth + "\",\"req\":" + req + "}]," //
+                + "\"svcReqL\":[" //
+                + "{\"meth\":\"ServerInfo\",\"req\":{\"getServerDateTime\":true,\"getTimeTablePeriod\":false}}," //
+                + "{\"meth\":\"" + meth + "\",\"cfg\":{\"polyEnc\":\"GPA\"},\"req\":" + req + "}" //
+                + "]," //
                 + "\"formatted\":" + formatted + "}";
     }
 
@@ -686,6 +693,20 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
         final int hour = time.get(Calendar.HOUR_OF_DAY);
         final int minute = time.get(Calendar.MINUTE);
         return String.format(Locale.ENGLISH, "%02d%02d00", hour, minute);
+    }
+
+    private ResultHeader parseServerInfo(final JSONObject serverInfo, final String serverVersion) throws JSONException {
+        checkState("ServerInfo".equals(serverInfo.getString("meth")));
+        final String err = serverInfo.optString("err", null);
+        if (err != null && !"OK".equals(err)) {
+            final String errTxt = serverInfo.optString("errTxt");
+            throw new RuntimeException(err + " " + errTxt);
+        }
+        final JSONObject res = serverInfo.getJSONObject("res");
+        final Calendar c = new GregorianCalendar(timeZone);
+        ParserUtils.parseIsoDate(c, res.getString("sD"));
+        c.setTime(parseJsonTime(c, c.getTime(), res.getString("sT")));
+        return new ResultHeader(network, SERVER_PRODUCT, serverVersion, null, c.getTimeInMillis(), null);
     }
 
     private static final Pattern P_JSON_TIME = Pattern.compile("(\\d{2})?(\\d{2})(\\d{2})(\\d{2})");
