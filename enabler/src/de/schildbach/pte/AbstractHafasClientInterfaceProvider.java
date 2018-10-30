@@ -536,13 +536,18 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                         final Location destination = dirTxt != null ? new Location(LocationType.ANY, null, null, dirTxt)
                                 : null;
 
-                        final JSONArray stopList = jny.getJSONArray("stopL");
-                        checkState(stopList.length() >= 2);
-                        final List<Stop> intermediateStops = new ArrayList<>(stopList.length());
-                        for (int iStop = 1; iStop < stopList.length() - 1; iStop++) {
-                            final JSONObject stop = stopList.getJSONObject(iStop);
-                            final Stop intermediateStop = parseJsonStop(stop, locList, c, baseDate);
-                            intermediateStops.add(intermediateStop);
+                        final JSONArray stopList = jny.optJSONArray("stopL");
+                        final List<Stop> intermediateStops;
+                        if (stopList != null) {
+                            checkState(stopList.length() >= 2);
+                            intermediateStops = new ArrayList<>(stopList.length());
+                            for (int iStop = 1; iStop < stopList.length() - 1; iStop++) {
+                                final JSONObject stop = stopList.getJSONObject(iStop);
+                                final Stop intermediateStop = parseJsonStop(stop, locList, c, baseDate);
+                                intermediateStops.add(intermediateStop);
+                            }
+                        } else {
+                            intermediateStops = null;
                         }
 
                         final JSONArray remList = jny.optJSONArray("remL");
