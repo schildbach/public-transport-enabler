@@ -403,6 +403,8 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
     private static final Joiner JOINER = Joiner.on(' ').skipNulls();
 
     private Location jsonTripSearchIdentify(final Location location) throws IOException {
+        if (location.hasId())
+            return location;
         if (location.hasName()) {
             final List<Location> locations = jsonLocMatch(JOINER.join(location.place, location.name), 1).getLocations();
             if (!locations.isEmpty())
@@ -420,26 +422,19 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
     protected final QueryTripsResult jsonTripSearch(Location from, @Nullable Location via, Location to, final Date time,
             final boolean dep, final @Nullable Set<Product> products, final @Nullable WalkSpeed walkSpeed,
             final @Nullable String moreContext) throws IOException {
-        if (!from.hasId()) {
-            from = jsonTripSearchIdentify(from);
-            if (from == null)
-                return new QueryTripsResult(new ResultHeader(network, SERVER_PRODUCT),
-                        QueryTripsResult.Status.UNKNOWN_FROM);
-        }
-
-        if (via != null && !via.hasId()) {
+        from = jsonTripSearchIdentify(from);
+        if (from == null)
+            return new QueryTripsResult(new ResultHeader(network, SERVER_PRODUCT),
+                    QueryTripsResult.Status.UNKNOWN_FROM);
+        if (via != null) {
             via = jsonTripSearchIdentify(via);
             if (via == null)
                 return new QueryTripsResult(new ResultHeader(network, SERVER_PRODUCT),
                         QueryTripsResult.Status.UNKNOWN_VIA);
         }
-
-        if (!to.hasId()) {
-            to = jsonTripSearchIdentify(to);
-            if (to == null)
-                return new QueryTripsResult(new ResultHeader(network, SERVER_PRODUCT),
-                        QueryTripsResult.Status.UNKNOWN_TO);
-        }
+        to = jsonTripSearchIdentify(to);
+        if (to == null)
+            return new QueryTripsResult(new ResultHeader(network, SERVER_PRODUCT), QueryTripsResult.Status.UNKNOWN_TO);
 
         final Calendar c = new GregorianCalendar(timeZone);
         c.setTime(time);
