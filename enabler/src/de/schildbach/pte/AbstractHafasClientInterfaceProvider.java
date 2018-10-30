@@ -144,7 +144,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
 
     @Override
     public SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException {
-        return jsonLocMatch(constraint);
+        return jsonLocMatch(constraint, 0);
     }
 
     @Override
@@ -348,10 +348,13 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
         }
     }
 
-    protected final SuggestLocationsResult jsonLocMatch(final CharSequence constraint) throws IOException {
+    protected final SuggestLocationsResult jsonLocMatch(final CharSequence constraint, int maxLocations)
+            throws IOException {
+        if (maxLocations == 0)
+            maxLocations = DEFAULT_MAX_LOCATIONS;
         final String request = wrapJsonApiRequest("LocMatch",
                 "{\"input\":{\"field\":\"S\",\"loc\":{\"name\":" + JSONObject.quote(checkNotNull(constraint).toString())
-                        + ",\"meta\":false},\"maxLoc\":" + DEFAULT_MAX_LOCATIONS + "}}",
+                        + ",\"meta\":false},\"maxLoc\":" + maxLocations + "}}",
                 false);
 
         final HttpUrl url = requestUrl(request);
@@ -401,13 +404,13 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
 
     private Location jsonTripSearchIdentify(final Location location) throws IOException {
         if (location.hasName()) {
-            final List<Location> locations = jsonLocMatch(JOINER.join(location.place, location.name)).getLocations();
+            final List<Location> locations = jsonLocMatch(JOINER.join(location.place, location.name), 1).getLocations();
             if (!locations.isEmpty())
                 return locations.get(0);
         }
         if (location.hasLocation()) {
             final List<Location> locations = jsonLocGeoPos(EnumSet.allOf(LocationType.class), location.lat,
-                    location.lon, 0, 0).locations;
+                    location.lon, 0, 1).locations;
             if (!locations.isEmpty())
                 return locations.get(0);
         }
