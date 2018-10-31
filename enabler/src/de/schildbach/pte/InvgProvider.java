@@ -17,67 +17,28 @@
 
 package de.schildbach.pte;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.Charsets;
-import com.google.common.base.Strings;
-
-import de.schildbach.pte.dto.Departure;
-import de.schildbach.pte.dto.Line;
-import de.schildbach.pte.dto.Location;
-import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.Position;
 import de.schildbach.pte.dto.Product;
-import de.schildbach.pte.dto.QueryDeparturesResult;
-import de.schildbach.pte.dto.QueryDeparturesResult.Status;
-import de.schildbach.pte.dto.QueryTripsContext;
-import de.schildbach.pte.dto.QueryTripsResult;
-import de.schildbach.pte.dto.ResultHeader;
-import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.dto.Style;
-import de.schildbach.pte.util.ParserUtils;
 
 import okhttp3.HttpUrl;
 
 /**
  * @author Andreas Schildbach
  */
-public class InvgProvider extends AbstractHafasLegacyProvider {
+public class InvgProvider extends AbstractHafasClientInterfaceProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("https://fpa.invg.de/bin/");
-    // http://invg.hafas.de/bin/
-    private static final Product[] PRODUCTS_MAP = { null, null, null, null, null, null, null, null, null, null };
-    private static final long PARSER_DAY_ROLLOVER_THRESHOLD_MS = 12 * 60 * 60 * 1000;
+    private static final Product[] PRODUCTS_MAP = { Product.BUS, null, null, Product.REGIONAL_TRAIN };
 
-    public InvgProvider() {
-        super(NetworkId.INVG, API_BASE, "dn", PRODUCTS_MAP);
-        setRequestUrlEncoding(Charsets.UTF_8);
-        setStationBoardCanDoEquivs(false);
-        setJsonNearbyLocationsEncoding(Charsets.UTF_8);
+    public InvgProvider(final String apiAuthorization) {
+        super(NetworkId.INVG, API_BASE, PRODUCTS_MAP);
+        setApiVersion("1.13");
+        setApiClient("{\"id\":\"INVG\",\"type\":\"AND\"}");
+        setApiAuthorization(apiAuthorization);
         setStyles(STYLES);
-        setExtXmlEndpoint(API_BASE.newBuilder().addPathSegment("extxml.exe").build());
-    }
-
-    @Override
-    protected boolean hasCapability(final Capability capability) {
-        if (capability == Capability.TRIPS)
-            return false;
-        else
-            return super.hasCapability(capability);
     }
 
     private static final String[] PLACES = { "Ingolstadt", "München" };
@@ -111,206 +72,6 @@ public class InvgProvider extends AbstractHafasLegacyProvider {
             return new String[] { m.group(1), m.group(2) };
 
         return super.splitStationName(address);
-    }
-
-    private static final Pattern P_DEPARTURES_HEAD_COARSE = Pattern.compile(".*?" //
-            + "(?:" //
-            + "<div class=\"summary clearfix\">.*?<div class=\"block\">.*?(<div>.*?</div>.*?<div class=\"last\">.*?</div>).*?</div>.*?" //
-            + "<div class=\"linkGroup\">.*?input=(\\d+).*?" // locationId
-            + "(?:<table class=\"resultTable\" cellspacing=\"0\">(.*?)</table>|(verkehren an dieser Haltestelle keine))"//
-            + "|(Eingabe kann nicht interpretiert)|(Verbindung zum Server konnte leider nicht hergestellt werden|kann vom Server derzeit leider nicht bearbeitet werden))" //
-            + ".*?" //
-            , Pattern.DOTALL);
-    private static final Pattern P_DEPARTURES_HEAD_FINE = Pattern.compile(
-            ".*?" //
-                    + "<span class=\"output\">(.*?)<.*?" // location
-                    + "<span class=\"output\">\n(\\d{2}\\.\\d{2}\\.\\d{2}).*?" // date
-                    + "Abfahrt (\\d{1,2}:\\d{2}).*?" // time
-            , Pattern.DOTALL);
-    private static final Pattern P_DEPARTURES_COARSE = Pattern.compile("<tr class=\"(depboard-\\w*)\">(.*?)</tr>",
-            Pattern.DOTALL);
-    private static final Pattern P_DEPARTURES_FINE = Pattern.compile(
-            ".*?" //
-                    + "<td class=\"time\">(\\d{1,2}:\\d{2})</td>\n" // plannedTime
-                    + "(?:<td class=\"[\\w ]*prognosis[\\w ]*\">\n" //
-                    + "(?:&nbsp;|<span class=\"rtLimit\\d\">(p&#252;nktlich|\\d{1,2}:\\d{2})</span>)\n</td>\n" // predictedTime
-                    + ")?.*?" //
-                    + "<img class=\"product\" src=\"/hafas-res/img/products/(\\w+)_pic\\.gif\"[^>]*>\\s*(.*?)\\s*</.*?" // type,
-                                                                                                                        // line
-                    + "<strong>\n" //
-                    + "<a href=\"http://fpa\\.invg\\.de/bin/stboard\\.exe/dn\\?input=(\\d+)&[^>]*>" // destinationId
-                    + "\\s*(.*?)\\s*</a>\n" // destination
-                    + "</strong>.*?" //
-                    + "(?:<td class=\"center sepline top\">\n(" + ParserUtils.P_PLATFORM + ").*?)?" // position
-            , Pattern.DOTALL);
-
-    @Override
-    public QueryDeparturesResult queryDepartures(final String stationId, final @Nullable Date time,
-            final int maxDepartures, final boolean equivs) throws IOException {
-        checkNotNull(Strings.emptyToNull(stationId));
-
-        final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
-        final QueryDeparturesResult result = new QueryDeparturesResult(header);
-
-        // scrape page
-        final HttpUrl.Builder url = stationBoardEndpoint.newBuilder().addPathSegment(apiLanguage);
-        appendXmlStationBoardParameters(url, time, stationId, maxDepartures, false, null);
-        final CharSequence page = httpClient.get(url.build());
-
-        // parse page
-        final Matcher mHeadCoarse = P_DEPARTURES_HEAD_COARSE.matcher(page);
-        if (mHeadCoarse.matches()) {
-            // messages
-            if (mHeadCoarse.group(4) != null) {
-                result.stationDepartures.add(new StationDepartures(new Location(LocationType.STATION, stationId),
-                        Collections.<Departure> emptyList(), null));
-                return result;
-            } else if (mHeadCoarse.group(5) != null)
-                return new QueryDeparturesResult(header, Status.INVALID_STATION);
-            else if (mHeadCoarse.group(6) != null)
-                return new QueryDeparturesResult(header, Status.SERVICE_DOWN);
-
-            final String locationId = mHeadCoarse.group(2);
-
-            final Matcher mHeadFine = P_DEPARTURES_HEAD_FINE.matcher(mHeadCoarse.group(1));
-            if (mHeadFine.matches()) {
-                final String[] placeAndName = splitStationName(ParserUtils.resolveEntities(mHeadFine.group(1)));
-                final Calendar currentTime = new GregorianCalendar(timeZone);
-                currentTime.clear();
-                ParserUtils.parseGermanDate(currentTime, mHeadFine.group(2));
-                ParserUtils.parseEuropeanTime(currentTime, mHeadFine.group(3));
-                final List<Departure> departures = new ArrayList<>(8);
-                String oldZebra = null;
-
-                final Matcher mDepCoarse = P_DEPARTURES_COARSE.matcher(mHeadCoarse.group(3));
-                while (mDepCoarse.find()) {
-                    final String zebra = mDepCoarse.group(1);
-                    if (oldZebra != null && zebra.equals(oldZebra))
-                        throw new IllegalArgumentException("missed row? last:" + zebra);
-                    else
-                        oldZebra = zebra;
-
-                    final Matcher mDepFine = P_DEPARTURES_FINE.matcher(mDepCoarse.group(2));
-                    if (mDepFine.matches()) {
-                        final Calendar plannedTime = new GregorianCalendar(timeZone);
-                        plannedTime.setTimeInMillis(currentTime.getTimeInMillis());
-                        ParserUtils.parseEuropeanTime(plannedTime, mDepFine.group(1));
-
-                        if (plannedTime.getTimeInMillis()
-                                - currentTime.getTimeInMillis() < -PARSER_DAY_ROLLOVER_THRESHOLD_MS)
-                            plannedTime.add(Calendar.DAY_OF_MONTH, 1);
-
-                        final Calendar predictedTime;
-                        final String prognosis = ParserUtils.resolveEntities(mDepFine.group(2));
-                        if (prognosis != null) {
-                            predictedTime = new GregorianCalendar(timeZone);
-                            if (prognosis.equals("pünktlich")) {
-                                predictedTime.setTimeInMillis(plannedTime.getTimeInMillis());
-                            } else {
-                                predictedTime.setTimeInMillis(currentTime.getTimeInMillis());
-                                ParserUtils.parseEuropeanTime(predictedTime, prognosis);
-                            }
-                        } else {
-                            predictedTime = null;
-                        }
-
-                        final String lineType = mDepFine.group(3);
-
-                        final Line line = parseLine(lineType, ParserUtils.resolveEntities(mDepFine.group(4)), false);
-
-                        final String destinationId = mDepFine.group(5);
-                        final String destinationName = ParserUtils.resolveEntities(mDepFine.group(6));
-                        final Location destination;
-                        if (destinationId != null) {
-                            final String[] destinationPlaceAndName = splitStationName(destinationName);
-                            destination = new Location(LocationType.STATION, destinationId, destinationPlaceAndName[0],
-                                    destinationPlaceAndName[1]);
-                        } else {
-                            destination = new Location(LocationType.ANY, null, null, destinationName);
-                        }
-
-                        final Position position = parsePosition(ParserUtils.resolveEntities(mDepFine.group(7)));
-
-                        final Departure dep = new Departure(plannedTime.getTime(),
-                                predictedTime != null ? predictedTime.getTime() : null, line, position, destination,
-                                null, null);
-
-                        if (!departures.contains(dep))
-                            departures.add(dep);
-                    } else {
-                        throw new IllegalArgumentException(
-                                "cannot parse '" + mDepCoarse.group(2) + "' on " + stationId);
-                    }
-                }
-
-                result.stationDepartures.add(new StationDepartures(
-                        new Location(LocationType.STATION, locationId, placeAndName[0], placeAndName[1]), departures,
-                        null));
-                return result;
-            } else {
-                throw new IllegalArgumentException("cannot parse '" + mHeadCoarse.group(1) + "' on " + stationId);
-            }
-        } else {
-            throw new IllegalArgumentException("cannot parse '" + page + "' on " + stationId);
-        }
-    }
-
-    @Override
-    public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to,
-            final Date date, final boolean dep, final @Nullable Set<Product> products,
-            final @Nullable Optimize optimize, final @Nullable WalkSpeed walkSpeed,
-            final @Nullable Accessibility accessibility, final @Nullable Set<Option> options) throws IOException {
-        return queryTripsXml(from, via, to, date, dep, products, walkSpeed, accessibility, options);
-    }
-
-    @Override
-    public QueryTripsResult queryMoreTrips(final QueryTripsContext context, final boolean later) throws IOException {
-        return queryMoreTripsXml(context, later);
-    }
-
-    protected static final Pattern P_NORMALIZE_LINE_BUS = Pattern.compile("Bus\\s*(\\d+)");
-    protected static final Pattern P_NORMALIZE_LINE_NACHTBUS = Pattern.compile("Bus\\s*N\\s*(\\d+)");
-    protected static final Pattern P_NORMALIZE_LINE_BUS_S = Pattern.compile("Bus\\s*S\\s*(\\d+)");
-    protected static final Pattern P_NORMALIZE_LINE_BUS_X = Pattern.compile("Bus\\s*X\\s*(\\d+)");
-
-    @Override
-    protected Line parseLine(final String type, final String line, final boolean wheelchairAccess) {
-        if ("1".equals(type)) {
-            final Matcher mBus = P_NORMALIZE_LINE_BUS.matcher(line);
-            if (mBus.matches()) {
-                final String label = mBus.group(1);
-                return new Line(null, null, Product.BUS, label, lineStyle(null, Product.BUS, label));
-            }
-
-            final Matcher mNachtbus = P_NORMALIZE_LINE_NACHTBUS.matcher(line);
-            if (mNachtbus.matches()) {
-                final String label = "N" + mNachtbus.group(1);
-                return new Line(null, null, Product.BUS, label, lineStyle(null, Product.BUS, label));
-            }
-
-            final Matcher mBusS = P_NORMALIZE_LINE_BUS_S.matcher(line);
-            if (mBusS.matches()) {
-                final String label = "S" + mBusS.group(1);
-                return new Line(null, null, Product.BUS, label, lineStyle(null, Product.BUS, label));
-            }
-
-            final Matcher mBusX = P_NORMALIZE_LINE_BUS_X.matcher(line);
-            if (mBusX.matches()) {
-                final String label = "X" + mBusX.group(1);
-                return new Line(null, null, Product.BUS, label, lineStyle(null, Product.BUS, label));
-            }
-        }
-
-        return super.parseLine(type, line, wheelchairAccess);
-    }
-
-    @Override
-    protected Product normalizeType(final String type) {
-        if ("1".equals(type))
-            return Product.BUS;
-
-        // skip parsing of "common" lines
-        throw new IllegalStateException("cannot normalize type '" + type + "'");
     }
 
     private static final Map<String, Style> STYLES = new HashMap<>();

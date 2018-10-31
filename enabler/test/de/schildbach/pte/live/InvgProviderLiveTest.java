@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
  */
 public class InvgProviderLiveTest extends AbstractProviderLiveTest {
     public InvgProviderLiveTest() {
-        super(new InvgProvider());
+        super(new InvgProvider(secretProperty("invg.api_authorization")));
     }
 
     @Test
@@ -68,16 +68,27 @@ public class InvgProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void suggestLocations() throws Exception {
-        final SuggestLocationsResult result = suggestLocations("Flughafen");
+        final SuggestLocationsResult result = suggestLocations("Rathausplatz");
         print(result);
     }
 
     @Test
     public void shortTrip() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "80302", null, "Ingolstadt, Hauptbahnhof Stadteinwärts"), null,
-                new Location(LocationType.STATION, "181102", null, "Elisabethstraße"), new Date(), true, Product.ALL,
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+        final Location from = new Location(LocationType.STATION, "60706", null, "Rathausplatz");
+        final Location to = new Location(LocationType.STATION, "146704", null, "Hochschule");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, Product.ALL, WalkSpeed.NORMAL,
+                Accessibility.NEUTRAL);
+        print(result);
+        final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+        print(laterResult);
+    }
+
+    @Test
+    public void tripBetweenCoordinates() throws Exception {
+        final Location from = Location.coord(48744414, 11434603); // Ingolstadt Hbf
+        final Location to = Location.coord(48751558, 11426546); // Ingolstadt Nordbahnhof
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, Product.ALL, WalkSpeed.NORMAL,
+                Accessibility.NEUTRAL);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);

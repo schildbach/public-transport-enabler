@@ -289,6 +289,4 @@ public final class ParserUtils {
 
         return null;
     }
-
-    public static final String P_PLATFORM = "[\\wÄÖÜäöüßáàâéèêíìîóòôúùû\\. -/&#;]+?";
 }
