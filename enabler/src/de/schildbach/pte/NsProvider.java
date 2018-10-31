@@ -54,6 +54,9 @@ public class NsProvider extends AbstractHafasLegacyProvider {
         if (ucType.equals("N")) // Avignon
             return Product.REGIONAL_TRAIN;
 
+        if ("FERRY".equals(ucType))
+            return Product.FERRY;
+
         return super.normalizeType(type);
     }
 }
