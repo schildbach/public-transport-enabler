@@ -1222,8 +1222,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                 return new Line(id, network, Product.REGIONAL_TRAIN, "SWE" + trainNum);
             if ("SWEG-Zug".equals(trainName)) // Südwestdeutschen Verkehrs-Aktiengesellschaft
                 return new Line(id, network, Product.REGIONAL_TRAIN, "SWEG" + trainNum);
-            if ("SWEG-Zug".equals(longName))
-                return new Line(id, network, Product.REGIONAL_TRAIN, "SWEG");
+            if (longName != null && longName.startsWith("SWEG-Zug"))
+                return new Line(id, network, Product.REGIONAL_TRAIN, "SWEG" + Strings.nullToEmpty(trainNum));
             if ("EGP Eisenbahngesellschaft Potsdam".equals(trainName))
                 return new Line(id, network, Product.REGIONAL_TRAIN, "EGP" + trainNumStr);
             if ("ÖBB".equals(trainType) || "ÖBB".equals(trainName))
