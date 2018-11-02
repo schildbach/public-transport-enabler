@@ -93,6 +93,8 @@ public class DsbProvider extends AbstractHafasLegacyProvider {
             return Product.BUS;
         if ("FLEXBUS".equals(ucType))
             return Product.BUS;
+        if ("FJERNBUS".equals(ucType))
+            return Product.BUS;
 
         if ("TELEBUS".equals(ucType))
             return Product.ON_DEMAND;
