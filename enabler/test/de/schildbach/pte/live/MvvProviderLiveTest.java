@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,12 +28,9 @@ import java.util.EnumSet;
 import org.junit.Test;
 
 import de.schildbach.pte.MvvProvider;
-import de.schildbach.pte.NetworkProvider.Accessibility;
-import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
-import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -117,8 +114,7 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void shortTrip() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "2", "München", "Marienplatz"),
-                null, new Location(LocationType.STATION, "10", "München", "Pasing"), new Date(), true, Product.ALL,
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                null, new Location(LocationType.STATION, "10", "München", "Pasing"), new Date(), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
@@ -130,16 +126,14 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest {
     public void longTrip() throws Exception {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.STATION, "1005530", 48002924, 11340144, "Starnberg", "Agentur für Arbeit"),
-                null, new Location(LocationType.STATION, null, null, "Ackermannstraße"), new Date(), true, Product.ALL,
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                null, new Location(LocationType.STATION, null, null, "Ackermannstraße"), new Date(), true, null);
         print(result);
     }
 
     @Test
     public void tripBetweenCoordinates() throws Exception {
         final QueryTripsResult result = queryTrips(Location.coord(48165238, 11577473), null,
-                Location.coord(47987199, 11326532), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-                Accessibility.NEUTRAL);
+                Location.coord(47987199, 11326532), new Date(), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
@@ -148,8 +142,7 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void tripBetweenCoordinateAndStation() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 48238341, 11478230), null,
-                new Location(LocationType.ANY, null, null, "Ostbahnhof"), new Date(), true, Product.ALL,
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Location(LocationType.ANY, null, null, "Ostbahnhof"), new Date(), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
@@ -159,8 +152,7 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest {
     public void tripBetweenAddresses() throws Exception {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.ADDRESS, null, null, "München, Maximilianstr. 1"), null,
-                new Location(LocationType.ADDRESS, null, null, "Starnberg, Jahnstraße 50"), new Date(), true,
-                Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Location(LocationType.ADDRESS, null, null, "Starnberg, Jahnstraße 50"), new Date(), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
@@ -170,7 +162,7 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest {
     public void tripBetweenStationAndAddress() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "1220", null, "Josephsburg"),
                 null, new Location(LocationType.ADDRESS, null, 48188018, 11574239, null, "München Frankfurter Ring 35"),
-                new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Date(), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
@@ -179,14 +171,12 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void queryTripInvalidStation() throws Exception {
         final QueryTripsResult result1 = queryTrips(new Location(LocationType.STATION, "2", "München", "Marienplatz"),
-                null, new Location(LocationType.STATION, "99999", 0, 0, null, null), new Date(), true, Product.ALL,
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                null, new Location(LocationType.STATION, "99999", 0, 0, null, null), new Date(), true, null);
 
         assertEquals(QueryTripsResult.Status.UNKNOWN_TO, result1.status);
 
         final QueryTripsResult result2 = queryTrips(new Location(LocationType.STATION, "99999", 0, 0, null, null), null,
-                new Location(LocationType.STATION, "2", "München", "Marienplatz"), new Date(), true, Product.ALL,
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "2", "München", "Marienplatz"), new Date(), true, null);
 
         assertEquals(QueryTripsResult.Status.UNKNOWN_FROM, result2.status);
     }

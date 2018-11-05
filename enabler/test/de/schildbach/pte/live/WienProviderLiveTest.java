@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,13 +27,10 @@ import java.util.EnumSet;
 
 import org.junit.Test;
 
-import de.schildbach.pte.NetworkProvider.Accessibility;
-import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.WienProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
-import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -101,7 +98,7 @@ public class WienProviderLiveTest extends AbstractProviderLiveTest {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.STATION, "60200657", 48200756, 16369001, "Wien", "Karlsplatz"), null,
                 new Location(LocationType.STATION, "60201094", 48198612, 16367719, "Wien", "Resselgasse"), new Date(),
-                true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
@@ -128,8 +125,7 @@ public class WienProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void tripBetweenCoordinates() throws Exception {
         final QueryTripsResult result = queryTrips(Location.coord(48180281, 16333551), null,
-                Location.coord(48240452, 16444788), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-                Accessibility.NEUTRAL);
+                Location.coord(48240452, 16444788), new Date(), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);

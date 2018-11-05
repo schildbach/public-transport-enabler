@@ -27,11 +27,9 @@ import java.util.EnumSet;
 import org.junit.Test;
 
 import de.schildbach.pte.CmtaProvider;
-import de.schildbach.pte.NetworkProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
-import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -91,8 +89,7 @@ public class CmtaProviderLiveTest extends AbstractProviderLiveTest {
     public void shortTrip() throws Exception {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.STATION, "591", null, "Capitol Station (NB)"), null,
-                new Location(LocationType.STATION, "5940", null, "Lavaca/17th (Midblock)"), new Date(), true,
-                Product.ALL, NetworkProvider.WalkSpeed.NORMAL, NetworkProvider.Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "5940", null, "Lavaca/17th (Midblock)"), new Date(), true, null);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         print(result);
 
@@ -106,8 +103,7 @@ public class CmtaProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void addressTrip() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, null, "1501 Colorado St"),
-                null, new Location(LocationType.ADDRESS, null, null, "4299 Duval St"), new Date(), true, Product.ALL,
-                NetworkProvider.WalkSpeed.NORMAL, NetworkProvider.Accessibility.NEUTRAL);
+                null, new Location(LocationType.ADDRESS, null, null, "4299 Duval St"), new Date(), true, null);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         print(result);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,6 +35,7 @@ import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
+import de.schildbach.pte.dto.TripOptions;
 
 /**
  * @author Andreas Schildbach
@@ -109,9 +110,9 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void shortTrip() throws Exception {
+
         final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "3000001", null, "Hauptwache"),
-                null, new Location(LocationType.STATION, "3000912", null, "Südbahnhof"), new Date(), true, Product.ALL,
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                null, new Location(LocationType.STATION, "3000912", null, "Südbahnhof"), new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
@@ -182,7 +183,7 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.STATION, "2200007", null, "Kassel Wilhelmshöhe"), null,
                 new Location(LocationType.STATION, "2200278", null, "Kassel Wilhelmshöher Weg"), new Date(), true,
-                Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
@@ -190,10 +191,12 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void slowTrip() throws Exception {
+        final TripOptions options = new TripOptions(Product.ALL, null, WalkSpeed.NORMAL, Accessibility.BARRIER_FREE,
+                null);
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.STATION, "3029079", 50017679, 8229480, "Mainz", "An den Dünen"), null,
                 new Location(LocationType.STATION, "3013508", 50142890, 8895203, "Hanau", "Beethovenplatz"), new Date(),
-                true, Product.ALL, WalkSpeed.NORMAL, Accessibility.BARRIER_FREE);
+                true, options);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
@@ -209,8 +212,7 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest {
     public void shortTripByName() throws Exception {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.ANY, null, null, "Frankfurt Bockenheimer Warte!"), null,
-                new Location(LocationType.ANY, null, null, "Frankfurt Hauptbahnhof!"), new Date(), true, Product.ALL,
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Location(LocationType.ANY, null, null, "Frankfurt Hauptbahnhof!"), new Date(), true, null);
         print(result);
     }
 
@@ -221,7 +223,7 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest {
                         "Hegelstrasse, 60316 Frankfurt am Main"),
                 null,
                 new Location(LocationType.ADDRESS, null, 50100364, 8615193, null, "Mainzer Landstrasse, Frankfurt"),
-                new Date(1378368840000l), true, Product.ALL, null, null);
+                new Date(1378368840000l), true, null);
         print(result);
 
         if (!result.context.canQueryLater())
@@ -236,7 +238,7 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.STATION, "3000909", 50094052, 8690923, null, "F Brauerei"), null,
                 new Location(LocationType.STATION, "3001201", 50119950, 8653924, null, "F Bockenheimer Warte"),
-                new Date(1378368840000l), true, Product.ALL, null, null);
+                new Date(1378368840000l), true, null);
         print(result);
 
         if (!result.context.canQueryLater())

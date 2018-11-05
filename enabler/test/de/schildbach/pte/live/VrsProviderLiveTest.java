@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,6 +51,7 @@ import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.dto.SuggestLocationsResult;
+import de.schildbach.pte.dto.TripOptions;
 import de.schildbach.pte.util.Iso8601Format;
 
 /**
@@ -264,8 +265,7 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
     public void anyTripAmbiguous() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "Köln"),
                 new Location(LocationType.ANY, null, null, "Leverkusen"),
-                new Location(LocationType.ANY, null, null, "Bonn"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-                Accessibility.NEUTRAL);
+                new Location(LocationType.ANY, null, null, "Bonn"), new Date(), true, null);
         assertEquals(QueryTripsResult.Status.AMBIGUOUS, result.status);
         assertNotNull(result.ambiguousFrom);
         assertNotNull(result.ambiguousVia);
@@ -275,8 +275,7 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void anyTripUnique() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "T-Mobile"), null,
-                new Location(LocationType.ANY, null, null, "Schauspielhalle"), new Date(), true, Product.ALL,
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Location(LocationType.ANY, null, null, "Schauspielhalle"), new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
     }
@@ -284,16 +283,14 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void anyTripUnknown() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "\1"), null,
-                new Location(LocationType.ANY, null, null, "\2"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-                Accessibility.NEUTRAL);
+                new Location(LocationType.ANY, null, null, "\2"), new Date(), true, null);
         assertEquals(QueryTripsResult.Status.UNKNOWN_FROM, result.status);
     }
 
     @Test
     public void tripEarlierLater() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8"), null,
-                new Location(LocationType.STATION, "9"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-                Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "9"), new Date(), true, null);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
         print(result);
@@ -317,8 +314,7 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void tripEarlierLaterCologneBerlin() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "1"), null,
-                new Location(LocationType.STATION, "11458"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-                Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "11458"), new Date(), true, null);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
         print(result);
@@ -333,10 +329,10 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void testTripWithProductFilter() throws Exception {
+        final TripOptions options = new TripOptions(EnumSet.of(Product.ON_DEMAND, Product.SUBWAY, Product.FERRY,
+                Product.TRAM, Product.CABLECAR, Product.BUS), null, WalkSpeed.NORMAL, Accessibility.NEUTRAL, null);
         final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "1504"), null,
-                new Location(LocationType.STATION, "1"), new Date(), true, EnumSet.of(Product.ON_DEMAND, Product.SUBWAY,
-                        Product.FERRY, Product.TRAM, Product.CABLECAR, Product.BUS),
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "1"), new Date(), true, options);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
         print(result);
@@ -345,8 +341,7 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void testTripBeuelKoelnSued() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "1504"), null,
-                new Location(LocationType.STATION, "25"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-                Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "25"), new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
@@ -355,8 +350,7 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void testTripBonnHbfBonnBeuel() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "687"), null,
-                new Location(LocationType.STATION, "1504"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-                Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "1504"), new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
@@ -365,8 +359,7 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void testTripBonnHbfDorotheenstr() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "687"), null,
-                new Location(LocationType.STATION, "1150"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-                Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "1150"), new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
@@ -375,8 +368,7 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void testTripKoelnHbfBresslauerPlatz() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8"), null,
-                new Location(LocationType.STATION, "9"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-                Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "9"), new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
@@ -385,8 +377,7 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void testTripDuerenLammersdorf() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "6868"), null,
-                new Location(LocationType.STATION, "21322"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-                Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "21322"), new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
@@ -395,8 +386,7 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void testTripEhrenfeldNeumarkt() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "251"), null,
-                new Location(LocationType.STATION, "2"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-                Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "2"), new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
@@ -404,10 +394,11 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void testTripCologneWickede() throws Exception {
+        final TripOptions options = new TripOptions(
+                EnumSet.of(Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.SUBWAY, Product.TRAM), null,
+                WalkSpeed.NORMAL, Accessibility.NEUTRAL, null);
         final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8"), null,
-                new Location(LocationType.STATION, "10781"), new Date(), true,
-                EnumSet.of(Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.SUBWAY, Product.TRAM),
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "10781"), new Date(), true, options);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
@@ -416,8 +407,7 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void testTripByCoord() throws Exception {
         final QueryTripsResult result = queryTrips(Location.coord(50740530, 7129200), null,
-                Location.coord(50933930, 6932440), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-                Accessibility.NEUTRAL);
+                Location.coord(50933930, 6932440), new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
@@ -428,8 +418,7 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.ADDRESS, null /* id */, 50909350, 6676310, "Kerpen-Sindorf", "Erftstraße 43"),
                 null, new Location(LocationType.ADDRESS, null /* id */, 50923000, 6818440, "Frechen", "Zedernweg 1"),
-                Iso8601Format.parseDateTime("2015-03-17 21:11:18"), true, Product.ALL, WalkSpeed.NORMAL,
-                Accessibility.NEUTRAL);
+                Iso8601Format.parseDateTime("2015-03-17 21:11:18"), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
@@ -438,8 +427,7 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void testTripWithSurchargeInfo() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "687"), null,
-                new Location(LocationType.STATION, "892"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-                Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "892"), new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
@@ -447,9 +435,10 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void testTripAachenEschweilerBus() throws Exception {
+        final TripOptions options = new TripOptions(EnumSet.of(Product.BUS), null, WalkSpeed.NORMAL,
+                Accessibility.NEUTRAL, null);
         final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "10004"), null,
-                new Location(LocationType.STATION, "10003"), new Date(), true, EnumSet.of(Product.BUS),
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "10003"), new Date(), true, options);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
@@ -466,8 +455,7 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
                 int toLat = latFrom + rand.nextInt(latTo - latFrom);
                 int toLon = lonFrom + rand.nextInt(lonTo - lonFrom);
                 final QueryTripsResult result = queryTrips(Location.coord(fromLat, fromLon), null,
-                        Location.coord(toLat, toLon), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-                        Accessibility.NEUTRAL);
+                        Location.coord(toLat, toLon), new Date(), true, null);
                 System.out.println("# " + (i + 1));
                 if (result.status.equals(QueryTripsResult.Status.OK)) {
                     print(result);

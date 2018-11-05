@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,13 +26,10 @@ import java.util.Date;
 
 import org.junit.Test;
 
-import de.schildbach.pte.NetworkProvider.Accessibility;
-import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.VbnProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
-import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -126,8 +123,7 @@ public class VbnProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void shortTrip() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8096109", null, "Oldenburg"),
-                null, new Location(LocationType.STATION, "625398", null, "Bremerhaven"), new Date(), true, Product.ALL,
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                null, new Location(LocationType.STATION, "625398", null, "Bremerhaven"), new Date(), true, null);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
 
@@ -160,7 +156,7 @@ public class VbnProviderLiveTest extends AbstractProviderLiveTest {
     public void shortTripGoettingen() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8000128", null, "Göttingen"),
                 null, new Location(LocationType.STATION, "1140061", null, "Göttingen Nikolausberger Weg"), new Date(),
-                true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                true, null);
         print(result);
 
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
@@ -171,7 +167,7 @@ public class VbnProviderLiveTest extends AbstractProviderLiveTest {
     public void tripDateOutsideTimetablePeriod() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8096109", null, "Oldenburg"),
                 null, new Location(LocationType.STATION, "625398", null, "Bremerhaven"), new Date(1155822689759l), true,
-                Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                null);
         assertEquals(QueryTripsResult.Status.INVALID_DATE, result.status);
     }
 }

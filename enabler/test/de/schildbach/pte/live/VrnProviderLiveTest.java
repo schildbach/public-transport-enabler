@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,13 +26,10 @@ import java.util.Date;
 
 import org.junit.Test;
 
-import de.schildbach.pte.NetworkProvider.Accessibility;
-import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.VrnProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
-import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -108,7 +105,7 @@ public class VrnProviderLiveTest extends AbstractProviderLiveTest {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.STATION, "6002417", 49479748, 8469938, "Mannheim", "Mannheim, Hauptbahnhof"),
                 null, new Location(LocationType.STATION, "6005542", 49482892, 8473050, "Mannheim", "Kunsthalle"),
-                new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
@@ -135,8 +132,7 @@ public class VrnProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void shortTrip2() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "17002402", null, "Bahnhof"),
-                null, new Location(LocationType.STATION, "17009001", null, "Bahnhof"), new Date(), true, Product.ALL,
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                null, new Location(LocationType.STATION, "17009001", null, "Bahnhof"), new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
@@ -163,8 +159,7 @@ public class VrnProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void tripWithUmlaut() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "Käfertal"), null,
-                new Location(LocationType.STATION, "6002417", "Mannheim", "Hauptbahnhof"), new Date(), true,
-                Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "6002417", "Mannheim", "Hauptbahnhof"), new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);

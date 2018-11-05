@@ -24,12 +24,9 @@ import java.util.Date;
 import org.junit.Test;
 
 import de.schildbach.pte.InvgProvider;
-import de.schildbach.pte.NetworkProvider.Accessibility;
-import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
-import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -76,8 +73,7 @@ public class InvgProviderLiveTest extends AbstractProviderLiveTest {
     public void shortTrip() throws Exception {
         final Location from = new Location(LocationType.STATION, "60706", null, "Rathausplatz");
         final Location to = new Location(LocationType.STATION, "146704", null, "Hochschule");
-        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-                Accessibility.NEUTRAL);
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
@@ -87,8 +83,7 @@ public class InvgProviderLiveTest extends AbstractProviderLiveTest {
     public void tripBetweenCoordinates() throws Exception {
         final Location from = Location.coord(48744414, 11434603); // Ingolstadt Hbf
         final Location to = Location.coord(48751558, 11426546); // Ingolstadt Nordbahnhof
-        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-                Accessibility.NEUTRAL);
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);

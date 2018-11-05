@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,12 +24,9 @@ import java.util.Date;
 import org.junit.Test;
 
 import de.schildbach.pte.LuProvider;
-import de.schildbach.pte.NetworkProvider.Accessibility;
-import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
-import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -76,8 +73,7 @@ public class LuProviderLiveTest extends AbstractProviderLiveTest {
     public void shortTrip() throws Exception {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.STATION, "200416001", null, "Cité Aéroport"), null,
-                new Location(LocationType.STATION, "200405035", "Luxembourg", "Gare Centrale"), new Date(), true,
-                Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "200405035", "Luxembourg", "Gare Centrale"), new Date(), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
@@ -87,8 +83,7 @@ public class LuProviderLiveTest extends AbstractProviderLiveTest {
     public void addressTrip() throws Exception {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.ADDRESS, null, 49611610, 6130265, null, "Luxembourg, Rue Génistre 2"), null,
-                new Location(LocationType.STATION, "200405035", "Luxembourg", "Gare Centrale"), new Date(), true,
-                Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "200405035", "Luxembourg", "Gare Centrale"), new Date(), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);

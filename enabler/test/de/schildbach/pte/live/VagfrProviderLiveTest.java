@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,13 +26,10 @@ import java.util.Date;
 
 import org.junit.Test;
 
-import de.schildbach.pte.NetworkProvider.Accessibility;
-import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.VagfrProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
-import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -80,8 +77,7 @@ public class VagfrProviderLiveTest extends AbstractProviderLiveTest {
     public void shortTrip() throws Exception {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.STATION, "6930100", null, "Freiburg Bertoldsbrunnen"), null,
-                new Location(LocationType.STATION, "6930101", null, "Freiburg Siegesdenkmal"), new Date(), true,
-                Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "6930101", null, "Freiburg Siegesdenkmal"), new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
@@ -108,8 +104,7 @@ public class VagfrProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void trip() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "6930120"), null,
-                new Location(LocationType.STATION, "6930071"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-                Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "6930071"), new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
     }

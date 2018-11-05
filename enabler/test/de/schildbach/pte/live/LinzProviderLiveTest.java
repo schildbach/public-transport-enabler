@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,12 +25,9 @@ import java.util.Date;
 import org.junit.Test;
 
 import de.schildbach.pte.LinzProvider;
-import de.schildbach.pte.NetworkProvider.Accessibility;
-import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
-import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -88,16 +85,14 @@ public class LinzProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void incompleteTrip() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "linz"), null,
-                new Location(LocationType.ANY, null, null, "gel"), new Date(), true, Product.ALL, WalkSpeed.FAST,
-                Accessibility.NEUTRAL);
+                new Location(LocationType.ANY, null, null, "gel"), new Date(), true, null);
         print(result);
     }
 
     @Test
     public void shortTrip() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, null, null, "Linz Hauptbahnhof"),
-                null, new Location(LocationType.STATION, null, null, "Linz Auwiesen"), new Date(), true, Product.ALL,
-                WalkSpeed.FAST, Accessibility.NEUTRAL);
+                null, new Location(LocationType.STATION, null, null, "Linz Auwiesen"), new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
@@ -124,8 +119,7 @@ public class LinzProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void longTrip() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, null, null, "Linz Auwiesen"),
-                null, new Location(LocationType.STATION, null, null, "Linz Hafen"), new Date(), true, Product.ALL,
-                WalkSpeed.SLOW, Accessibility.NEUTRAL);
+                null, new Location(LocationType.STATION, null, null, "Linz Hafen"), new Date(), true, null);
         print(result);
         // final QueryTripsResult laterResult = queryMoreTrips(provider, result.context, true);
         // print(laterResult);

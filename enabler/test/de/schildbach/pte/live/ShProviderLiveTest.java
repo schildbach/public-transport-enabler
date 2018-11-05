@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,13 +24,10 @@ import java.util.Date;
 
 import org.junit.Test;
 
-import de.schildbach.pte.NetworkProvider.Accessibility;
-import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.ShProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
-import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -96,8 +93,7 @@ public class ShProviderLiveTest extends AbstractProviderLiveTest {
     public void shortTrip() throws Exception {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.STATION, "8002547", null, "Flughafen Hamburg"), null,
-                new Location(LocationType.STATION, "8003781", null, "Lübeck Airport"), new Date(), true, Product.ALL,
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "8003781", null, "Lübeck Airport"), new Date(), true, null);
         print(result);
 
         if (!result.context.canQueryLater())
@@ -110,8 +106,7 @@ public class ShProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void tripKiel() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "3490015"), null,
-                new Location(LocationType.STATION, "706923"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-                Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "706923"), new Date(), true, null);
         print(result);
     }
 
@@ -119,7 +114,7 @@ public class ShProviderLiveTest extends AbstractProviderLiveTest {
     public void tripKielVia() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "3490015"),
                 new Location(LocationType.STATION, "3490020"), new Location(LocationType.STATION, "706923"), new Date(),
-                true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                true, null);
         print(result);
     }
 
@@ -128,15 +123,14 @@ public class ShProviderLiveTest extends AbstractProviderLiveTest {
         final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "3490015"), null,
                 new Location(LocationType.POI,
                         "A=4@O=Kiel, Hiroshimapark@X=10131697@Y=54324466@U=104@L=970001375@B=1@V=14.9,@p=1397713274@"),
-                new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Date(), true, null);
         print(result);
     }
 
     @Test
     public void trip_errorTooClose() throws Exception {
         final Location station = new Location(LocationType.STATION, "003665026");
-        final QueryTripsResult result = queryTrips(station, null, station, new Date(), true, Product.ALL,
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+        final QueryTripsResult result = queryTrips(station, null, station, new Date(), true, null);
         assertEquals(QueryTripsResult.Status.TOO_CLOSE, result.status);
     }
 }

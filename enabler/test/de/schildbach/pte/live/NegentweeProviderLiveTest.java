@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,6 @@ import java.util.EnumSet;
 import org.junit.Test;
 
 import de.schildbach.pte.NegentweeProvider;
-import de.schildbach.pte.NetworkProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
@@ -134,7 +133,7 @@ public class NegentweeProviderLiveTest extends AbstractProviderLiveTest {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.STATION, "station-amsterdam-centraal", null, "Amsterdam Centraal"), null,
                 new Location(LocationType.STATION, "station-amsterdam-zuid", null, "Amsterdam Zuid"), new Date(), true,
-                null, NetworkProvider.WalkSpeed.FAST, NetworkProvider.Accessibility.NEUTRAL);
+                null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
     }
@@ -144,7 +143,7 @@ public class NegentweeProviderLiveTest extends AbstractProviderLiveTest {
         final QueryTripsResult result1 = queryTrips(
                 new Location(LocationType.STATION, "station-amsterdam-centraal", null, "Amsterdam Centraal"), null,
                 new Location(LocationType.STATION, "station-rotterdam-centraal", null, "Rotterdam Centraal"),
-                new Date(), true, null, NetworkProvider.WalkSpeed.FAST, NetworkProvider.Accessibility.NEUTRAL);
+                new Date(), true, null);
         print(result1);
 
         assertEquals(QueryTripsResult.Status.OK, result1.status);
@@ -160,8 +159,7 @@ public class NegentweeProviderLiveTest extends AbstractProviderLiveTest {
     public void ambiguousTrip() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "Amsterdam Zuid"),
                 new Location(LocationType.STATION, "station-amsterdam-centraal", null, "Amsterdam Centraal"),
-                new Location(LocationType.ANY, null, null, "Rotterdam Centraal"), new Date(), true, null,
-                NetworkProvider.WalkSpeed.FAST, NetworkProvider.Accessibility.NEUTRAL);
+                new Location(LocationType.ANY, null, null, "Rotterdam Centraal"), new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.AMBIGUOUS, result.status);
     }
@@ -172,7 +170,7 @@ public class NegentweeProviderLiveTest extends AbstractProviderLiveTest {
                 new Location(LocationType.ADDRESS, "amsterdam/prins-hendrikkade-80e", null, "Prins Hendrikkade"), null,
                 new Location(LocationType.STATION, "breda/bushalte-cornelis-florisstraat", null,
                         "Cornelis Florisstraat"),
-                new Date(), true, null, NetworkProvider.WalkSpeed.FAST, NetworkProvider.Accessibility.NEUTRAL);
+                new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
     }
@@ -181,8 +179,7 @@ public class NegentweeProviderLiveTest extends AbstractProviderLiveTest {
     public void coordinatesTrip() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.COORD, null, new Point(51677273, 4437548)),
                 new Location(LocationType.COORD, null, new Point(52162772, 4583171)),
-                new Location(LocationType.COORD, null, new Point(53347140, 6720583)), new Date(), true, null,
-                NetworkProvider.WalkSpeed.FAST, NetworkProvider.Accessibility.NEUTRAL);
+                new Location(LocationType.COORD, null, new Point(53347140, 6720583)), new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
     }

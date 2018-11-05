@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@ import de.schildbach.pte.dto.QueryTripsContext;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.dto.SuggestLocationsResult;
+import de.schildbach.pte.dto.TripOptions;
 
 /**
  * @author Antonio El Khoury
@@ -169,7 +170,7 @@ public abstract class AbstractNavitiaProviderLiveTest extends AbstractProviderLi
         assertTrue(toResult.getLocations().size() > 0);
 
         final QueryTripsResult result = queryTrips(fromResult.getLocations().get(0), null,
-                toResult.getLocations().get(0), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                toResult.getLocations().get(0), new Date(), true, null);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         print(result);
     }
@@ -180,9 +181,10 @@ public abstract class AbstractNavitiaProviderLiveTest extends AbstractProviderLi
         final SuggestLocationsResult toResult = suggestLocations(to);
         assertTrue(toResult.getLocations().size() > 0);
 
+        final TripOptions options = new TripOptions(EnumSet.noneOf(Product.class), null, WalkSpeed.NORMAL,
+                Accessibility.NEUTRAL, null);
         final QueryTripsResult result = queryTrips(fromResult.getLocations().get(0), null,
-                toResult.getLocations().get(0), new Date(), true, EnumSet.noneOf(Product.class), WalkSpeed.NORMAL,
-                Accessibility.NEUTRAL);
+                toResult.getLocations().get(0), new Date(), true, options);
         assertEquals(QueryTripsResult.Status.NO_TRIPS, result.status);
         print(result);
     }
@@ -192,7 +194,7 @@ public abstract class AbstractNavitiaProviderLiveTest extends AbstractProviderLi
         assertTrue(toResult.getLocations().size() > 0);
 
         final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "stop_area:RTP:SA:999999"), null,
-                toResult.getLocations().get(0), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                toResult.getLocations().get(0), new Date(), true, null);
         assertEquals(QueryTripsResult.Status.UNKNOWN_FROM, result.status);
         print(result);
     }
@@ -202,8 +204,7 @@ public abstract class AbstractNavitiaProviderLiveTest extends AbstractProviderLi
         assertTrue(fromResult.getLocations().size() > 0);
 
         final QueryTripsResult result = queryTrips(fromResult.getLocations().get(0), null,
-                new Location(LocationType.STATION, "stop_area:RTP:SA:999999"), new Date(), true, Product.ALL,
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "stop_area:RTP:SA:999999"), new Date(), true, null);
         assertEquals(QueryTripsResult.Status.UNKNOWN_TO, result.status);
         print(result);
     }
@@ -212,8 +213,7 @@ public abstract class AbstractNavitiaProviderLiveTest extends AbstractProviderLi
         final SuggestLocationsResult toResult = suggestLocations(to);
         assertTrue(toResult.getLocations().size() > 0);
 
-        final QueryTripsResult result = queryTrips(from, null, toResult.getLocations().get(0), new Date(), true,
-                Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+        final QueryTripsResult result = queryTrips(from, null, toResult.getLocations().get(0), new Date(), true, null);
         assertEquals(QueryTripsResult.Status.AMBIGUOUS, result.status);
         assertTrue(result.ambiguousFrom != null);
         assertTrue(result.ambiguousFrom.size() > 0);
@@ -224,8 +224,7 @@ public abstract class AbstractNavitiaProviderLiveTest extends AbstractProviderLi
         final SuggestLocationsResult fromResult = suggestLocations(from);
         assertTrue(fromResult.getLocations().size() > 0);
 
-        final QueryTripsResult result = queryTrips(fromResult.getLocations().get(0), null, to, new Date(), true,
-                Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+        final QueryTripsResult result = queryTrips(fromResult.getLocations().get(0), null, to, new Date(), true, null);
         assertEquals(QueryTripsResult.Status.AMBIGUOUS, result.status);
         assertTrue(result.ambiguousTo != null);
         assertTrue(result.ambiguousTo.size() > 0);
@@ -238,8 +237,9 @@ public abstract class AbstractNavitiaProviderLiveTest extends AbstractProviderLi
         final SuggestLocationsResult toResult = suggestLocations(to);
         assertTrue(toResult.getLocations().size() > 0);
 
+        final TripOptions options = new TripOptions(Product.ALL, null, WalkSpeed.SLOW, Accessibility.NEUTRAL, null);
         final QueryTripsResult result = queryTrips(fromResult.getLocations().get(0), null,
-                toResult.getLocations().get(0), new Date(), true, Product.ALL, WalkSpeed.SLOW, Accessibility.NEUTRAL);
+                toResult.getLocations().get(0), new Date(), true, options);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         print(result);
     }
@@ -250,8 +250,9 @@ public abstract class AbstractNavitiaProviderLiveTest extends AbstractProviderLi
         final SuggestLocationsResult toResult = suggestLocations(to);
         assertTrue(toResult.getLocations().size() > 0);
 
+        final TripOptions options = new TripOptions(Product.ALL, null, WalkSpeed.FAST, Accessibility.NEUTRAL, null);
         final QueryTripsResult result = queryTrips(fromResult.getLocations().get(0), null,
-                toResult.getLocations().get(0), new Date(), true, Product.ALL, WalkSpeed.FAST, Accessibility.NEUTRAL);
+                toResult.getLocations().get(0), new Date(), true, options);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         print(result);
     }
@@ -269,8 +270,7 @@ public abstract class AbstractNavitiaProviderLiveTest extends AbstractProviderLi
         assertEquals(toLocation.type, LocationType.POI);
         print(toResult);
 
-        final QueryTripsResult tripsResult = queryTrips(fromLocation, null, toLocation, new Date(), true, Product.ALL,
-                NetworkProvider.WalkSpeed.NORMAL, NetworkProvider.Accessibility.NEUTRAL);
+        final QueryTripsResult tripsResult = queryTrips(fromLocation, null, toLocation, new Date(), true, null);
         assertEquals(QueryTripsResult.Status.OK, tripsResult.status);
         print(tripsResult);
     }
@@ -282,7 +282,7 @@ public abstract class AbstractNavitiaProviderLiveTest extends AbstractProviderLi
         assertTrue(toResult.getLocations().size() > 0);
 
         final QueryTripsResult result = queryTrips(fromResult.getLocations().get(0), null,
-                toResult.getLocations().get(0), new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                toResult.getLocations().get(0), new Date(), true, null);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         final QueryTripsContext context = result.context;
 

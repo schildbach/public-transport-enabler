@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,13 +24,10 @@ import java.util.Date;
 
 import org.junit.Test;
 
-import de.schildbach.pte.NetworkProvider.Accessibility;
-import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.OebbProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
-import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -93,8 +90,7 @@ public class OebbProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void shortTrip() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "1140101", null, "Linz"), null,
-                new Location(LocationType.STATION, "1190100", null, "Wien"), new Date(), true, Product.ALL,
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "1190100", null, "Wien"), new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
@@ -105,8 +101,7 @@ public class OebbProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void slowTrip() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "Ramsen Zoll!"), null,
-                new Location(LocationType.ANY, null, null, "Azuga!"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-                Accessibility.NEUTRAL);
+                new Location(LocationType.ANY, null, null, "Azuga!"), new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
@@ -117,8 +112,7 @@ public class OebbProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void tripWithFootway() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "Graz, Haselweg!"), null,
-                new Location(LocationType.ANY, null, null, "Innsbruck, Gumppstraße 69!"), new Date(), true, Product.ALL,
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Location(LocationType.ANY, null, null, "Innsbruck, Gumppstraße 69!"), new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
@@ -131,7 +125,7 @@ public class OebbProviderLiveTest extends AbstractProviderLiveTest {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.ANY, null, null, "Wien, Krottenbachstraße 110!"), null,
                 new Location(LocationType.ADDRESS, null, null, "Wien, Meidlinger Hauptstraße 1!"), new Date(), true,
-                Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);

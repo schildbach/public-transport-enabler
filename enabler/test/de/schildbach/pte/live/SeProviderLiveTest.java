@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,13 +25,10 @@ import java.util.Date;
 
 import org.junit.Test;
 
-import de.schildbach.pte.NetworkProvider.Accessibility;
-import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.SeProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
-import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -91,8 +88,7 @@ public class SeProviderLiveTest extends AbstractProviderLiveTest {
     public void shortTrip() throws Exception {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.STATION, "740014867", null, "Luleå Airport"), null,
-                new Location(LocationType.STATION, "740098000", null, "STOCKHOLM"), new Date(), true, Product.ALL,
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "740098000", null, "STOCKHOLM"), new Date(), true, null);
         print(result);
 
         if (!result.context.canQueryLater())
@@ -106,7 +102,7 @@ public class SeProviderLiveTest extends AbstractProviderLiveTest {
     public void shortStockholmTrip() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "740098000", null, "STOCKHOLM"),
                 null, new Location(LocationType.STATION, "740020101", "Stockholm", "Slussen T-bana"), new Date(), true,
-                Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                null);
         print(result);
 
         if (!result.context.canQueryLater())
@@ -120,8 +116,7 @@ public class SeProviderLiveTest extends AbstractProviderLiveTest {
     public void longTrip() throws Exception {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.STATION, "740098086", 67859847, 20212802, null, "KIRUNA"), null,
-                new Location(LocationType.STATION, "740098000", null, "STOCKHOLM"), new Date(), true, Product.ALL,
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "740098000", null, "STOCKHOLM"), new Date(), true, null);
         print(result);
 
         if (!result.context.canQueryLater())

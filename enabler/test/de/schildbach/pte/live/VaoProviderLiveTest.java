@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,13 +26,10 @@ import java.util.Date;
 
 import org.junit.Test;
 
-import de.schildbach.pte.NetworkProvider.Accessibility;
-import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.VaoProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
-import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -124,8 +121,7 @@ public class VaoProviderLiveTest extends AbstractProviderLiveTest {
     public void shortTripFeldkirch() throws Exception {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.STATION, "480082200", null, "Feldkirch Katzenturm"), null,
-                new Location(LocationType.STATION, "480081700", null, "Feldkirch Bahnhof"), new Date(), true,
-                Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "480081700", null, "Feldkirch Bahnhof"), new Date(), true, null);
         print(result);
 
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
@@ -142,8 +138,7 @@ public class VaoProviderLiveTest extends AbstractProviderLiveTest {
     public void shortTripWien() throws Exception {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.STATION, "490132000", null, "Wien Stephansplatz"), null,
-                new Location(LocationType.STATION, "490024500", null, "Wien Stubentor"), new Date(), true, Product.ALL,
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "490024500", null, "Wien Stubentor"), new Date(), true, null);
         print(result);
 
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
@@ -161,7 +156,7 @@ public class VaoProviderLiveTest extends AbstractProviderLiveTest {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.STATION, "455000900", 47808976, 13056409, "Salzburg", "Vogelweiderstraße"),
                 null, new Location(LocationType.STATION, "455084400", 47811556, 13050278, "Salzburg", "Merianstraße"),
-                new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
@@ -192,15 +187,15 @@ public class VaoProviderLiveTest extends AbstractProviderLiveTest {
                         "A=2@O=6800 Feldkirch, Kapfweg 6@X=9585539@Y=47239257@U=103@L=980092305@B=1@p=1437727591@",
                         "6800 Feldkirch", "Kapfweg 6"),
                 null, new Location(LocationType.STATION, "480081700", null, "Feldkirch Bahnhof"), new Date(), true,
-                Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                null);
         print(result);
     }
 
     @Test
     public void tripCoordinateToStation() throws Exception {
+
         final QueryTripsResult result = queryTrips(Location.coord(47238096, 9585581), null,
-                new Location(LocationType.STATION, "480081700", null, "Feldkirch Bahnhof"), new Date(), true,
-                Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "480081700", null, "Feldkirch Bahnhof"), new Date(), true, null);
         print(result);
     }
 }

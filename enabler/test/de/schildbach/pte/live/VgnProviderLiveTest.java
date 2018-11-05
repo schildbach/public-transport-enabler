@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,13 +24,10 @@ import java.util.Date;
 
 import org.junit.Test;
 
-import de.schildbach.pte.NetworkProvider.Accessibility;
-import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.VgnProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
-import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -81,8 +78,7 @@ public class VgnProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void shortTrip() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "451", "Nürnberg", "Ostring"),
-                null, new Location(LocationType.STATION, "510", "Nürnberg", "Hauptbahnhof"), new Date(), true,
-                Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                null, new Location(LocationType.STATION, "510", "Nürnberg", "Hauptbahnhof"), new Date(), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
@@ -94,7 +90,7 @@ public class VgnProviderLiveTest extends AbstractProviderLiveTest {
                 new Location(LocationType.POI,
                         "poiID:246:9564000:1:Grundschule Grimmstr.:Nürnberg:Grundschule Grimmstr.:ANY:POI:4436708:678322:NAV4:VGN",
                         49468692, 11125334, "Nürnberg", "Grundschule Grimmstr."),
-                new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Date(), true, null);
         print(result);
 
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
@@ -106,7 +102,7 @@ public class VgnProviderLiveTest extends AbstractProviderLiveTest {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.STATION, "1756", "Nürnberg", "Saarbrückener Str."), null,
                 new Location(LocationType.ADDRESS, null, 49437392, 11094524, "Nürnberg", "Wodanstraße 25"), new Date(),
-                false, Product.ALL, WalkSpeed.FAST, Accessibility.NEUTRAL);
+                false, null);
         print(result);
 
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);

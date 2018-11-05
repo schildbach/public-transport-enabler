@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,13 +24,10 @@ import java.util.Date;
 
 import org.junit.Test;
 
-import de.schildbach.pte.NetworkProvider.Accessibility;
-import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.TlemProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
-import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -95,8 +92,7 @@ public class TlemProviderLiveTest extends AbstractProviderLiveTest {
     public void shortTrip1() throws Exception {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.STATION, "1008730", null, "King & Queen Wharf"), null,
-                new Location(LocationType.STATION, "1006433", null, "Edinburgh Court"), new Date(), true, Product.ALL,
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "1006433", null, "Edinburgh Court"), new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
@@ -125,10 +121,9 @@ public class TlemProviderLiveTest extends AbstractProviderLiveTest {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.STATION, "2099014", 52478184, -1898364, "Birmingham",
                         "Birmingham New Street Rail Station"),
-                null,
-                new Location(LocationType.STATION, "2099150", 52585468, -2122962, "Wolverhampton",
+                null, new Location(LocationType.STATION, "2099150", 52585468, -2122962, "Wolverhampton",
                         "Wolverhampton Rail Station"),
-                new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
@@ -159,7 +154,7 @@ public class TlemProviderLiveTest extends AbstractProviderLiveTest {
                         "Bullingdon Prison"),
                 null,
                 new Location(LocationType.STATION, "60006013", 51856612, -1112904, "Lower Arncott", "The Plough E"),
-                new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
@@ -191,7 +186,7 @@ public class TlemProviderLiveTest extends AbstractProviderLiveTest {
                         -314316, "Ham (London)", "Statue"),
                 null,
                 new Location(LocationType.ADDRESS, "streetID:106269::31117001:-1", "London", "Cannon Street, London"),
-                new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Date(), true, null);
         print(result);
     }
 
@@ -200,15 +195,14 @@ public class TlemProviderLiveTest extends AbstractProviderLiveTest {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.ADDRESS, "streetID:203417::31117006:-1", "London", "Kings Cross, London"),
                 null, new Location(LocationType.STATION, "1002070", 51508530, 46706, "Royal Albert", "Royal Albert"),
-                new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Date(), true, null);
         print(result);
     }
 
     @Test
     public void tripPostcode() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "se7 7tr"), null,
-                new Location(LocationType.ANY, null, null, "n9 0nx"), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-                Accessibility.NEUTRAL);
+                new Location(LocationType.ANY, null, null, "n9 0nx"), new Date(), true, null);
         print(result);
     }
 }

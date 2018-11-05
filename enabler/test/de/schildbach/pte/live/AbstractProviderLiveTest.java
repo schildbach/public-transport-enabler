@@ -24,17 +24,13 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.Properties;
-import java.util.Set;
 
 import javax.annotation.Nullable;
 
 import de.schildbach.pte.NetworkProvider;
-import de.schildbach.pte.NetworkProvider.Accessibility;
-import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
-import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsContext;
 import de.schildbach.pte.dto.QueryTripsResult;
@@ -122,10 +118,8 @@ public abstract class AbstractProviderLiveTest {
     }
 
     protected final QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to,
-            final Date date, final boolean dep, final @Nullable Set<Product> products,
-            final @Nullable WalkSpeed walkSpeed, final @Nullable Accessibility accessibility) throws IOException {
-        return provider.queryTrips(from, via, to, date, dep,
-                new TripOptions(products, null, walkSpeed, accessibility, null));
+            final Date date, final boolean dep, final @Nullable TripOptions options) throws IOException {
+        return provider.queryTrips(from, via, to, date, dep, options);
     }
 
     protected final QueryTripsResult queryMoreTrips(final QueryTripsContext context, final boolean later)

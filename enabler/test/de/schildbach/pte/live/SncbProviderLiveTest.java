@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,13 +23,10 @@ import java.util.Date;
 
 import org.junit.Test;
 
-import de.schildbach.pte.NetworkProvider.Accessibility;
-import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.SncbProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
-import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -88,8 +85,7 @@ public class SncbProviderLiveTest extends AbstractProviderLiveTest {
     public void shortTrip() throws Exception {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.STATION, "8821006", "Antwerpen", "Centraal"), null,
-                new Location(LocationType.STATION, "8813003", "Brussel", "Centraal"), new Date(), true, null,
-                WalkSpeed.FAST, Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "8813003", "Brussel", "Centraal"), new Date(), true, null);
         print(result);
 
         if (result.context == null)
@@ -103,8 +99,7 @@ public class SncbProviderLiveTest extends AbstractProviderLiveTest {
     public void longTrip() throws Exception {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.STATION, "207280", "Brussel", "Wannecouter"), null,
-                new Location(LocationType.STATION, "207272", "Brussel", "Stadion"), new Date(), true, null,
-                WalkSpeed.FAST, Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "207272", "Brussel", "Stadion"), new Date(), true, null);
         print(result);
 
         if (result.context == null)
@@ -118,8 +113,7 @@ public class SncbProviderLiveTest extends AbstractProviderLiveTest {
     public void tripFromAddress() throws Exception {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.ADDRESS, null, null, "Bruxelles - Haren, Rue Paul Janson 9"), null,
-                new Location(LocationType.STATION, "8500010", null, "Basel"), new Date(), true, Product.ALL,
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "8500010", null, "Basel"), new Date(), true, null);
         print(result);
 
         if (result.context == null)

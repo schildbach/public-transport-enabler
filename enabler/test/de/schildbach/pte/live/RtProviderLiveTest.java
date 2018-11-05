@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,13 +23,10 @@ import java.util.Date;
 
 import org.junit.Test;
 
-import de.schildbach.pte.NetworkProvider.Accessibility;
-import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.RtProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
-import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -89,7 +86,7 @@ public class RtProviderLiveTest extends AbstractProviderLiveTest {
     public void shortTrip() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8503000", null, "Zürich HB"),
                 null, new Location(LocationType.STATION, "8507785", null, "Bern, Hauptbahnhof"), new Date(), true,
-                Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
@@ -99,8 +96,7 @@ public class RtProviderLiveTest extends AbstractProviderLiveTest {
     public void slowTrip() throws Exception {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.ANY, null, null, "Schocherswil, Alte Post!"), null,
-                new Location(LocationType.ANY, null, null, "Laconnex, Mollach"), new Date(), true, Product.ALL,
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Location(LocationType.ANY, null, null, "Laconnex, Mollach"), new Date(), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
@@ -110,8 +106,7 @@ public class RtProviderLiveTest extends AbstractProviderLiveTest {
     public void tripWithFootway() throws Exception {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.ADDRESS, null, null, "Spiez, Seestraße 62"), null,
-                new Location(LocationType.ADDRESS, null, null, "Einsiedeln, Erlenmoosweg 24"), new Date(), true,
-                Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Location(LocationType.ADDRESS, null, null, "Einsiedeln, Erlenmoosweg 24"), new Date(), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
@@ -123,7 +118,7 @@ public class RtProviderLiveTest extends AbstractProviderLiveTest {
                 new Location(LocationType.ADDRESS, null, 51521886, -51447, null,
                         "26 Coopers Close, Poplar, Greater London E1 4, Vereinigtes Königreich"),
                 null, new Location(LocationType.STATION, "8096022", 50941312, 6967206, null, "COLOGNE"), new Date(),
-                true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
@@ -133,8 +128,7 @@ public class RtProviderLiveTest extends AbstractProviderLiveTest {
     public void viaTrip() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8400056", null, "Amsterdam RAI"),
                 new Location(LocationType.STATION, "8400058", null, "Amsterdam Centraal"),
-                new Location(LocationType.STATION, "8000085", null, "Düsseldorf Hbf"), new Date(), true, Product.ALL,
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "8000085", null, "Düsseldorf Hbf"), new Date(), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
@@ -143,8 +137,7 @@ public class RtProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void crossStateTrip() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8000207", null, "Köln Hbf"),
-                null, new Location(LocationType.STATION, "6096001", null, "DUBLIN"), new Date(), true, Product.ALL,
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                null, new Location(LocationType.STATION, "6096001", null, "DUBLIN"), new Date(), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);

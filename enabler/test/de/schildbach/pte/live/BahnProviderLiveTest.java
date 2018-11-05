@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,6 +36,7 @@ import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
+import de.schildbach.pte.dto.TripOptions;
 
 /**
  * @author Andreas Schildbach
@@ -109,8 +110,7 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void shortTrip() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8011160", null, "Berlin Hbf"),
-                null, new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf"), new Date(), true, Product.ALL,
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                null, new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf"), new Date(), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
@@ -126,10 +126,9 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest {
     public void slowTrip() throws Exception {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.STATION, "732655", 52535576, 13422171, null, "Marienburger Str., Berlin"),
-                null,
-                new Location(LocationType.STATION, "623234", 48000221, 11342490, null,
+                null, new Location(LocationType.STATION, "623234", 48000221, 11342490, null,
                         "Tutzinger-Hof-Platz, Starnberg"),
-                new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Date(), true, null);
         print(result);
 
         if (!result.context.canQueryLater())
@@ -143,8 +142,7 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest {
     public void noTrips() throws Exception {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.STATION, "513729", null, "Schillerplatz, Kaiserslautern"), null,
-                new Location(LocationType.STATION, "403631", null, "Trippstadt Grundschule"), new Date(), true,
-                Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "403631", null, "Trippstadt Grundschule"), new Date(), true, null);
         print(result);
     }
 
@@ -153,10 +151,9 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.ADDRESS, null, 52517139, 13388749, null,
                         "Berlin - Mitte, Unter den Linden 24"),
-                null,
-                new Location(LocationType.ADDRESS, null, 47994243, 11338543, null,
+                null, new Location(LocationType.ADDRESS, null, 47994243, 11338543, null,
                         "Starnberg, Possenhofener Straße 13"),
-                new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Date(), true, null);
         print(result);
 
         if (!result.context.canQueryLater())
@@ -168,9 +165,10 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void tripsAcrossBorder() throws Exception {
+        final TripOptions options = new TripOptions(EnumSet.of(Product.BUS), null, WalkSpeed.NORMAL,
+                Accessibility.NEUTRAL, null);
         final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8506131", null, "Kreuzlingen"),
-                null, new Location(LocationType.STATION, "8003400", null, "Konstanz"), new Date(), true,
-                EnumSet.of(Product.BUS), WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                null, new Location(LocationType.STATION, "8003400", null, "Konstanz"), new Date(), true, options);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
     }
@@ -178,16 +176,14 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void tripsByCoordinate() throws Exception {
         final QueryTripsResult result = queryTrips(Location.coord(52535576, 13422171), null,
-                Location.coord(52525589, 13369548), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-                Accessibility.NEUTRAL);
+                Location.coord(52525589, 13369548), new Date(), true, null);
         print(result);
     }
 
     @Test
     public void tripsTooClose() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf"),
-                null, new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf"), new Date(), true, Product.ALL,
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                null, new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf"), new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.TOO_CLOSE, result.status);
     }
@@ -195,8 +191,7 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void tripsInvalidDate() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8011160", null, "Berlin Hbf"),
-                null, new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf"), new Date(0), true,
-                Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                null, new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf"), new Date(0), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.INVALID_DATE, result.status);
     }

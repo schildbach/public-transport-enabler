@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,13 +26,10 @@ import java.util.Date;
 
 import org.junit.Test;
 
-import de.schildbach.pte.NetworkProvider.Accessibility;
-import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.VorProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
-import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -104,7 +101,7 @@ public class VorProviderLiveTest extends AbstractProviderLiveTest {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.STATION, "490065700", 48200852, 16368880, "Wien", "Karlsplatz"), null,
                 new Location(LocationType.STATION, "490109400", 48198362, 16367667, "Wien", "Resselgasse"), new Date(),
-                true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
@@ -135,7 +132,7 @@ public class VorProviderLiveTest extends AbstractProviderLiveTest {
                 new Location(LocationType.POI,
                         "A=4@O=Naschmarkt, Wien@X=16362903@Y=48198290@U=130@L=960068499@B=1@p=1476842541@", 48198290,
                         16362903, "Wien", "Naschmarkt"),
-                new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Date(), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
@@ -144,8 +141,7 @@ public class VorProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void tripBetweenCoordinates() throws Exception {
         final QueryTripsResult result = queryTrips(Location.coord(48180281, 16333551), null,
-                Location.coord(48240452, 16444788), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-                Accessibility.NEUTRAL);
+                Location.coord(48240452, 16444788), new Date(), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);

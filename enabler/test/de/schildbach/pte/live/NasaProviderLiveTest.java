@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,12 +25,9 @@ import java.util.Date;
 import org.junit.Test;
 
 import de.schildbach.pte.NasaProvider;
-import de.schildbach.pte.NetworkProvider.Accessibility;
-import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
-import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -93,8 +90,7 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest {
     public void shortTrip() throws Exception {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.STATION, "11063", null, "Leipzig, Johannisplatz"), null,
-                new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf"), new Date(), true, Product.ALL,
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf"), new Date(), true, null);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         print(result);
 
@@ -110,7 +106,7 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.STATION, "8010205", 51346546, 12383333, null, "Leipzig Hbf"), null,
                 new Location(LocationType.STATION, "8012183", 51423340, 12223423, null, "Leipzig/Halle Flughafen"),
-                new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Date(), true, null);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         print(result);
 
@@ -126,16 +122,14 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.STATION, "13002", null, "Leipzig, Augustusplatz"), null,
                 new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf"),
-                Iso8601Format.newDateFormat().parse("2011-01-01"), true, Product.ALL, WalkSpeed.NORMAL,
-                Accessibility.NEUTRAL);
+                Iso8601Format.newDateFormat().parse("2011-01-01"), true, null);
         assertEquals(QueryTripsResult.Status.INVALID_DATE, result.status);
     }
 
     @Test
     public void ambiguousTrip() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "Platz"), null,
-                new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf"), new Date(), true, Product.ALL,
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf"), new Date(), true, null);
         assertEquals(QueryTripsResult.Status.AMBIGUOUS, result.status);
         print(result);
     }
@@ -143,8 +137,7 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void sameStationTrip() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf"),
-                null, new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf"), new Date(), true, Product.ALL,
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                null, new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf"), new Date(), true, null);
         assertEquals(QueryTripsResult.Status.TOO_CLOSE, result.status);
     }
 
@@ -153,8 +146,7 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.ADDRESS, null, 51334078, 12478331, "04319 Leipzig-Engelsdorf",
                         "August-Bebel-Platz"),
-                null, new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf"), new Date(), true, Product.ALL,
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                null, new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf"), new Date(), true, null);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         print(result);
 

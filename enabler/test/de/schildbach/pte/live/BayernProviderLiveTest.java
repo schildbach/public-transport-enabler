@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,12 +28,9 @@ import java.util.EnumSet;
 import org.junit.Test;
 
 import de.schildbach.pte.BayernProvider;
-import de.schildbach.pte.NetworkProvider.Accessibility;
-import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
-import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -114,8 +111,7 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest {
     public void shortTrip() throws Exception {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.STATION, "80000793", "München", "Ostbahnhof"), null,
-                new Location(LocationType.STATION, "80000799", "München", "Pasing"), new Date(), true, Product.ALL,
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "80000799", "München", "Pasing"), new Date(), true, null);
         print(result);
 
         if (!result.context.canQueryLater())
@@ -129,8 +125,7 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest {
     public void longTrip() throws Exception {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.STATION, "1005530", "Starnberg", "Arbeitsamt"), null,
-                new Location(LocationType.STATION, "3001459", "Nürnberg", "Fallrohrstraße"), new Date(), true,
-                Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "3001459", "Nürnberg", "Fallrohrstraße"), new Date(), true, null);
         print(result);
         // seems like there are no more trips all the time
     }
@@ -138,8 +133,7 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void tripBetweenCoordinates() throws Exception {
         final QueryTripsResult result = queryTrips(Location.coord(48165238, 11577473), null,
-                Location.coord(47987199, 11326532), new Date(), true, Product.ALL, WalkSpeed.NORMAL,
-                Accessibility.NEUTRAL);
+                Location.coord(47987199, 11326532), new Date(), true, null);
         print(result);
 
         if (!result.context.canQueryLater())
@@ -152,8 +146,7 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void tripBetweenCoordinateAndStation() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 48238341, 11478230), null,
-                new Location(LocationType.STATION, "80000793", "München", "Ostbahnhof"), new Date(), true, Product.ALL,
-                WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "80000793", "München", "Ostbahnhof"), new Date(), true, null);
         print(result);
 
         if (!result.context.canQueryLater())
@@ -167,8 +160,7 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest {
     public void tripBetweenAddresses() throws Exception {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.ADDRESS, null, null, "München, Maximilianstr. 1"), null,
-                new Location(LocationType.ADDRESS, null, null, "Starnberg, Jahnstraße 50"), new Date(), true,
-                Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Location(LocationType.ADDRESS, null, null, "Starnberg, Jahnstraße 50"), new Date(), true, null);
         print(result);
 
         if (!result.context.canQueryLater())
@@ -182,7 +174,7 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest {
     public void tripBetweenStationAndAddress() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "1001220", null, "Josephsburg"),
                 null, new Location(LocationType.ADDRESS, null, 48188018, 11574239, null, "München Frankfurter Ring 35"),
-                new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Date(), true, null);
         print(result);
 
         if (!result.context.canQueryLater())
@@ -197,7 +189,7 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.POI, null, 47710568, 12621970, null, "Ruhpolding, Seehaus"), null,
                 new Location(LocationType.POI, null, 47738372, 12630996, null, "Ruhpolding, Unternberg-Bahn"),
-                new Date(), true, Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Date(), true, null);
         print(result);
 
         if (!result.context.canQueryLater())
@@ -211,8 +203,7 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest {
     public void tripRegensburg() throws Exception {
         final QueryTripsResult result = queryTrips(
                 new Location(LocationType.STATION, "4014051", "Regensburg", "Klenzestraße"), null,
-                new Location(LocationType.STATION, "4014080", "Regensburg", "Universität"), new Date(), true,
-                Product.ALL, WalkSpeed.NORMAL, Accessibility.NEUTRAL);
+                new Location(LocationType.STATION, "4014080", "Regensburg", "Universität"), new Date(), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
