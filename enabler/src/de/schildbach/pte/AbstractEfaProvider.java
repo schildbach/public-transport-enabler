@@ -2057,7 +2057,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         url.addEncodedQueryParameter("trITMOTvalue100", "10"); // maximum time to walk to first or from last
                                                                // stop
 
-        if (options.options != null && options.options.contains(Option.BIKE))
+        if (options.flags != null && options.flags.contains(TripFlag.BIKE))
             url.addEncodedQueryParameter("bikeTakeAlong", "1");
 
         url.addEncodedQueryParameter("locationServerActive", "1");

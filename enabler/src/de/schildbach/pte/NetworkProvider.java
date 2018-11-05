@@ -65,7 +65,7 @@ public interface NetworkProvider {
         NEUTRAL, LIMITED, BARRIER_FREE
     }
 
-    public enum Option {
+    public enum TripFlag {
         BIKE
     }
 
@@ -151,7 +151,7 @@ public interface NetworkProvider {
     @Deprecated
     QueryTripsResult queryTrips(Location from, @Nullable Location via, Location to, Date date, boolean dep,
             @Nullable Set<Product> products, @Nullable Optimize optimize, @Nullable WalkSpeed walkSpeed,
-            @Nullable Accessibility accessibility, @Nullable Set<Option> options) throws IOException;
+            @Nullable Accessibility accessibility, @Nullable Set<TripFlag> flags) throws IOException;
 
     /**
      * Query more trips (e.g. earlier or later)

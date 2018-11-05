@@ -920,7 +920,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
                     url.addQueryParameter("walking_speed", Double.toString(walkingSpeed));
                 }
 
-                if (options.options != null && options.options.contains(Option.BIKE)) {
+                if (options.flags != null && options.flags.contains(TripFlag.BIKE)) {
                     url.addQueryParameter("first_section_mode", "bike");
                     url.addQueryParameter("last_section_mode", "bike");
                 }

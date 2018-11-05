@@ -738,7 +738,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
         else
             productsStr = allProductsString();
 
-        final char bikeChar = (options.options != null && options.options.contains(Option.BIKE)) ? '1' : '0';
+        final char bikeChar = (options.flags != null && options.flags.contains(TripFlag.BIKE)) ? '1' : '0';
 
         final StringBuilder conReq = new StringBuilder("<ConReq deliverPolyline=\"1\">");
         conReq.append("<Start>").append(locationXml(from));
@@ -1298,7 +1298,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
     protected void appendQueryTripsBinaryParameters(final HttpUrl.Builder url, final Location from,
             final @Nullable Location via, final Location to, final Date date, final boolean dep,
             final @Nullable Set<Product> products, final @Nullable Accessibility accessibility,
-            final @Nullable Set<Option> options) {
+            final @Nullable Set<TripFlag> flags) {
         url.addQueryParameter("start", "Suchen");
         url.addEncodedQueryParameter("REQ0JourneyStopsS0ID",
                 ParserUtils.urlEncode(locationId(from), requestUrlEncoding));
@@ -1340,7 +1340,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
                 url.addQueryParameter("REQ0AddParamBaimprofile", "0");
         }
 
-        if (options != null && options.contains(Option.BIKE))
+        if (flags != null && flags.contains(TripFlag.BIKE))
             url.addQueryParameter("REQ0JourneyProduct_opt3", "1");
 
         appendCommonQueryTripsBinaryParameters(url);
@@ -1390,7 +1390,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
 
         final HttpUrl.Builder url = queryEndpoint.newBuilder().addPathSegment(apiLanguage);
         appendQueryTripsBinaryParameters(url, from, via, to, date, dep, options.products, options.accessibility,
-                options.options);
+                options.flags);
         return queryTripsBinary(url.build(), from, via, to, QUERY_TRIPS_BINARY_BUFFER_SIZE);
     }
 

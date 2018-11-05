@@ -27,7 +27,7 @@ import com.google.common.base.MoreObjects.ToStringHelper;
 import de.schildbach.pte.NetworkProvider;
 import de.schildbach.pte.NetworkProvider.Accessibility;
 import de.schildbach.pte.NetworkProvider.Optimize;
-import de.schildbach.pte.NetworkProvider.Option;
+import de.schildbach.pte.NetworkProvider.TripFlag;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
 
 /**
@@ -40,7 +40,7 @@ public class TripOptions {
     public final @Nullable Optimize optimize;
     public final @Nullable WalkSpeed walkSpeed;
     public final @Nullable Accessibility accessibility;
-    public final @Nullable Set<Option> options;
+    public final @Nullable Set<TripFlag> flags;
 
     /**
      * @param products
@@ -51,16 +51,16 @@ public class TripOptions {
      *            walking ability, or {@code null} for the provider default
      * @param accessibility
      *            route accessibility, or {@code null} for the provider default
-     * @param options
-     *            additional options, or {@code null} for the provider default
+     * @param flags
+     *            additional flags, or {@code null} for the provider default
      */
     public TripOptions(@Nullable Set<Product> products, @Nullable Optimize optimize, @Nullable WalkSpeed walkSpeed,
-            @Nullable Accessibility accessibility, @Nullable Set<Option> options) {
+            @Nullable Accessibility accessibility, @Nullable Set<TripFlag> flags) {
         this.products = products;
         this.optimize = optimize;
         this.walkSpeed = walkSpeed;
         this.accessibility = accessibility;
-        this.options = options;
+        this.flags = flags;
     }
 
     public TripOptions() {
@@ -68,7 +68,7 @@ public class TripOptions {
         this.optimize = null;
         this.walkSpeed = null;
         this.accessibility = null;
-        this.options = null;
+        this.flags = null;
     }
 
     @Override
@@ -78,7 +78,7 @@ public class TripOptions {
         helper.addValue(optimize);
         helper.addValue(walkSpeed);
         helper.addValue(accessibility);
-        helper.add("options", options);
+        helper.add("flags", flags);
         return helper.toString();
     }
 }

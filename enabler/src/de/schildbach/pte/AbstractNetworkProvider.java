@@ -81,9 +81,9 @@ public abstract class AbstractNetworkProvider implements NetworkProvider {
     @Override
     public QueryTripsResult queryTrips(Location from, @Nullable Location via, Location to, Date date, boolean dep,
             @Nullable Set<Product> products, @Nullable Optimize optimize, @Nullable WalkSpeed walkSpeed,
-            @Nullable Accessibility accessibility, @Nullable Set<Option> options) throws IOException {
+            @Nullable Accessibility accessibility, @Nullable Set<TripFlag> flags) throws IOException {
         return queryTrips(from, via, to, date, dep,
-                new TripOptions(products, optimize, walkSpeed, accessibility, options));
+                new TripOptions(products, optimize, walkSpeed, accessibility, flags));
     }
 
     @Override
