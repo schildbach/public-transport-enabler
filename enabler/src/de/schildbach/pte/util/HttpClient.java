@@ -101,7 +101,7 @@ public final class HttpClient {
         OKHTTP_CLIENT = builder.build();
     }
 
-    private static final String SCRAPE_ACCEPT = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
+    private static final String DEFAULT_ACCEPT = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
     private static final int SCRAPE_PEEK_SIZE = 8192;
 
     private static final Logger log = LoggerFactory.getLogger(HttpClient.class);
@@ -173,10 +173,10 @@ public final class HttpClient {
         while (true) {
             final Request.Builder request = new Request.Builder();
             request.url(url);
+            request.header("Accept", DEFAULT_ACCEPT);
             request.headers(Headers.of(headers));
             if (postRequest != null)
                 request.post(RequestBody.create(MediaType.parse(requestContentType), postRequest));
-            request.header("Accept", SCRAPE_ACCEPT);
             if (userAgent != null)
                 request.header("User-Agent", userAgent);
             if (referer != null)

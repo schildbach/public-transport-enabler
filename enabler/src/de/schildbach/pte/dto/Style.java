@@ -37,6 +37,14 @@ public class Style implements Serializable {
         RECT, ROUNDED, CIRCLE
     }
 
+    public Style(final int backgroundColor) {
+        this.shape = Shape.ROUNDED;
+        this.backgroundColor = backgroundColor;
+        this.backgroundColor2 = 0;
+        this.foregroundColor = deriveForegroundColor(backgroundColor);
+        this.borderColor = 0;
+    }
+
     public Style(final int backgroundColor, final int foregroundColor) {
         this.shape = Shape.ROUNDED;
         this.backgroundColor = backgroundColor;
