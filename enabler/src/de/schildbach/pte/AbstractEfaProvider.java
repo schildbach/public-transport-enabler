@@ -896,7 +896,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                         return;
                     }
 
-                    if (ownStation.get() != null && !stations.contains(ownStation))
+                    if (ownStation.get() != null && !stations.contains(ownStation.get()))
                         stations.add(ownStation.get());
 
                     if (maxLocations == 0 || maxLocations >= stations.size())
