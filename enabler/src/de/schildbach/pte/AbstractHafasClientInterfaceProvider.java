@@ -87,9 +87,9 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
     @Nullable
     public String apiClient;
     @Nullable
-    public String requestChecksumSalt;
+    public byte[] requestChecksumSalt;
     @Nullable
-    public String requestMicMacSalt;
+    public byte[] requestMicMacSalt;
 
     private static final String SERVER_PRODUCT = "hci";
     private static final HashFunction MD5 = Hashing.md5();
@@ -117,12 +117,12 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
         return this;
     }
 
-    protected AbstractHafasClientInterfaceProvider setRequestChecksumSalt(final String requestChecksumSalt) {
+    protected AbstractHafasClientInterfaceProvider setRequestChecksumSalt(final byte[] requestChecksumSalt) {
         this.requestChecksumSalt = requestChecksumSalt;
         return this;
     }
 
-    protected AbstractHafasClientInterfaceProvider setRequestMicMacSalt(final String requestMicMacSalt) {
+    protected AbstractHafasClientInterfaceProvider setRequestMicMacSalt(final byte[] requestMicMacSalt) {
         this.requestMicMacSalt = requestMicMacSalt;
         return this;
     }
@@ -660,15 +660,15 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
     private HttpUrl requestUrl(final String body) {
         final HttpUrl.Builder url = checkNotNull(mgateEndpoint).newBuilder();
         if (requestChecksumSalt != null) {
-            final HashCode checksum = MD5.newHasher().putString(body, Charsets.UTF_8)
-                    .putString(requestChecksumSalt, Charsets.UTF_8).hash();
+            final HashCode checksum = MD5.newHasher().putString(body, Charsets.UTF_8).putBytes(requestChecksumSalt)
+                    .hash();
             url.addQueryParameter("checksum", checksum.toString());
         }
         if (requestMicMacSalt != null) {
             final HashCode mic = MD5.newHasher().putString(body, Charsets.UTF_8).hash();
             url.addQueryParameter("mic", HEX.encode(mic.asBytes()));
             final HashCode mac = MD5.newHasher().putString(HEX.encode(mic.asBytes()), Charsets.UTF_8)
-                    .putBytes(HEX.decode(requestMicMacSalt)).hash();
+                    .putBytes(requestMicMacSalt).hash();
             url.addQueryParameter("mac", HEX.encode(mac.asBytes()));
         }
         return url.build();
