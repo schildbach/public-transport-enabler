@@ -418,8 +418,8 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
     }
 
     protected final QueryTripsResult jsonTripSearch(Location from, @Nullable Location via, Location to, final Date time,
-            final boolean dep, final @Nullable Set<Product> products, final WalkSpeed walkSpeed,
-            final String moreContext) throws IOException {
+            final boolean dep, final @Nullable Set<Product> products, final @Nullable WalkSpeed walkSpeed,
+            final @Nullable String moreContext) throws IOException {
         if (!from.hasId()) {
             from = jsonTripSearchIdentify(from);
             if (from == null)
@@ -446,8 +446,8 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
         final CharSequence outDate = jsonDate(c);
         final CharSequence outTime = jsonTime(c);
         final CharSequence outFrwd = Boolean.toString(dep);
-        final CharSequence jnyFltr = productsString(products);
-        final String meta = "foot_speed_" + walkSpeed.name().toLowerCase();
+        final CharSequence jnyFltr = products != null ? productsString(products) : null;
+        final String meta = "foot_speed_" + (walkSpeed != null ? walkSpeed : WalkSpeed.NORMAL).name().toLowerCase();
         final CharSequence jsonContext = moreContext != null ? "\"ctxScr\":" + JSONObject.quote(moreContext) + "," : "";
         final String request = wrapJsonApiRequest("TripSearch", "{" //
                 + jsonContext //
@@ -457,7 +457,8 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                 + "\"outDate\":\"" + outDate + "\"," //
                 + "\"outTime\":\"" + outTime + "\"," //
                 + "\"outFrwd\":" + outFrwd + "," //
-                + "\"jnyFltrL\":[{\"value\":\"" + jnyFltr + "\",\"mode\":\"BIT\",\"type\":\"PROD\"}]," //
+                + (jnyFltr != null
+                        ? "\"jnyFltrL\":[{\"value\":\"" + jnyFltr + "\",\"mode\":\"BIT\",\"type\":\"PROD\"}]," : "") //
                 + "\"gisFltrL\":[{\"mode\":\"FB\",\"profile\":{\"type\":\"F\",\"linDistRouting\":false,\"maxdist\":2000},\"type\":\"M\",\"meta\":\""
                 + meta + "\"}]," //
                 + "\"getPolyline\":false,\"getPasslist\":true,\"getIST\":false,\"getEco\":false,\"extChgTime\":-1}", //
