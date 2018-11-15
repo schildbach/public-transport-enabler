@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,9 +21,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.google.common.base.Charsets;
-
-import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Product;
 
 import okhttp3.HttpUrl;
@@ -31,23 +28,18 @@ import okhttp3.HttpUrl;
 /**
  * @author Andreas Schildbach
  */
-public class SeProvider extends AbstractHafasLegacyProvider {
+public class SeProvider extends AbstractHafasClientInterfaceProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("https://reseplanerare.resrobot.se/bin/");
-    // http://samtrafiken.hafas.de/bin/
-    // http://reseplanerare.resrobot.se/bin/
-    // http://api.vasttrafik.se/bin/
-    private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
-            Product.REGIONAL_TRAIN, Product.BUS, Product.REGIONAL_TRAIN, Product.SUBWAY, Product.TRAM, Product.BUS,
-            Product.FERRY, Product.FERRY, Product.REGIONAL_TRAIN, null, null, null };
+    // https://samtrafiken.hafas.de/bin/
+    private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN /* Air */, Product.HIGH_SPEED_TRAIN,
+            Product.REGIONAL_TRAIN, Product.BUS, Product.SUBURBAN_TRAIN, Product.SUBWAY, Product.TRAM, Product.BUS,
+            Product.FERRY, Product.ON_DEMAND /* Taxi */ };
 
-    public SeProvider() {
-        super(NetworkId.SE, API_BASE, "sn", PRODUCTS_MAP);
-
-        setRequestUrlEncoding(Charsets.UTF_8);
-        setJsonNearbyLocationsEncoding(Charsets.UTF_8);
-        setUseIso8601(true);
-        setStationBoardHasStationTable(false);
-        setStationBoardCanDoEquivs(false);
+    public SeProvider(final String jsonApiAuthorization) {
+        super(NetworkId.SE, API_BASE, PRODUCTS_MAP);
+        setApiVersion("1.14");
+        setApiClient("{\"id\":\"SAMTRAFIKEN\",\"type\":\"AND\"}");
+        setApiAuthorization(jsonApiAuthorization);
     }
 
     private static final Pattern P_SPLIT_NAME_PAREN = Pattern.compile("(.*) \\((.{3,}?) kn\\)");
@@ -57,13 +49,7 @@ public class SeProvider extends AbstractHafasLegacyProvider {
         final Matcher mParen = P_SPLIT_NAME_PAREN.matcher(name);
         if (mParen.matches())
             return new String[] { mParen.group(2), mParen.group(1) };
-
         return super.splitStationName(name);
-    }
-
-    @Override
-    public Set<Product> defaultProducts() {
-        return Product.ALL;
     }
 
     @Override
@@ -71,23 +57,11 @@ public class SeProvider extends AbstractHafasLegacyProvider {
         final Matcher m = P_SPLIT_NAME_LAST_COMMA.matcher(address);
         if (m.matches())
             return new String[] { m.group(2), m.group(1) };
-
         return super.splitStationName(address);
     }
 
-    private static final Pattern P_NORMALIZE_LINE_BUS = Pattern.compile("Buss\\s*(.*)");
-    private static final Pattern P_NORMALIZE_LINE_SUBWAY = Pattern.compile("Tunnelbana\\s*(.*)");
-
     @Override
-    protected Line parseLineAndType(final String line) {
-        final Matcher mBus = P_NORMALIZE_LINE_BUS.matcher(line);
-        if (mBus.matches())
-            return newLine(Product.BUS, mBus.group(1), null);
-
-        final Matcher mSubway = P_NORMALIZE_LINE_SUBWAY.matcher(line);
-        if (mSubway.matches())
-            return newLine(Product.SUBWAY, "T" + mSubway.group(1), null);
-
-        return newLine(null, line, null);
+    public Set<Product> defaultProducts() {
+        return Product.ALL;
     }
 }

@@ -39,13 +39,7 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
  */
 public class SeProviderLiveTest extends AbstractProviderLiveTest {
     public SeProviderLiveTest() {
-        super(new SeProvider());
-    }
-
-    @Test
-    public void nearbyStations() throws Exception {
-        final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "7414867"));
-        print(result);
+        super(new SeProvider(secretProperty("se.api_authorization")));
     }
 
     @Test
@@ -56,7 +50,7 @@ public class SeProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void queryDepartures() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("7414867", false);
+        final QueryDeparturesResult result = queryDepartures("740017515", false);
         print(result);
     }
 
@@ -76,55 +70,49 @@ public class SeProviderLiveTest extends AbstractProviderLiveTest {
     public void suggestLocationsUmlaut() throws Exception {
         final SuggestLocationsResult result = suggestLocations("Luleå");
         print(result);
+        assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "740098049")));
     }
 
     @Test
     public void suggestLocationsCoverage() throws Exception {
-        final SuggestLocationsResult salzburgResult = suggestLocations("Stockholm");
-        print(salzburgResult);
-        assertThat(salzburgResult.getLocations(), hasItem(new Location(LocationType.STATION, "740098000")));
+        final SuggestLocationsResult result = suggestLocations("Stockholm");
+        print(result);
+        assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "740098000")));
     }
 
     @Test
     public void shortTrip() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "740014867", null, "Luleå Airport"), null,
-                new Location(LocationType.STATION, "740098000", null, "STOCKHOLM"), new Date(), true, null);
+        final Location from = new Location(LocationType.STATION, "740014867", null, "Luleå Airport");
+        final Location to = new Location(LocationType.STATION, "740098000", null, "STOCKHOLM");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
-
-        if (!result.context.canQueryLater())
-            return;
-
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
     }
 
     @Test
     public void shortStockholmTrip() throws Exception {
-        final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "740098000", null, "STOCKHOLM"),
-                null, new Location(LocationType.STATION, "740020101", "Stockholm", "Slussen T-bana"), new Date(), true,
-                null);
+        final Location from = new Location(LocationType.STATION, "740098000", null, "STOCKHOLM");
+        final Location to = new Location(LocationType.STATION, "740020101", "Stockholm", "Slussen T-bana");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
-
-        if (!result.context.canQueryLater())
-            return;
-
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
     }
 
     @Test
     public void longTrip() throws Exception {
-        final Location from = new Location(LocationType.STATION, "740098086", Point.from1E6(67859847, 20212802), null,
-                "KIRUNA");
+        final Location from = new Location(LocationType.STATION, "740098086", null, "KIRUNA");
         final Location to = new Location(LocationType.STATION, "740098000", null, "STOCKHOLM");
         final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
+    }
 
-        if (!result.context.canQueryLater())
-            return;
-
-        final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-        print(laterResult);
+    @Test
+    public void tripBetweenCoordinates() throws Exception {
+        final Location from = Location.coord(Point.fromDouble(59.3299775, 18.0576622)); // Stockholm Central
+        final Location to = Location.coord(Point.fromDouble(59.3136500, 18.0620848)); // Stockholms södra
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
+        print(result);
     }
 }
