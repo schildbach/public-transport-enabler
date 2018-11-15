@@ -21,6 +21,8 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.Strings;
+
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Product;
 
@@ -51,8 +53,8 @@ public class TfiProvider extends AbstractEfaProvider {
         if ("0".equals(mot)) {
             if ("DART".equals(name))
                 return new Line(id, network, Product.SUBURBAN_TRAIN, "DART");
-            if ("Rail".equals(trainName) && trainNum == null)
-                return new Line(id, network, null, "Rail");
+            if ("Rail".equals(trainName))
+                return new Line(id, network, Product.REGIONAL_TRAIN, "Rail" + Strings.nullToEmpty(trainNum));
             if ("Train".equals(name) && "Train".equals(symbol))
                 return new Line(id, network, null, "Train");
         }
