@@ -104,32 +104,35 @@ public final class BvgProvider extends AbstractHafasClientInterfaceProvider {
     }
 
     @Override
-    protected Line newLine(final String operator, final Product product, final String name) {
-        if (product == Product.SUBURBAN_TRAIN && "S41".equals(name))
-            return new Line(null, operator, product, name, lineStyle(operator, product, name),
-                    Sets.newHashSet(Attr.CIRCLE_CLOCKWISE));
-        if (product == Product.SUBURBAN_TRAIN && "S42".equals(name))
-            return new Line(null, operator, product, name, lineStyle(operator, product, name),
-                    Sets.newHashSet(Attr.CIRCLE_ANTICLOCKWISE));
+    protected Line newLine(final String operator, final Product product, final String name, final String number) {
+        final Line line = super.newLine(operator, product, name, number);
 
-        if (product == Product.BUS && "S41".equals(name))
-            return new Line(null, operator, product, name, lineStyle(operator, product, name),
-                    Sets.newHashSet(Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_CLOCKWISE));
-        if (product == Product.BUS && "S42".equals(name))
-            return new Line(null, operator, product, name, lineStyle(operator, product, name),
-                    Sets.newHashSet(Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_ANTICLOCKWISE));
+        if (line.product == Product.SUBURBAN_TRAIN) {
+            if ("S41".equals(line.label))
+                return new Line(null, line.network, line.product, line.label, line.name, line.style,
+                        Sets.newHashSet(Attr.CIRCLE_CLOCKWISE), line.message);
+            if ("S42".equals(line.label))
+                return new Line(null, line.network, line.product, line.label, line.name, line.style,
+                        Sets.newHashSet(Attr.CIRCLE_ANTICLOCKWISE), line.message);
+            if ("S9".equals(line.label))
+                return new Line(null, line.network, line.product, line.label, line.name, line.style,
+                        Sets.newHashSet(Attr.LINE_AIRPORT), line.message);
+            if ("S45".equals(line.label))
+                return new Line(null, line.network, line.product, line.label, line.name, line.style,
+                        Sets.newHashSet(Attr.LINE_AIRPORT), line.message);
+        } else if (line.product == Product.BUS) {
+            if ("S41".equals(line.label))
+                return new Line(null, line.network, line.product, line.label, line.name, line.style,
+                        Sets.newHashSet(Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_CLOCKWISE), line.message);
+            if ("S42".equals(line.label))
+                return new Line(null, line.network, line.product, line.label, line.name, line.style,
+                        Sets.newHashSet(Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_ANTICLOCKWISE), line.message);
+            if ("TXL".equals(line.label))
+                return new Line(null, line.network, line.product, line.label, line.name, line.style,
+                        Sets.newHashSet(Attr.LINE_AIRPORT), line.message);
+        }
 
-        if (product == Product.BUS && "TXL".equals(name))
-            return new Line(null, operator, product, name, lineStyle(operator, product, name),
-                    Sets.newHashSet(Attr.LINE_AIRPORT));
-        if (product == Product.SUBURBAN_TRAIN && "S9".equals(name))
-            return new Line(null, operator, product, name, lineStyle(operator, product, name),
-                    Sets.newHashSet(Attr.LINE_AIRPORT));
-        if (product == Product.SUBURBAN_TRAIN && "S45".equals(name))
-            return new Line(null, operator, product, name, lineStyle(operator, product, name),
-                    Sets.newHashSet(Attr.LINE_AIRPORT));
-
-        return super.newLine(operator, product, name);
+        return line;
     }
 
     @Override

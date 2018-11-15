@@ -81,15 +81,18 @@ public class VbnProvider extends AbstractHafasClientInterfaceProvider {
     }
 
     @Override
-    protected Line newLine(final String operator, final Product product, final String name) {
-        final Line line = super.newLine(operator, product, name);
+    protected Line newLine(final String operator, final Product product, final String name, final String number) {
+        final Line line = super.newLine(operator, product, name, number);
 
-        if (line.product == Product.BUS && "57".equals(line.label))
-            return new Line(null, line.network, line.product, line.label, line.name, line.style,
-                    Sets.newHashSet(Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_CLOCKWISE), line.message);
-        if (line.product == Product.BUS && "58".equals(line.label))
-            return new Line(null, line.network, line.product, line.label, line.name, line.style,
-                    Sets.newHashSet(Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_ANTICLOCKWISE), line.message);
+        if (line.product == Product.BUS) {
+            if ("57".equals(line.label))
+                return new Line(null, line.network, line.product, line.label, line.name, line.style,
+                        Sets.newHashSet(Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_CLOCKWISE), line.message);
+            if ("58".equals(line.label))
+                return new Line(null, line.network, line.product, line.label, line.name, line.style,
+                        Sets.newHashSet(Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_ANTICLOCKWISE), line.message);
+        }
+
         return line;
     }
 

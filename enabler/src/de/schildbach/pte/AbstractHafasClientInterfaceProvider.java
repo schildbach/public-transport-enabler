@@ -45,6 +45,7 @@ import org.json.JSONObject;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
@@ -823,32 +824,25 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
     }
 
     private List<Line> parseProdList(final JSONArray prodList, final List<String> operators) throws JSONException {
-        final List<Line> lines = new ArrayList<>(prodList.length());
+        final int prodListLen = prodList.length();
+        final List<Line> lines = new ArrayList<>(prodListLen);
 
-        for (int iProd = 0; iProd < prodList.length(); iProd++) {
+        for (int iProd = 0; iProd < prodListLen; iProd++) {
             final JSONObject prod = prodList.getJSONObject(iProd);
+            final String name = Strings.emptyToNull(prod.getString("name"));
+            final String number = prod.optString("number");
             final int oprIndex = prod.optInt("oprX", -1);
             final String operator = oprIndex != -1 ? operators.get(oprIndex) : null;
             final int cls = prod.optInt("cls", -1);
             final Product product = cls != -1 ? intToProduct(cls) : null;
-            final String name = prod.getString("name");
-            lines.add(newLine(operator, product, name));
+            lines.add(newLine(operator, product, name, number));
         }
 
         return lines;
     }
 
-    protected Line newLine(final String operator, final Product product, final String name) {
-        final String normalizedName;
-        if (product == Product.BUS && name.startsWith("Bus "))
-            normalizedName = name.substring(4);
-        else if (product == Product.TRAM && name.startsWith("Tram "))
-            normalizedName = name.substring(5);
-        else if (product == Product.SUBURBAN_TRAIN && name.startsWith("S "))
-            normalizedName = "S" + name.substring(2);
-        else
-            normalizedName = name;
-        return new Line(null, operator, product, normalizedName, lineStyle(operator, product, normalizedName));
+    protected Line newLine(final String operator, final Product product, final String name, final String number) {
+        return new Line(null, operator, product, number, name, lineStyle(operator, product, number));
     }
 
     @SuppressWarnings("serial")
