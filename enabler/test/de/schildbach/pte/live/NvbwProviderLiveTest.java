@@ -30,6 +30,7 @@ import de.schildbach.pte.NvbwProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
+import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -137,10 +138,11 @@ public class NvbwProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void shortTripReutlingen() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "8029333", 48492484, 9207456, "Reutlingen", "ZOB"), null,
-                new Location(LocationType.STATION, "8029109", 48496968, 9213320, "Reutlingen", "Bismarckstr."),
-                new Date(), true, null);
+        final Location from = new Location(LocationType.STATION, "8029333", Point.from1E6(48492484, 9207456),
+                "Reutlingen", "ZOB");
+        final Location to = new Location(LocationType.STATION, "8029109", Point.from1E6(48496968, 9213320),
+                "Reutlingen", "Bismarckstr.");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
@@ -166,11 +168,11 @@ public class NvbwProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void trip() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "6900037", 48063184, 7779532, "Buchheim (Breisgau)", "Fortuna"),
-                null, new Location(LocationType.STATION, "6906508", 47996616, 7840450, "Freiburg im Breisgau",
-                        "Freiburg im Breisgau, Hauptbahnhof"),
-                new Date(), true, null);
+        final Location from = new Location(LocationType.STATION, "6900037", Point.from1E6(48063184, 7779532),
+                "Buchheim (Breisgau)", "Fortuna");
+        final Location to = new Location(LocationType.STATION, "6906508", Point.from1E6(47996616, 7840450),
+                "Freiburg im Breisgau", "Freiburg im Breisgau, Hauptbahnhof");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
     }

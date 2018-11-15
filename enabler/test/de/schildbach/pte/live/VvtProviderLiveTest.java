@@ -30,6 +30,7 @@ import de.schildbach.pte.VvtProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
+import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -87,10 +88,11 @@ public class VvtProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void shortTrip() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "476151200", 47268248, 11355560, "Innsbruck", "Allerheiligen"), null,
-                new Location(LocationType.STATION, "476151000", 47267241, 11351003, "Innsbruck", "Tschiggfreystraße"),
-                new Date(), true, null);
+        final Location from = new Location(LocationType.STATION, "476151200", Point.from1E6(47268248, 11355560),
+                "Innsbruck", "Allerheiligen");
+        final Location to = new Location(LocationType.STATION, "476151000", Point.from1E6(47267241, 11351003),
+                "Innsbruck", "Tschiggfreystraße");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);

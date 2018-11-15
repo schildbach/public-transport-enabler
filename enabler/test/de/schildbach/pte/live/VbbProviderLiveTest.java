@@ -30,6 +30,7 @@ import de.schildbach.pte.VbbProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
+import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -126,11 +127,11 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void shortFootwayTrip() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.ADDRESS, null, 52435193, 13473409, "12357 Berlin-Buckow", "Kernbeisserweg 4"),
-                null,
-                new Location(LocationType.ADDRESS, null, 52433989, 13474353, "12357 Berlin-Buckow", "Distelfinkweg 35"),
-                new Date(), true, null);
+        final Location from = new Location(LocationType.ADDRESS, null, Point.from1E6(52435193, 13473409),
+                "12357 Berlin-Buckow", "Kernbeisserweg 4");
+        final Location to = new Location(LocationType.ADDRESS, null, Point.from1E6(52433989, 13474353),
+                "12357 Berlin-Buckow", "Distelfinkweg 35");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
 
         if (!result.context.canQueryLater())
@@ -183,12 +184,11 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void tripBetweenAddresses() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.ADDRESS, null, 52479663, 13324278, "10715 Berlin-Wilmersdorf",
-                        "Weimarische Str. 7"),
-                null, new Location(LocationType.ADDRESS, null, 52541536, 13421290, "10437 Berlin-Prenzlauer Berg",
-                        "Göhrener Str. 5"),
-                new Date(), true, null);
+        final Location from = new Location(LocationType.ADDRESS, null, Point.from1E6(52479663, 13324278),
+                "10715 Berlin-Wilmersdorf", "Weimarische Str. 7");
+        final Location to = new Location(LocationType.ADDRESS, null, Point.from1E6(52541536, 13421290),
+                "10437 Berlin-Prenzlauer Berg", "Göhrener Str. 5");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
 
         if (!result.context.canQueryLater())
@@ -200,13 +200,13 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void viaTripBetweenAddresses() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.ADDRESS, null, 52479663, 13324278, "10715 Berlin-Wilmersdorf",
-                        "Weimarische Str. 7"),
-                new Location(LocationType.ADDRESS, null, 52527872, 13381657, "10115 Berlin-Mitte",
-                        "Hannoversche Str. 20"),
-                new Location(LocationType.ADDRESS, null, 52526029, 13399878, "10178 Berlin-Mitte", "Sophienstr. 24"),
-                new Date(), true, null);
+        final Location from = new Location(LocationType.ADDRESS, null, Point.from1E6(52479663, 13324278),
+                "10715 Berlin-Wilmersdorf", "Weimarische Str. 7");
+        final Location via = new Location(LocationType.ADDRESS, null, Point.from1E6(52527872, 13381657),
+                "10115 Berlin-Mitte", "Hannoversche Str. 20");
+        final Location to = new Location(LocationType.ADDRESS, null, Point.from1E6(52526029, 13399878),
+                "10178 Berlin-Mitte", "Sophienstr. 24");
+        final QueryTripsResult result = queryTrips(from, via, to, new Date(), true, null);
         print(result);
 
         if (!result.context.canQueryLater())

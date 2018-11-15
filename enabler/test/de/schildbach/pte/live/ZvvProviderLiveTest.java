@@ -27,6 +27,7 @@ import de.schildbach.pte.ZvvProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
+import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -81,10 +82,11 @@ public class ZvvProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void trip() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "8503000", 47378491, 8537945, "Zürich", "Zürich, Hauptbahnhof"),
-                null, new Location(LocationType.STATION, "8530812", 47361762, 8560715, "Zürich", "Hegibachplatz"),
-                new Date(), true, null);
+        final Location from = new Location(LocationType.STATION, "8503000", Point.from1E6(47378491, 8537945), "Zürich",
+                "Zürich, Hauptbahnhof");
+        final Location to = new Location(LocationType.STATION, "8530812", Point.from1E6(47361762, 8560715), "Zürich",
+                "Hegibachplatz");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);

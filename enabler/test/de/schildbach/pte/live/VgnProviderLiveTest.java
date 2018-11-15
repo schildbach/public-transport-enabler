@@ -28,6 +28,7 @@ import de.schildbach.pte.VgnProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
+import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -86,11 +87,11 @@ public class VgnProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void tripToPOI() throws Exception {
-        final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 49527298, 10836204), null,
-                new Location(LocationType.POI,
-                        "poiID:246:9564000:1:Grundschule Grimmstr.:Nürnberg:Grundschule Grimmstr.:ANY:POI:4436708:678322:NAV4:VGN",
-                        49468692, 11125334, "Nürnberg", "Grundschule Grimmstr."),
-                new Date(), true, null);
+        final Location from = new Location(LocationType.ADDRESS, null, Point.from1E6(49527298, 10836204));
+        final Location to = new Location(LocationType.POI,
+                "poiID:246:9564000:1:Grundschule Grimmstr.:Nürnberg:Grundschule Grimmstr.:ANY:POI:4436708:678322:NAV4:VGN",
+                Point.from1E6(49468692, 11125334), "Nürnberg", "Grundschule Grimmstr.");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
 
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
@@ -99,10 +100,10 @@ public class VgnProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void tripToAddress() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "1756", "Nürnberg", "Saarbrückener Str."), null,
-                new Location(LocationType.ADDRESS, null, 49437392, 11094524, "Nürnberg", "Wodanstraße 25"), new Date(),
-                false, null);
+        final Location from = new Location(LocationType.STATION, "1756", "Nürnberg", "Saarbrückener Str.");
+        final Location to = new Location(LocationType.ADDRESS, null, Point.from1E6(49437392, 11094524), "Nürnberg",
+                "Wodanstraße 25");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), false, null);
         print(result);
 
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);

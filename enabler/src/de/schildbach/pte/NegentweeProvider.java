@@ -232,10 +232,6 @@ public class NegentweeProvider extends AbstractNetworkProvider {
         }
     }
 
-    private Point pointFromLocation(Location location) throws JSONException {
-        return new Point(location.lat, location.lon);
-    }
-
     private LocationType locationTypeFromTypeString(String type) throws JSONException {
         switch (type) {
         case "station":
@@ -322,7 +318,7 @@ public class NegentweeProvider extends AbstractNetworkProvider {
     private String locationToQueryParameterString(Location loc) {
         if (loc.hasId()) {
             return loc.id;
-        } else if (loc.hasLocation()) {
+        } else if (loc.hasCoord()) {
             return loc.getLatAsDouble() + "," + loc.getLonAsDouble();
         } else {
             return null;
@@ -408,18 +404,18 @@ public class NegentweeProvider extends AbstractNetworkProvider {
 
             // First stop
             Stop firstStop = stopFromJSONObject(stops.getJSONObject(0));
-            foundPoints.add(pointFromLocation(firstStop.location));
+            foundPoints.add(firstStop.location.coord);
 
             // Intermediate stops
             LinkedList<Stop> foundStops = new LinkedList<>();
             for (int j = 1; j < stops.length() - 1; j++) {
                 foundStops.add(stopFromJSONObject(stops.getJSONObject(j)));
-                foundPoints.add(pointFromLocation(foundStops.getLast().location));
+                foundPoints.add(foundStops.getLast().location.coord);
             }
 
             // Last stop
             Stop lastStop = stopFromJSONObject(stops.getJSONObject(stops.length() - 1));
-            foundPoints.add(pointFromLocation(lastStop.location));
+            foundPoints.add(lastStop.location.coord);
 
             switch (leg.getString("type").toLowerCase()) {
             case "scheduled":
@@ -578,14 +574,14 @@ public class NegentweeProvider extends AbstractNetworkProvider {
 
         Point locationPoint = Point.fromDouble(latlon.getDouble("lat"), latlon.getDouble("long"));
 
-        return new Location(locationTypeFromTypeString(locationType), location.getString("id"), locationPoint.lat,
-                locationPoint.lon, !(place == null) ? place.optString("name", null) : null, locationName, null);
+        return new Location(locationTypeFromTypeString(locationType), location.getString("id"), locationPoint,
+                !(place == null) ? place.optString("name", null) : null, locationName, null);
     }
 
     private List<Location> solveAmbiguousLocation(Location location) throws IOException {
         if (location.hasId()) {
             return Arrays.asList(location);
-        } else if (location.hasLocation()) {
+        } else if (location.hasCoord()) {
             return queryNearbyLocations(EnumSet.of(location.type), location, -1, -1).locations;
         } else if (location.hasName()) {
             return queryLocationsByName(location.name, EnumSet.of(location.type));
@@ -715,7 +711,7 @@ public class NegentweeProvider extends AbstractNetworkProvider {
     public NearbyLocationsResult queryNearbyLocations(EnumSet<LocationType> types, Location location, int maxDistance,
             int maxLocations) throws IOException {
         // Coordinates are required
-        if (!location.hasLocation()) {
+        if (!location.hasCoord()) {
             try {
                 if (location.hasId()) {
                     location = queryLocationById(location.id);
@@ -728,7 +724,7 @@ public class NegentweeProvider extends AbstractNetworkProvider {
                 return new NearbyLocationsResult(this.resultHeader, NearbyLocationsResult.Status.SERVICE_DOWN);
             }
 
-            if (location == null || !location.hasLocation()) {
+            if (location == null || !location.hasCoord()) {
                 return new NearbyLocationsResult(this.resultHeader, NearbyLocationsResult.Status.INVALID_ID);
             }
         }
@@ -814,7 +810,7 @@ public class NegentweeProvider extends AbstractNetworkProvider {
                         lineDestinationResult.add(new LineDestination(
                                 new Line(null, departure.getString("operatorName"), lineProduct, mode.getString("name"),
                                         null, Standard.STYLES.get(lineProduct), null, null),
-                                new Location(LocationType.STATION, null, 0, 0, null,
+                                new Location(LocationType.STATION, null, null, null,
                                         departure.getString("destinationName"), EnumSet.of(lineProduct))));
                     }
 
@@ -864,10 +860,10 @@ public class NegentweeProvider extends AbstractNetworkProvider {
     @Override
     public QueryTripsResult queryTrips(Location from, @Nullable Location via, Location to, Date date, boolean dep,
             @Nullable TripOptions options) throws IOException {
-        if (!(from.hasId() || from.hasLocation()))
+        if (!(from.hasId() || from.hasCoord()))
             return ambiguousQueryTrips(from, via, to);
 
-        if (!(to.hasId() || to.hasLocation()))
+        if (!(to.hasId() || to.hasCoord()))
             return ambiguousQueryTrips(from, via, to);
 
         // Default query options
@@ -880,7 +876,7 @@ public class NegentweeProvider extends AbstractNetworkProvider {
                         new QueryParameter("before", "1"), new QueryParameter("after", "5")));
 
         if (via != null) {
-            if (!(via.hasId() || via.hasLocation()))
+            if (!(via.hasId() || via.hasCoord()))
                 return ambiguousQueryTrips(from, via, to);
 
             queryParameters.add(new QueryParameter("via", locationToQueryParameterString(via)));

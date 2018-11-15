@@ -30,6 +30,7 @@ import de.schildbach.pte.VvoProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
+import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -116,11 +117,11 @@ public class VvoProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void tripFromAddressToAddress() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.ADDRESS, null, 51052260, 13740998, "Dresden", "Dresden, Töpferstraße 10"),
-                null, new Location(LocationType.ADDRESS, null, 51029752, 13700666, "Dresden",
-                        "Dresden, Tharandter Straße 88"),
-                new Date(), true, null);
+        final Location from = new Location(LocationType.ADDRESS, null, Point.from1E6(51052260, 13740998), "Dresden",
+                "Dresden, Töpferstraße 10");
+        final Location to = new Location(LocationType.ADDRESS, null, Point.from1E6(51029752, 13700666), "Dresden",
+                "Dresden, Tharandter Straße 88");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);

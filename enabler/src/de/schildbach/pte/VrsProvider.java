@@ -363,9 +363,9 @@ public class VrsProvider extends AbstractNetworkProvider {
         // g=p means group by product; not used here
         final HttpUrl.Builder url = API_BASE.newBuilder();
         url.addQueryParameter("eID", "tx_vrsinfo_ass2_timetable");
-        if (location.hasLocation()) {
+        if (location.hasCoord()) {
             url.addQueryParameter("r",
-                    String.format(Locale.ENGLISH, "%.6f,%.6f", location.lat / 1E6, location.lon / 1E6));
+                    String.format(Locale.ENGLISH, "%.6f,%.6f", location.getLatAsDouble(), location.getLonAsDouble()));
         } else if (location.type == LocationType.STATION && location.hasId()) {
             url.addQueryParameter("i", location.id);
         } else {
@@ -857,15 +857,15 @@ public class VrsProvider extends AbstractNetworkProvider {
                     }
 
                     List<Point> points = new ArrayList<>();
-                    points.add(new Point(segmentOrigin.lat, segmentOrigin.lon));
+                    points.add(segmentOrigin.coord);
                     if (EXACT_POINTS && segment.has("polygon")) {
                         parsePolygon(segment.getString("polygon"), points);
                     } else {
                         for (Stop intermediateStop : intermediateStops) {
-                            points.add(new Point(intermediateStop.location.lat, intermediateStop.location.lon));
+                            points.add(intermediateStop.location.coord);
                         }
                     }
-                    points.add(new Point(segmentDestination.lat, segmentDestination.lon));
+                    points.add(segmentDestination.coord);
                     if (type.equals("walk")) {
                         if (departurePlanned == null)
                             departurePlanned = legs.get(legs.size() - 1).getArrivalTime();
@@ -941,8 +941,7 @@ public class VrsProvider extends AbstractNetworkProvider {
             String pointsArr[] = polygonStr.split("\\s");
             for (String point : pointsArr) {
                 String latlon[] = point.split(",");
-                polygonArr.add(new Point((int) Math.round(Double.parseDouble(latlon[0]) * 1E6),
-                        (int) Math.round(Double.parseDouble(latlon[1]) * 1E6)));
+                polygonArr.add(Point.fromDouble(Double.parseDouble(latlon[0]), Double.parseDouble(latlon[1])));
             }
         }
     }
@@ -970,7 +969,7 @@ public class VrsProvider extends AbstractNetworkProvider {
 
     @Override
     public Point[] getArea() throws IOException {
-        return new Point[] { new Point(50937531, 6960279) };
+        return new Point[] { Point.from1E6(50937531, 6960279) };
     }
 
     private static Product productFromLineNumber(String number) {
@@ -1113,9 +1112,10 @@ public class VrsProvider extends AbstractNetworkProvider {
                 place += "-" + location.getString("district");
             }
         }
-        final int lat = (int) Math.round(location.optDouble("x", 0) * 1E6);
-        final int lon = (int) Math.round(location.optDouble("y", 0) * 1E6);
-        return new LocationWithPosition(new Location(locationType, id, lat, lon, place, name),
+        final double lat = location.optDouble("x", 0);
+        final double lon = location.optDouble("y", 0);
+        final Point coord = Point.fromDouble(lat, lon);
+        return new LocationWithPosition(new Location(locationType, id, coord, place, name),
                 position != null ? new Position(position.substring(position.lastIndexOf(" ") + 1)) : null);
     }
 
@@ -1124,8 +1124,8 @@ public class VrsProvider extends AbstractNetworkProvider {
             return null;
         } else if (loc.id != null) {
             return loc.id;
-        } else if (loc.lat != 0 && loc.lon != 0) {
-            return String.format(Locale.ENGLISH, "%f,%f", loc.lat / 1E6, loc.lon / 1E6);
+        } else if (loc.coord != null) {
+            return String.format(Locale.ENGLISH, "%f,%f", loc.getLatAsDouble(), loc.getLonAsDouble());
         } else {
             SuggestLocationsResult suggestLocationsResult = suggestLocations(loc.name);
             final List<Location> suggestedLocations = suggestLocationsResult.getLocations();

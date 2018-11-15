@@ -29,6 +29,7 @@ import de.schildbach.pte.SeProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
+import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -114,9 +115,10 @@ public class SeProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void longTrip() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "740098086", 67859847, 20212802, null, "KIRUNA"), null,
-                new Location(LocationType.STATION, "740098000", null, "STOCKHOLM"), new Date(), true, null);
+        final Location from = new Location(LocationType.STATION, "740098086", Point.from1E6(67859847, 20212802), null,
+                "KIRUNA");
+        final Location to = new Location(LocationType.STATION, "740098000", null, "STOCKHOLM");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
 
         if (!result.context.canQueryLater())

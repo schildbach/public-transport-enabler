@@ -31,6 +31,7 @@ import de.schildbach.pte.MvvProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
+import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -124,9 +125,10 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void longTrip() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "1005530", 48002924, 11340144, "Starnberg", "Agentur für Arbeit"),
-                null, new Location(LocationType.STATION, null, null, "Ackermannstraße"), new Date(), true, null);
+        final Location from = new Location(LocationType.STATION, "1005530", Point.from1E6(48002924, 11340144),
+                "Starnberg", "Agentur für Arbeit");
+        final Location to = new Location(LocationType.STATION, null, null, "Ackermannstraße");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
     }
 
@@ -141,8 +143,9 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void tripBetweenCoordinateAndStation() throws Exception {
-        final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 48238341, 11478230), null,
-                new Location(LocationType.ANY, null, null, "Ostbahnhof"), new Date(), true, null);
+        final Location from = new Location(LocationType.ADDRESS, null, Point.from1E6(48238341, 11478230));
+        final Location to = new Location(LocationType.ANY, null, null, "Ostbahnhof");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
@@ -160,9 +163,10 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void tripBetweenStationAndAddress() throws Exception {
-        final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "1220", null, "Josephsburg"),
-                null, new Location(LocationType.ADDRESS, null, 48188018, 11574239, null, "München Frankfurter Ring 35"),
-                new Date(), true, null);
+        final Location from = new Location(LocationType.STATION, "1220", null, "Josephsburg");
+        final Location to = new Location(LocationType.ADDRESS, null, Point.from1E6(48188018, 11574239), null,
+                "München Frankfurter Ring 35");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
@@ -171,11 +175,11 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void queryTripInvalidStation() throws Exception {
         final QueryTripsResult result1 = queryTrips(new Location(LocationType.STATION, "2", "München", "Marienplatz"),
-                null, new Location(LocationType.STATION, "99999", 0, 0, null, null), new Date(), true, null);
+                null, new Location(LocationType.STATION, "99999", null, null), new Date(), true, null);
 
         assertEquals(QueryTripsResult.Status.UNKNOWN_TO, result1.status);
 
-        final QueryTripsResult result2 = queryTrips(new Location(LocationType.STATION, "99999", 0, 0, null, null), null,
+        final QueryTripsResult result2 = queryTrips(new Location(LocationType.STATION, "99999", null, null), null,
                 new Location(LocationType.STATION, "2", "München", "Marienplatz"), new Date(), true, null);
 
         assertEquals(QueryTripsResult.Status.UNKNOWN_FROM, result2.status);

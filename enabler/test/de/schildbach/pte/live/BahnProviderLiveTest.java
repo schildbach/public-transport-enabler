@@ -32,6 +32,7 @@ import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
+import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
@@ -124,11 +125,11 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void slowTrip() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "732655", 52535576, 13422171, null, "Marienburger Str., Berlin"),
-                null, new Location(LocationType.STATION, "623234", 48000221, 11342490, null,
-                        "Tutzinger-Hof-Platz, Starnberg"),
-                new Date(), true, null);
+        final Location from = new Location(LocationType.STATION, "732655", Point.from1E6(52535576, 13422171), null,
+                "Marienburger Str., Berlin");
+        final Location to = new Location(LocationType.STATION, "623234", Point.from1E6(48000221, 11342490), null,
+                "Tutzinger-Hof-Platz, Starnberg");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
 
         if (!result.context.canQueryLater())
@@ -148,12 +149,11 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void tripWithFootway() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.ADDRESS, null, 52517139, 13388749, null,
-                        "Berlin - Mitte, Unter den Linden 24"),
-                null, new Location(LocationType.ADDRESS, null, 47994243, 11338543, null,
-                        "Starnberg, Possenhofener Straße 13"),
-                new Date(), true, null);
+        final Location from = new Location(LocationType.ADDRESS, null, Point.from1E6(52517139, 13388749), null,
+                "Berlin - Mitte, Unter den Linden 24");
+        final Location to = new Location(LocationType.ADDRESS, null, Point.from1E6(47994243, 11338543), null,
+                "Starnberg, Possenhofener Straße 13");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
 
         if (!result.context.canQueryLater())

@@ -477,12 +477,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     }
 
     private void appendXmlCoordRequestParameters(final HttpUrl.Builder url, final EnumSet<LocationType> types,
-            final int lat, final int lon, final int maxDistance, final int maxLocations) {
+            final Point coord, final int maxDistance, final int maxLocations) {
         appendCommonRequestParams(url, "XML");
-        url.addEncodedQueryParameter("coord",
-                ParserUtils.urlEncode(
-                        String.format(Locale.ENGLISH, "%2.6f:%2.6f:WGS84", latLonToDouble(lon), latLonToDouble(lat)),
-                        requestUrlEncoding));
+        url.addEncodedQueryParameter("coord", ParserUtils.urlEncode(
+                String.format(Locale.ENGLISH, "%2.6f:%2.6f:WGS84", coord.getLonAsDouble(), coord.getLatAsDouble()),
+                requestUrlEncoding));
         if (useStringCoordListOutputFormat)
             url.addEncodedQueryParameter("coordListOutputFormat", "STRING");
         url.addEncodedQueryParameter("max", Integer.toString(maxLocations != 0 ? maxLocations : 50));
@@ -500,10 +499,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         }
     }
 
-    protected NearbyLocationsResult xmlCoordRequest(final EnumSet<LocationType> types, final int lat, final int lon,
+    protected NearbyLocationsResult xmlCoordRequest(final EnumSet<LocationType> types, final Point coord,
             final int maxDistance, final int maxStations) throws IOException {
         final HttpUrl.Builder url = coordEndpoint.newBuilder();
-        appendXmlCoordRequestParameters(url, types, lat, lon, maxDistance, maxStations);
+        appendXmlCoordRequestParameters(url, types, coord, maxDistance, maxStations);
         final AtomicReference<NearbyLocationsResult> result = new AtomicReference<>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
@@ -572,10 +571,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         return result.get();
     }
 
-    protected NearbyLocationsResult mobileCoordRequest(final EnumSet<LocationType> types, final int lat, final int lon,
+    protected NearbyLocationsResult mobileCoordRequest(final EnumSet<LocationType> types, final Point coord,
             final int maxDistance, final int maxStations) throws IOException {
         final HttpUrl.Builder url = coordEndpoint.newBuilder();
-        appendXmlCoordRequestParameters(url, types, lat, lon, maxDistance, maxStations);
+        appendXmlCoordRequestParameters(url, types, coord, maxDistance, maxStations);
         final AtomicReference<NearbyLocationsResult> result = new AtomicReference<>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
@@ -836,8 +835,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     @Override
     public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location,
             final int maxDistance, final int maxLocations) throws IOException {
-        if (location.hasLocation())
-            return xmlCoordRequest(types, location.lat, location.lon, maxDistance, maxLocations);
+        if (location.hasCoord())
+            return xmlCoordRequest(types, location.coord, maxDistance, maxLocations);
 
         if (location.type != LocationType.STATION)
             throw new IllegalArgumentException("cannot handle: " + location.type);
@@ -1964,10 +1963,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         return P_STATION_NAME_WHITESPACE.matcher(name).replaceAll(" ");
     }
 
-    protected static double latLonToDouble(final int value) {
-        return (double) value / 1000000;
-    }
-
     protected void appendXsltTripRequestParameters(final HttpUrl.Builder url, final Location from,
             final @Nullable Location via, final Location to, final Date time, final boolean dep,
             @Nullable TripOptions options) {
@@ -2810,7 +2805,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                                     if ("WGS84".equals(coordParts[2])) {
                                         final int lat = (int) Math.round(Double.parseDouble(coordParts[1]));
                                         final int lon = (int) Math.round(Double.parseDouble(coordParts[0]));
-                                        coords = new Point(lat, lon);
+                                        coords = Point.from1E6(lat, lon);
                                     } else {
                                         coords = null;
                                     }
@@ -2934,7 +2929,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         while (XmlPullUtil.optEnter(pp, "itdCoordinateBaseElem")) {
             final int lon = (int) Math.round(Double.parseDouble(XmlPullUtil.valueTag(pp, "x")));
             final int lat = (int) Math.round(Double.parseDouble(XmlPullUtil.valueTag(pp, "y")));
-            path.add(new Point(lat, lon));
+            path.add(Point.from1E6(lat, lon));
 
             XmlPullUtil.skipExit(pp, "itdCoordinateBaseElem");
         }
@@ -2951,7 +2946,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         final String[] parts = coordStr.split(",");
         final int lat = (int) Math.round(Double.parseDouble(parts[1]));
         final int lon = (int) Math.round(Double.parseDouble(parts[0]));
-        return new Point(lat, lon);
+        return Point.from1E6(lat, lon);
     }
 
     private Point processCoordAttr(final XmlPullParser pp) {
@@ -2965,7 +2960,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         if (!"WGS84".equals(mapName))
             return null;
 
-        return new Point(y, x);
+        return Point.from1E6(y, x);
     }
 
     private Fare processItdGenericTicketGroup(final XmlPullParser pp, final String net, final Currency currency)
@@ -3029,10 +3024,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
     private void appendLocationParams(final HttpUrl.Builder url, final Location location, final String paramSuffix) {
         final String name = locationValue(location);
-        if ((location.type == LocationType.ADDRESS || location.type == LocationType.COORD) && location.hasLocation()) {
+        if ((location.type == LocationType.ADDRESS || location.type == LocationType.COORD) && location.hasCoord()) {
             url.addEncodedQueryParameter("type_" + paramSuffix, "coord");
             url.addEncodedQueryParameter("name_" + paramSuffix, ParserUtils.urlEncode(
-                    String.format(Locale.ENGLISH, "%.6f:%.6f", location.lon / 1E6, location.lat / 1E6) + ":WGS84",
+                    String.format(Locale.ENGLISH, "%.6f:%.6f", location.getLonAsDouble(), location.getLatAsDouble())
+                            + ":WGS84",
                     requestUrlEncoding));
         } else if (name != null) {
             url.addEncodedQueryParameter("type_" + paramSuffix, locationTypeValue(location));

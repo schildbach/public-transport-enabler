@@ -28,6 +28,7 @@ import de.schildbach.pte.NasaProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
+import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -103,10 +104,11 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void anotherShortTrip() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "8010205", 51346546, 12383333, null, "Leipzig Hbf"), null,
-                new Location(LocationType.STATION, "8012183", 51423340, 12223423, null, "Leipzig/Halle Flughafen"),
-                new Date(), true, null);
+        final Location from = new Location(LocationType.STATION, "8010205", Point.from1E6(51346546, 12383333), null,
+                "Leipzig Hbf");
+        final Location to = new Location(LocationType.STATION, "8012183", Point.from1E6(51423340, 12223423), null,
+                "Leipzig/Halle Flughafen");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         print(result);
 
@@ -143,10 +145,10 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void addressTrip() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.ADDRESS, null, 51334078, 12478331, "04319 Leipzig-Engelsdorf",
-                        "August-Bebel-Platz"),
-                null, new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf"), new Date(), true, null);
+        final Location from = new Location(LocationType.ADDRESS, null, Point.from1E6(51334078, 12478331),
+                "04319 Leipzig-Engelsdorf", "August-Bebel-Platz");
+        final Location to = new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         print(result);
 

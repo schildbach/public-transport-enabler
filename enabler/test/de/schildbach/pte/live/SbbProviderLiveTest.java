@@ -27,6 +27,7 @@ import de.schildbach.pte.SbbProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
+import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -103,10 +104,11 @@ public class SbbProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void tripWithFootway() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.ADDRESS, null, 46689354, 7683444, null, "Spiez, Seestraße 62"), null,
-                new Location(LocationType.ADDRESS, null, 47133169, 8767425, null, "Einsiedeln, Erlenmoosweg 24"),
-                new Date(), true, null);
+        final Location from = new Location(LocationType.ADDRESS, null, Point.from1E6(46689354, 7683444), null,
+                "Spiez, Seestraße 62");
+        final Location to = new Location(LocationType.ADDRESS, null, Point.from1E6(47133169, 8767425), null,
+                "Einsiedeln, Erlenmoosweg 24");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
@@ -114,9 +116,10 @@ public class SbbProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void tripFromAddress() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.ADDRESS, null, 47438595, 8437369, null, "Dorfstrasse 10, Dällikon, Schweiz"),
-                null, new Location(LocationType.STATION, "8500010", null, "Basel"), new Date(), true, null);
+        final Location from = new Location(LocationType.ADDRESS, null, Point.from1E6(47438595, 8437369), null,
+                "Dorfstrasse 10, Dällikon, Schweiz");
+        final Location to = new Location(LocationType.STATION, "8500010", null, "Basel");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);

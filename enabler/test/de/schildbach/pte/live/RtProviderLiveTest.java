@@ -27,6 +27,7 @@ import de.schildbach.pte.RtProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
+import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -114,11 +115,11 @@ public class RtProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void tripFromAddress() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.ADDRESS, null, 51521886, -51447, null,
-                        "26 Coopers Close, Poplar, Greater London E1 4, Vereinigtes Königreich"),
-                null, new Location(LocationType.STATION, "8096022", 50941312, 6967206, null, "COLOGNE"), new Date(),
-                true, null);
+        final Location from = new Location(LocationType.ADDRESS, null, Point.from1E6(51521886, -51447), null,
+                "26 Coopers Close, Poplar, Greater London E1 4, Vereinigtes Königreich");
+        final Location to = new Location(LocationType.STATION, "8096022", Point.from1E6(50941312, 6967206), null,
+                "COLOGNE");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);

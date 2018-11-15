@@ -177,9 +177,10 @@ public class NegentweeProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void coordinatesTrip() throws Exception {
-        final QueryTripsResult result = queryTrips(new Location(LocationType.COORD, null, new Point(51677273, 4437548)),
-                new Location(LocationType.COORD, null, new Point(52162772, 4583171)),
-                new Location(LocationType.COORD, null, new Point(53347140, 6720583)), new Date(), true, null);
+        final Location from = new Location(LocationType.COORD, null, Point.from1E6(51677273, 4437548));
+        final Location via = new Location(LocationType.COORD, null, Point.from1E6(52162772, 4583171));
+        final Location to = new Location(LocationType.COORD, null, Point.from1E6(53347140, 6720583));
+        final QueryTripsResult result = queryTrips(from, via, to, new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
     }

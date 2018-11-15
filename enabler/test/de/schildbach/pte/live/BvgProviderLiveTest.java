@@ -29,6 +29,7 @@ import de.schildbach.pte.BvgProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
+import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -131,10 +132,11 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void tripBetweenStations() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "900055101", 52496176, 13343273, null, "U Viktoria-Luise-Platz"),
-                null, new Location(LocationType.STATION, "900089303", 52588810, 13288699, null, "S Tegel"), new Date(),
-                true, null);
+        final Location from = new Location(LocationType.STATION, "900055101", Point.from1E6(52496176, 13343273), null,
+                "U Viktoria-Luise-Platz");
+        final Location to = new Location(LocationType.STATION, "900089303", Point.from1E6(52588810, 13288699), null,
+                "S Tegel");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
     }
 
@@ -160,12 +162,11 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void tripBetweenCoordinatesAndAddresses() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.ADDRESS, null, 52536099, 13426309, null,
-                        "Christburger Straße 1, 10405 Berlin, Deutschland"),
-                null, new Location(LocationType.ADDRESS, null, 52486400, 13350744, null,
-                        "Eisenacher Straße 70, 10823 Berlin, Deutschland"),
-                new Date(), true, null);
+        final Location from = new Location(LocationType.ADDRESS, null, Point.from1E6(52536099, 13426309), null,
+                "Christburger Straße 1, 10405 Berlin, Deutschland");
+        final Location to = new Location(LocationType.ADDRESS, null, Point.from1E6(52486400, 13350744), null,
+                "Eisenacher Straße 70, 10823 Berlin, Deutschland");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
@@ -182,12 +183,11 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void tripBetweenAddresses() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.ADDRESS, null, 52479663, 13324278, "10715 Berlin-Wilmersdorf",
-                        "Weimarische Str. 7"),
-                null, new Location(LocationType.ADDRESS, null, 52541536, 13421290, "10437 Berlin-Prenzlauer Berg",
-                        "Göhrener Str. 5"),
-                new Date(), true, null);
+        final Location from = new Location(LocationType.ADDRESS, null, Point.from1E6(52479663, 13324278),
+                "10715 Berlin-Wilmersdorf", "Weimarische Str. 7");
+        final Location to = new Location(LocationType.ADDRESS, null, Point.from1E6(52541536, 13421290),
+                "10437 Berlin-Prenzlauer Berg", "Göhrener Str. 5");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
@@ -195,13 +195,13 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void viaTripBetweenAddresses() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.ADDRESS, null, 52479663, 13324278, "10715 Berlin-Wilmersdorf",
-                        "Weimarische Str. 7"),
-                new Location(LocationType.ADDRESS, null, 52527872, 13381657, "10115 Berlin-Mitte",
-                        "Hannoversche Str. 20"),
-                new Location(LocationType.ADDRESS, null, 52526029, 13399878, "10178 Berlin-Mitte", "Sophienstr. 24"),
-                new Date(), true, null);
+        final Location from = new Location(LocationType.ADDRESS, null, Point.from1E6(52479663, 13324278),
+                "10715 Berlin-Wilmersdorf", "Weimarische Str. 7");
+        final Location via = new Location(LocationType.ADDRESS, null, Point.from1E6(52527872, 13381657),
+                "10115 Berlin-Mitte", "Hannoversche Str. 20");
+        final Location to = new Location(LocationType.ADDRESS, null, Point.from1E6(52526029, 13399878),
+                "10178 Berlin-Mitte", "Sophienstr. 24");
+        final QueryTripsResult result = queryTrips(from, via, to, new Date(), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
@@ -209,12 +209,11 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void tripAddressWithoutId() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.ADDRESS, null, 52481922, 13388383, null,
-                        "Bayernring, 12101 Berlin, Deutschland"),
-                null,
-                new Location(LocationType.STATION, "900064301", 52429099, 13328081, null, "S Lichterfelde Ost Bhf"),
-                new Date(), true, null);
+        final Location from = new Location(LocationType.ADDRESS, null, Point.from1E6(52481922, 13388383), null,
+                "Bayernring, 12101 Berlin, Deutschland");
+        final Location to = new Location(LocationType.STATION, "900064301", Point.from1E6(52429099, 13328081), null,
+                "S Lichterfelde Ost Bhf");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
     }
 }

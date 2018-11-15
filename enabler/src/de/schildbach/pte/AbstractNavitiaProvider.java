@@ -310,8 +310,8 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
     private String printLocation(final Location location) {
         if (location.hasId())
             return location.id;
-        else if (location.hasLocation())
-            return (double) (location.lon) / 1E6 + ";" + (double) (location.lat) / 1E6;
+        else if (location.hasCoord())
+            return location.getLonAsDouble() + ";" + location.getLatAsDouble();
         else
             return "";
     }
@@ -695,9 +695,9 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
 
         // Build url depending of location type.
         final HttpUrl.Builder url = url();
-        if (location.hasLocation()) {
-            final double lon = location.lon / 1E6;
-            final double lat = location.lat / 1E6;
+        if (location.hasCoord()) {
+            final double lon = location.getLonAsDouble();
+            final double lat = location.getLatAsDouble();
             url.addPathSegment("coords").addPathSegment(lon + ";" + lat);
         } else if (location.type == LocationType.STATION) {
             if (!location.isIdentified())

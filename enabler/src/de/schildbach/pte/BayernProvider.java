@@ -112,8 +112,8 @@ public class BayernProvider extends AbstractEfaProvider {
     @Override
     public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location,
             final int maxDistance, final int maxLocations) throws IOException {
-        if (location.hasLocation())
-            return mobileCoordRequest(types, location.lat, location.lon, maxDistance, maxLocations);
+        if (location.hasCoord())
+            return mobileCoordRequest(types, location.coord, maxDistance, maxLocations);
 
         if (location.type != LocationType.STATION)
             throw new IllegalArgumentException("cannot handle: " + location.type);

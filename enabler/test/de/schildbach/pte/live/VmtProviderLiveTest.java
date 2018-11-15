@@ -27,6 +27,7 @@ import de.schildbach.pte.VmtProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
+import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -80,10 +81,11 @@ public class VmtProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void shortTrip() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "153166", 50926947, 11586987, null, "Jena, Stadtzentrum"), null,
-                new Location(LocationType.STATION, "153014", 50933887, 11590592, null, "Jena, Spittelpl."), new Date(),
-                true, null);
+        final Location from = new Location(LocationType.STATION, "153166", Point.from1E6(50926947, 11586987), null,
+                "Jena, Stadtzentrum");
+        final Location to = new Location(LocationType.STATION, "153014", Point.from1E6(50933887, 11590592), null,
+                "Jena, Spittelpl.");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         System.out.println(result);
 
         if (!result.context.canQueryLater())

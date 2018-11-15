@@ -31,6 +31,7 @@ import de.schildbach.pte.NvvProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
+import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
@@ -193,10 +194,11 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest {
     public void slowTrip() throws Exception {
         final TripOptions options = new TripOptions(Product.ALL, null, WalkSpeed.NORMAL, Accessibility.BARRIER_FREE,
                 null);
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "3029079", 50017679, 8229480, "Mainz", "An den Dünen"), null,
-                new Location(LocationType.STATION, "3013508", 50142890, 8895203, "Hanau", "Beethovenplatz"), new Date(),
-                true, options);
+        final Location from = new Location(LocationType.STATION, "3029079", Point.from1E6(50017679, 8229480), "Mainz",
+                "An den Dünen");
+        final Location to = new Location(LocationType.STATION, "3013508", Point.from1E6(50142890, 8895203), "Hanau",
+                "Beethovenplatz");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, options);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
@@ -218,12 +220,11 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void tripUsingMuchBuffer() throws IOException {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.ADDRESS, null, 50119563, 8697044, null,
-                        "Hegelstrasse, 60316 Frankfurt am Main"),
-                null,
-                new Location(LocationType.ADDRESS, null, 50100364, 8615193, null, "Mainzer Landstrasse, Frankfurt"),
-                new Date(1378368840000l), true, null);
+        final Location from = new Location(LocationType.ADDRESS, null, Point.from1E6(50119563, 8697044), null,
+                "Hegelstrasse, 60316 Frankfurt am Main");
+        final Location to = new Location(LocationType.ADDRESS, null, Point.from1E6(50100364, 8615193), null,
+                "Mainzer Landstrasse, Frankfurt");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(1378368840000l), true, null);
         print(result);
 
         if (!result.context.canQueryLater())
@@ -235,10 +236,11 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void tripUsingEvenMoreBuffer() throws IOException {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "3000909", 50094052, 8690923, null, "F Brauerei"), null,
-                new Location(LocationType.STATION, "3001201", 50119950, 8653924, null, "F Bockenheimer Warte"),
-                new Date(1378368840000l), true, null);
+        final Location from = new Location(LocationType.STATION, "3000909", Point.from1E6(50094052, 8690923), null,
+                "F Brauerei");
+        final Location to = new Location(LocationType.STATION, "3001201", Point.from1E6(50119950, 8653924), null,
+                "F Bockenheimer Warte");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(1378368840000l), true, null);
         print(result);
 
         if (!result.context.canQueryLater())

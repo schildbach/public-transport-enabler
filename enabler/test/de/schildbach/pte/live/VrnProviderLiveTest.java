@@ -30,6 +30,7 @@ import de.schildbach.pte.VrnProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
+import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -102,10 +103,11 @@ public class VrnProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void shortTrip() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "6002417", 49479748, 8469938, "Mannheim", "Mannheim, Hauptbahnhof"),
-                null, new Location(LocationType.STATION, "6005542", 49482892, 8473050, "Mannheim", "Kunsthalle"),
-                new Date(), true, null);
+        final Location from = new Location(LocationType.STATION, "6002417", Point.from1E6(49479748, 8469938),
+                "Mannheim", "Mannheim, Hauptbahnhof");
+        final Location to = new Location(LocationType.STATION, "6005542", Point.from1E6(49482892, 8473050), "Mannheim",
+                "Kunsthalle");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);

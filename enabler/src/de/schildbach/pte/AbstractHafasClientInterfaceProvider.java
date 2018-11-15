@@ -57,6 +57,7 @@ import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
+import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.Position;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
@@ -131,8 +132,8 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
     @Override
     public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location,
             final int maxDistance, final int maxLocations) throws IOException {
-        if (location.hasLocation())
-            return jsonLocGeoPos(types, location.lat, location.lon, maxDistance, maxLocations);
+        if (location.hasCoord())
+            return jsonLocGeoPos(types, location.coord, maxDistance, maxLocations);
         else
             throw new IllegalArgumentException("cannot handle: " + location);
     }
@@ -162,7 +163,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                 jsonContext.products, jsonContext.walkSpeed, later ? jsonContext.laterContext : jsonContext.earlierContext);
     }
 
-    protected final NearbyLocationsResult jsonLocGeoPos(final EnumSet<LocationType> types, final int lat, final int lon,
+    protected final NearbyLocationsResult jsonLocGeoPos(final EnumSet<LocationType> types, final Point coord,
             int maxDistance, int maxLocations) throws IOException {
         if (maxDistance == 0)
             maxDistance = DEFAULT_MAX_DISTANCE;
@@ -171,7 +172,8 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
         final boolean getStations = types.contains(LocationType.STATION);
         final boolean getPOIs = types.contains(LocationType.POI);
         final String request = wrapJsonApiRequest("LocGeoPos", "{\"ring\":" //
-                + "{\"cCrd\":{\"x\":" + lon + ",\"y\":" + lat + "},\"maxDist\":" + maxDistance + "}," //
+                + "{\"cCrd\":{\"x\":" + coord.getLonAs1E6() + ",\"y\":" + coord.getLatAs1E6() + "}," //
+                + "\"maxDist\":" + maxDistance + "}," //
                 + "\"getStops\":" + getStations + "," //
                 + "\"getPOIs\":" + getPOIs + "," //
                 + "\"maxLoc\":" + maxLocations + "}", //
@@ -411,9 +413,9 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
             if (!locations.isEmpty())
                 return locations.get(0);
         }
-        if (location.hasLocation()) {
-            final List<Location> locations = jsonLocGeoPos(EnumSet.allOf(LocationType.class), location.lat,
-                    location.lon, 0, 1).locations;
+        if (location.hasCoord()) {
+            final List<Location> locations = jsonLocGeoPos(EnumSet.allOf(LocationType.class), location.coord, 0,
+                    1).locations;
             if (!locations.isEmpty())
                 return locations.get(0);
         }
@@ -805,8 +807,8 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
 
         final JSONObject crd = loc.optJSONObject("crd");
         if (crd != null)
-            return new Location(locationType, id, crd.getInt("y"), crd.getInt("x"), placeAndName[0], placeAndName[1],
-                    products);
+            return new Location(locationType, id, Point.from1E6(crd.getInt("y"), crd.getInt("x")), placeAndName[0],
+                    placeAndName[1], products);
         else
             return new Location(LocationType.STATION, id, null, placeAndName[0], placeAndName[1], products);
     }

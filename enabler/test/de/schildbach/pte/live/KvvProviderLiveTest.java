@@ -30,6 +30,7 @@ import de.schildbach.pte.KvvProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
+import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -81,11 +82,11 @@ public class KvvProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void shortTrip() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "7000001", 49009526, 8404914, "Karlsruhe", "Marktplatz"), null,
-                new Location(LocationType.STATION, "7000002", 49009393, 8408866, "Karlsruhe",
-                        "Kronenplatz (Kaiserstr.)"),
-                new Date(), true, null);
+        final Location from = new Location(LocationType.STATION, "7000001", Point.from1E6(49009526, 8404914),
+                "Karlsruhe", "Marktplatz");
+        final Location to = new Location(LocationType.STATION, "7000002", Point.from1E6(49009393, 8408866), "Karlsruhe",
+                "Kronenplatz (Kaiserstr.)");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
@@ -111,12 +112,11 @@ public class KvvProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void tripBetweenAddresses() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.ADDRESS, null, 48985089, 8402709, null,
-                        "Konstanzer Straße 17, 76199 Karlsruhe, Deutschland"),
-                null, new Location(LocationType.ADDRESS, null, 49007706, 8356358, null,
-                        "Durmersheimer Straße 6, 76185 Karlsruhe, Deutschland"),
-                new Date(), true, null);
+        final Location from = new Location(LocationType.ADDRESS, null, Point.from1E6(48985089, 8402709), null,
+                "Konstanzer Straße 17, 76199 Karlsruhe, Deutschland");
+        final Location to = new Location(LocationType.ADDRESS, null, Point.from1E6(49007706, 8356358), null,
+                "Durmersheimer Straße 6, 76185 Karlsruhe, Deutschland");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
 
         if (!result.context.canQueryLater())

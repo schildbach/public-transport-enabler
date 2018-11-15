@@ -30,6 +30,7 @@ import de.schildbach.pte.VorProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
+import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -98,10 +99,11 @@ public class VorProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void shortTrip() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "490065700", 48200852, 16368880, "Wien", "Karlsplatz"), null,
-                new Location(LocationType.STATION, "490109400", 48198362, 16367667, "Wien", "Resselgasse"), new Date(),
-                true, null);
+        final Location from = new Location(LocationType.STATION, "490065700", Point.from1E6(48200852, 16368880), "Wien",
+                "Karlsplatz");
+        final Location to = new Location(LocationType.STATION, "490109400", Point.from1E6(48198362, 16367667), "Wien",
+                "Resselgasse");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
@@ -127,12 +129,11 @@ public class VorProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void tripToPOI() throws Exception {
-        final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "490134900", 48185184, 16376413),
-                null,
-                new Location(LocationType.POI,
-                        "A=4@O=Naschmarkt, Wien@X=16362903@Y=48198290@U=130@L=960068499@B=1@p=1476842541@", 48198290,
-                        16362903, "Wien", "Naschmarkt"),
-                new Date(), true, null);
+        final Location from = new Location(LocationType.STATION, "490134900", Point.from1E6(48185184, 16376413));
+        final Location to = new Location(LocationType.POI,
+                "A=4@O=Naschmarkt, Wien@X=16362903@Y=48198290@U=130@L=960068499@B=1@p=1476842541@",
+                Point.from1E6(48198290, 16362903), "Wien", "Naschmarkt");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);

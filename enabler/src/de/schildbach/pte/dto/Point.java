@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
 package de.schildbach.pte.dto;
 
 import java.io.Serializable;
+import java.util.Locale;
 
 import com.google.common.base.Objects;
 
@@ -27,23 +28,35 @@ import com.google.common.base.Objects;
 public final class Point implements Serializable {
     private static final long serialVersionUID = -256077054671402897L;
 
-    public final int lat, lon;
+    private final double lat, lon;
 
-    public Point(final int lat, final int lon) {
+    private Point(final double lat, final double lon) {
         this.lat = lat;
         this.lon = lon;
     }
 
     public static Point fromDouble(final double lat, final double lon) {
-        return new Point((int) Math.round(lat * 1E6), (int) Math.round(lon * 1E6));
+        return new Point(lat, lon);
+    }
+
+    public static Point from1E6(final int lat, final int lon) {
+        return new Point(lat / 1E6, lon / 1E6);
     }
 
     public double getLatAsDouble() {
-        return lat / 1E6;
+        return lat;
     }
 
     public double getLonAsDouble() {
-        return lon / 1E6;
+        return lon;
+    }
+
+    public int getLatAs1E6() {
+        return (int) Math.round(lat * 1E6);
+    }
+
+    public int getLonAs1E6() {
+        return (int) Math.round(lon * 1E6);
     }
 
     @Override
@@ -67,6 +80,6 @@ public final class Point implements Serializable {
 
     @Override
     public String toString() {
-        return lat + "/" + lon;
+        return String.format(Locale.ENGLISH, "%.7f/%.7f", lat, lon);
     }
 }

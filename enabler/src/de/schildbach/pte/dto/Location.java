@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,17 +39,16 @@ public final class Location implements Serializable {
 
     public final LocationType type;
     public final @Nullable String id;
-    public final int lat, lon;
+    public final @Nullable Point coord;
     public final @Nullable String place;
     public final @Nullable String name;
     public final @Nullable Set<Product> products;
 
-    public Location(final LocationType type, final String id, final int lat, final int lon, final String place,
-            final String name, final Set<Product> products) {
+    public Location(final LocationType type, final String id, final Point coord, final String place, final String name,
+            final Set<Product> products) {
         this.type = checkNotNull(type);
         this.id = id;
-        this.lat = lat;
-        this.lon = lon;
+        this.coord = coord;
         this.place = place;
         this.name = name;
         this.products = products;
@@ -59,36 +58,22 @@ public final class Location implements Serializable {
         if (type == LocationType.ANY) {
             checkArgument(id == null, "type ANY cannot have ID");
         } else if (type == LocationType.COORD) {
-            checkArgument(hasLocation(), "coordinates missing");
+            checkArgument(hasCoord(), "coordinates missing");
             checkArgument(place == null && name == null, "coordinates cannot have place or name");
         }
     }
 
-    public Location(final LocationType type, final String id, final int lat, final int lon, final String place,
-            final String name) {
-        this(type, id, lat, lon, place, name, null);
-    }
-
-    public Location(final LocationType type, final String id, final Point coord, final String place, final String name,
-            final Set<Product> products) {
-        this(type, id, coord != null ? coord.lat : 0, coord != null ? coord.lon : 0, place, name, products);
-    }
-
     public Location(final LocationType type, final String id, final Point coord, final String place,
             final String name) {
-        this(type, id, coord != null ? coord.lat : 0, coord != null ? coord.lon : 0, place, name);
+        this(type, id, coord, place, name, null);
     }
 
     public Location(final LocationType type, final String id, final String place, final String name) {
-        this(type, id, 0, 0, place, name);
-    }
-
-    public Location(final LocationType type, final String id, final int lat, final int lon) {
-        this(type, id, lat, lon, null, null);
+        this(type, id, null, place, name);
     }
 
     public Location(final LocationType type, final String id, final Point coord) {
-        this(type, id, coord != null ? coord.lat : 0, coord != null ? coord.lon : 0);
+        this(type, id, coord, null, null);
     }
 
     public Location(final LocationType type, final String id) {
@@ -96,27 +81,35 @@ public final class Location implements Serializable {
     }
 
     public static Location coord(final int lat, final int lon) {
-        return new Location(LocationType.COORD, null, lat, lon);
+        return new Location(LocationType.COORD, null, Point.from1E6(lat, lon));
     }
 
     public static Location coord(final Point coord) {
-        return new Location(LocationType.COORD, null, coord.lat, coord.lon);
+        return new Location(LocationType.COORD, null, coord);
     }
 
     public final boolean hasId() {
         return !Strings.isNullOrEmpty(id);
     }
 
-    public final boolean hasLocation() {
-        return lat != 0 || lon != 0;
+    public final boolean hasCoord() {
+        return coord != null;
     }
 
     public double getLatAsDouble() {
-        return lat / 1E6;
+        return coord.getLatAsDouble();
     }
 
     public double getLonAsDouble() {
-        return lon / 1E6;
+        return coord.getLonAsDouble();
+    }
+
+    public int getLatAs1E6() {
+        return coord.getLatAs1E6();
+    }
+
+    public int getLonAs1E6() {
+        return coord.getLonAs1E6();
     }
 
     public final boolean hasName() {
@@ -131,7 +124,7 @@ public final class Location implements Serializable {
             return true;
 
         if (type == LocationType.ADDRESS || type == LocationType.COORD)
-            return hasLocation();
+            return hasCoord();
 
         return false;
     }
@@ -165,8 +158,8 @@ public final class Location implements Serializable {
             return false;
         if (this.id != null)
             return Objects.equal(this.id, other.id);
-        if (this.lat != 0 && this.lon != 0)
-            return this.lat == other.lat && this.lon == other.lon;
+        if (this.coord != null)
+            return Objects.equal(this.coord, other.coord);
 
         // only discriminate by name/place if no ids are given
         if (!Objects.equal(this.place, other.place))
@@ -185,7 +178,7 @@ public final class Location implements Serializable {
             return false;
         if (!Objects.equal(this.id, other.id))
             return false;
-        if (this.lat != other.lat && this.lon != other.lon)
+        if (!Objects.equal(this.coord, other.coord))
             return false;
         if (!Objects.equal(this.place, other.place))
             return false;
@@ -201,14 +194,14 @@ public final class Location implements Serializable {
         if (id != null)
             return Objects.hashCode(type, id);
         else
-            return Objects.hashCode(type, lat, lon);
+            return Objects.hashCode(type, coord);
     }
 
     @Override
     public String toString() {
         final ToStringHelper helper = MoreObjects.toStringHelper(this).addValue(type).addValue(id);
-        if (hasLocation())
-            helper.addValue(lat + "/" + lon);
+        if (hasCoord())
+            helper.addValue(coord);
         return helper.add("place", place).add("name", name).add("products", products).omitNullValues().toString();
     }
 }

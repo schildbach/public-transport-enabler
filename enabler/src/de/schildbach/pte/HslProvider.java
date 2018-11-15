@@ -157,7 +157,7 @@ public class HslProvider extends AbstractNetworkProvider {
                     final String id = xmlValueTag(pp, "code");
                     final String name = xmlValueTag(pp, "name_fi");
                     final Point pt = coordStrToPoint(xmlValueTag(pp, "coords"));
-                    result.set(new Location(LocationType.STATION, id, pt.lat, pt.lon, null, name));
+                    result.set(new Location(LocationType.STATION, id, pt, null, name));
                 } catch (final XmlPullParserException x) {
                     throw new ParserException("cannot parse xml: " + bodyPeek, x);
                 }
@@ -175,7 +175,7 @@ public class HslProvider extends AbstractNetworkProvider {
     public NearbyLocationsResult queryNearbyLocations(EnumSet<LocationType> types, Location location, int maxDistance,
             int maxStations) throws IOException {
         final HttpUrl.Builder url = apiUrl("stops_area");
-        if (!location.hasLocation()) {
+        if (!location.hasCoord()) {
             if (location.type != LocationType.STATION)
                 throw new IllegalArgumentException("cannot handle: " + location.type);
             if (!location.hasId())
@@ -209,7 +209,7 @@ public class HslProvider extends AbstractNetworkProvider {
 
                         XmlPullUtil.skipExit(pp, "node");
 
-                        stations.add(new Location(LocationType.STATION, id, pt.lat, pt.lon, place, name));
+                        stations.add(new Location(LocationType.STATION, id, pt, place, name));
                     }
 
                     result.set(new NearbyLocationsResult(header, stations));
@@ -384,8 +384,7 @@ public class HslProvider extends AbstractNetworkProvider {
                         if (shortCode != null)
                             name = name + " (" + shortCode + ")";
 
-                        locations
-                                .add(new SuggestedLocation(new Location(type, id, pt.lat, pt.lon, null, name), weight));
+                        locations.add(new SuggestedLocation(new Location(type, id, pt, null, name), weight));
                         weight -= 1;
                     }
 
@@ -628,7 +627,7 @@ public class HslProvider extends AbstractNetworkProvider {
                                 LocationType type = LocationType.ANY;
                                 if (code != null)
                                     type = LocationType.STATION;
-                                Location loc = new Location(type, code, pt.lat, pt.lon, stopAddress, name);
+                                Location loc = new Location(type, code, pt, stopAddress, name);
 
                                 if (path.size() == 0) {
                                     departure = loc;
@@ -653,8 +652,8 @@ public class HslProvider extends AbstractNetworkProvider {
                             if (legType.equals("walk")) {
                                 // ugly hack to set the name of the last arrival
                                 if (arrival != null && arrival.name == null) {
-                                    arrival = new Location(arrival.type, arrival.id, arrival.lat, arrival.lon,
-                                            arrival.place, to.name);
+                                    arrival = new Location(arrival.type, arrival.id, arrival.coord, arrival.place,
+                                            to.name);
                                 }
 
                                 legs.add(new Trip.Individual(Trip.Individual.Type.WALK, departure, departureTime,

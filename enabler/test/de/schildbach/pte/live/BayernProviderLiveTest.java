@@ -31,6 +31,7 @@ import de.schildbach.pte.BayernProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
+import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -145,8 +146,9 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void tripBetweenCoordinateAndStation() throws Exception {
-        final QueryTripsResult result = queryTrips(new Location(LocationType.ADDRESS, null, 48238341, 11478230), null,
-                new Location(LocationType.STATION, "80000793", "München", "Ostbahnhof"), new Date(), true, null);
+        final Location from = new Location(LocationType.ADDRESS, null, Point.from1E6(48238341, 11478230));
+        final Location to = new Location(LocationType.STATION, "80000793", "München", "Ostbahnhof");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
 
         if (!result.context.canQueryLater())
@@ -172,9 +174,10 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void tripBetweenStationAndAddress() throws Exception {
-        final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "1001220", null, "Josephsburg"),
-                null, new Location(LocationType.ADDRESS, null, 48188018, 11574239, null, "München Frankfurter Ring 35"),
-                new Date(), true, null);
+        final Location from = new Location(LocationType.STATION, "1001220", null, "Josephsburg");
+        final Location to = new Location(LocationType.ADDRESS, null, Point.from1E6(48188018, 11574239), null,
+                "München Frankfurter Ring 35");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
 
         if (!result.context.canQueryLater())
@@ -186,10 +189,11 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void tripBetweenPOIs() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.POI, null, 47710568, 12621970, null, "Ruhpolding, Seehaus"), null,
-                new Location(LocationType.POI, null, 47738372, 12630996, null, "Ruhpolding, Unternberg-Bahn"),
-                new Date(), true, null);
+        final Location from = new Location(LocationType.POI, null, Point.from1E6(47710568, 12621970), null,
+                "Ruhpolding, Seehaus");
+        final Location to = new Location(LocationType.POI, null, Point.from1E6(47738372, 12630996), null,
+                "Ruhpolding, Unternberg-Bahn");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
 
         if (!result.context.canQueryLater())

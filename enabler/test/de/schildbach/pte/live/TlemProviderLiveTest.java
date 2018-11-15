@@ -28,6 +28,7 @@ import de.schildbach.pte.TlemProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
+import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -118,12 +119,11 @@ public class TlemProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void shortTrip2() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "2099014", 52478184, -1898364, "Birmingham",
-                        "Birmingham New Street Rail Station"),
-                null, new Location(LocationType.STATION, "2099150", 52585468, -2122962, "Wolverhampton",
-                        "Wolverhampton Rail Station"),
-                new Date(), true, null);
+        final Location from = new Location(LocationType.STATION, "2099014", Point.from1E6(52478184, -1898364),
+                "Birmingham", "Birmingham New Street Rail Station");
+        final Location to = new Location(LocationType.STATION, "2099150", Point.from1E6(52585468, -2122962),
+                "Wolverhampton", "Wolverhampton Rail Station");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
@@ -149,12 +149,11 @@ public class TlemProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void tripArncott() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "60011202", 51850168, -1094302, "Upper Arncott",
-                        "Bullingdon Prison"),
-                null,
-                new Location(LocationType.STATION, "60006013", 51856612, -1112904, "Lower Arncott", "The Plough E"),
-                new Date(), true, null);
+        final Location from = new Location(LocationType.STATION, "60011202", Point.from1E6(51850168, -1094302),
+                "Upper Arncott", "Bullingdon Prison");
+        final Location to = new Location(LocationType.STATION, "60006013", Point.from1E6(51856612, -1112904),
+                "Lower Arncott", "The Plough E");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
@@ -180,22 +179,22 @@ public class TlemProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void tripFromPOI() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.POI,
-                        "poiID:48863:31117134:-1:Statue:Ham (London):Statue:ANY:POI:517246:826916:TFLV:uk", 51444620,
-                        -314316, "Ham (London)", "Statue"),
-                null,
-                new Location(LocationType.ADDRESS, "streetID:106269::31117001:-1", "London", "Cannon Street, London"),
-                new Date(), true, null);
+        final Location from = new Location(LocationType.POI,
+                "poiID:48863:31117134:-1:Statue:Ham (London):Statue:ANY:POI:517246:826916:TFLV:uk",
+                Point.from1E6(51444620, -314316), "Ham (London)", "Statue");
+        final Location to = new Location(LocationType.ADDRESS, "streetID:106269::31117001:-1", "London",
+                "Cannon Street, London");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
     }
 
     @Test
     public void tripFromAddress() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.ADDRESS, "streetID:203417::31117006:-1", "London", "Kings Cross, London"),
-                null, new Location(LocationType.STATION, "1002070", 51508530, 46706, "Royal Albert", "Royal Albert"),
-                new Date(), true, null);
+        final Location from = new Location(LocationType.ADDRESS, "streetID:203417::31117006:-1", "London",
+                "Kings Cross, London");
+        final Location to = new Location(LocationType.STATION, "1002070", Point.from1E6(51508530, 46706),
+                "Royal Albert", "Royal Albert");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
     }
 

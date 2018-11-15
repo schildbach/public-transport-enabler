@@ -45,6 +45,7 @@ import de.schildbach.pte.dto.LineDestination;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
+import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
@@ -415,10 +416,12 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void testTripByAddressAndEmptyPolygon() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.ADDRESS, null /* id */, 50909350, 6676310, "Kerpen-Sindorf", "Erftstraße 43"),
-                null, new Location(LocationType.ADDRESS, null /* id */, 50923000, 6818440, "Frechen", "Zedernweg 1"),
-                Iso8601Format.parseDateTime("2015-03-17 21:11:18"), true, null);
+        final Location from = new Location(LocationType.ADDRESS, null /* id */, Point.from1E6(50909350, 6676310),
+                "Kerpen-Sindorf", "Erftstraße 43");
+        final Location to = new Location(LocationType.ADDRESS, null /* id */, Point.from1E6(50923000, 6818440),
+                "Frechen", "Zedernweg 1");
+        final QueryTripsResult result = queryTrips(from, null, to, Iso8601Format.parseDateTime("2015-03-17 21:11:18"),
+                true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);

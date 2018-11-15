@@ -240,9 +240,8 @@ public final class Trip implements Serializable {
         final StringBuilder builder = new StringBuilder();
 
         for (final Leg leg : legs) {
-            builder.append(leg.departure.hasId() ? leg.departure.id : leg.departure.lat + '/' + leg.departure.lon)
-                    .append('-');
-            builder.append(leg.arrival.hasId() ? leg.arrival.id : leg.arrival.lat + '/' + leg.arrival.lon).append('-');
+            builder.append(leg.departure.hasId() ? leg.departure.id : leg.departure.coord).append('-');
+            builder.append(leg.arrival.hasId() ? leg.arrival.id : leg.arrival.coord).append('-');
 
             if (leg instanceof Individual) {
                 builder.append("individual");

@@ -30,6 +30,7 @@ import de.schildbach.pte.CmtaProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
+import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -62,8 +63,8 @@ public class CmtaProviderLiveTest extends AbstractProviderLiveTest {
         print(result);
         assertThat(result.locations,
                 hasItem(new Location(LocationType.POI,
-                        "A=4@O=Texas State Capitol@X=-97740215@Y=30275103@u=0@U=130@L=9819105@", 30275103, -97740215,
-                        null, "Texas State Capitol")));
+                        "A=4@O=Texas State Capitol@X=-97740215@Y=30275103@u=0@U=130@L=9819105@",
+                        Point.from1E6(30275103, -97740215), null, "Texas State Capitol")));
     }
 
     @Test

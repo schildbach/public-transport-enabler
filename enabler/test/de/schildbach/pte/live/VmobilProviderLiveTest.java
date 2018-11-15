@@ -30,6 +30,7 @@ import de.schildbach.pte.VmobilProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
+import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -153,10 +154,11 @@ public class VmobilProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void shortTripSalzburg() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "455000900", 47808976, 13056409, "Salzburg", "Vogelweiderstraße"),
-                null, new Location(LocationType.STATION, "455084400", 47811556, 13050278, "Salzburg", "Merianstraße"),
-                new Date(), true, null);
+        final Location from = new Location(LocationType.STATION, "455000900", Point.from1E6(47808976, 13056409),
+                "Salzburg", "Vogelweiderstraße");
+        final Location to = new Location(LocationType.STATION, "455084400", Point.from1E6(47811556, 13050278),
+                "Salzburg", "Merianstraße");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);

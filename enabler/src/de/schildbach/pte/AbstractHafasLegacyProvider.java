@@ -248,9 +248,9 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
             final String id = XmlPullUtil.attr(pp, "externalStationNr");
             final int x = XmlPullUtil.intAttr(pp, "x");
             final int y = XmlPullUtil.intAttr(pp, "y");
-
+            final Point coord = Point.from1E6(y, x);
             final String[] placeAndName = splitStationName(name);
-            return new Location(LocationType.STATION, id, y, x, placeAndName[0], placeAndName[1]);
+            return new Location(LocationType.STATION, id, coord, placeAndName[0], placeAndName[1]);
         }
         throw new IllegalStateException("cannot handle: " + type);
     }
@@ -263,7 +263,8 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
                 name = null;
             final int x = XmlPullUtil.intAttr(pp, "x");
             final int y = XmlPullUtil.intAttr(pp, "y");
-            return new Location(LocationType.POI, null, y, x, null, name);
+            final Point coord = Point.from1E6(y, x);
+            return new Location(LocationType.POI, null, coord, null, name);
         }
         throw new IllegalStateException("cannot handle: " + type);
     }
@@ -276,9 +277,9 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
                 name = null;
             final int x = XmlPullUtil.intAttr(pp, "x");
             final int y = XmlPullUtil.intAttr(pp, "y");
-
+            final Point coord = Point.from1E6(y, x);
             final String[] placeAndName = splitAddress(name);
-            return new Location(LocationType.ADDRESS, null, y, x, placeAndName[0], placeAndName[1]);
+            return new Location(LocationType.ADDRESS, null, coord, placeAndName[0], placeAndName[1]);
         }
         throw new IllegalStateException("cannot handle: " + type);
     }
@@ -346,23 +347,23 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
                         if (type == 1) // station
                         {
                             final String[] placeAndName = splitStationName(value);
-                            location = new Location(LocationType.STATION, localId, lat, lon, placeAndName[0],
-                                    placeAndName[1]);
+                            location = new Location(LocationType.STATION, localId, Point.from1E6(lat, lon),
+                                    placeAndName[0], placeAndName[1]);
                         } else if (type == 2) // address
                         {
                             final String[] placeAndName = splitAddress(value);
-                            location = new Location(LocationType.ADDRESS, null, lat, lon, placeAndName[0],
-                                    placeAndName[1]);
+                            location = new Location(LocationType.ADDRESS, null, Point.from1E6(lat, lon),
+                                    placeAndName[0], placeAndName[1]);
                         } else if (type == 4) // poi
                         {
                             final String[] placeAndName = splitPOI(value);
-                            location = new Location(LocationType.POI, localId, lat, lon, placeAndName[0],
+                            location = new Location(LocationType.POI, localId, Point.from1E6(lat, lon), placeAndName[0],
                                     placeAndName[1]);
                         } else if (type == 128) // crossing
                         {
                             final String[] placeAndName = splitAddress(value);
-                            location = new Location(LocationType.ADDRESS, localId, lat, lon, placeAndName[0],
-                                    placeAndName[1]);
+                            location = new Location(LocationType.ADDRESS, localId, Point.from1E6(lat, lon),
+                                    placeAndName[0], placeAndName[1]);
                         } else if (type == 87) {
                             location = null;
                             // don't know what to do
@@ -1115,7 +1116,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
                                 while (XmlPullUtil.test(pp, "Point")) {
                                     final int x = XmlPullUtil.intAttr(pp, "x");
                                     final int y = XmlPullUtil.intAttr(pp, "y");
-                                    path.add(new Point(y, x));
+                                    path.add(Point.from1E6(y, x));
                                     XmlPullUtil.next(pp);
                                 }
                                 XmlPullUtil.skipExit(pp, "Polyline");
@@ -1248,13 +1249,13 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
     private static final String locationXml(final Location location) {
         if (location.type == LocationType.STATION && location.hasId())
             return "<Station externalId=\"" + normalizeStationId(location.id) + "\" />";
-        else if (location.type == LocationType.POI && location.hasLocation())
-            return "<Poi type=\"WGS84\" x=\"" + location.lon + "\" y=\"" + location.lat + "\" />";
-        else if (location.type == LocationType.ADDRESS && location.hasLocation())
-            return "<Address type=\"WGS84\" x=\"" + location.lon + "\" y=\"" + location.lat + "\" name=\""
-                    + (location.place != null ? location.place + ", " : "") + location.name + "\" />";
-        else if (location.type == LocationType.COORD && location.hasLocation())
-            return "<Coord type=\"WGS84\" x=\"" + location.lon + "\" y=\"" + location.lat + "\" />";
+        else if (location.type == LocationType.POI && location.hasCoord())
+            return "<Poi type=\"WGS84\" x=\"" + location.getLonAs1E6() + "\" y=\"" + location.getLatAs1E6() + "\" />";
+        else if (location.type == LocationType.ADDRESS && location.hasCoord())
+            return "<Address type=\"WGS84\" x=\"" + location.getLonAs1E6() + "\" y=\"" + location.getLatAs1E6()
+                    + "\" name=\"" + (location.place != null ? location.place + ", " : "") + location.name + "\" />";
+        else if (location.type == LocationType.COORD && location.hasCoord())
+            return "<Coord type=\"WGS84\" x=\"" + location.getLonAs1E6() + "\" y=\"" + location.getLatAs1E6() + "\" />";
         else
             throw new IllegalArgumentException("cannot handle: " + location);
     }
@@ -1266,11 +1267,11 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
 
         if (location.type == LocationType.STATION && location.hasId()) {
             id.append("@L=").append(normalizeStationId(location.id));
-        } else if (location.hasLocation()) {
-            id.append("@X=").append(location.lon);
-            id.append("@Y=").append(location.lat);
-            id.append("@O=").append(location.name != null ? location.name
-                    : String.format(Locale.ENGLISH, "%.6f, %.6f", location.lat / 1E6, location.lon / 1E6));
+        } else if (location.hasCoord()) {
+            id.append("@X=").append(location.getLonAs1E6());
+            id.append("@Y=").append(location.getLatAs1E6());
+            id.append("@O=").append(location.name != null ? location.name : String.format(Locale.ENGLISH, "%.6f, %.6f",
+                    location.getLatAsDouble(), location.getLonAsDouble()));
         } else if (location.name != null) {
             id.append("@G=").append(location.name);
             if (location.type != LocationType.ANY)
@@ -1286,7 +1287,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
             return 1;
         if (type == LocationType.POI)
             return 4;
-        if (type == LocationType.COORD || (type == LocationType.ADDRESS && location.hasLocation()))
+        if (type == LocationType.COORD || (type == LocationType.ADDRESS && location.hasCoord()))
             return 16;
         if (type == LocationType.ADDRESS && location.name != null)
             return 2;
@@ -1310,12 +1311,12 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
 
             if (via.type == LocationType.STATION && via.hasId()) {
                 url.addQueryParameter("REQ0JourneyStops1.0L", via.id);
-            } else if (via.hasLocation()) {
-                url.addQueryParameter("REQ0JourneyStops1.0X", Integer.toString(via.lon));
-                url.addQueryParameter("REQ0JourneyStops1.0Y", Integer.toString(via.lat));
+            } else if (via.hasCoord()) {
+                url.addQueryParameter("REQ0JourneyStops1.0X", Integer.toString(via.getLonAs1E6()));
+                url.addQueryParameter("REQ0JourneyStops1.0Y", Integer.toString(via.getLatAs1E6()));
                 if (via.name == null)
                     url.addQueryParameter("REQ0JourneyStops1.0O",
-                            String.format(Locale.ENGLISH, "%.6f, %.6f", via.lat / 1E6, via.lon / 1E6));
+                            String.format(Locale.ENGLISH, "%.6f, %.6f", via.getLatAsDouble(), via.getLonAsDouble()));
             } else if (via.name != null) {
                 url.addEncodedQueryParameter("REQ0JourneyStops1.0G", ParserUtils
                         .urlEncode(via.name + (via.type != LocationType.ANY ? "!" : ""), requestUrlEncoding));
@@ -2029,13 +2030,13 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
 
         if (type == 1) {
             final String[] placeAndName = splitStationName(name);
-            return new Location(LocationType.STATION, null, lat, lon, placeAndName[0], placeAndName[1]);
+            return new Location(LocationType.STATION, null, Point.from1E6(lat, lon), placeAndName[0], placeAndName[1]);
         } else if (type == 2) {
             final String[] placeAndName = splitAddress(name);
-            return new Location(LocationType.ADDRESS, null, lat, lon, placeAndName[0], placeAndName[1]);
+            return new Location(LocationType.ADDRESS, null, Point.from1E6(lat, lon), placeAndName[0], placeAndName[1]);
         } else if (type == 3) {
             final String[] placeAndName = splitPOI(name);
-            return new Location(LocationType.POI, null, lat, lon, placeAndName[0], placeAndName[1]);
+            return new Location(LocationType.POI, null, Point.from1E6(lat, lon), placeAndName[0], placeAndName[1]);
         } else {
             throw new IllegalStateException("unknown type: " + type + "  " + name);
         }
@@ -2185,8 +2186,8 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
                 final int lon = stationInputStream.readIntReverse();
                 final int lat = stationInputStream.readIntReverse();
 
-                return new Location(LocationType.STATION, id != 0 ? Integer.toString(id) : null, lat, lon,
-                        placeAndName[0], placeAndName[1]);
+                return new Location(LocationType.STATION, id != 0 ? Integer.toString(id) : null,
+                        Point.from1E6(lat, lon), placeAndName[0], placeAndName[1]);
             } finally {
                 stationInputStream.close();
             }
@@ -2196,23 +2197,23 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
     @Override
     public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location,
             final int maxDistance, final int maxLocations) throws IOException {
-        if (location.hasLocation())
-            return nearbyLocationsByCoordinate(types, location.lat, location.lon, maxDistance, maxLocations);
+        if (location.hasCoord())
+            return nearbyLocationsByCoordinate(types, location.coord, maxDistance, maxLocations);
         else if (location.type == LocationType.STATION && location.hasId())
             return nearbyStationsById(location.id, maxDistance);
         else
             throw new IllegalArgumentException("cannot handle: " + location);
     }
 
-    protected final NearbyLocationsResult nearbyLocationsByCoordinate(final EnumSet<LocationType> types, final int lat,
-            final int lon, final int maxDistance, final int maxLocations) throws IOException {
+    protected final NearbyLocationsResult nearbyLocationsByCoordinate(final EnumSet<LocationType> types,
+            final Point coord, final int maxDistance, final int maxLocations) throws IOException {
         if (types.contains(LocationType.STATION)) {
             final HttpUrl.Builder url = queryEndpoint.newBuilder().addPathSegment(apiLanguage + "y");
-            appendJsonNearbyStationsParameters(url, lat, lon, maxDistance, maxLocations);
+            appendJsonNearbyStationsParameters(url, coord, maxDistance, maxLocations);
             return jsonNearbyLocations(url.build());
         } else if (types.contains(LocationType.POI)) {
             final HttpUrl.Builder url = queryEndpoint.newBuilder().addPathSegment(apiLanguage + "y");
-            appendJsonNearbyPOIsParameters(url, lat, lon, maxDistance, maxLocations);
+            appendJsonNearbyPOIsParameters(url, coord, maxDistance, maxLocations);
             return jsonNearbyLocations(url.build());
         } else {
             return new NearbyLocationsResult(null, Collections.<Location> emptyList());
@@ -2239,12 +2240,11 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
 
     private static final Pattern P_XML_NEARBY_STATIONS_COARSE = Pattern.compile("\\G<\\s*St\\s*(.*?)/?>(?:\n|\\z)",
             Pattern.DOTALL);
-    private static final Pattern P_XML_NEARBY_STATIONS_FINE = Pattern.compile(
-            "" //
-                    + "evaId=\"(\\d+)\"\\s*" // id
-                    + "name=\"([^\"]+)\".*?" // name
-                    + "(?:x=\"(\\d+)\"\\s*)?" // x
-                    + "(?:y=\"(\\d+)\"\\s*)?" // y
+    private static final Pattern P_XML_NEARBY_STATIONS_FINE = Pattern.compile("" //
+            + "evaId=\"(\\d+)\"\\s*" // id
+            + "name=\"([^\"]+)\".*?" // name
+            + "(?:x=\"(\\d+)\"\\s*)?" // x
+            + "(?:y=\"(\\d+)\"\\s*)?" // y
             , Pattern.DOTALL);
     private static final Pattern P_XML_NEARBY_STATIONS_MESSAGES = Pattern
             .compile("<Err code=\"([^\"]*)\" text=\"([^\"]*)\"");
@@ -2276,19 +2276,15 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
 
                 final String parsedName = ParserUtils.resolveEntities(mFine.group(2)).trim();
 
-                final int parsedLon;
-                final int parsedLat;
-                if (mFine.group(3) != null && mFine.group(4) != null) {
-                    parsedLon = Integer.parseInt(mFine.group(3));
-                    parsedLat = Integer.parseInt(mFine.group(4));
-                } else {
-                    parsedLon = 0;
-                    parsedLat = 0;
-                }
+                final Point parsedCoord;
+                if (mFine.group(3) != null && mFine.group(4) != null)
+                    parsedCoord = Point.from1E6(Integer.parseInt(mFine.group(4)), Integer.parseInt(mFine.group(3)));
+                else
+                    parsedCoord = null;
 
                 final String[] placeAndName = splitStationName(parsedName);
-                stations.add(new Location(LocationType.STATION, parsedId, parsedLat, parsedLon, placeAndName[0],
-                        placeAndName[1]));
+                stations.add(
+                        new Location(LocationType.STATION, parsedId, parsedCoord, placeAndName[0], placeAndName[1]));
             } else {
                 throw new IllegalArgumentException("cannot parse '" + mCoarse.group(1) + "' on " + url);
             }
@@ -2297,7 +2293,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
         return new NearbyLocationsResult(null, stations);
     }
 
-    protected void appendJsonNearbyStationsParameters(final HttpUrl.Builder url, final int lat, final int lon,
+    protected void appendJsonNearbyStationsParameters(final HttpUrl.Builder url, final Point coord,
             final int maxDistance, final int maxStations) {
         url.addQueryParameter("performLocating", "2");
         url.addQueryParameter("tpl", "stop2json");
@@ -2309,19 +2305,19 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
         // density|80
         // get_stopweight|yes
         // get_infotext|yes
-        url.addQueryParameter("look_x", Integer.toString(lon));
-        url.addQueryParameter("look_y", Integer.toString(lat));
+        url.addQueryParameter("look_x", Integer.toString(coord.getLonAs1E6()));
+        url.addQueryParameter("look_y", Integer.toString(coord.getLatAs1E6()));
         url.addQueryParameter("look_maxno", Integer.toString(maxStations != 0 ? maxStations : 200));
         url.addQueryParameter("look_maxdist", Integer.toString(maxDistance != 0 ? maxDistance : 5000));
     }
 
-    protected void appendJsonNearbyPOIsParameters(final HttpUrl.Builder url, final int lat, final int lon,
-            final int maxDistance, final int maxStations) {
+    protected void appendJsonNearbyPOIsParameters(final HttpUrl.Builder url, final Point coord, final int maxDistance,
+            final int maxStations) {
         url.addQueryParameter("performLocating", "4");
         url.addQueryParameter("tpl", "poi2json");
         url.addQueryParameter("look_pois", ""); // all categories
-        url.addQueryParameter("look_x", Integer.toString(lon));
-        url.addQueryParameter("look_y", Integer.toString(lat));
+        url.addQueryParameter("look_x", Integer.toString(coord.getLonAs1E6()));
+        url.addQueryParameter("look_y", Integer.toString(coord.getLatAs1E6()));
         url.addQueryParameter("look_maxno", Integer.toString(maxStations != 0 ? maxStations : 200));
         url.addQueryParameter("look_maxdist", Integer.toString(maxDistance != 0 ? maxDistance : 5000));
     }
@@ -2353,8 +2349,8 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
                         if (stopWeight != 0) {
                             final String[] placeAndName = splitStationName(urlname);
                             final Set<Product> products = prodclass != -1 ? intToProducts(prodclass) : null;
-                            locations.add(new Location(LocationType.STATION, id, lat, lon, placeAndName[0],
-                                    placeAndName[1], products));
+                            locations.add(new Location(LocationType.STATION, id, Point.from1E6(lat, lon),
+                                    placeAndName[0], placeAndName[1], products));
                         }
                     }
                 }
@@ -2373,7 +2369,8 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
                         final int lon = poi.getInt("x");
 
                         final String[] placeAndName = splitPOI(urlname);
-                        locations.add(new Location(LocationType.POI, id, lat, lon, placeAndName[0], placeAndName[1]));
+                        locations.add(new Location(LocationType.POI, id, Point.from1E6(lat, lon), placeAndName[0],
+                                placeAndName[1]));
                     }
                 }
 

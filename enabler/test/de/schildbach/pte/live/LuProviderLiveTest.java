@@ -27,6 +27,7 @@ import de.schildbach.pte.LuProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
+import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -81,9 +82,10 @@ public class LuProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void addressTrip() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.ADDRESS, null, 49611610, 6130265, null, "Luxembourg, Rue Génistre 2"), null,
-                new Location(LocationType.STATION, "200405035", "Luxembourg", "Gare Centrale"), new Date(), true, null);
+        final Location from = new Location(LocationType.ADDRESS, null, Point.from1E6(49611610, 6130265), null,
+                "Luxembourg, Rue Génistre 2");
+        final Location to = new Location(LocationType.STATION, "200405035", "Luxembourg", "Gare Centrale");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
