@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,10 +17,16 @@
 
 package de.schildbach.pte;
 
+import de.schildbach.pte.dto.Point;
+
 /**
  * @author Andreas Schildbach
  */
 public final class LocationUtils {
+    public static float computeDistance(final Point p1, final Point p2) {
+        return computeDistance(p1.getLatAsDouble(), p1.getLonAsDouble(), p2.getLatAsDouble(), p2.getLonAsDouble());
+    }
+
     /**
      * @param lat1
      *            latitude of origin point in decimal degrees
