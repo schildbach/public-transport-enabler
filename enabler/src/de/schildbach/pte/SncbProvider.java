@@ -17,32 +17,31 @@
 
 package de.schildbach.pte;
 
-import java.util.Calendar;
 import java.util.Set;
 import java.util.regex.Matcher;
 
-import com.google.common.base.Charsets;
-
 import de.schildbach.pte.dto.Product;
-import de.schildbach.pte.util.ParserUtils;
 
 import okhttp3.HttpUrl;
 
 /**
  * @author Andreas Schildbach
  */
-public class SncbProvider extends AbstractHafasLegacyProvider {
+public class SncbProvider extends AbstractHafasClientInterfaceProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("http://www.belgianrail.be/jp/sncb-nmbs-routeplanner/");
-    // http://hari.b-rail.be/hafas/bin/
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, null, Product.HIGH_SPEED_TRAIN, null,
             null, Product.BUS, Product.REGIONAL_TRAIN, null, Product.SUBWAY, Product.BUS, Product.TRAM, null, null,
             null, null, null };
 
     public SncbProvider() {
-        super(NetworkId.SNCB, API_BASE, "nn", PRODUCTS_MAP);
-        setRequestUrlEncoding(Charsets.UTF_8);
-        setJsonNearbyLocationsEncoding(Charsets.UTF_8);
-        setStationBoardHasLocation(true);
+        this("{\"type\":\"AID\",\"aid\":\"sncb-mobi\"}");
+    }
+
+    public SncbProvider(final String jsonApiAuthorization) {
+        super(NetworkId.SNCB, API_BASE, PRODUCTS_MAP);
+        setApiVersion("1.14");
+        setApiClient("{\"id\":\"SNCB\",\"type\":\"AND\"}");
+        setApiAuthorization(jsonApiAuthorization);
     }
 
     private static final String[] PLACES = { "Antwerpen", "Gent", "Charleroi", "Liege", "Liège", "Brussel" };
@@ -52,7 +51,6 @@ public class SncbProvider extends AbstractHafasLegacyProvider {
         for (final String place : PLACES)
             if (name.startsWith(place + " ") || name.startsWith(place + "-"))
                 return new String[] { place, name.substring(place.length() + 1) };
-
         return super.splitStationName(name);
     }
 
@@ -61,36 +59,11 @@ public class SncbProvider extends AbstractHafasLegacyProvider {
         final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(address);
         if (m.matches())
             return new String[] { m.group(1), m.group(2) };
-
         return super.splitStationName(address);
     }
 
     @Override
     public Set<Product> defaultProducts() {
         return Product.ALL;
-    }
-
-    @Override
-    protected Product normalizeType(final String type) {
-        final String ucType = type.toUpperCase();
-
-        if ("THALYS".equals(ucType))
-            return Product.HIGH_SPEED_TRAIN;
-
-        if ("L".equals(ucType))
-            return Product.REGIONAL_TRAIN;
-
-        if ("MÉTRO".equals(ucType))
-            return Product.SUBWAY;
-
-        if ("TRAMWAY".equals(ucType))
-            return Product.TRAM;
-
-        return super.normalizeType(type);
-    }
-
-    @Override
-    protected void parseXmlStationBoardDate(final Calendar calendar, final String dateStr) {
-        ParserUtils.parseGermanDate(calendar, dateStr);
     }
 }

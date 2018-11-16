@@ -27,6 +27,7 @@ import de.schildbach.pte.SncbProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
+import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -53,8 +54,11 @@ public class SncbProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void queryDepartures() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("8813003", false);
-        print(result);
+        final QueryDeparturesResult result1 = queryDepartures("240229", false);
+        print(result1);
+
+        final QueryDeparturesResult result2 = queryDepartures("8813003", false);
+        print(result2);
     }
 
     @Test
@@ -83,43 +87,37 @@ public class SncbProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void shortTrip() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "8821006", "Antwerpen", "Centraal"), null,
-                new Location(LocationType.STATION, "8813003", "Brussel", "Centraal"), new Date(), true, null);
+        final Location from = new Location(LocationType.STATION, "8821006", "Antwerpen", "Centraal");
+        final Location to = new Location(LocationType.STATION, "8813003", "Brussel", "Centraal");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
-
-        if (result.context == null)
-            return;
-
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
     }
 
     @Test
     public void longTrip() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "207280", "Brussel", "Wannecouter"), null,
-                new Location(LocationType.STATION, "207272", "Brussel", "Stadion"), new Date(), true, null);
+        final Location from = new Location(LocationType.STATION, "207280", "Brussel", "Wannecouter");
+        final Location to = new Location(LocationType.STATION, "207272", "Brussel", "Stadion");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
-
-        if (result.context == null)
-            return;
-
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
     }
 
     @Test
     public void tripFromAddress() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.ADDRESS, null, null, "Bruxelles - Haren, Rue Paul Janson 9"), null,
-                new Location(LocationType.STATION, "8500010", null, "Basel"), new Date(), true, null);
+        final Location from = new Location(LocationType.ADDRESS, null, null, "Bruxelles - Haren, Rue Paul Janson 9");
+        final Location to = new Location(LocationType.STATION, "8500010", null, "Basel");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
+    }
 
-        if (result.context == null)
-            return;
-
-        final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-        print(laterResult);
+    @Test
+    public void tripBetweenCoordinates() throws Exception {
+        final Location from = Location.coord(Point.fromDouble(50.8356748, 4.3362419)); // Brussels-Midi
+        final Location to = Location.coord(Point.fromDouble(50.8605993, 4.3612788)); // Brussel-Noord
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
+        print(result);
     }
 }
