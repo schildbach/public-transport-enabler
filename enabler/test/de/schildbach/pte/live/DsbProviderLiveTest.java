@@ -27,6 +27,7 @@ import de.schildbach.pte.DsbProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
+import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -36,13 +37,7 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
  */
 public class DsbProviderLiveTest extends AbstractProviderLiveTest {
     public DsbProviderLiveTest() {
-        super(new DsbProvider());
-    }
-
-    @Test
-    public void nearbyStations() throws Exception {
-        final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "8600858"));
-        print(result);
+        super(new DsbProvider(secretProperty("dsb.api_authorization")));
     }
 
     @Test
@@ -53,7 +48,7 @@ public class DsbProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void queryDepartures() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("8600858", false);
+        final QueryDeparturesResult result = queryDepartures("860430302", false);
         print(result);
     }
 
@@ -71,11 +66,20 @@ public class DsbProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void shortTrip() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "900000011", null, "Copenhagen Airport"), null,
-                new Location(LocationType.POI, "551922500", null, "Billund Airport"), new Date(), true, null);
+        final Location from = new Location(LocationType.STATION, "900000011", null, "Copenhagen Airport");
+        final Location to = new Location(LocationType.POI, "551922500", null, "Billund Airport");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
+    }
+
+    @Test
+    public void tripBetweenCoordinates() throws Exception {
+        final Location from = Location.coord(Point.fromDouble(55.6724746, 12.5649895)); // Copenhagen Central
+                                                                                        // Station
+        final Location to = Location.coord(Point.fromDouble(55.6650983, 12.5595897)); // Dybbølsbro
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
+        print(result);
     }
 }
