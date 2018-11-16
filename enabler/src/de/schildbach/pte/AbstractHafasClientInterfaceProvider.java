@@ -82,17 +82,18 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafasProvider {
-    public HttpUrl mgateEndpoint;
+    private final HttpUrl apiBase;
+    private String apiEndpoint = "mgate.exe";
     @Nullable
-    public String apiVersion;
+    private String apiVersion;
     @Nullable
-    public String apiAuthorization;
+    private String apiAuthorization;
     @Nullable
-    public String apiClient;
+    private String apiClient;
     @Nullable
-    public byte[] requestChecksumSalt;
+    private byte[] requestChecksumSalt;
     @Nullable
-    public byte[] requestMicMacSalt;
+    private byte[] requestMicMacSalt;
 
     private static final String SERVER_PRODUCT = "hci";
     private static final HashFunction MD5 = Hashing.md5();
@@ -101,7 +102,12 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
     public AbstractHafasClientInterfaceProvider(final NetworkId network, final HttpUrl apiBase,
             final Product[] productsMap) {
         super(network, productsMap);
-        this.mgateEndpoint = apiBase.newBuilder().addPathSegment("mgate.exe").build();
+        this.apiBase = checkNotNull(apiBase);
+    }
+
+    protected AbstractHafasClientInterfaceProvider setApiEndpoint(final String apiEndpoint) {
+        this.apiEndpoint = checkNotNull(apiEndpoint);
+        return this;
     }
 
     protected AbstractHafasClientInterfaceProvider setApiVersion(final String apiVersion) {
@@ -658,7 +664,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
     }
 
     private HttpUrl requestUrl(final String body) {
-        final HttpUrl.Builder url = checkNotNull(mgateEndpoint).newBuilder();
+        final HttpUrl.Builder url = apiBase.newBuilder().addPathSegment(apiEndpoint);
         if (requestChecksumSalt != null) {
             final HashCode checksum = MD5.newHasher().putString(body, Charsets.UTF_8).putBytes(requestChecksumSalt)
                     .hash();
