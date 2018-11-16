@@ -27,21 +27,18 @@ import okhttp3.HttpUrl;
 /**
  * @author Andreas Schildbach
  */
-public class OebbProvider extends AbstractHafasLegacyProvider {
+public class OebbProvider extends AbstractHafasClientInterfaceProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("http://fahrplan.oebb.at/bin/");
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN,
             Product.BUS, Product.FERRY, Product.SUBWAY, Product.TRAM, Product.HIGH_SPEED_TRAIN, Product.ON_DEMAND,
             Product.HIGH_SPEED_TRAIN };
 
-    public OebbProvider() {
-        super(NetworkId.OEBB, API_BASE, "dn", PRODUCTS_MAP);
-        setDominantPlanStopTime(true);
-    }
-
-    @Override
-    public Set<Product> defaultProducts() {
-        return Product.ALL;
+    public OebbProvider(final String apiAuthorization) {
+        super(NetworkId.OEBB, API_BASE, PRODUCTS_MAP);
+        setApiVersion("1.14");
+        setApiClient("{\"id\":\"OEBB\",\"type\":\"AND\"}");
+        setApiAuthorization(apiAuthorization);
     }
 
     private static final String[] PLACES = { "Wien", "Graz", "Linz/Donau", "Salzburg", "Innsbruck" };
@@ -51,7 +48,6 @@ public class OebbProvider extends AbstractHafasLegacyProvider {
         for (final String place : PLACES)
             if (name.startsWith(place + " "))
                 return new String[] { place, name.substring(place.length() + 1) };
-
         return super.splitStationName(name);
     }
 
@@ -60,7 +56,6 @@ public class OebbProvider extends AbstractHafasLegacyProvider {
         final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(poi);
         if (m.matches())
             return new String[] { m.group(1), m.group(2) };
-
         return super.splitStationName(poi);
     }
 
@@ -69,74 +64,11 @@ public class OebbProvider extends AbstractHafasLegacyProvider {
         final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(address);
         if (m.matches())
             return new String[] { m.group(1), m.group(2) };
-
         return super.splitStationName(address);
     }
 
     @Override
-    protected Product normalizeType(final String type) {
-        final String ucType = type.toUpperCase();
-
-        if (ucType.equals("RR")) // Finnland, Connections only?
-            return Product.HIGH_SPEED_TRAIN;
-        if (ucType.equals("EE")) // Rumänien, Connections only?
-            return Product.HIGH_SPEED_TRAIN;
-        if (ucType.equals("OZ")) // Schweden, Oeresundzug, Connections only?
-            return Product.HIGH_SPEED_TRAIN;
-        if (ucType.equals("UUU")) // Italien, Nacht, Connections only?
-            return Product.HIGH_SPEED_TRAIN;
-
-        if (ucType.equals("S2")) // Helsinki-Turku, Connections only?
-            return Product.REGIONAL_TRAIN;
-        if (ucType.equals("RE")) // RegionalExpress Deutschland
-            return Product.REGIONAL_TRAIN;
-        if (ucType.equals("DPN")) // Connections only? TODO nicht evtl. doch eher ne S-Bahn?
-            return Product.REGIONAL_TRAIN;
-        if (ucType.equals("IP")) // Ozd, Ungarn
-            return Product.REGIONAL_TRAIN;
-        if (ucType.equals("N")) // Frankreich, Tours
-            return Product.REGIONAL_TRAIN;
-        if (ucType.equals("DPF")) // VX=Vogtland Express, Connections only?
-            return Product.REGIONAL_TRAIN;
-        if ("UAU".equals(ucType)) // Rußland
-            return Product.REGIONAL_TRAIN;
-
-        if (ucType.equals("RSB")) // Schnellbahn Wien
-            return Product.SUBURBAN_TRAIN;
-
-        if (ucType.equals("LKB")) // Connections only?
-            return Product.TRAM;
-
-        if (ucType.equals("OBU")) // Connections only?
-            return Product.BUS;
-        if (ucType.equals("O-BUS")) // Stadtbus
-            return Product.BUS;
-        if (ucType.equals("O")) // Stadtbus
-            return Product.BUS;
-
-        if (ucType.equals("SCH")) // Connections only?
-            return Product.FERRY;
-        if (ucType.equals("F")) // Fähre
-            return Product.FERRY;
-
-        if (ucType.equals("LIF"))
-            return Product.CABLECAR;
-        if (ucType.equals("LIFT")) // Graz Uhrturm
-            return Product.CABLECAR;
-        if (ucType.equals("SSB")) // Graz Schlossbergbahn
-            return Product.CABLECAR;
-
-        if (ucType.equals("U70")) // U.K., Connections only?
-            return null;
-        if (ucType.equals("X70")) // U.K., Connections only?
-            return null;
-        if (ucType.equals("R84")) // U.K., Connections only?
-            return null;
-        if (ucType.equals("S84")) // U.K., Connections only?
-            return null;
-        if (ucType.equals("T84")) // U.K., Connections only?
-            return null;
-
-        return super.normalizeType(type);
+    public Set<Product> defaultProducts() {
+        return Product.ALL;
     }
 }
