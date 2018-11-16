@@ -21,12 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import com.google.common.base.Charsets;
-import com.google.common.base.Strings;
-
-import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.dto.Style.Shape;
@@ -36,23 +31,18 @@ import okhttp3.HttpUrl;
 /**
  * @author Andreas Schildbach
  */
-public class ZvvProvider extends AbstractHafasLegacyProvider {
+public class ZvvProvider extends AbstractHafasClientInterfaceProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("https://online.fahrplan.zvv.ch/bin/");
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.REGIONAL_TRAIN, Product.REGIONAL_TRAIN, Product.FERRY, Product.SUBURBAN_TRAIN, Product.BUS,
-            Product.CABLECAR, Product.SUBWAY, Product.TRAM };
+            Product.CABLECAR, Product.BUS, Product.TRAM };
 
-    public ZvvProvider() {
-        super(NetworkId.ZVV, API_BASE, "dn", PRODUCTS_MAP);
-
-        setRequestUrlEncoding(Charsets.UTF_8);
-        setJsonNearbyLocationsEncoding(Charsets.UTF_8);
+    public ZvvProvider(final String jsonApiAuthorization) {
+        super(NetworkId.ZVV, API_BASE, PRODUCTS_MAP);
+        setApiVersion("1.15");
+        setApiClient("{\"id\":\"ZVV\",\"type\":\"AND\"}");
+        setApiAuthorization(jsonApiAuthorization);
         setStyles(STYLES);
-    }
-
-    @Override
-    public Set<Product> defaultProducts() {
-        return Product.ALL;
     }
 
     private static final String[] OPERATORS = { "SBB", "SZU" };
@@ -79,7 +69,6 @@ public class ZvvProvider extends AbstractHafasLegacyProvider {
         for (final String place : PLACES)
             if (name.startsWith(place + " ") || name.startsWith(place + ","))
                 return new String[] { place, name.substring(place.length() + 1) };
-
         return super.splitStationName(name);
     }
 
@@ -88,7 +77,6 @@ public class ZvvProvider extends AbstractHafasLegacyProvider {
         final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(poi);
         if (m.matches())
             return new String[] { m.group(1), m.group(2) };
-
         return super.splitStationName(poi);
     }
 
@@ -97,86 +85,12 @@ public class ZvvProvider extends AbstractHafasLegacyProvider {
         final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(address);
         if (m.matches())
             return new String[] { m.group(1), m.group(2) };
-
         return super.splitStationName(address);
     }
 
-    private static final Pattern P_NUMBER = Pattern.compile("\\d{2,5}");
-
     @Override
-    protected Line parseLineAndType(final String lineAndType) {
-        final Matcher m = P_NORMALIZE_LINE_AND_TYPE.matcher(lineAndType);
-        if (m.matches()) {
-            final String number = Strings.emptyToNull(m.group(1).replaceAll("\\s+", ""));
-            final String type = Strings.emptyToNull(m.group(2));
-
-            if ("Bus".equals(type))
-                return newLine(Product.BUS, stripPrefix(number, "Bus"), null);
-            if ("Bus-NF".equals(type))
-                return newLine(Product.BUS, stripPrefix(number, "Bus", "Bus-NF"), null, Line.Attr.WHEEL_CHAIR_ACCESS);
-            if ("Tro".equals(type) || "Trolley".equals(type))
-                return newLine(Product.BUS, stripPrefix(number, "Tro"), null);
-            if ("Tro-NF".equals(type))
-                return newLine(Product.BUS, stripPrefix(number, "Tro", "Tro-NF"), null, Line.Attr.WHEEL_CHAIR_ACCESS);
-            if ("Trm".equals(type))
-                return newLine(Product.TRAM, stripPrefix(number, "Trm"), null);
-            if ("Trm-NF".equals(type))
-                return newLine(Product.TRAM, stripPrefix(number, "Trm", "Trm-NF"), null, Line.Attr.WHEEL_CHAIR_ACCESS);
-
-            if ("S18".equals(number))
-                return newLine(Product.SUBURBAN_TRAIN, "S18", null);
-
-            if (number != null && P_NUMBER.matcher(number).matches())
-                return newLine(null, number, null);
-
-            if (type != null) {
-                final Product product = normalizeType(type);
-                if (product != null)
-                    return newLine(product, number, null);
-            }
-
-            throw new IllegalStateException(
-                    "cannot normalize type " + type + " number " + number + " line#type " + lineAndType);
-        }
-
-        throw new IllegalStateException("cannot normalize line#type " + lineAndType);
-    }
-
-    private String stripPrefix(final String str, final String... prefixes) {
-        for (final String prefix : prefixes)
-            if (str.startsWith(prefix))
-                return str.substring(prefix.length());
-
-        return str;
-    }
-
-    @Override
-    protected Product normalizeType(final String type) {
-        final String ucType = type.toUpperCase();
-
-        if ("N".equals(ucType)) // Nachtbus
-            return Product.BUS;
-        if ("TX".equals(ucType))
-            return Product.BUS;
-        if ("KB".equals(ucType)) // Kleinbus?
-            return Product.BUS;
-
-        if ("TE2".equals(ucType)) // Basel - Strasbourg
-            return Product.REGIONAL_TRAIN;
-
-        if ("D-SCHIFF".equals(ucType))
-            return Product.FERRY;
-        if ("DAMPFSCH".equals(ucType))
-            return Product.FERRY;
-
-        if ("BERGBAHN".equals(ucType))
-            return Product.CABLECAR;
-        if ("LSB".equals(ucType)) // Luftseilbahn
-            return Product.CABLECAR;
-        if ("SLB".equals(ucType)) // Sesselliftbahn
-            return Product.CABLECAR;
-
-        return super.normalizeType(type);
+    public Set<Product> defaultProducts() {
+        return Product.ALL;
     }
 
     private static final Map<String, Style> STYLES = new HashMap<>();

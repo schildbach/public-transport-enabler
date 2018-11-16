@@ -37,13 +37,7 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
  */
 public class ZvvProviderLiveTest extends AbstractProviderLiveTest {
     public ZvvProviderLiveTest() {
-        super(new ZvvProvider());
-    }
-
-    @Test
-    public void nearbyStationsByStation() throws Exception {
-        final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "8503000"));
-        print(result);
+        super(new ZvvProvider(secretProperty("zvv.api_authorization")));
     }
 
     @Test
@@ -72,9 +66,9 @@ public class ZvvProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void shortTrip() throws Exception {
-        final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8503000", null, "Zürich HB"),
-                null, new Location(LocationType.STATION, "8507785", null, "Bern, Hauptbahnhof"), new Date(), true,
-                null);
+        final Location from = new Location(LocationType.STATION, "8503000", "Zürich", "Hauptbahnhof");
+        final Location to = new Location(LocationType.STATION, "8507785", "Bern", "Hauptbahnhof");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
@@ -90,5 +84,13 @@ public class ZvvProviderLiveTest extends AbstractProviderLiveTest {
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
+    }
+
+    @Test
+    public void tripBetweenCoordinates() throws Exception {
+        final Location from = Location.coord(Point.fromDouble(47.3782535, 8.5392280)); // Zürich Hauptbahnhof
+        final Location to = Location.coord(Point.fromDouble(47.3852910, 8.5172170)); // Bahnhof Hardbrücke
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
+        print(result);
     }
 }
