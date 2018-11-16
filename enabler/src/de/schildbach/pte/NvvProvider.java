@@ -19,26 +19,24 @@ package de.schildbach.pte;
 
 import java.util.regex.Matcher;
 
-import com.google.common.base.Charsets;
-
 import de.schildbach.pte.dto.Product;
-import de.schildbach.pte.util.StringReplaceReader;
 
 import okhttp3.HttpUrl;
 
 /**
  * @author Andreas Schildbach
  */
-public class NvvProvider extends AbstractHafasLegacyProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("https://auskunft.nvv.de/auskunft/bin/jp/");
+public class NvvProvider extends AbstractHafasClientInterfaceProvider {
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://auskunft.nvv.de/auskunft/bin/app/");
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.SUBWAY, Product.TRAM, Product.BUS, Product.BUS,
             Product.FERRY, Product.ON_DEMAND, Product.REGIONAL_TRAIN, Product.REGIONAL_TRAIN };
 
-    public NvvProvider() {
-        super(NetworkId.NVV, API_BASE, "dn", PRODUCTS_MAP);
-        setRequestUrlEncoding(Charsets.UTF_8);
-        setJsonNearbyLocationsEncoding(Charsets.UTF_8);
+    public NvvProvider(final String apiAuthorization) {
+        super(NetworkId.NVV, API_BASE, PRODUCTS_MAP);
+        setApiVersion("1.14");
+        setApiClient("{\"id\":\"NVV\",\"type\":\"AND\"}");
+        setApiAuthorization(apiAuthorization);
         httpClient.setTrustAllCertificates(true);
     }
 
@@ -69,40 +67,6 @@ public class NvvProvider extends AbstractHafasLegacyProvider {
         final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(address);
         if (m.matches())
             return new String[] { m.group(1), m.group(2) };
-
         return super.splitStationName(address);
-    }
-
-    @Override
-    protected void addCustomReplaces(final StringReplaceReader reader) {
-        reader.replace("<ul>", " ");
-        reader.replace("</ul>", " ");
-        reader.replace("<li>", " ");
-        reader.replace("</li>", " ");
-        reader.replace("Park&Ride", "Park&amp;Ride");
-        reader.replace("C&A", "C&amp;A");
-    }
-
-    @Override
-    protected Product normalizeType(final String type) {
-        final String ucType = type.toUpperCase();
-
-        if ("U-BAHN".equals(ucType))
-            return Product.SUBWAY;
-
-        if ("AT".equals(ucType)) // Anschluß Sammel Taxi, Anmeldung nicht erforderlich
-            return Product.BUS;
-        if ("LTAXI".equals(ucType))
-            return Product.BUS;
-
-        if ("MOFA".equals(ucType)) // Mobilfalt-Fahrt
-            return Product.ON_DEMAND;
-
-        if ("64".equals(ucType))
-            return null;
-        if ("65".equals(ucType))
-            return null;
-
-        return super.normalizeType(type);
     }
 }

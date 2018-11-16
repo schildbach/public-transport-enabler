@@ -43,13 +43,7 @@ import de.schildbach.pte.dto.TripOptions;
  */
 public class NvvProviderLiveTest extends AbstractProviderLiveTest {
     public NvvProviderLiveTest() {
-        super(new NvvProvider());
-    }
-
-    @Test
-    public void nearbyStations() throws Exception {
-        final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "3000001"));
-        print(result);
+        super(new NvvProvider(secretProperty("nvv.api_authorization")));
     }
 
     @Test
@@ -111,80 +105,39 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void shortTrip() throws Exception {
-
-        final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "3000001", null, "Hauptwache"),
-                null, new Location(LocationType.STATION, "3000912", null, "Südbahnhof"), new Date(), true, null);
+        final Location from = new Location(LocationType.STATION, "3000001", null, "Hauptwache");
+        final Location to = new Location(LocationType.STATION, "3000912", null, "Südbahnhof");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
-
-        if (!result.context.canQueryLater())
-            return;
-
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
-
-        if (!laterResult.context.canQueryLater())
-            return;
-
         final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
         print(later2Result);
-
-        if (!later2Result.context.canQueryLater())
-            return;
-
         final QueryTripsResult later3Result = queryMoreTrips(later2Result.context, true);
         print(later3Result);
-
-        if (!later3Result.context.canQueryLater())
-            return;
-
         final QueryTripsResult later4Result = queryMoreTrips(later3Result.context, true);
         print(later4Result);
-
-        if (!later4Result.context.canQueryLater())
-            return;
-
         final QueryTripsResult later5Result = queryMoreTrips(later4Result.context, true);
         print(later5Result);
-
-        if (!later5Result.context.canQueryLater())
-            return;
-
         final QueryTripsResult later6Result = queryMoreTrips(later5Result.context, true);
         print(later6Result);
-
-        if (!result.context.canQueryEarlier())
-            return;
-
         final QueryTripsResult earlierResult = queryMoreTrips(result.context, false);
         print(earlierResult);
-
-        if (!earlierResult.context.canQueryEarlier())
-            return;
-
         final QueryTripsResult earlier2Result = queryMoreTrips(earlierResult.context, false);
         print(earlier2Result);
-
-        if (!earlier2Result.context.canQueryEarlier())
-            return;
-
         final QueryTripsResult earlier3Result = queryMoreTrips(earlier2Result.context, false);
         print(earlier3Result);
-
-        if (!earlier3Result.context.canQueryEarlier())
-            return;
-
         final QueryTripsResult earlier4Result = queryMoreTrips(earlier3Result.context, false);
         print(earlier4Result);
     }
 
     @Test
     public void shortTripKassel() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "2200007", null, "Kassel Wilhelmshöhe"), null,
-                new Location(LocationType.STATION, "2200278", null, "Kassel Wilhelmshöher Weg"), new Date(), true,
-                null);
+        final Location from = new Location(LocationType.STATION, "2200007", null, "Kassel Wilhelmshöhe");
+        final Location to = new Location(LocationType.STATION, "2200278", null, "Kassel Wilhelmshöher Weg");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
@@ -192,29 +145,25 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void slowTrip() throws Exception {
-        final TripOptions options = new TripOptions(Product.ALL, null, WalkSpeed.NORMAL, Accessibility.BARRIER_FREE,
-                null);
         final Location from = new Location(LocationType.STATION, "3029079", Point.from1E6(50017679, 8229480), "Mainz",
                 "An den Dünen");
         final Location to = new Location(LocationType.STATION, "3013508", Point.from1E6(50142890, 8895203), "Hanau",
                 "Beethovenplatz");
+        final TripOptions options = new TripOptions(Product.ALL, null, WalkSpeed.NORMAL, Accessibility.BARRIER_FREE,
+                null);
         final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, options);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
-
-        if (!result.context.canQueryLater())
-            return;
-
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
     }
 
     @Test
     public void shortTripByName() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.ANY, null, null, "Frankfurt Bockenheimer Warte!"), null,
-                new Location(LocationType.ANY, null, null, "Frankfurt Hauptbahnhof!"), new Date(), true, null);
+        final Location from = new Location(LocationType.ANY, null, null, "Frankfurt Bockenheimer Warte!");
+        final Location to = new Location(LocationType.ANY, null, null, "Frankfurt Hauptbahnhof!");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
     }
 
@@ -226,10 +175,6 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest {
                 "Mainzer Landstrasse, Frankfurt");
         final QueryTripsResult result = queryTrips(from, null, to, new Date(1378368840000l), true, null);
         print(result);
-
-        if (!result.context.canQueryLater())
-            return;
-
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
     }
@@ -242,11 +187,15 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest {
                 "F Bockenheimer Warte");
         final QueryTripsResult result = queryTrips(from, null, to, new Date(1378368840000l), true, null);
         print(result);
-
-        if (!result.context.canQueryLater())
-            return;
-
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
+    }
+
+    @Test
+    public void tripBetweenCoordinates() throws Exception {
+        final Location from = Location.coord(Point.fromDouble(51.3183386, 9.4896007)); // Kassel Hauptbahnhof
+        final Location to = Location.coord(Point.fromDouble(51.3245728, 9.4521398)); // Kassel-Kirchditmold
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
+        print(result);
     }
 }
