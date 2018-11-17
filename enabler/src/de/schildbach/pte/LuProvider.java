@@ -30,7 +30,7 @@ public class LuProvider extends AbstractHafasClientInterfaceProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("https://travelplanner.mobiliteit.lu/hafas/");
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, Product.REGIONAL_TRAIN, Product.BUS, Product.BUS,
-            Product.BUS, Product.BUS };
+            Product.BUS, Product.BUS, Product.BUS };
 
     public LuProvider(final String apiAuthorization) {
         super(NetworkId.LU, API_BASE, PRODUCTS_MAP);
