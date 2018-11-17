@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ public class VvtProvider extends AbstractHafasClientInterfaceProvider {
 
     public VvtProvider(final String apiAuthorization) {
         super(NetworkId.VVT, API_BASE, PRODUCTS_MAP);
-        setApiVersion("1.14");
+        setApiVersion("1.15");
         setApiClient("{\"id\":\"VAO\",\"l\":\"vs_vvt\",\"type\":\"AND\"}");
         setApiAuthorization(apiAuthorization);
     }
@@ -53,7 +53,6 @@ public class VvtProvider extends AbstractHafasClientInterfaceProvider {
         final Matcher m = P_SPLIT_NAME_ONE_COMMA.matcher(name);
         if (m.matches())
             return new String[] { m.group(2), m.group(1) };
-
         return super.splitStationName(name);
     }
 
@@ -62,7 +61,6 @@ public class VvtProvider extends AbstractHafasClientInterfaceProvider {
         final Matcher m = P_SPLIT_NAME_ONE_COMMA.matcher(poi);
         if (m.matches())
             return new String[] { m.group(2), m.group(1) };
-
         return super.splitPOI(poi);
     }
 
@@ -71,7 +69,6 @@ public class VvtProvider extends AbstractHafasClientInterfaceProvider {
         final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(address);
         if (m.matches())
             return new String[] { m.group(1), m.group(2) };
-
         return super.splitAddress(address);
     }
 }

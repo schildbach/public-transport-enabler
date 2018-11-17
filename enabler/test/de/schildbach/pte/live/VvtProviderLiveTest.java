@@ -44,12 +44,6 @@ public class VvtProviderLiveTest extends AbstractProviderLiveTest {
     }
 
     @Test
-    public void nearbyStations() throws Exception {
-        final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "470118700"));
-        print(result);
-    }
-
-    @Test
     public void nearbyStationsByCoordinate() throws Exception {
         final NearbyLocationsResult result = queryNearbyStations(Location.coord(47271228, 11402063));
         print(result);
@@ -96,22 +90,10 @@ public class VvtProviderLiveTest extends AbstractProviderLiveTest {
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
-
-        if (!result.context.canQueryLater())
-            return;
-
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
-
-        if (!laterResult.context.canQueryLater())
-            return;
-
         final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
         print(later2Result);
-
-        if (!later2Result.context.canQueryEarlier())
-            return;
-
         final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
         print(earlierResult);
     }

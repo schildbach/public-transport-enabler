@@ -44,12 +44,6 @@ public class VorProviderLiveTest extends AbstractProviderLiveTest {
     }
 
     @Test
-    public void nearbyStations() throws Exception {
-        final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "490134900"));
-        print(result);
-    }
-
-    @Test
     public void nearbyStationsByCoordinate() throws Exception {
         final NearbyLocationsResult result = queryNearbyStations(Location.coord(48207355, 16370602));
         print(result);
@@ -83,7 +77,7 @@ public class VorProviderLiveTest extends AbstractProviderLiveTest {
     public void suggestLocationsWithUmlaut() throws Exception {
         final SuggestLocationsResult result = suggestLocations("Längenfeld");
         print(result);
-        assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "900018107")));
+        assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "900019683")));
     }
 
     @Test
@@ -107,22 +101,10 @@ public class VorProviderLiveTest extends AbstractProviderLiveTest {
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
-
-        if (!result.context.canQueryLater())
-            return;
-
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
-
-        if (!laterResult.context.canQueryLater())
-            return;
-
         final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
         print(later2Result);
-
-        if (!later2Result.context.canQueryEarlier())
-            return;
-
         final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
         print(earlierResult);
     }
@@ -141,10 +123,9 @@ public class VorProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void tripBetweenCoordinates() throws Exception {
-        final QueryTripsResult result = queryTrips(Location.coord(48180281, 16333551), null,
-                Location.coord(48240452, 16444788), new Date(), true, null);
+        final Location from = Location.coord(48180281, 16333551);
+        final Location to = Location.coord(48240452, 16444788);
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
-        final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-        print(laterResult);
     }
 }

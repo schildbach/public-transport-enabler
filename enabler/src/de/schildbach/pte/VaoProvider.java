@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ public class VaoProvider extends AbstractHafasClientInterfaceProvider {
 
     public VaoProvider(final String apiAuthorization) {
         super(NetworkId.VAO, API_BASE, PRODUCTS_MAP);
-        setApiVersion("1.14");
+        setApiVersion("1.15");
         setApiClient("{\"id\":\"VAO\",\"l\":\"vs_vvv\",\"type\":\"AND\"}");
         setApiAuthorization(apiAuthorization);
         setStyles(STYLES);

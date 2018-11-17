@@ -44,12 +44,6 @@ public class OoevvProviderLiveTest extends AbstractProviderLiveTest {
     }
 
     @Test
-    public void nearbyStations() throws Exception {
-        final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "490132007"));
-        print(result);
-    }
-
-    @Test
     public void nearbyStationsByCoordinate() throws Exception {
         final NearbyLocationsResult result = queryNearbyStations(Location.coord(48207355, 16370602));
         print(result);
@@ -101,41 +95,35 @@ public class OoevvProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void suggestLocationsCoverage() throws Exception {
-        final SuggestLocationsResult linzResult = suggestLocations("Linz Hauptbahnhof");
-        print(linzResult);
-        assertThat(linzResult.getLocations(), hasItem(new Location(LocationType.STATION, "444116400")));
+        final SuggestLocationsResult result = suggestLocations("Linz Hauptbahnhof");
+        print(result);
+        assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "444116400")));
     }
 
     @Test
     public void shortTripFeldkirch() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "480082200", null, "Feldkirch Katzenturm"), null,
-                new Location(LocationType.STATION, "480081700", null, "Feldkirch Bahnhof"), new Date(), true, null);
+        final Location from = new Location(LocationType.STATION, "480082200", null, "Feldkirch Katzenturm");
+        final Location to = new Location(LocationType.STATION, "480081700", null, "Feldkirch Bahnhof");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
-
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
-
         final QueryTripsResult laterResult2 = queryMoreTrips(laterResult.context, true);
         print(laterResult2);
-
         final QueryTripsResult earlierResult = queryMoreTrips(result.context, false);
         print(earlierResult);
     }
 
     @Test
     public void shortTripWien() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "490132000", null, "Wien Stephansplatz"), null,
-                new Location(LocationType.STATION, "490024500", null, "Wien Stubentor"), new Date(), true, null);
+        final Location from = new Location(LocationType.STATION, "490132000", null, "Wien Stephansplatz");
+        final Location to = new Location(LocationType.STATION, "490024500", null, "Wien Stubentor");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
-
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
-
         final QueryTripsResult laterResult2 = queryMoreTrips(laterResult.context, true);
         print(laterResult2);
-
         final QueryTripsResult earlierResult = queryMoreTrips(result.context, false);
         print(earlierResult);
     }
@@ -150,41 +138,29 @@ public class OoevvProviderLiveTest extends AbstractProviderLiveTest {
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
-
-        if (!result.context.canQueryLater())
-            return;
-
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
-
-        if (!laterResult.context.canQueryLater())
-            return;
-
         final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
         print(later2Result);
-
-        if (!later2Result.context.canQueryEarlier())
-            return;
-
         final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
         print(earlierResult);
     }
 
     @Test
     public void tripAddressToStation() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.ADDRESS,
-                        "A=2@O=6800 Feldkirch, Kapfweg 6@X=9585539@Y=47239257@U=103@L=980092305@B=1@p=1437727591@",
-                        "6800 Feldkirch", "Kapfweg 6"),
-                null, new Location(LocationType.STATION, "480081700", null, "Feldkirch Bahnhof"), new Date(), true,
-                null);
+        final Location from = new Location(LocationType.ADDRESS,
+                "A=2@O=6800 Feldkirch, Kapfweg 6@X=9585539@Y=47239257@U=103@L=980092305@B=1@p=1437727591@",
+                "6800 Feldkirch", "Kapfweg 6");
+        final Location to = new Location(LocationType.STATION, "480081700", null, "Feldkirch Bahnhof");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
     }
 
     @Test
     public void tripCoordinateToStation() throws Exception {
-        final QueryTripsResult result = queryTrips(Location.coord(47238096, 9585581), null,
-                new Location(LocationType.STATION, "480081700", null, "Feldkirch Bahnhof"), new Date(), true, null);
+        final Location from = Location.coord(47238096, 9585581);
+        final Location to = new Location(LocationType.STATION, "480081700", null, "Feldkirch Bahnhof");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
     }
 }
