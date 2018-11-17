@@ -37,13 +37,7 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
  */
 public class LuProviderLiveTest extends AbstractProviderLiveTest {
     public LuProviderLiveTest() {
-        super(new LuProvider());
-    }
-
-    @Test
-    public void nearbyStations() throws Exception {
-        final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "200501001"));
-        print(result);
+        super(new LuProvider(secretProperty("lu.api_authorization")));
     }
 
     @Test
@@ -72,9 +66,9 @@ public class LuProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void shortTrip() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "200416001", null, "Cité Aéroport"), null,
-                new Location(LocationType.STATION, "200405035", "Luxembourg", "Gare Centrale"), new Date(), true, null);
+        final Location from = new Location(LocationType.STATION, "200416001", null, "Cité Aéroport");
+        final Location to = new Location(LocationType.STATION, "200405035", "Luxembourg", "Gare Centrale");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
@@ -89,5 +83,14 @@ public class LuProviderLiveTest extends AbstractProviderLiveTest {
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
+    }
+
+    @Test
+    public void tripBetweenCoordinates() throws Exception {
+        final Location from = Location.coord(Point.fromDouble(49.5999681, 6.1342493)); // Luxembourg Central
+                                                                                       // Station
+        final Location to = Location.coord(Point.fromDouble(49.5956369, 6.1200199)); // Hollerich
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
+        print(result);
     }
 }

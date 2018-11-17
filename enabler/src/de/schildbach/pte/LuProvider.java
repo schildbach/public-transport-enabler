@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,6 @@ package de.schildbach.pte;
 
 import java.util.regex.Matcher;
 
-import com.google.common.base.Charsets;
-
 import de.schildbach.pte.dto.Product;
 
 import okhttp3.HttpUrl;
@@ -28,18 +26,17 @@ import okhttp3.HttpUrl;
 /**
  * @author Andreas Schildbach
  */
-public class LuProvider extends AbstractHafasLegacyProvider {
+public class LuProvider extends AbstractHafasClientInterfaceProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("https://travelplanner.mobiliteit.lu/hafas/");
-    // https://mobiliteitszentral.hafas.de/hafas/
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, Product.REGIONAL_TRAIN, Product.BUS, Product.BUS,
             Product.BUS, Product.BUS };
 
-    public LuProvider() {
-        super(NetworkId.LU, API_BASE, "fn", PRODUCTS_MAP);
-
-        setRequestUrlEncoding(Charsets.UTF_8);
-        setJsonNearbyLocationsEncoding(Charsets.UTF_8);
+    public LuProvider(final String apiAuthorization) {
+        super(NetworkId.LU, API_BASE, PRODUCTS_MAP);
+        setApiVersion("1.16");
+        setApiClient("{\"id\":\"CDT\",\"type\":\"AND\"}");
+        setApiAuthorization(apiAuthorization);
     }
 
     @Override
@@ -47,7 +44,6 @@ public class LuProvider extends AbstractHafasLegacyProvider {
         final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(name);
         if (m.matches())
             return new String[] { m.group(1), m.group(2) };
-
         return super.splitStationName(name);
     }
 
@@ -56,26 +52,6 @@ public class LuProvider extends AbstractHafasLegacyProvider {
         final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(address);
         if (m.matches())
             return new String[] { m.group(1), m.group(2) };
-
         return super.splitStationName(address);
-    }
-
-    @Override
-    protected Product normalizeType(final String type) {
-        final String ucType = type.toUpperCase();
-
-        if ("CRE".equals(ucType))
-            return Product.REGIONAL_TRAIN;
-
-        if ("CITYBUS".equals(ucType))
-            return Product.BUS;
-        if ("NIGHTBUS".equals(ucType))
-            return Product.BUS;
-        if ("DIFFBUS".equals(ucType))
-            return Product.BUS;
-        if ("NAVETTE".equals(ucType))
-            return Product.BUS;
-
-        return super.normalizeType(type);
     }
 }
