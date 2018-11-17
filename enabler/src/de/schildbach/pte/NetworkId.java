@@ -51,9 +51,6 @@ public enum NetworkId {
     // Sweden
     SE,
 
-    // Finland
-    HSL,
-
     // Luxembourg
     LU,
 
