@@ -124,11 +124,11 @@ public final class Line implements Serializable, Comparable<Line> {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this) //
+        return MoreObjects.toStringHelper(this).omitNullValues() //
                 .addValue(network) //
                 .addValue(product) //
                 .addValue(label) //
-                .addValue(name) //
+                .addValue("'"+ name + "'") //
                 .toString();
     }
 
