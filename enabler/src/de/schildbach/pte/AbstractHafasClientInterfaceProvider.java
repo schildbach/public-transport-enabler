@@ -846,7 +846,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
         for (int iProd = 0; iProd < prodListLen; iProd++) {
             final JSONObject prod = prodList.getJSONObject(iProd);
             final String name = Strings.emptyToNull(prod.getString("name"));
-            final String number = prod.optString("number");
+            final String number = prod.optString("number", null);
             final int oprIndex = prod.optInt("oprX", -1);
             final String operator = oprIndex != -1 ? operators.get(oprIndex) : null;
             final int cls = prod.optInt("cls", -1);
