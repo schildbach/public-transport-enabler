@@ -311,17 +311,19 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                     final Position position = normalizePosition(stbStopPlatformS);
 
                     final String jnyDirTxt = jny.getString("dirTxt");
+                    Location destination = null;
+                    // if last entry in stopL happens to be our destination, use it
                     final JSONArray stopList = jny.optJSONArray("stopL");
-                    final Location destination;
                     if (stopList != null) {
                         final int lastStopIdx = stopList.getJSONObject(stopList.length() - 1).getInt("locX");
                         final String lastStopName = locList.getJSONObject(lastStopIdx).getString("name");
                         if (jnyDirTxt.equals(lastStopName))
                             destination = parseLoc(locList, lastStopIdx, null);
-                        else
-                            destination = new Location(LocationType.ANY, null, null, jnyDirTxt);
-                    } else {
-                        destination = new Location(LocationType.ANY, null, null, jnyDirTxt);
+                    }
+                    // otherwise split unidentified destination as if it was a station and use it
+                    if (destination == null) {
+                        final String[] splitJnyDirTxt = splitStationName(jnyDirTxt);
+                        destination = new Location(LocationType.ANY, null, splitJnyDirTxt[0], splitJnyDirTxt[1]);
                     }
 
                     final JSONArray remList = jny.optJSONArray("remL");
@@ -547,8 +549,14 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                         final JSONObject jny = sec.getJSONObject("jny");
                         final Line line = lines.get(jny.getInt("prodX"));
                         final String dirTxt = jny.optString("dirTxt", null);
-                        final Location destination = dirTxt != null ? new Location(LocationType.ANY, null, null, dirTxt)
-                                : null;
+
+                        final Location destination;
+                        if (dirTxt != null) {
+                            final String[] splitDirTxt = splitStationName(dirTxt);
+                            destination = new Location(LocationType.ANY, null, splitDirTxt[0], splitDirTxt[1]);
+                        } else {
+                            destination = null;
+                        }
 
                         final JSONArray stopList = jny.optJSONArray("stopL");
                         final List<Stop> intermediateStops;
