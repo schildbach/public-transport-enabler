@@ -63,13 +63,16 @@ public class ZvvProvider extends AbstractHafasClientInterfaceProvider {
             }
         }
 
+        for (final String place : PLACES) {
+            if (name.startsWith(place + " "))
+                return new String[] { place, name.substring(place.length() + 1) };
+            else if (name.startsWith(place + ", "))
+                return new String[] { place, name.substring(place.length() + 2) };
+        }
+
         final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(name);
         if (m.matches())
             return new String[] { m.group(1), m.group(2) };
-
-        for (final String place : PLACES)
-            if (name.startsWith(place + " ") || name.startsWith(place + ","))
-                return new String[] { place, name.substring(place.length() + 1) };
         return super.splitStationName(name);
     }
 
