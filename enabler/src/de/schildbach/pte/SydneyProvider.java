@@ -36,10 +36,10 @@ import okhttp3.HttpUrl;
  */
 public class SydneyProvider extends AbstractEfaProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("https://transportnsw.info/web/");
+    private static final String TRIP_ENDPOINT = "XML_TRIP_REQUEST2";
 
     public SydneyProvider() {
-        super(NetworkId.SYDNEY, API_BASE);
-
+        super(NetworkId.SYDNEY, API_BASE, null, TRIP_ENDPOINT, null, null);
         setLanguage("en");
         setTimeZone("Australia/Sydney");
         setUseProxFootSearch(false);
