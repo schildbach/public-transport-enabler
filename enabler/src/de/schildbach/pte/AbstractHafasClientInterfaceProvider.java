@@ -304,7 +304,8 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
 
                     final Date predictedTime = parseJsonTime(c, baseDate, stbStop.optString("dTimeR", null));
 
-                    final Line line = lines.get(stbStop.getInt("dProdX"));
+                    final int dProdX = stbStop.optInt("dProdX", -1);
+                    final Line line = dProdX != -1 ? lines.get(dProdX) : null;
 
                     final Location location = equivs ? parseLoc(locList, stbStop.getInt("locX"), null)
                             : new Location(LocationType.STATION, stationId);
@@ -337,16 +338,18 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                         }
                     }
 
-                    final Departure departure = new Departure(plannedTime, predictedTime, line, position, destination,
-                            null, message);
+                    if (line != null) {
+                        final Departure departure = new Departure(plannedTime, predictedTime, line, position,
+                                destination, null, message);
 
-                    StationDepartures stationDepartures = findStationDepartures(result.stationDepartures, location);
-                    if (stationDepartures == null) {
-                        stationDepartures = new StationDepartures(location, new ArrayList<Departure>(8), null);
-                        result.stationDepartures.add(stationDepartures);
+                        StationDepartures stationDepartures = findStationDepartures(result.stationDepartures, location);
+                        if (stationDepartures == null) {
+                            stationDepartures = new StationDepartures(location, new ArrayList<Departure>(8), null);
+                            result.stationDepartures.add(stationDepartures);
+                        }
+
+                        stationDepartures.departures.add(departure);
                     }
-
-                    stationDepartures.departures.add(departure);
                 }
             }
 
