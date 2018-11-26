@@ -71,6 +71,7 @@ import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.ResultHeader;
 import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.dto.Stop;
+import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.dto.SuggestLocationsResult;
 import de.schildbach.pte.dto.SuggestedLocation;
 import de.schildbach.pte.dto.Trip;
@@ -341,8 +342,9 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
 
             final JSONObject common = res.getJSONObject("common");
             final List<String[]> remarks = parseRemList(common.getJSONArray("remL"));
+            final List<Style> styles = parseIcoList(common.getJSONArray("icoL"));
             final List<String> operators = parseOpList(common.getJSONArray("opL"));
-            final List<Line> lines = parseProdList(common.getJSONArray("prodL"), operators);
+            final List<Line> lines = parseProdList(common.getJSONArray("prodL"), operators, styles);
             final JSONArray locList = common.getJSONArray("locL");
 
             final JSONArray jnyList = res.optJSONArray("jnyL");
@@ -610,9 +612,10 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
 
             final JSONObject common = res.getJSONObject("common");
             final List<String[]> remarks = parseRemList(common.getJSONArray("remL"));
+            final List<Style> styles = parseIcoList(common.getJSONArray("icoL"));
             final JSONArray locList = common.getJSONArray("locL");
             final List<String> operators = parseOpList(common.getJSONArray("opL"));
-            final List<Line> lines = parseProdList(common.getJSONArray("prodL"), operators);
+            final List<Line> lines = parseProdList(common.getJSONArray("prodL"), operators, styles);
 
             final JSONArray outConList = res.optJSONArray("outConL");
             final List<Trip> trips = new ArrayList<>(outConList.length());
@@ -882,6 +885,44 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
         return remarks;
     }
 
+    private List<Style> parseIcoList(final JSONArray icoList) throws JSONException {
+        final List<Style> styles = new ArrayList<>(icoList.length());
+        for (int i = 0; i < icoList.length(); i++) {
+            final JSONObject ico = icoList.getJSONObject(i);
+            if (ico.has("bg")) {
+                final int background = parseIcoColor(ico.getJSONObject("bg"));
+                final int foreground = parseIcoColor(ico.getJSONObject("fg"));
+                final String shp = ico.optString("shp", null);
+                if (shp == null) {
+                    styles.add(new Style(background, foreground));
+                } else {
+                    final Style.Shape shape;
+                    if ("C".equals(shp))
+                        shape = Style.Shape.CIRCLE;
+                    else if ("R".equals(shp))
+                        shape = Style.Shape.RECT;
+                    else
+                        throw new IllegalStateException("cannot handle shp: " + shp);
+                    styles.add(new Style(shape, background, foreground));
+                }
+            } else {
+                styles.add(null);
+            }
+        }
+        return styles;
+    }
+
+    private int parseIcoColor(final JSONObject color) throws JSONException {
+        final int a = color.optInt("a", 255);
+        final int r = color.getInt("r");
+        final int g = color.getInt("g");
+        final int b = color.getInt("b");
+        if (r != -1 || g != -1 || b != -1)
+            return Style.argb(a, r, g, b);
+        else
+            return 0;
+    }
+
     private List<Location> parseLocList(final JSONArray locList) throws JSONException {
         final List<Location> locations = new ArrayList<>(locList.length());
         for (int iLoc = 0; iLoc < locList.length(); iLoc++)
@@ -947,7 +988,8 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
         return operators;
     }
 
-    private List<Line> parseProdList(final JSONArray prodList, final List<String> operators) throws JSONException {
+    private List<Line> parseProdList(final JSONArray prodList, final List<String> operators, final List<Style> styles)
+            throws JSONException {
         final int prodListLen = prodList.length();
         final List<Line> lines = new ArrayList<>(prodListLen);
 
@@ -956,18 +998,20 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
             final String name = Strings.emptyToNull(prod.getString("name"));
             final String nameS = prod.optString("nameS", null);
             final String number = prod.optString("number", null);
+            final int icoIndex = prod.getInt("icoX");
+            final Style style = styles.get(icoIndex);
             final int oprIndex = prod.optInt("oprX", -1);
             final String operator = oprIndex != -1 ? operators.get(oprIndex) : null;
             final int cls = prod.optInt("cls", -1);
             final Product product = cls != -1 ? intToProduct(cls) : null;
-            lines.add(newLine(operator, product, name, nameS, number));
+            lines.add(newLine(operator, product, name, nameS, number, style));
         }
 
         return lines;
     }
 
     protected Line newLine(final String operator, final Product product, final @Nullable String name,
-            final @Nullable String shortName, final @Nullable String number) {
+            final @Nullable String shortName, final @Nullable String number, final Style style) {
         final String longName;
         if (name != null)
             longName = name + (number != null && !name.endsWith(number) ? " (" + number + ")" : "");

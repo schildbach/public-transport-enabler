@@ -119,8 +119,12 @@ public class Style implements Serializable {
         }
     }
 
+    public static int argb(final int alpha, final int red, final int green, final int blue) {
+        return (alpha << 24) | (red << 16) | (green << 8) | blue;
+    }
+
     public static int rgb(final int red, final int green, final int blue) {
-        return (0xFF << 24) | (red << 16) | (green << 8) | blue;
+        return argb(0xFF, red, green, blue);
     }
 
     public static int red(final int color) {

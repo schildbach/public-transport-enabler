@@ -91,8 +91,8 @@ public class VbnProvider extends AbstractHafasClientInterfaceProvider {
 
     @Override
     protected Line newLine(final String operator, final Product product, final @Nullable String name,
-            final @Nullable String shortName, final @Nullable String number) {
-        final Line line = super.newLine(operator, product, name, shortName, number);
+            final @Nullable String shortName, final @Nullable String number, final Style style) {
+        final Line line = super.newLine(operator, product, name, shortName, number, style);
 
         if (line.product == Product.BUS) {
             if ("57".equals(line.label))
