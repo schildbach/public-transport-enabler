@@ -778,8 +778,9 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
         for (int i = 0; i < remList.length(); i++) {
             final JSONObject rem = remList.getJSONObject(i);
             final String code = rem.getString("code");
-            final String txt = rem.getString("txtN");
-            remarks.add(new String[] { code, txt });
+            final String txtS = rem.optString("txtS", null);
+            final String txtN = rem.optString("txtN", null);
+            remarks.add(new String[] { code, txtS != null ? txtS : txtN });
         }
 
         return remarks;
