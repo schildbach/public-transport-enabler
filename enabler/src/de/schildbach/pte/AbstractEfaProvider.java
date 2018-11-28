@@ -1097,6 +1097,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                 return new Line(id, network, Product.REGIONAL_TRAIN, "MR" + trainNum);
             if ("MRB".equals(trainType) || "Mitteldeutsche Regiobahn".equals(trainName))
                 return new Line(id, network, Product.REGIONAL_TRAIN, "MRB" + trainNum);
+            if ("MRB26".equals(trainNum) && trainType == null)
+                return new Line(id, network, Product.REGIONAL_TRAIN, trainNum);
             if ("ABR".equals(trainType) || "ABELLIO Rail NRW GmbH".equals(trainName))
                 return new Line(id, network, Product.REGIONAL_TRAIN, "ABR" + trainNum);
             if ("NEB".equals(trainType) || "NEB Niederbarnimer Eisenbahn".equals(trainName))
