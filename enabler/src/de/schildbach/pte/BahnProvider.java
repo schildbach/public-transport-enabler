@@ -22,9 +22,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.google.common.base.Charsets;
-import com.google.common.base.Strings;
 
-import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Product;
 
 import okhttp3.HttpUrl;
@@ -75,16 +73,5 @@ public final class BahnProvider extends AbstractHafasClientInterfaceProvider {
         if (m.matches())
             return new String[] { m.group(1), m.group(2) };
         return super.splitStationName(address);
-    }
-
-    @Override
-    protected Line newLine(final String operator, final Product product, final String name, final String number) {
-        if (product == Product.SUBURBAN_TRAIN && name != null && name.startsWith("S")
-                && !(number != null && number.startsWith("S")))
-            return super.newLine(operator, product, name, "S" + Strings.nullToEmpty(number));
-        if (product == Product.SUBWAY && name != null && name.startsWith("U")
-                && !(number != null && number.startsWith("U")))
-            return super.newLine(operator, product, name, "U" + Strings.nullToEmpty(number));
-        return super.newLine(operator, product, name, number);
     }
 }

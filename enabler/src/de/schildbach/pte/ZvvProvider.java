@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 
-import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.dto.Style.Shape;
@@ -95,27 +94,6 @@ public class ZvvProvider extends AbstractHafasClientInterfaceProvider {
     @Override
     public Set<Product> defaultProducts() {
         return Product.ALL;
-    }
-
-    @Override
-    protected Line newLine(final String operator, final Product product, final String name, final String number) {
-        if (name == null)
-            return super.newLine(operator, product, name, number);
-        final String[] splitName = name.split("\\s+", 2);
-        if (splitName.length != 2)
-            return super.newLine(operator, product, name, number);
-
-        final String newName = name + (number != null ? " (" + number + ")" : "");
-        final String newNumber;
-        if (product == Product.BUS && "Bus".equals(splitName[0]))
-            newNumber = splitName[1];
-        else if (product == Product.BUS && "Tro".equals(splitName[0]))
-            newNumber = splitName[1];
-        else if (product == Product.TRAM && "Trm".equals(splitName[0]))
-            newNumber = splitName[1];
-        else
-            newNumber = splitName[0] + splitName[1];
-        return super.newLine(operator, product, newName, newNumber);
     }
 
     private static final Map<String, Style> STYLES = new HashMap<>();

@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
+
 import com.google.common.collect.Sets;
 
 import de.schildbach.pte.dto.Fare;
@@ -104,8 +106,9 @@ public final class BvgProvider extends AbstractHafasClientInterfaceProvider {
     }
 
     @Override
-    protected Line newLine(final String operator, final Product product, final String name, final String number) {
-        final Line line = super.newLine(operator, product, name, number);
+    protected Line newLine(final String operator, final Product product, final @Nullable String name,
+            final @Nullable String shortName, final @Nullable String number) {
+        final Line line = super.newLine(operator, product, name, shortName, number);
 
         if (line.product == Product.SUBURBAN_TRAIN) {
             if ("S41".equals(line.label))

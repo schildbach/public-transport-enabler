@@ -861,19 +861,42 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
         for (int iProd = 0; iProd < prodListLen; iProd++) {
             final JSONObject prod = prodList.getJSONObject(iProd);
             final String name = Strings.emptyToNull(prod.getString("name"));
+            final String nameS = prod.optString("nameS", null);
             final String number = prod.optString("number", null);
             final int oprIndex = prod.optInt("oprX", -1);
             final String operator = oprIndex != -1 ? operators.get(oprIndex) : null;
             final int cls = prod.optInt("cls", -1);
             final Product product = cls != -1 ? intToProduct(cls) : null;
-            lines.add(newLine(operator, product, name, number));
+            lines.add(newLine(operator, product, name, nameS, number));
         }
 
         return lines;
     }
 
-    protected Line newLine(final String operator, final Product product, final String name, final String number) {
-        return new Line(null, operator, product, number, name, lineStyle(operator, product, number));
+    protected Line newLine(final String operator, final Product product, final @Nullable String name,
+            final @Nullable String shortName, final @Nullable String number) {
+        final String longName;
+        if (name != null)
+            longName = name + (number != null && !name.endsWith(number) ? " (" + number + ")" : "");
+        else if (shortName != null)
+            longName = shortName + (number != null && !shortName.endsWith(number) ? " (" + number + ")" : "");
+        else
+            longName = number;
+
+        if (product == Product.BUS || product == Product.TRAM) {
+            // For bus and tram, prefer a slightly shorter label without the product prefix
+            final String label;
+            if (shortName != null)
+                label = shortName;
+            else if (number != null && name != null && name.endsWith(number))
+                label = number;
+            else
+                label = name;
+            return new Line(null, operator, product, label, longName, lineStyle(operator, product, label));
+        } else {
+            // Otherwise the longer label is fine
+            return new Line(null, operator, product, name, longName, lineStyle(operator, product, name));
+        }
     }
 
     @SuppressWarnings("serial")
