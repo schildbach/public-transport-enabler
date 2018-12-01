@@ -522,7 +522,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                     return new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_LOCATION);
                 if ("CGI_READ_FAILED".equals(err))
                     return new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN);
-                throw new RuntimeException(err + (errTxt != null ? " " + errTxt : ""));
+                throw new RuntimeException(err + " " + errTxt);
             }
             final JSONObject res = svcRes.getJSONObject("res");
 
