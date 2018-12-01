@@ -209,6 +209,8 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                 log.debug("Hafas error: {} {}", err, errTxt);
                 if ("FAIL".equals(err) && "HCI Service: request failed".equals(errTxt))
                     return new NearbyLocationsResult(header, NearbyLocationsResult.Status.SERVICE_DOWN);
+                if ("CGI_READ_FAILED".equals(err))
+                    return new NearbyLocationsResult(header, NearbyLocationsResult.Status.SERVICE_DOWN);
                 throw new RuntimeException(err + " " + errTxt);
             }
             final JSONObject res = svcRes.getJSONObject("res");
@@ -278,6 +280,8 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                 if ("LOCATION".equals(err) && "HCI Service: location missing or invalid".equals(errTxt))
                     return new QueryDeparturesResult(header, QueryDeparturesResult.Status.INVALID_STATION);
                 if ("FAIL".equals(err) && "HCI Service: request failed".equals(errTxt))
+                    return new QueryDeparturesResult(header, QueryDeparturesResult.Status.SERVICE_DOWN);
+                if ("CGI_READ_FAILED".equals(err))
                     return new QueryDeparturesResult(header, QueryDeparturesResult.Status.SERVICE_DOWN);
                 throw new RuntimeException(err + " " + errTxt);
             }
@@ -394,6 +398,8 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                 final String errTxt = svcRes.optString("errTxt");
                 log.debug("Hafas error: {} {}", err, errTxt);
                 if ("FAIL".equals(err) && "HCI Service: request failed".equals(errTxt))
+                    return new SuggestLocationsResult(header, SuggestLocationsResult.Status.SERVICE_DOWN);
+                if ("CGI_READ_FAILED".equals(err))
                     return new SuggestLocationsResult(header, SuggestLocationsResult.Status.SERVICE_DOWN);
                 throw new RuntimeException(err + " " + errTxt);
             }
