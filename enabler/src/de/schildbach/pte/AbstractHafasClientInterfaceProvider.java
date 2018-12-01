@@ -205,7 +205,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
             checkState("LocGeoPos".equals(svcRes.getString("meth")));
             final String err = svcRes.getString("err");
             if (!"OK".equals(err)) {
-                final String errTxt = svcRes.getString("errTxt");
+                final String errTxt = svcRes.optString("errTxt");
                 log.debug("Hafas error: {} {}", err, errTxt);
                 if ("FAIL".equals(err) && "HCI Service: request failed".equals(errTxt))
                     return new NearbyLocationsResult(header, NearbyLocationsResult.Status.SERVICE_DOWN);
@@ -273,7 +273,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
             checkState("StationBoard".equals(svcRes.getString("meth")));
             final String err = svcRes.getString("err");
             if (!"OK".equals(err)) {
-                final String errTxt = svcRes.getString("errTxt");
+                final String errTxt = svcRes.optString("errTxt");
                 log.debug("Hafas error: {} {}", err, errTxt);
                 if ("LOCATION".equals(err) && "HCI Service: location missing or invalid".equals(errTxt))
                     return new QueryDeparturesResult(header, QueryDeparturesResult.Status.INVALID_STATION);
@@ -391,7 +391,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
             checkState("LocMatch".equals(svcRes.getString("meth")));
             final String err = svcRes.getString("err");
             if (!"OK".equals(err)) {
-                final String errTxt = svcRes.getString("errTxt");
+                final String errTxt = svcRes.optString("errTxt");
                 log.debug("Hafas error: {} {}", err, errTxt);
                 if ("FAIL".equals(err) && "HCI Service: request failed".equals(errTxt))
                     return new SuggestLocationsResult(header, SuggestLocationsResult.Status.SERVICE_DOWN);
