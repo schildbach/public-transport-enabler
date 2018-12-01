@@ -369,12 +369,12 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
 
     protected final SuggestLocationsResult jsonLocMatch(final CharSequence constraint, int maxLocations)
             throws IOException {
+        checkNotNull(constraint);
         if (maxLocations == 0)
             maxLocations = DEFAULT_MAX_LOCATIONS;
+        final String loc = "{\"name\":" + JSONObject.quote(constraint + "?") + ",\"meta\":false}";
         final String request = wrapJsonApiRequest("LocMatch",
-                "{\"input\":{\"field\":\"S\",\"loc\":{\"name\":" + JSONObject.quote(checkNotNull(constraint).toString())
-                        + ",\"meta\":false},\"maxLoc\":" + maxLocations + "}}",
-                false);
+                "{\"input\":{\"field\":\"S\",\"loc\":" + loc + ",\"maxLoc\":" + maxLocations + "}}", false);
 
         final HttpUrl url = requestUrl(request);
         final CharSequence page = httpClient.get(url, request, "application/json");
