@@ -153,7 +153,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
 
     @Override
     public SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException {
-        return jsonLocMatch(constraint, 0);
+        return jsonLocMatch(constraint, null, 0);
     }
 
     @Override
@@ -367,12 +367,19 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
         }
     }
 
-    protected final SuggestLocationsResult jsonLocMatch(final CharSequence constraint, int maxLocations)
-            throws IOException {
+    protected final SuggestLocationsResult jsonLocMatch(final CharSequence constraint,
+            final @Nullable Set<LocationType> types, int maxLocations) throws IOException {
         checkNotNull(constraint);
         if (maxLocations == 0)
             maxLocations = DEFAULT_MAX_LOCATIONS;
-        final String loc = "{\"name\":" + JSONObject.quote(constraint + "?") + ",\"meta\":false}";
+        final String type;
+        if (types == null || types.contains(LocationType.ANY)
+                || types.containsAll(EnumSet.of(LocationType.STATION, LocationType.ADDRESS, LocationType.POI)))
+            type = "ALL";
+        else
+            type = Joiner.on("").skipNulls().join(types.contains(LocationType.STATION) ? "S" : null,
+                    types.contains(LocationType.ADDRESS) ? "A" : null, types.contains(LocationType.POI) ? "P" : null);
+        final String loc = "{\"name\":" + JSONObject.quote(constraint + "?") + ",\"type\":\"" + type + "\"}";
         final String request = wrapJsonApiRequest("LocMatch",
                 "{\"input\":{\"field\":\"S\",\"loc\":" + loc + ",\"maxLoc\":" + maxLocations + "}}", false);
 
@@ -427,7 +434,8 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
         if (location.hasId())
             return location;
         if (location.hasName()) {
-            final List<Location> locations = jsonLocMatch(JOINER.join(location.place, location.name), 1).getLocations();
+            final List<Location> locations = jsonLocMatch(JOINER.join(location.place, location.name), null, 1)
+                    .getLocations();
             if (!locations.isEmpty())
                 return locations.get(0);
         }
