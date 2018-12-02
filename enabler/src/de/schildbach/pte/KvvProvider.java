@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,8 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.Charsets;
+
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.dto.Style.Shape;
@@ -42,7 +44,7 @@ public class KvvProvider extends AbstractEfaProvider {
 
     public KvvProvider(final HttpUrl apiBase) {
         super(NetworkId.KVV, apiBase);
-
+        setRequestUrlEncoding(Charsets.UTF_8);
         setStyles(STYLES);
         setSessionCookieName("HASESSIONID");
     }
