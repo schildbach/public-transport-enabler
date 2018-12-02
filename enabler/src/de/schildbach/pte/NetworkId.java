@@ -66,6 +66,9 @@ public enum NetworkId {
     // Poland
     PL, PLNAVITIA,
 
+    // Portugal
+    PT,
+
     // Italy
     IT,
 
