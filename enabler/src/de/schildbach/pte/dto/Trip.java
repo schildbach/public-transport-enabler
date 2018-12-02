@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,12 @@ package de.schildbach.pte.dto;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
@@ -299,7 +304,7 @@ public final class Trip implements Serializable {
 
         public final Location departure;
         public final Location arrival;
-        public List<Point> path;
+        public transient List<Point> path; // custom serialization, to save space
 
         public Leg(final Location departure, final Location arrival, final List<Point> path) {
             this.departure = checkNotNull(departure);
@@ -318,6 +323,35 @@ public final class Trip implements Serializable {
 
         /** Maximum time occurring in this leg. */
         public abstract Date getMaxTime();
+
+        private void writeObject(final ObjectOutputStream os) throws IOException {
+            os.defaultWriteObject();
+            if (path != null) {
+                os.writeInt(path.size());
+                for (final Point p : path) {
+                    os.writeInt(p.getLatAs1E6());
+                    os.writeInt(p.getLonAs1E6());
+                }
+            } else {
+                os.writeInt(-1);
+            }
+        }
+
+        private void readObject(final ObjectInputStream is) throws ClassNotFoundException, IOException {
+            is.defaultReadObject();
+            try {
+                final int pathSize = is.readInt();
+                if (pathSize >= 0) {
+                    path = new ArrayList<>(pathSize);
+                    for (int i = 0; i < pathSize; i++)
+                        path.add(Point.from1E6(is.readInt(), is.readInt()));
+                } else {
+                    path = null;
+                }
+            } catch (final EOFException x) {
+                path = null;
+            }
+        }
     }
 
     public final static class Public extends Leg {
