@@ -40,10 +40,10 @@ public class WienProvider extends AbstractEfaProvider {
 
     public WienProvider() {
         super(NetworkId.WIEN, API_BASE);
-
         setIncludeRegionId(false);
         setStyles(STYLES);
         setRequestUrlEncoding(Charsets.UTF_8);
+        setSessionCookieName("NSC_mcwtsw-IUUQ-UDQ-80-phe");
     }
 
     @Override

@@ -38,6 +38,7 @@ public class PlProvider extends AbstractHafasLegacyProvider {
         super(NetworkId.PL, API_BASE, "pn", PRODUCTS_MAP);
         setRequestUrlEncoding(Charsets.UTF_8);
         setJsonNearbyLocationsEncoding(Charsets.UTF_8);
+        setSessionCookieName("SERVERID");
     }
 
     private static final String[] PLACES = { "Warszawa", "Kraków" };

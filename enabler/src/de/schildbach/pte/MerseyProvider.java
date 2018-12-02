@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,9 +39,9 @@ public class MerseyProvider extends AbstractEfaProvider {
 
     public MerseyProvider() {
         super(NetworkId.MERSEY, API_BASE);
-
         setLanguage("en");
         setTimeZone("Europe/London");
+        setSessionCookieName("NSC_JOcrlgwob0srnjmdokl3avefk4bsneM");
     }
 
     @Override

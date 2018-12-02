@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,8 +40,8 @@ public class VvoProvider extends AbstractEfaProvider {
 
     public VvoProvider(final HttpUrl apiBase) {
         super(NetworkId.VVO, apiBase, null, null, STOP_FINDER_ENDPOINT, COORD_ENDPOINT);
-
         setRequestUrlEncoding(Charsets.UTF_8);
+        setSessionCookieName("VVO-EFA");
     }
 
     @Override

@@ -45,10 +45,9 @@ public class MvvProvider extends AbstractEfaProvider {
 
     public MvvProvider(final HttpUrl apiBase) {
         super(NetworkId.MVV, apiBase);
-
         setIncludeRegionId(false);
         setStyles(STYLES);
-        setSessionCookieName("SIDefaalt");
+        setSessionCookieName("SIDefaalt"); // SIDefa
     }
 
     @Override

@@ -39,6 +39,7 @@ public class TfiProvider extends AbstractEfaProvider {
         super(NetworkId.TFI, API_BASE);
         setLanguage("en");
         setTimeZone("Europe/London");
+        setSessionCookieName("NSC_ttm_kqmboofs-usbotqpsu");
     }
 
     @Override

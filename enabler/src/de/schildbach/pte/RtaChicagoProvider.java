@@ -34,6 +34,7 @@ public class RtaChicagoProvider extends AbstractEfaProvider {
         super(NetworkId.RTACHICAGO, API_BASE);
         setLanguage("en");
         setTimeZone("America/Chicago");
+        setSessionCookieName("AWSELB");
     }
 
     @Override

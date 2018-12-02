@@ -37,6 +37,7 @@ public class VmvProvider extends AbstractEfaProvider {
         super(NetworkId.VMV, API_BASE);
         setIncludeRegionId(false);
         setUseRouteIndexAsTripId(false);
+        setSessionCookieName("EFABWLB");
         httpClient.setTrustAllCertificates(true);
     }
 

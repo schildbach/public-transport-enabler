@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,9 +27,9 @@ public class DubProvider extends AbstractEfaProvider {
 
     public DubProvider() {
         super(NetworkId.DUB, API_BASE);
-
         setTimeZone("Asia/Dubai");
         setUseRouteIndexAsTripId(false);
         setFareCorrectionFactor(0.01f);
+        setSessionCookieName("jp-rta-ae-20480");
     }
 }
