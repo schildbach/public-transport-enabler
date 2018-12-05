@@ -106,7 +106,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     private boolean useProxFootSearch = true;
     private @Nullable String httpReferer = null;
     private @Nullable String httpRefererTrip = null;
-    private boolean httpPost = false;
     private boolean useRouteIndexAsTripId = true;
     private boolean useLineRestriction = true;
     private boolean useStringCoordListOutputFormat = true;
@@ -193,11 +192,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         return this;
     }
 
-    protected AbstractEfaProvider setHttpPost(final boolean httpPost) {
-        this.httpPost = httpPost;
-        return this;
-    }
-
     protected AbstractEfaProvider setIncludeRegionId(final boolean includeRegionId) {
         this.includeRegionId = includeRegionId;
         return this;
@@ -248,11 +242,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     protected SuggestLocationsResult jsonStopfinderRequest(final Location constraint) throws IOException {
         final HttpUrl.Builder url = stopFinderEndpoint.newBuilder();
         appendStopfinderRequestParameters(url, constraint, "JSON");
-        final CharSequence page;
-        if (httpPost)
-            page = httpClient.get(url.build(), url.build().encodedQuery(), "application/x-www-form-urlencoded");
-        else
-            page = httpClient.get(url.build());
+        final CharSequence page = httpClient.get(url.build());
         final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
 
         try {
@@ -388,11 +378,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             }
         };
 
-        if (httpPost)
-            httpClient.getInputStream(callback, url.build(), url.build().encodedQuery(),
-                    "application/x-www-form-urlencoded", httpReferer);
-        else
-            httpClient.getInputStream(callback, url.build(), httpReferer);
+        httpClient.getInputStream(callback, url.build(), httpReferer);
 
         return result.get();
     }
@@ -467,11 +453,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             }
         };
 
-        if (httpPost)
-            httpClient.getInputStream(callback, url.build(), url.build().encodedQuery(),
-                    "application/x-www-form-urlencoded", httpReferer);
-        else
-            httpClient.getInputStream(callback, url.build(), httpReferer);
+        httpClient.getInputStream(callback, url.build(), httpReferer);
 
         return result.get();
     }
@@ -562,11 +544,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             }
         };
 
-        if (httpPost)
-            httpClient.getInputStream(callback, url.build(), url.build().encodedQuery(),
-                    "application/x-www-form-urlencoded", httpReferer);
-        else
-            httpClient.getInputStream(callback, url.build(), httpReferer);
+        httpClient.getInputStream(callback, url.build(), httpReferer);
 
         return result.get();
     }
@@ -636,11 +614,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             }
         };
 
-        if (httpPost)
-            httpClient.getInputStream(callback, url.build(), url.build().encodedQuery(),
-                    "application/x-www-form-urlencoded", httpReferer);
-        else
-            httpClient.getInputStream(callback, url.build(), httpReferer);
+        httpClient.getInputStream(callback, url.build(), httpReferer);
 
         return result.get();
     }
@@ -908,11 +882,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             }
         };
 
-        if (httpPost)
-            httpClient.getInputStream(callback, url.build(), url.build().encodedQuery(),
-                    "application/x-www-form-urlencoded", httpReferer);
-        else
-            httpClient.getInputStream(callback, url.build(), httpReferer);
+        httpClient.getInputStream(callback, url.build(), httpReferer);
 
         return result.get();
     }
@@ -1607,11 +1577,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             }
         };
 
-        if (httpPost)
-            httpClient.getInputStream(callback, url.build(), url.build().encodedQuery(),
-                    "application/x-www-form-urlencoded", httpReferer);
-        else
-            httpClient.getInputStream(callback, url.build(), httpReferer);
+        httpClient.getInputStream(callback, url.build(), httpReferer);
 
         return result.get();
     }
@@ -1701,11 +1667,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             }
         };
 
-        if (httpPost)
-            httpClient.getInputStream(callback, url.build(), url.build().encodedQuery(),
-                    "application/x-www-form-urlencoded", httpReferer);
-        else
-            httpClient.getInputStream(callback, url.build(), httpReferer);
+        httpClient.getInputStream(callback, url.build(), httpReferer);
 
         return result.get();
     }
@@ -2096,11 +2058,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             }
         };
 
-        if (httpPost)
-            httpClient.getInputStream(callback, url.build(), url.build().encodedQuery(),
-                    "application/x-www-form-urlencoded", httpRefererTrip);
-        else
-            httpClient.getInputStream(callback, url.build(), httpRefererTrip);
+        httpClient.getInputStream(callback, url.build(), httpRefererTrip);
 
         return result.get();
     }
@@ -2124,11 +2082,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             }
         };
 
-        if (httpPost)
-            httpClient.getInputStream(callback, url.build(), url.build().encodedQuery(),
-                    "application/x-www-form-urlencoded", httpRefererTrip);
-        else
-            httpClient.getInputStream(callback, url.build(), httpRefererTrip);
+        httpClient.getInputStream(callback, url.build(), httpRefererTrip);
 
         return result.get();
     }
