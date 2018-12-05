@@ -345,44 +345,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         }
     }
 
-    protected SuggestLocationsResult xmlStopfinderRequest(final Location constraint) throws IOException {
-        final HttpUrl.Builder url = stopFinderEndpoint.newBuilder();
-        appendStopfinderRequestParameters(url, constraint, "XML");
-        final AtomicReference<SuggestLocationsResult> result = new AtomicReference<>();
-
-        final HttpClient.Callback callback = new HttpClient.Callback() {
-            @Override
-            public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
-                try {
-                    final XmlPullParser pp = parserFactory.newPullParser();
-                    pp.setInput(body.byteStream(), null); // Read encoding from XML declaration
-                    final ResultHeader header = enterItdRequest(pp);
-
-                    final List<SuggestedLocation> locations = new ArrayList<>();
-
-                    XmlPullUtil.enter(pp, "itdStopFinderRequest");
-
-                    processItdOdv(pp, "sf", new ProcessItdOdvCallback() {
-                        @Override
-                        public void location(final String nameState, final Location location, final int matchQuality) {
-                            locations.add(new SuggestedLocation(location, matchQuality));
-                        }
-                    });
-
-                    XmlPullUtil.skipExit(pp, "itdStopFinderRequest");
-
-                    result.set(new SuggestLocationsResult(header, locations));
-                } catch (final XmlPullParserException x) {
-                    throw new ParserException("cannot parse xml: " + bodyPeek, x);
-                }
-            }
-        };
-
-        httpClient.getInputStream(callback, url.build(), httpReferer);
-
-        return result.get();
-    }
-
     protected SuggestLocationsResult mobileStopfinderRequest(final Location constraint) throws IOException {
         final HttpUrl.Builder url = stopFinderEndpoint.newBuilder();
         appendStopfinderRequestParameters(url, constraint, "XML");

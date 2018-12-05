@@ -17,16 +17,13 @@
 
 package de.schildbach.pte;
 
-import java.io.IOException;
 import java.util.Date;
 
 import javax.annotation.Nullable;
 
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
-import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.Product;
-import de.schildbach.pte.dto.SuggestLocationsResult;
 import de.schildbach.pte.dto.TripOptions;
 
 import okhttp3.HttpUrl;
@@ -61,11 +58,6 @@ public class VgnProvider extends AbstractEfaProvider {
         }
 
         return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
-    }
-
-    @Override
-    public SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException {
-        return xmlStopfinderRequest(new Location(LocationType.ANY, null, null, constraint.toString()));
     }
 
     @Override
