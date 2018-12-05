@@ -47,13 +47,12 @@ public class VrrProvider extends AbstractEfaProvider {
 
     public VrrProvider(final HttpUrl apiBase) {
         super(NetworkId.VRR, apiBase);
-
         setIncludeRegionId(false);
         setUseProxFootSearch(false);
         setNeedsSpEncId(true);
         setUseRouteIndexAsTripId(false);
         setStyles(STYLES);
-        setRequestUrlEncoding(Charsets.ISO_8859_1);
+        setRequestUrlEncoding(Charsets.UTF_8);
         setSessionCookieName("vrr-efa-lb");
     }
 
