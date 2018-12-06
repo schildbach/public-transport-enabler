@@ -21,6 +21,8 @@ import java.util.Date;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.Charsets;
+
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.Product;
@@ -36,7 +38,7 @@ public class VmsProvider extends AbstractEfaProvider {
 
     public VmsProvider() {
         super(NetworkId.VMS, API_BASE);
-
+        setRequestUrlEncoding(Charsets.UTF_8);
         setUseLineRestriction(false);
     }
 
