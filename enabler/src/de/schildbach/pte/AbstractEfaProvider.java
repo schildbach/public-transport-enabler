@@ -247,50 +247,67 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
         try {
             final List<SuggestedLocation> locations = new ArrayList<>();
-
             final JSONObject head = new JSONObject(page.toString());
             final JSONObject stopFinder = head.optJSONObject("stopFinder");
-            final JSONArray stops;
-            if (stopFinder == null) {
-                stops = head.getJSONArray("stopFinder");
-            } else {
+            if (stopFinder != null) {
                 final JSONArray messages = stopFinder.optJSONArray("message");
                 if (messages != null) {
-                    for (int i = 0; i < messages.length(); i++) {
-                        final JSONObject message = messages.optJSONObject(i);
-                        final String messageName = message.getString("name");
-                        final String messageValue = Strings.emptyToNull(message.getString("value"));
-                        if ("code".equals(messageName) && !"-8010".equals(messageValue)
-                                && !"-8011".equals(messageValue))
-                            return new SuggestLocationsResult(header, SuggestLocationsResult.Status.SERVICE_DOWN);
-                    }
+                    final SuggestLocationsResult.Status status = parseJsonMessages(messages);
+                    if (status != null)
+                        return new SuggestLocationsResult(header, status);
                 }
 
                 final JSONObject points = stopFinder.optJSONObject("points");
                 if (points != null) {
-                    final JSONObject stop = points.getJSONObject("point");
-                    final SuggestedLocation location = parseJsonStop(stop);
+                    final JSONObject point = points.getJSONObject("point");
+                    final SuggestedLocation location = parseJsonStop(point);
                     locations.add(location);
-                    return new SuggestLocationsResult(header, locations);
                 }
 
-                stops = stopFinder.optJSONArray("points");
-                if (stops == null)
-                    return new SuggestLocationsResult(header, locations);
-            }
+                final JSONArray pointsArray = stopFinder.optJSONArray("points");
+                if (pointsArray != null) {
+                    final int nPoints = pointsArray.length();
+                    for (int i = 0; i < nPoints; i++) {
+                        final JSONObject point = pointsArray.optJSONObject(i);
+                        final SuggestedLocation location = parseJsonStop(point);
+                        locations.add(location);
+                    }
+                }
+            } else {
+                final JSONArray messages = head.optJSONArray("message");
+                if (messages != null) {
+                    final SuggestLocationsResult.Status status = parseJsonMessages(messages);
+                    if (status != null)
+                        return new SuggestLocationsResult(header, status);
+                }
 
-            final int nStops = stops.length();
-
-            for (int i = 0; i < nStops; i++) {
-                final JSONObject stop = stops.optJSONObject(i);
-                final SuggestedLocation location = parseJsonStop(stop);
-                locations.add(location);
+                final JSONArray pointsArray = head.optJSONArray("stopFinder");
+                if (pointsArray != null) {
+                    final int nPoints = pointsArray.length();
+                    for (int i = 0; i < nPoints; i++) {
+                        final JSONObject point = pointsArray.optJSONObject(i);
+                        final SuggestedLocation location = parseJsonStop(point);
+                        locations.add(location);
+                    }
+                }
             }
 
             return new SuggestLocationsResult(header, locations);
         } catch (final JSONException x) {
             throw new RuntimeException("cannot parse: '" + page + "' on " + url, x);
         }
+    }
+
+    private SuggestLocationsResult.Status parseJsonMessages(final JSONArray messages) throws JSONException {
+        final int messagesSize = messages.length();
+        for (int i = 0; i < messagesSize; i++) {
+            final JSONObject message = messages.optJSONObject(i);
+            final String messageName = message.getString("name");
+            final String messageValue = Strings.emptyToNull(message.getString("value"));
+            if ("code".equals(messageName) && !"-8010".equals(messageValue) && !"-8011".equals(messageValue))
+                return SuggestLocationsResult.Status.SERVICE_DOWN;
+        }
+        return null;
     }
 
     private SuggestedLocation parseJsonStop(final JSONObject stop) throws JSONException {
