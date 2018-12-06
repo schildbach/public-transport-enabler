@@ -314,31 +314,35 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         String type = stop.getString("type");
         if ("any".equals(type))
             type = stop.getString("anyType");
-        final String id = stop.getString("stateless");
+        final String stateless = stop.getString("stateless");
         final String name = normalizeLocationName(stop.optString("name"));
         final String object = normalizeLocationName(stop.optString("object"));
         final String postcode = stop.optString("postcode");
         final int quality = stop.getInt("quality");
         final JSONObject ref = stop.getJSONObject("ref");
+        final String id = ref.getString("id");
         String place = ref.getString("place");
         if (place != null && place.length() == 0)
             place = null;
         final Point coord = parseCoord(ref.optString("coords", null));
 
         final Location location;
-        if ("stop".equals(type))
+        if ("stop".equals(type)) {
+            if (!stateless.startsWith(id))
+                throw new RuntimeException("id mismatch: '" + id + "' vs '" + stateless + "'");
             location = new Location(LocationType.STATION, id, coord, place, object);
-        else if ("poi".equals(type))
-            location = new Location(LocationType.POI, id, coord, place, object);
-        else if ("crossing".equals(type))
-            location = new Location(LocationType.ADDRESS, id, coord, place, object);
-        else if ("street".equals(type) || "address".equals(type) || "singlehouse".equals(type)
-                || "buildingname".equals(type) || "loc".equals(type))
-            location = new Location(LocationType.ADDRESS, id, coord, place, name);
-        else if ("postcode".equals(type))
-            location = new Location(LocationType.ADDRESS, id, coord, place, postcode);
-        else
+        } else if ("poi".equals(type)) {
+            location = new Location(LocationType.POI, stateless, coord, place, object);
+        } else if ("crossing".equals(type)) {
+            location = new Location(LocationType.ADDRESS, stateless, coord, place, object);
+        } else if ("street".equals(type) || "address".equals(type) || "singlehouse".equals(type)
+                || "buildingname".equals(type) || "loc".equals(type)) {
+            location = new Location(LocationType.ADDRESS, stateless, coord, place, name);
+        } else if ("postcode".equals(type)) {
+            location = new Location(LocationType.ADDRESS, stateless, coord, place, postcode);
+        } else {
             throw new JSONException("unknown type: " + type);
+        }
 
         return new SuggestedLocation(location, quality);
     }
