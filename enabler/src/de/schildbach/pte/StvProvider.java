@@ -25,6 +25,7 @@ import java.util.EnumSet;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 
 import de.schildbach.pte.dto.Location;
@@ -46,7 +47,7 @@ public class StvProvider extends AbstractEfaProvider {
 
     public StvProvider() {
         super(NetworkId.STV, API_BASE);
-
+        setRequestUrlEncoding(Charsets.UTF_8);
         setIncludeRegionId(false);
     }
 
