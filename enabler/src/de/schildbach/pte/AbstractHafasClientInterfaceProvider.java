@@ -517,6 +517,9 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                     return new QueryTripsResult(header, QueryTripsResult.Status.TOO_CLOSE);
                 if ("H9220".equals(err)) // Nearby to the given address stations could not be found.
                     return new QueryTripsResult(header, QueryTripsResult.Status.UNRESOLVABLE_ADDRESS);
+                if ("H886".equals(err)) // HAFAS Kernel: No connections found within the requested time
+                                        // interval.
+                    return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
                 if ("H887".equals(err)) // HAFAS Kernel: Kernel computation time limit reached.
                     return new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN);
                 if ("H9240".equals(err)) // HAFAS Kernel: Internal error.
