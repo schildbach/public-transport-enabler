@@ -23,6 +23,8 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.Charsets;
+
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.Product;
@@ -39,8 +41,8 @@ public class AvvProvider extends AbstractEfaProvider {
 
     public AvvProvider() {
         super(NetworkId.AVV, API_BASE);
-
         setUseRouteIndexAsTripId(false);
+        setRequestUrlEncoding(Charsets.UTF_8);
         setStyles(STYLES);
     }
 
