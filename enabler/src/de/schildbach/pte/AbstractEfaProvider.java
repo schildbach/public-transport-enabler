@@ -260,7 +260,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                 final JSONObject points = stopFinder.optJSONObject("points");
                 if (points != null) {
                     final JSONObject point = points.getJSONObject("point");
-                    final SuggestedLocation location = parseJsonStop(point);
+                    final SuggestedLocation location = parseJsonPoint(point);
                     locations.add(location);
                 }
 
@@ -269,7 +269,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                     final int nPoints = pointsArray.length();
                     for (int i = 0; i < nPoints; i++) {
                         final JSONObject point = pointsArray.optJSONObject(i);
-                        final SuggestedLocation location = parseJsonStop(point);
+                        final SuggestedLocation location = parseJsonPoint(point);
                         locations.add(location);
                     }
                 }
@@ -286,7 +286,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                     final int nPoints = pointsArray.length();
                     for (int i = 0; i < nPoints; i++) {
                         final JSONObject point = pointsArray.optJSONObject(i);
-                        final SuggestedLocation location = parseJsonStop(point);
+                        final SuggestedLocation location = parseJsonPoint(point);
                         locations.add(location);
                     }
                 }
@@ -310,16 +310,16 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         return null;
     }
 
-    private SuggestedLocation parseJsonStop(final JSONObject stop) throws JSONException {
-        String type = stop.getString("type");
+    private SuggestedLocation parseJsonPoint(final JSONObject point) throws JSONException {
+        String type = point.getString("type");
         if ("any".equals(type))
-            type = stop.getString("anyType");
-        final String stateless = stop.getString("stateless");
-        final String name = normalizeLocationName(stop.optString("name"));
-        final String object = normalizeLocationName(stop.optString("object"));
-        final String postcode = stop.optString("postcode");
-        final int quality = stop.getInt("quality");
-        final JSONObject ref = stop.getJSONObject("ref");
+            type = point.getString("anyType");
+        final String stateless = point.getString("stateless");
+        final String name = normalizeLocationName(point.optString("name"));
+        final String object = normalizeLocationName(point.optString("object"));
+        final String postcode = point.optString("postcode");
+        final int quality = point.getInt("quality");
+        final JSONObject ref = point.getJSONObject("ref");
         final String id = ref.getString("id");
         String place = ref.getString("place");
         if (place != null && place.length() == 0)
