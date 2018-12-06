@@ -44,35 +44,62 @@ public class NvbwProviderLiveTest extends AbstractProviderLiveTest {
     }
 
     @Test
-    public void nearbyStations() throws Exception {
-        final NearbyLocationsResult result1 = queryNearbyStations(new Location(LocationType.STATION, "6900001"));
-        print(result1);
-
-        final NearbyLocationsResult result2 = queryNearbyStations(new Location(LocationType.STATION, "53019174"));
-        print(result2);
+    public void nearbyStationsStuttgart() throws Exception {
+        final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "5006022")); // Schlossplatz
+        print(result);
     }
 
     @Test
-    public void nearbyStationsByCoordinate() throws Exception {
-        final NearbyLocationsResult result1 = queryNearbyStations(Location.coord(48778953, 9178963));
-        print(result1);
-
-        final NearbyLocationsResult result2 = queryNearbyStations(Location.coord(48493550, 9205656));
-        print(result2);
+    public void nearbyStationsReutlingen() throws Exception {
+        final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "53019174")); // Reutlingen
+        print(result);
     }
 
     @Test
-    public void queryDepartures() throws Exception {
-        final QueryDeparturesResult result1 = queryDepartures("6900001", false);
-        print(result1);
-
-        final QueryDeparturesResult result2 = queryDepartures("53019174", false);
-        print(result2);
+    public void nearbyStationsFreiburg() throws Exception {
+        final NearbyLocationsResult result = queryNearbyStations(new Location(LocationType.STATION, "6930112")); // Faulerstraße
+        print(result);
     }
 
     @Test
-    public void queryDeparturesMesseKarlsruhe() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("7000211", false);
+    public void nearbyStationsByCoordinateStuttgart() throws Exception {
+        final NearbyLocationsResult result = queryNearbyStations(Location.coord(48778953, 9178963));
+        print(result);
+    }
+
+    @Test
+    public void nearbyStationsByCoordinateReutlingen() throws Exception {
+        final NearbyLocationsResult result = queryNearbyStations(Location.coord(48493550, 9205656));
+        print(result);
+    }
+
+    @Test
+    public void nearbyStationsByCoordinateFreiburg() throws Exception {
+        final NearbyLocationsResult result = queryNearbyStations(Location.coord(48000295, 7854338));
+        print(result);
+    }
+
+    @Test
+    public void queryDeparturesStuttgart() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("5006022", false); // Schlossplatz
+        print(result);
+    }
+
+    @Test
+    public void queryDeparturesReutlingen() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("53019174", false); // Reutlingen
+        print(result);
+    }
+
+    @Test
+    public void queryDeparturesKarlsruhe() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("7000211", false); // Messe
+        print(result);
+    }
+
+    @Test
+    public void queryDeparturesFreiburg() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("6930112", false); // Faulerstraße
         print(result);
     }
 
@@ -95,43 +122,38 @@ public class NvbwProviderLiveTest extends AbstractProviderLiveTest {
     }
 
     @Test
-    public void suggestLocationsCoverage() throws Exception {
-        final SuggestLocationsResult freiburgResult = suggestLocations("Freiburg Hauptbahnhof");
-        print(freiburgResult);
-        assertThat(freiburgResult.getLocations(), hasItem(new Location(LocationType.STATION, "6906508")));
+    public void suggestLocationsCoverageFreiburg() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Freiburg Hauptbahnhof");
+        print(result);
+        assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "6906508")));
+    }
 
-        final SuggestLocationsResult baselResult = suggestLocations("Basel");
-        print(baselResult);
-        assertThat(baselResult.getLocations(), hasItem(new Location(LocationType.STATION, "51000007")));
+    @Test
+    public void suggestLocationsCoverageBasel() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Basel");
+        print(result);
+        assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "51000007")));
+    }
 
-        final SuggestLocationsResult constanceResult = suggestLocations("Konstanz");
-        print(constanceResult);
-        assertThat(constanceResult.getLocations(), hasItem(new Location(LocationType.STATION, "8706554")));
+    @Test
+    public void suggestLocationsCoverageKonstanz() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Konstanz");
+        print(result);
+        assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "8706554")));
     }
 
     @Test
     public void shortTrip() throws Exception {
-        final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "17002402", null, "Bahnhof"),
-                null, new Location(LocationType.STATION, "17009001", null, "Bahnhof"), new Date(), true, null);
+        final Location from = new Location(LocationType.STATION, "17002402", null, "Bahnhof");
+        final Location to = new Location(LocationType.STATION, "17009001", null, "Bahnhof");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
-
-        if (!result.context.canQueryLater())
-            return;
-
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
-
-        if (!laterResult.context.canQueryLater())
-            return;
-
         final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
         print(later2Result);
-
-        if (!later2Result.context.canQueryEarlier())
-            return;
-
         final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
         print(earlierResult);
     }
@@ -146,22 +168,26 @@ public class NvbwProviderLiveTest extends AbstractProviderLiveTest {
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
-
-        if (!result.context.canQueryLater())
-            return;
-
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
-
-        if (!laterResult.context.canQueryLater())
-            return;
-
         final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
         print(later2Result);
+        final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
+        print(earlierResult);
+    }
 
-        if (!later2Result.context.canQueryEarlier())
-            return;
-
+    @Test
+    public void shortTripFreiburg() throws Exception {
+        final Location from = new Location(LocationType.STATION, "6930100", null, "Freiburg Bertoldsbrunnen");
+        final Location to = new Location(LocationType.STATION, "6930101", null, "Freiburg Siegesdenkmal");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
+        print(result);
+        assertEquals(QueryTripsResult.Status.OK, result.status);
+        assertTrue(result.trips.size() > 0);
+        final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+        print(laterResult);
+        final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
+        print(later2Result);
         final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
         print(earlierResult);
     }
@@ -179,8 +205,9 @@ public class NvbwProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void tripPforzheimToKarlsruhe() throws Exception {
-        final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "7900050"), null,
-                new Location(LocationType.STATION, "7000090"), new Date(), true, null);
+        final Location from = new Location(LocationType.STATION, "7900050");
+        final Location to = new Location(LocationType.STATION, "7000090");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
     }
