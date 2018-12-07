@@ -91,7 +91,7 @@ public class VrrProvider extends AbstractEfaProvider {
             // H-Bahn TU Dortmund
             if ("H-Bahn".equals(trainName) || (longName != null && longName.startsWith("H-Bahn")))
                 return new Line(id, network, Product.CABLECAR, name);
-        } else if ("11".equals(mot)) {
+        } else if ("19".equals(mot)) {
             if ("Bürgerbus".equals(trainName) || "BürgerBus".equals(trainName))
                 return new Line(id, network, Product.BUS, symbol);
         }
