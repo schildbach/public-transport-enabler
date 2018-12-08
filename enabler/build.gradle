@@ -1,5 +1,9 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
+apply plugin: 'maven'
+
+group = 'de.schildbach.pte'
+archivesBaseName = 'public-transport-enabler'
 
 dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.12.0'
