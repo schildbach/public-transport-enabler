@@ -27,6 +27,7 @@ import javax.annotation.Nullable;
 import com.google.common.base.Charsets;
 
 import de.schildbach.pte.dto.Line;
+import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.dto.Style.Shape;
 
@@ -55,6 +56,11 @@ public class KvvProvider extends AbstractEfaProvider {
     protected Line parseLine(final @Nullable String id, final @Nullable String network, final @Nullable String mot,
             @Nullable String symbol, @Nullable String name, @Nullable String longName, final @Nullable String trainType,
             final @Nullable String trainNum, final @Nullable String trainName) {
+        if ("19".equals(mot)) {
+            if ("Bürgerbus".equals(trainName) || "BürgerBus".equals(trainName))
+                return new Line(id, network, Product.BUS, symbol);
+        }
+
         if (symbol != null) {
             final Matcher m = P_LINE.matcher(symbol);
             if (m.matches())
