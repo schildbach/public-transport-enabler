@@ -434,16 +434,20 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
         if (location.hasId())
             return location;
         if (location.hasName()) {
-            final List<Location> locations = jsonLocMatch(JOINER.join(location.place, location.name), null, 1)
-                    .getLocations();
-            if (!locations.isEmpty())
-                return locations.get(0);
+            final SuggestLocationsResult result = jsonLocMatch(JOINER.join(location.place, location.name), null, 1);
+            if (result.status == SuggestLocationsResult.Status.OK) {
+                final List<Location> locations = result.getLocations();
+                if (!locations.isEmpty())
+                    return locations.get(0);
+            }
         }
         if (location.hasCoord()) {
-            final List<Location> locations = jsonLocGeoPos(EnumSet.allOf(LocationType.class), location.coord, 0,
-                    1).locations;
-            if (!locations.isEmpty())
-                return locations.get(0);
+            final NearbyLocationsResult result = jsonLocGeoPos(EnumSet.allOf(LocationType.class), location.coord, 0, 1);
+            if (result.status == NearbyLocationsResult.Status.OK) {
+                final List<Location> locations = result.locations;
+                if (!locations.isEmpty())
+                    return locations.get(0);
+            }
         }
         return null;
     }
