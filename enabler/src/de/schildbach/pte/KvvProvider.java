@@ -52,7 +52,10 @@ public class KvvProvider extends AbstractEfaProvider {
     protected Line parseLine(final @Nullable String id, final @Nullable String network, final @Nullable String mot,
             @Nullable String symbol, @Nullable String name, @Nullable String longName, final @Nullable String trainType,
             final @Nullable String trainNum, final @Nullable String trainName) {
-        if ("19".equals(mot)) {
+        if ("0".equals(mot)) {
+            if ("IRE1".equals(trainNum) && trainName == null)
+                return new Line(id, network, Product.REGIONAL_TRAIN, trainNum);
+        } else if ("19".equals(mot)) {
             if ("Bürgerbus".equals(trainName) || "BürgerBus".equals(trainName))
                 return new Line(id, network, Product.BUS, symbol);
         }
