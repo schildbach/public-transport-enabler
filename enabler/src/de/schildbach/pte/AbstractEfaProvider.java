@@ -1274,6 +1274,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                 return new Line(id, network, Product.REGIONAL_TRAIN, "NX" + trainNum);
             if (("SE".equals(trainType) || "ABELLIO Rail Mitteldeutschland GmbH".equals(trainName)) && trainNum != null)
                 return new Line(id, network, Product.REGIONAL_TRAIN, "SE" + trainNum);
+            if (("DNA".equals(trainType) && trainNum != null)) // Dieselnetz Augsburg
+                return new Line(id, network, Product.REGIONAL_TRAIN, "DNA" + trainNum);
+            if ("Dieselnetz".equals(trainType) && "Augsburg".equals(trainNum))
+                return new Line(id, network, Product.REGIONAL_TRAIN, "DNA");
 
             if (("BSB".equals(trainType) || "Breisgau-S-Bahn Gmbh".equals(trainName)) && trainNum != null)
                 return new Line(id, network, Product.REGIONAL_TRAIN, "BSB" + trainNum);
