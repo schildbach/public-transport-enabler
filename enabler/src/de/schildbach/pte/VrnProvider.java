@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,6 +52,8 @@ public class VrnProvider extends AbstractEfaProvider {
         if ("0".equals(mot)) {
             if ("InterRegio".equals(longName) && symbol == null)
                 return new Line(id, network, Product.REGIONAL_TRAIN, "IR");
+            if ("IRE1".equals(trainNum) && trainName == null)
+                return new Line(id, network, Product.REGIONAL_TRAIN, trainNum);
         }
 
         if (name != null && name.startsWith("RNV Moonliner "))
