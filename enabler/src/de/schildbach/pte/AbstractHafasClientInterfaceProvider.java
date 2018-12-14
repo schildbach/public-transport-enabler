@@ -96,6 +96,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
     private byte[] requestMicMacSalt;
 
     private static final String SERVER_PRODUCT = "hci";
+    @SuppressWarnings("deprecation")
     private static final HashFunction MD5 = Hashing.md5();
     private static final BaseEncoding HEX = BaseEncoding.base16().lowerCase();
 
