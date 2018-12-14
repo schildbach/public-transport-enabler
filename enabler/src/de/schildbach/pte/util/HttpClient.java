@@ -95,8 +95,8 @@ public final class HttpClient {
         builder.followRedirects(false);
         builder.followSslRedirects(true);
         builder.connectTimeout(15, TimeUnit.SECONDS);
-        builder.writeTimeout(10, TimeUnit.SECONDS);
-        builder.readTimeout(15, TimeUnit.SECONDS);
+        builder.writeTimeout(30, TimeUnit.SECONDS);
+        builder.readTimeout(30, TimeUnit.SECONDS);
         builder.addNetworkInterceptor(loggingInterceptor);
         OKHTTP_CLIENT = builder.build();
     }
