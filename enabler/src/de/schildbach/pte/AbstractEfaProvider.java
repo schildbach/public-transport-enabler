@@ -941,8 +941,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                 return new Line(id, network, Product.HIGH_SPEED_TRAIN, "TGD" + trainNum);
             if ("INZ".equals(trainType) && trainNum != null)
                 return new Line(id, network, Product.HIGH_SPEED_TRAIN, "INZ" + trainNum);
-            if (("RJ".equals(trainType) || "railjet".equals(trainName)) && trainNum != null) // railjet
-                return new Line(id, network, Product.HIGH_SPEED_TRAIN, "RJ" + trainNum);
+            if (("RJ".equals(trainType) || "railjet".equals(trainName)))
+                return new Line(id, network, Product.HIGH_SPEED_TRAIN, "RJ" + Strings.nullToEmpty(trainNum));
+            if (("RJX".equals(trainType) || "railjet xpress".equals(trainName)))
+                return new Line(id, network, Product.HIGH_SPEED_TRAIN, "RJX" + Strings.nullToEmpty(trainNum));
             if (("WB".equals(trainType) || "WESTbahn".equals(trainName)) && trainNum != null)
                 return new Line(id, network, Product.HIGH_SPEED_TRAIN, "WB" + trainNum);
             if (("HKX".equals(trainType) || "Hamburg-Köln-Express".equals(trainName)) && trainNum != null)
