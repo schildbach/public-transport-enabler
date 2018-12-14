@@ -71,6 +71,12 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest {
     }
 
     @Test
+    public void queryDeparturesInvalidStation() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("999999", false);
+        assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
+    }
+
+    @Test
     public void queryManyDeparturesWithEquivs() throws Exception {
         final QueryDeparturesResult result = queryDepartures("20018235", true);
         print(result);

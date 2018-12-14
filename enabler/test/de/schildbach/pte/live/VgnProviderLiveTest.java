@@ -18,6 +18,7 @@
 package de.schildbach.pte.live;
 
 import static org.hamcrest.CoreMatchers.hasItem;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import java.util.Date;
@@ -57,6 +58,12 @@ public class VgnProviderLiveTest extends AbstractProviderLiveTest {
     public void queryDepartures() throws Exception {
         final QueryDeparturesResult result = queryDepartures("3000510", false);
         print(result);
+    }
+
+    @Test
+    public void queryDeparturesInvalidStation() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("999999", false);
+        assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
     }
 
     @Test
