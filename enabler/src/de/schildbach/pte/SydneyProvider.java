@@ -150,6 +150,8 @@ public class SydneyProvider extends AbstractEfaProvider {
                 return new Line(id, network, Product.FERRY, "F6");
             if ("F7".equals(symbol) || "F7 Eastern Suburbs".equals(symbol))
                 return new Line(id, network, Product.FERRY, "F7");
+            if ("F8".equals(symbol) || "F8 Cockatoo Island".equals(symbol))
+                return new Line(id, network, Product.FERRY, "F8");
             if (("Private ferry servic".equals(trainName) || "Private ferry and fa".equals(trainName))
                     && symbol != null)
                 return new Line(id, network, Product.FERRY, symbol);
@@ -169,6 +171,18 @@ public class SydneyProvider extends AbstractEfaProvider {
                 return new Line(id, network, Product.FERRY, "CCGD");
             if ("CCWM".equals(symbol) || "Manly to Watsons Bay".equals(name))
                 return new Line(id, network, Product.FERRY, "CCWM");
+            if ("MDH".equals(symbol) || "MDH Manly to Darling Harbour Loop Ferry".equals(name))
+                return new Line(id, network, Product.FERRY, "MDH");
+            if ("CCGZ".equals(symbol) || "CCGZ Garden Island & Taronga Zoo Ferry".equals(name))
+                return new Line(id, network, Product.FERRY, "CCGZ");
+            if ("CCDH".equals(symbol) || "CCDH Circular Quay Luna Park Darling Harbour Ferry".equals(name))
+                return new Line(id, network, Product.FERRY, "CCDH");
+            if ("CCDM".equals(symbol) || "CCDM Manly Ferry".equals(name))
+                return new Line(id, network, Product.FERRY, "CCDM");
+            if ("CCSH".equals(symbol) || "CCSH Shark Island Ferry".equals(name))
+                return new Line(id, network, Product.FERRY, "CCSH");
+            if ("CCTZ".equals(symbol) || "CCTZ Taronga Zoo Ferry".equals(name))
+                return new Line(id, network, Product.FERRY, "CCTZ");
 
             throw new IllegalStateException("cannot normalize mot='" + mot + "' symbol='" + symbol + "' name='" + name
                     + "' long='" + longName + "' trainType='" + trainType + "' trainNum='" + trainNum + "' trainName='"
