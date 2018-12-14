@@ -21,7 +21,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Currency;
@@ -376,7 +376,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
                 try {
                     final XmlPullParser pp = parserFactory.newPullParser();
-                    pp.setInput(body.byteStream(), null); // Read encoding from XML declaration
+                    pp.setInput(body.charStream());
                     final ResultHeader header = enterEfa(pp);
                     XmlPullUtil.optSkip(pp, "ers");
 
@@ -475,7 +475,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
                 try {
                     final XmlPullParser pp = parserFactory.newPullParser();
-                    pp.setInput(body.byteStream(), null); // Read encoding from XML declaration
+                    pp.setInput(body.charStream());
                     final ResultHeader header = enterItdRequest(pp);
 
                     XmlPullUtil.enter(pp, "itdCoordInfoRequest");
@@ -543,7 +543,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
                 try {
                     final XmlPullParser pp = parserFactory.newPullParser();
-                    pp.setInput(body.byteStream(), null); // Read encoding from XML declaration
+                    pp.setInput(body.charStream());
                     final ResultHeader header = enterEfa(pp);
 
                     XmlPullUtil.enter(pp, "ci");
@@ -825,7 +825,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
                 try {
                     final XmlPullParser pp = parserFactory.newPullParser();
-                    pp.setInput(body.byteStream(), null); // Read encoding from XML declaration
+                    pp.setInput(body.charStream());
                     final ResultHeader header = enterItdRequest(pp);
 
                     XmlPullUtil.enter(pp, "itdDepartureMonitorRequest");
@@ -1434,7 +1434,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
                 try {
                     final XmlPullParser pp = parserFactory.newPullParser();
-                    pp.setInput(body.byteStream(), null); // Read encoding from XML declaration
+                    pp.setInput(body.charStream());
                     final ResultHeader header = enterItdRequest(pp);
 
                     final QueryDeparturesResult r = new QueryDeparturesResult(header);
@@ -1582,7 +1582,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
                 try {
                     final XmlPullParser pp = parserFactory.newPullParser();
-                    pp.setInput(body.byteStream(), null); // Read encoding from XML declaration
+                    pp.setInput(body.charStream());
                     final ResultHeader header = enterEfa(pp);
                     final QueryDeparturesResult r = new QueryDeparturesResult(header);
 
@@ -2038,7 +2038,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             @Override
             public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
                 try {
-                    result.set(queryTrips(url.build(), body.byteStream()));
+                    result.set(queryTrips(url.build(), body.charStream()));
                 } catch (final XmlPullParserException x) {
                     throw new ParserException("cannot parse xml: " + bodyPeek, x);
                 } catch (final RuntimeException x) {
@@ -2062,7 +2062,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             @Override
             public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
                 try {
-                    result.set(queryTripsMobile(url.build(), from, via, to, body.byteStream()));
+                    result.set(queryTripsMobile(url.build(), from, via, to, body.charStream()));
                 } catch (final XmlPullParserException x) {
                     throw new ParserException("cannot parse xml: " + bodyPeek, x);
                 } catch (final RuntimeException x) {
@@ -2089,7 +2089,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             @Override
             public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
                 try {
-                    result.set(queryTrips(url.build(), body.byteStream()));
+                    result.set(queryTrips(url.build(), body.charStream()));
                 } catch (final XmlPullParserException x) {
                     throw new ParserException("cannot parse xml: " + bodyPeek, x);
                 } catch (final RuntimeException x) {
@@ -2116,7 +2116,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             @Override
             public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
                 try {
-                    result.set(queryTripsMobile(url.build(), null, null, null, body.byteStream()));
+                    result.set(queryTripsMobile(url.build(), null, null, null, body.charStream()));
                 } catch (final XmlPullParserException x) {
                     throw new ParserException("cannot parse xml: " + bodyPeek, x);
                 } catch (final RuntimeException x) {
@@ -2130,10 +2130,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         return result.get();
     }
 
-    private QueryTripsResult queryTrips(final HttpUrl url, final InputStream is)
+    private QueryTripsResult queryTrips(final HttpUrl url, final Reader reader)
             throws XmlPullParserException, IOException {
         final XmlPullParser pp = parserFactory.newPullParser();
-        pp.setInput(is, null); // Read encoding from XML declaration
+        pp.setInput(reader);
         final ResultHeader header = enterItdRequest(pp);
         final Object context = header.context;
 
@@ -2619,9 +2619,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     }
 
     private QueryTripsResult queryTripsMobile(final HttpUrl url, final Location from, final @Nullable Location via,
-            final Location to, final InputStream is) throws XmlPullParserException, IOException {
+            final Location to, final Reader reader) throws XmlPullParserException, IOException {
         final XmlPullParser pp = parserFactory.newPullParser();
-        pp.setInput(is, null); // Read encoding from XML declaration
+        pp.setInput(reader);
         final ResultHeader header = enterEfa(pp);
 
         final Calendar plannedTimeCal = new GregorianCalendar(timeZone);
