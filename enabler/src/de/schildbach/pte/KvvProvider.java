@@ -55,6 +55,8 @@ public class KvvProvider extends AbstractEfaProvider {
         if ("0".equals(mot)) {
             if ("IRE1".equals(trainNum) && trainName == null)
                 return new Line(id, network, Product.REGIONAL_TRAIN, trainNum);
+            if (trainName != null && trainName.startsWith("TRILEX"))
+                return new Line(id, network, Product.REGIONAL_TRAIN, trainName);
         } else if ("19".equals(mot)) {
             if ("Bürgerbus".equals(trainName) || "BürgerBus".equals(trainName))
                 return new Line(id, network, Product.BUS, symbol);
