@@ -25,7 +25,9 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.Charsets;
 
+import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.dto.TripOptions;
 
@@ -52,6 +54,17 @@ public class BsvagProvider extends AbstractEfaProvider {
             final @Nullable TripOptions options) {
         super.appendXsltTripRequestParameters(url, from, via, to, time, dep, options);
         url.addEncodedQueryParameter("inclMOT_11", "on");
+    }
+
+    @Override
+    protected Line parseLine(String id, String network, String mot, String symbol, String name, String longName,
+            String trainType, String trainNum, String trainName) {
+        if ("19".equals(mot)) {
+            if ("Bürgerbus".equals(trainName) || "BürgerBus".equals(trainName))
+                return new Line(id, network, Product.BUS, symbol);
+        }
+
+        return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
     }
 
     private static final Map<String, Style> STYLES = new HashMap<>();
