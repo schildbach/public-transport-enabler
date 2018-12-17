@@ -303,6 +303,10 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                     final JSONObject jny = jnyList.getJSONObject(iJny);
                     final JSONObject stbStop = jny.getJSONObject("stbStop");
 
+                    final boolean cancelled = stbStop.optBoolean("dCncl", false);
+                    if (cancelled)
+                        continue;
+
                     final String stbStopPlatformS = stbStop.optString("dPlatfS", null);
                     c.clear();
                     ParserUtils.parseIsoDate(c, jny.getString("date"));
