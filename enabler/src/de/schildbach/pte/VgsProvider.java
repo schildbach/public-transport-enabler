@@ -26,18 +26,17 @@ import okhttp3.HttpUrl;
 /**
  * @author Andreas Schildbach
  */
-public class VgsProvider extends AbstractHafasLegacyProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("https://www.saarfahrplan.de/cgi-bin/");
-    // http://www.vgs-online.de/cgi-bin/
+public class VgsProvider extends AbstractHafasClientInterfaceProvider {
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://saarfahrplan.de/bin/");
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.SUBWAY, Product.TRAM,
             Product.BUS, Product.CABLECAR, Product.ON_DEMAND, Product.BUS };
 
-    public VgsProvider() {
-        super(NetworkId.VGS, API_BASE, "dn", PRODUCTS_MAP);
-        setStationBoardHasStationTable(false);
-        httpClient.setTrustAllCertificates(true);
-        httpClient.setSslAcceptAllHostnames(true);
+    public VgsProvider(final String jsonApiAuthorization) {
+        super(NetworkId.VGS, API_BASE, PRODUCTS_MAP);
+        setApiVersion("1.21");
+        setApiClient("{\"id\":\"ZPS-SAAR\",\"type\":\"AND\"}");
+        setApiAuthorization(jsonApiAuthorization);
     }
 
     @Override

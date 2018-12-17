@@ -36,7 +36,7 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
  */
 public class VgsProviderLiveTest extends AbstractProviderLiveTest {
     public VgsProviderLiveTest() {
-        super(new VgsProvider());
+        super(new VgsProvider(secretProperty("vgs.api_authorization")));
     }
 
     @Test
