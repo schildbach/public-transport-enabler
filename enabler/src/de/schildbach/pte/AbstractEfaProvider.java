@@ -407,7 +407,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
                             final String id = XmlPullUtil.valueTag(pp, "id");
                             XmlPullUtil.optValueTag(pp, "gid", null);
-                            XmlPullUtil.valueTag(pp, "stateless");
+                            final String stateless = XmlPullUtil.valueTag(pp, "stateless");
                             XmlPullUtil.valueTag(pp, "omc");
                             final String place = normalizeLocationName(XmlPullUtil.optValueTag(pp, "pc", null));
                             XmlPullUtil.valueTag(pp, "pid");
@@ -420,7 +420,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
                             XmlPullUtil.skipExit(pp, "p");
 
-                            final Location location = new Location(type, type == LocationType.STATION ? id : null,
+                            final Location location = new Location(type, type == LocationType.STATION ? id : stateless,
                                     coord, place, name);
                             final SuggestedLocation locationAndQuality = new SuggestedLocation(location, quality);
                             locations.add(locationAndQuality);
@@ -572,14 +572,15 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                             XmlPullUtil.valueTag(pp, "layer");
                             XmlPullUtil.valueTag(pp, "gisID");
                             XmlPullUtil.valueTag(pp, "ds");
-                            XmlPullUtil.valueTag(pp, "stateless");
+                            final String stateless = XmlPullUtil.valueTag(pp, "stateless");
+                            final String locationId = locationType == LocationType.STATION ? id : stateless;
                             final Point coord = parseCoord(XmlPullUtil.valueTag(pp, "c"));
 
                             final Location location;
                             if (name != null)
-                                location = new Location(locationType, id, coord, place, name);
+                                location = new Location(locationType, locationId, coord, place, name);
                             else
-                                location = new Location(locationType, id, coord, null, place);
+                                location = new Location(locationType, locationId, coord, null, place);
                             stations.add(location);
 
                             XmlPullUtil.skipExit(pp, "pi");

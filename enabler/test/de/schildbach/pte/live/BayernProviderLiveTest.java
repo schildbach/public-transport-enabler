@@ -97,6 +97,14 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest {
     }
 
     @Test
+    public void suggestLocationsPOI() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Ruhpolding, Seehaus");
+        print(result);
+        assertThat(result.getLocations(), hasItem(new Location(LocationType.POI,
+                "poiID:40499046:9189140:-1:Seehaus:Ruhpolding:Seehaus:ANY:POI:1405062:5941100:MRCV:BAY")));
+    }
+
+    @Test
     public void suggestLocationsAddress() throws Exception {
         final SuggestLocationsResult result = suggestLocations("München, Friedenstraße 2");
         print(result);
@@ -195,16 +203,14 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void tripBetweenPOIs() throws Exception {
-        final Location from = new Location(LocationType.POI, null, Point.from1E6(47710568, 12621970), null,
-                "Ruhpolding, Seehaus");
-        final Location to = new Location(LocationType.POI, null, Point.from1E6(47738372, 12630996), null,
-                "Ruhpolding, Unternberg-Bahn");
+        final Location from = new Location(LocationType.POI,
+                "poiID:40499046:9189140:-1:Seehaus:Ruhpolding:Seehaus:ANY:POI:1405062:5941100:MRCV:BAY", "Ruhpolding",
+                "Seehaus");
+        final Location to = new Location(LocationType.POI,
+                "poiID:40215904:9189140:-1:Alpengasthof Laubau:Ruhpolding:Alpengasthof Laubau:ANY:POI:1409082:5938642:MRCV:BAY",
+                "Ruhpolding", "Alpengasthof Laubau");
         final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
-
-        if (!result.context.canQueryLater())
-            return;
-
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
     }
