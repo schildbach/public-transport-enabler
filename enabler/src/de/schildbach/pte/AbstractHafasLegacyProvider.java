@@ -2954,7 +2954,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
     private static final Pattern P_LINE_NUMBER = Pattern.compile("\\d{2,5}");
     private static final Pattern P_LINE_SUBWAY = Pattern.compile("U\\d{1,2}");
     private static final Pattern P_LINE_RUSSIA = Pattern.compile(
-            "\\d{3}(?:AJ|BJ|CJ|DJ|EJ|FJ|GJ|IJ|KJ|LJ|NJ|MJ|OJ|RJ|SJ|TJ|UJ|VJ|ZJ|CH|KH|ZH|EI|JA|JI|MZ|SH|SZ|PC|Y)");
+            "\\d{3}(?:AJ|BJ|CJ|DJ|EJ|FJ|GJ|IJ|KJ|LJ|NJ|MJ|OJ|RJ|SJ|TJ|UJ|VJ|ZJ|CH|KH|ZH|EI|JA|JI|MZ|SH|SZ|PC|Y|YJ)");
 
     protected Line parseLineAndType(final String lineAndType) {
         final Matcher mLineAndType = P_NORMALIZE_LINE_AND_TYPE.matcher(lineAndType);
