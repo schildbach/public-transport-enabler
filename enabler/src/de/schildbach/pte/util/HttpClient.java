@@ -54,11 +54,13 @@ import okhttp3.CertificatePinner;
 import okhttp3.Cookie;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
+import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.Response.Builder;
 import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 
@@ -91,6 +93,35 @@ public final class HttpClient {
                 });
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
 
+        final Interceptor xmlEncodingInterceptor = new Interceptor() {
+            private final Pattern P_XML_PRAGMA = Pattern.compile("<\\?xml.*?encoding=\"(.*?)\".*?\\?>");
+            private final String HEADER_CONTENT_TYPE = "Content-Type";
+
+            @Override
+            public Response intercept(final Interceptor.Chain chain) throws IOException {
+                Response response = chain.proceed(chain.request());
+                final MediaType originalContentType = response.body().contentType();
+                if ("text".equalsIgnoreCase(originalContentType.type())
+                        && "xml".equalsIgnoreCase(originalContentType.subtype())
+                        && originalContentType.charset() == null) {
+                    final String peek = response.peekBody(64).string();
+                    final Matcher matcher = P_XML_PRAGMA.matcher(peek);
+                    if (matcher.find()) {
+                        final String encoding = matcher.group(1);
+                        final MediaType contentType = MediaType.get(originalContentType.type() + '/'
+                                + originalContentType.subtype() + ";charset=" + encoding);
+                        final ResponseBody body = response.body();
+                        final Builder responseBuilder = response.newBuilder();
+                        responseBuilder.header(HEADER_CONTENT_TYPE, contentType.toString());
+                        responseBuilder.body(ResponseBody.create(contentType, body.contentLength(), body.source()));
+                        response = responseBuilder.build();
+                        log.info("Derived missing {} encoding from XML pragma", encoding);
+                    }
+                }
+                return response;
+            }
+        };
+
         final OkHttpClient.Builder builder = new OkHttpClient.Builder();
         builder.followRedirects(false);
         builder.followSslRedirects(true);
@@ -98,6 +129,7 @@ public final class HttpClient {
         builder.writeTimeout(30, TimeUnit.SECONDS);
         builder.readTimeout(30, TimeUnit.SECONDS);
         builder.addNetworkInterceptor(loggingInterceptor);
+        builder.addInterceptor(xmlEncodingInterceptor);
         OKHTTP_CLIENT = builder.build();
     }
 
