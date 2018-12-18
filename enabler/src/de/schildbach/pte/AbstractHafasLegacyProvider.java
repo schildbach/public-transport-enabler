@@ -2399,6 +2399,8 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
         // Intercity
         if ("EC".equals(ucType)) // EuroCity
             return Product.HIGH_SPEED_TRAIN;
+        if ("ECE".equals(ucType)) // EuroCity-Express
+            return Product.HIGH_SPEED_TRAIN;
         if ("EN".equals(ucType)) // EuroNight
             return Product.HIGH_SPEED_TRAIN;
         if ("D".equals(ucType)) // EuroNight, Sitzwagenabteil
