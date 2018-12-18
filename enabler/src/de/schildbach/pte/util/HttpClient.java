@@ -240,7 +240,8 @@ public final class HttpClient {
             } else if (responseCode == HttpURLConnection.HTTP_MOVED_PERM
                     || responseCode == HttpURLConnection.HTTP_MOVED_TEMP) {
                 throw new UnexpectedRedirectException(url, HttpUrl.parse(response.header("Location")));
-            } else if (responseCode == HttpURLConnection.HTTP_INTERNAL_ERROR) {
+            } else if (responseCode == HttpURLConnection.HTTP_INTERNAL_ERROR
+                    || responseCode == HttpURLConnection.HTTP_BAD_GATEWAY) {
                 throw new InternalErrorException(url, bodyPeek);
             } else {
                 final String message = "got response: " + responseCode + " " + response.message();
