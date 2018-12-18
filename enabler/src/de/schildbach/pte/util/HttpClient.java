@@ -115,7 +115,7 @@ public final class HttpClient {
                         responseBuilder.header(HEADER_CONTENT_TYPE, contentType.toString());
                         responseBuilder.body(ResponseBody.create(contentType, body.contentLength(), body.source()));
                         response = responseBuilder.build();
-                        log.info("Derived missing {} encoding from XML pragma", encoding);
+                        log.debug("Deriving missing {} encoding from XML pragma", encoding);
                     }
                 }
                 return response;
