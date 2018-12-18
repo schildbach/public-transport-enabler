@@ -53,7 +53,7 @@ public class VrrProvider extends AbstractEfaProvider {
         setUseRouteIndexAsTripId(false);
         setStyles(STYLES);
         setRequestUrlEncoding(Charsets.UTF_8);
-        setSessionCookieName("vrr-efa-lb");
+        setSessionCookieName("vrr-ef-lb");
     }
 
     @Override
