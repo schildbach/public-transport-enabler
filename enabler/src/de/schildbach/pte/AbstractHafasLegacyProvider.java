@@ -2513,6 +2513,8 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
             return Product.HIGH_SPEED_TRAIN;
         if ("FR".equals(ucType)) // Frecciarossa, Italy
             return Product.HIGH_SPEED_TRAIN;
+        if ("FA".equals(ucType)) // Frecciargento, Italy
+            return Product.HIGH_SPEED_TRAIN;
 
         // Regional
         if ("ZUG".equals(ucType)) // Generic Train
