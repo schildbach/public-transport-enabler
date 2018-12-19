@@ -568,7 +568,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                             final String id = XmlPullUtil.valueTag(pp, "id");
                             XmlPullUtil.valueTag(pp, "omc");
                             XmlPullUtil.optValueTag(pp, "pid", null);
-                            final String place = normalizeLocationName(XmlPullUtil.valueTag(pp, "locality"));
+                            final String place = normalizeLocationName(XmlPullUtil.optValueTag(pp, "locality", null));
                             XmlPullUtil.valueTag(pp, "layer");
                             XmlPullUtil.valueTag(pp, "gisID");
                             XmlPullUtil.valueTag(pp, "ds");
