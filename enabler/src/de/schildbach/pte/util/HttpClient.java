@@ -101,7 +101,7 @@ public final class HttpClient {
             public Response intercept(final Interceptor.Chain chain) throws IOException {
                 Response response = chain.proceed(chain.request());
                 final MediaType originalContentType = response.body().contentType();
-                if ("text".equalsIgnoreCase(originalContentType.type())
+                if (originalContentType != null && "text".equalsIgnoreCase(originalContentType.type())
                         && "xml".equalsIgnoreCase(originalContentType.subtype())
                         && originalContentType.charset() == null) {
                     final String peek = response.peekBody(64).string();
