@@ -3073,20 +3073,25 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
         XmlPullUtil.enter(pp, "efa");
 
-        final String now = XmlPullUtil.valueTag(pp, "now");
-        final Calendar serverTime = new GregorianCalendar(timeZone);
-        ParserUtils.parseIsoDate(serverTime, now.substring(0, 10));
-        ParserUtils.parseEuropeanTime(serverTime, now.substring(11));
+        if (XmlPullUtil.test(pp, "error")) {
+            final String message = XmlPullUtil.valueTag(pp, "error");
+            throw new RuntimeException(message);
+        } else {
+            final String now = XmlPullUtil.valueTag(pp, "now");
+            final Calendar serverTime = new GregorianCalendar(timeZone);
+            ParserUtils.parseIsoDate(serverTime, now.substring(0, 10));
+            ParserUtils.parseEuropeanTime(serverTime, now.substring(11));
 
-        final Map<String, String> params = processPas(pp);
-        final String requestId = params.get("requestID");
-        final String sessionId = params.get("sessionID");
-        final String serverId = params.get("serverID");
+            final Map<String, String> params = processPas(pp);
+            final String requestId = params.get("requestID");
+            final String sessionId = params.get("sessionID");
+            final String serverId = params.get("serverID");
 
-        final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, null, serverId,
-                serverTime.getTimeInMillis(), new String[] { sessionId, requestId });
+            final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, null, serverId,
+                    serverTime.getTimeInMillis(), new String[] { sessionId, requestId });
 
-        return header;
+            return header;
+        }
     }
 
     private Map<String, String> processPas(final XmlPullParser pp) throws XmlPullParserException, IOException {
