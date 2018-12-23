@@ -689,7 +689,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
     }
 
     @Override
-    public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location,
+    public NearbyLocationsResult queryNearbyLocations(final Set<LocationType> types, final Location location,
             int maxDistance, final int maxLocations) throws IOException {
         final ResultHeader resultHeader = new ResultHeader(network, SERVER_PRODUCT, SERVER_VERSION, null, 0, null);
 

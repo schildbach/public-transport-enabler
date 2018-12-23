@@ -138,7 +138,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
     }
 
     @Override
-    public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location,
+    public NearbyLocationsResult queryNearbyLocations(final Set<LocationType> types, final Location location,
             final int maxDistance, final int maxLocations) throws IOException {
         if (location.hasCoord())
             return jsonLocGeoPos(types, location.coord, maxDistance, maxLocations);
@@ -171,7 +171,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                 jsonContext.products, jsonContext.walkSpeed, later ? jsonContext.laterContext : jsonContext.earlierContext);
     }
 
-    protected final NearbyLocationsResult jsonLocGeoPos(final EnumSet<LocationType> types, final Point coord,
+    protected final NearbyLocationsResult jsonLocGeoPos(final Set<LocationType> types, final Point coord,
             int maxDistance, int maxLocations) throws IOException {
         if (maxDistance == 0)
             maxDistance = DEFAULT_MAX_DISTANCE;

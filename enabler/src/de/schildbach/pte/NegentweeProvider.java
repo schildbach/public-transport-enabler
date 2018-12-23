@@ -195,7 +195,7 @@ public class NegentweeProvider extends AbstractNetworkProvider {
         }
     }
 
-    private Location queryLocationByName(String locationName, EnumSet<LocationType> types) throws IOException {
+    private Location queryLocationByName(String locationName, Set<LocationType> types) throws IOException {
         for (Location location : queryLocationsByName(locationName, types)) {
             if (location.name != null && location.name.equals(locationName)) {
                 return location;
@@ -205,7 +205,7 @@ public class NegentweeProvider extends AbstractNetworkProvider {
         throw new RuntimeException("Cannot find station with name " + locationName);
     }
 
-    private List<Location> queryLocationsByName(String locationName, EnumSet<LocationType> types) throws IOException {
+    private List<Location> queryLocationsByName(String locationName, Set<LocationType> types) throws IOException {
         List<QueryParameter> queryParameters = new ArrayList<>();
         queryParameters.add(new QueryParameter("q", locationName));
 
@@ -267,7 +267,7 @@ public class NegentweeProvider extends AbstractNetworkProvider {
         }
     }
 
-    private EnumSet<Product> productSetFromTypeString(String type) {
+    private Set<Product> productSetFromTypeString(String type) {
         switch (type.toLowerCase()) {
         case "train":
             return EnumSet.of(Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN);
@@ -328,7 +328,7 @@ public class NegentweeProvider extends AbstractNetworkProvider {
     // Including these type names will cause the locations API to fail, skip them
     private static final ImmutableSet<String> DISALLOWED_TYPE_NAMES = ImmutableSet.of("latlong", "streetrange");
 
-    private String locationTypesToQueryParameterString(EnumSet<LocationType> types) {
+    private String locationTypesToQueryParameterString(Set<LocationType> types) {
         StringBuilder typeValue = new StringBuilder();
         if (!types.contains(LocationType.ANY) && types.size() > 0) {
             for (LocationType type : types) {
@@ -708,7 +708,7 @@ public class NegentweeProvider extends AbstractNetworkProvider {
     }
 
     @Override
-    public NearbyLocationsResult queryNearbyLocations(EnumSet<LocationType> types, Location location, int maxDistance,
+    public NearbyLocationsResult queryNearbyLocations(Set<LocationType> types, Location location, int maxDistance,
             int maxLocations) throws IOException {
         // Coordinates are required
         if (!location.hasCoord()) {

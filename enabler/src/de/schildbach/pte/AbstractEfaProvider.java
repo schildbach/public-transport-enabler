@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Currency;
 import java.util.Date;
-import java.util.EnumSet;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -444,7 +443,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         return result.get();
     }
 
-    private void appendCoordRequestParameters(final HttpUrl.Builder url, final EnumSet<LocationType> types,
+    private void appendCoordRequestParameters(final HttpUrl.Builder url, final Set<LocationType> types,
             final Point coord, final int maxDistance, final int maxLocations) {
         appendCommonRequestParams(url, "XML");
         url.addEncodedQueryParameter("coord", ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%.7f:%.7f:%s",
@@ -465,7 +464,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         }
     }
 
-    protected NearbyLocationsResult xmlCoordRequest(final EnumSet<LocationType> types, final Point coord,
+    protected NearbyLocationsResult xmlCoordRequest(final Set<LocationType> types, final Point coord,
             final int maxDistance, final int maxStations) throws IOException {
         final HttpUrl.Builder url = coordEndpoint.newBuilder();
         appendCoordRequestParameters(url, types, coord, maxDistance, maxStations);
@@ -533,7 +532,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         return result.get();
     }
 
-    protected NearbyLocationsResult mobileCoordRequest(final EnumSet<LocationType> types, final Point coord,
+    protected NearbyLocationsResult mobileCoordRequest(final Set<LocationType> types, final Point coord,
             final int maxDistance, final int maxStations) throws IOException {
         final HttpUrl.Builder url = coordEndpoint.newBuilder();
         appendCoordRequestParameters(url, types, coord, maxDistance, maxStations);
@@ -775,7 +774,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     }
 
     @Override
-    public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location,
+    public NearbyLocationsResult queryNearbyLocations(final Set<LocationType> types, final Location location,
             final int maxDistance, final int maxLocations) throws IOException {
         if (location.hasCoord())
             return xmlCoordRequest(types, location.coord, maxDistance, maxLocations);

@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 
@@ -84,13 +85,13 @@ public abstract class AbstractProviderLiveTest {
         return queryNearbyLocations(EnumSet.of(LocationType.STATION), location, 0, 5);
     }
 
-    protected final NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types,
-            final Location location) throws IOException {
+    protected final NearbyLocationsResult queryNearbyLocations(final Set<LocationType> types, final Location location)
+            throws IOException {
         return queryNearbyLocations(types, location, 0, 5);
     }
 
-    protected final NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types,
-            final Location location, final int maxDistance, final int maxStations) throws IOException {
+    protected final NearbyLocationsResult queryNearbyLocations(final Set<LocationType> types, final Location location,
+            final int maxDistance, final int maxStations) throws IOException {
         return provider.queryNearbyLocations(types, location, maxDistance, maxStations);
     }
 

@@ -21,7 +21,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.EnumSet;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 
@@ -110,7 +110,7 @@ public class BayernProvider extends AbstractEfaProvider {
     }
 
     @Override
-    public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location,
+    public NearbyLocationsResult queryNearbyLocations(final Set<LocationType> types, final Location location,
             final int maxDistance, final int maxLocations) throws IOException {
         if (location.hasCoord())
             return mobileCoordRequest(types, location.coord, maxDistance, maxLocations);

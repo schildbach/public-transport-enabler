@@ -28,7 +28,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Currency;
 import java.util.Date;
-import java.util.EnumSet;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -358,7 +357,7 @@ public class VrsProvider extends AbstractNetworkProvider {
 
     // only stations supported
     @Override
-    public NearbyLocationsResult queryNearbyLocations(EnumSet<LocationType> types /* only STATION supported */,
+    public NearbyLocationsResult queryNearbyLocations(Set<LocationType> types /* only STATION supported */,
             Location location, int maxDistance, int maxLocations) throws IOException {
         // g=p means group by product; not used here
         final HttpUrl.Builder url = API_BASE.newBuilder();

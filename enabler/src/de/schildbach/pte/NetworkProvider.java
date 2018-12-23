@@ -19,7 +19,6 @@ package de.schildbach.pte;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.EnumSet;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -88,7 +87,7 @@ public interface NetworkProvider {
      * @return nearby stations
      * @throws IOException
      */
-    NearbyLocationsResult queryNearbyLocations(EnumSet<LocationType> types, Location location, int maxDistance,
+    NearbyLocationsResult queryNearbyLocations(Set<LocationType> types, Location location, int maxDistance,
             int maxLocations) throws IOException;
 
     /**

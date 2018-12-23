@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.EnumSet;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -2195,7 +2194,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
     }
 
     @Override
-    public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location,
+    public NearbyLocationsResult queryNearbyLocations(final Set<LocationType> types, final Location location,
             final int maxDistance, final int maxLocations) throws IOException {
         if (location.hasCoord())
             return nearbyLocationsByCoordinate(types, location.coord, maxDistance, maxLocations);
@@ -2205,8 +2204,8 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
             throw new IllegalArgumentException("cannot handle: " + location);
     }
 
-    protected final NearbyLocationsResult nearbyLocationsByCoordinate(final EnumSet<LocationType> types,
-            final Point coord, final int maxDistance, final int maxLocations) throws IOException {
+    protected final NearbyLocationsResult nearbyLocationsByCoordinate(final Set<LocationType> types, final Point coord,
+            final int maxDistance, final int maxLocations) throws IOException {
         if (types.contains(LocationType.STATION)) {
             final HttpUrl.Builder url = queryEndpoint.newBuilder().addPathSegment(apiLanguage + "y");
             appendJsonNearbyStationsParameters(url, coord, maxDistance, maxLocations);
