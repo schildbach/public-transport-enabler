@@ -448,8 +448,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         appendCommonRequestParams(url, "XML");
         url.addEncodedQueryParameter("coord", ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%.7f:%.7f:%s",
                 coord.getLonAsDouble(), coord.getLatAsDouble(), COORD_FORMAT), requestUrlEncoding));
-        if (useStringCoordListOutputFormat)
-            url.addEncodedQueryParameter("coordListOutputFormat", "STRING");
+        url.addEncodedQueryParameter("coordListOutputFormat", useStringCoordListOutputFormat ? "string" : "list");
         url.addEncodedQueryParameter("max", Integer.toString(maxLocations != 0 ? maxLocations : 50));
         url.addEncodedQueryParameter("inclFilter", "1");
         int i = 1;
@@ -2028,8 +2027,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     }
 
     private final void appendCommonXsltTripRequest2Params(final HttpUrl.Builder url) {
-        if (useStringCoordListOutputFormat)
-            url.addEncodedQueryParameter("coordListOutputFormat", "STRING");
+        url.addEncodedQueryParameter("coordListOutputFormat", useStringCoordListOutputFormat ? "string" : "list");
     }
 
     @Override
