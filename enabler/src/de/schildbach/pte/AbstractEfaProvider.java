@@ -443,7 +443,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         return result.get();
     }
 
-    private void appendXmlCoordRequestParameters(final HttpUrl.Builder url, final EnumSet<LocationType> types,
+    private void appendCoordRequestParameters(final HttpUrl.Builder url, final EnumSet<LocationType> types,
             final Point coord, final int maxDistance, final int maxLocations) {
         appendCommonRequestParams(url, "XML");
         url.addEncodedQueryParameter("coord", ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%.7f:%.7f:%s",
@@ -467,7 +467,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     protected NearbyLocationsResult xmlCoordRequest(final EnumSet<LocationType> types, final Point coord,
             final int maxDistance, final int maxStations) throws IOException {
         final HttpUrl.Builder url = coordEndpoint.newBuilder();
-        appendXmlCoordRequestParameters(url, types, coord, maxDistance, maxStations);
+        appendCoordRequestParameters(url, types, coord, maxDistance, maxStations);
         final AtomicReference<NearbyLocationsResult> result = new AtomicReference<>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
@@ -535,7 +535,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     protected NearbyLocationsResult mobileCoordRequest(final EnumSet<LocationType> types, final Point coord,
             final int maxDistance, final int maxStations) throws IOException {
         final HttpUrl.Builder url = coordEndpoint.newBuilder();
-        appendXmlCoordRequestParameters(url, types, coord, maxDistance, maxStations);
+        appendCoordRequestParameters(url, types, coord, maxDistance, maxStations);
         final AtomicReference<NearbyLocationsResult> result = new AtomicReference<>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
@@ -1396,7 +1396,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         return xsltDepartureMonitorRequest(stationId, time, maxDepartures, equivs);
     }
 
-    protected void appendXsltDepartureMonitorRequestParameters(final HttpUrl.Builder url, final String stationId,
+    protected void appendDepartureMonitorRequestParameters(final HttpUrl.Builder url, final String stationId,
             final @Nullable Date time, final int maxDepartures, final boolean equivs) {
         appendCommonRequestParams(url, "XML");
         url.addEncodedQueryParameter("type_dm", "stop");
@@ -1430,7 +1430,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     private QueryDeparturesResult xsltDepartureMonitorRequest(final String stationId, final @Nullable Date time,
             final int maxDepartures, final boolean equivs) throws IOException {
         final HttpUrl.Builder url = departureMonitorEndpoint.newBuilder();
-        appendXsltDepartureMonitorRequestParameters(url, stationId, time, maxDepartures, equivs);
+        appendDepartureMonitorRequestParameters(url, stationId, time, maxDepartures, equivs);
         final AtomicReference<QueryDeparturesResult> result = new AtomicReference<>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
@@ -1578,7 +1578,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     protected QueryDeparturesResult queryDeparturesMobile(final String stationId, final @Nullable Date time,
             final int maxDepartures, final boolean equivs) throws IOException {
         final HttpUrl.Builder url = departureMonitorEndpoint.newBuilder();
-        appendXsltDepartureMonitorRequestParameters(url, stationId, time, maxDepartures, equivs);
+        appendDepartureMonitorRequestParameters(url, stationId, time, maxDepartures, equivs);
         final AtomicReference<QueryDeparturesResult> result = new AtomicReference<>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
@@ -1920,7 +1920,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         return P_STATION_NAME_WHITESPACE.matcher(name).replaceAll(" ");
     }
 
-    protected void appendXsltTripRequestParameters(final HttpUrl.Builder url, final Location from,
+    protected void appendTripRequestParameters(final HttpUrl.Builder url, final Location from,
             final @Nullable Location via, final Location to, final Date time, final boolean dep,
             @Nullable TripOptions options) {
         appendCommonRequestParams(url, "XML");
@@ -1928,7 +1928,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         url.addEncodedQueryParameter("sessionID", "0");
         url.addEncodedQueryParameter("requestID", "0");
 
-        appendCommonXsltTripRequest2Params(url);
+        appendCommonTripRequestParams(url);
 
         appendLocationParams(url, from, "origin");
         appendLocationParams(url, to, "destination");
@@ -2022,11 +2022,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         url.addEncodedQueryParameter("sessionID", sessionId);
         url.addEncodedQueryParameter("requestID", requestId);
         url.addEncodedQueryParameter("calcNumberOfTrips", Integer.toString(numTripsRequested));
-        appendCommonXsltTripRequest2Params(url);
+        appendCommonTripRequestParams(url);
         return url.build();
     }
 
-    private final void appendCommonXsltTripRequest2Params(final HttpUrl.Builder url) {
+    private final void appendCommonTripRequestParams(final HttpUrl.Builder url) {
         url.addEncodedQueryParameter("coordListOutputFormat", useStringCoordListOutputFormat ? "string" : "list");
     }
 
@@ -2034,7 +2034,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to,
             final Date date, final boolean dep, final @Nullable TripOptions options) throws IOException {
         final HttpUrl.Builder url = tripEndpoint.newBuilder();
-        appendXsltTripRequestParameters(url, from, via, to, date, dep, options);
+        appendTripRequestParameters(url, from, via, to, date, dep, options);
         final AtomicReference<QueryTripsResult> result = new AtomicReference<>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
@@ -2058,7 +2058,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     protected QueryTripsResult queryTripsMobile(final Location from, final @Nullable Location via, final Location to,
             final Date date, final boolean dep, final @Nullable TripOptions options) throws IOException {
         final HttpUrl.Builder url = tripEndpoint.newBuilder();
-        appendXsltTripRequestParameters(url, from, via, to, date, dep, options);
+        appendTripRequestParameters(url, from, via, to, date, dep, options);
         final AtomicReference<QueryTripsResult> result = new AtomicReference<>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
