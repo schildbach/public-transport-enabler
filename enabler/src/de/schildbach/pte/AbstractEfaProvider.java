@@ -94,6 +94,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     protected static final String DEFAULT_COORD_ENDPOINT = "XML_COORD_REQUEST";
 
     protected static final String SERVER_PRODUCT = "efa";
+    protected static final String COORD_FORMAT = "WGS84[DD.ddddddd]";
 
     private final HttpUrl departureMonitorEndpoint;
     private final HttpUrl tripEndpoint;
@@ -236,7 +237,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         url.addEncodedQueryParameter("outputFormat", outputFormat);
         url.addEncodedQueryParameter("language", language);
         url.addEncodedQueryParameter("stateless", "1");
-        url.addEncodedQueryParameter("coordOutputFormat", "WGS84");
+        url.addEncodedQueryParameter("coordOutputFormat", COORD_FORMAT);
+        url.addEncodedQueryParameter("coordOutputFormatTail", "7");
     }
 
     protected SuggestLocationsResult jsonStopfinderRequest(final Location constraint) throws IOException {
@@ -444,9 +446,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     private void appendXmlCoordRequestParameters(final HttpUrl.Builder url, final EnumSet<LocationType> types,
             final Point coord, final int maxDistance, final int maxLocations) {
         appendCommonRequestParams(url, "XML");
-        url.addEncodedQueryParameter("coord", ParserUtils.urlEncode(
-                String.format(Locale.ENGLISH, "%2.6f:%2.6f:WGS84", coord.getLonAsDouble(), coord.getLatAsDouble()),
-                requestUrlEncoding));
+        url.addEncodedQueryParameter("coord", ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%.7f:%.7f:%s",
+                coord.getLonAsDouble(), coord.getLatAsDouble(), COORD_FORMAT), requestUrlEncoding));
         if (useStringCoordListOutputFormat)
             url.addEncodedQueryParameter("coordListOutputFormat", "STRING");
         url.addEncodedQueryParameter("max", Integer.toString(maxLocations != 0 ? maxLocations : 50));
@@ -2751,10 +2752,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                                 final Point coords;
                                 if (!"::".equals(coordPart)) {
                                     final String[] coordParts = coordPart.split(":");
-                                    if ("WGS84".equals(coordParts[2])) {
-                                        final int lat = (int) Math.round(Double.parseDouble(coordParts[1]));
-                                        final int lon = (int) Math.round(Double.parseDouble(coordParts[0]));
-                                        coords = Point.from1E6(lat, lon);
+                                    final String mapName = coordParts[2];
+                                    if (COORD_FORMAT.equals(mapName)) {
+                                        final double lat = Double.parseDouble(coordParts[1]);
+                                        final double lon = Double.parseDouble(coordParts[0]);
+                                        coords = Point.fromDouble(lat, lon);
                                     } else {
                                         coords = null;
                                     }
@@ -2876,9 +2878,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         XmlPullUtil.enter(pp, "itdCoordinateBaseElemList");
 
         while (XmlPullUtil.optEnter(pp, "itdCoordinateBaseElem")) {
-            final int lon = (int) Math.round(Double.parseDouble(XmlPullUtil.valueTag(pp, "x")));
-            final int lat = (int) Math.round(Double.parseDouble(XmlPullUtil.valueTag(pp, "y")));
-            path.add(Point.from1E6(lat, lon));
+            final double x = Double.parseDouble(XmlPullUtil.valueTag(pp, "x"));
+            final double y = Double.parseDouble(XmlPullUtil.valueTag(pp, "y"));
+            path.add(Point.fromDouble(y, x));
 
             XmlPullUtil.skipExit(pp, "itdCoordinateBaseElem");
         }
@@ -2893,23 +2895,23 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             return null;
 
         final String[] parts = coordStr.split(",");
-        final int lat = (int) Math.round(Double.parseDouble(parts[1]));
-        final int lon = (int) Math.round(Double.parseDouble(parts[0]));
-        return Point.from1E6(lat, lon);
+        final double lat = Double.parseDouble(parts[1]);
+        final double lon = Double.parseDouble(parts[0]);
+        return Point.fromDouble(lat, lon);
     }
 
     private Point processCoordAttr(final XmlPullParser pp) {
         final String mapName = XmlPullUtil.optAttr(pp, "mapName", null);
-        final int x = (int) Math.round(XmlPullUtil.optFloatAttr(pp, "x", 0));
-        final int y = (int) Math.round(XmlPullUtil.optFloatAttr(pp, "y", 0));
+        final double x = XmlPullUtil.optFloatAttr(pp, "x", 0);
+        final double y = XmlPullUtil.optFloatAttr(pp, "y", 0);
 
         if (mapName == null || (x == 0 && y == 0))
             return null;
 
-        if (!"WGS84".equals(mapName))
+        if (!COORD_FORMAT.equals(mapName))
             return null;
 
-        return Point.from1E6(y, x);
+        return Point.fromDouble(y, x);
     }
 
     private Fare processItdGenericTicketGroup(final XmlPullParser pp, final String net, final Currency currency)
@@ -2975,10 +2977,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         final String name = locationValue(location);
         if ((location.type == LocationType.ADDRESS || location.type == LocationType.COORD) && location.hasCoord()) {
             url.addEncodedQueryParameter("type_" + paramSuffix, "coord");
-            url.addEncodedQueryParameter("name_" + paramSuffix, ParserUtils.urlEncode(
-                    String.format(Locale.ENGLISH, "%.6f:%.6f", location.getLonAsDouble(), location.getLatAsDouble())
-                            + ":WGS84",
-                    requestUrlEncoding));
+            url.addEncodedQueryParameter("name_" + paramSuffix,
+                    ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%.7f:%.7f:%s", location.getLonAsDouble(),
+                            location.getLatAsDouble(), COORD_FORMAT), requestUrlEncoding));
         } else if (name != null) {
             url.addEncodedQueryParameter("type_" + paramSuffix, locationTypeValue(location));
             url.addEncodedQueryParameter("name_" + paramSuffix, ParserUtils.urlEncode(name, requestUrlEncoding));

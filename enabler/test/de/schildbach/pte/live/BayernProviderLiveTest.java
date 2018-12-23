@@ -52,7 +52,8 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void nearbyStationsByCoordinate() throws Exception {
-        final NearbyLocationsResult result = queryNearbyStations(Location.coord(48135232, 11560650));
+        final NearbyLocationsResult result = queryNearbyStations(
+                Location.coord(Point.fromDouble(48.1331686, 11.5580299))); // München, Beethovenplatz
         print(result);
         assertTrue(result.locations.size() > 0);
     }
