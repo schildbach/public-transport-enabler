@@ -196,9 +196,9 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
     }
 
     @Override
-    public SuggestLocationsResult suggestLocations(final CharSequence constraint, final int maxLocations)
-            throws IOException {
-        return jsonLocMatch(constraint, null, maxLocations);
+    public SuggestLocationsResult suggestLocations(final CharSequence constraint,
+            final @Nullable Set<LocationType> types, final int maxLocations) throws IOException {
+        return jsonLocMatch(constraint, types, maxLocations);
     }
 
     @Override

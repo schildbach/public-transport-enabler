@@ -130,9 +130,9 @@ public class BayernProvider extends AbstractEfaProvider {
     }
 
     @Override
-    public SuggestLocationsResult suggestLocations(final CharSequence constraint, final int maxLocations)
-            throws IOException {
-        return mobileStopfinderRequest(new Location(LocationType.ANY, null, null, constraint.toString()), maxLocations);
+    public SuggestLocationsResult suggestLocations(final CharSequence constraint,
+            final @Nullable Set<LocationType> types, final int maxLocations) throws IOException {
+        return mobileStopfinderRequest(constraint, types, maxLocations);
     }
 
     @Override

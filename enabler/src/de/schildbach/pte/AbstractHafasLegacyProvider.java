@@ -295,8 +295,8 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
     }
 
     @Override
-    public SuggestLocationsResult suggestLocations(final CharSequence constraint, final int maxLocations)
-            throws IOException {
+    public SuggestLocationsResult suggestLocations(final CharSequence constraint,
+            final @Nullable Set<LocationType> types, final int maxLocations) throws IOException {
         final HttpUrl.Builder url = getStopEndpoint.newBuilder().addPathSegment(apiLanguage);
         appendJsonGetStopsParameters(url, checkNotNull(constraint), maxLocations);
         return jsonGetStops(url.build());
@@ -701,7 +701,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
         final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
 
         if (!from.isIdentified()) {
-            final List<Location> locations = suggestLocations(from.name, 0).getLocations();
+            final List<Location> locations = suggestLocations(from.name, null, 0).getLocations();
             if (locations.isEmpty())
                 return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS); // TODO
             if (locations.size() > 1)
@@ -710,7 +710,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
         }
 
         if (via != null && !via.isIdentified()) {
-            final List<Location> locations = suggestLocations(via.name, 0).getLocations();
+            final List<Location> locations = suggestLocations(via.name, null, 0).getLocations();
             if (locations.isEmpty())
                 return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS); // TODO
             if (locations.size() > 1)
@@ -719,7 +719,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
         }
 
         if (!to.isIdentified()) {
-            final List<Location> locations = suggestLocations(to.name, 0).getLocations();
+            final List<Location> locations = suggestLocations(to.name, null, 0).getLocations();
             if (locations.isEmpty())
                 return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS); // TODO
             if (locations.size() > 1)
@@ -1360,7 +1360,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
         final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
 
         if (!from.isIdentified()) {
-            final List<Location> locations = suggestLocations(from.name, 0).getLocations();
+            final List<Location> locations = suggestLocations(from.name, null, 0).getLocations();
             if (locations.isEmpty())
                 return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS); // TODO
             if (locations.size() > 1)
@@ -1369,7 +1369,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
         }
 
         if (via != null && !via.isIdentified()) {
-            final List<Location> locations = suggestLocations(via.name, 0).getLocations();
+            final List<Location> locations = suggestLocations(via.name, null, 0).getLocations();
             if (locations.isEmpty())
                 return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS); // TODO
             if (locations.size() > 1)
@@ -1378,7 +1378,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
         }
 
         if (!to.isIdentified()) {
-            final List<Location> locations = suggestLocations(to.name, 0).getLocations();
+            final List<Location> locations = suggestLocations(to.name, null, 0).getLocations();
             if (locations.isEmpty())
                 return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS); // TODO
             if (locations.size() > 1)

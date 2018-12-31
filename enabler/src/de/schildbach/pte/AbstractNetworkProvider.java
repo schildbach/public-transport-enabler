@@ -81,7 +81,7 @@ public abstract class AbstractNetworkProvider implements NetworkProvider {
     @Deprecated
     @Override
     public final SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException {
-        return suggestLocations(constraint, 0);
+        return suggestLocations(constraint, null, 0);
     }
 
     @Deprecated

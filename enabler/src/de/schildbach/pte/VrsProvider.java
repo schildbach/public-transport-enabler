@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Currency;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -573,14 +574,14 @@ public class VrsProvider extends AbstractNetworkProvider {
     }
 
     @Override
-    public SuggestLocationsResult suggestLocations(final CharSequence constraint, final int maxLocations)
-            throws IOException {
+    public SuggestLocationsResult suggestLocations(final CharSequence constraint,
+            final @Nullable Set<LocationType> types, final int maxLocations) throws IOException {
         // sc = station count
-        final int sc = maxLocations / 2;
+        final int sc = EnumSet.of(LocationType.STATION).equals(types) ? maxLocations : maxLocations / 2;
         // ac = address count
-        final int ac = maxLocations / 4;
+        final int ac = EnumSet.of(LocationType.ADDRESS).equals(types) ? maxLocations : maxLocations / 4;
         // pc = points of interest count
-        final int pc = maxLocations / 4;
+        final int pc = EnumSet.of(LocationType.POI).equals(types) ? maxLocations : maxLocations / 4;
         // t = sap (stops and/or addresses and/or pois)
         final HttpUrl.Builder url = API_BASE.newBuilder();
         url.addQueryParameter("eID", "tx_vrsinfo_ass2_objects");
@@ -1127,7 +1128,7 @@ public class VrsProvider extends AbstractNetworkProvider {
         } else if (loc.coord != null) {
             return String.format(Locale.ENGLISH, "%f,%f", loc.getLatAsDouble(), loc.getLonAsDouble());
         } else {
-            SuggestLocationsResult suggestLocationsResult = suggestLocations(loc.name, 0);
+            SuggestLocationsResult suggestLocationsResult = suggestLocations(loc.name, null, 0);
             final List<Location> suggestedLocations = suggestLocationsResult.getLocations();
             if (suggestedLocations.size() == 1) {
                 return suggestedLocations.get(0).id;

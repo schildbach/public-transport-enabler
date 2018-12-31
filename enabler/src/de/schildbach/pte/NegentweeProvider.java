@@ -827,7 +827,8 @@ public class NegentweeProvider extends AbstractNetworkProvider {
     }
 
     @Override
-    public SuggestLocationsResult suggestLocations(CharSequence constraint, int maxLocations) throws IOException {
+    public SuggestLocationsResult suggestLocations(CharSequence constraint, @Nullable Set<LocationType> types,
+            int maxLocations) throws IOException {
         HttpUrl url = buildApiUrl("locations", Arrays.asList(new QueryParameter("q", constraint.toString())));
         final CharSequence page;
         try {
