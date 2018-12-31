@@ -143,6 +143,22 @@ public class NvbwProviderLiveTest extends AbstractProviderLiveTest {
     }
 
     @Test
+    public void suggestAddress() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Stuttgart, Kronenstraße 3");
+        print(result);
+        assertThat(result.getLocations(), hasItem(new Location(LocationType.ADDRESS,
+                "streetID:1500000599:3:8111000:51:Kronenstraße:Stuttgart:Kronenstraße::Kronenstraße:70173:ANY:DIVA_SINGLEHOUSE:1021956:5762095:MRCV:B_W")));
+    }
+
+    @Test
+    public void suggestStreet() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Stuttgart, Kronenstraße");
+        print(result);
+        assertThat(result.getLocations(), hasItem(new Location(LocationType.ADDRESS,
+                "streetID:1500000599::8111000:51:Kronenstraße:Stuttgart:Kronenstraße::Kronenstraße: 70174 70173:ANY:DIVA_STREET:1021539:5761790:MRCV:B_W")));
+    }
+
+    @Test
     public void shortTrip() throws Exception {
         final Location from = new Location(LocationType.STATION, "17002402", null, "Bahnhof");
         final Location to = new Location(LocationType.STATION, "17009001", null, "Bahnhof");
@@ -210,5 +226,29 @@ public class NvbwProviderLiveTest extends AbstractProviderLiveTest {
         final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
+    }
+
+    @Test
+    public void tripBetweenAddresses() throws Exception {
+        final Location from = new Location(LocationType.ADDRESS,
+                "streetID:1500000484:11:8111000:-1:Wilhelmsplatz (Stgt):Stuttgart:Wilhelmsplatz (Stgt)::Wilhelmsplatz (Stgt):70182:ANY:DIVA_SINGLEHOUSE:1021706:5763896:MRCV:B_W",
+                null, "Wilhelmsplatz 11");
+        final Location to = new Location(LocationType.ADDRESS,
+                "streetID:1500000599:3:8111000:51:Kronenstraße:Stuttgart:Kronenstraße::Kronenstraße:70173:ANY:DIVA_SINGLEHOUSE:1021956:5762095:MRCV:B_W",
+                null, "Kronenstraße 3");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), false, null);
+        print(result);
+    }
+
+    @Test
+    public void tripBetweenStreets() throws Exception {
+        final Location from = new Location(LocationType.ADDRESS,
+                "streetID:1500000484::8111000:51:Wilhelmsplatz (Stgt):Stuttgart:Wilhelmsplatz (Stgt)::Wilhelmsplatz (Stgt): 70182:ANY:DIVA_STREET:1021828:5763870:MRCV:B_W",
+                null, "Wilhelmsplatz");
+        final Location to = new Location(LocationType.ADDRESS,
+                "streetID:1500000599::8111000:51:Kronenstraße:Stuttgart:Kronenstraße::Kronenstraße: 70174 70173:ANY:DIVA_STREET:1021539:5761790:MRCV:B_W",
+                null, "Kronenstraße");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), false, null);
+        print(result);
     }
 }

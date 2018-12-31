@@ -30,6 +30,7 @@ import de.schildbach.pte.VrrProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
+import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
@@ -49,12 +50,19 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest {
     }
 
     @Test
-    public void nearbyStationsByCoordinate() throws Exception {
-        final NearbyLocationsResult result = queryNearbyStations(Location.coord(51218693, 6777785));
+    public void nearbyStationsByCoordinateDuesseldorf() throws Exception {
+        final NearbyLocationsResult result = queryNearbyStations(
+                Location.coord(Point.fromDouble(51.2190163, 6.7757496)));
         print(result);
+        assertThat(result.locations, hasItem(new Location(LocationType.STATION, "20018243"))); // Graf-Adolf-Platz
+    }
 
-        final NearbyLocationsResult result2 = queryNearbyStations(Location.coord(51719648, 8754330));
-        print(result2);
+    @Test
+    public void nearbyStationsByCoordinatePaderborn() throws Exception {
+        final NearbyLocationsResult result = queryNearbyStations(
+                Location.coord(Point.fromDouble(51.7169873, 8.7537501)));
+        print(result);
+        assertThat(result.locations, hasItem(new Location(LocationType.STATION, "23207100"))); // Rathausplatz
     }
 
     @Test
@@ -86,9 +94,6 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest {
     public void suggestLocationsIncomplete() throws Exception {
         final SuggestLocationsResult result = suggestLocations("Kur");
         print(result);
-
-        final SuggestLocationsResult paderbornResult = suggestLocations("Paderborn Hbf");
-        print(paderbornResult);
     }
 
     @Test
@@ -105,26 +110,45 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest {
     }
 
     @Test
-    public void suggestLocationsCoverage() throws Exception {
-        final SuggestLocationsResult cologneResult = suggestLocations("Köln Ebertplatz");
-        print(cologneResult);
-        assertThat(cologneResult.getLocations(), hasItem(new Location(LocationType.STATION, "22000035")));
+    public void suggestLocationsCologne() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Köln Ebertplatz");
+        print(result);
+        assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "22000035")));
+    }
 
-        final SuggestLocationsResult dortmundResult = suggestLocations("Dortmund Zugstraße");
-        print(dortmundResult);
-        assertThat(dortmundResult.getLocations(), hasItem(new Location(LocationType.STATION, "20000524")));
+    @Test
+    public void suggestLocationsDortmund() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Dortmund Zugstraße");
+        print(result);
+        assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "20000524")));
+    }
 
-        final SuggestLocationsResult duesseldorfResult = suggestLocations("Düsseldorf Sternstraße");
-        print(duesseldorfResult);
-        assertThat(duesseldorfResult.getLocations(), hasItem(new Location(LocationType.STATION, "20018017")));
+    @Test
+    public void suggestLocationsDuesseldorf() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Düsseldorf Sternstraße");
+        print(result);
+        assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "20018017")));
+    }
 
-        final SuggestLocationsResult muensterResult = suggestLocations("Münster Vennheideweg");
-        print(muensterResult);
-        assertThat(muensterResult.getLocations(), hasItem(new Location(LocationType.STATION, "24047291")));
+    @Test
+    public void suggestLocationsMuenster() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Münster Vennheideweg");
+        print(result);
+        assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "24047291")));
+    }
 
-        final SuggestLocationsResult aachenResult = suggestLocations("Aachen Elisenbrunnen");
-        print(aachenResult);
-        assertThat(aachenResult.getLocations(), hasItem(new Location(LocationType.STATION, "21001029")));
+    @Test
+    public void suggestLocationsAachen() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Aachen Elisenbrunnen");
+        print(result);
+        assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "21001029")));
+    }
+
+    @Test
+    public void suggestLocationsPaderborn() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Paderborn Hbf");
+        print(result);
+        assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "23207000")));
     }
 
     @Test
@@ -134,75 +158,91 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest {
     }
 
     @Test
+    public void suggestAddress() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Hagen, Siegstraße 30");
+        print(result);
+        assertThat(result.getLocations(),
+                hasItem(new Location(LocationType.ADDRESS, "streetID:1500000683:30:5914000:-1")));
+    }
+
+    @Test
+    public void suggestStreet() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Hagen, Siegstraße");
+        print(result);
+        assertThat(result.getLocations(), hasItem(new Location(LocationType.ADDRESS,
+                "streetID:1500000683::5914000:-1:Siegstraße:Hagen:Siegstraße::Siegstraße: 58097:ANY:DIVA_STREET:831366:5312904:MRCV:nrw")));
+    }
+
+    @Test
     public void anyTrip() throws Exception {
-        final QueryTripsResult result = queryTrips(new Location(LocationType.ANY, null, null, "Köln"), null,
-                new Location(LocationType.ANY, null, null, "Bonn"), new Date(), true, null);
+        final Location from = new Location(LocationType.ANY, null, null, "Köln");
+        final Location to = new Location(LocationType.ANY, null, null, "Bonn");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.AMBIGUOUS, result.status);
     }
 
     @Test
-    public void shortTrip() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "20009289", "Essen", "Hauptbahnhof"), null,
-                new Location(LocationType.STATION, "20009161", "Essen", "Bismarckplatz"), new Date(), true, null);
+    public void shortTripEssen() throws Exception {
+        final Location from = new Location(LocationType.STATION, "20009289", "Essen", "Hauptbahnhof");
+        final Location to = new Location(LocationType.STATION, "20009161", "Essen", "Bismarckplatz");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
-
-        if (!result.context.canQueryLater())
-            return;
-
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
-
-        if (!laterResult.context.canQueryLater())
-            return;
-
         final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
         print(later2Result);
-
-        if (!later2Result.context.canQueryEarlier())
-            return;
-
         final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
         print(earlierResult);
     }
 
     @Test
     public void shortTripPaderborn() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "23007000", "Paderborn", "Paderborn Hbf"), null,
-                new Location(LocationType.STATION, "23007700", "Höxter", "Bahnhof / Rathaus"), new Date(), true, null);
+        final Location from = new Location(LocationType.STATION, "23207000"); // Paderborn Hbf
+        final Location to = new Location(LocationType.STATION, "23207700"); // Höxter, Bahnhof / Rathaus
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
-
-        if (!result.context.canQueryLater())
-            return;
-
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
-
-        if (!laterResult.context.canQueryLater())
-            return;
-
         final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
         print(later2Result);
-
-        if (!later2Result.context.canQueryEarlier())
-            return;
-
         final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
         print(earlierResult);
     }
 
     @Test
     public void shortTripDorsten() throws Exception {
-        final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "20009643", "Bottrop", "West S"),
-                null, new Location(LocationType.STATION, "20003214", "Dorsten", "ZOB Dorsten"), new Date(), true, null);
+        final Location from = new Location(LocationType.STATION, "20009643", "Bottrop", "West S");
+        final Location to = new Location(LocationType.STATION, "20003214", "Dorsten", "ZOB Dorsten");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
+    }
+
+    @Test
+    public void tripBetweenAddresses() throws Exception {
+        final Location from = new Location(LocationType.ADDRESS, "streetID:1500000683:30:5914000:-1", null,
+                "Siegstraße 30");
+        final Location to = new Location(LocationType.ADDRESS, "streetID:1500000146:1:5914000:-1", null,
+                "Berliner Platz 1");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
+        print(result);
+    }
+
+    @Test
+    public void tripBetweenStreets() throws Exception {
+        final Location from = new Location(LocationType.ADDRESS,
+                "streetID:1500000683::5914000:-1:Siegstraße:Hagen:Siegstraße::Siegstraße: 58097:ANY:DIVA_STREET:831366:5312904:MRCV:nrw",
+                null, "Siegstraße");
+        final Location to = new Location(LocationType.ADDRESS,
+                "streetID:1500000146::5914000:29:Berliner Platz:Hagen:Berliner Platz::Berliner Platz: 58089:ANY:DIVA_STREET:830589:5314386:MRCV:nrw",
+                null, "Berliner Platz");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
+        print(result);
     }
 }

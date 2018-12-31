@@ -87,6 +87,22 @@ public class KvvProviderLiveTest extends AbstractProviderLiveTest {
     }
 
     @Test
+    public void suggestAddress() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Karlsruhe, Bahnhofsplatz 2");
+        print(result);
+        assertThat(result.getLocations(), hasItem(new Location(LocationType.ADDRESS,
+                "streetID:1500000173:2:8212000:15:Bahnhofplatz:Karlsruhe:Bahnhofplatz::Bahnhofplatz:76137:ANY:DIVA_SINGLEHOUSE:935315:5725973:MRCV:b_w")));
+    }
+
+    @Test
+    public void suggestStreet() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Karlsruhe, Bahnhofsplatz");
+        print(result);
+        assertThat(result.getLocations(), hasItem(new Location(LocationType.ADDRESS,
+                "streetID:1500000173::8212000:-1:Bahnhofplatz:Karlsruhe:Bahnhofplatz::Bahnhofplatz: 76137:ANY:DIVA_STREET:935120:5726009:MRCV:b_w")));
+    }
+
+    @Test
     public void shortTrip() throws Exception {
         final Location from = new Location(LocationType.STATION, "7000001", Point.from1E6(49009526, 8404914),
                 "Karlsruhe", "Marktplatz");
@@ -96,39 +112,35 @@ public class KvvProviderLiveTest extends AbstractProviderLiveTest {
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
-
-        if (!result.context.canQueryLater())
-            return;
-
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
-
-        if (!laterResult.context.canQueryLater())
-            return;
-
         final QueryTripsResult later2Result = queryMoreTrips(laterResult.context, true);
         print(later2Result);
-
-        if (!later2Result.context.canQueryEarlier())
-            return;
-
         final QueryTripsResult earlierResult = queryMoreTrips(later2Result.context, false);
         print(earlierResult);
     }
 
     @Test
     public void tripBetweenAddresses() throws Exception {
-        final Location from = new Location(LocationType.ADDRESS, null, Point.from1E6(48985089, 8402709), null,
-                "Konstanzer Straße 17, 76199 Karlsruhe, Deutschland");
-        final Location to = new Location(LocationType.ADDRESS, null, Point.from1E6(49007706, 8356358), null,
-                "Durmersheimer Straße 6, 76185 Karlsruhe, Deutschland");
+        final Location from = new Location(LocationType.ADDRESS,
+                "streetID:1500000173:2:8212000:15:Bahnhofplatz:Karlsruhe:Bahnhofplatz::Bahnhofplatz:76137:ANY:DIVA_SINGLEHOUSE:935315:5725973:MRCV:b_w",
+                null, "Bahnhofsplatz 2");
+        final Location to = new Location(LocationType.ADDRESS,
+                "streetID:1500001060:15:8212000:-1:Lorenzstraße:Karlsruhe:Lorenzstraße::Lorenzstraße:76135:ANY:DIVA_SINGLEHOUSE:933225:5724788:MRCV:b_w",
+                null, "Lorenzstraße 15");
         final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
+    }
 
-        if (!result.context.canQueryLater())
-            return;
-
-        final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-        print(laterResult);
+    @Test
+    public void tripBetweenStreets() throws Exception {
+        final Location from = new Location(LocationType.ADDRESS,
+                "streetID:1500000173::8212000:-1:Bahnhofplatz:Karlsruhe:Bahnhofplatz::Bahnhofplatz: 76137:ANY:DIVA_STREET:935120:5726009:MRCV:b_w",
+                null, "Bahnhofsplatz");
+        final Location to = new Location(LocationType.ADDRESS,
+                "streetID:1500001060::8212000:-1:Lorenzstraße:Karlsruhe:Lorenzstraße::Lorenzstraße: 76135:ANY:DIVA_STREET:933225:5724788:MRCV:b_w",
+                null, "Lorenzstraße");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
+        print(result);
     }
 }

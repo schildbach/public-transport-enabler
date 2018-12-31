@@ -2963,6 +2963,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         } else if (location.type == LocationType.POI && location.hasId()) {
             url.addEncodedQueryParameter("type_" + paramSuffix, "poi");
             url.addEncodedQueryParameter("name_" + paramSuffix, ParserUtils.urlEncode(location.id, requestUrlEncoding));
+        } else if (location.type == LocationType.ADDRESS && location.hasId()) {
+            url.addEncodedQueryParameter("type_" + paramSuffix, "address");
+            url.addEncodedQueryParameter("name_" + paramSuffix, ParserUtils.urlEncode(location.id, requestUrlEncoding));
         } else if ((location.type == LocationType.ADDRESS || location.type == LocationType.COORD)
                 && location.hasCoord()) {
             url.addEncodedQueryParameter("type_" + paramSuffix, "coord");

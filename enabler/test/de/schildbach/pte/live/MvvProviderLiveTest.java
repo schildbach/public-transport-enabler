@@ -131,6 +131,22 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest {
     }
 
     @Test
+    public void suggestAddress() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("München, Maximilianstr. 1");
+        print(result);
+        assertThat(result.getLocations(), hasItem(new Location(LocationType.ADDRESS,
+                "streetID:3239:1:9162000:9162000:Maximilianstraße:München:Maximilianstraße::Maximilianstraße:80539:ANY:DIVA_ADDRESS:4468763:826437:MVTT:MVV")));
+    }
+
+    @Test
+    public void suggestStreet() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("München, Maximilianstr.");
+        print(result);
+        assertThat(result.getLocations(), hasItem(new Location(LocationType.ADDRESS,
+                "streetID:3239::9162000:-1:Maximilianstraße:München:Maximilianstraße::Maximilianstraße: 80539 80538:ANY:DIVA_STREET:4469138:826553:MVTT:MVV")));
+    }
+
+    @Test
     public void shortTrip() throws Exception {
         final Location from = new Location(LocationType.STATION, "2", "München", "Marienplatz");
         final Location to = new Location(LocationType.STATION, "10", "München", "Pasing");
@@ -173,8 +189,26 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void tripBetweenAddresses() throws Exception {
-        final Location from = new Location(LocationType.ADDRESS, null, null, "München, Maximilianstr. 1");
-        final Location to = new Location(LocationType.ADDRESS, null, null, "Starnberg, Jahnstraße 50");
+        final Location from = new Location(LocationType.ADDRESS,
+                "streetID:3239:1:9162000:9162000:Maximilianstraße:München:Maximilianstraße::Maximilianstraße:80539:ANY:DIVA_ADDRESS:4468763:826437:MVTT:MVV",
+                null, "Maximilianstraße 1");
+        final Location to = new Location(LocationType.ADDRESS,
+                "streetID:753:4:9162000:1:Burggrafenstraße:München:Burggrafenstraße::Burggrafenstraße:81671:ANY:DIVA_SINGLEHOUSE:4471134:827570:MVTT:MVV",
+                null, "Burggrafenstraße 4");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
+        print(result);
+        final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+        print(laterResult);
+    }
+
+    @Test
+    public void tripBetweenStreets() throws Exception {
+        final Location from = new Location(LocationType.ADDRESS,
+                "streetID:3239::9162000:-1:Maximilianstraße:München:Maximilianstraße::Maximilianstraße: 80539 80538:ANY:DIVA_STREET:4469138:826553:MVTT:MVV",
+                null, "Maximilianstraße");
+        final Location to = new Location(LocationType.ADDRESS,
+                "streetID:753::9162000:1:Burggrafenstraße:München:Burggrafenstraße::Burggrafenstraße: 81671:ANY:DIVA_STREET:4471150:827576:MVTT:MVV",
+                null, "Burggrafenstraße");
         final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);

@@ -98,65 +98,74 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest {
     }
 
     @Test
-    public void suggestLocationsPOI() throws Exception {
+    public void suggestLocationsRegensburg() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Regensburg");
+        print(result);
+        assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "80001083")));
+    }
+
+    @Test
+    public void suggestLocationsMunich() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("München");
+        print(result);
+        assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "91000100")));
+    }
+
+    @Test
+    public void suggestLocationsNuernberg() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Nürnberg");
+        print(result);
+        assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "80001020")));
+    }
+
+    @Test
+    public void suggestPOI() throws Exception {
         final SuggestLocationsResult result = suggestLocations("Ruhpolding, Seehaus");
         print(result);
         assertThat(result.getLocations(), hasItem(new Location(LocationType.POI,
-                "poiID:40499046:9189140:-1:Seehaus:Ruhpolding:Seehaus:ANY:POI:1405062:5941100:MRCV:BAY")));
+                "poiID:40502661:9189140:-1:Seehaus:Ruhpolding:Seehaus:ANY:POI:1405062:5941100:MRCV:BAY")));
     }
 
     @Test
-    public void suggestLocationsAddress() throws Exception {
+    public void suggestAddress() throws Exception {
         final SuggestLocationsResult result = suggestLocations("München, Friedenstraße 2");
         print(result);
+        assertThat(result.getLocations(), hasItem(new Location(LocationType.ADDRESS,
+                "streetID:1500002757:2:9162000:-1:Friedenstraße:München:Friedenstraße::Friedenstraße:81671:ANY:DIVA_SINGLEHOUSE:1291659:5872432:MRCV:BAY")));
     }
 
     @Test
-    public void suggestLocationsLocal() throws Exception {
-        final SuggestLocationsResult regensburgResult = suggestLocations("Regensburg");
-        assertEquals("80001083", regensburgResult.getLocations().iterator().next().id);
-
-        final SuggestLocationsResult munichResult = suggestLocations("München");
-        assertEquals("80000689", munichResult.getLocations().iterator().next().id);
-
-        final SuggestLocationsResult nurembergResult = suggestLocations("Nürnberg");
-        assertEquals("80001020", nurembergResult.getLocations().iterator().next().id);
+    public void suggestStreet() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("München, Friedenstraße");
+        print(result);
+        assertThat(result.getLocations(), hasItem(new Location(LocationType.ADDRESS,
+                "streetID:1500002757::9162000:-1:Friedenstraße:München:Friedenstraße::Friedenstraße: 81671:ANY:DIVA_STREET:1292298:5871791:MRCV:BAY")));
     }
 
     @Test
     public void shortTrip() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "80000793", "München", "Ostbahnhof"), null,
-                new Location(LocationType.STATION, "80000799", "München", "Pasing"), new Date(), true, null);
+        final Location from = new Location(LocationType.STATION, "80000793", "München", "Ostbahnhof");
+        final Location to = new Location(LocationType.STATION, "80000799", "München", "Pasing");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
-
-        if (!result.context.canQueryLater())
-            return;
-
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
     }
 
     @Test
     public void longTrip() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "1005530", "Starnberg", "Arbeitsamt"), null,
-                new Location(LocationType.STATION, "3001459", "Nürnberg", "Fallrohrstraße"), new Date(), true, null);
+        final Location from = new Location(LocationType.STATION, "1005530", "Starnberg", "Arbeitsamt");
+        final Location to = new Location(LocationType.STATION, "3001459", "Nürnberg", "Fallrohrstraße");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
-        // seems like there are no more trips all the time
     }
 
     @Test
     public void tripBetweenCoordinates() throws Exception {
-        final QueryTripsResult result = queryTrips(Location.coord(48165238, 11577473), null,
-                Location.coord(47987199, 11326532), new Date(), true, null);
+        final Location from = Location.coord(48165238, 11577473);
+        final Location to = Location.coord(47987199, 11326532);
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
-
-        if (!result.context.canQueryLater())
-            return;
-
-        final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-        print(laterResult);
     }
 
     @Test
@@ -165,26 +174,14 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest {
         final Location to = new Location(LocationType.STATION, "80000793", "München", "Ostbahnhof");
         final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
-
-        if (!result.context.canQueryLater())
-            return;
-
-        final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-        print(laterResult);
     }
 
     @Test
     public void tripBetweenAddresses() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.ADDRESS, null, null, "München, Maximilianstr. 1"), null,
-                new Location(LocationType.ADDRESS, null, null, "Starnberg, Jahnstraße 50"), new Date(), true, null);
+        final Location from = new Location(LocationType.ADDRESS, null, null, "München, Maximilianstr. 1");
+        final Location to = new Location(LocationType.ADDRESS, null, null, "Starnberg, Jahnstraße 50");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
-
-        if (!result.context.canQueryLater())
-            return;
-
-        final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-        print(laterResult);
     }
 
     @Test
@@ -194,12 +191,6 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest {
                 "München Frankfurter Ring 35");
         final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
-
-        if (!result.context.canQueryLater())
-            return;
-
-        final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-        print(laterResult);
     }
 
     @Test
@@ -212,17 +203,13 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest {
                 "Ruhpolding", "Alpengasthof Laubau");
         final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
-        final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-        print(laterResult);
     }
 
     @Test
     public void tripRegensburg() throws Exception {
-        final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "4014051", "Regensburg", "Klenzestraße"), null,
-                new Location(LocationType.STATION, "4014080", "Regensburg", "Universität"), new Date(), true, null);
+        final Location from = new Location(LocationType.STATION, "4014051", "Regensburg", "Klenzestraße");
+        final Location to = new Location(LocationType.STATION, "4014080", "Regensburg", "Universität");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
-        final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-        print(laterResult);
     }
 }
