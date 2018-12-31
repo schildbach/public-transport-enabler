@@ -2973,42 +2973,26 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     }
 
     private void appendLocationParams(final HttpUrl.Builder url, final Location location, final String paramSuffix) {
-        final String name = locationValue(location);
-        if ((location.type == LocationType.ADDRESS || location.type == LocationType.COORD) && location.hasCoord()) {
+        if (location.type == LocationType.STATION && location.hasId()) {
+            url.addEncodedQueryParameter("type_" + paramSuffix, "stop");
+            url.addEncodedQueryParameter("name_" + paramSuffix,
+                    ParserUtils.urlEncode(normalizeStationId(location.id), requestUrlEncoding));
+        } else if (location.type == LocationType.POI && location.hasId()) {
+            url.addEncodedQueryParameter("type_" + paramSuffix, "poi");
+            url.addEncodedQueryParameter("name_" + paramSuffix, ParserUtils.urlEncode(location.id, requestUrlEncoding));
+        } else if ((location.type == LocationType.ADDRESS || location.type == LocationType.COORD)
+                && location.hasCoord()) {
             url.addEncodedQueryParameter("type_" + paramSuffix, "coord");
             url.addEncodedQueryParameter("name_" + paramSuffix,
                     ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%.7f:%.7f:%s", location.getLonAsDouble(),
                             location.getLatAsDouble(), COORD_FORMAT), requestUrlEncoding));
-        } else if (name != null) {
-            url.addEncodedQueryParameter("type_" + paramSuffix, locationTypeValue(location));
-            url.addEncodedQueryParameter("name_" + paramSuffix, ParserUtils.urlEncode(name, requestUrlEncoding));
+        } else if (location.name != null) {
+            url.addEncodedQueryParameter("type_" + paramSuffix, "any");
+            url.addEncodedQueryParameter("name_" + paramSuffix,
+                    ParserUtils.urlEncode(location.name, requestUrlEncoding));
         } else {
             throw new IllegalArgumentException("cannot append location: " + location);
         }
-    }
-
-    private static String locationTypeValue(final Location location) {
-        final LocationType type = location.type;
-        if (type == LocationType.STATION)
-            return "stop";
-        if (type == LocationType.ADDRESS)
-            return "any"; // strange, matches with anyObjFilter
-        if (type == LocationType.COORD)
-            return "coord";
-        if (type == LocationType.POI)
-            return "poi";
-        if (type == LocationType.ANY)
-            return "any";
-        throw new IllegalArgumentException(type.toString());
-    }
-
-    private static @Nullable String locationValue(final Location location) {
-        if (location.type == LocationType.STATION && location.hasId())
-            return normalizeStationId(location.id);
-        else if (location.type == LocationType.POI && location.hasId())
-            return location.id;
-        else
-            return location.name;
     }
 
     private static final Map<WalkSpeed, String> WALKSPEED_MAP = new HashMap<>();
