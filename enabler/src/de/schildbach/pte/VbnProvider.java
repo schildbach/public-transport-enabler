@@ -55,8 +55,8 @@ public class VbnProvider extends AbstractHafasClientInterfaceProvider {
         setStyles(STYLES);
     }
 
-    private static final String[] PLACES = { "Bremen", "Bremerhaven", "Oldenburg(Oldb)", "Osnabrück", "Göttingen",
-            "Rostock", "Warnemünde" };
+    private static final String[] PLACES = { "Bremen", "Bremerhaven", "Hamburg", "Oldenburg(Oldb)", "Osnabrück",
+            "Göttingen", "Rostock", "Warnemünde" };
 
     @Override
     protected String[] splitStationName(final String name) {
