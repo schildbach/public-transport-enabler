@@ -94,7 +94,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     protected static final String DEFAULT_COORD_ENDPOINT = "XML_COORD_REQUEST";
 
     protected static final String SERVER_PRODUCT = "efa";
-    protected static final String COORD_FORMAT = "WGS84[DD.ddddddd]";
+    protected static final String COORD_FORMAT = "WGS84[DD.ddddd]";
+    protected static final int COORD_FORMAT_TAIL = 7;
 
     private final HttpUrl departureMonitorEndpoint;
     private final HttpUrl tripEndpoint;
@@ -238,7 +239,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         url.addEncodedQueryParameter("language", language);
         url.addEncodedQueryParameter("stateless", "1");
         url.addEncodedQueryParameter("coordOutputFormat", COORD_FORMAT);
-        url.addEncodedQueryParameter("coordOutputFormatTail", "7");
+        url.addEncodedQueryParameter("coordOutputFormatTail", Integer.toString(COORD_FORMAT_TAIL));
     }
 
     protected SuggestLocationsResult jsonStopfinderRequest(final Location constraint) throws IOException {
