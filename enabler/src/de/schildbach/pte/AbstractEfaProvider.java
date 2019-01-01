@@ -704,7 +704,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
         if ("any".equals(type))
             type = XmlPullUtil.attr(pp, "anyType");
-        final String id = XmlPullUtil.attr(pp, "stateless");
+        final String id = XmlPullUtil.optAttr(pp, "id", null);
+        final String stateless = XmlPullUtil.attr(pp, "stateless");
         final String locality = normalizeLocationName(XmlPullUtil.optAttr(pp, "locality", null));
         final String objectName = normalizeLocationName(XmlPullUtil.optAttr(pp, "objectName", null));
         final String buildingName = XmlPullUtil.optAttr(pp, "buildingName", null);
@@ -724,59 +725,41 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         }
         XmlPullUtil.exit(pp, "odvNameElem");
 
-        final LocationType locationType;
-        final String place;
-        final String name;
-
         if ("stop".equals(type)) {
-            locationType = LocationType.STATION;
-            place = locality != null ? locality : defaultPlace;
-            name = objectName != null ? objectName : nameElem;
+            if (id != null && !stateless.startsWith(id))
+                throw new RuntimeException("id mismatch: '" + id + "' vs '" + stateless + "'");
+            return new Location(LocationType.STATION, id != null ? id : stateless, coord,
+                    locality != null ? locality : defaultPlace, objectName != null ? objectName : nameElem);
         } else if ("poi".equals(type)) {
-            locationType = LocationType.POI;
-            place = locality != null ? locality : defaultPlace;
-            name = objectName != null ? objectName : nameElem;
+            return new Location(LocationType.POI, stateless, coord, locality != null ? locality : defaultPlace,
+                    objectName != null ? objectName : nameElem);
         } else if ("loc".equals(type)) {
             if (locality != null) {
-                locationType = LocationType.ADDRESS;
-                place = null;
-                name = locality;
+                return new Location(LocationType.ADDRESS, stateless, coord, null, locality);
             } else if (nameElem != null) {
-                locationType = LocationType.ADDRESS;
-                place = null;
-                name = nameElem;
+                return new Location(LocationType.ADDRESS, stateless, coord, null, nameElem);
             } else if (coord != null) {
-                locationType = LocationType.COORD;
-                place = null;
-                name = null;
+                return new Location(LocationType.COORD, stateless, coord, null, null);
             } else {
                 throw new IllegalArgumentException("not enough data for type/anyType: " + type);
             }
         } else if ("address".equals(type) || "singlehouse".equals(type)) {
-            locationType = LocationType.ADDRESS;
-            place = locality != null ? locality : defaultPlace;
-            name = objectName + (buildingNumber != null ? " " + buildingNumber : "");
+            return new Location(LocationType.ADDRESS, stateless, coord, locality != null ? locality : defaultPlace,
+                    objectName + (buildingNumber != null ? " " + buildingNumber : ""));
         } else if ("street".equals(type) || "crossing".equals(type)) {
-            locationType = LocationType.ADDRESS;
-            place = locality != null ? locality : defaultPlace;
-            name = objectName != null ? objectName : nameElem;
+            return new Location(LocationType.ADDRESS, stateless, coord, locality != null ? locality : defaultPlace,
+                    objectName != null ? objectName : nameElem);
         } else if ("postcode".equals(type)) {
-            locationType = LocationType.ADDRESS;
-            place = locality != null ? locality : defaultPlace;
-            name = postCode;
+            return new Location(LocationType.ADDRESS, stateless, coord, locality != null ? locality : defaultPlace,
+                    postCode);
         } else if ("buildingname".equals(type)) {
-            locationType = LocationType.ADDRESS;
-            place = locality != null ? locality : defaultPlace;
-            name = buildingName != null ? buildingName : streetName;
+            return new Location(LocationType.ADDRESS, stateless, coord, locality != null ? locality : defaultPlace,
+                    buildingName != null ? buildingName : streetName);
         } else if ("coord".equals(type)) {
-            locationType = LocationType.ADDRESS;
-            place = defaultPlace;
-            name = nameElem;
+            return new Location(LocationType.ADDRESS, stateless, coord, defaultPlace, nameElem);
         } else {
             throw new IllegalArgumentException("unknown type/anyType: " + type);
         }
-
-        return new Location(locationType, id, coord, place, name);
     }
 
     private Location processItdOdvAssignedStop(final XmlPullParser pp) throws XmlPullParserException, IOException {
