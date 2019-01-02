@@ -432,7 +432,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                     }
 
                     result.set(new SuggestLocationsResult(header, locations));
-                } catch (final XmlPullParserException x) {
+                } catch (final XmlPullParserException | ParserException x) {
                     throw new ParserException("cannot parse xml: " + bodyPeek, x);
                 }
             }
@@ -521,7 +521,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                     }
 
                     result.set(new NearbyLocationsResult(header, locations));
-                } catch (final XmlPullParserException x) {
+                } catch (final XmlPullParserException | ParserException x) {
                     throw new ParserException("cannot parse xml: " + bodyPeek, x);
                 }
             }
@@ -592,7 +592,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                     XmlPullUtil.skipExit(pp, "ci");
 
                     result.set(new NearbyLocationsResult(header, stations));
-                } catch (final XmlPullParserException x) {
+                } catch (final XmlPullParserException | ParserException x) {
                     throw new ParserException("cannot parse xml: " + bodyPeek, x);
                 }
             }
@@ -843,7 +843,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                         result.set(new NearbyLocationsResult(header, stations));
                     else
                         result.set(new NearbyLocationsResult(header, stations.subList(0, maxLocations)));
-                } catch (final XmlPullParserException x) {
+                } catch (final XmlPullParserException | ParserException x) {
                     throw new ParserException("cannot parse xml: " + bodyPeek, x);
                 }
             }
@@ -1547,7 +1547,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                     }
 
                     result.set(r);
-                } catch (final XmlPullParserException x) {
+                } catch (final XmlPullParserException | ParserException x) {
                     throw new ParserException("cannot parse xml: " + bodyPeek, x);
                 }
             }
@@ -1637,7 +1637,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                     } else {
                         result.set(new QueryDeparturesResult(header, QueryDeparturesResult.Status.INVALID_STATION));
                     }
-                } catch (final XmlPullParserException x) {
+                } catch (final XmlPullParserException | ParserException x) {
                     throw new ParserException("cannot parse xml: " + bodyPeek, x);
                 }
             }
@@ -2025,7 +2025,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
                 try {
                     result.set(queryTrips(url.build(), body.charStream()));
-                } catch (final XmlPullParserException x) {
+                } catch (final XmlPullParserException | ParserException x) {
                     throw new ParserException("cannot parse xml: " + bodyPeek, x);
                 } catch (final RuntimeException x) {
                     throw new RuntimeException("uncategorized problem while processing " + url, x);
@@ -2049,7 +2049,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
                 try {
                     result.set(queryTripsMobile(url.build(), from, via, to, body.charStream()));
-                } catch (final XmlPullParserException x) {
+                } catch (final XmlPullParserException | ParserException x) {
                     throw new ParserException("cannot parse xml: " + bodyPeek, x);
                 } catch (final RuntimeException x) {
                     throw new RuntimeException("uncategorized problem while processing " + url, x);
@@ -2076,7 +2076,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
                 try {
                     result.set(queryTrips(url.build(), body.charStream()));
-                } catch (final XmlPullParserException x) {
+                } catch (final XmlPullParserException | ParserException x) {
                     throw new ParserException("cannot parse xml: " + bodyPeek, x);
                 } catch (final RuntimeException x) {
                     throw new RuntimeException("uncategorized problem while processing " + url, x);
@@ -2103,7 +2103,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
                 try {
                     result.set(queryTripsMobile(url.build(), null, null, null, body.charStream()));
-                } catch (final XmlPullParserException x) {
+                } catch (final XmlPullParserException | ParserException x) {
                     throw new ParserException("cannot parse xml: " + bodyPeek, x);
                 } catch (final RuntimeException x) {
                     throw new RuntimeException("uncategorized problem while processing " + url, x);
