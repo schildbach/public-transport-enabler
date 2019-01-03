@@ -194,6 +194,7 @@ public class VrnProvider extends AbstractEfaProvider {
         STYLES.put("SS4", new Style(Style.parseColor("#00A651"), Style.BLACK));
         STYLES.put("SS5", new Style(Style.parseColor("#F89735"), Style.WHITE));
         STYLES.put("SS51", new Style(Style.parseColor("#F89735"), Style.WHITE));
+        STYLES.put("SS6", new Style(Style.parseColor("#007EC5"), Style.WHITE));
 
         // Bus Bad Bergzabern
         STYLES.put("B540", new Style(Style.parseColor("#FDC500"), Style.WHITE));
