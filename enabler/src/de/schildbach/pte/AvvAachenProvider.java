@@ -17,11 +17,13 @@
 
 package de.schildbach.pte;
 
+import com.sun.istack.internal.Nullable;
+
+import java.util.Map;
 import java.util.regex.Matcher;
 
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Product;
-
 import de.schildbach.pte.dto.Style;
 import okhttp3.HttpUrl;
 
@@ -69,8 +71,9 @@ public class AvvAachenProvider extends AbstractHafasClientInterfaceProvider {
         return super.splitStationName(address);
     }
 
-	@Override
-	protected Line newLine(String operator, Product product, String name) {
+    @Override
+    protected Line newLine(final String operator, final Product product, final @Nullable String name,
+                           final @Nullable String shortName, final @Nullable String number) {
 		final String normalizedName;
 		if (product == Product.ON_DEMAND && name.startsWith("ALT")) { // bsp. ALT74ALT -> 74ALT
 			normalizedName = name.substring(3);
@@ -80,7 +83,7 @@ public class AvvAachenProvider extends AbstractHafasClientInterfaceProvider {
 			return new Line(null, operator, Product.HIGH_SPEED_TRAIN, name, lineStyle(operator, Product.HIGH_SPEED_TRAIN, name));
 		}
 
-		return super.newLine(operator, product, name);
+		return super.newLine(operator, product, name, shortName, number);
 	}
 
 
