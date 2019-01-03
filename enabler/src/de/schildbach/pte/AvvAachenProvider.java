@@ -17,10 +17,11 @@
 
 package de.schildbach.pte;
 
-import com.sun.istack.internal.Nullable;
-
+import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
+
+import javax.annotation.Nullable;
 
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Product;
