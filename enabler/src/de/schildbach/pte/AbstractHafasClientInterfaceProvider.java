@@ -633,6 +633,10 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
 
                         leg = new Trip.Public(line, destination, departureStop, arrivalStop, intermediateStops, null,
                                 message);
+                    } else if ("DEVI".equals(secType)) {
+                        leg = new Trip.Individual(Trip.Individual.Type.TRANSFER, departureStop.location,
+                                departureStop.getDepartureTime(), arrivalStop.location, arrivalStop.getArrivalTime(),
+                                null, 0);
                     } else if ("WALK".equals(secType) || "TRSF".equals(secType)) {
                         final JSONObject gis = sec.getJSONObject("gis");
                         final int distance = gis.optInt("dist", 0);
