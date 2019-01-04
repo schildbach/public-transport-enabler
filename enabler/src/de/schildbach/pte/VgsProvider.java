@@ -24,6 +24,8 @@ import de.schildbach.pte.dto.Product;
 import okhttp3.HttpUrl;
 
 /**
+ * Provider implementation for Saarfahrplan (Saarland, Germany).
+ * 
  * @author Andreas Schildbach
  */
 public class VgsProvider extends AbstractHafasClientInterfaceProvider {

@@ -29,6 +29,8 @@ import de.schildbach.pte.dto.Style;
 import okhttp3.HttpUrl;
 
 /**
+ * Provider implementation for the Salzburger Verkehrsverbund (Salzburg, Austria).
+ * 
  * @author Andreas Schildbach
  */
 public class SvvProvider extends AbstractHafasClientInterfaceProvider {

@@ -24,6 +24,8 @@ import de.schildbach.pte.dto.Product;
 import okhttp3.HttpUrl;
 
 /**
+ * Provider implementation for the Aachener Verkehrsverbund (Aachen, Germany).
+ * 
  * @author Andreas Schildbach
  */
 public class AvvAachenProvider extends AbstractHafasClientInterfaceProvider {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,6 +35,8 @@ import de.schildbach.pte.dto.Style.Shape;
 import okhttp3.HttpUrl;
 
 /**
+ * Provider implementation for the Verkehrsverbund Bremen/Niedersachsen (Lower Saxony, Germany).
+ * 
  * @author Andreas Schildbach
  */
 public class VbnProvider extends AbstractHafasClientInterfaceProvider {

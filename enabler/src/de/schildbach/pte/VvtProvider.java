@@ -26,6 +26,8 @@ import de.schildbach.pte.dto.Product;
 import okhttp3.HttpUrl;
 
 /**
+ * Provider implementation for the Verkehrsverbund Tirol (Tyrol, Austria).
+ * 
  * @author Andreas Schildbach
  */
 public class VvtProvider extends AbstractHafasClientInterfaceProvider {

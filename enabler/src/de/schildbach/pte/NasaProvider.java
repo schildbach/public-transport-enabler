@@ -24,6 +24,8 @@ import de.schildbach.pte.dto.Product;
 import okhttp3.HttpUrl;
 
 /**
+ * Provider implementation for the Informationssystem Nahverkehr Sachsen-Anhalt (Saxony-Anhalt, Germany).
+ * 
  * @author Andreas Schildbach
  */
 public class NasaProvider extends AbstractHafasClientInterfaceProvider {

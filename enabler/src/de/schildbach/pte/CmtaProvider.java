@@ -22,6 +22,8 @@ import de.schildbach.pte.dto.Product;
 import okhttp3.HttpUrl;
 
 /**
+ * Provider implementation for the Capital Metropolitan Transportation Authority (Austin, Texas, US).
+ * 
  * @author Colin Murphy
  */
 public class CmtaProvider extends AbstractHafasClientInterfaceProvider {

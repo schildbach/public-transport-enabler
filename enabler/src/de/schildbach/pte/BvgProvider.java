@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2017 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +38,8 @@ import de.schildbach.pte.dto.Style.Shape;
 import okhttp3.HttpUrl;
 
 /**
+ * Provider implementation for the Berliner Verkehrsbetriebe (Berlin, Germany).
+ * 
  * @author Andreas Schildbach
  */
 public final class BvgProvider extends AbstractHafasClientInterfaceProvider {

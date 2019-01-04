@@ -29,6 +29,8 @@ import de.schildbach.pte.dto.Style;
 import okhttp3.HttpUrl;
 
 /**
+ * Provider implementation for the Verkehrsverbund Ost-Region (Lower Austria and Burgenland, Austria).
+ * 
  * @author Andreas Schildbach
  */
 public class VorProvider extends AbstractHafasClientInterfaceProvider {

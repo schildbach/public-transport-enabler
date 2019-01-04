@@ -25,6 +25,8 @@ import de.schildbach.pte.dto.Product;
 import okhttp3.HttpUrl;
 
 /**
+ * Provider implementation for Rejseplanen (Denmark).
+ * 
  * @author Andreas Schildbach
  */
 public class DsbProvider extends AbstractHafasClientInterfaceProvider {

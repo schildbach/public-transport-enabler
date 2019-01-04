@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,8 @@ import de.schildbach.pte.dto.Product;
 import okhttp3.HttpUrl;
 
 /**
+ * Provider implementation for the Verkehrsverbund Mittelthüringen (Thuringia, Germany).
+ * 
  * @author Andreas Schildbach
  */
 public class VmtProvider extends AbstractHafasClientInterfaceProvider {

@@ -29,6 +29,8 @@ import de.schildbach.pte.dto.Style;
 import okhttp3.HttpUrl;
 
 /**
+ * Provider implementation for the Ingolstädter Verkehrsgesellschaft (Ingolstadt, Germany).
+ * 
  * @author Andreas Schildbach
  */
 public class InvgProvider extends AbstractHafasClientInterfaceProvider {

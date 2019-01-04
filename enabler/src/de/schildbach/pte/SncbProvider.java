@@ -25,6 +25,8 @@ import de.schildbach.pte.dto.Product;
 import okhttp3.HttpUrl;
 
 /**
+ * Provider implementation for the Nationale Maatschappij der Belgische Spoorwegen (Belgium).
+ * 
  * @author Andreas Schildbach
  */
 public class SncbProvider extends AbstractHafasClientInterfaceProvider {

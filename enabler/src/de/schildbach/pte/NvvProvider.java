@@ -24,6 +24,8 @@ import de.schildbach.pte.dto.Product;
 import okhttp3.HttpUrl;
 
 /**
+ * Provider implementation for the Nordhessischer Verkehrsverbund (North Hesse, Germany).
+ * 
  * @author Andreas Schildbach
  */
 public class NvvProvider extends AbstractHafasClientInterfaceProvider {

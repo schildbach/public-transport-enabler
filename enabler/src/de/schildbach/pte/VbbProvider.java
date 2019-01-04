@@ -29,6 +29,8 @@ import de.schildbach.pte.dto.Product;
 import okhttp3.HttpUrl;
 
 /**
+ * Provider implementation for the Verkehrsverbund Berlin-Brandenburg (Brandenburg, Germany).
+ * 
  * @author Andreas Schildbach
  */
 public class VbbProvider extends AbstractHafasClientInterfaceProvider {

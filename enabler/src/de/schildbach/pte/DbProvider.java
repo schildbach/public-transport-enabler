@@ -28,6 +28,8 @@ import de.schildbach.pte.dto.Product;
 import okhttp3.HttpUrl;
 
 /**
+ * Provider implementation for Deutsche Bahn (Germany).
+ * 
  * @author Andreas Schildbach
  */
 public final class DbProvider extends AbstractHafasClientInterfaceProvider {

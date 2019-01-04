@@ -26,6 +26,8 @@ import de.schildbach.pte.dto.Product;
 import okhttp3.HttpUrl;
 
 /**
+ * Provider implementation for Samtrafiken (Sweden).
+ * 
  * @author Andreas Schildbach
  */
 public class SeProvider extends AbstractHafasClientInterfaceProvider {

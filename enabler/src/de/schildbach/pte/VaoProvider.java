@@ -29,6 +29,8 @@ import de.schildbach.pte.dto.Style;
 import okhttp3.HttpUrl;
 
 /**
+ * Provider implementation for the Verkehrsauskunft Österreich (Austria).
+ * 
  * @author Andreas Schildbach
  */
 public class VaoProvider extends AbstractHafasClientInterfaceProvider {

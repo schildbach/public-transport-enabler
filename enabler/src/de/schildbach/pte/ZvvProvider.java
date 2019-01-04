@@ -29,6 +29,8 @@ import de.schildbach.pte.dto.Style.Shape;
 import okhttp3.HttpUrl;
 
 /**
+ * Provider implementation for the Zürcher Verkehrsverbund (Zurich, Switzerland).
+ * 
  * @author Andreas Schildbach
  */
 public class ZvvProvider extends AbstractHafasClientInterfaceProvider {
