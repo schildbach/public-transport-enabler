@@ -19,6 +19,8 @@ package de.schildbach.pte;
 
 import java.util.regex.Matcher;
 
+import com.google.common.base.Charsets;
+
 import de.schildbach.pte.dto.Product;
 
 import okhttp3.HttpUrl;
@@ -39,6 +41,7 @@ public class VgsProvider extends AbstractHafasClientInterfaceProvider {
         setApiVersion("1.21");
         setApiClient("{\"id\":\"ZPS-SAAR\",\"type\":\"AND\"}");
         setApiAuthorization(jsonApiAuthorization);
+        setRequestMicMacSalt("HJtlubisvxiJxss".getBytes(Charsets.UTF_8));
     }
 
     @Override
