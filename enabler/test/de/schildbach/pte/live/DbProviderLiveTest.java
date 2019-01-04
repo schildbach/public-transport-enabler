@@ -26,7 +26,7 @@ import java.util.EnumSet;
 
 import org.junit.Test;
 
-import de.schildbach.pte.BahnProvider;
+import de.schildbach.pte.DbProvider;
 import de.schildbach.pte.NetworkProvider.Accessibility;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Location;
@@ -42,9 +42,9 @@ import de.schildbach.pte.dto.TripOptions;
 /**
  * @author Andreas Schildbach
  */
-public class BahnProviderLiveTest extends AbstractProviderLiveTest {
-    public BahnProviderLiveTest() {
-        super(new BahnProvider(secretProperty("db.api_authorization")));
+public class DbProviderLiveTest extends AbstractProviderLiveTest {
+    public DbProviderLiveTest() {
+        super(new DbProvider(secretProperty("db.api_authorization")));
     }
 
     @Test

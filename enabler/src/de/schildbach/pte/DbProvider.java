@@ -30,13 +30,13 @@ import okhttp3.HttpUrl;
 /**
  * @author Andreas Schildbach
  */
-public final class BahnProvider extends AbstractHafasClientInterfaceProvider {
+public final class DbProvider extends AbstractHafasClientInterfaceProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("https://reiseauskunft.bahn.de/bin/");
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.REGIONAL_TRAIN, Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.BUS, Product.FERRY,
             Product.SUBWAY, Product.TRAM, Product.ON_DEMAND, null, null, null, null };
 
-    public BahnProvider(final String apiAuthorization) {
+    public DbProvider(final String apiAuthorization) {
         super(NetworkId.DB, API_BASE, PRODUCTS_MAP);
         setApiVersion("1.14");
         setApiClient("{\"id\":\"DB\",\"v\":\"16040000\",\"type\":\"AND\",\"name\":\"DB Navigator\"}");
