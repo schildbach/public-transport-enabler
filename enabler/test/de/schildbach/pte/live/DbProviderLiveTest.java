@@ -190,4 +190,12 @@ public class DbProviderLiveTest extends AbstractProviderLiveTest {
         print(result);
         assertEquals(QueryTripsResult.Status.INVALID_DATE, result.status);
     }
+
+    @Test
+    public void tripBetweenAreas() throws Exception {
+        final Location from = new Location(LocationType.STATION, "8096021"); // FRANKFURT(MAIN)
+        final Location to = new Location(LocationType.STATION, "8096022"); // KÖLN
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
+        print(result);
+    }
 }
