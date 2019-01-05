@@ -40,10 +40,6 @@ public class VbbProvider extends AbstractHafasClientInterfaceProvider {
     private static final Set<Product> ALL_EXCEPT_HIGHSPEED_AND_ONDEMAND = EnumSet
             .complementOf(EnumSet.of(Product.HIGH_SPEED_TRAIN, Product.ON_DEMAND));
 
-    public VbbProvider() {
-        this("{\"type\":\"AID\",\"aid\":\"hafas-vbb-apps\"}");
-    }
-
     public VbbProvider(final String apiAuthorization) {
         super(NetworkId.VBB, API_BASE, PRODUCTS_MAP);
         setApiVersion("1.14");

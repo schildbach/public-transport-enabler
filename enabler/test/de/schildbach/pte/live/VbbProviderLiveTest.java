@@ -40,7 +40,7 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
  */
 public class VbbProviderLiveTest extends AbstractProviderLiveTest {
     public VbbProviderLiveTest() {
-        super(new VbbProvider());
+        super(new VbbProvider(secretProperty("vbb.api_authorization")));
     }
 
     @Test
