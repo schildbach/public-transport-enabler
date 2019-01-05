@@ -39,7 +39,7 @@ import de.schildbach.pte.util.Iso8601Format;
  */
 public class NasaProviderLiveTest extends AbstractProviderLiveTest {
     public NasaProviderLiveTest() {
-        super(new NasaProvider());
+        super(new NasaProvider(secretProperty("nasa.api_authorization")));
     }
 
     @Test
