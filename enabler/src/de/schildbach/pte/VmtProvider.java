@@ -37,7 +37,7 @@ public class VmtProvider extends AbstractHafasClientInterfaceProvider {
 
     public VmtProvider(final String jsonApiAuthorization) {
         super(NetworkId.VMT, API_BASE, PRODUCTS_MAP);
-        setApiVersion("1.14");
+        setApiVersion("1.15");
         setApiClient("{\"name\":\"VMT\",\"type\":\"AND\"}");
         setApiAuthorization(jsonApiAuthorization);
     }
