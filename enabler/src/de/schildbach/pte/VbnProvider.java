@@ -49,11 +49,12 @@ public class VbnProvider extends AbstractHafasClientInterfaceProvider {
             Product.REGIONAL_TRAIN, Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.BUS, Product.FERRY,
             Product.SUBWAY, Product.TRAM, Product.ON_DEMAND };
 
-    public VbnProvider(final String apiAuthorization) {
+    public VbnProvider(final String apiAuthorization, final byte[] salt) {
         super(NetworkId.VBN, API_BASE, PRODUCTS_MAP);
-        setApiVersion("1.13");
+        setApiVersion("1.24");
         setApiClient("{\"id\":\"VBN\",\"type\":\"AND\"}");
         setApiAuthorization(apiAuthorization);
+        setRequestMicMacSalt(salt);
         setStyles(STYLES);
     }
 
