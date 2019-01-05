@@ -42,6 +42,7 @@ public class ZvvProvider extends AbstractHafasClientInterfaceProvider {
     public ZvvProvider(final String jsonApiAuthorization) {
         super(NetworkId.ZVV, API_BASE, PRODUCTS_MAP);
         setApiVersion("1.15");
+        setApiExt("ZVV.2");
         setApiClient("{\"id\":\"ZVV\",\"type\":\"AND\"}");
         setApiAuthorization(jsonApiAuthorization);
         setStyles(STYLES);
