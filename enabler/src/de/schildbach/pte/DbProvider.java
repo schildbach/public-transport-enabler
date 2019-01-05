@@ -21,8 +21,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.google.common.base.Charsets;
-
 import de.schildbach.pte.dto.Product;
 
 import okhttp3.HttpUrl;
@@ -38,13 +36,13 @@ public final class DbProvider extends AbstractHafasClientInterfaceProvider {
             Product.REGIONAL_TRAIN, Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.BUS, Product.FERRY,
             Product.SUBWAY, Product.TRAM, Product.ON_DEMAND, null, null, null, null };
 
-    public DbProvider(final String apiAuthorization) {
+    public DbProvider(final String apiAuthorization, final byte[] salt) {
         super(NetworkId.DB, API_BASE, PRODUCTS_MAP);
         setApiVersion("1.14");
         setApiExt("DB.R15.12.a");
         setApiClient("{\"id\":\"DB\",\"v\":\"16040000\",\"type\":\"AND\",\"name\":\"DB Navigator\"}");
         setApiAuthorization(apiAuthorization);
-        setRequestChecksumSalt("bdI8UVj40K5fvxwf".getBytes(Charsets.UTF_8));
+        setRequestChecksumSalt(salt);
     }
 
     @Override

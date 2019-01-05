@@ -22,8 +22,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.google.common.io.BaseEncoding;
-
 import de.schildbach.pte.dto.Product;
 
 import okhttp3.HttpUrl;
@@ -40,12 +38,12 @@ public class VbbProvider extends AbstractHafasClientInterfaceProvider {
     private static final Set<Product> ALL_EXCEPT_HIGHSPEED_AND_ONDEMAND = EnumSet
             .complementOf(EnumSet.of(Product.HIGH_SPEED_TRAIN, Product.ON_DEMAND));
 
-    public VbbProvider(final String apiAuthorization) {
+    public VbbProvider(final String apiAuthorization, final byte[] salt) {
         super(NetworkId.VBB, API_BASE, PRODUCTS_MAP);
         setApiVersion("1.14");
         setApiClient("{\"id\":\"VBB\",\"type\":\"AND\"}");
         setApiAuthorization(apiAuthorization);
-        setRequestMicMacSalt(BaseEncoding.base16().lowerCase().decode("5243544a4d3266467846667878516649"));
+        setRequestMicMacSalt(salt);
         httpClient.setTrustAllCertificates(true);
     }
 

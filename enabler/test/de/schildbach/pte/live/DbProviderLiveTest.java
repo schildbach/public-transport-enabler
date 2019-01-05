@@ -26,6 +26,7 @@ import java.util.EnumSet;
 
 import org.junit.Test;
 
+import de.schildbach.pte.AbstractHafasClientInterfaceProvider;
 import de.schildbach.pte.DbProvider;
 import de.schildbach.pte.NetworkProvider.Accessibility;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
@@ -44,7 +45,8 @@ import de.schildbach.pte.dto.TripOptions;
  */
 public class DbProviderLiveTest extends AbstractProviderLiveTest {
     public DbProviderLiveTest() {
-        super(new DbProvider(secretProperty("db.api_authorization")));
+        super(new DbProvider(secretProperty("db.api_authorization"), AbstractHafasClientInterfaceProvider
+                .decryptSalt(secretProperty("db.encrypted_salt"), secretProperty("hci.salt_encryption_key"))));
     }
 
     @Test

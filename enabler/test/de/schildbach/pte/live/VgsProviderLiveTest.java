@@ -23,6 +23,7 @@ import java.util.Date;
 
 import org.junit.Test;
 
+import de.schildbach.pte.AbstractHafasClientInterfaceProvider;
 import de.schildbach.pte.VgsProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
@@ -36,7 +37,8 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
  */
 public class VgsProviderLiveTest extends AbstractProviderLiveTest {
     public VgsProviderLiveTest() {
-        super(new VgsProvider(secretProperty("vgs.api_authorization")));
+        super(new VgsProvider(secretProperty("vgs.api_authorization"), AbstractHafasClientInterfaceProvider
+                .decryptSalt(secretProperty("vgs.encrypted_salt"), secretProperty("hci.salt_encryption_key"))));
     }
 
     @Test

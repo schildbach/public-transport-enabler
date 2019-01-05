@@ -21,8 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 
-import com.google.common.base.Charsets;
-
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
 
@@ -37,12 +35,12 @@ public class InvgProvider extends AbstractHafasClientInterfaceProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("https://fpa.invg.de/bin/");
     private static final Product[] PRODUCTS_MAP = { Product.BUS, null, null, Product.REGIONAL_TRAIN };
 
-    public InvgProvider(final String apiAuthorization) {
+    public InvgProvider(final String apiAuthorization, final byte[] salt) {
         super(NetworkId.INVG, API_BASE, PRODUCTS_MAP);
         setApiVersion("1.14");
         setApiClient("{\"id\":\"INVG\",\"type\":\"AND\"}");
         setApiAuthorization(apiAuthorization);
-        setRequestMicMacSalt("ERxotxpwFT7uYRsI".getBytes(Charsets.UTF_8));
+        setRequestMicMacSalt(salt);
         setStyles(STYLES);
     }
 

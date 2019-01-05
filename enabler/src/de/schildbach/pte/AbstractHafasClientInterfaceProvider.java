@@ -22,6 +22,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -39,6 +40,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -978,6 +982,21 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
         @Override
         public boolean canQueryEarlier() {
             return earlierContext != null;
+        }
+    }
+
+    public static final byte[] decryptSalt(final String encryptedSalt, final String saltEncryptionKey) {
+        try {
+            final byte[] key = BaseEncoding.base16().lowerCase().decode(saltEncryptionKey);
+            checkState(key.length * 8 == 128, "encryption key must be 128 bits");
+            final SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
+            final IvParameterSpec ivParameterSpec = new IvParameterSpec(new byte[16]);
+            final Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            cipher.init(Cipher.DECRYPT_MODE, secretKey, ivParameterSpec);
+            return cipher.doFinal(BaseEncoding.base64().decode(encryptedSalt));
+        } catch (final GeneralSecurityException x) {
+            // should not happen
+            throw new RuntimeException(x);
         }
     }
 }
