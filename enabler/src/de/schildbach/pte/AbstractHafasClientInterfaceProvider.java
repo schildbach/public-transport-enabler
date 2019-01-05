@@ -112,9 +112,17 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
         this.apiBase = checkNotNull(apiBase);
     }
 
+    public HttpUrl getApiBase() {
+        return apiBase;
+    }
+
     protected AbstractHafasClientInterfaceProvider setApiEndpoint(final String apiEndpoint) {
         this.apiEndpoint = checkNotNull(apiEndpoint);
         return this;
+    }
+
+    public String getApiEndpoint() {
+        return apiEndpoint;
     }
 
     protected AbstractHafasClientInterfaceProvider setApiVersion(final String apiVersion) {
@@ -123,9 +131,17 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
         return this;
     }
 
+    public String getApiVersion() {
+        return apiVersion;
+    }
+
     protected AbstractHafasClientInterfaceProvider setApiExt(final String apiExt) {
         this.apiExt = checkNotNull(apiExt);
         return this;
+    }
+
+    public String getApiExt() {
+        return apiExt;
     }
 
     protected AbstractHafasClientInterfaceProvider setApiAuthorization(final String apiAuthorization) {
@@ -133,9 +149,17 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
         return this;
     }
 
+    public String getApiAuthorization() {
+        return apiAuthorization;
+    }
+
     protected AbstractHafasClientInterfaceProvider setApiClient(final String apiClient) {
         this.apiClient = apiClient;
         return this;
+    }
+
+    public String getApiClient() {
+        return apiClient;
     }
 
     protected AbstractHafasClientInterfaceProvider setRequestChecksumSalt(final byte[] requestChecksumSalt) {
@@ -143,9 +167,17 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
         return this;
     }
 
+    public byte[] getRequestChecksumSalt() {
+        return requestChecksumSalt;
+    }
+
     protected AbstractHafasClientInterfaceProvider setRequestMicMacSalt(final byte[] requestMicMacSalt) {
         this.requestMicMacSalt = requestMicMacSalt;
         return this;
+    }
+
+    public byte[] getRequestMicMacSalt() {
+        return requestMicMacSalt;
     }
 
     @Override
