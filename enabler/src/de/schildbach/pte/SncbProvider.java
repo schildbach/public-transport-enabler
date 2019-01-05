@@ -35,10 +35,6 @@ public class SncbProvider extends AbstractHafasClientInterfaceProvider {
             null, Product.BUS, Product.REGIONAL_TRAIN, null, Product.SUBWAY, Product.BUS, Product.TRAM, null, null,
             null, null, null };
 
-    public SncbProvider() {
-        this("{\"type\":\"AID\",\"aid\":\"sncb-mobi\"}");
-    }
-
     public SncbProvider(final String jsonApiAuthorization) {
         super(NetworkId.SNCB, API_BASE, PRODUCTS_MAP);
         setApiVersion("1.14");
