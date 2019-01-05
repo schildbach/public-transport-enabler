@@ -38,8 +38,8 @@ public final class DbProvider extends AbstractHafasClientInterfaceProvider {
 
     public DbProvider(final String apiAuthorization, final byte[] salt) {
         super(NetworkId.DB, API_BASE, PRODUCTS_MAP);
-        setApiVersion("1.14");
-        setApiExt("DB.R15.12.a");
+        setApiVersion("1.15");
+        setApiExt("DB.R18.06.a");
         setApiClient("{\"id\":\"DB\",\"v\":\"16040000\",\"type\":\"AND\",\"name\":\"DB Navigator\"}");
         setApiAuthorization(apiAuthorization);
         setRequestChecksumSalt(salt);
