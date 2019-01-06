@@ -41,13 +41,17 @@ import okhttp3.HttpUrl;
  */
 public class VbnProvider extends AbstractHafasClientInterfaceProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("https://fahrplaner.vbn.de/hafas/");
-    // http://fahrplaner.vsninfo.de/hafas/
-    // http://fahrplan.rsag-online.de/hafas/
-    // http://fahrplanauskunft.verkehrsverbund-warnow.de/bin/
-
-    private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
-            Product.REGIONAL_TRAIN, Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.BUS, Product.FERRY,
-            Product.SUBWAY, Product.TRAM, Product.ON_DEMAND };
+    private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, // ICE
+            Product.HIGH_SPEED_TRAIN, // IC / EC / CNL
+            Product.HIGH_SPEED_TRAIN, // IR, sonstiger Schnellzug
+            Product.REGIONAL_TRAIN, // Nahverkehr
+            Product.SUBURBAN_TRAIN, // S-Bahn
+            Product.BUS, // Bus
+            Product.FERRY, // Schiff
+            Product.SUBWAY, // U-Bahn
+            Product.TRAM, // Straßen-/ Stadtbahn
+            Product.ON_DEMAND // Anrufverkehr
+    };
 
     public VbnProvider(final String apiAuthorization, final byte[] salt) {
         super(NetworkId.VBN, API_BASE, PRODUCTS_MAP);
