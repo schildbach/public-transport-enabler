@@ -845,7 +845,8 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
     }
 
     @Override
-    public SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException {
+    public SuggestLocationsResult suggestLocations(final CharSequence constraint, final int maxLocations)
+            throws IOException {
         final String nameCstr = constraint.toString();
 
         final HttpUrl.Builder url = url().addPathSegment("places");
@@ -1008,7 +1009,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
                 Location newFrom = null, newTo = null;
 
                 if (!from.isIdentified() && from.hasName()) {
-                    ambiguousFrom = suggestLocations(from.name).getLocations();
+                    ambiguousFrom = suggestLocations(from.name, 0).getLocations();
                     if (ambiguousFrom.isEmpty())
                         return new QueryTripsResult(resultHeader, QueryTripsResult.Status.UNKNOWN_FROM);
                     if (ambiguousFrom.size() == 1 && ambiguousFrom.get(0).isIdentified())
@@ -1016,7 +1017,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
                 }
 
                 if (!to.isIdentified() && to.hasName()) {
-                    ambiguousTo = suggestLocations(to.name).getLocations();
+                    ambiguousTo = suggestLocations(to.name, 0).getLocations();
                     if (ambiguousTo.isEmpty())
                         return new QueryTripsResult(resultHeader, QueryTripsResult.Status.UNKNOWN_TO);
                     if (ambiguousTo.size() == 1 && ambiguousTo.get(0).isIdentified())

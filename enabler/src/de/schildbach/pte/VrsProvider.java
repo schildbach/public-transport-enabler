@@ -573,13 +573,14 @@ public class VrsProvider extends AbstractNetworkProvider {
     }
 
     @Override
-    public SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException {
+    public SuggestLocationsResult suggestLocations(final CharSequence constraint, final int maxLocations)
+            throws IOException {
         // sc = station count
-        final int sc = 10;
+        final int sc = maxLocations / 2;
         // ac = address count
-        final int ac = 5;
+        final int ac = maxLocations / 4;
         // pc = points of interest count
-        final int pc = 5;
+        final int pc = maxLocations / 4;
         // t = sap (stops and/or addresses and/or pois)
         final HttpUrl.Builder url = API_BASE.newBuilder();
         url.addQueryParameter("eID", "tx_vrsinfo_ass2_objects");
@@ -1126,7 +1127,7 @@ public class VrsProvider extends AbstractNetworkProvider {
         } else if (loc.coord != null) {
             return String.format(Locale.ENGLISH, "%f,%f", loc.getLatAsDouble(), loc.getLonAsDouble());
         } else {
-            SuggestLocationsResult suggestLocationsResult = suggestLocations(loc.name);
+            SuggestLocationsResult suggestLocationsResult = suggestLocations(loc.name, 0);
             final List<Location> suggestedLocations = suggestLocationsResult.getLocations();
             if (suggestedLocations.size() == 1) {
                 return suggestedLocations.get(0).id;

@@ -112,9 +112,14 @@ public interface NetworkProvider {
      * 
      * @param constraint
      *            input by user so far
+     * @param maxLocations
+     *            maximum number of locations to suggest or {@code 0}
      * @return location suggestions
      * @throws IOException
      */
+    SuggestLocationsResult suggestLocations(CharSequence constraint, int maxLocations) throws IOException;
+
+    @Deprecated
     SuggestLocationsResult suggestLocations(CharSequence constraint) throws IOException;
 
     /**

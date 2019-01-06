@@ -72,8 +72,9 @@ public class StvProvider extends AbstractEfaProvider {
     }
 
     @Override
-    public SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException {
-        return mobileStopfinderRequest(new Location(LocationType.ANY, null, null, constraint.toString()));
+    public SuggestLocationsResult suggestLocations(final CharSequence constraint, final int maxLocations)
+            throws IOException {
+        return mobileStopfinderRequest(new Location(LocationType.ANY, null, null, constraint.toString()), maxLocations);
     }
 
     @Override

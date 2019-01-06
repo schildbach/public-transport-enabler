@@ -90,7 +90,7 @@ public class SydneyProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void suggestLocationsEmpty() throws Exception {
-        final SuggestLocationsResult result = provider.suggestLocations("kreide");
+        final SuggestLocationsResult result = suggestLocations("kreide");
         print(result);
     }
 
