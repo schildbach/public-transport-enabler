@@ -32,9 +32,17 @@ import okhttp3.HttpUrl;
  */
 public final class DbProvider extends AbstractHafasClientInterfaceProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("https://reiseauskunft.bahn.de/bin/");
-    private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
-            Product.REGIONAL_TRAIN, Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.BUS, Product.FERRY,
-            Product.SUBWAY, Product.TRAM, Product.ON_DEMAND, null, null, null, null };
+    private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, // ICE-Züge
+            Product.HIGH_SPEED_TRAIN, // Intercity- und Eurocityzüge
+            Product.HIGH_SPEED_TRAIN, // Interregio- und Schnellzüge
+            Product.REGIONAL_TRAIN, // Nahverkehr, sonstige Züge
+            Product.SUBURBAN_TRAIN, // S-Bahn
+            Product.BUS, // Busse
+            Product.FERRY, // Schiffe
+            Product.SUBWAY, // U-Bahnen
+            Product.TRAM, // Straßenbahnen
+            Product.ON_DEMAND, // Anruf-Sammeltaxi
+            null, null, null, null };
 
     public DbProvider(final String apiAuthorization, final byte[] salt) {
         super(NetworkId.DB, API_BASE, PRODUCTS_MAP);
