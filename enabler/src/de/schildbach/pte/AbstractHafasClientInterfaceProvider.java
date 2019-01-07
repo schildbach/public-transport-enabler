@@ -1015,14 +1015,16 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
             final int oprIndex = prod.optInt("oprX", -1);
             final String operator = oprIndex != -1 ? operators.get(oprIndex) : null;
             final int cls = prod.optInt("cls", -1);
+            final JSONObject prodCtx = prod.optJSONObject("prodCtx");
+            final String id = prodCtx != null ? prodCtx.optString("lineId", null) : null;
             final Product product = cls != -1 ? intToProduct(cls) : null;
-            lines.add(newLine(operator, product, name, nameS, number, style));
+            lines.add(newLine(id, operator, product, name, nameS, number, style));
         }
 
         return lines;
     }
 
-    protected Line newLine(final String operator, final Product product, final @Nullable String name,
+    protected Line newLine(final String id, final String operator, final Product product, final @Nullable String name,
             final @Nullable String shortName, final @Nullable String number, final Style style) {
         final String longName;
         if (name != null)
@@ -1041,10 +1043,10 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                 label = number;
             else
                 label = name;
-            return new Line(null, operator, product, label, longName, lineStyle(operator, product, label));
+            return new Line(id, operator, product, label, longName, lineStyle(operator, product, label));
         } else {
             // Otherwise the longer label is fine
-            return new Line(null, operator, product, name, longName, lineStyle(operator, product, name));
+            return new Line(id, operator, product, name, longName, lineStyle(operator, product, name));
         }
     }
 

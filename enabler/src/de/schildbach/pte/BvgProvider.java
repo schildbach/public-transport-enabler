@@ -109,32 +109,32 @@ public final class BvgProvider extends AbstractHafasClientInterfaceProvider {
     }
 
     @Override
-    protected Line newLine(final String operator, final Product product, final @Nullable String name,
+    protected Line newLine(final String id, final String operator, final Product product, final @Nullable String name,
             final @Nullable String shortName, final @Nullable String number, final Style style) {
-        final Line line = super.newLine(operator, product, name, shortName, number, style);
+        final Line line = super.newLine(id, operator, product, name, shortName, number, style);
 
         if (line.product == Product.SUBURBAN_TRAIN) {
             if ("S41".equals(line.label))
-                return new Line(null, line.network, line.product, line.label, line.name, line.style,
+                return new Line(id, line.network, line.product, line.label, line.name, line.style,
                         Sets.newHashSet(Attr.CIRCLE_CLOCKWISE), line.message);
             if ("S42".equals(line.label))
-                return new Line(null, line.network, line.product, line.label, line.name, line.style,
+                return new Line(id, line.network, line.product, line.label, line.name, line.style,
                         Sets.newHashSet(Attr.CIRCLE_ANTICLOCKWISE), line.message);
             if ("S9".equals(line.label))
-                return new Line(null, line.network, line.product, line.label, line.name, line.style,
+                return new Line(id, line.network, line.product, line.label, line.name, line.style,
                         Sets.newHashSet(Attr.LINE_AIRPORT), line.message);
             if ("S45".equals(line.label))
-                return new Line(null, line.network, line.product, line.label, line.name, line.style,
+                return new Line(id, line.network, line.product, line.label, line.name, line.style,
                         Sets.newHashSet(Attr.LINE_AIRPORT), line.message);
         } else if (line.product == Product.BUS) {
             if ("S41".equals(line.label))
-                return new Line(null, line.network, line.product, line.label, line.name, line.style,
+                return new Line(id, line.network, line.product, line.label, line.name, line.style,
                         Sets.newHashSet(Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_CLOCKWISE), line.message);
             if ("S42".equals(line.label))
-                return new Line(null, line.network, line.product, line.label, line.name, line.style,
+                return new Line(id, line.network, line.product, line.label, line.name, line.style,
                         Sets.newHashSet(Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_ANTICLOCKWISE), line.message);
             if ("TXL".equals(line.label))
-                return new Line(null, line.network, line.product, line.label, line.name, line.style,
+                return new Line(id, line.network, line.product, line.label, line.name, line.style,
                         Sets.newHashSet(Attr.LINE_AIRPORT), line.message);
         }
 
