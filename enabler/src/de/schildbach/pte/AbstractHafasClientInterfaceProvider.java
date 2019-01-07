@@ -265,11 +265,12 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
 
             final JSONObject common = res.getJSONObject("common");
             /* final List<String[]> remarks = */ parseRemList(common.getJSONArray("remL"));
+            final JSONArray crdSysList = common.optJSONArray("crdSysL");
 
             final JSONArray locL = res.optJSONArray("locL");
             final List<Location> locations;
             if (locL != null) {
-                locations = parseLocList(locL);
+                locations = parseLocList(locL, crdSysList);
 
                 // filter unwanted location types
                 for (Iterator<Location> i = locations.iterator(); i.hasNext();) {
@@ -345,6 +346,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
             final List<Style> styles = parseIcoList(common.getJSONArray("icoL"));
             final List<String> operators = parseOpList(common.getJSONArray("opL"));
             final List<Line> lines = parseProdList(common.getJSONArray("prodL"), operators, styles);
+            final JSONArray crdSysList = common.optJSONArray("crdSysL");
             final JSONArray locList = common.getJSONArray("locL");
 
             final JSONArray jnyList = res.optJSONArray("jnyL");
@@ -369,7 +371,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                     final int dProdX = stbStop.optInt("dProdX", -1);
                     final Line line = dProdX != -1 ? lines.get(dProdX) : null;
 
-                    final Location location = equivs ? parseLoc(locList, stbStop.getInt("locX"), null)
+                    final Location location = equivs ? parseLoc(locList, stbStop.getInt("locX"), null, crdSysList)
                             : new Location(LocationType.STATION, stationId);
                     final Position position = normalizePosition(stbStopPlatformS);
 
@@ -381,7 +383,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                         final int lastStopIdx = stopList.getJSONObject(stopList.length() - 1).getInt("locX");
                         final String lastStopName = locList.getJSONObject(lastStopIdx).getString("name");
                         if (jnyDirTxt.equals(lastStopName))
-                            destination = parseLoc(locList, lastStopIdx, null);
+                            destination = parseLoc(locList, lastStopIdx, null, crdSysList);
                     }
                     // otherwise split unidentified destination as if it was a station and use it
                     if (destination == null) {
@@ -476,7 +478,8 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
             /* final List<String[]> remarks = */ parseRemList(common.getJSONArray("remL"));
 
             final JSONObject match = res.getJSONObject("match");
-            final List<Location> locations = parseLocList(match.optJSONArray("locL"));
+            final JSONArray crdSysList = common.optJSONArray("crdSysL");
+            final List<Location> locations = parseLocList(match.optJSONArray("locL"), crdSysList);
             final List<SuggestedLocation> suggestedLocations = new ArrayList<>(locations.size());
             for (final Location location : locations)
                 suggestedLocations.add(new SuggestedLocation(location));
@@ -613,6 +616,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
             final JSONObject common = res.getJSONObject("common");
             final List<String[]> remarks = parseRemList(common.getJSONArray("remL"));
             final List<Style> styles = parseIcoList(common.getJSONArray("icoL"));
+            final JSONArray crdSysList = common.optJSONArray("crdSysL");
             final JSONArray locList = common.getJSONArray("locL");
             final List<String> operators = parseOpList(common.getJSONArray("opL"));
             final List<Line> lines = parseProdList(common.getJSONArray("prodL"), operators, styles);
@@ -621,8 +625,9 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
             final List<Trip> trips = new ArrayList<>(outConList.length());
             for (int iOutCon = 0; iOutCon < outConList.length(); iOutCon++) {
                 final JSONObject outCon = outConList.getJSONObject(iOutCon);
-                final Location tripFrom = parseLoc(locList, outCon.getJSONObject("dep").getInt("locX"), null);
-                final Location tripTo = parseLoc(locList, outCon.getJSONObject("arr").getInt("locX"), null);
+                final Location tripFrom = parseLoc(locList, outCon.getJSONObject("dep").getInt("locX"), null,
+                        crdSysList);
+                final Location tripTo = parseLoc(locList, outCon.getJSONObject("arr").getInt("locX"), null, crdSysList);
 
                 c.clear();
                 ParserUtils.parseIsoDate(c, outCon.getString("date"));
@@ -635,10 +640,10 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                     final String secType = sec.getString("type");
 
                     final JSONObject secDep = sec.getJSONObject("dep");
-                    final Stop departureStop = parseJsonStop(secDep, locList, c, baseDate);
+                    final Stop departureStop = parseJsonStop(secDep, locList, crdSysList, c, baseDate);
 
                     final JSONObject secArr = sec.getJSONObject("arr");
-                    final Stop arrivalStop = parseJsonStop(secArr, locList, c, baseDate);
+                    final Stop arrivalStop = parseJsonStop(secArr, locList, crdSysList, c, baseDate);
 
                     final Trip.Leg leg;
                     if ("JNY".equals(secType)) {
@@ -661,7 +666,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                             intermediateStops = new ArrayList<>(stopList.length());
                             for (int iStop = 1; iStop < stopList.length() - 1; iStop++) {
                                 final JSONObject stop = stopList.getJSONObject(iStop);
-                                final Stop intermediateStop = parseJsonStop(stop, locList, c, baseDate);
+                                final Stop intermediateStop = parseJsonStop(stop, locList, crdSysList, c, baseDate);
                                 intermediateStops.add(intermediateStop);
                             }
                         } else {
@@ -850,9 +855,9 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
         throw new RuntimeException("cannot parse: '" + str + "'");
     }
 
-    private Stop parseJsonStop(final JSONObject json, final JSONArray locList, final Calendar c, final Date baseDate)
-            throws JSONException {
-        final Location location = parseLoc(locList, json.getInt("locX"), null);
+    private Stop parseJsonStop(final JSONObject json, final JSONArray locList, final JSONArray crdSysList,
+            final Calendar c, final Date baseDate) throws JSONException {
+        final Location location = parseLoc(locList, json.getInt("locX"), null, crdSysList);
 
         final boolean arrivalCancelled = json.optBoolean("aCncl", false);
         final Date plannedArrivalTime = parseJsonTime(c, baseDate, json.optString("aTimeS", null));
@@ -923,15 +928,15 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
             return 0;
     }
 
-    private List<Location> parseLocList(final JSONArray locList) throws JSONException {
+    private List<Location> parseLocList(final JSONArray locList, final JSONArray crdSysList) throws JSONException {
         final List<Location> locations = new ArrayList<>(locList.length());
         for (int iLoc = 0; iLoc < locList.length(); iLoc++)
-            locations.add(parseLoc(locList, iLoc, null));
+            locations.add(parseLoc(locList, iLoc, null, crdSysList));
         return locations;
     }
 
     private Location parseLoc(final JSONArray locList, final int locListIndex,
-            @Nullable Set<Integer> previousLocListIndexes) throws JSONException {
+            @Nullable Set<Integer> previousLocListIndexes, final JSONArray crdSysList) throws JSONException {
         final JSONObject loc = locList.getJSONObject(locListIndex);
         final String type = loc.getString("type");
 
@@ -946,7 +951,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                     previousLocListIndexes = new HashSet<>();
                 if (!previousLocListIndexes.contains(mMastLocX)) {
                     previousLocListIndexes.add(locListIndex);
-                    return parseLoc(locList, mMastLocX, previousLocListIndexes);
+                    return parseLoc(locList, mMastLocX, previousLocListIndexes, crdSysList);
                 }
             }
             locationType = LocationType.STATION;
@@ -969,11 +974,18 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
         }
 
         final JSONObject crd = loc.optJSONObject("crd");
-        if (crd != null)
+        if (crd != null) {
+            final int crdSysX = loc.optInt("crdSysX", -1);
+            if (crdSysX != -1) {
+                final String crdSysType = crdSysList.getJSONObject(crdSysX).getString("type");
+                if (!"WGS84".equals(crdSysType))
+                    throw new RuntimeException("unknown type: " + crdSysType);
+            }
             return new Location(locationType, id, Point.from1E6(crd.getInt("y"), crd.getInt("x")), placeAndName[0],
                     placeAndName[1], products);
-        else
+        } else {
             return new Location(LocationType.STATION, id, null, placeAndName[0], placeAndName[1], products);
+        }
     }
 
     private List<String> parseOpList(final JSONArray opList) throws JSONException {
