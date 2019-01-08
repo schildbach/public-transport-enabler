@@ -43,6 +43,8 @@ import javax.net.ssl.X509TrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.primitives.Ints;
+
 import de.schildbach.pte.exception.BlockedException;
 import de.schildbach.pte.exception.InternalErrorException;
 import de.schildbach.pte.exception.NotFoundException;
@@ -81,6 +83,15 @@ public final class HttpClient {
     @Nullable
     private CertificatePinner certificatePinner = null;
     private boolean sslAcceptAllHostnames = false;
+
+    private static final List<Integer> RESPONSE_CODES_BLOCKED = Ints.asList(HttpURLConnection.HTTP_BAD_REQUEST,
+            HttpURLConnection.HTTP_UNAUTHORIZED, HttpURLConnection.HTTP_FORBIDDEN,
+            HttpURLConnection.HTTP_NOT_ACCEPTABLE, HttpURLConnection.HTTP_UNAVAILABLE);
+    private static final List<Integer> RESPONSE_CODES_NOT_FOUND = Ints.asList(HttpURLConnection.HTTP_NOT_FOUND);
+    private static final List<Integer> RESPONSE_CODES_REDIRECT = Ints.asList(HttpURLConnection.HTTP_MOVED_PERM,
+            HttpURLConnection.HTTP_MOVED_TEMP);
+    private static final List<Integer> RESPONSE_CODES_INTERNAL_ERROR = Ints
+            .asList(HttpURLConnection.HTTP_INTERNAL_ERROR, HttpURLConnection.HTTP_BAD_GATEWAY);
 
     private static final OkHttpClient OKHTTP_CLIENT;
     static {
@@ -261,19 +272,13 @@ public final class HttpClient {
 
                 callback.onSuccessful(bodyPeek, response.body());
                 return;
-            } else if (responseCode == HttpURLConnection.HTTP_BAD_REQUEST
-                    || responseCode == HttpURLConnection.HTTP_UNAUTHORIZED
-                    || responseCode == HttpURLConnection.HTTP_FORBIDDEN
-                    || responseCode == HttpURLConnection.HTTP_NOT_ACCEPTABLE
-                    || responseCode == HttpURLConnection.HTTP_UNAVAILABLE) {
+            } else if (RESPONSE_CODES_BLOCKED.contains(responseCode)) {
                 throw new BlockedException(url, bodyPeek);
-            } else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
+            } else if (RESPONSE_CODES_NOT_FOUND.contains(responseCode)) {
                 throw new NotFoundException(url, bodyPeek);
-            } else if (responseCode == HttpURLConnection.HTTP_MOVED_PERM
-                    || responseCode == HttpURLConnection.HTTP_MOVED_TEMP) {
+            } else if (RESPONSE_CODES_REDIRECT.contains(responseCode)) {
                 throw new UnexpectedRedirectException(url, HttpUrl.parse(response.header("Location")));
-            } else if (responseCode == HttpURLConnection.HTTP_INTERNAL_ERROR
-                    || responseCode == HttpURLConnection.HTTP_BAD_GATEWAY) {
+            } else if (RESPONSE_CODES_INTERNAL_ERROR.contains(responseCode)) {
                 throw new InternalErrorException(url, bodyPeek);
             } else {
                 final String message = "got response: " + responseCode + " " + response.message();
