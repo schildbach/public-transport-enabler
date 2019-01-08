@@ -359,7 +359,8 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                     if (cancelled)
                         continue;
 
-                    final String stbStopPlatformS = stbStop.optString("dPlatfS", null);
+                    final Position position = parseJsonPosition(stbStop, "dPlatfS", "dPltfS");
+
                     c.clear();
                     ParserUtils.parseIsoDate(c, jny.getString("date"));
                     final Date baseDate = c.getTime();
@@ -373,7 +374,6 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
 
                     final Location location = equivs ? parseLoc(locList, stbStop.getInt("locX"), null, crdSysList)
                             : new Location(LocationType.STATION, stationId);
-                    final Position position = normalizePosition(stbStopPlatformS);
 
                     final String jnyDirTxt = jny.getString("dirTxt");
                     Location destination = null;
@@ -855,6 +855,17 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
         throw new RuntimeException("cannot parse: '" + str + "'");
     }
 
+    private Position parseJsonPosition(final JSONObject json, final String platfName, final String pltfName)
+            throws JSONException {
+        final JSONObject pltf = json.optJSONObject(pltfName);
+        if (pltf != null)
+            return new Position(pltf.getString("txt")); // TODO type
+        final String platf = json.optString(platfName, null);
+        if (platf != null)
+            return normalizePosition(platf);
+        return null;
+    }
+
     private Stop parseJsonStop(final JSONObject json, final JSONArray locList, final JSONArray crdSysList,
             final Calendar c, final Date baseDate) throws JSONException {
         final Location location = parseLoc(locList, json.getInt("locX"), null, crdSysList);
@@ -862,14 +873,14 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
         final boolean arrivalCancelled = json.optBoolean("aCncl", false);
         final Date plannedArrivalTime = parseJsonTime(c, baseDate, json.optString("aTimeS", null));
         final Date predictedArrivalTime = parseJsonTime(c, baseDate, json.optString("aTimeR", null));
-        final Position plannedArrivalPosition = normalizePosition(json.optString("aPlatfS", null));
-        final Position predictedArrivalPosition = normalizePosition(json.optString("aPlatfR", null));
+        final Position plannedArrivalPosition = parseJsonPosition(json, "aPlatfS", "aPltfS");
+        final Position predictedArrivalPosition = parseJsonPosition(json, "aPlatfR", "aPltfR");
 
         final boolean departureCancelled = json.optBoolean("dCncl", false);
         final Date plannedDepartureTime = parseJsonTime(c, baseDate, json.optString("dTimeS", null));
         final Date predictedDepartureTime = parseJsonTime(c, baseDate, json.optString("dTimeR", null));
-        final Position plannedDeparturePosition = normalizePosition(json.optString("dPlatfS", null));
-        final Position predictedDeparturePosition = normalizePosition(json.optString("dPlatfR", null));
+        final Position plannedDeparturePosition = parseJsonPosition(json, "dPlatfS", "dPltfS");
+        final Position predictedDeparturePosition = parseJsonPosition(json, "dPlatfR", "dPltfR");
 
         return new Stop(location, plannedArrivalTime, predictedArrivalTime, plannedArrivalPosition,
                 predictedArrivalPosition, arrivalCancelled, plannedDepartureTime, predictedDepartureTime,
