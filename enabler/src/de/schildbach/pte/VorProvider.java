@@ -41,7 +41,8 @@ public class VorProvider extends AbstractHafasClientInterfaceProvider {
 
     public VorProvider(final String apiAuthorization) {
         super(NetworkId.VOR, API_BASE, PRODUCTS_MAP);
-        setApiVersion("1.15");
+        setApiVersion("1.20");
+        setApiExt("VAO.9");
         setApiClient("{\"id\":\"VAO\",\"l\":\"vs_anachb\",\"type\":\"AND\"}");
         setApiAuthorization(apiAuthorization);
         setStyles(STYLES);
