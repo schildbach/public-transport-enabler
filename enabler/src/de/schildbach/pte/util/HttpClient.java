@@ -133,6 +133,21 @@ public final class HttpClient {
             }
         };
 
+        final Interceptor retryInterceptor = new Interceptor() {
+            @Override
+            public Response intercept(final Chain chain) throws IOException {
+                final Request request = chain.request();
+                final Response response = chain.proceed(request);
+                if (response.isSuccessful() && response.peekBody(1).bytes().length == 0) {
+                    log.info("Got empty response, retrying {}", request.url());
+                    response.close();
+                    return chain.proceed(request);
+                } else {
+                    return response;
+                }
+            }
+        };
+
         final OkHttpClient.Builder builder = new OkHttpClient.Builder();
         builder.followRedirects(false);
         builder.followSslRedirects(true);
@@ -140,6 +155,7 @@ public final class HttpClient {
         builder.writeTimeout(30, TimeUnit.SECONDS);
         builder.readTimeout(30, TimeUnit.SECONDS);
         builder.addNetworkInterceptor(loggingInterceptor);
+        builder.addInterceptor(retryInterceptor);
         builder.addInterceptor(xmlEncodingInterceptor);
         OKHTTP_CLIENT = builder.build();
     }
