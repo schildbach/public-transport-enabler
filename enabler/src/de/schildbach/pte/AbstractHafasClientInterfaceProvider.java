@@ -907,7 +907,8 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
             final JSONObject ico = icoList.getJSONObject(i);
             if (ico.has("bg")) {
                 final int background = parseIcoColor(ico.getJSONObject("bg"));
-                final int foreground = parseIcoColor(ico.getJSONObject("fg"));
+                final JSONObject fg = ico.optJSONObject("fg");
+                final int foreground = fg != null ? parseIcoColor(fg) : Style.deriveForegroundColor(background);
                 final String shp = ico.optString("shp", null);
                 if (shp == null) {
                     styles.add(new Style(background, foreground));
