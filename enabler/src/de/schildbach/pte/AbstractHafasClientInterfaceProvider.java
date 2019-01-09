@@ -78,6 +78,7 @@ import de.schildbach.pte.dto.Trip;
 import de.schildbach.pte.dto.TripOptions;
 import de.schildbach.pte.exception.ParserException;
 import de.schildbach.pte.util.ParserUtils;
+import de.schildbach.pte.util.PolylineFormat;
 
 import okhttp3.HttpUrl;
 
@@ -552,7 +553,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                         ? "\"jnyFltrL\":[{\"value\":\"" + jnyFltr + "\",\"mode\":\"BIT\",\"type\":\"PROD\"}]," : "") //
                 + "\"gisFltrL\":[{\"mode\":\"FB\",\"profile\":{\"type\":\"F\",\"linDistRouting\":false,\"maxdist\":2000},\"type\":\"M\",\"meta\":\""
                 + meta + "\"}]," //
-                + "\"getPolyline\":false,\"getPasslist\":true,\"getIST\":false,\"getEco\":false,\"extChgTime\":-1}", //
+                + "\"getPolyline\":true,\"getPasslist\":true,\"getIST\":false,\"getEco\":false,\"extChgTime\":-1}", //
                 false);
 
         final HttpUrl url = requestUrl(request);
@@ -620,6 +621,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
             final JSONArray locList = common.getJSONArray("locL");
             final List<String> operators = parseOpList(common.getJSONArray("opL"));
             final List<Line> lines = parseProdList(common.getJSONArray("prodL"), operators, styles);
+            final List<String> encodedPolylines = parsePolyList(common.getJSONArray("polyL"));
 
             final JSONArray outConList = res.optJSONArray("outConL");
             final List<Trip> trips = new ArrayList<>(outConList.length());
@@ -673,6 +675,27 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                             intermediateStops = null;
                         }
 
+                        final List<Point> path;
+                        final JSONObject polyG = jny.optJSONObject("polyG");
+                        if (polyG != null) {
+                            final int crdSysX = polyG.optInt("crdSysX", -1);
+                            if (crdSysX != -1) {
+                                final String crdSysType = crdSysList.getJSONObject(crdSysX).getString("type");
+                                if (!"WGS84".equals(crdSysType))
+                                    throw new RuntimeException("unknown type: " + crdSysType);
+                            }
+                            final JSONArray polyXList = polyG.getJSONArray("polyXL");
+                            path = new LinkedList<>();
+                            final int polyXListLen = polyXList.length();
+                            checkState(polyXListLen <= 1);
+                            for (int i = 0; i < polyXListLen; i++) {
+                                final String encodedPolyline = encodedPolylines.get(polyXList.getInt(i));
+                                path.addAll(PolylineFormat.decode(encodedPolyline));
+                            }
+                        } else {
+                            path = null;
+                        }
+
                         final JSONArray remList = jny.optJSONArray("remL");
                         String message = null;
                         if (remList != null) {
@@ -684,7 +707,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                             }
                         }
 
-                        leg = new Trip.Public(line, destination, departureStop, arrivalStop, intermediateStops, null,
+                        leg = new Trip.Public(line, destination, departureStop, arrivalStop, intermediateStops, path,
                                 message);
                     } else if ("DEVI".equals(secType)) {
                         leg = new Trip.Individual(Trip.Individual.Type.TRANSFER, departureStop.location,
@@ -1034,6 +1057,18 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
         }
 
         return lines;
+    }
+
+    private List<String> parsePolyList(final JSONArray polyList) throws JSONException {
+        final int len = polyList.length();
+        final List<String> polylines = new ArrayList<>(len);
+
+        for (int i = 0; i < len; i++) {
+            final JSONObject poly = polyList.getJSONObject(i);
+            checkState(poly.getBoolean("delta"));
+            polylines.add(poly.getString("crdEncYX"));
+        }
+        return polylines;
     }
 
     protected Line newLine(final String id, final String operator, final Product product, final @Nullable String name,
