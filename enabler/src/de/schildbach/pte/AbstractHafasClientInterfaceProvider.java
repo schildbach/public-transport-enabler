@@ -553,7 +553,8 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                         ? "\"jnyFltrL\":[{\"value\":\"" + jnyFltr + "\",\"mode\":\"BIT\",\"type\":\"PROD\"}]," : "") //
                 + "\"gisFltrL\":[{\"mode\":\"FB\",\"profile\":{\"type\":\"F\",\"linDistRouting\":false,\"maxdist\":2000},\"type\":\"M\",\"meta\":\""
                 + meta + "\"}]," //
-                + "\"getPolyline\":true,\"getPasslist\":true,\"getIST\":false,\"getEco\":false,\"extChgTime\":-1}", //
+                + "\"getPolyline\":true,\"getPasslist\":true," //
+                + "\"getConGroups\":false,\"getIST\":false,\"getEco\":false,\"extChgTime\":-1}", //
                 false);
 
         final HttpUrl url = requestUrl(request);

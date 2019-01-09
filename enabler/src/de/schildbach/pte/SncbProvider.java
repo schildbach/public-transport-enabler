@@ -37,7 +37,7 @@ public class SncbProvider extends AbstractHafasClientInterfaceProvider {
 
     public SncbProvider(final String jsonApiAuthorization) {
         super(NetworkId.SNCB, API_BASE, PRODUCTS_MAP);
-        setApiVersion("1.14");
+        setApiVersion("1.15");
         setApiClient("{\"id\":\"SNCB\",\"type\":\"AND\"}");
         setApiAuthorization(jsonApiAuthorization);
     }
