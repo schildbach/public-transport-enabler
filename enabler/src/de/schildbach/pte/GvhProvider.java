@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,10 +32,7 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class GvhProvider extends AbstractEfaProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("https://bhb.efa.de/bhb/");
-    // http://www.efa.de/efaws2/cmsembedded_gvh/
-    // https://bhb.efa.de/bhb/
-    // http://mobil.efa.de/mobile3/
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://app.efa.de/mdv_server/app_gvh/");
 
     public GvhProvider() {
         this(API_BASE);
