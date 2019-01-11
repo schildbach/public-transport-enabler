@@ -19,6 +19,7 @@ package de.schildbach.pte.util;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
@@ -43,6 +44,7 @@ import javax.net.ssl.X509TrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Throwables;
 import com.google.common.primitives.Ints;
 
 import de.schildbach.pte.exception.BlockedException;
@@ -137,14 +139,20 @@ public final class HttpClient {
             @Override
             public Response intercept(final Chain chain) throws IOException {
                 final Request request = chain.request();
-                final Response response = chain.proceed(request);
+                Response response = null;
+                try {
+                    response = chain.proceed(request);
+                } catch (final IOException x) {
+                    if (Throwables.getRootCause(x) instanceof EOFException)
+                        return chain.proceed(request); // retry
+                    throw x;
+                }
                 if (response.isSuccessful() && response.peekBody(1).bytes().length == 0) {
                     log.info("Got empty response, retrying {}", request.url());
                     response.close();
-                    return chain.proceed(request);
-                } else {
-                    return response;
+                    return chain.proceed(request); // retry
                 }
+                return response;
             }
         };
 
