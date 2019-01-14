@@ -88,7 +88,7 @@ public class VbnProvider extends AbstractHafasClientInterfaceProvider {
 
     @Override
     protected boolean hideFare(Fare fare) {
-        final String fareNameLc = fare.network.toLowerCase(Locale.US);
+        final String fareNameLc = fare.name.toLowerCase(Locale.US);
         if (fareNameLc.contains("2 adults"))
             return true;
         if (fareNameLc.contains("3 adults"))
