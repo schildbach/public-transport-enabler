@@ -17,15 +17,10 @@
 
 package de.schildbach.pte;
 
-import java.util.Currency;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 
-import javax.annotation.Nullable;
-
-import de.schildbach.pte.dto.Fare;
-import de.schildbach.pte.dto.Fare.Type;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
 
@@ -77,20 +72,6 @@ public class ShProvider extends AbstractHafasClientInterfaceProvider {
             return new String[] { m.group(1), m.group(2) };
 
         return super.splitStationName(address);
-    }
-
-    @Override
-    protected Fare parseJsonTripFare(final @Nullable String fareSetName, final @Nullable String fareSetDescription,
-            String name, final Currency currency, final float price) {
-        if (!"Normalpreis".equals(fareSetDescription) || !name.startsWith("Einzelfahrkarte "))
-            return null;
-        name = name.substring(16);
-        if (name.startsWith("Übergang"))
-            return null;
-        if (name.startsWith("Kind "))
-            return new Fare("SH-Tarif", Type.CHILD, currency, price, name.substring(5), null);
-        else
-            return new Fare("SH-Tarif", Type.ADULT, currency, price, name, null);
     }
 
     protected static final Map<String, Style> STYLES = new HashMap<>();

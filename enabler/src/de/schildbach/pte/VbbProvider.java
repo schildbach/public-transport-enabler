@@ -99,6 +99,11 @@ public class VbbProvider extends AbstractHafasClientInterfaceProvider {
     }
 
     @Override
+    protected String normalizeFareName(final String fareName) {
+        return fareName.replaceAll("Tarifgebiet ", "");
+    }
+
+    @Override
     public Set<Product> defaultProducts() {
         return ALL_EXCEPT_HIGHSPEED_AND_ONDEMAND;
     }

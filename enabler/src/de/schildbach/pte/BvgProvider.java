@@ -17,7 +17,6 @@
 
 package de.schildbach.pte;
 
-import java.util.Currency;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -27,7 +26,6 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.Sets;
 
-import de.schildbach.pte.dto.Fare;
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Line.Attr;
 import de.schildbach.pte.dto.Point;
@@ -109,6 +107,11 @@ public final class BvgProvider extends AbstractHafasClientInterfaceProvider {
     }
 
     @Override
+    protected String normalizeFareName(final String fareName) {
+        return fareName.replaceAll("Tarifgebiet ", "");
+    }
+
+    @Override
     protected Line newLine(final String id, final String operator, final Product product, final @Nullable String name,
             final @Nullable String shortName, final @Nullable String number, final Style style) {
         final Line line = super.newLine(id, operator, product, name, shortName, number, style);
@@ -139,22 +142,6 @@ public final class BvgProvider extends AbstractHafasClientInterfaceProvider {
         }
 
         return line;
-    }
-
-    @Override
-    protected Fare parseJsonTripFare(String fareSetName, final String fareSetDescription, final String name,
-            final Currency currency, final float price) {
-        if (!fareSetName.startsWith("Berlin Tarifgebiet ") || !fareSetName.endsWith(" Einzelfahrausweis"))
-            return null;
-        fareSetName = "Berlin " + fareSetName.substring(19, fareSetName.length() - 19);
-
-        if (name.equals("Regeltarif"))
-            return new Fare(fareSetName, Fare.Type.ADULT, currency, price, name, null);
-        if (name.equals("Ermäßigungstarif"))
-            return new Fare(fareSetName, Fare.Type.CHILD, currency, price, name, null);
-        if (name.equals("Fahrrad"))
-            return new Fare(fareSetName, Fare.Type.BIKE, currency, price, name, null);
-        return null;
     }
 
     private static final Map<String, Style> STYLES = new HashMap<>();

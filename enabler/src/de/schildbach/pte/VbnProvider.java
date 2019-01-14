@@ -18,6 +18,7 @@
 package de.schildbach.pte;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -26,6 +27,7 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.Sets;
 
+import de.schildbach.pte.dto.Fare;
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Line.Attr;
 import de.schildbach.pte.dto.Product;
@@ -82,6 +84,20 @@ public class VbnProvider extends AbstractHafasClientInterfaceProvider {
             return new String[] { m.group(1), m.group(2) };
 
         return super.splitAddress(address);
+    }
+
+    @Override
+    protected boolean hideFare(Fare fare) {
+        final String fareNameLc = fare.network.toLowerCase(Locale.US);
+        if (fareNameLc.contains("2 adults"))
+            return true;
+        if (fareNameLc.contains("3 adults"))
+            return true;
+        if (fareNameLc.contains("4 adults"))
+            return true;
+        if (fareNameLc.contains("5 adults"))
+            return true;
+        return super.hideFare(fare);
     }
 
     @Override
