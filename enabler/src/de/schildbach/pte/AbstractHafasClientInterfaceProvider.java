@@ -1023,6 +1023,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
             throw new RuntimeException("Unknown type " + type + ": " + loc);
         }
 
+        final Point coord;
         final JSONObject crd = loc.optJSONObject("crd");
         if (crd != null) {
             final int crdSysX = loc.optInt("crdSysX", -1);
@@ -1031,11 +1032,12 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                 if (!"WGS84".equals(crdSysType))
                     throw new RuntimeException("unknown type: " + crdSysType);
             }
-            return new Location(locationType, id, Point.from1E6(crd.getInt("y"), crd.getInt("x")), placeAndName[0],
-                    placeAndName[1], products);
+            coord = Point.from1E6(crd.getInt("y"), crd.getInt("x"));
         } else {
-            return new Location(LocationType.STATION, id, null, placeAndName[0], placeAndName[1], products);
+            coord = null;
         }
+
+        return new Location(locationType, id, coord, placeAndName[0], placeAndName[1], products);
     }
 
     private List<String> parseOpList(final JSONArray opList) throws JSONException {
