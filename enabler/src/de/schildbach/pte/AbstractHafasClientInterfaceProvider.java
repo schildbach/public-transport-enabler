@@ -290,20 +290,29 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
     }
 
     protected final QueryDeparturesResult jsonStationBoard(final String stationId, final @Nullable Date time,
-            final int maxDepartures, final boolean equivs) throws IOException {
+            int maxDepartures, final boolean equivs) throws IOException {
+        final boolean canStbFltrEquiv = apiVersion.compareToIgnoreCase("1.18") <= 0;
+        if (maxDepartures == 0)
+            maxDepartures = DEFAULT_MAX_DEPARTURES;
+        if (!equivs && !canStbFltrEquiv) {
+            final int raisedMaxDepartures = maxDepartures * 4;
+            log.info("stbFltrEquiv workaround in effect: querying for {} departures rather than {}",
+                    raisedMaxDepartures, maxDepartures);
+            maxDepartures = raisedMaxDepartures;
+        }
+
         final Calendar c = new GregorianCalendar(timeZone);
         c.setTime(time);
         final CharSequence jsonDate = jsonDate(c);
         final CharSequence jsonTime = jsonTime(c);
         final CharSequence normalizedStationId = normalizeStationId(stationId);
-        final CharSequence stbFltrEquiv = Boolean.toString(!equivs);
-        final CharSequence maxJny = Integer.toString(maxDepartures != 0 ? maxDepartures : DEFAULT_MAX_DEPARTURES);
+        final CharSequence maxJny = Integer.toString(maxDepartures);
         final String request = wrapJsonApiRequest("StationBoard", "{\"type\":\"DEP\"," //
                 + "\"date\":\"" + jsonDate + "\"," //
                 + "\"time\":\"" + jsonTime + "\"," //
                 + "\"stbLoc\":{\"type\":\"S\"," + "\"state\":\"F\"," // F/M
                 + "\"extId\":" + JSONObject.quote(normalizedStationId.toString()) + "}," //
-                + (apiVersion.compareToIgnoreCase("1.19") < 0 ? "\"stbFltrEquiv\":" + stbFltrEquiv + "," : "") //
+                + (canStbFltrEquiv ? "\"stbFltrEquiv\":" + Boolean.toString(!equivs) + "," : "") //
                 + "\"maxJny\":" + maxJny + "}", false);
 
         final HttpUrl url = requestUrl(request);
@@ -373,8 +382,10 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                     final int dProdX = stbStop.optInt("dProdX", -1);
                     final Line line = dProdX != -1 ? lines.get(dProdX) : null;
 
-                    final Location location = equivs ? parseLoc(locList, stbStop.getInt("locX"), null, crdSysList)
-                            : new Location(LocationType.STATION, stationId);
+                    final Location location = parseLoc(locList, stbStop.getInt("locX"), null, crdSysList);
+                    checkState(location.type == LocationType.STATION);
+                    if (!equivs && !location.id.equals(stationId))
+                        continue;
 
                     final String jnyDirTxt = jny.getString("dirTxt");
                     Location destination = null;
