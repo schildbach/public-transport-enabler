@@ -36,7 +36,7 @@ public class LuProvider extends AbstractHafasClientInterfaceProvider {
 
     public LuProvider(final String apiAuthorization) {
         super(NetworkId.LU, API_BASE, PRODUCTS_MAP);
-        setApiVersion("1.21");
+        setApiVersion("1.18");
         setApiClient("{\"id\":\"CDT\",\"type\":\"AND\"}");
         setApiAuthorization(apiAuthorization);
     }
