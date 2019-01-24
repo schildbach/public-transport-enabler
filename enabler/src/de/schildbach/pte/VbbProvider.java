@@ -40,7 +40,7 @@ public class VbbProvider extends AbstractHafasClientInterfaceProvider {
 
     public VbbProvider(final String apiAuthorization, final byte[] salt) {
         super(NetworkId.VBB, API_BASE, PRODUCTS_MAP);
-        setApiVersion("1.16");
+        setApiVersion("1.18");
         setApiExt("VBB.4");
         setApiClient("{\"id\":\"VBB\",\"type\":\"AND\"}");
         setApiAuthorization(apiAuthorization);
