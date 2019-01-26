@@ -25,6 +25,8 @@ import de.schildbach.pte.dto.Product;
 import okhttp3.HttpUrl;
 
 /**
+ * Provider implementation for Rejseplanen (Denmark).
+ * 
  * @author Andreas Schildbach
  */
 public class DsbProvider extends AbstractHafasClientInterfaceProvider {
@@ -36,7 +38,8 @@ public class DsbProvider extends AbstractHafasClientInterfaceProvider {
     public DsbProvider(final String apiAuthorization) {
         super(NetworkId.DSB, API_BASE, PRODUCTS_MAP);
         setApiEndpoint("iphone.exe");
-        setApiVersion("1.14");
+        setApiVersion("1.15");
+        setApiExt("DK.9");
         setApiClient("{\"id\":\"DK\",\"type\":\"AND\"}");
         setApiAuthorization(apiAuthorization);
     }

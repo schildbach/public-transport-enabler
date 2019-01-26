@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2017 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,6 @@
 
 package de.schildbach.pte;
 
-import java.util.Currency;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -27,7 +26,6 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.Sets;
 
-import de.schildbach.pte.dto.Fare;
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Line.Attr;
 import de.schildbach.pte.dto.Point;
@@ -38,6 +36,8 @@ import de.schildbach.pte.dto.Style.Shape;
 import okhttp3.HttpUrl;
 
 /**
+ * Provider implementation for the Berliner Verkehrsbetriebe (Berlin, Germany).
+ * 
  * @author Andreas Schildbach
  */
 public final class BvgProvider extends AbstractHafasClientInterfaceProvider {
@@ -47,7 +47,8 @@ public final class BvgProvider extends AbstractHafasClientInterfaceProvider {
 
     public BvgProvider(final String jsonApiAuthorization) {
         super(NetworkId.BVG, API_BASE, PRODUCTS_MAP);
-        setApiVersion("1.14");
+        setApiVersion("1.18");
+        setApiExt("BVG.1");
         setApiClient("{\"id\":\"BVG\",\"type\":\"AND\"}");
         setApiAuthorization(jsonApiAuthorization);
         setStyles(STYLES);
@@ -106,52 +107,41 @@ public final class BvgProvider extends AbstractHafasClientInterfaceProvider {
     }
 
     @Override
-    protected Line newLine(final String operator, final Product product, final @Nullable String name,
-            final @Nullable String shortName, final @Nullable String number) {
-        final Line line = super.newLine(operator, product, name, shortName, number);
+    protected String normalizeFareName(final String fareName) {
+        return fareName.replaceAll("Tarifgebiet ", "");
+    }
+
+    @Override
+    protected Line newLine(final String id, final String operator, final Product product, final @Nullable String name,
+            final @Nullable String shortName, final @Nullable String number, final Style style) {
+        final Line line = super.newLine(id, operator, product, name, shortName, number, style);
 
         if (line.product == Product.SUBURBAN_TRAIN) {
             if ("S41".equals(line.label))
-                return new Line(null, line.network, line.product, line.label, line.name, line.style,
+                return new Line(id, line.network, line.product, line.label, line.name, line.style,
                         Sets.newHashSet(Attr.CIRCLE_CLOCKWISE), line.message);
             if ("S42".equals(line.label))
-                return new Line(null, line.network, line.product, line.label, line.name, line.style,
+                return new Line(id, line.network, line.product, line.label, line.name, line.style,
                         Sets.newHashSet(Attr.CIRCLE_ANTICLOCKWISE), line.message);
             if ("S9".equals(line.label))
-                return new Line(null, line.network, line.product, line.label, line.name, line.style,
+                return new Line(id, line.network, line.product, line.label, line.name, line.style,
                         Sets.newHashSet(Attr.LINE_AIRPORT), line.message);
             if ("S45".equals(line.label))
-                return new Line(null, line.network, line.product, line.label, line.name, line.style,
+                return new Line(id, line.network, line.product, line.label, line.name, line.style,
                         Sets.newHashSet(Attr.LINE_AIRPORT), line.message);
         } else if (line.product == Product.BUS) {
             if ("S41".equals(line.label))
-                return new Line(null, line.network, line.product, line.label, line.name, line.style,
+                return new Line(id, line.network, line.product, line.label, line.name, line.style,
                         Sets.newHashSet(Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_CLOCKWISE), line.message);
             if ("S42".equals(line.label))
-                return new Line(null, line.network, line.product, line.label, line.name, line.style,
+                return new Line(id, line.network, line.product, line.label, line.name, line.style,
                         Sets.newHashSet(Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_ANTICLOCKWISE), line.message);
             if ("TXL".equals(line.label))
-                return new Line(null, line.network, line.product, line.label, line.name, line.style,
+                return new Line(id, line.network, line.product, line.label, line.name, line.style,
                         Sets.newHashSet(Attr.LINE_AIRPORT), line.message);
         }
 
         return line;
-    }
-
-    @Override
-    protected Fare parseJsonTripFare(String fareSetName, final String fareSetDescription, final String name,
-            final Currency currency, final float price) {
-        if (!fareSetName.startsWith("Berlin Tarifgebiet ") || !fareSetName.endsWith(" Einzelfahrausweis"))
-            return null;
-        fareSetName = "Berlin " + fareSetName.substring(19, fareSetName.length() - 19);
-
-        if (name.equals("Regeltarif"))
-            return new Fare(fareSetName, Fare.Type.ADULT, currency, price, name, null);
-        if (name.equals("Ermäßigungstarif"))
-            return new Fare(fareSetName, Fare.Type.CHILD, currency, price, name, null);
-        if (name.equals("Fahrrad"))
-            return new Fare(fareSetName, Fare.Type.BIKE, currency, price, name, null);
-        return null;
     }
 
     private static final Map<String, Style> STYLES = new HashMap<>();

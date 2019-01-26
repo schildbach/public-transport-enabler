@@ -37,16 +37,16 @@ public final class Fare implements Serializable {
 
     private static final long serialVersionUID = -6136489996930976421L;
 
-    public final String network;
+    public final String name;
     public final Type type;
     public final Currency currency;
     public final float fare;
     public final @Nullable String unitName;
     public final @Nullable String units;
 
-    public Fare(final String network, final Type type, final Currency currency, final float fare, final String unitName,
+    public Fare(final String name, final Type type, final Currency currency, final float fare, final String unitName,
             final String units) {
-        this.network = checkNotNull(network);
+        this.name = checkNotNull(name);
         this.type = checkNotNull(type);
         this.currency = checkNotNull(currency);
         this.fare = fare;
@@ -61,7 +61,7 @@ public final class Fare implements Serializable {
         if (!(o instanceof Fare))
             return false;
         final Fare other = (Fare) o;
-        if (!Objects.equal(this.network, other.network))
+        if (!Objects.equal(this.name, other.name))
             return false;
         if (!Objects.equal(this.type, other.type))
             return false;
@@ -78,12 +78,12 @@ public final class Fare implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(network, type, currency, fare, unitName, units);
+        return Objects.hashCode(name, type, currency, fare, unitName, units);
     }
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this).addValue(network).addValue(type).addValue(currency).addValue(fare)
+        return MoreObjects.toStringHelper(this).addValue(name).addValue(type).addValue(currency).addValue(fare)
                 .addValue(unitName).addValue(units).toString();
     }
 }

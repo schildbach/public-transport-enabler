@@ -22,13 +22,13 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.google.common.io.BaseEncoding;
-
 import de.schildbach.pte.dto.Product;
 
 import okhttp3.HttpUrl;
 
 /**
+ * Provider implementation for the Verkehrsverbund Berlin-Brandenburg (Brandenburg, Germany).
+ * 
  * @author Andreas Schildbach
  */
 public class VbbProvider extends AbstractHafasClientInterfaceProvider {
@@ -38,16 +38,13 @@ public class VbbProvider extends AbstractHafasClientInterfaceProvider {
     private static final Set<Product> ALL_EXCEPT_HIGHSPEED_AND_ONDEMAND = EnumSet
             .complementOf(EnumSet.of(Product.HIGH_SPEED_TRAIN, Product.ON_DEMAND));
 
-    public VbbProvider() {
-        this("{\"type\":\"AID\",\"aid\":\"hafas-vbb-apps\"}");
-    }
-
-    public VbbProvider(final String apiAuthorization) {
+    public VbbProvider(final String apiAuthorization, final byte[] salt) {
         super(NetworkId.VBB, API_BASE, PRODUCTS_MAP);
-        setApiVersion("1.14");
+        setApiVersion("1.18");
+        setApiExt("VBB.4");
         setApiClient("{\"id\":\"VBB\",\"type\":\"AND\"}");
         setApiAuthorization(apiAuthorization);
-        setRequestMicMacSalt(BaseEncoding.base16().lowerCase().decode("5243544a4d3266467846667878516649"));
+        setRequestMicMacSalt(salt);
         httpClient.setTrustAllCertificates(true);
     }
 
@@ -99,6 +96,11 @@ public class VbbProvider extends AbstractHafasClientInterfaceProvider {
         if (m.matches())
             return new String[] { m.group(1), m.group(2) };
         return super.splitStationName(address);
+    }
+
+    @Override
+    protected String normalizeFareName(final String fareName) {
+        return fareName.replaceAll("Tarifgebiet ", "");
     }
 
     @Override

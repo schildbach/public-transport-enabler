@@ -358,7 +358,7 @@ public class VrsProvider extends AbstractNetworkProvider {
 
     // only stations supported
     @Override
-    public NearbyLocationsResult queryNearbyLocations(EnumSet<LocationType> types /* only STATION supported */,
+    public NearbyLocationsResult queryNearbyLocations(Set<LocationType> types /* only STATION supported */,
             Location location, int maxDistance, int maxLocations) throws IOException {
         // g=p means group by product; not used here
         final HttpUrl.Builder url = API_BASE.newBuilder();
@@ -574,13 +574,14 @@ public class VrsProvider extends AbstractNetworkProvider {
     }
 
     @Override
-    public SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException {
+    public SuggestLocationsResult suggestLocations(final CharSequence constraint,
+            final @Nullable Set<LocationType> types, final int maxLocations) throws IOException {
         // sc = station count
-        final int sc = 10;
+        final int sc = EnumSet.of(LocationType.STATION).equals(types) ? maxLocations : maxLocations / 2;
         // ac = address count
-        final int ac = 5;
+        final int ac = EnumSet.of(LocationType.ADDRESS).equals(types) ? maxLocations : maxLocations / 4;
         // pc = points of interest count
-        final int pc = 5;
+        final int pc = EnumSet.of(LocationType.POI).equals(types) ? maxLocations : maxLocations / 4;
         // t = sap (stops and/or addresses and/or pois)
         final HttpUrl.Builder url = API_BASE.newBuilder();
         url.addQueryParameter("eID", "tx_vrsinfo_ass2_objects");
@@ -1127,7 +1128,7 @@ public class VrsProvider extends AbstractNetworkProvider {
         } else if (loc.coord != null) {
             return String.format(Locale.ENGLISH, "%f,%f", loc.getLatAsDouble(), loc.getLonAsDouble());
         } else {
-            SuggestLocationsResult suggestLocationsResult = suggestLocations(loc.name);
+            SuggestLocationsResult suggestLocationsResult = suggestLocations(loc.name, null, 0);
             final List<Location> suggestedLocations = suggestLocationsResult.getLocations();
             if (suggestedLocations.size() == 1) {
                 return suggestedLocations.get(0).id;

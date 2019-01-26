@@ -26,7 +26,8 @@ import java.util.EnumSet;
 
 import org.junit.Test;
 
-import de.schildbach.pte.BahnProvider;
+import de.schildbach.pte.AbstractHafasClientInterfaceProvider;
+import de.schildbach.pte.DbProvider;
 import de.schildbach.pte.NetworkProvider.Accessibility;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Location;
@@ -42,9 +43,10 @@ import de.schildbach.pte.dto.TripOptions;
 /**
  * @author Andreas Schildbach
  */
-public class BahnProviderLiveTest extends AbstractProviderLiveTest {
-    public BahnProviderLiveTest() {
-        super(new BahnProvider(secretProperty("db.api_authorization")));
+public class DbProviderLiveTest extends AbstractProviderLiveTest {
+    public DbProviderLiveTest() {
+        super(new DbProvider(secretProperty("db.api_authorization"), AbstractHafasClientInterfaceProvider
+                .decryptSalt(secretProperty("db.encrypted_salt"), secretProperty("hci.salt_encryption_key"))));
     }
 
     @Test
@@ -189,5 +191,13 @@ public class BahnProviderLiveTest extends AbstractProviderLiveTest {
         final QueryTripsResult result = queryTrips(from, null, to, date, true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.INVALID_DATE, result.status);
+    }
+
+    @Test
+    public void tripBetweenAreas() throws Exception {
+        final Location from = new Location(LocationType.STATION, "8096021"); // FRANKFURT(MAIN)
+        final Location to = new Location(LocationType.STATION, "8096022"); // KÖLN
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
+        print(result);
     }
 }

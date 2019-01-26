@@ -21,7 +21,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.EnumSet;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 
@@ -110,7 +110,7 @@ public class BayernProvider extends AbstractEfaProvider {
     }
 
     @Override
-    public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location,
+    public NearbyLocationsResult queryNearbyLocations(final Set<LocationType> types, final Location location,
             final int maxDistance, final int maxLocations) throws IOException {
         if (location.hasCoord())
             return mobileCoordRequest(types, location.coord, maxDistance, maxLocations);
@@ -130,15 +130,16 @@ public class BayernProvider extends AbstractEfaProvider {
     }
 
     @Override
-    public SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException {
-        return mobileStopfinderRequest(new Location(LocationType.ANY, null, null, constraint.toString()));
+    public SuggestLocationsResult suggestLocations(final CharSequence constraint,
+            final @Nullable Set<LocationType> types, final int maxLocations) throws IOException {
+        return mobileStopfinderRequest(constraint, types, maxLocations);
     }
 
     @Override
-    protected void appendXsltTripRequestParameters(final HttpUrl.Builder url, final Location from,
+    protected void appendTripRequestParameters(final HttpUrl.Builder url, final Location from,
             final @Nullable Location via, final Location to, final Date time, final boolean dep,
             final @Nullable TripOptions options) {
-        super.appendXsltTripRequestParameters(url, from, via, to, time, dep, options);
+        super.appendTripRequestParameters(url, from, via, to, time, dep, options);
         if (options != null && options.products != null) {
             for (final Product p : options.products) {
                 if (p == Product.HIGH_SPEED_TRAIN)

@@ -25,6 +25,8 @@ import de.schildbach.pte.dto.Product;
 import okhttp3.HttpUrl;
 
 /**
+ * Provider implementation for the Österreichische Bundesbahnen (Austria).
+ * 
  * @author Andreas Schildbach
  */
 public class OebbProvider extends AbstractHafasClientInterfaceProvider {
@@ -36,7 +38,7 @@ public class OebbProvider extends AbstractHafasClientInterfaceProvider {
 
     public OebbProvider(final String apiAuthorization) {
         super(NetworkId.OEBB, API_BASE, PRODUCTS_MAP);
-        setApiVersion("1.14");
+        setApiVersion("1.16");
         setApiClient("{\"id\":\"OEBB\",\"type\":\"AND\"}");
         setApiAuthorization(apiAuthorization);
     }

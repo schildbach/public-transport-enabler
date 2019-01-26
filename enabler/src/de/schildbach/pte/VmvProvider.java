@@ -21,6 +21,8 @@ import java.util.Date;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.Charsets;
+
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.TripOptions;
 
@@ -37,15 +39,16 @@ public class VmvProvider extends AbstractEfaProvider {
         super(NetworkId.VMV, API_BASE);
         setIncludeRegionId(false);
         setUseRouteIndexAsTripId(false);
+        setRequestUrlEncoding(Charsets.UTF_8);
         setSessionCookieName("EFABWLB");
         httpClient.setTrustAllCertificates(true);
     }
 
     @Override
-    protected void appendXsltTripRequestParameters(final HttpUrl.Builder url, final Location from,
+    protected void appendTripRequestParameters(final HttpUrl.Builder url, final Location from,
             final @Nullable Location via, final Location to, final Date time, final boolean dep,
             final @Nullable TripOptions options) {
-        super.appendXsltTripRequestParameters(url, from, via, to, time, dep, options);
+        super.appendTripRequestParameters(url, from, via, to, time, dep, options);
         url.addEncodedQueryParameter("inclMOT_11", "on");
     }
 }

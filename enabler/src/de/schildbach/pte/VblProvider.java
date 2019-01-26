@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,8 @@ package de.schildbach.pte;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.Charsets;
+
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Product;
 
@@ -32,7 +34,7 @@ public class VblProvider extends AbstractEfaProvider {
 
     public VblProvider() {
         super(NetworkId.VBL, API_BASE);
-
+        setRequestUrlEncoding(Charsets.UTF_8);
         setUseRouteIndexAsTripId(false);
     }
 

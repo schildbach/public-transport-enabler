@@ -21,10 +21,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.EnumSet;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 
 import de.schildbach.pte.dto.Location;
@@ -46,12 +47,12 @@ public class StvProvider extends AbstractEfaProvider {
 
     public StvProvider() {
         super(NetworkId.STV, API_BASE);
-
+        setRequestUrlEncoding(Charsets.UTF_8);
         setIncludeRegionId(false);
     }
 
     @Override
-    public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location,
+    public NearbyLocationsResult queryNearbyLocations(final Set<LocationType> types, final Location location,
             final int maxDistance, final int maxLocations) throws IOException {
         if (location.hasCoord())
             return mobileCoordRequest(types, location.coord, maxDistance, maxLocations);
@@ -71,8 +72,9 @@ public class StvProvider extends AbstractEfaProvider {
     }
 
     @Override
-    public SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException {
-        return mobileStopfinderRequest(new Location(LocationType.ANY, null, null, constraint.toString()));
+    public SuggestLocationsResult suggestLocations(final CharSequence constraint,
+            final @Nullable Set<LocationType> types, final int maxLocations) throws IOException {
+        return mobileStopfinderRequest(constraint, types, maxLocations);
     }
 
     @Override

@@ -26,6 +26,7 @@ import java.util.Date;
 
 import org.junit.Test;
 
+import de.schildbach.pte.AbstractHafasClientInterfaceProvider;
 import de.schildbach.pte.VbnProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
@@ -39,7 +40,8 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
  */
 public class VbnProviderLiveTest extends AbstractProviderLiveTest {
     public VbnProviderLiveTest() {
-        super(new VbnProvider(secretProperty("vbn.api_authorization")));
+        super(new VbnProvider(secretProperty("vbn.api_authorization"), AbstractHafasClientInterfaceProvider
+                .decryptSalt(secretProperty("vbn.encrypted_salt"), secretProperty("hci.salt_encryption_key"))));
     }
 
     @Test
@@ -55,15 +57,28 @@ public class VbnProviderLiveTest extends AbstractProviderLiveTest {
     }
 
     @Test
-    public void queryDepartures() throws Exception {
-        final QueryDeparturesResult result1 = queryDepartures("8000110", false);
-        print(result1);
+    public void queryDeparturesFreudenstadt() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("8000110", false);
+        print(result);
+    }
 
-        final QueryDeparturesResult result2 = queryDepartures("8000128", false);
-        print(result2);
+    @Test
+    public void queryDeparturesGoettingen() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("8000128", false);
+        print(result);
+    }
 
-        final QueryDeparturesResult result3 = queryDepartures("8010304", false);
-        print(result3);
+    @Test
+    public void queryDeparturesRostockHbf() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("8010304", false);
+        print(result);
+    }
+
+    @Test
+    public void queryDeparturesEquivs() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("8010304", true);
+        print(result);
+        assertTrue(result.stationDepartures.size() > 1);
     }
 
     @Test
@@ -73,15 +88,21 @@ public class VbnProviderLiveTest extends AbstractProviderLiveTest {
     }
 
     @Test
-    public void suggestLocations() throws Exception {
-        final SuggestLocationsResult result1 = suggestLocations("Bremen");
-        print(result1);
+    public void suggestLocationsBremen() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Bremen");
+        print(result);
+    }
 
-        final SuggestLocationsResult result2 = suggestLocations("Hannover");
-        print(result2);
+    @Test
+    public void suggestLocationsHannover() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Hannover");
+        print(result);
+    }
 
-        final SuggestLocationsResult result3 = suggestLocations("Rostock");
-        print(result3);
+    @Test
+    public void suggestLocationsRostock() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Rostock");
+        print(result);
     }
 
     @Test

@@ -39,6 +39,7 @@ import de.schildbach.pte.dto.Position;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.Style;
+import de.schildbach.pte.dto.SuggestLocationsResult;
 import de.schildbach.pte.dto.TripOptions;
 import de.schildbach.pte.util.HttpClient;
 
@@ -76,6 +77,12 @@ public abstract class AbstractNetworkProvider implements NetworkProvider {
     }
 
     protected abstract boolean hasCapability(Capability capability);
+
+    @Deprecated
+    @Override
+    public final SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException {
+        return suggestLocations(constraint, null, 0);
+    }
 
     @Deprecated
     @Override

@@ -20,6 +20,7 @@ package de.schildbach.pte.live;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 
@@ -62,14 +63,45 @@ public class BvgProviderLiveTest extends AbstractProviderLiveTest {
     }
 
     @Test
-    public void queryDepartures() throws Exception {
-        final QueryDeparturesResult result1 = queryDepartures("900016254", false);
-        assertEquals(QueryDeparturesResult.Status.OK, result1.status);
-        print(result1);
+    public void queryDeparturesWilmsstrasse() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("900016254", false);
+        print(result);
+        assertEquals(QueryDeparturesResult.Status.OK, result.status);
+    }
 
-        final QueryDeparturesResult result2 = queryDepartures("900100003", false);
-        assertEquals(QueryDeparturesResult.Status.OK, result2.status);
-        print(result2);
+    @Test
+    public void queryDeparturesAlexanderplatzBhf() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("900100003", false);
+        print(result);
+        assertEquals(QueryDeparturesResult.Status.OK, result.status);
+    }
+
+    @Test
+    public void queryDeparturesAlexanderplatzU2() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("900100703", false);
+        print(result);
+        assertEquals(QueryDeparturesResult.Status.OK, result.status);
+    }
+
+    @Test
+    public void queryDeparturesAlexanderplatzU5() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("900100704", false);
+        print(result);
+        assertEquals(QueryDeparturesResult.Status.OK, result.status);
+    }
+
+    @Test
+    public void queryDeparturesAlexanderplatzU8() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("900100705", false);
+        print(result);
+        assertEquals(QueryDeparturesResult.Status.OK, result.status);
+    }
+
+    @Test
+    public void queryDeparturesEquivs() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("900100003", true);
+        print(result);
+        assertTrue(result.stationDepartures.size() > 1);
     }
 
     @Test

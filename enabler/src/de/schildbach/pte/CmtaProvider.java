@@ -22,6 +22,8 @@ import de.schildbach.pte.dto.Product;
 import okhttp3.HttpUrl;
 
 /**
+ * Provider implementation for the Capital Metropolitan Transportation Authority (Austin, Texas, US).
+ * 
  * @author Colin Murphy
  */
 public class CmtaProvider extends AbstractHafasClientInterfaceProvider {
@@ -34,6 +36,7 @@ public class CmtaProvider extends AbstractHafasClientInterfaceProvider {
         super(NetworkId.CMTA, API_BASE, PRODUCTS_MAP);
         setTimeZone("America/Chicago");
         setApiVersion("1.14");
+        setApiExt("SBB.TZT.1");
         setApiClient("{\"id\":\"CMTA\",\"type\":\"AND\"}");
     }
 }

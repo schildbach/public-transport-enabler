@@ -37,7 +37,7 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
  */
 public class SncbProviderLiveTest extends AbstractProviderLiveTest {
     public SncbProviderLiveTest() {
-        super(new SncbProvider());
+        super(new SncbProvider(secretProperty("sncb.api_authorization")));
     }
 
     @Test

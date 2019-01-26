@@ -26,6 +26,7 @@ import java.util.Date;
 import org.junit.Assert;
 import org.junit.Test;
 
+import de.schildbach.pte.AbstractHafasClientInterfaceProvider;
 import de.schildbach.pte.VbbProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
@@ -40,7 +41,8 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
  */
 public class VbbProviderLiveTest extends AbstractProviderLiveTest {
     public VbbProviderLiveTest() {
-        super(new VbbProvider());
+        super(new VbbProvider(secretProperty("vbb.api_authorization"), AbstractHafasClientInterfaceProvider
+                .decryptSalt(secretProperty("vbb.encrypted_salt"), secretProperty("hci.salt_encryption_key"))));
     }
 
     @Test
@@ -54,6 +56,41 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest {
     public void queryDepartures() throws Exception {
         final QueryDeparturesResult result = queryDepartures("900007102", false);
         print(result);
+    }
+
+    @Test
+    public void queryDeparturesAlexanderplatzBhf() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("900100003", false);
+        print(result);
+        assertEquals(QueryDeparturesResult.Status.OK, result.status);
+    }
+
+    @Test
+    public void queryDeparturesAlexanderplatzU2() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("900100703", false);
+        print(result);
+        assertEquals(QueryDeparturesResult.Status.OK, result.status);
+    }
+
+    @Test
+    public void queryDeparturesAlexanderplatzU5() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("900100704", false);
+        print(result);
+        assertEquals(QueryDeparturesResult.Status.OK, result.status);
+    }
+
+    @Test
+    public void queryDeparturesAlexanderplatzU8() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("900100705", false);
+        print(result);
+        assertEquals(QueryDeparturesResult.Status.OK, result.status);
+    }
+
+    @Test
+    public void queryDeparturesEquivs() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("900100003", true);
+        print(result);
+        assertTrue(result.stationDepartures.size() > 1);
     }
 
     @Test

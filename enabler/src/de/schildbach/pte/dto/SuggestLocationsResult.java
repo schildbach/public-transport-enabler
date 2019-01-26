@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
 package de.schildbach.pte.dto;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -57,10 +58,10 @@ public final class SuggestLocationsResult implements Serializable {
     }
 
     public List<Location> getLocations() {
+        checkState(status == Status.OK, "no locations with status: {}", status);
         final List<Location> locations = new ArrayList<>(suggestedLocations.size());
         for (final SuggestedLocation location : suggestedLocations)
             locations.add(location.location);
-
         return locations;
     }
 

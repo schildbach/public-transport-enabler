@@ -19,14 +19,13 @@ package de.schildbach.pte;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
 import com.google.common.base.Charsets;
 
 import de.schildbach.pte.dto.Line;
+import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.dto.Style.Shape;
 
@@ -49,28 +48,15 @@ public class KvvProvider extends AbstractEfaProvider {
         setSessionCookieName("HASESSIONID");
     }
 
-    private static final Pattern P_LINE = Pattern.compile("(.*?)\\s+\\([\\w/]+\\)", Pattern.CASE_INSENSITIVE);
-
     @Override
     protected Line parseLine(final @Nullable String id, final @Nullable String network, final @Nullable String mot,
             @Nullable String symbol, @Nullable String name, @Nullable String longName, final @Nullable String trainType,
             final @Nullable String trainNum, final @Nullable String trainName) {
-        if (symbol != null) {
-            final Matcher m = P_LINE.matcher(symbol);
-            if (m.matches())
-                symbol = m.group(1);
-        }
-
-        if (name != null) {
-            final Matcher m = P_LINE.matcher(name);
-            if (m.matches())
-                name = m.group(1);
-        }
-
-        if (longName != null) {
-            final Matcher m = P_LINE.matcher(longName);
-            if (m.matches())
-                longName = m.group(1);
+        if ("0".equals(mot)) {
+            if ("IRE1".equals(trainNum) && trainName == null)
+                return new Line(id, network, Product.REGIONAL_TRAIN, trainNum);
+            if (trainName != null && trainName.startsWith("TRILEX"))
+                return new Line(id, network, Product.REGIONAL_TRAIN, trainName);
         }
 
         return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);

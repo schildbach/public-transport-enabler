@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@ package de.schildbach.pte.util;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
@@ -43,6 +44,9 @@ import javax.net.ssl.X509TrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Throwables;
+import com.google.common.primitives.Ints;
+
 import de.schildbach.pte.exception.BlockedException;
 import de.schildbach.pte.exception.InternalErrorException;
 import de.schildbach.pte.exception.NotFoundException;
@@ -54,11 +58,13 @@ import okhttp3.CertificatePinner;
 import okhttp3.Cookie;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
+import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.Response.Builder;
 import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 
@@ -80,6 +86,15 @@ public final class HttpClient {
     private CertificatePinner certificatePinner = null;
     private boolean sslAcceptAllHostnames = false;
 
+    private static final List<Integer> RESPONSE_CODES_BLOCKED = Ints.asList(HttpURLConnection.HTTP_BAD_REQUEST,
+            HttpURLConnection.HTTP_UNAUTHORIZED, HttpURLConnection.HTTP_FORBIDDEN,
+            HttpURLConnection.HTTP_NOT_ACCEPTABLE, HttpURLConnection.HTTP_UNAVAILABLE);
+    private static final List<Integer> RESPONSE_CODES_NOT_FOUND = Ints.asList(HttpURLConnection.HTTP_NOT_FOUND);
+    private static final List<Integer> RESPONSE_CODES_REDIRECT = Ints.asList(HttpURLConnection.HTTP_MOVED_PERM,
+            HttpURLConnection.HTTP_MOVED_TEMP);
+    private static final List<Integer> RESPONSE_CODES_INTERNAL_ERROR = Ints
+            .asList(HttpURLConnection.HTTP_INTERNAL_ERROR, HttpURLConnection.HTTP_BAD_GATEWAY);
+
     private static final OkHttpClient OKHTTP_CLIENT;
     static {
         final HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(
@@ -91,13 +106,65 @@ public final class HttpClient {
                 });
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
 
+        final Interceptor xmlEncodingInterceptor = new Interceptor() {
+            private final Pattern P_XML_PRAGMA = Pattern.compile("<\\?xml.*?encoding=\"(.*?)\".*?\\?>");
+            private final String HEADER_CONTENT_TYPE = "Content-Type";
+
+            @Override
+            public Response intercept(final Interceptor.Chain chain) throws IOException {
+                Response response = chain.proceed(chain.request());
+                final MediaType originalContentType = response.body().contentType();
+                if (originalContentType != null && "text".equalsIgnoreCase(originalContentType.type())
+                        && "xml".equalsIgnoreCase(originalContentType.subtype())
+                        && originalContentType.charset() == null) {
+                    final String peek = response.peekBody(64).string();
+                    final Matcher matcher = P_XML_PRAGMA.matcher(peek);
+                    if (matcher.find()) {
+                        final String encoding = matcher.group(1);
+                        final MediaType contentType = MediaType.get(originalContentType.type() + '/'
+                                + originalContentType.subtype() + ";charset=" + encoding);
+                        final ResponseBody body = response.body();
+                        final Builder responseBuilder = response.newBuilder();
+                        responseBuilder.header(HEADER_CONTENT_TYPE, contentType.toString());
+                        responseBuilder.body(ResponseBody.create(contentType, body.contentLength(), body.source()));
+                        response = responseBuilder.build();
+                        log.debug("Deriving missing {} encoding from XML pragma", encoding);
+                    }
+                }
+                return response;
+            }
+        };
+
+        final Interceptor retryInterceptor = new Interceptor() {
+            @Override
+            public Response intercept(final Chain chain) throws IOException {
+                final Request request = chain.request();
+                Response response = null;
+                try {
+                    response = chain.proceed(request);
+                } catch (final IOException x) {
+                    if (Throwables.getRootCause(x) instanceof EOFException)
+                        return chain.proceed(request); // retry
+                    throw x;
+                }
+                if (response.isSuccessful() && response.peekBody(1).bytes().length == 0) {
+                    log.info("Got empty response, retrying {}", request.url());
+                    response.close();
+                    return chain.proceed(request); // retry
+                }
+                return response;
+            }
+        };
+
         final OkHttpClient.Builder builder = new OkHttpClient.Builder();
         builder.followRedirects(false);
         builder.followSslRedirects(true);
         builder.connectTimeout(15, TimeUnit.SECONDS);
-        builder.writeTimeout(10, TimeUnit.SECONDS);
-        builder.readTimeout(15, TimeUnit.SECONDS);
+        builder.writeTimeout(30, TimeUnit.SECONDS);
+        builder.readTimeout(30, TimeUnit.SECONDS);
         builder.addNetworkInterceptor(loggingInterceptor);
+        builder.addInterceptor(retryInterceptor);
+        builder.addInterceptor(xmlEncodingInterceptor);
         OKHTTP_CLIENT = builder.build();
     }
 
@@ -168,94 +235,82 @@ public final class HttpClient {
         checkNotNull(callback);
         checkNotNull(url);
 
-        int tries = 3;
+        final Request.Builder request = new Request.Builder();
+        request.url(url);
+        request.headers(Headers.of(headers));
+        if (postRequest != null)
+            request.post(RequestBody.create(MediaType.parse(requestContentType), postRequest));
+        request.header("Accept", SCRAPE_ACCEPT);
+        if (userAgent != null)
+            request.header("User-Agent", userAgent);
+        if (referer != null)
+            request.header("Referer", referer);
+        final Cookie sessionCookie = this.sessionCookie;
+        if (sessionCookie != null && sessionCookie.name().equals(sessionCookieName))
+            request.header("Cookie", sessionCookie.toString());
 
-        while (true) {
-            final Request.Builder request = new Request.Builder();
-            request.url(url);
-            request.headers(Headers.of(headers));
-            if (postRequest != null)
-                request.post(RequestBody.create(MediaType.parse(requestContentType), postRequest));
-            request.header("Accept", SCRAPE_ACCEPT);
-            if (userAgent != null)
-                request.header("User-Agent", userAgent);
-            if (referer != null)
-                request.header("Referer", referer);
-            final Cookie sessionCookie = this.sessionCookie;
-            if (sessionCookie != null && sessionCookie.name().equals(sessionCookieName))
-                request.header("Cookie", sessionCookie.toString());
+        final OkHttpClient okHttpClient;
+        if (proxy != null || trustAllCertificates || certificatePinner != null || sslAcceptAllHostnames) {
+            final OkHttpClient.Builder builder = OKHTTP_CLIENT.newBuilder();
+            if (proxy != null)
+                builder.proxy(proxy);
+            if (trustAllCertificates)
+                trustAllCertificates(builder);
+            if (certificatePinner != null)
+                builder.certificatePinner(certificatePinner);
+            if (sslAcceptAllHostnames)
+                builder.hostnameVerifier(SSL_ACCEPT_ALL_HOSTNAMES);
+            okHttpClient = builder.build();
+        } else {
+            okHttpClient = OKHTTP_CLIENT;
+        }
 
-            final OkHttpClient okHttpClient;
-            if (proxy != null || trustAllCertificates || certificatePinner != null || sslAcceptAllHostnames) {
-                final OkHttpClient.Builder builder = OKHTTP_CLIENT.newBuilder();
-                if (proxy != null)
-                    builder.proxy(proxy);
-                if (trustAllCertificates)
-                    trustAllCertificates(builder);
-                if (certificatePinner != null)
-                    builder.certificatePinner(certificatePinner);
-                if (sslAcceptAllHostnames)
-                    builder.hostnameVerifier(SSL_ACCEPT_ALL_HOSTNAMES);
-                okHttpClient = builder.build();
-            } else {
-                okHttpClient = OKHTTP_CLIENT;
-            }
+        final Call call = okHttpClient.newCall(request.build());
+        Response response = null;
+        try {
+            response = call.execute();
+            final int responseCode = response.code();
+            final String bodyPeek = response.peekBody(SCRAPE_PEEK_SIZE).string().replaceAll("\\p{C}", "");
+            if (responseCode == HttpURLConnection.HTTP_OK) {
 
-            final Call call = okHttpClient.newCall(request.build());
-            Response response = null;
-            try {
-                response = call.execute();
-                final int responseCode = response.code();
-                final String bodyPeek = response.peekBody(SCRAPE_PEEK_SIZE).string().replaceAll("\\p{C}", "");
-                if (responseCode == HttpURLConnection.HTTP_OK) {
+                final HttpUrl redirectUrl = testRedirect(url, bodyPeek);
+                if (redirectUrl != null)
+                    throw new UnexpectedRedirectException(url, redirectUrl);
 
-                    final HttpUrl redirectUrl = testRedirect(url, bodyPeek);
-                    if (redirectUrl != null)
-                        throw new UnexpectedRedirectException(url, redirectUrl);
+                if (testExpired(bodyPeek))
+                    throw new SessionExpiredException();
+                if (testInternalError(bodyPeek))
+                    throw new InternalErrorException(url, bodyPeek);
 
-                    if (testExpired(bodyPeek))
-                        throw new SessionExpiredException();
-                    if (testInternalError(bodyPeek))
-                        throw new InternalErrorException(url, bodyPeek);
-
-                    // save cookie
-                    if (sessionCookieName != null) {
-                        final List<Cookie> cookies = Cookie.parseAll(url, response.headers());
-                        for (final Iterator<Cookie> i = cookies.iterator(); i.hasNext();) {
-                            final Cookie cookie = i.next();
-                            if (cookie.name().equals(sessionCookieName)) {
-                                this.sessionCookie = cookie;
-                                break;
-                            }
+                // save cookie
+                if (sessionCookieName != null) {
+                    final List<Cookie> cookies = Cookie.parseAll(url, response.headers());
+                    for (final Iterator<Cookie> i = cookies.iterator(); i.hasNext();) {
+                        final Cookie cookie = i.next();
+                        if (cookie.name().equals(sessionCookieName)) {
+                            this.sessionCookie = cookie;
+                            break;
                         }
                     }
-
-                    callback.onSuccessful(bodyPeek, response.body());
-                    return;
-                } else if (responseCode == HttpURLConnection.HTTP_BAD_REQUEST
-                        || responseCode == HttpURLConnection.HTTP_UNAUTHORIZED
-                        || responseCode == HttpURLConnection.HTTP_FORBIDDEN
-                        || responseCode == HttpURLConnection.HTTP_NOT_ACCEPTABLE
-                        || responseCode == HttpURLConnection.HTTP_UNAVAILABLE) {
-                    throw new BlockedException(url, bodyPeek);
-                } else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
-                    throw new NotFoundException(url, bodyPeek);
-                } else if (responseCode == HttpURLConnection.HTTP_MOVED_PERM
-                        || responseCode == HttpURLConnection.HTTP_MOVED_TEMP) {
-                    throw new UnexpectedRedirectException(url, HttpUrl.parse(response.header("Location")));
-                } else if (responseCode == HttpURLConnection.HTTP_INTERNAL_ERROR) {
-                    throw new InternalErrorException(url, bodyPeek);
-                } else {
-                    final String message = "got response: " + responseCode + " " + response.message();
-                    if (tries-- > 0)
-                        log.info("{}, retrying...", message);
-                    else
-                        throw new IOException(message + ": " + url);
                 }
-            } finally {
-                if (response != null)
-                    response.close();
+
+                callback.onSuccessful(bodyPeek, response.body());
+                return;
+            } else if (RESPONSE_CODES_BLOCKED.contains(responseCode)) {
+                throw new BlockedException(url, bodyPeek);
+            } else if (RESPONSE_CODES_NOT_FOUND.contains(responseCode)) {
+                throw new NotFoundException(url, bodyPeek);
+            } else if (RESPONSE_CODES_REDIRECT.contains(responseCode)) {
+                throw new UnexpectedRedirectException(url, HttpUrl.parse(response.header("Location")));
+            } else if (RESPONSE_CODES_INTERNAL_ERROR.contains(responseCode)) {
+                throw new InternalErrorException(url, bodyPeek);
+            } else {
+                final String message = "got response: " + responseCode + " " + response.message();
+                throw new IOException(message + ": " + url);
             }
+        } finally {
+            if (response != null)
+                response.close();
         }
     }
 

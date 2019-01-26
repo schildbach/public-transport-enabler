@@ -187,11 +187,20 @@ public final class Trip implements Serializable {
         }
     }
 
-    /** Returns true if no legs overlap, false otherwise. */
+    /**
+     * Returns true if it looks like the trip can be traveled. Returns false if legs overlap, important
+     * departures or arrivals are cancelled and that sort of thing.
+     */
     public boolean isTravelable() {
         Date time = null;
 
         for (final Leg leg : legs) {
+            if (leg instanceof Public) {
+                final Public publicLeg = (Public) leg;
+                if (publicLeg.departureStop.departureCancelled || publicLeg.arrivalStop.arrivalCancelled)
+                    return false;
+            }
+
             final Date departureTime = leg.getDepartureTime();
             if (time != null && departureTime.before(time))
                 return false;

@@ -689,7 +689,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
     }
 
     @Override
-    public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location,
+    public NearbyLocationsResult queryNearbyLocations(final Set<LocationType> types, final Location location,
             int maxDistance, final int maxLocations) throws IOException {
         final ResultHeader resultHeader = new ResultHeader(network, SERVER_PRODUCT, SERVER_VERSION, null, 0, null);
 
@@ -845,14 +845,18 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
     }
 
     @Override
-    public SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException {
+    public SuggestLocationsResult suggestLocations(final CharSequence constraint,
+            final @Nullable Set<LocationType> types, final int maxLocations) throws IOException {
         final String nameCstr = constraint.toString();
 
         final HttpUrl.Builder url = url().addPathSegment("places");
         url.addQueryParameter("q", nameCstr);
-        url.addQueryParameter("type[]", "stop_area");
-        url.addQueryParameter("type[]", "address");
-        url.addQueryParameter("type[]", "poi");
+        if (types == null || types.contains(LocationType.ANY) || types.contains(LocationType.STATION))
+            url.addQueryParameter("type[]", "stop_area");
+        if (types == null || types.contains(LocationType.ANY) || types.contains(LocationType.ADDRESS))
+            url.addQueryParameter("type[]", "address");
+        if (types == null || types.contains(LocationType.ANY) || types.contains(LocationType.POI))
+            url.addQueryParameter("type[]", "poi");
         url.addQueryParameter("type[]", "administrative_region");
         url.addQueryParameter("depth", "1");
         final CharSequence page = httpClient.get(url.build());
@@ -1008,7 +1012,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
                 Location newFrom = null, newTo = null;
 
                 if (!from.isIdentified() && from.hasName()) {
-                    ambiguousFrom = suggestLocations(from.name).getLocations();
+                    ambiguousFrom = suggestLocations(from.name, null, 0).getLocations();
                     if (ambiguousFrom.isEmpty())
                         return new QueryTripsResult(resultHeader, QueryTripsResult.Status.UNKNOWN_FROM);
                     if (ambiguousFrom.size() == 1 && ambiguousFrom.get(0).isIdentified())
@@ -1016,7 +1020,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
                 }
 
                 if (!to.isIdentified() && to.hasName()) {
-                    ambiguousTo = suggestLocations(to.name).getLocations();
+                    ambiguousTo = suggestLocations(to.name, null, 0).getLocations();
                     if (ambiguousTo.isEmpty())
                         return new QueryTripsResult(resultHeader, QueryTripsResult.Status.UNKNOWN_TO);
                     if (ambiguousTo.size() == 1 && ambiguousTo.get(0).isIdentified())

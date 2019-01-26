@@ -29,6 +29,8 @@ import de.schildbach.pte.dto.Style;
 import okhttp3.HttpUrl;
 
 /**
+ * Provider implementation for the Verkehrsverbund Ost-Region (Lower Austria and Burgenland, Austria).
+ * 
  * @author Andreas Schildbach
  */
 public class VorProvider extends AbstractHafasClientInterfaceProvider {
@@ -39,7 +41,8 @@ public class VorProvider extends AbstractHafasClientInterfaceProvider {
 
     public VorProvider(final String apiAuthorization) {
         super(NetworkId.VOR, API_BASE, PRODUCTS_MAP);
-        setApiVersion("1.15");
+        setApiVersion("1.18");
+        setApiExt("VAO.9");
         setApiClient("{\"id\":\"VAO\",\"l\":\"vs_anachb\",\"type\":\"AND\"}");
         setApiAuthorization(apiAuthorization);
         setStyles(STYLES);

@@ -21,12 +21,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Currency;
 import java.util.Date;
-import java.util.EnumSet;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -94,6 +93,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     protected static final String DEFAULT_COORD_ENDPOINT = "XML_COORD_REQUEST";
 
     protected static final String SERVER_PRODUCT = "efa";
+    protected static final String COORD_FORMAT = "WGS84[DD.ddddd]";
+    protected static final int COORD_FORMAT_TAIL = 7;
 
     private final HttpUrl departureMonitorEndpoint;
     private final HttpUrl tripEndpoint;
@@ -106,7 +107,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     private boolean useProxFootSearch = true;
     private @Nullable String httpReferer = null;
     private @Nullable String httpRefererTrip = null;
-    private boolean httpPost = false;
     private boolean useRouteIndexAsTripId = true;
     private boolean useLineRestriction = true;
     private boolean useStringCoordListOutputFormat = true;
@@ -193,11 +193,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         return this;
     }
 
-    protected AbstractEfaProvider setHttpPost(final boolean httpPost) {
-        this.httpPost = httpPost;
-        return this;
-    }
-
     protected AbstractEfaProvider setIncludeRegionId(final boolean includeRegionId) {
         this.includeRegionId = includeRegionId;
         return this;
@@ -242,59 +237,62 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         url.addEncodedQueryParameter("outputFormat", outputFormat);
         url.addEncodedQueryParameter("language", language);
         url.addEncodedQueryParameter("stateless", "1");
-        url.addEncodedQueryParameter("coordOutputFormat", "WGS84");
+        url.addEncodedQueryParameter("coordOutputFormat", COORD_FORMAT);
+        url.addEncodedQueryParameter("coordOutputFormatTail", Integer.toString(COORD_FORMAT_TAIL));
     }
 
-    protected SuggestLocationsResult jsonStopfinderRequest(final Location constraint) throws IOException {
+    protected SuggestLocationsResult jsonStopfinderRequest(final CharSequence constraint,
+            final @Nullable Set<LocationType> types, final int maxLocations) throws IOException {
         final HttpUrl.Builder url = stopFinderEndpoint.newBuilder();
-        appendStopfinderRequestParameters(url, constraint, "JSON");
-        final CharSequence page;
-        if (httpPost)
-            page = httpClient.get(url.build(), url.build().encodedQuery(), "application/x-www-form-urlencoded");
-        else
-            page = httpClient.get(url.build());
+        appendStopfinderRequestParameters(url, constraint, "JSON", types, maxLocations);
+        final CharSequence page = httpClient.get(url.build());
         final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
 
         try {
             final List<SuggestedLocation> locations = new ArrayList<>();
-
             final JSONObject head = new JSONObject(page.toString());
             final JSONObject stopFinder = head.optJSONObject("stopFinder");
-            final JSONArray stops;
-            if (stopFinder == null) {
-                stops = head.getJSONArray("stopFinder");
-            } else {
+            if (stopFinder != null) {
                 final JSONArray messages = stopFinder.optJSONArray("message");
                 if (messages != null) {
-                    for (int i = 0; i < messages.length(); i++) {
-                        final JSONObject message = messages.optJSONObject(i);
-                        final String messageName = message.getString("name");
-                        final String messageValue = Strings.emptyToNull(message.getString("value"));
-                        if ("code".equals(messageName) && !"-8010".equals(messageValue)
-                                && !"-8011".equals(messageValue))
-                            return new SuggestLocationsResult(header, SuggestLocationsResult.Status.SERVICE_DOWN);
-                    }
+                    final SuggestLocationsResult.Status status = parseJsonMessages(messages);
+                    if (status != null)
+                        return new SuggestLocationsResult(header, status);
                 }
 
                 final JSONObject points = stopFinder.optJSONObject("points");
                 if (points != null) {
-                    final JSONObject stop = points.getJSONObject("point");
-                    final SuggestedLocation location = parseJsonStop(stop);
+                    final JSONObject point = points.getJSONObject("point");
+                    final SuggestedLocation location = parseJsonPoint(point);
                     locations.add(location);
-                    return new SuggestLocationsResult(header, locations);
                 }
 
-                stops = stopFinder.optJSONArray("points");
-                if (stops == null)
-                    return new SuggestLocationsResult(header, locations);
-            }
+                final JSONArray pointsArray = stopFinder.optJSONArray("points");
+                if (pointsArray != null) {
+                    final int nPoints = pointsArray.length();
+                    for (int i = 0; i < nPoints; i++) {
+                        final JSONObject point = pointsArray.optJSONObject(i);
+                        final SuggestedLocation location = parseJsonPoint(point);
+                        locations.add(location);
+                    }
+                }
+            } else {
+                final JSONArray messages = head.optJSONArray("message");
+                if (messages != null) {
+                    final SuggestLocationsResult.Status status = parseJsonMessages(messages);
+                    if (status != null)
+                        return new SuggestLocationsResult(header, status);
+                }
 
-            final int nStops = stops.length();
-
-            for (int i = 0; i < nStops; i++) {
-                final JSONObject stop = stops.optJSONObject(i);
-                final SuggestedLocation location = parseJsonStop(stop);
-                locations.add(location);
+                final JSONArray pointsArray = head.optJSONArray("stopFinder");
+                if (pointsArray != null) {
+                    final int nPoints = pointsArray.length();
+                    for (int i = 0; i < nPoints; i++) {
+                        final JSONObject point = pointsArray.optJSONObject(i);
+                        final SuggestedLocation location = parseJsonPoint(point);
+                        locations.add(location);
+                    }
+                }
             }
 
             return new SuggestLocationsResult(header, locations);
@@ -303,61 +301,84 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         }
     }
 
-    private SuggestedLocation parseJsonStop(final JSONObject stop) throws JSONException {
-        String type = stop.getString("type");
+    private SuggestLocationsResult.Status parseJsonMessages(final JSONArray messages) throws JSONException {
+        final int messagesSize = messages.length();
+        for (int i = 0; i < messagesSize; i++) {
+            final JSONObject message = messages.optJSONObject(i);
+            final String messageName = message.getString("name");
+            final String messageValue = Strings.emptyToNull(message.getString("value"));
+            if ("code".equals(messageName) && !"-8010".equals(messageValue) && !"-8011".equals(messageValue))
+                return SuggestLocationsResult.Status.SERVICE_DOWN;
+        }
+        return null;
+    }
+
+    private SuggestedLocation parseJsonPoint(final JSONObject point) throws JSONException {
+        String type = point.getString("type");
         if ("any".equals(type))
-            type = stop.getString("anyType");
-        final String id = stop.getString("stateless");
-        final String name = normalizeLocationName(stop.optString("name"));
-        final String object = normalizeLocationName(stop.optString("object"));
-        final String postcode = stop.optString("postcode");
-        final int quality = stop.getInt("quality");
-        final JSONObject ref = stop.getJSONObject("ref");
+            type = point.getString("anyType");
+        final String stateless = point.getString("stateless");
+        final String name = normalizeLocationName(point.optString("name"));
+        final String object = normalizeLocationName(point.optString("object"));
+        final String postcode = point.optString("postcode");
+        final int quality = point.getInt("quality");
+        final JSONObject ref = point.getJSONObject("ref");
+        final String id = ref.getString("id");
         String place = ref.getString("place");
         if (place != null && place.length() == 0)
             place = null;
         final Point coord = parseCoord(ref.optString("coords", null));
 
         final Location location;
-        if ("stop".equals(type))
+        if ("stop".equals(type)) {
+            if (!stateless.startsWith(id))
+                throw new RuntimeException("id mismatch: '" + id + "' vs '" + stateless + "'");
             location = new Location(LocationType.STATION, id, coord, place, object);
-        else if ("poi".equals(type))
-            location = new Location(LocationType.POI, id, coord, place, object);
-        else if ("crossing".equals(type))
-            location = new Location(LocationType.ADDRESS, id, coord, place, object);
-        else if ("street".equals(type) || "address".equals(type) || "singlehouse".equals(type)
-                || "buildingname".equals(type) || "loc".equals(type))
-            location = new Location(LocationType.ADDRESS, id, coord, place, name);
-        else if ("postcode".equals(type))
-            location = new Location(LocationType.ADDRESS, id, coord, place, postcode);
-        else
+        } else if ("poi".equals(type)) {
+            location = new Location(LocationType.POI, stateless, coord, place, object);
+        } else if ("crossing".equals(type)) {
+            location = new Location(LocationType.ADDRESS, stateless, coord, place, object);
+        } else if ("street".equals(type) || "address".equals(type) || "singlehouse".equals(type)
+                || "buildingname".equals(type) || "loc".equals(type)) {
+            location = new Location(LocationType.ADDRESS, stateless, coord, place, name);
+        } else if ("postcode".equals(type)) {
+            location = new Location(LocationType.ADDRESS, stateless, coord, place, postcode);
+        } else {
             throw new JSONException("unknown type: " + type);
+        }
 
         return new SuggestedLocation(location, quality);
     }
 
-    private void appendStopfinderRequestParameters(final HttpUrl.Builder url, final Location constraint,
-            final String outputFormat) {
+    private void appendStopfinderRequestParameters(final HttpUrl.Builder url, final CharSequence constraint,
+            final String outputFormat, final @Nullable Set<LocationType> types, final int maxLocations) {
         appendCommonRequestParams(url, outputFormat);
         url.addEncodedQueryParameter("locationServerActive", "1");
         if (includeRegionId)
             url.addEncodedQueryParameter("regionID_sf", "1"); // prefer own region
-        appendLocationParams(url, constraint, "sf");
-        if (constraint.type == LocationType.ANY) {
-            if (needsSpEncId)
-                url.addEncodedQueryParameter("SpEncId", "0");
-            // 1=place 2=stop 4=street 8=address 16=crossing 32=poi 64=postcode
-            url.addEncodedQueryParameter("anyObjFilter_sf", Integer.toString(2 + 4 + 8 + 16 + 32 + 64));
-            url.addEncodedQueryParameter("reducedAnyPostcodeObjFilter_sf", "64");
-            url.addEncodedQueryParameter("reducedAnyTooManyObjFilter_sf", "2");
-            url.addEncodedQueryParameter("useHouseNumberList", "true");
-            url.addEncodedQueryParameter("anyMaxSizeHitList", "500");
-        }
+        url.addEncodedQueryParameter("type_sf", "any");
+        url.addEncodedQueryParameter("name_sf", ParserUtils.urlEncode(constraint.toString(), requestUrlEncoding));
+        if (needsSpEncId)
+            url.addEncodedQueryParameter("SpEncId", "0");
+        int filter = 0;
+        if (types == null || types.contains(LocationType.STATION))
+            filter += 2; // stop
+        if (types == null || types.contains(LocationType.POI))
+            filter += 32; // poi
+        if (types == null || types.contains(LocationType.ADDRESS))
+            filter += 4 + 8 + 16 + 64; // street + address + crossing + postcode
+        url.addEncodedQueryParameter("anyObjFilter_sf", Integer.toString(filter));
+        url.addEncodedQueryParameter("reducedAnyPostcodeObjFilter_sf", "64");
+        url.addEncodedQueryParameter("reducedAnyTooManyObjFilter_sf", "2");
+        url.addEncodedQueryParameter("useHouseNumberList", "true");
+        if (maxLocations > 0)
+            url.addEncodedQueryParameter("anyMaxSizeHitList", Integer.toString(maxLocations));
     }
 
-    protected SuggestLocationsResult xmlStopfinderRequest(final Location constraint) throws IOException {
+    protected SuggestLocationsResult mobileStopfinderRequest(final CharSequence constraint,
+            final @Nullable Set<LocationType> types, final int maxLocations) throws IOException {
         final HttpUrl.Builder url = stopFinderEndpoint.newBuilder();
-        appendStopfinderRequestParameters(url, constraint, "XML");
+        appendStopfinderRequestParameters(url, constraint, "XML", types, maxLocations);
         final AtomicReference<SuggestLocationsResult> result = new AtomicReference<>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
@@ -365,49 +386,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
                 try {
                     final XmlPullParser pp = parserFactory.newPullParser();
-                    pp.setInput(body.byteStream(), null); // Read encoding from XML declaration
-                    final ResultHeader header = enterItdRequest(pp);
-
-                    final List<SuggestedLocation> locations = new ArrayList<>();
-
-                    XmlPullUtil.enter(pp, "itdStopFinderRequest");
-
-                    processItdOdv(pp, "sf", new ProcessItdOdvCallback() {
-                        @Override
-                        public void location(final String nameState, final Location location, final int matchQuality) {
-                            locations.add(new SuggestedLocation(location, matchQuality));
-                        }
-                    });
-
-                    XmlPullUtil.skipExit(pp, "itdStopFinderRequest");
-
-                    result.set(new SuggestLocationsResult(header, locations));
-                } catch (final XmlPullParserException x) {
-                    throw new ParserException("cannot parse xml: " + bodyPeek, x);
-                }
-            }
-        };
-
-        if (httpPost)
-            httpClient.getInputStream(callback, url.build(), url.build().encodedQuery(),
-                    "application/x-www-form-urlencoded", httpReferer);
-        else
-            httpClient.getInputStream(callback, url.build(), httpReferer);
-
-        return result.get();
-    }
-
-    protected SuggestLocationsResult mobileStopfinderRequest(final Location constraint) throws IOException {
-        final HttpUrl.Builder url = stopFinderEndpoint.newBuilder();
-        appendStopfinderRequestParameters(url, constraint, "XML");
-        final AtomicReference<SuggestLocationsResult> result = new AtomicReference<>();
-
-        final HttpClient.Callback callback = new HttpClient.Callback() {
-            @Override
-            public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
-                try {
-                    final XmlPullParser pp = parserFactory.newPullParser();
-                    pp.setInput(body.byteStream(), null); // Read encoding from XML declaration
+                    pp.setInput(body.charStream());
                     final ResultHeader header = enterEfa(pp);
                     XmlPullUtil.optSkip(pp, "ers");
 
@@ -438,7 +417,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
                             final String id = XmlPullUtil.valueTag(pp, "id");
                             XmlPullUtil.optValueTag(pp, "gid", null);
-                            XmlPullUtil.valueTag(pp, "stateless");
+                            final String stateless = XmlPullUtil.valueTag(pp, "stateless");
                             XmlPullUtil.valueTag(pp, "omc");
                             final String place = normalizeLocationName(XmlPullUtil.optValueTag(pp, "pc", null));
                             XmlPullUtil.valueTag(pp, "pid");
@@ -451,7 +430,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
                             XmlPullUtil.skipExit(pp, "p");
 
-                            final Location location = new Location(type, type == LocationType.STATION ? id : null,
+                            final Location location = new Location(type, type == LocationType.STATION ? id : stateless,
                                     coord, place, name);
                             final SuggestedLocation locationAndQuality = new SuggestedLocation(location, quality);
                             locations.add(locationAndQuality);
@@ -461,29 +440,23 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                     }
 
                     result.set(new SuggestLocationsResult(header, locations));
-                } catch (final XmlPullParserException x) {
+                } catch (final XmlPullParserException | ParserException x) {
                     throw new ParserException("cannot parse xml: " + bodyPeek, x);
                 }
             }
         };
 
-        if (httpPost)
-            httpClient.getInputStream(callback, url.build(), url.build().encodedQuery(),
-                    "application/x-www-form-urlencoded", httpReferer);
-        else
-            httpClient.getInputStream(callback, url.build(), httpReferer);
+        httpClient.getInputStream(callback, url.build(), httpReferer);
 
         return result.get();
     }
 
-    private void appendXmlCoordRequestParameters(final HttpUrl.Builder url, final EnumSet<LocationType> types,
+    private void appendCoordRequestParameters(final HttpUrl.Builder url, final Set<LocationType> types,
             final Point coord, final int maxDistance, final int maxLocations) {
         appendCommonRequestParams(url, "XML");
-        url.addEncodedQueryParameter("coord", ParserUtils.urlEncode(
-                String.format(Locale.ENGLISH, "%2.6f:%2.6f:WGS84", coord.getLonAsDouble(), coord.getLatAsDouble()),
-                requestUrlEncoding));
-        if (useStringCoordListOutputFormat)
-            url.addEncodedQueryParameter("coordListOutputFormat", "STRING");
+        url.addEncodedQueryParameter("coord", ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%.7f:%.7f:%s",
+                coord.getLonAsDouble(), coord.getLatAsDouble(), COORD_FORMAT), requestUrlEncoding));
+        url.addEncodedQueryParameter("coordListOutputFormat", useStringCoordListOutputFormat ? "string" : "list");
         url.addEncodedQueryParameter("max", Integer.toString(maxLocations != 0 ? maxLocations : 50));
         url.addEncodedQueryParameter("inclFilter", "1");
         int i = 1;
@@ -499,10 +472,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         }
     }
 
-    protected NearbyLocationsResult xmlCoordRequest(final EnumSet<LocationType> types, final Point coord,
+    protected NearbyLocationsResult xmlCoordRequest(final Set<LocationType> types, final Point coord,
             final int maxDistance, final int maxStations) throws IOException {
         final HttpUrl.Builder url = coordEndpoint.newBuilder();
-        appendXmlCoordRequestParameters(url, types, coord, maxDistance, maxStations);
+        appendCoordRequestParameters(url, types, coord, maxDistance, maxStations);
         final AtomicReference<NearbyLocationsResult> result = new AtomicReference<>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
@@ -510,7 +483,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
                 try {
                     final XmlPullParser pp = parserFactory.newPullParser();
-                    pp.setInput(body.byteStream(), null); // Read encoding from XML declaration
+                    pp.setInput(body.charStream());
                     final ResultHeader header = enterItdRequest(pp);
 
                     XmlPullUtil.enter(pp, "itdCoordInfoRequest");
@@ -556,25 +529,21 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                     }
 
                     result.set(new NearbyLocationsResult(header, locations));
-                } catch (final XmlPullParserException x) {
+                } catch (final XmlPullParserException | ParserException x) {
                     throw new ParserException("cannot parse xml: " + bodyPeek, x);
                 }
             }
         };
 
-        if (httpPost)
-            httpClient.getInputStream(callback, url.build(), url.build().encodedQuery(),
-                    "application/x-www-form-urlencoded", httpReferer);
-        else
-            httpClient.getInputStream(callback, url.build(), httpReferer);
+        httpClient.getInputStream(callback, url.build(), httpReferer);
 
         return result.get();
     }
 
-    protected NearbyLocationsResult mobileCoordRequest(final EnumSet<LocationType> types, final Point coord,
+    protected NearbyLocationsResult mobileCoordRequest(final Set<LocationType> types, final Point coord,
             final int maxDistance, final int maxStations) throws IOException {
         final HttpUrl.Builder url = coordEndpoint.newBuilder();
-        appendXmlCoordRequestParameters(url, types, coord, maxDistance, maxStations);
+        appendCoordRequestParameters(url, types, coord, maxDistance, maxStations);
         final AtomicReference<NearbyLocationsResult> result = new AtomicReference<>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
@@ -582,7 +551,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
                 try {
                     final XmlPullParser pp = parserFactory.newPullParser();
-                    pp.setInput(body.byteStream(), null); // Read encoding from XML declaration
+                    pp.setInput(body.charStream());
                     final ResultHeader header = enterEfa(pp);
 
                     XmlPullUtil.enter(pp, "ci");
@@ -607,18 +576,19 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                             final String id = XmlPullUtil.valueTag(pp, "id");
                             XmlPullUtil.valueTag(pp, "omc");
                             XmlPullUtil.optValueTag(pp, "pid", null);
-                            final String place = normalizeLocationName(XmlPullUtil.valueTag(pp, "locality"));
+                            final String place = normalizeLocationName(XmlPullUtil.optValueTag(pp, "locality", null));
                             XmlPullUtil.valueTag(pp, "layer");
                             XmlPullUtil.valueTag(pp, "gisID");
                             XmlPullUtil.valueTag(pp, "ds");
-                            XmlPullUtil.valueTag(pp, "stateless");
+                            final String stateless = XmlPullUtil.valueTag(pp, "stateless");
+                            final String locationId = locationType == LocationType.STATION ? id : stateless;
                             final Point coord = parseCoord(XmlPullUtil.valueTag(pp, "c"));
 
                             final Location location;
                             if (name != null)
-                                location = new Location(locationType, id, coord, place, name);
+                                location = new Location(locationType, locationId, coord, place, name);
                             else
-                                location = new Location(locationType, id, coord, null, place);
+                                location = new Location(locationType, locationId, coord, null, place);
                             stations.add(location);
 
                             XmlPullUtil.skipExit(pp, "pi");
@@ -630,24 +600,21 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                     XmlPullUtil.skipExit(pp, "ci");
 
                     result.set(new NearbyLocationsResult(header, stations));
-                } catch (final XmlPullParserException x) {
+                } catch (final XmlPullParserException | ParserException x) {
                     throw new ParserException("cannot parse xml: " + bodyPeek, x);
                 }
             }
         };
 
-        if (httpPost)
-            httpClient.getInputStream(callback, url.build(), url.build().encodedQuery(),
-                    "application/x-www-form-urlencoded", httpReferer);
-        else
-            httpClient.getInputStream(callback, url.build(), httpReferer);
+        httpClient.getInputStream(callback, url.build(), httpReferer);
 
         return result.get();
     }
 
     @Override
-    public SuggestLocationsResult suggestLocations(final CharSequence constraint) throws IOException {
-        return jsonStopfinderRequest(new Location(LocationType.ANY, null, null, constraint.toString()));
+    public SuggestLocationsResult suggestLocations(final CharSequence constraint,
+            final @Nullable Set<LocationType> types, final int maxLocations) throws IOException {
+        return jsonStopfinderRequest(constraint, types, maxLocations);
     }
 
     private interface ProcessItdOdvCallback {
@@ -745,7 +712,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
         if ("any".equals(type))
             type = XmlPullUtil.attr(pp, "anyType");
-        final String id = XmlPullUtil.attr(pp, "stateless");
+        final String id = XmlPullUtil.optAttr(pp, "id", null);
+        final String stateless = XmlPullUtil.attr(pp, "stateless");
         final String locality = normalizeLocationName(XmlPullUtil.optAttr(pp, "locality", null));
         final String objectName = normalizeLocationName(XmlPullUtil.optAttr(pp, "objectName", null));
         final String buildingName = XmlPullUtil.optAttr(pp, "buildingName", null);
@@ -765,59 +733,41 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         }
         XmlPullUtil.exit(pp, "odvNameElem");
 
-        final LocationType locationType;
-        final String place;
-        final String name;
-
         if ("stop".equals(type)) {
-            locationType = LocationType.STATION;
-            place = locality != null ? locality : defaultPlace;
-            name = objectName != null ? objectName : nameElem;
+            if (id != null && !stateless.startsWith(id))
+                throw new RuntimeException("id mismatch: '" + id + "' vs '" + stateless + "'");
+            return new Location(LocationType.STATION, id != null ? id : stateless, coord,
+                    locality != null ? locality : defaultPlace, objectName != null ? objectName : nameElem);
         } else if ("poi".equals(type)) {
-            locationType = LocationType.POI;
-            place = locality != null ? locality : defaultPlace;
-            name = objectName != null ? objectName : nameElem;
+            return new Location(LocationType.POI, stateless, coord, locality != null ? locality : defaultPlace,
+                    objectName != null ? objectName : nameElem);
         } else if ("loc".equals(type)) {
             if (locality != null) {
-                locationType = LocationType.ADDRESS;
-                place = null;
-                name = locality;
+                return new Location(LocationType.ADDRESS, stateless, coord, null, locality);
             } else if (nameElem != null) {
-                locationType = LocationType.ADDRESS;
-                place = null;
-                name = nameElem;
+                return new Location(LocationType.ADDRESS, stateless, coord, null, nameElem);
             } else if (coord != null) {
-                locationType = LocationType.COORD;
-                place = null;
-                name = null;
+                return new Location(LocationType.COORD, stateless, coord, null, null);
             } else {
                 throw new IllegalArgumentException("not enough data for type/anyType: " + type);
             }
         } else if ("address".equals(type) || "singlehouse".equals(type)) {
-            locationType = LocationType.ADDRESS;
-            place = locality != null ? locality : defaultPlace;
-            name = objectName + (buildingNumber != null ? " " + buildingNumber : "");
+            return new Location(LocationType.ADDRESS, stateless, coord, locality != null ? locality : defaultPlace,
+                    objectName + (buildingNumber != null ? " " + buildingNumber : ""));
         } else if ("street".equals(type) || "crossing".equals(type)) {
-            locationType = LocationType.ADDRESS;
-            place = locality != null ? locality : defaultPlace;
-            name = objectName != null ? objectName : nameElem;
+            return new Location(LocationType.ADDRESS, stateless, coord, locality != null ? locality : defaultPlace,
+                    objectName != null ? objectName : nameElem);
         } else if ("postcode".equals(type)) {
-            locationType = LocationType.ADDRESS;
-            place = locality != null ? locality : defaultPlace;
-            name = postCode;
+            return new Location(LocationType.ADDRESS, stateless, coord, locality != null ? locality : defaultPlace,
+                    postCode);
         } else if ("buildingname".equals(type)) {
-            locationType = LocationType.ADDRESS;
-            place = locality != null ? locality : defaultPlace;
-            name = buildingName != null ? buildingName : streetName;
+            return new Location(LocationType.ADDRESS, stateless, coord, locality != null ? locality : defaultPlace,
+                    buildingName != null ? buildingName : streetName);
         } else if ("coord".equals(type)) {
-            locationType = LocationType.COORD;
-            place = null;
-            name = null;
+            return new Location(LocationType.ADDRESS, stateless, coord, defaultPlace, nameElem);
         } else {
             throw new IllegalArgumentException("unknown type/anyType: " + type);
         }
-
-        return new Location(locationType, id, coord, place, name);
     }
 
     private Location processItdOdvAssignedStop(final XmlPullParser pp) throws XmlPullParserException, IOException {
@@ -833,7 +783,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     }
 
     @Override
-    public NearbyLocationsResult queryNearbyLocations(final EnumSet<LocationType> types, final Location location,
+    public NearbyLocationsResult queryNearbyLocations(final Set<LocationType> types, final Location location,
             final int maxDistance, final int maxLocations) throws IOException {
         if (location.hasCoord())
             return xmlCoordRequest(types, location.coord, maxDistance, maxLocations);
@@ -868,7 +818,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
                 try {
                     final XmlPullParser pp = parserFactory.newPullParser();
-                    pp.setInput(body.byteStream(), null); // Read encoding from XML declaration
+                    pp.setInput(body.charStream());
                     final ResultHeader header = enterItdRequest(pp);
 
                     XmlPullUtil.enter(pp, "itdDepartureMonitorRequest");
@@ -902,17 +852,13 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                         result.set(new NearbyLocationsResult(header, stations));
                     else
                         result.set(new NearbyLocationsResult(header, stations.subList(0, maxLocations)));
-                } catch (final XmlPullParserException x) {
+                } catch (final XmlPullParserException | ParserException x) {
                     throw new ParserException("cannot parse xml: " + bodyPeek, x);
                 }
             }
         };
 
-        if (httpPost)
-            httpClient.getInputStream(callback, url.build(), url.build().encodedQuery(),
-                    "application/x-www-form-urlencoded", httpReferer);
-        else
-            httpClient.getInputStream(callback, url.build(), httpReferer);
+        httpClient.getInputStream(callback, url.build(), httpReferer);
 
         return result.get();
     }
@@ -988,8 +934,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                 return new Line(id, network, Product.HIGH_SPEED_TRAIN, "TGD" + trainNum);
             if ("INZ".equals(trainType) && trainNum != null)
                 return new Line(id, network, Product.HIGH_SPEED_TRAIN, "INZ" + trainNum);
-            if (("RJ".equals(trainType) || "railjet".equals(trainName)) && trainNum != null) // railjet
-                return new Line(id, network, Product.HIGH_SPEED_TRAIN, "RJ" + trainNum);
+            if (("RJ".equals(trainType) || "railjet".equals(trainName)))
+                return new Line(id, network, Product.HIGH_SPEED_TRAIN, "RJ" + Strings.nullToEmpty(trainNum));
+            if (("RJX".equals(trainType) || "railjet xpress".equals(trainName)))
+                return new Line(id, network, Product.HIGH_SPEED_TRAIN, "RJX" + Strings.nullToEmpty(trainNum));
             if (("WB".equals(trainType) || "WESTbahn".equals(trainName)) && trainNum != null)
                 return new Line(id, network, Product.HIGH_SPEED_TRAIN, "WB" + trainNum);
             if (("HKX".equals(trainType) || "Hamburg-Köln-Express".equals(trainName)) && trainNum != null)
@@ -1321,6 +1269,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                 return new Line(id, network, Product.REGIONAL_TRAIN, "NX" + trainNum);
             if (("SE".equals(trainType) || "ABELLIO Rail Mitteldeutschland GmbH".equals(trainName)) && trainNum != null)
                 return new Line(id, network, Product.REGIONAL_TRAIN, "SE" + trainNum);
+            if (("DNA".equals(trainType) && trainNum != null)) // Dieselnetz Augsburg
+                return new Line(id, network, Product.REGIONAL_TRAIN, "DNA" + trainNum);
+            if ("Dieselnetz".equals(trainType) && "Augsburg".equals(trainNum))
+                return new Line(id, network, Product.REGIONAL_TRAIN, "DNA");
 
             if (("BSB".equals(trainType) || "Breisgau-S-Bahn Gmbh".equals(trainName)) && trainNum != null)
                 return new Line(id, network, Product.REGIONAL_TRAIN, "BSB" + trainNum);
@@ -1418,6 +1370,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         } else if ("17".equals(mot)) {
             if (trainNum == null && trainName != null && trainName.startsWith("Schienenersatz"))
                 return new Line(id, network, Product.BUS, "SEV");
+        } else if ("19".equals(mot)) {
+            if ("Bürgerbus".equals(trainName) || "BürgerBus".equals(trainName))
+                return new Line(id, network, Product.BUS, symbol);
         }
 
         throw new IllegalStateException(
@@ -1433,7 +1388,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         return xsltDepartureMonitorRequest(stationId, time, maxDepartures, equivs);
     }
 
-    protected void appendXsltDepartureMonitorRequestParameters(final HttpUrl.Builder url, final String stationId,
+    protected void appendDepartureMonitorRequestParameters(final HttpUrl.Builder url, final String stationId,
             final @Nullable Date time, final int maxDepartures, final boolean equivs) {
         appendCommonRequestParams(url, "XML");
         url.addEncodedQueryParameter("type_dm", "stop");
@@ -1467,7 +1422,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     private QueryDeparturesResult xsltDepartureMonitorRequest(final String stationId, final @Nullable Date time,
             final int maxDepartures, final boolean equivs) throws IOException {
         final HttpUrl.Builder url = departureMonitorEndpoint.newBuilder();
-        appendXsltDepartureMonitorRequestParameters(url, stationId, time, maxDepartures, equivs);
+        appendDepartureMonitorRequestParameters(url, stationId, time, maxDepartures, equivs);
         final AtomicReference<QueryDeparturesResult> result = new AtomicReference<>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
@@ -1475,7 +1430,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
                 try {
                     final XmlPullParser pp = parserFactory.newPullParser();
-                    pp.setInput(body.byteStream(), null); // Read encoding from XML declaration
+                    pp.setInput(body.charStream());
                     final ResultHeader header = enterItdRequest(pp);
 
                     final QueryDeparturesResult r = new QueryDeparturesResult(header);
@@ -1493,7 +1448,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                         }
                     });
 
-                    if ("notidentified".equals(nameState) || "list".equals(nameState)) {
+                    if (!"identified".equals(nameState)) {
                         result.set(new QueryDeparturesResult(header, QueryDeparturesResult.Status.INVALID_STATION));
                         return;
                     }
@@ -1601,17 +1556,13 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                     }
 
                     result.set(r);
-                } catch (final XmlPullParserException x) {
+                } catch (final XmlPullParserException | ParserException x) {
                     throw new ParserException("cannot parse xml: " + bodyPeek, x);
                 }
             }
         };
 
-        if (httpPost)
-            httpClient.getInputStream(callback, url.build(), url.build().encodedQuery(),
-                    "application/x-www-form-urlencoded", httpReferer);
-        else
-            httpClient.getInputStream(callback, url.build(), httpReferer);
+        httpClient.getInputStream(callback, url.build(), httpReferer);
 
         return result.get();
     }
@@ -1619,7 +1570,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     protected QueryDeparturesResult queryDeparturesMobile(final String stationId, final @Nullable Date time,
             final int maxDepartures, final boolean equivs) throws IOException {
         final HttpUrl.Builder url = departureMonitorEndpoint.newBuilder();
-        appendXsltDepartureMonitorRequestParameters(url, stationId, time, maxDepartures, equivs);
+        appendDepartureMonitorRequestParameters(url, stationId, time, maxDepartures, equivs);
         final AtomicReference<QueryDeparturesResult> result = new AtomicReference<>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
@@ -1627,7 +1578,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
                 try {
                     final XmlPullParser pp = parserFactory.newPullParser();
-                    pp.setInput(body.byteStream(), null); // Read encoding from XML declaration
+                    pp.setInput(body.charStream());
                     final ResultHeader header = enterEfa(pp);
                     final QueryDeparturesResult r = new QueryDeparturesResult(header);
 
@@ -1695,17 +1646,13 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                     } else {
                         result.set(new QueryDeparturesResult(header, QueryDeparturesResult.Status.INVALID_STATION));
                     }
-                } catch (final XmlPullParserException x) {
+                } catch (final XmlPullParserException | ParserException x) {
                     throw new ParserException("cannot parse xml: " + bodyPeek, x);
                 }
             }
         };
 
-        if (httpPost)
-            httpClient.getInputStream(callback, url.build(), url.build().encodedQuery(),
-                    "application/x-www-form-urlencoded", httpReferer);
-        else
-            httpClient.getInputStream(callback, url.build(), httpReferer);
+        httpClient.getInputStream(callback, url.build(), httpReferer);
 
         return result.get();
     }
@@ -1965,7 +1912,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         return P_STATION_NAME_WHITESPACE.matcher(name).replaceAll(" ");
     }
 
-    protected void appendXsltTripRequestParameters(final HttpUrl.Builder url, final Location from,
+    protected void appendTripRequestParameters(final HttpUrl.Builder url, final Location from,
             final @Nullable Location via, final Location to, final Date time, final boolean dep,
             @Nullable TripOptions options) {
         appendCommonRequestParams(url, "XML");
@@ -1973,7 +1920,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         url.addEncodedQueryParameter("sessionID", "0");
         url.addEncodedQueryParameter("requestID", "0");
 
-        appendCommonXsltTripRequest2Params(url);
+        appendCommonTripRequestParams(url);
 
         appendLocationParams(url, from, "origin");
         appendLocationParams(url, to, "destination");
@@ -2067,28 +2014,27 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         url.addEncodedQueryParameter("sessionID", sessionId);
         url.addEncodedQueryParameter("requestID", requestId);
         url.addEncodedQueryParameter("calcNumberOfTrips", Integer.toString(numTripsRequested));
-        appendCommonXsltTripRequest2Params(url);
+        appendCommonTripRequestParams(url);
         return url.build();
     }
 
-    private final void appendCommonXsltTripRequest2Params(final HttpUrl.Builder url) {
-        if (useStringCoordListOutputFormat)
-            url.addEncodedQueryParameter("coordListOutputFormat", "STRING");
+    private final void appendCommonTripRequestParams(final HttpUrl.Builder url) {
+        url.addEncodedQueryParameter("coordListOutputFormat", useStringCoordListOutputFormat ? "string" : "list");
     }
 
     @Override
     public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to,
             final Date date, final boolean dep, final @Nullable TripOptions options) throws IOException {
         final HttpUrl.Builder url = tripEndpoint.newBuilder();
-        appendXsltTripRequestParameters(url, from, via, to, date, dep, options);
+        appendTripRequestParameters(url, from, via, to, date, dep, options);
         final AtomicReference<QueryTripsResult> result = new AtomicReference<>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
             @Override
             public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
                 try {
-                    result.set(queryTrips(url.build(), body.byteStream()));
-                } catch (final XmlPullParserException x) {
+                    result.set(queryTrips(url.build(), body.charStream()));
+                } catch (final XmlPullParserException | ParserException x) {
                     throw new ParserException("cannot parse xml: " + bodyPeek, x);
                 } catch (final RuntimeException x) {
                     throw new RuntimeException("uncategorized problem while processing " + url, x);
@@ -2096,11 +2042,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             }
         };
 
-        if (httpPost)
-            httpClient.getInputStream(callback, url.build(), url.build().encodedQuery(),
-                    "application/x-www-form-urlencoded", httpRefererTrip);
-        else
-            httpClient.getInputStream(callback, url.build(), httpRefererTrip);
+        httpClient.getInputStream(callback, url.build(), httpRefererTrip);
 
         return result.get();
     }
@@ -2108,15 +2050,15 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     protected QueryTripsResult queryTripsMobile(final Location from, final @Nullable Location via, final Location to,
             final Date date, final boolean dep, final @Nullable TripOptions options) throws IOException {
         final HttpUrl.Builder url = tripEndpoint.newBuilder();
-        appendXsltTripRequestParameters(url, from, via, to, date, dep, options);
+        appendTripRequestParameters(url, from, via, to, date, dep, options);
         final AtomicReference<QueryTripsResult> result = new AtomicReference<>();
 
         final HttpClient.Callback callback = new HttpClient.Callback() {
             @Override
             public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
                 try {
-                    result.set(queryTripsMobile(url.build(), from, via, to, body.byteStream()));
-                } catch (final XmlPullParserException x) {
+                    result.set(queryTripsMobile(url.build(), from, via, to, body.charStream()));
+                } catch (final XmlPullParserException | ParserException x) {
                     throw new ParserException("cannot parse xml: " + bodyPeek, x);
                 } catch (final RuntimeException x) {
                     throw new RuntimeException("uncategorized problem while processing " + url, x);
@@ -2124,11 +2066,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             }
         };
 
-        if (httpPost)
-            httpClient.getInputStream(callback, url.build(), url.build().encodedQuery(),
-                    "application/x-www-form-urlencoded", httpRefererTrip);
-        else
-            httpClient.getInputStream(callback, url.build(), httpRefererTrip);
+        httpClient.getInputStream(callback, url.build(), httpRefererTrip);
 
         return result.get();
     }
@@ -2146,8 +2084,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             @Override
             public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
                 try {
-                    result.set(queryTrips(url.build(), body.byteStream()));
-                } catch (final XmlPullParserException x) {
+                    result.set(queryTrips(url.build(), body.charStream()));
+                } catch (final XmlPullParserException | ParserException x) {
                     throw new ParserException("cannot parse xml: " + bodyPeek, x);
                 } catch (final RuntimeException x) {
                     throw new RuntimeException("uncategorized problem while processing " + url, x);
@@ -2173,8 +2111,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             @Override
             public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
                 try {
-                    result.set(queryTripsMobile(url.build(), null, null, null, body.byteStream()));
-                } catch (final XmlPullParserException x) {
+                    result.set(queryTripsMobile(url.build(), null, null, null, body.charStream()));
+                } catch (final XmlPullParserException | ParserException x) {
                     throw new ParserException("cannot parse xml: " + bodyPeek, x);
                 } catch (final RuntimeException x) {
                     throw new RuntimeException("uncategorized problem while processing " + url, x);
@@ -2187,10 +2125,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         return result.get();
     }
 
-    private QueryTripsResult queryTrips(final HttpUrl url, final InputStream is)
+    private QueryTripsResult queryTrips(final HttpUrl url, final Reader reader)
             throws XmlPullParserException, IOException {
         final XmlPullParser pp = parserFactory.newPullParser();
-        pp.setInput(is, null); // Read encoding from XML declaration
+        pp.setInput(reader);
         final ResultHeader header = enterItdRequest(pp);
         final Object context = header.context;
 
@@ -2676,9 +2614,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     }
 
     private QueryTripsResult queryTripsMobile(final HttpUrl url, final Location from, final @Nullable Location via,
-            final Location to, final InputStream is) throws XmlPullParserException, IOException {
+            final Location to, final Reader reader) throws XmlPullParserException, IOException {
         final XmlPullParser pp = parserFactory.newPullParser();
-        pp.setInput(is, null); // Read encoding from XML declaration
+        pp.setInput(reader);
         final ResultHeader header = enterEfa(pp);
 
         final Calendar plannedTimeCal = new GregorianCalendar(timeZone);
@@ -2804,10 +2742,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                                 final Point coords;
                                 if (!"::".equals(coordPart)) {
                                     final String[] coordParts = coordPart.split(":");
-                                    if ("WGS84".equals(coordParts[2])) {
-                                        final int lat = (int) Math.round(Double.parseDouble(coordParts[1]));
-                                        final int lon = (int) Math.round(Double.parseDouble(coordParts[0]));
-                                        coords = Point.from1E6(lat, lon);
+                                    final String mapName = coordParts[2];
+                                    if (COORD_FORMAT.equals(mapName)) {
+                                        final double lat = Double.parseDouble(coordParts[1]);
+                                        final double lon = Double.parseDouble(coordParts[0]);
+                                        coords = Point.fromDouble(lat, lon);
                                     } else {
                                         coords = null;
                                     }
@@ -2929,9 +2868,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         XmlPullUtil.enter(pp, "itdCoordinateBaseElemList");
 
         while (XmlPullUtil.optEnter(pp, "itdCoordinateBaseElem")) {
-            final int lon = (int) Math.round(Double.parseDouble(XmlPullUtil.valueTag(pp, "x")));
-            final int lat = (int) Math.round(Double.parseDouble(XmlPullUtil.valueTag(pp, "y")));
-            path.add(Point.from1E6(lat, lon));
+            final double x = Double.parseDouble(XmlPullUtil.valueTag(pp, "x"));
+            final double y = Double.parseDouble(XmlPullUtil.valueTag(pp, "y"));
+            path.add(Point.fromDouble(y, x));
 
             XmlPullUtil.skipExit(pp, "itdCoordinateBaseElem");
         }
@@ -2946,23 +2885,23 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             return null;
 
         final String[] parts = coordStr.split(",");
-        final int lat = (int) Math.round(Double.parseDouble(parts[1]));
-        final int lon = (int) Math.round(Double.parseDouble(parts[0]));
-        return Point.from1E6(lat, lon);
+        final double lat = Double.parseDouble(parts[1]);
+        final double lon = Double.parseDouble(parts[0]);
+        return Point.fromDouble(lat, lon);
     }
 
     private Point processCoordAttr(final XmlPullParser pp) {
         final String mapName = XmlPullUtil.optAttr(pp, "mapName", null);
-        final int x = (int) Math.round(XmlPullUtil.optFloatAttr(pp, "x", 0));
-        final int y = (int) Math.round(XmlPullUtil.optFloatAttr(pp, "y", 0));
+        final double x = XmlPullUtil.optFloatAttr(pp, "x", 0);
+        final double y = XmlPullUtil.optFloatAttr(pp, "y", 0);
 
         if (mapName == null || (x == 0 && y == 0))
             return null;
 
-        if (!"WGS84".equals(mapName))
+        if (!COORD_FORMAT.equals(mapName))
             return null;
 
-        return Point.from1E6(y, x);
+        return Point.fromDouble(y, x);
     }
 
     private Fare processItdGenericTicketGroup(final XmlPullParser pp, final String net, final Currency currency)
@@ -3025,43 +2964,29 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     }
 
     private void appendLocationParams(final HttpUrl.Builder url, final Location location, final String paramSuffix) {
-        final String name = locationValue(location);
-        if ((location.type == LocationType.ADDRESS || location.type == LocationType.COORD) && location.hasCoord()) {
+        if (location.type == LocationType.STATION && location.hasId()) {
+            url.addEncodedQueryParameter("type_" + paramSuffix, "stop");
+            url.addEncodedQueryParameter("name_" + paramSuffix,
+                    ParserUtils.urlEncode(normalizeStationId(location.id), requestUrlEncoding));
+        } else if (location.type == LocationType.POI && location.hasId()) {
+            url.addEncodedQueryParameter("type_" + paramSuffix, "poi");
+            url.addEncodedQueryParameter("name_" + paramSuffix, ParserUtils.urlEncode(location.id, requestUrlEncoding));
+        } else if (location.type == LocationType.ADDRESS && location.hasId()) {
+            url.addEncodedQueryParameter("type_" + paramSuffix, "address");
+            url.addEncodedQueryParameter("name_" + paramSuffix, ParserUtils.urlEncode(location.id, requestUrlEncoding));
+        } else if ((location.type == LocationType.ADDRESS || location.type == LocationType.COORD)
+                && location.hasCoord()) {
             url.addEncodedQueryParameter("type_" + paramSuffix, "coord");
-            url.addEncodedQueryParameter("name_" + paramSuffix, ParserUtils.urlEncode(
-                    String.format(Locale.ENGLISH, "%.6f:%.6f", location.getLonAsDouble(), location.getLatAsDouble())
-                            + ":WGS84",
-                    requestUrlEncoding));
-        } else if (name != null) {
-            url.addEncodedQueryParameter("type_" + paramSuffix, locationTypeValue(location));
-            url.addEncodedQueryParameter("name_" + paramSuffix, ParserUtils.urlEncode(name, requestUrlEncoding));
+            url.addEncodedQueryParameter("name_" + paramSuffix,
+                    ParserUtils.urlEncode(String.format(Locale.ENGLISH, "%.7f:%.7f:%s", location.getLonAsDouble(),
+                            location.getLatAsDouble(), COORD_FORMAT), requestUrlEncoding));
+        } else if (location.name != null) {
+            url.addEncodedQueryParameter("type_" + paramSuffix, "any");
+            url.addEncodedQueryParameter("name_" + paramSuffix,
+                    ParserUtils.urlEncode(location.name, requestUrlEncoding));
         } else {
             throw new IllegalArgumentException("cannot append location: " + location);
         }
-    }
-
-    private static String locationTypeValue(final Location location) {
-        final LocationType type = location.type;
-        if (type == LocationType.STATION)
-            return "stop";
-        if (type == LocationType.ADDRESS)
-            return "any"; // strange, matches with anyObjFilter
-        if (type == LocationType.COORD)
-            return "coord";
-        if (type == LocationType.POI)
-            return "poi";
-        if (type == LocationType.ANY)
-            return "any";
-        throw new IllegalArgumentException(type.toString());
-    }
-
-    private static @Nullable String locationValue(final Location location) {
-        if (location.type == LocationType.STATION && location.hasId())
-            return normalizeStationId(location.id);
-        else if (location.type == LocationType.POI && location.hasId())
-            return location.id;
-        else
-            return location.name;
     }
 
     private static final Map<WalkSpeed, String> WALKSPEED_MAP = new HashMap<>();
@@ -3127,20 +3052,25 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
         XmlPullUtil.enter(pp, "efa");
 
-        final String now = XmlPullUtil.valueTag(pp, "now");
-        final Calendar serverTime = new GregorianCalendar(timeZone);
-        ParserUtils.parseIsoDate(serverTime, now.substring(0, 10));
-        ParserUtils.parseEuropeanTime(serverTime, now.substring(11));
+        if (XmlPullUtil.test(pp, "error")) {
+            final String message = XmlPullUtil.valueTag(pp, "error");
+            throw new RuntimeException(message);
+        } else {
+            final String now = XmlPullUtil.valueTag(pp, "now");
+            final Calendar serverTime = new GregorianCalendar(timeZone);
+            ParserUtils.parseIsoDate(serverTime, now.substring(0, 10));
+            ParserUtils.parseEuropeanTime(serverTime, now.substring(11));
 
-        final Map<String, String> params = processPas(pp);
-        final String requestId = params.get("requestID");
-        final String sessionId = params.get("sessionID");
-        final String serverId = params.get("serverID");
+            final Map<String, String> params = processPas(pp);
+            final String requestId = params.get("requestID");
+            final String sessionId = params.get("sessionID");
+            final String serverId = params.get("serverID");
 
-        final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, null, serverId,
-                serverTime.getTimeInMillis(), new String[] { sessionId, requestId });
+            final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, null, serverId,
+                    serverTime.getTimeInMillis(), new String[] { sessionId, requestId });
 
-        return header;
+            return header;
+        }
     }
 
     private Map<String, String> processPas(final XmlPullParser pp) throws XmlPullParserException, IOException {

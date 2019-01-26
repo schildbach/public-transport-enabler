@@ -19,7 +19,6 @@ package de.schildbach.pte;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.EnumSet;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -88,7 +87,7 @@ public interface NetworkProvider {
      * @return nearby stations
      * @throws IOException
      */
-    NearbyLocationsResult queryNearbyLocations(EnumSet<LocationType> types, Location location, int maxDistance,
+    NearbyLocationsResult queryNearbyLocations(Set<LocationType> types, Location location, int maxDistance,
             int maxLocations) throws IOException;
 
     /**
@@ -113,9 +112,17 @@ public interface NetworkProvider {
      * 
      * @param constraint
      *            input by user so far
+     * @param types
+     *            types of locations to suggest, or {@code null} for any
+     * @param maxLocations
+     *            maximum number of locations to suggest or {@code 0}
      * @return location suggestions
      * @throws IOException
      */
+    SuggestLocationsResult suggestLocations(CharSequence constraint, @Nullable Set<LocationType> types,
+            int maxLocations) throws IOException;
+
+    @Deprecated
     SuggestLocationsResult suggestLocations(CharSequence constraint) throws IOException;
 
     /**

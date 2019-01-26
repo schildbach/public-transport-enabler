@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +17,8 @@
 
 package de.schildbach.pte;
 
+import com.google.common.base.Charsets;
+
 import okhttp3.HttpUrl;
 
 /**
@@ -29,5 +31,6 @@ public class VvvProvider extends AbstractEfaProvider {
 
     public VvvProvider() {
         super(NetworkId.VVV, API_BASE);
+        setRequestUrlEncoding(Charsets.UTF_8);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,6 +52,10 @@ public class VrnProvider extends AbstractEfaProvider {
         if ("0".equals(mot)) {
             if ("InterRegio".equals(longName) && symbol == null)
                 return new Line(id, network, Product.REGIONAL_TRAIN, "IR");
+            if ("IRE1".equals(trainNum) && trainName == null)
+                return new Line(id, network, Product.REGIONAL_TRAIN, trainNum);
+            if ("RE11 (RRX)".equals(trainNum))
+                return new Line(id, network, Product.REGIONAL_TRAIN, "RE11");
         }
 
         if (name != null && name.startsWith("RNV Moonliner "))
@@ -190,6 +194,7 @@ public class VrnProvider extends AbstractEfaProvider {
         STYLES.put("SS4", new Style(Style.parseColor("#00A651"), Style.BLACK));
         STYLES.put("SS5", new Style(Style.parseColor("#F89735"), Style.WHITE));
         STYLES.put("SS51", new Style(Style.parseColor("#F89735"), Style.WHITE));
+        STYLES.put("SS6", new Style(Style.parseColor("#007EC5"), Style.WHITE));
 
         // Bus Bad Bergzabern
         STYLES.put("B540", new Style(Style.parseColor("#FDC500"), Style.WHITE));

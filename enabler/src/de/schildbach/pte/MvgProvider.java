@@ -17,6 +17,8 @@
 
 package de.schildbach.pte;
 
+import com.google.common.base.Charsets;
+
 import de.schildbach.pte.dto.Position;
 
 import okhttp3.HttpUrl;
@@ -29,6 +31,7 @@ public class MvgProvider extends AbstractEfaProvider {
 
     public MvgProvider() {
         super(NetworkId.MVG, API_BASE);
+        setRequestUrlEncoding(Charsets.UTF_8);
         setSessionCookieName("SIDefa80");
     }
 

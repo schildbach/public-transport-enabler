@@ -24,10 +24,12 @@ import de.schildbach.pte.dto.Product;
 import okhttp3.HttpUrl;
 
 /**
+ * Provider implementation for the Aachener Verkehrsverbund (Aachen, Germany).
+ * 
  * @author Andreas Schildbach
  */
 public class AvvAachenProvider extends AbstractHafasClientInterfaceProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("https://auskunft.avv.de/bin/mgate.exe");
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://auskunft.avv.de/bin/");
     private static final Product[] PRODUCTS_MAP = { Product.REGIONAL_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.HIGH_SPEED_TRAIN, Product.BUS, Product.SUBURBAN_TRAIN, Product.SUBWAY, Product.TRAM, Product.BUS,
             Product.BUS, Product.ON_DEMAND, Product.FERRY };

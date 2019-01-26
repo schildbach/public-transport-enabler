@@ -15,21 +15,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.schildbach.pte;
+package de.schildbach.pte.util;
 
-import com.google.common.base.Charsets;
+import static org.junit.Assert.assertEquals;
 
-import okhttp3.HttpUrl;
+import java.util.List;
+
+import org.junit.Test;
+
+import de.schildbach.pte.dto.Point;
 
 /**
  * @author Andreas Schildbach
  */
-public class DingProvider extends AbstractEfaProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("https://www.ding.eu/ding3/");
-    // https://www.ding.eu/swu/
-
-    public DingProvider() {
-        super(NetworkId.DING, API_BASE);
-        setRequestUrlEncoding(Charsets.UTF_8);
+public class PolylineFormatTest {
+    @Test
+    public void test() {
+        final List<Point> polyline = PolylineFormat.decode(
+                "}qfeHyn|bBnBdA\\R]xBzA|@r@f@u@hCWS{@bCe@t@e@v@h@vCIFu@`@MPDJ@L?NAPIZXf@|@`Br@pAHLZp@~@jBbArBbBjDLTTd@fAzBcFnH[d@Vf@iA`BWb@t@zAb@~@LTNNdCzE~A{BAA??");
+        assertEquals(44, polyline.size());
+        assertEquals(Point.fromDouble(48.2078300, 16.3711700), polyline.get(0));
+        assertEquals(Point.fromDouble(48.2051400, 16.3579600), polyline.get(43));
     }
 }

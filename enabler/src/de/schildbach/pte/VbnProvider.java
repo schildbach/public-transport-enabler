@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2015 the original author or authors.
+ * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
 package de.schildbach.pte;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -26,6 +27,7 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.Sets;
 
+import de.schildbach.pte.dto.Fare;
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Line.Attr;
 import de.schildbach.pte.dto.Product;
@@ -35,28 +37,35 @@ import de.schildbach.pte.dto.Style.Shape;
 import okhttp3.HttpUrl;
 
 /**
+ * Provider implementation for the Verkehrsverbund Bremen/Niedersachsen (Lower Saxony, Germany).
+ * 
  * @author Andreas Schildbach
  */
 public class VbnProvider extends AbstractHafasClientInterfaceProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("https://fahrplaner.vbn.de/hafas/");
-    // http://fahrplaner.vsninfo.de/hafas/
-    // http://fahrplan.rsag-online.de/hafas/
-    // http://fahrplanauskunft.verkehrsverbund-warnow.de/bin/
+    private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, // ICE
+            Product.HIGH_SPEED_TRAIN, // IC / EC / CNL
+            Product.HIGH_SPEED_TRAIN, // IR, sonstiger Schnellzug
+            Product.REGIONAL_TRAIN, // Nahverkehr
+            Product.SUBURBAN_TRAIN, // S-Bahn
+            Product.BUS, // Bus
+            Product.FERRY, // Schiff
+            Product.SUBWAY, // U-Bahn
+            Product.TRAM, // Straßen-/ Stadtbahn
+            Product.ON_DEMAND // Anrufverkehr
+    };
 
-    private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
-            Product.REGIONAL_TRAIN, Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.BUS, Product.FERRY,
-            Product.SUBWAY, Product.TRAM, Product.ON_DEMAND };
-
-    public VbnProvider(final String apiAuthorization) {
+    public VbnProvider(final String apiAuthorization, final byte[] salt) {
         super(NetworkId.VBN, API_BASE, PRODUCTS_MAP);
-        setApiVersion("1.13");
+        setApiVersion("1.18");
         setApiClient("{\"id\":\"VBN\",\"type\":\"AND\"}");
         setApiAuthorization(apiAuthorization);
+        setRequestMicMacSalt(salt);
         setStyles(STYLES);
     }
 
-    private static final String[] PLACES = { "Bremen", "Bremerhaven", "Oldenburg(Oldb)", "Osnabrück", "Göttingen",
-            "Rostock", "Warnemünde" };
+    private static final String[] PLACES = { "Bremen", "Bremerhaven", "Hamburg", "Oldenburg(Oldb)", "Osnabrück",
+            "Göttingen", "Rostock", "Warnemünde" };
 
     @Override
     protected String[] splitStationName(final String name) {
@@ -78,21 +87,35 @@ public class VbnProvider extends AbstractHafasClientInterfaceProvider {
     }
 
     @Override
+    protected boolean hideFare(Fare fare) {
+        final String fareNameLc = fare.name.toLowerCase(Locale.US);
+        if (fareNameLc.contains("2 adults"))
+            return true;
+        if (fareNameLc.contains("3 adults"))
+            return true;
+        if (fareNameLc.contains("4 adults"))
+            return true;
+        if (fareNameLc.contains("5 adults"))
+            return true;
+        return super.hideFare(fare);
+    }
+
+    @Override
     public Set<Product> defaultProducts() {
         return Product.ALL;
     }
 
     @Override
-    protected Line newLine(final String operator, final Product product, final @Nullable String name,
-            final @Nullable String shortName, final @Nullable String number) {
-        final Line line = super.newLine(operator, product, name, shortName, number);
+    protected Line newLine(final String id, final String operator, final Product product, final @Nullable String name,
+            final @Nullable String shortName, final @Nullable String number, final Style style) {
+        final Line line = super.newLine(id, operator, product, name, shortName, number, style);
 
         if (line.product == Product.BUS) {
             if ("57".equals(line.label))
-                return new Line(null, line.network, line.product, line.label, line.name, line.style,
+                return new Line(id, line.network, line.product, line.label, line.name, line.style,
                         Sets.newHashSet(Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_CLOCKWISE), line.message);
             if ("58".equals(line.label))
-                return new Line(null, line.network, line.product, line.label, line.name, line.style,
+                return new Line(id, line.network, line.product, line.label, line.name, line.style,
                         Sets.newHashSet(Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_ANTICLOCKWISE), line.message);
         }
 
@@ -188,13 +211,10 @@ public class VbnProvider extends AbstractHafasClientInterfaceProvider {
         STYLES.put("Rostocker Straßenbahn AG|T5", new Style(Shape.RECT, Style.parseColor("#ed1c24"), Style.WHITE));
         STYLES.put("Rostocker Straßenbahn AG|T6", new Style(Shape.RECT, Style.parseColor("#fab20b"), Style.WHITE));
 
-        STYLES.put("Rostocker Straßenbahn AG|B15", new Style(Style.parseColor("#008dc6"), Style.WHITE));
         STYLES.put("Rostocker Straßenbahn AG|B16", new Style(Style.parseColor("#1d3c85"), Style.WHITE));
         STYLES.put("Rostocker Straßenbahn AG|B17", new Style(Style.parseColor("#5784cc"), Style.WHITE));
         STYLES.put("Rostocker Straßenbahn AG|B18", new Style(Style.parseColor("#0887c9"), Style.WHITE));
         STYLES.put("Rostocker Straßenbahn AG|B19", new Style(Style.parseColor("#166ab8"), Style.WHITE));
-        STYLES.put("Rostocker Straßenbahn AG|PRFT 19A", new Style(Style.WHITE, Style.parseColor("#166ab8")));
-        STYLES.put("Rostocker Straßenbahn AG|PRFT 20A", new Style(Style.WHITE, Style.parseColor("#1959a6")));
         STYLES.put("Rostocker Straßenbahn AG|B22", new Style(Style.parseColor("#3871c1"), Style.WHITE));
         STYLES.put("Rostocker Straßenbahn AG|B23", new Style(Style.parseColor("#173e7d"), Style.WHITE));
         STYLES.put("Rostocker Straßenbahn AG|B25", new Style(Style.parseColor("#0994dc"), Style.WHITE));
@@ -205,11 +225,11 @@ public class VbnProvider extends AbstractHafasClientInterfaceProvider {
         STYLES.put("Rostocker Straßenbahn AG|B31", new Style(Style.parseColor("#3a9fdf"), Style.WHITE));
         STYLES.put("Rostocker Straßenbahn AG|B34", new Style(Style.parseColor("#1c63b7"), Style.WHITE));
         STYLES.put("Rostocker Straßenbahn AG|B35", new Style(Style.parseColor("#1969bc"), Style.WHITE));
-        STYLES.put("Rostocker Straßenbahn AG|PRFT 35A", new Style(Style.WHITE, Style.parseColor("#1969bc")));
         STYLES.put("Rostocker Straßenbahn AG|B36", new Style(Style.parseColor("#1c63b7"), Style.WHITE));
         STYLES.put("Rostocker Straßenbahn AG|B37", new Style(Style.parseColor("#36aee8"), Style.WHITE));
         STYLES.put("Rostocker Straßenbahn AG|B38", new Style(Style.parseColor("#6e87cd"), Style.WHITE));
         STYLES.put("Rostocker Straßenbahn AG|B39", new Style(Style.parseColor("#173e7d"), Style.WHITE));
+        STYLES.put("Rostocker Straßenbahn AG|BX41", new Style(Style.parseColor("#079897"), Style.WHITE));
         STYLES.put("Rostocker Straßenbahn AG|B45", new Style(Style.parseColor("#66cef5"), Style.WHITE));
         STYLES.put("Rostocker Straßenbahn AG|PRFT 45A", new Style(Style.WHITE, Style.parseColor("#66cef5")));
         STYLES.put("Rostocker Straßenbahn AG|B49", new Style(Style.parseColor("#202267"), Style.WHITE));
@@ -241,7 +261,6 @@ public class VbnProvider extends AbstractHafasClientInterfaceProvider {
         STYLES.put("rebus Regionalbus Rostock GmbH|B123", new Style(Style.parseColor("#f39200"), Style.WHITE));
         STYLES.put("rebus Regionalbus Rostock GmbH|B124", new Style(Style.parseColor("#9dc41a"), Style.WHITE));
         STYLES.put("rebus Regionalbus Rostock GmbH|B125", new Style(Style.parseColor("#935b00"), Style.WHITE));
-        STYLES.put("rebus Regionalbus Rostock GmbH|B127", new Style(Style.parseColor("#079897"), Style.WHITE));
         STYLES.put("rebus Regionalbus Rostock GmbH|B128", new Style(Style.parseColor("#7263a9"), Style.WHITE));
         STYLES.put("rebus Regionalbus Rostock GmbH|B129", new Style(Style.parseColor("#e6007e"), Style.WHITE));
         STYLES.put("rebus Regionalbus Rostock GmbH|B131", new Style(Style.parseColor("#0075bf"), Style.WHITE));

@@ -26,6 +26,8 @@ import de.schildbach.pte.dto.Product;
 import okhttp3.HttpUrl;
 
 /**
+ * Provider implementation for Samtrafiken (Sweden).
+ * 
  * @author Andreas Schildbach
  */
 public class SeProvider extends AbstractHafasClientInterfaceProvider {
@@ -37,7 +39,7 @@ public class SeProvider extends AbstractHafasClientInterfaceProvider {
 
     public SeProvider(final String jsonApiAuthorization) {
         super(NetworkId.SE, API_BASE, PRODUCTS_MAP);
-        setApiVersion("1.14");
+        setApiVersion("1.18");
         setApiClient("{\"id\":\"SAMTRAFIKEN\",\"type\":\"AND\"}");
         setApiAuthorization(jsonApiAuthorization);
     }

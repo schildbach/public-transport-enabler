@@ -24,6 +24,8 @@ import de.schildbach.pte.dto.Product;
 import okhttp3.HttpUrl;
 
 /**
+ * Provider implementation for Mobilitéitszentral (Luxembourg).
+ * 
  * @author Andreas Schildbach
  */
 public class LuProvider extends AbstractHafasClientInterfaceProvider {
@@ -34,7 +36,7 @@ public class LuProvider extends AbstractHafasClientInterfaceProvider {
 
     public LuProvider(final String apiAuthorization) {
         super(NetworkId.LU, API_BASE, PRODUCTS_MAP);
-        setApiVersion("1.16");
+        setApiVersion("1.18");
         setApiClient("{\"id\":\"CDT\",\"type\":\"AND\"}");
         setApiAuthorization(apiAuthorization);
     }

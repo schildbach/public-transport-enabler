@@ -23,6 +23,7 @@ import java.util.Date;
 
 import org.junit.Test;
 
+import de.schildbach.pte.AbstractHafasClientInterfaceProvider;
 import de.schildbach.pte.InvgProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
@@ -36,7 +37,8 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
  */
 public class InvgProviderLiveTest extends AbstractProviderLiveTest {
     public InvgProviderLiveTest() {
-        super(new InvgProvider(secretProperty("invg.api_authorization")));
+        super(new InvgProvider(secretProperty("invg.api_authorization"), AbstractHafasClientInterfaceProvider
+                .decryptSalt(secretProperty("invg.encrypted_salt"), secretProperty("hci.salt_encryption_key"))));
     }
 
     @Test

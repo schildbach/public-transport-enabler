@@ -61,6 +61,12 @@ public class DingProviderLiveTest extends AbstractProviderLiveTest {
     }
 
     @Test
+    public void queryDeparturesInvalidStation() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("999999", false);
+        assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
+    }
+
+    @Test
     public void suggestLocationsIdentified() throws Exception {
         final SuggestLocationsResult result = suggestLocations("Ulm, Justizgebäude");
         print(result);

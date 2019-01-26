@@ -53,15 +53,27 @@ public class SydneyProviderLiveTest extends AbstractProviderLiveTest {
     }
 
     @Test
-    public void queryDepartures() throws Exception {
-        final QueryDeparturesResult resultTownHall = queryDepartures("10101101", false);
-        print(resultTownHall);
+    public void queryDeparturesTownHall() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("10101101", false);
+        print(result);
+    }
 
-        final QueryDeparturesResult resultCircularQuay = queryDepartures("10101103", false);
-        print(resultCircularQuay);
+    @Test
+    public void queryDeparturesCircularQuay() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("10101103", false);
+        print(result);
+    }
 
-        final QueryDeparturesResult resultConvention = queryDepartures("10101439", false);
-        print(resultConvention);
+    @Test
+    public void queryDeparturesConvention() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("10101439", false);
+        print(result);
+    }
+
+    @Test
+    public void queryDeparturesInvalidStation() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("999999", false);
+        assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
     }
 
     @Test
@@ -78,7 +90,7 @@ public class SydneyProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void suggestLocationsEmpty() throws Exception {
-        final SuggestLocationsResult result = provider.suggestLocations("kreide");
+        final SuggestLocationsResult result = suggestLocations("kreide");
         print(result);
     }
 

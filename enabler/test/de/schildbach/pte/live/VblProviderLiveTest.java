@@ -60,6 +60,12 @@ public class VblProviderLiveTest extends AbstractProviderLiveTest {
     }
 
     @Test
+    public void queryDeparturesInvalidStation() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("999999", false);
+        assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
+    }
+
+    @Test
     public void suggestLocationsIdentified() throws Exception {
         final SuggestLocationsResult result = suggestLocations("Luzern, Kantonalbank");
         print(result);
