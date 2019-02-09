@@ -106,7 +106,7 @@ public abstract class AbstractProviderLiveTest {
 
         if (result.status == QueryDeparturesResult.Status.OK) {
             if (equivs)
-                assertTrue(result.stationDepartures.size() > 1);
+                assertTrue(result.stationDepartures.size() >= 1);
             else
                 assertTrue(result.stationDepartures.size() == 1);
         }
