@@ -20,6 +20,7 @@ package de.schildbach.pte;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -317,11 +318,15 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
     }
 
     private Date parseDate(final String dateString) throws ParseException {
-        return new SimpleDateFormat("yyyyMMdd'T'HHmmss").parse(dateString);
+        DateFormat format = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
+        format.setTimeZone(timeZone);
+        return format.parse(dateString);
     }
 
     private String printDate(final Date date) {
-        return new SimpleDateFormat("yyyyMMdd'T'HHmmss").format(date);
+        DateFormat format = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
+        format.setTimeZone(timeZone);
+        return format.format(date);
     }
 
     private LinkedList<Point> parsePath(final JSONArray coordinates) throws IOException {
