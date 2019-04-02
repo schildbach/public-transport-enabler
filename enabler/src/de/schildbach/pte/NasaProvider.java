@@ -33,11 +33,12 @@ public class NasaProvider extends AbstractHafasClientInterfaceProvider {
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.REGIONAL_TRAIN, Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.TRAM, Product.BUS,
             Product.ON_DEMAND, Product.REGIONAL_TRAIN, Product.REGIONAL_TRAIN };
+    private static final String DEFAULT_API_CLIENT = "{\"id\":\"NASA\",\"type\":\"AND\"}";
 
     public NasaProvider(final String apiAuthorization) {
         super(NetworkId.NASA, API_BASE, PRODUCTS_MAP);
         setApiVersion("1.15");
-        setApiClient("{\"id\":\"NASA\",\"type\":\"AND\"}");
+        setApiClient(DEFAULT_API_CLIENT);
         setApiAuthorization(apiAuthorization);
     }
 

@@ -34,11 +34,12 @@ public class SncbProvider extends AbstractHafasClientInterfaceProvider {
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, null, Product.HIGH_SPEED_TRAIN, null,
             null, Product.BUS, Product.REGIONAL_TRAIN, null, Product.SUBWAY, Product.BUS, Product.TRAM, null, null,
             null, null, null };
+    private static final String DEFAULT_API_CLIENT = "{\"id\":\"SNCB\",\"type\":\"AND\"}";
 
     public SncbProvider(final String jsonApiAuthorization) {
         super(NetworkId.SNCB, API_BASE, PRODUCTS_MAP);
         setApiVersion("1.15");
-        setApiClient("{\"id\":\"SNCB\",\"type\":\"AND\"}");
+        setApiClient(DEFAULT_API_CLIENT);
         setApiAuthorization(jsonApiAuthorization);
     }
 

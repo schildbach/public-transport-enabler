@@ -31,12 +31,13 @@ public class CmtaProvider extends AbstractHafasClientInterfaceProvider {
     // MetroRail: 8, MetroBus: 32, MetroRapid: 4096
     private static final Product[] PRODUCTS_MAP = { null, null, null, Product.REGIONAL_TRAIN, null, Product.BUS, null,
             null, null, null, null, null, Product.BUS };
+    private static final String DEFAULT_API_CLIENT = "{\"id\":\"CMTA\",\"type\":\"AND\"}";
 
     public CmtaProvider() {
         super(NetworkId.CMTA, API_BASE, PRODUCTS_MAP);
         setTimeZone("America/Chicago");
         setApiVersion("1.14");
         setApiExt("SBB.TZT.1");
-        setApiClient("{\"id\":\"CMTA\",\"type\":\"AND\"}");
+        setApiClient(DEFAULT_API_CLIENT);
     }
 }

@@ -43,12 +43,13 @@ public final class DbProvider extends AbstractHafasClientInterfaceProvider {
             Product.TRAM, // Straßenbahnen
             Product.ON_DEMAND, // Anruf-Sammeltaxi
             null, null, null, null };
+    private static final String DEFAULT_API_CLIENT = "{\"id\":\"DB\",\"v\":\"16040000\",\"type\":\"AND\",\"name\":\"DB Navigator\"}";
 
     public DbProvider(final String apiAuthorization, final byte[] salt) {
         super(NetworkId.DB, API_BASE, PRODUCTS_MAP);
         setApiVersion("1.15");
         setApiExt("DB.R18.06.a");
-        setApiClient("{\"id\":\"DB\",\"v\":\"16040000\",\"type\":\"AND\",\"name\":\"DB Navigator\"}");
+        setApiClient(DEFAULT_API_CLIENT);
         setApiAuthorization(apiAuthorization);
         setRequestChecksumSalt(salt);
     }

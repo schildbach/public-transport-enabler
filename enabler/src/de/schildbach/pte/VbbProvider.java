@@ -37,12 +37,13 @@ public class VbbProvider extends AbstractHafasClientInterfaceProvider {
             Product.FERRY, Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, null, null, Product.BUS /* BEV */ };
     private static final Set<Product> ALL_EXCEPT_HIGHSPEED_AND_ONDEMAND = EnumSet
             .complementOf(EnumSet.of(Product.HIGH_SPEED_TRAIN, Product.ON_DEMAND));
+    private static final String DEFAULT_API_CLIENT = "{\"id\":\"VBB\",\"type\":\"AND\"}";
 
     public VbbProvider(final String apiAuthorization, final byte[] salt) {
         super(NetworkId.VBB, API_BASE, PRODUCTS_MAP);
         setApiVersion("1.18");
         setApiExt("VBB.4");
-        setApiClient("{\"id\":\"VBB\",\"type\":\"AND\"}");
+        setApiClient(DEFAULT_API_CLIENT);
         setApiAuthorization(apiAuthorization);
         setRequestMicMacSalt(salt);
         httpClient.setTrustAllCertificates(true);

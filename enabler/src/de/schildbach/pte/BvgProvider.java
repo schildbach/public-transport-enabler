@@ -44,12 +44,13 @@ public final class BvgProvider extends AbstractHafasClientInterfaceProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("https://bvg-apps.hafas.de/bin/");
     private static final Product[] PRODUCTS_MAP = { Product.SUBURBAN_TRAIN, Product.SUBWAY, Product.TRAM, Product.BUS,
             Product.FERRY, Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, Product.ON_DEMAND, null, null };
+    private static final String DEFAULT_API_CLIENT = "{\"id\":\"BVG\",\"type\":\"AND\"}";
 
     public BvgProvider(final String jsonApiAuthorization) {
         super(NetworkId.BVG, API_BASE, PRODUCTS_MAP);
         setApiVersion("1.18");
         setApiExt("BVG.1");
-        setApiClient("{\"id\":\"BVG\",\"type\":\"AND\"}");
+        setApiClient(DEFAULT_API_CLIENT);
         setApiAuthorization(jsonApiAuthorization);
         setStyles(STYLES);
     }

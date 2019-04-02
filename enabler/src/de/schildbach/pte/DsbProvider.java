@@ -34,13 +34,14 @@ public class DsbProvider extends AbstractHafasClientInterfaceProvider {
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.REGIONAL_TRAIN, Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.BUS, Product.BUS,
             Product.BUS, Product.BUS, Product.FERRY, Product.SUBWAY, Product.SUBURBAN_TRAIN /* Light Rail */ };
+    private static final String DEFAULT_API_CLIENT = "{\"id\":\"DK\",\"type\":\"AND\"}";
 
     public DsbProvider(final String apiAuthorization) {
         super(NetworkId.DSB, API_BASE, PRODUCTS_MAP);
         setApiEndpoint("iphone.exe");
         setApiVersion("1.15");
         setApiExt("DK.9");
-        setApiClient("{\"id\":\"DK\",\"type\":\"AND\"}");
+        setApiClient(DEFAULT_API_CLIENT);
         setApiAuthorization(apiAuthorization);
     }
 

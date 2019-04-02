@@ -33,11 +33,12 @@ public class AvvAachenProvider extends AbstractHafasClientInterfaceProvider {
     private static final Product[] PRODUCTS_MAP = { Product.REGIONAL_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.HIGH_SPEED_TRAIN, Product.BUS, Product.SUBURBAN_TRAIN, Product.SUBWAY, Product.TRAM, Product.BUS,
             Product.BUS, Product.ON_DEMAND, Product.FERRY };
+    private static final String DEFAULT_API_CLIENT = "{\"id\":\"AVV_AACHEN\",\"type\":\"AND\"}";
 
     public AvvAachenProvider(final String jsonApiAuthorization) {
         super(NetworkId.AVV_AACHEN, API_BASE, PRODUCTS_MAP);
         setApiVersion("1.16");
-        setApiClient("{\"id\":\"AVV_AACHEN\",\"type\":\"AND\"}");
+        setApiClient(DEFAULT_API_CLIENT);
         setApiAuthorization(jsonApiAuthorization);
     }
 

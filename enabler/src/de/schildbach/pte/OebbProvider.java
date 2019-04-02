@@ -35,11 +35,12 @@ public class OebbProvider extends AbstractHafasClientInterfaceProvider {
             Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN,
             Product.BUS, Product.FERRY, Product.SUBWAY, Product.TRAM, Product.HIGH_SPEED_TRAIN, Product.ON_DEMAND,
             Product.HIGH_SPEED_TRAIN };
+    private static final String DEFAULT_API_CLIENT = "{\"id\":\"OEBB\",\"type\":\"AND\"}";
 
     public OebbProvider(final String apiAuthorization) {
         super(NetworkId.OEBB, API_BASE, PRODUCTS_MAP);
         setApiVersion("1.16");
-        setApiClient("{\"id\":\"OEBB\",\"type\":\"AND\"}");
+        setApiClient(DEFAULT_API_CLIENT);
         setApiAuthorization(apiAuthorization);
     }
 

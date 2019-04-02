@@ -54,11 +54,12 @@ public class VbnProvider extends AbstractHafasClientInterfaceProvider {
             Product.TRAM, // Straßen-/ Stadtbahn
             Product.ON_DEMAND // Anrufverkehr
     };
+    private static final String DEFAULT_API_CLIENT = "{\"id\":\"VBN\",\"type\":\"AND\"}";
 
     public VbnProvider(final String apiAuthorization, final byte[] salt) {
         super(NetworkId.VBN, API_BASE, PRODUCTS_MAP);
         setApiVersion("1.18");
-        setApiClient("{\"id\":\"VBN\",\"type\":\"AND\"}");
+        setApiClient(DEFAULT_API_CLIENT);
         setApiAuthorization(apiAuthorization);
         setRequestMicMacSalt(salt);
         setStyles(STYLES);

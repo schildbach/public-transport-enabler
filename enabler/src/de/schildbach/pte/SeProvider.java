@@ -36,11 +36,12 @@ public class SeProvider extends AbstractHafasClientInterfaceProvider {
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN /* Air */, Product.HIGH_SPEED_TRAIN,
             Product.REGIONAL_TRAIN, Product.BUS, Product.SUBURBAN_TRAIN, Product.SUBWAY, Product.TRAM, Product.BUS,
             Product.FERRY, Product.ON_DEMAND /* Taxi */ };
+    private static final String DEFAULT_API_CLIENT = "{\"id\":\"SAMTRAFIKEN\",\"type\":\"AND\"}";
 
     public SeProvider(final String jsonApiAuthorization) {
         super(NetworkId.SE, API_BASE, PRODUCTS_MAP);
         setApiVersion("1.18");
-        setApiClient("{\"id\":\"SAMTRAFIKEN\",\"type\":\"AND\"}");
+        setApiClient(DEFAULT_API_CLIENT);
         setApiAuthorization(jsonApiAuthorization);
     }
 

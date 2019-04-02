@@ -35,12 +35,13 @@ public class OoevvProvider extends AbstractHafasClientInterfaceProvider {
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.SUBURBAN_TRAIN, Product.SUBWAY,
             null, Product.TRAM, Product.REGIONAL_TRAIN, Product.BUS, Product.BUS, Product.TRAM, Product.FERRY,
             Product.ON_DEMAND, Product.BUS, Product.REGIONAL_TRAIN, null, null, null };
+    private static final String DEFAULT_API_CLIENT = "{\"id\":\"VAO\",\"l\":\"vs_ooevv\",\"type\":\"AND\"}";
 
     public OoevvProvider(final String apiAuthorization) {
         super(NetworkId.OOEVV, API_BASE, PRODUCTS_MAP);
         setApiVersion("1.18");
         setApiExt("VAO.6");
-        setApiClient("{\"id\":\"VAO\",\"l\":\"vs_ooevv\",\"type\":\"AND\"}");
+        setApiClient(DEFAULT_API_CLIENT);
         setApiAuthorization(apiAuthorization);
         httpClient.setSslAcceptAllHostnames(true);
     }

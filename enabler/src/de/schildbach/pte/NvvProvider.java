@@ -33,12 +33,13 @@ public class NvvProvider extends AbstractHafasClientInterfaceProvider {
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.SUBWAY, Product.TRAM, Product.BUS, Product.BUS,
             Product.FERRY, Product.ON_DEMAND, Product.REGIONAL_TRAIN, Product.REGIONAL_TRAIN };
+    private static final String DEFAULT_API_CLIENT = "{\"id\":\"NVV\",\"type\":\"AND\"}";
 
     public NvvProvider(final String apiAuthorization) {
         super(NetworkId.NVV, API_BASE, PRODUCTS_MAP);
         setApiVersion("1.18");
         setApiExt("NVV.6.0");
-        setApiClient("{\"id\":\"NVV\",\"type\":\"AND\"}");
+        setApiClient(DEFAULT_API_CLIENT);
         setApiAuthorization(apiAuthorization);
         httpClient.setTrustAllCertificates(true);
     }

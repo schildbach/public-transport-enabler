@@ -33,11 +33,12 @@ public class LuProvider extends AbstractHafasClientInterfaceProvider {
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, Product.REGIONAL_TRAIN, Product.BUS, Product.BUS,
             Product.BUS, Product.BUS, Product.BUS };
+    private static final String DEFAULT_API_CLIENT = "{\"id\":\"CDT\",\"type\":\"AND\"}";
 
     public LuProvider(final String apiAuthorization) {
         super(NetworkId.LU, API_BASE, PRODUCTS_MAP);
         setApiVersion("1.18");
-        setApiClient("{\"id\":\"CDT\",\"type\":\"AND\"}");
+        setApiClient(DEFAULT_API_CLIENT);
         setApiAuthorization(apiAuthorization);
     }
 
