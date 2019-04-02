@@ -36,11 +36,15 @@ public class SncbProvider extends AbstractHafasClientInterfaceProvider {
             null, null, null };
     private static final String DEFAULT_API_CLIENT = "{\"id\":\"SNCB\",\"type\":\"AND\"}";
 
-    public SncbProvider(final String jsonApiAuthorization) {
+    public SncbProvider(final String apiAuthorization) {
+        this(DEFAULT_API_CLIENT, apiAuthorization);
+    }
+
+    public SncbProvider(final String apiClient, final String apiAuthorization) {
         super(NetworkId.SNCB, API_BASE, PRODUCTS_MAP);
         setApiVersion("1.15");
-        setApiClient(DEFAULT_API_CLIENT);
-        setApiAuthorization(jsonApiAuthorization);
+        setApiClient(apiClient);
+        setApiAuthorization(apiAuthorization);
     }
 
     private static final String[] PLACES = { "Antwerpen", "Gent", "Charleroi", "Liege", "Liège", "Brussel" };

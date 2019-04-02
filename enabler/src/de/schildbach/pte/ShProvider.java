@@ -39,9 +39,13 @@ public class ShProvider extends AbstractHafasClientInterfaceProvider {
     private static final String DEFAULT_API_CLIENT = "{\"id\":\"NAHSH\",\"type\":\"AND\"}";
 
     public ShProvider(final String apiAuthorization) {
+        this(DEFAULT_API_CLIENT, apiAuthorization);
+    }
+
+    public ShProvider(final String apiClient, final String apiAuthorization) {
         super(NetworkId.SH, API_BASE, PRODUCTS_MAP);
         setApiVersion("1.18");
-        setApiClient(DEFAULT_API_CLIENT);
+        setApiClient(apiClient);
         setApiAuthorization(apiAuthorization);
         setStyles(STYLES);
     }

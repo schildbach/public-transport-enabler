@@ -36,10 +36,14 @@ public class NvvProvider extends AbstractHafasClientInterfaceProvider {
     private static final String DEFAULT_API_CLIENT = "{\"id\":\"NVV\",\"type\":\"AND\"}";
 
     public NvvProvider(final String apiAuthorization) {
+        this(DEFAULT_API_CLIENT, apiAuthorization);
+    }
+
+    public NvvProvider(final String apiClient, final String apiAuthorization) {
         super(NetworkId.NVV, API_BASE, PRODUCTS_MAP);
         setApiVersion("1.18");
         setApiExt("NVV.6.0");
-        setApiClient(DEFAULT_API_CLIENT);
+        setApiClient(apiClient);
         setApiAuthorization(apiAuthorization);
         httpClient.setTrustAllCertificates(true);
     }

@@ -35,11 +35,15 @@ public class AvvAachenProvider extends AbstractHafasClientInterfaceProvider {
             Product.BUS, Product.ON_DEMAND, Product.FERRY };
     private static final String DEFAULT_API_CLIENT = "{\"id\":\"AVV_AACHEN\",\"type\":\"AND\"}";
 
-    public AvvAachenProvider(final String jsonApiAuthorization) {
+    public AvvAachenProvider(final String apiAuthorization) {
+        this(DEFAULT_API_CLIENT, apiAuthorization);
+    }
+
+    public AvvAachenProvider(final String apiClient, final String apiAuthorization) {
         super(NetworkId.AVV_AACHEN, API_BASE, PRODUCTS_MAP);
         setApiVersion("1.16");
-        setApiClient(DEFAULT_API_CLIENT);
-        setApiAuthorization(jsonApiAuthorization);
+        setApiClient(apiClient);
+        setApiAuthorization(apiAuthorization);
     }
 
     @Override

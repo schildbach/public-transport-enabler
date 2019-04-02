@@ -38,10 +38,14 @@ public class VmobilProvider extends AbstractHafasClientInterfaceProvider {
     private static final String DEFAULT_API_CLIENT = "{\"id\":\"VAO\",\"l\":\"vs_vvv\",\"type\":\"AND\"}";
 
     public VmobilProvider(final String apiAuthorization) {
+        this(DEFAULT_API_CLIENT, apiAuthorization);
+    }
+
+    public VmobilProvider(final String apiClient, final String apiAuthorization) {
         super(NetworkId.VMOBIL, API_BASE, PRODUCTS_MAP);
         setApiVersion("1.18");
         setApiExt("VAO.6");
-        setApiClient(DEFAULT_API_CLIENT);
+        setApiClient(apiClient);
         setApiAuthorization(apiAuthorization);
     }
 

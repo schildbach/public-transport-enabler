@@ -36,9 +36,13 @@ public class LuProvider extends AbstractHafasClientInterfaceProvider {
     private static final String DEFAULT_API_CLIENT = "{\"id\":\"CDT\",\"type\":\"AND\"}";
 
     public LuProvider(final String apiAuthorization) {
+        this(DEFAULT_API_CLIENT, apiAuthorization);
+    }
+
+    public LuProvider(final String apiClient, final String apiAuthorization) {
         super(NetworkId.LU, API_BASE, PRODUCTS_MAP);
         setApiVersion("1.18");
-        setApiClient(DEFAULT_API_CLIENT);
+        setApiClient(apiClient);
         setApiAuthorization(apiAuthorization);
     }
 

@@ -38,10 +38,14 @@ public class VvtProvider extends AbstractHafasClientInterfaceProvider {
     private static final String DEFAULT_API_CLIENT = "{\"id\":\"VAO\",\"l\":\"vs_vvt\",\"type\":\"AND\"}";
 
     public VvtProvider(final String apiAuthorization) {
+        this(DEFAULT_API_CLIENT, apiAuthorization);
+    }
+
+    public VvtProvider(final String apiClient, final String apiAuthorization) {
         super(NetworkId.VVT, API_BASE, PRODUCTS_MAP);
         setApiVersion("1.18");
         setApiExt("VAO.6");
-        setApiClient(DEFAULT_API_CLIENT);
+        setApiClient(apiClient);
         setApiAuthorization(apiAuthorization);
     }
 

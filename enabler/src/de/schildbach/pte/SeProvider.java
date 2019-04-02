@@ -38,11 +38,15 @@ public class SeProvider extends AbstractHafasClientInterfaceProvider {
             Product.FERRY, Product.ON_DEMAND /* Taxi */ };
     private static final String DEFAULT_API_CLIENT = "{\"id\":\"SAMTRAFIKEN\",\"type\":\"AND\"}";
 
-    public SeProvider(final String jsonApiAuthorization) {
+    public SeProvider(final String apiAuthorization) {
+        this(DEFAULT_API_CLIENT, apiAuthorization);
+    }
+
+    public SeProvider(final String apiClient, final String apiAuthorization) {
         super(NetworkId.SE, API_BASE, PRODUCTS_MAP);
         setApiVersion("1.18");
-        setApiClient(DEFAULT_API_CLIENT);
-        setApiAuthorization(jsonApiAuthorization);
+        setApiClient(apiClient);
+        setApiAuthorization(apiAuthorization);
     }
 
     private static final Pattern P_SPLIT_NAME_PAREN = Pattern.compile("(.*) \\((.{3,}?) kn\\)");

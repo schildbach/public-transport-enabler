@@ -40,12 +40,16 @@ public class ZvvProvider extends AbstractHafasClientInterfaceProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("https://online.fahrplan.zvv.ch/bin/");
     private static final String DEFAULT_API_CLIENT = "{\"id\":\"ZVV\",\"type\":\"AND\"}";
 
-    public ZvvProvider(final String jsonApiAuthorization) {
+    public ZvvProvider(final String apiAuthorization) {
+        this(DEFAULT_API_CLIENT, apiAuthorization);
+    }
+
+    public ZvvProvider(final String apiClient, final String apiAuthorization) {
         super(NetworkId.ZVV, API_BASE, PRODUCTS_MAP);
         setApiVersion("1.15");
         setApiExt("ZVV.2");
-        setApiClient(DEFAULT_API_CLIENT);
-        setApiAuthorization(jsonApiAuthorization);
+        setApiClient(apiClient);
+        setApiAuthorization(apiAuthorization);
         setStyles(STYLES);
     }
 

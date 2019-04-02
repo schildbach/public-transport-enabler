@@ -40,10 +40,14 @@ public class VbbProvider extends AbstractHafasClientInterfaceProvider {
     private static final String DEFAULT_API_CLIENT = "{\"id\":\"VBB\",\"type\":\"AND\"}";
 
     public VbbProvider(final String apiAuthorization, final byte[] salt) {
+        this(DEFAULT_API_CLIENT, apiAuthorization, salt);
+    }
+
+    public VbbProvider(final String apiClient, final String apiAuthorization, final byte[] salt) {
         super(NetworkId.VBB, API_BASE, PRODUCTS_MAP);
         setApiVersion("1.18");
         setApiExt("VBB.4");
-        setApiClient(DEFAULT_API_CLIENT);
+        setApiClient(apiClient);
         setApiAuthorization(apiAuthorization);
         setRequestMicMacSalt(salt);
         httpClient.setTrustAllCertificates(true);

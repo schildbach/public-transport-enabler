@@ -46,10 +46,14 @@ public final class DbProvider extends AbstractHafasClientInterfaceProvider {
     private static final String DEFAULT_API_CLIENT = "{\"id\":\"DB\",\"v\":\"16040000\",\"type\":\"AND\",\"name\":\"DB Navigator\"}";
 
     public DbProvider(final String apiAuthorization, final byte[] salt) {
+        this(DEFAULT_API_CLIENT, apiAuthorization, salt);
+    }
+
+    public DbProvider(final String apiClient, final String apiAuthorization, final byte[] salt) {
         super(NetworkId.DB, API_BASE, PRODUCTS_MAP);
         setApiVersion("1.15");
         setApiExt("DB.R18.06.a");
-        setApiClient(DEFAULT_API_CLIENT);
+        setApiClient(apiClient);
         setApiAuthorization(apiAuthorization);
         setRequestChecksumSalt(salt);
     }

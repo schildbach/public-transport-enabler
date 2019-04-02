@@ -34,10 +34,14 @@ public class CmtaProvider extends AbstractHafasClientInterfaceProvider {
     private static final String DEFAULT_API_CLIENT = "{\"id\":\"CMTA\",\"type\":\"AND\"}";
 
     public CmtaProvider() {
+        this(DEFAULT_API_CLIENT);
+    }
+
+    public CmtaProvider(final String apiClient) {
         super(NetworkId.CMTA, API_BASE, PRODUCTS_MAP);
         setTimeZone("America/Chicago");
         setApiVersion("1.14");
         setApiExt("SBB.TZT.1");
-        setApiClient(DEFAULT_API_CLIENT);
+        setApiClient(apiClient);
     }
 }

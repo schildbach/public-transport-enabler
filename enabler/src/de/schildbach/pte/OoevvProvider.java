@@ -38,10 +38,14 @@ public class OoevvProvider extends AbstractHafasClientInterfaceProvider {
     private static final String DEFAULT_API_CLIENT = "{\"id\":\"VAO\",\"l\":\"vs_ooevv\",\"type\":\"AND\"}";
 
     public OoevvProvider(final String apiAuthorization) {
+        this(DEFAULT_API_CLIENT, apiAuthorization);
+    }
+
+    public OoevvProvider(final String apiClient, final String apiAuthorization) {
         super(NetworkId.OOEVV, API_BASE, PRODUCTS_MAP);
         setApiVersion("1.18");
         setApiExt("VAO.6");
-        setApiClient(DEFAULT_API_CLIENT);
+        setApiClient(apiClient);
         setApiAuthorization(apiAuthorization);
         httpClient.setSslAcceptAllHostnames(true);
     }
