@@ -2654,6 +2654,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                         final String usage = XmlPullUtil.valueTag(pp, "u");
                         XmlPullUtil.optValueTag(pp, "de", null);
                         XmlPullUtil.optValueTag(pp, "gid", null);
+                        XmlPullUtil.optValueTag(pp, "pgid", null);
                         XmlPullUtil.requireSkip(pp, "dt");
 
                         parseMobileSt(pp, plannedTimeCal, predictedTimeCal);
