@@ -37,7 +37,11 @@ public class VmsProvider extends AbstractEfaProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("https://www.vms.de/vms2/");
 
     public VmsProvider() {
-        super(NetworkId.VMS, API_BASE);
+        this(API_BASE);
+    }
+
+    public VmsProvider(final HttpUrl apiBase) {
+        super(NetworkId.VMS, apiBase);
         setRequestUrlEncoding(Charsets.UTF_8);
         setUseLineRestriction(false);
     }
