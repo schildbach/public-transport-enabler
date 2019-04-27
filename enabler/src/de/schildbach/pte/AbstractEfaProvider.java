@@ -2644,6 +2644,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
                 while (XmlPullUtil.test(pp, "l")) {
                     XmlPullUtil.enter(pp, "l");
+                    XmlPullUtil.optSkip(pp, "rtStatus");
 
                     XmlPullUtil.enter(pp, "ps");
 
