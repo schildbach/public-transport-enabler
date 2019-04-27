@@ -2618,6 +2618,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         final XmlPullParser pp = parserFactory.newPullParser();
         pp.setInput(reader);
         final ResultHeader header = enterEfa(pp);
+        XmlPullUtil.optSkip(pp, "msgs");
 
         final Calendar plannedTimeCal = new GregorianCalendar(timeZone);
         final Calendar predictedTimeCal = new GregorianCalendar(timeZone);
