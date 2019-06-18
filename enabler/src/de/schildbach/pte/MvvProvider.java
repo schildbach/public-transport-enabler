@@ -121,12 +121,14 @@ public class MvvProvider extends AbstractEfaProvider {
         STYLES.put("T18", new Style(Shape.RECT, Style.parseColor("#13a538"), Style.WHITE));
         STYLES.put("T19", new Style(Shape.RECT, Style.parseColor("#e30613"), Style.WHITE));
         STYLES.put("T20", new Style(Shape.RECT, Style.parseColor("#16bae7"), Style.WHITE));
-        STYLES.put("T21", new Style(Shape.RECT, Style.WHITE, Style.parseColor("#16bae7"), Style.parseColor("#16bae7")));
+        STYLES.put("T21", new Style(Shape.RECT, Style.parseColor("#bc7a00"), Style.WHITE));
         STYLES.put("T22", new Style(Shape.RECT, Style.WHITE, Style.parseColor("#16bae7"), Style.parseColor("#16bae7")));
         STYLES.put("T23", new Style(Shape.RECT, Style.parseColor("#bccf00"), Style.WHITE));
         STYLES.put("T25", new Style(Shape.RECT, Style.parseColor("#f1919c"), Style.WHITE));
         STYLES.put("T27", new Style(Shape.RECT, Style.parseColor("#f7a600"), Style.WHITE));
-        STYLES.put("T28", new Style(Shape.RECT, Style.WHITE, Style.parseColor("#00a984"), Style.parseColor("#00a984")));
+        STYLES.put("T28", new Style(Shape.RECT, Style.WHITE, Style.parseColor("#f7a600"), Style.parseColor("#00a984")));
+        STYLES.put("T31",
+                new Style(Shape.RECT, Style.parseColor("#e30613"), Style.parseColor("#bc7a00"), Style.WHITE, 0));
         STYLES.put("T38",
                 new Style(Shape.RECT, Style.parseColor("#1fa22e"), Style.parseColor("#23bae2"), Style.WHITE, 0));
         STYLES.put("TN17", new Style(Shape.RECT, Style.parseColor("#999999"), Style.parseColor("#ffff00")));
