@@ -979,6 +979,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                 return new Line(id, network, Product.REGIONAL_TRAIN, "IR" + trainNum);
             if ("IRE".equals(trainType) || "Interregio-Express".equals(trainName))
                 return new Line(id, network, Product.REGIONAL_TRAIN, "IRE" + trainNum);
+            if ("IRE1".equals(trainNum) && trainName == null)
+                return new Line(id, network, Product.REGIONAL_TRAIN, trainNum);
             if ("InterRegioExpress".equals(trainName))
                 return new Line(id, network, Product.REGIONAL_TRAIN, "IRE" + trainNumStr);
             if ("RE".equals(trainType) || "Regional-Express".equals(trainName))
