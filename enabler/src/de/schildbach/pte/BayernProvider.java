@@ -188,7 +188,7 @@ public class BayernProvider extends AbstractEfaProvider {
         STYLES.put("swm|T25", new Style(Shape.RECT, Style.parseColor("#f1919c"), Style.WHITE));
         STYLES.put("swm|T27", new Style(Shape.RECT, Style.parseColor("#f7a600"), Style.WHITE));
         STYLES.put("swm|T28",
-                new Style(Shape.RECT, Style.WHITE, Style.parseColor("#f7a600"), Style.parseColor("#00a984")));
+                new Style(Shape.RECT, Style.WHITE, Style.parseColor("#f7a600"), Style.parseColor("#f7a600")));
         STYLES.put("swm|T31",
                 new Style(Shape.RECT, Style.parseColor("#e30613"), Style.parseColor("#bc7a00"), Style.WHITE, 0));
         STYLES.put("swm|TN17", new Style(Shape.RECT, Style.parseColor("#999999"), Style.parseColor("#ffff00")));
