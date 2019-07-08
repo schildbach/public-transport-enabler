@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import de.schildbach.pte.RtProvider;
+import de.schildbach.pte.AbstractNetworkProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
@@ -34,10 +34,11 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
 
 /**
  * @author Andreas Schildbach
+ * @author Felix Delattre
  */
 @Controller
 public class LocationController {
-    private final RtProvider provider = new RtProvider();
+    private final AbstractNetworkProvider provider = Application.get_provider();
 
     @RequestMapping(value = "/location/suggest", method = RequestMethod.GET)
     @ResponseBody

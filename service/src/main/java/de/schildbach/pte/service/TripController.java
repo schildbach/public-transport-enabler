@@ -26,17 +26,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import de.schildbach.pte.RtProvider;
+import de.schildbach.pte.AbstractNetworkProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.QueryTripsResult;
 
 /**
  * @author Andreas Schildbach
+ * @author Felix Delattre
  */
 @Controller
 public class TripController {
-    private final RtProvider provider = new RtProvider();
+    private final AbstractNetworkProvider provider = Application.get_provider();
 
     @RequestMapping(value = "/trip", method = RequestMethod.GET)
     @ResponseBody
