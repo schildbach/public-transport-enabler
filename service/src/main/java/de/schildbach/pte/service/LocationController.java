@@ -19,6 +19,7 @@ package de.schildbach.pte.service;
 
 import java.io.IOException;
 import java.util.EnumSet;
+import java.util.Date;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,26 +31,48 @@ import de.schildbach.pte.RtProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
+import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.SuggestLocationsResult;
 
 /**
  * @author Andreas Schildbach
+ * @author Felix Delattre
  */
 @Controller
 public class LocationController {
     private final RtProvider provider = new RtProvider();
 
-    @RequestMapping(value = "/location/suggest", method = RequestMethod.GET)
-    @ResponseBody
-    public SuggestLocationsResult suggest(@RequestParam("q") final String query) throws IOException {
-        return provider.suggestLocations(query);
-    }
-
     @RequestMapping(value = "/location/nearby", method = RequestMethod.GET)
     @ResponseBody
-    public NearbyLocationsResult nearby(@RequestParam("lat") final int lat, @RequestParam("lon") final int lon)
+    public NearbyLocationsResult nearby(
+            @RequestParam(value = "types", required = false, defaultValue = "ANY") final EnumSet<LocationType> types,
+            @RequestParam(value = "lat", required = true) final int lat,
+            @RequestParam(value = "lon", required = true) final int lon,
+            @RequestParam(value = "maxDistance", required = false, defaultValue = "5000") final Integer maxDistance,
+            @RequestParam(value = "maxLocations", required = false, defaultValue = "100") final Integer maxLocations)
             throws IOException {
-        final Location coord = Location.coord(lat, lon);
-        return provider.queryNearbyLocations(EnumSet.of(LocationType.STATION, LocationType.POI), coord, 5000, 100);
+        final Location location = Location.coord(lat, lon);
+        return provider.queryNearbyLocations(types, location, maxDistance, maxLocations);
+    }
+
+    @RequestMapping(value = "/location/departures", method = RequestMethod.GET)
+    @ResponseBody
+    public QueryDeparturesResult departures(
+            @RequestParam(value = "stationId", required = true) final String stationId,
+            //@RequestParam(value = "time", required = false, defaultValue = "100") final Date time,
+            @RequestParam(value = "maxDepartures", required = false, defaultValue = "25") final Integer maxDepartures,
+            @RequestParam(value = "equivs", required = false, defaultValue = "false") final Boolean equivs)
+            throws IOException {
+        return provider.queryDepartures(stationId, new Date(), maxDepartures, equivs);
+    }
+
+    @RequestMapping(value = "/location/suggest", method = RequestMethod.GET)
+    @ResponseBody
+    public SuggestLocationsResult suggest(
+            @RequestParam(value = "constraint", required = true) final CharSequence constraint,
+            @RequestParam(value = "types", required = false, defaultValue = "ANY") final EnumSet<LocationType> types,
+            @RequestParam(value = "maxLocations", required = false, defaultValue = "25") final Integer maxLocations)
+            throws IOException {
+        return provider.suggestLocations(constraint, types, maxLocations);
     }
 }
