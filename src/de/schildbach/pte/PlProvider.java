@@ -33,7 +33,7 @@ public class PlProvider extends AbstractHafasLegacyProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("http://mobil.rozklad-pkp.pl/bin/");
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, // High speed trains from other countries
 			Product.HIGH_SPEED_TRAIN, // EIP, EIC, EC and international equivalents
-            Product.HIGH_SPEED_TRAIN, // IC, TLK, IR and international equivalents
+			Product.HIGH_SPEED_TRAIN, // IC, TLK, IR and international equivalents
 			Product.REGIONAL_TRAIN, // R (Regio), Os (Osobowy) and other regional and suburban trains
 			Product.BUS, Product.BUS, Product.FERRY };
 
