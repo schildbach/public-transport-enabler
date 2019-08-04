@@ -31,8 +31,12 @@ import okhttp3.HttpUrl;
  */
 public class PlProvider extends AbstractHafasLegacyProvider {
     private static final HttpUrl API_BASE = HttpUrl.parse("http://mobil.rozklad-pkp.pl/bin/");
-    private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
-            Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.BUS, Product.BUS, Product.FERRY };
+    private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, // High speed trains from other
+                                                                              // countries
+            Product.HIGH_SPEED_TRAIN, // EIP, EIC, EC and international equivalents
+            Product.HIGH_SPEED_TRAIN, // IC, TLK, IR and international equivalents
+            Product.REGIONAL_TRAIN, // R (Regio), Os (Osobowy) and other regional and suburban trains
+            Product.BUS, Product.BUS, Product.FERRY };
 
     public PlProvider() {
         super(NetworkId.PL, API_BASE, "pn", PRODUCTS_MAP);
@@ -82,6 +86,13 @@ public class PlProvider extends AbstractHafasLegacyProvider {
             return Product.REGIONAL_TRAIN;
         if ("L".equals(ucType) || "LS".equals(ucType)) // Łódzka Kolej Aglomeracyjna
             return Product.REGIONAL_TRAIN;
+
+        if ("SKM".equals(ucType)) // SKM Trojmiasto in Gdansk Metropolitan Area
+            return Product.SUBURBAN_TRAIN;
+        if ("SKW".equals(ucType)) // SKM Warszawa
+            return Product.SUBURBAN_TRAIN;
+        if ("WKD".equals(ucType)) // Warsaw Commuter Railway (Warszawa Kolej Dojazdowa)
+            return Product.SUBURBAN_TRAIN;
 
         if ("IRB".equals(ucType)) // interREGIO Bus
             return Product.BUS;
