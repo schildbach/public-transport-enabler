@@ -4,3 +4,7 @@
 .gradle/
 bin/
 build/
+
+# IntelliJ IDEA
+/.idea/
+*.iml
