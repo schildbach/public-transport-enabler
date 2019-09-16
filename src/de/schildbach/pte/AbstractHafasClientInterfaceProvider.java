@@ -107,6 +107,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
     private static final String SECTION_TYPE_JOURNEY = "JNY";
     private static final String SECTION_TYPE_WALK = "WALK";
     private static final String SECTION_TYPE_TRANSFER = "TRSF";
+    private static final String SECTION_TYPE_TELE_TAXI = "TETA";
     private static final String SECTION_TYPE_DEVI = "DEVI";
     @SuppressWarnings("deprecation")
     private static final HashFunction MD5 = Hashing.md5();
@@ -726,14 +727,16 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
 
                         leg = new Trip.Public(line, destination, departureStop, arrivalStop, intermediateStops, path,
                                 message);
-                    } else if (SECTION_TYPE_DEVI.equals(secType)) {
-                        leg = new Trip.Individual(Trip.Individual.Type.TRANSFER, departureStop.location,
-                                departureStop.getDepartureTime(), arrivalStop.location, arrivalStop.getArrivalTime(),
-                                null, 0);
-                    } else if (SECTION_TYPE_WALK.equals(secType) || SECTION_TYPE_TRANSFER.equals(secType)) {
+                    } else if (SECTION_TYPE_WALK.equals(secType)) {
                         final JSONObject gis = sec.getJSONObject("gis");
                         final int distance = gis.optInt("dist", 0);
                         leg = new Trip.Individual(Trip.Individual.Type.WALK, departureStop.location,
+                                departureStop.getDepartureTime(), arrivalStop.location, arrivalStop.getArrivalTime(),
+                                null, distance);
+                    } else if (SECTION_TYPE_TRANSFER.equals(secType) || SECTION_TYPE_DEVI.equals(secType) || SECTION_TYPE_TELE_TAXI.equals(secType)) {
+                        final JSONObject gis = sec.optJSONObject("gis");
+                        final int distance = gis != null ? gis.optInt("dist", 0) : 0;
+                        leg = new Trip.Individual(Trip.Individual.Type.TRANSFER, departureStop.location,
                                 departureStop.getDepartureTime(), arrivalStop.location, arrivalStop.getArrivalTime(),
                                 null, distance);
                     } else {
