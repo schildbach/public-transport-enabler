@@ -10,8 +10,8 @@ repositories {
 }
 
 dependencies {
-    compile 'com.squareup.okhttp3:okhttp:3.12.3'
-    compile 'com.squareup.okhttp3:logging-interceptor:3.12.3'
+    compile 'com.squareup.okhttp3:okhttp:3.12.5'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.12.5'
     compile 'com.google.guava:guava:28.1-android'
     compile 'org.slf4j:slf4j-api:1.7.28'
     compile 'com.google.code.findbugs:jsr305:3.0.2'
