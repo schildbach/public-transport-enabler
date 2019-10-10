@@ -1611,6 +1611,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                             /* final String gid = */XmlPullUtil.optValueTag(pp, "gid", null);
                             /* final String pgid = */XmlPullUtil.optValueTag(pp, "pgid", null);
                             /* final boolean isRealtime = */XmlPullUtil.valueTag(pp, "realtime").equals("1");
+                            /* final String rts = */XmlPullUtil.optValueTag(pp, "rts", null);
 
                             XmlPullUtil.optSkip(pp, "dt");
 
