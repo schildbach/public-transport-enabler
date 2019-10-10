@@ -68,14 +68,20 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void queryDepartures() throws Exception {
-        final QueryDeparturesResult munichOstbahnhof = queryDepartures("80000793", false);
-        print(munichOstbahnhof);
+        final QueryDeparturesResult munichMarienplatz = queryDepartures("91000002", false);
+        print(munichMarienplatz);
 
-        final QueryDeparturesResult munichHauptbahnhof = queryDepartures("80000689", false);
+        final QueryDeparturesResult munichHauptbahnhof = queryDepartures("91000006", false);
         print(munichHauptbahnhof);
 
         final QueryDeparturesResult nurembergHauptbahnhof = queryDepartures("80001020", false);
         print(nurembergHauptbahnhof);
+
+        final QueryDeparturesResult augsburgAfrabruecke = queryDepartures("2000770", false);
+        print(augsburgAfrabruecke);
+
+        final QueryDeparturesResult ingolstadtHbf = queryDepartures("80000706", false);
+        print(ingolstadtHbf);
     }
 
     @Test
@@ -94,7 +100,7 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest {
     public void suggestLocationsWithUmlaut() throws Exception {
         final SuggestLocationsResult result = suggestLocations("München Mühldorfstraße");
         print(result);
-        assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "1000921")));
+        assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "91000921")));
     }
 
     @Test
@@ -123,7 +129,7 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest {
         final SuggestLocationsResult result = suggestLocations("Ruhpolding, Seehaus");
         print(result);
         assertThat(result.getLocations(), hasItem(new Location(LocationType.POI,
-                "poiID:40502661:9189140:-1:Seehaus:Ruhpolding:Seehaus:ANY:POI:1405062:5941100:MRCV:BAY")));
+                "poiID:40519640:9189140:-1:Seehaus:Ruhpolding:Seehaus:ANY:POI:1405062:5941100:MRCV:BAY")));
     }
 
     @Test
@@ -131,7 +137,7 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest {
         final SuggestLocationsResult result = suggestLocations("München, Friedenstraße 2");
         print(result);
         assertThat(result.getLocations(), hasItem(new Location(LocationType.ADDRESS,
-                "streetID:1500002757:2:9162000:-1:Friedenstraße:München:Friedenstraße::Friedenstraße:81671:ANY:DIVA_SINGLEHOUSE:1291659:5872432:MRCV:BAY")));
+                "streetID:1500001985:2:9162000:-1:Friedenstraße:München:Friedenstraße::Friedenstraße:81671:ANY:DIVA_SINGLEHOUSE:1291659:5872432:MRCV:BAY")));
     }
 
     @Test
@@ -139,13 +145,13 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest {
         final SuggestLocationsResult result = suggestLocations("München, Friedenstraße");
         print(result);
         assertThat(result.getLocations(), hasItem(new Location(LocationType.ADDRESS,
-                "streetID:1500002757::9162000:-1:Friedenstraße:München:Friedenstraße::Friedenstraße: 81671:ANY:DIVA_STREET:1292298:5871791:MRCV:BAY")));
+                "streetID:1500001985::9162000:-1:Friedenstraße:München:Friedenstraße::Friedenstraße: 81671:ANY:DIVA_STREET:1292214:5871888:MRCV:BAY")));
     }
 
     @Test
     public void shortTrip() throws Exception {
-        final Location from = new Location(LocationType.STATION, "80000793", "München", "Ostbahnhof");
-        final Location to = new Location(LocationType.STATION, "80000799", "München", "Pasing");
+        final Location from = new Location(LocationType.STATION, "91000005", "München", "Ostbahnhof");
+        final Location to = new Location(LocationType.STATION, "91001796", "München", "Pasing");
         final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
