@@ -2,4 +2,4 @@
 sudo: false
 dist: trusty
 language: java
-jdk: openjdk7
+jdk: openjdk8
