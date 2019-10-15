@@ -415,10 +415,8 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
             } else {
                 return null;
             }
-        } catch (final JSONException jsonExc) {
+        } catch (final JSONException | ParseException jsonExc) {
             throw new ParserException(jsonExc);
-        } catch (final ParseException parseExc) {
-            throw new ParserException(parseExc);
         }
     }
 
@@ -471,10 +469,8 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
 
             return new Stop(location, plannedArrivalTime, plannedArrivalPosition, plannedDepartureTime,
                     plannedDeparturePosition);
-        } catch (final JSONException jsonExc) {
+        } catch (final JSONException | ParseException jsonExc) {
             throw new ParserException(jsonExc);
-        } catch (final ParseException parseExc) {
-            throw new ParserException(parseExc);
         }
     }
 
@@ -829,10 +825,8 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
             }
 
             return result;
-        } catch (final JSONException jsonExc) {
+        } catch (final JSONException | ParseException jsonExc) {
             throw new ParserException(jsonExc);
-        } catch (final ParseException parseExc) {
-            throw new ParserException(parseExc);
         } catch (final NotFoundException fnfExc) {
             try {
                 final JSONObject head = new JSONObject(fnfExc.getBodyPeek().toString());

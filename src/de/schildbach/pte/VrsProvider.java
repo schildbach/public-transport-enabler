@@ -410,10 +410,8 @@ public class VrsProvider extends AbstractNetworkProvider {
             }
             final ResultHeader header = new ResultHeader(NetworkId.VRS, SERVER_PRODUCT, null, null, serverTime, null);
             return new NearbyLocationsResult(header, locations);
-        } catch (final JSONException x) {
+        } catch (final JSONException | ParseException x) {
             throw new RuntimeException("cannot parse: '" + page + "' on " + url, x);
-        } catch (final ParseException e) {
-            throw new RuntimeException("cannot parse: '" + page + "' on " + url, e);
         }
     }
 
@@ -510,10 +508,8 @@ public class VrsProvider extends AbstractNetworkProvider {
             }
 
             return result;
-        } catch (final JSONException x) {
+        } catch (final JSONException | ParseException x) {
             throw new RuntimeException("cannot parse: '" + page + "' on " + url, x);
-        } catch (final ParseException e) {
-            throw new RuntimeException("cannot parse: '" + page + "' on " + url, e);
         }
     }
 
@@ -906,10 +902,8 @@ public class VrsProvider extends AbstractNetworkProvider {
                     context.disableEarlier();
             }
             return new QueryTripsResult(header, url.build().toString(), from, via, to, context, trips);
-        } catch (final JSONException x) {
+        } catch (final JSONException | ParseException x) {
             throw new RuntimeException("cannot parse: '" + page + "' on " + url, x);
-        } catch (final ParseException e) {
-            throw new RuntimeException("cannot parse: '" + page + "' on " + url, e);
         }
     }
 
