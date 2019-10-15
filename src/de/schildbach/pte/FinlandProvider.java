@@ -25,7 +25,7 @@ import okhttp3.HttpUrl;
  * @author Adrian Perez de Castro <aperez@igalia.com>
  */
 public class FinlandProvider extends AbstractNavitiaProvider {
-    private static String API_REGION = "fi";
+    private static final String API_REGION = "fi";
 
     public FinlandProvider(final HttpUrl apiBase, final String authorization) {
         super(NetworkId.FINLAND, apiBase, authorization);
