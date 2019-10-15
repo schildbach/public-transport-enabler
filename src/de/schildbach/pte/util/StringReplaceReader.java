@@ -129,9 +129,9 @@ public class StringReplaceReader extends FilterReader implements Cloneable {
      * Read characters into a portion of an array. This method will block until some input is available, an
      * I/O error occurs, or the end of the stream is reached.
      * 
-     * @parm buffer Destination buffer
-     * @parm offset location in buffer to start storing characters
-     * @parm charsToRead maximum characters to read
+     * @param buffer Destination buffer
+     * @param offset location in buffer to start storing characters
+     * @param charsToRead maximum characters to read
      * @return number of characters actually read, -1 if reach EOF on reading first character
      * @exception IOException
      *                if an I/O error occurs
