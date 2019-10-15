@@ -108,7 +108,7 @@ public interface NetworkProvider {
             throws IOException;
 
     /**
-     * Meant for auto-completion of location names, like in an {@link android.widget.AutoCompleteTextView}
+     * Meant for auto-completion of location names, like in an Android AutoCompleteTextView.
      * 
      * @param constraint
      *            input by user so far
