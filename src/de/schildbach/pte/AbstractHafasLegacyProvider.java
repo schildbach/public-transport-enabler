@@ -440,229 +440,225 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
         final String normalizedStationId = normalizeStationId(stationId);
         final AtomicReference<QueryDeparturesResult> result = new AtomicReference<>();
 
-        httpClient.getInputStream(new HttpClient.Callback() {
+        httpClient.getInputStream((bodyPeek, body) -> {
+            StringReplaceReader reader = null;
+            String firstChars = null;
 
-            @Override
-            public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
-                StringReplaceReader reader = null;
-                String firstChars = null;
+            // work around unparsable XML
+            reader = new StringReplaceReader(body.charStream(), " & ", " &amp; ");
+            reader.replace("<b>", " ");
+            reader.replace("</b>", " ");
+            reader.replace("<u>", " ");
+            reader.replace("</u>", " ");
+            reader.replace("<i>", " ");
+            reader.replace("</i>", " ");
+            reader.replace("<br />", " ");
+            reader.replace(" ->", " &#x2192;"); // right arrow
+            reader.replace(" <-", " &#x2190;"); // left arrow
+            reader.replace(" <> ", " &#x2194; "); // left-right arrow
+            addCustomReplaces(reader);
 
-                // work around unparsable XML
-                reader = new StringReplaceReader(body.charStream(), " & ", " &amp; ");
-                reader.replace("<b>", " ");
-                reader.replace("</b>", " ");
-                reader.replace("<u>", " ");
-                reader.replace("</u>", " ");
-                reader.replace("<i>", " ");
-                reader.replace("</i>", " ");
-                reader.replace("<br />", " ");
-                reader.replace(" ->", " &#x2192;"); // right arrow
-                reader.replace(" <-", " &#x2190;"); // left arrow
-                reader.replace(" <> ", " &#x2194; "); // left-right arrow
-                addCustomReplaces(reader);
+            try {
+                final XmlPullParserFactory factory = XmlPullParserFactory
+                        .newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
+                final XmlPullParser pp = factory.newPullParser();
+                pp.setInput(reader);
 
-                try {
-                    final XmlPullParserFactory factory = XmlPullParserFactory
-                            .newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
-                    final XmlPullParser pp = factory.newPullParser();
-                    pp.setInput(reader);
+                pp.nextTag();
 
-                    pp.nextTag();
+                final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
+                final QueryDeparturesResult r = new QueryDeparturesResult(header);
 
-                    final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
-                    final QueryDeparturesResult r = new QueryDeparturesResult(header);
+                if (XmlPullUtil.test(pp, "Err")) {
+                    final String code = XmlPullUtil.attr(pp, "code");
+                    final String text = XmlPullUtil.attr(pp, "text");
 
-                    if (XmlPullUtil.test(pp, "Err")) {
-                        final String code = XmlPullUtil.attr(pp, "code");
-                        final String text = XmlPullUtil.attr(pp, "text");
-
-                        if (code.equals("H730")) {
-                            result.set(new QueryDeparturesResult(header, QueryDeparturesResult.Status.INVALID_STATION));
-                            return;
-                        }
-                        if (code.equals("H890")) {
-                            r.stationDepartures
-                                    .add(new StationDepartures(new Location(LocationType.STATION, normalizedStationId),
-                                            Collections.<Departure> emptyList(), null));
-                            result.set(r);
-                            return;
-                        }
-                        throw new IllegalArgumentException("unknown error " + code + ", " + text);
+                    if (code.equals("H730")) {
+                        result.set(new QueryDeparturesResult(header, QueryDeparturesResult.Status.INVALID_STATION));
+                        return;
                     }
-
-                    String[] stationPlaceAndName = null;
-
-                    if (stationBoardHasStationTable)
-                        XmlPullUtil.enter(pp, "StationTable");
-                    else
-                        checkState(!XmlPullUtil.test(pp, "StationTable"));
-
-                    if (stationBoardHasLocation) {
-                        XmlPullUtil.require(pp, "St");
-
-                        final String evaId = XmlPullUtil.attr(pp, "evaId");
-                        if (evaId != null) {
-                            if (!evaId.equals(normalizedStationId))
-                                throw new IllegalStateException(
-                                        "stationId: " + normalizedStationId + ", evaId: " + evaId);
-
-                            final String name = XmlPullUtil.attr(pp, "name");
-                            if (name != null)
-                                stationPlaceAndName = splitStationName(name.trim());
-                        }
-                        XmlPullUtil.requireSkip(pp, "St");
-                    } else {
-                        checkState(!XmlPullUtil.test(pp, "St"));
+                    if (code.equals("H890")) {
+                        r.stationDepartures
+                                .add(new StationDepartures(new Location(LocationType.STATION, normalizedStationId),
+                                        Collections.<Departure> emptyList(), null));
+                        result.set(r);
+                        return;
                     }
+                    throw new IllegalArgumentException("unknown error " + code + ", " + text);
+                }
 
-                    while (XmlPullUtil.test(pp, "Journey")) {
-                        final String fpTime = XmlPullUtil.attr(pp, "fpTime");
-                        final String fpDate = XmlPullUtil.attr(pp, "fpDate");
-                        final String delay = XmlPullUtil.attr(pp, "delay");
-                        final String eDelay = XmlPullUtil.optAttr(pp, "e_delay", null);
-                        final String platform = XmlPullUtil.optAttr(pp, "platform", null);
-                        // TODO newpl
-                        final String targetLoc = XmlPullUtil.optAttr(pp, "targetLoc", null);
-                        // TODO hafasname
-                        final String dirnr = XmlPullUtil.optAttr(pp, "dirnr", null);
-                        final String prod = XmlPullUtil.attr(pp, "prod");
-                        final String classStr = XmlPullUtil.optAttr(pp, "class", null);
-                        final String dir = XmlPullUtil.optAttr(pp, "dir", null);
-                        final String capacityStr = XmlPullUtil.optAttr(pp, "capacity", null);
-                        final String depStation = XmlPullUtil.optAttr(pp, "depStation", null);
-                        final String delayReason = XmlPullUtil.optAttr(pp, "delayReason", null);
-                        // TODO is_reachable
-                        // TODO disableTrainInfo
-                        // TODO lineFG/lineBG (ZVV)
-                        final String administration = normalizeLineAdministration(
-                                XmlPullUtil.optAttr(pp, "administration", null));
+                String[] stationPlaceAndName = null;
 
-                        if (!"cancel".equals(delay) && !"cancel".equals(eDelay)) {
-                            final Calendar plannedTime = new GregorianCalendar(timeZone);
-                            plannedTime.clear();
-                            parseXmlStationBoardDate(plannedTime, fpDate);
-                            parseXmlStationBoardTime(plannedTime, fpTime);
+                if (stationBoardHasStationTable)
+                    XmlPullUtil.enter(pp, "StationTable");
+                else
+                    checkState(!XmlPullUtil.test(pp, "StationTable"));
 
-                            final Calendar predictedTime;
-                            if (eDelay != null) {
-                                predictedTime = new GregorianCalendar(timeZone);
-                                predictedTime.setTimeInMillis(plannedTime.getTimeInMillis());
-                                predictedTime.add(Calendar.MINUTE, Integer.parseInt(eDelay));
-                            } else if (delay != null) {
-                                final Matcher m = P_XML_STATION_BOARD_DELAY.matcher(delay);
-                                if (m.matches()) {
-                                    if (m.group(1) != null) {
-                                        predictedTime = new GregorianCalendar(timeZone);
-                                        predictedTime.setTimeInMillis(plannedTime.getTimeInMillis());
-                                        predictedTime.add(Calendar.MINUTE, Integer.parseInt(m.group(1)));
-                                    } else {
-                                        predictedTime = null;
-                                    }
+                if (stationBoardHasLocation) {
+                    XmlPullUtil.require(pp, "St");
+
+                    final String evaId = XmlPullUtil.attr(pp, "evaId");
+                    if (evaId != null) {
+                        if (!evaId.equals(normalizedStationId))
+                            throw new IllegalStateException(
+                                    "stationId: " + normalizedStationId + ", evaId: " + evaId);
+
+                        final String name = XmlPullUtil.attr(pp, "name");
+                        if (name != null)
+                            stationPlaceAndName = splitStationName(name.trim());
+                    }
+                    XmlPullUtil.requireSkip(pp, "St");
+                } else {
+                    checkState(!XmlPullUtil.test(pp, "St"));
+                }
+
+                while (XmlPullUtil.test(pp, "Journey")) {
+                    final String fpTime = XmlPullUtil.attr(pp, "fpTime");
+                    final String fpDate = XmlPullUtil.attr(pp, "fpDate");
+                    final String delay = XmlPullUtil.attr(pp, "delay");
+                    final String eDelay = XmlPullUtil.optAttr(pp, "e_delay", null);
+                    final String platform = XmlPullUtil.optAttr(pp, "platform", null);
+                    // TODO newpl
+                    final String targetLoc = XmlPullUtil.optAttr(pp, "targetLoc", null);
+                    // TODO hafasname
+                    final String dirnr = XmlPullUtil.optAttr(pp, "dirnr", null);
+                    final String prod = XmlPullUtil.attr(pp, "prod");
+                    final String classStr = XmlPullUtil.optAttr(pp, "class", null);
+                    final String dir = XmlPullUtil.optAttr(pp, "dir", null);
+                    final String capacityStr = XmlPullUtil.optAttr(pp, "capacity", null);
+                    final String depStation = XmlPullUtil.optAttr(pp, "depStation", null);
+                    final String delayReason = XmlPullUtil.optAttr(pp, "delayReason", null);
+                    // TODO is_reachable
+                    // TODO disableTrainInfo
+                    // TODO lineFG/lineBG (ZVV)
+                    final String administration = normalizeLineAdministration(
+                            XmlPullUtil.optAttr(pp, "administration", null));
+
+                    if (!"cancel".equals(delay) && !"cancel".equals(eDelay)) {
+                        final Calendar plannedTime = new GregorianCalendar(timeZone);
+                        plannedTime.clear();
+                        parseXmlStationBoardDate(plannedTime, fpDate);
+                        parseXmlStationBoardTime(plannedTime, fpTime);
+
+                        final Calendar predictedTime;
+                        if (eDelay != null) {
+                            predictedTime = new GregorianCalendar(timeZone);
+                            predictedTime.setTimeInMillis(plannedTime.getTimeInMillis());
+                            predictedTime.add(Calendar.MINUTE, Integer.parseInt(eDelay));
+                        } else if (delay != null) {
+                            final Matcher m = P_XML_STATION_BOARD_DELAY.matcher(delay);
+                            if (m.matches()) {
+                                if (m.group(1) != null) {
+                                    predictedTime = new GregorianCalendar(timeZone);
+                                    predictedTime.setTimeInMillis(plannedTime.getTimeInMillis());
+                                    predictedTime.add(Calendar.MINUTE, Integer.parseInt(m.group(1)));
                                 } else {
-                                    throw new RuntimeException("cannot parse delay: '" + delay + "'");
+                                    predictedTime = null;
                                 }
                             } else {
-                                predictedTime = null;
+                                throw new RuntimeException("cannot parse delay: '" + delay + "'");
                             }
-
-                            final Position position = parsePosition(ParserUtils.resolveEntities(platform));
-
-                            final String destinationName;
-                            if (dir != null)
-                                destinationName = dir.trim();
-                            else if (targetLoc != null)
-                                destinationName = targetLoc.trim();
-                            else
-                                destinationName = null;
-
-                            final Location destination;
-                            if (dirnr != null) {
-                                final String[] destinationPlaceAndName = splitStationName(destinationName);
-                                destination = new Location(LocationType.STATION, dirnr, destinationPlaceAndName[0],
-                                        destinationPlaceAndName[1]);
-                            } else {
-                                destination = new Location(LocationType.ANY, null, null, destinationName);
-                            }
-
-                            final Line prodLine = parseLineAndType(prod);
-                            final Line line;
-                            if (classStr != null) {
-                                final Product product = intToProduct(Integer.parseInt(classStr));
-                                if (product == null)
-                                    throw new IllegalArgumentException();
-                                // could check for type consistency here
-                                final Set<Attr> attrs = prodLine.attrs;
-                                if (attrs != null)
-                                    line = newLine(administration, product, prodLine.label, null,
-                                            attrs.toArray(new Line.Attr[0]));
-                                else
-                                    line = newLine(administration, product, prodLine.label, null);
-                            } else {
-                                final Set<Attr> attrs = prodLine.attrs;
-                                if (attrs != null)
-                                    line = newLine(administration, prodLine.product, prodLine.label, null,
-                                            attrs.toArray(new Line.Attr[0]));
-                                else
-                                    line = newLine(administration, prodLine.product, prodLine.label, null);
-                            }
-
-                            final int[] capacity;
-                            if (capacityStr != null && !"0|0".equals(capacityStr)) {
-                                final String[] capacityParts = capacityStr.split("\\|");
-                                capacity = new int[] { Integer.parseInt(capacityParts[0]),
-                                        Integer.parseInt(capacityParts[1]) };
-                            } else {
-                                capacity = null;
-                            }
-
-                            final String message;
-                            if (delayReason != null) {
-                                final String msg = delayReason.trim();
-                                message = msg.length() > 0 ? msg : null;
-                            } else {
-                                message = null;
-                            }
-
-                            final Departure departure = new Departure(plannedTime.getTime(),
-                                    predictedTime != null ? predictedTime.getTime() : null, line, position, destination,
-                                    capacity, message);
-
-                            final Location location;
-                            if (!stationBoardCanDoEquivs || depStation == null) {
-                                location = new Location(LocationType.STATION, normalizedStationId,
-                                        stationPlaceAndName != null ? stationPlaceAndName[0] : null,
-                                        stationPlaceAndName != null ? stationPlaceAndName[1] : null);
-                            } else {
-                                final String[] depPlaceAndName = splitStationName(depStation);
-                                location = new Location(LocationType.STATION, null, depPlaceAndName[0],
-                                        depPlaceAndName[1]);
-                            }
-
-                            StationDepartures stationDepartures = findStationDepartures(r.stationDepartures, location);
-                            if (stationDepartures == null) {
-                                stationDepartures = new StationDepartures(location, new ArrayList<Departure>(8), null);
-                                r.stationDepartures.add(stationDepartures);
-                            }
-
-                            stationDepartures.departures.add(departure);
+                        } else {
+                            predictedTime = null;
                         }
 
-                        XmlPullUtil.requireSkip(pp, "Journey");
+                        final Position position = parsePosition(ParserUtils.resolveEntities(platform));
+
+                        final String destinationName;
+                        if (dir != null)
+                            destinationName = dir.trim();
+                        else if (targetLoc != null)
+                            destinationName = targetLoc.trim();
+                        else
+                            destinationName = null;
+
+                        final Location destination;
+                        if (dirnr != null) {
+                            final String[] destinationPlaceAndName = splitStationName(destinationName);
+                            destination = new Location(LocationType.STATION, dirnr, destinationPlaceAndName[0],
+                                    destinationPlaceAndName[1]);
+                        } else {
+                            destination = new Location(LocationType.ANY, null, null, destinationName);
+                        }
+
+                        final Line prodLine = parseLineAndType(prod);
+                        final Line line;
+                        if (classStr != null) {
+                            final Product product = intToProduct(Integer.parseInt(classStr));
+                            if (product == null)
+                                throw new IllegalArgumentException();
+                            // could check for type consistency here
+                            final Set<Attr> attrs = prodLine.attrs;
+                            if (attrs != null)
+                                line = newLine(administration, product, prodLine.label, null,
+                                        attrs.toArray(new Attr[0]));
+                            else
+                                line = newLine(administration, product, prodLine.label, null);
+                        } else {
+                            final Set<Attr> attrs = prodLine.attrs;
+                            if (attrs != null)
+                                line = newLine(administration, prodLine.product, prodLine.label, null,
+                                        attrs.toArray(new Attr[0]));
+                            else
+                                line = newLine(administration, prodLine.product, prodLine.label, null);
+                        }
+
+                        final int[] capacity;
+                        if (capacityStr != null && !"0|0".equals(capacityStr)) {
+                            final String[] capacityParts = capacityStr.split("\\|");
+                            capacity = new int[] { Integer.parseInt(capacityParts[0]),
+                                    Integer.parseInt(capacityParts[1]) };
+                        } else {
+                            capacity = null;
+                        }
+
+                        final String message;
+                        if (delayReason != null) {
+                            final String msg = delayReason.trim();
+                            message = msg.length() > 0 ? msg : null;
+                        } else {
+                            message = null;
+                        }
+
+                        final Departure departure = new Departure(plannedTime.getTime(),
+                                predictedTime != null ? predictedTime.getTime() : null, line, position, destination,
+                                capacity, message);
+
+                        final Location location;
+                        if (!stationBoardCanDoEquivs || depStation == null) {
+                            location = new Location(LocationType.STATION, normalizedStationId,
+                                    stationPlaceAndName != null ? stationPlaceAndName[0] : null,
+                                    stationPlaceAndName != null ? stationPlaceAndName[1] : null);
+                        } else {
+                            final String[] depPlaceAndName = splitStationName(depStation);
+                            location = new Location(LocationType.STATION, null, depPlaceAndName[0],
+                                    depPlaceAndName[1]);
+                        }
+
+                        StationDepartures stationDepartures = findStationDepartures(r.stationDepartures, location);
+                        if (stationDepartures == null) {
+                            stationDepartures = new StationDepartures(location, new ArrayList<Departure>(8), null);
+                            r.stationDepartures.add(stationDepartures);
+                        }
+
+                        stationDepartures.departures.add(departure);
                     }
 
-                    if (stationBoardHasStationTable)
-                        XmlPullUtil.exit(pp, "StationTable");
-
-                    XmlPullUtil.requireEndDocument(pp);
-
-                    // sort departures
-                    for (final StationDepartures stationDepartures : r.stationDepartures)
-                        Collections.sort(stationDepartures.departures, Departure.TIME_COMPARATOR);
-
-                    result.set(r);
-                } catch (final XmlPullParserException x) {
-                    throw new ParserException("cannot parse xml: " + firstChars, x);
+                    XmlPullUtil.requireSkip(pp, "Journey");
                 }
+
+                if (stationBoardHasStationTable)
+                    XmlPullUtil.exit(pp, "StationTable");
+
+                XmlPullUtil.requireEndDocument(pp);
+
+                // sort departures
+                for (final StationDepartures stationDepartures : r.stationDepartures)
+                    Collections.sort(stationDepartures.departures, Departure.TIME_COMPARATOR);
+
+                result.set(r);
+            } catch (final XmlPullParserException x) {
+                throw new ParserException("cannot parse xml: " + firstChars, x);
             }
         }, url);
 
@@ -794,396 +790,393 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
         final HttpUrl endpoint = extXmlEndpoint != null ? extXmlEndpoint
                 : queryEndpoint.newBuilder().addPathSegment(apiLanguage).build();
         final AtomicReference<QueryTripsResult> result = new AtomicReference<>();
-        httpClient.getInputStream(new HttpClient.Callback() {
-            @Override
-            public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
-                try {
-                    final XmlPullParserFactory factory = XmlPullParserFactory
-                            .newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
-                    final XmlPullParser pp = factory.newPullParser();
-                    pp.setInput(body.charStream());
+        httpClient.getInputStream((bodyPeek, body) -> {
+            try {
+                final XmlPullParserFactory factory = XmlPullParserFactory
+                        .newInstance(System.getProperty(XmlPullParserFactory.PROPERTY_NAME), null);
+                final XmlPullParser pp = factory.newPullParser();
+                pp.setInput(body.charStream());
 
-                    XmlPullUtil.require(pp, "ResC");
-                    final String product = XmlPullUtil.attr(pp, "prod").split(" ")[0];
-                    final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, product, null, 0, null);
-                    XmlPullUtil.enter(pp, "ResC");
+                XmlPullUtil.require(pp, "ResC");
+                final String product = XmlPullUtil.attr(pp, "prod").split(" ")[0];
+                final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, product, null, 0, null);
+                XmlPullUtil.enter(pp, "ResC");
 
-                    if (XmlPullUtil.test(pp, "Err")) {
-                        final String code = XmlPullUtil.attr(pp, "code");
-                        if (code.equals("I3")) {
-                            result.set(new QueryTripsResult(header, QueryTripsResult.Status.INVALID_DATE));
-                            return;
-                        }
-                        if (code.equals("F1")) {
-                            result.set(new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN));
-                            return;
-                        }
-                        throw new IllegalStateException("error " + code + " " + XmlPullUtil.attr(pp, "text"));
+                if (XmlPullUtil.test(pp, "Err")) {
+                    final String code = XmlPullUtil.attr(pp, "code");
+                    if (code.equals("I3")) {
+                        result.set(new QueryTripsResult(header, QueryTripsResult.Status.INVALID_DATE));
+                        return;
                     }
-
-                    XmlPullUtil.enter(pp, "ConRes");
-
-                    if (XmlPullUtil.test(pp, "Err")) {
-                        final String code = XmlPullUtil.attr(pp, "code");
-                        log.debug("Hafas error: {}", code);
-                        if (code.equals("K9260")) {
-                            // Unknown departure station
-                            result.set(new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_FROM));
-                            return;
-                        }
-                        if (code.equals("K9280")) {
-                            // Unknown intermediate station
-                            result.set(new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_VIA));
-                            return;
-                        }
-                        if (code.equals("K9300")) {
-                            // Unknown arrival station
-                            result.set(new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_TO));
-                            return;
-                        }
-                        if (code.equals("K9360")) {
-                            // Date outside of the timetable period
-                            result.set(new QueryTripsResult(header, QueryTripsResult.Status.INVALID_DATE));
-                            return;
-                        }
-                        if (code.equals("K9380")) {
-                            // Dep./Arr./Intermed. or equivalent station defined more than once
-                            result.set(new QueryTripsResult(header, QueryTripsResult.Status.TOO_CLOSE));
-                            return;
-                        }
-                        if (code.equals("K895")) {
-                            // Departure/Arrival are too near
-                            result.set(new QueryTripsResult(header, QueryTripsResult.Status.TOO_CLOSE));
-                            return;
-                        }
-                        if (code.equals("K9220")) {
-                            // Nearby to the given address stations could not be found
-                            result.set(new QueryTripsResult(header, QueryTripsResult.Status.UNRESOLVABLE_ADDRESS));
-                            return;
-                        }
-                        if (code.equals("K9240")) {
-                            // Internal error
-                            result.set(new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN));
-                            return;
-                        }
-                        if (code.equals("K890")) {
-                            // No connections found
-                            result.set(new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS));
-                            return;
-                        }
-                        if (code.equals("K891")) {
-                            // No route found (try entering an intermediate station)
-                            result.set(new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS));
-                            return;
-                        }
-                        if (code.equals("K899")) {
-                            // An error occurred
-                            result.set(new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN));
-                            return;
-                        }
-                        if (code.equals("K1:890")) {
-                            // Unsuccessful or incomplete search (direction: forward)
-                            result.set(new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS));
-                            return;
-                        }
-                        if (code.equals("K2:890")) {
-                            // Unsuccessful or incomplete search (direction: backward)
-                            result.set(new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS));
-                            return;
-                        }
-                        throw new IllegalStateException("error " + code + " " + XmlPullUtil.attr(pp, "text"));
+                    if (code.equals("F1")) {
+                        result.set(new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN));
+                        return;
                     }
+                    throw new IllegalStateException("error " + code + " " + XmlPullUtil.attr(pp, "text"));
+                }
 
-                    // H9380 Dep./Arr./Intermed. or equivalent stations defined more than once
-                    // H9360 Error in data field
-                    // H9320 The input is incorrect or incomplete
-                    // H9300 Unknown arrival station
-                    // H9280 Unknown intermediate station
-                    // H9260 Unknown departure station
-                    // H9250 Part inquiry interrupted
-                    // H9240 Unsuccessful search
-                    // H9230 An internal error occurred
-                    // H9220 Nearby to the given address stations could not be found
-                    // H900 Unsuccessful or incomplete search (timetable change)
-                    // H892 Inquiry too complex (try entering less intermediate stations)
-                    // H891 No route found (try entering an intermediate station)
-                    // H890 Unsuccessful search.
-                    // H500 Because of too many trains the connection is not complete
-                    // H460 One or more stops are passed through multiple times.
-                    // H455 Prolonged stop
-                    // H410 Display may be incomplete due to change of timetable
-                    // H390 Departure/Arrival replaced by an equivalent station
-                    // H895 Departure/Arrival are too near
-                    // H899 Unsuccessful or incomplete search (timetable change
+                XmlPullUtil.enter(pp, "ConRes");
 
-                    final String c = XmlPullUtil.optValueTag(pp, "ConResCtxt", null);
-                    final Context context;
-                    if (previousContext == null)
-                        context = new Context(c, c, 0);
-                    else if (later)
-                        context = new Context(c, previousContext.earlierContext, previousContext.sequence + 1);
-                    else
-                        context = new Context(previousContext.laterContext, c, previousContext.sequence + 1);
+                if (XmlPullUtil.test(pp, "Err")) {
+                    final String code = XmlPullUtil.attr(pp, "code");
+                    log.debug("Hafas error: {}", code);
+                    if (code.equals("K9260")) {
+                        // Unknown departure station
+                        result.set(new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_FROM));
+                        return;
+                    }
+                    if (code.equals("K9280")) {
+                        // Unknown intermediate station
+                        result.set(new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_VIA));
+                        return;
+                    }
+                    if (code.equals("K9300")) {
+                        // Unknown arrival station
+                        result.set(new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_TO));
+                        return;
+                    }
+                    if (code.equals("K9360")) {
+                        // Date outside of the timetable period
+                        result.set(new QueryTripsResult(header, QueryTripsResult.Status.INVALID_DATE));
+                        return;
+                    }
+                    if (code.equals("K9380")) {
+                        // Dep./Arr./Intermed. or equivalent station defined more than once
+                        result.set(new QueryTripsResult(header, QueryTripsResult.Status.TOO_CLOSE));
+                        return;
+                    }
+                    if (code.equals("K895")) {
+                        // Departure/Arrival are too near
+                        result.set(new QueryTripsResult(header, QueryTripsResult.Status.TOO_CLOSE));
+                        return;
+                    }
+                    if (code.equals("K9220")) {
+                        // Nearby to the given address stations could not be found
+                        result.set(new QueryTripsResult(header, QueryTripsResult.Status.UNRESOLVABLE_ADDRESS));
+                        return;
+                    }
+                    if (code.equals("K9240")) {
+                        // Internal error
+                        result.set(new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN));
+                        return;
+                    }
+                    if (code.equals("K890")) {
+                        // No connections found
+                        result.set(new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS));
+                        return;
+                    }
+                    if (code.equals("K891")) {
+                        // No route found (try entering an intermediate station)
+                        result.set(new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS));
+                        return;
+                    }
+                    if (code.equals("K899")) {
+                        // An error occurred
+                        result.set(new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN));
+                        return;
+                    }
+                    if (code.equals("K1:890")) {
+                        // Unsuccessful or incomplete search (direction: forward)
+                        result.set(new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS));
+                        return;
+                    }
+                    if (code.equals("K2:890")) {
+                        // Unsuccessful or incomplete search (direction: backward)
+                        result.set(new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS));
+                        return;
+                    }
+                    throw new IllegalStateException("error " + code + " " + XmlPullUtil.attr(pp, "text"));
+                }
 
-                    XmlPullUtil.enter(pp, "ConnectionList");
+                // H9380 Dep./Arr./Intermed. or equivalent stations defined more than once
+                // H9360 Error in data field
+                // H9320 The input is incorrect or incomplete
+                // H9300 Unknown arrival station
+                // H9280 Unknown intermediate station
+                // H9260 Unknown departure station
+                // H9250 Part inquiry interrupted
+                // H9240 Unsuccessful search
+                // H9230 An internal error occurred
+                // H9220 Nearby to the given address stations could not be found
+                // H900 Unsuccessful or incomplete search (timetable change)
+                // H892 Inquiry too complex (try entering less intermediate stations)
+                // H891 No route found (try entering an intermediate station)
+                // H890 Unsuccessful search.
+                // H500 Because of too many trains the connection is not complete
+                // H460 One or more stops are passed through multiple times.
+                // H455 Prolonged stop
+                // H410 Display may be incomplete due to change of timetable
+                // H390 Departure/Arrival replaced by an equivalent station
+                // H895 Departure/Arrival are too near
+                // H899 Unsuccessful or incomplete search (timetable change
 
-                    final List<Trip> trips = new ArrayList<>();
+                final String c = XmlPullUtil.optValueTag(pp, "ConResCtxt", null);
+                final Context context;
+                if (previousContext == null)
+                    context = new Context(c, c, 0);
+                else if (later)
+                    context = new Context(c, previousContext.earlierContext, previousContext.sequence + 1);
+                else
+                    context = new Context(previousContext.laterContext, c, previousContext.sequence + 1);
 
-                    while (XmlPullUtil.test(pp, "Connection")) {
-                        final String id = context.sequence + "/" + XmlPullUtil.attr(pp, "id");
+                XmlPullUtil.enter(pp, "ConnectionList");
 
-                        XmlPullUtil.enter(pp, "Connection");
-                        while (pp.getName().equals("RtStateList"))
-                            XmlPullUtil.next(pp);
-                        XmlPullUtil.enter(pp, "Overview");
+                final List<Trip> trips = new ArrayList<>();
 
-                        final Calendar currentDate = new GregorianCalendar(timeZone);
-                        currentDate.clear();
-                        parseDate(currentDate, XmlPullUtil.valueTag(pp, "Date"));
+                while (XmlPullUtil.test(pp, "Connection")) {
+                    final String id = context.sequence + "/" + XmlPullUtil.attr(pp, "id");
+
+                    XmlPullUtil.enter(pp, "Connection");
+                    while (pp.getName().equals("RtStateList"))
+                        XmlPullUtil.next(pp);
+                    XmlPullUtil.enter(pp, "Overview");
+
+                    final Calendar currentDate = new GregorianCalendar(timeZone);
+                    currentDate.clear();
+                    parseDate(currentDate, XmlPullUtil.valueTag(pp, "Date"));
+                    XmlPullUtil.enter(pp, "Departure");
+                    XmlPullUtil.enter(pp, "BasicStop");
+                    while (pp.getName().equals("StAttrList"))
+                        XmlPullUtil.next(pp);
+                    final Location departureLocation = parseLocation(pp);
+                    XmlPullUtil.enter(pp, "Dep");
+                    XmlPullUtil.skipExit(pp, "Dep");
+                    final int[] capacity;
+                    if (XmlPullUtil.test(pp, "StopPrognosis")) {
+                        XmlPullUtil.enter(pp, "StopPrognosis");
+                        XmlPullUtil.optSkip(pp, "Arr");
+                        XmlPullUtil.optSkip(pp, "Dep");
+                        XmlPullUtil.enter(pp, "Status");
+                        XmlPullUtil.skipExit(pp, "Status");
+                        final int capacity1st = Integer.parseInt(XmlPullUtil.optValueTag(pp, "Capacity1st", "0"));
+                        final int capacity2nd = Integer.parseInt(XmlPullUtil.optValueTag(pp, "Capacity2nd", "0"));
+                        if (capacity1st > 0 || capacity2nd > 0)
+                            capacity = new int[] { capacity1st, capacity2nd };
+                        else
+                            capacity = null;
+                        XmlPullUtil.skipExit(pp, "StopPrognosis");
+                    } else {
+                        capacity = null;
+                    }
+                    XmlPullUtil.skipExit(pp, "BasicStop");
+                    XmlPullUtil.skipExit(pp, "Departure");
+
+                    XmlPullUtil.enter(pp, "Arrival");
+                    XmlPullUtil.enter(pp, "BasicStop");
+                    while (pp.getName().equals("StAttrList"))
+                        XmlPullUtil.next(pp);
+                    final Location arrivalLocation = parseLocation(pp);
+                    XmlPullUtil.skipExit(pp, "BasicStop");
+                    XmlPullUtil.skipExit(pp, "Arrival");
+
+                    final int numTransfers = Integer.parseInt(XmlPullUtil.valueTag(pp, "Transfers"));
+
+                    XmlPullUtil.skipExit(pp, "Overview");
+
+                    final List<Trip.Leg> legs = new ArrayList<>(4);
+
+                    XmlPullUtil.enter(pp, "ConSectionList");
+
+                    final Calendar time = new GregorianCalendar(timeZone);
+
+                    while (XmlPullUtil.test(pp, "ConSection")) {
+                        XmlPullUtil.enter(pp, "ConSection");
+
+                        // departure
                         XmlPullUtil.enter(pp, "Departure");
                         XmlPullUtil.enter(pp, "BasicStop");
                         while (pp.getName().equals("StAttrList"))
                             XmlPullUtil.next(pp);
-                        final Location departureLocation = parseLocation(pp);
+                        final Location sectionDepartureLocation = parseLocation(pp);
+
+                        XmlPullUtil.optSkip(pp, "Arr");
                         XmlPullUtil.enter(pp, "Dep");
+                        time.setTimeInMillis(currentDate.getTimeInMillis());
+                        parseTime(time, XmlPullUtil.valueTag(pp, "Time"));
+                        final Date departureTime = time.getTime();
+                        final Position departurePos = parsePlatform(pp);
                         XmlPullUtil.skipExit(pp, "Dep");
-                        final int[] capacity;
-                        if (XmlPullUtil.test(pp, "StopPrognosis")) {
-                            XmlPullUtil.enter(pp, "StopPrognosis");
-                            XmlPullUtil.optSkip(pp, "Arr");
-                            XmlPullUtil.optSkip(pp, "Dep");
-                            XmlPullUtil.enter(pp, "Status");
-                            XmlPullUtil.skipExit(pp, "Status");
-                            final int capacity1st = Integer.parseInt(XmlPullUtil.optValueTag(pp, "Capacity1st", "0"));
-                            final int capacity2nd = Integer.parseInt(XmlPullUtil.optValueTag(pp, "Capacity2nd", "0"));
-                            if (capacity1st > 0 || capacity2nd > 0)
-                                capacity = new int[] { capacity1st, capacity2nd };
-                            else
-                                capacity = null;
-                            XmlPullUtil.skipExit(pp, "StopPrognosis");
-                        } else {
-                            capacity = null;
-                        }
+
                         XmlPullUtil.skipExit(pp, "BasicStop");
                         XmlPullUtil.skipExit(pp, "Departure");
 
+                        // journey
+                        final Line line;
+                        Location destination = null;
+
+                        List<Stop> intermediateStops = null;
+
+                        final String tag = pp.getName();
+                        if (tag.equals("Journey")) {
+                            XmlPullUtil.enter(pp, "Journey");
+                            while (pp.getName().equals("JHandle"))
+                                XmlPullUtil.next(pp);
+                            XmlPullUtil.enter(pp, "JourneyAttributeList");
+                            boolean wheelchairAccess = false;
+                            String name = null;
+                            String category = null;
+                            String shortCategory = null;
+                            while (XmlPullUtil.test(pp, "JourneyAttribute")) {
+                                XmlPullUtil.enter(pp, "JourneyAttribute");
+                                XmlPullUtil.require(pp, "Attribute");
+                                final String attrName = XmlPullUtil.attr(pp, "type");
+                                final String code = XmlPullUtil.optAttr(pp, "code", null);
+                                XmlPullUtil.enter(pp, "Attribute");
+                                final Map<String, String> attributeVariants = parseAttributeVariants(pp);
+                                XmlPullUtil.skipExit(pp, "Attribute");
+                                XmlPullUtil.skipExit(pp, "JourneyAttribute");
+
+                                if ("bf".equals(code)) {
+                                    wheelchairAccess = true;
+                                } else if ("NAME".equals(attrName)) {
+                                    name = attributeVariants.get("NORMAL");
+                                } else if ("CATEGORY".equals(attrName)) {
+                                    shortCategory = attributeVariants.get("SHORT");
+                                    category = attributeVariants.get("NORMAL");
+                                    // longCategory = attributeVariants.get("LONG");
+                                } else if ("DIRECTION".equals(attrName)) {
+                                    final String[] destinationPlaceAndName = splitStationName(
+                                            attributeVariants.get("NORMAL"));
+                                    destination = new Location(LocationType.ANY, null, destinationPlaceAndName[0],
+                                            destinationPlaceAndName[1]);
+                                }
+                            }
+                            XmlPullUtil.skipExit(pp, "JourneyAttributeList");
+
+                            if (XmlPullUtil.test(pp, "PassList")) {
+                                intermediateStops = new LinkedList<>();
+
+                                XmlPullUtil.enter(pp, "PassList");
+                                while (XmlPullUtil.test(pp, "BasicStop")) {
+                                    XmlPullUtil.enter(pp, "BasicStop");
+                                    while (XmlPullUtil.test(pp, "StAttrList"))
+                                        XmlPullUtil.next(pp);
+                                    final Location location = parseLocation(pp);
+                                    if (location.id != sectionDepartureLocation.id) {
+                                        Date stopArrivalTime = null;
+                                        Date stopDepartureTime = null;
+                                        Position stopArrivalPosition = null;
+                                        Position stopDeparturePosition = null;
+
+                                        if (XmlPullUtil.test(pp, "Arr")) {
+                                            XmlPullUtil.enter(pp, "Arr");
+                                            time.setTimeInMillis(currentDate.getTimeInMillis());
+                                            parseTime(time, XmlPullUtil.valueTag(pp, "Time"));
+                                            stopArrivalTime = time.getTime();
+                                            stopArrivalPosition = parsePlatform(pp);
+                                            XmlPullUtil.skipExit(pp, "Arr");
+                                        }
+
+                                        if (XmlPullUtil.test(pp, "Dep")) {
+                                            XmlPullUtil.enter(pp, "Dep");
+                                            time.setTimeInMillis(currentDate.getTimeInMillis());
+                                            parseTime(time, XmlPullUtil.valueTag(pp, "Time"));
+                                            stopDepartureTime = time.getTime();
+                                            stopDeparturePosition = parsePlatform(pp);
+                                            XmlPullUtil.skipExit(pp, "Dep");
+                                        }
+
+                                        intermediateStops.add(new Stop(location, stopArrivalTime,
+                                                stopArrivalPosition, stopDepartureTime, stopDeparturePosition));
+                                    }
+                                    XmlPullUtil.skipExit(pp, "BasicStop");
+                                }
+
+                                XmlPullUtil.skipExit(pp, "PassList");
+                            }
+
+                            XmlPullUtil.skipExit(pp, "Journey");
+
+                            if (category == null)
+                                category = shortCategory;
+
+                            line = parseLine(category, name, wheelchairAccess);
+                        } else if (tag.equals("Walk") || tag.equals("Transfer") || tag.equals("GisRoute")) {
+                            XmlPullUtil.enter(pp);
+                            XmlPullUtil.enter(pp, "Duration");
+                            XmlPullUtil.skipExit(pp, "Duration");
+                            XmlPullUtil.skipExit(pp);
+
+                            line = null;
+                        } else {
+                            throw new IllegalStateException("cannot handle: " + pp.getName());
+                        }
+
+                        // polyline
+                        final List<Point> path;
+                        if (XmlPullUtil.test(pp, "Polyline")) {
+                            path = new LinkedList<>();
+                            XmlPullUtil.enter(pp, "Polyline");
+                            while (XmlPullUtil.test(pp, "Point")) {
+                                final int x = XmlPullUtil.intAttr(pp, "x");
+                                final int y = XmlPullUtil.intAttr(pp, "y");
+                                path.add(Point.from1E6(y, x));
+                                XmlPullUtil.next(pp);
+                            }
+                            XmlPullUtil.skipExit(pp, "Polyline");
+                        } else {
+                            path = null;
+                        }
+
+                        // arrival
                         XmlPullUtil.enter(pp, "Arrival");
                         XmlPullUtil.enter(pp, "BasicStop");
                         while (pp.getName().equals("StAttrList"))
                             XmlPullUtil.next(pp);
-                        final Location arrivalLocation = parseLocation(pp);
+                        final Location sectionArrivalLocation = parseLocation(pp);
+                        XmlPullUtil.enter(pp, "Arr");
+                        time.setTimeInMillis(currentDate.getTimeInMillis());
+                        parseTime(time, XmlPullUtil.valueTag(pp, "Time"));
+                        final Date arrivalTime = time.getTime();
+                        final Position arrivalPos = parsePlatform(pp);
+                        XmlPullUtil.skipExit(pp, "Arr");
+
                         XmlPullUtil.skipExit(pp, "BasicStop");
                         XmlPullUtil.skipExit(pp, "Arrival");
 
-                        final int numTransfers = Integer.parseInt(XmlPullUtil.valueTag(pp, "Transfers"));
+                        // remove last intermediate
+                        if (intermediateStops != null)
+                            if (!intermediateStops.isEmpty())
+                                if (!intermediateStops.get(intermediateStops.size() - 1).location
+                                        .equals(sectionArrivalLocation))
+                                    intermediateStops.remove(intermediateStops.size() - 1);
 
-                        XmlPullUtil.skipExit(pp, "Overview");
+                        XmlPullUtil.skipExit(pp, "ConSection");
 
-                        final List<Trip.Leg> legs = new ArrayList<>(4);
+                        if (line != null) {
+                            final Stop departure = new Stop(sectionDepartureLocation, true, departureTime, null,
+                                    departurePos, null);
+                            final Stop arrival = new Stop(sectionArrivalLocation, false, arrivalTime, null,
+                                    arrivalPos, null);
 
-                        XmlPullUtil.enter(pp, "ConSectionList");
-
-                        final Calendar time = new GregorianCalendar(timeZone);
-
-                        while (XmlPullUtil.test(pp, "ConSection")) {
-                            XmlPullUtil.enter(pp, "ConSection");
-
-                            // departure
-                            XmlPullUtil.enter(pp, "Departure");
-                            XmlPullUtil.enter(pp, "BasicStop");
-                            while (pp.getName().equals("StAttrList"))
-                                XmlPullUtil.next(pp);
-                            final Location sectionDepartureLocation = parseLocation(pp);
-
-                            XmlPullUtil.optSkip(pp, "Arr");
-                            XmlPullUtil.enter(pp, "Dep");
-                            time.setTimeInMillis(currentDate.getTimeInMillis());
-                            parseTime(time, XmlPullUtil.valueTag(pp, "Time"));
-                            final Date departureTime = time.getTime();
-                            final Position departurePos = parsePlatform(pp);
-                            XmlPullUtil.skipExit(pp, "Dep");
-
-                            XmlPullUtil.skipExit(pp, "BasicStop");
-                            XmlPullUtil.skipExit(pp, "Departure");
-
-                            // journey
-                            final Line line;
-                            Location destination = null;
-
-                            List<Stop> intermediateStops = null;
-
-                            final String tag = pp.getName();
-                            if (tag.equals("Journey")) {
-                                XmlPullUtil.enter(pp, "Journey");
-                                while (pp.getName().equals("JHandle"))
-                                    XmlPullUtil.next(pp);
-                                XmlPullUtil.enter(pp, "JourneyAttributeList");
-                                boolean wheelchairAccess = false;
-                                String name = null;
-                                String category = null;
-                                String shortCategory = null;
-                                while (XmlPullUtil.test(pp, "JourneyAttribute")) {
-                                    XmlPullUtil.enter(pp, "JourneyAttribute");
-                                    XmlPullUtil.require(pp, "Attribute");
-                                    final String attrName = XmlPullUtil.attr(pp, "type");
-                                    final String code = XmlPullUtil.optAttr(pp, "code", null);
-                                    XmlPullUtil.enter(pp, "Attribute");
-                                    final Map<String, String> attributeVariants = parseAttributeVariants(pp);
-                                    XmlPullUtil.skipExit(pp, "Attribute");
-                                    XmlPullUtil.skipExit(pp, "JourneyAttribute");
-
-                                    if ("bf".equals(code)) {
-                                        wheelchairAccess = true;
-                                    } else if ("NAME".equals(attrName)) {
-                                        name = attributeVariants.get("NORMAL");
-                                    } else if ("CATEGORY".equals(attrName)) {
-                                        shortCategory = attributeVariants.get("SHORT");
-                                        category = attributeVariants.get("NORMAL");
-                                        // longCategory = attributeVariants.get("LONG");
-                                    } else if ("DIRECTION".equals(attrName)) {
-                                        final String[] destinationPlaceAndName = splitStationName(
-                                                attributeVariants.get("NORMAL"));
-                                        destination = new Location(LocationType.ANY, null, destinationPlaceAndName[0],
-                                                destinationPlaceAndName[1]);
-                                    }
-                                }
-                                XmlPullUtil.skipExit(pp, "JourneyAttributeList");
-
-                                if (XmlPullUtil.test(pp, "PassList")) {
-                                    intermediateStops = new LinkedList<>();
-
-                                    XmlPullUtil.enter(pp, "PassList");
-                                    while (XmlPullUtil.test(pp, "BasicStop")) {
-                                        XmlPullUtil.enter(pp, "BasicStop");
-                                        while (XmlPullUtil.test(pp, "StAttrList"))
-                                            XmlPullUtil.next(pp);
-                                        final Location location = parseLocation(pp);
-                                        if (location.id != sectionDepartureLocation.id) {
-                                            Date stopArrivalTime = null;
-                                            Date stopDepartureTime = null;
-                                            Position stopArrivalPosition = null;
-                                            Position stopDeparturePosition = null;
-
-                                            if (XmlPullUtil.test(pp, "Arr")) {
-                                                XmlPullUtil.enter(pp, "Arr");
-                                                time.setTimeInMillis(currentDate.getTimeInMillis());
-                                                parseTime(time, XmlPullUtil.valueTag(pp, "Time"));
-                                                stopArrivalTime = time.getTime();
-                                                stopArrivalPosition = parsePlatform(pp);
-                                                XmlPullUtil.skipExit(pp, "Arr");
-                                            }
-
-                                            if (XmlPullUtil.test(pp, "Dep")) {
-                                                XmlPullUtil.enter(pp, "Dep");
-                                                time.setTimeInMillis(currentDate.getTimeInMillis());
-                                                parseTime(time, XmlPullUtil.valueTag(pp, "Time"));
-                                                stopDepartureTime = time.getTime();
-                                                stopDeparturePosition = parsePlatform(pp);
-                                                XmlPullUtil.skipExit(pp, "Dep");
-                                            }
-
-                                            intermediateStops.add(new Stop(location, stopArrivalTime,
-                                                    stopArrivalPosition, stopDepartureTime, stopDeparturePosition));
-                                        }
-                                        XmlPullUtil.skipExit(pp, "BasicStop");
-                                    }
-
-                                    XmlPullUtil.skipExit(pp, "PassList");
-                                }
-
-                                XmlPullUtil.skipExit(pp, "Journey");
-
-                                if (category == null)
-                                    category = shortCategory;
-
-                                line = parseLine(category, name, wheelchairAccess);
-                            } else if (tag.equals("Walk") || tag.equals("Transfer") || tag.equals("GisRoute")) {
-                                XmlPullUtil.enter(pp);
-                                XmlPullUtil.enter(pp, "Duration");
-                                XmlPullUtil.skipExit(pp, "Duration");
-                                XmlPullUtil.skipExit(pp);
-
-                                line = null;
+                            legs.add(new Trip.Public(line, destination, departure, arrival, intermediateStops, path,
+                                    null));
+                        } else {
+                            if (legs.size() > 0 && legs.get(legs.size() - 1) instanceof Trip.Individual) {
+                                final Trip.Individual lastIndividualLeg = (Trip.Individual) legs
+                                        .remove(legs.size() - 1);
+                                legs.add(new Trip.Individual(Trip.Individual.Type.WALK, lastIndividualLeg.departure,
+                                        lastIndividualLeg.departureTime, sectionArrivalLocation, arrivalTime, null,
+                                        0));
                             } else {
-                                throw new IllegalStateException("cannot handle: " + pp.getName());
-                            }
-
-                            // polyline
-                            final List<Point> path;
-                            if (XmlPullUtil.test(pp, "Polyline")) {
-                                path = new LinkedList<>();
-                                XmlPullUtil.enter(pp, "Polyline");
-                                while (XmlPullUtil.test(pp, "Point")) {
-                                    final int x = XmlPullUtil.intAttr(pp, "x");
-                                    final int y = XmlPullUtil.intAttr(pp, "y");
-                                    path.add(Point.from1E6(y, x));
-                                    XmlPullUtil.next(pp);
-                                }
-                                XmlPullUtil.skipExit(pp, "Polyline");
-                            } else {
-                                path = null;
-                            }
-
-                            // arrival
-                            XmlPullUtil.enter(pp, "Arrival");
-                            XmlPullUtil.enter(pp, "BasicStop");
-                            while (pp.getName().equals("StAttrList"))
-                                XmlPullUtil.next(pp);
-                            final Location sectionArrivalLocation = parseLocation(pp);
-                            XmlPullUtil.enter(pp, "Arr");
-                            time.setTimeInMillis(currentDate.getTimeInMillis());
-                            parseTime(time, XmlPullUtil.valueTag(pp, "Time"));
-                            final Date arrivalTime = time.getTime();
-                            final Position arrivalPos = parsePlatform(pp);
-                            XmlPullUtil.skipExit(pp, "Arr");
-
-                            XmlPullUtil.skipExit(pp, "BasicStop");
-                            XmlPullUtil.skipExit(pp, "Arrival");
-
-                            // remove last intermediate
-                            if (intermediateStops != null)
-                                if (!intermediateStops.isEmpty())
-                                    if (!intermediateStops.get(intermediateStops.size() - 1).location
-                                            .equals(sectionArrivalLocation))
-                                        intermediateStops.remove(intermediateStops.size() - 1);
-
-                            XmlPullUtil.skipExit(pp, "ConSection");
-
-                            if (line != null) {
-                                final Stop departure = new Stop(sectionDepartureLocation, true, departureTime, null,
-                                        departurePos, null);
-                                final Stop arrival = new Stop(sectionArrivalLocation, false, arrivalTime, null,
-                                        arrivalPos, null);
-
-                                legs.add(new Trip.Public(line, destination, departure, arrival, intermediateStops, path,
-                                        null));
-                            } else {
-                                if (legs.size() > 0 && legs.get(legs.size() - 1) instanceof Trip.Individual) {
-                                    final Trip.Individual lastIndividualLeg = (Trip.Individual) legs
-                                            .remove(legs.size() - 1);
-                                    legs.add(new Trip.Individual(Trip.Individual.Type.WALK, lastIndividualLeg.departure,
-                                            lastIndividualLeg.departureTime, sectionArrivalLocation, arrivalTime, null,
-                                            0));
-                                } else {
-                                    legs.add(new Trip.Individual(Trip.Individual.Type.WALK, sectionDepartureLocation,
-                                            departureTime, sectionArrivalLocation, arrivalTime, null, 0));
-                                }
+                                legs.add(new Trip.Individual(Trip.Individual.Type.WALK, sectionDepartureLocation,
+                                        departureTime, sectionArrivalLocation, arrivalTime, null, 0));
                             }
                         }
-
-                        XmlPullUtil.skipExit(pp, "ConSectionList");
-
-                        XmlPullUtil.skipExit(pp, "Connection");
-
-                        trips.add(new Trip(id, departureLocation, arrivalLocation, legs, null, capacity, numTransfers));
                     }
 
-                    XmlPullUtil.skipExit(pp, "ConnectionList");
+                    XmlPullUtil.skipExit(pp, "ConSectionList");
 
-                    result.set(new QueryTripsResult(header, null, from, via, to, context, trips));
-                } catch (final XmlPullParserException x) {
-                    throw new ParserException("cannot parse xml: " + bodyPeek, x);
+                    XmlPullUtil.skipExit(pp, "Connection");
+
+                    trips.add(new Trip(id, departureLocation, arrivalLocation, legs, null, capacity, numTransfers));
                 }
+
+                XmlPullUtil.skipExit(pp, "ConnectionList");
+
+                result.set(new QueryTripsResult(header, null, from, via, to, context, trips));
+            } catch (final XmlPullParserException x) {
+                throw new ParserException("cannot parse xml: " + bodyPeek, x);
             }
         }, endpoint, request, "application/xml", null);
 
@@ -1432,588 +1425,585 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
 
         final AtomicReference<QueryTripsResult> result = new AtomicReference<>();
 
-        httpClient.getInputStream(new HttpClient.Callback() {
-            @Override
-            public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
-                final CustomBufferedInputStream bis = new CustomBufferedInputStream(
-                        new GZIPInputStream(body.byteStream()));
+        httpClient.getInputStream((HttpClient.Callback) (bodyPeek, body) -> {
+            final CustomBufferedInputStream bis = new CustomBufferedInputStream(
+                    new GZIPInputStream(body.byteStream()));
 
-                // initialize input stream
-                final LittleEndianDataInputStream is = new LittleEndianDataInputStream(bis);
-                is.mark(expectedBufferSize);
+            // initialize input stream
+            final LittleEndianDataInputStream is = new LittleEndianDataInputStream(bis);
+            is.mark(expectedBufferSize);
 
-                // quick check of status
-                final int version = is.readShortReverse();
-                if (version != 6 && version != 5)
-                    throw new IllegalStateException("unknown version: " + version + ", first chars: " + bodyPeek);
-                final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, Integer.toString(version), null,
-                        0, null);
+            // quick check of status
+            final int version = is.readShortReverse();
+            if (version != 6 && version != 5)
+                throw new IllegalStateException("unknown version: " + version + ", first chars: " + bodyPeek);
+            final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, Integer.toString(version), null,
+                    0, null);
 
-                // quick seek for pointers
+            // quick seek for pointers
+            is.reset();
+            is.skipBytes(0x20);
+            final int serviceDaysTablePtr = is.readIntReverse();
+            final int stringTablePtr = is.readIntReverse();
+
+            is.reset();
+            is.skipBytes(0x36);
+            final int stationTablePtr = is.readIntReverse();
+            final int commentTablePtr = is.readIntReverse();
+
+            is.reset();
+            is.skipBytes(0x46);
+            final int extensionHeaderPtr = is.readIntReverse();
+
+            // read strings
+            final StringTable strings = new StringTable(is, stringTablePtr, serviceDaysTablePtr - stringTablePtr);
+
+            is.reset();
+            is.skipBytes(extensionHeaderPtr);
+
+            // read extension header
+            final int extensionHeaderLength = is.readIntReverse();
+            if (extensionHeaderLength < 0x2c)
+                throw new IllegalStateException("too short: " + extensionHeaderLength);
+
+            is.skipBytes(12);
+            final int errorCode = is.readShortReverse();
+
+            if (errorCode == 0) {
+                // string encoding
+                is.skipBytes(14);
+                final Charset stringEncoding = Charset.forName(strings.read(is));
+                strings.setEncoding(stringEncoding);
+
+                // read number of trips
                 is.reset();
-                is.skipBytes(0x20);
-                final int serviceDaysTablePtr = is.readIntReverse();
-                final int stringTablePtr = is.readIntReverse();
+                is.skipBytes(30);
+
+                final int numTrips = is.readShortReverse();
+                if (numTrips == 0) {
+                    result.set(new QueryTripsResult(header, url.toString(), from, via, to, null,
+                            new LinkedList<Trip>()));
+                    return;
+                }
+
+                // read rest of header
+                is.reset();
+                is.skipBytes(0x02);
+
+                final Location resDeparture = location(is, strings);
+                final Location resArrival = location(is, strings);
+
+                is.skipBytes(10);
+
+                final long resDate = date(is);
+                /* final long resDate30 = */date(is);
 
                 is.reset();
-                is.skipBytes(0x36);
-                final int stationTablePtr = is.readIntReverse();
-                final int commentTablePtr = is.readIntReverse();
+                is.skipBytes(extensionHeaderPtr + 0x8);
 
-                is.reset();
-                is.skipBytes(0x46);
-                final int extensionHeaderPtr = is.readIntReverse();
+                final int seqNr = is.readShortReverse();
+                if (seqNr == 0)
+                    throw new SessionExpiredException();
+                else if (seqNr < 0)
+                    throw new IllegalStateException("illegal sequence number: " + seqNr);
 
-                // read strings
-                final StringTable strings = new StringTable(is, stringTablePtr, serviceDaysTablePtr - stringTablePtr);
+                final String requestId = strings.read(is);
 
-                is.reset();
-                is.skipBytes(extensionHeaderPtr);
+                final int tripDetailsPtr = is.readIntReverse();
+                if (tripDetailsPtr == 0)
+                    throw new IllegalStateException("no connection details");
 
-                // read extension header
-                final int extensionHeaderLength = is.readIntReverse();
-                if (extensionHeaderLength < 0x2c)
-                    throw new IllegalStateException("too short: " + extensionHeaderLength);
+                is.skipBytes(4);
 
-                is.skipBytes(12);
-                final int errorCode = is.readShortReverse();
+                final int disruptionsPtr = is.readIntReverse();
 
-                if (errorCode == 0) {
-                    // string encoding
-                    is.skipBytes(14);
-                    final Charset stringEncoding = Charset.forName(strings.read(is));
-                    strings.setEncoding(stringEncoding);
+                is.skipBytes(10);
 
-                    // read number of trips
+                final String ld = strings.read(is);
+                final int attrsOffset = is.readIntReverse();
+
+                final int tripAttrsPtr;
+                if (extensionHeaderLength >= 0x30) {
+                    if (extensionHeaderLength < 0x32)
+                        throw new IllegalArgumentException("too short: " + extensionHeaderLength);
                     is.reset();
-                    is.skipBytes(30);
-
-                    final int numTrips = is.readShortReverse();
-                    if (numTrips == 0) {
-                        result.set(new QueryTripsResult(header, url.toString(), from, via, to, null,
-                                new LinkedList<Trip>()));
-                        return;
-                    }
-
-                    // read rest of header
-                    is.reset();
-                    is.skipBytes(0x02);
-
-                    final Location resDeparture = location(is, strings);
-                    final Location resArrival = location(is, strings);
-
-                    is.skipBytes(10);
-
-                    final long resDate = date(is);
-                    /* final long resDate30 = */date(is);
-
-                    is.reset();
-                    is.skipBytes(extensionHeaderPtr + 0x8);
-
-                    final int seqNr = is.readShortReverse();
-                    if (seqNr == 0)
-                        throw new SessionExpiredException();
-                    else if (seqNr < 0)
-                        throw new IllegalStateException("illegal sequence number: " + seqNr);
-
-                    final String requestId = strings.read(is);
-
-                    final int tripDetailsPtr = is.readIntReverse();
-                    if (tripDetailsPtr == 0)
-                        throw new IllegalStateException("no connection details");
-
-                    is.skipBytes(4);
-
-                    final int disruptionsPtr = is.readIntReverse();
-
-                    is.skipBytes(10);
-
-                    final String ld = strings.read(is);
-                    final int attrsOffset = is.readIntReverse();
-
-                    final int tripAttrsPtr;
-                    if (extensionHeaderLength >= 0x30) {
-                        if (extensionHeaderLength < 0x32)
-                            throw new IllegalArgumentException("too short: " + extensionHeaderLength);
-                        is.reset();
-                        is.skipBytes(extensionHeaderPtr + 0x2c);
-                        tripAttrsPtr = is.readIntReverse();
-                    } else {
-                        tripAttrsPtr = 0;
-                    }
-
-                    // determine stops offset
-                    is.reset();
-                    is.skipBytes(tripDetailsPtr);
-                    final int tripDetailsVersion = is.readShortReverse();
-                    if (tripDetailsVersion != 1)
-                        throw new IllegalStateException("unknown trip details version: " + tripDetailsVersion);
-                    is.skipBytes(0x02);
-
-                    final int tripDetailsIndexOffset = is.readShortReverse();
-                    final int tripDetailsLegOffset = is.readShortReverse();
-                    final int tripDetailsLegSize = is.readShortReverse();
-                    final int stopsSize = is.readShortReverse();
-                    final int stopsOffset = is.readShortReverse();
-
-                    // read stations
-                    final StationTable stations = new StationTable(is, stationTablePtr,
-                            commentTablePtr - stationTablePtr, strings);
-
-                    // read comments
-                    final CommentTable comments = new CommentTable(is, commentTablePtr,
-                            tripDetailsPtr - commentTablePtr, strings);
-
-                    final List<Trip> trips = new ArrayList<>(numTrips);
-
-                    // read trips
-                    for (int iTrip = 0; iTrip < numTrips; iTrip++) {
-                        is.reset();
-                        is.skipBytes(0x4a + iTrip * 12);
-
-                        final int serviceDaysTableOffset = is.readShortReverse();
-
-                        final int legsOffset = is.readIntReverse();
-
-                        final int numLegs = is.readShortReverse();
-
-                        final int numChanges = is.readShortReverse();
-
-                        /* final long duration = time(is, 0, 0); */is.readShortReverse();
-
-                        is.reset();
-                        is.skipBytes(serviceDaysTablePtr + serviceDaysTableOffset);
-
-                        /* final String serviceDaysText = */strings.read(is);
-
-                        final int serviceBitBase = is.readShortReverse();
-                        final int serviceBitLength = is.readShortReverse();
-
-                        int tripDayOffset = serviceBitBase * 8;
-                        for (int i = 0; i < serviceBitLength; i++) {
-                            int serviceBits = is.read();
-                            if (serviceBits == 0) {
-                                tripDayOffset += 8;
-                                continue;
-                            }
-                            while ((serviceBits & 0x80) == 0) {
-                                serviceBits = serviceBits << 1;
-                                tripDayOffset++;
-                            }
-                            break;
-                        }
-
-                        is.reset();
-                        is.skipBytes(tripDetailsPtr + tripDetailsIndexOffset + iTrip * 2);
-                        final int tripDetailsOffset = is.readShortReverse();
-
-                        is.reset();
-                        is.skipBytes(tripDetailsPtr + tripDetailsOffset);
-                        final int realtimeStatus = is.readShortReverse();
-
-                        /* final short delay = */is.readShortReverse();
-
-                        /* final int legIndex = */is.readShortReverse();
-
-                        is.skipBytes(2); // 0xffff
-
-                        /* final int legStatus = */is.readShortReverse();
-
-                        is.skipBytes(2); // 0x0000
-
-                        String connectionId = null;
-                        if (tripAttrsPtr != 0) {
-                            is.reset();
-                            is.skipBytes(tripAttrsPtr + iTrip * 2);
-                            final int tripAttrsIndex = is.readShortReverse();
-
-                            is.reset();
-                            is.skipBytes(attrsOffset + tripAttrsIndex * 4);
-                            while (true) {
-                                final String key = strings.read(is);
-                                if (key == null)
-                                    break;
-                                else if (key.equals("ConnectionId"))
-                                    connectionId = strings.read(is);
-                                else
-                                    is.skipBytes(2);
-                            }
-                        }
-
-                        final List<Trip.Leg> legs = new ArrayList<>(numLegs);
-
-                        for (int iLegs = 0; iLegs < numLegs; iLegs++) {
-                            is.reset();
-                            is.skipBytes(0x4a + legsOffset + iLegs * 20);
-
-                            final long plannedDepartureTime = time(is, resDate, tripDayOffset);
-                            final Location departureLocation = stations.read(is);
-
-                            final long plannedArrivalTime = time(is, resDate, tripDayOffset);
-                            final Location arrivalLocation = stations.read(is);
-
-                            final int type = is.readShortReverse();
-
-                            final String lineName = strings.read(is);
-
-                            final Position plannedDeparturePosition = normalizePosition(strings.read(is));
-                            final Position plannedArrivalPosition = normalizePosition(strings.read(is));
-
-                            final int legAttrIndex = is.readShortReverse();
-
-                            final List<Line.Attr> lineAttrs = new ArrayList<>();
-                            String lineComment = null;
-                            boolean lineOnDemand = false;
-                            for (final String comment : comments.read(is)) {
-                                if (comment.startsWith("bf ")) {
-                                    lineAttrs.add(Line.Attr.WHEEL_CHAIR_ACCESS);
-                                } else if (comment.startsWith("FA ") || comment.startsWith("FB ")
-                                        || comment.startsWith("FR ")) {
-                                    lineAttrs.add(Line.Attr.BICYCLE_CARRIAGE);
-                                } else if (comment.startsWith("$R ") || comment.startsWith("ga ")
-                                        || comment.startsWith("ja ") || comment.startsWith("Vs ")
-                                        || comment.startsWith("mu ") || comment.startsWith("mx ")) {
-                                    lineOnDemand = true;
-                                    lineComment = comment.substring(5);
-                                }
-                            }
-
-                            is.reset();
-                            is.skipBytes(attrsOffset + legAttrIndex * 4);
-                            String directionStr = null;
-                            int lineClass = 0;
-                            String lineCategory = null;
-                            String routingType = null;
-                            String lineNetwork = null;
-                            while (true) {
-                                final String key = strings.read(is);
-                                if (key == null)
-                                    break;
-                                else if (key.equals("Direction"))
-                                    directionStr = strings.read(is);
-                                else if (key.equals("Class"))
-                                    lineClass = Integer.parseInt(strings.read(is));
-                                else if (key.equals("Category"))
-                                    lineCategory = strings.read(is);
-                                // else if (key.equals("Operator"))
-                                // lineOperator = strings.read(is);
-                                else if (key.equals("GisRoutingType"))
-                                    routingType = strings.read(is);
-                                else if (key.equals("AdminCode"))
-                                    lineNetwork = normalizeLineAdministration(strings.read(is));
-                                else
-                                    is.skipBytes(2);
-                            }
-
-                            if (lineCategory == null && lineName != null)
-                                lineCategory = categoryFromName(lineName);
-
-                            is.reset();
-                            is.skipBytes(tripDetailsPtr + tripDetailsOffset + tripDetailsLegOffset
-                                    + iLegs * tripDetailsLegSize);
-
-                            if (tripDetailsLegSize != 16)
-                                throw new IllegalStateException(
-                                        "unhandled trip details leg size: " + tripDetailsLegSize);
-
-                            final long predictedDepartureTime = time(is, resDate, tripDayOffset);
-                            final long predictedArrivalTime = time(is, resDate, tripDayOffset);
-                            final Position predictedDeparturePosition = normalizePosition(strings.read(is));
-                            final Position predictedArrivalPosition = normalizePosition(strings.read(is));
-
-                            final int bits = is.readShortReverse();
-                            final boolean arrivalCancelled = (bits & 0x10) != 0;
-                            final boolean departureCancelled = (bits & 0x20) != 0;
-
-                            is.readShort();
-
-                            final int firstStopIndex = is.readShortReverse();
-
-                            final int numStops = is.readShortReverse();
-
-                            is.reset();
-                            is.skipBytes(disruptionsPtr);
-
-                            String disruptionText = null;
-
-                            if (is.readShortReverse() == 1) {
-                                is.reset();
-                                is.skipBytes(disruptionsPtr + 2 + iTrip * 2);
-
-                                int disruptionsOffset = is.readShortReverse();
-                                while (disruptionsOffset != 0) {
-                                    is.reset();
-                                    is.skipBytes(disruptionsPtr + disruptionsOffset);
-
-                                    strings.read(is); // "0"
-
-                                    final int disruptionLeg = is.readShortReverse();
-
-                                    is.skipBytes(2); // bitmaske
-
-                                    strings.read(is); // start of line
-                                    strings.read(is); // end of line
-
-                                    strings.read(is);
-                                    // id
-                                    /* final String disruptionTitle = */strings.read(is);
-                                    final String disruptionShortText = ParserUtils.formatHtml(strings.read(is));
-
-                                    disruptionsOffset = is.readShortReverse(); // next
-
-                                    if (iLegs == disruptionLeg) {
-                                        final int disruptionAttrsIndex = is.readShortReverse();
-
-                                        is.reset();
-                                        is.skipBytes(attrsOffset + disruptionAttrsIndex * 4);
-
-                                        while (true) {
-                                            final String key = strings.read(is);
-                                            if (key == null)
-                                                break;
-                                            else if (key.equals("Text"))
-                                                disruptionText = ParserUtils.resolveEntities(strings.read(is));
-                                            else
-                                                is.skipBytes(2);
-                                        }
-
-                                        if (disruptionShortText != null)
-                                            disruptionText = disruptionShortText;
-                                    }
-                                }
-                            }
-
-                            List<Stop> intermediateStops = null;
-
-                            if (numStops > 0) {
-                                is.reset();
-                                is.skipBytes(tripDetailsPtr + stopsOffset + firstStopIndex * stopsSize);
-
-                                if (stopsSize != 26)
-                                    throw new IllegalStateException("unhandled stops size: " + stopsSize);
-
-                                intermediateStops = new ArrayList<>(numStops);
-
-                                for (int iStop = 0; iStop < numStops; iStop++) {
-                                    final long plannedStopDepartureTime = time(is, resDate, tripDayOffset);
-                                    final Date plannedStopDepartureDate = plannedStopDepartureTime != 0
-                                            ? new Date(plannedStopDepartureTime) : null;
-                                    final long plannedStopArrivalTime = time(is, resDate, tripDayOffset);
-                                    final Date plannedStopArrivalDate = plannedStopArrivalTime != 0
-                                            ? new Date(plannedStopArrivalTime) : null;
-                                    final Position plannedStopDeparturePosition = normalizePosition(strings.read(is));
-                                    final Position plannedStopArrivalPosition = normalizePosition(strings.read(is));
-
-                                    is.readInt();
-
-                                    final long predictedStopDepartureTime = time(is, resDate, tripDayOffset);
-                                    final Date predictedStopDepartureDate = predictedStopDepartureTime != 0
-                                            ? new Date(predictedStopDepartureTime) : null;
-                                    final long predictedStopArrivalTime = time(is, resDate, tripDayOffset);
-                                    final Date predictedStopArrivalDate = predictedStopArrivalTime != 0
-                                            ? new Date(predictedStopArrivalTime) : null;
-                                    final Position predictedStopDeparturePosition = normalizePosition(strings.read(is));
-                                    final Position predictedStopArrivalPosition = normalizePosition(strings.read(is));
-
-                                    final int stopBits = is.readShortReverse();
-                                    final boolean stopArrivalCancelled = (stopBits & 0x10) != 0;
-                                    final boolean stopDepartureCancelled = (stopBits & 0x20) != 0;
-
-                                    is.readShort();
-
-                                    final Location stopLocation = stations.read(is);
-
-                                    final boolean validPredictedDate = !dominantPlanStopTime
-                                            || (plannedStopArrivalDate != null && plannedStopDepartureDate != null);
-
-                                    final Stop stop = new Stop(stopLocation, plannedStopArrivalDate,
-                                            validPredictedDate ? predictedStopArrivalDate : null,
-                                            plannedStopArrivalPosition, predictedStopArrivalPosition,
-                                            stopArrivalCancelled, plannedStopDepartureDate,
-                                            validPredictedDate ? predictedStopDepartureDate : null,
-                                            plannedStopDeparturePosition, predictedStopDeparturePosition,
-                                            stopDepartureCancelled);
-
-                                    intermediateStops.add(stop);
-                                }
-                            }
-
-                            final Trip.Leg leg;
-                            if (type == 1 /* Fussweg */ || type == 3 /* Uebergang */ || type == 4 /* Uebergang */) {
-                                final Trip.Individual.Type individualType;
-                                if (routingType == null)
-                                    individualType = type == 1 ? Trip.Individual.Type.WALK
-                                            : Trip.Individual.Type.TRANSFER;
-                                else if ("FOOT".equals(routingType))
-                                    individualType = Trip.Individual.Type.WALK;
-                                else if ("BIKE".equals(routingType))
-                                    individualType = Trip.Individual.Type.BIKE;
-                                else if ("CAR".equals(routingType) || "P+R".equals(routingType))
-                                    individualType = Trip.Individual.Type.CAR;
-                                else
-                                    throw new IllegalStateException("unknown routingType: " + routingType);
-
-                                final Date departureTime = new Date(
-                                        predictedDepartureTime != 0 ? predictedDepartureTime : plannedDepartureTime);
-                                final Date arrivalTime = new Date(
-                                        predictedArrivalTime != 0 ? predictedArrivalTime : plannedArrivalTime);
-
-                                final Trip.Leg lastLeg = legs.size() > 0 ? legs.get(legs.size() - 1) : null;
-                                if (lastLeg != null && lastLeg instanceof Trip.Individual
-                                        && ((Trip.Individual) lastLeg).type == individualType) {
-                                    final Trip.Individual lastIndividualLeg = (Trip.Individual) legs
-                                            .remove(legs.size() - 1);
-                                    leg = new Trip.Individual(individualType, lastIndividualLeg.departure,
-                                            lastIndividualLeg.departureTime, arrivalLocation, arrivalTime, null, 0);
-                                } else {
-                                    leg = new Trip.Individual(individualType, departureLocation, departureTime,
-                                            arrivalLocation, arrivalTime, null, 0);
-                                }
-                            } else if (type == 2) {
-                                final Product lineProduct;
-                                if (lineOnDemand)
-                                    lineProduct = Product.ON_DEMAND;
-                                else if (lineClass != 0)
-                                    lineProduct = intToProduct(lineClass);
-                                else
-                                    lineProduct = normalizeType(lineCategory);
-
-                                final Line line = newLine(lineNetwork, lineProduct, normalizeLineName(lineName),
-                                        lineComment, lineAttrs.toArray(new Line.Attr[0]));
-
-                                final Location direction;
-                                if (directionStr != null) {
-                                    final String[] directionPlaceAndName = splitStationName(directionStr);
-                                    direction = new Location(LocationType.ANY, null, directionPlaceAndName[0],
-                                            directionPlaceAndName[1]);
-                                } else {
-                                    direction = null;
-                                }
-
-                                final Stop departure = new Stop(departureLocation, true,
-                                        plannedDepartureTime != 0 ? new Date(plannedDepartureTime) : null,
-                                        predictedDepartureTime != 0 ? new Date(predictedDepartureTime) : null,
-                                        plannedDeparturePosition, predictedDeparturePosition, departureCancelled);
-                                final Stop arrival = new Stop(arrivalLocation, false,
-                                        plannedArrivalTime != 0 ? new Date(plannedArrivalTime) : null,
-                                        predictedArrivalTime != 0 ? new Date(predictedArrivalTime) : null,
-                                        plannedArrivalPosition, predictedArrivalPosition, arrivalCancelled);
-
-                                leg = new Trip.Public(line, direction, departure, arrival, intermediateStops, null,
-                                        disruptionText);
-                            } else {
-                                throw new IllegalStateException("unhandled type: " + type);
-                            }
-                            legs.add(leg);
-                        }
-
-                        final Trip trip = new Trip(connectionId, resDeparture, resArrival, legs, null, null,
-                                (int) numChanges);
-
-                        if (realtimeStatus != 2) // Verbindung fällt aus
-                            trips.add(trip);
-                    }
-
-                    // if result is only one single individual leg, don't query for more
-                    final boolean canQueryMore = trips.size() != 1 || trips.get(0).legs.size() != 1
-                            || !(trips.get(0).legs.get(0) instanceof Trip.Individual);
-
-                    result.set(new QueryTripsResult(header, url.toString(), from, via, to,
-                            new QueryTripsBinaryContext(requestId, seqNr, ld, bis.getCount(), canQueryMore), trips));
+                    is.skipBytes(extensionHeaderPtr + 0x2c);
+                    tripAttrsPtr = is.readIntReverse();
                 } else {
-                    log.debug("Hafas error: {}", errorCode);
-                    if (errorCode == 1) {
-                        throw new SessionExpiredException();
-                    } else if (errorCode == 2) {
-                        // F2: Your search results could not be stored internally.
-                        throw new SessionExpiredException();
-                    } else if (errorCode == 8) {
-                        result.set(new QueryTripsResult(header, QueryTripsResult.Status.AMBIGUOUS));
-                        return;
-                    } else if (errorCode == 13) {
-                        // IN13: Our booking system is currently being used by too many users at the same
-                        // time.
-                        result.set(new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN));
-                        return;
-                    } else if (errorCode == 19) {
-                        result.set(new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN));
-                        return;
-                    } else if (errorCode == 207) {
-                        // H207: Unfortunately your connection request can currently not be processed.
-                        result.set(new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN));
-                        return;
-                    } else if (errorCode == 887) {
-                        // H887: Your inquiry was too complex. Please try entering less intermediate stations.
-                        result.set(new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS));
-                        return;
-                    } else if (errorCode == 890) {
-                        // H890: No connections have been found that correspond to your request. It is
-                        // possible
-                        // that the requested service does not operate from or to the places you stated on the
-                        // requested date of travel.
-                        result.set(new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS));
-                        return;
-                    } else if (errorCode == 891) {
-                        // H891: Unfortunately there was no route found. Missing timetable data could be the
-                        // reason.
-                        result.set(new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS));
-                        return;
-                    } else if (errorCode == 892) {
-                        // H892: Your inquiry was too complex. Please try entering less intermediate stations.
-                        result.set(new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS));
-                        return;
-                    } else if (errorCode == 899) {
-                        // H899: there was an unsuccessful or incomplete search due to a timetable change.
-                        result.set(new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS));
-                        return;
-                    } else if (errorCode == 900) {
-                        // Unsuccessful or incomplete search (timetable change)
-                        result.set(new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS));
-                        return;
-                    } else if (errorCode == 9220) {
-                        // H9220: Nearby to the given address stations could not be found.
-                        result.set(new QueryTripsResult(header, QueryTripsResult.Status.UNRESOLVABLE_ADDRESS));
-                        return;
-                    } else if (errorCode == 9240) {
-                        // H9240: Unfortunately there was no route found. Perhaps your start or destination is
-                        // not
-                        // served at all or with the selected means of transport on the required date/time.
-                        result.set(new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS));
-                        return;
-                    } else if (errorCode == 9260) {
-                        // H9260: Unknown departure station
-                        result.set(new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_FROM));
-                        return;
-                    } else if (errorCode == 9280) {
-                        // H9280: Unknown intermediate station
-                        result.set(new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_VIA));
-                        return;
-                    } else if (errorCode == 9300) {
-                        // H9300: Unknown arrival station
-                        result.set(new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_TO));
-                        return;
-                    } else if (errorCode == 9320) {
-                        // The input is incorrect or incomplete
-                        result.set(new QueryTripsResult(header, QueryTripsResult.Status.INVALID_DATE));
-                        return;
-                    } else if (errorCode == 9360) {
-                        // H9360: Unfortunately your connection request can currently not be processed.
-                        result.set(new QueryTripsResult(header, QueryTripsResult.Status.INVALID_DATE));
-                        return;
-                    } else if (errorCode == 9380) {
-                        // H9380: Dep./Arr./Intermed. or equivalent station defined more than once
-                        result.set(new QueryTripsResult(header, QueryTripsResult.Status.TOO_CLOSE));
-                        return;
-                    } else if (errorCode == 895) {
-                        // H895: Departure/Arrival are too near
-                        result.set(new QueryTripsResult(header, QueryTripsResult.Status.TOO_CLOSE));
-                        return;
-                    } else if (errorCode == 65535) {
-                        result.set(new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN));
-                        return;
-                    } else {
-                        throw new IllegalStateException("error " + errorCode + " on " + url);
+                    tripAttrsPtr = 0;
+                }
+
+                // determine stops offset
+                is.reset();
+                is.skipBytes(tripDetailsPtr);
+                final int tripDetailsVersion = is.readShortReverse();
+                if (tripDetailsVersion != 1)
+                    throw new IllegalStateException("unknown trip details version: " + tripDetailsVersion);
+                is.skipBytes(0x02);
+
+                final int tripDetailsIndexOffset = is.readShortReverse();
+                final int tripDetailsLegOffset = is.readShortReverse();
+                final int tripDetailsLegSize = is.readShortReverse();
+                final int stopsSize = is.readShortReverse();
+                final int stopsOffset = is.readShortReverse();
+
+                // read stations
+                final StationTable stations = new StationTable(is, stationTablePtr,
+                        commentTablePtr - stationTablePtr, strings);
+
+                // read comments
+                final CommentTable comments = new CommentTable(is, commentTablePtr,
+                        tripDetailsPtr - commentTablePtr, strings);
+
+                final List<Trip> trips = new ArrayList<>(numTrips);
+
+                // read trips
+                for (int iTrip = 0; iTrip < numTrips; iTrip++) {
+                    is.reset();
+                    is.skipBytes(0x4a + iTrip * 12);
+
+                    final int serviceDaysTableOffset = is.readShortReverse();
+
+                    final int legsOffset = is.readIntReverse();
+
+                    final int numLegs = is.readShortReverse();
+
+                    final int numChanges = is.readShortReverse();
+
+                    /* final long duration = time(is, 0, 0); */is.readShortReverse();
+
+                    is.reset();
+                    is.skipBytes(serviceDaysTablePtr + serviceDaysTableOffset);
+
+                    /* final String serviceDaysText = */strings.read(is);
+
+                    final int serviceBitBase = is.readShortReverse();
+                    final int serviceBitLength = is.readShortReverse();
+
+                    int tripDayOffset = serviceBitBase * 8;
+                    for (int i = 0; i < serviceBitLength; i++) {
+                        int serviceBits = is.read();
+                        if (serviceBits == 0) {
+                            tripDayOffset += 8;
+                            continue;
+                        }
+                        while ((serviceBits & 0x80) == 0) {
+                            serviceBits = serviceBits << 1;
+                            tripDayOffset++;
+                        }
+                        break;
                     }
+
+                    is.reset();
+                    is.skipBytes(tripDetailsPtr + tripDetailsIndexOffset + iTrip * 2);
+                    final int tripDetailsOffset = is.readShortReverse();
+
+                    is.reset();
+                    is.skipBytes(tripDetailsPtr + tripDetailsOffset);
+                    final int realtimeStatus = is.readShortReverse();
+
+                    /* final short delay = */is.readShortReverse();
+
+                    /* final int legIndex = */is.readShortReverse();
+
+                    is.skipBytes(2); // 0xffff
+
+                    /* final int legStatus = */is.readShortReverse();
+
+                    is.skipBytes(2); // 0x0000
+
+                    String connectionId = null;
+                    if (tripAttrsPtr != 0) {
+                        is.reset();
+                        is.skipBytes(tripAttrsPtr + iTrip * 2);
+                        final int tripAttrsIndex = is.readShortReverse();
+
+                        is.reset();
+                        is.skipBytes(attrsOffset + tripAttrsIndex * 4);
+                        while (true) {
+                            final String key = strings.read(is);
+                            if (key == null)
+                                break;
+                            else if (key.equals("ConnectionId"))
+                                connectionId = strings.read(is);
+                            else
+                                is.skipBytes(2);
+                        }
+                    }
+
+                    final List<Trip.Leg> legs = new ArrayList<>(numLegs);
+
+                    for (int iLegs = 0; iLegs < numLegs; iLegs++) {
+                        is.reset();
+                        is.skipBytes(0x4a + legsOffset + iLegs * 20);
+
+                        final long plannedDepartureTime = time(is, resDate, tripDayOffset);
+                        final Location departureLocation = stations.read(is);
+
+                        final long plannedArrivalTime = time(is, resDate, tripDayOffset);
+                        final Location arrivalLocation = stations.read(is);
+
+                        final int type = is.readShortReverse();
+
+                        final String lineName = strings.read(is);
+
+                        final Position plannedDeparturePosition = normalizePosition(strings.read(is));
+                        final Position plannedArrivalPosition = normalizePosition(strings.read(is));
+
+                        final int legAttrIndex = is.readShortReverse();
+
+                        final List<Attr> lineAttrs = new ArrayList<>();
+                        String lineComment = null;
+                        boolean lineOnDemand = false;
+                        for (final String comment : comments.read(is)) {
+                            if (comment.startsWith("bf ")) {
+                                lineAttrs.add(Attr.WHEEL_CHAIR_ACCESS);
+                            } else if (comment.startsWith("FA ") || comment.startsWith("FB ")
+                                    || comment.startsWith("FR ")) {
+                                lineAttrs.add(Attr.BICYCLE_CARRIAGE);
+                            } else if (comment.startsWith("$R ") || comment.startsWith("ga ")
+                                    || comment.startsWith("ja ") || comment.startsWith("Vs ")
+                                    || comment.startsWith("mu ") || comment.startsWith("mx ")) {
+                                lineOnDemand = true;
+                                lineComment = comment.substring(5);
+                            }
+                        }
+
+                        is.reset();
+                        is.skipBytes(attrsOffset + legAttrIndex * 4);
+                        String directionStr = null;
+                        int lineClass = 0;
+                        String lineCategory = null;
+                        String routingType = null;
+                        String lineNetwork = null;
+                        while (true) {
+                            final String key = strings.read(is);
+                            if (key == null)
+                                break;
+                            else if (key.equals("Direction"))
+                                directionStr = strings.read(is);
+                            else if (key.equals("Class"))
+                                lineClass = Integer.parseInt(strings.read(is));
+                            else if (key.equals("Category"))
+                                lineCategory = strings.read(is);
+                            // else if (key.equals("Operator"))
+                            // lineOperator = strings.read(is);
+                            else if (key.equals("GisRoutingType"))
+                                routingType = strings.read(is);
+                            else if (key.equals("AdminCode"))
+                                lineNetwork = normalizeLineAdministration(strings.read(is));
+                            else
+                                is.skipBytes(2);
+                        }
+
+                        if (lineCategory == null && lineName != null)
+                            lineCategory = categoryFromName(lineName);
+
+                        is.reset();
+                        is.skipBytes(tripDetailsPtr + tripDetailsOffset + tripDetailsLegOffset
+                                + iLegs * tripDetailsLegSize);
+
+                        if (tripDetailsLegSize != 16)
+                            throw new IllegalStateException(
+                                    "unhandled trip details leg size: " + tripDetailsLegSize);
+
+                        final long predictedDepartureTime = time(is, resDate, tripDayOffset);
+                        final long predictedArrivalTime = time(is, resDate, tripDayOffset);
+                        final Position predictedDeparturePosition = normalizePosition(strings.read(is));
+                        final Position predictedArrivalPosition = normalizePosition(strings.read(is));
+
+                        final int bits = is.readShortReverse();
+                        final boolean arrivalCancelled = (bits & 0x10) != 0;
+                        final boolean departureCancelled = (bits & 0x20) != 0;
+
+                        is.readShort();
+
+                        final int firstStopIndex = is.readShortReverse();
+
+                        final int numStops = is.readShortReverse();
+
+                        is.reset();
+                        is.skipBytes(disruptionsPtr);
+
+                        String disruptionText = null;
+
+                        if (is.readShortReverse() == 1) {
+                            is.reset();
+                            is.skipBytes(disruptionsPtr + 2 + iTrip * 2);
+
+                            int disruptionsOffset = is.readShortReverse();
+                            while (disruptionsOffset != 0) {
+                                is.reset();
+                                is.skipBytes(disruptionsPtr + disruptionsOffset);
+
+                                strings.read(is); // "0"
+
+                                final int disruptionLeg = is.readShortReverse();
+
+                                is.skipBytes(2); // bitmaske
+
+                                strings.read(is); // start of line
+                                strings.read(is); // end of line
+
+                                strings.read(is);
+                                // id
+                                /* final String disruptionTitle = */strings.read(is);
+                                final String disruptionShortText = ParserUtils.formatHtml(strings.read(is));
+
+                                disruptionsOffset = is.readShortReverse(); // next
+
+                                if (iLegs == disruptionLeg) {
+                                    final int disruptionAttrsIndex = is.readShortReverse();
+
+                                    is.reset();
+                                    is.skipBytes(attrsOffset + disruptionAttrsIndex * 4);
+
+                                    while (true) {
+                                        final String key = strings.read(is);
+                                        if (key == null)
+                                            break;
+                                        else if (key.equals("Text"))
+                                            disruptionText = ParserUtils.resolveEntities(strings.read(is));
+                                        else
+                                            is.skipBytes(2);
+                                    }
+
+                                    if (disruptionShortText != null)
+                                        disruptionText = disruptionShortText;
+                                }
+                            }
+                        }
+
+                        List<Stop> intermediateStops = null;
+
+                        if (numStops > 0) {
+                            is.reset();
+                            is.skipBytes(tripDetailsPtr + stopsOffset + firstStopIndex * stopsSize);
+
+                            if (stopsSize != 26)
+                                throw new IllegalStateException("unhandled stops size: " + stopsSize);
+
+                            intermediateStops = new ArrayList<>(numStops);
+
+                            for (int iStop = 0; iStop < numStops; iStop++) {
+                                final long plannedStopDepartureTime = time(is, resDate, tripDayOffset);
+                                final Date plannedStopDepartureDate = plannedStopDepartureTime != 0
+                                        ? new Date(plannedStopDepartureTime) : null;
+                                final long plannedStopArrivalTime = time(is, resDate, tripDayOffset);
+                                final Date plannedStopArrivalDate = plannedStopArrivalTime != 0
+                                        ? new Date(plannedStopArrivalTime) : null;
+                                final Position plannedStopDeparturePosition = normalizePosition(strings.read(is));
+                                final Position plannedStopArrivalPosition = normalizePosition(strings.read(is));
+
+                                is.readInt();
+
+                                final long predictedStopDepartureTime = time(is, resDate, tripDayOffset);
+                                final Date predictedStopDepartureDate = predictedStopDepartureTime != 0
+                                        ? new Date(predictedStopDepartureTime) : null;
+                                final long predictedStopArrivalTime = time(is, resDate, tripDayOffset);
+                                final Date predictedStopArrivalDate = predictedStopArrivalTime != 0
+                                        ? new Date(predictedStopArrivalTime) : null;
+                                final Position predictedStopDeparturePosition = normalizePosition(strings.read(is));
+                                final Position predictedStopArrivalPosition = normalizePosition(strings.read(is));
+
+                                final int stopBits = is.readShortReverse();
+                                final boolean stopArrivalCancelled = (stopBits & 0x10) != 0;
+                                final boolean stopDepartureCancelled = (stopBits & 0x20) != 0;
+
+                                is.readShort();
+
+                                final Location stopLocation = stations.read(is);
+
+                                final boolean validPredictedDate = !dominantPlanStopTime
+                                        || (plannedStopArrivalDate != null && plannedStopDepartureDate != null);
+
+                                final Stop stop = new Stop(stopLocation, plannedStopArrivalDate,
+                                        validPredictedDate ? predictedStopArrivalDate : null,
+                                        plannedStopArrivalPosition, predictedStopArrivalPosition,
+                                        stopArrivalCancelled, plannedStopDepartureDate,
+                                        validPredictedDate ? predictedStopDepartureDate : null,
+                                        plannedStopDeparturePosition, predictedStopDeparturePosition,
+                                        stopDepartureCancelled);
+
+                                intermediateStops.add(stop);
+                            }
+                        }
+
+                        final Trip.Leg leg;
+                        if (type == 1 /* Fussweg */ || type == 3 /* Uebergang */ || type == 4 /* Uebergang */) {
+                            final Trip.Individual.Type individualType;
+                            if (routingType == null)
+                                individualType = type == 1 ? Trip.Individual.Type.WALK
+                                        : Trip.Individual.Type.TRANSFER;
+                            else if ("FOOT".equals(routingType))
+                                individualType = Trip.Individual.Type.WALK;
+                            else if ("BIKE".equals(routingType))
+                                individualType = Trip.Individual.Type.BIKE;
+                            else if ("CAR".equals(routingType) || "P+R".equals(routingType))
+                                individualType = Trip.Individual.Type.CAR;
+                            else
+                                throw new IllegalStateException("unknown routingType: " + routingType);
+
+                            final Date departureTime = new Date(
+                                    predictedDepartureTime != 0 ? predictedDepartureTime : plannedDepartureTime);
+                            final Date arrivalTime = new Date(
+                                    predictedArrivalTime != 0 ? predictedArrivalTime : plannedArrivalTime);
+
+                            final Trip.Leg lastLeg = legs.size() > 0 ? legs.get(legs.size() - 1) : null;
+                            if (lastLeg != null && lastLeg instanceof Trip.Individual
+                                    && ((Trip.Individual) lastLeg).type == individualType) {
+                                final Trip.Individual lastIndividualLeg = (Trip.Individual) legs
+                                        .remove(legs.size() - 1);
+                                leg = new Trip.Individual(individualType, lastIndividualLeg.departure,
+                                        lastIndividualLeg.departureTime, arrivalLocation, arrivalTime, null, 0);
+                            } else {
+                                leg = new Trip.Individual(individualType, departureLocation, departureTime,
+                                        arrivalLocation, arrivalTime, null, 0);
+                            }
+                        } else if (type == 2) {
+                            final Product lineProduct;
+                            if (lineOnDemand)
+                                lineProduct = Product.ON_DEMAND;
+                            else if (lineClass != 0)
+                                lineProduct = intToProduct(lineClass);
+                            else
+                                lineProduct = normalizeType(lineCategory);
+
+                            final Line line = newLine(lineNetwork, lineProduct, normalizeLineName(lineName),
+                                    lineComment, lineAttrs.toArray(new Attr[0]));
+
+                            final Location direction;
+                            if (directionStr != null) {
+                                final String[] directionPlaceAndName = splitStationName(directionStr);
+                                direction = new Location(LocationType.ANY, null, directionPlaceAndName[0],
+                                        directionPlaceAndName[1]);
+                            } else {
+                                direction = null;
+                            }
+
+                            final Stop departure = new Stop(departureLocation, true,
+                                    plannedDepartureTime != 0 ? new Date(plannedDepartureTime) : null,
+                                    predictedDepartureTime != 0 ? new Date(predictedDepartureTime) : null,
+                                    plannedDeparturePosition, predictedDeparturePosition, departureCancelled);
+                            final Stop arrival = new Stop(arrivalLocation, false,
+                                    plannedArrivalTime != 0 ? new Date(plannedArrivalTime) : null,
+                                    predictedArrivalTime != 0 ? new Date(predictedArrivalTime) : null,
+                                    plannedArrivalPosition, predictedArrivalPosition, arrivalCancelled);
+
+                            leg = new Trip.Public(line, direction, departure, arrival, intermediateStops, null,
+                                    disruptionText);
+                        } else {
+                            throw new IllegalStateException("unhandled type: " + type);
+                        }
+                        legs.add(leg);
+                    }
+
+                    final Trip trip = new Trip(connectionId, resDeparture, resArrival, legs, null, null,
+                            (int) numChanges);
+
+                    if (realtimeStatus != 2) // Verbindung fällt aus
+                        trips.add(trip);
+                }
+
+                // if result is only one single individual leg, don't query for more
+                final boolean canQueryMore = trips.size() != 1 || trips.get(0).legs.size() != 1
+                        || !(trips.get(0).legs.get(0) instanceof Trip.Individual);
+
+                result.set(new QueryTripsResult(header, url.toString(), from, via, to,
+                        new QueryTripsBinaryContext(requestId, seqNr, ld, bis.getCount(), canQueryMore), trips));
+            } else {
+                log.debug("Hafas error: {}", errorCode);
+                if (errorCode == 1) {
+                    throw new SessionExpiredException();
+                } else if (errorCode == 2) {
+                    // F2: Your search results could not be stored internally.
+                    throw new SessionExpiredException();
+                } else if (errorCode == 8) {
+                    result.set(new QueryTripsResult(header, QueryTripsResult.Status.AMBIGUOUS));
+                    return;
+                } else if (errorCode == 13) {
+                    // IN13: Our booking system is currently being used by too many users at the same
+                    // time.
+                    result.set(new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN));
+                    return;
+                } else if (errorCode == 19) {
+                    result.set(new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN));
+                    return;
+                } else if (errorCode == 207) {
+                    // H207: Unfortunately your connection request can currently not be processed.
+                    result.set(new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN));
+                    return;
+                } else if (errorCode == 887) {
+                    // H887: Your inquiry was too complex. Please try entering less intermediate stations.
+                    result.set(new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS));
+                    return;
+                } else if (errorCode == 890) {
+                    // H890: No connections have been found that correspond to your request. It is
+                    // possible
+                    // that the requested service does not operate from or to the places you stated on the
+                    // requested date of travel.
+                    result.set(new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS));
+                    return;
+                } else if (errorCode == 891) {
+                    // H891: Unfortunately there was no route found. Missing timetable data could be the
+                    // reason.
+                    result.set(new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS));
+                    return;
+                } else if (errorCode == 892) {
+                    // H892: Your inquiry was too complex. Please try entering less intermediate stations.
+                    result.set(new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS));
+                    return;
+                } else if (errorCode == 899) {
+                    // H899: there was an unsuccessful or incomplete search due to a timetable change.
+                    result.set(new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS));
+                    return;
+                } else if (errorCode == 900) {
+                    // Unsuccessful or incomplete search (timetable change)
+                    result.set(new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS));
+                    return;
+                } else if (errorCode == 9220) {
+                    // H9220: Nearby to the given address stations could not be found.
+                    result.set(new QueryTripsResult(header, QueryTripsResult.Status.UNRESOLVABLE_ADDRESS));
+                    return;
+                } else if (errorCode == 9240) {
+                    // H9240: Unfortunately there was no route found. Perhaps your start or destination is
+                    // not
+                    // served at all or with the selected means of transport on the required date/time.
+                    result.set(new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS));
+                    return;
+                } else if (errorCode == 9260) {
+                    // H9260: Unknown departure station
+                    result.set(new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_FROM));
+                    return;
+                } else if (errorCode == 9280) {
+                    // H9280: Unknown intermediate station
+                    result.set(new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_VIA));
+                    return;
+                } else if (errorCode == 9300) {
+                    // H9300: Unknown arrival station
+                    result.set(new QueryTripsResult(header, QueryTripsResult.Status.UNKNOWN_TO));
+                    return;
+                } else if (errorCode == 9320) {
+                    // The input is incorrect or incomplete
+                    result.set(new QueryTripsResult(header, QueryTripsResult.Status.INVALID_DATE));
+                    return;
+                } else if (errorCode == 9360) {
+                    // H9360: Unfortunately your connection request can currently not be processed.
+                    result.set(new QueryTripsResult(header, QueryTripsResult.Status.INVALID_DATE));
+                    return;
+                } else if (errorCode == 9380) {
+                    // H9380: Dep./Arr./Intermed. or equivalent station defined more than once
+                    result.set(new QueryTripsResult(header, QueryTripsResult.Status.TOO_CLOSE));
+                    return;
+                } else if (errorCode == 895) {
+                    // H895: Departure/Arrival are too near
+                    result.set(new QueryTripsResult(header, QueryTripsResult.Status.TOO_CLOSE));
+                    return;
+                } else if (errorCode == 65535) {
+                    result.set(new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN));
+                    return;
+                } else {
+                    throw new IllegalStateException("error " + errorCode + " on " + url);
                 }
             }
         }, url);

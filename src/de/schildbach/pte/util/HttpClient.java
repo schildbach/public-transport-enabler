@@ -208,12 +208,7 @@ public final class HttpClient {
     public CharSequence get(final HttpUrl url, final String postRequest, final String requestContentType)
             throws IOException {
         final StringBuilder buffer = new StringBuilder();
-        final Callback callback = new Callback() {
-            @Override
-            public void onSuccessful(final CharSequence bodyPeek, final ResponseBody body) throws IOException {
-                buffer.append(body.string());
-            }
-        };
+        final Callback callback = (bodyPeek, body) -> buffer.append(body.string());
         getInputStream(callback, url, postRequest, requestContentType, null);
         return buffer;
     }
@@ -382,10 +377,5 @@ public final class HttpClient {
         }
     };
 
-    private static final HostnameVerifier SSL_ACCEPT_ALL_HOSTNAMES = new HostnameVerifier() {
-        @Override
-        public boolean verify(final String hostname, final SSLSession session) {
-            return true;
-        }
-    };
+    private static final HostnameVerifier SSL_ACCEPT_ALL_HOSTNAMES = (hostname, session) -> true;
 }
