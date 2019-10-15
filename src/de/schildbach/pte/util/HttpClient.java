@@ -266,9 +266,7 @@ public final class HttpClient {
         }
 
         final Call call = okHttpClient.newCall(request.build());
-        Response response = null;
-        try {
-            response = call.execute();
+        try (final Response response = call.execute()) {
             final int responseCode = response.code();
             final String bodyPeek = response.peekBody(SCRAPE_PEEK_SIZE).string().replaceAll("\\p{C}", "");
             if (responseCode == HttpURLConnection.HTTP_OK) {
@@ -308,9 +306,6 @@ public final class HttpClient {
                 final String message = "got response: " + responseCode + " " + response.message();
                 throw new IOException(message + ": " + url);
             }
-        } finally {
-            if (response != null)
-                response.close();
         }
     }
 

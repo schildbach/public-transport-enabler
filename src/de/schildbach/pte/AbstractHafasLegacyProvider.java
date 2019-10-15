@@ -2102,10 +2102,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
                 throw new IllegalStateException(
                         "pointer " + pointer + " cannot exceed strings table size " + table.length);
 
-            final InputStreamReader reader = new InputStreamReader(
-                    new ByteArrayInputStream(table, pointer, table.length - pointer), encoding);
-
-            try {
+            try (final InputStreamReader reader = new InputStreamReader(new ByteArrayInputStream(table, pointer, table.length - pointer), encoding)) {
                 final StringBuilder builder = new StringBuilder();
 
                 int c;
@@ -2113,8 +2110,6 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
                     builder.append((char) c);
 
                 return builder.toString().trim();
-            } finally {
-                reader.close();
             }
         }
     }
@@ -2139,10 +2134,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
                 throw new IllegalStateException(
                         "pointer " + pointer + " cannot exceed comments table size " + table.length);
 
-            final LittleEndianDataInputStream commentsInputStream = new LittleEndianDataInputStream(
-                    new ByteArrayInputStream(table, pointer, table.length - pointer));
-
-            try {
+            try (final LittleEndianDataInputStream commentsInputStream = new LittleEndianDataInputStream(new ByteArrayInputStream(table, pointer, table.length - pointer))) {
                 final int numComments = commentsInputStream.readShortReverse();
                 final String[] comments = new String[numComments];
 
@@ -2150,8 +2142,6 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
                     comments[i] = strings.read(commentsInputStream);
 
                 return comments;
-            } finally {
-                commentsInputStream.close();
             }
         }
     }
@@ -2177,10 +2167,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
                 throw new IllegalStateException(
                         "pointer " + ptr + " cannot exceed stations table size " + table.length);
 
-            final LittleEndianDataInputStream stationInputStream = new LittleEndianDataInputStream(
-                    new ByteArrayInputStream(table, ptr, 14));
-
-            try {
+            try (final LittleEndianDataInputStream stationInputStream = new LittleEndianDataInputStream(new ByteArrayInputStream(table, ptr, 14))) {
                 final String[] placeAndName = splitStationName(strings.read(stationInputStream));
                 final int id = stationInputStream.readIntReverse();
                 final int lon = stationInputStream.readIntReverse();
@@ -2188,8 +2175,6 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
 
                 return new Location(LocationType.STATION, id != 0 ? Integer.toString(id) : null,
                         Point.from1E6(lat, lon), placeAndName[0], placeAndName[1]);
-            } finally {
-                stationInputStream.close();
             }
         }
     }
