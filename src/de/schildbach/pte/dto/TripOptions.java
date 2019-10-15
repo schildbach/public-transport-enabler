@@ -17,6 +17,7 @@
 
 package de.schildbach.pte.dto;
 
+import java.util.Date;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -31,7 +32,7 @@ import de.schildbach.pte.NetworkProvider.TripFlag;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
 
 /**
- * Options for {@link NetworkProvider#queryTrips()}.
+ * Options for {@link NetworkProvider#queryTrips(Location, Location, Location, Date, boolean, TripOptions)}.
  * 
  * @author Ialokim
  */
