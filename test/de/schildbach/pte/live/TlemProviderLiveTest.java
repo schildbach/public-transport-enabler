@@ -52,7 +52,7 @@ public class TlemProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void nearbyStationsByCoordinate() throws Exception {
-        final NearbyLocationsResult result = queryNearbyStations(Location.coord(51507161, -0127144));
+        final NearbyLocationsResult result = queryNearbyStations(Location.coord(51507161, -127144));
         print(result);
     }
 
