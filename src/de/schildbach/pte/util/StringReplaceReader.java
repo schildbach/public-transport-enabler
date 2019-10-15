@@ -85,7 +85,7 @@ public class StringReplaceReader extends FilterReader implements Cloneable {
      * Returns the entire contents of the input stream.
      */
     public String contents() throws IOException {
-        StringBuffer contents = new StringBuffer(1024);
+        StringBuilder contents = new StringBuilder(1024);
         int readSize = 512;
 
         char[] filteredChars = new char[readSize];

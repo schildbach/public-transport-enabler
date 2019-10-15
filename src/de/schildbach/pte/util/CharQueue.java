@@ -92,7 +92,7 @@ final public class CharQueue {
      */
     @Override
     public String toString() {
-        StringBuffer queueString = new StringBuffer(elementCount);
+        StringBuilder queueString = new StringBuilder(elementCount);
         if (queueFront < queueRear) {
             queueString.append(queueElements, queueFront, elementCount);
         } else {
