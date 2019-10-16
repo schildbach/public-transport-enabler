@@ -76,7 +76,7 @@ public enum NetworkId {
     DUB,
 
     // United States
-    RTACHICAGO, OREGON, MASSACHUSETTS, CMTA,
+    BART, RTACHICAGO, OREGON, MASSACHUSETTS, CMTA,
 
     // Canada
     ONTARIO, QUEBEC, BRITISHCOLUMBIA,
