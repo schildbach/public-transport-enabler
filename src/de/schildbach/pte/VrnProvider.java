@@ -52,8 +52,6 @@ public class VrnProvider extends AbstractEfaProvider {
         if ("0".equals(mot)) {
             if ("InterRegio".equals(longName) && symbol == null)
                 return new Line(id, network, Product.REGIONAL_TRAIN, "IR");
-            if ("RE11 (RRX)".equals(trainNum))
-                return new Line(id, network, Product.REGIONAL_TRAIN, "RE11");
         }
 
         if (name != null && name.startsWith("RNV Moonliner "))
