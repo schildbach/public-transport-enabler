@@ -265,6 +265,8 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                     return new NearbyLocationsResult(header, NearbyLocationsResult.Status.SERVICE_DOWN);
                 if ("CGI_NO_SERVER".equals(err))
                     return new NearbyLocationsResult(header, NearbyLocationsResult.Status.SERVICE_DOWN);
+                if ("H_UNKNOWN".equals(err))
+                    return new NearbyLocationsResult(header, NearbyLocationsResult.Status.SERVICE_DOWN);
                 throw new RuntimeException(err + " " + errTxt);
             }
             final JSONObject res = svcRes.getJSONObject("res");
@@ -351,6 +353,8 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                 if ("CGI_READ_FAILED".equals(err))
                     return new QueryDeparturesResult(header, QueryDeparturesResult.Status.SERVICE_DOWN);
                 if ("CGI_NO_SERVER".equals(err))
+                    return new QueryDeparturesResult(header, QueryDeparturesResult.Status.SERVICE_DOWN);
+                if ("H_UNKNOWN".equals(err))
                     return new QueryDeparturesResult(header, QueryDeparturesResult.Status.SERVICE_DOWN);
                 throw new RuntimeException(err + " " + errTxt);
             }
@@ -486,6 +490,8 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                 if ("CGI_READ_FAILED".equals(err))
                     return new SuggestLocationsResult(header, SuggestLocationsResult.Status.SERVICE_DOWN);
                 if ("CGI_NO_SERVER".equals(err))
+                    return new SuggestLocationsResult(header, SuggestLocationsResult.Status.SERVICE_DOWN);
+                if ("H_UNKNOWN".equals(err))
                     return new SuggestLocationsResult(header, SuggestLocationsResult.Status.SERVICE_DOWN);
                 throw new RuntimeException(err + " " + errTxt);
             }
@@ -626,6 +632,8 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                 if ("CGI_READ_FAILED".equals(err))
                     return new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN);
                 if ("CGI_NO_SERVER".equals(err))
+                    return new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN);
+                if ("H_UNKNOWN".equals(err))
                     return new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN);
                 throw new RuntimeException(err + " " + errTxt);
             }
