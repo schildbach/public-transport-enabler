@@ -30,7 +30,7 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class OebbProvider extends AbstractHafasClientInterfaceProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("http://fahrplan.oebb.at/bin/");
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://fahrplan.oebb.at/bin/");
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN,
             Product.BUS, Product.FERRY, Product.SUBWAY, Product.TRAM, Product.HIGH_SPEED_TRAIN, Product.ON_DEMAND,
