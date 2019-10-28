@@ -34,9 +34,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -84,7 +82,6 @@ public final class HttpClient {
     private boolean trustAllCertificates = false;
     @Nullable
     private CertificatePinner certificatePinner = null;
-    private boolean sslAcceptAllHostnames = false;
 
     private static final List<Integer> RESPONSE_CODES_BLOCKED = Ints.asList(HttpURLConnection.HTTP_BAD_REQUEST,
             HttpURLConnection.HTTP_UNAUTHORIZED, HttpURLConnection.HTTP_FORBIDDEN,
@@ -197,10 +194,6 @@ public final class HttpClient {
         this.certificatePinner = new CertificatePinner.Builder().add(host, hashes).build();
     }
 
-    public void setSslAcceptAllHostnames(final boolean sslAcceptAllHostnames) {
-        this.sslAcceptAllHostnames = sslAcceptAllHostnames;
-    }
-
     public CharSequence get(final HttpUrl url) throws IOException {
         return get(url, null, null);
     }
@@ -245,7 +238,7 @@ public final class HttpClient {
             request.header("Cookie", sessionCookie.toString());
 
         final OkHttpClient okHttpClient;
-        if (proxy != null || trustAllCertificates || certificatePinner != null || sslAcceptAllHostnames) {
+        if (proxy != null || trustAllCertificates || certificatePinner != null) {
             final OkHttpClient.Builder builder = OKHTTP_CLIENT.newBuilder();
             if (proxy != null)
                 builder.proxy(proxy);
@@ -253,8 +246,6 @@ public final class HttpClient {
                 trustAllCertificates(builder);
             if (certificatePinner != null)
                 builder.certificatePinner(certificatePinner);
-            if (sslAcceptAllHostnames)
-                builder.hostnameVerifier(SSL_ACCEPT_ALL_HOSTNAMES);
             okHttpClient = builder.build();
         } else {
             okHttpClient = OKHTTP_CLIENT;
@@ -376,6 +367,4 @@ public final class HttpClient {
             return new X509Certificate[0];
         }
     };
-
-    private static final HostnameVerifier SSL_ACCEPT_ALL_HOSTNAMES = (hostname, session) -> true;
 }
