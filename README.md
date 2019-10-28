@@ -12,7 +12,7 @@ Copy the `secrets.properties.template` file to `secrets.properties` like so:
 
     $ cp test/de/schildbach/pte/live/secrets.properties.template test/de/schildbach/pte/live/secrets.properties
 
-You need to request the secrets directly from the provider. For Navitia based providers, you can [request a secret here](http://www.navitia.io/register).
+You need to request the secrets directly from the provider. For Navitia based providers, you can [request a secret here](https://www.navitia.io/register).
 
 How to run live tests?
 ----------------------
