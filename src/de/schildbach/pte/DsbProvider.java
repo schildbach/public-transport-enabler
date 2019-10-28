@@ -30,7 +30,7 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class DsbProvider extends AbstractHafasClientInterfaceProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("http://mobilapps.rejseplanen.dk/bin/");
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://mobilapps.rejseplanen.dk/bin/");
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.REGIONAL_TRAIN, Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.BUS, Product.BUS,
             Product.BUS, Product.BUS, Product.FERRY, Product.SUBWAY, Product.SUBURBAN_TRAIN /* Light Rail */ };
