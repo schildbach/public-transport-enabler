@@ -47,7 +47,6 @@ public class OoevvProvider extends AbstractHafasClientInterfaceProvider {
         setApiExt("VAO.6");
         setApiClient(apiClient);
         setApiAuthorization(apiAuthorization);
-        httpClient.setSslAcceptAllHostnames(true);
     }
 
     @Override
