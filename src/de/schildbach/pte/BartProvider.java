@@ -43,7 +43,6 @@ public class BartProvider extends AbstractHafasClientInterfaceProvider {
         setApiVersion("1.18");
         setApiClient(apiClient);
         setApiAuthorization(apiAuthorization);
-        httpClient.setTrustAllCertificates(true);
     }
 
     @Override

@@ -51,7 +51,6 @@ public class SvvProvider extends AbstractHafasClientInterfaceProvider {
         setApiClient(apiClient);
         setApiAuthorization(apiAuthorization);
         setStyles(STYLES);
-        httpClient.setTrustAllCertificates(true);
     }
 
     @Override

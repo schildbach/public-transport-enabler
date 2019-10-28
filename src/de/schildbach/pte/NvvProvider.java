@@ -45,7 +45,6 @@ public class NvvProvider extends AbstractHafasClientInterfaceProvider {
         setApiExt("NVV.6.0");
         setApiClient(apiClient);
         setApiAuthorization(apiAuthorization);
-        httpClient.setTrustAllCertificates(true);
     }
 
     private static final String[] PLACES = { "Frankfurt (Main)", "Offenbach (Main)", "Mainz", "Wiesbaden", "Marburg",

@@ -48,7 +48,6 @@ public class TlemProvider extends AbstractEfaProvider {
         setTimeZone("Europe/London");
         setUseProxFootSearch(false);
         setStyles(STYLES);
-        httpClient.setTrustAllCertificates(true);
     }
 
     @Override

@@ -50,7 +50,6 @@ public class VbbProvider extends AbstractHafasClientInterfaceProvider {
         setApiClient(apiClient);
         setApiAuthorization(apiAuthorization);
         setRequestMicMacSalt(salt);
-        httpClient.setTrustAllCertificates(true);
     }
 
     private static final Pattern P_SPLIT_NAME_SU = Pattern.compile("(.*?)(?:\\s+\\((S|U|S\\+U)\\))?");
