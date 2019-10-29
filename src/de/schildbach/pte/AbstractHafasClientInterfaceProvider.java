@@ -674,7 +674,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                     final Stop arrivalStop = parseJsonStop(secArr, locList, crdSysList, c, baseDate);
 
                     final Trip.Leg leg;
-                    if (SECTION_TYPE_JOURNEY.equals(secType)) {
+                    if (SECTION_TYPE_JOURNEY.equals(secType) || SECTION_TYPE_TELE_TAXI.equals(secType)) {
                         final JSONObject jny = sec.getJSONObject("jny");
                         final Line line = lines.get(jny.getInt("prodX"));
                         final String dirTxt = jny.optString("dirTxt", null);
@@ -741,7 +741,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                         leg = new Trip.Individual(Trip.Individual.Type.WALK, departureStop.location,
                                 departureStop.getDepartureTime(), arrivalStop.location, arrivalStop.getArrivalTime(),
                                 null, distance);
-                    } else if (SECTION_TYPE_TRANSFER.equals(secType) || SECTION_TYPE_DEVI.equals(secType) || SECTION_TYPE_TELE_TAXI.equals(secType)) {
+                    } else if (SECTION_TYPE_TRANSFER.equals(secType) || SECTION_TYPE_DEVI.equals(secType)) {
                         final JSONObject gis = sec.optJSONObject("gis");
                         final int distance = gis != null ? gis.optInt("dist", 0) : 0;
                         leg = new Trip.Individual(Trip.Individual.Type.TRANSFER, departureStop.location,

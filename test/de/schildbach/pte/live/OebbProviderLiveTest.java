@@ -77,9 +77,21 @@ public class OebbProviderLiveTest extends AbstractProviderLiveTest {
     }
 
     @Test
-    public void shortTrip() throws Exception {
+    public void shortTripLinzWien() throws Exception {
         final Location from = new Location(LocationType.STATION, "1140101", null, "Linz");
         final Location to = new Location(LocationType.STATION, "1190100", null, "Wien");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
+        print(result);
+        assertEquals(QueryTripsResult.Status.OK, result.status);
+        assertTrue(result.trips.size() > 0);
+        final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+        print(laterResult);
+    }
+
+    @Test
+    public void shortTripBregenzBezau() throws Exception {
+        final Location from = new Location(LocationType.STATION, "1180207", null, "Bregenz");
+        final Location to = new Location(LocationType.STATION, "1180204", null, "Bezau");
         final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
