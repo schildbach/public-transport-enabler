@@ -256,11 +256,11 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
     public void suggestManyLocations() throws Exception {
         Random rand = new Random(new Date().getTime());
         for (int i = 0; i < 10; i++) {
-            String s = "";
+            final StringBuilder s = new StringBuilder();
             int len = rand.nextInt(256);
             for (int j = 0; j < len; j++) {
                 char c = (char) ('a' + rand.nextInt(26));
-                s += c;
+                s.append(c);
             }
             final SuggestLocationsResult result = suggestLocations(s);
             System.out.print(s + " => ");
