@@ -1407,7 +1407,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
         return queryTripsBinary(url.build(), null, null, null, QUERY_TRIPS_BINARY_BUFFER_SIZE + context.usedBufferSize);
     }
 
-    private class CustomBufferedInputStream extends BufferedInputStream {
+    private static class CustomBufferedInputStream extends BufferedInputStream {
         public CustomBufferedInputStream(final InputStream in) {
             super(in);
         }
