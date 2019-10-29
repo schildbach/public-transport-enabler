@@ -754,9 +754,8 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
         conReq.append("<ReqT a=\"").append(dep ? 0 : 1).append("\" date=\"")
                 .append(String.format(Locale.ENGLISH, "%04d.%02d.%02d", c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1,
                         c.get(Calendar.DAY_OF_MONTH)))
-                .append("\" time=\"")
-                .append(String.format(Locale.ENGLISH, "%02d:%02d", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE))
-                        + "\"/>");
+                .append("\" time=\"").append(String.format(Locale.ENGLISH, "%02d:%02d", c.get(Calendar.HOUR_OF_DAY),
+                c.get(Calendar.MINUTE))).append("\"/>");
         conReq.append("<RFlags");
         // number of trips backwards
         conReq.append(" b=\"").append(0).append("\"");
