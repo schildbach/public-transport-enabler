@@ -187,7 +187,7 @@ public class VbnProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void tripDateOutsideTimetablePeriod() throws Exception {
         final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8096109", null, "Oldenburg"),
-                null, new Location(LocationType.STATION, "625398", null, "Bremerhaven"), new Date(1155822689759l), true,
+                null, new Location(LocationType.STATION, "625398", null, "Bremerhaven"), new Date(1155822689759L), true,
                 null);
         assertEquals(QueryTripsResult.Status.INVALID_DATE, result.status);
     }

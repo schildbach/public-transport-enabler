@@ -173,7 +173,7 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest {
                 "Hegelstrasse, 60316 Frankfurt am Main");
         final Location to = new Location(LocationType.ADDRESS, null, Point.from1E6(50100364, 8615193), null,
                 "Mainzer Landstrasse, Frankfurt");
-        final QueryTripsResult result = queryTrips(from, null, to, new Date(1378368840000l), true, null);
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(1378368840000L), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
@@ -185,7 +185,7 @@ public class NvvProviderLiveTest extends AbstractProviderLiveTest {
                 "F Brauerei");
         final Location to = new Location(LocationType.STATION, "3001201", Point.from1E6(50119950, 8653924), null,
                 "F Bockenheimer Warte");
-        final QueryTripsResult result = queryTrips(from, null, to, new Date(1378368840000l), true, null);
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(1378368840000L), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);

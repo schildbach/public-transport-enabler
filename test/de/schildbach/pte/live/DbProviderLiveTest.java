@@ -187,7 +187,7 @@ public class DbProviderLiveTest extends AbstractProviderLiveTest {
     public void tripsInvalidDate() throws Exception {
         final Location from = new Location(LocationType.STATION, "8011160", null, "Berlin Hbf");
         final Location to = new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf");
-        final Date date = new Date(System.currentTimeMillis() - 2 * 365 * 24 * 3600 * 1000l); // 2 years ago
+        final Date date = new Date(System.currentTimeMillis() - 2 * 365 * 24 * 3600 * 1000L); // 2 years ago
         final QueryTripsResult result = queryTrips(from, null, to, date, true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.INVALID_DATE, result.status);
