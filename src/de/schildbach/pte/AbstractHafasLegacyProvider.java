@@ -1052,7 +1052,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
                                     while (XmlPullUtil.test(pp, "StAttrList"))
                                         XmlPullUtil.next(pp);
                                     final Location location = parseLocation(pp);
-                                    if (location.id != sectionDepartureLocation.id) {
+                                    if (location.id.equals(sectionDepartureLocation.id)) {
                                         Date stopArrivalTime = null;
                                         Date stopDepartureTime = null;
                                         Position stopArrivalPosition = null;
