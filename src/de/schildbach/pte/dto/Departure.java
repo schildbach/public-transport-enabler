@@ -34,8 +34,9 @@ import com.google.common.base.Objects;
 /**
  * @author Andreas Schildbach
  */
-@SuppressWarnings("serial")
 public final class Departure implements Serializable {
+    private static final long serialVersionUID = -9104517779537062795L;
+
     final public @Nullable Date plannedTime;
     final public @Nullable Date predictedTime;
     final public Line line;
