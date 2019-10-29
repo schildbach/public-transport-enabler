@@ -347,7 +347,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
         return path;
     }
 
-    private class LegInfo {
+    private static class LegInfo {
         public final Location departure;
         public final Date departureTime;
         public final Location arrival;
