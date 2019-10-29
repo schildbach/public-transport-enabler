@@ -33,7 +33,7 @@ import com.google.common.base.MoreObjects.ToStringHelper;
 @SuppressWarnings("serial")
 public final class QueryTripsResult implements Serializable {
     public enum Status {
-        OK, AMBIGUOUS, TOO_CLOSE, UNKNOWN_FROM, UNKNOWN_VIA, UNKNOWN_TO, UNKNOWN_LOCATION, UNRESOLVABLE_ADDRESS, NO_TRIPS, INVALID_DATE, SERVICE_DOWN;
+        OK, AMBIGUOUS, TOO_CLOSE, UNKNOWN_FROM, UNKNOWN_VIA, UNKNOWN_TO, UNKNOWN_LOCATION, UNRESOLVABLE_ADDRESS, NO_TRIPS, INVALID_DATE, SERVICE_DOWN
     }
 
     public final @Nullable ResultHeader header;
