@@ -2764,6 +2764,8 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
             return Product.TRAM;
 
         // Bus
+        if ("B".equals(ucType))
+            return Product.BUS;
         if (P_LINE_BUS.matcher(ucType).matches()) // Generic Bus
             return Product.BUS;
         if ("NFB".equals(ucType)) // Niederflur-Bus
