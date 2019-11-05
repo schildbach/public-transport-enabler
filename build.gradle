@@ -1,5 +1,7 @@
-apply plugin: 'java'
-apply plugin: 'maven'
+plugins {
+    id 'java'
+    id 'maven'
+}
 
 group = 'de.schildbach.pte'
 archivesBaseName = 'public-transport-enabler'
