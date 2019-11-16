@@ -358,6 +358,48 @@ public class VrrProvider extends AbstractEfaProvider {
         // Schwebebahn Wuppertal
         STYLES.put("wsw|C60", new Style(Style.parseColor("#003090"), Style.WHITE));
 
+        // Busse Hagen
+        STYLES.put("hst|B510", new Style(Style.parseColor("#b06520"), Style.WHITE));
+        STYLES.put("ver|B511", new Style(Style.parseColor("#15b6b9"), Style.WHITE));
+        STYLES.put("hst|B512", new Style(Style.parseColor("#b06520"), Style.WHITE));
+        STYLES.put("hst|B513", new Style(Style.parseColor("#7f4984"), Style.WHITE));
+        STYLES.put("hst|B514", new Style(Style.parseColor("#f49b00"), Style.WHITE));
+        STYLES.put("hst|B515", new Style(Style.parseColor("#c10004"), Style.WHITE));
+        STYLES.put("hst|B516", new Style(Style.parseColor("#7eaf49"), Style.WHITE));
+        STYLES.put("hst|B517", new Style(Style.parseColor("#619f4e"), Style.WHITE));
+        STYLES.put("hst|B518", new Style(Style.parseColor("#007bc1"), Style.WHITE));
+        STYLES.put("hst|B519", new Style(Style.parseColor("#007bc1"), Style.WHITE));
+        STYLES.put("hst|B520", new Style(Style.parseColor("#e63758"), Style.WHITE));
+        STYLES.put("hst|B521", new Style(Style.parseColor("#df0008"), Style.WHITE));
+        STYLES.put("hst|B524", new Style(Style.parseColor("#a36501"), Style.WHITE));
+        STYLES.put("hst|B525", new Style(Style.parseColor("#df0008"), Style.WHITE));
+        STYLES.put("hst|B527", new Style(Style.parseColor("#7c277d"), Style.WHITE));
+        STYLES.put("hst|B528", new Style(Style.parseColor("#1784c1"), Style.WHITE));
+        STYLES.put("hst|B530", new Style(Style.parseColor("#e60253"), Style.WHITE));
+        STYLES.put("hst|B532", new Style(Style.parseColor("#364a9c"), Style.WHITE));
+        STYLES.put("hst|B534", new Style(Style.parseColor("#567b3e"), Style.WHITE));
+        STYLES.put("hst|B535", new Style(Style.parseColor("#e14c25"), Style.WHITE));
+        STYLES.put("hst|B536", new Style(Style.parseColor("#7fceef"), Style.WHITE));
+        STYLES.put("hst|B538", new Style(Style.parseColor("#006cb6"), Style.WHITE));
+        STYLES.put("hst|B539", new Style(Style.parseColor("#897300"), Style.WHITE));
+        STYLES.put("hst|B541", new Style(Style.parseColor("#9c590f"), Style.WHITE));
+        STYLES.put("hst|B542", new Style(Style.parseColor("#71c837"), Style.WHITE));
+        STYLES.put("hst|B543", new Style(Style.parseColor("#f49b00"), Style.WHITE));
+        STYLES.put("hst|BSB71", new Style(Style.parseColor("#15b6b9"), Style.WHITE));
+        STYLES.put("hst|BSB72", new Style(Style.parseColor("#0c919c"), Style.WHITE));
+        STYLES.put("hst|BNE1", new Style(Style.parseColor("#ff2a2a"), Style.WHITE));
+        STYLES.put("hst|BNE2", new Style(Style.parseColor("#ff6600"), Style.WHITE));
+        STYLES.put("hst|BNE3", new Style(Style.parseColor("#ffcc00"), Style.BLACK));
+        STYLES.put("hst|BNE4", new Style(Style.parseColor("#2ca02c"), Style.WHITE));
+        STYLES.put("hst|BNE5", new Style(Style.parseColor("#5f8dd3"), Style.WHITE));
+        STYLES.put("hst|BNE6", new Style(Style.parseColor("#7137c8"), Style.WHITE));
+        STYLES.put("hst|BNE7", new Style(Style.parseColor("#a05a2c"), Style.WHITE));
+        STYLES.put("bvr|BNE9", new Style(Style.parseColor("#800080"), Style.WHITE));
+        STYLES.put("hst|BNE19", new Style(Style.parseColor("#a02c2c"), Style.WHITE));
+        STYLES.put("hst|BNE22", new Style(Style.parseColor("#006cb6"), Style.WHITE));
+        STYLES.put("hst|BNE31", new Style(Style.parseColor("#803300"), Style.WHITE));
+        STYLES.put("hst|BNE32", new Style(Style.parseColor("#364a9c"), Style.WHITE));
+
         // Stadtbahn Köln-Bonn
         STYLES.put("vrs|T1", new Style(Style.parseColor("#ed1c24"), Style.WHITE));
         STYLES.put("vrs|T3", new Style(Style.parseColor("#f680c5"), Style.WHITE));
