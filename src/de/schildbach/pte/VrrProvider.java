@@ -394,7 +394,7 @@ public class VrrProvider extends AbstractEfaProvider {
         STYLES.put("hst|BNE5", new Style(Style.parseColor("#5f8dd3"), Style.WHITE));
         STYLES.put("hst|BNE6", new Style(Style.parseColor("#7137c8"), Style.WHITE));
         STYLES.put("hst|BNE7", new Style(Style.parseColor("#a05a2c"), Style.WHITE));
-        STYLES.put("hst|BNE9", new Style(Style.parseColor("#800080"), Style.WHITE));
+        STYLES.put("bvr|BNE9", new Style(Style.parseColor("#800080"), Style.WHITE));
         STYLES.put("hst|BNE19", new Style(Style.parseColor("#a02c2c"), Style.WHITE));
         STYLES.put("hst|BNE22", new Style(Style.parseColor("#006cb6"), Style.WHITE));
         STYLES.put("hst|BNE31", new Style(Style.parseColor("#803300"), Style.WHITE));
