@@ -118,6 +118,8 @@ public class SydneyProvider extends AbstractEfaProvider {
                 return new Line(id, network, Product.SUBURBAN_TRAIN, "T7");
             if ("T8".equals(symbol) || "T8 Airport & South Line".equals(symbol))
                 return new Line(id, network, Product.SUBURBAN_TRAIN, "T8");
+            if ("T9".equals(symbol) || "T9 Northern Line".equals(symbol))
+                return new Line(id, network, Product.SUBURBAN_TRAIN, "T9");
 
             if (("31".equals(symbol) || "36".equals(symbol) || "621".equals(symbol) || "622".equals(symbol)
                     || "635".equals(symbol) || "636".equals(symbol))
