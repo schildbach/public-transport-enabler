@@ -11,7 +11,9 @@ repositories {
 }
 
 dependencies {
+    //noinspection GradleDependency
     compile 'com.squareup.okhttp3:okhttp:3.12.6'
+    //noinspection GradleDependency
     compile 'com.squareup.okhttp3:logging-interceptor:3.12.6'
     compile 'com.google.guava:guava:28.1-android'
     compile 'org.slf4j:slf4j-api:1.7.29'
