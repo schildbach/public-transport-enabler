@@ -40,7 +40,7 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
  */
 public class CmtaProviderLiveTest extends AbstractProviderLiveTest {
     public CmtaProviderLiveTest() {
-        super(new CmtaProvider());
+        super(new CmtaProvider(secretProperty("cmta.api_authorization")));
     }
 
     @Test(expected = IllegalArgumentException.class)

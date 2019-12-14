@@ -33,15 +33,16 @@ public class CmtaProvider extends AbstractHafasClientInterfaceProvider {
             null, null, null, null, null, Product.BUS };
     private static final String DEFAULT_API_CLIENT = "{\"id\":\"CMTA\",\"type\":\"AND\"}";
 
-    public CmtaProvider() {
-        this(DEFAULT_API_CLIENT);
+    public CmtaProvider(final String apiAuthorization) {
+        this(DEFAULT_API_CLIENT, apiAuthorization);
     }
 
-    public CmtaProvider(final String apiClient) {
+    public CmtaProvider(final String apiClient, final String apiAuthorization) {
         super(NetworkId.CMTA, API_BASE, PRODUCTS_MAP);
         setTimeZone("America/Chicago");
         setApiVersion("1.14");
         setApiExt("SBB.TZT.1");
         setApiClient(apiClient);
+        setApiAuthorization(apiAuthorization);
     }
 }
