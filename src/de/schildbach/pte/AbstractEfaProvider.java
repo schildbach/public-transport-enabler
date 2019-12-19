@@ -898,6 +898,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                 return new Line(id, network, Product.HIGH_SPEED_TRAIN, "EN" + trainNum);
             if (("IC".equals(trainType) || "IC".equals(trainName) || "InterCity".equals(trainName)) && trainNum != null)
                 return new Line(id, network, Product.HIGH_SPEED_TRAIN, "IC" + trainNum);
+            if ("IC21".equals(trainNum) && trainName == null)
+                return new Line(id, network, Product.HIGH_SPEED_TRAIN, trainNum);
+            if ("IC40".equals(trainNum) && trainName == null)
+                return new Line(id, network, Product.HIGH_SPEED_TRAIN, trainNum);
             if (("ICE".equals(trainType) || "ICE".equals(trainName) || "Intercity-Express".equals(trainName))
                     && trainNum != null)
                 return new Line(id, network, Product.HIGH_SPEED_TRAIN, "ICE" + trainNum);
