@@ -133,6 +133,8 @@ public class SydneyProvider extends AbstractEfaProvider {
         } else if ("4".equals(mot)) {
             if ("L1".equals(symbol) || "L1 Dulwich Hill Line".equals(symbol))
                 return new Line(id, network, Product.TRAM, "L1");
+            if ("L2".equals(symbol) || "L2 Randwick Line".equals(symbol))
+                return new Line(id, network, Product.TRAM, "L2");
 
             throw new IllegalStateException("cannot normalize mot='" + mot + "' symbol='" + symbol + "' name='" + name
                     + "' long='" + longName + "' trainType='" + trainType + "' trainNum='" + trainNum + "' trainName='"
