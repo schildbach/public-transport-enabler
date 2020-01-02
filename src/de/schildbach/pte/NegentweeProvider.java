@@ -485,15 +485,17 @@ public class NegentweeProvider extends AbstractNetworkProvider {
 
         // Get journey fares
         JSONObject fareInfo = trip.getJSONObject("fareInfo");
-        JSONArray fareLegs = fareInfo.getJSONArray("legs");
 
-        Fare[] foundFares = new Fare[fareLegs.length()];
-        for (int i = 0; i < fareLegs.length(); i++) {
-            foundFares[i] = fareFromJSONObject(fareLegs.getJSONObject(i));
+        List<Fare> tripFares = null;
+        if (fareInfo.getBoolean("complete")) {
+            tripFares = Arrays.asList(
+                new Fare("Full-price", Fare.Type.ADULT, Currency.getInstance("EUR"),
+                    fareInfo.getInt("fullPriceCents") / 100, null, null),
+                new Fare("Reduced-price", Fare.Type.ADULT, Currency.getInstance("EUR"),
+                    fareInfo.getInt("reducedPriceCents") / 100, null, null));
         }
 
-        return new Trip(trip.getString("id"), from, to, foundLegs, Arrays.asList(foundFares), null,
-                trip.getInt("numberOfChanges"));
+        return new Trip(trip.getString("id"), from, to, foundLegs, tripFares, null, trip.getInt("numberOfChanges"));
     }
 
     private Stop stopFromJSONObject(JSONObject stop) throws JSONException {
