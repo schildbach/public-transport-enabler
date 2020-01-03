@@ -893,7 +893,7 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
 
         try {
             if (from != null && from.isIdentified() && to != null && to.isIdentified()) {
-                final HttpUrl.Builder url = apiBase.newBuilder().addPathSegment("journeys");
+                final HttpUrl.Builder url = url().addPathSegment("journeys");
                 url.addQueryParameter("from", printLocation(from));
                 url.addQueryParameter("to", printLocation(to));
                 url.addQueryParameter("datetime", printDate(date));
@@ -1045,9 +1045,9 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
                     final String toString = printLocation(to);
 
                     final String message = error.getString("message");
-                    if (message.equals("Invalid id : " + fromString))
+                    if (message.contains(fromString))
                         return new QueryTripsResult(resultHeader, QueryTripsResult.Status.UNKNOWN_FROM);
-                    else if (message.equals("Invalid id : " + toString))
+                    else if (message.contains(toString))
                         return new QueryTripsResult(resultHeader, QueryTripsResult.Status.UNKNOWN_TO);
                     else
                         throw new IllegalArgumentException("Unhandled error message: " + message);
