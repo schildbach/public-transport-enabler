@@ -2708,7 +2708,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                             if (!id.equals(departure.location.id) && !id.equals(arrival.location.id)) {
                                 final String name = normalizeLocationName(intermediateParts[1]);
 
-                                if (!("0000-1".equals(intermediateParts[2]) && "000-1".equals(intermediateParts[3]))) {
+                                if (!(intermediateParts[2].startsWith("000") && intermediateParts[3].startsWith("000"))) {
                                     ParserUtils.parseIsoDate(plannedTimeCal, intermediateParts[2]);
                                     ParserUtils.parseIsoTime(plannedTimeCal, intermediateParts[3]);
 
