@@ -15,7 +15,7 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.12.6'
     //noinspection GradleDependency
     compile 'com.squareup.okhttp3:logging-interceptor:3.12.6'
-    compile 'com.google.guava:guava:28.1-android'
+    compile 'com.google.guava:guava:28.2-android'
     compile 'org.slf4j:slf4j-api:1.7.30'
     compile 'com.google.code.findbugs:jsr305:3.0.2'
     compile 'org.json:json:20090211' // provided by Android
