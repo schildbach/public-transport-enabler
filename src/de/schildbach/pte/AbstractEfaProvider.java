@@ -882,7 +882,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                 if (trainName.equals("Nachtbus"))
                     return new Line(id, network, Product.BUS, str);
                 if (trainName.equals("Anrufsammeltaxi"))
-                    return new Line(id, network, Product.BUS, str);
+                    return new Line(id, network, Product.ON_DEMAND, str);
                 if (trainName.equals("Ersatzverkehr"))
                     return new Line(id, network, Product.BUS, str);
                 if (trainName.equals("Vienna Airport Lines"))
@@ -1358,7 +1358,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             return new Line(id, network, Product.SUBWAY, name);
         } else if ("3".equals(mot) || "4".equals(mot)) {
             return new Line(id, network, Product.TRAM, name);
-        } else if ("5".equals(mot) || "6".equals(mot) || "7".equals(mot) || "10".equals(mot)) {
+        } else if ("5".equals(mot) || "6".equals(mot) || "7".equals(mot)) {
             if ("Schienenersatzverkehr".equals(name))
                 return new Line(id, network, Product.BUS, "SEV");
             else
@@ -1367,6 +1367,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             return new Line(id, network, Product.CABLECAR, name);
         } else if ("9".equals(mot)) {
             return new Line(id, network, Product.FERRY, name);
+        } else if ("10".equals(mot)) {
+            return new Line(id, network, Product.ON_DEMAND, name);
         } else if ("11".equals(mot)) {
             return new Line(id, network, null, ParserUtils.firstNotEmpty(symbol, name));
         } else if ("13".equals(mot)) {
