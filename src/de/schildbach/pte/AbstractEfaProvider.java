@@ -2494,6 +2494,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
                 XmlPullUtil.enter(pp, "itdPoint");
                 XmlPullUtil.optSkip(pp, "genAttrList");
+                XmlPullUtil.optSkip(pp, "sPAs");
                 XmlPullUtil.require(pp, "itdDateTime");
 
                 final Date plannedStopArrivalTime;
