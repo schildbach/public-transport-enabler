@@ -62,7 +62,7 @@ public class VvoProvider extends AbstractEfaProvider {
                 return new Line(id, network, Product.REGIONAL_TRAIN, "TLX");
             if ("Trilex".equals(trainName) && trainNum == null)
                 return new Line(id, network, Product.REGIONAL_TRAIN, "TLX");
-            if ("U 28".equals(symbol)) // Nationalparkbahn
+            if ("U28".equals(symbol) || "U 28".equals(symbol)) // Nationalparkbahn
                 return new Line(id, network, Product.REGIONAL_TRAIN, "U28");
             if ("SB 71".equals(symbol)) // Städtebahn Sachsen
                 return new Line(id, network, Product.REGIONAL_TRAIN, "SB71");
