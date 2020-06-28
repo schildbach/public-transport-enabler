@@ -12,9 +12,9 @@ repositories {
 
 dependencies {
     //noinspection GradleDependency
-    implementation 'com.squareup.okhttp3:okhttp:3.12.10'
+    implementation 'com.squareup.okhttp3:okhttp:3.12.12'
     //noinspection GradleDependency
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.12.10'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.12.12'
     implementation 'com.google.guava:guava:28.2-android'
     implementation 'org.slf4j:slf4j-api:1.7.30'
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
