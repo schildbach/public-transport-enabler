@@ -32,8 +32,7 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class VmvProvider extends AbstractEfaProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("https://efa.vmv-mbh.de/vmv/");
-    // http://80.146.180.107/delfi/
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://fahrplanauskunft-mv.de/vmv3/");
 
     public VmvProvider() {
         super(NetworkId.VMV, API_BASE);
