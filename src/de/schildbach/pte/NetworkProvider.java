@@ -49,7 +49,13 @@ public interface NetworkProvider {
         /* can query for departures */
         DEPARTURES,
         /* can query trips */
-        TRIPS
+        TRIPS,
+        /* supports trip queries passing by a specific location */
+        TRIPS_VIA,
+        /* exposes real-time data on departures for delays and/or cancellations */
+        DEPARTURES_REALTIME,
+        /* exposes real-time data on trip queries for delays and/or cancellations */
+        TRIPS_REALTIME
     }
 
     public enum Optimize {

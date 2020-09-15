@@ -24,6 +24,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.LinkedList;
@@ -77,6 +78,13 @@ import okhttp3.HttpUrl;
 public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
     protected final static String SERVER_PRODUCT = "navitia";
     protected final static String SERVER_VERSION = "v1";
+
+    private final List CAPABILITIES = Arrays.asList(
+            Capability.SUGGEST_LOCATIONS,
+            Capability.NEARBY_LOCATIONS,
+            Capability.DEPARTURES,
+            Capability.TRIPS
+    );
 
     protected HttpUrl apiBase = HttpUrl.parse("https://api.navitia.io/").newBuilder().addPathSegment(SERVER_VERSION)
             .build();
@@ -680,13 +688,10 @@ public abstract class AbstractNavitiaProvider extends AbstractNetworkProvider {
         }
     }
 
+    // this should be overridden by networks not providing one of the default capabilities
     @Override
     protected boolean hasCapability(final Capability capability) {
-        if (capability == Capability.SUGGEST_LOCATIONS || capability == Capability.NEARBY_LOCATIONS
-                || capability == Capability.DEPARTURES || capability == Capability.TRIPS)
-            return true;
-        else
-            return false;
+        return CAPABILITIES.contains(capability);
     }
 
     @Override
