@@ -34,7 +34,7 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class VmsProvider extends AbstractEfaProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("https://www.vms.de/vms2/");
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://www.vms.de/VMSSL3/");
 
     public VmsProvider() {
         this(API_BASE);
