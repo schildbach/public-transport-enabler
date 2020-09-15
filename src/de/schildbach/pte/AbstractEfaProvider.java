@@ -101,7 +101,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             Capability.SUGGEST_LOCATIONS,
             Capability.NEARBY_LOCATIONS,
             Capability.DEPARTURES,
-            Capability.TRIPS
+            Capability.TRIPS,
+            Capability.TRIPS_VIA
     );
 
     private final HttpUrl departureMonitorEndpoint;

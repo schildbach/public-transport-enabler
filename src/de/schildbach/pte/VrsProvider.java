@@ -86,7 +86,8 @@ public class VrsProvider extends AbstractNetworkProvider {
             Capability.SUGGEST_LOCATIONS,
             Capability.NEARBY_LOCATIONS,
             Capability.DEPARTURES,
-            Capability.TRIPS
+            Capability.TRIPS,
+            Capability.TRIPS_VIA
     );
 
     private static final Logger log = LoggerFactory.getLogger(VrsProvider.class);

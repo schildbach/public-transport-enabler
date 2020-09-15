@@ -48,7 +48,8 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
             Capability.SUGGEST_LOCATIONS,
             Capability.NEARBY_LOCATIONS,
             Capability.DEPARTURES,
-            Capability.TRIPS
+            Capability.TRIPS,
+            Capability.TRIPS_VIA
     );
 
     protected static final Logger log = LoggerFactory.getLogger(AbstractHafasProvider.class);
