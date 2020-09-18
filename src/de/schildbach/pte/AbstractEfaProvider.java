@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Currency;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -524,10 +525,34 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                         final List<Point> path = processItdPathCoordinates(pp);
                         final Point coord1 = path != null ? path.get(0) : null;
 
+                        final EnumSet<Product> products = EnumSet.noneOf(Product.class);
+                        if (XmlPullUtil.optEnter(pp, "genAttrList")) {
+                            while (XmlPullUtil.optEnter(pp, "genAttrElem")) {
+                                final String attrName = XmlPullUtil.valueTag(pp, "name");
+                                final String attrValue = XmlPullUtil.valueTag(pp, "value");
+                                XmlPullUtil.skipExit(pp, "genAttrElem");
+
+                                if ("STOP_MAJOR_MEANS".equals(attrName)) {
+                                    final int majorMeans = Integer.parseInt(attrValue);
+                                    if (majorMeans == 1)
+                                        products.add(Product.SUBWAY);
+                                    else if (majorMeans == 2)
+                                        products.add(Product.SUBURBAN_TRAIN);
+                                    else if (majorMeans == 3)
+                                        products.add(Product.BUS);
+                                    else if (majorMeans == 4)
+                                        products.add(Product.TRAM);
+                                    else
+                                        log.info("unknown STOP_MAJOR_MEANS value: {}", majorMeans);
+                                }
+                            }
+                            XmlPullUtil.skipExit(pp, "genAttrList");
+                        }
+
                         XmlPullUtil.skipExit(pp, "coordInfoItem");
 
                         if (name != null)
-                            locations.add(new Location(locationType, id, coord1, place, name));
+                            locations.add(new Location(locationType, id, coord1, place, name, products));
                     }
 
                     XmlPullUtil.skipExit(pp, "coordInfoItemList");
