@@ -533,17 +533,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                                 XmlPullUtil.skipExit(pp, "genAttrElem");
 
                                 if ("STOP_MAJOR_MEANS".equals(attrName)) {
-                                    final int majorMeans = Integer.parseInt(attrValue);
-                                    if (majorMeans == 1)
-                                        products.add(Product.SUBWAY);
-                                    else if (majorMeans == 2)
-                                        products.add(Product.SUBURBAN_TRAIN);
-                                    else if (majorMeans == 3)
-                                        products.add(Product.BUS);
-                                    else if (majorMeans == 4)
-                                        products.add(Product.TRAM);
-                                    else
-                                        log.info("unknown STOP_MAJOR_MEANS value: {}", majorMeans);
+                                    final Product product = majorMeansToProduct(Integer.parseInt(attrValue));
+                                    if (product != null)
+                                        products.add(product);
                                 }
                             }
                             XmlPullUtil.skipExit(pp, "genAttrList");
@@ -611,11 +603,27 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                         final String locationId = locationType == LocationType.STATION ? id : stateless;
                         final Point coord1 = parseCoord(XmlPullUtil.valueTag(pp, "c"));
 
+                        final EnumSet<Product> products = EnumSet.noneOf(Product.class);
+                        if (XmlPullUtil.optEnter(pp, "attrs")) {
+                            while (XmlPullUtil.optEnter(pp, "attr")) {
+                                final String attrName = XmlPullUtil.valueTag(pp, "n");
+                                final String attrValue = XmlPullUtil.valueTag(pp, "v");
+                                XmlPullUtil.skipExit(pp, "attr");
+
+                                if ("STOP_MAJOR_MEANS".equals(attrName)) {
+                                    final Product product = majorMeansToProduct(Integer.parseInt(attrValue));
+                                    if (product != null)
+                                        products.add(product);
+                                }
+                            }
+                            XmlPullUtil.skipExit(pp, "attrs");
+                        }
+
                         final Location location;
                         if (name != null)
-                            location = new Location(locationType, locationId, coord1, place, name);
+                            location = new Location(locationType, locationId, coord1, place, name, products);
                         else
-                            location = new Location(locationType, locationId, coord1, null, place);
+                            location = new Location(locationType, locationId, coord1, null, place, products);
                         stations.add(location);
 
                         XmlPullUtil.skipExit(pp, "pi");
@@ -2927,6 +2935,22 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             return null;
 
         return Point.fromDouble(y, x);
+    }
+
+    private Product majorMeansToProduct(final int majorMeans) {
+        switch (majorMeans) {
+            case 1:
+                return Product.SUBWAY;
+            case 2:
+                return Product.SUBURBAN_TRAIN;
+            case 3:
+                return Product.BUS;
+            case 4:
+                return Product.TRAM;
+            default:
+                log.info("unknown STOP_MAJOR_MEANS value: {}", majorMeans);
+                return null;
+        }
     }
 
     private Fare processItdGenericTicketGroup(final XmlPullParser pp, final String net, final Currency currency)
