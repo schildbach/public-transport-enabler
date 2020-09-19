@@ -369,8 +369,8 @@ public class VrsProvider extends AbstractNetworkProvider {
         } else {
             throw new IllegalArgumentException("at least one of stationId or lat/lon must be given");
         }
-        // c=1 limits the departures at each stop to 1 - actually we don't need any at this point
-        url.addQueryParameter("c", "1");
+        // limits the departures at each stop - we need that to guess available products
+        url.addQueryParameter("c", "8");
         if (maxLocations > 0) {
             // s=number of stops, artificially limited by server
             url.addQueryParameter("s", Integer.toString(Math.min(16, maxLocations)));
@@ -396,7 +396,8 @@ public class VrsProvider extends AbstractNetworkProvider {
             for (int i = 0; i < timetable.length(); i++) {
                 final JSONObject entry = timetable.getJSONObject(i);
                 final JSONObject stop = entry.getJSONObject("stop");
-                final Location loc = parseLocationAndPosition(stop).location;
+                final JSONArray events = entry.getJSONArray("events");
+                final Location loc = parseLocationAndPosition(stop, events).location;
                 int distance = stop.getInt("distance");
                 if (maxDistance > 0 && distance > maxDistance) {
                     break; // we rely on the server side sorting by distance
@@ -458,7 +459,7 @@ public class VrsProvider extends AbstractNetworkProvider {
             for (int iStation = 0; iStation < timetable.length(); iStation++) {
                 final List<Departure> departures = new ArrayList<>();
                 final JSONObject station = timetable.getJSONObject(iStation);
-                final Location location = parseLocationAndPosition(station.getJSONObject("stop")).location;
+                final Location location = parseLocationAndPosition(station.getJSONObject("stop"), null).location;
                 final JSONArray events = station.getJSONArray("events");
                 final List<LineDestination> lines = new ArrayList<>();
                 // for all departures
@@ -608,21 +609,21 @@ public class VrsProvider extends AbstractNetworkProvider {
             final int nStops = stops.length();
             for (int iStop = 0; iStop < nStops; iStop++) {
                 final JSONObject stop = stops.optJSONObject(iStop);
-                final Location location = parseLocationAndPosition(stop).location;
+                final Location location = parseLocationAndPosition(stop, null).location;
                 locations.add(new SuggestedLocation(location, sc + ac + pc - iStop));
             }
 
             final int nAddresses = addresses.length();
             for (int iAddress = 0; iAddress < nAddresses; iAddress++) {
                 final JSONObject address = addresses.optJSONObject(iAddress);
-                final Location location = parseLocationAndPosition(address).location;
+                final Location location = parseLocationAndPosition(address, null).location;
                 locations.add(new SuggestedLocation(location, ac + pc - iAddress));
             }
 
             final int nPois = pois.length();
             for (int iPoi = 0; iPoi < nPois; iPoi++) {
                 final JSONObject poi = pois.optJSONObject(iPoi);
-                final Location location = parseLocationAndPosition(poi).location;
+                final Location location = parseLocationAndPosition(poi, null).location;
                 locations.add(new SuggestedLocation(location, pc - iPoi));
             }
 
@@ -755,7 +756,7 @@ public class VrsProvider extends AbstractNetworkProvider {
                     final JSONObject segment = segments.getJSONObject(iSegment);
                     final String type = segment.getString("type");
                     final JSONObject origin = segment.getJSONObject("origin");
-                    final LocationWithPosition segmentOriginLocationWithPosition = parseLocationAndPosition(origin);
+                    final LocationWithPosition segmentOriginLocationWithPosition = parseLocationAndPosition(origin, null);
                     Location segmentOrigin = segmentOriginLocationWithPosition.location;
                     final Position segmentOriginPosition = segmentOriginLocationWithPosition.position;
                     if (iSegment == 0) {
@@ -767,7 +768,7 @@ public class VrsProvider extends AbstractNetworkProvider {
                     }
                     final JSONObject destination = segment.getJSONObject("destination");
                     final LocationWithPosition segmentDestinationLocationWithPosition = parseLocationAndPosition(
-                            destination);
+                            destination, null);
                     Location segmentDestination = segmentDestinationLocationWithPosition.location;
                     final Position segmentDestinationPosition = segmentDestinationLocationWithPosition.position;
                     if (iSegment == segments.length() - 1) {
@@ -783,7 +784,7 @@ public class VrsProvider extends AbstractNetworkProvider {
                         for (int iVia = 0; iVia < vias.length(); iVia++) {
                             final JSONObject viaJsonObject = vias.getJSONObject(iVia);
                             final LocationWithPosition viaLocationWithPosition = parseLocationAndPosition(
-                                    viaJsonObject);
+                                    viaJsonObject, null);
                             final Location viaLocation = viaLocationWithPosition.location;
                             final Position viaPosition = viaLocationWithPosition.position;
                             Date arrivalPlanned = null;
@@ -1070,7 +1071,7 @@ public class VrsProvider extends AbstractNetworkProvider {
         }
     }
 
-    public static LocationWithPosition parseLocationAndPosition(JSONObject location) throws JSONException {
+    public LocationWithPosition parseLocationAndPosition(JSONObject location, JSONArray events) throws JSONException {
         final LocationType locationType;
         String id = null;
         String name = null;
@@ -1108,7 +1109,16 @@ public class VrsProvider extends AbstractNetworkProvider {
         final double lat = location.optDouble("x", 0);
         final double lon = location.optDouble("y", 0);
         final Point coord = Point.fromDouble(lat, lon);
-        return new LocationWithPosition(new Location(locationType, id, coord, place, name),
+
+        final EnumSet<Product> products = EnumSet.noneOf(Product.class);
+        if (events != null) {
+            for (int iEvent = 0; iEvent < events.length(); iEvent++) {
+                final JSONObject event = events.getJSONObject(iEvent);
+                final Line line = parseLine(event.getJSONObject("line"));
+                products.add(line.product);
+            }
+        }
+        return new LocationWithPosition(new Location(locationType, id, coord, place, name, products),
                 position != null ? new Position(position.substring(position.lastIndexOf(" ") + 1)) : null);
     }
 
