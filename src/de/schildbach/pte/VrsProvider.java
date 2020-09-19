@@ -404,7 +404,7 @@ public class VrsProvider extends AbstractNetworkProvider {
                 if (types.contains(loc.type) || types.contains(LocationType.ANY)) {
                     locations.add(loc);
                 }
-                serverTime = parseDateTime(timetable.getJSONObject(i).getString("generated")).getTime();
+                serverTime = parseDateTime(entry.getString("generated")).getTime();
             }
             final ResultHeader header = new ResultHeader(NetworkId.VRS, SERVER_PRODUCT, null, null, serverTime, null);
             return new NearbyLocationsResult(header, locations);
