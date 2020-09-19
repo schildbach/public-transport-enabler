@@ -383,7 +383,7 @@ public class VrsProvider extends AbstractNetworkProvider {
             final JSONObject head = new JSONObject(page.toString());
             final String error = Strings.emptyToNull(head.optString("error", "").trim());
             if (error != null) {
-                if (error.equals("Leere Koordinate.") || error.equals("Leere ASS-ID und leere Koordinate"))
+                if (error.equals("Leere Koordinate.") || error.equals("Leere ASS-ID und leere Koordinate") || error.equals("Keine Abfahrten gefunden."))
                     return new NearbyLocationsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT), locations);
                 else if (error.equals("ASS2-Server lieferte leere Antwort."))
                     return new NearbyLocationsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT),
