@@ -525,7 +525,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                         final List<Point> path = processItdPathCoordinates(pp);
                         final Point coord1 = path != null ? path.get(0) : null;
 
-                        final EnumSet<Product> products = EnumSet.noneOf(Product.class);
+                        EnumSet<Product> products = null;
                         if (XmlPullUtil.optEnter(pp, "genAttrList")) {
                             while (XmlPullUtil.optEnter(pp, "genAttrElem")) {
                                 final String attrName = XmlPullUtil.valueTag(pp, "name");
@@ -533,6 +533,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                                 XmlPullUtil.skipExit(pp, "genAttrElem");
 
                                 if ("STOP_MAJOR_MEANS".equals(attrName)) {
+                                    products = EnumSet.noneOf(Product.class);
                                     final Product product = majorMeansToProduct(Integer.parseInt(attrValue));
                                     if (product != null)
                                         products.add(product);
@@ -603,7 +604,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                         final String locationId = locationType == LocationType.STATION ? id : stateless;
                         final Point coord1 = parseCoord(XmlPullUtil.valueTag(pp, "c"));
 
-                        final EnumSet<Product> products = EnumSet.noneOf(Product.class);
+                        EnumSet<Product> products = null;
                         if (XmlPullUtil.optEnter(pp, "attrs")) {
                             while (XmlPullUtil.optEnter(pp, "attr")) {
                                 final String attrName = XmlPullUtil.valueTag(pp, "n");
@@ -611,6 +612,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                                 XmlPullUtil.skipExit(pp, "attr");
 
                                 if ("STOP_MAJOR_MEANS".equals(attrName)) {
+                                    products = EnumSet.noneOf(Product.class);
                                     final Product product = majorMeansToProduct(Integer.parseInt(attrValue));
                                     if (product != null)
                                         products.add(product);
