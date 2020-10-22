@@ -695,6 +695,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         }
 
         XmlPullUtil.optSkipMultiple(pp, "infoLink");
+        XmlPullUtil.optSkip(pp, "itdMapItemList");
         XmlPullUtil.optSkip(pp, "odvNameInput");
 
         XmlPullUtil.exit(pp, "itdOdvName");
