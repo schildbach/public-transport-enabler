@@ -71,9 +71,6 @@ public class TlemProvider extends AbstractEfaProvider {
         if ("1".equals(mot)) {
             if (trainType == null && ("DLR".equals(trainNum) || "Light Railway".equals(trainName)))
                 return new Line(id, network, Product.SUBURBAN_TRAIN, "DLR");
-        } else if ("13".equals(mot)) {
-            if ("OO".equals(trainType) || "Ordinary passenger (o.pas.)".equals(trainName))
-                return new Line(id, network, Product.REGIONAL_TRAIN, "OO" + Strings.nullToEmpty(trainNum));
         }
 
         return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
