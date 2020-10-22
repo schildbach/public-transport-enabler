@@ -65,6 +65,9 @@ public class VrrProvider extends AbstractEfaProvider {
             for (final Product p : options.products) {
                 if (p == Product.CABLECAR)
                     url.addEncodedQueryParameter("inclMOT_11", "on"); // Schwebebahn
+                if (p == Product.HIGH_SPEED_TRAIN)
+                    url.addEncodedQueryParameter("inclMOT_14", "on")
+                            .addEncodedQueryParameter("inclMOT_16", "on");
             }
         }
     }
