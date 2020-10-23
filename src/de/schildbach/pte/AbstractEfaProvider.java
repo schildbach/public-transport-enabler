@@ -2588,12 +2588,14 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             // remove first and last, because they are not intermediate
             final int size = intermediateStops.size();
             if (size >= 2) {
-                if (!intermediateStops.get(size - 1).location.equals(arrivalLocation))
-                    throw new IllegalStateException();
+                final Location lastLocation = intermediateStops.get(size - 1).location;
+                if (!lastLocation.equals(arrivalLocation))
+                    throw new IllegalStateException(lastLocation + " vs " + arrivalLocation);
                 intermediateStops.remove(size - 1);
 
-                if (!intermediateStops.get(0).location.equals(departureLocation))
-                    throw new IllegalStateException();
+                final Location firstLocation = intermediateStops.get(0).location;
+                if (!firstLocation.equals(departureLocation))
+                    throw new IllegalStateException(firstLocation + " vs " + departureLocation);
                 intermediateStops.remove(0);
             }
         }
