@@ -1433,7 +1433,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             if (trainNum == null && trainName != null && trainName.startsWith("Schienenersatz"))
                 return new Line(id, network, Product.BUS, "SEV");
         } else if ("19".equals(mot)) {
-            if ("Bürgerbus".equals(trainName) || "BürgerBus".equals(trainName))
+            if (("Bürgerbus".equals(trainName) || "BürgerBus".equals(trainName) || "Kleinbus".equals(trainName)) && symbol != null)
                 return new Line(id, network, Product.BUS, symbol);
         }
 
