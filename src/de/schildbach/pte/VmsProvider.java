@@ -52,7 +52,6 @@ public class VmsProvider extends AbstractEfaProvider {
             final @Nullable TripOptions options) {
         super.appendTripRequestParameters(url, from, via, to, time, dep, options);
         url.addEncodedQueryParameter("inclMOT_11", "on");
-        url.addEncodedQueryParameter("inclMOT_13", "on");
         url.addEncodedQueryParameter("inclMOT_14", "on");
         url.addEncodedQueryParameter("inclMOT_15", "on");
         url.addEncodedQueryParameter("inclMOT_16", "on");

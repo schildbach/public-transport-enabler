@@ -58,7 +58,6 @@ public class SydneyProvider extends AbstractEfaProvider {
                     url.addEncodedQueryParameter("inclMOT_11", "on"); // school bus
             }
         }
-        url.addEncodedQueryParameter("inclMOT_13", "on");
         url.addEncodedQueryParameter("inclMOT_14", "on");
         url.addEncodedQueryParameter("inclMOT_15", "on");
         url.addEncodedQueryParameter("inclMOT_16", "on");

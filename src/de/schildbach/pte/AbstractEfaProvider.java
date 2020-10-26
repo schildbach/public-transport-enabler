@@ -2023,6 +2023,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                         hasI = true;
                 }
 
+                if (p == Product.REGIONAL_TRAIN)
+                    url.addEncodedQueryParameter("inclMOT_13", "on");
+
                 if (p == Product.SUBURBAN_TRAIN)
                     url.addEncodedQueryParameter("inclMOT_1", "on");
 
