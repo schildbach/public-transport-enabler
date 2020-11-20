@@ -496,8 +496,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
                 XmlPullUtil.enter(pp, "itdCoordInfo");
 
-                XmlPullUtil.enter(pp, "coordInfoRequest");
-                XmlPullUtil.skipExit(pp, "coordInfoRequest");
+                XmlPullUtil.optSkip(pp, "coordInfoRequest");
 
                 final List<Location> locations = new ArrayList<>();
 
