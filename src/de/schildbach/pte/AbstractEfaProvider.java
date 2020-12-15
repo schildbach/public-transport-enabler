@@ -888,7 +888,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         return result.get();
     }
 
-    private static final Pattern P_LINE_RE = Pattern.compile("RE ?\\d+");
+    private static final Pattern P_LINE_RE = Pattern.compile("RE ?\\d+[ab]?");
     private static final Pattern P_LINE_RB = Pattern.compile("RB ?\\d+[ab]?");
     private static final Pattern P_LINE_R = Pattern.compile("R ?\\d+");
     private static final Pattern P_LINE_S = Pattern.compile("S ?\\d+");
@@ -1025,10 +1025,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             if ("RE".equals(trainType) || "Regional-Express".equals(trainName))
                 return new Line(id, network, Product.REGIONAL_TRAIN, "RE" + trainNum);
             if (trainType == null && trainNum != null && P_LINE_RE.matcher(trainNum).matches())
-                return new Line(id, network, Product.REGIONAL_TRAIN, trainNum);
-            if ("RE6a".equals(trainNum) && trainName == null)
-                return new Line(id, network, Product.REGIONAL_TRAIN, trainNum);
-            if ("RE19a".equals(trainNum) && trainName == null)
                 return new Line(id, network, Product.REGIONAL_TRAIN, trainNum);
             if ("RE3 / RB30".equals(trainNum) && trainType == null && trainName == null)
                 return new Line(id, network, Product.REGIONAL_TRAIN, "RE3/RB30");
