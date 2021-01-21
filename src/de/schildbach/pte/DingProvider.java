@@ -18,8 +18,11 @@
 package de.schildbach.pte;
 
 import com.google.common.base.Charsets;
-
+import de.schildbach.pte.dto.Line;
+import de.schildbach.pte.dto.Product;
 import okhttp3.HttpUrl;
+
+import javax.annotation.Nullable;
 
 /**
  * @author Andreas Schildbach
@@ -31,5 +34,19 @@ public class DingProvider extends AbstractEfaProvider {
     public DingProvider() {
         super(NetworkId.DING, API_BASE);
         setRequestUrlEncoding(Charsets.UTF_8);
+    }
+
+    @Override
+    protected Line parseLine(final @Nullable String id, final @Nullable String network, final @Nullable String mot,
+                             final @Nullable String symbol, final @Nullable String name, final @Nullable String longName,
+                             final @Nullable String trainType, final @Nullable String trainNum, final @Nullable String trainName) {
+        if ("0".equals(mot)) {
+            if (trainType == null && "RS 7".equals(trainNum))
+                return new Line(id, network, Product.REGIONAL_TRAIN, "RS7");
+            if (trainType == null && "RS 71".equals(trainNum))
+                return new Line(id, network, Product.REGIONAL_TRAIN, "RS71");
+        }
+
+        return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
     }
 }
