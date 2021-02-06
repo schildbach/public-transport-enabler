@@ -7,7 +7,7 @@ group = 'de.schildbach.pte'
 archivesBaseName = 'public-transport-enabler'
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {
