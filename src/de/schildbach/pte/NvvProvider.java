@@ -83,26 +83,24 @@ public class NvvProvider extends AbstractHafasClientInterfaceProvider {
     private static final Map<String, Style> STYLES = new HashMap<>();
 
     static {
-        STYLES.put("SS1", new Style(Style.parseColor("#009edd"), Style.WHITE));
-        STYLES.put("SS2", new Style(Style.parseColor("#ff2e17"), Style.WHITE));
-        STYLES.put("SS3", new Style(Style.parseColor("#00b098"), Style.WHITE));
-        STYLES.put("SS4", new Style(Style.parseColor("#ffc734"), Style.parseColor("#2c2e35"), Style.parseColor(
-                "#2c2e35")));
-        STYLES.put("SS5", new Style(Style.parseColor("#95542a"), Style.WHITE));
-        STYLES.put("SS6", new Style(Style.parseColor("#ff7322"), Style.WHITE));
-        STYLES.put("SS7", new Style(Style.parseColor("#214d36"), Style.WHITE));
-        STYLES.put("SS8", new Style(Style.parseColor("#88c946"), Style.WHITE));
-        STYLES.put("SS9", new Style(Style.parseColor("#872996"), Style.WHITE));
+        STYLES.put("DB Regio AG S-Bahn Rhein-Main|SS1", new Style(Style.parseColor("#009edd"), Style.WHITE));
+        STYLES.put("DB Regio AG S-Bahn Rhein-Main|SS2", new Style(Style.parseColor("#ff2e17"), Style.WHITE));
+        STYLES.put("DB Regio AG S-Bahn Rhein-Main|SS3", new Style(Style.parseColor("#00b098"), Style.WHITE));
+        STYLES.put("DB Regio AG S-Bahn Rhein-Main|SS4", new Style(Style.parseColor("#ffc734"), Style.parseColor("#2c2e35"), Style.parseColor("#2c2e35")));
+        STYLES.put("DB Regio AG S-Bahn Rhein-Main|SS5", new Style(Style.parseColor("#95542a"), Style.WHITE));
+        STYLES.put("DB Regio AG S-Bahn Rhein-Main|SS6", new Style(Style.parseColor("#ff7322"), Style.WHITE));
+        STYLES.put("DB Regio AG S-Bahn Rhein-Main|SS7", new Style(Style.parseColor("#214d36"), Style.WHITE));
+        STYLES.put("DB Regio AG S-Bahn Rhein-Main|SS8", new Style(Style.parseColor("#88c946"), Style.WHITE));
+        STYLES.put("DB Regio AG S-Bahn Rhein-Main|SS9", new Style(Style.parseColor("#872996"), Style.WHITE));
 
-        STYLES.put("UU1", new Style(Style.parseColor("#c52b1e"), Style.WHITE));
-        STYLES.put("UU2", new Style(Style.parseColor("#00ab4f"), Style.WHITE));
-        STYLES.put("UU3", new Style(Style.parseColor("#345aaf"), Style.WHITE));
-        STYLES.put("UU4", new Style(Style.parseColor("#fc5cac"), Style.WHITE));
-        STYLES.put("UU5", new Style(Style.parseColor("#0c7d3e"), Style.WHITE));
-        STYLES.put("UU6", new Style(Style.parseColor("#0082ca"), Style.WHITE));
-        STYLES.put("UU7", new Style(Style.parseColor("#f19e2d"), Style.WHITE));
-        STYLES.put("UU8", new Style(Style.parseColor("#ca7fbe"), Style.WHITE));
-        STYLES.put("UU9", new Style(Style.parseColor("#f4d039"), Style.parseColor("#2c2e35"), Style.parseColor(
-                "#2c2e35")));
+        STYLES.put("Stadtwerke Verkehrsgesellschaft Frankfurt|UU1", new Style(Style.parseColor("#c52b1e"), Style.WHITE));
+        STYLES.put("Stadtwerke Verkehrsgesellschaft Frankfurt|UU2", new Style(Style.parseColor("#00ab4f"), Style.WHITE));
+        STYLES.put("Stadtwerke Verkehrsgesellschaft Frankfurt|UU3", new Style(Style.parseColor("#345aaf"), Style.WHITE));
+        STYLES.put("Stadtwerke Verkehrsgesellschaft Frankfurt|UU4", new Style(Style.parseColor("#fc5cac"), Style.WHITE));
+        STYLES.put("Stadtwerke Verkehrsgesellschaft Frankfurt|UU5", new Style(Style.parseColor("#0c7d3e"), Style.WHITE));
+        STYLES.put("Stadtwerke Verkehrsgesellschaft Frankfurt|UU6", new Style(Style.parseColor("#0082ca"), Style.WHITE));
+        STYLES.put("Stadtwerke Verkehrsgesellschaft Frankfurt|UU7", new Style(Style.parseColor("#f19e2d"), Style.WHITE));
+        STYLES.put("Stadtwerke Verkehrsgesellschaft Frankfurt|UU8", new Style(Style.parseColor("#ca7fbe"), Style.WHITE));
+        STYLES.put("Stadtwerke Verkehrsgesellschaft Frankfurt|UU9", new Style(Style.parseColor("#f4d039"), Style.parseColor("#2c2e35"), Style.parseColor("#2c2e35")));
     }
 }
