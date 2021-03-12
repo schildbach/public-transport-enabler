@@ -773,19 +773,29 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                             final int ticketX = ovwTrfRef.getInt("ticketX");
                             final JSONObject jsonTicket = jsonFare.getJSONArray("ticketL").getJSONObject(ticketX);
                             final String ticketName = jsonTicket.getString("name");
-                            final Currency currency = Currency.getInstance(jsonTicket.getString("cur"));
-                            final float price = jsonTicket.getInt("prc") / 100f;
-                            fare = new Fare(normalizeFareName(fareName) + '\n' + ticketName,
-                                    normalizeFareType(ticketName), currency, price, null, null);
+                            final String currencyStr = jsonTicket.getString("cur");
+                            if (currencyStr != null) {
+                                final Currency currency = Currency.getInstance(currencyStr);
+                                final float price = jsonTicket.getInt("prc") / 100f;
+                                fare = new Fare(normalizeFareName(fareName) + '\n' + ticketName,
+                                        normalizeFareType(ticketName), currency, price, null, null);
+                            } else {
+                                fare = null;
+                            }
                         } else if (type.equals("F")) { // fare
-                            final Currency currency = Currency.getInstance(jsonFare.getString("cur"));
-                            final float price = jsonFare.getInt("prc") / 100f;
-                            fare = new Fare(normalizeFareName(fareName), normalizeFareType(fareName), currency, price,
-                                    null, null);
+                            final String currencyStr = jsonFare.optString("cur");
+                            if (currencyStr != null) {
+                                final Currency currency = Currency.getInstance(currencyStr);
+                                final float price = jsonFare.getInt("prc") / 100f;
+                                fare = new Fare(normalizeFareName(fareName), normalizeFareType(fareName), currency,
+                                        price, null, null);
+                            } else {
+                                fare = null;
+                            }
                         } else {
                             throw new IllegalArgumentException("cannot handle type: " + type);
                         }
-                        if (!hideFare(fare))
+                        if (fare != null && !hideFare(fare))
                             fares.add(fare);
                     }
                 } else {
