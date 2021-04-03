@@ -730,6 +730,9 @@ public class VrsProvider extends AbstractNetworkProvider {
                 else if (error.equals("Destination invalid."))
                     return new QueryTripsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT),
                             QueryTripsResult.Status.UNKNOWN_TO);
+                else if (error.equals("Fehlerhafter Start"))
+                    return new QueryTripsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT),
+                            QueryTripsResult.Status.UNKNOWN_FROM);
                 else if (error.equals("Fehlerhaftes Ziel"))
                     return new QueryTripsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT),
                             QueryTripsResult.Status.UNKNOWN_TO);
