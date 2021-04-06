@@ -42,6 +42,7 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.Joiner;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -2256,6 +2257,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         XmlPullUtil.optSkipMultiple(pp, "omcTaxi");
 
         final List<Trip> trips = new ArrayList<>();
+        final Joiner idJoiner = Joiner.on('-').skipNulls();
 
         XmlPullUtil.require(pp, "itdItinerary");
         if (XmlPullUtil.optEnter(pp, "itdItinerary")) {
@@ -2265,16 +2267,13 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                 final Calendar calendar = new GregorianCalendar(timeZone);
 
                 while (XmlPullUtil.test(pp, "itdRoute")) {
-                    final String id;
+                    final String tripId;
                     if (useRouteIndexAsTripId) {
                         final String routeIndex = XmlPullUtil.optAttr(pp, "routeIndex", null);
                         final String routeTripIndex = XmlPullUtil.optAttr(pp, "routeTripIndex", null);
-                        if (routeIndex != null && routeTripIndex != null)
-                            id = routeIndex + "-" + routeTripIndex;
-                        else
-                            id = null;
+                        tripId = Strings.emptyToNull(idJoiner.join(routeIndex, routeTripIndex));
                     } else {
-                        id = null;
+                        tripId = null;
                     }
                     final int numChanges = XmlPullUtil.intAttr(pp, "changes");
                     XmlPullUtil.enter(pp, "itdRoute");
@@ -2419,7 +2418,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
                     XmlPullUtil.skipExit(pp, "itdRoute");
 
-                    final Trip trip = new Trip(id, firstDepartureLocation, lastArrivalLocation, legs,
+                    final Trip trip = new Trip(tripId, firstDepartureLocation, lastArrivalLocation, legs,
                             fares.isEmpty() ? null : fares, null, numChanges);
 
                     if (!cancelled)
