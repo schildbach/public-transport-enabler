@@ -1017,15 +1017,20 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
 
     private List<Location> parseLocList(final JSONArray locList, final JSONArray crdSysList) throws JSONException {
         final List<Location> locations = new ArrayList<>(locList.length());
-        for (int iLoc = 0; iLoc < locList.length(); iLoc++)
-            locations.add(parseLoc(locList, iLoc, new HashSet<Integer>(), crdSysList));
+        for (int iLoc = 0; iLoc < locList.length(); iLoc++) {
+            final Location location = parseLoc(locList, iLoc, new HashSet<Integer>(), crdSysList);
+            if (location != null)
+                locations.add(location);
+        }
         return locations;
     }
 
     private Location parseLoc(final JSONArray locList, final int locListIndex,
             @Nullable Set<Integer> previousLocListIndexes, final JSONArray crdSysList) throws JSONException {
         final JSONObject loc = locList.getJSONObject(locListIndex);
-        final String type = loc.getString("type");
+        final String type = loc.optString("type", null);
+        if (type == null)
+            return null;
 
         final LocationType locationType;
         final String id;
