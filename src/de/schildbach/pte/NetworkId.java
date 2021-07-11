@@ -95,4 +95,7 @@ public enum NetworkId {
 
     // Brazil
     BRAZIL,
+
+    // Estonia
+    ESTONIA,
 }
