@@ -1405,15 +1405,16 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             return new Line(id, network, Product.SUBWAY, name);
         } else if ("3".equals(mot) || "4".equals(mot)) {
             return new Line(id, network, Product.TRAM, name);
-        } else if ("5".equals(mot) || "6".equals(mot) || "7".equals(mot) || "10".equals(mot)) {
+        } else if ("5".equals(mot) || "6".equals(mot) || "7".equals(mot)) {
             if ("Schienenersatzverkehr".equals(name))
                 return new Line(id, network, Product.BUS, "SEV");
-            else
-                return new Line(id, network, Product.BUS, name);
+            return new Line(id, network, Product.BUS, name);
         } else if ("8".equals(mot)) {
             return new Line(id, network, Product.CABLECAR, name);
         } else if ("9".equals(mot)) {
             return new Line(id, network, Product.FERRY, name);
+        } else if ("10".equals(mot)) {
+            return new Line(id, network, Product.ON_DEMAND, name);
         } else if ("11".equals(mot)) {
             return new Line(id, network, null, ParserUtils.firstNotEmpty(symbol, name));
         } else if ("12".equals(mot)) {
@@ -1424,15 +1425,21 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                 return new Line(id, network, Product.BUS, "SEV");
             if (trainNum != null)
                 return new Line(id, network, Product.REGIONAL_TRAIN, Strings.nullToEmpty(trainType) + trainNum);
+            return new Line(id, network, Product.REGIONAL_TRAIN, name);
         } else if ("14".equals(mot) || "15".equals(mot) || "16".equals(mot)) {
             if (trainType != null || trainNum != null)
                 return new Line(id, network, Product.HIGH_SPEED_TRAIN, Strings.nullToEmpty(trainType) + Strings.nullToEmpty(trainNum));
-        } else if ("17".equals(mot)) {
+            return new Line(id, network, Product.HIGH_SPEED_TRAIN, name);
+        } else if ("17".equals(mot)) { // Schienenersatzverkehr
             if (trainNum == null && trainName != null && trainName.startsWith("Schienenersatz"))
                 return new Line(id, network, Product.BUS, "SEV");
-        } else if ("19".equals(mot)) {
+            return new Line(id, network, Product.BUS, name);
+        } else if ("18".equals(mot)) { // Zug-Shuttle
+            return new Line(id, network, Product.REGIONAL_TRAIN, name);
+        } else if ("19".equals(mot)) { // Bürgerbus
             if (("Bürgerbus".equals(trainName) || "BürgerBus".equals(trainName) || "Kleinbus".equals(trainName)) && symbol != null)
                 return new Line(id, network, Product.BUS, symbol);
+            return new Line(id, network, Product.BUS, name);
         }
 
         throw new IllegalStateException(
@@ -2026,7 +2033,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                             .addEncodedQueryParameter("inclMOT_16", "on");
 
                 if (p == Product.REGIONAL_TRAIN)
-                    url.addEncodedQueryParameter("inclMOT_13", "on");
+                    url.addEncodedQueryParameter("inclMOT_13", "on").addEncodedQueryParameter("inclMOT_18", "on");
 
                 if (p == Product.SUBURBAN_TRAIN)
                     url.addEncodedQueryParameter("inclMOT_1", "on");
@@ -2039,7 +2046,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
                 if (p == Product.BUS)
                     url.addEncodedQueryParameter("inclMOT_5", "on").addEncodedQueryParameter("inclMOT_6", "on")
-                            .addEncodedQueryParameter("inclMOT_7", "on");
+                            .addEncodedQueryParameter("inclMOT_7", "on").addEncodedQueryParameter("inclMOT_17", "on")
+                            .addEncodedQueryParameter("inclMOT_19", "on");
 
                 if (p == Product.ON_DEMAND)
                     url.addEncodedQueryParameter("inclMOT_10", "on");
