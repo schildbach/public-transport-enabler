@@ -1645,6 +1645,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                     final String mod = XmlPullUtil.valueTag(pp, "mod");
                     final String co = XmlPullUtil.valueTag(pp, "co");
                     XmlPullUtil.optValueTag(pp, "u", null);
+                    XmlPullUtil.optValueTag(pp, "tx", null);
                     if ("-2000".equals(co)) { // STOP_INVALID
                         result.set(new QueryDeparturesResult(header, QueryDeparturesResult.Status.INVALID_STATION));
                     } else if ("-4050".equals(co)) { // NO_SERVINGLINES
