@@ -12,7 +12,7 @@ Copy the `secrets.properties.template` file to `secrets.properties` like so:
 
     $ cp test/de/schildbach/pte/live/secrets.properties.template test/de/schildbach/pte/live/secrets.properties
 
-You need to request the secrets directly from the provider. For Navitia based providers, you can [request a secret here](https://www.navitia.io/register).
+You need to request the secrets directly from the provider.
 
 How to run live tests?
 ----------------------
@@ -25,7 +25,7 @@ If you prefer to run tests from the command line, you can comment out the test e
 [build.gradle](https://github.com/schildbach/public-transport-enabler/blob/master/build.gradle#L30)
 and use this command to only execute a test for a single provider:
 
-    $ gradle -Dtest.single=ParisProviderLive test
+    $ gradle -Dtest.single=BvgProviderLive test
 
-This uses the `ParisProvider` as an example.
+This uses the `BvgProvider` as an example.
 Just replace it with the provider you want to test.
