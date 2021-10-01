@@ -659,7 +659,7 @@ public class VrsProvider extends AbstractNetworkProvider {
                 else if (error.equals("Keine Verbindungen gefunden."))
                     return new QueryTripsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT),
                             QueryTripsResult.Status.NO_TRIPS);
-                else if (error.contains("keine") && error.contains("Verbindungen"))
+                else if (error.equals("Es wurden keine gültigen Verbindungen für diese Anfrage gefunden."))
                     return new QueryTripsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT),
                             QueryTripsResult.Status.NO_TRIPS);
                 else if (error.startsWith("Keine Verbindung gefunden."))

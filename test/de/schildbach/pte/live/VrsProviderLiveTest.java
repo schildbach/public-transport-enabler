@@ -128,12 +128,10 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
         print(result3);
     }
 
-    @Ignore
-    // The new interface tx_ekap_here method gives the error message with a status code 500, which is handled in HttpClient
     @Test
     public void nearbyLocationsEmpty() throws Exception {
         final NearbyLocationsResult result = queryNearbyLocations(EnumSet.allOf(LocationType.class),
-                Location.coord(1, 0), 0, 0);
+                Location.coord(1, 1), 1000, 0);
         print(result);
         assertEquals(0, result.locations.size());
     }
