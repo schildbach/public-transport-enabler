@@ -25,7 +25,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Currency;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.GregorianCalendar;
@@ -41,6 +40,7 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
+import de.schildbach.pte.util.ParserUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -865,11 +865,11 @@ public class VrsProvider extends AbstractNetworkProvider {
                                                                                                        // "4"
 
             if (name != null && price != 0.0 && level != null) {
-                fares.add(new Fare(name, Fare.Type.ADULT, Currency.getInstance("EUR"), price, level, null /* units */));
+                fares.add(new Fare(name, Fare.Type.ADULT, ParserUtils.CURRENCY_EUR, price, level, null /* units */));
             } else if (name != null && name.equals("NRW-Tarif") && text != null) {
                 Matcher matcher = nrwTarifPattern.matcher(text);
                 if (matcher.find()) {
-                    fares.add(new Fare(name, Fare.Type.ADULT, Currency.getInstance("EUR"),
+                    fares.add(new Fare(name, Fare.Type.ADULT, ParserUtils.CURRENCY_EUR,
                             Float.parseFloat(matcher.group(0).replace(",", ".")), null /* level */, null /* units */));
                 }
             }

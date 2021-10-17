@@ -23,7 +23,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Currency;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -497,9 +496,9 @@ public class NegentweeProvider extends AbstractNetworkProvider {
         List<Fare> tripFares = null;
         if (fareInfo.getBoolean("complete")) {
             tripFares = Arrays.asList(
-                new Fare("Full-price", Fare.Type.ADULT, Currency.getInstance("EUR"),
+                new Fare("Full-price", Fare.Type.ADULT, ParserUtils.CURRENCY_EUR,
                     fareInfo.getInt("fullPriceCents") / 100, null, null),
-                new Fare("Reduced-price", Fare.Type.ADULT, Currency.getInstance("EUR"),
+                new Fare("Reduced-price", Fare.Type.ADULT, ParserUtils.CURRENCY_EUR,
                     fareInfo.getInt("reducedPriceCents") / 100, null, null));
         }
 
@@ -531,7 +530,7 @@ public class NegentweeProvider extends AbstractNetworkProvider {
             }
         }
 
-        return new Fare(fareLeg.getString("operatorString"), Fare.Type.ADULT, Currency.getInstance("EUR"), farePrice,
+        return new Fare(fareLeg.getString("operatorString"), Fare.Type.ADULT, ParserUtils.CURRENCY_EUR, farePrice,
                 null, null);
     }
 
