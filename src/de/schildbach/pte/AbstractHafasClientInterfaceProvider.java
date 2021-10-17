@@ -785,7 +785,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                         } else if (type.equals("F")) { // fare
                             final String currencyStr = jsonFare.optString("cur");
                             if (currencyStr != null) {
-                                final Currency currency = Currency.getInstance(currencyStr);
+                                final Currency currency = ParserUtils.getCurrency(currencyStr);
                                 final float price = jsonFare.getInt("prc") / 100f;
                                 fare = new Fare(normalizeFareName(fareName), normalizeFareType(fareName), currency,
                                         price, null, null);

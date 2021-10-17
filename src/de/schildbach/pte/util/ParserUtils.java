@@ -303,4 +303,12 @@ public final class ParserUtils {
 
         return null;
     }
+
+    public static Currency getCurrency(final String code) {
+        try {
+            return Currency.getInstance(code);
+        } catch (final IllegalArgumentException x) {
+            throw new RuntimeException("unknown ISO 4217 code: " + code);
+        }
+    }
 }

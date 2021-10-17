@@ -3014,7 +3014,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             return Currency.getInstance("USD");
         if (currencyStr.equals("Dirham"))
             return Currency.getInstance("AED");
-        return Currency.getInstance(currencyStr);
+        return ParserUtils.getCurrency(currencyStr);
     }
 
     private static final Pattern P_POSITION = Pattern.compile(
