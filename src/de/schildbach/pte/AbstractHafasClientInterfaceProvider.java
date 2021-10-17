@@ -774,7 +774,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                             final JSONObject jsonTicket = jsonFare.getJSONArray("ticketL").getJSONObject(ticketX);
                             final String ticketName = jsonTicket.getString("name");
                             final String currencyStr = jsonTicket.getString("cur");
-                            if (currencyStr != null) {
+                            if (!Strings.isNullOrEmpty(currencyStr)) {
                                 final Currency currency = Currency.getInstance(currencyStr);
                                 final float price = jsonTicket.getInt("prc") / 100f;
                                 fare = new Fare(normalizeFareName(fareName) + '\n' + ticketName,
@@ -784,7 +784,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                             }
                         } else if (type.equals("F")) { // fare
                             final String currencyStr = jsonFare.optString("cur");
-                            if (currencyStr != null) {
+                            if (!Strings.isNullOrEmpty(currencyStr)) {
                                 final Currency currency = ParserUtils.getCurrency(currencyStr);
                                 final float price = jsonFare.getInt("prc") / 100f;
                                 fare = new Fare(normalizeFareName(fareName), normalizeFareType(fareName), currency,
