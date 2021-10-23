@@ -39,7 +39,7 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class MvvProvider extends AbstractEfaProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("https://efa.mvv-muenchen.de/mobile/");
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://efa.mvv-muenchen.de/ng/");
 
     public MvvProvider() {
         this(API_BASE);
@@ -50,7 +50,7 @@ public class MvvProvider extends AbstractEfaProvider {
         setIncludeRegionId(false);
         setRequestUrlEncoding(Charsets.UTF_8);
         setStyles(STYLES);
-        setSessionCookieName("SIDefaalt"); // SIDefa
+        setSessionCookieName("SIDefa");
     }
 
     @Override
