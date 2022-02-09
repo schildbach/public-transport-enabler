@@ -80,6 +80,8 @@ public final class XmlPullUtil {
     }
 
     public static void exit(final XmlPullParser pp, final String tagName) throws XmlPullParserException, IOException {
+        skipWhitespace(pp);
+
         pp.require(XmlPullParser.END_TAG, null, tagName);
         pp.next();
     }
