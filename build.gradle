@@ -16,12 +16,12 @@ dependencies {
     //noinspection GradleDependency
     implementation 'com.squareup.okhttp3:logging-interceptor:3.12.13'
     implementation 'com.google.guava:guava:31.0.1-android'
-    implementation 'org.slf4j:slf4j-api:1.7.32'
+    implementation 'org.slf4j:slf4j-api:1.7.36'
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
     implementation 'org.json:json:20090211' // provided by Android
     implementation 'net.sf.kxml:kxml2:2.3.0' // provided by Android
     testImplementation 'junit:junit:4.13.2'
-    testRuntime 'org.slf4j:slf4j-jdk14:1.7.32'
+    testRuntime 'org.slf4j:slf4j-jdk14:1.7.36'
 }
 
 sourceSets {
