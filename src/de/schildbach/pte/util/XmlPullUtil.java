@@ -187,24 +187,29 @@ public final class XmlPullUtil {
     public static String valueTag(final XmlPullParser pp, final String tagName)
             throws XmlPullParserException, IOException {
         XmlPullUtil.enter(pp, tagName);
-        final String value = pp.getText();
+        String value = pp.getText();
         XmlPullUtil.skipExit(pp, tagName);
 
-        return value != null ? value.trim() : null;
+        if (value == null)
+            return null;
+        value = value.trim();
+        if (value.isEmpty())
+            return null;
+        return value;
     }
 
     public static String optValueTag(final XmlPullParser pp, final String tagName, final @Nullable String defaultValue)
             throws XmlPullParserException, IOException {
-        if (XmlPullUtil.test(pp, tagName)) {
-            if (!pp.isEmptyElementTag()) {
-                return valueTag(pp, tagName);
-            } else {
-                pp.next();
-                return defaultValue;
-            }
-        } else {
+        if (!XmlPullUtil.test(pp, tagName))
+            return defaultValue;
+        if (pp.isEmptyElementTag()) {
+            pp.next();
             return defaultValue;
         }
+        final String value = valueTag(pp, tagName);
+        if (value == null)
+            return defaultValue;
+        return value;
     }
 
     /**
