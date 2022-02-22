@@ -2801,6 +2801,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                                     final String[] coordParts = coordPart.split(":");
                                     final String mapName = coordParts[2];
                                     if (COORD_FORMAT.equals(mapName)) {
+                                        if (coordParts.length < 2)
+                                            throw new RuntimeException("cannot parse coordinate: " + coordPart);
                                         final double lat = Double.parseDouble(coordParts[1]);
                                         final double lon = Double.parseDouble(coordParts[0]);
                                         coords = Point.fromDouble(lat, lon);
@@ -2942,6 +2944,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             return null;
 
         final String[] parts = coordStr.split(",");
+        if (parts.length < 2)
+            throw new RuntimeException("cannot parse coordinate: " + coordStr);
         final double lat = Double.parseDouble(parts[1]);
         final double lon = Double.parseDouble(parts[0]);
         return Point.fromDouble(lat, lon);
