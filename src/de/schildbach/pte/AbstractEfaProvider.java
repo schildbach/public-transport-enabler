@@ -1588,6 +1588,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                         plannedDepartureTime.clear();
                         processItdDateTime(pp, plannedDepartureTime);
 
+                        XmlPullUtil.optSkip(pp, "itdDateTimeBaseTimetable");
+
                         predictedDepartureTime.clear();
                         if (XmlPullUtil.test(pp, "itdRTDateTime"))
                             processItdDateTime(pp, predictedDepartureTime);
