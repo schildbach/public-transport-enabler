@@ -396,18 +396,18 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                     if (!equivs && !location.id.equals(stationId))
                         continue;
 
-                    final String jnyDirTxt = jny.getString("dirTxt");
+                    final String jnyDirTxt = jny.optString("dirTxt", null);
                     Location destination = null;
                     // if last entry in stopL happens to be our destination, use it
                     final JSONArray stopList = jny.optJSONArray("stopL");
                     if (stopList != null) {
                         final int lastStopIdx = stopList.getJSONObject(stopList.length() - 1).getInt("locX");
                         final String lastStopName = locList.getJSONObject(lastStopIdx).getString("name");
-                        if (jnyDirTxt.equals(lastStopName))
+                        if (jnyDirTxt != null && jnyDirTxt.equals(lastStopName))
                             destination = parseLoc(locList, lastStopIdx, null, crdSysList);
                     }
                     // otherwise split unidentified destination as if it was a station and use it
-                    if (destination == null) {
+                    if (destination == null && jnyDirTxt != null) {
                         final String[] splitJnyDirTxt = splitStationName(jnyDirTxt);
                         destination = new Location(LocationType.ANY, null, splitJnyDirTxt[0], splitJnyDirTxt[1]);
                     }
