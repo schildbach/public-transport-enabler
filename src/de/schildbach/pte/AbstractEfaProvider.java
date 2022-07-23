@@ -927,7 +927,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                 if (trainName.equals("Nachtbus"))
                     return new Line(id, network, Product.BUS, str);
                 if (trainName.equals("Anrufsammeltaxi"))
-                    return new Line(id, network, Product.BUS, str);
+                    return new Line(id, network, Product.ON_DEMAND, str);
                 if (trainName.equals("Ersatzverkehr"))
                     return new Line(id, network, Product.BUS, str);
                 if (trainName.equals("Vienna Airport Lines"))
