@@ -1,0 +1,14 @@
+image: ubuntu:focal
+
+before_script:
+  - apt-get update
+  - apt-get -y upgrade
+  - apt-get -y install ${JDK_PACKAGE}
+  - apt-get -y install gradle
+
+build:
+  parallel:
+    matrix:
+      - JDK_PACKAGE: [ openjdk-8-jdk, openjdk-11-jdk ]
+  script:
+    - gradle build --stacktrace

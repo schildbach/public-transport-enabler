@@ -24,6 +24,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.Calendar;
+import java.util.Currency;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
@@ -39,6 +40,8 @@ public final class ParserUtils {
             Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
     private static final Pattern P_HTML_BREAKS = Pattern.compile("(<br\\s*/>)+",
             Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+
+    public static final Currency CURRENCY_EUR = Currency.getInstance("EUR");
 
     public static String formatHtml(final CharSequence html) {
         if (html == null)
@@ -299,5 +302,13 @@ public final class ParserUtils {
                 return str;
 
         return null;
+    }
+
+    public static Currency getCurrency(final String code) {
+        try {
+            return Currency.getInstance(code);
+        } catch (final IllegalArgumentException x) {
+            throw new RuntimeException("unknown ISO 4217 code: " + code);
+        }
     }
 }

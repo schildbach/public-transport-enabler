@@ -53,6 +53,7 @@ public class VrrProvider extends AbstractEfaProvider {
         setUseRouteIndexAsTripId(false);
         setStyles(STYLES);
         setRequestUrlEncoding(Charsets.UTF_8);
+        setUseLineRestriction(false);
         setSessionCookieName("vrr-ef-lb");
     }
 
@@ -82,6 +83,10 @@ public class VrrProvider extends AbstractEfaProvider {
             if (trainType == null && "SEV7".equals(trainNum))
                 return new Line(id, network, Product.BUS, trainNum);
             if (trainType == null && "3SEV".equals(trainNum))
+                return new Line(id, network, Product.BUS, trainNum);
+            if (trainType == null && "SEV A".equals(trainNum))
+                return new Line(id, network, Product.BUS, trainNum);
+            if (trainType == null && "SEV B".equals(trainNum))
                 return new Line(id, network, Product.BUS, trainNum);
         } else if ("11".equals(mot)) {
             // Wuppertaler Schwebebahn & SkyTrain D'dorf

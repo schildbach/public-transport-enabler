@@ -396,18 +396,18 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                     if (!equivs && !location.id.equals(stationId))
                         continue;
 
-                    final String jnyDirTxt = jny.getString("dirTxt");
+                    final String jnyDirTxt = jny.optString("dirTxt", null);
                     Location destination = null;
                     // if last entry in stopL happens to be our destination, use it
                     final JSONArray stopList = jny.optJSONArray("stopL");
                     if (stopList != null) {
                         final int lastStopIdx = stopList.getJSONObject(stopList.length() - 1).getInt("locX");
                         final String lastStopName = locList.getJSONObject(lastStopIdx).getString("name");
-                        if (jnyDirTxt.equals(lastStopName))
+                        if (jnyDirTxt != null && jnyDirTxt.equals(lastStopName))
                             destination = parseLoc(locList, lastStopIdx, null, crdSysList);
                     }
                     // otherwise split unidentified destination as if it was a station and use it
-                    if (destination == null) {
+                    if (destination == null && jnyDirTxt != null) {
                         final String[] splitJnyDirTxt = splitStationName(jnyDirTxt);
                         destination = new Location(LocationType.ANY, null, splitJnyDirTxt[0], splitJnyDirTxt[1]);
                     }
@@ -773,19 +773,29 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                             final int ticketX = ovwTrfRef.getInt("ticketX");
                             final JSONObject jsonTicket = jsonFare.getJSONArray("ticketL").getJSONObject(ticketX);
                             final String ticketName = jsonTicket.getString("name");
-                            final Currency currency = Currency.getInstance(jsonTicket.getString("cur"));
-                            final float price = jsonTicket.getInt("prc") / 100f;
-                            fare = new Fare(normalizeFareName(fareName) + '\n' + ticketName,
-                                    normalizeFareType(ticketName), currency, price, null, null);
+                            final String currencyStr = jsonTicket.getString("cur");
+                            if (!Strings.isNullOrEmpty(currencyStr)) {
+                                final Currency currency = Currency.getInstance(currencyStr);
+                                final float price = jsonTicket.getInt("prc") / 100f;
+                                fare = new Fare(normalizeFareName(fareName) + '\n' + ticketName,
+                                        normalizeFareType(ticketName), currency, price, null, null);
+                            } else {
+                                fare = null;
+                            }
                         } else if (type.equals("F")) { // fare
-                            final Currency currency = Currency.getInstance(jsonFare.getString("cur"));
-                            final float price = jsonFare.getInt("prc") / 100f;
-                            fare = new Fare(normalizeFareName(fareName), normalizeFareType(fareName), currency, price,
-                                    null, null);
+                            final String currencyStr = jsonFare.optString("cur");
+                            if (!Strings.isNullOrEmpty(currencyStr)) {
+                                final Currency currency = ParserUtils.getCurrency(currencyStr);
+                                final float price = jsonFare.getInt("prc") / 100f;
+                                fare = new Fare(normalizeFareName(fareName), normalizeFareType(fareName), currency,
+                                        price, null, null);
+                            } else {
+                                fare = null;
+                            }
                         } else {
                             throw new IllegalArgumentException("cannot handle type: " + type);
                         }
-                        if (!hideFare(fare))
+                        if (fare != null && !hideFare(fare))
                             fares.add(fare);
                     }
                 } else {
@@ -1007,15 +1017,20 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
 
     private List<Location> parseLocList(final JSONArray locList, final JSONArray crdSysList) throws JSONException {
         final List<Location> locations = new ArrayList<>(locList.length());
-        for (int iLoc = 0; iLoc < locList.length(); iLoc++)
-            locations.add(parseLoc(locList, iLoc, new HashSet<Integer>(), crdSysList));
+        for (int iLoc = 0; iLoc < locList.length(); iLoc++) {
+            final Location location = parseLoc(locList, iLoc, new HashSet<Integer>(), crdSysList);
+            if (location != null)
+                locations.add(location);
+        }
         return locations;
     }
 
     private Location parseLoc(final JSONArray locList, final int locListIndex,
             @Nullable Set<Integer> previousLocListIndexes, final JSONArray crdSysList) throws JSONException {
         final JSONObject loc = locList.getJSONObject(locListIndex);
-        final String type = loc.getString("type");
+        final String type = loc.optString("type", null);
+        if (type == null)
+            return null;
 
         final LocationType locationType;
         final String id;

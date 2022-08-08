@@ -53,7 +53,6 @@ import de.schildbach.pte.dto.StationDepartures;
 import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.dto.SuggestLocationsResult;
 import de.schildbach.pte.dto.TripOptions;
-import de.schildbach.pte.util.Iso8601Format;
 
 /**
  * @author Michael Dyrna
@@ -71,7 +70,7 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void nearbyStationsByCoordinate() throws Exception {
-        final NearbyLocationsResult result = queryNearbyStations(Location.coord(51218693, 6777785));
+        final NearbyLocationsResult result = queryNearbyStations(Location.coord(50942970, 6958570));
         print(result);
 
         final NearbyLocationsResult result2 = queryNearbyStations(Location.coord(51719648, 8754330));
@@ -121,18 +120,18 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
         print(result);
 
         final NearbyLocationsResult result2 = queryNearbyLocations(EnumSet.of(LocationType.STATION),
-                Location.coord(50732100, 7096820), 0, 50);
+                Location.coord(50732100, 7096820), 0, 1);
         print(result2);
 
         final NearbyLocationsResult result3 = queryNearbyLocations(EnumSet.of(LocationType.STATION),
-                Location.coord(50732100, 7096820), 1000, 50);
+                Location.coord(50732100, 7096820), 100, 0);
         print(result3);
     }
 
     @Test
     public void nearbyLocationsEmpty() throws Exception {
         final NearbyLocationsResult result = queryNearbyLocations(EnumSet.allOf(LocationType.class),
-                Location.coord(1, 0), 0, 0);
+                Location.coord(1, 1), 1000, 0);
         print(result);
         assertEquals(0, result.locations.size());
     }
@@ -165,7 +164,6 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void queryDeparturesGaussstr() throws Exception {
         final QueryDeparturesResult result = queryDepartures("8984", false);
-        // will return {"error": "Keine Abfahrten gefunden."}
         print(result);
         printLineDestinations(result);
     }
@@ -319,9 +317,9 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
     }
 
     @Test
-    public void tripEarlierLaterCologneBerlin() throws Exception {
-        final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "1"), null,
-                new Location(LocationType.STATION, "11458"), new Date(), true, null);
+    public void tripEarlierLaterCologneBonn() throws Exception {
+        final QueryTripsResult result = queryTrips(new Location(LocationType.STATION, "8"), null,
+                new Location(LocationType.STATION, "687"), new Date(), true, null);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
         print(result);
@@ -426,8 +424,7 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
                 "Kerpen-Sindorf", "Erftstraße 43");
         final Location to = new Location(LocationType.ADDRESS, null /* id */, Point.from1E6(50923000, 6818440),
                 "Frechen", "Zedernweg 1");
-        final QueryTripsResult result = queryTrips(from, null, to, Iso8601Format.parseDateTime("2015-03-17 21:11:18"),
-                true, null);
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);
@@ -529,8 +526,7 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
         }
         Set<Line> lines = new TreeSet<>();
         for (Location station : stations) {
-            QueryDeparturesResult qdr = provider.queryDepartures(station.id,
-                    Iso8601Format.parseDateTime("2015-03-16 02:00:00"), 100, false);
+            QueryDeparturesResult qdr = provider.queryDepartures(station.id, new Date(), 100, false);
             if (qdr.status == QueryDeparturesResult.Status.OK) {
                 for (StationDepartures stationDepartures : qdr.stationDepartures) {
                     final List<LineDestination> stationDeparturesLines = stationDepartures.lines;
@@ -549,11 +545,9 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
         for (Line line : lines) {
             final Product product = line.product;
             if (product != null) {
-                if (product.equals(Product.BUS)) {
-                    final Style style = line.style;
-                    if (style != null) {
-                        System.out.printf("%s %6x\n", line.label, style.backgroundColor);
-                    }
+                final Style style = line.style;
+                if (style != null) {
+                    System.out.printf("%s %s %6x\n", product, line.label, style.backgroundColor);
                 }
             }
         }

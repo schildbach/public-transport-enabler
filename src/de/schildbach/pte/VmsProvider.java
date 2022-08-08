@@ -34,7 +34,7 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class VmsProvider extends AbstractEfaProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("https://www.vms.de/vms2/");
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://www.vms.de/VMSSL3/");
 
     public VmsProvider() {
         this(API_BASE);
@@ -52,10 +52,6 @@ public class VmsProvider extends AbstractEfaProvider {
             final @Nullable TripOptions options) {
         super.appendTripRequestParameters(url, from, via, to, time, dep, options);
         url.addEncodedQueryParameter("inclMOT_11", "on");
-        url.addEncodedQueryParameter("inclMOT_13", "on");
-        url.addEncodedQueryParameter("inclMOT_14", "on");
-        url.addEncodedQueryParameter("inclMOT_15", "on");
-        url.addEncodedQueryParameter("inclMOT_16", "on");
         url.addEncodedQueryParameter("inclMOT_17", "on");
     }
 

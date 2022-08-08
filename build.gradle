@@ -1,5 +1,5 @@
 plugins {
-    id 'java'
+    id 'java-library'
     id 'maven'
 }
 
@@ -7,21 +7,21 @@ group = 'de.schildbach.pte'
 archivesBaseName = 'public-transport-enabler'
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {
     //noinspection GradleDependency
-    compile 'com.squareup.okhttp3:okhttp:3.12.6'
+    implementation 'com.squareup.okhttp3:okhttp:3.12.13'
     //noinspection GradleDependency
-    compile 'com.squareup.okhttp3:logging-interceptor:3.12.6'
-    compile 'com.google.guava:guava:28.1-android'
-    compile 'org.slf4j:slf4j-api:1.7.29'
-    compile 'com.google.code.findbugs:jsr305:3.0.2'
-    compile 'org.json:json:20090211' // provided by Android
-    compile 'net.sf.kxml:kxml2:2.3.0' // provided by Android
-    testCompile 'junit:junit:4.12'
-    testRuntime 'org.slf4j:slf4j-jdk14:1.7.29'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.12.13'
+    implementation 'com.google.guava:guava:31.1-android'
+    implementation 'org.slf4j:slf4j-api:1.7.36'
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
+    implementation 'org.json:json:20090211' // provided by Android
+    implementation 'net.sf.kxml:kxml2:2.3.0' // provided by Android
+    testImplementation 'junit:junit:4.13.2'
+    testRuntime 'org.slf4j:slf4j-jdk14:1.7.36'
 }
 
 sourceSets {
@@ -36,6 +36,12 @@ sourceSets {
 }
 
 compileJava {
+    sourceCompatibility '1.8'
+    targetCompatibility '1.8'
+    options.encoding = 'UTF-8'
+}
+
+compileTestJava {
     sourceCompatibility '1.8'
     targetCompatibility '1.8'
     options.encoding = 'UTF-8'

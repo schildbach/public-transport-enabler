@@ -49,18 +49,6 @@ public class MerseyProvider extends AbstractEfaProvider {
         return Product.ALL;
     }
 
-    @Override
-    protected Line parseLine(final @Nullable String id, final @Nullable String network, final @Nullable String mot,
-            final @Nullable String symbol, final @Nullable String name, final @Nullable String longName,
-            final @Nullable String trainType, final @Nullable String trainNum, final @Nullable String trainName) {
-        if ("13".equals(mot)) {
-            if ("OO".equals(trainType) || "Ordinary passenger (o.pas.)".equals(trainName))
-                return new Line(id, network, Product.REGIONAL_TRAIN, "OO" + Strings.nullToEmpty(trainNum));
-        }
-
-        return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
-    }
-
     private static final Pattern P_POSITION_BOUND = Pattern.compile("([NESW]+)-bound", Pattern.CASE_INSENSITIVE);
 
     @Override

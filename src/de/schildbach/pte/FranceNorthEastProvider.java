@@ -47,37 +47,4 @@ public class FranceNorthEastProvider extends AbstractNavitiaProvider {
     public String region() {
         return API_REGION;
     }
-
-    @Override
-    protected Style getLineStyle(final String network, final Product product, final String code, final String color) {
-        switch (product) {
-        case REGIONAL_TRAIN: {
-            // Rail (route_type = 2) for TER and Corail Intercité/Lunéa (all SNCF)
-            return new Style(Style.parseColor(color), computeForegroundColor(color));
-        }
-        case SUBURBAN_TRAIN: {
-            // Rail (route_type = 2) for Transilien (SNCF)
-            return new Style(Style.parseColor(color), computeForegroundColor(color));
-        }
-        case TRAM: {
-            // Tram (route_type = 0) for Strasboug (CTS) and Nancy (Stan)
-            return new Style(Shape.RECT, Style.parseColor(color), computeForegroundColor(color));
-        }
-        case BUS: {
-            // Bus (route_type = 3)
-            return new Style(Shape.ROUNDED, Style.parseColor(color), computeForegroundColor(color));
-        }
-        case SUBWAY: {
-            // Subway (route_type = 1) for Lille (Transpole)
-            return new Style(Shape.CIRCLE, Style.TRANSPARENT, Style.parseColor(color), Style.parseColor(color));
-        }
-        default:
-            throw new IllegalArgumentException("Unhandled product: " + product);
-        }
-    }
-
-    @Override
-    protected String getAddressName(final String name, final String houseNumber) {
-        return houseNumber + " " + name;
-    }
 }

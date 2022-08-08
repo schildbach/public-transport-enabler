@@ -145,16 +145,7 @@ public class BayernProvider extends AbstractEfaProvider {
             final @Nullable Location via, final Location to, final Date time, final boolean dep,
             final @Nullable TripOptions options) {
         super.appendTripRequestParameters(url, from, via, to, time, dep, options);
-        if (options != null && options.products != null) {
-            for (final Product p : options.products) {
-                if (p == Product.HIGH_SPEED_TRAIN)
-                    url.addEncodedQueryParameter("inclMOT_15", "on").addEncodedQueryParameter("inclMOT_16", "on");
-                if (p == Product.REGIONAL_TRAIN)
-                    url.addEncodedQueryParameter("inclMOT_13", "on");
-            }
-        }
         url.addEncodedQueryParameter("inclMOT_11", "on");
-        url.addEncodedQueryParameter("inclMOT_14", "on");
         url.addEncodedQueryParameter("calcOneDirection", "1");
     }
 

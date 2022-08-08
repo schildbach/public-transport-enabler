@@ -23,7 +23,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Currency;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -79,6 +78,14 @@ public class NegentweeProvider extends AbstractNetworkProvider {
     private static final Language DEFAULT_API_LANG = Language.NL_NL;
     private static final TimeZone API_TIMEZONE = TimeZone.getTimeZone("Europe/Amsterdam");
     private static final int DEFAULT_MAX_LOCATIONS = 50;
+
+    private final List CAPABILITIES = Arrays.asList(
+            Capability.SUGGEST_LOCATIONS,
+            Capability.NEARBY_LOCATIONS,
+            Capability.DEPARTURES,
+            Capability.TRIPS,
+            Capability.TRIPS_VIA
+    );
 
     private static final EnumSet<Product> trainProducts = EnumSet.of(Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN,
             Product.SUBURBAN_TRAIN);
@@ -485,15 +492,17 @@ public class NegentweeProvider extends AbstractNetworkProvider {
 
         // Get journey fares
         JSONObject fareInfo = trip.getJSONObject("fareInfo");
-        JSONArray fareLegs = fareInfo.getJSONArray("legs");
 
-        Fare[] foundFares = new Fare[fareLegs.length()];
-        for (int i = 0; i < fareLegs.length(); i++) {
-            foundFares[i] = fareFromJSONObject(fareLegs.getJSONObject(i));
+        List<Fare> tripFares = null;
+        if (fareInfo.getBoolean("complete")) {
+            tripFares = Arrays.asList(
+                new Fare("Full-price", Fare.Type.ADULT, ParserUtils.CURRENCY_EUR,
+                    fareInfo.getInt("fullPriceCents") / 100, null, null),
+                new Fare("Reduced-price", Fare.Type.ADULT, ParserUtils.CURRENCY_EUR,
+                    fareInfo.getInt("reducedPriceCents") / 100, null, null));
         }
 
-        return new Trip(trip.getString("id"), from, to, foundLegs, Arrays.asList(foundFares), null,
-                trip.getInt("numberOfChanges"));
+        return new Trip(trip.getString("id"), from, to, foundLegs, tripFares, null, trip.getInt("numberOfChanges"));
     }
 
     private Stop stopFromJSONObject(JSONObject stop) throws JSONException {
@@ -521,7 +530,7 @@ public class NegentweeProvider extends AbstractNetworkProvider {
             }
         }
 
-        return new Fare(fareLeg.getString("operatorString"), Fare.Type.ADULT, Currency.getInstance("EUR"), farePrice,
+        return new Fare(fareLeg.getString("operatorString"), Fare.Type.ADULT, ParserUtils.CURRENCY_EUR, farePrice,
                 null, null);
     }
 
@@ -696,15 +705,7 @@ public class NegentweeProvider extends AbstractNetworkProvider {
 
     @Override
     protected boolean hasCapability(Capability capability) {
-        switch (capability) {
-        case SUGGEST_LOCATIONS:
-        case NEARBY_LOCATIONS:
-        case DEPARTURES:
-        case TRIPS:
-            return true;
-        default:
-            return false;
-        }
+        return CAPABILITIES.contains(capability);
     }
 
     @Override

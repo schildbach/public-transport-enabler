@@ -23,9 +23,11 @@ import static com.google.common.base.Preconditions.checkState;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Currency;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -40,6 +42,7 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.Joiner;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -95,6 +98,14 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     protected static final String SERVER_PRODUCT = "efa";
     protected static final String COORD_FORMAT = "WGS84[DD.ddddd]";
     protected static final int COORD_FORMAT_TAIL = 7;
+
+    private final List CAPABILITIES = Arrays.asList(
+            Capability.SUGGEST_LOCATIONS,
+            Capability.NEARBY_LOCATIONS,
+            Capability.DEPARTURES,
+            Capability.TRIPS,
+            Capability.TRIPS_VIA
+    );
 
     private final HttpUrl departureMonitorEndpoint;
     private final HttpUrl tripEndpoint;
@@ -228,9 +239,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         return this;
     }
 
+    // this should be overridden by networks not providing one of the default capabilities
     @Override
     protected boolean hasCapability(final Capability capability) {
-        return true;
+        return CAPABILITIES.contains(capability);
     }
 
     private final void appendCommonRequestParams(final HttpUrl.Builder url, final String outputFormat) {
@@ -485,8 +497,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
                 XmlPullUtil.enter(pp, "itdCoordInfo");
 
-                XmlPullUtil.enter(pp, "coordInfoRequest");
-                XmlPullUtil.skipExit(pp, "coordInfoRequest");
+                XmlPullUtil.optSkip(pp, "coordInfoRequest");
 
                 final List<Location> locations = new ArrayList<>();
 
@@ -514,10 +525,27 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                         final List<Point> path = processItdPathCoordinates(pp);
                         final Point coord1 = path != null ? path.get(0) : null;
 
+                        EnumSet<Product> products = null;
+                        if (XmlPullUtil.optEnter(pp, "genAttrList")) {
+                            while (XmlPullUtil.optEnter(pp, "genAttrElem")) {
+                                final String attrName = XmlPullUtil.valueTag(pp, "name");
+                                final String attrValue = XmlPullUtil.valueTag(pp, "value");
+                                XmlPullUtil.skipExit(pp, "genAttrElem");
+
+                                if ("STOP_MAJOR_MEANS".equals(attrName)) {
+                                    products = EnumSet.noneOf(Product.class);
+                                    final Product product = majorMeansToProduct(Integer.parseInt(attrValue));
+                                    if (product != null)
+                                        products.add(product);
+                                }
+                            }
+                            XmlPullUtil.skipExit(pp, "genAttrList");
+                        }
+
                         XmlPullUtil.skipExit(pp, "coordInfoItem");
 
                         if (name != null)
-                            locations.add(new Location(locationType, id, coord1, place, name));
+                            locations.add(new Location(locationType, id, coord1, place, name, products));
                     }
 
                     XmlPullUtil.skipExit(pp, "coordInfoItemList");
@@ -576,11 +604,28 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                         final String locationId = locationType == LocationType.STATION ? id : stateless;
                         final Point coord1 = parseCoord(XmlPullUtil.valueTag(pp, "c"));
 
+                        EnumSet<Product> products = null;
+                        if (XmlPullUtil.optEnter(pp, "attrs")) {
+                            while (XmlPullUtil.optEnter(pp, "attr")) {
+                                final String attrName = XmlPullUtil.valueTag(pp, "n");
+                                final String attrValue = XmlPullUtil.valueTag(pp, "v");
+                                XmlPullUtil.skipExit(pp, "attr");
+
+                                if ("STOP_MAJOR_MEANS".equals(attrName)) {
+                                    products = EnumSet.noneOf(Product.class);
+                                    final Product product = majorMeansToProduct(Integer.parseInt(attrValue));
+                                    if (product != null)
+                                        products.add(product);
+                                }
+                            }
+                            XmlPullUtil.skipExit(pp, "attrs");
+                        }
+
                         final Location location;
                         if (name != null)
-                            location = new Location(locationType, locationId, coord1, place, name);
+                            location = new Location(locationType, locationId, coord1, place, name, products);
                         else
-                            location = new Location(locationType, locationId, coord1, null, place);
+                            location = new Location(locationType, locationId, coord1, null, place, products);
                         stations.add(location);
 
                         XmlPullUtil.skipExit(pp, "pi");
@@ -614,8 +659,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
     private String processItdOdv(final XmlPullParser pp, final String expectedUsage,
             final ProcessItdOdvCallback callback) throws XmlPullParserException, IOException {
-        if (!XmlPullUtil.test(pp, "itdOdv"))
-            throw new IllegalStateException("expecting <itdOdv />");
+        XmlPullUtil.require(pp, "itdOdv");
 
         final String usage = XmlPullUtil.attr(pp, "usage");
         if (expectedUsage != null && !usage.equals(expectedUsage))
@@ -651,6 +695,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         }
 
         XmlPullUtil.optSkipMultiple(pp, "infoLink");
+        XmlPullUtil.optSkip(pp, "itdMapItemList");
         XmlPullUtil.optSkip(pp, "odvNameInput");
 
         XmlPullUtil.exit(pp, "itdOdvName");
@@ -680,8 +725,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     }
 
     private String processItdOdvPlace(final XmlPullParser pp) throws XmlPullParserException, IOException {
-        if (!XmlPullUtil.test(pp, "itdOdvPlace"))
-            throw new IllegalStateException("expecting <itdOdvPlace />");
+        XmlPullUtil.require(pp, "itdOdvPlace");
 
         final String placeState = XmlPullUtil.attr(pp, "state");
 
@@ -698,8 +742,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
     private Location processOdvNameElem(final XmlPullParser pp, String type, final String defaultPlace)
             throws XmlPullParserException, IOException {
-        if (!XmlPullUtil.test(pp, "odvNameElem"))
-            throw new IllegalStateException("expecting <odvNameElem />");
+        XmlPullUtil.require(pp, "odvNameElem");
 
         if ("any".equals(type))
             type = XmlPullUtil.attr(pp, "anyType");
@@ -846,9 +889,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         return result.get();
     }
 
-    private static final Pattern P_LINE_RE = Pattern.compile("RE ?\\d+");
-    private static final Pattern P_LINE_RB = Pattern.compile("RB ?\\d+");
+    private static final Pattern P_LINE_RE = Pattern.compile("RE ?\\d+[ab]?");
+    private static final Pattern P_LINE_RB = Pattern.compile("RB ?\\d+[abc]?");
     private static final Pattern P_LINE_R = Pattern.compile("R ?\\d+");
+    private static final Pattern P_LINE_IRE = Pattern.compile("IRE\\d+[ab]?");
+    private static final Pattern P_LINE_MEX = Pattern.compile("MEX\\d+[abc]?");
     private static final Pattern P_LINE_S = Pattern.compile("S ?\\d+");
     private static final Pattern P_LINE_S_DB = Pattern.compile("(S\\d+) \\((?:DB Regio AG)\\)");
     private static final Pattern P_LINE_NUMBER = Pattern.compile("\\d+");
@@ -968,23 +1013,17 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                 return new Line(id, network, Product.REGIONAL_TRAIN, trainNum);
             if ("IR36".equals(trainNum) && trainName == null)
                 return new Line(id, network, Product.REGIONAL_TRAIN, trainNum);
+            if ("IR37".equals(trainNum) && trainName == null)
+                return new Line(id, network, Product.REGIONAL_TRAIN, trainNum);
             if ("IR75".equals(trainNum) && trainName == null)
                 return new Line(id, network, Product.REGIONAL_TRAIN, trainNum);
             if ("IRE".equals(trainType) || "Interregio-Express".equals(trainName))
                 return new Line(id, network, Product.REGIONAL_TRAIN, "IRE" + trainNum);
-            if ("IRE1".equals(trainNum) && trainName == null)
+            if (trainType == null && trainNum != null && P_LINE_IRE.matcher(trainNum).matches())
                 return new Line(id, network, Product.REGIONAL_TRAIN, trainNum);
-            if ("IRE6".equals(trainNum) && trainName == null)
-                return new Line(id, network, Product.REGIONAL_TRAIN, trainNum);
-            if ("InterRegioExpress".equals(trainName))
-                return new Line(id, network, Product.REGIONAL_TRAIN, "IRE" + trainNumStr);
             if ("RE".equals(trainType) || "Regional-Express".equals(trainName))
                 return new Line(id, network, Product.REGIONAL_TRAIN, "RE" + trainNum);
             if (trainType == null && trainNum != null && P_LINE_RE.matcher(trainNum).matches())
-                return new Line(id, network, Product.REGIONAL_TRAIN, trainNum);
-            if ("RE6a".equals(trainNum) && trainName == null)
-                return new Line(id, network, Product.REGIONAL_TRAIN, trainNum);
-            if ("RE19a".equals(trainNum) && trainName == null)
                 return new Line(id, network, Product.REGIONAL_TRAIN, trainNum);
             if ("RE3 / RB30".equals(trainNum) && trainType == null && trainName == null)
                 return new Line(id, network, Product.REGIONAL_TRAIN, "RE3/RB30");
@@ -992,6 +1031,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                 return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
             if ("R-Bahn".equals(trainName))
                 return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
+            if ("RE1 (RRX)".equals(trainNum))
+                return new Line(id, network, Product.REGIONAL_TRAIN, "RE1");
             if ("RE5 (RRX)".equals(trainNum))
                 return new Line(id, network, Product.REGIONAL_TRAIN, "RE5");
             if ("RE6 (RRX)".equals(trainNum))
@@ -1080,6 +1121,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                 return new Line(id, network, Product.REGIONAL_TRAIN, "CB" + trainNum);
             if (trainType == null && ("C11".equals(trainNum) || "C13".equals(trainNum) || "C14".equals(trainNum)
                     || "C15".equals(trainNum)))
+                return new Line(id, network, Product.REGIONAL_TRAIN, trainNum);
+            if ("CB523".equals(trainNum))
                 return new Line(id, network, Product.REGIONAL_TRAIN, trainNum);
             if ("VEC".equals(trainType) || "vectus Verkehrsgesellschaft".equals(trainName))
                 return new Line(id, network, Product.REGIONAL_TRAIN, "VEC" + trainNum);
@@ -1172,8 +1215,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                 return new Line(id, network, Product.REGIONAL_TRAIN, "erx" + trainNum);
             if (("ERX".equals(trainType) || "Erixx".equals(trainName)) && trainNum != null)
                 return new Line(id, network, Product.REGIONAL_TRAIN, "ERX" + trainNum);
-            if (("SWE".equals(trainType) || "Südwestdeutsche Verkehrs-AG".equals(trainName)) && trainNum != null)
-                return new Line(id, network, Product.REGIONAL_TRAIN, "SWE" + trainNum);
+            if ("SWE".equals(trainType) || "Südwestdeutsche Verkehrs-AG".equals(trainName) || "Südwestdeutsche Landesverkehrs-AG".equals(trainName))
+                return new Line(id, network, Product.REGIONAL_TRAIN, "SWE" + Strings.nullToEmpty(trainNum));
             if ("SWEG-Zug".equals(trainName)) // Südwestdeutschen Verkehrs-Aktiengesellschaft
                 return new Line(id, network, Product.REGIONAL_TRAIN, "SWEG" + trainNum);
             if (longName != null && longName.startsWith("SWEG-Zug"))
@@ -1278,6 +1321,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                 return new Line(id, network, Product.REGIONAL_TRAIN, "DNA" + trainNum);
             if ("Dieselnetz".equals(trainType) && "Augsburg".equals(trainNum))
                 return new Line(id, network, Product.REGIONAL_TRAIN, "DNA");
+            if (("SAB".equals(trainType) || "Schwäbische Alb-Bahn".equals(trainName)) && trainNum != null)
+                return new Line(id, network, Product.REGIONAL_TRAIN, "SAB" + trainNum);
+            if (trainType == null && trainNum != null && P_LINE_MEX.matcher(trainNum).matches()) // Metropolexpress
+                return new Line(id, network, Product.REGIONAL_TRAIN, trainNum);
 
             if (("BSB".equals(trainType) || "Breisgau-S-Bahn Gmbh".equals(trainName)) && trainNum != null)
                 return new Line(id, network, Product.REGIONAL_TRAIN, "BSB" + trainNum);
@@ -1358,26 +1405,41 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             return new Line(id, network, Product.SUBWAY, name);
         } else if ("3".equals(mot) || "4".equals(mot)) {
             return new Line(id, network, Product.TRAM, name);
-        } else if ("5".equals(mot) || "6".equals(mot) || "7".equals(mot) || "10".equals(mot)) {
+        } else if ("5".equals(mot) || "6".equals(mot) || "7".equals(mot)) {
             if ("Schienenersatzverkehr".equals(name))
                 return new Line(id, network, Product.BUS, "SEV");
-            else
-                return new Line(id, network, Product.BUS, name);
+            return new Line(id, network, Product.BUS, name);
         } else if ("8".equals(mot)) {
             return new Line(id, network, Product.CABLECAR, name);
         } else if ("9".equals(mot)) {
             return new Line(id, network, Product.FERRY, name);
+        } else if ("10".equals(mot)) {
+            return new Line(id, network, Product.ON_DEMAND, name);
         } else if ("11".equals(mot)) {
             return new Line(id, network, null, ParserUtils.firstNotEmpty(symbol, name));
+        } else if ("12".equals(mot)) {
+            if ("Schulbus".equals(trainName) && symbol != null)
+                return new Line(id, network, Product.BUS, symbol);
         } else if ("13".equals(mot)) {
-            if (("S-Bahn".equals(trainName) || (longName != null && longName.startsWith("S-Bahn"))) && symbol != null)
-                return new Line(id, network, Product.SUBURBAN_TRAIN, symbol);
-        } else if ("17".equals(mot)) {
+            if (("SEV".equals(trainName) || "Ersatzverkehr".equals(trainName)) && trainType == null)
+                return new Line(id, network, Product.BUS, "SEV");
+            if (trainNum != null)
+                return new Line(id, network, Product.REGIONAL_TRAIN, Strings.nullToEmpty(trainType) + trainNum);
+            return new Line(id, network, Product.REGIONAL_TRAIN, name);
+        } else if ("14".equals(mot) || "15".equals(mot) || "16".equals(mot)) {
+            if (trainType != null || trainNum != null)
+                return new Line(id, network, Product.HIGH_SPEED_TRAIN, Strings.nullToEmpty(trainType) + Strings.nullToEmpty(trainNum));
+            return new Line(id, network, Product.HIGH_SPEED_TRAIN, name);
+        } else if ("17".equals(mot)) { // Schienenersatzverkehr
             if (trainNum == null && trainName != null && trainName.startsWith("Schienenersatz"))
                 return new Line(id, network, Product.BUS, "SEV");
-        } else if ("19".equals(mot)) {
-            if ("Bürgerbus".equals(trainName) || "BürgerBus".equals(trainName))
+            return new Line(id, network, Product.BUS, name);
+        } else if ("18".equals(mot)) { // Zug-Shuttle
+            return new Line(id, network, Product.REGIONAL_TRAIN, name);
+        } else if ("19".equals(mot)) { // Bürgerbus
+            if (("Bürgerbus".equals(trainName) || "BürgerBus".equals(trainName) || "Kleinbus".equals(trainName)) && symbol != null)
                 return new Line(id, network, Product.BUS, symbol);
+            return new Line(id, network, Product.BUS, name);
         }
 
         throw new IllegalStateException(
@@ -1526,6 +1588,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                         plannedDepartureTime.clear();
                         processItdDateTime(pp, plannedDepartureTime);
 
+                        XmlPullUtil.optSkip(pp, "itdDateTimeBaseTimetable");
+
                         predictedDepartureTime.clear();
                         if (XmlPullUtil.test(pp, "itdRTDateTime"))
                             processItdDateTime(pp, predictedDepartureTime);
@@ -1583,6 +1647,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                     final String mod = XmlPullUtil.valueTag(pp, "mod");
                     final String co = XmlPullUtil.valueTag(pp, "co");
                     XmlPullUtil.optValueTag(pp, "u", null);
+                    XmlPullUtil.optValueTag(pp, "tx", null);
                     if ("-2000".equals(co)) { // STOP_INVALID
                         result.set(new QueryDeparturesResult(header, QueryDeparturesResult.Status.INVALID_STATION));
                     } else if ("-4050".equals(co)) { // NO_SERVINGLINES
@@ -1966,6 +2031,13 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                         hasI = true;
                 }
 
+                if (p == Product.HIGH_SPEED_TRAIN)
+                    url.addEncodedQueryParameter("inclMOT_14", "on").addEncodedQueryParameter("inclMOT_15", "on")
+                            .addEncodedQueryParameter("inclMOT_16", "on");
+
+                if (p == Product.REGIONAL_TRAIN)
+                    url.addEncodedQueryParameter("inclMOT_13", "on").addEncodedQueryParameter("inclMOT_18", "on");
+
                 if (p == Product.SUBURBAN_TRAIN)
                     url.addEncodedQueryParameter("inclMOT_1", "on");
 
@@ -1977,7 +2049,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
                 if (p == Product.BUS)
                     url.addEncodedQueryParameter("inclMOT_5", "on").addEncodedQueryParameter("inclMOT_6", "on")
-                            .addEncodedQueryParameter("inclMOT_7", "on");
+                            .addEncodedQueryParameter("inclMOT_7", "on").addEncodedQueryParameter("inclMOT_17", "on")
+                            .addEncodedQueryParameter("inclMOT_19", "on");
 
                 if (p == Product.ON_DEMAND)
                     url.addEncodedQueryParameter("inclMOT_10", "on");
@@ -2195,6 +2268,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         XmlPullUtil.optSkipMultiple(pp, "omcTaxi");
 
         final List<Trip> trips = new ArrayList<>();
+        final Joiner idJoiner = Joiner.on('-').skipNulls();
 
         XmlPullUtil.require(pp, "itdItinerary");
         if (XmlPullUtil.optEnter(pp, "itdItinerary")) {
@@ -2204,16 +2278,13 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                 final Calendar calendar = new GregorianCalendar(timeZone);
 
                 while (XmlPullUtil.test(pp, "itdRoute")) {
-                    final String id;
+                    final String tripId;
                     if (useRouteIndexAsTripId) {
                         final String routeIndex = XmlPullUtil.optAttr(pp, "routeIndex", null);
                         final String routeTripIndex = XmlPullUtil.optAttr(pp, "routeTripIndex", null);
-                        if (routeIndex != null && routeTripIndex != null)
-                            id = routeIndex + "-" + routeTripIndex;
-                        else
-                            id = null;
+                        tripId = Strings.emptyToNull(idJoiner.join(routeIndex, routeTripIndex));
                     } else {
-                        id = null;
+                        tripId = null;
                     }
                     final int numChanges = XmlPullUtil.intAttr(pp, "changes");
                     XmlPullUtil.enter(pp, "itdRoute");
@@ -2358,7 +2429,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
                     XmlPullUtil.skipExit(pp, "itdRoute");
 
-                    final Trip trip = new Trip(id, firstDepartureLocation, lastArrivalLocation, legs,
+                    final Trip trip = new Trip(tripId, firstDepartureLocation, lastArrivalLocation, legs,
                             fares.isEmpty() ? null : fares, null, numChanges);
 
                     if (!cancelled)
@@ -2492,6 +2563,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
                 XmlPullUtil.enter(pp, "itdPoint");
                 XmlPullUtil.optSkip(pp, "genAttrList");
+                XmlPullUtil.optSkip(pp, "sPAs");
                 XmlPullUtil.require(pp, "itdDateTime");
 
                 final Date plannedStopArrivalTime;
@@ -2536,12 +2608,14 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             // remove first and last, because they are not intermediate
             final int size = intermediateStops.size();
             if (size >= 2) {
-                if (!intermediateStops.get(size - 1).location.equals(arrivalLocation))
-                    throw new IllegalStateException();
+                final Location lastLocation = intermediateStops.get(size - 1).location;
+                if (!lastLocation.equals(arrivalLocation))
+                    throw new IllegalStateException(lastLocation + " vs " + arrivalLocation);
                 intermediateStops.remove(size - 1);
 
-                if (!intermediateStops.get(0).location.equals(departureLocation))
-                    throw new IllegalStateException();
+                final Location firstLocation = intermediateStops.get(0).location;
+                if (!firstLocation.equals(departureLocation))
+                    throw new IllegalStateException(firstLocation + " vs " + departureLocation);
                 intermediateStops.remove(0);
             }
         }
@@ -2612,10 +2686,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
                 XmlPullUtil.valueTag(pp, "d"); // duration
                 final int numChanges = Integer.parseInt(XmlPullUtil.valueTag(pp, "ic"));
-                final String tripId = XmlPullUtil.valueTag(pp, "de");
+                XmlPullUtil.valueTag(pp, "de");
                 XmlPullUtil.optValueTag(pp, "optval", null);
                 XmlPullUtil.optValueTag(pp, "alt", null);
-                XmlPullUtil.optValueTag(pp, "gix", null);
+                final String tripId = XmlPullUtil.valueTag(pp, "gix");
 
                 XmlPullUtil.enter(pp, "ls");
 
@@ -2708,7 +2782,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                             if (!id.equals(departure.location.id) && !id.equals(arrival.location.id)) {
                                 final String name = normalizeLocationName(intermediateParts[1]);
 
-                                if (!("0000-1".equals(intermediateParts[2]) && "000-1".equals(intermediateParts[3]))) {
+                                if (!(intermediateParts[2].startsWith("000") && intermediateParts[3].startsWith("000"))) {
                                     ParserUtils.parseIsoDate(plannedTimeCal, intermediateParts[2]);
                                     ParserUtils.parseIsoTime(plannedTimeCal, intermediateParts[3]);
 
@@ -2729,6 +2803,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                                     final String[] coordParts = coordPart.split(":");
                                     final String mapName = coordParts[2];
                                     if (COORD_FORMAT.equals(mapName)) {
+                                        if (coordParts.length < 2)
+                                            throw new RuntimeException("cannot parse coordinate: " + coordPart);
                                         final double lat = Double.parseDouble(coordParts[1]);
                                         final double lon = Double.parseDouble(coordParts[0]);
                                         coords = Point.fromDouble(lat, lon);
@@ -2870,6 +2946,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             return null;
 
         final String[] parts = coordStr.split(",");
+        if (parts.length < 2)
+            throw new RuntimeException("cannot parse coordinate: " + coordStr);
         final double lat = Double.parseDouble(parts[1]);
         final double lon = Double.parseDouble(parts[0]);
         return Point.fromDouble(lat, lon);
@@ -2887,6 +2965,22 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             return null;
 
         return Point.fromDouble(y, x);
+    }
+
+    private Product majorMeansToProduct(final int majorMeans) {
+        switch (majorMeans) {
+            case 1:
+                return Product.SUBWAY;
+            case 2:
+                return Product.SUBURBAN_TRAIN;
+            case 3:
+                return Product.BUS;
+            case 4:
+                return Product.TRAM;
+            default:
+                log.info("unknown STOP_MAJOR_MEANS value: {}", majorMeans);
+                return null;
+        }
     }
 
     private Fare processItdGenericTicketGroup(final XmlPullParser pp, final String net, final Currency currency)
@@ -2926,7 +3020,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             return Currency.getInstance("USD");
         if (currencyStr.equals("Dirham"))
             return Currency.getInstance("AED");
-        return Currency.getInstance(currencyStr);
+        return ParserUtils.getCurrency(currencyStr);
     }
 
     private static final Pattern P_POSITION = Pattern.compile(

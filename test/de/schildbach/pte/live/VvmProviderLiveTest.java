@@ -57,7 +57,7 @@ public class VvmProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void queryDepartures() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("3000510", false);
+        final QueryDeparturesResult result = queryDepartures("3000152", false);
         print(result);
     }
 

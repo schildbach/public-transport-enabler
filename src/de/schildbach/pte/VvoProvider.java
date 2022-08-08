@@ -30,7 +30,7 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class VvoProvider extends AbstractEfaProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("http://efa.vvo-online.de:8080/dvb/");
+    private static final HttpUrl API_BASE = HttpUrl.parse("http://efa.vvo-online.de:8080/std3/");
     private static final String STOP_FINDER_ENDPOINT = "XSLT_STOPFINDER_REQUEST";
     private static final String COORD_ENDPOINT = "XSLT_COORD_REQUEST";
 
@@ -62,7 +62,7 @@ public class VvoProvider extends AbstractEfaProvider {
                 return new Line(id, network, Product.REGIONAL_TRAIN, "TLX");
             if ("Trilex".equals(trainName) && trainNum == null)
                 return new Line(id, network, Product.REGIONAL_TRAIN, "TLX");
-            if ("U 28".equals(symbol)) // Nationalparkbahn
+            if ("U28".equals(symbol) || "U 28".equals(symbol)) // Nationalparkbahn
                 return new Line(id, network, Product.REGIONAL_TRAIN, "U28");
             if ("SB 71".equals(symbol)) // Städtebahn Sachsen
                 return new Line(id, network, Product.REGIONAL_TRAIN, "SB71");
