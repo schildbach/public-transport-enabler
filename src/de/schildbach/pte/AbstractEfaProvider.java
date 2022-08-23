@@ -2689,7 +2689,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                 XmlPullUtil.valueTag(pp, "de");
                 XmlPullUtil.optValueTag(pp, "optval", null);
                 XmlPullUtil.optValueTag(pp, "alt", null);
-                final String tripId = XmlPullUtil.valueTag(pp, "gix");
+                final String tripId = XmlPullUtil.optValueTag(pp, "gix", null);
 
                 XmlPullUtil.enter(pp, "ls");
 
