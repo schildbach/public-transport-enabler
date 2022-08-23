@@ -55,6 +55,8 @@ public class VgnProvider extends AbstractEfaProvider {
                 return new Line(id, network, Product.REGIONAL_TRAIN, "R7(z)");
             if ("R8(z)".equals(trainNum))
                 return new Line(id, network, Product.REGIONAL_TRAIN, "R8(z)");
+            if (trainType == null && "IC 61".equals(trainNum))
+                return new Line(id, network, Product.HIGH_SPEED_TRAIN, "IC61");
         }
 
         return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
