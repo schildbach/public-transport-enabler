@@ -17,20 +17,14 @@
 
 package de.schildbach.pte.live;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+import de.schildbach.pte.CHSearchProvider;
+import de.schildbach.pte.dto.*;
 
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.Date;
-
-import de.schildbach.pte.CHSearchProvider;
-import de.schildbach.pte.dto.Location;
-import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyLocationsResult;
-import de.schildbach.pte.dto.Point;
-import de.schildbach.pte.dto.QueryTripsResult;
-import de.schildbach.pte.dto.SuggestLocationsResult;
 
 
 /**
@@ -84,7 +78,30 @@ public class CHSearchProviderLiveTest extends AbstractProviderLiveTest {
         assertEquals(0, noResult.suggestedLocations.size());
 
     }
-//    @Test
+
+    @Test
+    public void stationBoard() throws IOException {
+        // Valid query
+        final QueryDeparturesResult result = queryDepartures("8503000", 0, false);
+        assertEquals(QueryDeparturesResult.Status.OK, result.status);
+        assertTrue(result.stationDepartures.size() > 0);
+        assertNotNull(result.stationDepartures.get(0));
+        assertTrue(result.stationDepartures.get(0).departures.size() > 0);
+
+        //Test if maxDepartures is honored
+        final QueryDeparturesResult result2 = queryDepartures("8503000", 2, false);
+        assertEquals(QueryDeparturesResult.Status.OK, result.status);
+        assertNotNull(result2.stationDepartures.get(0));
+        assertEquals(2, result2.stationDepartures.get(0).departures.size());
+
+        // Invalid query
+        final QueryDeparturesResult invalidResult = queryDepartures("9999999", 0, false);
+        assertEquals(QueryDeparturesResult.Status.INVALID_STATION, invalidResult.status);
+        assertEquals(0, invalidResult.stationDepartures.size());
+
+    }
+
+    //    @Test
 //    // Address suggestions are not supported...
 //    public void suggestLocationsAddress() throws Exception {
 //        final SuggestLocationsResult result = suggestLocations("Dorfstrasse 10, Dällikon, Schweiz");
@@ -144,7 +161,8 @@ public class CHSearchProviderLiveTest extends AbstractProviderLiveTest {
                 null);
         assertEquals(QueryTripsResult.Status.OK, viaResult.status);
     }
-//
+
+    //
     @Test
     public void slowTrip() throws Exception {
         final QueryTripsResult result = queryTrips(
@@ -156,7 +174,8 @@ public class CHSearchProviderLiveTest extends AbstractProviderLiveTest {
         assertEquals(QueryTripsResult.Status.OK, laterResult.status);
         assertEquals(QueryTripsResult.Status.OK, beforeResult.status);
     }
-//
+
+    //
     @Test
     public void tripWithFootway() throws Exception {
         final Location from = new Location(LocationType.ADDRESS, null, Point.from1E6(46689354, 7683444), null,

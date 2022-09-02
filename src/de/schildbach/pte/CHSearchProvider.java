@@ -1,49 +1,23 @@
 package de.schildbach.pte;
 
-import static de.schildbach.pte.dto.Style.parseColor;
+import de.schildbach.pte.dto.*;
+import de.schildbach.pte.exception.ParserException;
+import okhttp3.HttpUrl;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.annotation.Nullable;
+
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.annotation.Nullable;
-
-import de.schildbach.pte.dto.Departure;
-import de.schildbach.pte.dto.Line;
-import de.schildbach.pte.dto.Location;
-import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyLocationsResult;
-import de.schildbach.pte.dto.Point;
-import de.schildbach.pte.dto.Position;
-import de.schildbach.pte.dto.Product;
-import de.schildbach.pte.dto.QueryDeparturesResult;
-import de.schildbach.pte.dto.QueryTripsContext;
-import de.schildbach.pte.dto.QueryTripsResult;
-import de.schildbach.pte.dto.ResultHeader;
-import de.schildbach.pte.dto.StationDepartures;
-import de.schildbach.pte.dto.Stop;
-import de.schildbach.pte.dto.Style;
-import de.schildbach.pte.dto.SuggestLocationsResult;
-import de.schildbach.pte.dto.SuggestedLocation;
-import de.schildbach.pte.dto.Trip;
-import de.schildbach.pte.dto.TripOptions;
-import de.schildbach.pte.exception.ParserException;
-import okhttp3.HttpUrl;
+import static de.schildbach.pte.dto.Style.parseColor;
 
 /**
  * Implementation of timetables.search.ch provider.
@@ -192,8 +166,7 @@ public class CHSearchProvider extends AbstractNetworkProvider {
             for (StationBoardResult.StationBoardEntry sbEntry : sb.entries) {
 
                 Date predictedTime = addMinutesToDate(sbEntry.time, sbEntry.dep_delay);
-                Line line = new Line(sbEntry.Z, sbEntry.operator, type2Product(sbEntry.G), sbEntry.line, new Style(Style.Shape.RECT, sbEntry.bgColor, sbEntry.fgColor));
-
+                Line line = new Line(sbEntry.L, sbEntry.operator, type2Product(sbEntry.G), sbEntry.line, getTrainName(sbEntry.G, sbEntry.Z), new Style(Style.Shape.RECT, sbEntry.bgColor, sbEntry.fgColor));
                 Location destinationLocation = new Location(LocationType.STATION, sbEntry.terminal.stationID, Point.fromDouble(sbEntry.terminal.lat, sbEntry.terminal.lon), null, sbEntry.terminal.name);
                 Position departurePos = sbEntry.track != null ? new Position(sbEntry.track) : null;
                 departures.add(new Departure(sbEntry.time, predictedTime, line, departurePos, destinationLocation, null, null));
@@ -256,7 +229,7 @@ public class CHSearchProvider extends AbstractNetworkProvider {
         // And then build the request-url with all non-null keys
         for (Map.Entry<String, String> item :
                 rawParameters.entrySet()) {
-            if (null != item.getValue()){
+            if (null != item.getValue()) {
                 builder.addQueryParameter(item.getKey(), item.getValue());
             }
         }
@@ -310,7 +283,7 @@ public class CHSearchProvider extends AbstractNetworkProvider {
                         } else {
                             numChanges.getAndIncrement();
                             Location terminalLocation = new Location(LocationType.STATION, null, null, leg.terminal);
-                            Line line = new Line(leg.Z, leg.operator, type2Product(leg.G), leg.line, new Style(Style.Shape.RECT, leg.bgColor, leg.fgColor));
+                            Line line = new Line(leg.Z, leg.operator, type2Product(leg.G), leg.line, getTrainName(leg.G, leg.Z), new Style(Style.Shape.RECT, leg.bgColor, leg.fgColor));
                             legsList.add(new Trip.Public(line, terminalLocation, departureStop, arrivalStop, intermediateStops, null, infoText + disruptions));
                         }
 
@@ -340,7 +313,8 @@ public class CHSearchProvider extends AbstractNetworkProvider {
                 }
                 //if the connection is just walking
                 if (numChanges.get() == -1) numChanges.set(0);
-                tripsList.add(new Trip("generated_" + UUID.randomUUID(), from, to, legsList, null, null, numChanges.get()));
+                String tripID = generateTripID(from, to, legsList, numChanges.get());
+                tripsList.add(new Trip(tripID, from, to, legsList, null, null, numChanges.get()));
             }
             // We must consider that the first/last leg may be not a "Public" one and therefore, we can not use getLastPublicLeg()
             Date lastDeparture = tripsList.get(tripsList.size() - 1).legs.get(0).getDepartureTime();
@@ -355,6 +329,28 @@ public class CHSearchProvider extends AbstractNetworkProvider {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private static String generateTripID(Location from, Location to, List<Trip.Leg> legs, int numChanges) {
+        try {
+            Trip.Leg firstLeg = legs.get(0);
+            Trip.Leg lastLeg = legs.get(legs.size() - 1);
+            return String.format("%s_%ts_%s_%ts_%d", from.name, firstLeg.getDepartureTime(), to.name, lastLeg.getArrivalTime(), numChanges);
+        } catch (NullPointerException e) {
+            return "fallback_generated_" + UUID.randomUUID();
+        }
+    }
+
+    /**
+     * Generate train name
+     * @param G Product name
+     * @param Z Train number
+     * @return if Z is not empty, we strip the leading zeros of it and concat it with the product name
+     */
+    private static String getTrainName(String G, String Z) {
+        if ("".equals(Z)) return Z;
+        String cleanedTrainNumber = Z.replaceAll("^0*", "");
+        return String.format("%s %s", G, cleanedTrainNumber);
     }
 
     @Override
@@ -377,12 +373,19 @@ public class CHSearchProvider extends AbstractNetworkProvider {
         HashMap<String, Product> mapping = new HashMap<>();
         mapping.put("IC", Product.HIGH_SPEED_TRAIN);
         mapping.put("ICE", Product.HIGH_SPEED_TRAIN);
+        mapping.put("ICN", Product.HIGH_SPEED_TRAIN); // Intercity tilting train
         mapping.put("IRE", Product.REGIONAL_TRAIN);
         mapping.put("TGV", Product.HIGH_SPEED_TRAIN);
         mapping.put("RJX", Product.HIGH_SPEED_TRAIN); // RailJetExpress
+        mapping.put("NJ", Product.HIGH_SPEED_TRAIN); // ÖBB NightJet
         mapping.put("IR", Product.HIGH_SPEED_TRAIN);
         mapping.put("EC", Product.HIGH_SPEED_TRAIN);
         mapping.put("RE", Product.REGIONAL_TRAIN);
+        mapping.put("PE", Product.REGIONAL_TRAIN); // Panorama Express
+        mapping.put("BEX", Product.REGIONAL_TRAIN); // Bernina Express
+        mapping.put("GEX", Product.REGIONAL_TRAIN); // Galcier Express
+        mapping.put("CEX", Product.REGIONAL_TRAIN); // Centovalli Express (operated by SSIF italy)
+        mapping.put("CER", Product.REGIONAL_TRAIN); // Centovalli Regional (operated by SSIF italy)
         mapping.put("R", Product.REGIONAL_TRAIN);
         mapping.put("M", Product.SUBWAY);
         mapping.put("FUN", Product.TRAM); // Funicular railways
@@ -585,8 +588,18 @@ public class CHSearchProvider extends AbstractNetworkProvider {
                 public final @Nullable
                 String stopID;
                 public final String name;
-                public final String Z; // Train number
-                public final String G; // Train Product
+                /**
+                 * Train number
+                 */
+                public final String Z;
+                /**
+                 * Train Product
+                 */
+                public final String G;
+                /**
+                 * Line number
+                 */
+                public final String L;
                 public final @Nullable
                 String terminal;
                 public final @Nullable
@@ -621,8 +634,9 @@ public class CHSearchProvider extends AbstractNetworkProvider {
                         this.arrival = rawLeg.has("arrival") ? DATE_TIME_FORMATTER.parse(rawLeg.getString("arrival")) : null;
                         this.type = rawLeg.has("type") ? rawLeg.getString("type") : "unknown";
                         this.is_walk = "walk".equals(this.type);
-                        this.Z = rawLeg.has("*Z") ? rawLeg.getString("*Z") : "00000";
+                        this.Z = rawLeg.has("*Z") ? rawLeg.getString("*Z") : "";
                         this.G = rawLeg.has("*G") ? rawLeg.getString("*G") : "UNKN";
+                        this.L = rawLeg.has("*L") ? rawLeg.getString("*L") : "";
                         this.name = rawLeg.getString("name");
                         this.terminal = rawLeg.has("terminal") ? rawLeg.getString("terminal") : null;
                         this.tripID = rawLeg.has("tripid") ? rawLeg.getString("tripid") : "generated_" + UUID.randomUUID();
@@ -772,9 +786,9 @@ public class CHSearchProvider extends AbstractNetworkProvider {
 
         private static class StationBoardEntry {
             public final Date time;
-            public final String G;
-            public final String L;
-            public final String Z;
+            public final String G; // Product
+            public final String L; // Line number
+            public final String Z; // Full train number
             public final String line;
             public final @Nullable
             String track;
@@ -788,9 +802,9 @@ public class CHSearchProvider extends AbstractNetworkProvider {
 
             public StationBoardEntry(JSONObject rawEntry) throws JSONException, ParseException {
                 this.time = DATE_TIME_FORMATTER.parse(rawEntry.getString("time"));
-                G = rawEntry.has("*G") ? rawEntry.getString("*G") : "";
+                G = rawEntry.has("*G") ? rawEntry.getString("*G") : "UNKN";
                 L = rawEntry.has("*L") ? rawEntry.getString("*L") : "";
-                Z = rawEntry.has("*L") ? rawEntry.getString("*Z") : "";
+                Z = rawEntry.has("*Z") ? rawEntry.getString("*Z") : "";
                 String rawLine = rawEntry.has("line") ? rawEntry.getString("line") : null;
                 // Otherwise we would get a line named "null"
                 this.line = "null".equals(rawLine) ? "" : rawLine;
@@ -799,9 +813,8 @@ public class CHSearchProvider extends AbstractNetworkProvider {
                 String[] colors = rawEntry.getString("color").split("~", 3);
                 this.dep_delay = rawEntry.has("dep_delay") ? delayParser(rawEntry.getString("dep_delay")) : 0;
                 this.arr_delay = rawEntry.has("arr_delay") ? delayParser(rawEntry.getString("arr_delay")) : 0;
-                // sometimes there is no color information
-                this.fgColor = "".equals(colors[0]) ? Style.BLACK : parseColor(expandHex(colors[0]));
-                this.bgColor = "".equals(colors[1]) ? Style.WHITE : parseColor(expandHex(colors[1]));
+                this.bgColor = "".equals(colors[0]) ? Style.WHITE : parseColor(expandHex(colors[0]));
+                this.fgColor = "".equals(colors[1]) ? Style.BLACK : parseColor(expandHex(colors[1]));
                 this.terminal = new Terminal(rawEntry.getJSONObject("terminal"));
             }
 
