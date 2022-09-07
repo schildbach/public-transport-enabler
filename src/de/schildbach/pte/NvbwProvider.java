@@ -47,6 +47,7 @@ public class NvbwProvider extends AbstractEfaProvider {
     }
 
     private static final Pattern P_LINE_S_AVG_VBK = Pattern.compile("(S\\d+) \\((?:AVG|VBK)\\)");
+    private static final Pattern P_INTERCITY = Pattern.compile("IC\\d*");
     private static final Pattern P_INTERREGIO = Pattern.compile("IR\\d*");
 
     @Override
@@ -58,8 +59,7 @@ public class NvbwProvider extends AbstractEfaProvider {
                 return new Line(id, network, Product.HIGH_SPEED_TRAIN, "ICE");
             if ("InterCity".equals(trainName) && trainNum == null)
                 return new Line(id, network, Product.HIGH_SPEED_TRAIN, "IC");
-            if (("IC3".equals(trainNum) || "IC4".equals(trainNum) || "IC5".equals(trainNum) || "IC8".equals(trainNum))
-                    && trainType == null)
+            if (trainType == null && P_INTERCITY.matcher(trainNum).matches())
                 return new Line(id, network, Product.HIGH_SPEED_TRAIN, trainNum);
             if ("Fernreisezug externer EU".equals(trainName) && trainNum == null)
                 return new Line(id, network, Product.HIGH_SPEED_TRAIN, null);
