@@ -59,7 +59,7 @@ public class NvbwProvider extends AbstractEfaProvider {
                 return new Line(id, network, Product.HIGH_SPEED_TRAIN, "ICE");
             if ("InterCity".equals(trainName) && trainNum == null)
                 return new Line(id, network, Product.HIGH_SPEED_TRAIN, "IC");
-            if (trainType == null && P_INTERCITY.matcher(trainNum).matches())
+            if (trainType == null && trainNum != null && P_INTERCITY.matcher(trainNum).matches())
                 return new Line(id, network, Product.HIGH_SPEED_TRAIN, trainNum);
             if ("Fernreisezug externer EU".equals(trainName) && trainNum == null)
                 return new Line(id, network, Product.HIGH_SPEED_TRAIN, null);
@@ -67,7 +67,7 @@ public class NvbwProvider extends AbstractEfaProvider {
                 return new Line(id, network, Product.HIGH_SPEED_TRAIN, "SC");
             if ("InterRegio".equals(longName) && symbol == null)
                 return new Line(id, network, Product.REGIONAL_TRAIN, "IR");
-            if (trainType == null && P_INTERREGIO.matcher(trainNum).matches())
+            if (trainType == null && trainNum != null && P_INTERREGIO.matcher(trainNum).matches())
                 return new Line(id, network, Product.REGIONAL_TRAIN, trainNum);
             if ("REGIOBAHN".equals(trainName) && trainNum == null)
                 return new Line(id, network, Product.REGIONAL_TRAIN, null);
