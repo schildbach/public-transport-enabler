@@ -457,7 +457,7 @@ public final class Trip implements Serializable {
 
     public final static class Individual extends Leg {
         public enum Type {
-            WALK, BIKE, CAR, TRANSFER
+            WALK, BIKE, CAR, TRANSFER, CHECK_IN, CHECK_OUT
         }
 
         private static final long serialVersionUID = -6651381862837233925L;
