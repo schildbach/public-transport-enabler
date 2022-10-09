@@ -47,6 +47,8 @@ public class NvbwProvider extends AbstractEfaProvider {
     }
 
     private static final Pattern P_LINE_S_AVG_VBK = Pattern.compile("(S\\d+) \\((?:AVG|VBK)\\)");
+    private static final Pattern P_INTERCITY = Pattern.compile("IC\\d*");
+    private static final Pattern P_INTERREGIO = Pattern.compile("IR\\d*");
 
     @Override
     protected Line parseLine(final @Nullable String id, final @Nullable String network, final @Nullable String mot,
@@ -57,8 +59,7 @@ public class NvbwProvider extends AbstractEfaProvider {
                 return new Line(id, network, Product.HIGH_SPEED_TRAIN, "ICE");
             if ("InterCity".equals(trainName) && trainNum == null)
                 return new Line(id, network, Product.HIGH_SPEED_TRAIN, "IC");
-            if (("IC3".equals(trainNum) || "IC4".equals(trainNum) || "IC5".equals(trainNum) || "IC8".equals(trainNum))
-                    && trainType == null)
+            if (trainType == null && trainNum != null && P_INTERCITY.matcher(trainNum).matches())
                 return new Line(id, network, Product.HIGH_SPEED_TRAIN, trainNum);
             if ("Fernreisezug externer EU".equals(trainName) && trainNum == null)
                 return new Line(id, network, Product.HIGH_SPEED_TRAIN, null);
@@ -66,6 +67,8 @@ public class NvbwProvider extends AbstractEfaProvider {
                 return new Line(id, network, Product.HIGH_SPEED_TRAIN, "SC");
             if ("InterRegio".equals(longName) && symbol == null)
                 return new Line(id, network, Product.REGIONAL_TRAIN, "IR");
+            if (trainType == null && trainNum != null && P_INTERREGIO.matcher(trainNum).matches())
+                return new Line(id, network, Product.REGIONAL_TRAIN, trainNum);
             if ("REGIOBAHN".equals(trainName) && trainNum == null)
                 return new Line(id, network, Product.REGIONAL_TRAIN, null);
             if ("Meridian".equals(trainName) && symbol != null)
