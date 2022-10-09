@@ -166,7 +166,7 @@ public class CHSearchProvider extends AbstractNetworkProvider {
             for (StationBoardResult.StationBoardEntry sbEntry : sb.entries) {
 
                 Date predictedTime = addMinutesToDate(sbEntry.time, sbEntry.dep_delay);
-                Line line = new Line(sbEntry.L, sbEntry.operator, type2Product(sbEntry.G), sbEntry.line, getTrainName(sbEntry.G, sbEntry.Z), new Style(Style.Shape.RECT, sbEntry.bgColor, sbEntry.fgColor));
+                Line line = new Line(sbEntry.Z, sbEntry.operator, type2Product(sbEntry.G), getTrainName(sbEntry.G, sbEntry.Z, sbEntry.L), new Style(Style.Shape.RECT, sbEntry.bgColor, sbEntry.fgColor));
                 Location destinationLocation = new Location(LocationType.STATION, sbEntry.terminal.stationID, Point.fromDouble(sbEntry.terminal.lat, sbEntry.terminal.lon), null, sbEntry.terminal.name);
                 Position departurePos = sbEntry.track != null ? new Position(sbEntry.track) : null;
                 departures.add(new Departure(sbEntry.time, predictedTime, line, departurePos, destinationLocation, null, null));
@@ -283,7 +283,7 @@ public class CHSearchProvider extends AbstractNetworkProvider {
                         } else {
                             numChanges.getAndIncrement();
                             Location terminalLocation = new Location(LocationType.STATION, null, null, leg.terminal);
-                            Line line = new Line(leg.Z, leg.operator, type2Product(leg.G), leg.line, getTrainName(leg.G, leg.Z), new Style(Style.Shape.RECT, leg.bgColor, leg.fgColor));
+                            Line line = new Line(leg.Z, leg.operator, type2Product(leg.G), getTrainName(leg.G, leg.Z, leg.L), new Style(Style.Shape.RECT, leg.bgColor, leg.fgColor));
                             legsList.add(new Trip.Public(line, terminalLocation, departureStop, arrivalStop, intermediateStops, null, infoText + disruptions));
                         }
 
@@ -345,12 +345,22 @@ public class CHSearchProvider extends AbstractNetworkProvider {
      * Generate train name
      * @param G Product name
      * @param Z Train number
-     * @return if Z is not empty, we strip the leading zeros of it and concat it with the product name
+     * @param L Line number
+     * @return Extracts the product name / train number / line number string. For domestic trains
+     * this usually results in {Product} {Line number} and for international trains {Product} {Train number}
      */
-    private static String getTrainName(String G, String Z) {
-        if ("".equals(Z)) return Z;
+    private static String getTrainName(String G, String Z, String L) {
+        // Worst case, not seen in the wild yet...
+        if ("".equals(G)) return "UKN";
+        // train number nor line number
+        if ("".equals(Z) && "".equals(L)) return G;
+        // Train numbers usually have leading zeros
         String cleanedTrainNumber = Z.replaceAll("^0*", "");
-        return String.format("%s %s", G, cleanedTrainNumber);
+        if ("".equals(L)) {
+            return String.format("%s %s", G, cleanedTrainNumber);
+        } else {
+            return String.format("%s %s", G, L);
+        }
     }
 
     @Override
@@ -387,6 +397,7 @@ public class CHSearchProvider extends AbstractNetworkProvider {
         mapping.put("CEX", Product.REGIONAL_TRAIN); // Centovalli Express (operated by SSIF italy)
         mapping.put("CER", Product.REGIONAL_TRAIN); // Centovalli Regional (operated by SSIF italy)
         mapping.put("R", Product.REGIONAL_TRAIN);
+        mapping.put("SL", Product.REGIONAL_TRAIN); // Regional trains from france, around geneva
         mapping.put("M", Product.SUBWAY);
         mapping.put("FUN", Product.TRAM); // Funicular railways
         mapping.put("CC", Product.TRAM);  // Also used for funicular railways

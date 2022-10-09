@@ -18,6 +18,7 @@
 package de.schildbach.pte.live;
 
 import static org.junit.Assert.*;
+
 import de.schildbach.pte.CHSearchProvider;
 import de.schildbach.pte.dto.*;
 
