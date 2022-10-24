@@ -2720,6 +2720,8 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
             return Product.REGIONAL_TRAIN;
         if ("CJX".equals(ucType)) // Cityjet Xpress
             return Product.REGIONAL_TRAIN;
+        if ("FEX".equals(ucType)) // Flughafen-Express
+            return Product.REGIONAL_TRAIN;
 
         // Suburban Trains
         if (P_LINE_SBAHN.matcher(ucType).matches()) // Generic (Night) S-Bahn
