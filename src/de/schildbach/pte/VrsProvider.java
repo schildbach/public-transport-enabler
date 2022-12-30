@@ -186,6 +186,7 @@ public class VrsProvider extends AbstractNetworkProvider {
         STYLES.put("T13", new Style(Style.parseColor("#9e7b65"), Style.WHITE));
         STYLES.put("T15", new Style(Style.parseColor("#4dbd38"), Style.WHITE));
         STYLES.put("T16", new Style(Style.parseColor("#33baab"), Style.WHITE));
+        STYLES.put("T17", new Style(Style.parseColor("#85d0f5"), Style.WHITE));
         STYLES.put("T18", new Style(Style.parseColor("#05a1e6"), Style.WHITE));
         STYLES.put("T61", new Style(Style.parseColor("#80cc28"), Style.WHITE));
         STYLES.put("T62", new Style(Style.parseColor("#4dbd38"), Style.WHITE));
