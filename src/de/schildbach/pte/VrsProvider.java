@@ -19,22 +19,11 @@ package de.schildbach.pte;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.EnumSet;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -147,10 +136,7 @@ public class VrsProvider extends AbstractNetworkProvider {
         public Position position;
     }
 
-    // valid host names: www.vrsinfo.de, android.vrsinfo.de, ios.vrsinfo.de, ekap.vrsinfo.de (only SSL
-    // encrypted with client certificate)
-    // performance comparison March 2015 showed www.vrsinfo.de to be fastest for trips
-    protected static final HttpUrl API_BASE = HttpUrl.parse("http://android.vrsinfo.de/index.php");
+    protected static final HttpUrl API_BASE = HttpUrl.parse("https://ekap-app.vrs.de/index.php");
     protected static final String SERVER_PRODUCT = "vrs";
 
     @SuppressWarnings("serial")
@@ -189,6 +175,7 @@ public class VrsProvider extends AbstractNetworkProvider {
         STYLES.put("T13", new Style(Style.parseColor("#9e7b65"), Style.WHITE));
         STYLES.put("T15", new Style(Style.parseColor("#4dbd38"), Style.WHITE));
         STYLES.put("T16", new Style(Style.parseColor("#33baab"), Style.WHITE));
+        STYLES.put("T17", new Style(Style.parseColor("#85d0f5"), Style.WHITE));
         STYLES.put("T18", new Style(Style.parseColor("#05a1e6"), Style.WHITE));
         STYLES.put("T61", new Style(Style.parseColor("#80cc28"), Style.WHITE));
         STYLES.put("T62", new Style(Style.parseColor("#4dbd38"), Style.WHITE));
@@ -334,9 +321,13 @@ public class VrsProvider extends AbstractNetworkProvider {
         STYLES.put("R", new Style(Style.parseColor("#009d81"), Style.WHITE));
     }
 
+    private static byte[] pfxData = Base64.getDecoder().decode("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");
+
+    private static char pfxPassword[] = "xyH7PEpUdfyr6Zcb".toCharArray();
+
     public VrsProvider() {
         super(NetworkId.VRS);
-
+        httpClient.setClientCertificate(pfxData, pfxPassword);
         setStyles(STYLES);
     }
 

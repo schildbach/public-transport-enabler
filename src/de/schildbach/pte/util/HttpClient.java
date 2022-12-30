@@ -19,10 +19,13 @@ package de.schildbach.pte.util;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
+import java.security.KeyStore;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
@@ -34,10 +37,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
+import javax.net.ssl.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,6 +80,10 @@ public final class HttpClient {
     @Nullable
     private Proxy proxy = null;
     private boolean trustAllCertificates = false;
+    @Nullable
+    private byte[] pfxData = null;
+    @Nullable
+    private char[] pfxPassword = null;
     @Nullable
     private CertificatePinner certificatePinner = null;
 
@@ -190,6 +194,11 @@ public final class HttpClient {
         this.trustAllCertificates = trustAllCertificates;
     }
 
+    public void setClientCertificate(byte[] pfxData, char[] pfxPassword) {
+        this.pfxData = pfxData;
+        this.pfxPassword = pfxPassword;
+    }
+
     public void setCertificatePin(final String host, final String... hashes) {
         this.certificatePinner = new CertificatePinner.Builder().add(host, hashes).build();
     }
@@ -238,12 +247,12 @@ public final class HttpClient {
             request.header("Cookie", sessionCookie.toString());
 
         final OkHttpClient okHttpClient;
-        if (proxy != null || trustAllCertificates || certificatePinner != null) {
+        if (proxy != null || trustAllCertificates || certificatePinner != null || pfxData != null) {
             final OkHttpClient.Builder builder = OKHTTP_CLIENT.newBuilder();
             if (proxy != null)
                 builder.proxy(proxy);
-            if (trustAllCertificates)
-                trustAllCertificates(builder);
+            if (trustAllCertificates || pfxData != null)
+                configureSSL(builder);
             if (certificatePinner != null)
                 builder.certificatePinner(certificatePinner);
             okHttpClient = builder.build();
@@ -279,7 +288,6 @@ public final class HttpClient {
                 }
 
                 callback.onSuccessful(bodyPeek, response.body());
-                return;
             } else if (RESPONSE_CODES_BLOCKED.contains(responseCode)) {
                 throw new BlockedException(url, bodyPeek);
             } else if (RESPONSE_CODES_NOT_FOUND.contains(responseCode)) {
@@ -322,10 +330,7 @@ public final class HttpClient {
     public static boolean testExpired(final String content) {
         // check for expired session
         final Matcher mSessionExpired = P_EXPIRED.matcher(content);
-        if (mSessionExpired.find())
-            return true;
-
-        return false;
+        return mSessionExpired.find();
     }
 
     private static final Pattern P_INTERNAL_ERROR = Pattern.compile(
@@ -334,16 +339,21 @@ public final class HttpClient {
     public static boolean testInternalError(final String content) {
         // check for internal error
         final Matcher m = P_INTERNAL_ERROR.matcher(content);
-        if (m.find())
-            return true;
-
-        return false;
+        return m.find();
     }
 
-    private void trustAllCertificates(final OkHttpClient.Builder okHttpClientBuilder) {
+    private void configureSSL(final OkHttpClient.Builder okHttpClientBuilder) {
         try {
             final SSLContext sslContext = SSLContext.getInstance("SSL");
-            sslContext.init(null, new TrustManager[] { TRUST_ALL_CERTIFICATES }, null);
+            KeyManager[] keyManagers = null;
+            if (pfxData != null) {
+                KeyStore keyStore = KeyStore.getInstance("PKCS12");
+                keyStore.load(new ByteArrayInputStream(pfxData), pfxPassword);
+                KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+                keyManagerFactory.init(keyStore, pfxPassword);
+                keyManagers = keyManagerFactory.getKeyManagers();
+            }
+            sslContext.init(keyManagers, new TrustManager[] { TRUST_ALL_CERTIFICATES }, null);
             final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
             okHttpClientBuilder.sslSocketFactory(sslSocketFactory, TRUST_ALL_CERTIFICATES);
         } catch (final Exception x) {
