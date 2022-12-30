@@ -147,10 +147,7 @@ public class VrsProvider extends AbstractNetworkProvider {
         public Position position;
     }
 
-    // valid host names: www.vrsinfo.de, android.vrsinfo.de, ios.vrsinfo.de, ekap.vrsinfo.de (only SSL
-    // encrypted with client certificate)
-    // performance comparison March 2015 showed www.vrsinfo.de to be fastest for trips
-    protected static final HttpUrl API_BASE = HttpUrl.parse("http://android.vrsinfo.de/index.php");
+    protected static final HttpUrl API_BASE = HttpUrl.parse("https://ekap-app.vrs.de/index.php");
     protected static final String SERVER_PRODUCT = "vrs";
 
     @SuppressWarnings("serial")
@@ -334,9 +331,9 @@ public class VrsProvider extends AbstractNetworkProvider {
         STYLES.put("R", new Style(Style.parseColor("#009d81"), Style.WHITE));
     }
 
-    public VrsProvider() {
+    public VrsProvider(final byte[] clientCertificate) {
         super(NetworkId.VRS);
-
+        httpClient.setClientCertificate(clientCertificate);
         setStyles(STYLES);
     }
 
