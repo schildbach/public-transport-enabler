@@ -30,7 +30,7 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class VvoProvider extends AbstractEfaProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("http://efa.vvo-online.de:8080/std3/");
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://efa.vvo-online.de/std3/");
     private static final String STOP_FINDER_ENDPOINT = "XSLT_STOPFINDER_REQUEST";
     private static final String COORD_ENDPOINT = "XSLT_COORD_REQUEST";
 
