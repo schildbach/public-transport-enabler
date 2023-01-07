@@ -46,7 +46,7 @@ public enum NetworkId {
     SNCB,
 
     // Netherlands
-    NS, NEGENTWEE,
+    NS, NEGENTWEE, NETHERLANDS,
 
     // Denmark
     DSB,
