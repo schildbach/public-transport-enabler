@@ -45,6 +45,7 @@ public class HttpClientTest {
         assertEquals("center.vodafone.de", url.host());
     }
 
+    @Test
     public void kabelDeutschlandRedirect() throws Exception {
         final HttpUrl url = HttpClient.testRedirect(base,
                 "<script type=\"text/javascript\"> window.location = \"http://www.hotspot.kabeldeutschland.de/portal/?RequestedURI=http%3A%2F%2Fwww.fahrinfo-berlin.de%2FFahrinfo%2Fbin%2Fajax-getstop.bin%2Fdny%3Fgetstop%3D1%26REQ0JourneyStopsS0A%3D255%26REQ0JourneyStopsS0G%3Dgneisenustra%25DFe%3F%26js%3Dtrue&RedirectReason=Policy&RedirectAqpId=100&DiscardAqpId=100&SubscriberId=4fa432d4a653e5f8b2acb27aa862f98d&SubscriberType=ESM&ClientIP=10.136.25.241&SystemId=10.143.181.2-1%2F2&GroupId=1&PartitionId=2&Application=Unknown&ApplicationGroup=Unknown\" </script>");
