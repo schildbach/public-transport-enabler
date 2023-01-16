@@ -33,7 +33,7 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class TpgProvider extends AbstractHafasClientInterfaceProvider {
-    // private static final Product[] PRODUCTS_MAP = { Product.FERRY, Product.SUBURBAN_TRAIN, Product.BUS, Product.TRAM };
+    private static final Product[] PRODUCTS_MAP = { null, null, null, Product.REGIONAL_TRAIN, Product.FERRY, Product.REGIONAL_TRAIN, Product.BUS, null, null, Product.TRAM };
     private static final HttpUrl API_BASE = HttpUrl.parse("https://tpg.hafas.cloud/bin/");
     private static final String DEFAULT_API_CLIENT = "{\"id\":\"HAFAS\",\"l\":\"vs_webapp\",\"name\":\"webapp\",\"type\":\"WEB\"}";
 
