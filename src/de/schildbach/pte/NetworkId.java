@@ -34,7 +34,7 @@ public enum NetworkId {
     CZECH_REPUBLIC,
 
     // Switzerland
-    VBL, ZVV,
+    TPG, VBL, ZVV,
 
     // France
     PARIS, FRANCESOUTHWEST, FRANCESOUTHEAST, FRANCENORTHWEST, FRANCENORTHEAST,
