@@ -48,7 +48,7 @@ public class TpgProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void queryDepartures() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("8501238", false); // Genève-Paquis
+        final QueryDeparturesResult result = queryDepartures("8501238", true); // Genève-Paquis
         print(result);
     }
 
@@ -63,12 +63,6 @@ public class TpgProviderLiveTest extends AbstractProviderLiveTest {
         final QueryDeparturesResult result = queryDepartures("8587907", true); // Plainpalais
         print(result);
     }
-
-    // @Test
-    // public void queryDeparturesTrolley() throws Exception {
-    //     final QueryDeparturesResult result = queryDepartures("8591177", false); // Hardplatz
-    //     print(result);
-    // }
 
     @Test
     public void queryDeparturesInvalidStation() throws Exception {
@@ -92,18 +86,17 @@ public class TpgProviderLiveTest extends AbstractProviderLiveTest {
         print(laterResult);
     }
 
-    // @Test
-    // public void trip() throws Exception {
-    //     // final Location from = new Location(LocationType.STATION, "8593059", Point.from1E6(46163584, 6106258), "Plan-les-Ouates",
-    //     //         "Plan-les-Ouates, Galaise");
-    //     final Location from = new Location(LocationType.STATION, "8592913", "Genève", "Trembley");
-    //     final Location to = new Location(LocationType.STATION, "8593217", Point.from1E6(46325307, 6064940), "Cessy",
-    //             "Cessy-Les Hauts");
-    //     final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
-    //     print(result);
-    //     final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
-    //     print(laterResult);
-    // }
+    @Test
+    public void trip() throws Exception {
+        final Location from = new Location(LocationType.STATION, "8593059", Point.from1E6(46163584, 6106258), "Plan-les-Ouates",
+                "Plan-les-Ouates, Galaise");
+        final Location to = new Location(LocationType.STATION, "101012", Point.from1E6(46325307, 6064940), "Cessy",
+                "Cessy-Les Hauts");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
+        print(result);
+        final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+        print(laterResult);
+    }
 
     @Test
     public void tripBetweenCoordinates() throws Exception {
