@@ -1,5 +1,4 @@
 /*
-import de.schildbach.pte.dto.Style.Shape;
  * Copyright the original author or authors.
  *
  * This program is free software: you can redistribute it and/or modify
