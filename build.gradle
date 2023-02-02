@@ -1,6 +1,6 @@
 plugins {
     id 'java-library'
-    id 'maven'
+    id 'maven-publish'
 }
 
 group = 'de.schildbach.pte'
