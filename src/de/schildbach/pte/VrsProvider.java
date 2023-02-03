@@ -17,6 +17,7 @@
 
 package de.schildbach.pte;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.IOException;
@@ -1083,8 +1084,11 @@ public class VrsProvider extends AbstractNetworkProvider {
     }
 
     private final static Date parseDateTime(final String dateTimeStr) throws ParseException {
+        final int lastColonIndex = dateTimeStr.lastIndexOf(':');
+        if (lastColonIndex < 0)
+            throw new ParseException(dateTimeStr, lastColonIndex);
         return new SimpleDateFormat("yyyy-MM-dd'T'kk:mm:ssZ")
-                .parse(dateTimeStr.substring(0, dateTimeStr.lastIndexOf(':')) + "00");
+                .parse(dateTimeStr.substring(0, lastColonIndex) + "00");
     }
 
     private final Point stationToCoord(String id) throws IOException {
