@@ -101,12 +101,12 @@ public class VrsProvider extends AbstractNetworkProvider {
 
         @Override
         public boolean canQueryLater() {
-            return this.canQueryLater;
+            return this.canQueryLater && this.lastDeparture != null;
         }
 
         @Override
         public boolean canQueryEarlier() {
-            return this.canQueryEarlier;
+            return this.canQueryEarlier && this.firstArrival != null;
         }
 
         public void departure(Date departure) {
