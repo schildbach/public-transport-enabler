@@ -625,7 +625,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                 if ("H9380".equals(err)) // Departure/Arrival/Intermediate or equivalent stations def'd more
                                          // than once.
                     return new QueryTripsResult(header, QueryTripsResult.Status.TOO_CLOSE);
-                if ("FAIL".equals(err) && "HCI Service: request failed".equals(errTxt))
+                if ("FAIL".equals(err))
                     return new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN);
                 if ("PROBLEMS".equals(err) && "HCI Service: problems during service execution".equals(errTxt))
                     return new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN);
