@@ -487,7 +487,7 @@ public class VrsProvider extends AbstractNetworkProvider {
                             position = new Position(postName);
                         }
                     }
-                    final Location destination = new Location(LocationType.STATION, null /* id */, null /* place */,
+                    final Location destination = new Location(LocationType.ANY, null /* id */, null /* place */,
                             lineObj.getString("direction"));
 
                     final LineDestination lineDestination = new LineDestination(line, destination);
@@ -818,7 +818,7 @@ public class VrsProvider extends AbstractNetworkProvider {
                                 segmentDestination, arrivalPlanned, points, (int) distance));
                     } else if (type.equals("publicTransport")) {
                         legs.add(new Trip.Public(line, direction != null
-                                ? new Location(LocationType.STATION, null /* id */, null /* place */, direction) : null,
+                                ? new Location(LocationType.ANY, null /* id */, null /* place */, direction) : null,
                                 new Stop(segmentOrigin, true /* departure */, departurePlanned, departurePredicted,
                                         segmentOriginPosition, segmentOriginPosition),
                                 new Stop(segmentDestination, false /* departure */, arrivalPlanned, arrivalPredicted,
