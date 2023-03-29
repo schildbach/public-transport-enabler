@@ -4,16 +4,20 @@ before_script:
 after_script:
   - gradle --version
 
-focal-jdk8:
-  image: ubuntu:focal
+sid-jdk8:
+  image: debian:sid-slim
   script:
-    - apt-get -y install openjdk-8-jdk
-    - apt-get -y install gradle
+    - apt-get -y install openjdk-8-jdk gradle
     - gradle build --stacktrace
 
-focal-jdk11:
-  image: ubuntu:focal
+bullseye-jdk11:
+  image: debian:bullseye-slim
   script:
-    - apt-get -y install openjdk-11-jdk
-    - apt-get -y install gradle
+    - apt-get -y install openjdk-11-jdk gradle
+    - gradle build --stacktrace
+
+bookworm-jdk17:
+  image: debian:bookworm-slim
+  script:
+    - apt-get -y install openjdk-17-jdk gradle
     - gradle build --stacktrace
