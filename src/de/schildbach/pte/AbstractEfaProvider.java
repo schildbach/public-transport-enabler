@@ -893,7 +893,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     private static final Pattern P_LINE_RB = Pattern.compile("RB ?\\d+[abc]?");
     private static final Pattern P_LINE_R = Pattern.compile("R ?\\d+");
     private static final Pattern P_LINE_IRE = Pattern.compile("IRE\\d+[ab]?");
-    private static final Pattern P_LINE_MEX = Pattern.compile("MEX\\d+[abc]?");
+    private static final Pattern P_LINE_MEX = Pattern.compile("MEX ?\\d+[abc]?");
     private static final Pattern P_LINE_S = Pattern.compile("S ?\\d+");
     private static final Pattern P_LINE_S_DB = Pattern.compile("(S\\d+) \\((?:DB Regio AG)\\)");
     private static final Pattern P_LINE_NUMBER = Pattern.compile("\\d+");
