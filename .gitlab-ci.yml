@@ -2,7 +2,6 @@ image: ubuntu:focal
 
 before_script:
   - apt-get update
-  - apt-get -y upgrade
   - apt-get -y install ${JDK_PACKAGE}
   - apt-get -y install gradle
 
