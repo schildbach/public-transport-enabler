@@ -7,17 +7,17 @@ after_script:
 sid-jdk8:
   image: debian:sid-slim
   script:
-    - apt-get -y install openjdk-8-jdk gradle
+    - apt-get -y install openjdk-8-jdk-headless gradle
     - gradle build --stacktrace
 
 bullseye-jdk11:
   image: debian:bullseye-slim
   script:
-    - apt-get -y install openjdk-11-jdk gradle
+    - apt-get -y install openjdk-11-jdk-headless gradle
     - gradle build --stacktrace
 
 bookworm-jdk17:
   image: debian:bookworm-slim
   script:
-    - apt-get -y install openjdk-17-jdk gradle
+    - apt-get -y install openjdk-17-jdk-headless gradle
     - gradle build --stacktrace
