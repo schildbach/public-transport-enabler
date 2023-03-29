@@ -6,6 +6,9 @@ before_script:
   - apt-get -y install ${JDK_PACKAGE}
   - apt-get -y install gradle
 
+after_script:
+  - gradle --version
+
 build:
   parallel:
     matrix:
