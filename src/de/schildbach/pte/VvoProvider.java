@@ -73,7 +73,7 @@ public class VvoProvider extends AbstractEfaProvider {
             if ("RB 71".equals(symbol))
                 return new Line(id, network, Product.REGIONAL_TRAIN, "RB71");
 
-            if (P_C_LINE.matcher(symbol).matches())
+            if (symbol != null && P_C_LINE.matcher(symbol).matches())
                 return new Line(id, network, Product.TRAM, symbol);
 
             if ("Fernbus".equals(trainName) && trainNum == null)
