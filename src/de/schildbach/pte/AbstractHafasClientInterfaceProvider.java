@@ -260,7 +260,8 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
             final String err = svcRes.getString("err");
             if (!"OK".equals(err)) {
                 final String errTxt = svcRes.optString("errTxt");
-                log.debug("Hafas error: {} {}", err, errTxt);
+                final String msg = "err=" + err + ", errTxt=\"" + errTxt + "\"";
+                log.debug("Hafas error: {}", msg);
                 if ("FAIL".equals(err) && "HCI Service: request failed".equals(errTxt))
                     return new NearbyLocationsResult(header, NearbyLocationsResult.Status.SERVICE_DOWN);
                 if ("CGI_READ_FAILED".equals(err))
@@ -269,7 +270,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                     return new NearbyLocationsResult(header, NearbyLocationsResult.Status.SERVICE_DOWN);
                 if ("H_UNKNOWN".equals(err))
                     return new NearbyLocationsResult(header, NearbyLocationsResult.Status.SERVICE_DOWN);
-                throw new RuntimeException(err + " " + errTxt);
+                throw new RuntimeException(msg);
             }
             final JSONObject res = svcRes.getJSONObject("res");
 
@@ -345,7 +346,8 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
             final String err = svcRes.getString("err");
             if (!"OK".equals(err)) {
                 final String errTxt = svcRes.optString("errTxt");
-                log.debug("Hafas error: {} {}", err, errTxt);
+                final String msg = "err=" + err + ", errTxt=\"" + errTxt + "\"";
+                log.debug("Hafas error: {}", msg);
                 if ("LOCATION".equals(err) && "HCI Service: location missing or invalid".equals(errTxt))
                     return new QueryDeparturesResult(header, QueryDeparturesResult.Status.INVALID_STATION);
                 if ("FAIL".equals(err) && "HCI Service: request failed".equals(errTxt))
@@ -358,7 +360,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                     return new QueryDeparturesResult(header, QueryDeparturesResult.Status.SERVICE_DOWN);
                 if ("H_UNKNOWN".equals(err))
                     return new QueryDeparturesResult(header, QueryDeparturesResult.Status.SERVICE_DOWN);
-                throw new RuntimeException(err + " " + errTxt);
+                throw new RuntimeException(msg);
             }
             final JSONObject res = svcRes.getJSONObject("res");
 
@@ -486,7 +488,8 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
             final String err = svcRes.getString("err");
             if (!"OK".equals(err)) {
                 final String errTxt = svcRes.optString("errTxt");
-                log.debug("Hafas error: {} {}", err, errTxt);
+                final String msg = "err=" + err + ", errTxt=\"" + errTxt + "\"";
+                log.debug("Hafas error: {}", msg);
                 if ("FAIL".equals(err) && "HCI Service: request failed".equals(errTxt))
                     return new SuggestLocationsResult(header, SuggestLocationsResult.Status.SERVICE_DOWN);
                 if ("CGI_READ_FAILED".equals(err))
@@ -495,7 +498,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                     return new SuggestLocationsResult(header, SuggestLocationsResult.Status.SERVICE_DOWN);
                 if ("H_UNKNOWN".equals(err))
                     return new SuggestLocationsResult(header, SuggestLocationsResult.Status.SERVICE_DOWN);
-                throw new RuntimeException(err + " " + errTxt);
+                throw new RuntimeException(msg);
             }
             final JSONObject res = svcRes.getJSONObject("res");
 
@@ -601,7 +604,8 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
             final String err = svcRes.getString("err");
             if (!"OK".equals(err)) {
                 final String errTxt = svcRes.optString("errTxt");
-                log.debug("Hafas error: {} {}", err, errTxt);
+                final String msg = "err=" + err + ", errTxt=\"" + errTxt + "\"";
+                log.debug("Hafas error: {}", msg);
                 if ("H890".equals(err)) // No connections found.
                     return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
                 if ("H891".equals(err)) // No route found (try entering an intermediate station).
@@ -637,7 +641,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                     return new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN);
                 if ("H_UNKNOWN".equals(err))
                     return new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN);
-                throw new RuntimeException(err + " " + errTxt);
+                throw new RuntimeException(msg);
             }
             final JSONObject res = svcRes.getJSONObject("res");
 
@@ -912,7 +916,8 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
         final String err = serverInfo.optString("err", null);
         if (err != null && !"OK".equals(err)) {
             final String errTxt = serverInfo.optString("errTxt");
-            log.info("ServerInfo error: {} {}, ignoring", err, errTxt);
+            final String msg = "err=" + err + ", errTxt=\"" + errTxt + "\"";
+            log.info("ServerInfo error: {}, ignoring", msg);
             return new ResultHeader(network, SERVER_PRODUCT, serverVersion, null, 0, null);
         }
         final JSONObject res = serverInfo.getJSONObject("res");
