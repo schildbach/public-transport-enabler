@@ -89,11 +89,11 @@ public class CHSearchProviderLiveTest extends AbstractProviderLiveTest {
         assertNotNull(result.stationDepartures.get(0));
         assertTrue(result.stationDepartures.get(0).departures.size() > 0);
 
-        //Test if maxDepartures is honored
-        final QueryDeparturesResult result2 = queryDepartures("8503000", 2, false);
+        //Test if maxDepartures is honored (as of 29.7.23, this seems to be unstable sometimes..)
+        final QueryDeparturesResult result2 = queryDepartures("8503000", 5, false);
         assertEquals(QueryDeparturesResult.Status.OK, result.status);
         assertNotNull(result2.stationDepartures.get(0));
-        assertEquals(2, result2.stationDepartures.get(0).departures.size());
+        assertEquals(5, result2.stationDepartures.get(0).departures.size());
 
         // Invalid query
         final QueryDeparturesResult invalidResult = queryDepartures("9999999", 0, false);

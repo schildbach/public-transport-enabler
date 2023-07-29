@@ -59,6 +59,9 @@ public class CHSearchProvider extends AbstractNetworkProvider {
     private static final DateFormat DATE_FORMATTER = new SimpleDateFormat("MM/dd/yyyy");
     private static final DateFormat TIME_FORMATTER = new SimpleDateFormat("HH:mm");
     protected static final SimpleDateFormat DATE_TIME_FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    // Disruptions are not provided by the search.ch API anymore (probably not intentional). Before enabling this again,
+    // also check the related parser since they may change the format too..
+    private static final boolean DISABLE_DISRUPTIONS = true;
 
 
     private final List<Capability> CAPABILITIES = Arrays.asList(
@@ -513,7 +516,7 @@ public class CHSearchProvider extends AbstractNetworkProvider {
                     this.duration = rawConnection.getDouble("duration");
                     this.arrival = DATE_TIME_FORMATTER.parse(rawConnection.getString("arrival"));
                     this.departure = DATE_TIME_FORMATTER.parse(rawConnection.getString("departure"));
-                    this.disruptions = Disruption.extractDisruptionsToList(rawConnection);
+                    this.disruptions = DISABLE_DISRUPTIONS ? new ArrayList<>() : Disruption.extractDisruptionsToList(rawConnection);
 
                     JSONArray rawLegs = rawConnection.getJSONArray("legs");
                     for (int i = 0; i < rawLegs.length(); i++) {
@@ -672,7 +675,7 @@ public class CHSearchProvider extends AbstractNetworkProvider {
                         this.isAddress = rawLeg.has("isaddress") && rawLeg.getBoolean("isaddress");
                         this.exit = rawLeg.has("exit") ? new Exit(rawLeg.getJSONObject("exit")) : null;
                         this.cancelled = rawLeg.has("cancelled") && rawLeg.getBoolean("cancelled");
-                        this.disruptions = Disruption.extractDisruptionsToList(rawLeg);
+                        this.disruptions = DISABLE_DISRUPTIONS ? new ArrayList<>() : Disruption.extractDisruptionsToList(rawLeg);
 
                         if (rawLeg.has("stops") && !rawLeg.isNull("stops")) {
                             JSONArray rawStops = rawLeg.getJSONArray("stops");
