@@ -19,10 +19,12 @@ package de.schildbach.pte.util;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
+import java.security.KeyStore;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
@@ -34,6 +36,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
@@ -80,6 +84,8 @@ public final class HttpClient {
     @Nullable
     private Proxy proxy = null;
     private boolean trustAllCertificates = false;
+    @Nullable
+    private byte[] clientCertificate = null;
     @Nullable
     private CertificatePinner certificatePinner = null;
 
@@ -190,6 +196,10 @@ public final class HttpClient {
         this.trustAllCertificates = trustAllCertificates;
     }
 
+    public void setClientCertificate(final byte[] clientCertificate) {
+        this.clientCertificate = clientCertificate;
+    }
+
     public void setCertificatePin(final String host, final String... hashes) {
         this.certificatePinner = new CertificatePinner.Builder().add(host, hashes).build();
     }
@@ -238,12 +248,12 @@ public final class HttpClient {
             request.header("Cookie", sessionCookie.toString());
 
         final OkHttpClient okHttpClient;
-        if (proxy != null || trustAllCertificates || certificatePinner != null) {
+        if (proxy != null || trustAllCertificates || certificatePinner != null || clientCertificate != null) {
             final OkHttpClient.Builder builder = OKHTTP_CLIENT.newBuilder();
             if (proxy != null)
                 builder.proxy(proxy);
-            if (trustAllCertificates)
-                trustAllCertificates(builder);
+            if (trustAllCertificates || clientCertificate != null)
+                configureSSL(builder);
             if (certificatePinner != null)
                 builder.certificatePinner(certificatePinner);
             okHttpClient = builder.build();
@@ -340,10 +350,19 @@ public final class HttpClient {
         return false;
     }
 
-    private void trustAllCertificates(final OkHttpClient.Builder okHttpClientBuilder) {
+    private void configureSSL(final OkHttpClient.Builder okHttpClientBuilder) {
         try {
             final SSLContext sslContext = SSLContext.getInstance("SSL");
-            sslContext.init(null, new TrustManager[] { TRUST_ALL_CERTIFICATES }, null);
+            KeyManager[] keyManagers = null;
+            if (clientCertificate != null) {
+                final char[] keyStorePassword = "".toCharArray();
+                KeyStore keyStore = KeyStore.getInstance("PKCS12");
+                keyStore.load(new ByteArrayInputStream(clientCertificate), keyStorePassword);
+                KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+                keyManagerFactory.init(keyStore, keyStorePassword);
+                keyManagers = keyManagerFactory.getKeyManagers();
+            }
+            sslContext.init(keyManagers, new TrustManager[] { TRUST_ALL_CERTIFICATES }, null);
             final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
             okHttpClientBuilder.sslSocketFactory(sslSocketFactory, TRUST_ALL_CERTIFICATES);
         } catch (final Exception x) {

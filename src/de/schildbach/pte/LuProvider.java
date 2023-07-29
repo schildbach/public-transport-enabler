@@ -17,6 +17,7 @@
 
 package de.schildbach.pte;
 
+import java.util.Set;
 import java.util.regex.Matcher;
 
 import de.schildbach.pte.dto.Product;
@@ -44,6 +45,11 @@ public class LuProvider extends AbstractHafasClientInterfaceProvider {
         setApiVersion("1.18");
         setApiClient(apiClient);
         setApiAuthorization(apiAuthorization);
+    }
+
+    @Override
+    public Set<Product> defaultProducts() {
+        return Product.ALL;
     }
 
     @Override

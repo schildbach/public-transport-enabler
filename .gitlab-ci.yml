@@ -1,14 +1,35 @@
-image: ubuntu:focal
-
 before_script:
   - apt-get update
-  - apt-get -y upgrade
-  - apt-get -y install ${JDK_PACKAGE}
-  - apt-get -y install gradle
 
-build:
-  parallel:
-    matrix:
-      - JDK_PACKAGE: [ openjdk-8-jdk, openjdk-11-jdk ]
+after_script:
+  - gradle --version
+
+sid-jdk8:
+  image: debian:sid-slim
   script:
+    - apt-get -y install openjdk-8-jdk-headless gradle
     - gradle build --stacktrace
+  artifacts:
+    name: public-transport-enabler-$CI_JOB_NAME-$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA
+    paths:
+      - build/libs/*.jar
+
+bullseye-jdk11:
+  image: debian:bullseye-slim
+  script:
+    - apt-get -y install openjdk-11-jdk-headless gradle
+    - gradle build --stacktrace
+  artifacts:
+    name: public-transport-enabler-$CI_JOB_NAME-$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA
+    paths:
+      - build/libs/*.jar
+
+bookworm-jdk17:
+  image: debian:bookworm-slim
+  script:
+    - apt-get -y install openjdk-17-jdk-headless gradle
+    - gradle build --stacktrace
+  artifacts:
+    name: public-transport-enabler-$CI_JOB_NAME-$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA
+    paths:
+      - build/libs/*.jar

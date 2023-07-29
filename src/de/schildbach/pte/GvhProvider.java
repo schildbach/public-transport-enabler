@@ -22,6 +22,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.Charsets;
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
@@ -40,7 +41,7 @@ public class GvhProvider extends AbstractEfaProvider {
 
     public GvhProvider(final HttpUrl apiBase) {
         super(NetworkId.GVH, apiBase);
-
+        setRequestUrlEncoding(Charsets.UTF_8);
         setIncludeRegionId(false);
         setStyles(STYLES);
         setSessionCookieName("HASESSIONID");
@@ -55,6 +56,8 @@ public class GvhProvider extends AbstractEfaProvider {
                 return new Line(id, network, Product.REGIONAL_TRAIN, "RX" + trainNum);
             if ("S4".equals(trainNum))
                 return new Line(id, network, Product.SUBURBAN_TRAIN, "S4");
+            if ("RS3".equals(trainNum)) // Regio S-Bahn
+                return new Line(id, network, Product.SUBURBAN_TRAIN, "RS3");
             if (longName != null && longName.startsWith("Bus ") && name != null)
                 return new Line(id, network, Product.BUS, name);
         }

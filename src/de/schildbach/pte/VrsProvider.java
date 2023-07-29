@@ -17,6 +17,7 @@
 
 package de.schildbach.pte;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.IOException;
@@ -100,12 +101,12 @@ public class VrsProvider extends AbstractNetworkProvider {
 
         @Override
         public boolean canQueryLater() {
-            return this.canQueryLater;
+            return this.canQueryLater && this.lastDeparture != null;
         }
 
         @Override
         public boolean canQueryEarlier() {
-            return this.canQueryEarlier;
+            return this.canQueryEarlier && this.firstArrival != null;
         }
 
         public void departure(Date departure) {
@@ -147,10 +148,7 @@ public class VrsProvider extends AbstractNetworkProvider {
         public Position position;
     }
 
-    // valid host names: www.vrsinfo.de, android.vrsinfo.de, ios.vrsinfo.de, ekap.vrsinfo.de (only SSL
-    // encrypted with client certificate)
-    // performance comparison March 2015 showed www.vrsinfo.de to be fastest for trips
-    protected static final HttpUrl API_BASE = HttpUrl.parse("http://android.vrsinfo.de/index.php");
+    protected static final HttpUrl API_BASE = HttpUrl.parse("https://ekap-app.vrs.de/index.php");
     protected static final String SERVER_PRODUCT = "vrs";
 
     @SuppressWarnings("serial")
@@ -189,6 +187,7 @@ public class VrsProvider extends AbstractNetworkProvider {
         STYLES.put("T13", new Style(Style.parseColor("#9e7b65"), Style.WHITE));
         STYLES.put("T15", new Style(Style.parseColor("#4dbd38"), Style.WHITE));
         STYLES.put("T16", new Style(Style.parseColor("#33baab"), Style.WHITE));
+        STYLES.put("T17", new Style(Style.parseColor("#85d0f5"), Style.WHITE));
         STYLES.put("T18", new Style(Style.parseColor("#05a1e6"), Style.WHITE));
         STYLES.put("T61", new Style(Style.parseColor("#80cc28"), Style.WHITE));
         STYLES.put("T62", new Style(Style.parseColor("#4dbd38"), Style.WHITE));
@@ -334,9 +333,9 @@ public class VrsProvider extends AbstractNetworkProvider {
         STYLES.put("R", new Style(Style.parseColor("#009d81"), Style.WHITE));
     }
 
-    public VrsProvider() {
+    public VrsProvider(final byte[] clientCertificate) {
         super(NetworkId.VRS);
-
+        httpClient.setClientCertificate(clientCertificate);
         setStyles(STYLES);
     }
 
@@ -488,7 +487,7 @@ public class VrsProvider extends AbstractNetworkProvider {
                             position = new Position(postName);
                         }
                     }
-                    final Location destination = new Location(LocationType.STATION, null /* id */, null /* place */,
+                    final Location destination = new Location(LocationType.ANY, null /* id */, null /* place */,
                             lineObj.getString("direction"));
 
                     final LineDestination lineDestination = new LineDestination(line, destination);
@@ -819,7 +818,7 @@ public class VrsProvider extends AbstractNetworkProvider {
                                 segmentDestination, arrivalPlanned, points, (int) distance));
                     } else if (type.equals("publicTransport")) {
                         legs.add(new Trip.Public(line, direction != null
-                                ? new Location(LocationType.STATION, null /* id */, null /* place */, direction) : null,
+                                ? new Location(LocationType.ANY, null /* id */, null /* place */, direction) : null,
                                 new Stop(segmentOrigin, true /* departure */, departurePlanned, departurePredicted,
                                         segmentOriginPosition, segmentOriginPosition),
                                 new Stop(segmentDestination, false /* departure */, arrivalPlanned, arrivalPredicted,
@@ -1085,8 +1084,11 @@ public class VrsProvider extends AbstractNetworkProvider {
     }
 
     private final static Date parseDateTime(final String dateTimeStr) throws ParseException {
+        final int lastColonIndex = dateTimeStr.lastIndexOf(':');
+        if (lastColonIndex < 0)
+            throw new ParseException(dateTimeStr, lastColonIndex);
         return new SimpleDateFormat("yyyy-MM-dd'T'kk:mm:ssZ")
-                .parse(dateTimeStr.substring(0, dateTimeStr.lastIndexOf(':')) + "00");
+                .parse(dateTimeStr.substring(0, lastColonIndex) + "00");
     }
 
     private final Point stationToCoord(String id) throws IOException {

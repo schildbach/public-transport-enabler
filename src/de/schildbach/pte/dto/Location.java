@@ -19,6 +19,7 @@ package de.schildbach.pte.dto;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -97,18 +98,22 @@ public final class Location implements Serializable {
     }
 
     public double getLatAsDouble() {
+        checkState(hasCoord(), "missing coordinates: %s", toString());
         return coord.getLatAsDouble();
     }
 
     public double getLonAsDouble() {
+        checkState(hasCoord(), "missing coordinates: %s", toString());
         return coord.getLonAsDouble();
     }
 
     public int getLatAs1E6() {
+        checkState(hasCoord(), "missing coordinates: %s", toString());
         return coord.getLatAs1E6();
     }
 
     public int getLonAs1E6() {
+        checkState(hasCoord(), "missing coordinates: %s", toString());
         return coord.getLonAs1E6();
     }
 

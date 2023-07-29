@@ -109,6 +109,8 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
     private static final String SECTION_TYPE_TRANSFER = "TRSF";
     private static final String SECTION_TYPE_TELE_TAXI = "TETA";
     private static final String SECTION_TYPE_DEVI = "DEVI";
+    private static final String SECTION_TYPE_CHECK_IN = "CHKI";
+    private static final String SECTION_TYPE_CHECK_OUT = "CHKO";
     @SuppressWarnings("deprecation")
     private static final HashFunction MD5 = Hashing.md5();
     private static final BaseEncoding HEX = BaseEncoding.base16().lowerCase();
@@ -623,7 +625,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                 if ("H9380".equals(err)) // Departure/Arrival/Intermediate or equivalent stations def'd more
                                          // than once.
                     return new QueryTripsResult(header, QueryTripsResult.Status.TOO_CLOSE);
-                if ("FAIL".equals(err) && "HCI Service: request failed".equals(errTxt))
+                if ("FAIL".equals(err))
                     return new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN);
                 if ("PROBLEMS".equals(err) && "HCI Service: problems during service execution".equals(errTxt))
                     return new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN);
@@ -745,6 +747,18 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                         final JSONObject gis = sec.optJSONObject("gis");
                         final int distance = gis != null ? gis.optInt("dist", 0) : 0;
                         leg = new Trip.Individual(Trip.Individual.Type.TRANSFER, departureStop.location,
+                                departureStop.getDepartureTime(), arrivalStop.location, arrivalStop.getArrivalTime(),
+                                null, distance);
+                    } else if (SECTION_TYPE_CHECK_IN.equals(secType)) {
+                        final JSONObject gis = sec.optJSONObject("gis");
+                        final int distance = gis != null ? gis.optInt("dist", 0) : 0;
+                        leg = new Trip.Individual(Trip.Individual.Type.CHECK_IN, departureStop.location,
+                                departureStop.getDepartureTime(), arrivalStop.location, arrivalStop.getArrivalTime(),
+                                null, distance);
+                    } else if (SECTION_TYPE_CHECK_OUT.equals(secType)) {
+                        final JSONObject gis = sec.optJSONObject("gis");
+                        final int distance = gis != null ? gis.optInt("dist", 0) : 0;
+                        leg = new Trip.Individual(Trip.Individual.Type.CHECK_OUT, departureStop.location,
                                 departureStop.getDepartureTime(), arrivalStop.location, arrivalStop.getArrivalTime(),
                                 null, distance);
                     } else {

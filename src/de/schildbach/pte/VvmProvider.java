@@ -17,6 +17,7 @@
 
 package de.schildbach.pte;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
@@ -46,7 +47,7 @@ public class VvmProvider extends AbstractEfaProvider {
 
     public VvmProvider() {
         super(NetworkId.VVM, API_BASE, DEPARTURE_MONITOR_ENDPOINT, TRIP_ENDPOINT, null, null);
-
+        setRequestUrlEncoding(Charsets.UTF_8);
         setNeedsSpEncId(true);
     }
 

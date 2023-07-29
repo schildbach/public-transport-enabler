@@ -26,11 +26,13 @@ import de.schildbach.pte.dto.Product;
 
 import okhttp3.HttpUrl;
 
+import java.util.regex.Pattern;
+
 /**
  * @author Andreas Schildbach
  */
 public class VvoProvider extends AbstractEfaProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("http://efa.vvo-online.de:8080/std3/");
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://efa.vvo-online.de/std3/");
     private static final String STOP_FINDER_ENDPOINT = "XSLT_STOPFINDER_REQUEST";
     private static final String COORD_ENDPOINT = "XSLT_COORD_REQUEST";
 
@@ -43,6 +45,8 @@ public class VvoProvider extends AbstractEfaProvider {
         setRequestUrlEncoding(Charsets.UTF_8);
         setSessionCookieName("VVO-EFA");
     }
+
+    private static final Pattern P_C_LINE = Pattern.compile("C\\d{1,2}");
 
     @Override
     protected Line parseLine(final @Nullable String id, final @Nullable String network, final @Nullable String mot,
@@ -68,6 +72,9 @@ public class VvoProvider extends AbstractEfaProvider {
                 return new Line(id, network, Product.REGIONAL_TRAIN, "SB71");
             if ("RB 71".equals(symbol))
                 return new Line(id, network, Product.REGIONAL_TRAIN, "RB71");
+
+            if (P_C_LINE.matcher(symbol).matches())
+                return new Line(id, network, Product.TRAM, symbol);
 
             if ("Fernbus".equals(trainName) && trainNum == null)
                 return new Line(id, network, Product.BUS, trainName);
