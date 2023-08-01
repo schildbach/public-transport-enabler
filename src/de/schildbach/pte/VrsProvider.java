@@ -834,7 +834,8 @@ public class VrsProvider extends AbstractNetworkProvider {
                 trips.add(new Trip(null /* id */, tripOrigin, tripDestination, legs, fares, null /* capacity */,
                         changes));
             }
-            long serverTime = parseDateTime(head.getString("generated")).getTime();
+            String generatedStr = head.getString("generated");
+            long serverTime = !generatedStr.isEmpty() ? parseDateTime(generatedStr).getTime() : null;
             final ResultHeader header = new ResultHeader(NetworkId.VRS, SERVER_PRODUCT, null, null, serverTime, null);
             context.from = from;
             context.to = to;
