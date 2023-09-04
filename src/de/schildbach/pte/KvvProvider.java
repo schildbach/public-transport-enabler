@@ -57,6 +57,8 @@ public class KvvProvider extends AbstractEfaProvider {
                 return new Line(id, network, Product.REGIONAL_TRAIN, trainName);
             if ("IRE 1".equals(trainNum))
                 return new Line(id, network, Product.REGIONAL_TRAIN, "IRE1");
+            if ("IRE 3".equals(trainNum))
+                return new Line(id, network, Product.REGIONAL_TRAIN, "IRE3");
         }
 
         return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
