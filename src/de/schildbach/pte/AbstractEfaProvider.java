@@ -1340,6 +1340,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                 return new Line(id, network, Product.SUBURBAN_TRAIN, "BSB" + Strings.nullToEmpty(trainNum));
             if ("RSB".equals(trainType)) // Regionalschnellbahn, Wien
                 return new Line(id, network, Product.SUBURBAN_TRAIN, "RSB" + trainNum);
+            if ("RS18".equals(trainNum) && trainType == null) // Nahverkehrszug Maastricht - Valkenburg - Heerlen
+                return new Line(id, network, Product.SUBURBAN_TRAIN, "RS18");
             if ("RER".equals(trainName) && symbol != null && symbol.length() == 1) // Réseau Express Régional
                 return new Line(id, network, Product.SUBURBAN_TRAIN, symbol);
             if ("S".equals(trainType))
