@@ -83,8 +83,6 @@ public class NvbwProvider extends AbstractEfaProvider {
                 return new Line(id, network, null, "Zug");
             if ("DB".equals(trainName) && trainNum == null)
                 return new Line(id, network, null, "DB");
-            if ("RB".equals(trainNum) && trainType == null)
-                return new Line(id, network, null, "RB");
         } else if ("1".equals(mot)) {
             if (symbol != null && symbol.equals(name)) {
                 final Matcher m = P_LINE_S_AVG_VBK.matcher(symbol);
