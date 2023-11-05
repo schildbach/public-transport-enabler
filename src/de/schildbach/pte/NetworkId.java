@@ -64,7 +64,7 @@ public enum NetworkId {
     TLEM, MERSEY,
 
     // Ireland
-    TFI, EIREANN,
+    EIREANN,
 
     // Poland
     PL, PLNAVITIA,
