@@ -39,7 +39,7 @@ public class AvvAugsburgProvider extends AbstractHafasClientInterfaceProvider {
 
     public AvvAugsburgProvider(final String apiClient, final String apiAuthorization) {
         super(NetworkId.AVV_AUGSBURG, API_BASE, PRODUCTS_MAP);
-        setApiVersion("1.18");
+        setApiVersion("1.21");
         setApiExt("DB.R16.12.a");
         setApiClient(apiClient);
         setApiAuthorization(apiAuthorization);
