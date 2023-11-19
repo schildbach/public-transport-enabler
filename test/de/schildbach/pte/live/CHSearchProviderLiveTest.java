@@ -26,6 +26,8 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 
 /**
@@ -135,6 +137,44 @@ public class CHSearchProviderLiveTest extends AbstractProviderLiveTest {
         assert laterNightResult.trips != null;
         assertTrue(laterNightResult.trips.size() > 0);
         assertEquals(QueryTripsResult.Status.OK, laterNightResult.status);
+    }
+
+    @Test
+    public void modesOfTransport() throws Exception {
+        final HashSet<Product> products = new HashSet<>();
+        products.add(Product.TRAM);
+        final TripOptions optionsTram = new TripOptions(products, null, null, null, null);
+        final QueryTripsResult resultTram = queryTrips(new Location(LocationType.STATION, "8503000", null, "Zürich HB"),
+                null, new Location(LocationType.STATION, "8573205", null, "Zürich Flughafen"), daytimeDate, true,
+                optionsTram);
+        assert resultTram.trips != null;
+        assert resultTram.trips.get(0).products().contains(Product.TRAM);
+
+        // Lets to the same trip again, but this time with trains
+        products.remove(Product.TRAM);
+        products.add(Product.HIGH_SPEED_TRAIN);
+        products.add(Product.REGIONAL_TRAIN);
+        products.add(Product.SUBURBAN_TRAIN);
+
+        final TripOptions optionsTrain = new TripOptions(products, null, null, null, null);
+        final QueryTripsResult resultTrain = queryTrips(new Location(LocationType.STATION, "8503000", null, "Zürich HB"),
+                null, new Location(LocationType.STATION, "8573205", null, "Zürich Flughafen"), daytimeDate, true,
+                optionsTrain);
+        assert resultTrain.trips != null;
+        Set<Product> trainResultProducts = resultTrain.trips.get(0).products();
+        assert trainResultProducts.contains(Product.HIGH_SPEED_TRAIN) || trainResultProducts.contains(Product.REGIONAL_TRAIN) || trainResultProducts.contains(Product.SUBURBAN_TRAIN);
+
+        // Let's try to do it by ship...
+        products.remove(Product.HIGH_SPEED_TRAIN);
+        products.remove(Product.REGIONAL_TRAIN);
+        products.remove(Product.SUBURBAN_TRAIN);
+        products.add(Product.FERRY);
+
+        final TripOptions optionsShip = new TripOptions(products, null, null, null, null);
+        final QueryTripsResult resultsShip = queryTrips(new Location(LocationType.STATION, "8503000", null, "Zürich HB"),
+                null, new Location(LocationType.STATION, "8503016", null, "Zürich Flughafen"), daytimeDate, true,
+                optionsTrain);
+        assertNull(resultsShip.trips);
     }
 
     @Test

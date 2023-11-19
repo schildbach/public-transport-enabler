@@ -27,13 +27,13 @@ import static de.schildbach.pte.dto.Style.parseColor;
  * <p><b>Notes:</b></p>
  * <ul>
  *  <li>
- *      Some endpoints do offer a "transportation_type" parameter, however it seems that this functionality is not implemented
- *  </li>
- *  <li>
  *      Track changes are indicated with a "!" as prefix of the "track" attribute value
  *  </li>
  *  <li>
  *      Canceled connections are either indicated by a "dep_delay" of "X" and/or the a particular leg has the attribute "cancelled" set to true
+ *  </li>
+ *  <li>
+ *      This code intentionally does not take advantage of newer Java features like stream api etc to keep it as compatible as possible
  *  </li>
  * </ul>
  *
@@ -59,9 +59,8 @@ public class CHSearchProvider extends AbstractNetworkProvider {
     private static final DateFormat DATE_FORMATTER = new SimpleDateFormat("MM/dd/yyyy");
     private static final DateFormat TIME_FORMATTER = new SimpleDateFormat("HH:mm");
     protected static final SimpleDateFormat DATE_TIME_FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    // Disruptions are not provided by the search.ch API anymore (probably not intentional). Before enabling this again,
-    // also check the related parser since they may change the format too..
-    private static final boolean DISABLE_DISRUPTIONS = true;
+    // As of 19. Nov 2023, the API seems to provide disruptions again, us this toggle to quickly disable if it causes problems.
+    private static final boolean DISABLE_DISRUPTIONS = false;
 
 
     private final List<Capability> CAPABILITIES = Arrays.asList(
@@ -226,7 +225,8 @@ public class CHSearchProvider extends AbstractNetworkProvider {
         rawParameters.put("time_type", dep ? "depart" : "arrival");
         rawParameters.put("show_delays", "1");
         rawParameters.put("show_trackchanges", "1");
-
+        String productListForUrl = options == null ? "" : product2apiType(options.products);
+        if (!productListForUrl.isEmpty()) rawParameters.put("transportation_types", productListForUrl);
         HttpUrl.Builder builder = API_BASE.newBuilder();
         builder.addPathSegment(TRIP_ENDPOINT);
         // And then build the request-url with all non-null keys
@@ -346,6 +346,7 @@ public class CHSearchProvider extends AbstractNetworkProvider {
 
     /**
      * Generate train name
+     *
      * @param G Product name
      * @param Z Train number
      * @param L Line number
@@ -410,11 +411,42 @@ public class CHSearchProvider extends AbstractNetworkProvider {
         mapping.put("PB", Product.CABLECAR);
         mapping.put("GB", Product.CABLECAR); // Gondola Lift
         mapping.put("BAT", Product.FERRY);
-        return mapping.get(chSearchType);
+        // There is unfortunately no 'UNKNOWN' product, and since this static list seems quite brittle to me, we return
+        // Product.REGIONAL_TRAIN if there is no match
+        return mapping.getOrDefault(chSearchType, Product.REGIONAL_TRAIN);
+    }
+
+    /**
+     * Reduce products selection to the limited set of products offered by the API
+     *
+     * @param products Set of products
+     * @return A possibly empty, comma seperated string ready to use ase parameter value in the GET request
+     */
+    private static String product2apiType(Set<Product> products) {
+        if (products == null) return "";
+        HashMap<Product, String> mapping = new HashMap<>();
+        HashSet<String> productList = new HashSet<>(5);
+        mapping.put(Product.ON_DEMAND, "");
+        mapping.put(Product.HIGH_SPEED_TRAIN, "train");
+        mapping.put(Product.REGIONAL_TRAIN, "train");
+        mapping.put(Product.SUBURBAN_TRAIN, "train");
+        mapping.put(Product.SUBWAY, "tram"); // The only subway in switzerland is considered as tram by the API :(
+        mapping.put(Product.TRAM, "tram");
+        mapping.put(Product.BUS, "bus");
+        mapping.put(Product.FERRY, "ship");
+        mapping.put(Product.CABLECAR, "cableway");
+
+        for (Product product : products) {
+            String productApiString = mapping.getOrDefault(product, "");
+            if (!"".equals(productApiString)) {
+                productList.add(productApiString);
+            }
+        }
+        return String.join(",", productList);
     }
 
     private Location extractLocation(JSONObject locationEntry) throws JSONException {
-        // Sometime there is no station-id and location
+        // Sometimes there is no station-id and location
         String stationID = locationEntry.has("id") ? locationEntry.getString("id") : null;
         Point stationLocation = locationEntry.has("lat") ? Point.fromDouble(locationEntry.getDouble("lat"), locationEntry.getDouble("lon")) : null;
         return new Location(
@@ -529,47 +561,54 @@ public class CHSearchProvider extends AbstractNetworkProvider {
 
 
             private static class Disruption {
-
-                private static final SimpleDateFormat date_formatter_en = new SimpleDateFormat("dd-MM-yyyy HH:mm");
-                // unfortunately, they change the format depending on request lang..
-                private static final SimpleDateFormat date_formatter_de = new SimpleDateFormat("dd.MM.yyyy HH:mm");
-                public final String externalURL;
                 public final String ID;
-                public final String header;
-                public final String lead;
-                public final String text;
+                public final String summary;
+                public final String reason;
+                public final String consequence;
+                public final String recommendation;
                 public final @Nullable
                 Date timeStart;
                 public final @Nullable
                 Date timeEnd;
 
-                private Disruption(String externalURL, JSONObject rawDisruption) throws JSONException, ParseException {
-                    this.externalURL = externalURL;
+                private Disruption(JSONObject rawDisruption) throws JSONException, ParseException {
+                    String tempSummary = "No information provided by API";
+                    String tempReason = "";
+                    String tempConsequence = "";
+                    String tempRecommendation = "";
                     this.ID = rawDisruption.getString("id");
-                    this.header = rawDisruption.getString("header");
-                    this.lead = rawDisruption.getString("lead");
-                    this.text = rawDisruption.getString("text");
-                    Date tempStart = null;
-                    Date tempEnd = null;
-                    if (rawDisruption.has("timerange")) {
-                        String[] timeRanges = rawDisruption.getString("timerange").split("-", 3);
-                        try {
-                            tempStart = date_formatter_en.parse(timeRanges[0]);
-                            tempEnd = date_formatter_en.parse(timeRanges[1]);
-                        } catch (ParseException e) {
-                            tempStart = date_formatter_de.parse(timeRanges[0]);
-                            tempEnd = date_formatter_de.parse(timeRanges[1]);
-                        }
+                    this.timeStart = new Date();
+                    this.timeEnd = new Date();
 
+                    if (rawDisruption.has("periods")) {
+                        // If the disruption parser breaks, start looking in this mess here
+                        // ToDo: Make timezone aware
+                        JSONObject disruptionPeriods = rawDisruption.getJSONObject("periods");
+                        JSONArray disruptionValidity = disruptionPeriods.getJSONArray("validity");
+                        JSONArray firstDisruptionValidity = disruptionValidity.getJSONArray(0);
+                        this.timeStart.setTime(firstDisruptionValidity.getLong(0) * 1000);
+                        this.timeEnd.setTime(firstDisruptionValidity.getLong(1) * 1000);
                     }
-                    this.timeStart = tempStart;
-                    this.timeEnd = tempEnd;
 
+                    if (rawDisruption.has("texts")) {
+                        JSONObject disruptionTexts = rawDisruption.getJSONObject("texts");
+                        if (disruptionTexts.has("S")) {
+                            JSONObject shortDisruptionTexts = disruptionTexts.getJSONObject("S");
+                            tempSummary = shortDisruptionTexts.has("summary") ? shortDisruptionTexts.getString("summary") : "No information provided by API";
+                            tempReason = shortDisruptionTexts.has("reason") ? shortDisruptionTexts.getString("reason") : "";
+                            tempConsequence = shortDisruptionTexts.has("consequence") ? shortDisruptionTexts.getString("consequence") : "";
+                            tempRecommendation = shortDisruptionTexts.has("recommendation") ? shortDisruptionTexts.getString("recommendation") : "";
+                        }
+                    }
+                    this.summary = tempSummary;
+                    this.reason = tempReason;
+                    this.consequence = tempConsequence;
+                    this.recommendation = tempRecommendation;
                 }
 
                 @Override
                 public String toString() {
-                    return this.header + "," + this.lead;
+                    return this.summary + "," + this.reason;
                 }
 
                 /**
@@ -581,12 +620,20 @@ public class CHSearchProvider extends AbstractNetworkProvider {
                 public static List<Disruption> extractDisruptionsToList(JSONObject rawObject) throws JSONException, ParseException {
                     List<Disruption> disruptions = new ArrayList<>();
                     if (rawObject.has("disruptions")) {
-                        JSONObject rawDisruptions = rawObject.getJSONObject("disruptions");
-                        // Since the individual disruptions have their url as key(!) we have to do a bit of ugliness here...
-                        JSONArray dis = rawDisruptions.names();
-                        for (int k = 0; k < rawDisruptions.length(); k++) {
-                            String disruptionKey = dis.getString(k);
-                            disruptions.add(new Disruption(disruptionKey, rawDisruptions.getJSONObject(disruptionKey)));
+                        Object rawDisruptions = rawObject.get("disruptions");
+                        if (rawDisruptions instanceof JSONObject) {
+                            try {
+                                //Since the individual disruptions have their url as key(!) we have to do a bit of ugliness here...
+                                JSONArray dis = ((JSONObject) rawDisruptions).names();
+                                for (int k = 0; k < ((JSONObject) rawDisruptions).length(); k++) {
+                                    String disruptionKey = dis.getString(k);
+                                    disruptions.add(new Disruption(((JSONObject) rawDisruptions).getJSONObject(disruptionKey)));
+                                }
+                            } catch (Exception e) {
+                                // Apparently, the format of disruptions changes quite often, so let's catch any errors here...
+                                e.printStackTrace();
+                                return disruptions;
+                            }
                         }
                     }
                     return disruptions;
