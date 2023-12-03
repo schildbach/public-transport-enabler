@@ -33,7 +33,7 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class GvhProvider extends AbstractEfaProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("https://app.efa.de/mdv_server/app_gvh/");
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://app.efa.de/efa/");
 
     public GvhProvider() {
         this(API_BASE);
