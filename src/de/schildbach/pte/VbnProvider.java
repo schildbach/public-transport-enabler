@@ -222,6 +222,7 @@ public class VbnProvider extends AbstractHafasClientInterfaceProvider {
         STYLES.put("Rostocker Straßenbahn AG|B19", new Style(Style.parseColor("#0f82cd"), Style.WHITE));
         STYLES.put("Rostocker Straßenbahn AG|B22", new Style(Style.parseColor("#3ca0e1"), Style.WHITE));
         STYLES.put("Rostocker Straßenbahn AG|B23", new Style(Style.parseColor("#232369"), Style.WHITE));
+        STYLES.put("Rostocker Straßenbahn AG|B24", new Style(Style.parseColor("#50c8f5"), Style.WHITE));
         STYLES.put("Rostocker Straßenbahn AG|B25", new Style(Style.parseColor("#19417d"), Style.WHITE));
         STYLES.put("Rostocker Straßenbahn AG|B26", new Style(Style.parseColor("#50c8f5"), Style.WHITE));
         STYLES.put("Rostocker Straßenbahn AG|B27", new Style(Style.parseColor("#0f82cd"), Style.WHITE));
@@ -259,7 +260,7 @@ public class VbnProvider extends AbstractHafasClientInterfaceProvider {
         STYLES.put("rebus Regionalbus Rostock GmbH|B112", new Style(Style.parseColor("#e50069"), Style.WHITE));
         STYLES.put("rebus Regionalbus Rostock GmbH|B113", new Style(Style.parseColor("#935b00"), Style.WHITE));
         STYLES.put("rebus Regionalbus Rostock GmbH|B114", new Style(Style.parseColor("#935b00"), Style.WHITE));
-        STYLES.put("rebus Regionalbus Rostock GmbH|B115", new Style(Style.parseColor("#74b959"), Style.WHITE));
+        STYLES.put("rebus Regionalbus Rostock GmbH|B115", new Style(Style.parseColor("#a52869"), Style.WHITE));
         STYLES.put("rebus Regionalbus Rostock GmbH|B116", new Style(Style.parseColor("#0085ac"), Style.WHITE));
         STYLES.put("rebus Regionalbus Rostock GmbH|B118", new Style(Style.parseColor("#f9b000"), Style.WHITE));
         STYLES.put("rebus Regionalbus Rostock GmbH|B119", new Style(Style.parseColor("#055da9"), Style.WHITE));
