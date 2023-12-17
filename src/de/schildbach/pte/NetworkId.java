@@ -42,9 +42,6 @@ public enum NetworkId {
     // Spain
     SPAIN,
 
-    // Belgium
-    SNCB,
-
     // Netherlands
     NS, NEGENTWEE,
 
