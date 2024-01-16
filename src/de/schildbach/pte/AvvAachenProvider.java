@@ -46,11 +46,26 @@ public class AvvAachenProvider extends AbstractHafasClientInterfaceProvider {
         setApiAuthorization(apiAuthorization);
     }
 
+    private static final String[] PLACES = { "AC", "Aachen" };
+
     @Override
     protected String[] splitStationName(final String name) {
+        // Some stations in Aachen city have 3 names: "Aachen, station name", "station name, AC" and "AC, station name".
+        // Some (other) stations has 2 variants: "Aachen, station name" and "station name, Aachen"
+        // If you type the station name first, you get the variant "station name, AC" resp. "station name, Aachen",
+        // which would be parsed as a station AC resp. Aachen in "station name".
+        for (final String place: PLACES) {
+            if (name.endsWith(", " + place)) {
+                return new String[] { "Aachen" , name.substring(0, name.length() - place.length() - 2) };
+            }
+        }
         final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(name);
-        if (m.matches())
+        if (m.matches()) {
+            // also remove the abbreviating variant, just for consistency
+            if (m.group(1).equals("AC"))
+                return new String[] { "Aachen", m.group(2) };
             return new String[] { m.group(1), m.group(2) };
+        }
         return super.splitStationName(name);
     }
 
