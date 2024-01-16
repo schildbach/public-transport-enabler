@@ -20,8 +20,10 @@ package de.schildbach.pte.live;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
+import java.util.Objects;
 
 import org.junit.Test;
 
@@ -72,6 +74,20 @@ public class AvvAachenProviderLiveTest extends AbstractProviderLiveTest {
         final SuggestLocationsResult result = suggestLocations("Gaßmühle");
         print(result);
         assertThat(result.getLocations(), hasItem(new Location(LocationType.STATION, "1576", "Aachen", "Gaßmühle")));
+    }
+
+    @Test
+    public void suggestLocationBadSuffix() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Turmstraße");
+        print(result);
+        assertTrue(Objects.requireNonNull(result.getLocations().get(0).name).contains("Turmstr"));
+    }
+
+    @Test
+    public void suggestLocationSpecialPlaceStationOrder() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Jupp-Müller");
+        print(result);
+        assertTrue(Objects.requireNonNull(result.getLocations().get(0).name).contains("Jupp-Müller"));
     }
 
     @Test
