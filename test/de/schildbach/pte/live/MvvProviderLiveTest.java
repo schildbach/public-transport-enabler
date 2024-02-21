@@ -17,6 +17,7 @@
 
 package de.schildbach.pte.live;
 
+import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -131,16 +132,24 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest {
     public void suggestAddress() throws Exception {
         final SuggestLocationsResult result = suggestLocations("München, Maximilianstr. 1");
         print(result);
-        assertThat(result.getLocations(), hasItem(new Location(LocationType.ADDRESS,
-                "streetID:1500000561::9162000:-1:Maximilianstraße:München:Maximilianstraße::Maximilianstraße: 80539 80538:ANY:DIVA_STREET:1289507:5870064:MRCV:BAY")));
+        assertThat(result.getLocations(), anyOf(
+                hasItem(new Location(LocationType.ADDRESS,
+                        "streetID:1500000040::9162000:-1:Maximilianstraße:München:Maximilianstraße::Maximilianstraße: 80539 80538:ANY:DIVA_STREET:1289423:5870091:MRCV:BAY")),
+                hasItem(new Location(LocationType.ADDRESS,
+                        "streetID:1500000040::9162000:-1:Maximilianstraße:München:Maximilianstraße::Maximilianstraße: 80539 80538:ANY:DIVA_STREET:1289423:5870091:MRCV:bay"))
+                ));
     }
 
     @Test
     public void suggestStreet() throws Exception {
         final SuggestLocationsResult result = suggestLocations("München, Maximilianstr.");
         print(result);
-        assertThat(result.getLocations(), hasItem(new Location(LocationType.ADDRESS,
-                "streetID:1500000561::9162000:-1:Maximilianstraße:München:Maximilianstraße::Maximilianstraße: 80539 80538:ANY:DIVA_STREET:1289507:5870064:MRCV:BAY")));
+        assertThat(result.getLocations(), anyOf(
+                hasItem(new Location(LocationType.ADDRESS,
+                        "streetID:1500000040::9162000:-1:Maximilianstraße:München:Maximilianstraße::Maximilianstraße: 80539 80538:ANY:DIVA_STREET:1289423:5870091:MRCV:BAY")),
+                hasItem(new Location(LocationType.ADDRESS,
+                        "streetID:1500000040::9162000:-1:Maximilianstraße:München:Maximilianstraße::Maximilianstraße: 80539 80538:ANY:DIVA_STREET:1289423:5870091:MRCV:bay"))
+        ));
     }
 
     @Test
@@ -177,7 +186,7 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void tripBetweenCoordinateAndStation() throws Exception {
         final Location from = new Location(LocationType.ADDRESS, null, Point.from1E6(48238341, 11478230));
-        final Location to = new Location(LocationType.ANY, null, null, "Ostbahnhof");
+        final Location to = new Location(LocationType.ANY, null, null, "München, Ostbahnhof");
         final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
