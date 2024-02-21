@@ -17,7 +17,12 @@
 
 package de.schildbach.pte;
 
+import java.io.IOException;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,19 +32,24 @@ import javax.annotation.Nullable;
 import com.google.common.base.Charsets;
 
 import de.schildbach.pte.dto.Line;
+import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.Position;
 import de.schildbach.pte.dto.Product;
+import de.schildbach.pte.dto.QueryTripsContext;
+import de.schildbach.pte.dto.QueryTripsResult;
 import de.schildbach.pte.dto.Style;
 import de.schildbach.pte.dto.Style.Shape;
 
+import de.schildbach.pte.dto.Trip;
+import de.schildbach.pte.dto.TripOptions;
 import okhttp3.HttpUrl;
 
 /**
  * @author Andreas Schildbach
  */
 public class MvvProvider extends AbstractEfaProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("https://efa.mvv-muenchen.de/mobile/");
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://efa.mvv-muenchen.de/ng/");
 
     public MvvProvider() {
         this(API_BASE);
@@ -50,7 +60,7 @@ public class MvvProvider extends AbstractEfaProvider {
         setIncludeRegionId(false);
         setRequestUrlEncoding(Charsets.UTF_8);
         setStyles(STYLES);
-        setSessionCookieName("SIDefaalt"); // SIDefa
+        setSessionCookieName("SIDefa");
     }
 
     @Override
@@ -156,5 +166,118 @@ public class MvvProvider extends AbstractEfaProvider {
     @Override
     public Point[] getArea() {
         return new Point[] { Point.fromDouble(48.140377, 11.560643) };
+    }
+
+    /*
+        MVV's new EFA uses load balancing. Therefore, stateful API functionality only works
+        correctly if we coincidentally hit the same server again. The session ID cookie does include
+        the server ID that the session was created on, but apparently the load balancer does not
+        respect this.
+
+        There were attempts to ask MVV to fix this issue, but they did not offer any help:
+        https://github.com/schildbach/public-transport-enabler/pull/414#issuecomment-954032588
+
+        Thus, we implement queryMoreTrips in a stateless manner by adjusting
+        the departure/arrival times ourselves. This is the same algorithm that is
+        also used in the Javascript code on the mobile MVV website at
+        https://m.mvv-muenchen.de/mvvMobile5/de/index.html#trips
+     */
+
+    private static class MvvContext implements QueryTripsContext {
+        public Location from;
+        public Location via;
+        public Location to;
+        public TripOptions options;
+        public QueryTripsResult result;
+        public List<Trip> trips;
+
+        @Override
+        public boolean canQueryLater() {
+            return true;
+        }
+
+        @Override
+        public boolean canQueryEarlier() {
+            return true;
+        }
+    }
+
+    private boolean requestingMoreTrips;
+
+    @Override
+    public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to,
+                                       final Date date, final boolean dep, final @Nullable TripOptions options) throws IOException {
+        QueryTripsResult result = super.queryTrips(from, via, to, date, dep, options);
+
+        if (result.status == QueryTripsResult.Status.OK) {
+            MvvContext context = new MvvContext();
+            context.from = from;
+            context.to = to;
+            context.via = via;
+            context.options = options;
+            context.trips = result.trips;
+            result = new QueryTripsResult(result.header, result.queryUri, result.from,
+                    result.via, result.to, context, result.trips);
+        }
+        return result;
+    }
+
+    @Override
+    public QueryTripsResult queryMoreTrips(final QueryTripsContext contextObj, final boolean later) throws IOException {
+        if (!(contextObj instanceof MvvContext)) {
+            throw new IllegalArgumentException("needs an MvvContext");
+        }
+        MvvContext context = (MvvContext) contextObj;
+
+        // get departure time of last trip / arrival time of last trip as reference time
+        int tripIndex;
+        if (later) {
+            Trip lastTrip = context.trips.get(context.trips.size() - 1);
+            // if the last included trip is a walking route, use the previous one
+            boolean lastTripIsIndividual =
+                    lastTrip.legs.size() == 1 && lastTrip.legs.get(0) instanceof Trip.Individual;
+            tripIndex = context.trips.size() - (lastTripIsIndividual ? 2 : 1);
+        } else {
+            tripIndex = 0;
+        }
+        Trip refTrip = context.trips.get(tripIndex);
+        Date refTime = later ? refTrip.getFirstDepartureTime() : refTrip.getLastArrivalTime();
+
+        // adjust time by one minute so that we don't get the same trip again
+        refTime = addMinutesToDate(refTime, later ? 1 : -1);
+
+        requestingMoreTrips = true; // set special options for more trips request
+        try {
+            QueryTripsResult result = super.queryTrips(context.from, context.via, context.to,
+                    refTime, later, context.options);
+
+            if (result.status == QueryTripsResult.Status.OK) {
+                context.trips.addAll(later ? context.trips.size() - 1 : 0, result.trips);
+                result = new QueryTripsResult(result.header, result.queryUri, result.from,
+                        result.via, result.to, context, result.trips);
+            }
+
+            return result;
+        } finally {
+            requestingMoreTrips = false;  // reset options
+        }
+    }
+
+    @Override
+    protected void appendTripRequestParameters(HttpUrl.Builder url, Location from, @Nullable Location via, Location to, Date time, boolean dep, @Nullable TripOptions options) {
+        super.appendTripRequestParameters(url, from, via, to, time, dep, options);
+
+        if (requestingMoreTrips) {
+            // ensure that the first displayed trip is after the given departure time /
+            // last displayed trip is before the given arrival time
+            url.addEncodedQueryParameter("calcOneDirection", "1");
+        }
+    }
+
+    private Date addMinutesToDate(Date initial, int minutes) {
+        Calendar c = new GregorianCalendar(timeZone);
+        c.setTime(initial);
+        c.add(Calendar.MINUTE, minutes);
+        return c.getTime();
     }
 }
