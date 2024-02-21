@@ -43,7 +43,7 @@ public enum NetworkId {
     SPAIN,
 
     // Netherlands
-    NS, NEGENTWEE,
+    NS, NEGENTWEE, NETHERLANDS,
 
     // Denmark
     DSB,
