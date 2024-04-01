@@ -30,7 +30,7 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class LuProvider extends AbstractHafasClientInterfaceProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("https://cdt.hafas.de/bin/");
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://cdt.hafas.de/");
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, Product.REGIONAL_TRAIN, Product.BUS, Product.BUS,
             Product.BUS, Product.BUS, Product.BUS };
@@ -38,6 +38,7 @@ public class LuProvider extends AbstractHafasClientInterfaceProvider {
 
     public LuProvider(final String apiAuthorization) {
         this(DEFAULT_API_CLIENT, apiAuthorization);
+        setApiEndpoint("gate");
     }
 
     public LuProvider(final String apiClient, final String apiAuthorization) {
