@@ -29,7 +29,7 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class LinzProvider extends AbstractEfaProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("https://www.linzag.at/linz2/");
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://www.linzag.at/static/");
     // http://www.linzag.at/static/
 
     public LinzProvider() {
