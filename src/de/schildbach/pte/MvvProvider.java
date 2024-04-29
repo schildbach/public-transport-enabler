@@ -107,6 +107,7 @@ public class MvvProvider extends AbstractEfaProvider {
         STYLES.put("SS2", new Style(Shape.CIRCLE, Style.parseColor("#76b82a"), Style.WHITE));
         STYLES.put("SS3", new Style(Shape.CIRCLE, Style.parseColor("#951b81"), Style.WHITE));
         STYLES.put("SS4", new Style(Shape.CIRCLE, Style.parseColor("#e30613"), Style.WHITE));
+        STYLES.put("SS5", new Style(Shape.CIRCLE, Style.parseColor("#00527f"), Style.WHITE));
         STYLES.put("SS6", new Style(Shape.CIRCLE, Style.parseColor("#00975f"), Style.WHITE));
         STYLES.put("SS7", new Style(Shape.CIRCLE, Style.parseColor("#943126"), Style.WHITE));
         STYLES.put("SS8", new Style(Shape.CIRCLE, Style.BLACK, Style.parseColor("#ffcc00")));
