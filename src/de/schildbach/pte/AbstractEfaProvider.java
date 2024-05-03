@@ -523,29 +523,31 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
                         // FIXME this is always only one coordinate
                         final List<Point> path = processItdPathCoordinates(pp);
-                        final Point coord1 = path != null ? path.get(0) : null;
+                        if (path != null) {
+                            final Point coord1 = path.get(0);
 
-                        EnumSet<Product> products = null;
-                        if (XmlPullUtil.optEnter(pp, "genAttrList")) {
-                            while (XmlPullUtil.optEnter(pp, "genAttrElem")) {
-                                final String attrName = XmlPullUtil.valueTag(pp, "name");
-                                final String attrValue = XmlPullUtil.valueTag(pp, "value");
-                                XmlPullUtil.skipExit(pp, "genAttrElem");
+                            EnumSet<Product> products = null;
+                            if (XmlPullUtil.optEnter(pp, "genAttrList")) {
+                                while (XmlPullUtil.optEnter(pp, "genAttrElem")) {
+                                    final String attrName = XmlPullUtil.valueTag(pp, "name");
+                                    final String attrValue = XmlPullUtil.valueTag(pp, "value");
+                                    XmlPullUtil.skipExit(pp, "genAttrElem");
 
-                                if ("STOP_MAJOR_MEANS".equals(attrName)) {
-                                    products = EnumSet.noneOf(Product.class);
-                                    final Product product = majorMeansToProduct(Integer.parseInt(attrValue));
-                                    if (product != null)
-                                        products.add(product);
+                                    if ("STOP_MAJOR_MEANS".equals(attrName)) {
+                                        products = EnumSet.noneOf(Product.class);
+                                        final Product product = majorMeansToProduct(Integer.parseInt(attrValue));
+                                        if (product != null)
+                                            products.add(product);
+                                    }
                                 }
+                                XmlPullUtil.skipExit(pp, "genAttrList");
                             }
-                            XmlPullUtil.skipExit(pp, "genAttrList");
+
+                            if (name != null)
+                                locations.add(new Location(locationType, id, coord1, place, name, products));
                         }
 
                         XmlPullUtil.skipExit(pp, "coordInfoItem");
-
-                        if (name != null)
-                            locations.add(new Location(locationType, id, coord1, place, name, products));
                     }
 
                     XmlPullUtil.skipExit(pp, "coordInfoItemList");
