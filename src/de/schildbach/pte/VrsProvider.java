@@ -196,6 +196,9 @@ public class VrsProvider extends AbstractNetworkProvider {
         STYLES.put("T66", new Style(Style.parseColor("#ec008c"), Style.WHITE));
         STYLES.put("T67", new Style(Style.parseColor("#f680c5"), Style.WHITE));
         STYLES.put("T68", new Style(Style.parseColor("#ca93d0"), Style.WHITE));
+      // Temporary routes until November 2024
+        STYLES.put("T14", new Style(Style.parseColor("#B9348B"), Style.WHITE));
+        STYLES.put("T19", new Style(Style.parseColor("#214B35"), Style.WHITE));
 
         // Busse Köln
         STYLES.put("BSB40", new Style(Style.parseColor("#FF0000"), Style.WHITE));

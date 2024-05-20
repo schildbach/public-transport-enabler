@@ -77,6 +77,10 @@ public class VrrProvider extends AbstractEfaProvider {
         if ("0".equals(mot)) {
             if ("Regionalbahn".equals(trainName) && symbol != null)
                 return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
+                //not sure if that block works, regional express trains are currently displayed by train number only and i honestly don't know how VRR sends that out via their API
+                if ("RegionalExpress".equals(trainName) && symbol != null)
+                return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
+
             if ("NordWestBahn".equals(trainName) && symbol != null)
                 return new Line(id, network, Product.REGIONAL_TRAIN, symbol);
 
@@ -107,6 +111,11 @@ public class VrrProvider extends AbstractEfaProvider {
         // Schnellbusse VRR
         STYLES.put("vrr|BSB", new Style(Style.parseColor("#00919d"), Style.WHITE));
 
+        // X Bus VRR (to be filled)
+        STYLES.put("dsw|BX13", new Style(Shape.RECT, Style.parseColor("#52ae32"), Style.WHITE));
+        STYLES.put("bvr|BX28", new Style(Shape.RECT, Style.parseColor("#52ae32"), Style.WHITE));
+        STYLES.put("nia|BX32", new Style(Shape.RECT, Style.parseColor("#52ae32"), Style.WHITE));
+
         // Dortmund
         STYLES.put("dsw|UU41", new Style(Shape.RECT, Style.parseColor("#ffe700"), Style.GRAY));
         STYLES.put("dsw|UU42", new Style(Shape.RECT, Style.parseColor("#fcb913"), Style.WHITE));
@@ -123,7 +132,6 @@ public class VrrProvider extends AbstractEfaProvider {
         STYLES.put("rbg|UU71", new Style(Shape.RECT, Style.parseColor("#66cef6"), Style.WHITE));
         STYLES.put("rbg|UU72", new Style(Shape.RECT, Style.parseColor("#4cc4c5"), Style.WHITE));
         STYLES.put("rbg|UU73", new Style(Shape.RECT, Style.parseColor("#4763b8"), Style.WHITE));
-        STYLES.put("rbg|UU74", new Style(Shape.RECT, Style.parseColor("#27297c"), Style.WHITE));
         STYLES.put("rbg|UU75", new Style(Shape.RECT, Style.parseColor("#079acb"), Style.WHITE));
         STYLES.put("rbg|UU76", new Style(Shape.RECT, Style.parseColor("#1969bc"), Style.WHITE));
         STYLES.put("rbg|UU77", new Style(Shape.RECT, Style.parseColor("#6d90d2"), Style.WHITE));
@@ -424,6 +432,10 @@ public class VrrProvider extends AbstractEfaProvider {
         STYLES.put("vrs|T66", new Style(Style.parseColor("#ec008c"), Style.WHITE));
         STYLES.put("vrs|T67", new Style(Style.parseColor("#f680c5"), Style.WHITE));
         STYLES.put("vrs|T68", new Style(Style.parseColor("#ca93d0"), Style.WHITE));
+        // Temporary routes until November 2024
+        STYLES.put("vrs|T14", new Style(Style.parseColor("#B9348B"), Style.WHITE));
+        STYLES.put("vrs|T19", new Style(Style.parseColor("#214B35"), Style.WHITE));
+        STYLES.put("vrs|B118", new Style(Style.parseColor("#05a1e6"), Style.WHITE));
 
         // Stadtbahn Bielefeld
         STYLES.put("owl|T1", new Style(Style.parseColor("#00aeef"), Style.WHITE));
