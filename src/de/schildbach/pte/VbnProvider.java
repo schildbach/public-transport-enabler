@@ -130,13 +130,15 @@ public class VbnProvider extends AbstractHafasClientInterfaceProvider {
     private static final Map<String, Style> STYLES = new HashMap<>();
 
     static {
-        // Bremen
+        // Bremen (BSAG)
         STYLES.put("Bremer Straßenbahn AG|T1", new Style(Shape.RECT, Style.parseColor("#129640"), Style.WHITE));
         STYLES.put("Bremer Straßenbahn AG|T1S", new Style(Shape.RECT, Style.WHITE, Style.parseColor("#129640")));
         STYLES.put("Bremer Straßenbahn AG|T2", new Style(Shape.RECT, Style.parseColor("#115CA8"), Style.WHITE));
         STYLES.put("Bremer Straßenbahn AG|T3", new Style(Shape.RECT, Style.parseColor("#2A9AD6"), Style.WHITE));
         STYLES.put("Bremer Straßenbahn AG|T4", new Style(Shape.RECT, Style.parseColor("#E30C15"), Style.WHITE));
         STYLES.put("Bremer Straßenbahn AG|T4S", new Style(Shape.RECT, Style.WHITE, Style.parseColor("#E30C15")));
+        STYLES.put("Bremer Straßenbahn AG|T5", new Style(Shape.RECT, Style.parseColor("#00AAB8"), Style.WHITE));
+        STYLES.put("Bremer Straßenbahn AG|T5S", new Style(Shape.RECT, Style.parseColor("#00AAB8"), Style.WHITE));
         STYLES.put("Bremer Straßenbahn AG|T6", new Style(Shape.RECT, Style.parseColor("#FFCC00"), Style.BLACK));
         STYLES.put("Bremer Straßenbahn AG|T8", new Style(Shape.RECT, Style.parseColor("#98C21E"), Style.WHITE));
 
@@ -169,6 +171,7 @@ public class VbnProvider extends AbstractHafasClientInterfaceProvider {
         STYLES.put("Bremer Straßenbahn AG|B61", new Style(Shape.CIRCLE, Style.parseColor("#95C11F"), Style.WHITE));
         STYLES.put("Bremer Straßenbahn AG|B62", new Style(Shape.CIRCLE, Style.parseColor("#009640"), Style.WHITE));
         STYLES.put("Bremer Straßenbahn AG|B63", new Style(Shape.CIRCLE, Style.parseColor("#FFCC00"), Style.BLACK));
+        STYLES.put("Bremer Straßenbahn AG|B63S", new Style(Shape.RECT, Style.WHITE, Style.parseColor("#FFCC00")));
         STYLES.put("Bremer Straßenbahn AG|B65", new Style(Shape.CIRCLE, Style.parseColor("#A8D3AF"), Style.BLACK));
         STYLES.put("Bremer Straßenbahn AG|B66", new Style(Shape.CIRCLE, Style.parseColor("#A8D3AF"), Style.BLACK));
         STYLES.put("Bremer Straßenbahn AG|B77", new Style(Shape.CIRCLE, Style.parseColor("#808080"), Style.WHITE));
@@ -202,7 +205,9 @@ public class VbnProvider extends AbstractHafasClientInterfaceProvider {
         STYLES.put("NordWestBahn|SRS1", new Style(Style.parseColor("#214889"), Style.WHITE));
         STYLES.put("NordWestBahn|SRS2", new Style(Style.parseColor("#DB8F2D"), Style.WHITE));
         STYLES.put("NordWestBahn|SRS3", new Style(Style.parseColor("#A5C242"), Style.WHITE));
+        STYLES.put("NordWestBahn|SRS30", new Style(Style.parseColor("#51AF3D"), Style.WHITE));
         STYLES.put("NordWestBahn|SRS4", new Style(Style.parseColor("#C4031E"), Style.WHITE));
+        STYLES.put("NordWestBahn|SRS6", new Style(Style.parseColor("#889DB7"), Style.WHITE));
 
         // Rostock
         STYLES.put("DB Regio AG|SS1", new Style(Style.parseColor("#009037"), Style.WHITE));
