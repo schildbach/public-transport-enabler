@@ -123,7 +123,6 @@ public class VrrProvider extends AbstractEfaProvider {
         STYLES.put("rbg|UU71", new Style(Shape.RECT, Style.parseColor("#66cef6"), Style.WHITE));
         STYLES.put("rbg|UU72", new Style(Shape.RECT, Style.parseColor("#4cc4c5"), Style.WHITE));
         STYLES.put("rbg|UU73", new Style(Shape.RECT, Style.parseColor("#4763b8"), Style.WHITE));
-        STYLES.put("rbg|UU74", new Style(Shape.RECT, Style.parseColor("#27297c"), Style.WHITE));
         STYLES.put("rbg|UU75", new Style(Shape.RECT, Style.parseColor("#079acb"), Style.WHITE));
         STYLES.put("rbg|UU76", new Style(Shape.RECT, Style.parseColor("#1969bc"), Style.WHITE));
         STYLES.put("rbg|UU77", new Style(Shape.RECT, Style.parseColor("#6d90d2"), Style.WHITE));
@@ -424,6 +423,10 @@ public class VrrProvider extends AbstractEfaProvider {
         STYLES.put("vrs|T66", new Style(Style.parseColor("#ec008c"), Style.WHITE));
         STYLES.put("vrs|T67", new Style(Style.parseColor("#f680c5"), Style.WHITE));
         STYLES.put("vrs|T68", new Style(Style.parseColor("#ca93d0"), Style.WHITE));
+        // temporary routes until November 2024 - Construction on Mülheimer Brücke
+        STYLES.put("vrs|T14", new Style(Style.parseColor("#B9348B"), Style.WHITE));
+        STYLES.put("vrs|T19", new Style(Style.parseColor("#214B35"), Style.WHITE));
+        STYLES.put("vrs|B118", new Style(Style.parseColor("#05a1e6"), Style.WHITE));
 
         // Stadtbahn Bielefeld
         STYLES.put("owl|T1", new Style(Style.parseColor("#00aeef"), Style.WHITE));
