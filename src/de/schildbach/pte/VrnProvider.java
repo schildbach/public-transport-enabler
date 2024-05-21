@@ -83,7 +83,8 @@ public class VrnProvider extends AbstractEfaProvider {
         STYLES.put("T8", new Style(Shape.RECT, Style.parseColor("#e17600"), Style.WHITE));
         STYLES.put("T9", new Style(Shape.RECT, Style.parseColor("#e6007e"), Style.WHITE));
         STYLES.put("T10", new Style(Shape.RECT, Style.parseColor("#a71680"), Style.WHITE));
-        // STYLES.put("T15", new Style(Shape.RECT, Style.parseColor("#7c7c7b"), Style.WHITE));
+        STYLES.put("T15", new Style(Shape.RECT, Style.parseColor("#F7AB64"), Style.WHITE));
+        STYLES.put("T16", new Style(Shape.RECT, Style.parseColor("#9D9D9C"), Style.WHITE));
         STYLES.put("TX", new Style(Shape.RECT, Style.parseColor("#7c7c7b"), Style.WHITE));
 
         // Busse Mannheim
@@ -117,6 +118,8 @@ public class VrnProvider extends AbstractEfaProvider {
         STYLES.put("B62", new Style(Shape.CIRCLE, Style.parseColor("#a89bb1"), Style.WHITE));
         STYLES.put("B63", new Style(Shape.CIRCLE, Style.parseColor("#a1c3d6"), Style.WHITE));
         STYLES.put("B64", new Style(Shape.CIRCLE, Style.parseColor("#0091a6"), Style.WHITE));
+        STYLES.put("B66", new Style(Shape.CIRCLE, Style.parseColor("#E6007E"), Style.WHITE));
+        STYLES.put("B67", new Style(Shape.CIRCLE, Style.parseColor("#4E2583"), Style.WHITE));
 
         // Stadtbus Ludwigshafen
         STYLES.put("B70", new Style(Shape.CIRCLE, Style.parseColor("#4b96d2"), Style.WHITE));
@@ -152,19 +155,31 @@ public class VrnProvider extends AbstractEfaProvider {
         STYLES.put("T26", new Style(Shape.RECT, Style.parseColor("#f39b9a"), Style.WHITE));
 
         // Stadtbus Heidelberg rnv
+        STYLES.put("B20", new Style(Shape.CIRCLE, Style.parseColor("#E17600"), Style.WHITE));
+        STYLES.put("B20E", new Style(Shape.CIRCLE, Style.parseColor("#E17600"), Style.WHITE));
         STYLES.put("B27", new Style(Shape.CIRCLE, Style.parseColor("#4e2583"), Style.WHITE));
         STYLES.put("B28", new Style(Shape.CIRCLE, Style.parseColor("#b2a0cd"), Style.WHITE));
+        STYLES.put("B28A", new Style(Shape.CIRCLE, Style.parseColor("#b2a0cd"), Style.WHITE));
         STYLES.put("B29", new Style(Shape.CIRCLE, Style.parseColor("#10bbef"), Style.WHITE));
+        STYLES.put("B29E", new Style(Shape.CIRCLE, Style.parseColor("#10bbef"), Style.WHITE));
         STYLES.put("B30", new Style(Shape.CIRCLE, Style.parseColor("#baabd4"), Style.WHITE));
+        STYLES.put("B30E", new Style(Shape.CIRCLE, Style.parseColor("#baabd4"), Style.WHITE));
         STYLES.put("B31", new Style(Shape.CIRCLE, Style.parseColor("#4b96d2"), Style.WHITE));
-        STYLES.put("B32", new Style(Shape.CIRCLE, Style.parseColor("#a1c3d6"), Style.WHITE));
+        STYLES.put("B31E", new Style(Shape.CIRCLE, Style.parseColor("#4b96d2"), Style.WHITE));
+        STYLES.put("B32", new Style(Shape.CIRCLE, Style.parseColor("#A2C3D6"), Style.WHITE));
+        STYLES.put("B32E", new Style(Shape.CIRCLE, Style.parseColor("#A2C3D6"), Style.WHITE));
         STYLES.put("B33", new Style(Shape.CIRCLE, Style.parseColor("#0069b4"), Style.WHITE));
         STYLES.put("B34", new Style(Shape.CIRCLE, Style.parseColor("#009fe3"), Style.WHITE));
+        STYLES.put("B34E", new Style(Shape.CIRCLE, Style.parseColor("#009fe3"), Style.WHITE));
         STYLES.put("B35", new Style(Shape.CIRCLE, Style.parseColor("#4e2583"), Style.WHITE));
+        STYLES.put("B35E", new Style(Shape.CIRCLE, Style.parseColor("#4e2583"), Style.WHITE));
         STYLES.put("B36", new Style(Shape.CIRCLE, Style.parseColor("#b2a0cd"), Style.WHITE));
+        STYLES.put("B36A", new Style(Shape.CIRCLE, Style.parseColor("#b2a0cd"), Style.WHITE));
         STYLES.put("B37", new Style(Shape.CIRCLE, Style.parseColor("#10bbef"), Style.WHITE));
+        STYLES.put("B37E", new Style(Shape.CIRCLE, Style.parseColor("#10bbef"), Style.WHITE));
         STYLES.put("B38", new Style(Shape.CIRCLE, Style.parseColor("#0097b5"), Style.WHITE));
-        STYLES.put("B39", new Style(Shape.CIRCLE, Style.parseColor("#512985"), Style.WHITE));
+        STYLES.put("B39", new Style(Shape.CIRCLE, Style.parseColor("#4E2583"), Style.WHITE));
+        STYLES.put("B39A", new Style(Shape.CIRCLE, Style.parseColor("#4E2583"), Style.WHITE));
 
         // Moonliner Heidelberg
         STYLES.put("BM1", new Style(Style.parseColor("#FFCB06"), Style.parseColor("#0A3F88")));
@@ -188,9 +203,13 @@ public class VrnProvider extends AbstractEfaProvider {
         STYLES.put("SS3", new Style(Style.parseColor("#4F2E92"), Style.WHITE));
         STYLES.put("SS33", new Style(Style.parseColor("#4F2E92"), Style.WHITE));
         STYLES.put("SS4", new Style(Style.parseColor("#00A651"), Style.BLACK));
+        STYLES.put("SS44", new Style(Style.parseColor("#00A651"), Style.BLACK));
         STYLES.put("SS5", new Style(Style.parseColor("#F89735"), Style.WHITE));
         STYLES.put("SS51", new Style(Style.parseColor("#F89735"), Style.WHITE));
         STYLES.put("SS6", new Style(Style.parseColor("#007EC5"), Style.WHITE));
+        STYLES.put("SS7", new Style(Style.parseColor("#ED4A9B"), Style.WHITE));
+        STYLES.put("SS8", new Style(Style.parseColor("#A46EA8"), Style.WHITE));
+        STYLES.put("SS9", new Style(Style.parseColor("#7FC241"), Style.WHITE));
 
         // Bus Bad Bergzabern
         STYLES.put("B540", new Style(Style.parseColor("#FDC500"), Style.WHITE));
