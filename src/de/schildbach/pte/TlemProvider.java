@@ -71,6 +71,19 @@ public class TlemProvider extends AbstractEfaProvider {
         if ("1".equals(mot)) {
             if (trainType == null && ("DLR".equals(trainNum) || "Light Railway".equals(trainName)))
                 return new Line(id, network, Product.SUBURBAN_TRAIN, "DLR");
+            
+            //adding elizabeth line right here and i don't know how to test that. it just looks like it might make some sense.
+            //i've looked at a JSON response from traveline and it says following:
+            //product	"Elizabeth line"
+            //productId	"13"
+            //type	"9"
+            //code	"18"
+            //trainType	"OO"
+            //this might be a good template to improve routing in UK, to be honest
+            
+        if ("1".equals(mot)) {
+            if (trainType == "OO" && ("Elizabeth line".equals(product)))
+                return new Line(id, network, Product.SUBURBAN_TRAIN, "Elizabeth Line");
         }
 
         return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
@@ -95,6 +108,9 @@ public class TlemProvider extends AbstractEfaProvider {
 
         STYLES.put("SDLR", new Style(Style.parseColor("#00B2A9"), Style.WHITE));
         STYLES.put("SLO", new Style(Style.parseColor("#f46f1a"), Style.WHITE));
+
+        //  here goes nothing with Lizz
+        STYLES.put("SElizabeth Line", new Style(Style.parseColor("#6950a1"), Style.WHITE));
 
         STYLES.put("TTramlink 1", new Style(Style.rgb(193, 215, 46), Style.WHITE));
         STYLES.put("TTramlink 2", new Style(Style.rgb(193, 215, 46), Style.WHITE));
