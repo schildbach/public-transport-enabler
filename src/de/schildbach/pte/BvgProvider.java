@@ -134,6 +134,10 @@ public final class BvgProvider extends AbstractHafasClientInterfaceProvider {
             if ("S45".equals(line.label))
                 return new Line(id, line.network, line.product, line.label, line.name, line.style,
                         Sets.newHashSet(Attr.LINE_AIRPORT), line.message);
+        if (line.product == Product.REGIONAL_TRAIN) {
+            if ("FEX".equals(line.label))
+                return new Line(id, line.network, line.product, line.label, line.name, line.style,
+                        Sets.newHashSet(Attr.LINE_AIRPORT), line.message);
         } else if (line.product == Product.BUS) {
             if ("S41".equals(line.label))
                 return new Line(id, line.network, line.product, line.label, line.name, line.style,
@@ -141,7 +145,13 @@ public final class BvgProvider extends AbstractHafasClientInterfaceProvider {
             if ("S42".equals(line.label))
                 return new Line(id, line.network, line.product, line.label, line.name, line.style,
                         Sets.newHashSet(Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_ANTICLOCKWISE), line.message);
-            if ("TXL".equals(line.label))
+            if ("X7".equals(line.label))
+                return new Line(id, line.network, line.product, line.label, line.name, line.style,
+                        Sets.newHashSet(Attr.LINE_AIRPORT), line.message);
+            if ("X71".equals(line.label))
+                return new Line(id, line.network, line.product, line.label, line.name, line.style,
+                        Sets.newHashSet(Attr.LINE_AIRPORT), line.message);
+            if ("BER2".equals(line.label))
                 return new Line(id, line.network, line.product, line.label, line.name, line.style,
                         Sets.newHashSet(Attr.LINE_AIRPORT), line.message);
         }
@@ -152,6 +162,7 @@ public final class BvgProvider extends AbstractHafasClientInterfaceProvider {
     private static final Map<String, Style> STYLES = new HashMap<>();
 
     static {
+        // S-Bahn Berlin
         STYLES.put("SS1", new Style(Style.rgb(221, 77, 174), Style.WHITE));
         STYLES.put("SS2", new Style(Style.rgb(16, 132, 73), Style.WHITE));
         STYLES.put("SS25", new Style(Style.rgb(16, 132, 73), Style.WHITE));
@@ -168,18 +179,19 @@ public final class BvgProvider extends AbstractHafasClientInterfaceProvider {
         STYLES.put("SS85", new Style(Style.WHITE, Style.rgb(85, 184, 49), Style.rgb(85, 184, 49)));
         STYLES.put("SS9", new Style(Style.rgb(148, 36, 64), Style.WHITE));
 
+        // U-Bahn Berlin (metro)
         STYLES.put("UU1", new Style(Shape.RECT, Style.rgb(84, 131, 47), Style.WHITE));
         STYLES.put("UU2", new Style(Shape.RECT, Style.rgb(215, 25, 16), Style.WHITE));
         STYLES.put("UU12", new Style(Shape.RECT, Style.rgb(84, 131, 47), Style.rgb(215, 25, 16), Style.WHITE, 0));
         STYLES.put("UU3", new Style(Shape.RECT, Style.rgb(47, 152, 154), Style.WHITE));
         STYLES.put("UU4", new Style(Shape.RECT, Style.rgb(255, 233, 42), Style.BLACK));
         STYLES.put("UU5", new Style(Shape.RECT, Style.rgb(91, 31, 16), Style.WHITE));
-        STYLES.put("UU55", new Style(Shape.RECT, Style.rgb(91, 31, 16), Style.WHITE));
         STYLES.put("UU6", new Style(Shape.RECT, Style.rgb(127, 57, 115), Style.WHITE));
         STYLES.put("UU7", new Style(Shape.RECT, Style.rgb(0, 153, 204), Style.WHITE));
         STYLES.put("UU8", new Style(Shape.RECT, Style.rgb(24, 25, 83), Style.WHITE));
         STYLES.put("UU9", new Style(Shape.RECT, Style.rgb(255, 90, 34), Style.WHITE));
 
+        // MetroTram Berlin
         STYLES.put("TM1", new Style(Shape.RECT, Style.parseColor("#64bae8"), Style.WHITE));
         STYLES.put("TM2", new Style(Shape.RECT, Style.parseColor("#68c52f"), Style.WHITE));
         STYLES.put("TM4", new Style(Shape.RECT, Style.parseColor("#cf1b22"), Style.WHITE));
@@ -190,6 +202,7 @@ public final class BvgProvider extends AbstractHafasClientInterfaceProvider {
         STYLES.put("TM13", new Style(Shape.RECT, Style.parseColor("#36ab94"), Style.WHITE));
         STYLES.put("TM17", new Style(Shape.RECT, Style.parseColor("#a23f30"), Style.WHITE));
 
+        // Tram Berlin
         STYLES.put("T12", new Style(Shape.RECT, Style.parseColor("#8970aa"), Style.WHITE));
         STYLES.put("T16", new Style(Shape.RECT, Style.parseColor("#0e80ab"), Style.WHITE));
         STYLES.put("T18", new Style(Shape.RECT, Style.parseColor("#d5ad00"), Style.WHITE));
@@ -207,6 +220,7 @@ public final class BvgProvider extends AbstractHafasClientInterfaceProvider {
         STYLES.put("B", new Style(Shape.RECT, Style.parseColor("#993399"), Style.WHITE));
         STYLES.put("BN", new Style(Shape.RECT, Style.BLACK, Style.WHITE));
 
+        // Ferry
         STYLES.put("FF1", new Style(Style.BLUE, Style.WHITE)); // Potsdam
         STYLES.put("FF10", new Style(Style.BLUE, Style.WHITE));
         STYLES.put("FF11", new Style(Style.BLUE, Style.WHITE));
