@@ -107,7 +107,9 @@ public class VrrProvider extends AbstractEfaProvider {
         // Schnellbusse VRR
         STYLES.put("vrr|BSB", new Style(Style.parseColor("#00919d"), Style.WHITE));
 
-        // Dortmund
+        // X-Bus
+
+        // Dortmund U-Bahn (metro)
         STYLES.put("dsw|UU41", new Style(Shape.RECT, Style.parseColor("#ffe700"), Style.GRAY));
         STYLES.put("dsw|UU42", new Style(Shape.RECT, Style.parseColor("#fcb913"), Style.WHITE));
         STYLES.put("dsw|UU43", new Style(Shape.RECT, Style.parseColor("#409387"), Style.WHITE));
@@ -116,20 +118,37 @@ public class VrrProvider extends AbstractEfaProvider {
         STYLES.put("dsw|UU46", new Style(Shape.RECT, Style.parseColor("#756fb3"), Style.WHITE));
         STYLES.put("dsw|UU47", new Style(Shape.RECT, Style.parseColor("#8dc63e"), Style.WHITE));
         STYLES.put("dsw|UU49", new Style(Shape.RECT, Style.parseColor("#f7acbc"), Style.WHITE));
-        STYLES.put("dsw|BNE", new Style(Shape.RECT, Style.parseColor("#2e2382"), Style.WHITE));
+            // NachtExpress (night bus)
+        STYLES.put("dsw|BNE1", new Style(Shape.RECT, Style.parseColor("#EE1D23"), Style.WHITE));
+        STYLES.put("dsw|BNE2", new Style(Shape.RECT, Style.parseColor("#00A1E3"), Style.WHITE));
+        STYLES.put("dsw|BNE3", new Style(Shape.RECT, Style.parseColor("#8781BD"), Style.WHITE));
+        STYLES.put("dsw|BNE4", new Style(Shape.RECT, Style.parseColor("#FECA0A"), Style.GRAY));
+        STYLES.put("dsw|BNE5", new Style(Shape.RECT, Style.parseColor("#EF59A1"), Style.WHITE));
+        STYLES.put("dsw|BNE6", new Style(Shape.RECT, Style.parseColor("#F9A51B"), Style.WHITE));
+        STYLES.put("dsw|BNE7", new Style(Shape.RECT, Style.parseColor("#00A1E3"), Style.WHITE));
+        STYLES.put("dsw|BNE8", new Style(Shape.RECT, Style.parseColor("#FECA0A"), Style.GRAY));
+        STYLES.put("dsw|BNE9", new Style(Shape.RECT, Style.parseColor("#A78337"), Style.WHITE));
+        STYLES.put("dsw|BNE11", new Style(Shape.RECT, Style.parseColor("#A3A069"), Style.WHITE));
+        STYLES.put("dsw|BNE12", new Style(Shape.RECT, Style.parseColor("#8781BD"), Style.WHITE));
+        STYLES.put("dsw|BNE13", new Style(Shape.RECT, Style.parseColor("#F9A51B"), Style.WHITE));
+        STYLES.put("dsw|BNE22", new Style(Shape.RECT, Style.parseColor("#00854A"), Style.WHITE));
+        STYLES.put("dsw|BNE20", new Style(Shape.RECT, Style.parseColor("#EE1D23"), Style.WHITE));
+        STYLES.put("dsw|BNE24", new Style(Shape.RECT, Style.parseColor("#00854A"), Style.WHITE));
+        STYLES.put("dsw|BNE25", new Style(Shape.RECT, Style.parseColor("#23B24B"), Style.WHITE));
+        STYLES.put("dsw|BNE40", new Style(Shape.RECT, Style.parseColor("#EE1D23"), Style.WHITE));
 
-        // Düsseldorf
+        // Düsseldorf U-Bahn (metro)
         STYLES.put("rbg|UU70", new Style(Shape.RECT, Style.parseColor("#69b0cd"), Style.WHITE));
         STYLES.put("rbg|UU71", new Style(Shape.RECT, Style.parseColor("#66cef6"), Style.WHITE));
         STYLES.put("rbg|UU72", new Style(Shape.RECT, Style.parseColor("#4cc4c5"), Style.WHITE));
         STYLES.put("rbg|UU73", new Style(Shape.RECT, Style.parseColor("#4763b8"), Style.WHITE));
-        STYLES.put("rbg|UU74", new Style(Shape.RECT, Style.parseColor("#27297c"), Style.WHITE));
         STYLES.put("rbg|UU75", new Style(Shape.RECT, Style.parseColor("#079acb"), Style.WHITE));
         STYLES.put("rbg|UU76", new Style(Shape.RECT, Style.parseColor("#1969bc"), Style.WHITE));
         STYLES.put("rbg|UU77", new Style(Shape.RECT, Style.parseColor("#6d90d2"), Style.WHITE));
         STYLES.put("rbg|UU78", new Style(Shape.RECT, Style.parseColor("#02a7eb"), Style.WHITE));
         STYLES.put("rbg|UU79", new Style(Shape.RECT, Style.parseColor("#00aaa0"), Style.WHITE));
         STYLES.put("rbg|UU83", new Style(Shape.RECT, Style.parseColor("#2743a0"), Style.WHITE));
+            // Tram
         STYLES.put("rbg|T701", new Style(Shape.RECT, Style.parseColor("#f57215"), Style.WHITE));
         STYLES.put("rbg|T704", new Style(Shape.RECT, Style.parseColor("#c01c23"), Style.WHITE));
         STYLES.put("rbg|T705", new Style(Shape.RECT, Style.parseColor("#bd0c8e"), Style.WHITE));
@@ -137,6 +156,7 @@ public class VrrProvider extends AbstractEfaProvider {
         STYLES.put("rbg|T707", new Style(Shape.RECT, Style.parseColor("#72177a"), Style.WHITE));
         STYLES.put("rbg|T708", new Style(Shape.RECT, Style.parseColor("#f680b4"), Style.WHITE));
         STYLES.put("rbg|T709", new Style(Shape.RECT, Style.parseColor("#ef269d"), Style.WHITE));
+            // NachtExpress (night bus)
         STYLES.put("rbg|BNE1", new Style(Shape.RECT, Style.parseColor("#fec210"), Style.BLACK));
         STYLES.put("rbg|BNE2", new Style(Shape.RECT, Style.parseColor("#f17cb0"), Style.WHITE));
         STYLES.put("rbg|BNE3", new Style(Shape.RECT, Style.parseColor("#99ca3b"), Style.WHITE));
@@ -145,6 +165,7 @@ public class VrrProvider extends AbstractEfaProvider {
         STYLES.put("rbg|BNE6", new Style(Shape.RECT, Style.parseColor("#f47921"), Style.WHITE));
         STYLES.put("rbg|BNE7", new Style(Shape.RECT, Style.parseColor("#009247"), Style.WHITE));
         STYLES.put("rbg|BNE8", new Style(Shape.RECT, Style.parseColor("#bdaa8b"), Style.BLACK));
+            // MetroBus
         STYLES.put("rbg|BM1", new Style(Shape.RECT, Style.parseColor("#31b759"), Style.WHITE));
         STYLES.put("rbg|BM2", new Style(Shape.RECT, Style.parseColor("#31b759"), Style.WHITE));
         STYLES.put("rbg|BM3", new Style(Shape.RECT, Style.parseColor("#31b759"), Style.WHITE));
@@ -311,8 +332,9 @@ public class VrrProvider extends AbstractEfaProvider {
         STYLES.put("sws|BNE25", new Style(Style.parseColor("#000000"), Style.WHITE));
         STYLES.put("sws|BNE28", new Style(Style.parseColor("#000000"), Style.WHITE));
 
-        // Busse Wuppertal
+        // Stadtbus Wuppertal
         STYLES.put("wsw|B600", new Style(Style.parseColor("#cc4e97"), Style.WHITE));
+        STYLES.put("wsw|B601", new Style(Style.parseColor("#7A8B5C"), Style.WHITE));
         STYLES.put("wsw|B603", new Style(Style.parseColor("#a77251"), Style.WHITE));
         STYLES.put("wsw|B604", new Style(Style.parseColor("#f39100"), Style.WHITE));
         STYLES.put("wsw|B606", new Style(Style.parseColor("#88301b"), Style.WHITE));
@@ -327,6 +349,7 @@ public class VrrProvider extends AbstractEfaProvider {
         STYLES.put("wsw|B617", new Style(Style.parseColor("#95114d"), Style.WHITE));
         STYLES.put("wsw|B618", new Style(Style.parseColor("#cf8360"), Style.WHITE));
         STYLES.put("wsw|B619", new Style(Style.parseColor("#304c9d"), Style.WHITE));
+        STYLES.put("wsw|B620", new Style(Style.parseColor("#00A47B"), Style.WHITE));
         STYLES.put("wsw|B622", new Style(Style.parseColor("#aabd81"), Style.WHITE));
         STYLES.put("wsw|B623", new Style(Style.parseColor("#e04a23"), Style.WHITE));
         STYLES.put("wsw|B624", new Style(Style.parseColor("#0e9580"), Style.WHITE));
@@ -347,6 +370,10 @@ public class VrrProvider extends AbstractEfaProvider {
         STYLES.put("wsw|B645", new Style(Style.parseColor("#aeba0e"), Style.WHITE));
         STYLES.put("wsw|B646", new Style(Style.parseColor("#008db5"), Style.WHITE));
         STYLES.put("wsw|B650", new Style(Style.parseColor("#f5bd00"), Style.WHITE));
+        STYLES.put("wsw|B666", new Style(Style.parseColor("#00A1D2"), Style.WHITE));
+        STYLES.put("wsw|B670", new Style(Style.parseColor("#96599D"), Style.WHITE));
+        STYLES.put("wsw|BE800", new Style(Style.parseColor("#9C9C9D"), Style.WHITE));
+            // NachtExpress (night bus)
         STYLES.put("wsw|BNE1", new Style(Style.parseColor("#000000"), Style.WHITE));
         STYLES.put("wsw|BNE2", new Style(Style.parseColor("#000000"), Style.WHITE));
         STYLES.put("wsw|BNE3", new Style(Style.parseColor("#000000"), Style.WHITE));
@@ -355,6 +382,9 @@ public class VrrProvider extends AbstractEfaProvider {
         STYLES.put("wsw|BNE6", new Style(Style.parseColor("#000000"), Style.WHITE));
         STYLES.put("wsw|BNE7", new Style(Style.parseColor("#000000"), Style.WHITE));
         STYLES.put("wsw|BNE8", new Style(Style.parseColor("#000000"), Style.WHITE));
+            // CityExpress - SchnellBus Wuppertal
+        STYLES.put("wsw|BSB", new Style(Style.parseColor("#00919D"), Style.WHITE));
+        STYLES.put("wsw|BCE", new Style(Style.parseColor("#E3001D"), Style.WHITE));
 
         // H-Bahn Dortmund
         STYLES.put("dsw|CHB1", new Style(Style.parseColor("#e5007c"), Style.WHITE));
@@ -390,8 +420,11 @@ public class VrrProvider extends AbstractEfaProvider {
         STYLES.put("hst|B541", new Style(Style.parseColor("#9c590f"), Style.WHITE));
         STYLES.put("hst|B542", new Style(Style.parseColor("#71c837"), Style.WHITE));
         STYLES.put("hst|B543", new Style(Style.parseColor("#f49b00"), Style.WHITE));
-        STYLES.put("hst|BSB71", new Style(Style.parseColor("#15b6b9"), Style.WHITE));
+            //  SchnellBus (sprinter bus)
+        STYLES.put("hst|BSB71", new Style(Style.parseColor("#15b6b9"), Style.WHITE));    
         STYLES.put("hst|BSB72", new Style(Style.parseColor("#0c919c"), Style.WHITE));
+            //  CityExpress
+            //  NachtExpress (night bus)
         STYLES.put("hst|BNE1", new Style(Style.parseColor("#ff2a2a"), Style.WHITE));
         STYLES.put("hst|BNE2", new Style(Style.parseColor("#ff6600"), Style.WHITE));
         STYLES.put("hst|BNE3", new Style(Style.parseColor("#ffcc00"), Style.BLACK));
