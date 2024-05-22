@@ -96,6 +96,10 @@ public class VrrProvider extends AbstractEfaProvider {
             // H-Bahn TU Dortmund
             if ("H-Bahn".equals(trainName) || (longName != null && longName.startsWith("H-Bahn")))
                 return new Line(id, network, Product.CABLECAR, name);
+            // Rheinbahn buses wildcard (work in progress)
+            //if (network == "rbg" && "SEV B".equals(trainNum))
+            //    return new Line(id, network, Product.BUS);          
+
         }
 
         return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
@@ -254,7 +258,15 @@ public class VrrProvider extends AbstractEfaProvider {
         STYLES.put("dvg|BNE4", new Style(Style.parseColor("#000000"), Style.WHITE));
 
         // Bochum trams
-        STYLES.put("bgs|T302", new Style(Shape.RECT,Style.parseColor("#7FB7DC"), Style.WHITE));
+        STYLES.put("bgs|T301", new Style(Shape.RECT,Style.parseColor("#4ca85a"), Style.WHITE));
+        STYLES.put("bgs|T302", new Style(Shape.RECT,Style.parseColor("#89c0df"), Style.WHITE));
+        STYLES.put("bgs|T305", new Style(Shape.RECT,Style.parseColor("#9d7bb8"), Style.WHITE));
+        STYLES.put("bgs|T306", new Style(Shape.RECT,Style.parseColor("#ec6357"), Style.WHITE));
+        STYLES.put("bgs|T308", new Style(Shape.RECT,Style.parseColor("#acce5b"), Style.WHITE));
+        STYLES.put("bgs|T309", new Style(Shape.RECT,Style.parseColor("#15258e"), Style.WHITE));
+        STYLES.put("bgs|T310", new Style(Shape.RECT,Style.parseColor("#a05580"), Style.WHITE));
+        STYLES.put("bgs|T316", new Style(Shape.RECT,Style.parseColor("#e39142"), Style.WHITE));
+        STYLES.put("bgs|T318", new Style(Shape.RECT,Style.parseColor("#74aba1"), Style.WHITE));
 
         // Oberhausen
         STYLES.put("sto|B952", new Style(Style.parseColor("#f59598"), Style.WHITE));
@@ -385,9 +397,15 @@ public class VrrProvider extends AbstractEfaProvider {
         STYLES.put("wsw|BNE6", new Style(Style.parseColor("#000000"), Style.WHITE));
         STYLES.put("wsw|BNE7", new Style(Style.parseColor("#000000"), Style.WHITE));
         STYLES.put("wsw|BNE8", new Style(Style.parseColor("#000000"), Style.WHITE));
-            // CityExpress - SchnellBus Wuppertal
-        STYLES.put("wsw|BSB", new Style(Style.parseColor("#00919D"), Style.WHITE));
-        STYLES.put("wsw|BCE", new Style(Style.parseColor("#E3001D"), Style.WHITE));
+            // CityExpress & SchnellBus Wuppertal
+        STYLES.put("wsw|SBSB66", new Style(Style.parseColor("#00919D"), Style.WHITE));
+        STYLES.put("wsw|SBSB67", new Style(Style.parseColor("#00919D"), Style.WHITE));
+        STYLES.put("wsw|SBSB68", new Style(Style.parseColor("#00919D"), Style.WHITE));
+        STYLES.put("wsw|SBSB69", new Style(Style.parseColor("#00919D"), Style.WHITE));
+        STYLES.put("wsw|SBCE61", new Style(Style.parseColor("#E3001D"), Style.WHITE));
+        STYLES.put("wsw|SBCE62", new Style(Style.parseColor("#E3001D"), Style.WHITE));
+        STYLES.put("wsw|SBCE64", new Style(Style.parseColor("#E3001D"), Style.WHITE));
+        STYLES.put("wsw|SBCE65", new Style(Style.parseColor("#E3001D"), Style.WHITE));
 
         // H-Bahn Dortmund
         STYLES.put("dsw|CHB1", new Style(Style.parseColor("#e5007c"), Style.WHITE));
@@ -426,7 +444,6 @@ public class VrrProvider extends AbstractEfaProvider {
             //  SchnellBus (sprinter bus)
         STYLES.put("hst|BSB71", new Style(Style.parseColor("#15b6b9"), Style.WHITE));    
         STYLES.put("hst|BSB72", new Style(Style.parseColor("#0c919c"), Style.WHITE));
-            //  CityExpress
             //  NachtExpress (night bus)
         STYLES.put("hst|BNE1", new Style(Style.parseColor("#ff2a2a"), Style.WHITE));
         STYLES.put("hst|BNE2", new Style(Style.parseColor("#ff6600"), Style.WHITE));
