@@ -253,6 +253,9 @@ public class VrrProvider extends AbstractEfaProvider {
         STYLES.put("dvg|BNE3", new Style(Style.parseColor("#000000"), Style.WHITE));
         STYLES.put("dvg|BNE4", new Style(Style.parseColor("#000000"), Style.WHITE));
 
+        // Bochum trams
+        STYLES.put("bgs|T302", new Style(Shape.RECT,Style.parseColor("#7FB7DC"), Style.WHITE));
+
         // Oberhausen
         STYLES.put("sto|B952", new Style(Style.parseColor("#f59598"), Style.WHITE));
         STYLES.put("sto|B953", new Style(Style.parseColor("#5eb6d9"), Style.WHITE));
@@ -372,7 +375,7 @@ public class VrrProvider extends AbstractEfaProvider {
         STYLES.put("wsw|B650", new Style(Style.parseColor("#f5bd00"), Style.WHITE));
         STYLES.put("wsw|B666", new Style(Style.parseColor("#00A1D2"), Style.WHITE));
         STYLES.put("wsw|B670", new Style(Style.parseColor("#96599D"), Style.WHITE));
-        STYLES.put("wsw|BE800", new Style(Style.parseColor("#9C9C9D"), Style.WHITE));
+        STYLES.put("wsw|BE800", new Style(Style.parseColor("#9C9C9D"), Style.WHITE)); //UniExpress
             // NachtExpress (night bus)
         STYLES.put("wsw|BNE1", new Style(Style.parseColor("#000000"), Style.WHITE));
         STYLES.put("wsw|BNE2", new Style(Style.parseColor("#000000"), Style.WHITE));
