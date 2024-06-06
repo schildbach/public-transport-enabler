@@ -35,9 +35,7 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class NvbwProvider extends AbstractEfaProvider {
-    private final static HttpUrl API_BASE = HttpUrl.parse("https://www.efa-bw.de/nvbw3L/");
-    // https://efaserver.vag-freiburg.de/vagfr/
-    // http://efa2.naldo.de/naldo/
+    private final static HttpUrl API_BASE = HttpUrl.parse("https://www.efa-bw.de/nvbw/");
 
     public NvbwProvider() {
         super(NetworkId.NVBW, API_BASE);
