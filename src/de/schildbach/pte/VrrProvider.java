@@ -311,22 +311,29 @@ public class VrrProvider extends AbstractEfaProvider {
         STYLES.put("sws|BNE25", new Style(Style.parseColor("#000000"), Style.WHITE));
         STYLES.put("sws|BNE28", new Style(Style.parseColor("#000000"), Style.WHITE));
 
-        // Busse Wuppertal
+        // Busse Wuppertal (WSW mobil)
         STYLES.put("wsw|B600", new Style(Style.parseColor("#cc4e97"), Style.WHITE));
+        STYLES.put("wsw|B601", new Style(Style.parseColor("#7e8b61"), Style.WHITE));
+        STYLES.put("wsw|B602", new Style(Style.parseColor("#7d96c4"), Style.WHITE));
         STYLES.put("wsw|B603", new Style(Style.parseColor("#a77251"), Style.WHITE));
         STYLES.put("wsw|B604", new Style(Style.parseColor("#f39100"), Style.WHITE));
+        STYLES.put("wsw|B605", new Style(Style.parseColor("#aa974a"), Style.WHITE));
         STYLES.put("wsw|B606", new Style(Style.parseColor("#88301b"), Style.WHITE));
         STYLES.put("wsw|B607", new Style(Style.parseColor("#629e38"), Style.WHITE));
+        STYLES.put("wsw|B608", new Style(Style.parseColor("#25594d"), Style.WHITE));
         STYLES.put("wsw|B609", new Style(Style.parseColor("#53ae2e"), Style.WHITE));
         STYLES.put("wsw|B610", new Style(Style.parseColor("#eb5575"), Style.WHITE));
         STYLES.put("wsw|B611", new Style(Style.parseColor("#896a9a"), Style.WHITE));
         STYLES.put("wsw|B612", new Style(Style.parseColor("#cd7c00"), Style.WHITE));
         STYLES.put("wsw|B613", new Style(Style.parseColor("#491d5c"), Style.WHITE));
         STYLES.put("wsw|B614", new Style(Style.parseColor("#00a7c1"), Style.WHITE));
+        STYLES.put("wsw|B615", new Style(Style.parseColor("#924374"), Style.WHITE));
         STYLES.put("wsw|B616", new Style(Style.parseColor("#e4003a"), Style.WHITE));
         STYLES.put("wsw|B617", new Style(Style.parseColor("#95114d"), Style.WHITE));
         STYLES.put("wsw|B618", new Style(Style.parseColor("#cf8360"), Style.WHITE));
         STYLES.put("wsw|B619", new Style(Style.parseColor("#304c9d"), Style.WHITE));
+        STYLES.put("wsw|B620", new Style(Style.parseColor("#49a17d"), Style.WHITE));
+        STYLES.put("wsw|B621", new Style(Style.parseColor("#e59539"), Style.WHITE));
         STYLES.put("wsw|B622", new Style(Style.parseColor("#aabd81"), Style.WHITE));
         STYLES.put("wsw|B623", new Style(Style.parseColor("#e04a23"), Style.WHITE));
         STYLES.put("wsw|B624", new Style(Style.parseColor("#0e9580"), Style.WHITE));
@@ -359,6 +366,9 @@ public class VrrProvider extends AbstractEfaProvider {
         // H-Bahn Dortmund
         STYLES.put("dsw|CHB1", new Style(Style.parseColor("#e5007c"), Style.WHITE));
         STYLES.put("dsw|CHB2", new Style(Style.parseColor("#e5007c"), Style.WHITE));
+        STYLES.put("dsw|CHB3", new Style(Style.parseColor("#e5007c"), Style.WHITE));
+        STYLES.put("dsw|CHB5", new Style(Style.parseColor("#e5007c"), Style.WHITE));
+        STYLES.put("dsw|CHB7", new Style(Style.parseColor("#e5007c"), Style.WHITE));
 
         // Schwebebahn Wuppertal
         STYLES.put("wsw|C60", new Style(Style.parseColor("#003090"), Style.WHITE));
