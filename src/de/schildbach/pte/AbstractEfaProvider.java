@@ -1743,7 +1743,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         XmlPullUtil.enter(pp, "m");
 
         final String n = XmlPullUtil.optValueTag(pp, "n", null);
-        final String productNu = XmlPullUtil.valueTag(pp, "nu");
+        final String productNu = XmlPullUtil.optValueTag(pp, "nu", null);
         final String ty = XmlPullUtil.valueTag(pp, "ty");
 
         final Line line;
