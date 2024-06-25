@@ -24,10 +24,10 @@ bookworm-jdk17:
     paths:
       - build/libs/*.jar
 
-trixie-jdk21:
-  image: debian:trixie-slim
+default-jdk:
+  image: debian:testing-slim
   script:
-    - apt-get -y install openjdk-21-jdk-headless gradle
+    - apt-get -y install default-jdk-headless gradle
     - gradle build --stacktrace
   artifacts:
     name: public-transport-enabler-$CI_JOB_NAME-$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA
