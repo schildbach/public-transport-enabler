@@ -204,6 +204,9 @@ public final class XmlPullUtil {
             return defaultValue;
         if (pp.isEmptyElementTag()) {
             pp.next();
+            if (pp.getEventType() != XmlPullParser.END_TAG)
+                throw new IllegalStateException("expected (virtual) end tag on empty element");
+            pp.next();
             return defaultValue;
         }
         final String value = valueTag(pp, tagName);
