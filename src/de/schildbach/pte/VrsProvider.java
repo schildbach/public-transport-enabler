@@ -185,10 +185,12 @@ public class VrsProvider extends AbstractNetworkProvider {
         STYLES.put("T9", new Style(Style.parseColor("#f5777b"), Style.WHITE));
         STYLES.put("T12", new Style(Style.parseColor("#80cc28"), Style.WHITE));
         STYLES.put("T13", new Style(Style.parseColor("#9e7b65"), Style.WHITE));
+        STYLES.put("T14", new Style(Style.parseColor("#a7489c"), Style.WHITE));
         STYLES.put("T15", new Style(Style.parseColor("#4dbd38"), Style.WHITE));
         STYLES.put("T16", new Style(Style.parseColor("#33baab"), Style.WHITE));
         STYLES.put("T17", new Style(Style.parseColor("#85d0f5"), Style.WHITE));
         STYLES.put("T18", new Style(Style.parseColor("#05a1e6"), Style.WHITE));
+        STYLES.put("T19", new Style(Style.parseColor("#294835"), Style.WHITE));
         STYLES.put("T61", new Style(Style.parseColor("#80cc28"), Style.WHITE));
         STYLES.put("T62", new Style(Style.parseColor("#4dbd38"), Style.WHITE));
         STYLES.put("T63", new Style(Style.parseColor("#73d2f6"), Style.WHITE));
@@ -200,6 +202,7 @@ public class VrsProvider extends AbstractNetworkProvider {
         // Busse Köln
         STYLES.put("BSB40", new Style(Style.parseColor("#FF0000"), Style.WHITE));
         STYLES.put("B106", new Style(Style.parseColor("#0994dd"), Style.WHITE));
+        STYLES.put("B118", new Style(Style.parseColor("#b43c32"), Style.WHITE));
         STYLES.put("B120", new Style(Style.parseColor("#24C6E8"), Style.WHITE));
         STYLES.put("B121", new Style(Style.parseColor("#89E82D"), Style.WHITE));
         STYLES.put("B122", new Style(Style.parseColor("#4D44FF"), Style.WHITE));
@@ -309,7 +312,7 @@ public class VrsProvider extends AbstractNetworkProvider {
         STYLES.put("B857", new Style(Style.parseColor("#4e6578"), Style.WHITE));
 
         // andere Busse
-        STYLES.put("B250", new Style(Style.parseColor("#8FE84B"), Style.WHITE));
+        STYLES.put("BSB25", new Style(Style.parseColor("#8FE84B"), Style.WHITE));
         STYLES.put("B260", new Style(Style.parseColor("#FF8365"), Style.WHITE));
         STYLES.put("B423", new Style(Style.parseColor("#D3D2D2"), Style.WHITE));
         STYLES.put("B434", new Style(Style.parseColor("#14E80B"), Style.WHITE));
