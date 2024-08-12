@@ -311,22 +311,29 @@ public class VrrProvider extends AbstractEfaProvider {
         STYLES.put("sws|BNE25", new Style(Style.parseColor("#000000"), Style.WHITE));
         STYLES.put("sws|BNE28", new Style(Style.parseColor("#000000"), Style.WHITE));
 
-        // Busse Wuppertal
+        // Busse Wuppertal (WSW mobil)
         STYLES.put("wsw|B600", new Style(Style.parseColor("#cc4e97"), Style.WHITE));
+        STYLES.put("wsw|B601", new Style(Style.parseColor("#7e8b61"), Style.WHITE));
+        STYLES.put("wsw|B602", new Style(Style.parseColor("#7d96c4"), Style.WHITE));
         STYLES.put("wsw|B603", new Style(Style.parseColor("#a77251"), Style.WHITE));
         STYLES.put("wsw|B604", new Style(Style.parseColor("#f39100"), Style.WHITE));
+        STYLES.put("wsw|B605", new Style(Style.parseColor("#aa974a"), Style.WHITE));
         STYLES.put("wsw|B606", new Style(Style.parseColor("#88301b"), Style.WHITE));
         STYLES.put("wsw|B607", new Style(Style.parseColor("#629e38"), Style.WHITE));
+        STYLES.put("wsw|B608", new Style(Style.parseColor("#25594d"), Style.WHITE));
         STYLES.put("wsw|B609", new Style(Style.parseColor("#53ae2e"), Style.WHITE));
         STYLES.put("wsw|B610", new Style(Style.parseColor("#eb5575"), Style.WHITE));
         STYLES.put("wsw|B611", new Style(Style.parseColor("#896a9a"), Style.WHITE));
         STYLES.put("wsw|B612", new Style(Style.parseColor("#cd7c00"), Style.WHITE));
         STYLES.put("wsw|B613", new Style(Style.parseColor("#491d5c"), Style.WHITE));
         STYLES.put("wsw|B614", new Style(Style.parseColor("#00a7c1"), Style.WHITE));
+        STYLES.put("wsw|B615", new Style(Style.parseColor("#924374"), Style.WHITE));
         STYLES.put("wsw|B616", new Style(Style.parseColor("#e4003a"), Style.WHITE));
         STYLES.put("wsw|B617", new Style(Style.parseColor("#95114d"), Style.WHITE));
         STYLES.put("wsw|B618", new Style(Style.parseColor("#cf8360"), Style.WHITE));
         STYLES.put("wsw|B619", new Style(Style.parseColor("#304c9d"), Style.WHITE));
+        STYLES.put("wsw|B620", new Style(Style.parseColor("#49a17d"), Style.WHITE));
+        STYLES.put("wsw|B621", new Style(Style.parseColor("#e59539"), Style.WHITE));
         STYLES.put("wsw|B622", new Style(Style.parseColor("#aabd81"), Style.WHITE));
         STYLES.put("wsw|B623", new Style(Style.parseColor("#e04a23"), Style.WHITE));
         STYLES.put("wsw|B624", new Style(Style.parseColor("#0e9580"), Style.WHITE));
@@ -359,39 +366,52 @@ public class VrrProvider extends AbstractEfaProvider {
         // H-Bahn Dortmund
         STYLES.put("dsw|CHB1", new Style(Style.parseColor("#e5007c"), Style.WHITE));
         STYLES.put("dsw|CHB2", new Style(Style.parseColor("#e5007c"), Style.WHITE));
+        STYLES.put("dsw|CHB3", new Style(Style.parseColor("#e5007c"), Style.WHITE));
+        STYLES.put("dsw|CHB5", new Style(Style.parseColor("#e5007c"), Style.WHITE));
+        STYLES.put("dsw|CHB7", new Style(Style.parseColor("#e5007c"), Style.WHITE));
 
         // Schwebebahn Wuppertal
         STYLES.put("wsw|C60", new Style(Style.parseColor("#003090"), Style.WHITE));
 
         // Busse Hagen
+        STYLES.put("hst|BCE51", new Style(Style.parseColor("#c10004"), Style.WHITE));
+        STYLES.put("hst|BCE52", new Style(Style.parseColor("#e63758"), Style.WHITE));
         STYLES.put("hst|B510", new Style(Style.parseColor("#b06520"), Style.WHITE));
         STYLES.put("ver|B511", new Style(Style.parseColor("#15b6b9"), Style.WHITE));
         STYLES.put("hst|B512", new Style(Style.parseColor("#b06520"), Style.WHITE));
         STYLES.put("hst|B513", new Style(Style.parseColor("#7f4984"), Style.WHITE));
         STYLES.put("hst|B514", new Style(Style.parseColor("#f49b00"), Style.WHITE));
-        STYLES.put("hst|B515", new Style(Style.parseColor("#c10004"), Style.WHITE));
+        STYLES.put("hst|B515", new Style(Style.parseColor("#567b3e"), Style.WHITE));
         STYLES.put("hst|B516", new Style(Style.parseColor("#7eaf49"), Style.WHITE));
         STYLES.put("hst|B517", new Style(Style.parseColor("#619f4e"), Style.WHITE));
         STYLES.put("hst|B518", new Style(Style.parseColor("#007bc1"), Style.WHITE));
         STYLES.put("hst|B519", new Style(Style.parseColor("#007bc1"), Style.WHITE));
-        STYLES.put("hst|B520", new Style(Style.parseColor("#e63758"), Style.WHITE));
         STYLES.put("hst|B521", new Style(Style.parseColor("#df0008"), Style.WHITE));
-        STYLES.put("hst|B524", new Style(Style.parseColor("#a36501"), Style.WHITE));
+        STYLES.put("hst|B522", new Style(Style.parseColor("#e63758"), Style.WHITE));
+        STYLES.put("ver|B523", new Style(Style.parseColor("#348ab8"), Style.WHITE));
+        STYLES.put("hst|B524", new Style(Style.parseColor("#7fceef"), Style.WHITE));
         STYLES.put("hst|B525", new Style(Style.parseColor("#df0008"), Style.WHITE));
         STYLES.put("hst|B527", new Style(Style.parseColor("#7c277d"), Style.WHITE));
-        STYLES.put("hst|B528", new Style(Style.parseColor("#1784c1"), Style.WHITE));
-        STYLES.put("hst|B530", new Style(Style.parseColor("#e60253"), Style.WHITE));
-        STYLES.put("hst|B532", new Style(Style.parseColor("#364a9c"), Style.WHITE));
-        STYLES.put("hst|B534", new Style(Style.parseColor("#567b3e"), Style.WHITE));
+        STYLES.put("hst|B528", new Style(Style.parseColor("#7fceef"), Style.WHITE));
+        STYLES.put("ver|B529", new Style(Style.parseColor("#df992c"), Style.WHITE));
+        STYLES.put("hst|B534", new Style(Style.parseColor("#7c277d"), Style.WHITE));
         STYLES.put("hst|B535", new Style(Style.parseColor("#e14c25"), Style.WHITE));
-        STYLES.put("hst|B536", new Style(Style.parseColor("#7fceef"), Style.WHITE));
+        STYLES.put("hst|B537", new Style(Style.parseColor("#006cb6"), Style.WHITE));
         STYLES.put("hst|B538", new Style(Style.parseColor("#006cb6"), Style.WHITE));
         STYLES.put("hst|B539", new Style(Style.parseColor("#897300"), Style.WHITE));
-        STYLES.put("hst|B541", new Style(Style.parseColor("#9c590f"), Style.WHITE));
+        STYLES.put("hst|B540", new Style(Style.parseColor("#364a9c"), Style.WHITE));
+        STYLES.put("hst|B541", new Style(Style.parseColor("#e63758"), Style.WHITE));
         STYLES.put("hst|B542", new Style(Style.parseColor("#71c837"), Style.WHITE));
         STYLES.put("hst|B543", new Style(Style.parseColor("#f49b00"), Style.WHITE));
-        STYLES.put("hst|BSB71", new Style(Style.parseColor("#15b6b9"), Style.WHITE));
-        STYLES.put("hst|BSB72", new Style(Style.parseColor("#0c919c"), Style.WHITE));
+        STYLES.put("ver|B553", new Style(Style.parseColor("#e61d64"), Style.WHITE));
+        STYLES.put("ver|B555", new Style(Style.parseColor("#e61d64"), Style.WHITE));
+        STYLES.put("bvr|B591", new Style(Style.parseColor("#5f5fb5"), Style.WHITE));
+        STYLES.put("bvr|B594", new Style(Style.parseColor("#49444d"), Style.WHITE));
+        STYLES.put("mvg|B1", new Style(Style.parseColor("#6246a6"), Style.WHITE));
+        STYLES.put("mvg|B9", new Style(Style.parseColor("#ed0f80"), Style.WHITE));
+        STYLES.put("mvg|B57", new Style(Style.parseColor("#3b7cc8"), Style.WHITE));
+        STYLES.put("mvg|B84", new Style(Style.parseColor("#31807c"), Style.WHITE));
+        STYLES.put("bgs|B376", new Style(Style.parseColor("#37abc8"), Style.WHITE));
         STYLES.put("hst|BNE1", new Style(Style.parseColor("#ff2a2a"), Style.WHITE));
         STYLES.put("hst|BNE2", new Style(Style.parseColor("#ff6600"), Style.WHITE));
         STYLES.put("hst|BNE3", new Style(Style.parseColor("#ffcc00"), Style.BLACK));
@@ -401,7 +421,6 @@ public class VrrProvider extends AbstractEfaProvider {
         STYLES.put("hst|BNE7", new Style(Style.parseColor("#a05a2c"), Style.WHITE));
         STYLES.put("bvr|BNE9", new Style(Style.parseColor("#800080"), Style.WHITE));
         STYLES.put("hst|BNE19", new Style(Style.parseColor("#a02c2c"), Style.WHITE));
-        STYLES.put("hst|BNE22", new Style(Style.parseColor("#006cb6"), Style.WHITE));
         STYLES.put("hst|BNE31", new Style(Style.parseColor("#803300"), Style.WHITE));
         STYLES.put("hst|BNE32", new Style(Style.parseColor("#364a9c"), Style.WHITE));
 
