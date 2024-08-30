@@ -781,13 +781,11 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                     for (int i = 0; i < ovwTrfRefList.length(); i++) {
                         final JSONObject ovwTrfRef = ovwTrfRefList.getJSONObject(i);
                         final String type = ovwTrfRef.getString("type");
-                        final int fareSetX = ovwTrfRef.getInt("fareSetX");
-                        final int fareX = ovwTrfRef.getInt("fareX");
-                        final JSONObject jsonFareSet = fareSetList.getJSONObject(fareSetX);
-                        final JSONObject jsonFare = jsonFareSet.getJSONArray("fareL").getJSONObject(fareX);
-                        final String fareName = jsonFare.getString("name");
-                        final Fare fare;
+                        final JSONObject jsonFareSet = fareSetList.getJSONObject(ovwTrfRef.getInt("fareSetX"));
                         if (type.equals("T")) { // ticket
+                            final JSONObject jsonFare =
+                                    jsonFareSet.getJSONArray("fareL").getJSONObject(ovwTrfRef.getInt("fareX"));
+                            final String fareName = jsonFare.getString("name");
                             final int ticketX = ovwTrfRef.getInt("ticketX");
                             final JSONObject jsonTicket = jsonFare.getJSONArray("ticketL").getJSONObject(ticketX);
                             final String ticketName = jsonTicket.getString("name");
@@ -795,26 +793,41 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                             if (!Strings.isNullOrEmpty(currencyStr)) {
                                 final Currency currency = Currency.getInstance(currencyStr);
                                 final float price = jsonTicket.getInt("prc") / 100f;
-                                fare = new Fare(normalizeFareName(fareName) + '\n' + ticketName,
+                                final Fare fare = new Fare(normalizeFareName(fareName) + '\n' + ticketName,
                                         normalizeFareType(ticketName), currency, price, null, null);
-                            } else {
-                                fare = null;
+                                if (!hideFare(fare))
+                                    fares.add(fare);
                             }
                         } else if (type.equals("F")) { // fare
+                            final JSONObject jsonFare =
+                                    jsonFareSet.getJSONArray("fareL").getJSONObject(ovwTrfRef.getInt("fareX"));
+                            final String fareName = jsonFare.getString("name");
                             final String currencyStr = jsonFare.optString("cur");
                             if (!Strings.isNullOrEmpty(currencyStr)) {
                                 final Currency currency = ParserUtils.getCurrency(currencyStr);
                                 final float price = jsonFare.getInt("prc") / 100f;
-                                fare = new Fare(normalizeFareName(fareName), normalizeFareType(fareName), currency,
-                                        price, null, null);
-                            } else {
-                                fare = null;
+                                final Fare fare = new Fare(normalizeFareName(fareName), normalizeFareType(fareName),
+                                        currency, price, null, null);
+                                if (!hideFare(fare))
+                                    fares.add(fare);
+                            }
+                        } else if (type.equals("FS")) { // fare set
+                            final String fareSetName = jsonFareSet.getString("name");
+                            final JSONArray fareList = jsonFareSet.getJSONArray("fareL");
+                            for (int iFare = 0; iFare < fareList.length(); iFare++) {
+                                final JSONObject jsonFare = fareList.getJSONObject(iFare);
+                                final String fareName = jsonFare.getString("name");
+                                final String currencyStr = jsonFare.optString("cur");
+                                final Currency currency = ParserUtils.getCurrency(currencyStr);
+                                final float price = jsonFare.getInt("prc") / 100f;
+                                final Fare fare = new Fare(normalizeFareName(fareSetName), normalizeFareType(fareName),
+                                        currency, price, null, null);
+                                if (!hideFare(fare))
+                                    fares.add(fare);
                             }
                         } else {
                             throw new IllegalArgumentException("cannot handle type: " + type);
                         }
-                        if (fare != null && !hideFare(fare))
-                            fares.add(fare);
                     }
                 } else {
                     fares = null;

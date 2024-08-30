@@ -150,6 +150,18 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest {
     }
 
     @Test
+    public void tripBeelitzPotsdam() throws Exception {
+        final Location from = new Location(LocationType.STATION, "900220005", "Beelitz", "Bahnhof");
+        final Location to = new Location(LocationType.STATION, "900220010", "Potsdam", "Golm");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
+        print(result);
+        final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+        print(laterResult);
+        final QueryTripsResult earlierResult = queryMoreTrips(laterResult.context, false);
+        print(earlierResult);
+    }
+
+    @Test
     public void shortFootwayTrip() throws Exception {
         final Location from = new Location(LocationType.ADDRESS, null, Point.from1E6(52435193, 13473409),
                 "12357 Berlin-Buckow", "Kernbeisserweg 4");
