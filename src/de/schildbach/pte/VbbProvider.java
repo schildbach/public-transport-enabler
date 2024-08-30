@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.schildbach.pte.dto.Fare;
 import de.schildbach.pte.dto.Product;
 
 import okhttp3.HttpUrl;
@@ -103,8 +104,19 @@ public class VbbProvider extends AbstractHafasClientInterfaceProvider {
     }
 
     @Override
-    protected String normalizeFareName(final String fareName) {
-        return fareName.replaceAll("Tarifgebiet ", "");
+    protected String normalizeFareName(String name) {
+        name = name.replaceAll("Tarifgebiet ", "");
+        name = name.replaceAll("Einzelfahrausweis", "Einzel");
+        name = name.replaceAll("24-Stunden-Karte", "24 Stunden");
+        return name;
+    }
+
+    @Override
+    protected boolean hideFare(final Fare fare) {
+        final String name = fare.name;
+        if (name.contains("Zeitkarte"))
+            return true;
+        return super.hideFare(fare);
     }
 
     @Override
