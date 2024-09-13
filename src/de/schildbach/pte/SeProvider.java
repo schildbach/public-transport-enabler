@@ -106,6 +106,7 @@ public class SeProvider extends AbstractHafasClientInterfaceProvider {
         STYLES.put("SL|SLänstrafik - Tåg 25", new Style(Style.parseColor("#008f93"), Style.WHITE));
         STYLES.put("SL|SLänstrafik - Tåg 26", new Style(Style.parseColor("#008f93"), Style.WHITE));
         STYLES.put("SL|SLänstrafik - Tåg 27", new Style(Style.parseColor("#9f599a"), Style.WHITE));
+        STYLES.put("SL|SLänstrafik - Tåg 27S", new Style(Style.parseColor("#9f599a"), Style.WHITE));
         STYLES.put("SL|SLänstrafik - Tåg 28", new Style(Style.parseColor("#9f599a"), Style.WHITE));
         STYLES.put("SL|SLänstrafik - Tåg 28S", new Style(Style.parseColor("#9f599a"), Style.WHITE));
         STYLES.put("SL|SLänstrafik - Tåg 28X", new Style(Style.parseColor("#9f599a"), Style.WHITE));
