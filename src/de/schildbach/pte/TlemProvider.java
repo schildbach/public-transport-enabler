@@ -72,6 +72,17 @@ public class TlemProvider extends AbstractEfaProvider {
             if (trainType == null && ("DLR".equals(trainNum) || "Light Railway".equals(trainName)))
                 return new Line(id, network, Product.SUBURBAN_TRAIN, "DLR");
         }
+        if ("sco".equals(network) && "SUB".equals(symbol)){
+            String label = "SUB";
+            if (id!=null) {
+                if (id.contains("H")) {
+                    label = "OUT";
+                } else if (id.contains(("R"))) {
+                    label = "INN";
+                }
+            }
+            return new Line(id, network, Product.SUBWAY, label);
+        }
 
         return super.parseLine(id, network, mot, symbol, name, longName, trainType, trainNum, trainName);
     }
@@ -99,5 +110,9 @@ public class TlemProvider extends AbstractEfaProvider {
         STYLES.put("TTramlink 1", new Style(Style.rgb(193, 215, 46), Style.WHITE));
         STYLES.put("TTramlink 2", new Style(Style.rgb(193, 215, 46), Style.WHITE));
         STYLES.put("TTramlink 3", new Style(Style.rgb(124, 194, 66), Style.BLACK));
+
+        // Glasgow
+        STYLES.put("sco|UOUT", new Style(Style.parseColor("#f38b23"), Style.WHITE));
+        STYLES.put("sco|UINN", new Style(Style.parseColor("#585a5e"), Style.WHITE));
     }
 }
