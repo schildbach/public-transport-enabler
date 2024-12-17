@@ -31,7 +31,7 @@ public enum NetworkId {
     OEBB, VAO, VOR, WIEN, OOEVV, LINZ, SVV, VVT, STV, VMOBIL,
 
     // Switzerland
-    VBL, ZVV,
+    VBL, ZVV, SEARCHCH,
 
     // Netherlands
     NS, NEGENTWEE,
