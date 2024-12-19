@@ -21,17 +21,24 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
+import java.util.Date;
 import java.util.EnumSet;
 
 import org.junit.Ignore;
 import org.junit.Test;
 
 import de.schildbach.pte.DbMovasProvider;
+import de.schildbach.pte.NetworkProvider.Accessibility;
+import de.schildbach.pte.NetworkProvider.WalkSpeed;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
 import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Point;
+import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.QueryDeparturesResult;
+import de.schildbach.pte.dto.QueryTripsResult;
+import de.schildbach.pte.dto.SuggestLocationsResult;
+import de.schildbach.pte.dto.TripOptions;
 
 /**
  * @author Andreas Schildbach
@@ -41,14 +48,12 @@ public class DbMovasProviderLiveTest extends AbstractProviderLiveTest {
         super(new DbMovasProvider());
     }
 
-    
     @Test
     public void nearbyStationsByCoordinate() throws Exception {
         final NearbyLocationsResult result = queryNearbyStations(Location.coord(52525589, 13369548));
         print(result);
     }
 
-    
     @Test
     @Ignore
     // TODO not supported
@@ -63,7 +68,7 @@ public class DbMovasProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void queryDepartures() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("692991", false);
+        final QueryDeparturesResult result = queryDepartures("692991", true);
         print(result);
     }
 
@@ -73,7 +78,6 @@ public class DbMovasProviderLiveTest extends AbstractProviderLiveTest {
         assertEquals(QueryDeparturesResult.Status.INVALID_STATION, resultLive.status);
     }
 
-    /*
     @Test
     public void suggestLocationsUmlaut() throws Exception {
         final SuggestLocationsResult result = suggestLocations("Güntzelstr. (U)");
@@ -101,7 +105,7 @@ public class DbMovasProviderLiveTest extends AbstractProviderLiveTest {
         final SuggestLocationsResult result = suggestLocations("München, Friedenstraße 2");
         print(result);
         assertThat(result.getLocations(), hasItem(new Location(LocationType.ADDRESS,
-                "A=2@O=München - Berg am Laim, Friedenstraße 2@X=11602251@Y=48123949@U=103@L=980857648@B=1@p=1378873973@",
+                "980879740",
                 "München - Berg am Laim", "Friedenstraße 2")));
     }
 
@@ -173,6 +177,8 @@ public class DbMovasProviderLiveTest extends AbstractProviderLiveTest {
     }
 
     @Test
+    @Ignore
+    // returns empty list
     public void tripsTooClose() throws Exception {
         final Location location = new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf");
         final QueryTripsResult result = queryTrips(location, null, location, new Date(), true, null);
@@ -197,5 +203,5 @@ public class DbMovasProviderLiveTest extends AbstractProviderLiveTest {
         final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
     }
-    */
+
 }
