@@ -205,7 +205,7 @@ public final class DbMovasProvider extends AbstractNetworkProvider {
                 .filter(e -> e.getValue() == loc.type)
                 .findFirst()
                 .map(e -> e.getKey())
-                .orElse("2");
+                .orElse("0");
 
         final StringBuilder out = new StringBuilder();
         out.append(createLidEntry("A", typeId));
@@ -328,7 +328,8 @@ public final class DbMovasProvider extends AbstractNetworkProvider {
         final String richtung = dep.optString("richtung", null);
         if (richtung == null)
             return null;
-        return parseLocation(LocationType.STATION, null, null, richtung, null);
+        // arbitrary ID is tolerated by backend if name matches
+        return parseLocation(LocationType.STATION, richtung, null, richtung, null);
     }
 
     private List<Location> parseLocations(final JSONArray locs) throws JSONException {
@@ -342,13 +343,14 @@ public final class DbMovasProvider extends AbstractNetworkProvider {
         return locations;
     }
 
-    private void parseMessages(final JSONArray msgs, final List<String> messages) throws JSONException {
+    private void parseMessages(final JSONArray msgs, final List<String> messages, final Integer minPriority)
+            throws JSONException {
         if (msgs == null)
             return;
         for (int i = 0; i < msgs.length(); i++) {
             final JSONObject msgObj = msgs.getJSONObject(i);
             final String msg = msgObj.optString("text", null);
-            if (msg != null) {
+            if (msg != null && (minPriority == null || msgObj.optInt("priority", minPriority) < minPriority)) {
                 messages.add(msg);
             }
         }
@@ -356,8 +358,10 @@ public final class DbMovasProvider extends AbstractNetworkProvider {
 
     private String parseMessages(final JSONObject e) throws JSONException {
         final List<String> messages = new ArrayList<>();
-        parseMessages(e.optJSONArray("echtzeitNotizen"), messages);
-        parseMessages(e.optJSONArray("himNotizen"), messages);
+        parseMessages(e.optJSONArray("echtzeitNotizen"), messages, null);
+        parseMessages(e.optJSONArray("himNotizen"), messages, null);
+        // show very important static messages (e.g. on demand tel)
+        parseMessages(e.optJSONArray("attributNotizen"), messages, 100);
         return messages.isEmpty() ? null : String.join(" – ", messages);
     }
 

@@ -149,6 +149,15 @@ public class DbMovasProviderLiveTest extends AbstractProviderLiveTest {
     }
 
     @Test
+    public void ambiguousTrips() throws Exception {
+        final Location from = new Location(LocationType.STATION, "Berlin Hbf", null, "Berlin Hbf");
+        final Location to = new Location(LocationType.ANY, null, null, "mainz hbf");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
+        assertEquals(QueryTripsResult.Status.OK, result.status);
+        print(result);
+    }
+
+    @Test
     public void tripWithFootway() throws Exception {
         final Location from = new Location(LocationType.ADDRESS, null, Point.from1E6(52517139, 13388749), null,
                 "Berlin - Mitte, Unter den Linden 24");
