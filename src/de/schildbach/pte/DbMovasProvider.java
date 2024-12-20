@@ -36,6 +36,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -128,6 +130,7 @@ public final class DbMovasProvider extends AbstractNetworkProvider {
         }
     };
 
+    private static final int DEFAULT_MAX_DEPARTURES = 100;
     private static final int DEFAULT_MAX_LOCATIONS = 50;
     private static final int DEFAULT_MAX_DISTANCE = 10000;
 
@@ -138,13 +141,16 @@ public final class DbMovasProvider extends AbstractNetworkProvider {
 
     private TimeZone timeZone = TimeZone.getTimeZone("CET");
 
+    private static final Pattern P_SPLIT_NAME_FIRST_COMMA = Pattern.compile("([^,]*), (.*)");
+    private static final Pattern P_SPLIT_NAME_ONE_COMMA = Pattern.compile("([^,]*), ([^,]*)");
+
     public DbMovasProvider() {
         super(NetworkId.DBMOVAS);
         this.departureEndpoint = API_BASE.newBuilder().addPathSegments("bahnhofstafel/abfahrt").build();
         this.tripEndpoint = API_BASE.newBuilder().addPathSegments("angebote/fahrplan").build();
         this.locationsEndpoint = API_BASE.newBuilder().addPathSegments("location/search").build();
         this.nearbyEndpoint = API_BASE.newBuilder().addPathSegments("location/nearby").build();
-        this.resultHeader = new ResultHeader(network, "dbmovas");
+        this.resultHeader = new ResultHeader(network, "DB (movas)");
     }
 
     private String doRequest(final HttpUrl url, final String body, final String contentType) throws IOException {
@@ -266,6 +272,23 @@ public final class DbMovasProvider extends AbstractNetworkProvider {
                 .collect(Collectors.joining(", "));
     }
 
+    protected String[] splitPlaceAndName(final String placeAndName, final Pattern p, final int place, final int name) {
+        if (placeAndName == null)
+            return new String[] { null, null };
+        final Matcher m = p.matcher(placeAndName);
+        if (m.matches())
+            return new String[] { m.group(place), m.group(name) };
+        return new String[] { null, placeAndName };
+    }
+
+    protected String[] splitStationName(final String name) {
+        return splitPlaceAndName(name, P_SPLIT_NAME_ONE_COMMA, 2, 1);
+    }
+
+    protected String[] splitAddress(final String address) {
+        return splitPlaceAndName(address, P_SPLIT_NAME_FIRST_COMMA, 1, 2);
+    }
+
     private Location parseLocation(JSONObject loc) {
         if (loc == null)
             return null;
@@ -291,15 +314,12 @@ public final class DbMovasProvider extends AbstractNetworkProvider {
 
     private Location parseLocation(final LocationType type, final String id, final Point coord, String name,
             final Set<Product> products) {
-        String place = null;
-        if (name != null) {
-            int lastComma = name.lastIndexOf(", ");
-            if (lastComma > -1) {
-                place = name.substring(lastComma + 2);
-                name = name.substring(0, lastComma);
-            }
-        }
-        return new Location(type, id, coord, place, name, products);
+        final String[] placeAndName = type == LocationType.STATION ? splitStationName(name) : splitAddress(name);
+        return new Location(type, id, coord, placeAndName[0], placeAndName[1], products);
+    }
+
+    private Location parseDirection(final JSONObject dep) {
+        return parseLocation(LocationType.STATION, null, null, dep.optString("richtung", null), null);
     }
 
     private List<Location> parseLocations(final JSONArray locs) throws JSONException {
@@ -391,10 +411,6 @@ public final class DbMovasProvider extends AbstractNetworkProvider {
         return out;
     }
 
-    private Location parseDirection(final JSONObject dep) {
-        return parseLocation(LocationType.STATION, null, null, dep.optString("richtung", null), null);
-    }
-
     private int[] parseCapacity(final JSONObject e) throws JSONException {
         final JSONArray auslastungen = e.optJSONArray("auslastungsInfos");
         int[] out = { 0, 0 };
@@ -434,9 +450,11 @@ public final class DbMovasProvider extends AbstractNetworkProvider {
             return new Trip.Public(line, destination, departureStop, arrivalStop, intermediateStops, null, message);
         } else {
             final int dist = abschnitt.optInt("distanz");
-            return new Trip.Individual(dist == 0 ? Trip.Individual.Type.TRANSFER : Trip.Individual.Type.WALK,
+            return new Trip.Individual(Trip.Individual.Type.WALK,
                     departureStop.location,
-                    departureStop.getDepartureTime(), arrivalStop.location, arrivalStop.getArrivalTime(),
+                    departureStop.getDepartureTime(),
+                    arrivalStop.location,
+                    departureStop.location.equals(arrivalStop.location) ? departureStop.getDepartureTime() : arrivalStop.getArrivalTime(),
                     null, dist);
         }
     }
@@ -470,26 +488,22 @@ public final class DbMovasProvider extends AbstractNetworkProvider {
     }
 
     private QueryTripsResult doQueryTrips(Location from, @Nullable Location via, Location to, Date time, boolean dep,
-            @Nullable TripOptions options, final @Nullable String context) throws IOException {
+            @Nullable Set<Product> products, final boolean bike, final @Nullable String context) throws IOException {
         // TODO minUmstiegsdauer instead of walkSpeed ?
         // accessibility, optimize not supported
 
         final String deparr = dep ? "ABFAHRT" : "ANKUNFT";
-        final String products = "\"verkehrsmittel\":["
-                + formatProducts(options != null ? options.products : null)
-                + "]";
+        final String productsStr = "\"verkehrsmittel\":[" + formatProducts(products) + "]";
         final String viaLocations = via != null
-                ? "\"viaLocations\":[{\"locationId\": \"" + formatLid(via) + "\"," + products + "}],"
+                ? "\"viaLocations\":[{\"locationId\": \"" + formatLid(via) + "\"," + productsStr + "}],"
                 : "";
-        final String bike = options != null && options.flags != null && options.flags.contains(TripFlag.BIKE)
-                ? "\"fahrradmitnahme\":true,"
-                : "";
+        final String bikeStr = bike ? "\"fahrradmitnahme\":true," : "";
         final String ctxStr = context != null ? "\"context\": \"" + context + "\"," : "";
         final String request = "{\"autonomeReservierung\":false,\"einstiegsTypList\":[\"STANDARD\"],\"klasse\":\"KLASSE_2\"," //
                 + "\"reiseHin\":{\"wunsch\":{\"abgangsLocationId\": \"" + formatLid(from) + "\"," //
-                + products + "," //
+                + productsStr + "," //
                 + viaLocations //
-                + bike //
+                + bikeStr //
                 + ctxStr //
                 + "\"zeitWunsch\":{\"reiseDatum\":\"" + formatIso8601WOffset(time) + "\",\"zeitPunktArt\":\"" + deparr //
                 + "\"}," //
@@ -532,7 +546,7 @@ public final class DbMovasProvider extends AbstractNetworkProvider {
                         new Trip(verbindung.optString("kontext").split("#")[0], tripFrom, tripTo, legs, fares, capacity,
                                 transfers == -1 ? null : transfers));
             }
-            final DbMovasContext ctx = new DbMovasContext(from, via, to, time, dep, options,
+            final DbMovasContext ctx = new DbMovasContext(from, via, to, time, dep, products, bike,
                     res.optString("spaeterContext"), res.optString("frueherContext"));
             return new QueryTripsResult(this.resultHeader, null, from, via, to, ctx, trips);
         } catch (InternalErrorException | BlockedException e) {
@@ -589,6 +603,8 @@ public final class DbMovasProvider extends AbstractNetworkProvider {
     public QueryDeparturesResult queryDepartures(String stationId, @Nullable Date time, int maxDepartures,
             boolean equivs)
             throws IOException {
+        if (maxDepartures == 0)
+            maxDepartures = DEFAULT_MAX_DEPARTURES;
         final Calendar c = new GregorianCalendar(timeZone);
         c.setTime(time);
 
@@ -600,11 +616,10 @@ public final class DbMovasProvider extends AbstractNetworkProvider {
         final HttpUrl url = this.departureEndpoint;
         final String contentType = "application/x.db.vendo.mob.bahnhofstafeln.v2+json";
 
-        final ResultHeader h = new ResultHeader(NetworkId.DBMOVAS, contentType);
         String page = null;
         try {
             page = doRequest(url, request, contentType);
-            final QueryDeparturesResult result = new QueryDeparturesResult(h);
+            final QueryDeparturesResult result = new QueryDeparturesResult(this.resultHeader);
             final JSONObject head = new JSONObject(page);
             final JSONArray deps = head.getJSONArray("bahnhofstafelAbfahrtPositionen");
             int added = 0;
@@ -612,14 +627,15 @@ public final class DbMovasProvider extends AbstractNetworkProvider {
                 final JSONObject dep = deps.getJSONObject(i);
 
                 final Location l = parseLocation(dep.optJSONObject("abfrageOrt"));
+                if (!equivs && !stationId.equals(l.id)) {
+                    continue;
+                }
                 StationDepartures stationDepartures = result.findStationDepartures(l.id);
                 if (stationDepartures == null) {
                     stationDepartures = new StationDepartures(l, new ArrayList<Departure>(8), null);
                     result.stationDepartures.add(stationDepartures);
                 }
-                if (!equivs && l.id != stationId) {
-                    continue;
-                }
+
                 final Stop stop = parseStop(dep, l);
                 final Departure departure = new Departure(
                         stop.plannedDepartureTime,
@@ -687,7 +703,10 @@ public final class DbMovasProvider extends AbstractNetworkProvider {
     @Override
     public QueryTripsResult queryTrips(Location from, @Nullable Location via, Location to, Date date, boolean dep,
             @Nullable TripOptions options) throws IOException {
-        return doQueryTrips(from, via, to, date, dep, options, null);
+        return doQueryTrips(from, via, to, date, dep,
+                options != null ? options.products : null,
+                options != null && options.flags != null && options.flags.contains(TripFlag.BIKE),
+                null);
     }
 
     @Override
@@ -701,7 +720,7 @@ public final class DbMovasProvider extends AbstractNetworkProvider {
         } else {
             return new QueryTripsResult(this.resultHeader, QueryTripsResult.Status.NO_TRIPS);
         }
-        return doQueryTrips(ctx.from, ctx.via, ctx.to, ctx.date, ctx.dep, ctx.options, ctxToken);
+        return doQueryTrips(ctx.from, ctx.via, ctx.to, ctx.date, ctx.dep, ctx.products, ctx.bike, ctxToken);
     }
 
     @Override
@@ -709,22 +728,29 @@ public final class DbMovasProvider extends AbstractNetworkProvider {
         return CAPABILITIES.contains(capability);
     }
 
+    @Override
+    public Set<Product> defaultProducts() {
+        return Product.ALL;
+    }
+
     private static class DbMovasContext implements QueryTripsContext {
         public final Location from, via, to;
         public final Date date;
         public final boolean dep;
-        public final TripOptions options;
+        public final Set<Product> products;
+        public final boolean bike;
         public final String laterContext, earlierContext;
 
         public DbMovasContext(final Location from, final @Nullable Location via, final Location to, final Date date,
-                final boolean dep, final TripOptions options, final String laterContext,
+                final boolean dep, final Set<Product> products, final boolean bike, final String laterContext,
                 final String earlierContext) {
             this.from = from;
             this.via = via;
             this.to = to;
             this.date = date;
             this.dep = dep;
-            this.options = options;
+            this.products = products;
+            this.bike = bike;
             this.laterContext = laterContext;
             this.earlierContext = earlierContext;
         }

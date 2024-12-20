@@ -68,7 +68,7 @@ public class DbMovasProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void queryDepartures() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("692991", true);
+        final QueryDeparturesResult result = queryDepartures("692991", false);
         print(result);
     }
 
@@ -114,6 +114,7 @@ public class DbMovasProviderLiveTest extends AbstractProviderLiveTest {
         final Location from = new Location(LocationType.STATION, "8011160", null, "Berlin Hbf");
         final Location to = new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf");
         final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
+        assertEquals(QueryTripsResult.Status.OK, result.status);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
@@ -132,6 +133,7 @@ public class DbMovasProviderLiveTest extends AbstractProviderLiveTest {
         final Location to = new Location(LocationType.STATION, "623234", Point.from1E6(48000221, 11342490), null,
                 "Tutzinger-Hof-Platz, Starnberg");
         final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
+        assertEquals(QueryTripsResult.Status.OK, result.status);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
@@ -142,6 +144,7 @@ public class DbMovasProviderLiveTest extends AbstractProviderLiveTest {
         final Location from = new Location(LocationType.STATION, "513729", null, "Schillerplatz, Kaiserslautern");
         final Location to = new Location(LocationType.STATION, "403631", null, "Trippstadt Grundschule");
         final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
+        assertEquals(QueryTripsResult.Status.OK, result.status);
         print(result);
     }
 
@@ -152,8 +155,10 @@ public class DbMovasProviderLiveTest extends AbstractProviderLiveTest {
         final Location to = new Location(LocationType.ADDRESS, null, Point.from1E6(47994243, 11338543), null,
                 "Starnberg, Possenhofener Straße 13");
         final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
+        assertEquals(QueryTripsResult.Status.OK, result.status);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+        assertEquals(QueryTripsResult.Status.OK, laterResult.status);
         print(laterResult);
     }
 
@@ -164,8 +169,8 @@ public class DbMovasProviderLiveTest extends AbstractProviderLiveTest {
         final Location from = new Location(LocationType.STATION, "8506131", null, "Kreuzlingen");
         final Location to = new Location(LocationType.STATION, "8003400", null, "Konstanz");
         final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, options);
-        print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
+        print(result);
     }
 
     @Test
