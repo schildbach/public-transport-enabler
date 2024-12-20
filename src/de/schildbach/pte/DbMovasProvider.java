@@ -91,23 +91,30 @@ public final class DbMovasProvider extends AbstractNetworkProvider {
         {
             put("HOCHGESCHWINDIGKEITSZUEGE", Product.HIGH_SPEED_TRAIN);
             put("INTERCITYUNDEUROCITYZUEGE", Product.HIGH_SPEED_TRAIN);
+            put("INTERREGIOUNDSCHNELLZUEGE", Product.HIGH_SPEED_TRAIN);
+            put("NAHVERKEHRSONSTIGEZUEGE", Product.REGIONAL_TRAIN);
+            put("SBAHNEN", Product.SUBURBAN_TRAIN);
+            put("BUSSE", Product.BUS);
+            put("SCHIFFE", Product.FERRY);
+            put("UBAHN", Product.SUBWAY);
+            put("STRASSENBAHN", Product.TRAM);
+            put("ANRUFPFLICHTIGEVERKEHRE", Product.ON_DEMAND);
+        }
+    };
+
+    private static final Map<String, Product> SHORT_PRODUCTS_MAP = new LinkedHashMap<String, Product>() {
+        {
             put("ICE", Product.HIGH_SPEED_TRAIN);
             put("IC_EC", Product.HIGH_SPEED_TRAIN);
             put("IC", Product.HIGH_SPEED_TRAIN);
             put("EC", Product.HIGH_SPEED_TRAIN);
-            put("INTERREGIOUNDSCHNELLZUEGE", Product.HIGH_SPEED_TRAIN);
             put("IR", Product.HIGH_SPEED_TRAIN);
-            put("NAHVERKEHRSONSTIGEZUEGE", Product.REGIONAL_TRAIN);
             put("RB", Product.REGIONAL_TRAIN);
             put("RE", Product.REGIONAL_TRAIN);
-            put("SBAHNEN", Product.SUBURBAN_TRAIN);
             put("SBAHN", Product.SUBURBAN_TRAIN);
-            put("BUSSE", Product.BUS);
             put("BUS", Product.BUS);
-            put("SCHIFFE", Product.FERRY);
             put("SCHIFF", Product.FERRY);
             put("UBAHN", Product.SUBWAY);
-            put("STRASSENBAHN", Product.TRAM);
             put("STR", Product.TRAM);
             put("ANRUFPFLICHTIGEVERKEHRE", Product.ON_DEMAND);
         }
@@ -243,8 +250,7 @@ public final class DbMovasProvider extends AbstractNetworkProvider {
         if (products == null)
             return "\"ALL\"";
         return products.stream()
-                .map(p -> PRODUCTS_MAP.entrySet().stream().filter(e -> e.getValue() == p).findFirst().orElse(null))
-                .filter(p -> p != null)
+                .flatMap(p -> PRODUCTS_MAP.entrySet().stream().filter(e -> e.getValue() == p))
                 .map(p -> "\"" + p.getKey() + "\"")
                 .collect(Collectors.joining(", "));
     }
@@ -319,7 +325,10 @@ public final class DbMovasProvider extends AbstractNetworkProvider {
     }
 
     private Location parseDirection(final JSONObject dep) {
-        return parseLocation(LocationType.STATION, null, null, dep.optString("richtung", null), null);
+        final String richtung = dep.optString("richtung", null);
+        if (richtung == null)
+            return null;
+        return parseLocation(LocationType.STATION, null, null, richtung, null);
     }
 
     private List<Location> parseLocations(final JSONArray locs) throws JSONException {
@@ -354,7 +363,7 @@ public final class DbMovasProvider extends AbstractNetworkProvider {
 
     private Line parseLine(final JSONObject e) {
         // TODO attrs, messages
-        final Product p = PRODUCTS_MAP.get(e.optString("produktGattung", null));
+        final Product p = SHORT_PRODUCTS_MAP.get(e.optString("produktGattung", null));
         final String name = Optional.ofNullable(e.optString("langtext", null)).orElse(e.optString("mitteltext", null));
         String shortName = e.optString("mitteltext", null);
         if (shortName != null && (p == Product.BUS || p == Product.TRAM)) {
@@ -432,7 +441,8 @@ public final class DbMovasProvider extends AbstractNetworkProvider {
     private Trip.Leg parseLeg(final JSONObject abschnitt) throws JSONException {
         Stop departureStop = null;
         Stop arrivalStop = null;
-        final boolean isPublicTransportLeg = "FAHRZEUG".equals(abschnitt.optString("typ"));
+        final String typ = abschnitt.optString("typ", null);
+        final boolean isPublicTransportLeg = "FAHRZEUG".equals(typ);
         final List<Stop> intermediateStops = parseStops(abschnitt.optJSONArray("halte"));
         if (intermediateStops != null && intermediateStops.size() >= 2 && isPublicTransportLeg) {
             final int size = intermediateStops.size();
@@ -451,11 +461,14 @@ public final class DbMovasProvider extends AbstractNetworkProvider {
             return new Trip.Public(line, destination, departureStop, arrivalStop, intermediateStops, null, message);
         } else {
             final int dist = abschnitt.optInt("distanz");
-            return new Trip.Individual(Trip.Individual.Type.WALK,
+            return new Trip.Individual(
+                    "TRANSFER".equals(typ) ? Trip.Individual.Type.TRANSFER : Trip.Individual.Type.WALK,
                     departureStop.location,
                     departureStop.getDepartureTime(),
                     arrivalStop.location,
-                    departureStop.location.equals(arrivalStop.location) ? departureStop.getDepartureTime() : arrivalStop.getArrivalTime(),
+                    departureStop.location.equals(arrivalStop.location)
+                            ? departureStop.getDepartureTime()
+                            : arrivalStop.getArrivalTime(),
                     null, dist);
         }
     }
@@ -468,7 +481,7 @@ public final class DbMovasProvider extends AbstractNetworkProvider {
                 .map(gesamt -> gesamt.optJSONObject("ab"));
         if (ab.isPresent()) {
             fares.add(new Fare(
-                    "ab", Fare.Type.ADULT, ParserUtils.getCurrency(ab.get().optString("waehrung")),
+                    "ab", Fare.Type.ADULT, ParserUtils.getCurrency(ab.get().optString("waehrung", "EUR")),
                     (float) ab.get().optDouble("betrag"), null, null));
         }
         return fares;
@@ -479,7 +492,7 @@ public final class DbMovasProvider extends AbstractNetworkProvider {
         try {
             final JSONObject res = new JSONObject(e.getBodyPeek().toString());
             final JSONObject details = res.optJSONObject("details");
-            code = res.optString("code");
+            code = res.optString("code", null);
             if (details != null) {
                 code = details.optString("typ", code);
             }
@@ -547,8 +560,11 @@ public final class DbMovasProvider extends AbstractNetworkProvider {
                         new Trip(verbindung.optString("kontext").split("#")[0], tripFrom, tripTo, legs, fares, capacity,
                                 transfers == -1 ? null : transfers));
             }
+            if (trips.isEmpty()) {
+                return new QueryTripsResult(this.resultHeader, QueryTripsResult.Status.NO_TRIPS);
+            }
             final DbMovasContext ctx = new DbMovasContext(from, via, to, time, dep, products, bike,
-                    res.optString("spaeterContext"), res.optString("frueherContext"));
+                    res.optString("spaeterContext", null), res.optString("frueherContext", null));
             return new QueryTripsResult(this.resultHeader, null, from, via, to, ctx, trips);
         } catch (InternalErrorException | BlockedException e) {
             final String code = parseErrorCode(e);
@@ -626,7 +642,9 @@ public final class DbMovasProvider extends AbstractNetworkProvider {
             int added = 0;
             for (int i = 0; i < deps.length(); i++) {
                 final JSONObject dep = deps.getJSONObject(i);
-
+                if (parseCancelled(dep)) {
+                    continue;
+                }
                 final Location l = parseLocation(dep.optJSONObject("abfrageOrt"));
                 if (!equivs && !stationId.equals(l.id)) {
                     continue;

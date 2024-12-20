@@ -144,7 +144,7 @@ public class DbMovasProviderLiveTest extends AbstractProviderLiveTest {
         final Location from = new Location(LocationType.STATION, "513729", null, "Schillerplatz, Kaiserslautern");
         final Location to = new Location(LocationType.STATION, "403631", null, "Trippstadt Grundschule");
         final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
-        assertEquals(QueryTripsResult.Status.OK, result.status);
+        assertEquals(QueryTripsResult.Status.NO_TRIPS, result.status);
         print(result);
     }
 
@@ -182,13 +182,11 @@ public class DbMovasProviderLiveTest extends AbstractProviderLiveTest {
     }
 
     @Test
-    @Ignore
-    // returns empty list
     public void tripsTooClose() throws Exception {
         final Location location = new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf");
         final QueryTripsResult result = queryTrips(location, null, location, new Date(), true, null);
         print(result);
-        assertEquals(QueryTripsResult.Status.TOO_CLOSE, result.status);
+        assertEquals(QueryTripsResult.Status.NO_TRIPS, result.status);
     }
 
     @Test
