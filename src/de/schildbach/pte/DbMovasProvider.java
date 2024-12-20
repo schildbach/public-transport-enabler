@@ -345,14 +345,15 @@ public final class DbMovasProvider extends AbstractNetworkProvider {
         }
     }
 
-    private List<String> parseMessages(final JSONObject e) throws JSONException {
+    private String parseMessages(final JSONObject e) throws JSONException {
         final List<String> messages = new ArrayList<>();
         parseMessages(e.optJSONArray("echtzeitNotizen"), messages);
         parseMessages(e.optJSONArray("himNotizen"), messages);
-        return messages;
+        return messages.isEmpty() ? null : String.join(" – ", messages);
     }
 
     private Line parseLine(final JSONObject e) {
+        // TODO attrs, messages
         final Product p = PRODUCTS_MAP.get(e.optString("produktGattung", null));
         final String name = Optional.ofNullable(e.optString("langtext", null)).orElse(e.optString("mitteltext", null));
         String shortName = e.optString("mitteltext", null);
@@ -446,7 +447,7 @@ public final class DbMovasProvider extends AbstractNetworkProvider {
         if (isPublicTransportLeg) {
             final Line line = parseLine(abschnitt);
             final Location destination = parseDirection(abschnitt);
-            final String message = String.join(" – ", parseMessages(abschnitt));
+            final String message = parseMessages(abschnitt);
             return new Trip.Public(line, destination, departureStop, arrivalStop, intermediateStops, null, message);
         } else {
             final int dist = abschnitt.optInt("distanz");
@@ -644,7 +645,7 @@ public final class DbMovasProvider extends AbstractNetworkProvider {
                         Optional.ofNullable(stop.predictedDeparturePosition).orElse(stop.plannedDeparturePosition),
                         parseDirection(dep),
                         null,
-                        String.join(" – ", parseMessages(dep)));
+                        parseMessages(dep));
 
                 stationDepartures.departures.add(departure);
                 added += 1;
