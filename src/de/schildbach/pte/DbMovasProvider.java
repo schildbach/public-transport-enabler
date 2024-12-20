@@ -328,8 +328,7 @@ public final class DbMovasProvider extends AbstractNetworkProvider {
         final String richtung = dep.optString("richtung", null);
         if (richtung == null)
             return null;
-        // arbitrary ID is tolerated by backend if name matches
-        return parseLocation(LocationType.STATION, richtung, null, richtung, null);
+        return parseLocation(LocationType.STATION, null, null, richtung, null);
     }
 
     private List<Location> parseLocations(final JSONArray locs) throws JSONException {
