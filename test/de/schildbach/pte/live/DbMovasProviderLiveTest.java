@@ -68,7 +68,7 @@ public class DbMovasProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void queryDepartures() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("692991", false);
+        final QueryDeparturesResult result = queryDepartures("692990", false);
         print(result);
     }
 
@@ -105,7 +105,7 @@ public class DbMovasProviderLiveTest extends AbstractProviderLiveTest {
         final SuggestLocationsResult result = suggestLocations("München, Friedenstraße 2");
         print(result);
         assertThat(result.getLocations(), hasItem(new Location(LocationType.ADDRESS,
-                "980879740",
+                "A=2@O=München - Berg am Laim, Friedenstraße 2@H=2@X=11602251@Y=48123949@U=92@L=980879740@B=1@p=1706613073@",
                 "München - Berg am Laim", "Friedenstraße 2")));
     }
 
@@ -150,8 +150,8 @@ public class DbMovasProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void ambiguousTrips() throws Exception {
-        final Location from = new Location(LocationType.STATION, "Berlin Hbf", null, "Berlin Hbf");
-        final Location to = new Location(LocationType.ANY, null, null, "mainz hbf");
+        final Location from = new Location(LocationType.STATION, null, null, "berlin hbf");
+        final Location to = new Location(LocationType.ADDRESS, "A=2@O=München - Berg am Laim, Friedenstraße 2@X=11602251@Y=48123949@U=103@L=980857648@B=1@p=1378873973@", null, "irrelevant");
         final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         print(result);
