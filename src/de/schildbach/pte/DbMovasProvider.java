@@ -72,7 +72,7 @@ import de.schildbach.pte.util.ParserUtils;
 import okhttp3.HttpUrl;
 
 /**
- * Provider implementation for Deutsche Bahn (Germany).
+ * Provider implementation for new API of Deutsche Bahn (Germany).
  * 
  * @author Andreas Schildbach
  */
@@ -199,6 +199,9 @@ public final class DbMovasProvider extends AbstractNetworkProvider {
     }
 
     private String formatLid(final Location loc) {
+        if (loc.id != null && loc.id.startsWith("A=") && loc.id.contains("@")) {
+            return loc.id;
+        }
         final String typeId = ID_LOCATION_TYPE_MAP
                 .entrySet()
                 .stream()
@@ -228,7 +231,7 @@ public final class DbMovasProvider extends AbstractNetworkProvider {
 
     private Location parseLid(final String loc) {
         if (loc == null)
-            return null;
+            return new Location(LocationType.STATION, null);
         final Map<String, String> props = Arrays.stream(loc.split("@"))
                 .map(chunk -> chunk.split("="))
                 .filter(e -> e.length == 2)
@@ -239,7 +242,7 @@ public final class DbMovasProvider extends AbstractNetworkProvider {
         } catch (Exception e) {
         }
         return new Location(
-                Optional.ofNullable(ID_LOCATION_TYPE_MAP.get(props.get("A"))).orElse(LocationType.ADDRESS),
+                Optional.ofNullable(ID_LOCATION_TYPE_MAP.get(props.get("A"))).orElse(LocationType.ANY),
                 props.get("L"),
                 coord,
                 null,
@@ -269,7 +272,7 @@ public final class DbMovasProvider extends AbstractNetworkProvider {
     }
 
     private String formatLocationTypes(Set<LocationType> types) {
-        if (types == null)
+        if (types == null || types.contains(LocationType.ANY))
             return "\"" + LOCATION_TYPE_MAP.get(LocationType.ANY) + "\"";
         return types.stream()
                 .map(t -> LOCATION_TYPE_MAP.get(t))
@@ -298,7 +301,11 @@ public final class DbMovasProvider extends AbstractNetworkProvider {
     private Location parseLocation(JSONObject loc) {
         if (loc == null)
             return null;
-        final Location lid = parseLid(loc.optString("locationId", null));
+        final String lidStr = loc.optString("locationId", null);
+        final Location lid = parseLid(lidStr);
+        final String id = lid.type == LocationType.STATION
+                ? Optional.ofNullable(loc.optString("evaNr", null)).orElse(lid.id)
+                : lidStr;
         Point coord = null;
         JSONObject pos = loc.optJSONObject("coordinates");
         if (pos == null) {
@@ -312,7 +319,7 @@ public final class DbMovasProvider extends AbstractNetworkProvider {
 
         return parseLocation(
                 lid.type,
-                Optional.ofNullable(loc.optString("evaNr", null)).orElse(lid.id),
+                id,
                 coord,
                 loc.optString("name", null),
                 parseProducts(loc.optJSONArray("products")));
@@ -623,6 +630,7 @@ public final class DbMovasProvider extends AbstractNetworkProvider {
     public QueryDeparturesResult queryDepartures(String stationId, @Nullable Date time, int maxDepartures,
             boolean equivs)
             throws IOException {
+        // TODO only 1 hour of results returned, find secret parameter?
         if (maxDepartures == 0)
             maxDepartures = DEFAULT_MAX_DEPARTURES;
         final Calendar c = new GregorianCalendar(timeZone);
