@@ -24,9 +24,9 @@ import static org.junit.Assert.assertThat;
 import java.util.Date;
 import java.util.EnumSet;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
-import de.schildbach.pte.AbstractHafasClientInterfaceProvider;
 import de.schildbach.pte.DbProvider;
 import de.schildbach.pte.NetworkProvider.Accessibility;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
@@ -45,8 +45,7 @@ import de.schildbach.pte.dto.TripOptions;
  */
 public class DbProviderLiveTest extends AbstractProviderLiveTest {
     public DbProviderLiveTest() {
-        super(new DbProvider(secretProperty("db.api_authorization"), AbstractHafasClientInterfaceProvider
-                .decryptSalt(secretProperty("db.encrypted_salt"), secretProperty("hci.salt_encryption_key"))));
+        super(new DbProvider());
     }
 
     @Test
@@ -56,6 +55,8 @@ public class DbProviderLiveTest extends AbstractProviderLiveTest {
     }
 
     @Test
+    @Ignore
+    // TODO not supported
     public void nearbyPOIsByCoordinate() throws Exception {
         final NearbyLocationsResult result = queryNearbyLocations(EnumSet.of(LocationType.POI),
                 Location.coord(Point.fromDouble(52.5304903, 13.3791152)));
@@ -67,7 +68,7 @@ public class DbProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void queryDepartures() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("692991", false);
+        final QueryDeparturesResult result = queryDepartures("692990", false);
         print(result);
     }
 
@@ -104,7 +105,7 @@ public class DbProviderLiveTest extends AbstractProviderLiveTest {
         final SuggestLocationsResult result = suggestLocations("München, Friedenstraße 2");
         print(result);
         assertThat(result.getLocations(), hasItem(new Location(LocationType.ADDRESS,
-                "A=2@O=München - Berg am Laim, Friedenstraße 2@X=11602251@Y=48123949@U=103@L=980857648@B=1@p=1378873973@",
+                "A=2@O=München - Berg am Laim, Friedenstraße 2@H=2@X=11602251@Y=48123949@U=92@L=980879740@B=1@p=1706613073@",
                 "München - Berg am Laim", "Friedenstraße 2")));
     }
 
@@ -113,6 +114,7 @@ public class DbProviderLiveTest extends AbstractProviderLiveTest {
         final Location from = new Location(LocationType.STATION, "8011160", null, "Berlin Hbf");
         final Location to = new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf");
         final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
+        assertEquals(QueryTripsResult.Status.OK, result.status);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
@@ -131,6 +133,7 @@ public class DbProviderLiveTest extends AbstractProviderLiveTest {
         final Location to = new Location(LocationType.STATION, "623234", Point.from1E6(48000221, 11342490), null,
                 "Tutzinger-Hof-Platz, Starnberg");
         final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
+        assertEquals(QueryTripsResult.Status.OK, result.status);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
         print(laterResult);
@@ -141,6 +144,18 @@ public class DbProviderLiveTest extends AbstractProviderLiveTest {
         final Location from = new Location(LocationType.STATION, "513729", null, "Schillerplatz, Kaiserslautern");
         final Location to = new Location(LocationType.STATION, "403631", null, "Trippstadt Grundschule");
         final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
+        assertEquals(QueryTripsResult.Status.NO_TRIPS, result.status);
+        print(result);
+    }
+
+    @Test
+    public void ambiguousTrips() throws Exception {
+        final Location from = new Location(LocationType.STATION, null, null, "berlin hbf");
+        final Location to = new Location(LocationType.ADDRESS,
+                "A=2@O=München - Berg am Laim, Friedenstraße 2@X=11602251@Y=48123949@U=103@L=980857648@B=1@p=1378873973@",
+                null, "irrelevant");
+        final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
+        assertEquals(QueryTripsResult.Status.OK, result.status);
         print(result);
     }
 
@@ -151,8 +166,10 @@ public class DbProviderLiveTest extends AbstractProviderLiveTest {
         final Location to = new Location(LocationType.ADDRESS, null, Point.from1E6(47994243, 11338543), null,
                 "Starnberg, Possenhofener Straße 13");
         final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
+        assertEquals(QueryTripsResult.Status.OK, result.status);
         print(result);
         final QueryTripsResult laterResult = queryMoreTrips(result.context, true);
+        assertEquals(QueryTripsResult.Status.OK, laterResult.status);
         print(laterResult);
     }
 
@@ -163,8 +180,8 @@ public class DbProviderLiveTest extends AbstractProviderLiveTest {
         final Location from = new Location(LocationType.STATION, "8506131", null, "Kreuzlingen");
         final Location to = new Location(LocationType.STATION, "8003400", null, "Konstanz");
         final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, options);
-        print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
+        print(result);
     }
 
     @Test
@@ -180,7 +197,7 @@ public class DbProviderLiveTest extends AbstractProviderLiveTest {
         final Location location = new Location(LocationType.STATION, "8010205", null, "Leipzig Hbf");
         final QueryTripsResult result = queryTrips(location, null, location, new Date(), true, null);
         print(result);
-        assertEquals(QueryTripsResult.Status.TOO_CLOSE, result.status);
+        assertEquals(QueryTripsResult.Status.NO_TRIPS, result.status);
     }
 
     @Test
