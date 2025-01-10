@@ -236,8 +236,10 @@ public final class HttpClient {
         final Request.Builder request = new Request.Builder();
         request.url(url);
         request.headers(Headers.of(headers));
-        if (postRequest != null)
-            request.post(RequestBody.create(MediaType.parse(requestContentType), postRequest));
+        if (postRequest != null) {
+            final MediaType m = requestContentType != null ? MediaType.parse(requestContentType) : null;
+            request.post(RequestBody.create(m, postRequest));
+        }
         request.header("Accept", SCRAPE_ACCEPT);
         if (userAgent != null)
             request.header("User-Agent", userAgent);
