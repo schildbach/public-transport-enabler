@@ -157,14 +157,16 @@ public final class DbProvider extends AbstractNetworkProvider {
         this.tripEndpoint = API_BASE.newBuilder().addPathSegments("angebote/fahrplan").build();
         this.locationsEndpoint = API_BASE.newBuilder().addPathSegments("location/search").build();
         this.nearbyEndpoint = API_BASE.newBuilder().addPathSegments("location/nearby").build();
-        this.resultHeader = new ResultHeader(network, "DB (movas)");
+        this.resultHeader = new ResultHeader(network, "movas");
     }
 
     private String doRequest(final HttpUrl url, final String body, final String contentType) throws IOException {
+        // DB API requires these headers
+        // Content-Type must be exactly as passed below,
+        // passing it to httpClient.get would add charset suffix
         httpClient.setHeader("X-Correlation-ID", "null");
         httpClient.setHeader("Accept", contentType);
         httpClient.setHeader("Content-Type", contentType);
-        // Content-Type must be exactly as passed above (no charset)
         final CharSequence page = httpClient.get(url, body, null);
         return page.toString();
     }

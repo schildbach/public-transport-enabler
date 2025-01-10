@@ -151,7 +151,9 @@ public class DbProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void ambiguousTrips() throws Exception {
         final Location from = new Location(LocationType.STATION, null, null, "berlin hbf");
-        final Location to = new Location(LocationType.ADDRESS, "A=2@O=München - Berg am Laim, Friedenstraße 2@X=11602251@Y=48123949@U=103@L=980857648@B=1@p=1378873973@", null, "irrelevant");
+        final Location to = new Location(LocationType.ADDRESS,
+                "A=2@O=München - Berg am Laim, Friedenstraße 2@X=11602251@Y=48123949@U=103@L=980857648@B=1@p=1378873973@",
+                null, "irrelevant");
         final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         print(result);
