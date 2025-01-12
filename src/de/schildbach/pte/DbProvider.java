@@ -18,8 +18,9 @@
 package de.schildbach.pte;
 
 import java.io.IOException;
-import java.time.Instant;
-import java.time.format.DateTimeFormatter;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -185,16 +186,27 @@ public final class DbProvider extends AbstractNetworkProvider {
         return String.format(Locale.ENGLISH, "%02d:%02d", hour, minute);
     }
 
+    private static final DateFormat ISO_DATE_TIME_WOFFSET_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+
+    static {
+        ISO_DATE_TIME_WOFFSET_FORMAT.setTimeZone(TimeZone.getTimeZone("CET"));
+    }
+
     private String formatIso8601WOffset(final Date time) {
         if (time == null)
             return null;
-        return DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(time.toInstant().atZone(timeZone.toZoneId()));
+        return ISO_DATE_TIME_WOFFSET_FORMAT.format(time);
     }
+
 
     private Date parseIso8601WOffset(final String time) {
         if (time == null)
             return null;
-        return Date.from(Instant.from(DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(time)));
+        try {
+            return ISO_DATE_TIME_WOFFSET_FORMAT.parse(time);
+        } catch (final ParseException x) {
+            throw new RuntimeException(x);
+        }
     }
 
     private String createLidEntry(final String key, final Object value) {
