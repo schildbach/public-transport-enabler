@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -164,7 +165,7 @@ public final class DbProvider extends AbstractNetworkProvider {
         // DB API requires these headers
         // Content-Type must be exactly as passed below,
         // passing it to httpClient.get would add charset suffix
-        httpClient.setHeader("X-Correlation-ID", "null");
+        httpClient.setHeader("X-Correlation-ID", UUID.randomUUID() + "_" + UUID.randomUUID());
         httpClient.setHeader("Accept", contentType);
         httpClient.setHeader("Content-Type", contentType);
         final CharSequence page = httpClient.get(url, body, null);
