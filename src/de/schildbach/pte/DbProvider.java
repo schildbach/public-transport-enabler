@@ -36,6 +36,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.TimeZone;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -383,7 +384,14 @@ public final class DbProvider extends AbstractNetworkProvider {
         parseMessages(e.optJSONArray("himNotizen"), messages, null);
         // show very important static messages (e.g. on demand tel)
         parseMessages(e.optJSONArray("attributNotizen"), messages, 100);
-        return messages.isEmpty() ? null : String.join(" – ", messages);
+        return messages.isEmpty() ? null : join(" – ", messages);
+    }
+
+    // replace with String.join() at some point
+    private static String join(final CharSequence delimiter, final Iterable<? extends CharSequence> elements) {
+        final StringJoiner joiner = new StringJoiner(delimiter);
+        elements.forEach(joiner::add);
+        return joiner.toString();
     }
 
     private Line parseLine(final JSONObject e) {
