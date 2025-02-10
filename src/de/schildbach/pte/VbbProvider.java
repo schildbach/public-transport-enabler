@@ -99,7 +99,7 @@ public class VbbProvider extends AbstractHafasClientInterfaceProvider {
     protected String[] splitAddress(final String address) {
         final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(address);
         if (m.matches())
-            return new String[] { m.group(1), m.group(2) };
+            return new String[] { m.group(2), m.group(1) };
         return super.splitStationName(address);
     }
 
