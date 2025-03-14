@@ -49,7 +49,7 @@ public class PlProvider extends AbstractHafasClientInterfaceProvider {
         setApiClient(apiClient);
         setApiAuthorization(apiAuthorization);
         setSessionCookieName("SERVERID");
-        setUserAgent("Dalvik/2.1.0");
+        setUserAgent("Dalvik/2.1.0 (Linux; U; Android 15)");
     }
 
     private static final String[] PLACES = { "Warszawa", "Kraków" };
