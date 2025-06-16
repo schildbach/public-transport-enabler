@@ -41,7 +41,7 @@ public class NasaProvider extends AbstractHafasClientInterfaceProvider {
 
     public NasaProvider(final String apiClient, final String apiAuthorization) {
         super(NetworkId.NASA, API_BASE, PRODUCTS_MAP);
-        setApiVersion("1.15");
+        setApiVersion("1.21");
         setApiClient(apiClient);
         setApiAuthorization(apiAuthorization);
     }
