@@ -32,7 +32,7 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class ShProvider extends AbstractHafasClientInterfaceProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("https://nah.sh.hafas.de/bin/");
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://nahsh.hafas.cloud/");
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.BUS, Product.FERRY,
             Product.SUBWAY, Product.TRAM, Product.ON_DEMAND };
@@ -44,7 +44,8 @@ public class ShProvider extends AbstractHafasClientInterfaceProvider {
 
     public ShProvider(final String apiClient, final String apiAuthorization) {
         super(NetworkId.SH, API_BASE, PRODUCTS_MAP);
-        setApiVersion("1.18");
+        setApiEndpoint("gate");
+        setApiVersion("1.21");
         setApiClient(apiClient);
         setApiAuthorization(apiAuthorization);
         setStyles(STYLES);
