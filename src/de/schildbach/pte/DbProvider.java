@@ -560,7 +560,7 @@ public final class DbProvider extends AbstractNetworkProvider {
                 + "\"reservierungsKontingenteVorhanden\":false}";
 
         final HttpUrl url = this.tripEndpoint;
-        final String contentType = "application/x.db.vendo.mob.verbindungssuche.v8+json";
+        final String contentType = "application/x.db.vendo.mob.verbindungssuche.v9+json";
 
         String page = null;
         try {
