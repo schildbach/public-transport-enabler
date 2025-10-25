@@ -17,12 +17,12 @@
 
 package de.schildbach.pte;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Nullable;
 
-import com.google.common.base.Charsets;
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.Style;
@@ -41,7 +41,7 @@ public class GvhProvider extends AbstractEfaProvider {
 
     public GvhProvider(final HttpUrl apiBase) {
         super(NetworkId.GVH, apiBase);
-        setRequestUrlEncoding(Charsets.UTF_8);
+        setRequestUrlEncoding(StandardCharsets.UTF_8);
         setIncludeRegionId(false);
         setStyles(STYLES);
         setSessionCookieName("HASESSIONID");

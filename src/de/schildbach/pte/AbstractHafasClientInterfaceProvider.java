@@ -22,6 +22,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -48,7 +49,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.hash.HashCode;
@@ -886,14 +886,14 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
     private HttpUrl requestUrl(final String body) {
         final HttpUrl.Builder url = apiBase.newBuilder().addPathSegment(apiEndpoint);
         if (requestChecksumSalt != null) {
-            final HashCode checksum = MD5.newHasher().putString(body, Charsets.UTF_8).putBytes(requestChecksumSalt)
+            final HashCode checksum = MD5.newHasher().putString(body, StandardCharsets.UTF_8).putBytes(requestChecksumSalt)
                     .hash();
             url.addQueryParameter("checksum", checksum.toString());
         }
         if (requestMicMacSalt != null) {
-            final HashCode mic = MD5.newHasher().putString(body, Charsets.UTF_8).hash();
+            final HashCode mic = MD5.newHasher().putString(body, StandardCharsets.UTF_8).hash();
             url.addQueryParameter("mic", HEX.encode(mic.asBytes()));
-            final HashCode mac = MD5.newHasher().putString(HEX.encode(mic.asBytes()), Charsets.UTF_8)
+            final HashCode mac = MD5.newHasher().putString(HEX.encode(mic.asBytes()), StandardCharsets.UTF_8)
                     .putBytes(requestMicMacSalt).hash();
             url.addQueryParameter("mac", HEX.encode(mac.asBytes()));
         }

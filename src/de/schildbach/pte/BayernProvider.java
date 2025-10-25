@@ -20,6 +20,7 @@ package de.schildbach.pte;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +28,6 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 
 import de.schildbach.pte.dto.Line;
@@ -59,7 +59,7 @@ public class BayernProvider extends AbstractEfaProvider {
     public BayernProvider() {
         super(NetworkId.BAYERN, API_BASE, DEPARTURE_MONITOR_ENDPOINT, TRIP_ENDPOINT, STOP_FINDER_ENDPOINT, null);
 
-        setRequestUrlEncoding(Charsets.UTF_8);
+        setRequestUrlEncoding(StandardCharsets.UTF_8);
         setIncludeRegionId(false);
         setNumTripsRequested(12);
         setStyles(STYLES);

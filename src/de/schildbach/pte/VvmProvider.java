@@ -17,7 +17,6 @@
 
 package de.schildbach.pte;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
@@ -31,6 +30,7 @@ import okhttp3.HttpUrl;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Set;
 
@@ -47,7 +47,7 @@ public class VvmProvider extends AbstractEfaProvider {
 
     public VvmProvider() {
         super(NetworkId.VVM, API_BASE, DEPARTURE_MONITOR_ENDPOINT, TRIP_ENDPOINT, null, null);
-        setRequestUrlEncoding(Charsets.UTF_8);
+        setRequestUrlEncoding(StandardCharsets.UTF_8);
         setNeedsSpEncId(true);
     }
 

@@ -17,13 +17,12 @@
 
 package de.schildbach.pte;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Nullable;
-
-import com.google.common.base.Charsets;
 
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Location;
@@ -52,7 +51,7 @@ public class VrrProvider extends AbstractEfaProvider {
         setNeedsSpEncId(true);
         setUseRouteIndexAsTripId(false);
         setStyles(STYLES);
-        setRequestUrlEncoding(Charsets.UTF_8);
+        setRequestUrlEncoding(StandardCharsets.UTF_8);
         setUseLineRestriction(false);
         setSessionCookieName("vrr-ef-lb");
     }

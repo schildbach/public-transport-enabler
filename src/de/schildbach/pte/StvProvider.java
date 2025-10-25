@@ -20,12 +20,12 @@ package de.schildbach.pte;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Set;
 
 import javax.annotation.Nullable;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 
 import de.schildbach.pte.dto.Location;
@@ -47,7 +47,7 @@ public class StvProvider extends AbstractEfaProvider {
 
     public StvProvider() {
         super(NetworkId.STV, API_BASE);
-        setRequestUrlEncoding(Charsets.UTF_8);
+        setRequestUrlEncoding(StandardCharsets.UTF_8);
         setIncludeRegionId(false);
     }
 

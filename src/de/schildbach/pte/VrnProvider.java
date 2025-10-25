@@ -17,12 +17,11 @@
 
 package de.schildbach.pte;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Nullable;
-
-import com.google.common.base.Charsets;
 
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Product;
@@ -41,7 +40,7 @@ public class VrnProvider extends AbstractEfaProvider {
         super(NetworkId.VRN, API_BASE);
 
         setIncludeRegionId(false);
-        setRequestUrlEncoding(Charsets.UTF_8);
+        setRequestUrlEncoding(StandardCharsets.UTF_8);
         setStyles(STYLES);
     }
 

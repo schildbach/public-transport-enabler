@@ -17,12 +17,11 @@
 
 package de.schildbach.pte;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Nullable;
-
-import com.google.common.base.Charsets;
 
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Product;
@@ -43,7 +42,7 @@ public class KvvProvider extends AbstractEfaProvider {
 
     public KvvProvider(final HttpUrl apiBase) {
         super(NetworkId.KVV, apiBase);
-        setRequestUrlEncoding(Charsets.UTF_8);
+        setRequestUrlEncoding(StandardCharsets.UTF_8);
         setStyles(STYLES);
         setSessionCookieName("HASESSIONID");
     }

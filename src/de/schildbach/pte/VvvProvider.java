@@ -17,9 +17,9 @@
 
 package de.schildbach.pte;
 
-import com.google.common.base.Charsets;
-
 import okhttp3.HttpUrl;
+
+import java.nio.charset.StandardCharsets;
 
 /**
  * Verkehrsverbund Vogtland
@@ -31,6 +31,6 @@ public class VvvProvider extends AbstractEfaProvider {
 
     public VvvProvider() {
         super(NetworkId.VVV, API_BASE);
-        setRequestUrlEncoding(Charsets.UTF_8);
+        setRequestUrlEncoding(StandardCharsets.UTF_8);
     }
 }

@@ -17,13 +17,12 @@
 
 package de.schildbach.pte;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Nullable;
-
-import com.google.common.base.Charsets;
 
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.Style;
@@ -40,7 +39,7 @@ public class BsvagProvider extends AbstractEfaProvider {
     public BsvagProvider() {
         super(NetworkId.BSVAG, API_BASE);
 
-        setRequestUrlEncoding(Charsets.UTF_8);
+        setRequestUrlEncoding(StandardCharsets.UTF_8);
         setUseRouteIndexAsTripId(false);
         setStyles(STYLES);
         setSessionCookieName("HASESSIONID");

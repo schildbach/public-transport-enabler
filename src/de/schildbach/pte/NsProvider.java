@@ -17,9 +17,8 @@
 
 package de.schildbach.pte;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Set;
-
-import com.google.common.base.Charsets;
 
 import de.schildbach.pte.dto.Product;
 
@@ -36,7 +35,7 @@ public class NsProvider extends AbstractHafasLegacyProvider {
 
     public NsProvider() {
         super(NetworkId.NS, API_BASE, "nn", PRODUCTS_MAP);
-        setJsonNearbyLocationsEncoding(Charsets.UTF_8);
+        setJsonNearbyLocationsEncoding(StandardCharsets.UTF_8);
         setStationBoardHasLocation(true);
     }
 

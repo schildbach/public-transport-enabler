@@ -19,12 +19,12 @@ package de.schildbach.pte;
 
 import javax.annotation.Nullable;
 
-import com.google.common.base.Charsets;
-
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Product;
 
 import okhttp3.HttpUrl;
+
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author Andreas Schildbach
@@ -34,7 +34,7 @@ public class VblProvider extends AbstractEfaProvider {
 
     public VblProvider() {
         super(NetworkId.VBL, API_BASE);
-        setRequestUrlEncoding(Charsets.UTF_8);
+        setRequestUrlEncoding(StandardCharsets.UTF_8);
         setUseRouteIndexAsTripId(false);
     }
 

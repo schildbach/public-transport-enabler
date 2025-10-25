@@ -17,10 +17,10 @@
 
 package de.schildbach.pte;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.common.base.Charsets;
 import de.schildbach.pte.dto.Style;
 
 import okhttp3.HttpUrl;
@@ -34,7 +34,7 @@ public class LinzProvider extends AbstractEfaProvider {
 
     public LinzProvider() {
         super(NetworkId.LINZ, API_BASE);
-        setRequestUrlEncoding(Charsets.UTF_8);
+        setRequestUrlEncoding(StandardCharsets.UTF_8);
         setUseRouteIndexAsTripId(false);
         setStyles(STYLES);
     }
