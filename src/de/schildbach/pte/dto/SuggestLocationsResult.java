@@ -17,7 +17,7 @@
 
 package de.schildbach.pte.dto;
 
-import static com.google.common.base.Preconditions.checkState;
+import static de.schildbach.pte.util.Preconditions.checkState;
 import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
@@ -55,7 +55,8 @@ public final class SuggestLocationsResult implements Serializable {
     }
 
     public List<Location> getLocations() {
-        checkState(status == Status.OK, "no locations with status: {}", status);
+        checkState(status == Status.OK, () ->
+                "no locations with status: " + status);
         final List<Location> locations = new ArrayList<>(suggestedLocations.size());
         for (final SuggestedLocation location : suggestedLocations)
             locations.add(location.location);

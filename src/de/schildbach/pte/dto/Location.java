@@ -17,8 +17,8 @@
 
 package de.schildbach.pte.dto;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkState;
+import static de.schildbach.pte.util.Preconditions.checkArgument;
+import static de.schildbach.pte.util.Preconditions.checkState;
 import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
@@ -50,13 +50,15 @@ public final class Location implements Serializable {
         this.name = name;
         this.products = products;
 
-        checkArgument(id == null || id.length() > 0, "ID cannot be the empty string");
-        checkArgument(place == null || name != null, "place '%s' without name cannot exist", place);
+        checkArgument(id == null || id.length() > 0, () ->
+                "ID cannot be the empty string");
+        checkArgument(place == null || name != null, () ->
+                "place '" + place + "' without name cannot exist");
         if (type == LocationType.ANY) {
-            checkArgument(id == null, "type ANY cannot have ID");
+            checkArgument(id == null, () -> "type ANY cannot have ID");
         } else if (type == LocationType.COORD) {
-            checkArgument(hasCoord(), "coordinates missing");
-            checkArgument(place == null && name == null, "coordinates cannot have place or name");
+            checkArgument(hasCoord(), () -> "coordinates missing");
+            checkArgument(place == null && name == null, () -> "coordinates cannot have place or name");
         }
     }
 
@@ -94,22 +96,22 @@ public final class Location implements Serializable {
     }
 
     public double getLatAsDouble() {
-        checkState(hasCoord(), "missing coordinates: %s", toString());
+        checkState(hasCoord(), () -> "missing coordinates: " + this);
         return coord.getLatAsDouble();
     }
 
     public double getLonAsDouble() {
-        checkState(hasCoord(), "missing coordinates: %s", toString());
+        checkState(hasCoord(), () -> "missing coordinates: " + this);
         return coord.getLonAsDouble();
     }
 
     public int getLatAs1E6() {
-        checkState(hasCoord(), "missing coordinates: %s", toString());
+        checkState(hasCoord(), () -> "missing coordinates: " + this);
         return coord.getLatAs1E6();
     }
 
     public int getLonAs1E6() {
-        checkState(hasCoord(), "missing coordinates: %s", toString());
+        checkState(hasCoord(), () -> "missing coordinates: " + this);
         return coord.getLonAs1E6();
     }
 

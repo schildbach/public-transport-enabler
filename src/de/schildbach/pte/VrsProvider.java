@@ -17,7 +17,6 @@
 
 package de.schildbach.pte;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;

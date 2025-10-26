@@ -17,7 +17,7 @@
 
 package de.schildbach.pte;
 
-import static com.google.common.base.Preconditions.checkState;
+import static de.schildbach.pte.util.Preconditions.checkState;
 import static java.util.Objects.requireNonNull;
 
 import java.io.BufferedInputStream;

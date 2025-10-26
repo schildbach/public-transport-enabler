@@ -17,8 +17,8 @@
 
 package de.schildbach.pte;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkState;
+import static de.schildbach.pte.util.Preconditions.checkArgument;
+import static de.schildbach.pte.util.Preconditions.checkState;
 import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
@@ -121,7 +121,8 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
     }
 
     protected AbstractHafasClientInterfaceProvider setApiVersion(final String apiVersion) {
-        checkArgument(apiVersion.compareToIgnoreCase("1.14") >= 0, "apiVersion must be 1.14 or higher");
+        checkArgument(apiVersion.compareToIgnoreCase("1.14") >= 0, () ->
+                "apiVersion must be 1.14 or higher");
         this.apiVersion = apiVersion;
         return this;
     }

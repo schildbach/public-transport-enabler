@@ -17,7 +17,7 @@
 
 package de.schildbach.pte.dto;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import static de.schildbach.pte.util.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
@@ -106,8 +106,8 @@ public class Style implements Serializable {
 
     public static int parseColor(final String colorStr) {
         requireNonNull(colorStr);
-        checkArgument((colorStr.length() == 7 || colorStr.length() == 9) && colorStr.charAt(0) == '#',
-                "Unknown color: %s", colorStr);
+        checkArgument((colorStr.length() == 7 || colorStr.length() == 9) && colorStr.charAt(0) == '#', () ->
+                "Unknown color: " + colorStr);
         try {
             // Use a long to avoid rollovers on #ffXXXXXX
             long color = Long.parseLong(colorStr.substring(1), 16);

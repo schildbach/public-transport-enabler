@@ -17,9 +17,6 @@
 
 package de.schildbach.pte;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkState;
-
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
@@ -34,6 +31,9 @@ import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.Position;
 import de.schildbach.pte.dto.Product;
 import de.schildbach.pte.dto.StationDepartures;
+
+import static de.schildbach.pte.util.Preconditions.checkArgument;
+import static de.schildbach.pte.util.Preconditions.checkState;
 
 /**
  * @author Andreas Schildbach
@@ -91,7 +91,7 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
 
     protected final Product intToProduct(final int productInt) {
         final int allProductsInt = allProductsInt();
-        checkArgument(productInt <= allProductsInt,
+        checkArgument(productInt <= allProductsInt, () ->
                 "value " + productInt + " cannot be greater than " + allProductsInt);
 
         int value = productInt;
@@ -114,11 +114,13 @@ public abstract class AbstractHafasProvider extends AbstractNetworkProvider {
         return product;
     }
 
-    protected final Set<Product> intToProducts(int value) {
+    protected final Set<Product> intToProducts(final int productsInt) {
         final int allProductsInt = allProductsInt();
-        checkArgument(value <= allProductsInt, "value " + value + " cannot be greater than " + allProductsInt);
+        checkArgument(productsInt <= allProductsInt, () ->
+                "value " + productsInt + " cannot be greater than " + allProductsInt);
 
         final Set<Product> products = EnumSet.noneOf(Product.class);
+        int value = productsInt;
         for (int i = productsMap.length - 1; i >= 0; i--) {
             final int v = 1 << i;
             if (value >= v) {
