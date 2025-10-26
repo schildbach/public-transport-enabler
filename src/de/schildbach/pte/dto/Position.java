@@ -18,7 +18,7 @@
 package de.schildbach.pte.dto;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
 
@@ -40,7 +40,7 @@ public final class Position implements Serializable {
     }
 
     public Position(final String name, final String section) {
-        this.name = checkNotNull(name);
+        this.name = requireNonNull(name);
         // checkArgument(name.length() <= 5, "name too long: %s", name);
         this.section = section;
         checkArgument(section == null || section.length() <= 3, "section too long: %s", section);

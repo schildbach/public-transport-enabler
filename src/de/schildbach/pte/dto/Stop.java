@@ -17,8 +17,6 @@
 
 package de.schildbach.pte.dto;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Locale;
@@ -28,6 +26,8 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.MoreObjects.ToStringHelper;
 import com.google.common.base.Objects;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * @author Andreas Schildbach
@@ -61,7 +61,7 @@ public final class Stop implements Serializable {
             final boolean arrivalCancelled, final Date plannedDepartureTime, final Date predictedDepartureTime,
             final Position plannedDeparturePosition, final Position predictedDeparturePosition,
             final boolean departureCancelled) {
-        this.location = checkNotNull(location);
+        this.location = requireNonNull(location);
         this.plannedArrivalTime = plannedArrivalTime;
         this.predictedArrivalTime = predictedArrivalTime;
         this.plannedArrivalPosition = plannedArrivalPosition;
@@ -81,7 +81,7 @@ public final class Stop implements Serializable {
 
     public Stop(final Location location, final boolean departure, final Date plannedTime, final Date predictedTime,
             final Position plannedPosition, final Position predictedPosition, final boolean cancelled) {
-        this.location = checkNotNull(location);
+        this.location = requireNonNull(location);
         this.plannedArrivalTime = !departure ? plannedTime : null;
         this.predictedArrivalTime = !departure ? predictedTime : null;
         this.plannedArrivalPosition = !departure ? plannedPosition : null;
@@ -96,7 +96,7 @@ public final class Stop implements Serializable {
 
     public Stop(final Location location, final Date plannedArrivalTime, final Position plannedArrivalPosition,
             final Date plannedDepartureTime, final Position plannedDeparturePosition) {
-        this.location = checkNotNull(location);
+        this.location = requireNonNull(location);
         this.plannedArrivalTime = plannedArrivalTime;
         this.predictedArrivalTime = null;
         this.plannedArrivalPosition = plannedArrivalPosition;

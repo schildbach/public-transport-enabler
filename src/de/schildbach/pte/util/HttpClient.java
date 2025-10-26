@@ -17,8 +17,6 @@
 
 package de.schildbach.pte.util;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.IOException;
@@ -69,6 +67,8 @@ import okhttp3.Response;
 import okhttp3.Response.Builder;
 import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * @author Andreas Schildbach
@@ -234,8 +234,8 @@ public final class HttpClient {
 
     public void getInputStream(final Callback callback, final HttpUrl url, final String postRequest,
             final String requestContentType, final String referer) throws IOException {
-        checkNotNull(callback);
-        checkNotNull(url);
+        requireNonNull(callback);
+        requireNonNull(url);
 
         final Request.Builder request = new Request.Builder();
         request.url(url);

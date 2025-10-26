@@ -17,8 +17,6 @@
 
 package de.schildbach.pte.dto;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.io.Serializable;
 
 import javax.annotation.Nullable;
@@ -26,6 +24,8 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 
 import de.schildbach.pte.NetworkId;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * @author Andreas Schildbach
@@ -45,8 +45,8 @@ public final class ResultHeader implements Serializable {
 
     public ResultHeader(final NetworkId network, final String serverProduct, final String serverVersion,
             final String serverName, final long serverTime, final Object context) {
-        this.network = checkNotNull(network);
-        this.serverProduct = checkNotNull(serverProduct);
+        this.network = requireNonNull(network);
+        this.serverProduct = requireNonNull(serverProduct);
         this.serverVersion = serverVersion;
         this.serverName = serverName;
         this.serverTime = serverTime;

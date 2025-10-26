@@ -18,8 +18,8 @@
 package de.schildbach.pte;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
+import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -118,7 +118,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
     public AbstractHafasClientInterfaceProvider(final NetworkId network, final HttpUrl apiBase,
             final Product[] productsMap) {
         super(network, productsMap);
-        this.apiBase = checkNotNull(apiBase);
+        this.apiBase = requireNonNull(apiBase);
     }
 
     public HttpUrl getApiBase() {
@@ -126,7 +126,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
     }
 
     protected AbstractHafasClientInterfaceProvider setApiEndpoint(final String apiEndpoint) {
-        this.apiEndpoint = checkNotNull(apiEndpoint);
+        this.apiEndpoint = requireNonNull(apiEndpoint);
         return this;
     }
 
@@ -145,7 +145,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
     }
 
     protected AbstractHafasClientInterfaceProvider setApiExt(final String apiExt) {
-        this.apiExt = checkNotNull(apiExt);
+        this.apiExt = requireNonNull(apiExt);
         return this;
     }
 
@@ -454,7 +454,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
 
     protected final SuggestLocationsResult jsonLocMatch(final CharSequence constraint,
             final @Nullable Set<LocationType> types, int maxLocations) throws IOException {
-        checkNotNull(constraint);
+        requireNonNull(constraint);
         if (maxLocations == 0)
             maxLocations = DEFAULT_MAX_LOCATIONS;
         final String type;
@@ -873,9 +873,9 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
     private String wrapJsonApiRequest(final String meth, final String req, final boolean formatted) {
         return "{" //
                 + (apiAuthorization != null ? "\"auth\":" + apiAuthorization + "," : "") //
-                + "\"client\":" + checkNotNull(apiClient) + "," //
+                + "\"client\":" + requireNonNull(apiClient) + "," //
                 + (apiExt != null ? "\"ext\":\"" + apiExt + "\"," : "") //
-                + "\"ver\":\"" + checkNotNull(apiVersion) + "\",\"lang\":\"eng\"," //
+                + "\"ver\":\"" + requireNonNull(apiVersion) + "\",\"lang\":\"eng\"," //
                 + "\"svcReqL\":[" //
                 + "{\"meth\":\"ServerInfo\",\"req\":{\"getServerDateTime\":true,\"getTimeTablePeriod\":false}}," //
                 + "{\"meth\":\"" + meth + "\",\"cfg\":{\"polyEnc\":\"GPA\"},\"req\":" + req + "}" //

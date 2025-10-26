@@ -17,8 +17,8 @@
 
 package de.schildbach.pte.dto;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
+import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -53,7 +53,7 @@ public final class SuggestLocationsResult implements Serializable {
 
     public SuggestLocationsResult(final ResultHeader header, final Status status) {
         this.header = header;
-        this.status = checkNotNull(status);
+        this.status = requireNonNull(status);
         this.suggestedLocations = null;
     }
 

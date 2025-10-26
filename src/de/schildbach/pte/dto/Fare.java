@@ -17,8 +17,6 @@
 
 package de.schildbach.pte.dto;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.io.Serializable;
 import java.util.Currency;
 
@@ -26,6 +24,8 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * @author Andreas Schildbach
@@ -46,9 +46,9 @@ public final class Fare implements Serializable {
 
     public Fare(final String name, final Type type, final Currency currency, final float fare, final String unitName,
             final String units) {
-        this.name = checkNotNull(name);
-        this.type = checkNotNull(type);
-        this.currency = checkNotNull(currency);
+        this.name = requireNonNull(name);
+        this.type = requireNonNull(type);
+        this.currency = requireNonNull(currency);
         this.fare = fare;
         this.unitName = unitName;
         this.units = units;

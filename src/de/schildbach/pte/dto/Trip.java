@@ -18,7 +18,7 @@
 package de.schildbach.pte.dto;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -55,9 +55,9 @@ public final class Trip implements Serializable {
     public Trip(final String id, final Location from, final Location to, final List<Leg> legs, final List<Fare> fares,
             final int[] capacity, final Integer numChanges) {
         this.id = id;
-        this.from = checkNotNull(from);
-        this.to = checkNotNull(to);
-        this.legs = checkNotNull(legs);
+        this.from = requireNonNull(from);
+        this.to = requireNonNull(to);
+        this.legs = requireNonNull(legs);
         this.fares = fares;
         this.capacity = capacity;
         this.numChanges = numChanges;
@@ -316,8 +316,8 @@ public final class Trip implements Serializable {
         public transient List<Point> path; // custom serialization, to save space
 
         public Leg(final Location departure, final Location arrival, final List<Point> path) {
-            this.departure = checkNotNull(departure);
-            this.arrival = checkNotNull(arrival);
+            this.departure = requireNonNull(departure);
+            this.arrival = requireNonNull(arrival);
             this.path = path;
         }
 
@@ -377,15 +377,15 @@ public final class Trip implements Serializable {
                 final List<Stop> intermediateStops, final List<Point> path, final String message) {
             super(departureStop.location, arrivalStop.location, path);
 
-            this.line = checkNotNull(line);
+            this.line = requireNonNull(line);
             this.destination = destination;
-            this.departureStop = checkNotNull(departureStop);
-            this.arrivalStop = checkNotNull(arrivalStop);
+            this.departureStop = requireNonNull(departureStop);
+            this.arrivalStop = requireNonNull(arrivalStop);
             this.intermediateStops = intermediateStops;
             this.message = message;
 
-            checkNotNull(departureStop.getDepartureTime());
-            checkNotNull(arrivalStop.getArrivalTime());
+            requireNonNull(departureStop.getDepartureTime());
+            requireNonNull(arrivalStop.getArrivalTime());
         }
 
         @Override
@@ -472,9 +472,9 @@ public final class Trip implements Serializable {
                 final Date arrivalTime, final List<Point> path, final int distance) {
             super(departure, arrival, path);
 
-            this.type = checkNotNull(type);
-            this.departureTime = checkNotNull(departureTime);
-            this.arrivalTime = checkNotNull(arrivalTime);
+            this.type = requireNonNull(type);
+            this.departureTime = requireNonNull(departureTime);
+            this.arrivalTime = requireNonNull(arrivalTime);
             this.min = (int) ((arrivalTime.getTime() - departureTime.getTime()) / 1000 / 60);
             this.distance = distance;
         }

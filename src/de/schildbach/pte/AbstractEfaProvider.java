@@ -17,8 +17,8 @@
 
 package de.schildbach.pte;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
+import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -1468,7 +1468,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     @Override
     public QueryDeparturesResult queryDepartures(final String stationId, final @Nullable Date time,
             final int maxDepartures, final boolean equivs) throws IOException {
-        checkNotNull(Strings.emptyToNull(stationId));
+        requireNonNull(Strings.emptyToNull(stationId));
 
         return xsltDepartureMonitorRequest(stationId, time, maxDepartures, equivs);
     }
@@ -1564,7 +1564,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                                         new Location(LocationType.STATION, assignedStopId),
                                         new LinkedList<Departure>(), new LinkedList<LineDestination>());
 
-                            final List<LineDestination> assignedStationDeparturesLines = checkNotNull(
+                            final List<LineDestination> assignedStationDeparturesLines = requireNonNull(
                                     assignedStationDepartures.lines);
                             if (!assignedStationDeparturesLines.contains(lineDestination))
                                 assignedStationDeparturesLines.add(lineDestination);

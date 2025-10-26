@@ -17,11 +17,11 @@
 
 package de.schildbach.pte.dto;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.io.Serializable;
 
 import com.google.common.base.Objects;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * @author Andreas Schildbach
@@ -32,7 +32,7 @@ public final class SuggestedLocation implements Serializable, Comparable<Suggest
     public final int priority;
 
     public SuggestedLocation(final Location location, final int priority) {
-        this.location = checkNotNull(location);
+        this.location = requireNonNull(location);
         this.priority = priority;
     }
 

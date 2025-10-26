@@ -18,7 +18,7 @@
 package de.schildbach.pte.dto;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
 import java.util.Comparator;
@@ -50,7 +50,7 @@ public final class Departure implements Serializable {
         this.plannedTime = plannedTime;
         this.predictedTime = predictedTime;
         checkArgument(plannedTime != null || predictedTime != null);
-        this.line = checkNotNull(line);
+        this.line = requireNonNull(line);
         this.position = position;
         this.destination = destination;
         this.capacity = capacity;

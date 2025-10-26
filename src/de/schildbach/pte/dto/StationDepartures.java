@@ -17,8 +17,6 @@
 
 package de.schildbach.pte.dto;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.io.Serializable;
 import java.util.List;
 
@@ -27,6 +25,8 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.MoreObjects.ToStringHelper;
 import com.google.common.base.Objects;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * @author Andreas Schildbach
@@ -39,8 +39,8 @@ public final class StationDepartures implements Serializable {
 
     public StationDepartures(final Location location, final List<Departure> departures,
             final List<LineDestination> lines) {
-        this.location = checkNotNull(location);
-        this.departures = checkNotNull(departures);
+        this.location = requireNonNull(location);
+        this.departures = requireNonNull(departures);
         this.lines = lines;
     }
 

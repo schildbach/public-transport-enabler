@@ -17,8 +17,6 @@
 
 package de.schildbach.pte.dto;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.io.Serializable;
 import java.util.List;
 
@@ -26,6 +24,8 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.MoreObjects.ToStringHelper;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * @author Andreas Schildbach
@@ -58,8 +58,8 @@ public final class QueryTripsResult implements Serializable {
         this.from = from;
         this.via = via;
         this.to = to;
-        this.context = checkNotNull(context);
-        this.trips = checkNotNull(trips);
+        this.context = requireNonNull(context);
+        this.trips = requireNonNull(trips);
 
         this.ambiguousFrom = null;
         this.ambiguousVia = null;
@@ -84,7 +84,7 @@ public final class QueryTripsResult implements Serializable {
 
     public QueryTripsResult(final ResultHeader header, final Status status) {
         this.header = header;
-        this.status = checkNotNull(status);
+        this.status = requireNonNull(status);
 
         this.ambiguousFrom = null;
         this.ambiguousVia = null;

@@ -18,8 +18,8 @@
 package de.schildbach.pte.dto;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
+import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -47,7 +47,7 @@ public final class Location implements Serializable {
 
     public Location(final LocationType type, final String id, final Point coord, final String place, final String name,
             final Set<Product> products) {
-        this.type = checkNotNull(type);
+        this.type = requireNonNull(type);
         this.id = id;
         this.coord = coord;
         this.place = place;

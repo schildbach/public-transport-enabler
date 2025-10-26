@@ -18,7 +18,7 @@
 package de.schildbach.pte;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -414,7 +414,7 @@ public class VrsProvider extends AbstractNetworkProvider {
     @Override
     public QueryDeparturesResult queryDepartures(final String stationId, @Nullable Date time, int maxDepartures,
             boolean equivs) throws IOException {
-        checkNotNull(Strings.emptyToNull(stationId));
+        requireNonNull(Strings.emptyToNull(stationId));
 
         // g=p means group by product; not used here
         // d=minutes overwrites c=count and returns departures for the next d minutes
