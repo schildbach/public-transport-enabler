@@ -36,9 +36,12 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 import javax.crypto.Cipher;
@@ -49,7 +52,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
@@ -462,8 +464,10 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                 || types.containsAll(EnumSet.of(LocationType.STATION, LocationType.ADDRESS, LocationType.POI)))
             type = "ALL";
         else
-            type = Joiner.on("").skipNulls().join(types.contains(LocationType.STATION) ? "S" : null,
-                    types.contains(LocationType.ADDRESS) ? "A" : null, types.contains(LocationType.POI) ? "P" : null);
+            type = Stream.of(types.contains(LocationType.STATION) ? "S" : "",
+                            types.contains(LocationType.ADDRESS) ? "A" : "",
+                            types.contains(LocationType.POI) ? "P" : "")
+                    .collect(Collectors.joining());
         final String loc = "{\"name\":" + JSONObject.quote(constraint + "?") + ",\"type\":\"" + type + "\"}";
         final String request = wrapJsonApiRequest("LocMatch",
                 "{\"input\":{\"field\":\"S\",\"loc\":" + loc + ",\"maxLoc\":" + maxLocations + "}}", false);
@@ -519,13 +523,15 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
         }
     }
 
-    private static final Joiner JOINER = Joiner.on(' ').skipNulls();
-
     private Location jsonTripSearchIdentify(final Location location) throws IOException {
         if (location.hasId())
             return location;
         if (location.hasName()) {
-            final SuggestLocationsResult result = jsonLocMatch(JOINER.join(location.place, location.name), null, 1);
+            final SuggestLocationsResult result = jsonLocMatch(
+                    Stream.of(location.place, location.name)
+                            .filter(Objects::nonNull)
+                            .collect(Collectors.joining(" ")),
+                    null, 1);
             if (result.status == SuggestLocationsResult.Status.OK) {
                 final List<Location> locations = result.getLocations();
                 if (!locations.isEmpty())

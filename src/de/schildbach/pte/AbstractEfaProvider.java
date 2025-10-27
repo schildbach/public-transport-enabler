@@ -35,14 +35,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
-import com.google.common.base.Joiner;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -2285,7 +2287,6 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         XmlPullUtil.optSkipMultiple(pp, "omcTaxi");
 
         final List<Trip> trips = new ArrayList<>();
-        final Joiner idJoiner = Joiner.on('-').skipNulls();
 
         XmlPullUtil.require(pp, "itdItinerary");
         if (XmlPullUtil.optEnter(pp, "itdItinerary")) {
@@ -2299,7 +2300,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                     if (useRouteIndexAsTripId) {
                         final String routeIndex = XmlPullUtil.optAttr(pp, "routeIndex", null);
                         final String routeTripIndex = XmlPullUtil.optAttr(pp, "routeTripIndex", null);
-                        tripId = Strings.emptyToNull(idJoiner.join(routeIndex, routeTripIndex));
+                        tripId = Strings.emptyToNull(
+                                Stream.of(routeIndex, routeTripIndex)
+                                        .filter(Objects::nonNull)
+                                        .map(Object::toString)
+                                        .collect(Collectors.joining("-")));
                     } else {
                         tripId = null;
                     }
