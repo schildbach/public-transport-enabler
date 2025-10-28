@@ -24,6 +24,8 @@ import static java.util.Objects.requireNonNull;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -54,9 +56,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.common.base.Strings;
-import com.google.common.hash.HashCode;
-import com.google.common.hash.HashFunction;
-import com.google.common.hash.Hashing;
 
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.Fare;
@@ -113,8 +112,6 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
     private static final String SECTION_TYPE_DEVI = "DEVI";
     private static final String SECTION_TYPE_CHECK_IN = "CHKI";
     private static final String SECTION_TYPE_CHECK_OUT = "CHKO";
-    @SuppressWarnings("deprecation")
-    private static final HashFunction MD5 = Hashing.md5();
 
     public AbstractHafasClientInterfaceProvider(final NetworkId network, final HttpUrl apiBase,
             final Product[] productsMap) {
@@ -888,19 +885,35 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                 + "\"formatted\":" + formatted + "}";
     }
 
+    private MessageDigest md5instance() {
+        try {
+            // instance not thread safe!
+            return MessageDigest.getInstance("MD5");
+        } catch (final NoSuchAlgorithmException x) {
+            // should not happen
+            throw new RuntimeException(x);
+        }
+    }
+
     private HttpUrl requestUrl(final String body) {
         final HttpUrl.Builder url = apiBase.newBuilder().addPathSegment(apiEndpoint);
+        MessageDigest md5 = md5instance();
         if (requestChecksumSalt != null) {
-            final HashCode checksum = MD5.newHasher().putString(body, StandardCharsets.UTF_8).putBytes(requestChecksumSalt)
-                    .hash();
-            url.addQueryParameter("checksum", checksum.toString());
+            md5.reset();
+            md5.update(body.getBytes(StandardCharsets.UTF_8));
+            md5.update(requestChecksumSalt);
+            url.addQueryParameter("checksum", Encodings.HEX.encode(md5.digest()));
         }
         if (requestMicMacSalt != null) {
-            final HashCode mic = MD5.newHasher().putString(body, StandardCharsets.UTF_8).hash();
-            url.addQueryParameter("mic", Encodings.HEX.encode(mic.asBytes()));
-            final HashCode mac = MD5.newHasher().putString(Encodings.HEX.encode(mic.asBytes()), StandardCharsets.UTF_8)
-                    .putBytes(requestMicMacSalt).hash();
-            url.addQueryParameter("mac", Encodings.HEX.encode(mac.asBytes()));
+            md5.reset();
+            md5.update(body.getBytes(StandardCharsets.UTF_8));
+            byte[] mic = md5.digest();
+            url.addQueryParameter("mic", Encodings.HEX.encode(mic));
+            md5.reset();
+            md5.update(Encodings.HEX.encode(mic).getBytes(StandardCharsets.UTF_8));
+            md5.update(requestMicMacSalt);
+            byte[] mac = md5.digest();
+            url.addQueryParameter("mac", Encodings.HEX.encode(mac));
         }
         return url.build();
     }
