@@ -21,10 +21,9 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.annotation.Nullable;
-
-import com.google.common.base.Objects;
 
 /**
  * @author Andreas Schildbach
@@ -53,16 +52,16 @@ public final class Position implements Serializable {
         if (!(o instanceof Position))
             return false;
         final Position other = (Position) o;
-        if (!Objects.equal(this.name, other.name))
+        if (!Objects.equals(this.name, other.name))
             return false;
-        if (!Objects.equal(this.section, other.section))
+        if (!Objects.equals(this.section, other.section))
             return false;
         return true;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(name, section);
+        return Objects.hash(name, section);
     }
 
     @Override

@@ -30,13 +30,13 @@ import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.MoreObjects.ToStringHelper;
-import com.google.common.base.Objects;
 
 /**
  * @author Andreas Schildbach
@@ -287,12 +287,12 @@ public final class Trip implements Serializable {
         if (!(o instanceof Trip))
             return false;
         final Trip other = (Trip) o;
-        return Objects.equal(this.getId(), other.getId());
+        return Objects.equals(this.getId(), other.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(getId());
+        return Objects.hash(getId());
     }
 
     @Override

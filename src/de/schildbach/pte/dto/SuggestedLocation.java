@@ -18,8 +18,7 @@
 package de.schildbach.pte.dto;
 
 import java.io.Serializable;
-
-import com.google.common.base.Objects;
+import java.util.Objects;
 
 import static java.util.Objects.requireNonNull;
 
@@ -63,12 +62,12 @@ public final class SuggestedLocation implements Serializable, Comparable<Suggest
         if (!(o instanceof SuggestedLocation))
             return false;
         final SuggestedLocation other = (SuggestedLocation) o;
-        return Objects.equal(this.location, other.location);
+        return Objects.equals(this.location, other.location);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(location);
+        return Objects.hash(location);
     }
 
     @Override

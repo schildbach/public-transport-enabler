@@ -18,11 +18,11 @@
 package de.schildbach.pte.dto;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 
 import static java.util.Objects.requireNonNull;
 
@@ -46,12 +46,12 @@ public final class LineDestination implements Serializable {
         if (!(o instanceof LineDestination))
             return false;
         final LineDestination other = (LineDestination) o;
-        if (!Objects.equal(this.line, other.line))
+        if (!Objects.equals(this.line, other.line))
             return false;
         // This workaround is necessary because in rare cases destinations have IDs of other locations.
         final String thisDestinationName = this.destination != null ? this.destination.uniqueShortName() : null;
         final String otherDestinationName = other.destination != null ? other.destination.uniqueShortName() : null;
-        if (!Objects.equal(thisDestinationName, otherDestinationName))
+        if (!Objects.equals(thisDestinationName, otherDestinationName))
             return false;
         return true;
     }
@@ -60,7 +60,7 @@ public final class LineDestination implements Serializable {
     public int hashCode() {
         // This workaround is necessary because in rare cases destinations have IDs of other locations.
         final String destinationName = destination != null ? destination.uniqueShortName() : null;
-        return Objects.hashCode(line, destinationName);
+        return Objects.hash(line, destinationName);
     }
 
     @Override

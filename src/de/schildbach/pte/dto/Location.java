@@ -23,13 +23,13 @@ import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.MoreObjects.ToStringHelper;
-import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 
 /**
@@ -159,17 +159,17 @@ public final class Location implements Serializable {
         if (!(o instanceof Location))
             return false;
         final Location other = (Location) o;
-        if (!Objects.equal(this.type, other.type))
+        if (!Objects.equals(this.type, other.type))
             return false;
         if (this.id != null)
-            return Objects.equal(this.id, other.id);
+            return Objects.equals(this.id, other.id);
         if (this.coord != null)
-            return Objects.equal(this.coord, other.coord);
+            return Objects.equals(this.coord, other.coord);
 
         // only discriminate by name/place if no ids are given
-        if (!Objects.equal(this.place, other.place))
+        if (!Objects.equals(this.place, other.place))
             return false;
-        if (!Objects.equal(this.name, other.name))
+        if (!Objects.equals(this.name, other.name))
             return false;
         return true;
     }
@@ -179,17 +179,17 @@ public final class Location implements Serializable {
             return true;
         if (other == null)
             return false;
-        if (!Objects.equal(this.type, other.type))
+        if (!Objects.equals(this.type, other.type))
             return false;
-        if (!Objects.equal(this.id, other.id))
+        if (!Objects.equals(this.id, other.id))
             return false;
-        if (!Objects.equal(this.coord, other.coord))
+        if (!Objects.equals(this.coord, other.coord))
             return false;
-        if (!Objects.equal(this.place, other.place))
+        if (!Objects.equals(this.place, other.place))
             return false;
-        if (!Objects.equal(this.name, other.name))
+        if (!Objects.equals(this.name, other.name))
             return false;
-        if (!Objects.equal(this.products, other.products))
+        if (!Objects.equals(this.products, other.products))
             return false;
         return true;
     }
@@ -197,9 +197,9 @@ public final class Location implements Serializable {
     @Override
     public int hashCode() {
         if (id != null)
-            return Objects.hashCode(type, id);
+            return Objects.hash(type, id);
         else
-            return Objects.hashCode(type, coord);
+            return Objects.hash(type, coord);
     }
 
     @Override

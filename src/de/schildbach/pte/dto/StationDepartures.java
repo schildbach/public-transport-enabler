@@ -19,12 +19,12 @@ package de.schildbach.pte.dto;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.MoreObjects.ToStringHelper;
-import com.google.common.base.Objects;
 
 import static java.util.Objects.requireNonNull;
 
@@ -51,18 +51,18 @@ public final class StationDepartures implements Serializable {
         if (!(o instanceof StationDepartures))
             return false;
         final StationDepartures other = (StationDepartures) o;
-        if (!Objects.equal(this.location, other.location))
+        if (!Objects.equals(this.location, other.location))
             return false;
-        if (!Objects.equal(this.departures, other.departures))
+        if (!Objects.equals(this.departures, other.departures))
             return false;
-        if (!Objects.equal(this.lines, other.lines))
+        if (!Objects.equals(this.lines, other.lines))
             return false;
         return true;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(location, departures, lines);
+        return Objects.hash(location, departures, lines);
     }
 
     @Override

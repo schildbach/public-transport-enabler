@@ -20,12 +20,12 @@ package de.schildbach.pte.dto;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 
 import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.MoreObjects.ToStringHelper;
-import com.google.common.base.Objects;
 
 import static java.util.Objects.requireNonNull;
 
@@ -230,25 +230,25 @@ public final class Stop implements Serializable {
         if (!(o instanceof Stop))
             return false;
         final Stop other = (Stop) o;
-        if (!Objects.equal(this.location, other.location))
+        if (!Objects.equals(this.location, other.location))
             return false;
-        if (!Objects.equal(this.plannedArrivalTime, other.plannedArrivalTime))
+        if (!Objects.equals(this.plannedArrivalTime, other.plannedArrivalTime))
             return false;
-        if (!Objects.equal(this.predictedArrivalTime, other.predictedArrivalTime))
+        if (!Objects.equals(this.predictedArrivalTime, other.predictedArrivalTime))
             return false;
-        if (!Objects.equal(this.plannedArrivalPosition, other.plannedArrivalPosition))
+        if (!Objects.equals(this.plannedArrivalPosition, other.plannedArrivalPosition))
             return false;
-        if (!Objects.equal(this.predictedArrivalPosition, other.predictedArrivalPosition))
+        if (!Objects.equals(this.predictedArrivalPosition, other.predictedArrivalPosition))
             return false;
         if (this.arrivalCancelled != other.arrivalCancelled)
             return false;
-        if (!Objects.equal(this.plannedDepartureTime, other.plannedDepartureTime))
+        if (!Objects.equals(this.plannedDepartureTime, other.plannedDepartureTime))
             return false;
-        if (!Objects.equal(this.predictedDepartureTime, other.predictedDepartureTime))
+        if (!Objects.equals(this.predictedDepartureTime, other.predictedDepartureTime))
             return false;
-        if (!Objects.equal(this.plannedDeparturePosition, other.plannedDeparturePosition))
+        if (!Objects.equals(this.plannedDeparturePosition, other.plannedDeparturePosition))
             return false;
-        if (!Objects.equal(this.predictedDeparturePosition, other.predictedDeparturePosition))
+        if (!Objects.equals(this.predictedDeparturePosition, other.predictedDeparturePosition))
             return false;
         if (this.departureCancelled != other.departureCancelled)
             return false;
@@ -257,7 +257,7 @@ public final class Stop implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(location, plannedArrivalTime, predictedArrivalTime, plannedArrivalPosition,
+        return Objects.hash(location, plannedArrivalTime, predictedArrivalTime, plannedArrivalPosition,
                 predictedArrivalPosition, arrivalCancelled, plannedDepartureTime, predictedDepartureTime,
                 plannedDeparturePosition, predictedDeparturePosition, departureCancelled);
     }

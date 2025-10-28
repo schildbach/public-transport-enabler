@@ -24,12 +24,12 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 
 import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.MoreObjects.ToStringHelper;
-import com.google.common.base.Objects;
 
 /**
  * @author Andreas Schildbach
@@ -81,20 +81,20 @@ public final class Departure implements Serializable {
         if (!(o instanceof Departure))
             return false;
         final Departure other = (Departure) o;
-        if (!Objects.equal(this.plannedTime, other.plannedTime))
+        if (!Objects.equals(this.plannedTime, other.plannedTime))
             return false;
-        if (!Objects.equal(this.predictedTime, other.predictedTime))
+        if (!Objects.equals(this.predictedTime, other.predictedTime))
             return false;
-        if (!Objects.equal(this.line, other.line))
+        if (!Objects.equals(this.line, other.line))
             return false;
-        if (!Objects.equal(this.destination, other.destination))
+        if (!Objects.equals(this.destination, other.destination))
             return false;
         return true;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(plannedTime, predictedTime, line, destination);
+        return Objects.hash(plannedTime, predictedTime, line, destination);
     }
 
     public static final Comparator<Departure> TIME_COMPARATOR = (departure0, departure1) -> departure0.getTime().compareTo(departure1.getTime());
