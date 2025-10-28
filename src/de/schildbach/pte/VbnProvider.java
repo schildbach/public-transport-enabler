@@ -22,10 +22,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
-
-import com.google.common.collect.Sets;
 
 import de.schildbach.pte.dto.Fare;
 import de.schildbach.pte.dto.Line;
@@ -110,6 +110,11 @@ public class VbnProvider extends AbstractHafasClientInterfaceProvider {
         return Product.ALL;
     }
 
+    private static final Set<Attr> ATTRS_SERVICE_REPLACEMENT_CIRCLE_CLOCKWISE =
+            Stream.of(Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_CLOCKWISE).collect(Collectors.toSet());
+    private static final Set<Attr> ATTRS_SERVICE_REPLACEMENT_CIRCLE_ANTICLOCKWISE =
+            Stream.of(Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_ANTICLOCKWISE).collect(Collectors.toSet());
+
     @Override
     protected Line newLine(final String id, final String operator, final Product product, final @Nullable String name,
             final @Nullable String shortName, final @Nullable String number, final Style style) {
@@ -118,10 +123,10 @@ public class VbnProvider extends AbstractHafasClientInterfaceProvider {
         if (line.product == Product.BUS) {
             if ("57".equals(line.label))
                 return new Line(id, line.network, line.product, line.label, line.name, line.style,
-                        Sets.newHashSet(Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_CLOCKWISE), line.message);
+                        ATTRS_SERVICE_REPLACEMENT_CIRCLE_CLOCKWISE, line.message);
             if ("58".equals(line.label))
                 return new Line(id, line.network, line.product, line.label, line.name, line.style,
-                        Sets.newHashSet(Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_ANTICLOCKWISE), line.message);
+                        ATTRS_SERVICE_REPLACEMENT_CIRCLE_ANTICLOCKWISE, line.message);
         }
 
         return line;

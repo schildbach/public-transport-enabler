@@ -19,12 +19,13 @@ package de.schildbach.pte;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
-
-import com.google.common.collect.Sets;
 
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Line.Attr;
@@ -116,6 +117,17 @@ public final class BvgProvider extends AbstractHafasClientInterfaceProvider {
         return fareName.replaceAll("Tarifgebiet ", "");
     }
 
+    private static final Set<Attr> ATTRS_CIRCLE_CLOCKWISE =
+            Stream.of(Attr.CIRCLE_CLOCKWISE).collect(Collectors.toSet());
+    private static final Set<Attr> ATTRS_CIRCLE_ANTICLOCKWISE =
+            Stream.of(Attr.CIRCLE_ANTICLOCKWISE).collect(Collectors.toSet());
+    private static final Set<Attr> ATTRS_SERVICE_REPLACEMENT_CIRCLE_CLOCKWISE =
+            Stream.of(Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_CLOCKWISE).collect(Collectors.toSet());
+    private static final Set<Attr> ATTRS_SERVICE_REPLACEMENT_CIRCLE_ANTICLOCKWISE =
+            Stream.of(Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_ANTICLOCKWISE).collect(Collectors.toSet());
+    private static final Set<Attr> ATTRS_LINE_AIRPORT =
+            Stream.of(Attr.LINE_AIRPORT).collect(Collectors.toSet());
+
     @Override
     protected Line newLine(final String id, final String operator, final Product product, final @Nullable String name,
             final @Nullable String shortName, final @Nullable String number, final Style style) {
@@ -124,26 +136,26 @@ public final class BvgProvider extends AbstractHafasClientInterfaceProvider {
         if (line.product == Product.SUBURBAN_TRAIN) {
             if ("S41".equals(line.label))
                 return new Line(id, line.network, line.product, line.label, line.name, line.style,
-                        Sets.newHashSet(Attr.CIRCLE_CLOCKWISE), line.message);
+                        ATTRS_CIRCLE_CLOCKWISE, line.message);
             if ("S42".equals(line.label))
                 return new Line(id, line.network, line.product, line.label, line.name, line.style,
-                        Sets.newHashSet(Attr.CIRCLE_ANTICLOCKWISE), line.message);
+                        ATTRS_CIRCLE_ANTICLOCKWISE, line.message);
             if ("S9".equals(line.label))
                 return new Line(id, line.network, line.product, line.label, line.name, line.style,
-                        Sets.newHashSet(Attr.LINE_AIRPORT), line.message);
+                        ATTRS_LINE_AIRPORT, line.message);
             if ("S45".equals(line.label))
                 return new Line(id, line.network, line.product, line.label, line.name, line.style,
-                        Sets.newHashSet(Attr.LINE_AIRPORT), line.message);
+                        ATTRS_LINE_AIRPORT, line.message);
         } else if (line.product == Product.BUS) {
             if ("S41".equals(line.label))
                 return new Line(id, line.network, line.product, line.label, line.name, line.style,
-                        Sets.newHashSet(Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_CLOCKWISE), line.message);
+                        ATTRS_SERVICE_REPLACEMENT_CIRCLE_CLOCKWISE, line.message);
             if ("S42".equals(line.label))
                 return new Line(id, line.network, line.product, line.label, line.name, line.style,
-                        Sets.newHashSet(Attr.SERVICE_REPLACEMENT, Attr.CIRCLE_ANTICLOCKWISE), line.message);
+                        ATTRS_SERVICE_REPLACEMENT_CIRCLE_ANTICLOCKWISE, line.message);
             if ("TXL".equals(line.label))
                 return new Line(id, line.network, line.product, line.label, line.name, line.style,
-                        Sets.newHashSet(Attr.LINE_AIRPORT), line.message);
+                        ATTRS_LINE_AIRPORT, line.message);
         }
 
         return line;

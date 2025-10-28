@@ -29,9 +29,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 import javax.net.ssl.KeyManager;
@@ -45,7 +48,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Throwables;
-import com.google.common.primitives.Ints;
 
 import de.schildbach.pte.exception.BlockedException;
 import de.schildbach.pte.exception.InternalErrorException;
@@ -89,14 +91,20 @@ public final class HttpClient {
     @Nullable
     private CertificatePinner certificatePinner = null;
 
-    private static final List<Integer> RESPONSE_CODES_BLOCKED = Ints.asList(HttpURLConnection.HTTP_BAD_REQUEST,
-            HttpURLConnection.HTTP_UNAUTHORIZED, HttpURLConnection.HTTP_FORBIDDEN,
-            HttpURLConnection.HTTP_NOT_ACCEPTABLE, HttpURLConnection.HTTP_UNAVAILABLE);
-    private static final List<Integer> RESPONSE_CODES_NOT_FOUND = Ints.asList(HttpURLConnection.HTTP_NOT_FOUND);
-    private static final List<Integer> RESPONSE_CODES_REDIRECT = Ints.asList(HttpURLConnection.HTTP_MOVED_PERM,
-            HttpURLConnection.HTTP_MOVED_TEMP, 307, 308);
-    private static final List<Integer> RESPONSE_CODES_INTERNAL_ERROR = Ints
-            .asList(HttpURLConnection.HTTP_INTERNAL_ERROR, HttpURLConnection.HTTP_BAD_GATEWAY);
+    private static final Set<Integer> RESPONSE_CODES_BLOCKED =
+            Stream.of(HttpURLConnection.HTTP_BAD_REQUEST, HttpURLConnection.HTTP_UNAUTHORIZED,
+                            HttpURLConnection.HTTP_FORBIDDEN, HttpURLConnection.HTTP_NOT_ACCEPTABLE,
+                            HttpURLConnection.HTTP_UNAVAILABLE)
+                    .collect(Collectors.toSet());
+    private static final Set<Integer> RESPONSE_CODES_NOT_FOUND =
+            Stream.of(HttpURLConnection.HTTP_NOT_FOUND)
+                    .collect(Collectors.toSet());
+    private static final Set<Integer> RESPONSE_CODES_REDIRECT =
+            Stream.of(HttpURLConnection.HTTP_MOVED_PERM, HttpURLConnection.HTTP_MOVED_TEMP, 307, 308)
+                    .collect(Collectors.toSet());
+    private static final Set<Integer> RESPONSE_CODES_INTERNAL_ERROR =
+            Stream.of(HttpURLConnection.HTTP_INTERNAL_ERROR, HttpURLConnection.HTTP_BAD_GATEWAY)
+                    .collect(Collectors.toSet());
 
     private static final OkHttpClient OKHTTP_CLIENT;
     static {

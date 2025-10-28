@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -31,14 +32,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import com.google.common.collect.ImmutableSet;
 
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.Fare;
@@ -333,7 +334,8 @@ public class NegentweeProvider extends AbstractNetworkProvider {
     }
 
     // Including these type names will cause the locations API to fail, skip them
-    private static final ImmutableSet<String> DISALLOWED_TYPE_NAMES = ImmutableSet.of("latlong", "streetrange");
+    private static final Set<String> DISALLOWED_TYPE_NAMES =
+            Stream.of("latlong", "streetrange").collect(Collectors.toSet());
 
     private String locationTypesToQueryParameterString(Set<LocationType> types) {
         StringBuilder typeValue = new StringBuilder();
