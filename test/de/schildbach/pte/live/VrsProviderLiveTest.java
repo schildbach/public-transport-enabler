@@ -28,6 +28,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
@@ -35,8 +36,6 @@ import java.util.TreeSet;
 import com.google.common.io.BaseEncoding;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import com.google.common.collect.ComparisonChain;
 
 import de.schildbach.pte.NetworkProvider.Accessibility;
 import de.schildbach.pte.NetworkProvider.WalkSpeed;
@@ -510,7 +509,7 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
     private static class LocationComparator implements Comparator<Location> {
         @Override
         public int compare(Location o1, Location o2) {
-            return ComparisonChain.start().compare(o1.name, o2.name).result();
+            return Objects.compare(o1.name, o2.name, Comparator.nullsFirst(String::compareTo));
         }
     }
 

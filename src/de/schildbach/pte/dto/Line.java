@@ -18,13 +18,11 @@
 package de.schildbach.pte.dto;
 
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.Objects;
 import java.util.Set;
 
 import javax.annotation.Nullable;
-
-import com.google.common.collect.ComparisonChain;
-import com.google.common.collect.Ordering;
 
 /**
  * @author Andreas Schildbach
@@ -90,9 +88,21 @@ public final class Line implements Serializable, Comparable<Line> {
         this.message = message;
     }
 
+    private String network() {
+        return network;
+    }
+
+    private Product product() {
+        return product;
+    }
+
     public char productCode() {
         final Product product = this.product;
         return product != null ? product.code : Product.UNKNOWN;
+    }
+
+    private String label() {
+        return label;
     }
 
     public boolean hasAttr(final Attr attr) {
@@ -132,10 +142,9 @@ public final class Line implements Serializable, Comparable<Line> {
 
     @Override
     public int compareTo(final Line other) {
-        return ComparisonChain.start() //
-                .compare(this.network, other.network, Ordering.natural().nullsLast()) //
-                .compare(this.product, other.product, Ordering.natural().nullsLast()) //
-                .compare(this.label, other.label, Ordering.natural().nullsLast()) //
-                .result();
+        return Comparator.comparing(Line::network, Comparator.nullsLast(String::compareTo))
+                .thenComparing(Line::product, Comparator.nullsLast(Enum::compareTo))
+                .thenComparing(Line::label, Comparator.nullsLast(String::compareTo))
+                .compare(this, other);
     }
 }
