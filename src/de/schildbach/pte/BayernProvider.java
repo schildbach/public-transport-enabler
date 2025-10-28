@@ -22,6 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -78,7 +79,7 @@ public class BayernProvider extends AbstractEfaProvider {
             if ("ABR".equals(trainType) || "ABELLIO Rail NRW GmbH".equals(trainName))
                 return new Line(id, network, Product.SUBURBAN_TRAIN, "ABR" + trainNum);
             if ("SBB".equals(trainType) || "SBB GmbH".equals(trainName))
-                return new Line(id, network, Product.REGIONAL_TRAIN, "SBB" + Strings.nullToEmpty(trainNum));
+                return new Line(id, network, Product.REGIONAL_TRAIN, "SBB" + Objects.toString(trainNum, ""));
         } else if ("5".equals(mot)) {
             if (name != null && name.startsWith("Stadtbus Linie ")) // Lindau
                 return super.parseLine(id, network, mot, symbol, name.substring(15), longName, trainType, trainNum,
