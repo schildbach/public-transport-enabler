@@ -33,7 +33,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 
-import com.google.common.io.BaseEncoding;
+import de.schildbach.pte.util.Encodings;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -58,10 +58,8 @@ import de.schildbach.pte.dto.TripOptions;
  * @author Michael Dyrna
  */
 public class VrsProviderLiveTest extends AbstractProviderLiveTest {
-    private static final BaseEncoding BASE64 = BaseEncoding.base64();
-
     public VrsProviderLiveTest() {
-        super(new VrsProvider(BASE64.decode(secretProperty("vrs.client_certificate"))));
+        super(new VrsProvider(Encodings.BASE64.decode(secretProperty("vrs.client_certificate"))));
     }
 
     @Test

@@ -48,6 +48,7 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import de.schildbach.pte.util.Encodings;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -56,7 +57,6 @@ import com.google.common.base.Strings;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
-import com.google.common.io.BaseEncoding;
 
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.Fare;
@@ -115,7 +115,6 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
     private static final String SECTION_TYPE_CHECK_OUT = "CHKO";
     @SuppressWarnings("deprecation")
     private static final HashFunction MD5 = Hashing.md5();
-    private static final BaseEncoding HEX = BaseEncoding.base16().lowerCase();
 
     public AbstractHafasClientInterfaceProvider(final NetworkId network, final HttpUrl apiBase,
             final Product[] productsMap) {
@@ -898,10 +897,10 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
         }
         if (requestMicMacSalt != null) {
             final HashCode mic = MD5.newHasher().putString(body, StandardCharsets.UTF_8).hash();
-            url.addQueryParameter("mic", HEX.encode(mic.asBytes()));
-            final HashCode mac = MD5.newHasher().putString(HEX.encode(mic.asBytes()), StandardCharsets.UTF_8)
+            url.addQueryParameter("mic", Encodings.HEX.encode(mic.asBytes()));
+            final HashCode mac = MD5.newHasher().putString(Encodings.HEX.encode(mic.asBytes()), StandardCharsets.UTF_8)
                     .putBytes(requestMicMacSalt).hash();
-            url.addQueryParameter("mac", HEX.encode(mac.asBytes()));
+            url.addQueryParameter("mac", Encodings.HEX.encode(mac.asBytes()));
         }
         return url.build();
     }
@@ -1226,13 +1225,13 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
 
     public static final byte[] decryptSalt(final String encryptedSalt, final String saltEncryptionKey) {
         try {
-            final byte[] key = BaseEncoding.base16().lowerCase().decode(saltEncryptionKey);
+            final byte[] key = Encodings.HEX.decode(saltEncryptionKey);
             checkState(key.length * 8 == 128, "encryption key must be 128 bits");
             final SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
             final IvParameterSpec ivParameterSpec = new IvParameterSpec(new byte[16]);
             final Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             cipher.init(Cipher.DECRYPT_MODE, secretKey, ivParameterSpec);
-            return cipher.doFinal(BaseEncoding.base64().decode(encryptedSalt));
+            return cipher.doFinal(Encodings.BASE64.decode(encryptedSalt));
         } catch (final GeneralSecurityException x) {
             // should not happen
             throw new RuntimeException(x);
