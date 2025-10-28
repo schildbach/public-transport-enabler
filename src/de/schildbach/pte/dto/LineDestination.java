@@ -22,8 +22,6 @@ import java.util.Objects;
 
 import javax.annotation.Nullable;
 
-import com.google.common.base.MoreObjects;
-
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -65,7 +63,9 @@ public final class LineDestination implements Serializable {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this).add("line", line).add("destination", destination).omitNullValues()
-                .toString();
+        return getClass().getSimpleName() + "{" +
+                "line=" + line +
+                (destination != null ? ",destination=" + destination : "") +
+                "}";
     }
 }

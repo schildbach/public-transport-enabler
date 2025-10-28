@@ -52,7 +52,6 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 
 import de.schildbach.pte.dto.Departure;
@@ -2393,10 +2392,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                             processIndividualLeg(pp, legs, Trip.Individual.Type.CAR, distance, departureTime,
                                     departureLocation, arrivalTime, arrivalLocation);
                         } else {
-                            throw new IllegalStateException(MoreObjects.toStringHelper("")
-                                    .add("itdPartialRoute.type", itdPartialRouteType)
-                                    .add("itdMeansOfTransport.type", itdMeansOfTransportType)
-                                    .add("itdMeansOfTransport.productName", itdMeansOfTransportProductName).toString());
+                            throw new IllegalStateException("itdPartialRoute.type=" + itdPartialRouteType +
+                                            ",itdMeansOfTransport.type=" + itdMeansOfTransportType +
+                                            ",itdMeansOfTransport.productName" + itdMeansOfTransportProductName);
                         }
 
                         XmlPullUtil.skipExit(pp, "itdPartialRoute");

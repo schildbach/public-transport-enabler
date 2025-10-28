@@ -23,7 +23,6 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
-import com.google.common.base.MoreObjects;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Ordering;
 
@@ -124,12 +123,11 @@ public final class Line implements Serializable, Comparable<Line> {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this).omitNullValues() //
-                .addValue(network) //
-                .addValue(product) //
-                .addValue(label) //
-                .addValue("'"+ name + "'") //
-                .toString();
+        return getClass().getSimpleName() + "{" +
+                (network != null ? network + "," : "") +
+                (product != null ? product + "," : "") +
+                (label != null ? label + "," : "") +
+                "'" + name + "'}";
     }
 
     @Override

@@ -24,9 +24,6 @@ import java.util.Objects;
 
 import javax.annotation.Nullable;
 
-import com.google.common.base.MoreObjects;
-import com.google.common.base.MoreObjects.ToStringHelper;
-
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -264,19 +261,18 @@ public final class Stop implements Serializable {
 
     @Override
     public String toString() {
-        final ToStringHelper helper = MoreObjects.toStringHelper(this).addValue(location);
-        if (plannedArrivalTime != null)
-            helper.add("plannedArrivalTime", String.format(Locale.US, "%ta %<tR", plannedArrivalTime));
-        if (arrivalCancelled)
-            helper.addValue("cancelled");
-        else if (predictedArrivalTime != null)
-            helper.add("predictedArrivalTime", String.format(Locale.US, "%ta %<tR", predictedArrivalTime));
-        if (plannedDepartureTime != null)
-            helper.add("plannedDepartureTime", String.format(Locale.US, "%ta %<tR", plannedDepartureTime));
-        if (departureCancelled)
-            helper.addValue("cancelled");
-        else if (predictedDepartureTime != null)
-            helper.add("predictedDepartureTime", String.format(Locale.US, "%ta %<tR", predictedDepartureTime));
-        return helper.toString();
+        return getClass().getSimpleName() + "{" +
+                location + "," +
+                (plannedArrivalTime != null ?
+                        "plannedArrivalTime=" + String.format(Locale.US, "%ta %<tR", plannedArrivalTime) +
+                                (arrivalCancelled ? " (cancelled)" : "") + "," : "") +
+                (predictedArrivalTime != null ?
+                        "predictedArrivalTime=" + String.format(Locale.US, "%ta %<tR", predictedArrivalTime) + "," : "") +
+                (plannedDepartureTime != null ?
+                        "plannedDepartureTime=" + String.format(Locale.US, "%ta %<tR", plannedDepartureTime) +
+                                (departureCancelled ? " (cancelled)" : "") + "," : "") +
+                (predictedDepartureTime != null ?
+                        "predictedDepartureTime=" + String.format(Locale.US, "%ta %<tR", predictedDepartureTime) + "," : "") +
+                "}";
     }
 }

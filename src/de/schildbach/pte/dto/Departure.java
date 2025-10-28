@@ -28,9 +28,6 @@ import java.util.Objects;
 
 import javax.annotation.Nullable;
 
-import com.google.common.base.MoreObjects;
-import com.google.common.base.MoreObjects.ToStringHelper;
-
 /**
  * @author Andreas Schildbach
  */
@@ -66,12 +63,14 @@ public final class Departure implements Serializable {
 
     @Override
     public String toString() {
-        final ToStringHelper helper = MoreObjects.toStringHelper(this);
-        if (plannedTime != null)
-            helper.add("planned", String.format(Locale.US, "%ta %<tR", plannedTime));
-        if (predictedTime != null)
-            helper.add("predicted", String.format(Locale.US, "%ta %<tR", predictedTime));
-        return helper.addValue(line).addValue(position).add("destination", destination).omitNullValues().toString();
+        return getClass().getSimpleName() + "{" +
+                (plannedTime != null ?
+                        "planned=" + String.format(Locale.US, "%ta %<tR", plannedTime) + "," : "") +
+                (predictedTime != null ?
+                        "predicted=" + String.format(Locale.US, "%ta %<tR", predictedTime) + "," : "") +
+                (position != null ? position + "," : "") +
+                (destination != null ? "destination=" + destination + "," : "") +
+                line + "}";
     }
 
     @Override

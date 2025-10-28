@@ -23,8 +23,6 @@ import java.util.Objects;
 
 import javax.annotation.Nullable;
 
-import com.google.common.base.MoreObjects;
-
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -83,7 +81,12 @@ public final class Fare implements Serializable {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this).addValue(name).addValue(type).addValue(currency).addValue(fare)
-                .addValue(unitName).addValue(units).toString();
+        return getClass().getSimpleName() + "{" +
+                name + "," +
+                type + "," +
+                currency + "," +
+                fare + "," +
+                unitName + "," +
+                units + "}";
     }
 }

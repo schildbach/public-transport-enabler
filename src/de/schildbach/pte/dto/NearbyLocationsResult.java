@@ -22,9 +22,6 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import com.google.common.base.MoreObjects;
-import com.google.common.base.MoreObjects.ToStringHelper;
-
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -54,10 +51,11 @@ public final class NearbyLocationsResult implements Serializable {
 
     @Override
     public String toString() {
-        final ToStringHelper helper = MoreObjects.toStringHelper(this).addValue(status);
-        if (locations != null)
-            helper.add("size", locations.size()).add("locations", locations);
-        return helper.toString();
+        return getClass().getSimpleName() + "{" +
+                status + "," +
+                "size=" +
+                (locations != null ? locations.size() + ",locations=" + locations : "null") +
+                "}";
     }
 
     public String toShortString() {

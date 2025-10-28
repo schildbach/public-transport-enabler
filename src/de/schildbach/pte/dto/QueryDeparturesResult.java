@@ -23,9 +23,6 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import com.google.common.base.MoreObjects;
-import com.google.common.base.MoreObjects.ToStringHelper;
-
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -63,10 +60,10 @@ public final class QueryDeparturesResult implements Serializable {
 
     @Override
     public String toString() {
-        final ToStringHelper helper = MoreObjects.toStringHelper(this).addValue(status);
-        if (stationDepartures != null)
-            helper.add("size", stationDepartures.size()).add("stationDepartures", stationDepartures);
-        return helper.toString();
+        return getClass().getSimpleName() + "{" +
+                status + "," +
+                "size=" + stationDepartures.size() + "," +
+                "stationDepartures=" + stationDepartures + "}";
     }
 
     public String toShortString() {

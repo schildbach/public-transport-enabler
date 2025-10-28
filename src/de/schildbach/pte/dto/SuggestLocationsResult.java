@@ -28,9 +28,6 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import com.google.common.base.MoreObjects;
-import com.google.common.base.MoreObjects.ToStringHelper;
-
 /**
  * @author Andreas Schildbach
  */
@@ -67,10 +64,12 @@ public final class SuggestLocationsResult implements Serializable {
 
     @Override
     public String toString() {
-        final ToStringHelper helper = MoreObjects.toStringHelper(this).addValue(status);
-        if (suggestedLocations != null)
-            helper.add("size", suggestedLocations.size()).add("suggestedLocations", suggestedLocations);
-        return helper.toString();
+        return getClass().getSimpleName() + "{" +
+                status + "," +
+                "size=" +
+                (suggestedLocations != null ?
+                        suggestedLocations.size() + ",suggestedLocations=" + suggestedLocations : "null") +
+                "}";
     }
 
     public String toShortString() {

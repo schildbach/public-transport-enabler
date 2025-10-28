@@ -35,9 +35,6 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
-import com.google.common.base.MoreObjects;
-import com.google.common.base.MoreObjects.ToStringHelper;
-
 /**
  * @author Andreas Schildbach
  */
@@ -297,15 +294,15 @@ public final class Trip implements Serializable {
 
     @Override
     public String toString() {
-        final ToStringHelper helper = MoreObjects.toStringHelper(this).addValue(getId());
         final Date firstPublicLegDepartureTime = getFirstPublicLegDepartureTime();
         final Date lastPublicLegArrivalTime = getLastPublicLegArrivalTime();
-        helper.addValue(
-                firstPublicLegDepartureTime != null ? String.format(Locale.US, "%ta %<tR", firstPublicLegDepartureTime)
-                        : "null" + '-' + lastPublicLegArrivalTime != null
-                                ? String.format(Locale.US, "%ta %<tR", lastPublicLegArrivalTime) : "null");
-        helper.add("numChanges", numChanges);
-        return helper.toString();
+        return getClass().getSimpleName() + "{" +
+                getId() + "," +
+                (firstPublicLegDepartureTime != null ?
+                        "first=" + String.format(Locale.US, "%ta %<tR", firstPublicLegDepartureTime) + "," : "") +
+                (lastPublicLegArrivalTime != null ?
+                        "last=" + String.format(Locale.US, "%ta %<tR", lastPublicLegArrivalTime) + "," : "") +
+                "numChanges=" + numChanges + "}";
     }
 
     public abstract static class Leg implements Serializable {
@@ -450,8 +447,11 @@ public final class Trip implements Serializable {
 
         @Override
         public String toString() {
-            return MoreObjects.toStringHelper(this).add("line", line).add("destination", destination)
-                    .add("departureStop", departureStop).add("arrivalStop", arrivalStop).omitNullValues().toString();
+            return getClass().getSimpleName() + "{" +
+                    "line=" + line + "," +
+                    (destination != null ? "destination=" + destination + "," : "") +
+                    "departureStop=" + departureStop + "," +
+                    "arrivalStop=" + arrivalStop + "}";
         }
     }
 
@@ -508,8 +508,12 @@ public final class Trip implements Serializable {
 
         @Override
         public String toString() {
-            return MoreObjects.toStringHelper(this).addValue(type).add("departure", departure).add("arrival", arrival)
-                    .add("min", min).add("distance", distance).omitNullValues().toString();
+            return getClass().getSimpleName() + "{" +
+                    type + "," +
+                    "departure=" + departure + "," +
+                    "arrival=" + arrival + "," +
+                    "min=" + min + "," +
+                    "distance=" + distance + "}";
         }
     }
 }

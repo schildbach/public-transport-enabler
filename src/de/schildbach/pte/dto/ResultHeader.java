@@ -21,8 +21,6 @@ import java.io.Serializable;
 
 import javax.annotation.Nullable;
 
-import com.google.common.base.MoreObjects;
-
 import de.schildbach.pte.NetworkId;
 
 import static java.util.Objects.requireNonNull;
@@ -55,8 +53,11 @@ public final class ResultHeader implements Serializable {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this).add("serverProduct", serverProduct).add("serverVersion", serverVersion)
-                .add("serverName", serverName).add("serverTime", serverTime).add("context", context).omitNullValues()
-                .toString();
+        return getClass().getSimpleName() + "{" +
+                "serverProduct=" + serverProduct + "," +
+                (serverVersion != null ? "serverVersion=" + serverVersion + "," : "") +
+                (serverName != null ? "serverName=" + serverName + "," : "") +
+                "serverTime=" + serverTime + "," +
+                "context=" + context + "}";
     }
 }

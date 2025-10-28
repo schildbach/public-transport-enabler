@@ -23,9 +23,6 @@ import java.util.Objects;
 
 import javax.annotation.Nullable;
 
-import com.google.common.base.MoreObjects;
-import com.google.common.base.MoreObjects.ToStringHelper;
-
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -67,9 +64,11 @@ public final class StationDepartures implements Serializable {
 
     @Override
     public String toString() {
-        final ToStringHelper helper = MoreObjects.toStringHelper(this).addValue(location);
-        if (departures != null)
-            helper.add("size", departures.size()).add("departures", departures);
-        return helper.toString();
+        return getClass().getSimpleName() + "{" +
+                location + "," +
+                "size=" +
+                (departures != null ?
+                        departures.size() + ",departures=" + departures : "null") +
+                "}";
     }
 }

@@ -28,8 +28,6 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
-import com.google.common.base.MoreObjects;
-import com.google.common.base.MoreObjects.ToStringHelper;
 import com.google.common.base.Strings;
 
 /**
@@ -204,9 +202,12 @@ public final class Location implements Serializable {
 
     @Override
     public String toString() {
-        final ToStringHelper helper = MoreObjects.toStringHelper(this).addValue(type).addValue(id);
-        if (hasCoord())
-            helper.addValue(coord);
-        return helper.add("place", place).add("name", name).add("products", products).omitNullValues().toString();
+        return getClass().getSimpleName() + "{" +
+                type + "," +
+                (id != null ? id + "," : "") +
+                (hasCoord() ? coord + "," : "") +
+                (place != null ? "place=" + place + "," : "") +
+                (name != null ? "name=" + name + "," : "") +
+                "products=" + products + "}";
     }
 }
