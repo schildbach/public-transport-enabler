@@ -4,6 +4,8 @@ Public Transport Enabler
 This is a Java library allowing you to get data from public transport providers.
 Look into [NetworkProvider.java](https://github.com/schildbach/public-transport-enabler/blob/master/src/de/schildbach/pte/NetworkProvider.java) for an overview of the API.
 
+The library uses Java 8 language and requires Java 8 API or Android 7 API (level 24).
+
 Using providers that require secrets
 ------------------------------------
 
