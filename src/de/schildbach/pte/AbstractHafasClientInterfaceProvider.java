@@ -548,6 +548,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
     protected final QueryTripsResult jsonTripSearch(Location from, @Nullable Location via, Location to, final Date time,
             final boolean dep, final @Nullable Set<Product> products, final @Nullable WalkSpeed walkSpeed,
             final @Nullable String moreContext) throws IOException {
+        final boolean canGetConGroups = apiVersion.compareToIgnoreCase("1.24") <= 0;
         from = jsonTripSearchIdentify(from);
         if (from == null)
             return new QueryTripsResult(new ResultHeader(network, SERVER_PRODUCT),
@@ -583,7 +584,8 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                 + "\"gisFltrL\":[{\"mode\":\"FB\",\"profile\":{\"type\":\"F\",\"linDistRouting\":false,\"maxdist\":2000},\"type\":\"M\",\"meta\":\""
                 + meta + "\"}]," //
                 + "\"getPolyline\":true,\"getPasslist\":true," //
-                + "\"getConGroups\":false,\"getIST\":false,\"getEco\":false,\"extChgTime\":-1}", //
+                + (canGetConGroups ? "\"getConGroups\":false," : "") //
+                + "\"getIST\":false,\"getEco\":false,\"extChgTime\":-1}", //
                 false);
 
         final HttpUrl url = requestUrl(request);
