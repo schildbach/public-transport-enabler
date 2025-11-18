@@ -785,8 +785,8 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                     for (int i = 0; i < ovwTrfRefList.length(); i++) {
                         final JSONObject ovwTrfRef = ovwTrfRefList.getJSONObject(i);
                         final String type = ovwTrfRef.getString("type");
-                        final JSONObject jsonFareSet = fareSetList.getJSONObject(ovwTrfRef.getInt("fareSetX"));
                         if (type.equals("T")) { // ticket
+                            final JSONObject jsonFareSet = fareSetList.getJSONObject(ovwTrfRef.getInt("fareSetX"));
                             final JSONObject jsonFare =
                                     jsonFareSet.getJSONArray("fareL").getJSONObject(ovwTrfRef.getInt("fareX"));
                             final String fareName = jsonFare.getString("name");
@@ -803,6 +803,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                                     fares.add(fare);
                             }
                         } else if (type.equals("F")) { // fare
+                            final JSONObject jsonFareSet = fareSetList.getJSONObject(ovwTrfRef.getInt("fareSetX"));
                             final JSONObject jsonFare =
                                     jsonFareSet.getJSONArray("fareL").getJSONObject(ovwTrfRef.getInt("fareX"));
                             final String fareName = jsonFare.getString("name");
@@ -816,6 +817,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                                     fares.add(fare);
                             }
                         } else if (type.equals("FS")) { // fare set
+                            final JSONObject jsonFareSet = fareSetList.getJSONObject(ovwTrfRef.getInt("fareSetX"));
                             final String fareSetName = jsonFareSet.getString("name");
                             final JSONArray fareList = jsonFareSet.getJSONArray("fareL");
                             for (int iFare = 0; iFare < fareList.length(); iFare++) {
@@ -829,6 +831,8 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                                 if (!hideFare(fare))
                                     fares.add(fare);
                             }
+                        } else if (ovwTrfRef.length() == 1) {
+                            // cannot handle tariffs with no information other than the type
                         } else {
                             throw new IllegalArgumentException("cannot handle type: " + type);
                         }
