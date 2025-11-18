@@ -45,7 +45,7 @@ public class ShProvider extends AbstractHafasClientInterfaceProvider {
     public ShProvider(final String apiClient, final String apiAuthorization) {
         super(NetworkId.SH, API_BASE, PRODUCTS_MAP);
         setApiEndpoint("gate");
-        setApiVersion("1.21");
+        setApiVersion("1.68");
         setApiClient(apiClient);
         setApiAuthorization(apiAuthorization);
         setStyles(STYLES);
