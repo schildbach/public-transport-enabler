@@ -43,7 +43,7 @@ public class OoevvProvider extends AbstractHafasClientInterfaceProvider {
 
     public OoevvProvider(final String apiClient, final String apiAuthorization) {
         super(NetworkId.OOEVV, API_BASE, PRODUCTS_MAP);
-        setApiVersion("1.18");
+        setApiVersion("1.59");
         setApiExt("VAO.6");
         setApiClient(apiClient);
         setApiAuthorization(apiAuthorization);
