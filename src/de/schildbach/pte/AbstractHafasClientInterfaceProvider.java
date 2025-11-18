@@ -273,7 +273,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
             final JSONObject res = svcRes.getJSONObject("res");
 
             final JSONObject common = res.getJSONObject("common");
-            /* final List<String[]> remarks = */ parseRemList(common.getJSONArray("remL"));
+            /* final List<String[]> remarks = */ parseRemList(common.optJSONArray("remL"));
             final JSONArray crdSysList = common.optJSONArray("crdSysL");
 
             final JSONArray locL = res.optJSONArray("locL");
@@ -363,7 +363,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
             final JSONObject res = svcRes.getJSONObject("res");
 
             final JSONObject common = res.getJSONObject("common");
-            final List<String[]> remarks = parseRemList(common.getJSONArray("remL"));
+            final List<String[]> remarks = parseRemList(common.optJSONArray("remL"));
             final List<Style> styles = parseIcoList(common.getJSONArray("icoL"));
             final List<String> operators = parseOpList(common.getJSONArray("opL"));
             final List<Line> lines = parseProdList(common.getJSONArray("prodL"), operators, styles);
@@ -503,7 +503,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
             final JSONObject res = svcRes.getJSONObject("res");
 
             final JSONObject common = res.getJSONObject("common");
-            /* final List<String[]> remarks = */ parseRemList(common.getJSONArray("remL"));
+            /* final List<String[]> remarks = */ parseRemList(common.optJSONArray("remL"));
 
             final JSONObject match = res.getJSONObject("match");
             final JSONArray crdSysList = common.optJSONArray("crdSysL");
@@ -648,7 +648,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
             final JSONObject res = svcRes.getJSONObject("res");
 
             final JSONObject common = res.getJSONObject("common");
-            final List<String[]> remarks = parseRemList(common.getJSONArray("remL"));
+            final List<String[]> remarks = parseRemList(common.optJSONArray("remL"));
             final List<Style> styles = parseIcoList(common.getJSONArray("icoL"));
             final JSONArray crdSysList = common.optJSONArray("crdSysL");
             final JSONArray locList = common.getJSONArray("locL");
@@ -1013,8 +1013,10 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
     }
 
     private List<String[]> parseRemList(final JSONArray remList) throws JSONException {
-        final List<String[]> remarks = new ArrayList<>(remList.length());
+        if (remList == null)
+            return null;
 
+        final List<String[]> remarks = new ArrayList<>(remList.length());
         for (int i = 0; i < remList.length(); i++) {
             final JSONObject rem = remList.getJSONObject(i);
             final String code = rem.optString("code", null);
@@ -1022,7 +1024,6 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
             final String txtN = rem.optString("txtN", null);
             remarks.add(new String[] { code, txtS != null ? txtS : txtN });
         }
-
         return remarks;
     }
 
