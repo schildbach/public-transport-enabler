@@ -41,7 +41,7 @@ public class VgsProvider extends AbstractHafasClientInterfaceProvider {
 
     public VgsProvider(final String apiClient, final String apiAuthorization, final byte[] salt) {
         super(NetworkId.VGS, API_BASE, PRODUCTS_MAP);
-        setApiVersion("1.21");
+        setApiVersion("1.63");
         setApiClient(apiClient);
         setApiAuthorization(apiAuthorization);
         setRequestMicMacSalt(salt);
