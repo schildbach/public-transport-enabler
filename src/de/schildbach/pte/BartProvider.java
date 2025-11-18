@@ -40,7 +40,7 @@ public class BartProvider extends AbstractHafasClientInterfaceProvider {
     public BartProvider(final String apiClient, final String apiAuthorization) {
         super(NetworkId.BART, API_BASE, PRODUCTS_MAP);
         setTimeZone("America/Los_Angeles");
-        setApiVersion("1.18");
+        setApiVersion("1.53");
         setApiClient(apiClient);
         setApiAuthorization(apiAuthorization);
     }
