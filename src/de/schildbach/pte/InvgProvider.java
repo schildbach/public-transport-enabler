@@ -42,7 +42,7 @@ public class InvgProvider extends AbstractHafasClientInterfaceProvider {
 
     public InvgProvider(final String apiClient, final String apiAuthorization, final byte[] salt) {
         super(NetworkId.INVG, API_BASE, PRODUCTS_MAP);
-        setApiVersion("1.16");
+        setApiVersion("1.73");
         setApiClient(apiClient);
         setApiAuthorization(apiAuthorization);
         setRequestMicMacSalt(salt);
