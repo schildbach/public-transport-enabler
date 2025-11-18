@@ -29,8 +29,7 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class VmtProvider extends AbstractHafasClientInterfaceProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("https://vmt.hafas.de/bin/");
-    // http://www.routenplaner.nahverkehr-jena.de/bin/
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://vmt.eks-prod-euc1.hafas.cloud/bin/");
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.TRAM, Product.FERRY,
             Product.BUS /* guessing */, Product.BUS, null };
