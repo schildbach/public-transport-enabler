@@ -879,13 +879,16 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
     }
 
     private String wrapJsonApiRequest(final String meth, final String req, final boolean formatted) {
+        final boolean canGetTimeTablePeriod = apiVersion.compareToIgnoreCase("1.75") <= 0;
         return "{" //
                 + (apiAuthorization != null ? "\"auth\":" + apiAuthorization + "," : "") //
                 + "\"client\":" + requireNonNull(apiClient) + "," //
                 + (apiExt != null ? "\"ext\":\"" + apiExt + "\"," : "") //
                 + "\"ver\":\"" + requireNonNull(apiVersion) + "\",\"lang\":\"eng\"," //
                 + "\"svcReqL\":[" //
-                + "{\"meth\":\"ServerInfo\",\"req\":{\"getServerDateTime\":true,\"getTimeTablePeriod\":false}}," //
+                + "{\"meth\":\"ServerInfo\",\"req\":{\"getServerDateTime\":true" //
+                + (canGetTimeTablePeriod ? ",\"getTimeTablePeriod\":false" : "") //
+                + "}}," //
                 + "{\"meth\":\"" + meth + "\",\"cfg\":{\"polyEnc\":\"GPA\"},\"req\":" + req + "}" //
                 + "]," //
                 + "\"formatted\":" + formatted + "}";
