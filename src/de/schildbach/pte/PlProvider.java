@@ -43,7 +43,7 @@ public class PlProvider extends AbstractHafasClientInterfaceProvider {
 
     public PlProvider(final String apiClient, final String apiAuthorization) {
         super(NetworkId.PL, API_BASE, PRODUCTS_MAP);
-        setApiVersion("1.21");
+        setApiVersion("1.63");
         setApiClient(apiClient);
         setApiAuthorization(apiAuthorization);
         setSessionCookieName("SERVERID");
