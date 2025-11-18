@@ -793,12 +793,10 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                             final int ticketX = ovwTrfRef.getInt("ticketX");
                             final JSONObject jsonTicket = jsonFare.getJSONArray("ticketL").getJSONObject(ticketX);
                             final String ticketName = jsonTicket.getString("name");
-                            final String currencyStr = jsonTicket.getString("cur");
-                            if (!Strings.isNullOrEmpty(currencyStr)) {
-                                final Currency currency = Currency.getInstance(currencyStr);
-                                final float price = jsonTicket.getInt("prc") / 100f;
+                            final Price price = parsePriceFromObject(jsonTicket);
+                            if (price != null) {
                                 final Fare fare = new Fare(normalizeFareName(fareName) + '\n' + ticketName,
-                                        normalizeFareType(ticketName), currency, price, null, null);
+                                        normalizeFareType(ticketName), price.currency, price.amount, null, null);
                                 if (!hideFare(fare))
                                     fares.add(fare);
                             }
@@ -807,12 +805,10 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                             final JSONObject jsonFare =
                                     jsonFareSet.getJSONArray("fareL").getJSONObject(ovwTrfRef.getInt("fareX"));
                             final String fareName = jsonFare.getString("name");
-                            final String currencyStr = jsonFare.optString("cur");
-                            if (!Strings.isNullOrEmpty(currencyStr)) {
-                                final Currency currency = ParserUtils.getCurrency(currencyStr);
-                                final float price = jsonFare.getInt("prc") / 100f;
+                            final Price price = parsePriceFromObject(jsonFare);
+                            if (price != null) {
                                 final Fare fare = new Fare(normalizeFareName(fareName), normalizeFareType(fareName),
-                                        currency, price, null, null);
+                                        price.currency, price.amount, null, null);
                                 if (!hideFare(fare))
                                     fares.add(fare);
                             }
@@ -823,11 +819,9 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                             for (int iFare = 0; iFare < fareList.length(); iFare++) {
                                 final JSONObject jsonFare = fareList.getJSONObject(iFare);
                                 final String fareName = jsonFare.getString("name");
-                                final String currencyStr = jsonFare.optString("cur");
-                                final Currency currency = ParserUtils.getCurrency(currencyStr);
-                                final float price = jsonFare.getInt("prc") / 100f;
+                                final Price price = parsePriceFromObject(jsonFare);
                                 final Fare fare = new Fare(normalizeFareName(fareSetName), normalizeFareType(fareName),
-                                        currency, price, null, null);
+                                        price.currency, price.amount, null, null);
                                 if (!hideFare(fare))
                                     fares.add(fare);
                             }
@@ -1176,6 +1170,32 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
         }
 
         return lines;
+    }
+
+    private static class Price {
+        public final Currency currency;
+        public final float amount;
+
+        public Price(final Currency currency, final float amount) {
+            this.currency = currency;
+            this.amount = amount;
+        }
+    }
+
+    private Price parsePriceFromObject(final JSONObject jsonObject) throws JSONException {
+        final boolean hasPriceObject = apiVersion.compareToIgnoreCase("1.27") >= 0;
+        if (hasPriceObject) {
+            final JSONObject jsonPrice = jsonObject.optJSONObject("price");
+            if (jsonPrice == null)
+                return null;
+            final Currency currency = ParserUtils.getCurrency(jsonPrice.getString("currency"));
+            final float amount = jsonPrice.getInt("amount") / 100f;
+            return new Price(currency, amount);
+        } else {
+            final Currency currency = ParserUtils.getCurrency(jsonObject.optString("cur"));
+            final float amount = jsonObject.getInt("prc") / 100f;
+            return new Price(currency, amount);
+        }
     }
 
     private List<String> parsePolyList(final JSONArray polyList) throws JSONException {
