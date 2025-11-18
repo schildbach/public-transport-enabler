@@ -366,7 +366,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
             final List<String[]> remarks = parseRemList(common.optJSONArray("remL"));
             final List<Style> styles = parseIcoList(common.getJSONArray("icoL"));
             final List<String> operators = parseOpList(common.optJSONArray("opL"));
-            final List<Line> lines = parseProdList(common.getJSONArray("prodL"), operators, styles);
+            final List<Line> lines = parseProdList(common.optJSONArray("prodL"), operators, styles);
             final JSONArray crdSysList = common.optJSONArray("crdSysL");
             final JSONArray locList = common.getJSONArray("locL");
 
@@ -653,7 +653,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
             final JSONArray crdSysList = common.optJSONArray("crdSysL");
             final JSONArray locList = common.getJSONArray("locL");
             final List<String> operators = parseOpList(common.optJSONArray("opL"));
-            final List<Line> lines = parseProdList(common.getJSONArray("prodL"), operators, styles);
+            final List<Line> lines = parseProdList(common.optJSONArray("prodL"), operators, styles);
             final List<String> encodedPolylines = parsePolyList(common.getJSONArray("polyL"));
 
             final JSONArray outConList = res.optJSONArray("outConL");
@@ -1144,6 +1144,9 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
 
     private List<Line> parseProdList(final JSONArray prodList, final List<String> operators, final List<Style> styles)
             throws JSONException {
+        if (prodList == null)
+            return null;
+
         final int prodListLen = prodList.length();
         final List<Line> lines = new ArrayList<>(prodListLen);
 
