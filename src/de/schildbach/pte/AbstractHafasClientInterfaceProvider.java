@@ -365,7 +365,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
             final JSONObject common = res.getJSONObject("common");
             final List<String[]> remarks = parseRemList(common.optJSONArray("remL"));
             final List<Style> styles = parseIcoList(common.getJSONArray("icoL"));
-            final List<String> operators = parseOpList(common.getJSONArray("opL"));
+            final List<String> operators = parseOpList(common.optJSONArray("opL"));
             final List<Line> lines = parseProdList(common.getJSONArray("prodL"), operators, styles);
             final JSONArray crdSysList = common.optJSONArray("crdSysL");
             final JSONArray locList = common.getJSONArray("locL");
@@ -652,7 +652,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
             final List<Style> styles = parseIcoList(common.getJSONArray("icoL"));
             final JSONArray crdSysList = common.optJSONArray("crdSysL");
             final JSONArray locList = common.getJSONArray("locL");
-            final List<String> operators = parseOpList(common.getJSONArray("opL"));
+            final List<String> operators = parseOpList(common.optJSONArray("opL"));
             final List<Line> lines = parseProdList(common.getJSONArray("prodL"), operators, styles);
             final List<String> encodedPolylines = parsePolyList(common.getJSONArray("polyL"));
 
@@ -1130,14 +1130,15 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
     }
 
     private List<String> parseOpList(final JSONArray opList) throws JSONException {
-        final List<String> operators = new ArrayList<>(opList.length());
+        if (opList == null)
+            return null;
 
+        final List<String> operators = new ArrayList<>(opList.length());
         for (int i = 0; i < opList.length(); i++) {
             final JSONObject op = opList.getJSONObject(i);
             final String operator = op.getString("name");
             operators.add(operator);
         }
-
         return operators;
     }
 
