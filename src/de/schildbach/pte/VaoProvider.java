@@ -47,7 +47,7 @@ public class VaoProvider extends AbstractHafasClientInterfaceProvider {
     public VaoProvider(final String apiClient, final String apiAuthorization) {
         super(NetworkId.VAO, API_BASE, PRODUCTS_MAP);
         setApiEndpoint("gate");
-        setApiVersion("1.18");
+        setApiVersion("1.59");
         setApiExt("VAO.6");
         setApiClient(apiClient);
         setApiAuthorization(apiAuthorization);
