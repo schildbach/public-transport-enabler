@@ -58,7 +58,7 @@ public enum NetworkId {
     DUB,
 
     // United States
-    BART, RTACHICAGO, CMTA,
+    BART, RTACHICAGO,
 
     // Australia
     SYDNEY,
