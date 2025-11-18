@@ -41,7 +41,7 @@ public class AvvAachenProvider extends AbstractHafasClientInterfaceProvider {
 
     public AvvAachenProvider(final String apiClient, final String apiAuthorization) {
         super(NetworkId.AVV_AACHEN, API_BASE, PRODUCTS_MAP);
-        setApiVersion("1.16");
+        setApiVersion("1.69");
         setApiClient(apiClient);
         setApiAuthorization(apiAuthorization);
     }
