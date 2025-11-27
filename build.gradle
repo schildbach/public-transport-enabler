@@ -51,3 +51,12 @@ compileTestJava {
 test {
     exclude 'de/schildbach/pte/live/**'
 }
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            pom
+        }
+    }
+}
