@@ -50,3 +50,15 @@ compileTestJava {
 test {
     exclude 'de/schildbach/pte/live/**'
 }
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = project.group
+            artifactId = archivesBaseName
+            version = project.version
+
+            from components.java
+        }
+    }
+}
