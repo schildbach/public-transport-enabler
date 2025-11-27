@@ -5,6 +5,7 @@ plugins {
 
 group = 'de.schildbach.pte'
 archivesBaseName = 'public-transport-enabler'
+version = 'SNAPSHOT'
 
 repositories {
     mavenCentral()
@@ -53,12 +54,9 @@ test {
 
 publishing {
     publications {
-        maven(MavenPublication) {
-            groupId = project.group
-            artifactId = archivesBaseName
-            version = project.version
-
+        mavenJava(MavenPublication) {
             from components.java
+            pom
         }
     }
 }
