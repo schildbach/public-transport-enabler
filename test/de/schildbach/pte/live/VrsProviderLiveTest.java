@@ -24,6 +24,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.net.SocketTimeoutException;
+import java.util.Base64;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.EnumSet;
@@ -33,7 +34,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 
-import de.schildbach.pte.util.Encodings;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -59,7 +59,7 @@ import de.schildbach.pte.dto.TripOptions;
  */
 public class VrsProviderLiveTest extends AbstractProviderLiveTest {
     public VrsProviderLiveTest() {
-        super(new VrsProvider(Encodings.BASE64.decode(secretProperty("vrs.client_certificate"))));
+        super(new VrsProvider(Base64.getDecoder().decode(secretProperty("vrs.client_certificate"))));
     }
 
     @Test
