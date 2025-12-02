@@ -319,7 +319,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         for (int i = 0; i < messagesSize; i++) {
             final JSONObject message = messages.optJSONObject(i);
             final String messageName = message.getString("name");
-            final String messageValue = Strings.emptyToNull(message.getString("value"));
+            final String messageValue = message.getString("value");
             if ("code".equals(messageName) && !"-8010".equals(messageValue) && !"-8011".equals(messageValue))
                 return SuggestLocationsResult.Status.SERVICE_DOWN;
         }
