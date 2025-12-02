@@ -48,7 +48,7 @@ public class OebbProvider extends AbstractHafasClientInterfaceProvider {
     public OebbProvider(final HttpUrl apiBase, final String apiClient, final String apiAuthorization) {
         super(NetworkId.OEBB, apiBase, PRODUCTS_MAP);
         setApiEndpoint("gate");
-        setApiVersion("1.39");
+        setApiVersion("1.88");
         setApiClient(apiClient);
         setApiAuthorization(apiAuthorization);
     }
