@@ -430,7 +430,7 @@ public class VrsProvider extends AbstractNetworkProvider {
 
         try {
             final JSONObject head = new JSONObject(page.toString());
-            final String error = Strings.emptyToNull(head.optString("error", "").trim());
+            final String error = head.optString("error", null);
             if (error != null) {
                 if (error.equals("ASS2-Server lieferte leere Antwort."))
                     return new QueryDeparturesResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT),
@@ -532,7 +532,7 @@ public class VrsProvider extends AbstractNetworkProvider {
             final List<SuggestedLocation> locations = new ArrayList<>();
 
             final JSONObject head = new JSONObject(page.toString());
-            final String error = Strings.emptyToNull(head.optString("error", "").trim());
+            final String error = head.optString("error", null);
             if (error != null) {
                 if (error.equals("ASS2-Server lieferte leere Antwort."))
                     return new SuggestLocationsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT),
@@ -644,7 +644,7 @@ public class VrsProvider extends AbstractNetworkProvider {
         try {
             final List<Trip> trips = new ArrayList<>();
             final JSONObject head = new JSONObject(page.toString());
-            final String error = Strings.emptyToNull(head.optString("error", "").trim());
+            final String error = head.optString("error", null);
             if (error != null) {
                 if (error.equals("ASS2-Server lieferte leere Antwort."))
                     return new QueryTripsResult(new ResultHeader(NetworkId.VRS, SERVER_PRODUCT),
@@ -1101,7 +1101,7 @@ public class VrsProvider extends AbstractNetworkProvider {
 
         try {
             final JSONObject head = new JSONObject(page.toString());
-            final String error = Strings.emptyToNull(head.optString("error", "").trim());
+            final String error = head.optString("error", null);
             if (error != null) {
                 throw new IllegalStateException(error);
             }
