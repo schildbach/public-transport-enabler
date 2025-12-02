@@ -1987,7 +1987,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     private static final Pattern P_STATION_NAME_WHITESPACE = Pattern.compile("\\s+");
 
     protected String normalizeLocationName(final String name) {
-        if (Strings.isNullOrEmpty(name))
+        if (name == null || name.isEmpty())
             return null;
 
         return P_STATION_NAME_WHITESPACE.matcher(name).replaceAll(" ");

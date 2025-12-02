@@ -28,8 +28,6 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
-import com.google.common.base.Strings;
-
 /**
  * @author Andreas Schildbach
  */
@@ -88,7 +86,7 @@ public final class Location implements Serializable {
     }
 
     public final boolean hasId() {
-        return !Strings.isNullOrEmpty(id);
+        return id != null && !id.isEmpty();
     }
 
     public final boolean hasCoord() {
