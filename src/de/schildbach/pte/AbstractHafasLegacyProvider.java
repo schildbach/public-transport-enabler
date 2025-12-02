@@ -55,8 +55,6 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import com.google.common.base.Strings;
-
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.Line;
 import de.schildbach.pte.dto.Line.Attr;
@@ -391,7 +389,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
     @Override
     public QueryDeparturesResult queryDepartures(final String stationId, final @Nullable Date time,
             final int maxDepartures, final boolean equivs) throws IOException {
-        requireNonNull(Strings.emptyToNull(stationId));
+        requireNonNull(stationId);
 
         final HttpUrl.Builder url = stationBoardEndpoint.newBuilder().addPathSegment(apiLanguage);
         appendXmlStationBoardParameters(url, time, stationId, maxDepartures, equivs, "vs_java3");

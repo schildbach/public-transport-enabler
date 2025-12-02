@@ -1468,7 +1468,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     @Override
     public QueryDeparturesResult queryDepartures(final String stationId, final @Nullable Date time,
             final int maxDepartures, final boolean equivs) throws IOException {
-        requireNonNull(Strings.emptyToNull(stationId));
+        requireNonNull(stationId);
 
         return xsltDepartureMonitorRequest(stationId, time, maxDepartures, equivs);
     }

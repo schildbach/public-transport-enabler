@@ -414,7 +414,7 @@ public class VrsProvider extends AbstractNetworkProvider {
     @Override
     public QueryDeparturesResult queryDepartures(final String stationId, @Nullable Date time, int maxDepartures,
             boolean equivs) throws IOException {
-        requireNonNull(Strings.emptyToNull(stationId));
+        requireNonNull(stationId);
 
         // g=p means group by product; not used here
         // d=minutes overwrites c=count and returns departures for the next d minutes
