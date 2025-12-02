@@ -18,7 +18,6 @@
 package de.schildbach.pte.util;
 
 import java.io.ByteArrayInputStream;
-import java.io.EOFException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
@@ -46,8 +45,6 @@ import javax.net.ssl.X509TrustManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Throwables;
 
 import de.schildbach.pte.exception.BlockedException;
 import de.schildbach.pte.exception.InternalErrorException;
@@ -154,8 +151,6 @@ public final class HttpClient {
                 try {
                     response = chain.proceed(request);
                 } catch (final IOException x) {
-                    if (Throwables.getRootCause(x) instanceof EOFException)
-                        return chain.proceed(request); // retry
                     throw x;
                 }
                 if (response.isSuccessful() && response.peekBody(1).bytes().length == 0) {
