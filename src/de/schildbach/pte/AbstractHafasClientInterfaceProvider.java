@@ -49,8 +49,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.google.common.base.Strings;
-
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.Fare;
 import de.schildbach.pte.dto.Line;
@@ -1107,7 +1105,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
 
         for (int iProd = 0; iProd < prodListLen; iProd++) {
             final JSONObject prod = prodList.getJSONObject(iProd);
-            final String name = Strings.emptyToNull(prod.getString("name"));
+            final String name = prod.getString("name");
             final String nameS = prod.optString("nameS", null);
             final String number = prod.optString("number", null);
             final int icoIndex = prod.getInt("icoX");
@@ -1118,7 +1116,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
             final JSONObject prodCtx = prod.optJSONObject("prodCtx");
             final String id = prodCtx != null ? prodCtx.optString("lineId", null) : null;
             final Product product = cls != -1 ? intToProduct(cls) : null;
-            lines.add(newLine(id, operator, product, name, nameS, number, style));
+            lines.add(newLine(id, operator, product, !name.isEmpty() ? name : null, nameS, number, style));
         }
 
         return lines;

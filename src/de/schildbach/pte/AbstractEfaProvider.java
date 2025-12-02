@@ -54,8 +54,6 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import com.google.common.base.Strings;
-
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.Fare;
 import de.schildbach.pte.dto.Fare.Type;
@@ -2299,11 +2297,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                     if (useRouteIndexAsTripId) {
                         final String routeIndex = XmlPullUtil.optAttr(pp, "routeIndex", null);
                         final String routeTripIndex = XmlPullUtil.optAttr(pp, "routeTripIndex", null);
-                        tripId = Strings.emptyToNull(
-                                Stream.of(routeIndex, routeTripIndex)
+                        tripId = Stream.of(routeIndex, routeTripIndex)
                                         .filter(Objects::nonNull)
                                         .map(Object::toString)
-                                        .collect(Collectors.joining("-")));
+                                        .collect(Collectors.collectingAndThen(Collectors.joining("-"), id -> !id.isEmpty() ? id : null));
                     } else {
                         tripId = null;
                     }
@@ -2411,8 +2408,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                         if (XmlPullUtil.test(pp, "itdSingleTicket")) {
                             final String net = XmlPullUtil.optAttr(pp, "net", null);
                             if (net != null) {
-                                final String currencyStr = Strings.emptyToNull(XmlPullUtil.optAttr(pp, "currency", null));
-                                if (currencyStr != null) {
+                                final String currencyStr = XmlPullUtil.optAttr(pp, "currency", null);
+                                if (currencyStr != null && !currencyStr.isEmpty()) {
                                     final Currency currency = parseCurrency(currencyStr);
                                     final String fareAdult = XmlPullUtil.optAttr(pp, "fareAdult", null);
                                     final String fareChild = XmlPullUtil.optAttr(pp, "fareChild", null);
@@ -2883,7 +2880,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                         // ignore
                     } else {
                         legs.add(new Trip.Public(lineDestination.line, lineDestination.destination, departure, arrival,
-                                intermediateStops, path, Strings.emptyToNull(message.toString())));
+                                intermediateStops, path, message.length() > 0 ? message.toString() : null));
                     }
                 }
 

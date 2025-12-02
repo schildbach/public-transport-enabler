@@ -45,7 +45,6 @@ import de.schildbach.pte.util.ParserUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import com.google.common.base.Strings;
 
 import de.schildbach.pte.dto.Departure;
 import de.schildbach.pte.dto.Fare;
@@ -823,7 +822,7 @@ public class VrsProvider extends AbstractNetworkProvider {
                                         segmentOriginPosition, segmentOriginPosition),
                                 new Stop(segmentDestination, false /* departure */, arrivalPlanned, arrivalPredicted,
                                         segmentDestinationPosition, segmentDestinationPosition),
-                                intermediateStops, points, Strings.emptyToNull(message.toString())));
+                                intermediateStops, points, message.length() > 0 ? message.toString() : null));
                     } else {
                         throw new IllegalStateException("unhandled type: " + type);
                     }
