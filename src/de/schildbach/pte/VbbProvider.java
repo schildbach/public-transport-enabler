@@ -40,17 +40,16 @@ public class VbbProvider extends AbstractHafasClientInterfaceProvider {
             .complementOf(EnumSet.of(Product.HIGH_SPEED_TRAIN, Product.ON_DEMAND));
     private static final String DEFAULT_API_CLIENT = "{\"id\":\"VBB\",\"type\":\"AND\"}";
 
-    public VbbProvider(final String apiAuthorization, final byte[] salt) {
-        this(DEFAULT_API_CLIENT, apiAuthorization, salt);
+    public VbbProvider(final String apiAuthorization) {
+        this(DEFAULT_API_CLIENT, apiAuthorization);
     }
 
-    public VbbProvider(final String apiClient, final String apiAuthorization, final byte[] salt) {
+    public VbbProvider(final String apiClient, final String apiAuthorization) {
         super(NetworkId.VBB, API_BASE, PRODUCTS_MAP);
         setApiVersion("1.77");
         setApiExt("VBB.4");
         setApiClient(apiClient);
         setApiAuthorization(apiAuthorization);
-        setRequestMicMacSalt(salt);
     }
 
     private static final Pattern P_SPLIT_NAME_SU = Pattern.compile("(.*?)(?:\\s+\\((S|U|S\\+U)\\))?");

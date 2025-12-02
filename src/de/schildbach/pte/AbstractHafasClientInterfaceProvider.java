@@ -22,8 +22,6 @@ import static com.google.common.base.Preconditions.checkState;
 import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -46,11 +44,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
-import javax.crypto.Cipher;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 
-import de.schildbach.pte.util.Encodings;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -99,10 +93,6 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
     private String apiAuthorization;
     @Nullable
     private String apiClient;
-    @Nullable
-    private byte[] requestChecksumSalt;
-    @Nullable
-    private byte[] requestMicMacSalt;
 
     private static final String SERVER_PRODUCT = "hci";
     private static final String SECTION_TYPE_JOURNEY = "JNY";
@@ -167,24 +157,6 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
 
     public String getApiClient() {
         return apiClient;
-    }
-
-    protected AbstractHafasClientInterfaceProvider setRequestChecksumSalt(final byte[] requestChecksumSalt) {
-        this.requestChecksumSalt = requestChecksumSalt;
-        return this;
-    }
-
-    public byte[] getRequestChecksumSalt() {
-        return requestChecksumSalt;
-    }
-
-    protected AbstractHafasClientInterfaceProvider setRequestMicMacSalt(final byte[] requestMicMacSalt) {
-        this.requestMicMacSalt = requestMicMacSalt;
-        return this;
-    }
-
-    public byte[] getRequestMicMacSalt() {
-        return requestMicMacSalt;
     }
 
     @Override
@@ -898,26 +870,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
     }
 
     private HttpUrl requestUrl(final String body) {
-        final HttpUrl.Builder url = apiBase.newBuilder().addPathSegment(apiEndpoint);
-        MessageDigest md5 = md5instance();
-        if (requestChecksumSalt != null) {
-            md5.reset();
-            md5.update(body.getBytes(StandardCharsets.UTF_8));
-            md5.update(requestChecksumSalt);
-            url.addQueryParameter("checksum", Encodings.HEX.encode(md5.digest()));
-        }
-        if (requestMicMacSalt != null) {
-            md5.reset();
-            md5.update(body.getBytes(StandardCharsets.UTF_8));
-            byte[] mic = md5.digest();
-            url.addQueryParameter("mic", Encodings.HEX.encode(mic));
-            md5.reset();
-            md5.update(Encodings.HEX.encode(mic).getBytes(StandardCharsets.UTF_8));
-            md5.update(requestMicMacSalt);
-            byte[] mac = md5.digest();
-            url.addQueryParameter("mac", Encodings.HEX.encode(mac));
-        }
-        return url.build();
+        return apiBase.newBuilder().addPathSegment(apiEndpoint).build();
     }
 
     private String jsonLocation(final Location location) {
@@ -1266,21 +1219,6 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
         @Override
         public boolean canQueryEarlier() {
             return earlierContext != null;
-        }
-    }
-
-    public static final byte[] decryptSalt(final String encryptedSalt, final String saltEncryptionKey) {
-        try {
-            final byte[] key = Encodings.HEX.decode(saltEncryptionKey);
-            checkState(key.length * 8 == 128, "encryption key must be 128 bits");
-            final SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
-            final IvParameterSpec ivParameterSpec = new IvParameterSpec(new byte[16]);
-            final Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            cipher.init(Cipher.DECRYPT_MODE, secretKey, ivParameterSpec);
-            return cipher.doFinal(Encodings.BASE64.decode(encryptedSalt));
-        } catch (final GeneralSecurityException x) {
-            // should not happen
-            throw new RuntimeException(x);
         }
     }
 }

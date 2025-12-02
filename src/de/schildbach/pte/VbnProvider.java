@@ -56,16 +56,15 @@ public class VbnProvider extends AbstractHafasClientInterfaceProvider {
     };
     private static final String DEFAULT_API_CLIENT = "{\"id\":\"VBN\",\"type\":\"AND\"}";
 
-    public VbnProvider(final String apiAuthorization, final byte[] salt) {
-        this(DEFAULT_API_CLIENT, apiAuthorization, salt);
+    public VbnProvider(final String apiAuthorization) {
+        this(DEFAULT_API_CLIENT, apiAuthorization);
     }
 
-    public VbnProvider(final String apiClient, final String apiAuthorization, final byte[] salt) {
+    public VbnProvider(final String apiClient, final String apiAuthorization) {
         super(NetworkId.VBN, API_BASE, PRODUCTS_MAP);
         setApiVersion("1.66");
         setApiClient(apiClient);
         setApiAuthorization(apiAuthorization);
-        setRequestMicMacSalt(salt);
         setStyles(STYLES);
     }
 

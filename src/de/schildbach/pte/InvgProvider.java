@@ -36,16 +36,15 @@ public class InvgProvider extends AbstractHafasClientInterfaceProvider {
     private static final Product[] PRODUCTS_MAP = { Product.BUS, null, null, Product.REGIONAL_TRAIN };
     private static final String DEFAULT_API_CLIENT = "{\"id\":\"INVG\",\"type\":\"AND\"}";
 
-    public InvgProvider(final String apiAuthorization, final byte[] salt) {
-        this(DEFAULT_API_CLIENT, apiAuthorization, salt);
+    public InvgProvider(final String apiAuthorization) {
+        this(DEFAULT_API_CLIENT, apiAuthorization);
     }
 
-    public InvgProvider(final String apiClient, final String apiAuthorization, final byte[] salt) {
+    public InvgProvider(final String apiClient, final String apiAuthorization) {
         super(NetworkId.INVG, API_BASE, PRODUCTS_MAP);
         setApiVersion("1.73");
         setApiClient(apiClient);
         setApiAuthorization(apiAuthorization);
-        setRequestMicMacSalt(salt);
         setStyles(STYLES);
     }
 

@@ -26,7 +26,6 @@ import java.util.Date;
 import org.junit.Assert;
 import org.junit.Test;
 
-import de.schildbach.pte.AbstractHafasClientInterfaceProvider;
 import de.schildbach.pte.VbbProvider;
 import de.schildbach.pte.dto.Location;
 import de.schildbach.pte.dto.LocationType;
@@ -41,8 +40,7 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
  */
 public class VbbProviderLiveTest extends AbstractProviderLiveTest {
     public VbbProviderLiveTest() {
-        super(new VbbProvider(secretProperty("vbb.api_authorization"), AbstractHafasClientInterfaceProvider
-                .decryptSalt(secretProperty("vbb.encrypted_salt"), secretProperty("hci.salt_encryption_key"))));
+        super(new VbbProvider(secretProperty("vbb.api_authorization")));
     }
 
     @Test

@@ -35,16 +35,15 @@ public class VgsProvider extends AbstractHafasClientInterfaceProvider {
             Product.BUS, Product.CABLECAR, Product.ON_DEMAND, Product.BUS };
     private static final String DEFAULT_API_CLIENT = "{\"id\":\"ZPS-SAAR\",\"type\":\"AND\"}";
 
-    public VgsProvider(final String apiAuthorization, final byte[] salt) {
-        this(DEFAULT_API_CLIENT, apiAuthorization, salt);
+    public VgsProvider(final String apiAuthorization) {
+        this(DEFAULT_API_CLIENT, apiAuthorization);
     }
 
-    public VgsProvider(final String apiClient, final String apiAuthorization, final byte[] salt) {
+    public VgsProvider(final String apiClient, final String apiAuthorization) {
         super(NetworkId.VGS, API_BASE, PRODUCTS_MAP);
         setApiVersion("1.63");
         setApiClient(apiClient);
         setApiAuthorization(apiAuthorization);
-        setRequestMicMacSalt(salt);
     }
 
     @Override
