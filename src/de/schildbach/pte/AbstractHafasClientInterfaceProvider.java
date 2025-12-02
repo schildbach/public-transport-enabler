@@ -723,7 +723,6 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                             final JSONArray polyXList = polyG.getJSONArray("polyXL");
                             path = new LinkedList<>();
                             final int polyXListLen = polyXList.length();
-                            checkState(polyXListLen <= 1);
                             for (int i = 0; i < polyXListLen; i++) {
                                 final String encodedPolyline = encodedPolylines.get(polyXList.getInt(i));
                                 path.addAll(PolylineFormat.decode(encodedPolyline));
