@@ -2573,6 +2573,8 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
             XmlPullUtil.skipExit(pp, "infoLink");
         }
 
+        XmlPullUtil.optSkip(pp, "itdFrequencyInfo");
+
         List<Stop> intermediateStops = null;
         if (XmlPullUtil.optEnter(pp, "itdStopSeq")) {
             intermediateStops = new LinkedList<>();
