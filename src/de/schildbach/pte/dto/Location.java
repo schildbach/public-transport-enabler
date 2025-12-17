@@ -133,7 +133,8 @@ public final class Location implements Serializable {
     }
 
     private static final String[] NON_UNIQUE_NAMES = { "Hauptbahnhof", "Hbf", "Bahnhof", "Bf", "Busbahnhof", "ZOB",
-            "Schiffstation", "Schiffst.", "Zentrum", "Markt", "Dorf", "Kirche", "Nord", "Ost", "Süd", "West" };
+            "Schiffstation", "Schiffst.", "Zentrum", "Zentrum Bhf", "Markt", "Dorf", "Kirche", "Friedhof",
+            "Friedhof Bhf", "Nord", "Nord Bhf", "Ost", "Ost Bhf", "Süd", "Süd Bhf", "West", "West Bhf" };
 
     static {
         Arrays.sort(NON_UNIQUE_NAMES);
