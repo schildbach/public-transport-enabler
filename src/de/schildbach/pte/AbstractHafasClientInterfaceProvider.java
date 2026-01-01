@@ -583,6 +583,8 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                 log.debug("Hafas error: {}", msg);
                 if ("H890".equals(err)) // No connections found.
                     return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
+                if ("H883".equals(err)) // HAFAS Kernel: No connection found after post filtering
+                    return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
                 if ("H891".equals(err)) // No route found (try entering an intermediate station).
                     return new QueryTripsResult(header, QueryTripsResult.Status.NO_TRIPS);
                 if ("H892".equals(err)) // HAFAS Kernel: Request too complex (try entering less intermediate
