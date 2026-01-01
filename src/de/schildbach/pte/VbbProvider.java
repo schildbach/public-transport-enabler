@@ -33,7 +33,7 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class VbbProvider extends AbstractHafasClientInterfaceProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("https://fahrinfo.vbb.de/bin/");
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://fahrinfo.vbb.de/");
     private static final Product[] PRODUCTS_MAP = { Product.SUBURBAN_TRAIN, Product.SUBWAY, Product.TRAM, Product.BUS,
             Product.FERRY, Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, null, null, Product.BUS /* BEV */ };
     private static final Set<Product> ALL_EXCEPT_HIGHSPEED_AND_ONDEMAND = EnumSet
@@ -46,6 +46,7 @@ public class VbbProvider extends AbstractHafasClientInterfaceProvider {
 
     public VbbProvider(final String apiClient, final String apiAuthorization) {
         super(NetworkId.VBB, API_BASE, PRODUCTS_MAP);
+        setApiEndpoint("gate");
         setApiVersion("1.77");
         setApiExt("VBB.4");
         setApiClient(apiClient);
