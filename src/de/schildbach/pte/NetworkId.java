@@ -48,9 +48,6 @@ public enum NetworkId {
     // United Kingdom
     TLEM, MERSEY,
 
-    // Ireland
-    EIREANN,
-
     // Poland
     PL,
 
