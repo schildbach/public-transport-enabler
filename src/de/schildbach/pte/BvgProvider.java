@@ -42,7 +42,7 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public final class BvgProvider extends AbstractHafasClientInterfaceProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("https://bvg-apps-ext.hafas.de/bin/mgate.exe");
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://bvg-apps-ext.hafas.de/");
     private static final Product[] PRODUCTS_MAP = { Product.SUBURBAN_TRAIN, Product.SUBWAY, Product.TRAM, Product.BUS,
             Product.FERRY, Product.HIGH_SPEED_TRAIN, Product.REGIONAL_TRAIN, Product.ON_DEMAND, null, null };
     private static final String DEFAULT_API_CLIENT = "{\"id\":\"BVG\",\"type\":\"AND\"}";
@@ -53,6 +53,7 @@ public final class BvgProvider extends AbstractHafasClientInterfaceProvider {
 
     public BvgProvider(final String apiClient, final String apiAuthorization) {
         super(NetworkId.BVG, API_BASE, PRODUCTS_MAP);
+        setApiEndpoint("gate");
         setApiVersion("1.72");
         setApiExt("BVG.1");
         setApiClient(apiClient);
