@@ -601,6 +601,9 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                     return new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN);
                 if ("H9240".equals(err)) // HAFAS Kernel: Internal error.
                     return new QueryTripsResult(header, QueryTripsResult.Status.SERVICE_DOWN);
+                if ("H900".equals(err)) // HAFAS Kernel: No connection found, the connection period requested may be
+                                        // outside the timetable period
+                    return new QueryTripsResult(header, QueryTripsResult.Status.INVALID_DATE);
                 if ("H9360".equals(err)) // Date outside of the timetable period.
                     return new QueryTripsResult(header, QueryTripsResult.Status.INVALID_DATE);
                 if ("H9380".equals(err)) // Departure/Arrival/Intermediate or equivalent stations def'd more
