@@ -42,7 +42,7 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class VbnProvider extends AbstractHafasClientInterfaceProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("https://fahrplaner.vbn.de/hafas/");
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://fahrplaner.vbn.de/");
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, // ICE
             Product.HIGH_SPEED_TRAIN, // IC / EC / CNL
             Product.HIGH_SPEED_TRAIN, // IR, sonstiger Schnellzug
@@ -62,6 +62,7 @@ public class VbnProvider extends AbstractHafasClientInterfaceProvider {
 
     public VbnProvider(final String apiClient, final String apiAuthorization) {
         super(NetworkId.VBN, API_BASE, PRODUCTS_MAP);
+        setApiEndpoint("gate");
         setApiVersion("1.66");
         setApiClient(apiClient);
         setApiAuthorization(apiAuthorization);
