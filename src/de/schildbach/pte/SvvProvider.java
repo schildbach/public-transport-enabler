@@ -48,7 +48,7 @@ public class SvvProvider extends AbstractHafasClientInterfaceProvider {
         super(NetworkId.SVV, API_BASE, PRODUCTS_MAP);
         setApiEndpoint("gate");
         setApiVersion("1.59");
-        setApiExt("VAO.6");
+        setApiExt("VAO.22");
         setApiClient(apiClient);
         setApiAuthorization(apiAuthorization);
         setStyles(STYLES);
