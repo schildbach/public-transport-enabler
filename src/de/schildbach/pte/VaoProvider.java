@@ -48,7 +48,7 @@ public class VaoProvider extends AbstractHafasClientInterfaceProvider {
         super(NetworkId.VAO, API_BASE, PRODUCTS_MAP);
         setApiEndpoint("gate");
         setApiVersion("1.59");
-        setApiExt("VAO.6");
+        setApiExt("VAO.22");
         setApiClient(apiClient);
         setApiAuthorization(apiAuthorization);
         setStyles(STYLES);
