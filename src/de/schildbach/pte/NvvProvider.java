@@ -31,7 +31,7 @@ import java.util.regex.Matcher;
  * @author Andreas Schildbach
  */
 public class NvvProvider extends AbstractHafasClientInterfaceProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("https://auskunft.nvv.de/auskunft/bin/app/");
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://auskunft.nvv.de/bin/");
     private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.REGIONAL_TRAIN, Product.SUBURBAN_TRAIN, Product.SUBWAY, Product.TRAM, Product.BUS, Product.BUS,
             Product.FERRY, Product.ON_DEMAND, Product.REGIONAL_TRAIN, Product.REGIONAL_TRAIN };
