@@ -29,7 +29,7 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class AvvAachenProvider extends AbstractHafasClientInterfaceProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("https://auskunft.avv.de/bin/");
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://auskunft.avv.de/");
     private static final Product[] PRODUCTS_MAP = { Product.REGIONAL_TRAIN, Product.HIGH_SPEED_TRAIN,
             Product.HIGH_SPEED_TRAIN, Product.BUS, Product.SUBURBAN_TRAIN, Product.SUBWAY, Product.TRAM, Product.BUS,
             Product.BUS, Product.ON_DEMAND, Product.FERRY };
@@ -41,6 +41,7 @@ public class AvvAachenProvider extends AbstractHafasClientInterfaceProvider {
 
     public AvvAachenProvider(final String apiClient, final String apiAuthorization) {
         super(NetworkId.AVV_AACHEN, API_BASE, PRODUCTS_MAP);
+        setApiEndpoint("gate");
         setApiVersion("1.69");
         setApiClient(apiClient);
         setApiAuthorization(apiAuthorization);
