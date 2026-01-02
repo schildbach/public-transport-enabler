@@ -28,7 +28,7 @@ import java.util.regex.Matcher;
  * @author Andreas Schildbach
  */
 public class BartProvider extends AbstractHafasClientInterfaceProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("https://planner.bart.gov/bin/");
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://planner.bart.gov/gate/");
     private static final Product[] PRODUCTS_MAP = { null, null, Product.CABLECAR, Product.REGIONAL_TRAIN, null,
             Product.BUS, Product.FERRY, Product.SUBURBAN_TRAIN, Product.TRAM };
     private static final String DEFAULT_API_CLIENT = "{\"id\":\"BART\",\"type\":\"WEB\"}";
@@ -39,6 +39,7 @@ public class BartProvider extends AbstractHafasClientInterfaceProvider {
 
     public BartProvider(final String apiClient, final String apiAuthorization) {
         super(NetworkId.BART, API_BASE, PRODUCTS_MAP);
+        setApiEndpoint("");
         setTimeZone("America/Los_Angeles");
         setApiVersion("1.53");
         setApiClient(apiClient);
