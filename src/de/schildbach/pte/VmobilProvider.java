@@ -45,7 +45,7 @@ public class VmobilProvider extends AbstractHafasClientInterfaceProvider {
         super(NetworkId.VMOBIL, API_BASE, PRODUCTS_MAP);
         setApiEndpoint("gate");
         setApiVersion("1.59");
-        setApiExt("VAO.6");
+        setApiExt("VAO.22");
         setApiClient(apiClient);
         setApiAuthorization(apiAuthorization);
     }
