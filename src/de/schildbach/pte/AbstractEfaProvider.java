@@ -1361,6 +1361,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
             if ("RT".equals(trainType) || "RegioTram".equals(trainName))
                 return new Line(id, network, Product.TRAM, "RT" + trainNumStr);
+            if ("RT4".equals(symbol) && trainType == null)
+                return new Line(id, network, Product.TRAM, "RT4");
+            if ("RT5".equals(symbol) && trainType == null)
+                return new Line(id, network, Product.TRAM, "RT5");
 
             if ("Bus".equals(trainType) && trainNum != null)
                 return new Line(id, network, Product.BUS, trainNum);
