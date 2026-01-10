@@ -1951,7 +1951,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         String itdDelay = null;
         if (XmlPullUtil.test(pp, "itdTrain")) {
             itdTrainName = XmlPullUtil.optAttr(pp, "name", null);
-            itdTrainType = XmlPullUtil.attr(pp, "type");
+            itdTrainType = XmlPullUtil.optAttr(pp, "type", null);
             itdDelay = XmlPullUtil.optAttr(pp, "delay", null);
             XmlPullUtil.requireSkip(pp, "itdTrain");
         }
