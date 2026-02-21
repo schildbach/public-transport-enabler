@@ -52,7 +52,6 @@ public class VrrProvider extends AbstractEfaProvider {
         setStyles(STYLES);
         setRequestUrlEncoding(StandardCharsets.UTF_8);
         setUseLineRestriction(false);
-        setSessionCookieName("vrr-ef-lb");
     }
 
     @Override
