@@ -841,8 +841,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                 ParserUtils.urlEncode(normalizeStationId(stationId), requestUrlEncoding));
         url.addEncodedQueryParameter("itOptionsActive", "1");
         url.addEncodedQueryParameter("ptOptionsActive", "1");
-        if (useProxFootSearch)
+        if (useProxFootSearch) { // walk if it makes journeys quicker
             url.addEncodedQueryParameter("useProxFootSearch", "1");
+            url.addEncodedQueryParameter("useProxFootSearchOrigin", "1");
+            url.addEncodedQueryParameter("useProxFootSearchDestination", "1");
+        }
         url.addEncodedQueryParameter("mergeDep", "1");
         url.addEncodedQueryParameter("useAllStops", "1");
         url.addEncodedQueryParameter("mode", "direct");
@@ -2087,8 +2090,11 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                 url.addEncodedQueryParameter("lineRestriction", "403"); // means: all but ice
         }
 
-        if (useProxFootSearch)
-            url.addEncodedQueryParameter("useProxFootSearch", "1"); // walk if it makes journeys quicker
+        if (useProxFootSearch) { // walk if it makes journeys quicker
+            url.addEncodedQueryParameter("useProxFootSearch", "1");
+            url.addEncodedQueryParameter("useProxFootSearchOrigin", "1");
+            url.addEncodedQueryParameter("useProxFootSearchDestination", "1");
+        }
         url.addEncodedQueryParameter("trITMOTvalue100", "10"); // maximum time to walk to first or from last
                                                                // stop
 
