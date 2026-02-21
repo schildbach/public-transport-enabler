@@ -46,7 +46,7 @@ public class VrrProvider extends AbstractEfaProvider {
     public VrrProvider(final HttpUrl apiBase) {
         super(NetworkId.VRR, apiBase);
         setIncludeRegionId(false);
-        setUseProxFootSearch(false);
+        setUseProxFootSearch(true);
         setNeedsSpEncId(true);
         setUseRouteIndexAsTripId(false);
         setStyles(STYLES);
