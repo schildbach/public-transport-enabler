@@ -2871,7 +2871,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
                             String he = XmlPullUtil.optValueTag(pp, "he", null);
                             if (he != null)
                                 message.append(he).append('\n');
-                            String text = XmlPullUtil.valueTag(pp, "tx");
+                            String text = XmlPullUtil.optValueTag(pp, "tx", null);
                             if (text != null)
                                 message.append(text).append('\n');
                             XmlPullUtil.skipExit(pp, "no");
