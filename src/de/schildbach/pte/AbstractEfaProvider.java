@@ -3131,7 +3131,10 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         if (pp.getEventType() == XmlPullParser.END_DOCUMENT)
             throw new ParserException("empty document");
 
-        final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT);
+        XmlPullUtil.require(pp, "itdRequest");
+
+        final String sessionId = XmlPullUtil.optAttr(pp, "sessionID", null);
+        final ResultHeader header = new ResultHeader(network, SERVER_PRODUCT, null, null, 0, sessionId);
 
         XmlPullUtil.enter(pp, "itdRequest");
 
