@@ -59,4 +59,7 @@ public enum NetworkId {
 
     // Australia
     SYDNEY,
+    
+    // Motis
+    TRANSITOUS,
 }
