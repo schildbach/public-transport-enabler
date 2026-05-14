@@ -18,7 +18,13 @@
 package de.schildbach.pte.live;
 
 import de.schildbach.pte.TransitousProvider;
-import de.schildbach.pte.dto.*;
+import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.dto.LocationType;
+import de.schildbach.pte.dto.NearbyLocationsResult;
+import de.schildbach.pte.dto.Point;
+import de.schildbach.pte.dto.QueryDeparturesResult;
+import de.schildbach.pte.dto.QueryTripsResult;
+import de.schildbach.pte.dto.SuggestLocationsResult;
 import org.junit.Test;
 
 import java.util.Date;

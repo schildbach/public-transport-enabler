@@ -17,13 +17,31 @@
 
 package de.schildbach.pte;
 
-import de.schildbach.pte.dto.*;
+import de.schildbach.pte.dto.Departure;
+import de.schildbach.pte.dto.Line;
+import de.schildbach.pte.dto.LineDestination;
+import de.schildbach.pte.dto.Location;
+import de.schildbach.pte.dto.LocationType;
+import de.schildbach.pte.dto.NearbyLocationsResult;
+import de.schildbach.pte.dto.Point;
+import de.schildbach.pte.dto.Position;
+import de.schildbach.pte.dto.Product;
+import de.schildbach.pte.dto.QueryDeparturesResult;
+import de.schildbach.pte.dto.QueryTripsContext;
+import de.schildbach.pte.dto.QueryTripsResult;
+import de.schildbach.pte.dto.ResultHeader;
+import de.schildbach.pte.dto.StationDepartures;
+import de.schildbach.pte.dto.Stop;
+import de.schildbach.pte.dto.Style;
+import de.schildbach.pte.dto.SuggestLocationsResult;
+import de.schildbach.pte.dto.SuggestedLocation;
+import de.schildbach.pte.dto.Trip;
+import de.schildbach.pte.dto.TripOptions;
 import de.schildbach.pte.exception.InvalidDataException;
 import de.schildbach.pte.exception.NotFoundException;
 import de.schildbach.pte.exception.ParserException;
 import de.schildbach.pte.util.PolylineFormat;
 import okhttp3.HttpUrl;
-import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,10 +49,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -46,9 +73,9 @@ import static java.util.Objects.requireNonNull;
  */
 public class AbstractMotisProvider extends AbstractNetworkProvider {
     private static final Map<LocationType, String> SUPPORTED_NEARBY_LOCATIONS;
-    private static final Map<String, Product> MOTIS_MODE_MAP;
+    private static final Map<String, Product> MOTIS_MODE_TO_PRODUCT;
     private static final Map<String, Trip.Individual.Type> MOTIS_INDIVIDUAL_MODE_MAP;
-    private static final Map<Product, String[]> MODE_MOTIS_MAP;
+    private static final Map<Product, String[]> PRODUCT_TO_MOTIS_MODE;
 
     private static final Pattern STOP_CLEANUP_PATTERN = Pattern.compile("(^\\s*[\\-_,]?\\s*)|(\\s*[\\-_,]?\\s*$)");
 
@@ -58,40 +85,40 @@ public class AbstractMotisProvider extends AbstractNetworkProvider {
         SUPPORTED_NEARBY_LOCATIONS.put(LocationType.ADDRESS, "ADDRESS");
         SUPPORTED_NEARBY_LOCATIONS.put(LocationType.POI, "PLACE");
 
-        MOTIS_MODE_MAP = new HashMap<>();
-        MOTIS_MODE_MAP.put("ODM", Product.ON_DEMAND);
-        MOTIS_MODE_MAP.put("TRAM", Product.TRAM);
-        MOTIS_MODE_MAP.put("SUBWAY", Product.SUBWAY);
-        MOTIS_MODE_MAP.put("FERRY", Product.FERRY);
-        MOTIS_MODE_MAP.put("BUS", Product.BUS);
-        MOTIS_MODE_MAP.put("COACH", Product.BUS);
-        MOTIS_MODE_MAP.put("RAIL", Product.REGIONAL_TRAIN);
-        MOTIS_MODE_MAP.put("HIGHSPEED_RAIL", Product.HIGH_SPEED_TRAIN);
-        MOTIS_MODE_MAP.put("LONG_DISTANCE", Product.HIGH_SPEED_TRAIN);
-        MOTIS_MODE_MAP.put("NIGHT_RAIL", Product.HIGH_SPEED_TRAIN);
-        MOTIS_MODE_MAP.put("REGIONAL_RAIL", Product.REGIONAL_TRAIN);
-        MOTIS_MODE_MAP.put("SUBURBAN", Product.SUBURBAN_TRAIN);
-        MOTIS_MODE_MAP.put("FUNICULAR", Product.CABLECAR);
-        MOTIS_MODE_MAP.put("AERIAL_LIFT", Product.CABLECAR);
-        MOTIS_MODE_MAP.put("AREAL_LIFT", Product.CABLECAR);
-        MOTIS_MODE_MAP.put("METRO", Product.SUBURBAN_TRAIN);
-        MOTIS_MODE_MAP.put("CABLE_CAR", Product.CABLECAR);
+        MOTIS_MODE_TO_PRODUCT = new HashMap<>();
+        MOTIS_MODE_TO_PRODUCT.put("ODM", Product.ON_DEMAND);
+        MOTIS_MODE_TO_PRODUCT.put("TRAM", Product.TRAM);
+        MOTIS_MODE_TO_PRODUCT.put("SUBWAY", Product.SUBWAY);
+        MOTIS_MODE_TO_PRODUCT.put("FERRY", Product.FERRY);
+        MOTIS_MODE_TO_PRODUCT.put("BUS", Product.BUS);
+        MOTIS_MODE_TO_PRODUCT.put("COACH", Product.BUS);
+        MOTIS_MODE_TO_PRODUCT.put("RAIL", Product.REGIONAL_TRAIN);
+        MOTIS_MODE_TO_PRODUCT.put("HIGHSPEED_RAIL", Product.HIGH_SPEED_TRAIN);
+        MOTIS_MODE_TO_PRODUCT.put("LONG_DISTANCE", Product.HIGH_SPEED_TRAIN);
+        MOTIS_MODE_TO_PRODUCT.put("NIGHT_RAIL", Product.HIGH_SPEED_TRAIN);
+        MOTIS_MODE_TO_PRODUCT.put("REGIONAL_RAIL", Product.REGIONAL_TRAIN);
+        MOTIS_MODE_TO_PRODUCT.put("SUBURBAN", Product.SUBURBAN_TRAIN);
+        MOTIS_MODE_TO_PRODUCT.put("FUNICULAR", Product.CABLECAR);
+        MOTIS_MODE_TO_PRODUCT.put("AERIAL_LIFT", Product.CABLECAR);
+        MOTIS_MODE_TO_PRODUCT.put("AREAL_LIFT", Product.CABLECAR);
+        MOTIS_MODE_TO_PRODUCT.put("METRO", Product.SUBURBAN_TRAIN);
+        MOTIS_MODE_TO_PRODUCT.put("CABLE_CAR", Product.CABLECAR);
 
         MOTIS_INDIVIDUAL_MODE_MAP = new HashMap<>();
         MOTIS_INDIVIDUAL_MODE_MAP.put("WALK", Trip.Individual.Type.WALK);
         MOTIS_INDIVIDUAL_MODE_MAP.put("BIKE", Trip.Individual.Type.BIKE);
         MOTIS_INDIVIDUAL_MODE_MAP.put("CAR", Trip.Individual.Type.CAR);
 
-        MODE_MOTIS_MAP = new HashMap<>();
-        MODE_MOTIS_MAP.put(Product.BUS, new String[]{"BUS", "COACH"});
-        MODE_MOTIS_MAP.put(Product.CABLECAR, new String[]{"FUNICULAR", "AERIAL_LIFT", "AREAL_LIFT", "CABLE_CAR"});
-        MODE_MOTIS_MAP.put(Product.FERRY, new String[]{"FERRY"});
-        MODE_MOTIS_MAP.put(Product.HIGH_SPEED_TRAIN, new String[]{"HIGHSPEED_RAIL", "LONG_DISTANCE", "NIGHT_RAIL"});
-        MODE_MOTIS_MAP.put(Product.REGIONAL_TRAIN, new String[]{"REGIONAL_RAIL"});
-        MODE_MOTIS_MAP.put(Product.SUBURBAN_TRAIN, new String[]{"SUBURBAN", "METRO"});
-        MODE_MOTIS_MAP.put(Product.ON_DEMAND, new String[]{"ODM"});
-        MODE_MOTIS_MAP.put(Product.SUBWAY, new String[]{"SUBWAY"});
-        MODE_MOTIS_MAP.put(Product.TRAM, new String[]{"TRAM"});
+        PRODUCT_TO_MOTIS_MODE = new HashMap<>();
+        PRODUCT_TO_MOTIS_MODE.put(Product.BUS, new String[]{"BUS", "COACH"});
+        PRODUCT_TO_MOTIS_MODE.put(Product.CABLECAR, new String[]{"FUNICULAR", "AERIAL_LIFT", "AREAL_LIFT", "CABLE_CAR"});
+        PRODUCT_TO_MOTIS_MODE.put(Product.FERRY, new String[]{"FERRY"});
+        PRODUCT_TO_MOTIS_MODE.put(Product.HIGH_SPEED_TRAIN, new String[]{"HIGHSPEED_RAIL", "LONG_DISTANCE", "NIGHT_RAIL"});
+        PRODUCT_TO_MOTIS_MODE.put(Product.REGIONAL_TRAIN, new String[]{"REGIONAL_RAIL"});
+        PRODUCT_TO_MOTIS_MODE.put(Product.SUBURBAN_TRAIN, new String[]{"SUBURBAN", "METRO"});
+        PRODUCT_TO_MOTIS_MODE.put(Product.ON_DEMAND, new String[]{"ODM"});
+        PRODUCT_TO_MOTIS_MODE.put(Product.SUBWAY, new String[]{"SUBWAY"});
+        PRODUCT_TO_MOTIS_MODE.put(Product.TRAM, new String[]{"TRAM"});
     }
     
     protected static final Logger log = LoggerFactory.getLogger(AbstractMotisProvider.class);
@@ -122,7 +149,7 @@ public class AbstractMotisProvider extends AbstractNetworkProvider {
         return new Line(
                 data.getString("routeId"),
                 data.getString("agencyName"),
-                MOTIS_MODE_MAP.get(data.getString("mode")),
+                MOTIS_MODE_TO_PRODUCT.get(data.getString("mode")),
                 data.getString("routeShortName"),
                 data.getString("displayName"),
                 data.has("routeColor") && data.has("routeTextColor") ?
@@ -199,8 +226,8 @@ public class AbstractMotisProvider extends AbstractNetworkProvider {
                 final Set<Product> products = new HashSet<>();
                 for (int mi = 0; mi < (modes != null ? modes.length() : 0); mi++) {
                     final String mode = modes.getString(mi);
-                    if (MOTIS_MODE_MAP.containsKey(mode)) {
-                        products.add(MOTIS_MODE_MAP.get(mode));
+                    if (MOTIS_MODE_TO_PRODUCT.containsKey(mode)) {
+                        products.add(MOTIS_MODE_TO_PRODUCT.get(mode));
                     }
                 }
 
@@ -262,7 +289,7 @@ public class AbstractMotisProvider extends AbstractNetworkProvider {
                 // Individual leg
                 final int distance = (int) motisLeg.getDouble("distance");
                 legs.add(new Trip.Individual(MOTIS_INDIVIDUAL_MODE_MAP.get(mode), depLocation, depTime, arrLocation, arrTime, PolylineFormat.decode(googlePolyline), distance));
-            } else if (MOTIS_MODE_MAP.containsKey(mode)) {
+            } else if (MOTIS_MODE_TO_PRODUCT.containsKey(mode)) {
                 // Public leg
                 final boolean realtime = motisLeg.getBoolean("realTime");
                 final Line line = parseMotisLine(motisLeg);
@@ -531,7 +558,7 @@ public class AbstractMotisProvider extends AbstractNetworkProvider {
                     motisModes.add("RAIL");
                 }
                 for (Product p : options.products) {
-                    Collections.addAll(motisModes, MODE_MOTIS_MAP.get(p));
+                    Collections.addAll(motisModes, PRODUCT_TO_MOTIS_MODE.get(p));
                 }
 
                 endpointBuilder.addQueryParameter("transitModes", String.join(",", motisModes));
