@@ -61,6 +61,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -519,6 +520,18 @@ public class AbstractMotisProvider extends AbstractNetworkProvider {
         @Override
         public boolean canQueryEarlier() {
             return previousPageCursor != null;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof QueryContext)) return false;
+            QueryContext that = (QueryContext) o;
+            return Objects.equals(from, that.from) && Objects.equals(via, that.via) && Objects.equals(to, that.to) && Objects.equals(nextPageCursor, that.nextPageCursor) && Objects.equals(previousPageCursor, that.previousPageCursor) && Objects.equals(endpoint, that.endpoint);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(from, via, to, nextPageCursor, previousPageCursor, endpoint);
         }
     }
 
