@@ -77,7 +77,8 @@ public class AbstractMotisProvider extends AbstractNetworkProvider {
     private static final Map<String, Trip.Individual.Type> MOTIS_INDIVIDUAL_MODE_MAP;
     private static final Map<Product, String[]> PRODUCT_TO_MOTIS_MODE;
 
-    private static final Pattern STOP_CLEANUP_PATTERN = Pattern.compile("(^\\s*[\\-_,]?\\s*)|(\\s*[\\-_,]?\\s*$)");
+    private static final Pattern STOP_CLEANUP_PATTERN_START = Pattern.compile("(^\\s*[\\-_,]\\s*)|(^\\s+)");
+    private static final Pattern STOP_CLEANUP_PATTERN_END = Pattern.compile("(\\s*[\\-_,]\\s*$)|(\\s+$)");
 
     static {
         SUPPORTED_NEARBY_LOCATIONS = new HashMap<>();
@@ -238,14 +239,23 @@ public class AbstractMotisProvider extends AbstractNetworkProvider {
 
                 // Clean name
                 if (place != null) {
+                    // There are stop names such as Aachen, Kaiserplatz which should just become Kaiserplatz
+                    // but there are also stop names such as Bucureștii Noi (inside București), which should
+                    // remain as-is.
+                    
                     if (name.toUpperCase().startsWith(place.toUpperCase())) {
-                        name = name.substring(place.length());
+                        final String cleanedName = name.substring(place.length());
+                        final Matcher m = STOP_CLEANUP_PATTERN_START.matcher(cleanedName);
+                        if (m.find()) {
+                            name = m.replaceAll("");
+                        }
                     } else if (name.toUpperCase().endsWith(place.toUpperCase())) {
-                        name = name.substring(0, name.length() - place.length());
+                        final String cleanedName = name.substring(0, name.length() - place.length());
+                        final Matcher m = STOP_CLEANUP_PATTERN_END.matcher(cleanedName);
+                        if (m.find()) {
+                            name = m.replaceAll("");
+                        }
                     }
-
-                    final Matcher m = STOP_CLEANUP_PATTERN.matcher(name);
-                    name = m.replaceAll("");
                 }
 
                 return new Location(
