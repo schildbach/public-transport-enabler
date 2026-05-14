@@ -383,7 +383,9 @@ public class AbstractMotisProvider extends AbstractNetworkProvider {
                 .addPathSegment("api")
                 .addPathSegment("v5")
                 .addPathSegment("stoptimes")
-                .addQueryParameter("stopId", stationId);
+                .addQueryParameter("stopId", stationId)
+                .addQueryParameter("exactRadius", "false")
+                .addQueryParameter("radius", "200");
         if (maxDepartures != 0) {
             endpointBuilder.setQueryParameter("n", String.valueOf(maxDepartures));
         } else {
