@@ -14,12 +14,12 @@ repositories {
 dependencies {
     implementation 'com.squareup.okhttp3:okhttp:4.12.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:4.12.0'
-    implementation 'org.slf4j:slf4j-api:2.0.17'
+    implementation 'org.slf4j:slf4j-api:2.0.18'
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
     implementation 'org.json:json:20090211' // provided by Android
     implementation 'net.sf.kxml:kxml2:2.3.0' // provided by Android
     testImplementation 'junit:junit:4.13.2'
-    testImplementation 'org.slf4j:slf4j-jdk14:2.0.17'
+    testImplementation 'org.slf4j:slf4j-jdk14:2.0.18'
 }
 
 sourceSets {
