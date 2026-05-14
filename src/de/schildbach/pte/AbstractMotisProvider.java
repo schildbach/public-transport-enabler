@@ -144,6 +144,11 @@ public class AbstractMotisProvider extends AbstractNetworkProvider {
                 return false;
         }
     }
+    
+    @Override
+    public Set<Product> defaultProducts() {
+        return Product.ALL;
+    }
 
     protected static Line parseMotisLine(JSONObject data) throws JSONException {
         return new Line(
