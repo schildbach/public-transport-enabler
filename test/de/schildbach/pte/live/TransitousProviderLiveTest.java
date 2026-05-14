@@ -39,6 +39,9 @@ import static org.junit.Assert.assertThat;
 public class TransitousProviderLiveTest extends AbstractProviderLiveTest {
     public TransitousProviderLiveTest() {
         super(new TransitousProvider());
+        // Hard to provide a version or link here, since the repo could be forked, 
+        // and tests aren't really part of a versioned release
+        ((TransitousProvider)provider).setUserAgent("public-transport-enabler live tests");
     }
 
     @Test

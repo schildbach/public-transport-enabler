@@ -20,6 +20,11 @@ package de.schildbach.pte;
 import okhttp3.HttpUrl;
 
 /**
+ * Provider for the Transitous MOTIS instance.
+ * Keep in mind that setting an appropriate user agent with {@link TransitousProvider#setUserAgent(String)} is required.
+ * The user agent needs to contain the name of the application, version of the client implementation and a way of contact.
+ * See the <a href="https://transitous.org/api/">Transitous API Usage</a> for more info.
+ * 
  * @author Dan Cojocaru
  */
 public class TransitousProvider extends AbstractMotisProvider {
