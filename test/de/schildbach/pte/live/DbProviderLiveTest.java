@@ -20,6 +20,7 @@ package de.schildbach.pte.live;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 import java.util.EnumSet;
@@ -68,7 +69,8 @@ public class DbProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void queryDepartures() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("692990", false);
+        final QueryDeparturesResult result = provider.queryDepartures("692990", null, 5, false);
+        assertTrue(result.stationDepartures.size() == 1);
         print(result);
     }
 
