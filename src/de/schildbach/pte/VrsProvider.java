@@ -408,10 +408,8 @@ public class VrsProvider extends AbstractNetworkProvider {
         }
     }
 
-    // TODO equivs not supported; JSON result would support multiple timetables
     @Override
-    public QueryDeparturesResult queryDepartures(final String stationId, @Nullable Date time, int maxDepartures,
-            boolean equivs) throws IOException {
+    public QueryDeparturesResult queryDepartures(final String stationId, @Nullable Date time, int maxDepartures) throws IOException {
         requireNonNull(stationId);
 
         // g=p means group by product; not used here

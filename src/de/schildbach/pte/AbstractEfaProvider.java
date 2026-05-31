@@ -1472,14 +1472,14 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
     @Override
     public QueryDeparturesResult queryDepartures(final String stationId, final @Nullable Date time,
-            final int maxDepartures, final boolean equivs) throws IOException {
+            final int maxDepartures) throws IOException {
         requireNonNull(stationId);
 
-        return xsltDepartureMonitorRequest(stationId, time, maxDepartures, equivs);
+        return xsltDepartureMonitorRequest(stationId, time, maxDepartures);
     }
 
     protected void appendDepartureMonitorRequestParameters(final HttpUrl.Builder url, final String stationId,
-            final @Nullable Date time, final int maxDepartures, final boolean equivs) {
+            final @Nullable Date time, final int maxDepartures) {
         appendCommonRequestParams(url, "XML");
         url.addEncodedQueryParameter("type_dm", "stop");
         url.addEncodedQueryParameter("name_dm",
@@ -1489,9 +1489,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         url.addEncodedQueryParameter("useRealtime", "1");
         url.addEncodedQueryParameter("mode", "direct");
         url.addEncodedQueryParameter("ptOptionsActive", "1");
-        url.addEncodedQueryParameter("deleteAssignedStops_dm", equivs ? "0" : "1");
+        url.addEncodedQueryParameter("deleteAssignedStops_dm", "1");
         if (useProxFootSearch)
-            url.addEncodedQueryParameter("useProxFootSearch", equivs ? "1" : "0");
+            url.addEncodedQueryParameter("useProxFootSearch", "0");
         url.addEncodedQueryParameter("mergeDep", "1"); // merge departures
         if (maxDepartures > 0)
             url.addEncodedQueryParameter("limit", Integer.toString(maxDepartures));
@@ -1510,9 +1510,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     }
 
     private QueryDeparturesResult xsltDepartureMonitorRequest(final String stationId, final @Nullable Date time,
-            final int maxDepartures, final boolean equivs) throws IOException {
+            final int maxDepartures) throws IOException {
         final HttpUrl.Builder url = departureMonitorEndpoint.newBuilder();
-        appendDepartureMonitorRequestParameters(url, stationId, time, maxDepartures, equivs);
+        appendDepartureMonitorRequestParameters(url, stationId, time, maxDepartures);
         final AtomicReference<QueryDeparturesResult> result = new AtomicReference<>();
 
         final HttpClient.Callback callback = (bodyPeek, body) -> {
@@ -1653,9 +1653,9 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     }
 
     protected QueryDeparturesResult queryDeparturesMobile(final String stationId, final @Nullable Date time,
-            final int maxDepartures, final boolean equivs) throws IOException {
+            final int maxDepartures) throws IOException {
         final HttpUrl.Builder url = departureMonitorEndpoint.newBuilder();
-        appendDepartureMonitorRequestParameters(url, stationId, time, maxDepartures, equivs);
+        appendDepartureMonitorRequestParameters(url, stationId, time, maxDepartures);
         final AtomicReference<QueryDeparturesResult> result = new AtomicReference<>();
 
         final HttpClient.Callback callback = (bodyPeek, body) -> {

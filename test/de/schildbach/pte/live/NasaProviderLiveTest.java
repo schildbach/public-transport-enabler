@@ -59,19 +59,13 @@ public class NasaProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void queryDepartures() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("13000", false);
-        print(result);
-    }
-
-    @Test
-    public void queryDeparturesEquivs() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("13000", true);
+        final QueryDeparturesResult result = queryDepartures("13000");
         print(result);
     }
 
     @Test
     public void queryDeparturesInvalidStation() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("999999", false);
+        final QueryDeparturesResult result = queryDepartures("999999");
         assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
     }
 

@@ -101,12 +101,10 @@ public interface NetworkProvider {
      *            desired time for departing, or {@code null} for the provider default
      * @param maxDepartures
      *            maximum number of departures to get or {@code 0}
-     * @param equivs
-     *            also query equivalent stations?
      * @return result object containing the departures
      * @throws IOException
      */
-    QueryDeparturesResult queryDepartures(String stationId, @Nullable Date time, int maxDepartures, boolean equivs)
+    QueryDeparturesResult queryDepartures(String stationId, @Nullable Date time, int maxDepartures)
             throws IOException;
 
     /**

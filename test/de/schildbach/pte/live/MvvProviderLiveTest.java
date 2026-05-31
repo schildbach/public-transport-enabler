@@ -69,14 +69,14 @@ public class MvvProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void queryDeparturesMarienplatz() throws Exception {
-        final QueryDeparturesResult result1 = queryDepartures("91000002", false);
+        final QueryDeparturesResult result1 = queryDepartures("91000002");
         assertEquals(QueryDeparturesResult.Status.OK, result1.status);
         print(result1);
     }
 
     @Test
     public void queryDeparturesInvalidStation() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("999999", false);
+        final QueryDeparturesResult result = queryDepartures("999999");
         assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
     }
 

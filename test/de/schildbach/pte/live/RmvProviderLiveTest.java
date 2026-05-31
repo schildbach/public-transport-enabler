@@ -55,28 +55,22 @@ public class RmvProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void queryDepartures() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("3000408", false);
+        final QueryDeparturesResult result = queryDepartures("3000408");
         print(result);
 
-        final QueryDeparturesResult result2 = queryDepartures("3000010", false);
+        final QueryDeparturesResult result2 = queryDepartures("3000010");
         print(result2);
 
-        final QueryDeparturesResult result3 = queryDepartures("3015989", false);
+        final QueryDeparturesResult result3 = queryDepartures("3015989");
         print(result3);
 
-        final QueryDeparturesResult result4 = queryDepartures("3000139", false);
+        final QueryDeparturesResult result4 = queryDepartures("3000139");
         print(result4);
     }
 
     @Test
-    public void queryDeparturesEquivs() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("3000010", true);
-        print(result);
-    }
-
-    @Test
     public void queryDeparturesInvalidStation() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("999999", false);
+        final QueryDeparturesResult result = queryDepartures("999999");
         assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
     }
 

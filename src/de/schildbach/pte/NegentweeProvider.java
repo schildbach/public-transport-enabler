@@ -769,8 +769,7 @@ public class NegentweeProvider extends AbstractNetworkProvider {
     }
 
     @Override
-    public QueryDeparturesResult queryDepartures(String stationId, @Nullable Date time, int maxDepartures,
-            boolean equivs) throws IOException {
+    public QueryDeparturesResult queryDepartures(String stationId, @Nullable Date time, int maxDepartures) throws IOException {
         // The stationId does not need the / character escaped
         HttpUrl url = buildApiUrl("locations/" + stationId + "/departure-times", new ArrayList<QueryParameter>());
         final CharSequence page;
@@ -793,8 +792,8 @@ public class NegentweeProvider extends AbstractNetworkProvider {
                 for (int l = 0; l < locations.length(); l++) {
                     JSONObject location = locations.getJSONObject(l);
 
-                    // Ignore if equivs is false and stationId is not a strict match
-                    if (!equivs && !location.getString("id").equals(stationId)) {
+                    // Ignore stationId is not a strict match
+                    if (!location.getString("id").equals(stationId)) {
                         continue;
                     }
 

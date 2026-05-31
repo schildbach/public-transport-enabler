@@ -104,7 +104,6 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
     private boolean useIso8601 = false;
     private boolean stationBoardHasStationTable = true;
     private boolean stationBoardHasLocation = false;
-    private boolean stationBoardCanDoEquivs = true;
 
     @SuppressWarnings("serial")
     private static class Context implements QueryTripsContext {
@@ -223,11 +222,6 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
 
     protected AbstractHafasProvider setStationBoardHasLocation(final boolean stationBoardHasLocation) {
         this.stationBoardHasLocation = stationBoardHasLocation;
-        return this;
-    }
-
-    protected AbstractHafasProvider setStationBoardCanDoEquivs(final boolean canDoEquivs) {
-        this.stationBoardCanDoEquivs = canDoEquivs;
         return this;
     }
 
@@ -388,20 +382,19 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
 
     @Override
     public QueryDeparturesResult queryDepartures(final String stationId, final @Nullable Date time,
-            final int maxDepartures, final boolean equivs) throws IOException {
+            final int maxDepartures) throws IOException {
         requireNonNull(stationId);
 
         final HttpUrl.Builder url = stationBoardEndpoint.newBuilder().addPathSegment(apiLanguage);
-        appendXmlStationBoardParameters(url, time, stationId, maxDepartures, equivs, "vs_java3");
+        appendXmlStationBoardParameters(url, time, stationId, maxDepartures,"vs_java3");
         return xmlStationBoard(url.build(), stationId);
     }
 
     protected void appendXmlStationBoardParameters(final HttpUrl.Builder url, final @Nullable Date time,
-            final String stationId, final int maxDepartures, final boolean equivs, final @Nullable String styleSheet) {
+            final String stationId, final int maxDepartures, final @Nullable String styleSheet) {
         url.addQueryParameter("productsFilter", allProductsString().toString());
         url.addQueryParameter("boardType", "dep");
-        if (stationBoardCanDoEquivs)
-            url.addQueryParameter("disableEquivs", equivs ? "0" : "1");
+        url.addQueryParameter("disableEquivs", "1");
         url.addQueryParameter("maxJourneys",
                 Integer.toString(maxDepartures > 0 ? maxDepartures : DEFAULT_MAX_DEPARTURES));
         url.addEncodedQueryParameter("input", ParserUtils.urlEncode(normalizeStationId(stationId), requestUrlEncoding));
@@ -624,7 +617,7 @@ public abstract class AbstractHafasLegacyProvider extends AbstractHafasProvider 
                                 capacity, message);
 
                         final Location location;
-                        if (!stationBoardCanDoEquivs || depStation == null) {
+                        if (depStation == null) {
                             location = new Location(LocationType.STATION, normalizedStationId,
                                     stationPlaceAndName != null ? stationPlaceAndName[0] : null,
                                     stationPlaceAndName != null ? stationPlaceAndName[1] : null);

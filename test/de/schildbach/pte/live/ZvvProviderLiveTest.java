@@ -48,31 +48,31 @@ public class ZvvProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void queryDepartures() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("8503000", false); // Hauptbahnhof
+        final QueryDeparturesResult result = queryDepartures("8503000"); // Hauptbahnhof
         print(result);
     }
 
     @Test
     public void queryDeparturesSuburbanTrain() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("8500169", false); // Muriaux
+        final QueryDeparturesResult result = queryDepartures("8500169"); // Muriaux
         print(result);
     }
 
     @Test
     public void queryDeparturesTram() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("8591276", false); // Milchbuck
+        final QueryDeparturesResult result = queryDepartures("8591276"); // Milchbuck
         print(result);
     }
 
     @Test
     public void queryDeparturesTrolley() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("8591177", false); // Hardplatz
+        final QueryDeparturesResult result = queryDepartures("8591177"); // Hardplatz
         print(result);
     }
 
     @Test
     public void queryDeparturesInvalidStation() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("999999", false);
+        final QueryDeparturesResult result = queryDepartures("999999");
         assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
     }
 

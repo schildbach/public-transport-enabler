@@ -52,51 +52,44 @@ public class VbbProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void queryDepartures() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("900007102", false);
+        final QueryDeparturesResult result = queryDepartures("900007102");
         print(result);
     }
 
     @Test
     public void queryDeparturesAlexanderplatzBhf() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("900100003", false);
+        final QueryDeparturesResult result = queryDepartures("900100003");
         print(result);
         assertEquals(QueryDeparturesResult.Status.OK, result.status);
     }
 
     @Test
     public void queryDeparturesAlexanderplatzU2() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("900100703", false);
+        final QueryDeparturesResult result = queryDepartures("900100703");
         print(result);
         assertEquals(QueryDeparturesResult.Status.OK, result.status);
     }
 
     @Test
     public void queryDeparturesAlexanderplatzU5() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("900100704", false);
+        final QueryDeparturesResult result = queryDepartures("900100704");
         print(result);
         assertEquals(QueryDeparturesResult.Status.OK, result.status);
     }
 
     @Test
     public void queryDeparturesAlexanderplatzU8() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("900100705", false);
+        final QueryDeparturesResult result = queryDepartures("900100705");
         print(result);
         assertEquals(QueryDeparturesResult.Status.OK, result.status);
     }
 
     @Test
-    public void queryDeparturesEquivs() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("900100003", true);
-        print(result);
-        assertTrue(result.stationDepartures.size() > 1);
-    }
-
-    @Test
     public void queryDeparturesInvalidStation() throws Exception {
-        final QueryDeparturesResult resultLive = queryDepartures("111111", false);
+        final QueryDeparturesResult resultLive = queryDepartures("111111");
         assertEquals(QueryDeparturesResult.Status.INVALID_STATION, resultLive.status);
 
-        final QueryDeparturesResult resultPlan = queryDepartures("2449475", false);
+        final QueryDeparturesResult resultPlan = queryDepartures("2449475");
         assertEquals(QueryDeparturesResult.Status.INVALID_STATION, resultPlan.status);
     }
 

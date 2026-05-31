@@ -51,13 +51,13 @@ public class SvvProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void queryDepartures() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("455000200", false);
+        final QueryDeparturesResult result = queryDepartures("455000200");
         print(result);
     }
 
     @Test
     public void queryDeparturesInvalidStation() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("999999", 0, false);
+        final QueryDeparturesResult result = queryDepartures("999999", 0);
         assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
     }
 

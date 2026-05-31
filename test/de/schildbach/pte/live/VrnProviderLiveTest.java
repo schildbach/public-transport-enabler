@@ -63,16 +63,16 @@ public class VrnProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void queryDepartures() throws Exception {
-        final QueryDeparturesResult result1 = queryDepartures("6032236", false);
+        final QueryDeparturesResult result1 = queryDepartures("6032236");
         print(result1);
 
-        final QueryDeparturesResult result2 = queryDepartures("17001301", false);
+        final QueryDeparturesResult result2 = queryDepartures("17001301");
         print(result2);
     }
 
     @Test
     public void queryDeparturesInvalidStation() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("999999", false);
+        final QueryDeparturesResult result = queryDepartures("999999");
         assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
     }
 
