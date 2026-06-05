@@ -164,7 +164,6 @@ public final class HttpClient {
 
         final OkHttpClient.Builder builder = new OkHttpClient.Builder();
         builder.followRedirects(false);
-        builder.followSslRedirects(true);
         builder.connectTimeout(15, TimeUnit.SECONDS);
         builder.writeTimeout(30, TimeUnit.SECONDS);
         builder.readTimeout(30, TimeUnit.SECONDS);
