@@ -39,7 +39,7 @@ import de.schildbach.pte.dto.SuggestLocationsResult;
  */
 public class StvProviderLiveTest extends AbstractProviderLiveTest {
     public StvProviderLiveTest() {
-        super(new StvProvider());
+        super(new StvProvider(secretProperty("stv.api_authorization")));
     }
 
     @Test
@@ -55,8 +55,8 @@ public class StvProviderLiveTest extends AbstractProviderLiveTest {
     }
 
     @Test
-    public void queryDepartures() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("63203040", false);
+    public void queryDeparturesGraz() throws Exception {
+        final QueryDeparturesResult result = queryDepartures("460304000", false);
         print(result);
     }
 
@@ -104,8 +104,8 @@ public class StvProviderLiveTest extends AbstractProviderLiveTest {
     @Test
     public void shortTrip() throws Exception {
         final QueryTripsResult result = queryTrips(
-                new Location(LocationType.STATION, "63203040", null, "Graz Hauptbahnhof"), null,
-                new Location(LocationType.STATION, "63203149", null, "Graz Babenbergerstraße"), new Date(), true, null);
+                new Location(LocationType.STATION, "460304000", null, "Graz Hauptbahnhof"), null,
+                new Location(LocationType.STATION, "460314900", null, "Graz Babenbergerstraße"), new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.OK, result.status);
         assertTrue(result.trips.size() > 0);

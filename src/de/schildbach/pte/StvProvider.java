@@ -17,72 +17,66 @@
 
 package de.schildbach.pte;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Date;
-import java.util.Set;
-
-import javax.annotation.Nullable;
-
-import de.schildbach.pte.dto.Location;
-import de.schildbach.pte.dto.LocationType;
-import de.schildbach.pte.dto.NearbyLocationsResult;
-import de.schildbach.pte.dto.QueryDeparturesResult;
-import de.schildbach.pte.dto.QueryTripsContext;
-import de.schildbach.pte.dto.QueryTripsResult;
-import de.schildbach.pte.dto.SuggestLocationsResult;
-import de.schildbach.pte.dto.TripOptions;
-
+import de.schildbach.pte.dto.Product;
 import okhttp3.HttpUrl;
 
-import static java.util.Objects.requireNonNull;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
+ * Provider implementation for the Verkehrsverbund Steiermark (Austria).
+ *
  * @author Andreas Schildbach
  */
-public class StvProvider extends AbstractEfaProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("http://appefa10.verbundlinie.at/android/");
+public class StvProvider extends AbstractHafasClientInterfaceProvider {
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://verkehrsauskunft.verbundlinie.at/hamm/");
+    private static final Product[] PRODUCTS_MAP = { Product.HIGH_SPEED_TRAIN, Product.SUBURBAN_TRAIN, Product.SUBWAY,
+            null, Product.TRAM, Product.REGIONAL_TRAIN, Product.BUS, Product.BUS, Product.TRAM, Product.FERRY,
+            Product.ON_DEMAND, Product.BUS, Product.REGIONAL_TRAIN, null, null, null };
+    private static final String DEFAULT_API_CLIENT = "{\"id\":\"VAO\",\"l\":\"vs_stv\",\"type\":\"AND\"}";
 
-    public StvProvider() {
-        super(NetworkId.STV, API_BASE);
-        setRequestUrlEncoding(StandardCharsets.UTF_8);
-        setIncludeRegionId(false);
+    public StvProvider(final String apiAuthorization) {
+        this(DEFAULT_API_CLIENT, apiAuthorization);
+    }
+
+    public StvProvider(final String apiClient, final String apiAuthorization) {
+        super(NetworkId.STV, API_BASE, PRODUCTS_MAP);
+        setApiEndpoint("gate");
+        setApiVersion("1.59");
+        setApiExt("VAO.22");
+        setApiClient(apiClient);
+        setApiAuthorization(apiAuthorization);
     }
 
     @Override
-    public NearbyLocationsResult queryNearbyLocations(final Set<LocationType> types, final Location location,
-            final int maxDistance, final int maxLocations) throws IOException {
-        if (location.hasCoord())
-            return mobileCoordRequest(types, location.coord, maxDistance, maxLocations);
+    public Set<Product> defaultProducts() {
+        return Product.ALL;
+    }
 
-        if (location.type != LocationType.STATION)
-            throw new IllegalArgumentException("cannot handle: " + location.type);
+    private static final Pattern P_SPLIT_NAME_ONE_COMMA = Pattern.compile("([^,]*), ([^,]{3,64})");
 
-        throw new IllegalArgumentException("station"); // TODO
+    @Override
+    protected String[] splitStationName(final String name) {
+        final Matcher m = P_SPLIT_NAME_ONE_COMMA.matcher(name);
+        if (m.matches())
+            return new String[] { m.group(2), m.group(1) };
+        return super.splitStationName(name);
     }
 
     @Override
-    public QueryDeparturesResult queryDepartures(final String stationId, final @Nullable Date time,
-            final int maxDepartures, final boolean equivs) throws IOException {
-        requireNonNull(stationId);
-
-        return queryDeparturesMobile(stationId, time, maxDepartures, equivs);
+    protected String[] splitPOI(final String poi) {
+        final Matcher m = P_SPLIT_NAME_ONE_COMMA.matcher(poi);
+        if (m.matches())
+            return new String[] { m.group(2), m.group(1) };
+        return super.splitPOI(poi);
     }
 
     @Override
-    public SuggestLocationsResult suggestLocations(final CharSequence constraint,
-            final @Nullable Set<LocationType> types, final int maxLocations) throws IOException {
-        return mobileStopfinderRequest(constraint, types, maxLocations);
-    }
-
-    @Override
-    public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to,
-            final Date date, final boolean dep, final @Nullable TripOptions options) throws IOException {
-        return queryTripsMobile(from, via, to, date, dep, options);
-    }
-
-    @Override
-    public QueryTripsResult queryMoreTrips(final QueryTripsContext contextObj, final boolean later) throws IOException {
-        return queryMoreTripsMobile(contextObj, later);
+    protected String[] splitAddress(final String address) {
+        final Matcher m = P_SPLIT_NAME_FIRST_COMMA.matcher(address);
+        if (m.matches())
+            return new String[] { m.group(1), m.group(2) };
+        return super.splitAddress(address);
     }
 }
