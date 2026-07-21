@@ -54,6 +54,7 @@ import de.schildbach.pte.exception.UnexpectedRedirectException;
 
 import okhttp3.Call;
 import okhttp3.CertificatePinner;
+import okhttp3.ConnectionSpec;
 import okhttp3.Cookie;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
@@ -82,6 +83,8 @@ public final class HttpClient {
     private Cookie sessionCookie = null;
     @Nullable
     private Proxy proxy = null;
+    @Nullable
+    private ConnectionSpec connectionSpec = null;
     private boolean trustAllCertificates = false;
     @Nullable
     private byte[] clientCertificate = null;
@@ -198,6 +201,10 @@ public final class HttpClient {
         this.proxy = proxy;
     }
 
+    public void setConnectionSpec(final ConnectionSpec connectionSpec) {
+        this.connectionSpec = connectionSpec;
+    }
+
     public void setTrustAllCertificates(final boolean trustAllCertificates) {
         this.trustAllCertificates = trustAllCertificates;
     }
@@ -255,10 +262,12 @@ public final class HttpClient {
             request.header("Cookie", sessionCookie.toString());
 
         final OkHttpClient okHttpClient;
-        if (proxy != null || trustAllCertificates || certificatePinner != null || clientCertificate != null) {
+        if (proxy != null || connectionSpec != null || trustAllCertificates || certificatePinner != null || clientCertificate != null) {
             final OkHttpClient.Builder builder = OKHTTP_CLIENT.newBuilder();
             if (proxy != null)
                 builder.proxy(proxy);
+            if (connectionSpec != null)
+                builder.connectionSpecs(List.of(connectionSpec));
             if (trustAllCertificates || clientCertificate != null)
                 configureSSL(builder);
             if (certificatePinner != null)
