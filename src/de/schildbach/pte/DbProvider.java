@@ -72,6 +72,7 @@ import de.schildbach.pte.exception.BlockedException;
 import de.schildbach.pte.exception.InternalErrorException;
 import de.schildbach.pte.exception.ParserException;
 import de.schildbach.pte.util.ParserUtils;
+import okhttp3.ConnectionSpec;
 import okhttp3.HttpUrl;
 
 /**
@@ -156,6 +157,7 @@ public final class DbProvider extends AbstractNetworkProvider {
 
     public DbProvider() {
         super(NetworkId.DB);
+        httpClient.setConnectionSpec(ConnectionSpec.RESTRICTED_TLS);
         this.departureEndpoint = API_BASE.newBuilder().addPathSegments("bahnhofstafel/abfahrt").build();
         this.tripEndpoint = API_BASE.newBuilder().addPathSegments("angebote/fahrplan").build();
         this.locationsEndpoint = API_BASE.newBuilder().addPathSegments("location/search").build();
