@@ -157,7 +157,7 @@ public final class DbProvider extends AbstractNetworkProvider {
 
     public DbProvider() {
         super(NetworkId.DB);
-        httpClient.setConnectionSpec(ConnectionSpec.RESTRICTED_TLS);
+        httpClient.setConnectionSpec(ConnectionSpec.MODERN_TLS);
         this.departureEndpoint = API_BASE.newBuilder().addPathSegments("bahnhofstafel/abfahrt").build();
         this.tripEndpoint = API_BASE.newBuilder().addPathSegments("angebote/fahrplan").build();
         this.locationsEndpoint = API_BASE.newBuilder().addPathSegments("location/search").build();
