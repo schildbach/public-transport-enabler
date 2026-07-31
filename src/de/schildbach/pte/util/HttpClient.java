@@ -267,7 +267,7 @@ public final class HttpClient {
             if (proxy != null)
                 builder.proxy(proxy);
             if (connectionSpec != null)
-                builder.connectionSpecs(List.of(connectionSpec));
+                builder.connectionSpecs(Stream.of(connectionSpec).collect(Collectors.toList()));
             if (trustAllCertificates || clientCertificate != null)
                 configureSSL(builder);
             if (certificatePinner != null)
