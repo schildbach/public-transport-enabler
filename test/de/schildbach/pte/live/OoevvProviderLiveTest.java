@@ -57,20 +57,20 @@ public class OoevvProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void queryDeparturesLinz() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("444116400", 0, false);
+        final QueryDeparturesResult result = queryDepartures("444116400", 0);
         print(result);
         assertEquals(QueryDeparturesResult.Status.OK, result.status);
     }
 
     @Test
     public void queryDeparturesSalzburg() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("455000200", false);
+        final QueryDeparturesResult result = queryDepartures("455000200");
         print(result);
     }
 
     @Test
     public void queryDeparturesInvalidStation() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("999999", 0, false);
+        final QueryDeparturesResult result = queryDepartures("999999", 0);
         assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
     }
 

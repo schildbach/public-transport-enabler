@@ -68,25 +68,25 @@ public class BayernProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void queryDepartures() throws Exception {
-        final QueryDeparturesResult munichMarienplatz = queryDepartures("91000002", false);
+        final QueryDeparturesResult munichMarienplatz = queryDepartures("91000002");
         print(munichMarienplatz);
 
-        final QueryDeparturesResult munichHauptbahnhof = queryDepartures("91000006", false);
+        final QueryDeparturesResult munichHauptbahnhof = queryDepartures("91000006");
         print(munichHauptbahnhof);
 
-        final QueryDeparturesResult nurembergHauptbahnhof = queryDepartures("80001020", false);
+        final QueryDeparturesResult nurembergHauptbahnhof = queryDepartures("80001020");
         print(nurembergHauptbahnhof);
 
-        final QueryDeparturesResult augsburgAfrabruecke = queryDepartures("2000770", false);
+        final QueryDeparturesResult augsburgAfrabruecke = queryDepartures("2000770");
         print(augsburgAfrabruecke);
 
-        final QueryDeparturesResult ingolstadtHbf = queryDepartures("80000706", false);
+        final QueryDeparturesResult ingolstadtHbf = queryDepartures("80000706");
         print(ingolstadtHbf);
     }
 
     @Test
     public void queryDeparturesInvalidStation() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("999999", false);
+        final QueryDeparturesResult result = queryDepartures("999999");
         assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
     }
 

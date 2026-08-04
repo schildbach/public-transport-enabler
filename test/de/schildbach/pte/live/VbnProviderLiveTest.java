@@ -56,32 +56,25 @@ public class VbnProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void queryDeparturesFreudenstadt() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("8000110", false);
+        final QueryDeparturesResult result = queryDepartures("8000110");
         print(result);
     }
 
     @Test
     public void queryDeparturesGoettingen() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("8000128", false);
+        final QueryDeparturesResult result = queryDepartures("8000128");
         print(result);
     }
 
     @Test
     public void queryDeparturesRostockHbf() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("8010304", false);
+        final QueryDeparturesResult result = queryDepartures("8010304");
         print(result);
-    }
-
-    @Test
-    public void queryDeparturesEquivs() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("8010304", true);
-        print(result);
-        assertTrue(result.stationDepartures.size() > 1);
     }
 
     @Test
     public void queryDeparturesInvalidStation() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("999999", false);
+        final QueryDeparturesResult result = queryDepartures("999999");
         assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
     }
 

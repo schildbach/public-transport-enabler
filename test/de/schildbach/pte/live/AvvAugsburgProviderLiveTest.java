@@ -52,13 +52,13 @@ public class AvvAugsburgProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void queryDepartures() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("8000013", false); // Hbf
+        final QueryDeparturesResult result = queryDepartures("8000013"); // Hbf
         print(result);
     }
 
     @Test
     public void queryDeparturesInvalidStation() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("999999", false);
+        final QueryDeparturesResult result = queryDepartures("999999");
         assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
     }
 

@@ -75,21 +75,14 @@ public class NegentweeProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void queryDepartures() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("station-amsterdam-centraal", false);
-        print(result);
-        assertEquals(QueryDeparturesResult.Status.OK, result.status);
-    }
-
-    @Test
-    public void queryDeparturesWithEquivalents() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("station-amsterdam-centraal", true);
+        final QueryDeparturesResult result = queryDepartures("station-amsterdam-centraal");
         print(result);
         assertEquals(QueryDeparturesResult.Status.OK, result.status);
     }
 
     @Test
     public void queryDeparturesInvalidStation() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("999999", false);
+        final QueryDeparturesResult result = queryDepartures("999999");
         assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
     }
 

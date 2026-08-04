@@ -67,27 +67,21 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void queryDepartures() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("1007258", false);
+        final QueryDeparturesResult result = queryDepartures("1007258");
         print(result);
 
-        final QueryDeparturesResult result2 = queryDepartures("20019904", false);
+        final QueryDeparturesResult result2 = queryDepartures("20019904");
         print(result2);
 
         // Bonn
-        queryDepartures("22000687", false); // Hauptbahnhof
-        queryDepartures("22001374", false); // Suedwache
+        queryDepartures("22000687"); // Hauptbahnhof
+        queryDepartures("22001374"); // Suedwache
     }
 
     @Test
     public void queryDeparturesInvalidStation() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("999999", false);
+        final QueryDeparturesResult result = queryDepartures("999999");
         assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
-    }
-
-    @Test
-    public void queryManyDeparturesWithEquivs() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("20018235", true);
-        print(result);
     }
 
     @Test

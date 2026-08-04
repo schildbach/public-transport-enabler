@@ -64,10 +64,10 @@ public class VvmProvider extends AbstractEfaProvider {
 
     @Override
     public QueryDeparturesResult queryDepartures(final String stationId, final @Nullable Date time,
-                                                 final int maxDepartures, final boolean equivs) throws IOException {
+                                                 final int maxDepartures) throws IOException {
         requireNonNull(stationId);
 
-        return queryDeparturesMobile(stationId, time, maxDepartures, equivs);
+        return queryDeparturesMobile(stationId, time, maxDepartures);
     }
 
     @Override

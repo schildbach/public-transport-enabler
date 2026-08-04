@@ -149,28 +149,28 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void queryDeparturesBonnHbf() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("687", false);
+        final QueryDeparturesResult result = queryDepartures("687");
         print(result);
         printLineDestinations(result);
     }
 
     @Test
     public void queryDeparturesKoelnHbf() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("8", false);
+        final QueryDeparturesResult result = queryDepartures("8");
         print(result);
         printLineDestinations(result);
     }
 
     @Test
     public void queryDeparturesGaussstr() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("8984", false);
+        final QueryDeparturesResult result = queryDepartures("8984");
         print(result);
         printLineDestinations(result);
     }
 
     @Test
     public void queryDeparturesInvalidStation() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("999999", false);
+        final QueryDeparturesResult result = queryDepartures("999999");
         assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
     }
 
@@ -180,7 +180,7 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
         for (int i = 0; i < 10; i++) {
             Integer id = 1 + rand.nextInt(20000);
             try {
-                final QueryDeparturesResult result = queryDepartures(id.toString(), false);
+                final QueryDeparturesResult result = queryDepartures(id.toString());
                 if (result.status == QueryDeparturesResult.Status.OK) {
                     print(result);
                     printLineDestinations(result);
@@ -526,7 +526,7 @@ public class VrsProviderLiveTest extends AbstractProviderLiveTest {
         }
         Set<Line> lines = new TreeSet<>();
         for (Location station : stations) {
-            QueryDeparturesResult qdr = provider.queryDepartures(station.id, new Date(), 100, false);
+            QueryDeparturesResult qdr = provider.queryDepartures(station.id, new Date(), 100);
             if (qdr.status == QueryDeparturesResult.Status.OK) {
                 for (StationDepartures stationDepartures : qdr.stationDepartures) {
                     final List<LineDestination> stationDeparturesLines = stationDepartures.lines;

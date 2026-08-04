@@ -58,22 +58,16 @@ public class TlemProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void queryDepartures() throws Exception {
-        final QueryDeparturesResult result1 = queryDepartures("1001003", false);
+        final QueryDeparturesResult result1 = queryDepartures("1001003");
         print(result1);
 
-        final QueryDeparturesResult result2 = queryDepartures("1000086", false);
+        final QueryDeparturesResult result2 = queryDepartures("1000086");
         print(result2);
     }
 
     @Test
-    public void queryDeparturesEquivs() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("1001003", true);
-        print(result);
-    }
-
-    @Test
     public void queryDeparturesInvalidStation() throws Exception {
-        final QueryDeparturesResult resultLive = queryDepartures("999999", false);
+        final QueryDeparturesResult resultLive = queryDepartures("999999");
         assertEquals(QueryDeparturesResult.Status.INVALID_STATION, resultLive.status);
     }
 

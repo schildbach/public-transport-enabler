@@ -169,8 +169,8 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
 
     @Override
     public QueryDeparturesResult queryDepartures(final String stationId, final @Nullable Date time,
-            final int maxDepartures, final boolean equivs) throws IOException {
-        return jsonStationBoard(stationId, time, maxDepartures, equivs);
+            final int maxDepartures) throws IOException {
+        return jsonStationBoard(stationId, time, maxDepartures);
     }
 
     @Override
@@ -269,11 +269,11 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
     }
 
     protected final QueryDeparturesResult jsonStationBoard(final String stationId, final @Nullable Date time,
-            int maxDepartures, final boolean equivs) throws IOException {
+            int maxDepartures) throws IOException {
         final boolean canStbFltrEquiv = apiVersion.compareToIgnoreCase("1.18") <= 0;
         if (maxDepartures == 0)
             maxDepartures = DEFAULT_MAX_DEPARTURES;
-        if (!equivs && !canStbFltrEquiv) {
+        if (!canStbFltrEquiv) {
             final int raisedMaxDepartures = maxDepartures * 4;
             log.info("stbFltrEquiv workaround in effect: querying for {} departures rather than {}",
                     raisedMaxDepartures, maxDepartures);
@@ -291,7 +291,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
                 + "\"time\":\"" + jsonTime + "\"," //
                 + "\"stbLoc\":{\"type\":\"S\"," + "\"state\":\"F\"," // F/M
                 + "\"extId\":" + JSONObject.quote(normalizedStationId.toString()) + "}," //
-                + (canStbFltrEquiv ? "\"stbFltrEquiv\":" + Boolean.toString(!equivs) + "," : "") //
+                + (canStbFltrEquiv ? "\"stbFltrEquiv\":true," : "") //
                 + "\"maxJny\":" + maxJny + "}", false);
 
         final HttpUrl url = requestUrl(request);
@@ -366,7 +366,7 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
 
                     final Location location = parseLoc(locList, stbStop.getInt("locX"), null, crdSysList);
                     checkState(location.type == LocationType.STATION);
-                    if (!equivs && !location.id.equals(stationId))
+                    if (!location.id.equals(stationId))
                         continue;
 
                     final String jnyDirTxt = jny.optString("dirTxt", null);

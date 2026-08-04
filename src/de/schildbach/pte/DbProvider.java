@@ -653,8 +653,7 @@ public final class DbProvider extends AbstractNetworkProvider {
     }
 
     @Override
-    public QueryDeparturesResult queryDepartures(String stationId, @Nullable Date time, int maxDepartures,
-            boolean equivs)
+    public QueryDeparturesResult queryDepartures(String stationId, @Nullable Date time, int maxDepartures)
             throws IOException {
         // TODO only 1 hour of results returned, find secret parameter?
         if (maxDepartures == 0)
@@ -683,7 +682,7 @@ public final class DbProvider extends AbstractNetworkProvider {
                     continue;
                 }
                 final Location l = parseLocation(dep.optJSONObject("abfrageOrt"));
-                if (!equivs && !stationId.equals(l.id)) {
+                if (!stationId.equals(l.id)) {
                     continue;
                 }
                 StationDepartures stationDepartures = result.findStationDepartures(l.id);

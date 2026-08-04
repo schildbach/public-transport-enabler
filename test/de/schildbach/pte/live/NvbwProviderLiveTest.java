@@ -81,31 +81,31 @@ public class NvbwProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void queryDeparturesStuttgart() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("5006022", false); // Schlossplatz
+        final QueryDeparturesResult result = queryDepartures("5006022"); // Schlossplatz
         print(result);
     }
 
     @Test
     public void queryDeparturesReutlingen() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("53019174", false); // Reutlingen
+        final QueryDeparturesResult result = queryDepartures("53019174"); // Reutlingen
         print(result);
     }
 
     @Test
     public void queryDeparturesKarlsruhe() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("7000211", false); // Messe
+        final QueryDeparturesResult result = queryDepartures("7000211"); // Messe
         print(result);
     }
 
     @Test
     public void queryDeparturesFreiburg() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("6930112", false); // Faulerstraße
+        final QueryDeparturesResult result = queryDepartures("6930112"); // Faulerstraße
         print(result);
     }
 
     @Test
     public void queryDeparturesInvalidStation() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("999999", false);
+        final QueryDeparturesResult result = queryDepartures("999999");
         assertEquals(QueryDeparturesResult.Status.INVALID_STATION, result.status);
     }
 

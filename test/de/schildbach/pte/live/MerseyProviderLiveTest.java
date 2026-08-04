@@ -64,13 +64,13 @@ public class MerseyProviderLiveTest extends AbstractProviderLiveTest {
 
     @Test
     public void queryDepartures() throws Exception {
-        final QueryDeparturesResult result = queryDepartures("4017846", false);
+        final QueryDeparturesResult result = queryDepartures("4017846");
         print(result);
     }
 
     @Test
     public void queryDeparturesInvalidStation() throws Exception {
-        final QueryDeparturesResult resultLive = queryDepartures("999999", false);
+        final QueryDeparturesResult resultLive = queryDepartures("999999");
         assertEquals(QueryDeparturesResult.Status.INVALID_STATION, resultLive.status);
     }
 
