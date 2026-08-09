@@ -4,8 +4,11 @@ plugins {
 }
 
 group = 'de.schildbach.pte'
-archivesBaseName = 'public-transport-enabler'
 version = 'SNAPSHOT'
+
+base {
+    archivesName = 'public-transport-enabler'
+}
 
 repositories {
     mavenCentral()
@@ -16,7 +19,7 @@ dependencies {
     implementation 'com.squareup.okhttp3:logging-interceptor:5.3.2'
     implementation 'org.slf4j:slf4j-api:2.0.18'
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
-    implementation 'org.json:json:20090211' // provided by Android
+    implementation 'org.json:json:20231013' // provided by Android
     implementation 'net.sf.kxml:kxml2:2.3.0' // provided by Android
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.slf4j:slf4j-jdk14:2.0.18'
