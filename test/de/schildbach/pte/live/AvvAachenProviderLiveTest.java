@@ -91,6 +91,14 @@ public class AvvAachenProviderLiveTest extends AbstractProviderLiveTest {
     }
 
     @Test
+    public void suggestLocationAbbrevPlace() throws Exception {
+        final SuggestLocationsResult result = suggestLocations("Walramplatz");
+        print(result);
+        assertTrue(Objects.requireNonNull(result.getLocations().get(0).name).contains("Walramplatz"));
+        assertTrue(Objects.requireNonNull(result.getLocations().get(0).place).contains("Jülich"));
+    }
+
+    @Test
     public void suggestLocationsPOI() throws Exception {
         final SuggestLocationsResult result = suggestLocations("Suermondt-Ludwig-Museum");
         print(result);
