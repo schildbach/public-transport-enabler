@@ -1,5 +1,5 @@
 before_script:
-  - apt-get update
+  - apt-get update -o Acquire::Check-Valid-Until=false
 
 after_script:
   - gradle --version
