@@ -77,6 +77,7 @@ public final class HttpClient {
     @Nullable
     private String userAgent = null;
     private Map<String, String> headers = new HashMap<>();
+    private boolean contentEncodingFromXmlPragma = false;
     @Nullable
     private String sessionCookieName = null;
     @Nullable
@@ -117,35 +118,6 @@ public final class HttpClient {
                 });
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
 
-        final Interceptor xmlEncodingInterceptor = new Interceptor() {
-            private final Pattern P_XML_PRAGMA = Pattern.compile("<\\?xml.*?encoding=\"(.*?)\".*?\\?>");
-            private final String HEADER_CONTENT_TYPE = "Content-Type";
-
-            @Override
-            public Response intercept(final Interceptor.Chain chain) throws IOException {
-                Response response = chain.proceed(chain.request());
-                final MediaType originalContentType = response.body().contentType();
-                if (originalContentType != null && "text".equalsIgnoreCase(originalContentType.type())
-                        && "xml".equalsIgnoreCase(originalContentType.subtype())
-                        && originalContentType.charset() == null) {
-                    final String peek = response.peekBody(64).string();
-                    final Matcher matcher = P_XML_PRAGMA.matcher(peek);
-                    if (matcher.find()) {
-                        final String encoding = matcher.group(1);
-                        final MediaType contentType = MediaType.get(originalContentType.type() + '/'
-                                + originalContentType.subtype() + ";charset=" + encoding);
-                        final ResponseBody body = response.body();
-                        final Builder responseBuilder = response.newBuilder();
-                        responseBuilder.header(HEADER_CONTENT_TYPE, contentType.toString());
-                        responseBuilder.body(ResponseBody.create(contentType, body.contentLength(), body.source()));
-                        response = responseBuilder.build();
-                        log.debug("Deriving missing {} encoding from XML pragma", encoding);
-                    }
-                }
-                return response;
-            }
-        };
-
         final Interceptor retryInterceptor = new Interceptor() {
             @Override
             public Response intercept(final Chain chain) throws IOException {
@@ -172,9 +144,37 @@ public final class HttpClient {
         builder.readTimeout(30, TimeUnit.SECONDS);
         builder.addNetworkInterceptor(loggingInterceptor);
         builder.addInterceptor(retryInterceptor);
-        builder.addInterceptor(xmlEncodingInterceptor);
         OKHTTP_CLIENT = builder.build();
     }
+
+    private static final Interceptor XML_ENCODING_INTERCEPTOR = new Interceptor() {
+        private final Pattern P_XML_PRAGMA = Pattern.compile("<\\?xml.*?encoding=\"(.*?)\".*?\\?>");
+        private final String HEADER_CONTENT_TYPE = "Content-Type";
+
+        @Override
+        public Response intercept(final Interceptor.Chain chain) throws IOException {
+            Response response = chain.proceed(chain.request());
+            final MediaType originalContentType = response.body().contentType();
+            if (originalContentType != null && "text".equalsIgnoreCase(originalContentType.type())
+                    && "xml".equalsIgnoreCase(originalContentType.subtype())
+                    && originalContentType.charset() == null) {
+                final String peek = response.peekBody(64).string();
+                final Matcher matcher = P_XML_PRAGMA.matcher(peek);
+                if (matcher.find()) {
+                    final String encoding = matcher.group(1);
+                    final MediaType contentType = MediaType.get(originalContentType.type() + '/'
+                            + originalContentType.subtype() + ";charset=" + encoding);
+                    final ResponseBody body = response.body();
+                    final Builder responseBuilder = response.newBuilder();
+                    responseBuilder.header(HEADER_CONTENT_TYPE, contentType.toString());
+                    responseBuilder.body(ResponseBody.create(contentType, body.contentLength(), body.source()));
+                    response = responseBuilder.build();
+                    log.debug("Deriving missing {} encoding from XML pragma", encoding);
+                }
+            }
+            return response;
+        }
+    };
 
     private static final String SCRAPE_ACCEPT = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
     private static final int SCRAPE_PEEK_SIZE = 8192;
@@ -191,6 +191,10 @@ public final class HttpClient {
 
     public void setHeader(final String headerName, final String headerValue) {
         this.headers.put(headerName, headerValue);
+    }
+
+    public void setContentEncodingFromXmlPragma(final boolean contentEncodingFromXmlPragma) {
+        this.contentEncodingFromXmlPragma = contentEncodingFromXmlPragma;
     }
 
     public void setSessionCookieName(final String sessionCookieName) {
@@ -262,6 +266,8 @@ public final class HttpClient {
             request.header("Cookie", sessionCookie.toString());
 
         final OkHttpClient.Builder builder = OKHTTP_CLIENT.newBuilder();
+        if (contentEncodingFromXmlPragma)
+            builder.addInterceptor(XML_ENCODING_INTERCEPTOR);
         if (proxy != null)
             builder.proxy(proxy);
         if (connectionSpec != null)

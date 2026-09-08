@@ -48,6 +48,7 @@ public class VvmProvider extends AbstractEfaProvider {
         super(NetworkId.VVM, API_BASE, DEPARTURE_MONITOR_ENDPOINT, TRIP_ENDPOINT, null, null);
         setRequestUrlEncoding(StandardCharsets.UTF_8);
         setNeedsSpEncId(true);
+        httpClient.setContentEncodingFromXmlPragma(true);
     }
 
     @Override
