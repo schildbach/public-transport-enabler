@@ -23,7 +23,7 @@ import okhttp3.HttpUrl;
  * @author Andreas Schildbach
  */
 public class DubProvider extends AbstractEfaProvider {
-    private static final HttpUrl API_BASE = HttpUrl.parse("http://wojhati.rta.ae/dub/");
+    private static final HttpUrl API_BASE = HttpUrl.parse("https://wojhati.rta.ae/dub/");
 
     public DubProvider() {
         super(NetworkId.DUB, API_BASE);
