@@ -56,7 +56,4 @@ public enum NetworkId {
 
     // United States
     BART,
-
-    // Australia
-    SYDNEY,
 }
