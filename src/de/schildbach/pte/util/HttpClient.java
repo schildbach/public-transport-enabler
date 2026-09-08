@@ -261,23 +261,17 @@ public final class HttpClient {
         if (sessionCookie != null && sessionCookie.name().equals(sessionCookieName))
             request.header("Cookie", sessionCookie.toString());
 
-        final OkHttpClient okHttpClient;
-        if (proxy != null || connectionSpec != null || trustAllCertificates || certificatePinner != null || clientCertificate != null) {
-            final OkHttpClient.Builder builder = OKHTTP_CLIENT.newBuilder();
-            if (proxy != null)
-                builder.proxy(proxy);
-            if (connectionSpec != null)
-                builder.connectionSpecs(Stream.of(connectionSpec).collect(Collectors.toList()));
-            if (trustAllCertificates || clientCertificate != null)
-                configureSSL(builder);
-            if (certificatePinner != null)
-                builder.certificatePinner(certificatePinner);
-            okHttpClient = builder.build();
-        } else {
-            okHttpClient = OKHTTP_CLIENT;
-        }
+        final OkHttpClient.Builder builder = OKHTTP_CLIENT.newBuilder();
+        if (proxy != null)
+            builder.proxy(proxy);
+        if (connectionSpec != null)
+            builder.connectionSpecs(Stream.of(connectionSpec).collect(Collectors.toList()));
+        if (trustAllCertificates || clientCertificate != null)
+            configureSSL(builder);
+        if (certificatePinner != null)
+            builder.certificatePinner(certificatePinner);
 
-        final Call call = okHttpClient.newCall(request.build());
+        final Call call = builder.build().newCall(request.build());
         try (final Response response = call.execute()) {
             final int responseCode = response.code();
             final String bodyPeek = response.peekBody(SCRAPE_PEEK_SIZE).string().replaceAll("\\p{C}", "");
