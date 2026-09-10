@@ -165,6 +165,11 @@ public final class DbProvider extends AbstractNetworkProvider {
         this.resultHeader = new ResultHeader(network, "movas");
     }
 
+    // backwards compat
+    public DbProvider(final String apiClient, final String apiAuthorization, final byte[] salt) {
+        this();
+    }
+
     private String doRequest(final HttpUrl url, final String body, final String contentType) throws IOException {
         // DB API requires these headers
         // Content-Type must be exactly as passed below,
@@ -200,7 +205,6 @@ public final class DbProvider extends AbstractNetworkProvider {
             return null;
         return ISO_DATE_TIME_WOFFSET_FORMAT.format(time);
     }
-
 
     private Date parseIso8601WOffset(final String time) {
         if (time == null)
@@ -660,7 +664,9 @@ public final class DbProvider extends AbstractNetworkProvider {
         if (maxDepartures == 0)
             maxDepartures = DEFAULT_MAX_DEPARTURES;
         final Calendar c = new GregorianCalendar(timeZone);
-        c.setTime(time);
+        if (time != null) {
+            c.setTime(time);
+        }
 
         final String request = "{\"anfragezeit\": \"" + formatTime(c) + "\"," //
                 + "\"datum\": \"" + formatDate(c) + "\"," //

@@ -281,7 +281,9 @@ public abstract class AbstractHafasClientInterfaceProvider extends AbstractHafas
         }
 
         final Calendar c = new GregorianCalendar(timeZone);
-        c.setTime(time);
+        if (time != null) {
+            c.setTime(time);
+        }
         final CharSequence jsonDate = jsonDate(c);
         final CharSequence jsonTime = jsonTime(c);
         final CharSequence normalizedStationId = normalizeStationId(stationId);
