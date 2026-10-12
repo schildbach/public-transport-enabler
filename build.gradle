@@ -4,8 +4,13 @@ plugins {
 }
 
 group = 'de.schildbach.pte'
-archivesBaseName = 'public-transport-enabler'
 version = 'SNAPSHOT'
+
+if (GradleVersion.current() >= GradleVersion.version('7.1')) {
+    base.archivesName = 'public-transport-enabler'
+} else {
+    archivesBaseName = 'public-transport-enabler'
+}
 
 repositories {
     mavenCentral()
