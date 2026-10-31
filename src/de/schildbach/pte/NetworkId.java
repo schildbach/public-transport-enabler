@@ -56,4 +56,7 @@ public enum NetworkId {
 
     // United States
     BART,
+
+    // Italy
+    MATO
 }

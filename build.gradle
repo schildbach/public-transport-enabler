@@ -4,8 +4,11 @@ plugins {
 }
 
 group = 'de.schildbach.pte'
-archivesBaseName = 'public-transport-enabler'
 version = 'SNAPSHOT'
+
+base {
+    archivesName = 'public-transport-enabler'
+}
 
 repositories {
     mavenCentral()
