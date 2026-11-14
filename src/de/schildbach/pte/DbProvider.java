@@ -72,8 +72,10 @@ import de.schildbach.pte.exception.BlockedException;
 import de.schildbach.pte.exception.InternalErrorException;
 import de.schildbach.pte.exception.ParserException;
 import de.schildbach.pte.util.ParserUtils;
+import okhttp3.CipherSuite;
 import okhttp3.ConnectionSpec;
 import okhttp3.HttpUrl;
+import okhttp3.TlsVersion;
 
 /**
  * Provider implementation for movas API of Deutsche Bahn (Germany).
@@ -158,6 +160,17 @@ public final class DbProvider extends AbstractNetworkProvider {
     public DbProvider() {
         super(NetworkId.DB);
         httpClient.setConnectionSpec(ConnectionSpec.RESTRICTED_TLS);
+        httpClient.setConnectionSpec(new ConnectionSpec.Builder(true)
+                .tlsVersions(TlsVersion.TLS_1_3, TlsVersion.TLS_1_2)
+                .cipherSuites(
+                        CipherSuite.TLS_AES_256_GCM_SHA384,
+                        CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
+                        CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+                        CipherSuite.TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,
+                        CipherSuite.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256,
+                        CipherSuite.TLS_CHACHA20_POLY1305_SHA256)
+                .supportsTlsExtensions(true)
+                .build());
         this.departureEndpoint = API_BASE.newBuilder().addPathSegments("bahnhofstafel/abfahrt").build();
         this.tripEndpoint = API_BASE.newBuilder().addPathSegments("angebote/fahrplan").build();
         this.locationsEndpoint = API_BASE.newBuilder().addPathSegments("location/search").build();
