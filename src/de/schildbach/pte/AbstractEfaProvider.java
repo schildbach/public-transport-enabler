@@ -22,6 +22,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -113,6 +114,7 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
     private String language = "de";
     private boolean needsSpEncId = false;
+    private boolean statelessMoreTrips = false;
     private boolean includeRegionId = true;
     private boolean useProxFootSearch = true;
     private @Nullable String httpReferer = null;
@@ -126,17 +128,54 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractEfaProvider.class);
 
+    /**
+     * Everything needed to run the next "later" query as a fresh trip search, without the server-side session.
+     */
+    @SuppressWarnings("serial")
+    private static class StatelessQuery implements Serializable {
+        private final Location from, via, to;
+        private final Date time;
+        private final @Nullable HashSet<Product> products;
+        private final @Nullable Optimize optimize;
+        private final @Nullable WalkSpeed walkSpeed;
+        private final @Nullable Accessibility accessibility;
+        private final @Nullable HashSet<TripFlag> flags;
+
+        private StatelessQuery(final Location from, final @Nullable Location via, final Location to, final Date time,
+                final @Nullable TripOptions options) {
+            this.from = from;
+            this.via = via;
+            this.to = to;
+            this.time = time;
+            this.products = options != null && options.products != null ? new HashSet<>(options.products) : null;
+            this.optimize = options != null ? options.optimize : null;
+            this.walkSpeed = options != null ? options.walkSpeed : null;
+            this.accessibility = options != null ? options.accessibility : null;
+            this.flags = options != null && options.flags != null ? new HashSet<>(options.flags) : null;
+        }
+
+        private TripOptions options() {
+            return new TripOptions(products, optimize, walkSpeed, accessibility, flags);
+        }
+    }
+
     @SuppressWarnings("serial")
     private static class Context implements QueryTripsContext {
         private final String context;
+        private final @Nullable StatelessQuery stateless;
 
         private Context(final String context) {
+            this(context, null);
+        }
+
+        private Context(final String context, final @Nullable StatelessQuery stateless) {
             this.context = context;
+            this.stateless = stateless;
         }
 
         @Override
         public boolean canQueryLater() {
-            return context != null;
+            return context != null || stateless != null;
         }
 
         @Override
@@ -225,6 +264,17 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
 
     protected AbstractEfaProvider setUseStringCoordListOutputFormat(final boolean useStringCoordListOutputFormat) {
         this.useStringCoordListOutputFormat = useStringCoordListOutputFormat;
+        return this;
+    }
+
+    /**
+     * Load "later" trips with a fresh trip search that starts after the last known departure, instead of continuing
+     * the server-side session (<code>command=tripNext</code>). For servers behind a load balancer without session
+     * affinity, where a follow-up request usually ends on a node that does not know the session ("Your session has
+     * expired").
+     */
+    protected AbstractEfaProvider setStatelessMoreTrips(final boolean statelessMoreTrips) {
+        this.statelessMoreTrips = statelessMoreTrips;
         return this;
     }
 
@@ -2122,6 +2172,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     @Override
     public QueryTripsResult queryTrips(final Location from, final @Nullable Location via, final Location to,
             final Date date, final boolean dep, final @Nullable TripOptions options) throws IOException {
+        final QueryTripsResult result = doQueryTrips(from, via, to, date, dep, options);
+        return statelessMoreTrips ? withStatelessContext(result, options, null) : result;
+    }
+
+    private QueryTripsResult doQueryTrips(final Location from, final @Nullable Location via, final Location to,
+            final Date date, final boolean dep, final @Nullable TripOptions options) throws IOException {
         final HttpUrl.Builder url = tripEndpoint.newBuilder();
         appendTripRequestParameters(url, from, via, to, date, dep, options);
         final AtomicReference<QueryTripsResult> result = new AtomicReference<>();
@@ -2139,6 +2195,34 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
         httpClient.getInputStream(callback, url.build(), httpRefererTrip);
 
         return result.get();
+    }
+
+    /**
+     * Replaces the session based context by one that continues with a fresh search after the last departure. Trips
+     * that only consist of walking are ignored for that, and the search time always moves forward.
+     */
+    private QueryTripsResult withStatelessContext(final QueryTripsResult result, final @Nullable TripOptions options,
+            final @Nullable Date previousTime) {
+        if (result == null || result.status != QueryTripsResult.Status.OK || result.trips == null
+                || result.trips.isEmpty())
+            return result;
+        Date latest = null;
+        for (final Trip trip : result.trips) {
+            if (trip.getFirstPublicLeg() == null)
+                continue;
+            final Date departure = trip.getFirstDepartureTime();
+            if (latest == null || departure.after(latest))
+                latest = departure;
+        }
+        if (latest == null)
+            return result;
+        // The search works in whole minutes: start one minute after the last departure to not get it again
+        Date next = new Date((latest.getTime() / 60000 + 1) * 60000);
+        if (previousTime != null && !next.after(previousTime))
+            next = new Date(previousTime.getTime() + 60000);
+        return new QueryTripsResult(result.header, result.queryUri, result.from, result.via, result.to,
+                new Context(null, new StatelessQuery(result.from, result.via, result.to, next, options)),
+                result.trips);
     }
 
     protected QueryTripsResult queryTripsMobile(final Location from, final @Nullable Location via, final Location to,
@@ -2165,6 +2249,12 @@ public abstract class AbstractEfaProvider extends AbstractNetworkProvider {
     @Override
     public QueryTripsResult queryMoreTrips(final QueryTripsContext contextObj, final boolean later) throws IOException {
         final Context context = (Context) contextObj;
+        if (context.stateless != null) {
+            final StatelessQuery query = context.stateless;
+            final TripOptions options = query.options();
+            final QueryTripsResult result = doQueryTrips(query.from, query.via, query.to, query.time, true, options);
+            return withStatelessContext(result, options, query.time);
+        }
         final HttpUrl commandUrl = HttpUrl.parse(context.context);
         final HttpUrl.Builder url = commandUrl.newBuilder();
         appendCommonRequestParams(url, "XML");

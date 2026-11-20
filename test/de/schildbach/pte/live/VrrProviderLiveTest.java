@@ -33,6 +33,7 @@ import de.schildbach.pte.dto.NearbyLocationsResult;
 import de.schildbach.pte.dto.Point;
 import de.schildbach.pte.dto.QueryDeparturesResult;
 import de.schildbach.pte.dto.QueryTripsResult;
+import de.schildbach.pte.dto.Trip;
 import de.schildbach.pte.dto.SuggestLocationsResult;
 
 /**
@@ -180,6 +181,35 @@ public class VrrProviderLiveTest extends AbstractProviderLiveTest {
         final QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
         print(result);
         assertEquals(QueryTripsResult.Status.AMBIGUOUS, result.status);
+    }
+
+    @Test
+    public void moreTripsWithoutSession() throws Exception {
+        // the VRR servers have no session affinity: later trips must not depend on the server-side session
+        final Location from = new Location(LocationType.STATION, "20009289", "Essen", "Hauptbahnhof");
+        final Location to = new Location(LocationType.STATION, "20009161", "Essen", "Bismarckplatz");
+        QueryTripsResult result = queryTrips(from, null, to, new Date(), true, null);
+        print(result);
+        assertEquals(QueryTripsResult.Status.OK, result.status);
+        Date latest = latestPublicDeparture(result);
+        for (int i = 0; i < 5; i++) {
+            assertTrue(result.context.canQueryLater());
+            result = queryMoreTrips(result.context, true);
+            print(result);
+            assertEquals("later #" + (i + 1), QueryTripsResult.Status.OK, result.status);
+            final Date newLatest = latestPublicDeparture(result);
+            assertTrue("later #" + (i + 1) + " must reach further", newLatest.after(latest));
+            latest = newLatest;
+        }
+    }
+
+    private static Date latestPublicDeparture(final QueryTripsResult result) {
+        Date latest = null;
+        for (final Trip trip : result.trips)
+            if (trip.getFirstPublicLeg() != null
+                    && (latest == null || trip.getFirstDepartureTime().after(latest)))
+                latest = trip.getFirstDepartureTime();
+        return latest;
     }
 
     @Test
