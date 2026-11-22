@@ -159,7 +159,6 @@ public final class DbProvider extends AbstractNetworkProvider {
 
     public DbProvider() {
         super(NetworkId.DB);
-        httpClient.setConnectionSpec(ConnectionSpec.RESTRICTED_TLS);
         httpClient.setConnectionSpec(new ConnectionSpec.Builder(true)
                 .tlsVersions(TlsVersion.TLS_1_3, TlsVersion.TLS_1_2)
                 .cipherSuites(
