@@ -183,6 +183,7 @@ public final class DbProvider extends AbstractNetworkProvider {
         // passing it to httpClient.get would add charset suffix
         httpClient.setHeader("X-Correlation-ID", UUID.randomUUID() + "_" + UUID.randomUUID());
         httpClient.setHeader("Accept", contentType);
+        httpClient.setHeader("Accept-Language", "de");
         httpClient.setHeader("Content-Type", contentType);
         final CharSequence page = httpClient.get(url, body, null);
         return page.toString();
