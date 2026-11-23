@@ -52,6 +52,7 @@ public class VrrProvider extends AbstractEfaProvider {
         setStyles(STYLES);
         setRequestUrlEncoding(StandardCharsets.UTF_8);
         setUseLineRestriction(false);
+        setStatelessMoreTrips(true); // the load balancer has no session affinity, tripNext usually fails
     }
 
     @Override
